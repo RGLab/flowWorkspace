@@ -1,0 +1,15 @@
+Package: flowWorkspace
+Type: Package
+Title: Import flowJo Workspaces into BioConductor and replicate flowJo gating with flowCore 
+Version: 0.99.3
+Date: 2011-04-05
+Author: Greg Finak, Mike Jiang, Mose Andre
+Maintainer: Greg Finak <gfinak@fhcrc.org>
+Description: This package is designed to facilitate comparison of automated gating methods against manual gating done in flowJo. This package allows you to import basic flowJo workspaces into BioConductor and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies, groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.  
+License: Artistic-2.0
+LazyLoad: yes
+Imports: Biobase, Rgraphviz, XML, flowCore, graph, graphics, lattice, methods, stats, utils
+Collate: AllClasses.R AllGenerics.R AllMethods.R AllExportMethods.R flowWorkspace2flowCore-methods.R ncdfFlowSet-functions.R 
+biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
+Depends: methods, RBGL, graph, XML, flowCore, flowViz, Rgraphviz, Biobase
+Suggests: testthat, flowWorkspaceData
