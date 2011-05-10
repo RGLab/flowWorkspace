@@ -392,7 +392,16 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 			message("Compensating");
 			#compobj<-compensation(.getCompensationMatrices(doc)[[as.numeric(cid)]])
 			compobj<-compensation(hierarchy@compensation);
-			data<-compensate(data,compobj)
+			#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
+			#I need to handle this case properly.
+			res<-try(compensate(data,compobj),silent=TRUE)
+			if(inherits(res,"try-error")){
+				message("Data is probably stored already compensated");
+			}else{
+				data<-res
+				rm(res);
+				gc(reset=TRUE);
+			}
 			cnd<-colnames(data)
 			if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
 			wh<-cnd%in%parameters(compobj)
@@ -413,6 +422,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 			# }
 		}
 		else if(cid==-2){
+			#TODO the matrix may be acquisition defined.
 			message("No compensation");
 		}
 		else if(cid==-1){
@@ -422,8 +432,18 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 			if(grepl("Acquisition-defined",nm)){
 				###Code to compensate the sample using the acquisition defined compensation matrices.
 				message("Compensating with Acquisition defined compensation matrix");
+				#browser()
+				#TODO make sure we don't compensate data that's stored compensated and that we don't throw an error either.
 				comp<-compensation(spillover(data)$SPILL)
-				data<-compensate(data,comp)
+				hierarchy@compensation<-spillover(data)$SPILL
+				res<-try(compensate(data,comp),silent=TRUE)
+				if(inherits(res,"try-error")){
+					message("Data is probably stored already compensated");
+				}else{
+					data<-res
+					rm(res);
+					gc(reset=TRUE);
+				}
 				cnd<-colnames(data)
 				wh<-cnd%in%parameters(comp)
 				cnd[wh]<-paste("<",parameters(comp),">",sep="")
@@ -444,11 +464,13 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		.flowJoTransform(environment(),cal);
 		gc(reset=TRUE);
 		#wh<-which(data@parameters@data$name=="Time")
-		wh<-grep("Time",data@parameters@data$name)
+		wh<-grep("^Time$",data@parameters@data$name)
+		if(length(wh!=0)){
 		gc(reset=TRUE);
 		parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
 		gc(reset=TRUE);
 		parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
+		}
 		gc(reset=TRUE);
 		# if(!isNcdf){
 			e<-new.env(parent=.GlobalEnv);
@@ -655,7 +677,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 	return(x);
 }
 
-setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=50,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
+setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 	if(!boolean){	
 			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",env=x))))],x@tree)
 	}else{
@@ -666,16 +688,22 @@ setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot
 		natr<-list();
 		natr$label<-nn;
 		options("warn"=-1)
-		plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
+		renderGraph(Rgraphviz::layoutGraph(sub,layoutType=layout,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle"))))
+		#plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
 		options("warn"=0)
 })
 
 setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
 	node<-getNodes(x,tsort=tsort)[y];
+	if(is.na(node)){
+		warning("Can't plot gate ", y, " doesn't exist.");
+		return(1);
+	}
 	plotGate(x,y=node,add=add,border=border,tsort=tsort,...);
 })
 
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
+	#TODO fix plotting of rectangleGates that are one dimensional
 	
 		if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
@@ -724,7 +752,12 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 		}
 		dims<-colnames(getBoundaries(x,y))
 		dims<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
-		polygon(getBoundaries(x,y)[,dims],border=border,...);
+		#Case for rectangle or polygon gate
+		if(length(dims)>1){
+			polygon(getBoundaries(x,y)[,dims],border=border,...);
+		}else{
+			apply(getBoundaries(x,y)[,dims,drop=FALSE],1,function(x)abline(v=x,col="red"))
+		}
 	}
 })
 
@@ -746,6 +779,7 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 	
 	#m[1,4]<-m[1,3]
 	m[1,c(2)]<-1;
+	m[1,5]<-m[1,4]
 	colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
 	rownames(m)<-m[,1]
 	m<-m[,2:6]
@@ -754,24 +788,24 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 	x<-getPopStats(x)
-	cv<-apply(as.matrix(x[,2:3]),1,function(y)sd(y)/mean(y));
+	cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));
 	cv<-as.matrix(cv,nrow=length(cv))
 	cv[is.nan(cv)]<-0
 	rownames(cv)<-rownames(x);
-	barchart(cv,xlab="Coefficient of Variation",...);
+	return(barchart(cv,xlab="Coefficient of Variation",...));
 })
 
 setMethod("plotPopCV","GatingSet",function(x,...){
 #columns are populations
 #rows are samples
-cv<-do.call(rbind,lapply(lapply(G,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-sd(x)/mean(x);ifelse(is.nan(cv),0,cv)})))
+cv<-do.call(rbind,lapply(lapply(G,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
 #flatten, generate levels for samples.
 nr<-nrow(cv)
 nc<-ncol(cv)
 populations<-gl(nc,nr,labels=colnames(cv))
 samples<-as.vector(t(matrix(gl(nr,nc,labels=rownames(cv)),nrow=nc)))
 cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-barchart(cv~populations|samples,cv,...);
+return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...))));
 })
 
 setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(obj,y=NULL,...){
@@ -910,7 +944,12 @@ setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(ob
 	setdiff(adj(ugraph(obj@tree),y)[[1]],adj(obj@tree,y)[[1]])
 })
 setMethod("getBoundaries",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-	getGate(obj,y)@boundaries
+	g<-getGate(obj,y);
+	if(length(g@parameters)==1){
+		rbind(g@min,g@max)
+	}else{
+		g@boundaries
+	}
 })
 setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
 	if(.isBooleanGate.graphNEL(obj,y)){
@@ -1265,7 +1304,19 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		#Store the compensation matrices
 		if(is.null(xpathApply(x,"./ancestor-or-self::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]])){
 			#No compensation matrix
-			compensation<-matrix();
+			#Here the matrix could be acquisition defined and stored in the spillover keyword, but the data is also stored compensated so it doesn't need to be applied.
+			spillover.matrix<-try(strsplit(xpathApply(x,"./ancestor-or-self::Sample/Keywords/Keyword[@name='SPILL']",function(x)xmlGetAttr(x,"value"))[[1]],",")[[1]]);
+			if(!inherits(spillover.matrix,"try-error")){
+				dims<-as.numeric(spillover.matrix[1]);
+				spillover.matrix<-spillover.matrix[-1L]
+				cn<-spillover.matrix[1:dims];
+				spillover.matrix<-matrix(as.numeric(spillover.matrix[-c(1:dims)]),byrow=TRUE,ncol=dims)
+				colnames(spillover.matrix)<-cn;
+				compensation<-spillover.matrix
+			}else{
+				compensation<-matrix();
+			}
+			
 			assign("compensation",compensation,env);
 		}else{
 			compID<-xpathApply(x,"./ancestor-or-self::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]]
@@ -1273,12 +1324,15 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 				compobj<-.getCompensationMatrices(xmlRoot(x))[[as.numeric(compID)]]
 				assign("compensation",compobj,env);
 			}else if(compID==-1){
+				#browser()
 				#acquisition defined.. usually table 2 should have the "Acquisition defined" string.
-				warning("Compensation ID=-1 for sample")
-				str<-strsplit(.getCalibrationTableNames(xmlRoot(x))," ")
-				str<-lapply(str,function(x)x[1])
-				nm<-as.matrix(unique(do.call(c,str))[2])
-				assign("compensation",nm,env);
+				#This is not always true
+				#warning("Compensation ID=-1 for sample")
+				#data could be stored compensated. We want the compensation matrix.
+			#str<-strsplit(.getCalibrationTableNames(xmlRoot(x))," ")
+			#str<-lapply(str,function(x)x[1])
+			#nm<-as.matrix(unique(do.call(c,str))[2])
+				assign("compensation",as.matrix("Acquisition-defined"),env);
 			}
 		}
 		assign("gr",gr,env=env);
@@ -1492,8 +1546,11 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	colnames(vertices)<-axes
 	##Get the PnG gain for the two axes.
 	gains<-.getGains(x)
+	#The keywords may or may not have the <>.
+	#Best to remove them altogether and match?
+	
 	gains<-sapply(gsub("<","",gsub(">","",axes)),function(q){
-		as.numeric(gains[match(q,gains[,1]),2])
+		as.numeric(gains[match(q,gsub(">","",gsub("<","",gains[,1]))),2])
 	})
 	##Get the current sample name
 	attrs<-xpathApply(x,"./ancestor::Sample",xmlAttrs)[[1]];
@@ -1517,16 +1574,69 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		}else{
 			##search for a calibration table name prefixes specific to this compID
 			#It may not exist, so construct a table by default.
+			#TODO test with Aaron's workspace - where the names don't match ..
+			#Currently this doesn't work with Aaron's workspace where the names don't match. 
+			#Need a default case.. etc.
 			cal<-.getCalibrationTableSearch(xmlRoot(x),compnames[as.numeric(compID)])
-			if(as.numeric(strsplit(.getFlowJoVersion(x),"\\.")[[1]][1])<9){
-				cal<-.constructCalTables8.2(cal,x,compID,compnames)
-			}
 			cal<-lapply(cal,function(x){
 				at<-attr(x,"type")
 				if(length(at)==0)
 					attr(x,"type")<-"flowJo";
 				x
-				})
+			})
+			#Is it empty?
+			if(length(cal)==0){
+				#Case where we can't find the transformation we expect.
+				#Case where the transformations are not named after the parameters
+				#Should we log-transform these dimensions?
+				calnames<-unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"name")))
+
+				callog<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))
+				#4096, the magic number..
+				calrange<-(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"range"))))<4096)
+				callog<-callog&calrange
+
+				cal<-list();
+				
+				#default is identity transform
+				cal<-rep(list(function(x){x}),length(calnames))
+				names(cal)<-calnames
+				for(i in 1:length(cal)){
+					attr(cal[[i]],"type")<-"identity"
+				}
+				#Now log transform what needs to be log transformed
+				llen<-length(which(callog))
+				
+				if(llen!=0){
+					for(i in which(callog)){
+						cal[[i]]<-function(x){x<-log(x,10);x[is.nan(x)]<-0;x[is.infinite(x)]<-0;x}
+						attr(cal[[i]],"type")<-"log";
+					}
+				}
+				##Finally flowJo-specific transform whatever is left.
+					
+				if(!is.null(.getCalibrationTableNames(x))){
+					#Apply flowJo transform
+					#Not clear how this should be assigned to the correct parameters
+					#I have seen cases with wierd behaviour.
+					#this range >=4096 & log=1, means flowJo defined transform.
+					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
+					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
+						stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+					}else if(length(calfj!=0)){
+						#These are either ordered as in calnames or as in the StainChannelList
+						stainnames<-unlist(xpathApply(xmlRoot(x),"/Workspace/StainChannelList/StringArray/String",xmlValue));
+						cn<-names(cal[calfj])
+						cal[calfj]<-sapply(flowWorkspace:::.getCalibrationTableNames(x),function(y).getCalibrationTable(x,y))[match(calnames[calfj],stainnames)]
+						names(cal[calfj])<-cn;
+						for(i in which(calfj))
+							attr(cal[[i]],"type")<-"flowJo"
+					}
+				}
+			}
+			if(as.numeric(strsplit(.getFlowJoVersion(x),"\\.")[[1]][1])<9){
+				cal<-.constructCalTables8.2(cal,x,compID,compnames)
+			}
 			assign("transformations",cal,env);
 		}
 	}else if(compID==-1){
@@ -1534,15 +1644,67 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		if(exists("transformations",env)){
 			cal<-get("transformations",env);
 		}else{	
+			#In Aaron's workspace, the names don't necessarily match the calibration tables. I don't know why that is, but we need to deal with it.
+			
 	r<-unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1])))[grep("Acquisition-defined",unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1]))))]
-			cal<-.getCalibrationTableSearch(xmlRoot(x),r)
-			if(as.numeric(strsplit(.getFlowJoVersion(x),"\\.")[[1]][1])<9){
-				cal<-.constructCalTables8.2(cal,x,compID,compnames)
-			}
-			for(zz in 1:length(cal)){
-				at<-attr(x,"type")
-				if(length(at)==0)
+			if(length(r)!=0){	
+				cal<-.getCalibrationTableSearch(xmlRoot(x),r)
+				for(zz in 1:length(cal)){
+					at<-attr(x,"type")
+					if(length(at)==0)
 					attr(cal[[zz]],"type")<-"flowJo"
+				}
+			}else{
+				#Case where the transformations are not named after the parameters
+				#Should we log-transform these dimensions?
+				calnames<-unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"name")))
+
+				callog<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))
+				#4096, the magic number..
+				calrange<-(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"range"))))<4096)
+				callog<-callog&calrange
+
+				cal<-list();
+				
+				#default is identity transform
+				cal<-rep(list(function(x){x}),length(calnames))
+				names(cal)<-calnames
+				for(i in 1:length(cal)){
+					attr(cal[[i]],"type")<-"identity"
+				}
+				#Now log transform what needs to be log transformed
+				llen<-length(which(callog))
+				
+				if(llen!=0){
+					for(i in which(callog)){
+						cal[[i]]<-function(x){x<-log(x,10);x[is.nan(x)]<-0;x[is.infinite(x)]<-0;x}
+						attr(cal[[i]],"type")<-"log";
+					}
+				}
+				##Finally flowJo-specific transform whatever is left.
+					
+				if(!is.null(.getCalibrationTableNames(x))){
+					#Apply flowJo transform
+					#Not clear how this should be assigned to the correct parameters
+					#I have seen cases with wierd behaviour.
+					#this range >=4096 & log=1, means flowJo defined transform.
+					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
+					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
+						stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+					}else if(length(calfj!=0)){
+						#These are either ordered as in calnames or as in the StainChannelList
+						stainnames<-unlist(xpathApply(xmlRoot(x),"/Workspace/StainChannelList/StringArray/String",xmlValue));
+						cn<-names(cal[calfj])
+						cal[calfj]<-sapply(flowWorkspace:::.getCalibrationTableNames(x),function(y).getCalibrationTable(x,y))[match(calnames[calfj],stainnames)]
+						names(cal[calfj])<-cn;
+						for(i in which(calfj))
+							attr(cal[[i]],"type")<-"flowJo"
+					}
+				}
+			}
+			if(as.numeric(strsplit(.getFlowJoVersion(x),"\\.")[[1]][1])<9){
+				#TODO there may be bugs in the 8.2 code for the case of acquisition defined comp matrices.. to be seen.
+				cal<-.constructCalTables8.2(cal,x,compID,compnames)
 			}
 			assign("transformations",cal,env);
 		}
@@ -1560,7 +1722,12 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		}else{
 			#Should we log-transform these dimensions?
 			calnames<-unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"name")))
+			
 			callog<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))
+			#4096, the magic number..
+			calrange<-(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"range"))))<4096)
+			callog<-callog&calrange
+			
 			cal<-list();
 			#Probably need to do something here for 8.2 flowJo workspaces.
 			#Yes we do! It's broken!
@@ -1568,10 +1735,41 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 			if(as.numeric(strsplit(.getFlowJoVersion(x),"\\.")[[1]][1])<9){
 				cal<-.constructCalTables8.2(cal,x,compID,compnames=NULL)
 			}else{
+				#identity transform by default
+				cal<-rep(list(function(x){x}),length(calnames))
+				names(cal)<-calnames
+				for(i in 1:length(cal)){
+					attr(cal[[i]],"type")<-"identity"
+				}
+				#Now log transform what needs to be log transformed
 				llen<-length(which(callog))
-				cal<-rep(list(function(x){x<-log(x,10);x[is.nan(x)]<-0;x[is.infinite(x)]<-0;x}),llen)
-				cal<-lapply(cal,function(x){attr(x,"type")<-"log";x});
-				names(cal)<-calnames[which(callog)]
+				
+				if(llen!=0){
+					for(i in which(callog)){
+						cal[[i]]<-function(x){x<-log(x,10);x[is.nan(x)]<-0;x[is.infinite(x)]<-0;x}
+						attr(cal[[i]],"type")<-"log";
+					}
+				}
+				##Finally flowJo-specific transform whatever is left.
+					
+				if(!is.null(.getCalibrationTableNames(x))){
+					#Apply flowJo transform
+					#Not clear how this should be assigned to the correct parameters
+					#I have seen cases with wierd behaviour.
+					#this range >=4096 & log=1, means flowJo defined transform.
+					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
+					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
+						stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+					}else if(length(calfj!=0)){
+						#These are either ordered as in calnames or as in the StainChannelList
+						stainnames<-unlist(xpathApply(xmlRoot(x),"/Workspace/StainChannelList/StringArray/String",xmlValue));
+						cn<-names(cal[calfj])
+						cal[calfj]<-sapply(flowWorkspace:::.getCalibrationTableNames(x),function(y).getCalibrationTable(x,y))[match(calnames[calfj],stainnames)]
+						names(cal[calfj])<-cn;
+						for(i in which(calfj))
+							attr(cal[[i]],"type")<-"flowJo"
+					}
+				}
 			}
 			
 			# Cleaned this up a bit.
@@ -1778,6 +1976,8 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 }
 
 .getSamples<-function(x,win=FALSE){
+	lastwarn<-options("warn")[[1]]
+	options("warn"=-1)
 	top<-xmlRoot(x)
 	s<-do.call(rbind,xpathApply(top,"/Workspace/SampleList/Sample/SampleNode",function(x){
 		attrs<-xmlAttrs(x);
@@ -1794,6 +1994,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 			colnames(s)<-c("sampleID","name","count");
 		}
 		s[,2]<-as.character(s[,2])
+		options("warn"=lastwarn);
 		s
 }
 .trimWhiteSpace<-function (x) 

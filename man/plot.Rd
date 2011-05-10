@@ -7,7 +7,7 @@
 Plot a tree representing the GatingHierarchy
 }
 \usage{
-\S4method{plot}{GatingHierarchy,missing}(x,y,layout="dot",width=3,height=2,fontsize=50,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...)
+\S4method{plot}{GatingHierarchy,missing}(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...)
 }
 \arguments{
   \item{x}{
