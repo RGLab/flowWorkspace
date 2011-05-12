@@ -53,7 +53,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 #	if(execute){
 		m<-match("path",names(list(...)))
 		if(is.na(m)){
-			stop("If execute=TRUE, you must specify a path to the fcs files via path= argument");
+			stop("You must specify a path to the fcs files via path= argument");
 		}
 		path=list(...)$path
 #	}
@@ -123,6 +123,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		if(max(subset)<=length(l)&min(subset)>=1)
 		l<-l[subset]
 	}
+	#TODO filter for files that don't exist.
 	G<-lapply(l,function(x){
 		message("Parsing sampleID ",xmlGetAttr(x,"sampleID"));
 		.getPopulations(x,env=NULL);
@@ -147,6 +148,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		}))
 		names(G)<-fn
 	
+		excludefiles<-vector("numeric")
 		for(i in 1:length(G)){
 			nodeDataDefaults(G[[i]]$graph,"group")<-groups[result]
 			#########################################################
@@ -155,9 +157,17 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			file<-names(G[i])
 			absPath<-list.files(pattern=file,path=path,recursive=TRUE,full=TRUE)
 			if(length(absPath)==0){
-				stop("Can't find ",file," in directory: ",path,"\n");
+				warning("Can't find ",file," in directory: ",path,"\n");
+				excludefiles<-c(excludefiles,i);
+			}else{
+				G[[i]]$dataPath<-dirname(absPath[1])
 			}
-			G[[i]]$dataPath<-dirname(absPath[1])
+		}
+		#Remove samples where files don't exist.
+		#browser();
+		if(length(excludefiles)>0){
+			message("Removing ",length(excludefiles)," samples from the analysis since we can't find their FCS files.");
+			G<-G[-excludefiles];
 		}
 		
 		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeData(x$graph)[[1]]$metadata),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath))
@@ -358,6 +368,13 @@ setMethod("getNodes","GatingHierarchy",function(x,tsort=FALSE,...){
 	}
 })
 
+getFileNames<-function(ws){
+	if(class(ws)!="flowJoWorkspace"){
+		stop("ws should be a flowJoWorkspace")
+	}else{
+		unlist(xpathApply(ws@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value")));
+	}
+}
 setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cleanup=FALSE,keep.indices=TRUE,isNcdf=FALSE,ncfs=NULL,dataEnvironment=NULL,...){
 		##Conditional compilation for HAVE_NETCDF
 		if(isNcdf&!@HAVE_NETCDF@){
@@ -791,7 +808,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 	cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));
 	cv<-as.matrix(cv,nrow=length(cv))
 	cv[is.nan(cv)]<-0
-	rownames(cv)<-rownames(x);
+	rownames(cv)<-basename(as.character(rownames(x)));
 	return(barchart(cv,xlab="Coefficient of Variation",...));
 })
 
@@ -802,8 +819,8 @@ cv<-do.call(rbind,lapply(lapply(G,getPopStats),function(x)apply(x[,2:3],1,functi
 #flatten, generate levels for samples.
 nr<-nrow(cv)
 nc<-ncol(cv)
-populations<-gl(nc,nr,labels=colnames(cv))
-samples<-as.vector(t(matrix(gl(nr,nc,labels=rownames(cv)),nrow=nc)))
+populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
+samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
 cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
 return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...))));
 })
@@ -1622,7 +1639,8 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 					#this range >=4096 & log=1, means flowJo defined transform.
 					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
 					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
-						stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+						#TODO case, there is 1 transformation then apply it to all transformed samples. Otherwise .. exit
+						stop("I'm sorry, but the number of flowJo--defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
 					}else if(length(calfj!=0)){
 						#These are either ordered as in calnames or as in the StainChannelList
 						stainnames<-unlist(xpathApply(xmlRoot(x),"/Workspace/StainChannelList/StringArray/String",xmlValue));
