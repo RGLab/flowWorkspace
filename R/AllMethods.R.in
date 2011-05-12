@@ -51,11 +51,12 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	#path needs to be specified anyway to get full path of fcs
 	#########################################################
 #	if(execute){
-		m<-match("path",names(list(...)))
-		if(is.na(m)){
-			stop("You must specify a path to the fcs files via path= argument");
-		}
-		path=list(...)$path
+    ##m<-match("path",names(list(...))) 
+    path=list(...)$path     
+    if(is.null(path)){ 
+            ##stop("If execute=TRUE, you must specify a path to the fcs files via path= argument"); 
+            path=ws@path 
+    } 
 #	}
 #	browser()
 	x<-obj@doc;
