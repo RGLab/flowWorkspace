@@ -1322,7 +1322,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		if(is.null(xpathApply(x,"./ancestor-or-self::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]])){
 			#No compensation matrix
 			#Here the matrix could be acquisition defined and stored in the spillover keyword, but the data is also stored compensated so it doesn't need to be applied.
-			spillover.matrix<-try(strsplit(xpathApply(x,"./ancestor-or-self::Sample/Keywords/Keyword[@name='SPILL']",function(x)xmlGetAttr(x,"value"))[[1]],",")[[1]]);
+			spillover.matrix<-try(strsplit(xpathApply(x,"./ancestor-or-self::Sample/Keywords/Keyword[@name='SPILL']",function(x)xmlGetAttr(x,"value"))[[1]],",")[[1]],silent=TRUE);
 			if(!inherits(spillover.matrix,"try-error")){
 				dims<-as.numeric(spillover.matrix[1]);
 				spillover.matrix<-spillover.matrix[-1L]
@@ -1639,7 +1639,8 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 					#this range >=4096 & log=1, means flowJo defined transform.
 					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
 					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
-						#TODO case, there is 1 transformation then apply it to all transformed samples. Otherwise .. exit
+						#TODO case, there is 1 transformation then apply it to all transformed samples. Otherwise .. exit.
+						
 						stop("I'm sorry, but the number of flowJo--defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
 					}else if(length(calfj!=0)){
 						#These are either ordered as in calnames or as in the StainChannelList
