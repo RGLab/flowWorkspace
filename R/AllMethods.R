@@ -51,11 +51,20 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	#path needs to be specified anyway to get full path of fcs
 	#########################################################
 #	if(execute){
-		m<-match("path",names(list(...)))
-		if(is.na(m)){
-			stop("You must specify a path to the fcs files via path= argument");
-		}
-		path=list(...)$path
+    ##m<-match("path",names(list(...))) 
+    path=list(...)$path     
+    if(is.null(path)){ 
+            ##stop("If execute=TRUE, you must specify a path to the fcs files via path= argument"); 
+            path=obj@path 
+    }
+	#Check that the files exist now so we don't have to wait a long time.
+	filenames<-flowWorkspace:::getFileNames(obj);
+	missingfiles<-!file.exists(paste(obj@path,flowWorkspace:::getFileNames(obj),sep="/"))
+	if(length(which(missingfiles))/length(filenames)>=0.25){
+		warning(length(which(missingfiles))/length(filenames)*100,"% of the ",length(filenames)," FCS files can't be found at ",obj@path);
+		warning("They will be excluded from the import");
+		warning("Perhaps you want to specify a correct path to the files or copy the missing files over?")
+	}
 #	}
 #	browser()
 	x<-obj@doc;
@@ -155,8 +164,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			#get full path for each fcs and store in dataPath slot
 			#########################################################
 			file<-names(G[i])
-			absPath<-list.files(pattern=file,path=path,recursive=TRUE,full=TRUE)
-			if(length(absPath)==0){
+			lastwarn<-options("warn")[[1]];
+			options("warn"=-1);
+			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full=TRUE)
+			options("warn"=lastwarn)
+			if(length(absPath)==0|!file.exists(absPath)){
 				warning("Can't find ",file," in directory: ",path,"\n");
 				excludefiles<-c(excludefiles,i);
 			}else{
@@ -1322,7 +1334,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		if(is.null(xpathApply(x,"./ancestor-or-self::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]])){
 			#No compensation matrix
 			#Here the matrix could be acquisition defined and stored in the spillover keyword, but the data is also stored compensated so it doesn't need to be applied.
-			spillover.matrix<-try(strsplit(xpathApply(x,"./ancestor-or-self::Sample/Keywords/Keyword[@name='SPILL']",function(x)xmlGetAttr(x,"value"))[[1]],",")[[1]]);
+			spillover.matrix<-try(strsplit(xpathApply(x,"./ancestor-or-self::Sample/Keywords/Keyword[@name='SPILL']",function(x)xmlGetAttr(x,"value"))[[1]],",")[[1]],silent=TRUE);
 			if(!inherits(spillover.matrix,"try-error")){
 				dims<-as.numeric(spillover.matrix[1]);
 				spillover.matrix<-spillover.matrix[-1L]
@@ -1639,7 +1651,21 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 					#this range >=4096 & log=1, means flowJo defined transform.
 					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
 					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
-						stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+						#browser()
+						if(length(which(calfj))!=0&length(.getCalibrationTableNames(x))==1){
+							cn<-names(cal[calfj])
+							cal[calfj]<-rep(list(flowWorkspace:::.getCalibrationTable(x,flowWorkspace:::.getCalibrationTableNames(x))),length(cal[calfj])) #apply one to all remaining dimensions
+							names(cal[calfj])<-cn;
+							for(i in which(calfj))
+								attr(cal[[i]],"type")<-"flowJo"
+						}else{
+							cn<-names(cal[calfj])
+							cal[calfj]<-rep(list(flowWorkspace:::.getCalibrationTable(x,flowWorkspace:::.getCalibrationTableNames(x)[1])),length(cal[calfj])) #apply the first one to all remaining dimensions
+							#stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+							names(cal[calfj])<-cn;
+							for(i in which(calfj))
+								attr(cal[[i]],"type")<-"flowJo"
+						}
 					}else if(length(calfj!=0)){
 						#These are either ordered as in calnames or as in the StainChannelList
 						stainnames<-unlist(xpathApply(xmlRoot(x),"/Workspace/StainChannelList/StringArray/String",xmlValue));
@@ -1707,7 +1733,21 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 					#this range >=4096 & log=1, means flowJo defined transform.
 					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
 					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
-						stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+						#browser();
+						if(length(which(calfj))!=0&length(.getCalibrationTableNames(x))==1){
+							cn<-names(cal[calfj])
+							cal[calfj]<-rep(list(flowWorkspace:::.getCalibrationTable(x,flowWorkspace:::.getCalibrationTableNames(x))),length(cal[calfj])) #apply one to all remaining dimensions
+							names(cal[calfj])<-cn;
+							for(i in which(calfj))
+								attr(cal[[i]],"type")<-"flowJo"
+						}else{
+							cn<-names(cal[calfj])
+							cal[calfj]<-rep(list(flowWorkspace:::.getCalibrationTable(x,flowWorkspace:::.getCalibrationTableNames(x)[1])),length(cal[calfj])) #apply the first one to all remaining dimensions
+							#stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+							names(cal[calfj])<-cn;
+							for(i in which(calfj))
+								attr(cal[[i]],"type")<-"flowJo"
+						}
 					}else if(length(calfj!=0)){
 						#These are either ordered as in calnames or as in the StainChannelList
 						stainnames<-unlist(xpathApply(xmlRoot(x),"/Workspace/StainChannelList/StringArray/String",xmlValue));
@@ -1776,7 +1816,21 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 					#this range >=4096 & log=1, means flowJo defined transform.
 					calfj<-as.logical(as.numeric(unlist(xpathApply(x,"./ancestor::Sample/Parameter",function(x)xmlGetAttr(x,"log")))))&!calrange
 					if(length(which(calfj))!=length(.getCalibrationTableNames(x))){
-						stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+						#browser();
+						if(length(which(calfj))!=0&length(.getCalibrationTableNames(x))==1){
+							cn<-names(cal[calfj])
+							cal[calfj]<-rep(list(flowWorkspace:::.getCalibrationTable(x,flowWorkspace:::.getCalibrationTableNames(x))),length(cal[calfj])) #apply one to all remaining dimensions
+							names(cal[calfj])<-cn;
+							for(i in which(calfj))
+								attr(cal[[i]],"type")<-"flowJo"
+						}else{
+							cn<-names(cal[calfj])
+							cal[calfj]<-rep(list(flowWorkspace:::.getCalibrationTable(x,flowWorkspace:::.getCalibrationTableNames(x)[1])),length(cal[calfj])) #apply the first one to all remaining dimensions
+							#stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
+							names(cal[calfj])<-cn;
+							for(i in which(calfj))
+								attr(cal[[i]],"type")<-"flowJo"
+						}
 					}else if(length(calfj!=0)){
 						#These are either ordered as in calnames or as in the StainChannelList
 						stainnames<-unlist(xpathApply(xmlRoot(x),"/Workspace/StainChannelList/StringArray/String",xmlValue));
