@@ -168,7 +168,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			options("warn"=-1);
 			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full=TRUE)
 			options("warn"=lastwarn)
-			if(length(absPath)==0|!file.exists(absPath)){
+			if(length(absPath)==0){
 				warning("Can't find ",file," in directory: ",path,"\n");
 				excludefiles<-c(excludefiles,i);
 			}else{
@@ -732,7 +732,6 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add
 })
 
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
-	#TODO fix plotting of rectangleGates that are one dimensional
 	
 		if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
@@ -762,8 +761,19 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			dims<-getDimensions(x,y)
 			dims2<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
 			dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
+			par.desc<-parameters(getData(x,getParent(x,y)))@data$desc[dim.ind]
+			if(!any(is.na(par.desc))){
+				dflag<-TRUE
+			}else{
+				dflag<-FALSE
+			}
+			pd<-getData(x,getParent(x,y))[,dims2];
+			if(dflag){
+				#warning this may sometimes fail	
+				colnames(pd)<-parameters(pd)@data$desc
+			}
 			if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				flowViz:::fplot(getData(x,getParent(x,y))[,dims2],smooth=FALSE,...)
+				flowViz:::fplot(pd,smooth=FALSE,...)
 			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
 				
 				flowViz:::fplot(getData(x,getParent(x,y))[,dims2],smooth=FALSE,axes=FALSE,frame.plot=TRUE,xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at),...)
@@ -1971,7 +1981,10 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 	assign("axis.labels",list(),env=dataenv);
 	#this should save some memory
 	for (i in 1:dim(get("data",dataenv))[2]){
-		j<-grep(as.vector(parameters((get("data",dataenv)))@data$name)[i],names(cal));
+		#browser();
+		#added gsub
+		#j<-grep(as.vector(parameters((get("data",dataenv)))@data$name)[i],names(cal));
+		j<-grep(gsub(">","",gsub("<","",as.vector(parameters((get("data", dataenv)))@data$name)[i])),names(cal))
 		if(length(j)!=0){
 			#transform the data only if it's appropriate
 			if(attr(cal[[j]],"type")!="gateOnly"){
@@ -1982,8 +1995,8 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 		}
 	}
 	datarange<-sapply(1:dim(range(get("data",dataenv)))[2],function(i){
-		
-		j<-grep(names(range(get("data",dataenv)))[i],names(cal));
+		#added gsub
+		j<-grep(gsub(">","",gsub("<","",names(range(get("data",dataenv)))))[i],names(cal));
 		if(length(j)!=0){
 			rw<-range(get("data",dataenv))[,i];
 			if(attr(cal[[j]],"type")!="gateOnly"){
