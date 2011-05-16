@@ -837,7 +837,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 setMethod("plotPopCV","GatingSet",function(x,...){
 #columns are populations
 #rows are samples
-cv<-do.call(rbind,lapply(lapply(G,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
+cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
 #flatten, generate levels for samples.
 nr<-nrow(cv)
 nc<-ncol(cv)
@@ -869,7 +869,7 @@ setMethod("getData",signature(obj="GatingHierarchy"),function(obj,y=NULL,tsort=F
 		r<-nodeData(obj@tree,getNodes(obj,tsort=tsort)[1],"data")[[1]][["data"]]
 		if(class(r)=="environment")
 			r<-.getFlowFrame(r$ncfs,getSample(obj))
-	}else if((y==getNodes(obj)[1])){
+	}else if(identical(y,getNodes(obj)[1])){
 		r<-nodeData(obj@tree,getNodes(obj,tsort=tsort)[1],"data")[[1]][["data"]]
 		if(class(r)=="environment")
 			r<-.getFlowFrame(r$ncfs,getSample(obj))
