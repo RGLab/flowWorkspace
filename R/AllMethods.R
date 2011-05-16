@@ -837,7 +837,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 setMethod("plotPopCV","GatingSet",function(x,...){
 #columns are populations
 #rows are samples
-cv<-do.call(rbind,lapply(lapply(G,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
+cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
 #flatten, generate levels for samples.
 nr<-nrow(cv)
 nc<-ncol(cv)
