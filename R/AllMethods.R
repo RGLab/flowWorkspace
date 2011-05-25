@@ -61,9 +61,9 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	filenames<-flowWorkspace:::getFileNames(obj);
 	missingfiles<-!file.exists(paste(obj@path,flowWorkspace:::getFileNames(obj),sep="/"))
 	if(length(which(missingfiles))/length(filenames)>=0.25){
-		warning(length(which(missingfiles))/length(filenames)*100,"% of the ",length(filenames)," FCS files can't be found at ",obj@path);
-		warning("They will be excluded from the import");
-		warning("Perhaps you want to specify a correct path to the files or copy the missing files over?")
+		#warning(length(which(missingfiles))/length(filenames)*100,"% of the ",length(filenames)," FCS files can't be found at ",obj@path);
+		#warning("They will be excluded from the import");
+		#warning("Perhaps you want to specify a correct path to the files or copy the missing files over?")
 	}
 #	}
 #	browser()
@@ -132,7 +132,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		if(max(subset)<=length(l)&min(subset)>=1)
 		l<-l[subset]
 	}
-	#TODO filter for files that don't exist.
+	#TODO parallelize
 	G<-lapply(l,function(x){
 		message("Parsing sampleID ",xmlGetAttr(x,"sampleID"));
 		.getPopulations(x,env=NULL);
@@ -148,11 +148,9 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			compensation<-matrix();
 		}
 		list(graph=graph,transformations=transformations,compensation=compensation)
-		}
-		)
+		})
 	
 		fn<-do.call(c,lapply(G,function(x){		
-			#tmp<-try(nodeData(x$graph)[[1]])
 			get("fcsfile",env=nodeData(x$graph)[[1]]$metadata)
 		}))
 		names(G)<-fn
@@ -195,13 +193,15 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				assign("ncfs",ncfs1,envir=dataEnvironment)
 
 			}
+			#browser()
 			
-#			if("path"%in%names(list(...))){
+			#if(length(grep("multicore",loadedNamespaces()))==1){	
+			#	set<-mclapply(G@set,function(x)execute(hierarchy=x,isNcdf=isNcdf,ncfs=ncfs1,dataEnvironment=dataEnvironment))
+			#	G@set<-set;
+			#}else{
 				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf,ncfs=ncfs1,dataEnvironment=dataEnvironment))
-#				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf,ncfs=ncfs1,e=NULL))
-#			}else{
-#				G<-lapply(G,function(x)execute(hierarchy=x,path=obj@path,isNcdf=isNcdf,ncfs=ncfs1))
-#			}
+				
+			#}
 		}
 		return(G);
 })
@@ -869,7 +869,7 @@ setMethod("getData",signature(obj="GatingHierarchy"),function(obj,y=NULL,tsort=F
 		r<-nodeData(obj@tree,getNodes(obj,tsort=tsort)[1],"data")[[1]][["data"]]
 		if(class(r)=="environment")
 			r<-.getFlowFrame(r$ncfs,getSample(obj))
-	}else if((y==getNodes(obj)[1])){
+	}else if(identical(y,getNodes(obj)[1])){
 		r<-nodeData(obj@tree,getNodes(obj,tsort=tsort)[1],"data")[[1]][["data"]]
 		if(class(r)=="environment")
 			r<-.getFlowFrame(r$ncfs,getSample(obj))
