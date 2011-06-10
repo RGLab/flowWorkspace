@@ -41,7 +41,7 @@ setMethod("summary",signature("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
 
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=FALSE,isNcdf=FALSE,subset=NULL,...){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=FALSE,isNcdf=FALSE,subset=NULL,nslaves=4,...){
 	if(isNcdf&!@HAVE_NETCDF@){
 	stop("isNcdf must be FALSE since you don't have netcdf installed");
 	}
@@ -59,12 +59,13 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
     }
 	#Check that the files exist now so we don't have to wait a long time.
 	filenames<-flowWorkspace:::getFileNames(obj);
-	missingfiles<-!file.exists(paste(obj@path,flowWorkspace:::getFileNames(obj),sep="/"))
-	if(length(which(missingfiles))/length(filenames)>=0.25){
-		#warning(length(which(missingfiles))/length(filenames)*100,"% of the ",length(filenames)," FCS files can't be found at ",obj@path);
-		#warning("They will be excluded from the import");
-		#warning("Perhaps you want to specify a correct path to the files or copy the missing files over?")
-	}
+	#sapply(filenames,function(x)list.files(path=path,pattern=x,recursive=T))
+	#	missingfiles<-!file.exists()
+	#	if(length(which(missingfiles))/length(filenames)>=0.25){
+	#		#warning(length(which(missingfiles))/length(filenames)*100,"% of the ",length(filenames)," FCS files can't be found at ",obj@path);
+	#		#warning("They will be excluded from the import");
+	#		#warning("Perhaps you want to specify a correct path to the files or copy the missing files over?")
+	#	}
 #	}
 #	browser()
 	x<-obj@doc;
@@ -83,8 +84,14 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	#emptysid<-as.numeric(unlist(lapply(unlist(lapply(xpathApply(obj@doc,"/Workspace/SampleList/Sample"),function(x)xpathApply(x,"./ancestor-or-self::Sample[count(descendant::Population)=0]")),recursive=FALSE),function(x)xpathApply(x,".",function(x)xmlGetAttr(x,"sampleID")))))
 	#pop.counts<-unlist(lapply(xpathApply(obj@doc,"/Workspace/SampleList/Sample"),function(x)xpathApply(x,"count(descendant::Population)")))
 	sg<-sg[sg$pop.counts>0,]
+	#TODO: Subset indexes into the group of samples being imported.. not straightforward. Need to fix this.
+	#TODO: would be better to import based on some keywords.
 	if(!missing(subset)){
-		message("Parsing ",length(subset)," samples");
+		if(class(subset)=="list"){
+			message("Importing based on keywords")
+		}else{
+			message("Parsing ",length(subset)," samples");
+		}
 	}else{
 			message("Parsing ",length(unique(sg$sampleID))," samples");
 		}
@@ -92,8 +99,6 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		##samples may have no compID if they are only log-transformed, for example.
 		##Keep samples with compID = NA and set it to -2
 		#If the compID = NA, check the Sample Parameter attributes for the transformation information.
-		#sg<-sg[!is.na(sg$compID),]		
-		#sg.na<-is.na(sg$compID);
 		message("Version recognised. Continuing..")
 	}else if (wsversion=="1.6"){
 		#Windows compensation and transformation work differently.. there is no comp id
@@ -133,6 +138,24 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		l<-l[subset]
 	}
 	#TODO parallelize
+	if(length(grep("multicore",loadedNamespaces()))==1){	
+		G<-mclapply(l,function(x){
+			message("Parsing sampleID ",xmlGetAttr(x,"sampleID"));
+			.getPopulations(x,env=NULL);
+			graph<-get("gr",get("env",globalenv()))
+			if(exists("transformations",env)){
+				transformations<-get("transformations",get("env",globalenv()))
+			}else{
+				transformations<-list();
+			}
+			if(exists("compensation",env)){
+				compensation<-get("compensation",get("env",globalenv()))
+			}else{
+				compensation<-matrix();
+			}
+			list(graph=graph,transformations=transformations,compensation=compensation)
+			})
+	}else{
 	G<-lapply(l,function(x){
 		message("Parsing sampleID ",xmlGetAttr(x,"sampleID"));
 		.getPopulations(x,env=NULL);
@@ -149,6 +172,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		}
 		list(graph=graph,transformations=transformations,compensation=compensation)
 		})
+	}
 	
 		fn<-do.call(c,lapply(G,function(x){		
 			get("fcsfile",env=nodeData(x$graph)[[1]]$metadata)
@@ -193,18 +217,125 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				assign("ncfs",ncfs1,envir=dataEnvironment)
 
 			}
-			#browser()
-			
-			#if(length(grep("multicore",loadedNamespaces()))==1){	
-			#	set<-mclapply(G@set,function(x)execute(hierarchy=x,isNcdf=isNcdf,ncfs=ncfs1,dataEnvironment=dataEnvironment))
-			#	G@set<-set;
-			#}else{
+			#BUG doesn't work properly
+			#CV is too high. Still likely a problem with environments, etc..
+			if(.packageLoaded("Rmpi")){	
+				#nslaves=4
+				mpi.spawn.Rslaves(nslaves=nslaves)
+				mpi.remote.exec(library(flowWorkspace))
+				mpi.bcast.Robj2slave(ws)
+				mpi.bcast.Robj2slave(G)
+				mpi.bcast.Robj2slave(ncfs1)
+				mpi.bcast.Robj2slave(dataEnvironment)
+				wrapper<-function(){
+					more<-1;
+					while(more==1){
+						#ask for a task
+						mpi.send.Robj(0,0,1)
+						i<-mpi.recv.Robj(0,2)
+						
+						#These variables are global in this environment..
+						g<-execute(G[[i]],isNcdf=isNcdf,ncfs=ncfs1,dataEnvironment=dataEnvironment)
+						
+
+						#finish task
+						
+						#notify that I'm done
+						mpi.send.Robj(g,0,5)
+
+						#are there more tasks?
+						mpi.recv.Robj(0,mpi.any.tag())
+						sourcetag<-mpi.get.sourcetag();
+						if(sourcetag[2]==7){
+							#Nope I'm done!
+							more<-0
+						}
+					}
+				}
+				
+				#in master
+				mpi.bcast.Robj2slave(wrapper);
+				mpi.bcast.cmd(wrapper())
+				
+				#divvy up the tasks
+				ntasks<-length(G);
+				tasks<-1:ntasks
+				state<-0;
+				writequeue<-NULL
+				results<-NULL;
+				while(length(tasks)>0|length(results)<ntasks){
+					message("Gating");
+					#message("length(tasks): ", length(tasks), " length(results): ", length(results))
+					#message("checking if anyone needs to write")
+					if(state==0&length(writequeue)>0){
+						#okay, go for it
+						#message("they can write")
+						mpi.send.Robj(0,writequeue[1],4)
+						#message("okay, they're writing")
+						writequeue<-writequeue[-1L]
+						state<-1;
+					}
+					#listen for a request
+					#message("listening")
+					obj<-mpi.recv.Robj(mpi.any.source(),mpi.any.tag())
+					sourcetag<-mpi.get.sourcetag();
+					who<-sourcetag[1]
+					what<-sourcetag[2]
+					#Asking for data
+					if(what==1){
+						#message("they want data")
+						mpi.send.Robj(tasks[1],sourcetag[1],2);
+						#message("sent them data")
+						tasks<-tasks[-1L]
+					}
+					#Needs permission to write to NetCDF
+					if(what==3){
+						#queue up
+						#message("they want do write to ncdf")
+						writequeue<-c(writequeue,who)
+					}
+					#They sent me a result
+					if(what==5){
+						#message("they have a result")
+						results<-c(results,obj)
+						#Do I have any more data to hand out?
+						if(length(tasks)>0){
+							#message("there's more results for ",who)
+							mpi.send.Robj(0,who,6)
+							#message("they got more results")
+						}else{
+							#message("there's no more results for ", who)
+							mpi.send.Robj(0,who,7)
+							#message("moving on")
+						}
+					}
+					if(what==8){
+						#message("they're done writing")
+						state<-0
+					}
+				}
+				G<-new("GatingSet",set=results)
+				rm(results);
+				gc(reset=TRUE);
+				mpi.close.Rslaves()	
+			}else{
 				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf,ncfs=ncfs1,dataEnvironment=dataEnvironment))
 				
-			#}
+			}
 		}
 		return(G);
 })
+
+#From https://stat.ethz.ch/pipermail/r-help/2005-September/078974.html
+#Detects Rmpi support since Rmpi doesn't have a namespace, and we don't want to "require" it
+.packageLoaded <- function(name)
+{
+    ## Purpose: is package 'name' loaded?
+    ## --------------------------------------------------
+    (paste("package:", name, sep="") %in% search()) ||
+    (name %in% loadedNamespaces())
+}    
+
 .parseBooleanGate<-function(x,y,z){
 	x<-gsub("! G","!G",x)
 	
@@ -514,7 +645,18 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		else
 		{
 			sampleName<-getSample(hierarchy)
-			.addSlice(dataEnvironment$ncfs,data,sampleName)
+			if(.packageLoaded("Rmpi")){
+				#ask for permission to write to netcdf
+				mpi.send.Robj(0,0,3)
+				mpi.recv.Robj(0,4)
+				#write
+				.addSlice(dataEnvironment$ncfs,data,sampleName)
+				#let master know I'm done
+				mpi.send.Robj(0,0,8)
+
+			}else{
+				.addSlice(dataEnvironment$ncfs,data,sampleName)
+			}
 			###upate the colnames due to the compenstation
 			dataEnvironment$ncfs@parameters[[sampleName]]<-data@parameters
 			#ncfs@parameters[[sampleName]]@data$name<-colnames(data)
@@ -900,6 +1042,43 @@ setMethod("getKeywords",signature("flowJoWorkspace","character"),function(obj,y)
 	l<-lapply(l,function(x)x[["value"]])
 	return(l);
 })
+.getKeyword<-function(ws,x){
+	if(inherits(ws,"flowJoWorkspace")&class(x)=="character"){
+		 unlist(xpathApply(ws@doc,paste("/Workspace/SampleList/Sample/Keywords/Keyword[@name='",x,"']",sep=""),function(x)xmlGetAttr(x,"value")))
+	}else{
+		stop("No such keyword")
+	}
+	
+}
+
+getFJWSubsetIndices<-function(ws,key,value,group){
+	if(!is.numeric(group)){
+		stop("group must be numeric")
+	}
+	if(!is.character("key")){
+		stop("keyword must be character")
+	}
+	if(!is.character("value")){
+		stop("value must be character")
+	}
+	if(!class(ws)=="flowJoWorkspace"){
+		stop("ws must be a flowJoWorkspace object")
+	}
+	s<-getSamples(ws);
+	#TODO Use the actual value of key to name the column
+	s$key<-.getKeyword(ws,key)
+	
+	g<-getSampleGroups(ws)
+	sg<-merge(s,g,by="sampleID")
+	sg<-sg[sg$pop.counts>0,]
+	sg$groupName<-factor(sg$groupName)
+	groups<-levels(sg$groupName)
+	if(group>length(groups)){
+		stop("group is invalid, out of range")
+	}
+	sg<-sg[sg$groupName%in%groups[group],]
+	return(which(sg$key==value))
+}
 
 .getKeywords<-function(doc,y){
 	w<-which(xpathApply(doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value"))%in%y)
@@ -944,14 +1123,6 @@ setMethod("keyword",signature("GatingSet","character"),function(object,keyword){
 setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 	if(.isBooleanGate.graphNEL(obj,y)){
 		g<-get("gate",env=nodeData(obj@tree,y,"metadata")[[1]])[[1]];
-		# p<-g$ref
-		# 		if(length(ref)==1){
-		# 			return(ref);
-		# 		}else{
-		# 	 		p<-paste(g$v,p,sep="")
-		# 			p<-paste(p,c(g$v2,""),sep="")
-		# 			return(paste(p,collapse=""))
-		# 		}
 		return(g)
 	}else{
 		return(get("gate",env=nodeData(obj@tree,y,"metadata")[[1]]))
@@ -962,10 +1133,6 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 	n<-getNodes(obj,tsort=tsort)[y]
 	if(flowWorkspace:::.isBooleanGate.graphNEL(obj,n)){
 		g<-get("gate",env=nodeData(obj@tree,n,"metadata")[[1]])[[1]]
-		# p<-g$ref
-		# 		p<-paste(g$v,p,sep="")
-		# 		p<-paste(p,c(g$v2,""),sep="")
-		# 		return(paste(p,collapse=""))
 		return(g);
 	}else{
 		return(get("gate",env=nodeData(obj@tree,n,"metadata")[[1]]))
@@ -1045,17 +1212,10 @@ setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(
 })
 
 setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y){
-	# if(.isBooleanGate.graphNEL(x,y)){
-	# 		z<-table(getIndices(x,y))["TRUE"]
-	# 		return(ifelse(is.na(z),0,z)/table(getIndices(x,getParent(x,y)))["TRUE"])
-	# 	}else{
 	#Return the proportion of the population relative to the parent and relative to the total.
 	#x is a graph of a gating hierarchy that has had data added to it.
 	#y is nodename
-	
-		return(get("thisTot",env=nodeData(x@tree,y,"metadata")[[1]])/get("parentTot",env=nodeData(x@tree,y,"metadata")[[1]]))
-	# }
-	
+		return(get("thisTot",env=nodeData(x@tree,y,"metadata")[[1]])/get("parentTot",env=nodeData(x@tree,y,"metadata")[[1]]))	
 })
 setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y){
 		return(get("thisTot",env=nodeData(x@tree,y,"metadata")[[1]]))
@@ -1215,113 +1375,6 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	  return(.mergetables(c(list(merge(l[[1]],l[[2]],by="pop.name",all=TRUE)),l[-c(1:2)])))
 	}
 }
-# .getPopulations_1.6<-function(x,env=NULL){
-# 	if(is.null(env)){
-# 		level=0;
-# 		##Get the Sample node.
-# 		x <- xpathApply(x,"./parent::Sample/SampleNode")[[1]];
-# 		env=new.env(parent=globalenv());
-# 		#assign("count",0,env=env);
-# 		assign("groups",.getSampleGroups(xmlRoot(x),win=TRUE),env=env);
-# 		assign("gr",new("graphNEL",edgemode="directed"),env=env);
-# 		gr<-get("gr",env)
-# 		nodeDataDefaults(gr,"metadata")<-new.env(parent=emptyenv());
-# 		assign("gr",gr,env=env);
-# 		#The level of the hierarchy we're working with.
-# 		assign("level",level,env=env)		
-# 		assign("env",env,env=globalenv());
-# 	}
-# 	if(.isPopulation(x)){
-# 		#If it's a Population, we've already assigned the root.
-# 		parentpop <- tryCatch(rev(xpathApply(x,"./ancestor::Population",xmlAttrs))[[1]][["name"]],error= function(x) NA );
-# 		root<-xpathApply(x,"./ancestor::SampleNode",function(x)xmlGetAttr(x,"name"))[[1]];
-# 		rootcount<-xpathApply(x,"./ancestor::SampleNode",function(x)xmlGetAttr(x,"count"))[[1]];
-# 		if(.hasGate_1.6(x)){
-# 				mygate<-.extractGate(x,env=env);
-# 				ng<-mygate[[2]] ##Should we exclude samples in this gate?
-# 				mygate<-mygate[[1]]
-# 				#Do this if it's not a Boolean Gate
-# 				#print(mygate);
-# 				assign("gr",graph::addNode(mygate@filterId,get("gr",env=env)),env=env);
-# 				if(!is.na(parentpop)){
-# 					assign("gr",addEdge(parentpop,mygate@filterId,get("gr",env=env)),env=env);
-# 					}else{
-# 						assign("gr",addEdge(root,mygate@filterId,get("gr",env=env)),env=env);
-# 					}
-# 					fcsfile<- unlist(tryCatch(xpathApply(x,"./ancestor::Sample/Keywords/Keyword[@name='$FIL']",function(z)xmlGetAttr(z,"value")),error=function(q)NA))
-# 					compID<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]];
-# 					if(is.null(compID)){
-# 						compID<--2;
-# 					}
-# 					count<-xmlGetAttr(x,"count");
-# 					gr<-get("gr",env=env)
-# 					##get the flowJo name for the current population
-# 					##Generate the flowJo population name
-# 					finish<-mygate@filterId
-# 					start<-RBGL::tsort(gr)[2]
-# 					fjname<-RBGL::sp.between(gr,start,finish)[[1]]$path_detail
-# 					fjname<-unlist(lapply(strsplit(fjname,"\\."),function(x)x[2]))
-# 					fjname<-paste("/",paste(fjname,collapse="/"),sep="")
-# 					nodeData(gr,mygate@filterId,"metadata")<-new.env(parent=emptyenv());
-# 					assign("fjName",fjname,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("gate",mygate,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("fcsfile",fcsfile,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("count",count,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("compID",compID,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("negated",ng,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("isBooleanGate",FALSE,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("thisIndices",list(),env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("parentTot",NA,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					assign("thisTot",0,env=nodeData(gr,mygate@filterId,"metadata")[[1]])
-# 					#20110314
-# 					assign("isGated",FALSE,env=nodeData(gr,parentpop,"metadata")[[1]])
-# 					assign("gr",gr,env=env);
-# 		}
-# 		
-# 	}else if(xmlName(x)=="SampleNode"){
-# 		#We're at the root.
-# 		root<-xmlGetAttr(x,"name");
-# 		rootcount<-xmlGetAttr(x,"count");
-# 		assign("gr",graph::addNode(root,get("gr",env=env)),env=env)
-# 		gr<-get("gr",env=env)
-# 		nodeData(gr,root,"metadata")<-new.env(parent=emptyenv());
-# 		assign("count",rootcount,env=nodeData(gr,root,"metadata")[[1]]);
-# 		##Don't have a compensation ID for version 1.6 XML workpsaces
-# 		#compID<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]];
-# 		#assign("compID",compID,env=nodeData(gr,root,"metadata")[[1]]);
-# 		sampleID<-xmlGetAttr(x,"sampleID")[[1]];
-# 		fcsfile<- unlist(tryCatch(xpathApply(x,"./ancestor::Sample/Keywords/Keyword[@name='$FIL']",function(z)xmlGetAttr(z,"value")),error=function(q)NA))
-# 		if(length(fcsfile)==0){
-# 			warning("The keywords for sample ",sampleID," don't contain the $FIL filename keyword.");
-# 			#Use the name attribute of SampleNode
-# 			fcsfile<-xmlGetAttr(x,"name")[[1]];
-# 		}
-# 		assign("fcsfile",fcsfile,env=nodeData(gr,root,"metadata")[[1]]);
-# 		
-# 		#More root node defaults
-# 			assign("fjName",fcsfile,env=nodeData(gr,root,"metadata")[[1]])
-# 			assign("gate",NA,env=nodeData(gr,root,"metadata")[[1]])
-# 			assign("negated",FALSE,env=nodeData(gr,root,"metadata")[[1]])
-# 			assign("isBooleanGate",FALSE,env=nodeData(gr,root,"metadata")[[1]])
-# 			assign("thisIndices",list(),env=nodeData(gr,root,"metadata")[[1]])
-# 			assign("parentTot",NA,env=nodeData(gr,root,"metadata")[[1]])
-# 			assign("thisTot",0,env=nodeData(gr,root,"metadata")[[1]])
-# 			##get keywords and assign keywords
-# 			##.getKeywords has been fixed for version 1.6 XML workspace			
-# 			kw<-.getKeywords(x,fcsfile);
-# 			assign("keywords",kw,env=nodeData(gr,root,"metadata")[[1]])
-# 			
-# 		# nodeData(gr,root,"fcsfile")<-fcsfile;
-# 		assign("gr",gr,env=env)
-# 		level<-level+1;
-# 		assign("level",env=env);
-# 		#If there's child populations...
-# 		if(length(.nextPopulation(x,level))!=0){
-# 			lapply(.nextPopulation(x,level),function(x).getPopulations_1.6(x,env));
-# 		}	
-# 	}
-# 	return()
-# }
 
 #20110314
 .isGated.graphNEL<-function(x,y){
@@ -1363,14 +1416,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 				compobj<-.getCompensationMatrices(xmlRoot(x))[[as.numeric(compID)]]
 				assign("compensation",compobj,env);
 			}else if(compID==-1){
-				#browser()
-				#acquisition defined.. usually table 2 should have the "Acquisition defined" string.
-				#This is not always true
-				#warning("Compensation ID=-1 for sample")
-				#data could be stored compensated. We want the compensation matrix.
-			#str<-strsplit(.getCalibrationTableNames(xmlRoot(x))," ")
-			#str<-lapply(str,function(x)x[1])
-			#nm<-as.matrix(unique(do.call(c,str))[2])
+				#WARNING there may be cases where this still does not work (i.e. the Acquisition-Defnined string is not there)
 				assign("compensation",as.matrix("Acquisition-defined"),env);
 			}
 		}
@@ -1531,10 +1577,6 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	else
 		return(TRUE)
 }
-#TODO Update this for all gate types when you have a complete example of a workspace.
-# .extractGate_1.6<-function(x,env){
-# 	gateType<-xpathApply(xpathApply(x,"./child::Gate")[[1]],"./child::*",xmlName)[[1]];
-# }
 .extractGate<-function(x,env){
 	gateType<-setdiff(unlist(xpathApply(x,"./PolygonGate/node()",xmlName)),c("ParameterNames","Graph"))
 	#gateType<-setdiff(unlist(xpathApply(x,"./node()",xmlName)),c("Graph","Population"));
@@ -1549,17 +1591,6 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		}
 		axes
 	})
-	#nm<-tryCatch(xpathApply(x,"./PolygonGate/PolyRect|./PolygonGate/Polygon|./PolygonGate/Ellipse",function(x){
-	#	nm<-xmlGetAttr(x,"name");
-	#	nm
-	#})[[1]],error=function(y){
-		#Get population name
-		#nm<-tryCatch(xpathApply(x,"./PolygonGate/Range",function(y)xmlGetAttr(y,"name"))[[1]],error=function(y){
-		#	nm<-xpathApply(x,"./PolygonGate/Ellipse",function(y)xmlGetAttr(y,"name"))[[1]]
-		#	nm
-		#})
-	#	nm
-	#});
 	nm<-xmlGetAttr(x,"name")
 	nn<-xmlGetAttr(x,"nn");
 	nm<-paste(nn,nm,sep=".");
@@ -2029,15 +2060,6 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 			range(get("data",dataenv))[,i]
 		}
 	})
-	#Don't need to mess with the column names anymore.
-	# cn<-sapply(1:dim(range(get("data",dataenv)))[2],function(i){
-	# 		j<-grep(names(range(get("data",dataenv)))[i],names(cal));
-	# 		if(length(j)!=0){
-	# 			paste("<",parameters(get("data",dataenv))@data$name[i],">",sep="")
-	# 		}else{
-	# 			parameters(get("data",dataenv))@data$name[i]
-	# 		}
-	# 	})
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
 	datapar<-parameters(get("data",dataenv));
 	datapar@data[,c("range","minRange","maxRange")]<-datarange
@@ -2114,21 +2136,6 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	names(cmats)<-matrices;
 	cmats;
 }
-# .getKeywords<-function(x){
-# 	top<-xmlRoot(x)
-# 	keywords<-xpathApply(top,"/Workspace/Keywords/Keyword",function(x){
-# 		attrs<-xmlAttrs(x);
-# 		if(length(attrs)==2){
-# 			l<-list(attrs[["numeric"]]);
-# 			names(l)<-attrs[["name"]]
-# 		}else{
-# 			l<-list(NULL);
-# 			names(l)<-attrs[["name"]];
-# 		}
-# 		l
-# 	});
-# 	unlist(keywords,recursive=FALSE);
-# }
 .getStainChannels<-function(x){
 	top<-xmlRoot(x)
 	channels<-xpathApply(top,"/Workspace/StainChannelList/StringArray/String",xmlValue);

@@ -9,7 +9,7 @@ Parse a flowJo Workspace
 Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{execute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
 }
 \usage{
-\S4method{parseWorkspace}{flowJoWorkspace}(obj,name=NULL,execute=FALSE,isNcdf=FALSE,subset=NULL,...)
+\S4method{parseWorkspace}{flowJoWorkspace}(obj,name=NULL,execute=FALSE,isNcdf=FALSE,subset=NULL,nslaves=4,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,6 +27,9 @@ A \code{flowJoWorkspace} to be parsed.
 	}
 	\item{subset}{
 	\code{numeric} vector specifying the subset of samples in a group to import.
+	}
+	\item{nslaves}{
+	\code{numeric} number of slave processes for executing the gating under Rmpi
 	}
 	\item{...}{
 	Additional arguments.
