@@ -1,6 +1,6 @@
 AC_PREREQ(2.61)
 
-AC_INIT([flowWorkspace],0.99.1)
+AC_INIT([flowWorkspace],0.99.10)
 
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
@@ -55,6 +55,12 @@ if test -d /usr/include  -a  -d /usr/lib ; then
         LDFLAGS="$LDFLAGS -L/usr/lib"
 fi
 
+if test -e $HOME/include -a -e $HOME/lib -a -d $HOME/include -a -d $HOME/lib ; then
+	AC_MSG_RESULT($HOME)
+		CFLAGS="-I$HOME/include $CFLAGS"
+	CXXFLAGS="-I$HOME/include $CXXFLAGS"
+	LDFLAGS="-L$HOME/lib $LDFLAGS"
+fi
 
 CFLAGS="$CFLAGS"
 CXXFLAGS="$CXXFLAGS"
@@ -64,13 +70,13 @@ AC_ARG_WITH([netcdf],[AS_HELP_STRING([--with-netcdf], [Support for netcdf])],[],
 
 LIBNETCDF=
 AS_IF([test "x$with_netcdf" != xno],
-[AC_CHECK_LIB([netcdf], [nc_def_compound],
+[AC_CHECK_LIB([netcdf], [nc_def_var_deflate],
 [AC_SUBST([LIBNETCDF], ["-lnetcdf"])
 AC_DEFINE([HAVE_LIBNETCDF], [1],
 [Define if you have netcdf])
-AC_SEARCH_LIBS(nc_def_compound,netcdf,,)
+AC_SEARCH_LIBS(nc_def_var_deflate,netcdf,,)
 AC_CHECK_HEADERS(netcdf.h,,)
-if test "x$ac_cv_lib_netcdf_nc_def_compound" = "xyes" -a "x$ac_cv_header_netcdf_h" = "xyes"; then
+if test "x$ac_cv_lib_netcdf_nc_def_var_deflate" = "xyes" -a "x$ac_cv_header_netcdf_h" = "xyes"; then
   HAVE_NETCDF=TRUE
 else
   HAVE_NETCDF=FALSE
