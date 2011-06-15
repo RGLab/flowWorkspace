@@ -2,7 +2,7 @@
 setOldClass("XMLInternalDocument")
 setClass("flowJoWorkspace",representation(version="character",file="character",.cache="environment",path="character",doc="XMLInternalDocument"))
 
-setClass("GatingHierarchy",representation(tree="graphNEL",nodes="character",name="character",flag="logical",transformations="list",compensation="matrix",dataPath="character"))
+setClass("GatingHierarchy",representation(tree="graphNEL",nodes="character",name="character",flag="logical",transformations="list",compensation="matrix",dataPath="character",isNcdf="logical"))
 
 setClass("GatingSet",representation(set="list",metadata="AnnotatedDataFrame"),validity=function(object){
 	all(unlist(lapply(object@set,function(y)inherits(y,"GatingHierarchy"))))
