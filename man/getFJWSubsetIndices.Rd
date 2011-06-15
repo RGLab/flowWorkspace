@@ -36,6 +36,3 @@ Greg Finak <gfinak@fhcrc.org>
 \seealso{
 \code{\link{parseWorkspace}}
 }
-\examples{
-
-}

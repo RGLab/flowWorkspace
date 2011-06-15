@@ -204,9 +204,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			G<-G[-excludefiles];
 		}
 		
-		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeData(x$graph)[[1]]$metadata),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath))
+		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeData(x$graph)[[1]]$metadata),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
 		G<-new("GatingSet",set=G);
-
 		if(execute){
 			##################################################
 			#create ncdf file without adding matrices yet
@@ -223,6 +222,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				#nslaves=4
 				mpi.spawn.Rslaves(nslaves=nslaves)
 				mpi.remote.exec(library(flowWorkspace))
+				mpi.remote.exec(library(ncdf4))
 				mpi.bcast.Robj2slave(ws)
 				mpi.bcast.Robj2slave(G)
 				mpi.bcast.Robj2slave(ncfs1)
@@ -235,7 +235,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 						i<-mpi.recv.Robj(0,2)
 						
 						#These variables are global in this environment..
-						g<-execute(G[[i]],isNcdf=isNcdf,ncfs=ncfs1,dataEnvironment=dataEnvironment)
+						g<-execute(G[[i]],isNcdf=isNcdf(G[[i]]),ncfs=ncfs1,dataEnvironment=dataEnvironment)
 						
 
 						#finish task
@@ -264,52 +264,53 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				writequeue<-NULL
 				results<-NULL;
 				while(length(tasks)>0|length(results)<ntasks){
-					message("length(tasks): ", length(tasks), " length(results): ", length(results))
-					message("checking if anyone needs to write")
+					#message("length(tasks): ", length(tasks), " length(results): ", length(results))
+					#message("checking if anyone needs to write")
 					if(state==0&length(writequeue)>0){
 						#okay, go for it
-						message("they can write")
+						#message("they can write")
 						mpi.send.Robj(0,writequeue[1],4)
-						message("okay, they're writing")
+						#message("okay, they're writing")
 						writequeue<-writequeue[-1L]
 						state<-1;
 					}
 					#listen for a request
-					message("listening")
+					#message("listening")
 					obj<-mpi.recv.Robj(mpi.any.source(),mpi.any.tag())
 					sourcetag<-mpi.get.sourcetag();
 					who<-sourcetag[1]
 					what<-sourcetag[2]
 					#Asking for data
 					if(what==1){
-						message("they want data")
+						#message("they want data")
 						mpi.send.Robj(tasks[1],sourcetag[1],2);
-						message("sent them data")
+						#message("sent them data")
+						message("Gating");
 						tasks<-tasks[-1L]
 					}
 					#Needs permission to write to NetCDF
 					if(what==3){
 						#queue up
-						message("they want do write to ncdf")
+						#message("they want do write to ncdf")
 						writequeue<-c(writequeue,who)
 					}
 					#They sent me a result
 					if(what==5){
-						message("they have a result")
+						#message("they have a result")
 						results<-c(results,obj)
 						#Do I have any more data to hand out?
 						if(length(tasks)>0){
-							message("there's more results for ",who)
+							#message("there's more results for ",who)
 							mpi.send.Robj(0,who,6)
-							message("they got more results")
+							#message("they got more results")
 						}else{
-							message("there's no more results for ", who)
+							#message("there's no more results for ", who)
 							mpi.send.Robj(0,who,7)
-							message("moving on")
+							#message("moving on")
 						}
 					}
 					if(what==8){
-						message("they're done writing")
+						#message("they're done writing")
 						state<-0
 					}
 				}
@@ -318,7 +319,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				gc(reset=TRUE);
 				mpi.close.Rslaves()	
 			}else{
-				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf,ncfs=ncfs1,dataEnvironment=dataEnvironment))
+				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf(x),ncfs=ncfs1,dataEnvironment=dataEnvironment))
 				
 			}
 		}
@@ -644,6 +645,10 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		else
 		{
 			sampleName<-getSample(hierarchy)
+
+			#create ncdf file for indices
+			#moving this code to writeGatesToNetCDF
+			
 			if(.packageLoaded("Rmpi")){
 				#ask for permission to write to netcdf
 				mpi.send.Robj(0,0,3)
@@ -667,10 +672,6 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		gc(reset=TRUE)
 		nodeDataDefaults(x,"data")<-e;
 		##The data below needs to be added to metadata for each node.. probably best done in parseWorkspace
-		##These are now assigned in parseWorkspace. Comment out.
-		# nodeDataDefaults(x,"thisIndices")<-list();
-		# nodeDataDefaults(x,"parentTot")<-NA;
-		# nodeDataDefaults(x,"thisTot")<-0;
 		#Nodes to parse later
 		skipforlater<-list();
 		lastparent<-nlist[1];
@@ -686,7 +687,12 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 					
 					assign("thisTot",as.numeric(nodeData(x,node,"metadata")[[1]][["count"]]),env=nodeData(x,node,"metadata")[[1]]);
 					hierarchy@tree<-x;
-					assign("thisIndices",list(getIndices(hierarchy,node),env=nodeData(x,node,"metadata")[[1]]));
+					##the bug discovered and fixed on 06132011
+#					assign("thisIndices",list(getIndices(hierarchy,node),env=nodeData(x,node,"metadata")[[1]]));
+					l<-list(getIndices(hierarchy,node))
+#					browser()
+					.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
+					
 					#20110314 set the flag after gating
 					assign("isGated",TRUE,env=nodeData(x,node,"metadata")[[1]])
 					lastparent<-parentname;
@@ -709,8 +715,13 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 					lastparent<-parentname;
 					next;
 				}
+				#check if the current node has been gated during the skipforlater loop
+				#Perhaps this check should go into .calcGate?
+				#Done - check is inside .calcGate
+				#if(!.isGated.graphNEL(hierarchy,node)){
 				#gating the regular gate
 				.calcGate(hierarchy,node)
+				#}
 				lastparent<-parentname;
 			}
 		}
@@ -721,76 +732,11 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 			}
 			skipforlater<-list();
 		}
-			
-			
-			
-			
-			
-		# 	a<-adj(x,node)[[1]];
-		# 	for (ai in a){
-		# 		#Skip Boolean Gates and compute them later. (or maybe on the fly)
-		# 		if(.isBooleanGate.graphNEL(hierarchy,ai)){
-		# 			next
-		# 		}
-		# 		g<-get("gate",env=nodeData(x,ai,"metadata")[[1]]);
-		# 		#Need parent node name
-		# 		parentname<-(setdiff(adj(ugraph(x),ai)[[1]],adj(x,ai)[[1]]))
-		# 		if(parentname!=nlist[1]){
-		# 			#If the parent is not the root.
-		# 			##get the parent indices vector and AND with the current vector. Store the result
-		# 			message("Gating ", ai);
-		# 			
-		# 			if(get("negated",env=nodeData(x,ai,"metadata")[[1]])){
-		# 				l<-list(get("thisIndices",env=nodeData(x,parentname,"metadata")[[1]])[[1]]&(!filter(nodeData(x,ai,"data")[[1]][["data"]],get("gate",nodeData(x,ai,"metadata")[[1]]))@subSet))
-		# 				assign("thisIndices",l,env=nodeData(x,ai,"metadata")[[1]])						
-		# 			}else{
-		# 				l<-list(get("thisIndices",env=nodeData(x,parentname,"metadata")[[1]])[[1]]&(filter(nodeData(x,ai,"data")[[1]][["data"]],get("gate",env=nodeData(x,ai,"metadata")[[1]]))@subSet))
-		# 				
-		# 				assign("thisIndices",l,env=nodeData(x,ai,"metadata")[[1]])
-		# 				
-		# 			}
-		# 			l<-ifelse(is.na(table(get("thisIndices",env=nodeData(x,ai,"metadata")[[1]]))["TRUE"]),0,table(get("thisIndices",env=nodeData(x,ai,"metadata")[[1]]))["TRUE"])
-		# 			assign("thisTot",l,env=nodeData(x,ai,"metadata")[[1]])
-		# 			l<-get("thisTot",env=nodeData(x,parentname,"metadata")[[1]])
-		# 			assign("parentTot",l,env=nodeData(x,ai,"metadata")[[1]])
-		# 			##Check if there's any siblings left 
-		# 			if(!any(unlist(sapply(unlist(adj(x,parentname)),function(b)is.na(get("parentTot",env=nodeData(x,b,"metadata")[[1]])))))){
-		# 				#Do we keep indices?
-		# 				if(!keep.indices){
-		# 					assign("thisIndices",list(),env=nodeData(x,parentname,"metadata")[[1]])
-		# 					gc(reset=T)
-		# 				}
-		# 			}
-		# 			##Check if it has children.. otherwise remove the index also
-		# 			if(length(adj(x,ai)[[1]])==0){
-		# 				if(!keep.indices){
-		# 					assign("thisIndices",list(),env=nodeData(x,ai,"metadata")[[1]])
-		# 					gc(reset=T)
-		# 				}
-		# 			}
-		# 		}
-		# 		else{
-		# 			#if the parent is the root
-		# 			message("Gating ", ai);
-		# 			
-		# 			#Indices is just the filter subset
-		# 			l<-list(filter(nodeData(x,ai,"data")[[1]][["data"]],get("gate",env=nodeData(x,ai,"metadata")[[1]]))@subSet)
-		# 			assign("thisIndices",l,env=nodeData(x,ai,"metadata")[[1]])
-		# 			#Parent total is all events
-		# 			l<-length(get("thisIndices",env=nodeData(x,ai,"metadata")[[1]])[[1]]);
-		# 			assign("parentTot",l,env=nodeData(x,ai,"metadata")[[1]])
-		# 			#Current total is the contingency table of the subset
-		# 			l<-table(get("thisIndices",env=nodeData(x,ai,"metadata")[[1]]))["TRUE"];	
-		# 			assign("thisTot",l,env=nodeData(x,ai,"metadata")[[1]])	
-		# 			##Update parent to the computed counts rather than the defaults.
-		# 			l<-get("parentTot",env=nodeData(x,ai,"metadata")[[1]]);
-		# 			assign("thisTot",l,env=nodeData(x,parentname,"metadata")[[1]])
-		# 			l<-get("parentTot",env=nodeData(x,ai,"metadata")[[1]]);
-		# 			assign("parentTot",l,nodeData(x,parentname,"metadata")[[1]])
-		# 		}
-		# 	}
-		# }
-		# ###Once we're done gating, clean up the data if cleanup==TRUE
+		
+		#Done gating, now write all the indices to netcdf
+		#Checks the ncdf flag of hierarchy in the function
+		writeGatesToNetCDF(hierarchy)
+		
 		if(cleanup){
 			nodeDataDefaults(x,"data")<-new.env(parent=.GlobalEnv);
 			gc(reset=TRUE);
@@ -802,9 +748,58 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		hierarchy
 })
 
+#Checks the ncdf flag of hierarchy in the function
+#Writes the gates to netcdf. 
+#We can optionally move a gatinghierarchy from memory to netcdf this way.
+writeGatesToNetCDF<-function(hierarchy){
+	if(isNcdf(hierarchy)){
+		nlist<-RBGL::bfs(hierarchy@tree)
+		len<-length(getIndices(hierarchy,nlist[1]))
+		dimIndice<-ncdim_def("indices","count",1:len)
+		vars<-list();
+		vars[[1]]<-ncvar_def("total","count",dimIndice,-1,longname="initial indices of all events")
+		sampleName<-getSample(hierarchy)
+		ncFile<-paste(sampleName,"nc",sep=".")
+		for(i in 2:length(nlist)){
+			#define netcdf variables and sizes
+			#then create the file
+			#should be much faster
+			vars[[i]]<-ncvar_def(nlist[i],"count",dimIndice,-1)
+		}
+		nc1<-nc_create(ncFile,vars)
+		#now write the indices
+		message("Writing gates to NetCDF")
+		ncvar_put(nc1,vars[[1]],getIndices(hierarchy,nlist[1]))
+		for(i in 2:length(nlist)){
+			ncvar_put(nc1,vars[[i]],getIndices(hierarchy,nlist[i]))
+		}
+		message("done")
+		nc_close(nc1)
+		#And set the indices in memory to NULL
+		for(node in nlist){
+			assign("thisIndices",NULL,env=nodeData(hierarchy@tree,node,"metadata")[[1]])
+		}
+	}
+}
+
 #20110314
+#TODO wrap isNcdf slot with get/set methods
+isNcdf<-function(x){
+	if(inherits(x,"GatingHierarchy"))
+	return(x@isNcdf)
+}
+setNcdf<-function(x,y){
+	if(inherits(x,"GatingHierarchy")&class(y)=="logical"){
+		x@isNcdf=y
+	}
+	return(x);
+}
+#isNcdf should be FALSE for .calcGate, until we get the full sample completed.
 .calcGate<-function(hierarchy,node){
+	if(!.isGated.graphNEL(hierarchy,node)){
 #	browser()
+	isNcdf<-isNcdf(hierarchy)
+	sampleName<-getSample(hierarchy)
 	parentname<-getParent(hierarchy,node)
 	x<-hierarchy@tree
 	message("Gating ", node);
@@ -816,16 +811,16 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 			
 			
 			l<-list(getIndices(hierarchy,parentname)&(!filter(getData(x),get("gate",nodeData(x,node,"metadata")[[1]]))@subSet))
-			assign("thisIndices",l,env=nodeData(x,node,"metadata")[[1]])						
+			.saveIndices(x,sampleName,node,l,isNcdf=FALSE)	
 		}else{
 			hierarchy@tree<-x;
 			l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
-			assign("thisIndices",l,env=nodeData(x,node,"metadata")[[1]])
+			.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 		}
 	}else{
 		hierarchy@tree<-x;
 		l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
-		assign("thisIndices",l,env=nodeData(x,node,"metadata")[[1]])
+		.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 	}
 	l<-ifelse(is.na(table(get("thisIndices",env=nodeData(x,node,"metadata")[[1]]))["TRUE"]),0,table(get("thisIndices",env=nodeData(x,node,"metadata")[[1]]))["TRUE"])	
 	assign("thisTot",l,env=nodeData(x,node,"metadata")[[1]])
@@ -833,6 +828,29 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 	assign("parentTot",l,env=nodeData(x,node,"metadata")[[1]])
 	#20110314 set the flag after gating
 	assign("isGated",TRUE,env=nodeData(x,node,"metadata")[[1]])
+}
+}
+.saveIndices<-function(x,sampleName,node,l,isNcdf){
+	if(isNcdf)##save indices in file
+	{
+		##open ncdf file for indices
+		##Don't need this code any more
+		#ncFile<-paste(sampleName,"nc",sep=".")
+		#nc1<-nc_open(filename=ncFile,write=TRUE)
+		#dimIndice<-nc1$dim$indices
+		#var1<-ncvar_def(node,"count",dimIndice,-1)
+		#nc1<-ncvar_add(nc1,var1)
+		#nc_close(nc1)
+		#nc1<-nc_open(filename=ncFile,write=TRUE)
+		#ncvar_put(nc1,var1,vals=l[[1]])	
+		#nc_close(nc1)
+		#assign("thisIndices",NULL,env=nodeData(x,node,"metadata")[[1]])
+	}else
+	{
+		assign("thisIndices",l,env=nodeData(x,node,"metadata")[[1]])
+		
+	}
+	
 }
 .calcBooleanGate<-function(x,y){
 	message("Gating BooleanGate ",y, "\n");
@@ -1197,11 +1215,23 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 			return(rep(TRUE,nodeData(obj@tree,y,"metadata")[[1]][["thisTot"]]))
 		}else{
 			#20110314 if not gated yet,then do the gating first 
-			if(!.isGated.graphNEL(obj,y))
-			{
+			#if(!.isGated.graphNEL(obj,y))
+			#{
+				#check is now inside .calcGate
 				.calcGate(obj,y)
+			#}
+			ret<-get("thisIndices",env=nodeData(obj@tree,y,"metadata")[[1]])[[1]]
+			
+			if(is.null(ret))##load indice from file
+			{
+				sample<-getSample(obj)
+				ncfile<-paste(sample,"nc",sep=".")
+				nc1<-nc_open(filename=ncfile,write=FALSE,readunlim=FALSE)
+				ret<-ncvar_get(nc1,varid=y)
+				nc_close(nc1)
 			}
-			return(get("thisIndices",env=nodeData(obj@tree,y,"metadata")[[1]])[[1]])
+			
+			return(as.logical(ret))
 		}
 	}
 })

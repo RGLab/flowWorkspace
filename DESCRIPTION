@@ -12,5 +12,5 @@ Imports: Biobase, Rgraphviz, XML, flowCore, graph, graphics, lattice, methods, s
 Collate: AllClasses.R AllGenerics.R AllMethods.R AllExportMethods.R flowWorkspace2flowCore-methods.R ncdfFlowSet-functions.R 
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Depends: methods, RBGL, graph, XML, flowCore, flowViz, Rgraphviz, Biobase
-Enhances: multicore,Rmpi
+Enhances: multicore,Rmpi,ncdf4
 Suggests: testthat, flowWorkspaceData
