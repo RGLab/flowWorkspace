@@ -116,7 +116,7 @@ print(plotPopCV(G[[1]]))
 We can plot individual gates: note the scale of the transformed axes.
 
 <<plotGate,fig=TRUE,include=TRUE>>=
-plotGate(G[[1]],getNodes(G[[1]])[3],lwd=2)
+print(plotGate(G[[1]],getNodes(G[[1]])[3],lwd=2))
 @
 
 If we have  metadata associated with the experiment, it can be attached to the \Robject{GatingSet}. 
