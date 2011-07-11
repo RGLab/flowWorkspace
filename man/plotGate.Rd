@@ -10,7 +10,7 @@ Plot a flowJo Gate and Cell Population
 Plots a flowJo gate and associated cell population using it's \code{flowCore} definition contained in a \code{GatingHierarchy}
 }
 \usage{
-\S4method{plotGate}{GatingHierarchy,character}(x, y, add=FALSE,border="red",tsort=FALSE,...)
+\S4method{plotGate}{GatingHierarchy,character}(x, y, add=FALSE,border="red",tsort=FALSE,smooth=FALSE,...)
 }
 \arguments{
   \item{x}{
@@ -27,6 +27,9 @@ A \code{character} or \code{numeric} representing the node in the \code{GatingHi
 }
 \item{tsort}{
 \code{TRUE|FALSE} logical indicating if nodes should be referenced in topological sort order when \code{y="numeric"};
+}
+\item{smooth}{
+	\code{TRUE|FALSE} logical indicating whether a smoothed 2D scatter plot should be generated
 }
 \item{...}{
 Additional arguments to the \code{plot} function.

@@ -881,7 +881,7 @@ setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot
 		options("warn"=0)
 })
 
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,...){
 	node<-getNodes(x,tsort=tsort)[y];
 	if(is.na(node)){
 		warning("Can't plot gate ", y, " doesn't exist.");
@@ -890,12 +890,15 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add
 	plotGate(x,y=node,add=add,border=border,tsort=tsort,...);
 })
 
-setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
-	
+setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,...){
 		if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 			return();
 		}
+		cols <- colorRampPalette(IDPcolorRamp(21,
+		                               t(col2hsv(c("blue","green","yellow","red"))),
+		                               fr=c(0.7,0.1)))
+		
 		##Two cases: gate is boolean, or gate is normal
 		##Boolean gates are treated differently
 		if(.isBooleanGate.graphNEL(x,y)){
@@ -909,7 +912,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			if(add){
 				points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.');
 			}else{
-				plot((pd[,dims]),col=as.numeric(ind[ind.p])+1,smooth=FALSE);
+				plot((pd[,dims]),col=as.numeric(ind[ind.p])+1,smooth=smooth);
 			}
 			invisible()
 		}else if(suppressWarnings(is.na(getGate(x,y)))){
@@ -931,33 +934,81 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 				#warning this may sometimes fail	
 				colnames(pd)<-parameters(pd)@data$desc
 			}
+			form<-mkformula(rev(dims2));
+			if(length(dims2)==2){
 			if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				flowViz:::fplot(pd,smooth=FALSE,...)
+				scales<-list()
+				xlim=range(getData(x,getParent(x,y))[,dims2[1]])
+				ylim=range(getData(x,getParent(x,y))[,dims2[2]])
 			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				
-				flowViz:::fplot(getData(x,getParent(x,y))[,dims2],smooth=FALSE,axes=FALSE,frame.plot=TRUE,xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at),...)
-				axis(side=1,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label);
+				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
+				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+				ylim=range(getData(x,getParent(x,y))[,dims2[2]])
 			}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				
-				flowViz:::fplot(getData(x,getParent(x,y))[,dims2],smooth=FALSE,axes=FALSE,frame.plot=TRUE,ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at),...)
-				axis(side=2,at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label)	
+				scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
+				xlim=range(getData(x,getParent(x,y))[,dims2[1]])
+				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
 			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				
-				flowViz:::fplot(getData(x,getParent(x,y))[,dims2],smooth=FALSE,axes=FALSE,frame.plot=TRUE,xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at),ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at),...)
-				axis(side=1,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label);
-				axis(side=2,at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label)	
+				scales<-list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label)
+				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
 			}
-		}
-		dims<-colnames(getBoundaries(x,y))
-		dims<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
-		#Case for rectangle or polygon gate
-		if(length(dims)>1){
-			polygon(getBoundaries(x,y)[,dims],border=border,...);
+			#If 2D use xyplot.
+								flowViz:::xyplot(x=form,data=getData(x,getParent(x,y))[,dims2],smooth=smooth,colramp=cols,frame.plot=TRUE,scales=scales,nbin=512,
+										panel=function(gh=x,g=y,tsort=tsort,...){
+											gp <- list(...)[["par.settings"]]
+											flowViz:::panel.xyplot.flowframe(...)
+											dims<-colnames(getBoundaries(gh,g))
+											dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
+											#Case for rectangle or polygon gate
+											if(length(dims)>1){
+												panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
+											}else{
+												apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+											}
+										},...)
+	
 		}else{
-			apply(getBoundaries(x,y)[,dims,drop=FALSE],1,function(x)abline(v=x,col="red"))
+			if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
+				scales<-list();
+			}
+			else{
+				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
+			}
+				data=data.frame(exprs(getData(x,getParent(x,y))[,dims2]))
+				colnames(data)<-flowViz:::expr2char(form[[2]])
+								densityplot(x=form,data=data,scales=scales,#prepanel=
+								#								function (x, y, darg = list(n = 500, na.rm = TRUE), frames, overlap = 0.3, 
+								#								    subscripts, ..., which.channel) 
+								#								{
+								#								    channel.name <- unique(which.channel[subscripts])
+								#								    stopifnot(length(channel.name) == 1)
+								#								    xl <- range(eapply(frames, range, channel.name), finite = TRUE)
+								#									prepanel.default.densityplot(scales=scales)
+								#								    list(xlim = xl + c(-1, 1) * 0.07 * diff(xl))
+								#					
+								#TODO test this			},
+								panel=function(...,gh=x,g=y){
+									panel.densityplot(...);
+									apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+								},...)
+								#									browser()
+								#									panel.densityplot(darg=list(n=500,na.rm=T),...)
+								#								},
 		}
 	}
+	}
 })
+
+mkformula<-function(dims2){
+	if(length(dims2)==1){
+		form<-as.formula(paste(c("",sapply((dims2), function(x) paste("`",x, "`", sep = ""))), collapse = "~"))
+	}else{
+		form<-as.formula(paste(sapply((dims2),function(x)paste("`",x,"`",sep="")),collapse="~"))
+	}
+	return(form)
+}
+
 
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 	if(!x@flag){
@@ -1059,6 +1110,8 @@ setMethod("getKeywords",signature("flowJoWorkspace","character"),function(obj,y)
 	l<-lapply(l,function(x)x[["value"]])
 	return(l);
 })
+
+#Get a keyword from all samples
 .getKeyword<-function(ws,x){
 	if(inherits(ws,"flowJoWorkspace")&class(x)=="character"){
 		 unlist(xpathApply(ws@doc,paste("/Workspace/SampleList/Sample/Keywords/Keyword[@name='",x,"']",sep=""),function(x)xmlGetAttr(x,"value")))
