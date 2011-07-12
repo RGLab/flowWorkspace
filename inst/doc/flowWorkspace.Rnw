@@ -3,6 +3,7 @@
 %\VignettePackage{flowWorkspace}
 \documentclass[11pt]{article}
 \usepackage{Sweave}
+\usepackage{hyperref}
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
@@ -204,7 +205,14 @@ The \Rfunction{exportAsFlowJoXML} function can be used to export a \Robject{flow
 
 
 \subsection{Additional Important Notes}
-If you have particularly large data files (millions of events), then you won't want to keep the data around, nor the indices for gate membership. Instead, pass the options \texttt{cleanup=TRUE, keep.indices=FALSE} to the \Rfunction{execute()} function, and the data will be scrubbed after computing population statistics. With future improvements making use of the netCDF framework, and bitvector representations of population memberships; this will improve memory usage in high--throughput unsupervised analysis settings.
+\subsubsection{NetCDF Support}
+If you have particularly large data files (millions of events), then you will want to make use of the netCDF framework. To do so, you will have to install the netcdf4 C library (available at \url{http://www.unidata.ucar.edu/downloads/netcdf/index.jsp}), and build it with HDF5 support.You will also need the R library ncdf4. To use NetCDF, pass isNcdf=TRUE to parseWorkspace. flowWorkspace will create one netcdf file for the processed data, and additional netcdf files (one per sample) containing the event memberships for each gate in each sample. To build flowWorkspace to use netcdf, you may need to run autoconf in the top--level directory of the untarred flowWorkspace source directory, before installing with R CMD INSTALL.
+\subsubsection{Known Bugs}
+Importing flowJo transformations. We have made every effort to support the importing of flowJo's data transformations. Sometimes, however, flowWorkspace may have difficulty identifying the correct transofrmation to apply to your data. There are several things you can do:
+\begin{itemize}
+\item Visualize your data after import using plotPopCV(). This will tell you if there is a discrepancy between the flowJo counts and the flowCore counts for individual populations. Keep in mind that tare populations can differ by a few cells and still show large coefficients of variation. 
+\item If you are having difficulty importing your data due to a transformation problem, ensure that you are using either a log transform, or flowJo's "custom biexponential transform". The latter provides an explicit mapping between transformations, compensation matrices, and flow parameters. Outside of these two cases, success or failure appears to be dependent on the version of flowJo that was used to create the original workspace.
+\end{itemize}
 
 \section{Troubleshooting}
 If this package is throwing errors when parsing your workspace, and you are certain your workspace is version 2.0, contact the package author. If you can send your workspace by email, we can test, debug, and fix the package so that it works for you. Our goal is to provide a tool that works, and that people find useful.
