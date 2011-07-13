@@ -15,6 +15,45 @@
 #define CACHE_PREEMPTION .75
 #define DEFLATE_LEVEL 2
 #if defined HAVE_LIBNETCDF && defined HAVE_NETCDF_H
+
+SEXP createGateFile(SEXP _fileName, SEXP _X, SEXP _Y, SEXP _compress){
+	int NDIMS = 2;
+	int dimids[NDIMS];
+	int X = INTEGER(_X)[0];
+	int Y = INTEGER(_Y)[0];
+	int ncid, retval, varid, x_dimid, y_dimid;
+	int compress = LOGICAL(_compress)[0];
+	SEXP k = allocVector(LGLSXP,1);
+	size_t chunksize[] = {1,X};
+	
+	if ((retval = nc_create( translateChar(STRING_ELT(_fileName,0)), NC_NETCDF4, &ncid)))
+		ERR(retval);
+	if ((retval = nc_def_dim(ncid, "event", X, &x_dimid)))
+        ERR(retval);
+    if ((retval = nc_def_dim(ncid, "gate", Y, &y_dimid)))
+        ERR(retval);
+	dimids[0] = y_dimid;
+	dimids[1] = x_dimid;
+	
+	if ((retval = nc_def_var(ncid, "indices", NC_BYTE, NDIMS, dimids, &varid)))
+        ERR(retval);
+    
+    if (( retval = nc_def_var_chunking(ncid, varid, NC_CHUNKED, chunksize)))
+        ERR(retval);
+
+    if (( retval = nc_set_var_chunk_cache(ncid, varid, CACHE_SIZE, CACHE_NELEMS, CACHE_PREEMPTION)))
+        ERR(retval);
+    
+    if(compress) {
+        if (( retval = nc_def_var_deflate(ncid, varid, 0, 1, DEFLATE_LEVEL)))
+            ERR(retval);
+    }
+
+    if ((retval = nc_enddef(ncid)))
+        ERR(retval);
+    
+	
+}
 SEXP createFile(SEXP _fileName, SEXP _X, SEXP _Y, SEXP _Z, SEXP _compress) {
     int NDIMS = 3 ; 
     int dimids[NDIMS];
