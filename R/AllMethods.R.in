@@ -25,7 +25,10 @@ setMethod("show",signature("flowJoWorkspace"),function(object){
 	cat("File name: ",object@file,"\n");
 	if(object@.cache$flag){
 		cat("Workspace is open.","\n");
-	}else{
+		cat("\nGroups in Workspace\n");
+		tbl<-table(Name=getSampleGroups(object)$groupName,GroupID=getSampleGroups(object)$groupID)
+		print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
+	}else{	
 		cat("Workspace is closed.","\n")
 	}
 })
@@ -1043,6 +1046,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #rows are samples
 cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
 #flatten, generate levels for samples.
+rownames(cv)<-getSamples(x)
 nr<-nrow(cv)
 nc<-ncol(cv)
 populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))

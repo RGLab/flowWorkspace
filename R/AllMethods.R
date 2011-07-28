@@ -688,8 +688,8 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 					assign("thisTot",as.numeric(nodeData(x,node,"metadata")[[1]][["count"]]),env=nodeData(x,node,"metadata")[[1]]);
 					hierarchy@tree<-x;
 					##the bug discovered and fixed on 06132011
-#					assign("thisIndices",list(getIndices(hierarchy,node),env=nodeData(x,node,"metadata")[[1]]));
-					l<-list(getIndices(hierarchy,node))
+#					assign("thisIndices",list(flowWorkspace::getIndices(hierarchy,node),env=nodeData(x,node,"metadata")[[1]]));
+					l<-list(flowWorkspace::getIndices(hierarchy,node))
 #					browser()
 					.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 					
@@ -754,7 +754,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 writeGatesToNetCDF<-function(hierarchy){
 	if(isNcdf(hierarchy)){
 		nlist<-RBGL::bfs(hierarchy@tree)
-		len<-length(getIndices(hierarchy,nlist[1]))
+		len<-length(flowWorkspace::getIndices(hierarchy,nlist[1]))
 		dimIndice<-ncdim_def("indices","count",1:len)
 		vars<-list();
 		vars[[1]]<-ncvar_def("total","count",dimIndice,-1,longname="initial indices of all events")
@@ -769,9 +769,9 @@ writeGatesToNetCDF<-function(hierarchy){
 		nc1<-nc_create(ncFile,vars)
 		#now write the indices
 		message("Writing gates to NetCDF")
-		ncvar_put(nc1,vars[[1]],getIndices(hierarchy,nlist[1]))
+		ncvar_put(nc1,vars[[1]],flowWorkspace::getIndices(hierarchy,nlist[1]))
 		for(i in 2:length(nlist)){
-			ncvar_put(nc1,vars[[i]],getIndices(hierarchy,nlist[i]))
+			ncvar_put(nc1,vars[[i]],flowWorkspace::getIndices(hierarchy,nlist[i]))
 		}
 		message("done")
 		nc_close(nc1)
@@ -810,16 +810,16 @@ setNcdf<-function(x,y){
 			hierarchy@tree<-x;
 			
 			
-			l<-list(getIndices(hierarchy,parentname)&(!filter(getData(x),get("gate",nodeData(x,node,"metadata")[[1]]))@subSet))
+			l<-list(flowWorkspace::getIndices(hierarchy,parentname)&(!filter(getData(x),get("gate",nodeData(x,node,"metadata")[[1]]))@subSet))
 			.saveIndices(x,sampleName,node,l,isNcdf=FALSE)	
 		}else{
 			hierarchy@tree<-x;
-			l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
+			l<-list(flowWorkspace::getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
 			.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 		}
 	}else{
 		hierarchy@tree<-x;
-		l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
+		l<-list(flowWorkspace::getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
 		.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 	}
 	l<-ifelse(is.na(table(get("thisIndices",env=nodeData(x,node,"metadata")[[1]]))["TRUE"]),0,table(get("thisIndices",env=nodeData(x,node,"metadata")[[1]]))["TRUE"])	
@@ -854,10 +854,10 @@ setNcdf<-function(x,y){
 }
 .calcBooleanGate<-function(x,y){
 	message("Gating BooleanGate ",y, "\n");
-	z<-table(getIndices(x,y))["TRUE"]
+	z<-table(flowWorkspace::getIndices(x,y))["TRUE"]
 	z<-ifelse(is.na(z),0,z);
 	assign("thisTot",z,env=nodeData(x@tree,y,"metadata")[[1]]);
-	z<-table(getIndices(x,getParent(x,y)))["TRUE"]
+	z<-table(flowWorkspace::getIndices(x,getParent(x,y)))["TRUE"]
 	z<-ifelse(is.na(z),0,z)
 	assign("parentTot",z,env=nodeData(x@tree,y,"metadata")[[1]]);
 	#20110314 set the flag after gating
@@ -903,8 +903,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 		##Boolean gates are treated differently
 		if(.isBooleanGate.graphNEL(x,y)){
 			p<-getParent(x,y);
-			ind<-getIndices(x,y)
-			ind.p<-getIndices(x,p)
+			ind<-flowWorkspace::getIndices(x,y)
+			ind.p<-flowWorkspace::getIndices(x,p)
 			pd<-getData(x,p)
 			dim.ind<-getDimensions(x,p,index=TRUE)
 			dims<-getDimensions(x,p);
@@ -920,84 +920,78 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			invisible();			
 		}else{
 			if(add==FALSE){
-			dims<-getDimensions(x,y)
-			dims2<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
-			dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
-			par.desc<-parameters(getData(x,getParent(x,y)))@data$desc[dim.ind]
-			if(!any(is.na(par.desc))){
-				dflag<-TRUE
+				dims<-getDimensions(x,y)
+				dims2<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
+				dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
+				par.desc<-parameters(getData(x,getParent(x,y)))@data$desc[dim.ind]
+				if(!any(is.na(par.desc))){
+					dflag<-TRUE
+				}else{
+					dflag<-FALSE
+				}
+				pd<-getData(x,getParent(x,y))[,dims2];
+				if(dflag){
+					#warning this may sometimes fail	
+					colnames(pd)<-parameters(pd)@data$desc
+				}
+				form<-mkformula(rev(dims2));
+				if(length(dims2)==2){
+					if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
+						scales<-list()
+						xlim=range(getData(x,getParent(x,y))[,dims2[1]])
+						ylim=range(getData(x,getParent(x,y))[,dims2[2]])
+					}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
+						scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
+						xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+						ylim=range(getData(x,getParent(x,y))[,dims2[2]])
+					}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
+						scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
+						xlim=range(getData(x,getParent(x,y))[,dims2[1]])
+						ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
+					}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
+						scales<-list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label)
+						xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+						ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
+					}
+					#If 2D use xyplot.
+					flowViz:::xyplot(x=form,data=getData(x,getParent(x,y))[,dims2],smooth=smooth,colramp=cols,frame.plot=TRUE,scales=scales,nbin=512,
+						panel=function(gh=x,g=y,tsort=tsort,...){
+						gp <- list(...)[["par.settings"]]
+						flowViz:::panel.xyplot.flowframe(...)
+						dims<-colnames(getBoundaries(gh,g))
+						dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
+						#Case for rectangle or polygon gate
+						if(length(dims)>1){
+							panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
+						}else{
+							apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+						}
+						},...)
+				}else{
+					if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
+						scales<-list();
+					}
+					else{
+						scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
+					}
+					data=data.frame(exprs(getData(x,getParent(x,y))[,dims2]))
+					colnames(data)<-flowViz:::expr2char(form[[2]])
+					densityplot(x=form,data=data,scales=scales,
+						panel=function(...,gh=x,g=y){
+							panel.densityplot(...);
+							apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+						},...)
+				}
+										
 			}else{
-				dflag<-FALSE
+				#add=TRUE
+				trellis.focus(highlight=FALSE)
+				dims<-colnames(getBoundaries(x,y))
+				dims<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
+				panel.polygon(getBoundaries(x,y)[,dims],border="red",...)
+				trellis.unfocus();
 			}
-			pd<-getData(x,getParent(x,y))[,dims2];
-			if(dflag){
-				#warning this may sometimes fail	
-				colnames(pd)<-parameters(pd)@data$desc
-			}
-			form<-mkformula(rev(dims2));
-			if(length(dims2)==2){
-			if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list()
-				xlim=range(getData(x,getParent(x,y))[,dims2[1]])
-				ylim=range(getData(x,getParent(x,y))[,dims2[2]])
-			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
-				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-				ylim=range(getData(x,getParent(x,y))[,dims2[2]])
-			}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
-				xlim=range(getData(x,getParent(x,y))[,dims2[1]])
-				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label)
-				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-			}
-			#If 2D use xyplot.
-								flowViz:::xyplot(x=form,data=getData(x,getParent(x,y))[,dims2],smooth=smooth,colramp=cols,frame.plot=TRUE,scales=scales,nbin=512,
-										panel=function(gh=x,g=y,tsort=tsort,...){
-											gp <- list(...)[["par.settings"]]
-											flowViz:::panel.xyplot.flowframe(...)
-											dims<-colnames(getBoundaries(gh,g))
-											dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
-											#Case for rectangle or polygon gate
-											if(length(dims)>1){
-												panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
-											}else{
-												apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-											}
-										},...)
-	
-		}else{
-			if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
-				scales<-list();
-			}
-			else{
-				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
-			}
-				data=data.frame(exprs(getData(x,getParent(x,y))[,dims2]))
-				colnames(data)<-flowViz:::expr2char(form[[2]])
-								densityplot(x=form,data=data,scales=scales,#prepanel=
-								#								function (x, y, darg = list(n = 500, na.rm = TRUE), frames, overlap = 0.3, 
-								#								    subscripts, ..., which.channel) 
-								#								{
-								#								    channel.name <- unique(which.channel[subscripts])
-								#								    stopifnot(length(channel.name) == 1)
-								#								    xl <- range(eapply(frames, range, channel.name), finite = TRUE)
-								#									prepanel.default.densityplot(scales=scales)
-								#								    list(xlim = xl + c(-1, 1) * 0.07 * diff(xl))
-								#					
-								#TODO test this			},
-								panel=function(...,gh=x,g=y){
-									panel.densityplot(...);
-									apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-								},...)
-								#									browser()
-								#									panel.densityplot(darg=list(n=500,na.rm=T),...)
-								#								},
 		}
-	}
-	}
 })
 
 mkformula<-function(dims2){
@@ -1049,6 +1043,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #rows are samples
 cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
 #flatten, generate levels for samples.
+rownames(cv)<-rownames(getPopStats(G[[1]]))
 nr<-nrow(cv)
 nc<-ncol(cv)
 populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
@@ -1090,7 +1085,7 @@ setMethod("getData",signature(obj="GatingHierarchy"),function(obj,y=NULL,tsort=F
 		r<-nodeData(obj@tree,y,"data")[[1]][["data"]]
 		if(class(r)=="environment")
 			r<-.getFlowFrame(r$ncfs,getSample(obj))	
-		r<-r[getIndices(obj,y),]
+		r<-r[flowWorkspace::getIndices(obj,y),]
 	}
 	r
 })
@@ -1250,17 +1245,17 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 	if(.isBooleanGate.graphNEL(obj,y)){
 		g<-get("gate",env=nodeData(obj@tree,y,"metadata")[[1]])[[1]]
 		if(length(g$ref)==1){
-			p<-paste("getIndices(obj,\"",g$ref,"\")",sep="")
+			p<-paste("flowWorkspace::getIndices(obj,\"",g$ref,"\")",sep="")
 			p<-paste(g$v,p,sep="")
 	 		parent<-getParent(obj,y)
-			p<-c("getIndices(obj,parent)&(",p,")");
+			p<-c("flowWorkspace::getIndices(obj,parent)&(",p,")");
 			return(eval(parse(text=paste(p,collapse=""))))
 		}else{
-			p<-paste("getIndices(obj,\"",g$ref,"\")",sep="")
+			p<-paste("flowWorkspace::getIndices(obj,\"",g$ref,"\")",sep="")
 	 		p<-paste(g$v,p,sep="")
 			p<-paste(p,c(g$v2,""),sep="")
 			parent<-getParent(obj,y)
-			p<-c("getIndices(obj,parent)&(",p,")");
+			p<-c("flowWorkspace::getIndices(obj,parent)&(",p,")");
 			return(eval(parse(text=paste(p,collapse=""))))
 		}
 	}else{
@@ -1420,8 +1415,8 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	tt<-rep(list(c(TRUE,FALSE)),length(y));
 	names(tt)<-y;
 	tt<-expand.grid(tt);
-	len<-length(getIndices(x,y[1]))
-	ind<-sapply(y,function(q){getIndices(x,q)})
+	len<-length(flowWorkspace::getIndices(x,y[1]))
+	ind<-sapply(y,function(q){flowWorkspace::getIndices(x,q)})
 	r<-matrix(TRUE,len,dim(tt)[1])
 	for(q in 1:dim(tt)[1]){
 		pos<-y[which(tt[q,]==TRUE)]
@@ -1997,10 +1992,15 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		stop("File doesn't have a compensation matrix identified. I'm sorry but we don't support this yet. Contact the package maintainer, your workspace xml file has structure that we want to support, but don't yet.")
 	}
 	{
-v<-sapply(1:length(axes),function(i)if(any(grepl(axes[i],names(cal)))){cal[[grep(axes[i],names(cal))]](vertices[,i])}else{vertices[,i]})
+	naxes<-gsub(">","",gsub("<","",axes))
+	v<-sapply(1:length(naxes),function(i)if(any(grepl(naxes[i],names(cal)))){cal[[grep(naxes[i],names(cal))]](vertices[,i])}else{vertices[,i]})
 		colnames(v)<-colnames(vertices);
 		vertices<-v;rm(v);
 	}
+#v<-sapply(1:length(axes),function(i)if(any(grepl(axes[i],names(cal)))){cal[[grep(axes[i],names(cal))]](vertices[,i])}else{vertices[,i]})
+#		colnames(v)<-colnames(vertices);
+#		vertices<-v;rm(v);
+#	}
 	if(gateType=="PolyRect"||gateType=="Polygon"){
 		mygate<-polygonGate(filterId=nm[[1]],.gate=t(t(vertices)/gains));
 	}else if (gateType=="Range"){		
