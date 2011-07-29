@@ -870,7 +870,7 @@ setNcdf<-function(x,y){
 
 setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 	if(!boolean){	
-			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",env=x))))],x@tree)
+			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",env=x)),use.names=FALSE))],x@tree)
 	}else{
 		sub<-x@tree
 	}
@@ -879,7 +879,8 @@ setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot
 		natr<-list();
 		natr$label<-nn;
 		options("warn"=-1)
-		renderGraph(Rgraphviz::layoutGraph(sub,layoutType=layout,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle"))))
+		lay<-Rgraphviz::layoutGraph(sub,layoutType=layout,nodeAttrs=natr,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle")))
+		renderGraph(lay)
 		#plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
 		options("warn"=0)
 })
