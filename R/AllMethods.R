@@ -25,7 +25,10 @@ setMethod("show",signature("flowJoWorkspace"),function(object){
 	cat("File name: ",object@file,"\n");
 	if(object@.cache$flag){
 		cat("Workspace is open.","\n");
-	}else{
+		cat("\nGroups in Workspace\n");
+		tbl<-table(Name=getSampleGroups(object)$groupName,GroupID=getSampleGroups(object)$groupID)
+		print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
+	}else{	
 		cat("Workspace is closed.","\n")
 	}
 })
@@ -867,7 +870,7 @@ setNcdf<-function(x,y){
 
 setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 	if(!boolean){	
-			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",env=x))))],x@tree)
+			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",env=x)),use.names=FALSE))],x@tree)
 	}else{
 		sub<-x@tree
 	}
@@ -876,7 +879,8 @@ setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot
 		natr<-list();
 		natr$label<-nn;
 		options("warn"=-1)
-		renderGraph(Rgraphviz::layoutGraph(sub,layoutType=layout,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle"))))
+		lay<-Rgraphviz::layoutGraph(sub,layoutType=layout,nodeAttrs=natr,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle")))
+		renderGraph(lay)
 		#plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
 		options("warn"=0)
 })
@@ -1043,7 +1047,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #rows are samples
 cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
 #flatten, generate levels for samples.
-rownames(cv)<-rownames(getPopStats(G[[1]]))
+rownames(cv)<-getSamples(x)
 nr<-nrow(cv)
 nc<-ncol(cv)
 populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
