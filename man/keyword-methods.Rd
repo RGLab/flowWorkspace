@@ -23,3 +23,4 @@ Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or
 \seealso{
 	\code{\link[flowCore]{keyword-methods}}
 }
+\keyword{manip}

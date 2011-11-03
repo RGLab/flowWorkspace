@@ -62,6 +62,13 @@ if test -e $HOME/include -a -e $HOME/lib -a -d $HOME/include -a -d $HOME/lib ; t
 	LDFLAGS="-L$HOME/lib $LDFLAGS"
 fi
 
+if test -e $HOME/local/include -a -e $HOME/local/lib -a -d $HOME/local/include -a -d $HOME/local/lib ; then
+	AC_MSG_RESULT($HOME)
+		CFLAGS="-I$HOME/local/include $CFLAGS"
+	CXXFLAGS="-I$HOME/local/include $CXXFLAGS"
+	LDFLAGS="-L$HOME/local/lib $LDFLAGS"
+fi
+
 CFLAGS="$CFLAGS"
 CXXFLAGS="$CXXFLAGS"
 LDFLAGS="$LDFLAGS"
@@ -75,7 +82,7 @@ AS_IF([test "x$with_netcdf" != xno],
 AC_DEFINE([HAVE_LIBNETCDF], [1],
 [Define if you have netcdf])
 AC_SEARCH_LIBS(nc_def_var_deflate,netcdf,,)
-AC_CHECK_HEADERS(netcdf.h,,)
+AC_CHECK_HEADERS([netcdf.h],[],[])
 if test "x$ac_cv_lib_netcdf_nc_def_var_deflate" = "xyes" -a "x$ac_cv_header_netcdf_h" = "xyes"; then
   HAVE_NETCDF=TRUE
 else
@@ -83,7 +90,7 @@ else
   AC_MSG_WARN(Package should still build but you won't have netcdf functionality)
 fi
 ],
-[if test "x$with_netcdf" != xcheck; then
+[if test "x$with_netcdf" != x; then
 AC_MSG_WARN([--with-netcdf was given, but test for netcdf failed])
 fi
 HAVE_NETCDF=FALSE
@@ -91,17 +98,6 @@ AC_MSG_WARN(Package should still build but you won't have netcdf functionality)
 
 ], )
 ])
-
-dnl AC_CHECK_LIB(netcdf, nc_def_compound, , )
-dnl AC_SEARCH_LIBS(nc_def_compound,netcdf,,)
-dnl AC_CHECK_HEADERS(netcdf.h,,)
-dnl if test "$ac_cv_lib_netcdf_nc_def_compound"="yes"; then
-dnl  HAVE_NETCDF=TRUE
-dnl else
-dnl  HAVE_NETCDF=FALSE
-dnl  AC_MSG_WARN("No netcdf library found. Package should still build but you won't have netcdf functionality.")
-dnl fi
-
 
 AC_C_CONST
 AC_TYPE_SIZE_T
@@ -113,8 +109,5 @@ AC_SUBST(LDFLAGS)
 AC_SUBST(LIBS)
 AC_SUBST(DEFS)
 AC_CONFIG_FILES([R/AllMethods.R])
-AC_CONFIG_FILES([R/ncdfFlowSet-functions.R])
-AC_CONFIG_FILES([src/Makevars])
-AC_CONFIG_FILES([src/netCDF.c])
 AC_OUTPUT
 

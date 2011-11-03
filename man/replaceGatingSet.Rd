@@ -21,3 +21,4 @@ Additional arguments
 	A \code{GatingSet} object of size \code{length(i)}.
 }
 }
+\keyword{internal}

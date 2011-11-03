@@ -52,8 +52,8 @@ GatingHierarchy objects are elements of a GatingSet, which is returned by a call
     \item{\code{transformations}:}{Object of class \code{"list"}. The list of transformations applied to each dimension of the data.}
     \item{\code{compensation}:}{Object of class \code{"matrix"}. The compensation matrix applied to the data}
     \item{\code{dataPath}:}{Object of class \code{"character"}. A path to the fcs file associated with this GatingHierarchy }
-	\item{\code{isNcdf}:}{Specifies if the netcdf is used to store the data for this object.}
-  }
+    \item{\code{isNcdf}:}{Flag indicating whether ncdf is used to store data and gating indices}  
+}
 }
 \section{Methods}{
   \describe{

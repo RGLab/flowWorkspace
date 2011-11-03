@@ -3,7 +3,6 @@
 %\VignettePackage{flowWorkspace}
 \documentclass[11pt]{article}
 \usepackage{Sweave}
-\usepackage{hyperref}
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
@@ -53,11 +52,11 @@ We see that this a version 2.0 workspace file. It's location and filename are pr
 With the workspace file open, we have not yet imported the XML document. The next step parses the XML workspace and creates R data structures to represent some of the information therein. Specifically, by calling \Rfunction{parseWorkspace()} the user will be presented with a list of \textit{groups} in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a \Rclass{GatingHierarchy} for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a \Rclass{GatingSet} object. Calling \Rfunction{parseWorkspace()} is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument \texttt{execute=T/F} specifies whether you want to load, compensate, transform the data and compute statistics immediately after parsing the XML tree. 
 
 <<parsews,results=hide>>=
-G<-parseWorkspace(ws,name=1,execute=TRUE,path=ws@path,isNcdf=FALSE,cleanup=FALSE,keep.indices=TRUE); #import the first group
+G<-parseWorkspace(ws,name=1,path=ws@path,isNcdf=FALSE,cleanup=FALSE,keep.indices=TRUE); #import the first group
 #Lots of output here suppressed for the vignette.
 @
 
-When isNcdf flag is set TRUE,the data is stored in ncdf format on disc.
+When isNcdf flag is set TRUE,the data is stored in ncdf format on disk.
 
 <<summary,results=verbatim>>=
 G
@@ -65,7 +64,7 @@ G
 
 We have generated a \Rclass{GatingSet} with $\Sexpr{length(G)}$ samples, each  of which has 19 associated gates. Subsets of gating hierarchies can be accessed using the standard R subset syntax.
 
-At this point we have parsed the workspace file and generate the gating hierarchy associated with each sample imported from the file. The data have been loaded, compensated, and transformed in the workspace, since we passed \texttt{execute=TRUE} to the \Rfunction{parseWorkspace()} function. This can also be done separately via the \Rfunction{execute()} method, which takes a \Rclass{GatingHierarchy} and the \Rclass{flowJoWorkspace} that generated it, as arguments. It returns a \Rclass{GatingHierarchy} with additional data attached to each node of the hierarchy (population counts, membership indices, and a \Rclass{flowFrame}.
+At this point we have parsed the workspace file and generate the gating hierarchy associated with each sample imported from the file. The data have been loaded, compensated, and transformed in the workspace, and gating has been executed. The resulting \Rclass{GatingSet} contains a replicated analysis of the original flowJo workspace.
 
 <<execute,results=verbatim,eval=FALSE>>=
 G<-lapply(G,function(x)execute(x))
@@ -73,6 +72,7 @@ G<-lapply(G,function(x)execute(x))
 
 We can plot the gating hierarchy for a given sample:
 <<plotGH,include=TRUE,fig=TRUE>>=
+require(Rgraphviz)
 plot(G[[1]])
 @
 
@@ -111,13 +111,13 @@ getPopStats(G[[1]])
 
 We can plot the coefficients of variation between the counts derived using flowJo and flowCore for each population:
 <<plotPCV,fig=TRUE,include=TRUE>>=
-print(plotPopCV(G[[1]]))
+print(plotPopCV(G[[2]]))
 @
 
 We can plot individual gates: note the scale of the transformed axes.
 
 <<plotGate,fig=TRUE,include=TRUE>>=
-print(plotGate(G[[1]],getNodes(G[[1]])[3],lwd=2))
+print(plotGate(G[[1]],getNodes(G[[1]])[6],lwd=2,cex=2))
 @
 
 If we have  metadata associated with the experiment, it can be attached to the \Robject{GatingSet}. 
@@ -203,16 +203,12 @@ ws
 \subsection{Exporting to FlowJo OSX 9.2}
 The \Rfunction{exportAsFlowJoXML} function can be used to export a \Robject{flowCore::workFlow} as an XML workspace for FlowJo 9.2 OSX. If flowWorkspace has been used to import an existing FlowJo workspace, \Rfunction{flowWorkspace2flowCore} can be used to obtain a \Robject{workFlow} for exporting. Currently this function can export one workFlow at a time.
 
+\subsection{Parallel Support}
+Parsing and gating can be time--consuming. This latest version (>1.0.0) of flowWorkspace supports parallelization via multicore, snowfall, and Rmpi. If multicore is loaded, or a snowfall cluster is initialized, flowWorkspace will use snowfall or multicore (in that order of preference) to parse the workspace. Parallel gating of the workspace can be performed by loading Rmpi and running parseWorkspace(). This corresponds to the execute() step of the parseWorkspace function. Rmpi is needed to handle concurrent reads/writes to the ncdfFlowSet file. Parallel gating / parsing will work with netCDF-backed data or if data is stored in RAM.
 
-\subsection{Additional Important Notes}
-\subsubsection{NetCDF Support}
-If you have particularly large data files (millions of events), then you will want to make use of the netCDF framework. To do so, you will have to install the netcdf4 C library (available at \url{http://www.unidata.ucar.edu/downloads/netcdf/index.jsp}), and build it with HDF5 support.You will also need the R library ncdf4. To use NetCDF, pass isNcdf=TRUE to parseWorkspace. flowWorkspace will create one netcdf file for the processed data, and additional netcdf files (one per sample) containing the event memberships for each gate in each sample. To build flowWorkspace to use netcdf, you may need to run autoconf in the top--level directory of the untarred flowWorkspace source directory, before installing with R CMD INSTALL.
-\subsubsection{Known Bugs}
-Importing flowJo transformations. We have made every effort to support the importing of flowJo's data transformations. Sometimes, however, flowWorkspace may have difficulty identifying the correct transofrmation to apply to your data. There are several things you can do:
-\begin{itemize}
-\item Visualize your data after import using plotPopCV(). This will tell you if there is a discrepancy between the flowJo counts and the flowCore counts for individual populations. Keep in mind that tare populations can differ by a few cells and still show large coefficients of variation. 
-\item If you are having difficulty importing your data due to a transformation problem, ensure that you are using either a log transform, or flowJo's "custom biexponential transform". The latter provides an explicit mapping between transformations, compensation matrices, and flow parameters. Outside of these two cases, success or failure appears to be dependent on the version of flowJo that was used to create the original workspace.
-\end{itemize}
+\subsection{Deprecated Functionality}
+The following behaviour is no longer supported and has been replace by more extensive netCDF support via the ncdfFlow package.
+If you have particularly large data files (millions of events), then you won't want to keep the data around, nor the indices for gate membership. Instead, pass the options \texttt{cleanup=TRUE, keep.indices=FALSE} to the \Rfunction{execute()} function, and the data will be scrubbed after computing population statistics. With future improvements making use of the netCDF framework, and bitvector representations of population memberships; this will improve memory usage in high--throughput unsupervised analysis settings. 
 
 \section{Troubleshooting}
 If this package is throwing errors when parsing your workspace, and you are certain your workspace is version 2.0, contact the package author. If you can send your workspace by email, we can test, debug, and fix the package so that it works for you. Our goal is to provide a tool that works, and that people find useful.

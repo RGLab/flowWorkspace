@@ -3,8 +3,8 @@
 #include <Rinternals.h>
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
-#ifdef HAVE_NETCDFDEF
 #define IS_SET(b, i, bit) ((b)[i] != 0 && ((b)[i] & (1 << (bit))))
+
 SEXP ncdf_bitarray_set(SEXP bits, SEXP _indx) {
     SEXP ans = PROTECT(duplicate(bits)), btcnt;
     unsigned char *bytes = (unsigned char*) RAW(ans);
@@ -107,5 +107,4 @@ SEXP ncdf_bitarray_Flip(SEXP bits) {
     UNPROTECT(2);
     return(ans);
 }
-#endif
 

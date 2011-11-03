@@ -34,3 +34,4 @@ wfs<-flowWorkspace2flowCore(ws,groupId=1,path=dataDir)
 plotWf(wfs[[1]])}
 }
 
+\keyword{hplot}

@@ -17,6 +17,27 @@ setGeneric("flowWorkspace2flowCore",function(obj,...){
 setGeneric("ellipsoidGate2FlowJoVertices",function(gate,...){
 	standardGeneric("ellipsoidGate2FlowJoVertices");
 })
+setGeneric("haveSameGatingHierarchy",function(object1,object2){
+	standardGeneric("haveSameGatingHierarchy");
+})
+setGeneric("addGate",function(obj,gate,parent,...){
+	standardGeneric("addGate");	
+})
+
+
+
+setGeneric("getNcdf",function(obj){
+	standardGeneric("getNcdf")
+})
+
+
+setGeneric("ncFlowSet", function(x) standardGeneric("ncFlowSet"))
+setGeneric("ncFlowSet<-", function(x,value) standardGeneric("ncFlowSet<-"))
+
+
+setGeneric("getIndiceFile",function(obj){
+			standardGeneric("getIndiceFile")
+		})
 
 setGeneric("execute",function(hierarchy,...){
 	standardGeneric("execute")
@@ -57,6 +78,15 @@ setGeneric("getDimensions",function(obj,y,...){
 setGeneric("getChildren",function(obj,y,...){
 	standardGeneric("getChildren");
 })
+
+setGeneric("copyGatingHierarchyFromTo",function(a,b,...){
+	standardGeneric("copyGatingHierarchyFromTo");
+})
+
+setGeneric("writeIndice",function(obj,y,z,...){
+			standardGeneric("writeIndice");
+		})
+
 setGeneric("getIndices",function(obj,y,...){
 	standardGeneric("getIndices");
 })
