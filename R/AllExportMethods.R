@@ -88,46 +88,7 @@ setMethod("exportAsFlowJoXML",signature("rectangleGate"),function(obj, transform
 				gate_node <- newXMLNode(name = "PolygonGate", .children = list(parameter_names, range, graph_node))
 				
 			} else {
-				#but rectangle gates can be 2d and should be exported as polyrect.
-				if(length(obj@parameters)!=2){
-					stop('Only 1-d "Range" gates or 2D rectangleGates are currently supported.')
-				}else{
-					xchannel <- obj@parameters[[1]]@parameters
-					ychannel <- obj@parameters[[2]]@parameters
-					x_transform <- transforms[[xchannel]]
-					y_transform <- transforms[[ychannel]]
-					if(is.null(x_transform)){
-						x_transform <- function(x){x} # identity transform		
-					} else {
-						x_transform <- x_transform@f
-					}
-					if(is.null(y_transform)){
-						y_transform <- function(x){x}
-					} else {
-						y_transform <- y_transform@f
-					}
-					
-						makeVertexNode <- function(x){
-							newXMLNode(name = "Vertex", attrs = list(x = invert_transform(x[1], x_transform), y = invert_transform(x[2], y_transform)))
-						}
-						o<-rbind(obj@max,obj@min)
-						o<-expand.grid(o[,1],o[,2])
-						colnames(o)<-names(obj@min);
-						vertices <- apply(o, 1, makeVertexNode)
-						polygon <- newXMLNode(name = "Polygon", .children = list(vertices))
-						polygon_parent_name <- get_gate_name(obj)
-						parent_polygon <- newXMLNode(name = "Polygon", .children = polygon, attrs = list(name = polygon_parent_name, xAxisName = xchannel, yAxisName = ychannel))
-
-						strings <- vector(mode = "list", length = 2)
-						strings[[1]] <- newXMLNode(name = "String", text = xchannel)
-						strings[[2]] <- newXMLNode(name = "String", text = ychannel)
-						string_array <- newXMLNode(name = "StringArray", .children = strings)
-						parameter_names <- newXMLNode(name = "ParameterNames", .children = string_array)
-						graph_node <- get_graph_node(obj)
-						gate_node <- newXMLNode(name = "PolygonGate", .children = list(parameter_names, parent_polygon, graph_node))
-
-						
-				}
+				stop('Only 1-d "Range" gates are currently supported.')
 			}
 			return(gate_node)	
 		})
@@ -233,7 +194,7 @@ get_boolean_formula <- function(intersection){
 }	
 
 
-invert_nonlog_transform <- function(y_value, transform_function, interval = c(-10^4, 10^6)){
+invert_nonlog_transform <- function(y_value, transform_function, interval = c(-10^3, 10^6)){
 	fr <- function(x){abs(transform_function(x)-y_value)}
 	o <- optimize(fr, interval)
 	return(o$min)

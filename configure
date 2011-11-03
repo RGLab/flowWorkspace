@@ -1754,6 +1754,14 @@ echo "${ECHO_T}$HOME" >&6; }
 	LDFLAGS="-L$HOME/lib $LDFLAGS"
 fi
 
+if test -e $HOME/local/include -a -e $HOME/local/lib -a -d $HOME/local/include -a -d $HOME/local/lib ; then
+	{ echo "$as_me:$LINENO: result: $HOME" >&5
+echo "${ECHO_T}$HOME" >&6; }
+		CFLAGS="-I$HOME/local/include $CFLAGS"
+	CXXFLAGS="-I$HOME/local/include $CXXFLAGS"
+	LDFLAGS="-L$HOME/local/lib $LDFLAGS"
+fi
+
 CFLAGS="$CFLAGS"
 CXXFLAGS="$CXXFLAGS"
 LDFLAGS="$LDFLAGS"
@@ -3626,7 +3634,7 @@ echo "$as_me: WARNING: Package should still build but you won't have netcdf func
 fi
 
 else
-  if test "x$with_netcdf" != xcheck; then
+  if test "x$with_netcdf" != x; then
 { echo "$as_me:$LINENO: WARNING: --with-netcdf was given, but test for netcdf failed" >&5
 echo "$as_me: WARNING: --with-netcdf was given, but test for netcdf failed" >&2;}
 fi
@@ -3639,8 +3647,6 @@ fi
 
 
 fi
-
-
 
 
 { echo "$as_me:$LINENO: checking for an ANSI C-conforming const" >&5
@@ -3820,12 +3826,6 @@ fi
 
 
 ac_config_files="$ac_config_files R/AllMethods.R"
-
-ac_config_files="$ac_config_files R/ncdfFlowSet-functions.R"
-
-ac_config_files="$ac_config_files src/Makevars"
-
-ac_config_files="$ac_config_files src/netCDF.c"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4395,9 +4395,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "R/AllMethods.R") CONFIG_FILES="$CONFIG_FILES R/AllMethods.R" ;;
-    "R/ncdfFlowSet-functions.R") CONFIG_FILES="$CONFIG_FILES R/ncdfFlowSet-functions.R" ;;
-    "src/Makevars") CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
-    "src/netCDF.c") CONFIG_FILES="$CONFIG_FILES src/netCDF.c" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

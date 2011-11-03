@@ -29,7 +29,7 @@ A \code{character} or \code{numeric} representing the node in the \code{GatingHi
 \code{TRUE|FALSE} logical indicating if nodes should be referenced in topological sort order when \code{y="numeric"};
 }
 \item{smooth}{
-	\code{TRUE|FALSE} logical indicating whether a smoothed 2D scatter plot should be generated
+\code{TRUE|FALSE} logical indicating whether a smoothed 2D scatterplot should be drawn;
 }
 \item{...}{
 Additional arguments to the \code{plot} function.

@@ -72,6 +72,6 @@ Greg Finak <gfinak@fhcrc.org>
 	wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
 	ws <- openWorkspace(wsfile);
 	G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
-	plotPopCV(G[[1]]);
+	plotPopCV(G);
 }
 \keyword{classes}

@@ -2,6 +2,7 @@
 \alias{getPopStats}
 \alias{getPopStats-methods}
 \alias{getPopStats,GatingHierarchy-method}
+\alias{getPopStats,GatingSet-method}
 \title{
 Return a table of population statistics for all populations in a GatingHierarchy
 }
@@ -13,13 +14,13 @@ More useful than getPop. Returns a table of population statistics for all popula
 }
 \arguments{
   \item{x}{
-A \code{GatingHierarchy}
+A \code{GatingHierarchy} or \code{GatingSet}
 }  \item{...}{
 Additional arguments
 }
 }
 \details{
-Returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the flowJo and flowCore derived counts don't differ much (i.e. if they have a small coefficient of variation.)
+Returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the flowJo and flowCore derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
 }
 \value{
 A \code{data.frame} with columns for the population name, flowJo derived counts, flowCore derived counts, and the population proportions (relative to their parent pouplation). 
