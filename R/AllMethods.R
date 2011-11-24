@@ -1,4 +1,4 @@
-setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
+ setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
  	message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	if(inherits(file,"character")){
 		x<-xmlTreeParse(file,useInternal=TRUE);
@@ -33,6 +33,8 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSet","missing"),function(
 		return(TRUE)
 	}
 })
+
+
 splitGatingSetByNgates<-function(x){
     flowCore:::checkClass(x,"GatingSet");
     pData(x)$ngates<-unlist(lapply(x,function(x)length(x@nodes)))
@@ -44,14 +46,20 @@ splitGatingSetByNgates<-function(x){
     })
     x
 }
+
+
 setMethod("haveSameGatingHierarchy",signature=c("GatingSet","GatingSet"),function(object1,object2){
 	em<-c(edgeMatrix(object1),edgeMatrix(object2))
 	all(sapply(2:length(em),function(i)identical(em[[1]],em[[i]])))& all(apply(do.call(cbind,c(lapply(object1,function(x)gsub("^.*\\.","",RBGL:::bfs(x@tree))),lapply(object2,function(x)gsub("^.*\\.","",RBGL:::bfs(x@tree))))),1,function(x)x%in%x[1]))
 })
+
+
 setMethod("haveSameGatingHierarchy",signature=c("GatingSet","GatingHierarchy"),function(object1,object2){
 	em<-c(edgeMatrix(object1),list(edgeMatrix(object2)))
 	all(sapply(2:length(em),function(i)identical(em[[1]],em[[i]])))&all(apply(do.call(cbind,c(lapply(object1,function(x)RBGL:::bfs(x@tree)),list(RBGL:::bfs(object2@tree)))),1,function(x)x[1]%in%x))
 })
+
+
 setMethod("haveSameGatingHierarchy",signature=c("GatingHierarchy","GatingSet"),function(object1,object2){
 	em<-c(edgeMatrix(object2),list(edgeMatrix(object1)))
 	all(sapply(2:length(em),function(i)identical(em[[1]],em[[i]])))&all(apply(do.call(cbind,c(lapply(object2,function(x)RBGL:::bfs(x@tree)),list(RBGL:::bfs(object1@tree)))),1,function(x)x[1]%in%x))
@@ -2440,16 +2448,19 @@ v<-sapply(1:length(naxes),function(i)if(any(grepl(naxes[i],names(cal)))){cal[[gr
 	return(list(mygate,ng))
 	
 }
-.constructCalTables8.2<-function(cal,x,compID,compnames){
+.constructCalTables8.2<-function(cal,x,compID,compnames=NULL){
 			if(length(cal)==0){
 				#get all parameter names using a calibration.
  				calpars<-unlist(lapply(xpathApply(x,"./ancestor::Sample/Parameter",xmlAttrs),function(y){y[["name"]]["calibrationIndex"%in%names(y)];}),use.names=FALSE)						
  calinds<-na.omit(as.numeric(unlist(lapply(xpathApply(x,"./ancestor::Sample/Parameter",xmlAttrs),function(y){try(y[["calibrationIndex"]]["calibrationIndex"%in%names(y)],silent=TRUE);}),use.names=FALSE)))				
 				cal<-sapply(calinds,function(index).getCalibrationTableByIndex(xmlRoot(x),index));
 				cal<-lapply(cal,function(x){attr(x,"type")<-"flowJo";x})
-				#don't add <>
-				#names(cal)<-paste(compnames[as.numeric(compID)],paste("<",calpars,">",sep=""))
-				names(cal)<-trimWhiteSpace(paste(compnames[as.numeric(compID)],calpars))
+				if(!is.null(compnames)&compID!=-2){
+				    names(cal)<-trimWhiteSpace(paste(compnames[as.numeric(compID)],calpars))
+			    }else{
+			        #case where there is no compensation for the sample.
+			        names(cal)<-calpars;
+			    }
 			}
 			# =============================================================================================================
 			# = Check the lower and upper range of parameters that are linear. We may need to transform the data as well. =
@@ -2679,7 +2690,7 @@ constructTransformations<-function(x,env){
 			#Yes we do! It's broken!
 			
 			if(.getWorkspaceGeneratedVersion(x)<9){
-				cal<-.constructCalTables8.2(cal,x,compID,compnames)
+				cal<-.constructCalTables8.2(cal,x,compID)
 			}else
 			{
 				#identity transform by default
@@ -2716,7 +2727,6 @@ constructTransformations<-function(x,env){
 						}else{
 							cn<-names(cal[calfj])
 							cal[calfj]<-rep(list(flowWorkspace:::.getCalibrationTable(x,flowWorkspace:::.getCalibrationTableNames(x)[1])),length(cal[calfj])) #apply the first one to all remaining dimensions
-							#stop("I'm sorry, but the number of flowJo defined transformations doesn't match the number of transformed parameters in .extractGate. Please notify the package authors. Likely your workspace contains a case we haven't dealt with before.")
 							names(cal[calfj])<-cn;
 							for(i in which(calfj))
 								attr(cal[[i]],"type")<-"flowJo"
