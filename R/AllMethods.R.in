@@ -283,7 +283,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		})
 	}
 	
-		fn<-do.call(c,lapply(G,function(x){		
+		fn<-do.call(c,BiocGenerics:::lapply(G,function(x){		
 			get("fcsfile",env=nodeDataDefaults(x$graph,"metadata"))
 		}))
 		names(G)<-fn
@@ -312,7 +312,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			G<-G[-excludefiles];
 		}
 		
-		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeDataDefaults(x$graph,"metadata")),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
+		G<-BiocGenerics:::lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeDataDefaults(x$graph,"metadata")),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
 		G<-new("GatingSet",set=G);
 		##################################################
 		#create ncdf file without adding matrices yet
@@ -486,7 +486,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				options("flowWorkspace_mpi_communication"=NULL)
 			}
 			else{
-				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf(x),ncfs=ncfs1,dataEnvironment=dataEnvironment))
+				G<-BiocGenerics::lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf(x),ncfs=ncfs1,dataEnvironment=dataEnvironment))
 			}
 		}
 		return(G);
