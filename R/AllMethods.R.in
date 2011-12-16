@@ -1,4 +1,4 @@
- setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
+setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
  	message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	if(inherits(file,"character")){
 		x<-xmlTreeParse(file,useInternal=TRUE);
@@ -283,7 +283,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		})
 	}
 	
-		fn<-do.call(c,BiocGenerics:::lapply(G,function(x){		
+		fn<-do.call(c,lapply(G,function(x){		
 			get("fcsfile",env=nodeDataDefaults(x$graph,"metadata"))
 		}))
 		names(G)<-fn
@@ -312,7 +312,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			G<-G[-excludefiles];
 		}
 		
-		G<-BiocGenerics:::lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeDataDefaults(x$graph,"metadata")),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
+		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeDataDefaults(x$graph,"metadata")),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
 		G<-new("GatingSet",set=G);
 		##################################################
 		#create ncdf file without adding matrices yet
@@ -486,7 +486,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				options("flowWorkspace_mpi_communication"=NULL)
 			}
 			else{
-				G<-BiocGenerics::lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf(x),ncfs=ncfs1,dataEnvironment=dataEnvironment))
+				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf(x),ncfs=ncfs1,dataEnvironment=dataEnvironment))
 			}
 		}
 		return(G);
@@ -608,7 +608,7 @@ cloneGatingSet<-function(x,clone.data=FALSE,clone.gating=FALSE){
 	
 	if(clone.data&isNcdf(x[[1]])){
 		nc<-getNcdf(clone)
-		clone.nc<-ncdfFlow::clone.ncdfFlowSet(nc,isEmpty=FALSE,isNewNcFile=TRUE)
+		clone.nc<-ncdfFlow::clone.ncdfFlowSet(nc,isEmpty=FALSE,isNew=TRUE)
 		for(i in 1:length(clone)){
 			assign("ncfs",clone.nc,nodeData(clone[[i]]@tree,getNodes(clone[[i]])[1],"data")[[1]][["data"]])
 		}
@@ -1584,7 +1584,7 @@ recomputeGate<-function(x,gate,boolean=FALSE){
 	#Start by setting the "isGated" flag to FALSE for this gate in all the gating hierarchies.
 	#recalculate the gate
 	#don't assign to the ncdf file or we'll lose the original gating info for comparison!
-		flowWorkspace::lapply(as(x,"list"),function(gh){node<-flowWorkspace:::getNodes(gh)[gate];
+		lapply(as(x,"list"),function(gh){node<-flowWorkspace:::getNodes(gh)[gate];
 			assign("isGated",FALSE,env=nodeData(gh@tree,node,"metadata")[[1]])
 			if(is.null(boolean)){
 				if(flowWorkspace:::.isBooleanGate.graphNEL(gh,node)){
