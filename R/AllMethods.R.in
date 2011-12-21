@@ -2213,6 +2213,11 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		#Initialize the sample so that things work even if there are no gates defined
 		root<-xmlGetAttr(x,"name")
 		rootcount<-xmlGetAttr(x,"count")
+				#####Fix a bug here. If "count" is empty or doesn't exist, need to look at the parent Sample xml node and get the eventCount property
+		if(is.null(rootcount)){
+		    rootcount<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"eventCount"))[[1]]
+		}
+
 		parentpop<-root
 		if(is.na(match(parentpop,nodes(get("gr",env=env))))){
 			assign("gr",graph::addNode(parentpop,get("gr",env=env)),env=env)
@@ -2242,6 +2247,11 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 		parentpop <- tryCatch(rev(xpathApply(x,"./ancestor::Population",xmlAttrs))[[1]][["name"]],error= function(x) NA );
 		root<-xpathApply(x,"./ancestor::SampleNode",function(x)xmlGetAttr(x,"name"))[[1]];
 		rootcount<-xpathApply(x,"./ancestor::SampleNode",function(x)xmlGetAttr(x,"count"))[[1]];
+				#####Fix a bug here. If "count" is empty or doesn't exist, need to look at the parent Sample xml node and get the eventCount property
+		if(is.null(rootcount)){
+		    rootcount<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"eventCount"))[[1]]
+		}
+
 		if(!is.na(parentpop)){	
 			parent.nn<-tryCatch(rev(xpathApply(x,"./ancestor::Population",xmlAttrs))[[1]][["nn"]],error=function(x)NA)
 			parentpop<-paste(parent.nn,parentpop,sep=".");
