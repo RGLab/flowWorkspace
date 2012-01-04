@@ -1871,7 +1871,7 @@ setMethod("getBoundaries",signature(obj="GatingHierarchy",y="character"),functio
 #Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
 .isCompensated<-function(x){
     flowCore:::checkClass(x,"GatingHierarchy")
-    !is.null(rownames(x@compensation))
+    !(is.null(rownames(x@compensation))&identical(x@compensation%*%x@compensation,x@compensation))
 }
 setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
 	if(.isBooleanGate.graphNEL(obj,y)){
@@ -3056,7 +3056,7 @@ ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
         pops<-sapply(nds,function(i)get("fjName",nodeData(x@tree,i,"metadata")[[1]]))
         dir.create(gsub("\\.fcs","",s),showWarnings=FALSE)
         paths<-sapply(nds,function(y){
-            png(filename="tmp.png",width=300,height=300)
+            CairoPNG(filename="tmp.png",width=300,height=300)
             print(plotGate(x,y));
             dev.off();
             md5<-md5sum("tmp.png")

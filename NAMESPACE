@@ -22,7 +22,7 @@ importMethodsFrom(Biobase, description, exprs, pData, "pData<-",
                   sampleNames)
 
 #importMethodsFrom(Rgraphviz, plot)
-
+importFrom(Cairo,CairoPNG)
 importMethodsFrom(XML, addAttributes, free, saveXML)
 
 importMethodsFrom(flowCore, '%in%', Data, Rm, add, assign, colnames,
