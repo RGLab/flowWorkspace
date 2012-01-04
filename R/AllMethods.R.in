@@ -1564,7 +1564,7 @@ recomputeGatingSet<-function(x){
 	        }
 	    }
 	}else{
-	for(i in seq_along(x)){sapply(which(nodes(x[[i]]@tree)%in%leaves(x[[i]]@tree,"out")),function(j){recomputeGate(x[[i]],j,boolean=NULL);flowWorkspace:::writeGatesToNetCDF(new("GatingSet",set=list(x[[i]])))})}
+	for(i in seq_along(x)){sapply(which(nodes(x[[i]]@tree)%in%leaves(x[[i]]@tree,"out")),function(j){recomputeGate(x[i],j,boolean=NULL);flowWorkspace:::writeGatesToNetCDF(new("GatingSet",set=list(x[[i]])))})}
     }
 	invisible(NULL)
 }
