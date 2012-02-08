@@ -297,6 +297,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			file<-names(G[i])
 			lastwarn<-options("warn")[[1]];
 			options("warn"=-1);
+			##escape "illegal" characters
+			file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
 			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full=TRUE)
 			options("warn"=lastwarn)
 			if(length(absPath)==0){
@@ -771,7 +773,6 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 				###Code to compensate the sample using the acquisition defined compensation matrices.
 				message("Compensating with Acquisition defined compensation matrix");
 				#browser()
-				#TODO make sure we don't compensate data that's stored compensated and that we don't throw an error either.
 				comp<-compensation(spillover(data)$SPILL)
 				hierarchy@compensation<-spillover(data)$SPILL
 				res<-try(compensate(data,comp),silent=TRUE)
