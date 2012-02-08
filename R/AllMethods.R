@@ -376,7 +376,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				mpi.bcast.Robj2slave(wrapper);
 				mpi.bcast.cmd(wrapper())
 				
-				#divvy up the tasks
+				#divy up the tasks
 				ntasks<-length(G);
 				tasks<-1:ntasks
 				state<-0;
@@ -396,7 +396,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 						writequeue<-writequeue[-1L]
 						state<-1;
 					}
-					#give permission to the next person to read
+					#give permission to the next thread to read
 					if(state==0&readlock==0&length(readqueue)>0){
 					    #11 permission to read
 					    mpi.send.Robj(0,readqueue[1],11)
@@ -466,7 +466,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 				    names(ncfses)<-unlist(lapply(results,function(x)x@name),use.names=FALSE)
 				    snames<-names(ncfses)
 				    message("Cloning flowset")
-				    newnc<-ncdfFlow::clone.ncdfFlowSet(ncfses[[1]],newNcFile=FALSE,isNewNcFile=FALSE,isEmpty=FALSE)
+				    newnc<-ncdfFlow::clone.ncdfFlowSet(ncfses[[1]],isNew=FALSE,isEmpty=FALSE)
 				    for(samp in snames){
         				newnc@frames[[samp]]<-ncfses[[samp]]@frames[[samp]]
         			}
@@ -522,7 +522,12 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		##conditionally generate a query based on the full population name
 		if(length(strsplit(nme,"/")[[1]])==2&strsplit(nme,"/")[[1]][1]==""){
 			#Code for relative pop name
-			nd<-xpathApply(z,paste("./ancestor::Population[2]/descendant::Population[@name='",basename(nme),"']",sep=""))[[1]]
+			##TODO bug here when the parent is the root
+			nd<-xpathApply(z,paste("./ancestor::Population[2]/descendant::Population[@name='",basename(nme),"']",sep=""))			
+			if(is.null(nd)){
+			    nd<-xpathApply(z,paste("./ancestor::SampleNode[1]/descendant::Population[@name='",basename(nme),"']",sep=""))
+			}
+			nd<-nd[[1]]
 			paste(xmlGetAttr(nd,"nn"),xmlGetAttr(nd,"name"),sep=".");
 		}else{
 			prefix<-"./ancestor::Sample/";
@@ -555,7 +560,16 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	## generate a query based on the full population name
 	gnames<-unlist(xpathApply(x,".//String",function(x)(xmlValue(x))),use.names=FALSE)
 	nm<-xpathApply(x,"./parent::Population",function(x){nm<-xmlGetAttr(x,"name");nn<-xmlGetAttr(x,"nn");paste(nn,nm,sep=".");})[[1]]
-	attachto<-sapply(1,function(i){p<-xpathApply(x,"./parent::Population/parent::Population",xmlAttrs)[[1]];paste(p["nn"],".",p["name"],sep="")})
+	pname<-xpathApply(x,"./parent::Population/parent::node()",xmlName)
+	if(pname=="SampleNode"){
+	    attachto<-sapply(1,function(i){p<-xpathApply(x,"./parent::Population/parent::SampleNode",xmlAttrs)[[1]];p["name"]})
+	}else{
+	    attachto<-sapply(1,function(i){p<-xpathApply(x,"./parent::Population/parent::Population",xmlAttrs)[[1]];paste(p["nn"],".",p["name"],sep="")})
+	}
+	
+	
+	
+	
 	counts<-sapply(1,function(i){xpathApply(x,"./parent::Population",function(x)xmlGetAttr(x,"count"))[[1]]})
 	fjname<-sapply(1,function(i){paste(unlist(xpathApply(x,"./ancestor::Population",function(x)xmlGetAttr(x,"name")),use.names=FALSE),collapse="/")});
 	#message("Boolean Gate",nm,"\n")
@@ -1131,16 +1145,16 @@ setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot
 		options("warn"=0)
 })
 
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
 	node<-getNodes(x,tsort=tsort)[y];
 	if(is.na(node)){
 		warning("Can't plot gate ", y, " doesn't exist.");
 		return(1);
 	}
-	plotGate(x,y=node,add=add,border=border,tsort=tsort,...);
+	plotGate(x,y=node,add=add,border=border,tsort=tsort,fast=fast,...);
 })
 
-setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
 		if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 			return();
@@ -1157,6 +1171,10 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
             cl$main<-mtitle
             return(eval(cl,parent.frame()));
         }
+        cachedata<-getData(x,y);
+		parentdata<-getData(x,getParent(x,y));
+		rootdata<-getData(x);
+		
         main<-match.call()$main;
 		cols <- colorRampPalette(IDPcolorRamp(21,
 		                               t(col2hsv(c("blue","green","yellow","red"))),
@@ -1168,15 +1186,15 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			p<-getParent(x,y);
 			ind<-getIndices(x,y)
 			ind.p<-getIndices(x,p)
-			pd<-getData(x,p)
+			pd<-parentdata
 			dims<-getDimensions(x,p);
 			if(!.isCompensated(x)){
-			    pnames.data<-getData(x,y)@parameters@data$name
-			    pnames.desc<-getData(x,y)@parameters@data$desc
+			    pnames.data<-cachedata@parameters@data$name
+			    pnames.desc<-cachedata@parameters@data$desc
 			    pnames<-gsub(">","",gsub("<","",pnames.data))
 			}else{
-			    pnames<-pnames.data<-getData(x,y)@parameters@data$name
-    			pnames.desc<-getData(x,y)@parameters@data$desc
+			    pnames<-pnames.data<-cachedata@parameters@data$name
+    			pnames.desc<-cachedata@parameters@data$desc
 			}
 			dims<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
 			desc<-pnames.desc[match(dims,pnames)][na.omit(match(pnames,dims))]
@@ -1186,7 +1204,11 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			if(add){
 				points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.',xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "));
 			}else{
-				plot((pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1,smooth=smooth,main=main);
+			    if(!fast){
+				    plot((pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1,smooth=smooth,main=main);
+			    }else{
+			        plot(hexbin(pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1)
+			    }
 				points(exprs(pd[,dims][ind[ind.p],]),col="red",cex=2,pch='.');
 				
 			}
@@ -1207,13 +1229,13 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
 			#dims2<-dims[na.omit(match(pnames,dims))]
 			dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
-			par.desc<-parameters(getData(x,getParent(x,y)))@data$desc[dim.ind]
+			par.desc<-parameters(parentdata)@data$desc[dim.ind]
 			if(!any(is.na(par.desc))){
 				dflag<-TRUE
 			}else{
 				dflag<-FALSE
 			}
-			pd<-getData(x,getParent(x,y))[,dims2];
+			pd<-parentdata[,dims2];
 			if(dflag){
 				#warning this may sometimes fail	
 				colnames(pd)<-parameters(pd)@data$desc
@@ -1223,15 +1245,15 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			if(length(dims2)==2){
 			if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
 				scales<-list()
-				xlim=range(getData(x,getParent(x,y))[,dims2[1]])
-				ylim=range(getData(x,getParent(x,y))[,dims2[2]])
+				xlim=range(parentdata[,dims2[1]])
+				ylim=range(parentdata[,dims2[2]])
 			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
 				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),x=list(rot=45))
 				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-				ylim=range(getData(x,getParent(x,y))[,dims2[2]])
+				ylim=range(parentdata[,dims2[2]])
 			}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
 				scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label),x=list(rot=45))
-				xlim=range(getData(x,getParent(x,y))[,dims2[1]])
+				xlim=range(parentdata[,dims2[1]])
 				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
 			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
 				scales<-list(x=list(rot=45,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
@@ -1240,8 +1262,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			}
 			#If 2D use xyplot.
 			#TODO add stains to labels
-			xylab<-gsub("NA","",paste(pData(parameters(getData(x)))$name,pData(parameters(getData(x)))$desc))
-								res<-flowViz:::xyplot(x=form,data=getData(x,getParent(x,y))[,dims2],smooth=smooth,colramp=cols,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],frame.plot=TRUE,scales=scales,nbin=512,
+			xylab<-gsub("NA","",paste(pData(parameters(rootdata))$name,pData(parameters(rootdata))$desc))
+if(!fast){								res<-flowViz:::xyplot(x=form,data=parentdata[,dims2],smooth=smooth,colramp=cols,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],frame.plot=TRUE,scales=scales,nbin=512,
 										panel=function(gh=x,g=y,tsort=tsort,main=main,...){
 											gp <- list(...)[["par.settings"]]
 											flowViz:::panel.xyplot.flowframe(...)
@@ -1263,7 +1285,27 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 											}
 										},...)
 										return(res)
+	                                }else{
+res<-hexbinplot(form,data=as.data.frame(exprs(parentdata)),colramp=cols,scales=scales,xlim=xlim,ylim=ylim,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],aspect=1,xbins=128,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
+    panel.hexbinplot(...)
+    dims<-colnames(getBoundaries(gh,g))
+	if(.isCompensated(gh)){
+	    dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
+    }else{
+        tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
+        dims<-colnames(getBoundaries(gh,g))
+        dims<-na.omit(dims[match(tmp,dims)])
+    }
+	#Case for rectangle or polygon gate
+	if(length(dims)>1){
+		panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
+	}else{
+		apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+	}
 	
+},...)
+return(res);
+}	    	
 		}else{
 			if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
 				scales<-list();
@@ -1271,7 +1313,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 			else{
 				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
 			}
-				data=data.frame(exprs(getData(x,getParent(x,y))[,dim.ind]))
+				data=data.frame(exprs(parentdata[,dim.ind]))
 				colnames(data)<-flowViz:::expr2char(form[[2]])
 								res<-densityplot(x=form,data=data,scales=scales,#prepanel=
 								panel=function(...,gh=x,g=y){
@@ -1290,6 +1332,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,a
 		}
 	}
 })
+
+
 
 mkformula<-function(dims2){
 	if(length(dims2)==1){
@@ -1564,7 +1608,7 @@ recomputeGatingSet<-function(x){
 	        }
 	    }
 	}else{
-	for(i in seq_along(x)){sapply(which(nodes(x[[i]]@tree)%in%leaves(x[[i]]@tree,"out")),function(j){recomputeGate(x[[i]],j,boolean=NULL);flowWorkspace:::writeGatesToNetCDF(new("GatingSet",set=list(x[[i]])))})}
+	for(i in seq_along(x)){sapply(which(nodes(x[[i]]@tree)%in%leaves(x[[i]]@tree,"out")),function(j){recomputeGate(x[i],j,boolean=NULL);flowWorkspace:::writeGatesToNetCDF(x[[i]])})}
     }
 	invisible(NULL)
 }
@@ -1739,18 +1783,19 @@ setMethod("getKeywords",signature("flowJoWorkspace","character"),function(obj,y)
 	}
 	
 }
+
 setMethod("Subset",signature=signature(x="GatingSet",subset="numeric"),
 	definition=function(x,subset,select,...){
 		if(!all(unlist(lapply(lapply(x,function(x)getNodes(x)),function(x)length(x)>subset),use.names=FALSE))){
 			stop("subset out of range");
 		}
-		ncfs<-ncdfFlow::clone.ncdfFlowSet(flowWorkspace:::getNcdf(x[[1]]),isNewNcFile=FALSE,isEmpty=FALSE)
+		ncfs<-ncdfFlow::clone.ncdfFlowSet(flowWorkspace:::getNcdf(x[[1]]),isNew=FALSE,isEmpty=FALSE)
 		s<-getSamples(x) #Use GatingSet sample order, not ncdfFlowSet sample order (they are different, but same names)
 		for(i in 1:length(s)){
 			ind<-getIndices(x[[i]],getNodes(x[[i]])[subset])
 			updateIndices(x=ncfs,y=s[i],z=ind);
 		}
-		return(ncfs)
+		return(ncfs[s])
 	})
 getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	if(!is.numeric(group)){
@@ -1782,7 +1827,7 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	}
 	sg<-sg[sg$groupName%in%groups[group],]
 	if(!is.null(key)&!is.null(value)){
-	return(which(sg$key==value))
+	return(which(sg$key%in%value))
 	}
 	return(sg)
 }
@@ -1871,7 +1916,7 @@ setMethod("getBoundaries",signature(obj="GatingHierarchy",y="character"),functio
 #Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
 .isCompensated<-function(x){
     flowCore:::checkClass(x,"GatingHierarchy")
-    !is.null(rownames(x@compensation))
+    !(is.null(rownames(x@compensation))&identical(x@compensation%*%x@compensation,x@compensation))
 }
 setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
 	if(.isBooleanGate.graphNEL(obj,y)){
@@ -1926,7 +1971,10 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 		}
 	}else{
 		if(y==getNodes(obj)[1]){
-			ret<-rep(TRUE,nodeData(obj@tree,y,"metadata")[[1]][["thisTot"]])
+			ret<-try(rep(TRUE,nodeData(obj@tree,y,"metadata")[[1]][["thisTot"]]))
+			if(inherits(ret,"try-error"))
+			    warning("count still emtpy!")
+			    #browser()
 			return(ret)
 		}else{
 			#20110314 if not gated yet,then do the gating first 
@@ -2212,7 +2260,11 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	if(.isSampleNode(x)){
 		#Initialize the sample so that things work even if there are no gates defined
 		root<-xmlGetAttr(x,"name")
-		rootcount<-xmlGetAttr(x,"count")
+		rootcount<-xmlGetAttr(x,"count")###
+		#####Fix a bug here. If "count" is empty or doesn't exist, need to look at the parent Sample xml node and get the eventCount property
+		if(is.null(rootcount)){
+		    rootcount<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"eventCount"))[[1]]
+		}
 		parentpop<-root
 		if(is.na(match(parentpop,nodes(get("gr",env=env))))){
 			assign("gr",graph::addNode(parentpop,get("gr",env=env)),env=env)
@@ -2242,6 +2294,10 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 		parentpop <- tryCatch(rev(xpathApply(x,"./ancestor::Population",xmlAttrs))[[1]][["name"]],error= function(x) NA );
 		root<-xpathApply(x,"./ancestor::SampleNode",function(x)xmlGetAttr(x,"name"))[[1]];
 		rootcount<-xpathApply(x,"./ancestor::SampleNode",function(x)xmlGetAttr(x,"count"))[[1]];
+		if(is.null(rootcount)){
+		    rootcount<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"eventCount"))[[1]]
+		}
+		
 		if(!is.na(parentpop)){	
 			parent.nn<-tryCatch(rev(xpathApply(x,"./ancestor::Population",xmlAttrs))[[1]][["nn"]],error=function(x)NA)
 			parentpop<-paste(parent.nn,parentpop,sep=".");
@@ -3043,18 +3099,23 @@ ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
     graphs<-lapply(x,function(x)lapply(x,function(x){
         s<-getSample(x)
         nds<-getNodes(x)[-1L] #first node is the root, there is no associated gate
+        #TODO filter nodes to remove boolean gates
+        nds<-nds[!sapply(nds,function(y)flowWorkspace:::.isBooleanGate.graphNEL(x,y))]
         pops<-sapply(nds,function(i)get("fjName",nodeData(x@tree,i,"metadata")[[1]]))
         dir.create(gsub("\\.fcs","",s),showWarnings=FALSE)
-        paths<-sapply(nds,function(y){
-            png(filename="tmp.png",width=300,height=300)
-            print(plotGate(x,y));
+        plots<-lapply(as.list(nds),function(y){
+            p<-plotGate(x,y,fast=TRUE)
+        })
+        paths<-do.call(c,lapply(plots,function(i){
+            CairoPNG(file="tmp.png",width=300,height=300)
+            print(i)
             dev.off();
             md5<-md5sum("tmp.png")
             path<-paste(paste(gsub("\\.fcs","",s),md5,sep="/"),"png",sep=".")
             file.copy(from="tmp.png",to=path)
             file.remove("tmp.png")
             path;
-        })
+        }))
         graphs<-sapply(nds,function(y)paste(getDimensions(x,y),collapse=":"))
         data.frame(Sample=s,Population=gsub("^/","",pops),Graph=graphs,Path=paths);        
     }))
