@@ -2142,10 +2142,10 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	if(all(dim(x)!=c(4,2))){
 		stop("Coordinates of the ellipse gate are not as expected. Was expecting 4x2 matrix but got ",dim(x))
 	}else{
-		T<-x[which.max(x[,1]),]
-		B<-x[which.min(x[,1]),]
-		R<-x[which.max(x[,2]),]
-		L<-x[which.min(x[,2]),]
+		R<-x[which.max(x[,1]),]
+		L<-x[which.min(x[,1]),]
+		T<-x[which.max(x[,2]),]
+		B<-x[which.min(x[,2]),]
 		E<-c(norm(as.matrix(L-R),"F"),norm(as.matrix(T-B),"F"))/2
 		phi<-tan((R-L)[2]/(R-L)[1])
 		CY<-(B[2]+T[2])/2
