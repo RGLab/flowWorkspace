@@ -1,3 +1,4 @@
+#TODO Fix the messed up encoding of quadrant gate names (it works but it's not pretty when it prints)
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
  	message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	if(inherits(file,"character")){
@@ -2137,24 +2138,21 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	colnames(vertices)<-parameters(gate);
 	vertices;
 })
-.ellipseFit<-function(x){
+.ellipseFit<-function(x,l=100){
 	if(all(dim(x)!=c(4,2))){
 		stop("Coordinates of the ellipse gate are not as expected. Was expecting 4x2 matrix but got ",dim(x))
 	}else{
-		B<-x[1,];
-		T<-x[2,];
-		R<-x[3,];
-		L<-x[4,];
+		R<-x[which.max(x[,1]),]
+		L<-x[which.min(x[,1]),]
+		T<-x[which.max(x[,2]),]
+		B<-x[which.min(x[,2]),]
 		E<-c(norm(as.matrix(L-R),"F"),norm(as.matrix(T-B),"F"))/2
-		m<-which.max(E);
-		o<-order(E,decreasing=TRUE)
-		v<-list(T,L)[[o]]
-		phi<-acos(v[1]/norm(as.matrix(v),"F"))
+		phi<-tan((R-L)[2]/(R-L)[1])
 		CY<-(B[2]+T[2])/2
 		CX<-(R[1]+L[1])/2
-		T<-seq(0,2*pi,l=100)
-		X<-CX+E[1]*cos(T)*cos(phi)-E[2]*sin(T)*sin(phi);
-		Y<-CY+E[1]*cos(T)*sin(phi)+E[2]*sin(T)*cos(phi);
+		S<-seq(0,2*pi,l=l)
+		X<-CX+E[1]*cos(S)*cos(phi)-E[2]*sin(S)*sin(phi);
+		Y<-CY+E[1]*cos(S)*sin(phi)+E[2]*sin(S)*cos(phi);
 		return(data.frame(x=X,y=Y));
 	}
 }
@@ -2492,7 +2490,7 @@ v<-sapply(1:length(naxes),function(i)if(any(grepl(naxes[i],names(cal)))){cal[[gr
 	}else if (gateType=="Range"){		
 		mygate<-rectangleGate(filterId=nm[[1]],.gate=t(t(vertices)/gains));
 	}else if(gateType=="Ellipse"){
-		mygate<-polygonGate(filterId=nm[[1]],.gate=t(t(lapply(list(.ellipseFit(vertices)),function(y){colnames(y)<-colnames(vertices);y})[[1]])/gains));
+		mygate<-polygonGate(filterId=nm[[1]],.gate=t(t(lapply(list(.ellipseFit(vertices,l=1000)),function(y){colnames(y)<-colnames(vertices);y})[[1]])/gains));
 	}
 	##Check if the gate is "negated"
 	ng<-xpathApply(x,paste("./PolygonGate/",gateType),function(x)xmlGetAttr(x,"negated"))[[1]]
