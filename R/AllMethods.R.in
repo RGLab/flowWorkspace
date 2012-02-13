@@ -2138,7 +2138,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	colnames(vertices)<-parameters(gate);
 	vertices;
 })
-.ellipseFit<-function(x){
+.ellipseFit<-function(x,l=100){
 	if(all(dim(x)!=c(4,2))){
 		stop("Coordinates of the ellipse gate are not as expected. Was expecting 4x2 matrix but got ",dim(x))
 	}else{
@@ -2150,7 +2150,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		phi<-tan((R-L)[2]/(R-L)[1])
 		CY<-(B[2]+T[2])/2
 		CX<-(R[1]+L[1])/2
-		S<-seq(0,2*pi,l=100)
+		S<-seq(0,2*pi,l=l)
 		X<-CX+E[1]*cos(S)*cos(phi)-E[2]*sin(S)*sin(phi);
 		Y<-CY+E[1]*cos(S)*sin(phi)+E[2]*sin(S)*cos(phi);
 		return(data.frame(x=X,y=Y));
@@ -2490,7 +2490,7 @@ v<-sapply(1:length(naxes),function(i)if(any(grepl(naxes[i],names(cal)))){cal[[gr
 	}else if (gateType=="Range"){		
 		mygate<-rectangleGate(filterId=nm[[1]],.gate=t(t(vertices)/gains));
 	}else if(gateType=="Ellipse"){
-		mygate<-polygonGate(filterId=nm[[1]],.gate=t(t(lapply(list(.ellipseFit(vertices)),function(y){colnames(y)<-colnames(vertices);y})[[1]])/gains));
+		mygate<-polygonGate(filterId=nm[[1]],.gate=t(t(lapply(list(.ellipseFit(vertices,l=1000)),function(y){colnames(y)<-colnames(vertices);y})[[1]])/gains));
 	}
 	##Check if the gate is "negated"
 	ng<-xpathApply(x,paste("./PolygonGate/",gateType),function(x)xmlGetAttr(x,"negated"))[[1]]
