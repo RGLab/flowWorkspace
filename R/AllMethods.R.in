@@ -3096,7 +3096,7 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	#get the nodes in breadth first search order
 	bfsgates<-lapply(gs,function(y)RBGL::bfs(y@tree)[which(sapply(RBGL::bfs(y@tree),function(x)!flowWorkspace:::.isBooleanGate.graphNEL(y,x)))])
 	#get the gates in default order
-	gates<-lapply(x,function(y)flowWorkspace:::getNodes(y))
+	gates<-lapply(gs,function(y)flowWorkspace:::getNodes(y))
 	#reorder the bfsgates so that indices match the order in getNodes
 	for(i in seq_along(bfsgates)){
 		bfsgates[[i]]<-match(bfsgates[[i]],gates[[i]])
