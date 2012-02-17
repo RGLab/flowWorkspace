@@ -2315,7 +2315,7 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 			#And add an edge to the parent.
 			assign("gr",addEdge(parentpop,mygate@filterId,get("gr",env=env)),env=env);
 			#Pull the filename from the keywords
-			fcsfile<- unlist(tryCatch(xpathApply(x,"./ancestor::Sample/Keywords/Keyword[@name='$FIL']",function(z)xmlGetAttr(z,"value")),error=function(q)NA),use.names=FALSE)
+			# fcsfile<- unlist(tryCatch(xpathApply(x,"./ancestor::Sample/Keywords/Keyword[@name='$FIL']",function(z)xmlGetAttr(z,"value")),error=function(q)NA),use.names=FALSE)
 
 			#The node metadata is node-specific and has to be pulled for each node. That's why the assignments below are replicated.
 			compID<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]];
@@ -2464,11 +2464,11 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 		##In this case, we need to get more information from the parameters section. See below
 		compID<--2;
 	}
-	if(compID!=-1&compID!=-2){
-		compnames<-names(.getCompensationMatrices(xmlRoot(x)));
-	}
-	groups<-get("groups",env=get("env",env=globalenv()));
-	samples<-.getSamples(x);
+	# if(compID!=-1&compID!=-2){
+		# compnames<-names(.getCompensationMatrices(xmlRoot(x)));
+	# }
+	# groups<-get("groups",env=get("env",env=globalenv()));
+	# samples<-.getSamples(x);
 	
 	constructTransformations(x,env);
 	cal<-get("transformations",env)
@@ -3079,7 +3079,35 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	}
     return(gate_node)	
 }
+##TODO Method to convert included channel to excluded channels
+##TODO Method to convert included gate to excluded gates. (Should be an index of the gates, based on the fjName)
+.includedChannel2ExcludedChannel<-function(gs,includedims=NULL){
+	dimensions<-parameters(getData(gs[[1]]))@data$name	
+	return(setdiff(dimensions,includedims))
+}
 
+.includedGate2ExcludedGate<-function(gs,includegates){
+	#get the flowJo names
+	fjNames<-lapply(nodeData(gs[[1]]@tree),function(x)x$metadata[["fjName"]])
+	gnames<-names(fjNames)
+	fjNames<-unlist(fjNames,use.names=FALSE)
+	#set difference between the included gates and all the rest to get the excluded gates
+	
+	#get the nodes in breadth first search order
+	bfsgates<-lapply(gs,function(y)RBGL::bfs(y@tree)[which(sapply(RBGL::bfs(y@tree),function(x)!flowWorkspace:::.isBooleanGate.graphNEL(y,x)))])
+	#get the gates in default order
+	gates<-lapply(x,function(y)flowWorkspace:::getNodes(y))
+	#reorder the bfsgates so that indices match the order in getNodes
+	for(i in seq_along(bfsgates)){
+		bfsgates[[i]]<-match(bfsgates[[i]],gates[[i]])
+	}
+	#combine down to unique gate ids
+	bfsgates<-unique(do.call(rbind,bfsgates))
+	fjNames<-fjNames[bfsgates]
+	excludegates<-setdiff(fjNames,includegates)
+	exclude.inds<-bfsgates[fjNames%in%excludegates]
+	return(exclude.inds)
+}
 ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
     pData(x)<-keyword(x,Keywords)
     dir.create(EXPORT)
