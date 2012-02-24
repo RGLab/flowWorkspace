@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Import flowJo Workspaces into BioConductor and replicate flowJo gating with flowCore 
-Version: 1.1.11
+Version: 1.1.12
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang, Mose Andre
 Maintainer: Greg Finak <gfinak@fhcrc.org>
@@ -11,6 +11,6 @@ LazyLoad: yes
 Imports: Biobase, XML, flowCore, graph, graphics, lattice, methods, stats, utils
 Collate: AllClasses.R AllGenerics.R AllMethods.R AllExportMethods.R flowWorkspace2flowCore-methods.R flowWorkspaceEdit-methods.R bitVector.R
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
-Depends: Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore, flowViz, Biobase, IDPmisc, tools
+Depends: Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore, flowViz, Biobase, IDPmisc, tools,hexbin
 Enhances: multicore,Rmpi,ncdfFlow
 Suggests: testthat, flowWorkspaceData, Rgraphviz
