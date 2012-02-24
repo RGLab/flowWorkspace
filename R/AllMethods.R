@@ -3081,12 +3081,12 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 }
 ##TODO Method to convert included channel to excluded channels
 ##TODO Method to convert included gate to excluded gates. (Should be an index of the gates, based on the fjName)
-.includedChannel2ExcludedChannel<-function(gs,includedims=NULL){
+includedChannel2ExcludedChannel<-function(gs,includedims=NULL){
 	dimensions<-parameters(getData(gs[[1]]))@data$name	
 	return(setdiff(dimensions,includedims))
 }
 
-.includedGate2ExcludedGate<-function(gs,includegates){
+includedGate2ExcludedGate<-function(gs,includegates){
 	#get the flowJo names
 	fjNames<-lapply(nodeData(gs[[1]]@tree),function(x)x$metadata[["fjName"]])
 	gnames<-names(fjNames)
@@ -3096,7 +3096,7 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	#get the nodes in breadth first search order
 	bfsgates<-lapply(gs,function(y)RBGL::bfs(y@tree)[which(sapply(RBGL::bfs(y@tree),function(x)!flowWorkspace:::.isBooleanGate.graphNEL(y,x)))])
 	#get the gates in default order
-	gates<-lapply(x,function(y)flowWorkspace:::getNodes(y))
+	gates<-lapply(gs,function(y)flowWorkspace:::getNodes(y))
 	#reorder the bfsgates so that indices match the order in getNodes
 	for(i in seq_along(bfsgates)){
 		bfsgates[[i]]<-match(bfsgates[[i]],gates[[i]])
@@ -3107,6 +3107,12 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	excludegates<-setdiff(fjNames,includegates)
 	exclude.inds<-bfsgates[fjNames%in%excludegates]
 	return(exclude.inds)
+}
+.includedGate2ExcludedGate<-function(gs,includegates){
+includedGate2ExcludedGate(gs,includegates)
+}
+.includedChannel2ExcludedChannel<-function(gs,includedims=NULL){
+includedChannel2ExcludedChannel(gs,includedims)
 }
 ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
     pData(x)<-keyword(x,Keywords)

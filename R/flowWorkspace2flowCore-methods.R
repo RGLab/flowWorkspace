@@ -291,7 +291,7 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 				#get current node name
 				n<-nlist[i]
 				#get the gate from workspace by the node name
-				g<-get("gate",env=nodeData(x,n,"metadata")[[1]]);
+				g<-get("gate",envir=nodeData(x,n,"metadata")[[1]]);
 				#get the parent node name and node ID
 				parentName<-(setdiff(adj(ugraph(x),n)[[1]],adj(x,n)[[1]]))
 				pid<-nids[which(nlist==parentName)]
@@ -301,7 +301,7 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 					message("Gate attached to view: ", n);
 					#attach the gate to the parent view
 					add(wf1,g,parent=pid)	
-					isNegated<-get("negated",env=nodeData(x,n,"metadata")[[1]])
+					isNegated<-get("negated",envir=nodeData(x,n,"metadata")[[1]])
 				}else #boolean gates
 				{
 					
@@ -315,7 +315,7 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 					for(j in 1:length(g.nodes))
 					{
 						curNode<-g.nodes[j]
-						curG<-get("gate",env=nodeData(x,curNode,"metadata")[[1]])
+						curG<-get("gate",envir=nodeData(x,curNode,"metadata")[[1]])
 						expr<-paste(expr,gOperators[j-1],neg.Indicators[j],"g.vector[[",j,"]]",sep="")
 						g.vector<-c(g.vector,curG)
 						
