@@ -60,6 +60,8 @@ importFrom(methods, "@<-", is, new)
 
 importFrom(stats, na.omit, optimize, qchisq, sd, splinefun)
 
+importFrom(stats4, plot)
+
 importFrom(utils, menu)
 
 exportClasses(flowJoWorkspace,GatingHierarchy,GatingSet);
