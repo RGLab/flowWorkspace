@@ -249,7 +249,7 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 				#update the colnames of flowset with brackets
 				compfs<-Data(wf1[["CompensationView"]])
 				#add namespace of flowCore to make sure correct method of colnames is called 
-				colNames<-flowCore:::colnames(compfs)
+				colNames<-colnames(compfs)
 				compParams<-colnames(Comp.mat)
 				updatedCompParams<-paste("<",compParams,">",sep="")
 				colNames[which(colNames%in%compParams)]<-updatedCompParams
