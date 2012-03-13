@@ -210,7 +210,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	    tf<-tempfile()
 	    save(tmp,file=tf);
 	    sfExport("tf","TEMP")
-	    rm(tmp);gc()
+	    rm(tmp)
+	  #  gc()
 	    clusterEvalQ(sfGetCluster(),{load(tf);tmp<-xmlRoot(xmlTreeParse(tmp, asText = TRUE, useInternal = TRUE));invisible()})
 	    message("parsing")
 		G<-sfLapply(l,function(x){
@@ -230,7 +231,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			}else{
 				compensation<-matrix();
 			}
-			rm(x);gc()
+			rm(x)
+			#gc()
 			tf<-tempfile()
 			ret<-list(graph=graph,transformations=transformations,compensation=compensation)
 			if(!file.exists(TEMP)){
@@ -357,7 +359,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 						g<-execute(G[[i]],isNcdf=isNcdf(G[[i]]),ncfs=ncfs1,dataEnvironment=dataEnvironment)
 						
 						mpi.send.Robj(g,0,5)
-    					rm(g);gc(reset=T);	
+    					rm(g)
+    					#gc(reset=T);	
 
     					#are there more tasks?
     					mpi.recv.Robj(0,mpi.any.tag())
@@ -484,7 +487,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			    }
 				G<-new("GatingSet",set=results)
 				rm(results);
-				gc(reset=TRUE);
+				#gc(reset=TRUE);
 				mpi.remote.exec(options("flowWorkspace_mpi_communication"=FALSE));
 				options("flowWorkspace_mpi_communication"=NULL)
 			}
@@ -741,7 +744,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 			}else{
 				data<-res
 				rm(res);
-				gc(reset=TRUE);
+				#gc(reset=TRUE);
 			}
 			cnd<-colnames(data)
 			if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
@@ -782,7 +785,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 				}else{
 					data<-res
 					rm(res);
-					gc(reset=TRUE);
+					#gc(reset=TRUE);
 				}
 				cnd<-colnames(data)
 				wh<-cnd%in%parameters(comp)
@@ -793,25 +796,25 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 				p@data$name<-cnd
 				colnames(e)<-cnd;
 				data<-new("flowFrame",exprs=e,description=d,parameters=p)
-				gc(reset=TRUE);
+				#gc(reset=TRUE);
 			}
 			#Ditto
 			#cal<-.getCalibrationTableSearch(doc,nm)
 		}
-		gc(reset=TRUE)
+		#gc(reset=TRUE)
 		message("Transforming");
 		axis.labels<-list();
 		.flowJoTransform(environment(),cal);
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		#wh<-which(data@parameters@data$name=="Time")
 		wh<-grep("^Time$",data@parameters@data$name)
 		if(length(wh!=0)){
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
 		}
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		# if(!isNcdf){
 			e<-new.env(parent=.GlobalEnv);
 		# }
@@ -850,7 +853,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		}
 		assign("axis.labels",axis.labels,envir=e);
 		rm(data);
-		gc(reset=TRUE)
+		#gc(reset=TRUE)
 		nodeDataDefaults(x,"data")<-e;
 		#Nodes to parse later
 		skipforlater<-list();
@@ -921,7 +924,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		
 		if(cleanup){
 			nodeDataDefaults(x,"data")<-new.env(parent=.GlobalEnv);
-			gc(reset=TRUE);
+			#gc(reset=TRUE);
 		}
 		hierarchy@tree<-x;
 		# message("Computing Boolean Gates");
@@ -2919,10 +2922,10 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
 	datapar<-parameters(get("data",dataenv));
 	datapar@data[,c("range","minRange","maxRange")]<-datarange
-	gc(reset=TRUE)
+	#gc(reset=TRUE)
 	assign("datapar",datapar,dataenv)
 	eval(expression(data@parameters<-datapar),envir=dataenv)
-	gc(reset=TRUE)
+	#gc(reset=TRUE)
 }
 
 ##This function should return all the calibration vectors associated with a single prefix name.
