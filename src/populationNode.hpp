@@ -20,13 +20,13 @@ class populationNode{
 	gate thisGate;
 	vector<bool> indice;
 public:
-	vector<bool> getIndice(){return(this->indice)};
+	vector<bool> getIndice(){return(this->indice);};
 
 	map<string,double> getStats(bool isFlowCore=1){
-		return(isFlowCore?this->fcStats:this->fjStats)
+		return(isFlowCore?this->fcStats:this->fjStats);
 		};
 
-	gate getGate(){return(this->thisGate)};
+	gate getGate(){return(this->thisGate);};
 };
 
 
