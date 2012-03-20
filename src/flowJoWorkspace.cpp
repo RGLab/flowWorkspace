@@ -6,9 +6,9 @@
  */
 #include "flowJoWorkspace.hpp"
 #include <string>
-#include <libxml/tree.h>
+//#include <libxml/tree.h>
 #include <libxml/parser.h>
-#include <libxml/xpath.h>
+
 #include <iostream>
 using namespace std;
 
@@ -18,18 +18,23 @@ using namespace std;
 //}
 macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
 	cout<<"mac version of flowJo workspace recognized."<<endl;
+
+	xpath_sample="/Workspace/SampleList/Sample";
+
 	this->doc=doc;
 
 }
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
 	cout<<"windows version of flowJo workspace recognized."<<endl;
+	xpath_sample="/Workspace/SampleList/Sample/DataSet";
+
 	this->doc=doc;
 
 }
 flowJoWorkspace::~flowJoWorkspace(){
 
 	 /*free the document */
-			xmlFreeDoc(this->doc);
+			xmlFreeDoc(doc);
 
 			/*
 			 *Free the global variables that may
@@ -43,11 +48,8 @@ flowJoWorkspace::~flowJoWorkspace(){
 vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 {
 
-		xmlXPathContextPtr context;
-		xmlXPathObjectPtr result;
-
-		context = xmlXPathNewContext(doc);
-		result = xmlXPathEval((xmlChar *)"/Workspace/Groups/GroupNode", context);
+		xmlXPathContextPtr context = xmlXPathNewContext(doc);
+		xmlXPathObjectPtr result = xmlXPathEval((xmlChar *)"/Workspace/Groups/GroupNode", context);
 		if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
 			xmlXPathFreeObject(result);
 	                cout<<"No Groups"<<endl;;
@@ -65,32 +67,32 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 		for(unsigned i=0;i<size;i++)
 		{
 			xmlNodePtr curNode=nodeSet->nodeTab[i];
-			sampleID.push_back(xmlGetProp(curNode,(xmlChar *)"sampleID"));
+			xmlChar * curSampleID= xmlGetProp(curNode,(xmlChar *)"sampleID");
+
+			sampleID.push_back(curSampleID);
 		}
 //			;
 
 		xmlXPathFreeObject (result);
+		xmlXPathFreeContext(context);
 		xmlXPathFreeObject (sids);
 		return(sampleID);
 }
 
 
-xmlNodePtr winFlowJoWorkspace::getSampleNode(xmlChar * sampleID){
-	string xpath="/Workspace/SampleList/Sample/DataSet[@sampleID='";
-	xmlXPathContextPtr context=xmlXPathNewContext(doc);
 
-	xmlXPathEval((xmlChar *)xpath,context);
-	//				xpathApply(x,paste("/Workspace/SampleList/Sample/DataSet[@sampleID='",i,"']",sep=""))[[1]]
-	return (NULL);
-}
+xmlXPathObjectPtr flowJoWorkspace::getSampleNode(xmlChar *sampleID){
+		string xpath=xpath_sample;
+		xpath.append("[@sampleID='");
+		xpath.append((const char *)sampleID);
+		xpath.append("']");
+		xmlXPathContextPtr context=xmlXPathNewContext(doc);
 
-xmlNodePtr macFlowJoWorkspace::getSampleNode(xmlChar *sampleID){
-	//	if(wsversion=="2.0"){
-	//			l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
-	//				xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
-	//				})
+		xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),context);
 
-	return(NULL);
+		xmlXPathFreeContext(context);
+
+		return res;
 }
 void flowJoWorkspace::print_element_names(xmlNode *a_node)
 {

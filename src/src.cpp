@@ -24,7 +24,7 @@ int main(void) {
 	const char * filename="/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml";
 	GatingSet gs;
 	gs.openWorkspace(filename);
-
+	gs.parseWorkspace(2);
 
 	//construct GatingHierarchy without associate it with sample
 //	GatingHierarchy gh;

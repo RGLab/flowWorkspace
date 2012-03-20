@@ -32,7 +32,7 @@ void GatingSet::openWorkspace(const char * sFileName)
 //				xmlFreeDoc(doc);
 				return;
 			}
-		 if (xmlStrcmp(cur->name, (const xmlChar *) "Workspace")) {
+		 if (!xmlStrEqual(cur->name, (const xmlChar *) "Workspace")) {
 				fprintf(stderr,"document of the wrong type, root node != Workspace");
 //				xmlFreeDoc(doc);
 				return;
@@ -41,23 +41,30 @@ void GatingSet::openWorkspace(const char * sFileName)
 		//get version info
 		 xmlChar * wsVersion=xmlGetProp(cur,(const xmlChar*)"version");
 
-		 if (xmlStrcmp(wsVersion,(const xmlChar *)"1.6"))
-			 this->ws=new winFlowJoWorkspace(doc);
-		 else if (xmlStrcmp(wsVersion,(const xmlChar *)"2.0"))
-			 this->ws=new macFlowJoWorkspace(doc);
+		 if (xmlStrEqual(wsVersion,(const xmlChar *)"1.6"))
+			 ws=new winFlowJoWorkspace(doc);
+		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"2.0"))
+			 ws=new macFlowJoWorkspace(doc);
 		 else
+		 {
+			 xmlFree(wsVersion);
 			 throw(1);
+		 }
+		 xmlFree(wsVersion);
 
 }
 
 void GatingSet::parseWorkspace(unsigned short groupID)
 {
-	flowJoWorkspace * ws=this->ws;
+//	flowJoWorkspace * ws=this->ws;
 	vector<xmlChar *> sampleID=ws->getSampleID(groupID);
 	vector<xmlChar *>::iterator it;
 	for(it=sampleID.begin();it!=sampleID.end();it++)
 	{
-		ws->getSampleNode(*it);
+		xmlXPathObjectPtr curSampleNode=ws->getSampleNode(*it);
+		xmlFree(*it);
+
+		xmlXPathFreeObject(curSampleNode);
 	}
 
 }
