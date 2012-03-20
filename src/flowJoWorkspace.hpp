@@ -7,28 +7,46 @@
 
 #ifndef FLOWJOWORKSPACE_HPP_
 #define FLOWJOWORKSPACE_HPP_
-
+#include <vector>
 #include <string>
 #include <libxml/tree.h>
 //#include <libxml2/libxml/parser.h>
 //#include <iostream>
-//using namespace std;
+using namespace std;
 
 
 class flowJoWorkspace{
-
-	 xmlDoc *doc;
+protected:
+	 xmlDoc * doc;
 public:
-	flowJoWorkspace(const char *);
+//	flowJoWorkspace(xmlDoc *);
 	~flowJoWorkspace();
-	 void openWorkspace(const char * );
-	void print_element_names(xmlNode *);
+	 void print_element_names(xmlNode *);
+	 virtual void getCompensation()=0;
+	 virtual void getTransformation()=0;
+	 virtual void getPopulation()=0;
+	 virtual xmlNodePtr getSampleNode(xmlChar*)=0;
+	 vector <xmlChar *> getSampleID(unsigned short);
+};
+
+class winFlowJoWorkspace:public flowJoWorkspace{
+public:
+	winFlowJoWorkspace(xmlDoc *);
+	  void getCompensation(){};
+	  void getTransformation(){};
+	  void getPopulation(){};
+	  xmlNodePtr getSampleNode(xmlChar*);
 };
 
 
-
-
-
+class macFlowJoWorkspace:public flowJoWorkspace{
+public:
+	macFlowJoWorkspace(xmlDoc *);
+	void getCompensation(){};
+	void getTransformation(){};
+	void getPopulation(){};
+	xmlNodePtr getSampleNode(xmlChar*);
+};
 
 
 

@@ -7,7 +7,7 @@
 
 #ifndef GATINGHIERARCHY_HPP_
 #define GATINGHIERARCHY_HPP_
-
+#include <iostream>
 #include <string>
 #include <vector>
 #include "populationTree.hpp"

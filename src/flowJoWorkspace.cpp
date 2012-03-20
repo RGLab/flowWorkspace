@@ -8,15 +8,24 @@
 #include <string>
 #include <libxml/tree.h>
 #include <libxml/parser.h>
+#include <libxml/xpath.h>
 #include <iostream>
 using namespace std;
 
-flowJoWorkspace::flowJoWorkspace(const char * sFileName){
-	cout<<sFileName<<endl;
-	this->doc=NULL;
+//flowJoWorkspace::flowJoWorkspace(xmlDoc * doc){
+//	this->doc=doc;
+//
+//}
+macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
+	cout<<"mac version of flowJo workspace recognized."<<endl;
+	this->doc=doc;
 
 }
+winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
+	cout<<"windows version of flowJo workspace recognized."<<endl;
+	this->doc=doc;
 
+}
 flowJoWorkspace::~flowJoWorkspace(){
 
 	 /*free the document */
@@ -31,33 +40,58 @@ flowJoWorkspace::~flowJoWorkspace(){
 }
 
 
-
-
-void flowJoWorkspace::openWorkspace(const char * sFileName)
+vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 {
-//	 xmlDoc *doc = NULL;
-//		xmlNode *root_element = NULL;
 
-		/*
-		 * this initialize the library and check potential ABI mismatches
-		 * between the version it was compiled for and the actual shared
-		 * library used.
-		 */
-		LIBXML_TEST_VERSION
-	//	const char * sFileName="/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml";
-		/*parse the file and get the DOM */
-		this->doc = xmlReadFile(sFileName, NULL, 0);
+		xmlXPathContextPtr context;
+		xmlXPathObjectPtr result;
 
-		if (this->doc == NULL) {
-			printf("error: could not parse file %s\n", sFileName);
+		context = xmlXPathNewContext(doc);
+		result = xmlXPathEval((xmlChar *)"/Workspace/Groups/GroupNode", context);
+		if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
+			xmlXPathFreeObject(result);
+	                cout<<"No Groups"<<endl;;
+	                throw(2);
 		}
-		/*Get the root element node */
-//		 root_element = xmlDocGetRootElement(doc);
 
-//		print_element_names(root_element);
 
+		xmlNodePtr cur=result->nodesetval->nodeTab[groupID];
+		context->node=cur;
+		xmlXPathObjectPtr sids=xmlXPathEval((xmlChar *)".//SampleRef",context);
+		vector<xmlChar *> sampleID;
+		xmlNodeSetPtr nodeSet=sids->nodesetval;
+		int size=nodeSet->nodeNr;
+
+		for(unsigned i=0;i<size;i++)
+		{
+			xmlNodePtr curNode=nodeSet->nodeTab[i];
+			sampleID.push_back(xmlGetProp(curNode,(xmlChar *)"sampleID"));
+		}
+//			;
+
+		xmlXPathFreeObject (result);
+		xmlXPathFreeObject (sids);
+		return(sampleID);
 }
 
+
+xmlNodePtr winFlowJoWorkspace::getSampleNode(xmlChar * sampleID){
+	string xpath="/Workspace/SampleList/Sample/DataSet[@sampleID='";
+	xmlXPathContextPtr context=xmlXPathNewContext(doc);
+
+	xmlXPathEval((xmlChar *)xpath,context);
+	//				xpathApply(x,paste("/Workspace/SampleList/Sample/DataSet[@sampleID='",i,"']",sep=""))[[1]]
+	return (NULL);
+}
+
+xmlNodePtr macFlowJoWorkspace::getSampleNode(xmlChar *sampleID){
+	//	if(wsversion=="2.0"){
+	//			l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
+	//				xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
+	//				})
+
+	return(NULL);
+}
 void flowJoWorkspace::print_element_names(xmlNode *a_node)
 {
 

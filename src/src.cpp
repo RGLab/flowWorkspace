@@ -21,13 +21,14 @@ using namespace std;
 int main(void) {
 
 	//read xml file by libxml
-//	const char * filename="/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml";
-//	flowJoWorkspace ws (filename);
-//	ws.openWorkspace(filename);
+	const char * filename="/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml";
+	GatingSet gs;
+	gs.openWorkspace(filename);
+
 
 	//construct GatingHierarchy without associate it with sample
-	GatingHierarchy gh;
-	gh.gating();
+//	GatingHierarchy gh;
+//	gh.gating();
 //	gh.gating();
 	//construct GatingSet that holds GatingHierarchy for each individual sample and gate it afterwards
 
