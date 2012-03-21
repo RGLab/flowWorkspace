@@ -12,10 +12,9 @@
 #include <iostream>
 using namespace std;
 
-//flowJoWorkspace::flowJoWorkspace(xmlDoc * doc){
-//	this->doc=doc;
-//
-//}
+/*constructors of flowJoWorkspace for mac and win derived classes
+ *
+ */
 macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
 	cout<<"mac version of flowJo workspace recognized."<<endl;
 
@@ -44,7 +43,10 @@ flowJoWorkspace::~flowJoWorkspace(){
 			cout<<"xml freed!"<<endl;
 }
 
-
+/*get a vector of sampleID by the given groupID
+ * keep the returned results in char * format in case the non-numeric sampleID is stored
+ * make sure to free the memory of xmlChar * outside of the call
+ */
 vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 {
 
@@ -80,8 +82,8 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 }
 
 
-
-xmlXPathObjectPtr flowJoWorkspace::getSampleNode(xmlChar *sampleID){
+//make sure to free the memory of xmlXPathObject outside of the call
+xmlNodePtr flowJoWorkspace::getSample(xmlChar *sampleID){
 		string xpath=xpath_sample;
 		xpath.append("[@sampleID='");
 		xpath.append((const char *)sampleID);
@@ -89,11 +91,38 @@ xmlXPathObjectPtr flowJoWorkspace::getSampleNode(xmlChar *sampleID){
 		xmlXPathContextPtr context=xmlXPathNewContext(doc);
 
 		xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),context);
+		xmlNodePtr sample=res->nodesetval->nodeTab[0];
 
 		xmlXPathFreeContext(context);
-
-		return res;
+		xmlXPathFreeObject(res);
+		return sample;
 }
+
+//xquery the "SampleNode" within "sample" context
+xmlNodePtr flowJoWorkspace::getSampleNode(xmlNodePtr sample)
+{
+	string xpath="./SampleNode";
+
+
+	xmlXPathObjectPtr res=xpathInNode(xpath,sample);
+	xmlNodePtr sampleNode=res->nodesetval->nodeTab[0];
+	xmlXPathFreeObject(res);
+	return sampleNode;
+}
+
+/*Oftentimes we need to do the xquery based on the context of the current node instead of doc
+* it is strange that I haven't found this commonly used API in libxml2
+* so have to write my own here
+*/
+xmlXPathObjectPtr flowJoWorkspace::xpathInNode(string xpath,xmlNodePtr curNode)
+{
+	xmlXPathContextPtr ctxt=xmlXPathNewContext(this->doc);
+	ctxt->node=curNode;
+	xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),ctxt);
+	xmlXPathFreeContext(ctxt);
+	return res;
+}
+
 void flowJoWorkspace::print_element_names(xmlNode *a_node)
 {
 

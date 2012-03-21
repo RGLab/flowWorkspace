@@ -11,7 +11,8 @@
 #include <string>
 #include <vector>
 #include "populationTree.hpp"
-
+#include "flowJoWorkspace.hpp"
+#include <libxml/xpath.h>
 using namespace std;
 
 
@@ -35,7 +36,7 @@ class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
 //	double ** data;
-//	string sampleName;
+	string sampleName;
 	populationTree tree;
 public:
 	/*retrieve the gate definition from a particular node*/
@@ -47,7 +48,11 @@ public:
 //	void removeGate(string popName);
 
 	/*append the gate to the tree*/
-//	void addGate(gate& g,string popName);
+	void addGate(gate& g,string popName);
+	void addPopulation(xmlXPathObjectPtr popNode);
+	void addRoot(xmlNodePtr rootNode);
+	GatingHierarchy();
+	GatingHierarchy(xmlChar * sampleID,flowJoWorkspace &ws);
 
 	/*associate the tree with data matrix*/
 //	void addData();
@@ -57,8 +62,7 @@ public:
 //	vector<bool> * getData(string popName);
 
 //	void gating(gate& g,string popName);
-public:
-	void gating(){cout <<"test gating"<<endl;};
+	void gating();
 };
 
 

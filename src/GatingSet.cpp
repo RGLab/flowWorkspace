@@ -13,6 +13,11 @@
 #include <iostream>
 using namespace std;
 
+GatingSet::~GatingSet()
+{
+
+	delete ws;
+}
 //read xml file and create the appropriate flowJoWorkspace object
 void GatingSet::openWorkspace(const char * sFileName)
 {
@@ -56,15 +61,25 @@ void GatingSet::openWorkspace(const char * sFileName)
 
 void GatingSet::parseWorkspace(unsigned short groupID)
 {
-//	flowJoWorkspace * ws=this->ws;
 	vector<xmlChar *> sampleID=ws->getSampleID(groupID);
+
 	vector<xmlChar *>::iterator it;
 	for(it=sampleID.begin();it!=sampleID.end();it++)
 	{
-		xmlXPathObjectPtr curSampleNode=ws->getSampleNode(*it);
-		xmlFree(*it);
+//		xmlNodePtr curSample=ws->getSample(*it);
+//		xmlNodePtr curSample=ws->getSample(*it);
 
-		xmlXPathFreeObject(curSampleNode);
+		//construct gating hierarchy for each sampleNode
+		GatingHierarchy curGh(*it,*ws);
+		xmlFree(*it);//free memory for each sampleID returned by getSampleID
+
+		string sampleName;
+
+		ghs[sampleName]=curGh;//add to the map
+
+//		xmlXPathFreeObject(curSampleNode);//free memory for the xpath query result returned by getSampleNode
 	}
 
 }
+
+

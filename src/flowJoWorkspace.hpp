@@ -43,7 +43,10 @@ public:
 	 virtual void getCompensation()=0;
 	 virtual void getTransformation()=0;
 	 virtual void getPopulation()=0;
-	 xmlXPathObjectPtr getSampleNode(xmlChar* sampleID);
+	 xmlXPathObjectPtr xpathInNode(string xpath,xmlNodePtr curNode);
+	 xmlNodePtr getSample(xmlChar* sampleID);
+	 xmlNodePtr getSampleNode(xmlNodePtr sampleNode);
+
 	 vector <xmlChar *> getSampleID(unsigned short);
 };
 
