@@ -10,15 +10,17 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include "gate.hpp"
 
 using namespace std;
 
 class populationNode{
+public:
 	string thisName;
 	gate thisGate;
 	vector<bool> thisIndice;
-public:
+
 	map<string,double> fjStats;
 	map<string,double> fcStats;
 public:
@@ -29,6 +31,7 @@ public:
 		};
 
 	gate getGate(){return(this->thisGate);};
+	string getName(){return(this->thisName);};
 	void setName(string popName){thisName=popName;};
 	void setGate(gate gate){thisGate=gate;};
 	void setIndice(vector<bool> indice){thisIndice=indice;};

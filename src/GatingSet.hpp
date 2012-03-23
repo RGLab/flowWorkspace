@@ -18,7 +18,7 @@ using namespace std;
 
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
-	flowJoWorkspace * ws;
+	workspace * ws;
 	map<string,GatingHierarchy> ghs;
 public:
 	~GatingSet();

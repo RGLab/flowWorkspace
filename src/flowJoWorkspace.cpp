@@ -15,33 +15,30 @@ using namespace std;
 /*constructors of flowJoWorkspace for mac and win derived classes
  *
  */
+
 macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
 	cout<<"mac version of flowJo workspace recognized."<<endl;
 
-	xpath_sample="/Workspace/SampleList/Sample";
+	nodePath.group="/Workspace/Groups/GroupNode";
+	nodePath.sampleRef=".//SampleRef";
+	nodePath.sample="/Workspace/SampleList/Sample";
+	nodePath.sampleNode="./SampleNode";
+//	xpath_sample="/Workspace/SampleList/Sample";
 
 	this->doc=doc;
 
 }
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
 	cout<<"windows version of flowJo workspace recognized."<<endl;
-	xpath_sample="/Workspace/SampleList/Sample/DataSet";
-
+//	xpath_sample="/Workspace/SampleList/Sample/DataSet";
+	nodePath.group="/Workspace/Groups/GroupNode";
+	nodePath.sampleRef=".//SampleRef";
+	nodePath.sample="/Workspace/SampleList/Sample";
+	nodePath.sampleNode="./SampleNode";
 	this->doc=doc;
 
 }
-flowJoWorkspace::~flowJoWorkspace(){
 
-	 /*free the document */
-			xmlFreeDoc(doc);
-
-			/*
-			 *Free the global variables that may
-			 *have been allocated by the parser.
-			 */
-			xmlCleanupParser();
-			cout<<"xml freed!"<<endl;
-}
 
 /*get a vector of sampleID by the given groupID
  * keep the returned results in char * format in case the non-numeric sampleID is stored
@@ -51,7 +48,7 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 {
 
 		xmlXPathContextPtr context = xmlXPathNewContext(doc);
-		xmlXPathObjectPtr result = xmlXPathEval((xmlChar *)"/Workspace/Groups/GroupNode", context);
+		xmlXPathObjectPtr result = xmlXPathEval((xmlChar *)nodePath.group.c_str(), context);
 		if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
 			xmlXPathFreeObject(result);
 	                cout<<"No Groups"<<endl;;
@@ -61,7 +58,7 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 
 		xmlNodePtr cur=result->nodesetval->nodeTab[groupID];
 		context->node=cur;
-		xmlXPathObjectPtr sids=xmlXPathEval((xmlChar *)".//SampleRef",context);
+		xmlXPathObjectPtr sids=xmlXPathEval((xmlChar *)nodePath.sampleRef.c_str(),context);
 		vector<xmlChar *> sampleID;
 		xmlNodeSetPtr nodeSet=sids->nodesetval;
 		int size=nodeSet->nodeNr;
@@ -83,8 +80,8 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 
 
 //make sure to free the memory of xmlXPathObject outside of the call
-xmlNodePtr flowJoWorkspace::getSample(xmlChar *sampleID){
-		string xpath=xpath_sample;
+xmlNodePtr flowJoWorkspace::getSampleNode(xmlChar *sampleID){
+		string xpath=nodePath.sample;
 		xpath.append("[@sampleID='");
 		xpath.append((const char *)sampleID);
 		xpath.append("']");
@@ -99,42 +96,26 @@ xmlNodePtr flowJoWorkspace::getSample(xmlChar *sampleID){
 }
 
 //xquery the "SampleNode" within "sample" context
-xmlNodePtr flowJoWorkspace::getSampleNode(xmlNodePtr sample)
+wsRootNode flowJoWorkspace::getRoot(xmlNodePtr sample)
 {
-	string xpath="./SampleNode";
+	wsRootNode node;
 
-
-	xmlXPathObjectPtr res=xpathInNode(xpath,sample);
-	xmlNodePtr sampleNode=res->nodesetval->nodeTab[0];
+	xmlXPathObjectPtr res=xpathInNode(nodePath.sampleNode,sample);
+	node.thisNode=res->nodesetval->nodeTab[0];
 	xmlXPathFreeObject(res);
-	return sampleNode;
+	return node;
 }
 
-/*Oftentimes we need to do the xquery based on the context of the current node instead of doc
-* it is strange that I haven't found this commonly used API in libxml2
-* so have to write my own here
-*/
-xmlXPathObjectPtr flowJoWorkspace::xpathInNode(string xpath,xmlNodePtr curNode)
+wsPopNode flowJoWorkspace::getSubPop(wsNode * thisNode )
 {
-	xmlXPathContextPtr ctxt=xmlXPathNewContext(this->doc);
-	ctxt->node=curNode;
-	xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),ctxt);
-	xmlXPathFreeContext(ctxt);
-	return res;
+	wsPopNode node;
+//	string xpath=nodePath.sampleNode;
+//
+//
+//	xmlXPathObjectPtr res=xpathInNode(xpath,thisNode->node);
+//	xmlNodePtr sampleNode=res->nodesetval->nodeTab[0];
+//	xmlXPathFreeObject(res);
+	return node;
 }
 
-void flowJoWorkspace::print_element_names(xmlNode *a_node)
-{
 
-
-
-    xmlNode *cur_node = NULL;
-
-    for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
-        if (cur_node->type == XML_ELEMENT_NODE) {
-            printf("node type: Element, name: %s\n", cur_node->name);
-        }
-
-        print_element_names(cur_node->children);
-    }
-}

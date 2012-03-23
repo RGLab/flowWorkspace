@@ -16,7 +16,18 @@
 using namespace std;
 
 
+struct OurVertexPropertyWriter {
 
+	OurVertexPropertyWriter(populationTree &g_) : g(g_) {}
+
+    template <class Vertex>
+    void operator() (std::ostream &out, Vertex u) {
+        out << "."<<g[u].getName()<<"'";
+
+    }
+
+    populationTree &g;
+};
 class transformation{
 
 };
@@ -38,6 +49,7 @@ class GatingHierarchy{
 //	double ** data;
 	string sampleName;
 	populationTree tree;
+	map<string,VertexID> nodelist;
 public:
 	/*retrieve the gate definition from a particular node*/
 //	gate getGate(unsigned short gateid);
@@ -49,10 +61,10 @@ public:
 
 	/*append the gate to the tree*/
 	void addGate(gate& g,string popName);
-	void addPopulation(xmlXPathObjectPtr popNode);
-	void addRoot(xmlNodePtr rootNode);
+	void addPopulation(xmlNodePtr popNode);
+	void addRoot(populationNode rootNode);
 	GatingHierarchy();
-	GatingHierarchy(xmlChar * sampleID,flowJoWorkspace &ws);
+	GatingHierarchy(xmlChar * sampleID,workspace &ws);
 
 	/*associate the tree with data matrix*/
 //	void addData();
@@ -63,6 +75,7 @@ public:
 
 //	void gating(gate& g,string popName);
 	void gating();
+	void drawGraph();
 };
 
 

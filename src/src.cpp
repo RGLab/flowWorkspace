@@ -13,7 +13,7 @@
 
 #include "flowJoWorkspace.hpp"
 #include "GatingSet.hpp"
-
+#include "GatingHierarchy.hpp"
 using namespace std;
 
 
@@ -24,8 +24,11 @@ int main(void) {
 	const char * filename="/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml";
 	GatingSet gs;
 	gs.openWorkspace(filename);
-	gs.parseWorkspace(2);
+	unsigned short groupID=2;
+	gs.parseWorkspace(groupID);
 
+	GatingHierarchy gh=gs.getGatingHierarchy("test");
+	gh.drawGraph();
 	//construct GatingHierarchy without associate it with sample
 //	GatingHierarchy gh;
 //	gh.gating();
