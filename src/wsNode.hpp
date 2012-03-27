@@ -9,7 +9,7 @@
 #define WSNODE_HPP_
 #include "populationNode.hpp"
 #include <libxml/tree.h>
-
+#include <libxml/xpath.h>
 
 
 class wsNode{
@@ -20,20 +20,12 @@ public:
 
 };
 
-class wsNodeSet{
-public:
-	wsNode * nodes;
-	int number;
-};
+
 
 class wsSampleNode:public wsNode{
 public:
 	wsSampleNode(xmlNodePtr node){thisNode=node;};
-	populationNode to_popNode(){
-		cout<<"SampeNode can't be converted to population Node!"<<endl;
-		populationNode empty;
-		return(empty);
-	};
+
 };
 
 class wsRootNode:public wsNode{
@@ -44,8 +36,23 @@ public:
 class wsPopNode:public wsNode{
 public:
 	wsPopNode(xmlNodePtr node){thisNode=node;};
+	wsPopNode(){};
 };
 
+typedef vector<wsPopNode> wsPopNodeSet;
+//class wsPopNodeSet{
+//public:
+//	wsPopNode * nodes;
+//	int number;
+//	wsPopNodeSet(xmlNodePtr *,int nSize){
+//		childenNodes.nodes=new wsPopNode [nChildren];
+//			for(int i=0;i<nChildren;i++)
+//				{
+//					childenNodes.nodes[i]=wsPopNode(res->nodesetval->nodeTab[i]);
+//				}
+//
+//	}
+//};
 
 #endif /* WSNODE_HPP_ */
 

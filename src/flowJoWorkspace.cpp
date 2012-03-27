@@ -107,17 +107,17 @@ wsRootNode flowJoWorkspace::getRoot(wsSampleNode sample)
 }
 
 
-wsNodeSet flowJoWorkspace::getSubPop(wsNode & node)
+wsPopNodeSet flowJoWorkspace::getSubPop(wsNode * node)
 {
-	xmlXPathObjectPtr res=node.xpathInNode(nodePath.popNode);
-	int nChildren=res->nodesetval->nodeNr;
-	wsNodeSet childenNodes;
-	childenNodes.wsNodeSet=new wsNode *[nChildren];
-	for(int i=0;i<nChildren;i++)
-		{
-			childenNodes.wsNodeSet[i]=wsPopNode(res->nodesetval->nodeTab[i]);
-		}
 
+	xmlXPathObjectPtr res=node->xpathInNode(nodePath.popNode);
+	int nChildren=res->nodesetval->nodeNr;
+//	wsPopNodeSet childenNodes(res->nodesetval->nodeTab,nChildren);
+	wsPopNodeSet childenNodes;
+	for(int i=0;i<nChildren;i++)
+	{
+		childenNodes.push_back(wsPopNode(res->nodesetval->nodeTab[i]));
+	}
 
 	xmlXPathFreeObject(res);
 
@@ -125,4 +125,24 @@ wsNodeSet flowJoWorkspace::getSubPop(wsNode & node)
 
 }
 
+populationNode flowJoWorkspace::to_popNode(wsRootNode const * node){
+	xmlChar * popName=xmlGetProp(node->thisNode,(const xmlChar*)"name");
 
+	populationNode pNode;
+	pNode.setName((const char *)popName);
+
+	xmlFree(popName);
+
+	return pNode;
+}
+
+populationNode flowJoWorkspace::to_popNode(wsPopNode const * node){
+	xmlChar * popName=xmlGetProp(node->thisNode,(const xmlChar*)"name");
+
+	populationNode pNode;
+	pNode.setName((const char *)popName);
+
+	xmlFree(popName);
+
+	return pNode;
+}

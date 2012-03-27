@@ -52,7 +52,9 @@ public:
 	 virtual vector <xmlChar *> getSampleID(unsigned short)=0;
 	 virtual wsSampleNode getSampleNode(xmlChar *sampleID)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
-	 virtual wsNodeSet getSubPop(wsNode const *)=0;
+	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
+	 virtual populationNode to_popNode(wsRootNode const *)=0;
+	 virtual populationNode to_popNode(wsPopNode const *)=0;
 };
 
 

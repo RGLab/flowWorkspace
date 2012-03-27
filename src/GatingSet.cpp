@@ -69,7 +69,7 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 	for(it=sampleID.begin();it!=sampleID.end();it++)
 	{
 
-		GatingHierarchy curGh(*it,*ws);
+		GatingHierarchy curGh(*it,ws);
 
 		xmlFree(*it);//free memory for each sampleID returned by getSampleID
 

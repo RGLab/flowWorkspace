@@ -50,7 +50,7 @@ class GatingHierarchy{
 	string sampleName;
 	populationTree tree;
 	map<string,VertexID> nodelist;
-	workspace const * thisWs;
+	workspace * thisWs;
 public:
 	/*retrieve the gate definition from a particular node*/
 //	gate getGate(unsigned short gateid);
@@ -63,10 +63,10 @@ public:
 	/*append the gate to the tree*/
 	void addChild(VertexID parent,VertexID child);
 	void addGate(gate& g,string popName);
-	void addPopulation(VertexID parentID,wsNode const* parentNode);
+	void addPopulation(VertexID parentID,wsNode * parentNode);
 	VertexID addRoot(populationNode rootNode);
 	GatingHierarchy();
-	GatingHierarchy(xmlChar * sampleID,workspace const *ws);
+	GatingHierarchy(xmlChar * sampleID,workspace * ws);
 
 	/*associate the tree with data matrix*/
 //	void addData();

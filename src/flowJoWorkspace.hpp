@@ -18,7 +18,9 @@ public:
 	 vector <xmlChar *> getSampleID(unsigned short);
 	 wsSampleNode getSampleNode(xmlChar *sampleID);
      wsRootNode getRoot(wsSampleNode sampleNode);
-     wsNodeSet getSubPop(wsNode const * node);
+     wsPopNodeSet getSubPop(wsNode * node);
+     populationNode to_popNode(wsRootNode const *node);
+     populationNode to_popNode(wsPopNode const * node);
 
 };
 
