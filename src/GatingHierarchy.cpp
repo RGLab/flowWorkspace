@@ -14,22 +14,22 @@ GatingHierarchy::GatingHierarchy()
 
 }
 //constructor for sampleNode argument
-GatingHierarchy::GatingHierarchy(xmlChar * sampleID,workspace &ws)
+GatingHierarchy::GatingHierarchy(xmlChar * sampleID,workspace const *ws)
 {
-	xmlNodePtr curSampleNode=ws.getSampleNode(sampleID);
-	wsRootNode root=ws.getRoot(curSampleNode);
-	addRoot(root.to_popNode());
-
-//	addPopulation(curSampleNode);
+	thisWs=ws;
+	wsSampleNode curSampleNode=thisWs->getSampleNode(sampleID);
+	wsRootNode root=thisWs->getRoot(curSampleNode);
+	VertexID pVerID=addRoot(root.to_popNode());
+//	wsRootNode popNode=root;//getPopulation();
+	addPopulation(pVerID,&root,ws.nodePath.popNode);
 
 }
-void GatingHierarchy::addRoot(populationNode rootNode)
+VertexID GatingHierarchy::addRoot(populationNode rootNode)
 {
 
 
 	// Create  vertices in that graph
 	VertexID u = boost::add_vertex(tree);
-	nodelist[rootNode.getName()]=u;
 
 	tree[u]=rootNode;
 
@@ -38,9 +38,29 @@ void GatingHierarchy::addRoot(populationNode rootNode)
 			//		if(is.null(rootcount)){
 			//		    rootcount<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"eventCount"))[[1]]
 			//		}
+	nodelist[rootNode.getName()]=u;
+
+	return(u);
 }
-void GatingHierarchy::addPopulation(xmlNodePtr parentNode)
+
+void GatingHierarchy::addPopulation(VertexID parentID,wsNode const * parentNode)
 {
+
+
+		wsNodeSet children =thisWs->getSubPop(parentNode);
+		for(int i=0;i<children.number;i++)
+		{
+			VertexID curChildID = boost::add_vertex(tree);
+			wsNode * curChildNode=&children.nodes[i];
+			populationNode curChild=curChildNode->to_popNode();
+			tree[curChildID]=curChild;
+			boost::add_edge(parentID,curChildID,tree);
+
+			nodelist[curChild.getName()]=curChildID;//update the node map
+			//recursively add its descendants
+			addPopulation(curChildID,curChildNode);
+		}
+
 
 //	.nextPopulation<-function(x,level){
 //			#Get all the population nodes one level below this one..
@@ -72,9 +92,9 @@ void GatingHierarchy::gating()
 
 void GatingHierarchy::drawGraph()
 {
-//	ofstream outputFile("test.dot");
+	ofstream outputFile("test.dot");
 	//...
-	boost::write_graphviz(cout,tree,OurVertexPropertyWriter(tree));
+	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriter(tree));
 //	system("pwd");
 //	system("dot2gxl test.dot -o test.gxl");
 

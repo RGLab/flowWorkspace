@@ -10,22 +10,42 @@
 #include "populationNode.hpp"
 #include <libxml/tree.h>
 
+
+
 class wsNode{
 public:
 	xmlNodePtr thisNode;
-	virtual populationNode to_popNode()=0;
+	xmlXPathObjectPtr xpathInNode(string xpath);
+
+
 };
 
+class wsNodeSet{
+public:
+	wsNode * nodes;
+	int number;
+};
 
+class wsSampleNode:public wsNode{
+public:
+	wsSampleNode(xmlNodePtr node){thisNode=node;};
+	populationNode to_popNode(){
+		cout<<"SampeNode can't be converted to population Node!"<<endl;
+		populationNode empty;
+		return(empty);
+	};
+};
 
 class wsRootNode:public wsNode{
 public:
-	populationNode to_popNode();
+	wsRootNode(xmlNodePtr node){thisNode=node;};
 };
 
 class wsPopNode:public wsNode{
 public:
-	populationNode to_popNode();
+	wsPopNode(xmlNodePtr node){thisNode=node;};
 };
 
+
 #endif /* WSNODE_HPP_ */
+

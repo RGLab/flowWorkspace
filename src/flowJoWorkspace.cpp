@@ -23,8 +23,7 @@ macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
 	nodePath.sampleRef=".//SampleRef";
 	nodePath.sample="/Workspace/SampleList/Sample";
 	nodePath.sampleNode="./SampleNode";
-//	xpath_sample="/Workspace/SampleList/Sample";
-
+	nodePath.popNode="./Population";
 	this->doc=doc;
 
 }
@@ -35,6 +34,7 @@ winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
 	nodePath.sampleRef=".//SampleRef";
 	nodePath.sample="/Workspace/SampleList/Sample";
 	nodePath.sampleNode="./SampleNode";
+	nodePath.popNode="./Subpopulations";
 	this->doc=doc;
 
 }
@@ -80,7 +80,7 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 
 
 //make sure to free the memory of xmlXPathObject outside of the call
-xmlNodePtr flowJoWorkspace::getSampleNode(xmlChar *sampleID){
+wsSampleNode flowJoWorkspace::getSampleNode(xmlChar *sampleID){
 		string xpath=nodePath.sample;
 		xpath.append("[@sampleID='");
 		xpath.append((const char *)sampleID);
@@ -88,7 +88,7 @@ xmlNodePtr flowJoWorkspace::getSampleNode(xmlChar *sampleID){
 		xmlXPathContextPtr context=xmlXPathNewContext(doc);
 
 		xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),context);
-		xmlNodePtr sample=res->nodesetval->nodeTab[0];
+		wsSampleNode sample(res->nodesetval->nodeTab[0]);
 
 		xmlXPathFreeContext(context);
 		xmlXPathFreeObject(res);
@@ -96,26 +96,33 @@ xmlNodePtr flowJoWorkspace::getSampleNode(xmlChar *sampleID){
 }
 
 //xquery the "SampleNode" within "sample" context
-wsRootNode flowJoWorkspace::getRoot(xmlNodePtr sample)
+wsRootNode flowJoWorkspace::getRoot(wsSampleNode sample)
 {
-	wsRootNode node;
 
-	xmlXPathObjectPtr res=xpathInNode(nodePath.sampleNode,sample);
-	node.thisNode=res->nodesetval->nodeTab[0];
+
+	xmlXPathObjectPtr res=sample.xpathInNode(nodePath.sampleNode);
+	wsRootNode node(res->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(res);
 	return node;
 }
 
-wsPopNode flowJoWorkspace::getSubPop(wsNode * thisNode )
+
+wsNodeSet flowJoWorkspace::getSubPop(wsNode & node)
 {
-	wsPopNode node;
-//	string xpath=nodePath.sampleNode;
-//
-//
-//	xmlXPathObjectPtr res=xpathInNode(xpath,thisNode->node);
-//	xmlNodePtr sampleNode=res->nodesetval->nodeTab[0];
-//	xmlXPathFreeObject(res);
-	return node;
+	xmlXPathObjectPtr res=node.xpathInNode(nodePath.popNode);
+	int nChildren=res->nodesetval->nodeNr;
+	wsNodeSet childenNodes;
+	childenNodes.wsNodeSet=new wsNode *[nChildren];
+	for(int i=0;i<nChildren;i++)
+		{
+			childenNodes.wsNodeSet[i]=wsPopNode(res->nodesetval->nodeTab[i]);
+		}
+
+
+	xmlXPathFreeObject(res);
+
+	return childenNodes;
+
 }
 
 

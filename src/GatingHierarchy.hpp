@@ -22,7 +22,7 @@ struct OurVertexPropertyWriter {
 
     template <class Vertex>
     void operator() (std::ostream &out, Vertex u) {
-        out << "."<<g[u].getName()<<"'";
+        out <<"[label=\""<<g[u].getName()<<"\"]";
 
     }
 
@@ -50,6 +50,7 @@ class GatingHierarchy{
 	string sampleName;
 	populationTree tree;
 	map<string,VertexID> nodelist;
+	workspace const * thisWs;
 public:
 	/*retrieve the gate definition from a particular node*/
 //	gate getGate(unsigned short gateid);
@@ -60,11 +61,12 @@ public:
 //	void removeGate(string popName);
 
 	/*append the gate to the tree*/
+	void addChild(VertexID parent,VertexID child);
 	void addGate(gate& g,string popName);
-	void addPopulation(xmlNodePtr popNode);
-	void addRoot(populationNode rootNode);
+	void addPopulation(VertexID parentID,wsNode const* parentNode);
+	VertexID addRoot(populationNode rootNode);
 	GatingHierarchy();
-	GatingHierarchy(xmlChar * sampleID,workspace &ws);
+	GatingHierarchy(xmlChar * sampleID,workspace const *ws);
 
 	/*associate the tree with data matrix*/
 //	void addData();

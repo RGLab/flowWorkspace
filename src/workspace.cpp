@@ -24,18 +24,7 @@ workspace::~workspace(){
 			cout<<"xml freed!"<<endl;
 }
 
-/*Oftentimes we need to do the xquery based on the context of the current node instead of doc
-* it is strange that I haven't found this commonly used API in libxml2
-* so have to write my own here
-*/
-xmlXPathObjectPtr workspace::xpathInNode(string xpath,xmlNodePtr curNode)
-{
-	xmlXPathContextPtr ctxt=xmlXPathNewContext(this->doc);
-	ctxt->node=curNode;
-	xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),ctxt);
-	xmlXPathFreeContext(ctxt);
-	return res;
-}
+
 void workspace::print_element_names(xmlNode *a_node)
 {
 
