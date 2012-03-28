@@ -14,11 +14,20 @@ GatingHierarchy::GatingHierarchy()
 
 }
 //constructor for sampleNode argument
-GatingHierarchy::GatingHierarchy(xmlChar * sampleID,workspace * ws)
+GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)
 {
 	thisWs=ws;
 
 	wsSampleNode curSampleNode=thisWs->getSampleNode(sampleID);
+	wsRootNode root=thisWs->getRoot(curSampleNode);
+	VertexID pVerID=addRoot(thisWs->to_popNode(&root));
+//	wsRootNode popNode=root;//getPopulation();
+	addPopulation(pVerID,&root);
+
+}
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws)
+{
+	thisWs=ws;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	VertexID pVerID=addRoot(thisWs->to_popNode(&root));
 //	wsRootNode popNode=root;//getPopulation();

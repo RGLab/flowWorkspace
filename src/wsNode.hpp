@@ -24,6 +24,7 @@ public:
 
 class wsSampleNode:public wsNode{
 public:
+	xmlChar * name;
 	wsSampleNode(xmlNodePtr node){thisNode=node;};
 
 };

@@ -12,6 +12,7 @@
 #include <iostream>
 using namespace std;
 
+
 /*constructors of flowJoWorkspace for mac and win derived classes
  *
  */
@@ -44,13 +45,14 @@ winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
  * keep the returned results in char * format in case the non-numeric sampleID is stored
  * make sure to free the memory of xmlChar * outside of the call
  */
-vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
+vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 {
 
 		xmlXPathContextPtr context = xmlXPathNewContext(doc);
 		xmlXPathObjectPtr result = xmlXPathEval((xmlChar *)nodePath.group.c_str(), context);
 		if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
 			xmlXPathFreeObject(result);
+			xmlXPathFreeContext(context);
 	                cout<<"No Groups"<<endl;;
 	                throw(2);
 		}
@@ -59,7 +61,7 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 		xmlNodePtr cur=result->nodesetval->nodeTab[groupID];
 		context->node=cur;
 		xmlXPathObjectPtr sids=xmlXPathEval((xmlChar *)nodePath.sampleRef.c_str(),context);
-		vector<xmlChar *> sampleID;
+		vector<string> sampleID;
 		xmlNodeSetPtr nodeSet=sids->nodesetval;
 		int size=nodeSet->nodeNr;
 
@@ -67,8 +69,10 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 		{
 			xmlNodePtr curNode=nodeSet->nodeTab[i];
 			xmlChar * curSampleID= xmlGetProp(curNode,(xmlChar *)"sampleID");
-
-			sampleID.push_back(curSampleID);
+			//to avoid memory leaking,store a copy of returned characters in string vector so that the dynamically allocated memory
+			//can be freed right away in stead of later on.
+			sampleID.push_back(string((const char *)curSampleID));
+			xmlFree(curSampleID);
 		}
 //			;
 
@@ -80,10 +84,10 @@ vector<xmlChar *> flowJoWorkspace::getSampleID(unsigned short groupID)
 
 
 //make sure to free the memory of xmlXPathObject outside of the call
-wsSampleNode flowJoWorkspace::getSampleNode(xmlChar *sampleID){
+wsSampleNode flowJoWorkspace::getSampleNode(string sampleID){
 		string xpath=nodePath.sample;
 		xpath.append("[@sampleID='");
-		xpath.append((const char *)sampleID);
+		xpath.append(sampleID);
 		xpath.append("']");
 		xmlXPathContextPtr context=xmlXPathNewContext(doc);
 
@@ -95,6 +99,13 @@ wsSampleNode flowJoWorkspace::getSampleNode(xmlChar *sampleID){
 		return sample;
 }
 
+//need to explicitly release the memory after this call
+string flowJoWorkspace::getName(wsNode * node){
+
+//	xmlChar * curSampleID= xmlGetProp(node->thisNode,(xmlChar *)"sampleID");
+	return "test";
+
+}
 //xquery the "SampleNode" within "sample" context
 wsRootNode flowJoWorkspace::getRoot(wsSampleNode sample)
 {

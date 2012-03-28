@@ -45,12 +45,13 @@ protected:
 
 	 xmlDoc * doc;
 public:
-	~workspace();
-	 void print_element_names(xmlNode *);
+	 ~workspace();
+//	 void print_element_names(xmlNode *);
 	 virtual void getCompensation()=0;
 	 virtual void getTransformation()=0;
-	 virtual vector <xmlChar *> getSampleID(unsigned short)=0;
-	 virtual wsSampleNode getSampleNode(xmlChar *sampleID)=0;
+	 virtual vector <string> getSampleID(unsigned short)=0;
+	 virtual wsSampleNode getSampleNode(string sampleID)=0;
+	 virtual string getName(wsNode *)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
 	 virtual populationNode to_popNode(wsRootNode const *)=0;

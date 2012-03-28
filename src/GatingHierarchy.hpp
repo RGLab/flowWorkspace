@@ -66,7 +66,8 @@ public:
 	void addPopulation(VertexID parentID,wsNode * parentNode);
 	VertexID addRoot(populationNode rootNode);
 	GatingHierarchy();
-	GatingHierarchy(xmlChar * sampleID,workspace * ws);
+	GatingHierarchy(string sampleID,workspace * ws);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws);
 
 	/*associate the tree with data matrix*/
 //	void addData();

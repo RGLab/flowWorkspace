@@ -62,18 +62,22 @@ void GatingSet::openWorkspace(const char * sFileName)
 void GatingSet::parseWorkspace(unsigned short groupID)
 {
 	//first get all the sample IDs for given groupID
-	vector<xmlChar *> sampleID=ws->getSampleID(groupID);
+	vector<string> sampleID=ws->getSampleID(groupID);
 
 	//contruct gating hiearchy for each sampleID
-	vector<xmlChar *>::iterator it;
+	vector<string>::iterator it;
 	for(it=sampleID.begin();it!=sampleID.end();it++)
 	{
 
-		GatingHierarchy curGh(*it,ws);
+		wsSampleNode curSampleNode=ws->getSampleNode(*it);
 
-		xmlFree(*it);//free memory for each sampleID returned by getSampleID
+		GatingHierarchy curGh(curSampleNode,ws);
 
-		string sampleName="test";
+//		GatingHierarchy curGh(*it,ws);
+
+//		xmlFree(*it);//free memory for each sampleID returned by getSampleID
+
+		string sampleName=ws->getName(&curSampleNode);
 
 		ghs[sampleName]=curGh;//add to the map
 

@@ -15,12 +15,14 @@
 class flowJoWorkspace:public workspace{
 
 public:
-	 vector <xmlChar *> getSampleID(unsigned short);
-	 wsSampleNode getSampleNode(xmlChar *sampleID);
+//	~flowJoWorkspace();
+	 vector <string> getSampleID(unsigned short);
+	 wsSampleNode getSampleNode(string sampleID);
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
      populationNode to_popNode(wsRootNode const *node);
      populationNode to_popNode(wsPopNode const * node);
+     string getName(wsNode *);
 
 };
 

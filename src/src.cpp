@@ -24,7 +24,7 @@ int main(void) {
 	const char * filename="/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml";
 	GatingSet gs;
 	gs.openWorkspace(filename);
-	unsigned short groupID=2;
+	unsigned short groupID=3;
 	gs.parseWorkspace(groupID);
 
 	GatingHierarchy gh=gs.getGatingHierarchy("test");
