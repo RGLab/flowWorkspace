@@ -41,17 +41,17 @@ struct xpath{
 class workspace{
 public:
 	 xpath nodePath;
-protected:
+//protected:
 
 	 xmlDoc * doc;
 public:
 	 ~workspace();
-//	 void print_element_names(xmlNode *);
+	 virtual string xPathSample(string sampleID)=0;
 	 virtual void getCompensation()=0;
 	 virtual void getTransformation()=0;
 	 virtual vector <string> getSampleID(unsigned short)=0;
-	 virtual wsSampleNode getSampleNode(string sampleID)=0;
-	 virtual string getName(wsNode *)=0;
+//	 virtual wsSampleNode getSample(string sampleID)=0;
+	 virtual string getSampleName(wsSampleNode &)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
 	 virtual populationNode to_popNode(wsRootNode const *)=0;

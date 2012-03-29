@@ -20,11 +20,13 @@ using namespace std;
 class GatingSet{
 	workspace * ws;
 	map<string,GatingHierarchy> ghs;
+	vector<string> sampleList;
 public:
 	~GatingSet();
 
-	GatingHierarchy getGatingHierarchy(string sampleName);
-	void openWorkspace(const char * );
+	GatingHierarchy getGatingHierarchy(string );
+	GatingHierarchy getGatingHierarchy(unsigned int);
+	void openWorkspace(string);
 	 void parseWorkspace(unsigned short);
 
 };

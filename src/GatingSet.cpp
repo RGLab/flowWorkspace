@@ -13,19 +13,42 @@
 #include <iostream>
 using namespace std;
 
+
+template <class T>
+wsSampleNode getSample(T ws,string sampleID){
+
+		string xpath=ws->xPathSample(sampleID);
+
+		wsNode docRoot(xmlDocGetRootElement(ws->doc));
+
+		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
+		if(res->nodesetval->nodeNr>1)
+		{
+			cout<<sampleID<<" is not unique within this group!"<<endl;
+			xmlXPathFreeObject(res);
+			throw(3);
+		}
+
+		wsSampleNode sample(res->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(res);
+		return sample;
+}
+
+
+
 GatingSet::~GatingSet()
 {
 
 	delete ws;
 }
 //read xml file and create the appropriate flowJoWorkspace object
-void GatingSet::openWorkspace(const char * sFileName)
+void GatingSet::openWorkspace(string sFileName)
 {
 
 		LIBXML_TEST_VERSION
 
 		/*parse the file and get the DOM */
-		xmlDocPtr doc = xmlReadFile(sFileName, NULL, 0);
+		xmlDocPtr doc = xmlReadFile(sFileName.c_str(), NULL, 0);
 		if (doc == NULL ) {
 				fprintf(stderr,"Document not parsed successfully. \n");
 				return;
@@ -46,7 +69,7 @@ void GatingSet::openWorkspace(const char * sFileName)
 		//get version info
 		 xmlChar * wsVersion=xmlGetProp(cur,(const xmlChar*)"version");
 
-		 if (xmlStrEqual(wsVersion,(const xmlChar *)"1.6"))
+		 if (xmlStrEqual(wsVersion,(const xmlChar *)"1.61")||xmlStrEqual(wsVersion,(const xmlChar *)"1.6"))
 			 ws=new winFlowJoWorkspace(doc);
 		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"2.0"))
 			 ws=new macFlowJoWorkspace(doc);
@@ -69,19 +92,15 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 	for(it=sampleID.begin();it!=sampleID.end();it++)
 	{
 
-		wsSampleNode curSampleNode=ws->getSampleNode(*it);
+		wsSampleNode curSampleNode=getSample(ws,*it);
 
 		GatingHierarchy curGh(curSampleNode,ws);
 
-//		GatingHierarchy curGh(*it,ws);
-
-//		xmlFree(*it);//free memory for each sampleID returned by getSampleID
-
-		string sampleName=ws->getName(&curSampleNode);
+		string sampleName=ws->getSampleName(curSampleNode);
 
 		ghs[sampleName]=curGh;//add to the map
 
-//		xmlXPathFreeObject(curSampleNode);//free memory for the xpath query result returned by getSampleNode
+		sampleList.push_back(sampleName);
 	}
 
 }
@@ -92,7 +111,8 @@ GatingHierarchy GatingSet::getGatingHierarchy(string sampleName)
 	return ghs[sampleName];
 }
 
-//GatingHierarchy GatingSet::getGatingHierarchy(unsigned index)
-//{
-////	return ghs;
-//}
+GatingHierarchy GatingSet::getGatingHierarchy(unsigned index)
+{
+
+		return ghs[sampleList.at(index)];
+}

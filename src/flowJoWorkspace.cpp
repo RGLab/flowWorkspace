@@ -31,11 +31,11 @@ macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
 	cout<<"windows version of flowJo workspace recognized."<<endl;
 //	xpath_sample="/Workspace/SampleList/Sample/DataSet";
-	nodePath.group="/Workspace/Groups/GroupNode";
-	nodePath.sampleRef=".//SampleRef";
-	nodePath.sample="/Workspace/SampleList/Sample";
-	nodePath.sampleNode="./SampleNode";
-	nodePath.popNode="./Subpopulations";
+	nodePath.group="/Workspace/Groups/GroupNode";// abs path
+	nodePath.sampleRef=".//SampleRef";//relative GroupNode
+	nodePath.sample="/Workspace/SampleList/Sample";//abs path
+	nodePath.sampleNode="./SampleNode";//relative to sample
+	nodePath.popNode="./*/Population";//relative to sampleNode
 	this->doc=doc;
 
 }
@@ -71,7 +71,8 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 			xmlChar * curSampleID= xmlGetProp(curNode,(xmlChar *)"sampleID");
 			//to avoid memory leaking,store a copy of returned characters in string vector so that the dynamically allocated memory
 			//can be freed right away in stead of later on.
-			sampleID.push_back(string((const char *)curSampleID));
+			string sSampleID=(const char *)curSampleID;
+			sampleID.push_back(sSampleID.c_str());
 			xmlFree(curSampleID);
 		}
 //			;
@@ -82,30 +83,74 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 		return(sampleID);
 }
 
+string macFlowJoWorkspace::xPathSample(string sampleID){
+			string xpath=nodePath.sample;
+			xpath.append("[@sampleID='");
+			xpath.append(sampleID);
+			xpath.append("']");
+			return xpath;
 
-//make sure to free the memory of xmlXPathObject outside of the call
-wsSampleNode flowJoWorkspace::getSampleNode(string sampleID){
-		string xpath=nodePath.sample;
-		xpath.append("[@sampleID='");
-		xpath.append(sampleID);
-		xpath.append("']");
-		xmlXPathContextPtr context=xmlXPathNewContext(doc);
-
-		xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),context);
-		wsSampleNode sample(res->nodesetval->nodeTab[0]);
-
-		xmlXPathFreeContext(context);
-		xmlXPathFreeObject(res);
-		return sample;
 }
 
+string winFlowJoWorkspace::xPathSample(string sampleID){
+			string xpath=nodePath.sample;
+			xpath.append("/DataSet[@sampleID='");
+			xpath.append(sampleID);
+			xpath.append("']/..");
+			return xpath;
+
+}
+
+
+////make sure to free the memory of xmlXPathObject outside of the call
+//wsSampleNode macFlowJoWorkspace::getSample(string sampleID){
+//		string xpath=nodePath.sample;
+//		xpath.append("[@sampleID='");
+//		xpath.append(sampleID);
+//		xpath.append("']");
+//
+//		wsNode docRoot(xmlDocGetRootElement(doc));
+//
+//		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
+//		if(res->nodesetval->nodeNr>1)
+//		{
+//			cout<<sampleID<<" is not unique within this group!"<<endl;
+//			xmlXPathFreeObject(res);
+//			throw(3);
+//		}
+//
+//		wsSampleNode sample(res->nodesetval->nodeTab[0]);
+//		xmlXPathFreeObject(res);
+//		return sample;
+//}
+//wsSampleNode winFlowJoWorkspace::getSample(string sampleID){
+//
+//
+//		wsNode docRoot(xmlDocGetRootElement(doc));
+//
+//		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
+//		if(res->nodesetval->nodeNr>1)
+//		{
+//			cout<<sampleID<<" is not unique within this group!"<<endl;
+//			xmlXPathFreeObject(res);
+//			throw(3);
+//		}
+//
+//		wsSampleNode sample(res->nodesetval->nodeTab[0]);
+//		xmlXPathFreeObject(res);
+//		return sample;
+//}
 //need to explicitly release the memory after this call
-string flowJoWorkspace::getName(wsNode * node){
+string flowJoWorkspace::getSampleName(wsSampleNode & node){
 
-//	xmlChar * curSampleID= xmlGetProp(node->thisNode,(xmlChar *)"sampleID");
-	return "test";
+	xmlXPathObjectPtr res=node.xpathInNode("SampleNode");//get sampleNode
+	wsNode sampleNode(res->nodesetval->nodeTab[0]);
+	xmlXPathFreeObject(res);
+
+	return sampleNode.getProperty("name");//get property name from sampleNode
 
 }
+
 //xquery the "SampleNode" within "sample" context
 wsRootNode flowJoWorkspace::getRoot(wsSampleNode sample)
 {

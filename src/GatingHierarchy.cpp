@@ -14,17 +14,17 @@ GatingHierarchy::GatingHierarchy()
 
 }
 //constructor for sampleNode argument
-GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)
-{
-	thisWs=ws;
-
-	wsSampleNode curSampleNode=thisWs->getSampleNode(sampleID);
-	wsRootNode root=thisWs->getRoot(curSampleNode);
-	VertexID pVerID=addRoot(thisWs->to_popNode(&root));
-//	wsRootNode popNode=root;//getPopulation();
-	addPopulation(pVerID,&root);
-
-}
+//GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)
+//{
+//	thisWs=ws;
+//
+//	wsSampleNode curSampleNode=thisWs->getSample(sampleID);
+//	wsRootNode root=thisWs->getRoot(curSampleNode);
+//	VertexID pVerID=addRoot(thisWs->to_popNode(&root));
+////	wsRootNode popNode=root;//getPopulation();
+//	addPopulation(pVerID,&root);
+//
+//}
 GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws)
 {
 	thisWs=ws;
@@ -106,6 +106,7 @@ void GatingHierarchy::drawGraph()
 	ofstream outputFile("test.dot");
 	//...
 	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriter(tree));
+	outputFile.close();
 //	system("pwd");
 //	system("dot2gxl test.dot -o test.gxl");
 

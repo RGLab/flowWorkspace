@@ -21,13 +21,16 @@ using namespace std;
 int main(void) {
 
 	//read xml file by libxml
-	const char * filename="/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml";
+	vector<string> fileNames;
+
+	fileNames.push_back("fjWsExamples/HIPC_trial.xml");
+	fileNames.push_back("fjWsExamples/LyoplateTest1Yale.wsp");
 	GatingSet gs;
-	gs.openWorkspace(filename);
-	unsigned short groupID=3;
+	gs.openWorkspace(fileNames.at(1));
+	unsigned short groupID=1;
 	gs.parseWorkspace(groupID);
 
-	GatingHierarchy gh=gs.getGatingHierarchy("test");
+	GatingHierarchy gh=gs.getGatingHierarchy(1);
 	gh.drawGraph();
 	//construct GatingHierarchy without associate it with sample
 //	GatingHierarchy gh;

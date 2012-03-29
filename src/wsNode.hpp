@@ -15,16 +15,17 @@
 class wsNode{
 public:
 	xmlNodePtr thisNode;
+	string getProperty(string propName);
 	xmlXPathObjectPtr xpathInNode(string xpath);
-
-
+	wsNode(xmlNodePtr node){thisNode=node;};
+	wsNode(){};
 };
 
 
 
 class wsSampleNode:public wsNode{
 public:
-	xmlChar * name;
+//	wsSampleNode();
 	wsSampleNode(xmlNodePtr node){thisNode=node;};
 
 };
@@ -37,23 +38,11 @@ public:
 class wsPopNode:public wsNode{
 public:
 	wsPopNode(xmlNodePtr node){thisNode=node;};
-	wsPopNode(){};
+//	wsPopNode(){};
 };
 
 typedef vector<wsPopNode> wsPopNodeSet;
-//class wsPopNodeSet{
-//public:
-//	wsPopNode * nodes;
-//	int number;
-//	wsPopNodeSet(xmlNodePtr *,int nSize){
-//		childenNodes.nodes=new wsPopNode [nChildren];
-//			for(int i=0;i<nChildren;i++)
-//				{
-//					childenNodes.nodes[i]=wsPopNode(res->nodesetval->nodeTab[i]);
-//				}
-//
-//	}
-//};
+
 
 #endif /* WSNODE_HPP_ */
 

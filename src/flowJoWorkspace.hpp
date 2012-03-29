@@ -12,17 +12,19 @@
 
 
 
+
 class flowJoWorkspace:public workspace{
 
 public:
 //	~flowJoWorkspace();
 	 vector <string> getSampleID(unsigned short);
-	 wsSampleNode getSampleNode(string sampleID);
+//	 wsSampleNode getSample(string sampleID);
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
      populationNode to_popNode(wsRootNode const *node);
      populationNode to_popNode(wsPopNode const * node);
-     string getName(wsNode *);
+     string getSampleName(wsSampleNode &);
+//     virtual string xPathSample(string sampleID)=0;
 
 };
 
@@ -31,7 +33,8 @@ public:
 	winFlowJoWorkspace(xmlDoc *);
 	  void getCompensation(){};
 	  void getTransformation(){};
-//	  void getPopulation(){};
+	  string xPathSample(string sampleID);
+//	  string getSampleName(wsSampleNode &);
 };
 
 
@@ -40,7 +43,8 @@ public:
 	macFlowJoWorkspace(xmlDoc *);
 	void getCompensation(){};
 	void getTransformation(){};
-//	void getPopulation(){};
+	string xPathSample(string sampleID);
+//	 string getSampleName(wsSampleNode &);
 };
 
 
