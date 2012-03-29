@@ -21,8 +21,8 @@ public:
 //	 wsSampleNode getSample(string sampleID);
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
-     populationNode to_popNode(wsRootNode const *node);
-     populationNode to_popNode(wsPopNode const * node);
+     populationNode to_popNode(wsRootNode &);
+     populationNode to_popNode(wsPopNode &);
      string getSampleName(wsSampleNode &);
 //     virtual string xPathSample(string sampleID)=0;
 

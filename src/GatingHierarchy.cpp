@@ -29,7 +29,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws)
 {
 	thisWs=ws;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
-	VertexID pVerID=addRoot(thisWs->to_popNode(&root));
+	VertexID pVerID=addRoot(thisWs->to_popNode(root));
 //	wsRootNode popNode=root;//getPopulation();
 	addPopulation(pVerID,&root);
 
@@ -61,22 +61,22 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 	wsPopNodeSet::iterator it;
 		for(it=children.begin();it!=children.end();it++)
 		{
+			//add boost node
 			VertexID curChildID = boost::add_vertex(tree);
-			wsPopNode *curChildNode=&(*it);//&children.nodes[i];
+			wsPopNode curChildNode=(*it);
+			//convert to the node format that GatingHierarchy understands
 			populationNode curChild=thisWs->to_popNode(curChildNode);
+			//attach the populationNode to the boost node as property
 			tree[curChildID]=curChild;
+			//add relation between current node and parent node
 			boost::add_edge(parentID,curChildID,tree);
-
-			nodelist[curChild.getName()]=curChildID;//update the node map
+			//update the node map for the easy query by pop name
+			nodelist[curChild.getName()]=curChildID;
 			//recursively add its descendants
-			addPopulation(curChildID,curChildNode);
+			addPopulation(curChildID,&curChildNode);
 		}
 
 
-//	.nextPopulation<-function(x,level){
-//			#Get all the population nodes one level below this one..
-//			xpathApply(x,paste("./descendant::Population[count(ancestor-or-self::Population) = ",level+xpathApply(x,"count(ancestor-or-self::Population)"),"]",sep=""));
-//		}
 }
 void GatingHierarchy::addGate(gate& g,string popName)
 {

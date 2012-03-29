@@ -181,24 +181,23 @@ wsPopNodeSet flowJoWorkspace::getSubPop(wsNode * node)
 
 }
 
-populationNode flowJoWorkspace::to_popNode(wsRootNode const * node){
-	xmlChar * popName=xmlGetProp(node->thisNode,(const xmlChar*)"name");
+populationNode flowJoWorkspace::to_popNode(wsRootNode & node){
 
 	populationNode pNode;
-	pNode.setName((const char *)popName);
 
-	xmlFree(popName);
+	pNode.setName(node.getProperty("name").c_str());
+
+	pNode.fjStats["count"]=atoi(node.getProperty("count").c_str());
 
 	return pNode;
 }
 
-populationNode flowJoWorkspace::to_popNode(wsPopNode const * node){
-	xmlChar * popName=xmlGetProp(node->thisNode,(const xmlChar*)"name");
+populationNode flowJoWorkspace::to_popNode(wsPopNode &node){
 
 	populationNode pNode;
-	pNode.setName((const char *)popName);
+	pNode.setName(node.getProperty("name").c_str());
 
-	xmlFree(popName);
+	pNode.fjStats["count"]=atoi(node.getProperty("count").c_str());
 
 	return pNode;
 }

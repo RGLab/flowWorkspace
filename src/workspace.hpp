@@ -54,8 +54,8 @@ public:
 	 virtual string getSampleName(wsSampleNode &)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
-	 virtual populationNode to_popNode(wsRootNode const *)=0;
-	 virtual populationNode to_popNode(wsPopNode const *)=0;
+	 virtual populationNode to_popNode(wsRootNode &)=0;
+	 virtual populationNode to_popNode(wsPopNode &)=0;
 };
 
 
