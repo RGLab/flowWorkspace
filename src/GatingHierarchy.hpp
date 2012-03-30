@@ -22,7 +22,9 @@ struct OurVertexPropertyWriter {
 
     template <class Vertex>
     void operator() (std::ostream &out, Vertex u) {
-        out <<"[shape=record,label=\"{"<<g[u].getName()<<"|"<<g[u].fjStats["count"]<<"}\"]";
+
+    	out<<"[shape=record,label=\"{"<<g[u].getName()<<"|count:"<<g[u].fjStats["count"]<<"|"<<typeid(*g[u].getGate()).name()<<"}\"]";
+
 
     }
 

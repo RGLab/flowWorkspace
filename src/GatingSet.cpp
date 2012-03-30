@@ -91,7 +91,7 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 	vector<string>::iterator it;
 	for(it=sampleID.begin();it!=sampleID.end();it++)
 	{
-
+		cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
 		GatingHierarchy curGh(curSampleNode,ws);
@@ -101,6 +101,7 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 		ghs[sampleName]=curGh;//add to the map
 
 		sampleList.push_back(sampleName);
+		cout<<"Gating hierarchy created: "<<sampleName<<endl;
 	}
 
 }

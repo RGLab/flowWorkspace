@@ -65,7 +65,7 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 		xmlNodeSetPtr nodeSet=sids->nodesetval;
 		int size=nodeSet->nodeNr;
 
-		for(unsigned i=0;i<size;i++)
+		for(int i=0;i<size;i++)
 		{
 			xmlNodePtr curNode=nodeSet->nodeTab[i];
 			xmlChar * curSampleID= xmlGetProp(curNode,(xmlChar *)"sampleID");
@@ -102,44 +102,6 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 }
 
 
-////make sure to free the memory of xmlXPathObject outside of the call
-//wsSampleNode macFlowJoWorkspace::getSample(string sampleID){
-//		string xpath=nodePath.sample;
-//		xpath.append("[@sampleID='");
-//		xpath.append(sampleID);
-//		xpath.append("']");
-//
-//		wsNode docRoot(xmlDocGetRootElement(doc));
-//
-//		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
-//		if(res->nodesetval->nodeNr>1)
-//		{
-//			cout<<sampleID<<" is not unique within this group!"<<endl;
-//			xmlXPathFreeObject(res);
-//			throw(3);
-//		}
-//
-//		wsSampleNode sample(res->nodesetval->nodeTab[0]);
-//		xmlXPathFreeObject(res);
-//		return sample;
-//}
-//wsSampleNode winFlowJoWorkspace::getSample(string sampleID){
-//
-//
-//		wsNode docRoot(xmlDocGetRootElement(doc));
-//
-//		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
-//		if(res->nodesetval->nodeNr>1)
-//		{
-//			cout<<sampleID<<" is not unique within this group!"<<endl;
-//			xmlXPathFreeObject(res);
-//			throw(3);
-//		}
-//
-//		wsSampleNode sample(res->nodesetval->nodeTab[0]);
-//		xmlXPathFreeObject(res);
-//		return sample;
-//}
 //need to explicitly release the memory after this call
 string flowJoWorkspace::getSampleName(wsSampleNode & node){
 
@@ -180,7 +142,127 @@ wsPopNodeSet flowJoWorkspace::getSubPop(wsNode * node)
 	return childenNodes;
 
 }
+gate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
+			polygonGate * gate=new polygonGate();
+			//get the negate flag
+			gate->isNegate=node.getProperty("eventsInside")=="0";
 
+			//get parameter name
+			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']/*[local-name()='parameter']");
+			int nParam=resPara->nodesetval->nodeNr;
+			if(nParam!=2)
+			{
+				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
+				throw(4);
+			}
+			for(int i=0;i<nParam;i++)
+			{
+				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
+				string curParam=curPNode.getProperty("name");
+				gate->params.push_back(curParam);
+			}
+			xmlXPathFreeObject(resPara);
+
+			//get vertices
+			xmlXPathObjectPtr resVert=node.xpathInNode("*[local-name()='vertex']");
+			for(int i=0;i<resVert->nodesetval->nodeNr;i++)
+			{
+				wsNode curVNode(resVert->nodesetval->nodeTab[i]);
+
+				/*for each vertice node
+				**get one pair of coordinates
+				*/
+				xmlXPathObjectPtr resCoord=curVNode.xpathInNode("*[local-name()='coordinate']");
+
+				xmlNodeSetPtr nodeSet=resCoord->nodesetval;
+				int nCoord=nodeSet->nodeNr;
+				if(nCoord!=2)
+				{
+					cout<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
+					throw(5);
+				}
+				//get the coordinates values from the property of respective node
+				pair<double,double> pCoord;
+	//			wsNode xcord(nodeSet->nodeTab[0]);
+	//			string sXcord=xcord.getProperty("value");
+	//			pCoord.first=atof(sXcord.c_str());
+				pCoord.first=atof(wsNode(nodeSet->nodeTab[0]).getProperty("value").c_str());
+				pCoord.second=atof(wsNode(nodeSet->nodeTab[1]).getProperty("value").c_str());
+				//and push to the vertices vector of the gate object
+				gate->vertices.push_back(pCoord);
+
+				xmlXPathFreeObject(resCoord);
+			}
+			xmlXPathFreeObject(resVert);
+			return gate;
+}
+gate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
+			rectGate * gate=new rectGate();
+			//get the negate flag
+			gate->isNegate=node.getProperty("eventsInside")=="0";
+
+			//get parameter name
+			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']");
+			int nParam=resPara->nodesetval->nodeNr;
+			if(nParam!=2)
+			{
+				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
+				throw(4);
+			}
+			for(int i=0;i<nParam;i++)
+			{
+				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
+
+				//get coordinates from properties
+				rangegate rGate;
+				string sMin=curPNode.getProperty("min");
+				rGate.min=sMin.empty()?numeric_limits<double>::min():atof(sMin.c_str());
+
+				string sMax=curPNode.getProperty("max");
+				rGate.max=sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str());
+
+				//get parameter name from the children node
+				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");
+				rGate.pName=wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name");
+				xmlXPathFreeObject(resPName);
+
+				//push the current rangeGate into rectGate
+				gate->params.push_back(rGate);
+			}
+			xmlXPathFreeObject(resPara);
+			return gate;
+}
+gate* winFlowJoWorkspace::getGate(wsPopNode & node){
+
+
+	xmlXPathObjectPtr resGate=node.xpathInNode("Gate/*");
+	wsNode gNode(resGate->nodesetval->nodeTab[0]);
+	xmlXPathFreeObject(resGate);
+	const xmlChar * gateType=gNode.thisNode->name;
+	if(xmlStrEqual(gateType,(const xmlChar *)"PolygonGate"))
+	{
+		wsPolyGateNode pGNode(gNode.thisNode);
+		return(getGate(pGNode));
+
+	}
+	else if(xmlStrEqual(gateType,(const xmlChar *)"RectangleGate"))
+	{
+		wsRectGateNode rGNode(gNode.thisNode);
+		return(getGate(rGNode));
+	}
+	else
+	{
+		cout<<"gate type: "<<gateType<<" is not supported!"<<endl;
+		throw(6);
+	}
+
+}
+
+
+gate* macFlowJoWorkspace::getGate(wsPopNode & node){
+
+	return NULL;
+}
 populationNode flowJoWorkspace::to_popNode(wsRootNode & node){
 
 	populationNode pNode;
@@ -195,9 +277,18 @@ populationNode flowJoWorkspace::to_popNode(wsRootNode & node){
 populationNode flowJoWorkspace::to_popNode(wsPopNode &node){
 
 	populationNode pNode;
+	//add pop name
 	pNode.setName(node.getProperty("name").c_str());
-
+	//add pop counts
 	pNode.fjStats["count"]=atoi(node.getProperty("count").c_str());
-
+	//add gate lookat .extractGate R routine
+//	cout<<"extracting gate:"<<pNode.getName()<<endl;
+	try
+	{
+		pNode.setGate(getGate(node));
+	}
+	catch (int e) {
+		cout<<"extracting gate failed:"<<pNode.getName()<<endl;
+	}
 	return pNode;
 }

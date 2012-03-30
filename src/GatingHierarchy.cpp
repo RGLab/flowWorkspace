@@ -36,18 +36,10 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws)
 }
 VertexID GatingHierarchy::addRoot(populationNode rootNode)
 {
-
-
 	// Create  vertices in that graph
 	VertexID u = boost::add_vertex(tree);
 
 	tree[u]=rootNode;
-
-			//	rootcount<-xmlGetAttr(x,"count")###
-			//Fix a bug here. If "count" is empty or doesn't exist, need to look at the parent Sample xml node and get the eventCount property
-			//		if(is.null(rootcount)){
-			//		    rootcount<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"eventCount"))[[1]]
-			//		}
 	nodelist[rootNode.getName()]=u;
 
 	return(u);
@@ -66,6 +58,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
 			populationNode curChild=thisWs->to_popNode(curChildNode);
+			cout<<"node created:"<<curChild.getName()<<endl;
 			//attach the populationNode to the boost node as property
 			tree[curChildID]=curChild;
 			//add relation between current node and parent node

@@ -50,10 +50,10 @@ public:
 	 virtual void getCompensation()=0;
 	 virtual void getTransformation()=0;
 	 virtual vector <string> getSampleID(unsigned short)=0;
-//	 virtual wsSampleNode getSample(string sampleID)=0;
 	 virtual string getSampleName(wsSampleNode &)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
+	 virtual gate * getGate(wsPopNode &)=0;
 	 virtual populationNode to_popNode(wsRootNode &)=0;
 	 virtual populationNode to_popNode(wsPopNode &)=0;
 };

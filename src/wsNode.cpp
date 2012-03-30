@@ -27,7 +27,9 @@ xmlXPathObjectPtr wsNode::xpathInNode(string xpath)
 string wsNode::getProperty(string propName){
 
 	xmlChar * name= xmlGetProp(this->thisNode,(xmlChar *)propName.c_str());
-	string sName=(const char*)name;
+	string sName;
+	if(name!=0)
+		sName=(const char*)name;
 	xmlFree(name);
 	return sName;
 

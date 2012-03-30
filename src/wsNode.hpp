@@ -41,6 +41,18 @@ public:
 //	wsPopNode(){};
 };
 
+class wsRectGateNode:public wsNode{
+public:
+	wsRectGateNode(xmlNodePtr node){thisNode=node;};
+//	wsPopNode(){};
+};
+
+class wsPolyGateNode:public wsNode{
+public:
+	wsPolyGateNode(xmlNodePtr node){thisNode=node;};
+//	wsPopNode(){};
+};
+//typedef vector<wsNode> wsNodeSet;
 typedef vector<wsPopNode> wsPopNodeSet;
 
 

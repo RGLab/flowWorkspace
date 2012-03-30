@@ -16,7 +16,8 @@
 #include "GatingHierarchy.hpp"
 using namespace std;
 
-
+#define MAC 0
+#define WIN 1
 
 int main(void) {
 
@@ -26,7 +27,7 @@ int main(void) {
 	fileNames.push_back("fjWsExamples/HIPC_trial.xml");
 	fileNames.push_back("fjWsExamples/LyoplateTest1Yale.wsp");
 	GatingSet gs;
-	gs.openWorkspace(fileNames.at(1));
+	gs.openWorkspace(fileNames.at(WIN));//select xml workspace to parse
 	unsigned short groupID=1;
 	gs.parseWorkspace(groupID);
 

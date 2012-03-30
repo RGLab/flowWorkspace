@@ -34,7 +34,9 @@ public:
 	  void getCompensation(){};
 	  void getTransformation(){};
 	  string xPathSample(string sampleID);
-//	  string getSampleName(wsSampleNode &);
+	  gate * getGate(wsPopNode &);
+	  gate * getGate(wsPolyGateNode &);
+	  gate * getGate(wsRectGateNode &);
 };
 
 
@@ -44,7 +46,7 @@ public:
 	void getCompensation(){};
 	void getTransformation(){};
 	string xPathSample(string sampleID);
-//	 string getSampleName(wsSampleNode &);
+	gate * getGate(wsPopNode &);
 };
 
 
