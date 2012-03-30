@@ -23,6 +23,10 @@ public:
 //	virtual S4SXP to_flowCore()=0;
 };
 
+/*
+ * TODO:using #include <boost/multi_array.hpp> instead to make it easier to convert to R data structure hopefully.
+ *
+ */
 class polygonGate:public gate {
 public:
 	vector<string> params;
