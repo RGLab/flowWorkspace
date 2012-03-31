@@ -8,6 +8,21 @@
 #include "GatingHierarchy.hpp"
 #include <boost/graph/graphviz.hpp>
 #include <fstream>
+
+/*need to be careful that gate within each node of the GatingHierarchy is
+ * dynamically allocated,even it GatingHierarchy gets copied before destroyed
+ * these gates are already gone since the gate objects were already freed by
+ * this destructor
+ */
+//TODO:try to free the gates
+GatingHierarchy::~GatingHierarchy()
+{
+	//free the gate objects witin each node
+//	boost::vertices(tree).first()
+
+
+}
+
 //default constructor without argument
 GatingHierarchy::GatingHierarchy()
 {

@@ -49,11 +49,12 @@ class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
 //	double ** data;
-	string sampleName;
+
 	populationTree tree;
 	map<string,VertexID> nodelist;
 	workspace * thisWs;
 public:
+	string sampleName;
 	/*retrieve the gate definition from a particular node*/
 //	gate getGate(unsigned short gateid);
 //	gate getGate(string popName);
@@ -68,6 +69,7 @@ public:
 	void addPopulation(VertexID parentID,wsNode * parentNode);
 	VertexID addRoot(populationNode rootNode);
 	GatingHierarchy();
+	~GatingHierarchy();
 	GatingHierarchy(string sampleID,workspace * ws);
 	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws);
 
