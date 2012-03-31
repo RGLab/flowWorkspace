@@ -31,8 +31,8 @@ int main(void) {
 	unsigned short groupID=1;
 	gs.parseWorkspace(groupID);
 
-	GatingHierarchy gh=gs.getGatingHierarchy(1);
-	gh.drawGraph();
+	GatingHierarchy *gh=gs.getGatingHierarchy(1);
+	gh->drawGraph();
 	//construct GatingHierarchy without associate it with sample
 //	GatingHierarchy gh;
 //	gh.gating();

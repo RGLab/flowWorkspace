@@ -210,7 +210,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	    tf<-tempfile()
 	    save(tmp,file=tf);
 	    sfExport("tf","TEMP")
-	    rm(tmp);gc()
+	    rm(tmp)
+	  #  gc()
 	    clusterEvalQ(sfGetCluster(),{load(tf);tmp<-xmlRoot(xmlTreeParse(tmp, asText = TRUE, useInternal = TRUE));invisible()})
 	    message("parsing")
 		G<-sfLapply(l,function(x){
@@ -230,7 +231,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			}else{
 				compensation<-matrix();
 			}
-			rm(x);gc()
+			rm(x)
+			#gc()
 			tf<-tempfile()
 			ret<-list(graph=graph,transformations=transformations,compensation=compensation)
 			if(!file.exists(TEMP)){
@@ -285,7 +287,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	}
 	
 		fn<-do.call(c,lapply(G,function(x){		
-			get("fcsfile",env=nodeDataDefaults(x$graph,"metadata"))
+			get("fcsfile",envir=nodeDataDefaults(x$graph,"metadata"))
 		}))
 		names(G)<-fn
 	
@@ -315,7 +317,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			G<-G[-excludefiles];
 		}
 		
-		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",env=nodeDataDefaults(x$graph,"metadata")),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
+		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",envir=nodeDataDefaults(x$graph,"metadata")),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
 		G<-new("GatingSet",set=G);
 		##################################################
 		#create ncdf file without adding matrices yet
@@ -357,7 +359,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 						g<-execute(G[[i]],isNcdf=isNcdf(G[[i]]),ncfs=ncfs1,dataEnvironment=dataEnvironment)
 						
 						mpi.send.Robj(g,0,5)
-    					rm(g);gc(reset=T);	
+    					rm(g)
+    					#gc(reset=T);	
 
     					#are there more tasks?
     					mpi.recv.Robj(0,mpi.any.tag())
@@ -484,7 +487,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 			    }
 				G<-new("GatingSet",set=results)
 				rm(results);
-				gc(reset=TRUE);
+				#gc(reset=TRUE);
 				mpi.remote.exec(options("flowWorkspace_mpi_communication"=FALSE));
 				options("flowWorkspace_mpi_communication"=NULL)
 			}
@@ -579,14 +582,14 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	g<-graph::addNode(nm,g)
 	g<-graph::addEdge(attachto,nm,g)
 	nodeData(g,nm,"metadata")<-new.env(parent=emptyenv());
-	assign("isBooleanGate",TRUE,env=nodeData(g,nm,"metadata")[[1]])
+	assign("isBooleanGate",TRUE,envir=nodeData(g,nm,"metadata")[[1]])
 	struct<-list(.parseBooleanGate(def,gnames,x))
 	attr(struct,"type")<-"BooleanGate";
-	assign("gate",struct,env=nodeData(g,nm,"metadata")[[1]])
-	assign("count",counts,env=nodeData(g,nm,"metadata")[[1]]);
-	assign("fjName",fjname,env=nodeData(g,nm,"metadata")[[1]]);
+	assign("gate",struct,envir=nodeData(g,nm,"metadata")[[1]])
+	assign("count",counts,envir=nodeData(g,nm,"metadata")[[1]]);
+	assign("fjName",fjname,envir=nodeData(g,nm,"metadata")[[1]]);
 	#20110314
-	assign("isGated",FALSE,env=nodeData(g,nm,"metadata")[[1]])
+	assign("isGated",FALSE,envir=nodeData(g,nm,"metadata")[[1]])
 	
 	#Don't have these yet.. get them later.
 	#assign("parentTot",NA,env=nodeData(g,nm,"metadata")[[1]])
@@ -726,7 +729,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		message("Loading data file: ",file);
 		data<-read.FCS(file);
 
-		cid<-get("compID",env=nodeData(x,nlist[1],"metadata")[[1]])
+		cid<-get("compID",envir=nodeData(x,nlist[1],"metadata")[[1]])
 		cal<-hierarchy@transformations;
 
 		if(cid!=-1 & cid!=-2){
@@ -741,7 +744,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 			}else{
 				data<-res
 				rm(res);
-				gc(reset=TRUE);
+				#gc(reset=TRUE);
 			}
 			cnd<-colnames(data)
 			if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
@@ -782,7 +785,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 				}else{
 					data<-res
 					rm(res);
-					gc(reset=TRUE);
+					#gc(reset=TRUE);
 				}
 				cnd<-colnames(data)
 				wh<-cnd%in%parameters(comp)
@@ -793,25 +796,25 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 				p@data$name<-cnd
 				colnames(e)<-cnd;
 				data<-new("flowFrame",exprs=e,description=d,parameters=p)
-				gc(reset=TRUE);
+				#gc(reset=TRUE);
 			}
 			#Ditto
 			#cal<-.getCalibrationTableSearch(doc,nm)
 		}
-		gc(reset=TRUE)
+		#gc(reset=TRUE)
 		message("Transforming");
 		axis.labels<-list();
 		.flowJoTransform(environment(),cal);
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		#wh<-which(data@parameters@data$name=="Time")
 		wh<-grep("^Time$",data@parameters@data$name)
 		if(length(wh!=0)){
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
 		}
-		gc(reset=TRUE);
+		#gc(reset=TRUE);
 		# if(!isNcdf){
 			e<-new.env(parent=.GlobalEnv);
 		# }
@@ -850,7 +853,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		}
 		assign("axis.labels",axis.labels,envir=e);
 		rm(data);
-		gc(reset=TRUE)
+		#gc(reset=TRUE)
 		nodeDataDefaults(x,"data")<-e;
 		#Nodes to parse later
 		skipforlater<-list();
@@ -865,7 +868,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 				if(length(parentname)==0){
 					parentname<-node
 					
-					assign("thisTot",as.numeric(nodeData(x,node,"metadata")[[1]][["count"]]),env=nodeData(x,node,"metadata")[[1]]);
+					assign("thisTot",as.numeric(nodeData(x,node,"metadata")[[1]][["count"]]),envir=nodeData(x,node,"metadata")[[1]]);
 					hierarchy@tree<-x;
 					##the bug discovered and fixed on 06132011
 #					assign("thisIndices",list(getIndices(hierarchy,node),env=nodeData(x,node,"metadata")[[1]]));
@@ -874,7 +877,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 					.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 					
 					#20110314 set the flag after gating
-					assign("isGated",TRUE,env=nodeData(x,node,"metadata")[[1]])
+					assign("isGated",TRUE,envir=nodeData(x,node,"metadata")[[1]])
 					lastparent<-parentname;
 					next;
 				};
@@ -921,7 +924,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 		
 		if(cleanup){
 			nodeDataDefaults(x,"data")<-new.env(parent=.GlobalEnv);
-			gc(reset=TRUE);
+			#gc(reset=TRUE);
 		}
 		hierarchy@tree<-x;
 		# message("Computing Boolean Gates");
@@ -986,11 +989,11 @@ writeGatingSetGatesToNetCDFParallel<-function(gatingset,isNew=FALSE){
 		for(i in 1:length(tmp)){
 			#Update the indices file
 			if(isNew){
-				assign("IndiceFile",tmp[i],env=nodeData(gatingset[[i]]@tree,getNodes(gatingset[[i]])[1],"data")[[1]])
+				assign("IndiceFile",tmp[i],envir=nodeData(gatingset[[i]]@tree,getNodes(gatingset[[i]])[1],"data")[[1]])
 			}
 			#Tell each node in the tree that we are now using ncdf-based gate indices
 			for(node in getNodes(gatingset[[i]])){
-				assign("thisIndices",NULL,env=nodeData(gatingset[[i]]@tree,node,"metadata")[[1]])
+				assign("thisIndices",NULL,envir=nodeData(gatingset[[i]]@tree,node,"metadata")[[1]])
 			}
 		}
 	}else{
@@ -1051,7 +1054,7 @@ writeGatesToNetCDF<-function(hierarchy,isNew=FALSE){
 		
 		#And set the indices in memory to NULL
 		for(node in nlist){
-			assign("thisIndices",NULL,env=nodeData(hierarchy@tree,node,"metadata")[[1]])
+			assign("thisIndices",NULL,envir=nodeData(hierarchy@tree,node,"metadata")[[1]])
 		}
 	}
 }
@@ -1080,10 +1083,10 @@ setNcdf<-function(x,y){
 	parentname<-getParent(hierarchy,node)
 	x<-hierarchy@tree
 #	message("Gating ", node);
-	g<-get("gate",env=nodeData(x,node,"metadata")[[1]]);
+	g<-get("gate",envir=nodeData(x,node,"metadata")[[1]]);
 	#			browser()
-	if(exists("negated",env=nodeData(x,node,"metadata")[[1]])){
-		if(get("negated",env=nodeData(x,node,"metadata")[[1]])){
+	if(exists("negated",envir=nodeData(x,node,"metadata")[[1]])){
+		if(get("negated",envir=nodeData(x,node,"metadata")[[1]])){
 			hierarchy@tree<-x;
 			
 			
@@ -1091,33 +1094,33 @@ setNcdf<-function(x,y){
 			.saveIndices(x,sampleName,node,l,isNcdf=FALSE)	
 		}else{
 			hierarchy@tree<-x;
-			l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
+			l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",envir=nodeData(x,node,"metadata")[[1]]))@subSet))
 			.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 		}
 	}else{
 		hierarchy@tree<-x;
-		l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",env=nodeData(x,node,"metadata")[[1]]))@subSet))
+		l<-list(getIndices(hierarchy,parentname)&(filter(getData(x),get("gate",envir=nodeData(x,node,"metadata")[[1]]))@subSet))
 		.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
 	}
 	#TODO: get call getIndices method instead of directly access it,but the call to getIndices somehow cause
 	#recursive loop,which has to do with the inter-call between .calGate and getIndices. Need to break this inter-call
 	#on either routine in order to avoid the unexpected logical error--20110713 
-	thisIndices<-get("thisIndices",env=nodeData(x,node,"metadata")[[1]])[[1]]
+	thisIndices<-get("thisIndices",envir=nodeData(x,node,"metadata")[[1]])[[1]]
 	if(class(thisIndices)=="raw")
 		thisIndices<-.getBitStatus(thisIndices)
 	l<-sum(thisIndices)
-	l2<-get("thisTot",env=nodeData(x,parentname,"metadata")[[1]])
-	multiassign(c("thisTot","isGated","parentTot"),list(l,TRUE,l2),env=nodeData(x,node,"metadata")[[1]])	
+	l2<-get("thisTot",envir=nodeData(x,parentname,"metadata")[[1]])
+	multiassign(c("thisTot","isGated","parentTot"),list(l,TRUE,l2),envir=nodeData(x,node,"metadata")[[1]])	
 }
 }
 .saveIndices<-function(x,sampleName,node,l,isNcdf){
 	if(isNcdf)##save indices in file
 	{
-		assign("thisIndices",NULL,env=nodeData(x,node,"metadata")[[1]])
+		assign("thisIndices",NULL,envir=nodeData(x,node,"metadata")[[1]])
 	}else
 	{
 		l<-l[[1]]
-		assign("thisIndices",list(.makeBitVec(length(l),l)),env=nodeData(x,node,"metadata")[[1]])
+		assign("thisIndices",list(.makeBitVec(length(l),l)),envir=nodeData(x,node,"metadata")[[1]])
 		
 	}
 	
@@ -1126,13 +1129,13 @@ setNcdf<-function(x,y){
 #	message("Gating BooleanGate ",y, "\n");
 	z<-sum(getIndices(x,y))
 	z2<-sum(getIndices(x,getParent(x,y)))
-	multiassign(c("thisTot","parentTot","isGated"),list(z,z2,TRUE),env=nodeData(x@tree,y,"metadata")[[1]])
+	multiassign(c("thisTot","parentTot","isGated"),list(z,z2,TRUE),envir=nodeData(x@tree,y,"metadata")[[1]])
 	return(x);
 }
 
 setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 	if(!boolean){	
-			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",env=x)),use.names=FALSE))],x@tree)
+			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",envir=x)),use.names=FALSE))],x@tree)
 	}else{
 		sub<-x@tree
 	}
@@ -1364,7 +1367,7 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 		return()
 	}
 	
- m<-do.call(rbind,(sapply(RBGL::tsort(x@tree),function(y)list(c(get("fjName",env=nodeData(x@tree,y,"metadata")[[1]]),getProp(x,y),get("count",env=nodeData(x@tree,y,"metadata")[[1]]),get("thisTot",env=nodeData(x@tree,y,"metadata")[[1]]),get("parentTot",env=nodeData(x@tree,y,"metadata")[[1]]),y)))))
+ m<-do.call(rbind,(sapply(RBGL::tsort(x@tree),function(y)list(c(get("fjName",envir=nodeData(x@tree,y,"metadata")[[1]]),getProp(x,y),get("count",envir=nodeData(x@tree,y,"metadata")[[1]]),get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]]),get("parentTot",envir=nodeData(x@tree,y,"metadata")[[1]]),y)))))
 	###Fix for root node. Should be fixed in addDataToGatingHierarchy
 	rownames(m)<-NULL;
 	m<-data.frame(m);
@@ -1416,7 +1419,7 @@ return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...))));
 })
 
 setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(obj,y=NULL,...){
-	get("axis.labels",env=nodeData(obj@tree)[[1]]$data)
+	get("axis.labels",envir=nodeData(obj@tree)[[1]]$data)
 })
 
 #to be replaced by method "ncdfFlowSet"
@@ -1489,7 +1492,7 @@ setMethod("combine",signature("GatingSet","GatingSet"),function(x,y,...){
 		#create a new gating hierarchy
 		G<-new("GatingSet",set=c(x@set,y@set),new("AnnotatedDataFrame",rbind(pData(x),pData(y))))
 		ne<-new.env();
-		assign("ncfs",nc3,env=ne)
+		assign("ncfs",nc3,envir=ne)
 		for(i in seq_along(G))
 		{
 			flowWorkspace:::setDataEnv(G[[i]],ne)	
@@ -1631,7 +1634,7 @@ recomputeGate<-function(x,gate,boolean=FALSE){
 	#recalculate the gate
 	#don't assign to the ncdf file or we'll lose the original gating info for comparison!
 		lapply(as(x,"list"),function(gh){node<-flowWorkspace:::getNodes(gh)[gate];
-			assign("isGated",FALSE,env=nodeData(gh@tree,node,"metadata")[[1]])
+			assign("isGated",FALSE,envir=nodeData(gh@tree,node,"metadata")[[1]])
 			if(is.null(boolean)){
 				if(flowWorkspace:::.isBooleanGate.graphNEL(gh,node)){
 					flowWorkspace:::.calcBooleanGate(gh,node)
@@ -1848,7 +1851,7 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 }
 
 setMethod("getKeywords",signature("GatingHierarchy","missing"),function(obj,y){
-	get("keywords",env=nodeData(obj@tree)[[1]]$metadata);
+	get("keywords",envir=nodeData(obj@tree)[[1]]$metadata);
 })
 #Return the list of keywords given a GatingSet and a sample name
 setMethod("getKeywords",signature("GatingSet","character"),function(obj,y){
@@ -1879,20 +1882,20 @@ setMethod("keyword",signature("GatingSet","character"),function(object,keyword){
 })
 setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 	if(.isBooleanGate.graphNEL(obj,y)){
-		g<-get("gate",env=nodeData(obj@tree,y,"metadata")[[1]])[[1]];
+		g<-get("gate",envir=nodeData(obj@tree,y,"metadata")[[1]])[[1]];
 		return(g)
 	}else{
-		return(get("gate",env=nodeData(obj@tree,y,"metadata")[[1]]))
+		return(get("gate",envir=nodeData(obj@tree,y,"metadata")[[1]]))
 	}
 })
 #return gate y for a given hierarchy (by index)
 setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,tsort=FALSE){
 	n<-getNodes(obj,tsort=tsort)[y]
 	if(flowWorkspace:::.isBooleanGate.graphNEL(obj,n)){
-		g<-get("gate",env=nodeData(obj@tree,n,"metadata")[[1]])[[1]]
+		g<-get("gate",envir=nodeData(obj@tree,n,"metadata")[[1]])[[1]]
 		return(g);
 	}else{
-		return(get("gate",env=nodeData(obj@tree,n,"metadata")[[1]]))
+		return(get("gate",envir=nodeData(obj@tree,n,"metadata")[[1]]))
 	}
 })
 #Return gate y for all samples in the gating set (by index).
@@ -1954,7 +1957,7 @@ setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),functio
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 #	browser()
 		if(.isBooleanGate.graphNEL(obj,y)){
-		g<-get("gate",env=nodeData(obj@tree,y,"metadata")[[1]])[[1]]
+		g<-get("gate",envir=nodeData(obj@tree,y,"metadata")[[1]])[[1]]
 		if(length(g$ref)==1){
 			p<-paste("getIndices(obj,\"",g$ref,"\")",sep="")
 			p<-paste(g$v,p,sep="")
@@ -1985,7 +1988,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 				#check is now inside .calcGate
 				.calcGate(obj,y)
 			#}
-			ret<-get("thisIndices",env=nodeData(obj@tree,y,"metadata")[[1]])[[1]]
+			ret<-get("thisIndices",envir=nodeData(obj@tree,y,"metadata")[[1]])[[1]]
 			
 			if(is.null(ret))##load bit-vector indice from file
 			{
@@ -2043,10 +2046,10 @@ setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y){
 	#Return the proportion of the population relative to the parent and relative to the total.
 	#x is a graph of a gating hierarchy that has had data added to it.
 	#y is nodename
-		return(get("thisTot",env=nodeData(x@tree,y,"metadata")[[1]])/get("parentTot",env=nodeData(x@tree,y,"metadata")[[1]]))	
+		return(get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]])/get("parentTot",envir=nodeData(x@tree,y,"metadata")[[1]]))	
 })
 setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y){
-		return(get("thisTot",env=nodeData(x@tree,y,"metadata")[[1]]))
+		return(get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]]))
 })
 
 
@@ -2203,7 +2206,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 
 #20110314
 .isGated.graphNEL<-function(x,y){
-	return(get("isGated",env=nodeData(x@tree,y,"metadata")[[1]]));
+	return(get("isGated",envir=nodeData(x@tree,y,"metadata")[[1]]));
 }
 
 .nextPopulation<-function(x,level){
@@ -2219,8 +2222,8 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	#Things to do the first time we encounter a sample
 	if(is.null(env)){
 		env=new.env(parent=globalenv());
-		assign("groups",.getSampleGroups(xmlRoot(x),win=FALSE),env=env);
-		assign("gr",new("graphNEL",edgemode="directed"),env=env)
+		assign("groups",.getSampleGroups(xmlRoot(x),win=FALSE),envir=env);
+		assign("gr",new("graphNEL",edgemode="directed"),envir=env)
 		gr<-get("gr",env)
 		nodeDataDefaults(gr,"metadata")<-new.env(parent=emptyenv());
 		#Store the compensation matrices
@@ -2250,8 +2253,8 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 				assign("compensation",as.matrix("Acquisition-defined"),env);
 			}
 		}
-		assign("gr",gr,env=env);
-		assign("env",env,env=globalenv())
+		assign("gr",gr,envir=env);
+		assign("env",env,envir=globalenv())
 		#get the SampleNode for this sample
 		x<-xpathApply(x,"./SampleNode")[[1]]
 	}
@@ -2265,24 +2268,24 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		    rootcount<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"eventCount"))[[1]]
 		}
 		parentpop<-root
-		if(is.na(match(parentpop,nodes(get("gr",env=env))))){
-			assign("gr",graph::addNode(parentpop,get("gr",env=env)),env=env)
+		if(is.na(match(parentpop,nodes(get("gr",envir=env))))){
+			assign("gr",graph::addNode(parentpop,get("gr",envir=env)),envir=env)
 		
-			gr<-get("gr",env=env)
+			gr<-get("gr",envir=env)
 			nodeData(gr,parentpop,"metadata")<-new.env(parent=emptyenv());
-			assign("count",rootcount,env=nodeData(gr,parentpop,"metadata")[[1]]);
+			assign("count",rootcount,envir=nodeData(gr,parentpop,"metadata")[[1]]);
 			compID<-xpathApply(x,"./ancestor::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]];
 			if(is.null(compID)){
 				# -2 means there's no compensation ID
 				compID<--2;
 			}
 			fcsfile<- unlist(tryCatch(xpathApply(x,"./ancestor::Sample/Keywords/Keyword[@name='$FIL']",function(z)xmlGetAttr(z,"value")),error=function(q)NA),use.names=FALSE)
-			assign("fcsfile",fcsfile,env=nodeDataDefaults(gr,"metadata"));
+			assign("fcsfile",fcsfile,envir=nodeDataDefaults(gr,"metadata"));
 			#More root node defaults
 			##get keywords and assign keywords
 			kw<-.getKeywords(x,fcsfile);
-multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","parentTot","thisTot","isGated","keywords"),list(compID,fcsfile,NA,FALSE,FALSE,list(),NA,0,FALSE,kw),env=nodeData(gr,parentpop,"metadata")[[1]])
-			assign("gr",gr,env=env)
+multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","parentTot","thisTot","isGated","keywords"),list(compID,fcsfile,NA,FALSE,FALSE,list(),NA,0,FALSE,kw),envir=nodeData(gr,parentpop,"metadata")[[1]])
+			assign("gr",gr,envir=env)
 		}
 		#Now construct the transformations
 		constructTransformations(x,env)
@@ -2311,9 +2314,9 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 			mygate<-mygate[[1]]
 				
 			#Assign the node to the graph
-			assign("gr",graph::addNode(mygate@filterId,get("gr",env=env)),env=env);
+			assign("gr",graph::addNode(mygate@filterId,get("gr",envir=env)),envir=env);
 			#And add an edge to the parent.
-			assign("gr",addEdge(parentpop,mygate@filterId,get("gr",env=env)),env=env);
+			assign("gr",addEdge(parentpop,mygate@filterId,get("gr",envir=env)),envir=env);
 			#Pull the filename from the keywords
 			# fcsfile<- unlist(tryCatch(xpathApply(x,"./ancestor::Sample/Keywords/Keyword[@name='$FIL']",function(z)xmlGetAttr(z,"value")),error=function(q)NA),use.names=FALSE)
 
@@ -2326,7 +2329,7 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 			# Presume that a NULL count is for empty pops.
 			if(is.null(count))
 				count<-0
-			gr<-get("gr",env=env)
+			gr<-get("gr",envir=env)
 			##get the flowJo name for the current population
 			##Generate the flowJo population name
 			finish<-mygate@filterId
@@ -2335,15 +2338,15 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 			fjname<-unlist(lapply(strsplit(fjname,"\\."),function(x)x[2]),use.names=FALSE)
 			fjname<-paste("/",paste(fjname,collapse="/"),sep="")
 			nodeData(gr,mygate@filterId,"metadata")<-new.env(parent=emptyenv());
-			multiassign(c("fjName","gate","count","compID","negated","isBooleanGate","thisIndices","parentTot","thisTot","isGated"),list(fjname,mygate,count,compID,ng,FALSE,list(),NA,0,FALSE),env=nodeData(gr,mygate@filterId,"metadata")[[1]]);
-			assign("gr",gr,env=env);	
+			multiassign(c("fjName","gate","count","compID","negated","isBooleanGate","thisIndices","parentTot","thisTot","isGated"),list(fjname,mygate,count,compID,ng,FALSE,list(),NA,0,FALSE),envir=nodeData(gr,mygate@filterId,"metadata")[[1]]);
+			assign("gr",gr,envir=env);	
 		}
 		#If it is a boolean gate.
 		else if(.hasGate(x)&.isBooleanGate(x)){
 			#we want to parse it and add it to the gating hierarchy. But we don't want to evaluate the counts just yet.
-			gr<-get("gr",env=env)
+			gr<-get("gr",envir=env)
 			gr<-.parseBooleanGates(x,gr)
-			assign("gr",gr,env=env);
+			assign("gr",gr,envir=env);
 		}
 	}
 	#TODO could change this to be a global loop that simply goes through all the children that are populations and ignores everything else.. 
@@ -2402,7 +2405,7 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 
 .isBooleanGate.graphNEL<-function(x,y){
 #	browser()
-	return(get("isBooleanGate",env=nodeData(x@tree,y,"metadata")[[1]]));
+	return(get("isBooleanGate",envir=nodeData(x@tree,y,"metadata")[[1]]));
 }
 .isBooleanGate<-function(x){
 	p<-xpathApply(x,"./BooleanGate")
@@ -2865,7 +2868,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 }
 
 .flowJoTransform<-function(dataenv,cal){
-	assign("axis.labels",list(),env=dataenv);
+	assign("axis.labels",list(),envir=dataenv);
 	#this should save some memory
 	for (i in 1:dim(get("data",dataenv))[2]){
 		#browser();
@@ -2919,10 +2922,10 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
 	datapar<-parameters(get("data",dataenv));
 	datapar@data[,c("range","minRange","maxRange")]<-datarange
-	gc(reset=TRUE)
+	#gc(reset=TRUE)
 	assign("datapar",datapar,dataenv)
 	eval(expression(data@parameters<-datapar),envir=dataenv)
-	gc(reset=TRUE)
+	#gc(reset=TRUE)
 }
 
 ##This function should return all the calibration vectors associated with a single prefix name.
@@ -3140,7 +3143,7 @@ ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
             p<-plotGate(x,y,fast=TRUE)
         })
         paths<-do.call(c,lapply(plots,function(i){
-            CairoPNG(file="tmp.png",width=300,height=300)
+            CairoPNG(filename="tmp.png",width=300,height=300)
             print(i)
             dev.off();
             md5<-md5sum("tmp.png")

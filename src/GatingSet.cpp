@@ -35,20 +35,19 @@ wsSampleNode getSample(T ws,string sampleID){
 }
 
 
-void GatingSet::freeGatingHierarchy (map<string,GatingHierarchy *>::iterator it) {
-	GatingHierarchy * ghPtr=it->second;
-	string sampleName=ghPtr->sampleName;
-	delete ghPtr;
-	cout<<"GatingHierarchy freed:"<<sampleName<<endl;
-}
 
-/*
- *TODO: try BOOST_FOREACH
- */
 GatingSet::~GatingSet()
 {
 	delete ws;
-	for_each(ghs.begin(), ghs.end(), freeGatingHierarchy);
+//	for_each(ghs.begin(), ghs.end(), this->freeGatingHierarchy);
+	typedef map<string,GatingHierarchy *> map_t;
+	BOOST_FOREACH(map_t::value_type & it,ghs){
+			GatingHierarchy * ghPtr=it.second;
+			string sampleName=ghPtr->sampleName;
+			delete ghPtr;
+			cout<<"GatingHierarchy freed:"<<sampleName<<endl;
+	}
+
 }
 //read xml file and create the appropriate flowJoWorkspace object
 void GatingSet::openWorkspace(string sFileName)
@@ -107,6 +106,7 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 
 		string sampleName=ws->getSampleName(curSampleNode);
 
+		curGh->sampleName=sampleName;
 		ghs[sampleName]=curGh;//add to the map
 
 		sampleList.push_back(sampleName);

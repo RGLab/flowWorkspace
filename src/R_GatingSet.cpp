@@ -11,19 +11,39 @@
 #include <Rmath.h>
 #include "GatingSet.hpp"
 
+#include <Rcpp.h>
+#include <cmath>
+
+RcppExport SEXP newRcppVectorExample(SEXP vector) {
+BEGIN_RCPP
+
+    Rcpp::NumericVector orig(vector);                   // keep a copy (as the classic version does)
+    Rcpp::NumericVector vec(orig.size());               // create a target vector of the same size
+
+    // we could query size via
+    //   int n = vec.size();
+    // and loop over the vector, but using the STL is so much nicer
+    // so we use a STL transform() algorithm on each element
+    std::transform(orig.begin(), orig.end(), vec.begin(), ::sqrt);
+
+    return Rcpp::List::create(Rcpp::Named( "result" ) = vec,
+                              Rcpp::Named( "original" ) = orig) ;
+
+END_RCPP
+}
+
 static void cooked_goose(SEXP foo)
 {
     if (TYPEOF(foo) != EXTPTRSXP)
         error("argument not external pointer");
     GatingSet *x = (GatingSet *) R_ExternalPtrAddr(foo);
-    int blather = x[0];
+//    int blather = x[0];
     Free(x);
-    if (blather)
-        printf("finalizer ran\n");
+    cout<<"finalizer ran!"<<endl;
 }
 
 
-SEXP R_openWorkspace(SEXP fileNames)
+SEXP R_openWorkspace(string fileNames)
 {
 
 
@@ -45,13 +65,12 @@ SEXP R_getGatingHierarchy(SEXP gs)
 
     GatingSet *x = (GatingSet *) R_ExternalPtrAddr(gs);
 
-    GatingHierarchy *gh=&x->getGatingHierarchy(1);
+    GatingHierarchy *gh=x->getGatingHierarchy(1);
 //    gh->drawGraph();
 
     SEXP bar;
-    PROTECT(bar = allocVector(REALSXP, n));
-    for (int i = 0; i < n; ++i)
-        REAL(bar)[i] = x[i + 2];
+    PROTECT(bar = allocVector(REALSXP, 1));
+
     UNPROTECT(1);
     return bar;
 }

@@ -22,7 +22,6 @@ class GatingSet{
 	workspace * ws;
 	map<string,GatingHierarchy *> ghs;
 	vector<string> sampleList;
-	void freeGatingHierarchy (map<string,GatingHierarchy *>::iterator);
 
 public:
 	~GatingSet();
