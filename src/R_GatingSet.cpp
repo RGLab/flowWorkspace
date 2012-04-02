@@ -6,13 +6,13 @@
  *  Created on: Mar 30, 2012
  *      Author: wjiang2
  */
-#include <Rinternals.h>
-#include <Rdefines.h>
-#include <Rmath.h>
-#include "GatingSet.hpp"
+//#include <Rinternals.h>
+//#include <Rdefines.h>
+//#include <Rmath.h>
+//#include "GatingSet.hpp"
 
 #include <Rcpp.h>
-#include <cmath>
+//#include <cmath>
 
 RcppExport SEXP newRcppVectorExample(SEXP vector) {
 BEGIN_RCPP
@@ -32,46 +32,46 @@ BEGIN_RCPP
 END_RCPP
 }
 
-static void cooked_goose(SEXP foo)
-{
-    if (TYPEOF(foo) != EXTPTRSXP)
-        error("argument not external pointer");
-    GatingSet *x = (GatingSet *) R_ExternalPtrAddr(foo);
-//    int blather = x[0];
-    Free(x);
-    cout<<"finalizer ran!"<<endl;
-}
-
-
-SEXP R_openWorkspace(string fileNames)
-{
-
-
-	fileNames="fjWsExamples/LyoplateTest1Yale.wsp";
-	GatingSet gs;
-	gs.openWorkspace(fileNames);
-
-	SEXP ans;
-    PROTECT(ans = R_MakeExternalPtr(&gs, R_NilValue, R_NilValue));
-    R_RegisterCFinalizer(ans, cooked_goose);
-    UNPROTECT(1);
-    return ans;
-}
-
-SEXP R_getGatingHierarchy(SEXP gs)
-{
-    if (TYPEOF(gs) != EXTPTRSXP)
-        error("argument not external pointer");
-
-    GatingSet *x = (GatingSet *) R_ExternalPtrAddr(gs);
-
-    GatingHierarchy *gh=x->getGatingHierarchy(1);
-//    gh->drawGraph();
-
-    SEXP bar;
-    PROTECT(bar = allocVector(REALSXP, 1));
-
-    UNPROTECT(1);
-    return bar;
-}
+//static void cooked_goose(SEXP foo)
+//{
+//    if (TYPEOF(foo) != EXTPTRSXP)
+//        error("argument not external pointer");
+//    GatingSet *x = (GatingSet *) R_ExternalPtrAddr(foo);
+////    int blather = x[0];
+//    Free(x);
+//    cout<<"finalizer ran!"<<endl;
+//}
+//
+//RcppExport SEXP R_openWorkspace(SEXP fileName) {
+//BEGIN_RCPP
+//
+//	Rcpp::CharacterVector sFileName(fileName);
+////	fileName="fjWsExamples/LyoplateTest1Yale.wsp";
+//	GatingSet gs;
+//	gs.openWorkspace(sFileName.at);
+//
+//	SEXP ans;
+//    PROTECT(ans = R_MakeExternalPtr(&gs, R_NilValue, R_NilValue));
+//    R_RegisterCFinalizer(ans, cooked_goose);
+//    UNPROTECT(1);
+//    return ans;
+//END_RCPP
+//}
+//
+//SEXP R_getGatingHierarchy(SEXP gs)
+//{
+//    if (TYPEOF(gs) != EXTPTRSXP)
+//        error("argument not external pointer");
+//
+//    GatingSet *x = (GatingSet *) R_ExternalPtrAddr(gs);
+//
+//    GatingHierarchy *gh=x->getGatingHierarchy(1);
+////    gh->drawGraph();
+//
+//    SEXP bar;
+//    PROTECT(bar = allocVector(REALSXP, 1));
+//
+//    UNPROTECT(1);
+//    return bar;
+//}
 

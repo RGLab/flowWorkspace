@@ -9,8 +9,9 @@ Description: This package is designed to facilitate comparison of automated gati
 License: Artistic-2.0
 LazyLoad: yes
 Imports: Biobase, XML, flowCore, graph, graphics, lattice, methods, stats, stats4, utils
-Collate: AllClasses.R AllGenerics.R AllMethods.R AllExportMethods.R flowWorkspace2flowCore-methods.R flowWorkspaceEdit-methods.R bitVector.R
+Collate: AllClasses.R AllGenerics.R AllMethods.R InternalClasses.R InternalMethods.R AllExportMethods.R flowWorkspace2flowCore-methods.R flowWorkspaceEdit-methods.R bitVector.R
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
-Depends: Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore, flowViz, Biobase, IDPmisc, tools,hexbin
+Depends: Rcpp (>= 0.9.9),Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore, flowViz, Biobase, IDPmisc, tools,hexbin
 Enhances: multicore,Rmpi,ncdfFlow
 Suggests: testthat, flowWorkspaceData, Rgraphviz
+LinkingTo:Rcpp
