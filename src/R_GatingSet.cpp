@@ -16,24 +16,6 @@
 #include "GatingSet.hpp"
 using namespace Rcpp;
 
-RcppExport SEXP newRcppVectorExample(SEXP vector) {
-BEGIN_RCPP
-
-    Rcpp::NumericVector orig(vector);                   // keep a copy (as the classic version does)
-    Rcpp::NumericVector vec(orig.size());               // create a target vector of the same size
-
-    // we could query size via
-    //   int n = vec.size();
-    // and loop over the vector, but using the STL is so much nicer
-    // so we use a STL transform() algorithm on each element
-    std::transform(orig.begin(), orig.end(), vec.begin(), ::sqrt);
-
-    return Rcpp::List::create(Rcpp::Named( "result" ) = vec,
-                              Rcpp::Named( "original" ) = orig) ;
-
-END_RCPP
-}
-
 //RCPP_MODULE(cpp_GatingSet){
 //
 //	class_<GatingSet>(".GatingSet")
@@ -56,12 +38,12 @@ BEGIN_RCPP
 		unsigned short groupID=as<unsigned short>(_groupID);
 
 		gs->parseWorkspace(groupID);
-		return 0;
+		return wrap(0);
 END_RCPP
-		return IntegerVector(-1);
+		return wrap(-1);
 }
 
-RcppExport SEXP R_getGatingHierarchy(SEXP _gsPtr,SEXP _sampleName) {
+RcppExport SEXP R_getGatingHierarchyS(SEXP _gsPtr,SEXP _sampleName) {
 BEGIN_RCPP
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
@@ -73,7 +55,18 @@ BEGIN_RCPP
 
 END_RCPP
 }
+RcppExport SEXP R_getGatingHierarchyI(SEXP _gsPtr,SEXP _i) {
+BEGIN_RCPP
+	XPtr<GatingSet>gs(_gsPtr);
+	unsigned i=as<unsigned>(_i);
 
+	GatingHierarchy * gh=gs->getGatingHierarchy(i);
+
+	XPtr<GatingHierarchy>ptr(gh);
+	return ptr;
+
+END_RCPP
+}
 //since delete is not working with xptr, make sure it is released by R
 //RcppExport SEXP R_closeWorkspace(SEXP _gsPtr) {
 //BEGIN_RCPP

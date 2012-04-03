@@ -11,39 +11,49 @@ setClass("GatingHierarchyInternal",contains="GatingHierarchy"
 				,transformations="list"
 				,compensation="matrix"
 				,dataPath="character"
-				,isNcdf="logical"))
+				,isNcdf="logical"
+				,pointer="externalptr"))
 
 setMethod("initialize","GatingHierarchyInternal"
 		,function(.Object,name="New Sample",flag=FALSE
 				,transformations=rep(list({f<-function(x){x};attr(f,"type")<-"identity";f}),8)
 				,compensation=diag(8),dataPath="."
 				,isNcdf=FALSE
-				,fcsfile=NULL){
+				,fcsfile=NULL
+				,pointer=NULL){
 			#callNextMethod(.Object,tree,nodes,name,flag,transformations,compensation,dataPath,isNcdf)
-			
+			.Object@pointer=pointer
 			return(.Object)
 		})
 
 setClass("GatingSetInternal",contains="GatingSet"
 		,representation(set="list"
 				,metadata="AnnotatedDataFrame"
-				,pointer=".GatingSet")
+				,pointer="externalptr")
 		,validity=function(object){
 			all(unlist(lapply(object@set
 									,function(y)inherits(y,"GatingHierarchy"))))
 		})
 setMethod("initialize","GatingSetInternal"
 		,function(.Object
-				,set=list(new("GatingHierarchyInternal"))
-				,metadata=new("AnnotatedDataFrame")
-				,files=NULL
-				,isNcdf=FALSE
-				,flowSetId=NULL){
-#			browser()
-			.Object@set<-set;
-			.Object@metadata<-metadata
+#				,set=list(new("GatingHierarchyInternal"))
+#				,metadata=new("AnnotatedDataFrame")
+#				,files=NULL
+#				,isNcdf=FALSE
+#				,flowSetId=NULL
+				,xmlFileName=NULL){
+
+#			.Object@set<-set;
+#			.Object@metadata<-metadata
+#			browser()			
+			stopifnot(!is.null(xmlFileName))
+			.Object@pointer<-.Call("R_openWorkspace",xmlFileName)
 #	validObject(.Object)
 			return(.Object)
 		})
 
-
+makeGatingSetInternal<-function(xmlFileName)
+{
+	
+	new("GatingSetInternal",xmlFileName)
+}
