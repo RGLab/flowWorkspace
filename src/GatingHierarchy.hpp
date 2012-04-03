@@ -82,7 +82,7 @@ public:
 
 //	void gating(gate& g,string popName);
 	void gating();
-	void drawGraph();
+	string drawGraph();
 };
 
 

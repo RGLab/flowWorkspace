@@ -25,10 +25,10 @@ class GatingSet{
 
 public:
 	~GatingSet();
-
+	GatingSet(string);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
-	void openWorkspace(string);
+
 	 void parseWorkspace(unsigned short);
 
 };

@@ -13,6 +13,8 @@
 
 #include <Rcpp.h>
 //#include <cmath>
+#include "GatingSet.hpp"
+using namespace Rcpp;
 
 RcppExport SEXP newRcppVectorExample(SEXP vector) {
 BEGIN_RCPP
@@ -32,6 +34,56 @@ BEGIN_RCPP
 END_RCPP
 }
 
+//RCPP_MODULE(cpp_GatingSet){
+//
+//	class_<GatingSet>(".GatingSet")
+//	.method("",&GatingSet::parseWorkspace)
+//}
+
+RcppExport SEXP R_openWorkspace(SEXP _fileName) {
+BEGIN_RCPP
+
+	string fileName=as<string>(_fileName);
+	XPtr<GatingSet>ptr(new GatingSet(fileName));
+
+    return ptr;
+END_RCPP
+}
+
+RcppExport SEXP R_parseWorkspace(SEXP _gsPtr,SEXP _groupID) {
+BEGIN_RCPP
+		XPtr<GatingSet>gs(_gsPtr);
+		unsigned short groupID=as<unsigned short>(_groupID);
+
+		gs->parseWorkspace(groupID);
+		return 0;
+END_RCPP
+		return IntegerVector(-1);
+}
+
+RcppExport SEXP R_getGatingHierarchy(SEXP _gsPtr,SEXP _sampleName) {
+BEGIN_RCPP
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+
+	GatingHierarchy * gh=gs->getGatingHierarchy(sampleName);
+
+	XPtr<GatingHierarchy>ptr(gh);
+	return ptr;
+
+END_RCPP
+}
+
+//since delete is not working with xptr, make sure it is released by R
+//RcppExport SEXP R_closeWorkspace(SEXP _gsPtr) {
+//BEGIN_RCPP
+//	XPtr<GatingSet>gs(_gsPtr);
+//	delete gs;
+//	cout<<"Gating Set is released!"<<endl;
+//	return 0;
+//END_RCPP
+//	return IntegerVector(-1);
+//}
 //static void cooked_goose(SEXP foo)
 //{
 //    if (TYPEOF(foo) != EXTPTRSXP)
@@ -42,36 +94,7 @@ END_RCPP
 //    cout<<"finalizer ran!"<<endl;
 //}
 //
-//RcppExport SEXP R_openWorkspace(SEXP fileName) {
-//BEGIN_RCPP
-//
-//	Rcpp::CharacterVector sFileName(fileName);
-////	fileName="fjWsExamples/LyoplateTest1Yale.wsp";
-//	GatingSet gs;
-//	gs.openWorkspace(sFileName.at);
-//
-//	SEXP ans;
-//    PROTECT(ans = R_MakeExternalPtr(&gs, R_NilValue, R_NilValue));
-//    R_RegisterCFinalizer(ans, cooked_goose);
-//    UNPROTECT(1);
-//    return ans;
-//END_RCPP
-//}
-//
-//SEXP R_getGatingHierarchy(SEXP gs)
-//{
-//    if (TYPEOF(gs) != EXTPTRSXP)
-//        error("argument not external pointer");
-//
-//    GatingSet *x = (GatingSet *) R_ExternalPtrAddr(gs);
-//
-//    GatingHierarchy *gh=x->getGatingHierarchy(1);
-////    gh->drawGraph();
-//
-//    SEXP bar;
-//    PROTECT(bar = allocVector(REALSXP, 1));
-//
-//    UNPROTECT(1);
-//    return bar;
-//}
+
+
+
 

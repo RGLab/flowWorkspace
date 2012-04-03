@@ -26,8 +26,7 @@ int main(void) {
 
 	fileNames.push_back("fjWsExamples/HIPC_trial.xml");
 	fileNames.push_back("fjWsExamples/LyoplateTest1Yale.wsp");
-	GatingSet gs;
-	gs.openWorkspace(fileNames.at(WIN));//select xml workspace to parse
+	GatingSet gs(fileNames.at(WIN));//select xml workspace to parse
 	unsigned short groupID=1;
 	gs.parseWorkspace(groupID);
 

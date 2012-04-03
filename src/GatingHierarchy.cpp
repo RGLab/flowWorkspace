@@ -109,13 +109,15 @@ void GatingHierarchy::gating()
 	cout <<"test gating"<<endl;
 }
 
-void GatingHierarchy::drawGraph()
+string GatingHierarchy::drawGraph()
 {
 	ofstream outputFile("test.dot");
 	//...
 	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriter(tree));
 	outputFile.close();
+	system("dot2gxl test.dot -o test.gxl");
+	return("test.gxl");
 //	system("pwd");
-//	system("dot2gxl test.dot -o test.gxl");
+
 
 }

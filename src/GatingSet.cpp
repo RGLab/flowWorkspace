@@ -50,7 +50,7 @@ GatingSet::~GatingSet()
 
 }
 //read xml file and create the appropriate flowJoWorkspace object
-void GatingSet::openWorkspace(string sFileName)
+GatingSet::GatingSet(string sFileName)
 {
 
 		LIBXML_TEST_VERSION

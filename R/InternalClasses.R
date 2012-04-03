@@ -26,7 +26,8 @@ setMethod("initialize","GatingHierarchyInternal"
 
 setClass("GatingSetInternal",contains="GatingSet"
 		,representation(set="list"
-				,metadata="AnnotatedDataFrame")
+				,metadata="AnnotatedDataFrame"
+				,pointer=".GatingSet")
 		,validity=function(object){
 			all(unlist(lapply(object@set
 									,function(y)inherits(y,"GatingHierarchy"))))
