@@ -6,15 +6,14 @@
  *  Created on: Mar 30, 2012
  *      Author: wjiang2
  */
-//#include <Rinternals.h>
-//#include <Rdefines.h>
-//#include <Rmath.h>
-//#include "GatingSet.hpp"
 
-#include <Rcpp.h>
-//#include <cmath>
-#include <GatingHierarchy.hpp>
-using namespace Rcpp;
+/*
+ * can't use module for exposing overloaded methods and non-standard wrap/as type of the constructor
+ * Also each GatingHierarchy object is created by GatingSet method within c++
+ * thus it is not initialized by Rcpp module as S4 class within R. So have to use this tedious way to
+ * write R API
+ */
+#include "include/R_GatingHierarchy.hpp"
 
 RcppExport SEXP R_plotGh(SEXP _ghPtr) {
 BEGIN_RCPP
@@ -25,27 +24,36 @@ BEGIN_RCPP
 END_RCPP
 }
 
-//RcppExport SEXP R_parseWorkspace(SEXP _gsPtr,SEXP _groupID) {
+RcppExport SEXP R_getSample(SEXP _ghPtr){
+BEGIN_RCPP
+
+	XPtr<GatingHierarchy>gh(_ghPtr);
+	 return wrap(gh->getSample());
+END_RCPP
+}
+
+RcppExport SEXP R_getNodes(SEXP _ghPtr,SEXP _verID){
+BEGIN_RCPP
+
+	XPtr<GatingHierarchy>gh(_ghPtr);
+	return wrap(gh->getNodeList());
+END_RCPP
+}
+
+//RcppExport SEXP R_getParent(SEXP _ghPtr,SEXP _i){
 //BEGIN_RCPP
-//		XPtr<GatingSet>gs(_gsPtr);
-//		unsigned short groupID=as<unsigned short>(_groupID);
 //
-//		gs->parseWorkspace(groupID);
-//		return 0;
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+//	string res=gh->getParent();
+//	return wrap(res);
 //END_RCPP
-//		return IntegerVector(-1);
 //}
 //
-//RcppExport SEXP R_getGatingHierarchy(SEXP _gsPtr,SEXP _sampleName) {
+//RcppExport SEXP R_getParentI(SEXP _ghPtr,SEXP _verID){
 //BEGIN_RCPP
-//	XPtr<GatingSet>gs(_gsPtr);
-//	string sampleName=as<string>(_sampleName);
 //
-//	GatingHierarchy * gh=gs->getGatingHierarchy(sampleName);
-//
-//	XPtr<GatingHierarchy>ptr(gh);
-//	return ptr;
-//
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+//	return wrap(gh->getSample());
 //END_RCPP
 //}
 

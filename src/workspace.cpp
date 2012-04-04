@@ -8,7 +8,7 @@
 
 
 
-#include <workspace.hpp>
+#include "include/workspace.hpp"
 #include <iostream>
 
 workspace::~workspace(){
@@ -21,7 +21,8 @@ workspace::~workspace(){
 			 *have been allocated by the parser.
 			 */
 			xmlCleanupParser();
-			cout<<"xml freed!"<<endl;
+			if(dMode>=1)
+				cout<<"xml freed!"<<endl;
 }
 
 

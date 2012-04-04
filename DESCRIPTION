@@ -15,3 +15,4 @@ Depends: Rcpp (>= 0.9.9),Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCor
 Enhances: multicore,Rmpi,ncdfFlow
 Suggests: testthat, flowWorkspaceData, Rgraphviz
 LinkingTo:Rcpp
+#RcppModules: flowWorkspace

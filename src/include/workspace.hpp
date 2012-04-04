@@ -44,6 +44,7 @@ public:
 //protected:
 
 	 xmlDoc * doc;
+	 unsigned short dMode;//debug mode passed from gatingset class
 public:
 	 ~workspace();
 	 virtual string xPathSample(string sampleID)=0;

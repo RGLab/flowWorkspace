@@ -5,8 +5,9 @@
  *      Author: wjiang2
  */
 
-#include <GatingHierarchy.hpp>
+#include "include/GatingHierarchy.hpp"
 #include <boost/graph/graphviz.hpp>
+#include <boost/graph/graph_traits.hpp>
 #include <fstream>
 
 /*need to be careful that gate within each node of the GatingHierarchy is
@@ -24,9 +25,9 @@ GatingHierarchy::~GatingHierarchy()
 }
 
 //default constructor without argument
-GatingHierarchy::GatingHierarchy()
+GatingHierarchy::GatingHierarchy(unsigned short _dMode=1)
 {
-
+	dMode=_dMode;
 }
 //constructor for sampleNode argument
 //GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)
@@ -40,8 +41,9 @@ GatingHierarchy::GatingHierarchy()
 //	addPopulation(pVerID,&root);
 //
 //}
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,unsigned short _dMode=1)
 {
+	dMode=_dMode;
 	thisWs=ws;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
@@ -73,7 +75,8 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
 			populationNode curChild=thisWs->to_popNode(curChildNode);
-			cout<<"node created:"<<curChild.getName()<<endl;
+			if(dMode>=2)
+				cout<<"node created:"<<curChild.getName()<<endl;
 			//attach the populationNode to the boost node as property
 			tree[curChildID]=curChild;
 			//add relation between current node and parent node
@@ -121,3 +124,27 @@ string GatingHierarchy::drawGraph()
 
 
 }
+
+vector<string> GatingHierarchy::getNodeList(void){
+	map<string,VertexID>::iterator it;
+	vector<string> res;
+	for(it=nodelist.begin();it!=nodelist.end();it++)
+		res.push_back(it->first);
+	return(res);
+}
+
+VertexID GatingHierarchy::getParent(VertexID target){
+
+	typename boost::graph_traits<populationTree>::edge_descriptor e;
+
+	e=*boost::in_edges(target,tree).first;
+	return(boost::source(e,tree));
+}
+
+//string GatingHierarchy::getParent(string nodeName){
+//
+//	VertexID u=nodelist[u];
+//	VertexID v=getParent(u);
+//	return(tree[v].getName());
+//}
+

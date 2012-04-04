@@ -1,6 +1,6 @@
 PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()" ` -lxml2 
 #PKG_LIBS = -L/home/wjiang2/R/r-devel/Rbuild/library/Rcpp/lib -lRcpp -Wl,-rpath,/home/wjiang2/R/r-devel/Rbuild/library/Rcpp/lib -lxml2
-PKG_CPPFLAGS+=-Wno-deprecated -I../inst/include/
+PKG_CPPFLAGS+=-Wno-deprecated -I./include/
 
 .PHONY: 	all clean userLibrary 
 clean:

@@ -6,27 +6,17 @@
  *  Created on: Mar 30, 2012
  *      Author: wjiang2
  */
-//#include <Rinternals.h>
-//#include <Rdefines.h>
-//#include <Rmath.h>
-//#include "GatingSet.hpp"
+#include "include/R_GatingSet.hpp"
 
-#include <Rcpp.h>
-//#include <cmath>
-#include <GatingSet.hpp>
-using namespace Rcpp;
-
-//RCPP_MODULE(cpp_GatingSet){
-//
-//	class_<GatingSet>(".GatingSet")
-//	.method("",&GatingSet::parseWorkspace)
-//}
+/*
+ * can't use module for exposing overloaded methods
+ */
 
 RcppExport SEXP R_openWorkspace(SEXP _fileName) {
 BEGIN_RCPP
 
 	string fileName=as<string>(_fileName);
-	XPtr<GatingSet>ptr(new GatingSet(fileName));
+	XPtr<GatingSet>ptr(new GatingSet(fileName,1));
 
     return ptr;
 END_RCPP
@@ -40,7 +30,6 @@ BEGIN_RCPP
 		gs->parseWorkspace(groupID);
 		return wrap(0);
 END_RCPP
-		return wrap(-1);
 }
 
 RcppExport SEXP R_getGatingHierarchyS(SEXP _gsPtr,SEXP _sampleName) {

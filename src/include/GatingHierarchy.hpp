@@ -49,12 +49,12 @@ class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
 //	double ** data;
-
+	string _sampleName;
 	populationTree tree;
 	map<string,VertexID> nodelist;
 	workspace * thisWs;
+	unsigned short dMode;//debug mode passed from GatingSet
 public:
-	string sampleName;
 	/*retrieve the gate definition from a particular node*/
 //	gate getGate(unsigned short gateid);
 //	gate getGate(string popName);
@@ -68,10 +68,10 @@ public:
 	void addGate(gate& g,string popName);
 	void addPopulation(VertexID parentID,wsNode * parentNode);
 	VertexID addRoot(populationNode rootNode);
-	GatingHierarchy();
+	GatingHierarchy(unsigned short _dMode);
 	~GatingHierarchy();
-	GatingHierarchy(string sampleID,workspace * ws);
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws);
+//	GatingHierarchy(string sampleID,workspace * ws,unsigned short _dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,unsigned short _dMode);
 
 	/*associate the tree with data matrix*/
 //	void addData();
@@ -83,6 +83,11 @@ public:
 //	void gating(gate& g,string popName);
 	void gating();
 	string drawGraph();
+	string getSample(void){return _sampleName;};
+	void setSample(string sampleName){_sampleName=sampleName;};
+	vector<string> getNodeList(void);
+	VertexID getParent(VertexID);
+//	unsigned getParent(unsigned i);
 };
 
 

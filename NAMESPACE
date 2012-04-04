@@ -5,6 +5,7 @@ useDynLib("flowWorkspace")
 #Imports: Biobase, Rgraphviz, XML, flowCore, graph, graphics, lattice,
 #         methods, stats, utils
 
+#import( Rcpp )
 import("BiocGenerics")
 importClassesFrom(Biobase, AnnotatedDataFrame)
 

@@ -29,13 +29,13 @@ class GatingSet{
 	 * and return the sampleList
 	 */
 	vector<string> sampleList;
-
+	unsigned short dMode;//debug level to control print out
 public:
 	~GatingSet();
-	GatingSet(string);
+	GatingSet(string,unsigned short);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
 	void parseWorkspace(unsigned short);
-	vector<string> getSamples(){this->sampleList;};
+	vector<string> getSamples(void);
 };
 #endif /* GATINGSET_HPP_ */

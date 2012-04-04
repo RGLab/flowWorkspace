@@ -4,7 +4,7 @@
  *  Created on: Mar 15, 2012
  *      Author: wjiang2
  */
-#include <flowJoWorkspace.hpp>
+#include "include/flowJoWorkspace.hpp"
 #include <string>
 //#include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -242,12 +242,16 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	if(xmlStrEqual(gateType,(const xmlChar *)"PolygonGate"))
 	{
 		wsPolyGateNode pGNode(gNode.thisNode);
+		if(dMode>=4)
+			cout<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
 
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"RectangleGate"))
 	{
 		wsRectGateNode rGNode(gNode.thisNode);
+		if(dMode>=4)
+			cout<<"parsing RectangleGate.."<<endl;
 		return(getGate(rGNode));
 	}
 	else
@@ -276,13 +280,16 @@ populationNode flowJoWorkspace::to_popNode(wsRootNode & node){
 
 populationNode flowJoWorkspace::to_popNode(wsPopNode &node){
 
+
 	populationNode pNode;
 	//add pop name
 	pNode.setName(node.getProperty("name").c_str());
+
+	if(dMode>=3)
+			cout<<"parse the population Node:"<<pNode.getName()<<endl;
 	//add pop counts
 	pNode.fjStats["count"]=atoi(node.getProperty("count").c_str());
-	//add gate lookat .extractGate R routine
-//	cout<<"extracting gate:"<<pNode.getName()<<endl;
+
 	try
 	{
 		pNode.setGate(getGate(node));

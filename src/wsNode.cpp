@@ -7,7 +7,7 @@
 
 
 
-#include <wsNode.hpp>
+#include "include/wsNode.hpp"
 
 /*Oftentimes we need to do the xquery based on the context of the current node instead of doc
 * it is strange that I haven't found this commonly used API in libxml2

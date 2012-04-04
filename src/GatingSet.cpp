@@ -6,7 +6,7 @@
  */
 
 
-#include <GatingSet.hpp>
+#include "include/GatingSet.hpp"
 #include <string>
 #include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -43,14 +43,15 @@ GatingSet::~GatingSet()
 	typedef map<string,GatingHierarchy *> map_t;
 	BOOST_FOREACH(map_t::value_type & it,ghs){
 			GatingHierarchy * ghPtr=it.second;
-			string sampleName=ghPtr->sampleName;
+			string sampleName=ghPtr->getSample();
 			delete ghPtr;
-			cout<<"GatingHierarchy freed:"<<sampleName<<endl;
+			if(dMode>0)
+				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
 	}
 
 }
 //read xml file and create the appropriate flowJoWorkspace object
-GatingSet::GatingSet(string sFileName)
+GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 {
 
 		LIBXML_TEST_VERSION
@@ -88,6 +89,7 @@ GatingSet::GatingSet(string sFileName)
 		 }
 		 xmlFree(wsVersion);
 
+		 dMode=_dMode;
 }
 
 void GatingSet::parseWorkspace(unsigned short groupID)
@@ -99,18 +101,21 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 	vector<string>::iterator it;
 	for(it=sampleID.begin();it!=sampleID.end();it++)
 	{
-		cout<<"... start parsing sample: "<<*it<<endl;
+		if(dMode>=1)
+			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy * curGh=new GatingHierarchy(curSampleNode,ws);
+		GatingHierarchy * curGh=new GatingHierarchy(curSampleNode,ws,dMode);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 
-		curGh->sampleName=sampleName;
+		curGh->setSample(sampleName);
 		ghs[sampleName]=curGh;//add to the map
 
+
 		sampleList.push_back(sampleName);
-		cout<<"Gating hierarchy created: "<<sampleName<<endl;
+		if(dMode>=1)
+			cout<<"Gating hierarchy created: "<<sampleName<<endl;
 	}
 
 }
@@ -126,3 +131,7 @@ GatingHierarchy * GatingSet::getGatingHierarchy(unsigned index)
 
 		return ghs[sampleList.at(index)];
 }
+vector<string> GatingSet::getSamples(void)
+{
+	return(this->sampleList);
+};
