@@ -4,7 +4,7 @@
  *  Created on: Mar 15, 2012
  *      Author: wjiang2
  */
-#include "flowJoWorkspace.hpp"
+#include <flowJoWorkspace.hpp>
 #include <string>
 //#include <libxml/tree.h>
 #include <libxml/parser.h>

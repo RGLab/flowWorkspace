@@ -13,7 +13,7 @@
 
 #include <Rcpp.h>
 //#include <cmath>
-#include "GatingSet.hpp"
+#include <GatingSet.hpp>
 using namespace Rcpp;
 
 //RCPP_MODULE(cpp_GatingSet){
@@ -88,6 +88,12 @@ END_RCPP
 //}
 //
 
+RcppExport SEXP R_getSamples(SEXP _gsPtr) {
+BEGIN_RCPP
+	XPtr<GatingSet>gs(_gsPtr);
+	return wrap(gs->getSamples());
 
+END_RCPP
+}
 
 

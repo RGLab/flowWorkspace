@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "GatingHierarchy.hpp"
+#include <GatingHierarchy.hpp>
 #include <boost/graph/graphviz.hpp>
 #include <fstream>
 

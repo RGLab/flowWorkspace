@@ -13,7 +13,7 @@
 
 #include <Rcpp.h>
 //#include <cmath>
-#include "GatingHierarchy.hpp"
+#include <GatingHierarchy.hpp>
 using namespace Rcpp;
 
 RcppExport SEXP R_plotGh(SEXP _ghPtr) {

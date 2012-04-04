@@ -6,7 +6,7 @@
  */
 
 
-#include "GatingSet.hpp"
+#include <GatingSet.hpp>
 #include <string>
 #include <libxml/tree.h>
 #include <libxml/parser.h>

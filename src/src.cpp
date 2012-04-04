@@ -11,9 +11,9 @@
 
 
 
-#include "flowJoWorkspace.hpp"
-#include "GatingSet.hpp"
-#include "GatingHierarchy.hpp"
+#include <flowJoWorkspace.hpp>
+#include <GatingSet.hpp>
+#include <GatingHierarchy.hpp>
 using namespace std;
 
 #define MAC 0
@@ -44,3 +44,7 @@ int main(void) {
 
 	return (0);
 }
+
+//void Rcpp_test{
+//	R_openWorkspace
+//}

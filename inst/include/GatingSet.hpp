@@ -21,6 +21,13 @@ using namespace std;
 class GatingSet{
 	workspace * ws;
 	map<string,GatingHierarchy *> ghs;
+	/*
+	 * we assume the GatingSet is mainly for read-access
+	 * so we have a copy of samplenames here as a vector
+	 * for the convienient access samplenames
+	 * If there is need to avoid data-inconsistency,we can loop through the map
+	 * and return the sampleList
+	 */
 	vector<string> sampleList;
 
 public:
@@ -28,8 +35,7 @@ public:
 	GatingSet(string);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
-
-	 void parseWorkspace(unsigned short);
-
+	void parseWorkspace(unsigned short);
+	vector<string> getSamples(){this->sampleList;};
 };
 #endif /* GATINGSET_HPP_ */
