@@ -8,7 +8,7 @@ setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,lay
 			
 #			browser()
 			GXLFile<-.Call("R_plotGh",x@pointer)
-			GXLFile<-file.path("~/rglab/workspace/flowWorkspace/src",GXLFile)
+			GXLFile<-file.path("~/rglab/workspace/flowWorkspace/output",GXLFile)
 			sf<-file(GXLFile)
 			g<-fromGXL(sf)
 			close(sf)
@@ -67,12 +67,18 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,tsort=FALSE,...){
 #				return(RBGL::tsort(x@tree))
 #			}
 		})
-#setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
-##			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
-#			
-#			.Call("R_getParentI",x@pointer,as.integer(y))
-#			
-#		})
+setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
+#			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
+			
+			ind<-.Call("R_getParent",obj@pointer,as.integer(y))
+			getNodes(obj)[ind]
+			
+		})
+setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+#			browser()
+			ind<-which(getNodes(obj)%in%y)
+			getParent(obj,ind)
+		})
 #setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 ##			setdiff(adj(ugraph(obj@tree),y)[[1]],adj(obj@tree,y)[[1]])
 #			.Call("R_getParentS",x@pointer,y)

@@ -40,14 +40,14 @@ BEGIN_RCPP
 END_RCPP
 }
 
-//RcppExport SEXP R_getParent(SEXP _ghPtr,SEXP _i){
-//BEGIN_RCPP
-//
-//	XPtr<GatingHierarchy>gh(_ghPtr);
-//	string res=gh->getParent();
-//	return wrap(res);
-//END_RCPP
-//}
+RcppExport SEXP R_getParent(SEXP _ghPtr,SEXP _i){
+BEGIN_RCPP
+
+	XPtr<GatingHierarchy>gh(_ghPtr);
+	int u=as<int>(_i);
+	return wrap(gh->getParent(u));
+END_RCPP
+}
 //
 //RcppExport SEXP R_getParentI(SEXP _ghPtr,SEXP _verID){
 //BEGIN_RCPP

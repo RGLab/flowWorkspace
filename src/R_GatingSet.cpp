@@ -12,11 +12,12 @@
  * can't use module for exposing overloaded methods
  */
 
-RcppExport SEXP R_openWorkspace(SEXP _fileName) {
+RcppExport SEXP R_openWorkspace(SEXP _fileName,SEXP _dMode) {
 BEGIN_RCPP
 
 	string fileName=as<string>(_fileName);
-	XPtr<GatingSet>ptr(new GatingSet(fileName,1));
+	unsigned short dMode=as<unsigned short>(_dMode);
+	XPtr<GatingSet>ptr(new GatingSet(fileName,dMode));
 
     return ptr;
 END_RCPP

@@ -62,13 +62,13 @@ setMethod("show",signature("GatingSetInternal"),function(object){
 		})
 
 
-setMethod("getSamples","GatingSet",function(x,isFullPath=FALSE){
+setMethod("getSamples","GatingSetInternal",function(x,isFullPath=FALSE){
 			
 			.Call("R_getSamples",x@pointer)
 		})
 
 #Return gate y for all samples in the gating set (by index).
 #Warning: assume that all gating hierarchies are the same in the given gating set. We don't check for this, so be careful.
-setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE){
-			lapply(obj,function(x)getGate(x,y,tsort=tsort))
-		})
+#setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE){
+#			lapply(obj,function(x)getGate(x,y,tsort=tsort))
+#		})

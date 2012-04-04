@@ -49,9 +49,9 @@ class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
 //	double ** data;
-	string _sampleName;
+	string sampleName;
 	populationTree tree;
-	map<string,VertexID> nodelist;
+	map<string,VertexID> nodelist;//this field is for easy query by node name since boost does not provide this query feature explicitly
 	workspace * thisWs;
 	unsigned short dMode;//debug mode passed from GatingSet
 public:
@@ -83,8 +83,8 @@ public:
 //	void gating(gate& g,string popName);
 	void gating();
 	string drawGraph();
-	string getSample(void){return _sampleName;};
-	void setSample(string sampleName){_sampleName=sampleName;};
+	string getSample(void){return sampleName;};
+	void setSample(string _sampleName){sampleName=_sampleName;};
 	vector<string> getNodeList(void);
 	VertexID getParent(VertexID);
 //	unsigned getParent(unsigned i);

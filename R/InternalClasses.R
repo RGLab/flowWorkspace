@@ -41,19 +41,21 @@ setMethod("initialize","GatingSetInternal"
 #				,files=NULL
 #				,isNcdf=FALSE
 #				,flowSetId=NULL
-				,xmlFileName=NULL){
+				,xmlFileName=NULL
+				,dMode=1
+				){
 
 #			.Object@set<-set;
 #			.Object@metadata<-metadata
 #			browser()			
 			stopifnot(!is.null(xmlFileName))
-			.Object@pointer<-.Call("R_openWorkspace",xmlFileName)
+			.Object@pointer<-.Call("R_openWorkspace",xmlFileName,as.integer(dMode))
 #	validObject(.Object)
 			return(.Object)
 		})
 
-makeGatingSetInternal<-function(xmlFileName)
+makeGatingSetInternal<-function(xmlFileName,dMode)
 {
 	
-	new("GatingSetInternal",xmlFileName)
+	new("GatingSetInternal",xmlFileName,dMode)
 }

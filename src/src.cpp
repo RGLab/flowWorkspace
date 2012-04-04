@@ -21,14 +21,37 @@ using namespace std;
 
 
 void test(string xml){
-		GatingSet gs(xml,1);//select xml workspace to parse
+
+		//create gating set object
+		GatingSet gs(xml,0);
+
+		//parse a particular sample group
 		unsigned short groupID=1;
 		gs.parseWorkspace(groupID);
 
+		/*
+		 * get sample list from gating set
+		 */
+		vector<string> samples=gs.getSamples();
+		vector<string>::iterator it;
+		for(it=samples.begin();it!=samples.end();it++)
+			cout<<*it<<endl;
+
+		/*
+		 *
+		 */
 		GatingHierarchy *gh=gs.getGatingHierarchy(1);
-//		cout<<gh->getNodeList()<<endl;
+
+
+		vector<string> nodelist=gh->getNodeList();
+//		map<string,VertexID>::iterator it1;
+		for(it=nodelist.begin();it!=nodelist.end();it++)
+			cout<<*it<<endl;
 		cout<<gh->getSample()<<endl;
-//		gh->drawGraph();
+		cout<<gh->getParent(3)<<endl;
+
+
+		gh->drawGraph();
 		//construct GatingHierarchy without associate it with sample
 	//	GatingHierarchy gh;
 	//	gh.gating();

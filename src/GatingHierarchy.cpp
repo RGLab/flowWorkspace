@@ -114,11 +114,11 @@ void GatingHierarchy::gating()
 
 string GatingHierarchy::drawGraph()
 {
-	ofstream outputFile("test.dot");
+	ofstream outputFile("../output/test.dot");
 	//...
 	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriter(tree));
 	outputFile.close();
-	system("dot2gxl test.dot -o test.gxl");
+	system("dot2gxl ../output/test.dot -o ../output/test.gxl");
 	return("test.gxl");
 //	system("pwd");
 
@@ -127,10 +127,11 @@ string GatingHierarchy::drawGraph()
 
 vector<string> GatingHierarchy::getNodeList(void){
 	map<string,VertexID>::iterator it;
-	vector<string> res;
+	vector<string> res(nodelist.size());
 	for(it=nodelist.begin();it!=nodelist.end();it++)
-		res.push_back(it->first);
+		res.at(it->second)=it->first;
 	return(res);
+
 }
 
 VertexID GatingHierarchy::getParent(VertexID target){
