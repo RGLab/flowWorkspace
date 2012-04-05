@@ -14,7 +14,8 @@
 #include "flowJoWorkspace.hpp"
 #include <libxml/xpath.h>
 using namespace std;
-
+typedef map<string,VertexID> VertexID_map;
+typedef vector<VertexID> VertexID_vec;
 
 struct OurVertexPropertyWriter {
 
@@ -51,7 +52,13 @@ class GatingHierarchy{
 //	double ** data;
 	string sampleName;
 	populationTree tree;
-	map<string,VertexID> nodelist;//this field is for easy query by node name since boost does not provide this query feature explicitly
+	/*
+	 * this field is for the easy query by node name
+	 * since boost does not provide this query feature explicitly,
+	 * however it adds the potential data inconsistency risk when performing the non-read-only
+	 * operation on the tree
+	 */
+	VertexID_map nodelist;
 	workspace * thisWs;
 	unsigned short dMode;//debug mode passed from GatingSet
 public:
@@ -85,9 +92,10 @@ public:
 	string drawGraph();
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};
-	vector<string> getNodeList(void);
-	VertexID getParent(VertexID);
-	vector<VertexID> getChildren(VertexID);
+	VertexID_vec getVertices(bool);//return the node list in vertexID order or T order
+	VertexID_vec getParent(VertexID);
+	VertexID_vec getChildren(VertexID);
+	populationNode vertexIDToNode(VertexID);
 };
 
 

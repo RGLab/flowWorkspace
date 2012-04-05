@@ -25,7 +25,8 @@ typedef boost::adjacency_list<  // adjacency_list is a template depending on :
     Edge                        //  The type that describes an Edge
 > populationTree;
 typedef populationTree::vertex_descriptor VertexID;
+typedef populationTree::vertex_iterator VertexIt;
 typedef populationTree::edge_descriptor   EdgeID;
-
+typedef populationTree::edge_iterator   EdgeIt;
 
 #endif /* TREE_HPP_ */

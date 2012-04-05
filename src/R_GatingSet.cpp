@@ -29,7 +29,7 @@ BEGIN_RCPP
 		unsigned short groupID=as<unsigned short>(_groupID);
 
 		gs->parseWorkspace(groupID);
-		return wrap(0);
+		return R_NilValue; ;
 END_RCPP
 }
 
@@ -49,7 +49,6 @@ RcppExport SEXP R_getGatingHierarchyI(SEXP _gsPtr,SEXP _i) {
 BEGIN_RCPP
 	XPtr<GatingSet>gs(_gsPtr);
 	unsigned i=as<unsigned>(_i);
-
 	GatingHierarchy * gh=gs->getGatingHierarchy(i);
 
 	XPtr<GatingHierarchy>ptr(gh);

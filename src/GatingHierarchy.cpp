@@ -8,6 +8,7 @@
 #include "include/GatingHierarchy.hpp"
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/graph_traits.hpp>
+#include <boost/graph/topological_sort.hpp>
 #include <fstream>
 
 /*need to be careful that gate within each node of the GatingHierarchy is
@@ -144,43 +145,84 @@ string GatingHierarchy::drawGraph()
 }
 
 /*
- * retrieve the node names from the nodelist filed
- * by the order of VertexID which is presumably in topological order
+ * retrieve the vertexIDs in topological order or in regular order
  */
-vector<string> GatingHierarchy::getNodeList(void){
-	map<string,VertexID>::iterator it;
-	vector<string> res(nodelist.size());
-	for(it=nodelist.begin();it!=nodelist.end();it++)
-		res.at(it->second)=it->first;
+VertexID_vec GatingHierarchy::getVertices(bool tsort=false){
+
+	VertexID_vec res, vertices;
+	if(tsort)
+	{
+		boost::topological_sort(tree,back_inserter(vertices));
+		for(VertexID_vec::reverse_iterator it=vertices.rbegin();it!=vertices.rend();it++)
+			res.push_back(*it);
+	}
+	else
+	{
+		VertexIt it_begin,it_end;
+		tie(it_begin,it_end)=boost::vertices(tree);
+		for(VertexIt it=it_begin;it!=it_end;it++)
+			res.push_back((unsigned long)*it);
+	}
+
 	return(res);
 
 }
 /*
  * using boost in_edges out_edges to retrieve adjacent vertices
  */
-VertexID GatingHierarchy::getParent(VertexID target){
+VertexID_vec GatingHierarchy::getParent(VertexID target){
+	VertexID_vec res;
+	if(target>=0&&target<=nodelist.size())
+	{
+		cout<<"getting parent of "<<target<<"."<<tree[target].getName()<<endl;
+//		typename boost::graph_traits<populationTree>::edge_iterator e;
+		EdgeID e;
+		typename boost::graph_traits<populationTree>::in_edge_iterator in_i, in_end;
 
-	typename boost::graph_traits<populationTree>::edge_descriptor e;
-/*
- * assuming there is only one parent for each node at this point
- */
-	e=*boost::in_edges(target,tree).first;
-	return(boost::source(e,tree));
+		for (tie(in_i, in_end) = in_edges(target,tree);
+			         in_i != in_end; ++in_i)
+		{
+		  e = *in_i;
+		  VertexID  sarg = boost::source(e, tree);
+		  res.push_back(sarg);
+		}
+
+
+	}
+	else
+	{
+		cout<<"Warning:invalid vertexID input!"<<endl;
+//		  res.push_back(0);
+
+	}
+	return(res);
 }
 
-vector<VertexID> GatingHierarchy::getChildren(VertexID source){
+VertexID_vec GatingHierarchy::getChildren(VertexID source){
 
-	vector<VertexID> res;
-	typename boost::graph_traits<populationTree>::edge_descriptor e;
-	typename boost::graph_traits<populationTree>::out_edge_iterator out_i, out_end;
+	VertexID_vec res;
+	if(source>=0&&source<=nodelist.size())
+	{
 
-	for (tie(out_i, out_end) = out_edges(source,tree);
-	         out_i != out_end; ++out_i)
-	    {
-	      e = *out_i;
-	      VertexID  targ = target(e, tree);
-	      res.push_back(targ);
-	    }
+		EdgeID e;
+		typename boost::graph_traits<populationTree>::out_edge_iterator out_i, out_end;
 
+		for (tie(out_i, out_end) = out_edges(source,tree);
+				 out_i != out_end; ++out_i)
+			{
+			  e = *out_i;
+			  VertexID  targ = target(e, tree);
+			  res.push_back(targ);
+			}
+	}
+	else
+	{
+		cout<<"invalid vertexID input!"<<endl;
+//		res.push_back(0);
+	}
 	return(res);
+}
+populationNode GatingHierarchy::vertexIDToNode(VertexID u){
+
+	return(tree[u]);
 }

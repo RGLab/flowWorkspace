@@ -32,11 +32,23 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_getNodes(SEXP _ghPtr,SEXP _verID){
+/*
+ * return node names as a character vector
+ */
+RcppExport SEXP R_getNodes(SEXP _ghPtr,SEXP _tsort){
 BEGIN_RCPP
 
 	XPtr<GatingHierarchy>gh(_ghPtr);
-	return wrap(gh->getNodeList());
+	bool tsort=as<bool>(_tsort);
+	VertexID_vec vertices=gh->getVertices(tsort);
+	vector<string> res;
+	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	{
+		populationNode node=gh->vertexIDToNode(*it);
+		res.push_back(node.getName());
+	}
+
+	return wrap(res);
 END_RCPP
 }
 
@@ -58,7 +70,20 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_getPopStats(SEXP _ghPtr,SEXP _i){
+BEGIN_RCPP
 
+	XPtr<GatingHierarchy>gh(_ghPtr);
+	int u=as<int>(_i);
+	u--;
+	populationNode node=gh->vertexIDToNode(u);
+
+	return List::create(Named("FlowCore",node.getStats(true))
+						,Named("FlowJo",node.getStats(false))
+						);
+
+END_RCPP
+}
 
 
 

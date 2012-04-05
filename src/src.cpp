@@ -27,33 +27,81 @@ void test(string xml){
 
 		//parse a particular sample group
 		unsigned short groupID=1;
+		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
 		gs.parseWorkspace(groupID);
 
 		/*
 		 * get sample list from gating set
 		 */
+		cout<<endl<<"getsamples from gating set"<<endl;
+
 		vector<string> samples=gs.getSamples();
-		vector<string>::iterator it;
-		for(it=samples.begin();it!=samples.end();it++)
+		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
 			cout<<*it<<endl;
 
-		/*
-		 *
-		 */
 		GatingHierarchy *gh=gs.getGatingHierarchy(1);
 
+		/*
+		 * getNodes by the T order
+		 */
 
-		vector<string> nodelist=gh->getNodeList();
-//		map<string,VertexID>::iterator it1;
-		for(it=nodelist.begin();it!=nodelist.end();it++)
-			cout<<*it<<endl;
+		cout<<endl<<"tsorted node list"<<endl;
+		VertexID_vec vertices=gh->getVertices(true);
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			populationNode node=gh->vertexIDToNode(*it);
+			cout<<*it<<"."<<node.getName()<<endl;
+		}
+
+		/*
+		 * getNodes by vertices ID order
+		 * and get stats from each node
+		 */
+
+		cout<<endl<<"node list in regular order"<<endl;
+		vertices=gh->getVertices(false);
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			populationNode node=gh->vertexIDToNode(*it);
+			cout<<*it<<"."<<node.getName()<<":";
+			cout<<node.getStats(false)["count"]<<endl;
+		}
+		/*
+		 * getSample from gating hierarchy
+		 */
+		cout<<endl<<"get sample name from gating hierarchy"<<endl;
 		cout<<gh->getSample()<<endl;
-		cout<<gh->getParent(3)<<endl;
-		vector<VertexID> children=gh->getChildren(6);
-		vector<VertexID>::iterator it1;
-		for(it1=children.begin();it1!=children.end();it1++)
-					cout<<*it1<<endl;
+		/*
+		 * get children and parent node index
+		 */
 
+		cout<<endl<<"check parent node"<<endl;
+		for(int i=-1;i<=11;i++)
+		{
+			VertexID_vec parent=gh->getParent(i);
+			cout<<i<<"<--";
+			for(VertexID_vec::iterator it=parent.begin();it!=parent.end();it++)
+				cout<<*it<<" ";
+			cout<<endl;
+		}
+
+
+
+		cout<<endl<<"check children node"<<endl;
+		for(int i=-1;i<=11;i++)
+		{
+			VertexID_vec children=gh->getChildren(i);
+			cout<<i<<"-->";
+			for(VertexID_vec::iterator it=children.begin();it!=children.end();it++)
+						cout<<*it<<",";
+			cout<<endl;
+		}
+
+
+
+		/*
+		 * plot gating hierarchy tree
+		 */
 		gh->drawGraph();
 		//construct GatingHierarchy without associate it with sample
 	//	GatingHierarchy gh;

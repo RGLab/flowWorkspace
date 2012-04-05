@@ -45,7 +45,7 @@ GatingSet::~GatingSet()
 			GatingHierarchy * ghPtr=it.second;
 			string sampleName=ghPtr->getSample();
 			delete ghPtr;
-			if(dMode>0)
+			if(dMode>=1)
 				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
 	}
 

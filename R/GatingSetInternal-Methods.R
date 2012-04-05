@@ -38,7 +38,7 @@ setMethod("[[",signature("GatingSetInternal"),function(x,i,j,...){
 				ghPtr<-.Call("R_getGatingHierarchyS",x@pointer,i)
 			else
 				if(class(i)=="integer"||class(i)=="numeric")
-					ghPtr<-.Call("R_getGatingHierarchyI",x@pointer,as.integer(i))
+					ghPtr<-.Call("R_getGatingHierarchyI",x@pointer,as.integer(i)-1)
 				else
 					stop("Not valid index type(character or integer):",i
 									)
@@ -67,6 +67,17 @@ setMethod("getSamples","GatingSetInternal",function(x,isFullPath=FALSE){
 			.Call("R_getSamples",x@pointer)
 		})
 
+
+
+#setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y){
+#			#Return the proportion of the population relative to the parent and relative to the total.
+#			#x is a graph of a gating hierarchy that has had data added to it.
+#			#y is nodename
+#			return(get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]])/get("parentTot",envir=nodeData(x@tree,y,"metadata")[[1]]))	
+#		})
+#setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y){
+#			return(get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]]))
+#		})
 #Return gate y for all samples in the gating set (by index).
 #Warning: assume that all gating hierarchies are the same in the given gating set. We don't check for this, so be careful.
 #setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE){

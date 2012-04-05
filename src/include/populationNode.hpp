@@ -15,20 +15,21 @@
 
 using namespace std;
 
+typedef map<string,double> POPSTATS;
+
 class populationNode{
 public:
 	string thisName;
 	gate * thisGate;
 	vector<bool> thisIndice;
 
-	map<string,double> fjStats;
-	map<string,double> fcStats;
+	POPSTATS fjStats,fcStats;
 public:
 	populationNode(){thisGate=NULL;};
 //	~populationNode(){delete thisGate;};//since gate is dynamically created,needs to be freed here in destroy method
 	vector<bool> getIndice(){return(this->thisIndice);};
 
-	map<string,double> getStats(bool isFlowCore=1){
+	POPSTATS getStats(bool isFlowCore=1){
 		return(isFlowCore?this->fcStats:this->fjStats);
 		};
 
