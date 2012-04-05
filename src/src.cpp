@@ -49,7 +49,10 @@ void test(string xml){
 			cout<<*it<<endl;
 		cout<<gh->getSample()<<endl;
 		cout<<gh->getParent(3)<<endl;
-
+		vector<VertexID> children=gh->getChildren(6);
+		vector<VertexID>::iterator it1;
+		for(it1=children.begin();it1!=children.end();it1++)
+					cout<<*it1<<endl;
 
 		gh->drawGraph();
 		//construct GatingHierarchy without associate it with sample

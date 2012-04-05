@@ -48,14 +48,15 @@ BEGIN_RCPP
 	return wrap(gh->getParent(u));
 END_RCPP
 }
-//
-//RcppExport SEXP R_getParentI(SEXP _ghPtr,SEXP _verID){
-//BEGIN_RCPP
-//
-//	XPtr<GatingHierarchy>gh(_ghPtr);
-//	return wrap(gh->getSample());
-//END_RCPP
-//}
+
+RcppExport SEXP R_getChildren(SEXP _ghPtr,SEXP _i){
+BEGIN_RCPP
+
+	XPtr<GatingHierarchy>gh(_ghPtr);
+	int u=as<int>(_i);
+	return wrap(gh->getChildren(u));
+END_RCPP
+}
 
 
 

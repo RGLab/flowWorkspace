@@ -87,7 +87,7 @@ public:
 	void setSample(string _sampleName){sampleName=_sampleName;};
 	vector<string> getNodeList(void);
 	VertexID getParent(VertexID);
-//	unsigned getParent(unsigned i);
+	vector<VertexID> getChildren(VertexID);
 };
 
 

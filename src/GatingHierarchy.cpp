@@ -41,6 +41,9 @@ GatingHierarchy::GatingHierarchy(unsigned short _dMode=1)
 //	addPopulation(pVerID,&root);
 //
 //}
+/*
+ * Constructor that starts from a particular sampleNode from workspace to build a tree
+ */
 GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,unsigned short _dMode=1)
 {
 	dMode=_dMode;
@@ -51,6 +54,10 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,unsig
 	addPopulation(pVerID,&root);
 
 }
+/*
+ * add root node first before recursively add the other nodes
+ * since root node does not have gates as the others do
+ */
 VertexID GatingHierarchy::addRoot(populationNode rootNode)
 {
 	// Create  vertices in that graph
@@ -62,6 +69,9 @@ VertexID GatingHierarchy::addRoot(populationNode rootNode)
 	return(u);
 }
 
+/*
+ * recursively append the populations to the tree
+ */
 void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 {
 
@@ -89,6 +99,9 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 
 
 }
+/*
+ * this is for semi-automated pipeline to add populations sequetially
+ */
 void GatingHierarchy::addGate(gate& g,string popName)
 {
 
@@ -112,6 +125,11 @@ void GatingHierarchy::gating()
 	cout <<"test gating"<<endl;
 }
 
+/*
+ * current output the graph in dot format
+ * and further covert it to gxl in order for Rgraphviz to read since it does not support dot directly
+ * right now the data exchange is through file system,it would be nice to do it in memory
+ */
 string GatingHierarchy::drawGraph()
 {
 	ofstream outputFile("../output/test.dot");
@@ -125,6 +143,10 @@ string GatingHierarchy::drawGraph()
 
 }
 
+/*
+ * retrieve the node names from the nodelist filed
+ * by the order of VertexID which is presumably in topological order
+ */
 vector<string> GatingHierarchy::getNodeList(void){
 	map<string,VertexID>::iterator it;
 	vector<string> res(nodelist.size());
@@ -133,19 +155,32 @@ vector<string> GatingHierarchy::getNodeList(void){
 	return(res);
 
 }
-
+/*
+ * using boost in_edges out_edges to retrieve adjacent vertices
+ */
 VertexID GatingHierarchy::getParent(VertexID target){
 
 	typename boost::graph_traits<populationTree>::edge_descriptor e;
-
+/*
+ * assuming there is only one parent for each node at this point
+ */
 	e=*boost::in_edges(target,tree).first;
 	return(boost::source(e,tree));
 }
 
-//string GatingHierarchy::getParent(string nodeName){
-//
-//	VertexID u=nodelist[u];
-//	VertexID v=getParent(u);
-//	return(tree[v].getName());
-//}
+vector<VertexID> GatingHierarchy::getChildren(VertexID source){
 
+	vector<VertexID> res;
+	typename boost::graph_traits<populationTree>::edge_descriptor e;
+	typename boost::graph_traits<populationTree>::out_edge_iterator out_i, out_end;
+
+	for (tie(out_i, out_end) = out_edges(source,tree);
+	         out_i != out_end; ++out_i)
+	    {
+	      e = *out_i;
+	      VertexID  targ = target(e, tree);
+	      res.push_back(targ);
+	    }
+
+	return(res);
+}

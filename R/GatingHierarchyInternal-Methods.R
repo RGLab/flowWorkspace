@@ -79,14 +79,13 @@ setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),fun
 			ind<-which(getNodes(obj)%in%y)
 			getParent(obj,ind)
 		})
-#setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
-##			setdiff(adj(ugraph(obj@tree),y)[[1]],adj(obj@tree,y)[[1]])
-#			.Call("R_getParentS",x@pointer,y)
-#			
-#		})
-#setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
-#			adj(obj@tree,y)[[1]]
-#		})
+setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+			nodes<-getNodes(obj)
+#			browser()
+			ind<-which(nodes%in%y)
+			ind<-.Call("R_getChildren",obj@pointer,as.integer(ind))
+			nodes[ind]
+		})
 #
 #setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),function(x,y){
 #			#Return the proportion of the population relative to the parent and relative to the total.
