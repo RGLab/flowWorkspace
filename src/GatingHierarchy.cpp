@@ -174,8 +174,8 @@ VertexID_vec GatingHierarchy::getParent(VertexID target){
 	VertexID_vec res;
 	if(target>=0&&target<=nodelist.size())
 	{
-		cout<<"getting parent of "<<target<<"."<<tree[target].getName()<<endl;
-//		typename boost::graph_traits<populationTree>::edge_iterator e;
+//		cout<<"getting parent of "<<target<<"."<<tree[target].getName()<<endl;
+
 		EdgeID e;
 		typename boost::graph_traits<populationTree>::in_edge_iterator in_i, in_end;
 
@@ -191,7 +191,7 @@ VertexID_vec GatingHierarchy::getParent(VertexID target){
 	}
 	else
 	{
-		cout<<"Warning:invalid vertexID input!"<<endl;
+		cout<<"Warning:invalid vertexID:"<<target<<endl;
 //		  res.push_back(0);
 
 	}
@@ -217,12 +217,19 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 	}
 	else
 	{
-		cout<<"invalid vertexID input!"<<endl;
+		cout<<"invalid vertexID:"<<source<<endl;
 //		res.push_back(0);
 	}
 	return(res);
 }
 populationNode GatingHierarchy::vertexIDToNode(VertexID u){
 
-	return(tree[u]);
+
+	if(u>=0&&u<=nodelist.size())
+		return(tree[u]);
+	else
+	{
+		cout<<"returning empty node due to the invalid vertexID:"<<u<<endl;
+		return(populationNode());
+	}
 }

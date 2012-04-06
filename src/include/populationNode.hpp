@@ -29,7 +29,7 @@ public:
 //	~populationNode(){delete thisGate;};//since gate is dynamically created,needs to be freed here in destroy method
 	vector<bool> getIndice(){return(this->thisIndice);};
 
-	POPSTATS getStats(bool isFlowCore=1){
+	POPSTATS getStats(bool isFlowCore=false){
 		return(isFlowCore?this->fcStats:this->fjStats);
 		};
 

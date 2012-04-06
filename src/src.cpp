@@ -58,7 +58,7 @@ void test(string xml){
 		 * and get stats from each node
 		 */
 
-		cout<<endl<<"node list in regular order"<<endl;
+		cout<<endl<<"node list in regular order and stats:"<<endl;
 		vertices=gh->getVertices(false);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{

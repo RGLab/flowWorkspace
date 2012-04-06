@@ -106,16 +106,29 @@ setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),functio
 		y<-which(nodes%in%y)
 		
 	}
-	
+
 	stats<-.Call("R_getPopStats",x@pointer,as.integer(y)-1)
 	pInd<-.Call("R_getParent",x@pointer,as.integer(y)-1)+1
-	pstats<-.Call("R_getPopStats",x@pointer,as.integer(pInd)-1)
+	if(length(pInd)>0)
+		pstats<-.Call("R_getPopStats",x@pointer,as.integer(pInd)-1)
+	else
+		pstats<-list(FlowCore=c(count=0,proportion=0),FlowJo=c(count=0,proportion=0))
 	
-	
-	list(flowCore=c(proportion=unname(stats$FlowCore/pstats$FlowCore)
-					,stats$FlowCore["count"])
-			,flowJo=c(proportion=unname(stats$FlowJo/pstats$FlowJo)
-					,stats$FlowJo["count"])	
+#	browser()	
+#	list(flowCore=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
+#										,1
+#										,stats$FlowCore["count"]/pstats$FlowCore["count"]
+#										)
+#					,count=as.numeric(stats$FlowCore["count"])))
+#		,flowJo=c(proportion=as.numeric(ifelse(pstats$FlowJo["count"]==0
+#										,1
+#										,stats$FlowJo["count"]/pstats$FlowJo["count"]
+#										))
+#					,count=as.numeric(stats$FlowJo["count"]))	
+#		)
+	list(flowCore=c(parent.total=as.numeric(pstats$FlowCore["count"]),count=as.numeric(stats$FlowCore["count"]))
+		,flowJo=c(parent.total=as.numeric(pstats$FlowJo["count"]),count=as.numeric(stats$FlowJo["count"])
+		)	
 	)
 }
 setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
@@ -123,42 +136,43 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 			
 #			stopifnot(!missing(y)&&(is.numeric(y)||is.integer(y)))
 			nNodes<-length(getNodes(x))
-			browser()
-			lapply(1:nNodes,function(ind){
-						print(ind)		
-						.getPopStat(x,ind)
-					})
-			browser()
-			stats<-.Call("R_getPopStats",x@pointer,as.integer(y))
+
+			stats<-lapply(1:nNodes,function(ind){
+						
+						curStats<-.getPopStat(x,ind)
+#						browser()
+						curRes<-c(""
+									,curStats$flowCore["parent.total"]
+									,curStats$flowJo["count"]
+									,curStats$flowCore["count"]
+									,curStats$flowJo["parent.total"]
+									,""
+									)
+						
+						curRes			
+						})
+#			browser()
+			m<-do.call("rbind",stats)
+			m[,1]<-1:nrow(m)
 			
-			
-			pInd<-.Call("R_getParent",x@pointer,as.integer(y))
-			pstats<-.Call("R_getPopStats",x@pointer,as.integer(pInd))
-			
-			
-			list(flowCore=c(proportion=unname(stats$FlowCore/pstats$FlowCore)
-							,stats$FlowCore["count"])
-				,flowJo=c(proportion=unname(stats$FlowJo/pstats$FlowJo)
-							,stats$FlowJo["count"])	
-				)
 			###Fix for root node. Should be fixed in addDataToGatingHierarchy
 
-#			rownames(m)<-NULL;
+			rownames(m)<-NULL;
 			
-#			m<-data.frame(m);
-#			m[,2]<-as.numeric(as.character(m[,2]));
-#			m[,3]<-as.numeric(as.character(m[,3]));
-#			m[,4]<-as.numeric(as.character(m[,4]));
-#			m[,5]<-as.numeric(as.character(m[,5]))
-#			m[,6]<-as.character(m[,6])
-#			
-#			#m[1,4]<-m[1,3]
-#			m[1,c(2)]<-1;
+			m<-data.frame(m);
+			m[,2]<-as.numeric(as.character(m[,2]));
+			m[,3]<-as.numeric(as.character(m[,3]));
+			m[,4]<-as.numeric(as.character(m[,4]));
+			m[,5]<-as.numeric(as.character(m[,5]))
+			m[,6]<-as.character(m[,6])
+
+
+			m[1,c(2)]<-1;
 #			m[1,5]<-m[1,4]
-#			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
-#			rownames(m)<-m[,1]
-#			m<-m[,2:6]
-#			m
+			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
+			rownames(m)<-m[,1]
+			m<-m[,2:6]
+			m
 		})
 
 #setMethod("getPopStats","GatingSet",function(x,...){

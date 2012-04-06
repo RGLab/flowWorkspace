@@ -75,7 +75,6 @@ BEGIN_RCPP
 
 	XPtr<GatingHierarchy>gh(_ghPtr);
 	int u=as<int>(_i);
-	u--;
 	populationNode node=gh->vertexIDToNode(u);
 
 	return List::create(Named("FlowCore",node.getStats(true))
