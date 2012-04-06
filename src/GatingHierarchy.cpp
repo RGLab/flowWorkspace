@@ -131,14 +131,14 @@ void GatingHierarchy::gating()
  * and further covert it to gxl in order for Rgraphviz to read since it does not support dot directly
  * right now the data exchange is through file system,it would be nice to do it in memory
  */
-string GatingHierarchy::drawGraph()
+void GatingHierarchy::drawGraph(string output)
 {
-	ofstream outputFile("../output/test.dot");
+	ofstream outputFile(output.c_str());
 	//...
-	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriter(tree));
+	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriterR(tree));
 	outputFile.close();
-	system("dot2gxl ../output/test.dot -o ../output/test.gxl");
-	return("test.gxl");
+//	system("dot2gxl ../output/test.dot -o ../output/test.gxl");
+//	return("test.gxl");
 //	system("pwd");
 
 

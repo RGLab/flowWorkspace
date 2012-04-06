@@ -17,7 +17,7 @@
 //#include <cmath>
 #include "GatingHierarchy.hpp"
 using namespace Rcpp;
-RcppExport SEXP R_plotGh(SEXP _ghPtr);
+
 RcppExport SEXP R_getSample(SEXP _ghPtr);
 
 #endif /* R_GATINGHIERARCHY_HPP_ */

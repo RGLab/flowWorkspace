@@ -7,47 +7,48 @@
 setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 			
 #			browser()
-			GXLFile<-.Call("R_plotGh",x@pointer)
-			GXLFile<-file.path("~/rglab/workspace/flowWorkspace/output",GXLFile)
+			DotFile<-tempfile()
+			.Call("R_plotGh",x@pointer,DotFile)
+			GXLFile<-tempfile()
+			system(paste("dot2gxl",DotFile, "-o",GXLFile))
+			
 			sf<-file(GXLFile)
 			g<-fromGXL(sf)
 			close(sf)
+			
+			rm(DotFile)
+			rm(GXLFile)
 			nAttrs <- list()
 			nAttrs$label<-unlist(nodeData(g,attr="label"))
-			attrs <- list(node=list(shape="rectangle", fixedsize=FALSE,fontsize=30))
-			plot(g,nodeAttrs=nAttrs,attrs=attrs)
+#			browser()
+#			attrs <- list(node=list(shape="rectangle"
+#									, fixedsize=F
+##									,fontsize=10
+##									,height=1
+#									,fillcolor="lightgreen")
+#						)
+#			plot(g,nodeAttrs=nAttrs,attrs=attrs)
+			
+#			browser()
+			options("warn"=-1)
+			lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
+										,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
+													,node=list(fixedsize=FALSE
+																,fontsize=fontsize
+																,shape="rectangle"
+																)
+													)
+										)
+			renderGraph(lay)
+			#plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
+			options("warn"=0)
+			
 			
 })
-#setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
-#			if(!boolean){	
-#				sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",envir=x)),use.names=FALSE))],x@tree)
-#			}else{
-#				sub<-x@tree
-#			}
-#			nn<-sapply(nodes(sub),function(x)strsplit(x,"\\.")[[1]][2])
-#			nn[1]<-nodes(sub)[1]
-#			natr<-list();
-#			natr$label<-nn;
-#			options("warn"=-1)
-#			lay<-Rgraphviz::layoutGraph(sub,layoutType=layout,nodeAttrs=natr,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle")))
-#			renderGraph(lay)
-#			#plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
-#			options("warn"=0)
-#		})
 
 setMethod("show",signature("GatingHierarchyInternal"),function(object){
-#			cat("FlowJo Workspace Version ",object@version,"\n");
-#			cat("File location: ",object@path,"\n");
-#			cat("File name: ",object@file,"\n");
-#			if(object@.cache$flag){
-#				cat("Workspace is open.","\n");
-#				cat("\nGroups in Workspace\n");
-#				tbl<-table(Name=getSampleGroups(object)$groupName,GroupID=getSampleGroups(object)$groupID)
-#				print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
-#			}else{	
-#				cat("Workspace is closed.","\n")
-#			}
-			cat("GatingHierarchyInternal with internal structure:")
+			cat("\tFCS File: ",getSample(object),"\n");
+			cat("\tGatingHierarchy(internal structure) with ",length(getNodes(object))," gates\n");
 			print(object@pointer)
 			cat("\n")
 		})
@@ -67,9 +68,8 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,tsort=FALSE,isPath=FAL
 setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
 #			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
 			#make sure the index conversion is done properly between C and R convention
+#			browser()
 			.Call("R_getParent",obj@pointer,as.integer(y)-1)+1
-			
-			
 		})
 setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 #			browser()
@@ -87,14 +87,20 @@ setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),f
 #
 setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),function(x,y){
 			#Return the proportion of the population relative to the parent and relative to the total.
-			#x is a graph of a gating hierarchy that has had data added to it.
 			#y is nodename
-#			return(get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]])/get("parentTot",envir=nodeData(x@tree,y,"metadata")[[1]]))	
+			
+			ind<-which(getNodes(x)%in%y)
+			stats<-.getPopStat(x,ind)$flowJo
+#			browser()
+			unname(stats["count"]/stats["parent.total"])	
 		})
-#setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),function(x,y){
-#			return(get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]]))
-#		})
-#
+setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),function(x,y){
+			ind<-which(getNodes(x)%in%y)
+			stats<-.getPopStat(x,ind)$flowJo
+#			browser()
+			unname(stats["count"])
+		})
+
 
 .getPopStat<-function(x,y){
 	stopifnot(!missing(y))

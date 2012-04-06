@@ -15,12 +15,14 @@
  */
 #include "include/R_GatingHierarchy.hpp"
 
-RcppExport SEXP R_plotGh(SEXP _ghPtr) {
+RcppExport SEXP R_plotGh(SEXP _ghPtr,SEXP _output) {
 BEGIN_RCPP
 
 	XPtr<GatingHierarchy>gh(_ghPtr);
- 	 string res=gh->drawGraph();
-    return wrap(res);
+	string output=as<string>(_output);
+	gh->drawGraph(output);
+// 	 string res=gh->drawGraph();
+//    return wrap(res);
 END_RCPP
 }
 

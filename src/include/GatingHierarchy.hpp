@@ -31,6 +31,22 @@ struct OurVertexPropertyWriter {
 
     populationTree &g;
 };
+
+struct OurVertexPropertyWriterR {
+
+	OurVertexPropertyWriterR(populationTree &g_) : g(g_) {}
+
+    template <class Vertex>
+    void operator() (std::ostream &out, Vertex u) {
+
+    	out<<"[shape=record,label=\""<<g[u].getName()<<"\"]";
+
+
+    }
+
+    populationTree &g;
+};
+
 class transformation{
 
 };
@@ -89,7 +105,7 @@ public:
 
 //	void gating(gate& g,string popName);
 	void gating();
-	string drawGraph();
+	void drawGraph(string out);
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};
 	VertexID_vec getVertices(bool tsort);//return the node list in vertexID order or T order
