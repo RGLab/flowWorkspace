@@ -35,20 +35,13 @@ END_RCPP
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _ghPtr,SEXP _tsort){
+RcppExport SEXP R_getNodes(SEXP _ghPtr,SEXP _tsort,SEXP _isPath){
 BEGIN_RCPP
 
 	XPtr<GatingHierarchy>gh(_ghPtr);
 	bool tsort=as<bool>(_tsort);
-	VertexID_vec vertices=gh->getVertices(tsort);
-	vector<string> res;
-	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-	{
-		populationNode node=gh->vertexIDToNode(*it);
-		res.push_back(node.getName());
-	}
-
-	return wrap(res);
+	bool isPath=as<bool>(_isPath);
+	return wrap(gh->getPopNames(tsort,isPath));
 END_RCPP
 }
 

@@ -66,6 +66,18 @@ void test(string xml){
 			cout<<*it<<"."<<node.getName()<<":";
 			cout<<node.getStats(false)["count"]<<endl;
 		}
+
+		/*
+		 * getPopNames with full path
+		 */
+		cout<<endl<<"node list with/without full path:"<<endl;
+		vector<string> popNames=gh->getPopNames(false,true);
+		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
+			cout<<*it<<endl;
+		popNames=gh->getPopNames(false,false);
+		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
+			cout<<*it<<endl;
+
 		/*
 		 * getSample from gating hierarchy
 		 */

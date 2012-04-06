@@ -168,6 +168,50 @@ VertexID_vec GatingHierarchy::getVertices(bool tsort=false){
 
 }
 /*
+ * retrieve population names based on getVertices method
+ * isPath flag indicates whether append the ancestor node names
+ * the assumption is each node only has one parent
+ */
+vector<string> GatingHierarchy::getPopNames(bool tsort,bool isPath){
+
+	VertexID_vec vertices=getVertices(tsort);
+	vector<string> res;
+	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	{
+		VertexID u=*it;
+		string nodeName=vertexIDToNode(u).getName();
+		/*
+		 * append ancestors on its way of tracing back to the root node
+		 */
+		if(isPath)
+		{
+			while(u>0)//if u==0, it is a root vertex
+			{
+				nodeName="/"+nodeName;
+				VertexID_vec parents=getParent(u);
+				if(parents.size()>1)
+				{
+					cout<<"multiple parent nodes."<<endl;
+					break;
+				}
+				else
+				{
+					u=parents.at(0);
+					if(u>0)//don't append the root node
+						nodeName=vertexIDToNode(u).getName()+nodeName;
+				}
+
+			}
+
+
+		}
+
+		res.push_back(nodeName);
+
+	}
+	return res;
+}
+/*
  * using boost in_edges out_edges to retrieve adjacent vertices
  */
 VertexID_vec GatingHierarchy::getParent(VertexID target){

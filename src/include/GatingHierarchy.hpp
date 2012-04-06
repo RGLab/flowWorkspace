@@ -92,7 +92,8 @@ public:
 	string drawGraph();
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};
-	VertexID_vec getVertices(bool);//return the node list in vertexID order or T order
+	VertexID_vec getVertices(bool tsort);//return the node list in vertexID order or T order
+	vector<string> getPopNames(bool tsort,bool isPath);
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	populationNode vertexIDToNode(VertexID);

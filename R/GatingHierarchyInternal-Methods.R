@@ -58,26 +58,24 @@ setMethod("getSample","GatingHierarchyInternal",function(x,isFullPath=FALSE){
 			.Call("R_getSample",x@pointer)
 			
 		})
-setMethod("getNodes","GatingHierarchyInternal",function(x,tsort=FALSE,...){
-			.Call("R_getNodes",x@pointer,tsort)
-			
-#			if(!tsort){
-#				return(x@nodes)
-#			}else{
-#				return(RBGL::tsort(x@tree))
-#			}
+setMethod("getNodes","GatingHierarchyInternal",function(x,tsort=FALSE,isPath=FALSE,...){
+			nodes<-.Call("R_getNodes",x@pointer,tsort,isPath)
+			if(!isPath)
+				nodes<-c(nodes[1],paste(2:length(nodes),nodes[-1],sep="."))
+			nodes
 		})
 setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
 #			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
 			#make sure the index conversion is done properly between C and R convention
-			ind<-.Call("R_getParent",obj@pointer,as.integer(y)-1)+1
-			getNodes(obj)[ind]
+			.Call("R_getParent",obj@pointer,as.integer(y)-1)+1
+			
 			
 		})
 setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 #			browser()
 			ind<-which(getNodes(obj)%in%y)
-			getParent(obj,ind)
+			pind<-getParent(obj,ind)
+			getNodes(obj)[pind]
 		})
 setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 			nodes<-getNodes(obj)
@@ -135,25 +133,27 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 
 			
 #			stopifnot(!missing(y)&&(is.numeric(y)||is.integer(y)))
-			nNodes<-length(getNodes(x))
+			nodeNamesPath<-getNodes(gh,isPath=T)
+			nodeNames<-getNodes(x)
+			nNodes<-length(nodeNames)
 
 			stats<-lapply(1:nNodes,function(ind){
 						
 						curStats<-.getPopStat(x,ind)
 #						browser()
-						curRes<-c(""
+						curRes<-c(nodeNamesPath[ind]
 									,curStats$flowCore["parent.total"]
 									,curStats$flowJo["count"]
 									,curStats$flowCore["count"]
 									,curStats$flowJo["parent.total"]
-									,""
+									,nodeNames[ind]
 									)
 						
 						curRes			
 						})
 #			browser()
 			m<-do.call("rbind",stats)
-			m[,1]<-1:nrow(m)
+			
 			
 			###Fix for root node. Should be fixed in addDataToGatingHierarchy
 
