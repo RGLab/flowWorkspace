@@ -14,63 +14,86 @@
  * write R API
  */
 #include "include/R_GatingHierarchy.hpp"
-
-RcppExport SEXP R_plotGh(SEXP _ghPtr,SEXP _output) {
+#include "include/R_GatingSet.hpp"
+/*
+ * only expose gating set pointer to R to avoid gc() by R
+ */
+RcppExport SEXP R_plotGh(SEXP _gsPtr,SEXP _sampleName,SEXP _output) {
 BEGIN_RCPP
 
-	XPtr<GatingHierarchy>gh(_ghPtr);
+
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
+
 	string output=as<string>(_output);
-	gh->drawGraph(output);
-// 	 string res=gh->drawGraph();
+ 	gh.drawGraph(output);
 //    return wrap(res);
 END_RCPP
 }
 
-RcppExport SEXP R_getSample(SEXP _ghPtr){
-BEGIN_RCPP
-
-	XPtr<GatingHierarchy>gh(_ghPtr);
-	 return wrap(gh->getSample());
-END_RCPP
-}
+//RcppExport SEXP R_getSample(SEXP _gsPtr,SEXP _sampleName){
+//BEGIN_RCPP
+//
+////	XPtr<GatingHierarchy>gh(_ghPtr);
+//	XPtr<GatingSet>gs(_gsPtr);
+//	string sampleName=as<string>(_sampleName);
+//
+//	 return wrap(gs->getGatingHierarchy(sampleName).getSample());
+//END_RCPP
+//}
 
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _ghPtr,SEXP _tsort,SEXP _isPath){
+RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _tsort,SEXP _isPath){
 BEGIN_RCPP
 
-	XPtr<GatingHierarchy>gh(_ghPtr);
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
 	bool tsort=as<bool>(_tsort);
 	bool isPath=as<bool>(_isPath);
-	return wrap(gh->getPopNames(tsort,isPath));
+
+	return wrap(gh.getPopNames(tsort,isPath));
 END_RCPP
 }
 
-RcppExport SEXP R_getParent(SEXP _ghPtr,SEXP _i){
+RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
-	XPtr<GatingHierarchy>gh(_ghPtr);
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	return wrap(gh->getParent(u));
+	return wrap(gh.getParent(u));
 END_RCPP
 }
 
-RcppExport SEXP R_getChildren(SEXP _ghPtr,SEXP _i){
+RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
-	XPtr<GatingHierarchy>gh(_ghPtr);
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	return wrap(gh->getChildren(u));
+	return wrap(gh.getChildren(u));
 END_RCPP
 }
 
-RcppExport SEXP R_getPopStats(SEXP _ghPtr,SEXP _i){
+RcppExport SEXP R_getPopStats(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
-	XPtr<GatingHierarchy>gh(_ghPtr);
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	populationNode node=gh->vertexIDToNode(u);
+	populationNode node=gh.vertexIDToNode(u);
 
 	return List::create(Named("FlowCore",node.getStats(true))
 						,Named("FlowJo",node.getStats(false))

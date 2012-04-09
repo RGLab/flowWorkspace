@@ -8,7 +8,7 @@ setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,lay
 			
 #			browser()
 			DotFile<-tempfile()
-			.Call("R_plotGh",x@pointer,DotFile)
+			.Call("R_plotGh",x@pointer,getSample(x),DotFile)
 			GXLFile<-tempfile()
 			system(paste("dot2gxl",DotFile, "-o",GXLFile))
 			
@@ -48,19 +48,19 @@ setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,lay
 
 setMethod("show",signature("GatingHierarchyInternal"),function(object){
 			cat("\tFCS File: ",getSample(object),"\n");
-			cat("\tGatingHierarchy(internal) with ",length(getNodes(object))," gates\n");
+			cat("\tGatingHierarchy with ",length(getNodes(object))," gates\n");
 			print(object@pointer)
 			cat("\n")
 		})
 
 
-setMethod("getSample","GatingHierarchyInternal",function(x,isFullPath=FALSE){
-#			ifelse(isFullPath,file.path(x@dataPath,x@name),x@name)
-			.Call("R_getSample",x@pointer)
-			
-		})
+#setMethod("getSample","GatingHierarchyInternal",function(x,isFullPath=FALSE){
+##			ifelse(isFullPath,file.path(x@dataPath,x@name),x@name)
+#			.Call("R_getSample",x@pointer)
+#			
+#		})
 setMethod("getNodes","GatingHierarchyInternal",function(x,tsort=FALSE,isPath=FALSE,...){
-			nodes<-.Call("R_getNodes",x@pointer,tsort,isPath)
+			nodes<-.Call("R_getNodes",x@pointer,getSample(x),tsort,isPath)
 			if(!isPath)
 				nodes<-c(nodes[1],paste(2:length(nodes),nodes[-1],sep="."))
 			nodes
@@ -69,7 +69,7 @@ setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),funct
 #			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
 			#make sure the index conversion is done properly between C and R convention
 #			browser()
-			.Call("R_getParent",obj@pointer,as.integer(y)-1)+1
+			.Call("R_getParent",obj@pointer,getSample(obj),as.integer(y)-1)+1
 		})
 setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 #			browser()
@@ -81,7 +81,7 @@ setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),f
 			nodes<-getNodes(obj)
 #			browser()
 			ind<-which(nodes%in%y)
-			ind<-.Call("R_getChildren",obj@pointer,as.integer(ind)-1)+1
+			ind<-.Call("R_getChildren",obj@pointer,getSample(obj),as.integer(ind)-1)+1
 			nodes[ind]
 		})
 #
@@ -111,10 +111,10 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 		
 	}
 
-	stats<-.Call("R_getPopStats",x@pointer,as.integer(y)-1)
-	pInd<-.Call("R_getParent",x@pointer,as.integer(y)-1)+1
+	stats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(y)-1)
+	pInd<-.Call("R_getParent",x@pointer,getSample(x),as.integer(y)-1)+1
 	if(length(pInd)>0)
-		pstats<-.Call("R_getPopStats",x@pointer,as.integer(pInd)-1)
+		pstats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(pInd)-1)
 	else
 		pstats<-list(FlowCore=c(count=0,proportion=0),FlowJo=c(count=0,proportion=0))
 	

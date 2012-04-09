@@ -35,19 +35,29 @@
 #which requires moving some of the contruction to cpp code
 setMethod("parseWorkspace",signature("character"),function(obj,groupID,dMode=0,...){
 			
-			browser()
-			G<-.Call("R_parseWorkspace",obj,groupID,dMode)
+#			browser()
+#			G<-.Call("R_parseWorkspace",obj,groupID,dMode)
+			G<-new("GatingSetInternal",xmlFileName=obj,groupID,dMode)
 			samples<-.Call("R_getSamples",G@pointer)
 			G@set<-sapply(samples,function(x){
-													ghPtr<-.Call("R_getGatingHierarchyS",G@pointer,i)
-													new("GatingHierarchyInternal",pointer=ghPtr)
+#													ghPtr<-.Call("R_getGatingHierarchyS",G@pointer,i)
+#													new("GatingHierarchyInternal",pointer=ghPtr)
+													new("GatingHierarchyInternal",pointer=G@pointer,name=x)
 													}
 							,USE.NAMES=TRUE)
 								
 			G
 			
 		})
-
+setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){
+#			em<-edgeMatrix(object1)
+#			if(length(em)>=2){
+#				return(all(sapply(2:length(em),function(i)identical(em[[1]],em[[i]])))& all(apply(do.call(cbind,lapply(object1,function(x)gsub("^.*\\.","",RBGL:::bfs(x@tree)))),1,function(x)x%in%x[1])))
+#			}else{
+#				return(TRUE)
+#			}
+			return(TRUE)
+		})
 #setMethod("show","GatingSetInternal",function(object){
 #			cat("A GatingSet(internal) with ",length(object)," samples\n")
 #			print(object@pointer)

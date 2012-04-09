@@ -21,8 +21,9 @@ setMethod("initialize","GatingHierarchyInternal"
 				,isNcdf=FALSE
 				,fcsfile=NULL
 				,pointer=NULL){
-			#callNextMethod(.Object,tree,nodes,name,flag,transformations,compensation,dataPath,isNcdf)
+#			callNextMethod(.Object,tree,nodes,name,flag,transformations,compensation,dataPath,isNcdf)
 			.Object@pointer=pointer
+			.Object@name<-name
 			return(.Object)
 		})
 
@@ -42,6 +43,7 @@ setMethod("initialize","GatingSetInternal"
 #				,isNcdf=FALSE
 #				,flowSetId=NULL
 				,xmlFileName=NULL
+				,groupID
 				,dMode=1
 				){
 
@@ -49,7 +51,7 @@ setMethod("initialize","GatingSetInternal"
 #			.Object@metadata<-metadata
 #			browser()			
 			stopifnot(!is.null(xmlFileName))
-			.Object@pointer<-.Call("R_openWorkspace",xmlFileName,as.integer(dMode))
+			.Object@pointer<-.Call("R_parseWorkspace",xmlFileName,groupID,as.integer(dMode))
 #	validObject(.Object)
 			return(.Object)
 		})
