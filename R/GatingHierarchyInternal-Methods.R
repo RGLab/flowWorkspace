@@ -116,7 +116,7 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 	if(length(pInd)>0)
 		pstats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(pInd)-1)
 	else
-		pstats<-list(FlowCore=c(count=0,proportion=0),FlowJo=c(count=0,proportion=0))
+		pstats<-stats#list(FlowCore=c(count=0,proportion=0),FlowJo=c(count=0,proportion=0))
 	
 #	browser()	
 #	list(flowCore=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
@@ -139,7 +139,7 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 
 			
 #			stopifnot(!missing(y)&&(is.numeric(y)||is.integer(y)))
-			nodeNamesPath<-getNodes(gh,isPath=T)
+			nodeNamesPath<-getNodes(x,isPath=T)
 			nodeNames<-getNodes(x)
 			nNodes<-length(nodeNames)
 

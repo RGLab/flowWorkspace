@@ -38,7 +38,8 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSet","missing"),function(
 
 splitGatingSetByNgates<-function(x){
     flowCore:::checkClass(x,"GatingSet");
-    pData(x)$ngates<-unlist(lapply(x,function(x)length(x@nodes)))
+#	browser()
+    pData(x)$ngates<-unlist(lapply(x,function(x)length(getNodes(x))))
     #cluster by number of gates.. set up the groups
     groups<-by(pData(x),pData(x)$ngates,function(x)as.numeric(rownames(x)))
     #split the data
@@ -1385,12 +1386,22 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 	m<-m[,2:6]
 	m
 })
-
-setMethod("getPopStats","GatingSet",function(x,...){
+#made change to the original method to add flowJo option
+setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
     if(!haveSameGatingHierarchy(x)){
         message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
     }
-	r<-do.call(cbind,lapply(x,function(y)getPopStats(y)$flowCore.freq))
+	r<-do.call(cbind,lapply(x,function(y){
+#						browser()
+						curStats<-getPopStats(y)
+						if(flowJo)
+						{
+							curStats$flowJo.count/curStats$parent.total
+						}
+							
+						else
+							curStats$flowCore.freq
+						}))
 	rownames(r)<-rownames(getPopStats(x[[1]]));
 	r
 })

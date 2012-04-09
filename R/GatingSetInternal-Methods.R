@@ -52,11 +52,42 @@ setMethod("parseWorkspace",signature("character"),function(obj,groupID,dMode=0,.
 setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){
 #			em<-edgeMatrix(object1)
 #			if(length(em)>=2){
-#				return(all(sapply(2:length(em),function(i)identical(em[[1]],em[[i]])))& all(apply(do.call(cbind,lapply(object1,function(x)gsub("^.*\\.","",RBGL:::bfs(x@tree)))),1,function(x)x%in%x[1])))
+#				return(all(sapply(2:length(em),function(i)
+#											identical(em[[1]],em[[i]])
+#								)
+#							)
+#						& all(apply(do.call(cbind,lapply(object1,function(x)
+#															gsub("^.*\\.","",RBGL:::bfs(x@tree))
+#														)
+#											)
+#										,1,function(x)
+#												x%in%x[1]
+#									)
+#								)
+#						)
 #			}else{
 #				return(TRUE)
 #			}
 			return(TRUE)
+		})
+#made change to the original method to add flowJo option
+setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
+			if(!haveSameGatingHierarchy(x)){
+				message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
+			}
+			r<-do.call(cbind,lapply(x,function(y){
+#						browser()
+								curStats<-getPopStats(y)
+								if(flowJo)
+								{
+									curStats$flowJo.count/curStats$parent.total
+								}
+								
+								else
+									curStats$flowCore.freq
+							}))
+			rownames(r)<-rownames(getPopStats(x[[1]]));
+			r
 		})
 #setMethod("show","GatingSetInternal",function(object){
 #			cat("A GatingSet(internal) with ",length(object)," samples\n")
