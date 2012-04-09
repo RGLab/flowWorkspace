@@ -20,7 +20,7 @@
 using namespace Rcpp;
 RcppExport SEXP R_openWorkspace(SEXP _fileName,SEXP _dMode);
 
-RcppExport SEXP R_parseWorkspace(SEXP _gsPtr,SEXP _groupID);
+//RcppExport SEXP R_parseWorkspace(SEXP _gsPtr,SEXP _groupID);
 
 RcppExport SEXP R_getGatingHierarchyS(SEXP _gsPtr,SEXP _sampleName);
 RcppExport SEXP R_getGatingHierarchyI(SEXP _gsPtr,SEXP _i);

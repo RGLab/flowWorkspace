@@ -39,17 +39,17 @@ void test(string xml){
 		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
 			cout<<*it<<endl;
 
-		GatingHierarchy *gh=gs.getGatingHierarchy(1);
+		GatingHierarchy gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
 
 		/*
 		 * getNodes by the T order
 		 */
 
 		cout<<endl<<"tsorted node list"<<endl;
-		VertexID_vec vertices=gh->getVertices(true);
+		VertexID_vec vertices=gh.getVertices(true);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
-			populationNode node=gh->vertexIDToNode(*it);
+			populationNode node=gh.vertexIDToNode(*it);
 			cout<<*it<<"."<<node.getName()<<endl;
 		}
 
@@ -59,10 +59,10 @@ void test(string xml){
 		 */
 
 		cout<<endl<<"node list in regular order and stats:"<<endl;
-		vertices=gh->getVertices(false);
+		vertices=gh.getVertices(false);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
-			populationNode node=gh->vertexIDToNode(*it);
+			populationNode node=gh.vertexIDToNode(*it);
 			cout<<*it<<"."<<node.getName()<<":";
 			cout<<node.getStats(false)["count"]<<endl;
 		}
@@ -71,10 +71,10 @@ void test(string xml){
 		 * getPopNames with full path
 		 */
 		cout<<endl<<"node list with/without full path:"<<endl;
-		vector<string> popNames=gh->getPopNames(false,true);
+		vector<string> popNames=gh.getPopNames(false,true);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
-		popNames=gh->getPopNames(false,false);
+		popNames=gh.getPopNames(false,false);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
 
@@ -82,7 +82,7 @@ void test(string xml){
 		 * getSample from gating hierarchy
 		 */
 		cout<<endl<<"get sample name from gating hierarchy"<<endl;
-		cout<<gh->getSample()<<endl;
+		cout<<gh.getSample()<<endl;
 		/*
 		 * get children and parent node index
 		 */
@@ -90,7 +90,7 @@ void test(string xml){
 		cout<<endl<<"check parent node"<<endl;
 		for(int i=-1;i<=11;i++)
 		{
-			VertexID_vec parent=gh->getParent(i);
+			VertexID_vec parent=gh.getParent(i);
 			cout<<i<<"<--";
 			for(VertexID_vec::iterator it=parent.begin();it!=parent.end();it++)
 				cout<<*it<<" ";
@@ -102,7 +102,7 @@ void test(string xml){
 		cout<<endl<<"check children node"<<endl;
 		for(int i=-1;i<=11;i++)
 		{
-			VertexID_vec children=gh->getChildren(i);
+			VertexID_vec children=gh.getChildren(i);
 			cout<<i<<"-->";
 			for(VertexID_vec::iterator it=children.begin();it!=children.end();it++)
 						cout<<*it<<",";
@@ -115,7 +115,7 @@ void test(string xml){
 		 * plot gating hierarchy tree
 		 */
 
-		gh->drawGraph("../output/test.dot");
+		gh.drawGraph("../output/test.dot");
 		system("dot2gxl ../output/test.dot -o ../output/test.gxl");
 		//	return("test.gxl");
 

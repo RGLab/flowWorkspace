@@ -20,7 +20,7 @@ using namespace std;
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
 	workspace * ws;
-	map<string,GatingHierarchy *> ghs;
+	map<string,GatingHierarchy> ghs;
 	/*
 	 * we assume the GatingSet is mainly for read-access
 	 * so we have a copy of samplenames here as a vector
@@ -28,13 +28,13 @@ class GatingSet{
 	 * If there is need to avoid data-inconsistency,we can loop through the map
 	 * and return the sampleList
 	 */
-	vector<string> sampleList;
+//	vector<string> sampleList;
 	unsigned short dMode;//debug level to control print out
 public:
 	~GatingSet();
 	GatingSet(string,unsigned short);
-	GatingHierarchy * getGatingHierarchy(string );
-	GatingHierarchy * getGatingHierarchy(unsigned int);
+	GatingHierarchy & getGatingHierarchy(string );
+//	GatingHierarchy & getGatingHierarchy(unsigned int);
 	void parseWorkspace(unsigned short);
 	vector<string> getSamples(void);
 };

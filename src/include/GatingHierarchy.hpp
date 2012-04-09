@@ -91,7 +91,7 @@ public:
 	void addGate(gate& g,string popName);
 	void addPopulation(VertexID parentID,wsNode * parentNode);
 	VertexID addRoot(populationNode rootNode);
-	GatingHierarchy(unsigned short _dMode);
+	GatingHierarchy();
 	~GatingHierarchy();
 //	GatingHierarchy(string sampleID,workspace * ws,unsigned short _dMode);
 	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,unsigned short _dMode);

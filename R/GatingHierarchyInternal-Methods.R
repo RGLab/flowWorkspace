@@ -48,7 +48,7 @@ setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,lay
 
 setMethod("show",signature("GatingHierarchyInternal"),function(object){
 			cat("\tFCS File: ",getSample(object),"\n");
-			cat("\tGatingHierarchy(internal structure) with ",length(getNodes(object))," gates\n");
+			cat("\tGatingHierarchy(internal) with ",length(getNodes(object))," gates\n");
 			print(object@pointer)
 			cat("\n")
 		})

@@ -26,9 +26,9 @@ GatingHierarchy::~GatingHierarchy()
 }
 
 //default constructor without argument
-GatingHierarchy::GatingHierarchy(unsigned short _dMode=1)
+GatingHierarchy::GatingHierarchy()
 {
-	dMode=_dMode;
+	dMode=1;
 }
 //constructor for sampleNode argument
 //GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)

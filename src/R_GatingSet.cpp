@@ -12,50 +12,54 @@
  * can't use module for exposing overloaded methods
  */
 
-RcppExport SEXP R_openWorkspace(SEXP _fileName,SEXP _dMode) {
+//RcppExport SEXP R_openWorkspace(SEXP _fileName,SEXP _dMode) {
+//BEGIN_RCPP
+//
+//	string fileName=as<string>(_fileName);
+//	unsigned short dMode=as<unsigned short>(_dMode);
+//	XPtr<GatingSet>ptr(new GatingSet(fileName,dMode));
+//
+//    return ptr;
+//END_RCPP
+//}
+
+RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _groupID,SEXP _dMode) {
 BEGIN_RCPP
-
-	string fileName=as<string>(_fileName);
-	unsigned short dMode=as<unsigned short>(_dMode);
-	XPtr<GatingSet>ptr(new GatingSet(fileName,dMode));
-
-    return ptr;
-END_RCPP
-}
-
-RcppExport SEXP R_parseWorkspace(SEXP _gsPtr,SEXP _groupID) {
-BEGIN_RCPP
-		XPtr<GatingSet>gs(_gsPtr);
+		string fileName=as<string>(_fileName);
+		unsigned short dMode=as<unsigned short>(_dMode);
 		unsigned short groupID=as<unsigned short>(_groupID);
 
+//		XPtr<GatingSet>gs(_gsPtr);
+		GatingSet * gs=new GatingSet(fileName,dMode);
 		gs->parseWorkspace(groupID);
-		return R_NilValue; ;
+		return XPtr<GatingSet>(gs);
+//		return R_NilValue;
 END_RCPP
 }
 
-RcppExport SEXP R_getGatingHierarchyS(SEXP _gsPtr,SEXP _sampleName) {
-BEGIN_RCPP
-	XPtr<GatingSet>gs(_gsPtr);
-	string sampleName=as<string>(_sampleName);
-
-	GatingHierarchy * gh=gs->getGatingHierarchy(sampleName);
-
-	XPtr<GatingHierarchy>ptr(gh);
-	return ptr;
-
-END_RCPP
-}
-RcppExport SEXP R_getGatingHierarchyI(SEXP _gsPtr,SEXP _i) {
-BEGIN_RCPP
-	XPtr<GatingSet>gs(_gsPtr);
-	unsigned i=as<unsigned>(_i);
-	GatingHierarchy * gh=gs->getGatingHierarchy(i);
-
-	XPtr<GatingHierarchy>ptr(gh);
-	return ptr;
-
-END_RCPP
-}
+//RcppExport SEXP R_getGatingHierarchyS(SEXP _gsPtr,SEXP _sampleName) {
+//BEGIN_RCPP
+//	XPtr<GatingSet>gs(_gsPtr);
+//	string sampleName=as<string>(_sampleName);
+//
+//	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
+//
+//	XPtr<GatingHierarchy>ptr(gh);
+//	return ptr;
+//
+//END_RCPP
+//}
+//RcppExport SEXP R_getGatingHierarchyI(SEXP _gsPtr,SEXP _i) {
+//BEGIN_RCPP
+//	XPtr<GatingSet>gs(_gsPtr);
+//	unsigned i=as<unsigned>(_i);
+//	GatingHierarchy * gh=gs->getGatingHierarchy(i);
+//
+//	XPtr<GatingHierarchy>ptr(gh);
+//	return ptr;
+//
+//END_RCPP
+//}
 //since delete is not working with xptr, make sure it is released by R
 //RcppExport SEXP R_closeWorkspace(SEXP _gsPtr) {
 //BEGIN_RCPP

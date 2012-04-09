@@ -39,15 +39,14 @@ wsSampleNode getSample(T ws,string sampleID){
 GatingSet::~GatingSet()
 {
 	delete ws;
-//	for_each(ghs.begin(), ghs.end(), this->freeGatingHierarchy);
-	typedef map<string,GatingHierarchy *> map_t;
-	BOOST_FOREACH(map_t::value_type & it,ghs){
-			GatingHierarchy * ghPtr=it.second;
-			string sampleName=ghPtr->getSample();
-			delete ghPtr;
-			if(dMode>=1)
-				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
-	}
+//	typedef map<string,GatingHierarchy *> map_t;
+//	BOOST_FOREACH(map_t::value_type & it,ghs){
+//			GatingHierarchy * ghPtr=it.second;
+//			string sampleName=ghPtr->getSample();
+//			delete ghPtr;
+//			if(dMode>=1)
+//				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
+//	}
 
 }
 //read xml file and create the appropriate flowJoWorkspace object
@@ -105,15 +104,15 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy * curGh=new GatingHierarchy(curSampleNode,ws,dMode);
+		GatingHierarchy curGh=GatingHierarchy(curSampleNode,ws,dMode);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 
-		curGh->setSample(sampleName);
+		curGh.setSample(sampleName);
 		ghs[sampleName]=curGh;//add to the map
 
 
-		sampleList.push_back(sampleName);
+//		sampleList.push_back(sampleName);
 		if(dMode>=1)
 			cout<<"Gating hierarchy created: "<<sampleName<<endl;
 	}
@@ -121,17 +120,21 @@ void GatingSet::parseWorkspace(unsigned short groupID)
 }
 
 
-GatingHierarchy * GatingSet::getGatingHierarchy(string sampleName)
+GatingHierarchy & GatingSet::getGatingHierarchy(string sampleName)
 {
 	return ghs[sampleName];
 }
 
-GatingHierarchy * GatingSet::getGatingHierarchy(unsigned index)
-{
-
-		return ghs[sampleList.at(index)];
-}
+//GatingHierarchy & GatingSet::getGatingHierarchy(unsigned index)
+//{
+//
+//		return ghs.at(index);
+//}
 vector<string> GatingSet::getSamples(void)
 {
-	return(this->sampleList);
+		vector<string> res;
+		typedef map<string,GatingHierarchy> map_t;
+		BOOST_FOREACH(map_t::value_type & it,ghs){res.push_back(it.first);}
+		return res;
+		//	return(this->sampleList);
 };
