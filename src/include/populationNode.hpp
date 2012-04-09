@@ -35,7 +35,9 @@ public:
 
 	gate * getGate(){return(this->thisGate);};
 	string getName(){return(this->thisName);};
-	void setName(const char * popName){thisName=popName;};
+	void setName(const char * popName){
+		thisName=popName;
+	};
 	void setGate(gate *gate){thisGate=gate;};
 	void setIndice(vector<bool> indice){thisIndice=indice;};
 

@@ -65,7 +65,7 @@ VertexID GatingHierarchy::addRoot(populationNode rootNode)
 	VertexID u = boost::add_vertex(tree);
 
 	tree[u]=rootNode;
-	nodelist[rootNode.getName()]=u;
+//	nodelist[rootNode.getName()]=u;
 
 	return(u);
 }
@@ -93,7 +93,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 			//add relation between current node and parent node
 			boost::add_edge(parentID,curChildID,tree);
 			//update the node map for the easy query by pop name
-			nodelist[curChild.getName()]=curChildID;
+//			nodelist[curChild.getName()]=curChildID;
 			//recursively add its descendants
 			addPopulation(curChildID,&curChildNode);
 		}
@@ -216,7 +216,7 @@ vector<string> GatingHierarchy::getPopNames(bool tsort,bool isPath){
  */
 VertexID_vec GatingHierarchy::getParent(VertexID target){
 	VertexID_vec res;
-	if(target>=0&&target<=nodelist.size())
+	if(target>=0&&target<=boost::num_vertices(tree)-1)
 	{
 //		cout<<"getting parent of "<<target<<"."<<tree[target].getName()<<endl;
 
@@ -245,7 +245,7 @@ VertexID_vec GatingHierarchy::getParent(VertexID target){
 VertexID_vec GatingHierarchy::getChildren(VertexID source){
 
 	VertexID_vec res;
-	if(source>=0&&source<=nodelist.size())
+	if(source>=0&&source<=boost::num_vertices(tree)-1)
 	{
 
 		EdgeID e;
@@ -269,7 +269,7 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 populationNode GatingHierarchy::vertexIDToNode(VertexID u){
 
 
-	if(u>=0&&u<=nodelist.size())
+	if(u>=0&&u<=boost::num_vertices(tree)-1)
 		return(tree[u]);
 	else
 	{

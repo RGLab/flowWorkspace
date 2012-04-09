@@ -74,7 +74,7 @@ class GatingHierarchy{
 	 * however it adds the potential data inconsistency risk when performing the non-read-only
 	 * operation on the tree
 	 */
-	VertexID_map nodelist;
+//	VertexID_map nodelist;
 	workspace * thisWs;
 	unsigned short dMode;//debug mode passed from GatingSet
 public:

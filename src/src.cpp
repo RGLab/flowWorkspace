@@ -33,7 +33,7 @@ void test(string xml){
 		/*
 		 * get sample list from gating set
 		 */
-		cout<<endl<<"getsamples from gating set"<<endl;
+		cout<<endl<<"get samples from gating set"<<endl;
 
 		vector<string> samples=gs.getSamples();
 		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
@@ -45,8 +45,9 @@ void test(string xml){
 		 * getNodes by the T order
 		 */
 
-		cout<<endl<<"tsorted node list"<<endl;
-		VertexID_vec vertices=gh.getVertices(true);
+//		cout<<endl<<"tsorted node list"<<endl;
+		VertexID_vec vertices;
+		vertices=gh.getVertices(true);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
 			populationNode node=gh.vertexIDToNode(*it);
