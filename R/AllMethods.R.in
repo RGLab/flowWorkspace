@@ -38,7 +38,7 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSet","missing"),function(
 
 splitGatingSetByNgates<-function(x){
     flowCore:::checkClass(x,"GatingSet");
-    pData(x)$ngates<-unlist(lapply(x,function(x)length(x@nodes)))
+    pData(x)$ngates<-unlist(lapply(x,function(x)length(getNodes(x)))
     #cluster by number of gates.. set up the groups
     groups<-by(pData(x),pData(x)$ngates,function(x)as.numeric(rownames(x)))
     #split the data

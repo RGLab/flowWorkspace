@@ -1388,7 +1388,8 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 })
 #made change to the original method to add flowJo option
 setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
-    if(!haveSameGatingHierarchy(x)){
+#			browser()
+	if(!haveSameGatingHierarchy(x)){
         message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
     }
 	r<-do.call(cbind,lapply(x,function(y){
@@ -1402,6 +1403,8 @@ setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
 						else
 							curStats$flowCore.freq
 						}))
+		
+	
 	rownames(r)<-rownames(getPopStats(x[[1]]));
 	r
 })
