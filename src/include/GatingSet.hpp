@@ -36,6 +36,7 @@ public:
 	GatingHierarchy & getGatingHierarchy(string );
 //	GatingHierarchy & getGatingHierarchy(unsigned int);
 	void parseWorkspace(unsigned short,bool);
+	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);
 };
 #endif /* GATINGSET_HPP_ */

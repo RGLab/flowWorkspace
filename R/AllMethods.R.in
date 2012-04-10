@@ -105,8 +105,11 @@ setMethod("summary",signature("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
 
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,...){
-	if(isNcdf&!@HAVE_NETCDF@){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal=TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,...){
+	
+	
+			
+	if(isNcdf&!TRUE){
 	stop("isNcdf must be FALSE since you don't have netcdf installed");
 	}
 	message("We do not fully support all versions of flowJo XML workspaces at this time.")
@@ -135,7 +138,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	x<-obj@doc;
 	.hasNN(x);
 	wsversion<-xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]];
-	if(wsversion=="1.6"){
+#	browser()
+	if(!wsversion=="2.0"){
 		#Windows version code
 		s<-.getSamples(x,win=TRUE);
 		g<-.getSampleGroups(x,win=TRUE);
@@ -143,6 +147,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		s<-.getSamples(x);
 		g<-.getSampleGroups(x);
 	}
+#	browser()
 	sg<-merge(s,g,by="sampleID");
 	#requiregates - exclude samples where there are no gates? if(requiregates==TRUE)
 	if(requiregates){
@@ -153,12 +158,15 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		##Keep samples with compID = NA and set it to -2
 		#If the compID = NA, check the Sample Parameter attributes for the transformation information.
 		message("Version recognised. Continuing..")
-	}else if (wsversion=="1.6"){
+	}#else if (wsversion=="1.6"){
 		#Windows compensation and transformation work differently.. there is no comp id
-		stop("Sorry, we don't support this type of workspace (flowJo Windows) at the moment. But we are working on it!")
+	
+#		stop("Sorry, we don't support this type of workspace (flowJo Windows) at the moment. But we are working on it!")
 		
-	}else{
-		stop("Workspace Version not supported");
+	#}
+	else{
+		useInternal<-TRUE
+#		stop("Workspace Version not supported");
 	}
 	sg$groupName<-factor(sg$groupName)
 	groups<-levels(sg$groupName)
@@ -178,7 +186,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
 			})
-	}else if(wsversion=="1.6"){
+	}else if(substr(wsversion,1,3)=="1.6"){
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample/DataSet[@sampleID='",i,"']",sep=""))[[1]]
 			})
@@ -192,6 +200,12 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		l<-l[subset]
 	}
 	message("Parsing ",length(l)," samples");
+#	browser()
+	if(useInternal)
+	{
+		sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
+		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode))
+	}
 	#TODO parallelize
 	if(length(grep("snowfall",loadedNamespaces()))==1){
 	    if(is.null(sfGetCluster())){
@@ -497,6 +511,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		}
 		return(G);
 })
+
 
 #From https://stat.ethz.ch/pipermail/r-help/2005-September/078974.html
 #Detects Rmpi support since Rmpi doesn't have a namespace, and we don't want to "require" it
@@ -2848,33 +2863,43 @@ setMethod("getSample","graphNEL",function(x){
 			x@nodeData@defaults$data$sampleName
 		})
 
+###add support for win version
 setMethod("getSampleGroups","flowJoWorkspace",function(x){
-	.getSampleGroups(x@doc)
-})
+#			browser()
+			win<-!x@version=="2.0"
+			.getSampleGroups(x@doc,win)
+		})
 
+###add support for win version
 .getSampleGroups<-function(x,win=FALSE){
 	if(!win){
 		do.call(rbind,xpathApply(x,"/Workspace/Groups/GroupNode",function(x){
-			gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
-			sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
-				as.numeric(xmlGetAttr(x,"sampleID"))
-			}))
-			if(is.null(sid)){
-			    sid<-NA;
-			}
-			groups<-na.omit(data.frame(groupName=gid[[1]],groupID=as.numeric(gid[2]),sampleID=as.numeric(sid)));
-		}))
+							gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
+							sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
+												as.numeric(xmlGetAttr(x,"sampleID"))
+											}))
+							if(is.null(sid)){
+								sid<-NA;
+							}
+							groups<-na.omit(data.frame(groupName=gid[[1]],groupID=as.numeric(gid[2]),sampleID=as.numeric(sid)));
+						}))
 	}else{
+		#Note that groupID is from order of groupNode instead of from xml attribute 
+		counter<-1
 		do.call(rbind,xpathApply(x,"/Workspace/Groups/GroupNode",function(x){
-			gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
-			sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
-				as.numeric(xmlGetAttr(x,"sampleID",default=NA))
-			}))
-			if(is.null(sid)==0){
-				sid<-NA;
-			}
-			groups<-na.omit(data.frame(groupName=gid[[1]],groupID=as.numeric(gid[2]),sampleID=as.numeric(sid)));
-		}))
+#							browser()
+							gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
+							sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
+												as.numeric(xmlGetAttr(x,"sampleID",default=NA))
+											}))
+							if(is.null(sid)){
+								sid<-NA;
+							}
+#			browser()
+							groups<-na.omit(data.frame(groupName=gid[[1]],groupID=counter,sampleID=as.numeric(sid)));
+							counter<-counter+1
+							groups
+						}))
 	}
 }
 

@@ -107,7 +107,10 @@ setMethod("summary",signature("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
 
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,...){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal=TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,...){
+	
+	
+			
 	if(isNcdf&!TRUE){
 	stop("isNcdf must be FALSE since you don't have netcdf installed");
 	}
@@ -137,7 +140,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	x<-obj@doc;
 	.hasNN(x);
 	wsversion<-xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]];
-	if(wsversion=="1.6"){
+#	browser()
+	if(!wsversion=="2.0"){
 		#Windows version code
 		s<-.getSamples(x,win=TRUE);
 		g<-.getSampleGroups(x,win=TRUE);
@@ -145,6 +149,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		s<-.getSamples(x);
 		g<-.getSampleGroups(x);
 	}
+#	browser()
 	sg<-merge(s,g,by="sampleID");
 	#requiregates - exclude samples where there are no gates? if(requiregates==TRUE)
 	if(requiregates){
@@ -155,12 +160,15 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		##Keep samples with compID = NA and set it to -2
 		#If the compID = NA, check the Sample Parameter attributes for the transformation information.
 		message("Version recognised. Continuing..")
-	}else if (wsversion=="1.6"){
+	}#else if (wsversion=="1.6"){
 		#Windows compensation and transformation work differently.. there is no comp id
-		stop("Sorry, we don't support this type of workspace (flowJo Windows) at the moment. But we are working on it!")
+	
+#		stop("Sorry, we don't support this type of workspace (flowJo Windows) at the moment. But we are working on it!")
 		
-	}else{
-		stop("Workspace Version not supported");
+	#}
+	else{
+		useInternal<-TRUE
+#		stop("Workspace Version not supported");
 	}
 	sg$groupName<-factor(sg$groupName)
 	groups<-levels(sg$groupName)
@@ -180,7 +188,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
 			})
-	}else if(wsversion=="1.6"){
+	}else if(substr(wsversion,1,3)=="1.6"){
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample/DataSet[@sampleID='",i,"']",sep=""))[[1]]
 			})
@@ -194,6 +202,12 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 		l<-l[subset]
 	}
 	message("Parsing ",length(l)," samples");
+#	browser()
+	if(useInternal)
+	{
+		sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
+		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode))
+	}
 	#TODO parallelize
 	if(length(grep("snowfall",loadedNamespaces()))==1){
 	    if(is.null(sfGetCluster())){

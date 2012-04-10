@@ -22,16 +22,16 @@
 //    return ptr;
 //END_RCPP
 //}
-
-RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _groupID,SEXP _execute,SEXP _dMode) {
+typedef vector<string> StringVec;
+RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _execute,SEXP _dMode) {
 BEGIN_RCPP
 		string fileName=as<string>(_fileName);
 		unsigned short dMode=as<unsigned short>(_dMode);
-		unsigned short groupID=as<unsigned short>(_groupID);
+		StringVec sampleIDs=as<StringVec>(_sampleIDs);
 		bool isGating=as<bool>(_execute);
 //		XPtr<GatingSet>gs(_gsPtr);
 		GatingSet * gs=new GatingSet(fileName,dMode);
-		gs->parseWorkspace(groupID,isGating);
+		gs->parseWorkspace(sampleIDs,isGating);
 		return XPtr<GatingSet>(gs);
 //		return R_NilValue;
 END_RCPP

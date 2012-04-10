@@ -30,6 +30,10 @@ void test(string xml){
 		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
 		gs.parseWorkspace(groupID,false);
 
+		//parse a set of sampleIDs
+//		vector<string> sampleIDs;
+//		sampleIDs.push_back("7");
+//		gs.parseWorkspace(sampleIDs,false);
 		/*
 		 * get sample list from gating set
 		 */
