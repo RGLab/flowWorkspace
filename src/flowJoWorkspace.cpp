@@ -59,7 +59,12 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 	         throw(domain_error("No Groups infomation!"));
 		}
 
-
+		if(groupID<0||groupID>=result->nodesetval->nodeNr)
+		{
+			xmlXPathFreeObject(result);
+			xmlXPathFreeContext(context);
+			 throw(invalid_argument("invalid GroupID provided!"));
+		}
 		xmlNodePtr cur=result->nodesetval->nodeTab[groupID];
 		context->node=cur;
 		xmlXPathObjectPtr sids=xmlXPathEval((xmlChar *)nodePath.sampleRef.c_str(),context);
@@ -280,7 +285,7 @@ populationNode flowJoWorkspace::to_popNode(wsRootNode & node){
 	return pNode;
 }
 
-populationNode flowJoWorkspace::to_popNode(wsPopNode &node){
+populationNode flowJoWorkspace::to_popNode(wsPopNode &node,bool isGating=false){
 
 
 	populationNode pNode;
@@ -292,9 +297,10 @@ populationNode flowJoWorkspace::to_popNode(wsPopNode &node){
 	//add pop counts
 	pNode.fjStats["count"]=atoi(node.getProperty("count").c_str());
 
+
 	try
 	{
-		pNode.setGate(getGate(node));
+		if(isGating)pNode.setGate(getGate(node));
 	}
 	catch (int e) {
 		cout<<"extracting gate failed:"<<pNode.getName()<<endl;

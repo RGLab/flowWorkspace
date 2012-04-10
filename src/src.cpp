@@ -23,10 +23,10 @@ using namespace std;
 void test(string xml){
 
 		//create gating set object
-		GatingSet gs(xml,0);
+		GatingSet gs(xml,4);
 
 		//parse a particular sample group
-		unsigned short groupID=1;
+		unsigned short groupID=0;
 		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
 		gs.parseWorkspace(groupID);
 
@@ -152,8 +152,12 @@ int main(void) {
 	vector<string> fileNames;
 
 	fileNames.push_back("../fjWsExamples/HIPC_trial.xml");
-	fileNames.push_back("~/rglab/workspace/flowWorkspace/fjWsExamples/LyoplateTest1Yale.wsp");
-	test(fileNames.at(WIN));
+	fileNames.push_back("../fjWsExamples/LyoplateTest1Yale.wsp");
+
+	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
+	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
+	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
+	test(fileNames.at(2));
 //	Rcpp_test(fileNames.at(WIN));
 
 

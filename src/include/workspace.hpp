@@ -56,7 +56,7 @@ public:
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
 	 virtual gate * getGate(wsPopNode &)=0;
 	 virtual populationNode to_popNode(wsRootNode &)=0;
-	 virtual populationNode to_popNode(wsPopNode &)=0;
+	 virtual populationNode to_popNode(wsPopNode &,bool isGating)=0;
 };
 
 

@@ -2,23 +2,28 @@
 library(flowWorkspace)
 library(Rgraphviz)
 
-source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 
+path<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples"
 
-macXML<-"/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml"
-winXML<-"/home/mike/rglab/workspace/flowWorkspace/fjWsExamples/LyoplateTest1Yale.wsp"
+macXML<-"HIPC_trial.xml"
+macXML<-file.path(path,macXML)
 
+winXML<-c("LyoplateTest1Yale.wsp","Exp1_Treg.wsp")
+winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-G<-parseWorkspace(macXML,groupID=1,dMode=2)
+#ws<-openWorkspace(winXML)
+
+G<-parseWorkspace(winXML[2],groupID=1,dMode=2)
 G
 
 length(G)
 getSamples(G)
-
+getPopStats(G,flowJo=T)
 
 
 gh<-G[[3]]
@@ -42,7 +47,7 @@ flowWorkspace:::.getPopStat(gh,1)
 head(getPopStats(gh))
 
 
-plot(G[[3]])
+plot(G[[1]])
 
 
 pData(G)<-data.frame(sample=getSamples(G))

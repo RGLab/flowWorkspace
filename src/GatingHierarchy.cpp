@@ -85,7 +85,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 			VertexID curChildID = boost::add_vertex(tree);
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
-			populationNode curChild=thisWs->to_popNode(curChildNode);
+			populationNode curChild=thisWs->to_popNode(curChildNode,false);
 			if(dMode>=2)
 				cout<<"node created:"<<curChild.getName()<<endl;
 			//attach the populationNode to the boost node as property
@@ -221,7 +221,7 @@ VertexID_vec GatingHierarchy::getParent(VertexID target){
 //		cout<<"getting parent of "<<target<<"."<<tree[target].getName()<<endl;
 
 		EdgeID e;
-		typename boost::graph_traits<populationTree>::in_edge_iterator in_i, in_end;
+		boost::graph_traits<populationTree>::in_edge_iterator in_i, in_end;
 
 		for (tie(in_i, in_end) = in_edges(target,tree);
 			         in_i != in_end; ++in_i)
@@ -249,7 +249,7 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 	{
 
 		EdgeID e;
-		typename boost::graph_traits<populationTree>::out_edge_iterator out_i, out_end;
+		boost::graph_traits<populationTree>::out_edge_iterator out_i, out_end;
 
 		for (tie(out_i, out_end) = out_edges(source,tree);
 				 out_i != out_end; ++out_i)
