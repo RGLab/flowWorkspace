@@ -58,9 +58,3 @@ setMethod("initialize","GatingSetInternal"
 #	validObject(.Object)
 			return(.Object)
 		})
-
-#makeGatingSetInternal<-function(xmlFileName,dMode)
-#{
-#	
-#	new("GatingSetInternal",xmlFileName,dMode)
-#}
