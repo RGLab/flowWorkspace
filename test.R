@@ -16,9 +16,9 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(winXML[1])
+ws<-openWorkspace(macXML[1])
 
-G<-parseWorkspace(ws,groupID=1,execute=F,dMode=2,requiregates=F)
+G<-parseWorkspace(ws,name=1,execute=F,requiregates=F,subset=c(1:2),useInternal=T,dMode=2)
 G
 
 length(G)
@@ -26,7 +26,7 @@ getSamples(G)
 getPopStats(G,flowJo=T)
 
 
-gh<-G[[3]]
+gh<-G[[1]]
 gh
 
 getSample(gh)
