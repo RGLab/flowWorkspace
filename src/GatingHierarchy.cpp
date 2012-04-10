@@ -45,14 +45,14 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,unsigned short _dMode=1)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,unsigned short _dMode=1)
 {
 	dMode=_dMode;
 	thisWs=ws;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
 //	wsRootNode popNode=root;//getPopulation();
-	addPopulation(pVerID,&root);
+	addPopulation(pVerID,&root,isGating);
 
 }
 /*
@@ -73,7 +73,7 @@ VertexID GatingHierarchy::addRoot(populationNode rootNode)
 /*
  * recursively append the populations to the tree
  */
-void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
+void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool isGating)
 {
 
 
@@ -85,7 +85,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 			VertexID curChildID = boost::add_vertex(tree);
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
-			populationNode curChild=thisWs->to_popNode(curChildNode,false);
+			populationNode curChild=thisWs->to_popNode(curChildNode,isGating);
 			if(dMode>=2)
 				cout<<"node created:"<<curChild.getName()<<endl;
 			//attach the populationNode to the boost node as property
@@ -95,7 +95,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode)
 			//update the node map for the easy query by pop name
 //			nodelist[curChild.getName()]=curChildID;
 			//recursively add its descendants
-			addPopulation(curChildID,&curChildNode);
+			addPopulation(curChildID,&curChildNode,isGating);
 		}
 
 

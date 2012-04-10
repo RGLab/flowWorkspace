@@ -44,6 +44,7 @@ setMethod("initialize","GatingSetInternal"
 #				,flowSetId=NULL
 				,xmlFileName=NULL
 				,groupID
+				,execute=FALSE
 				,dMode=1
 				){
 
@@ -53,7 +54,7 @@ setMethod("initialize","GatingSetInternal"
 			stopifnot(!is.null(xmlFileName))
 			if(!file.exists(xmlFileName))
 				stop(xmlFileName," not found!")
-			.Object@pointer<-.Call("R_parseWorkspace",xmlFileName,groupID-1,as.integer(dMode))
+			.Object@pointer<-.Call("R_parseWorkspace",xmlFileName,groupID-1,execute,as.integer(dMode))
 #	validObject(.Object)
 			return(.Object)
 		})

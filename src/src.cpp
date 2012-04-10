@@ -28,7 +28,7 @@ void test(string xml){
 		//parse a particular sample group
 		unsigned short groupID=0;
 		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
-		gs.parseWorkspace(groupID);
+		gs.parseWorkspace(groupID,false);
 
 		/*
 		 * get sample list from gating set

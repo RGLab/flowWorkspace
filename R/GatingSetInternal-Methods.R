@@ -33,11 +33,11 @@
 
 #TODO:right now the this GatingSetInternal contructor depends on "[[" methods, it should be another way around
 #which requires moving some of the contruction to cpp code
-setMethod("parseWorkspace",signature("character"),function(obj,groupID,dMode=0,...){
+setMethod("parseWorkspace",signature("character"),function(obj,groupID,dMode=0,execute=FALSE,...){
 			
 #			browser()
 #			G<-.Call("R_parseWorkspace",obj,groupID,dMode)
-			G<-new("GatingSetInternal",xmlFileName=obj,groupID,dMode)
+			G<-new("GatingSetInternal",xmlFileName=obj,groupID,execute,dMode)
 			samples<-.Call("R_getSamples",G@pointer)
 			G@set<-sapply(samples,function(x){
 #													ghPtr<-.Call("R_getGatingHierarchyS",G@pointer,i)

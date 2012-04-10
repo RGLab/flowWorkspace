@@ -89,12 +89,12 @@ public:
 	/*append the gate to the tree*/
 	void addChild(VertexID parent,VertexID child);
 	void addGate(gate& g,string popName);
-	void addPopulation(VertexID parentID,wsNode * parentNode);
+	void addPopulation(VertexID parentID,wsNode * parentNode,bool isGating);
 	VertexID addRoot(populationNode rootNode);
 	GatingHierarchy();
 	~GatingHierarchy();
 //	GatingHierarchy(string sampleID,workspace * ws,unsigned short _dMode);
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,unsigned short _dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,unsigned short _dMode);
 
 	/*associate the tree with data matrix*/
 //	void addData();

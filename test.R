@@ -18,7 +18,7 @@ winXML<-file.path(path,winXML)
 ###############################################################################
 #ws<-openWorkspace(winXML)
 
-G<-parseWorkspace(winXML[2],groupID=1,dMode=2)
+G<-parseWorkspace(winXML[2],groupID=1,execute=F,dMode=2)
 G
 
 length(G)

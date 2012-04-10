@@ -35,7 +35,7 @@ public:
 	GatingSet(string,unsigned short);
 	GatingHierarchy & getGatingHierarchy(string );
 //	GatingHierarchy & getGatingHierarchy(unsigned int);
-	void parseWorkspace(unsigned short);
+	void parseWorkspace(unsigned short,bool);
 	vector<string> getSamples(void);
 };
 #endif /* GATINGSET_HPP_ */
