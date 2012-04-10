@@ -8,8 +8,10 @@
 #include <string>
 //#include <libxml/tree.h>
 #include <libxml/parser.h>
-
 #include <iostream>
+//#include <exception>
+#include <stdexcept>
+
 using namespace std;
 
 
@@ -53,8 +55,8 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 		if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
 			xmlXPathFreeObject(result);
 			xmlXPathFreeContext(context);
-	                cout<<"No Groups"<<endl;;
-	                throw(2);
+//	                cout<<"No Groups"<<endl;;
+	         throw(domain_error("No Groups infomation!"));
 		}
 
 
@@ -152,8 +154,8 @@ gate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			int nParam=resPara->nodesetval->nodeNr;
 			if(nParam!=2)
 			{
-				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
-				throw(4);
+//				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
+				throw(domain_error("invalid dimension of the polygon gate!"));
 			}
 			for(int i=0;i<nParam;i++)
 			{
@@ -178,8 +180,8 @@ gate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				int nCoord=nodeSet->nodeNr;
 				if(nCoord!=2)
 				{
-					cout<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
-					throw(5);
+//					cout<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
+					throw(domain_error("invalid  number of coordinates!"));
 				}
 				//get the coordinates values from the property of respective node
 				pair<double,double> pCoord;
@@ -206,8 +208,8 @@ gate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 			int nParam=resPara->nodesetval->nodeNr;
 			if(nParam!=2)
 			{
-				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
-				throw(4);
+//				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
+				throw(domain_error("invalid  dimension of the rectangle gate!"));
 			}
 			for(int i=0;i<nParam;i++)
 			{
@@ -256,8 +258,8 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	}
 	else
 	{
-		cout<<"gate type: "<<gateType<<" is not supported!"<<endl;
-		throw(6);
+//		cout<<"gate type: "<<gateType<<" is not supported!"<<endl;
+		throw(domain_error("invalid  gate type!"));
 	}
 
 }

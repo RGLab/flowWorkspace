@@ -11,6 +11,7 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <iostream>
+#include <exception>
 using namespace std;
 
 
@@ -24,9 +25,9 @@ wsSampleNode getSample(T ws,string sampleID){
 		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
 		if(res->nodesetval->nodeNr>1)
 		{
-			cout<<sampleID<<" is not unique within this group!"<<endl;
+//			cout<<sampleID<<" is not unique within this group!"<<endl;
 			xmlXPathFreeObject(res);
-			throw(3);
+			throw(domain_error("non-unique sampleID within the group!"));
 		}
 
 		wsSampleNode sample(res->nodesetval->nodeTab[0]);
@@ -58,20 +59,18 @@ GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 		/*parse the file and get the DOM */
 		xmlDocPtr doc = xmlReadFile(sFileName.c_str(), NULL, 0);
 		if (doc == NULL ) {
-				fprintf(stderr,"Document not parsed successfully. \n");
-				return;
+//				fprintf(stderr,"Document not parsed successfully. \n");
+				throw(ios_base::failure("Document not parsed successfully.Check if the path is valid."));
 			}
 		//validity check
 		xmlNodePtr cur = xmlDocGetRootElement(doc);
 		if (cur == NULL) {
-				fprintf(stderr,"empty document\n");
-//				xmlFreeDoc(doc);
-				return;
+//				fprintf(stderr,"empty document\n");
+				throw(invalid_argument("empty document!"));
 			}
 		 if (!xmlStrEqual(cur->name, (const xmlChar *) "Workspace")) {
-				fprintf(stderr,"document of the wrong type, root node != Workspace");
-//				xmlFreeDoc(doc);
-				return;
+//				fprintf(stderr,"document of the wrong type, root node != Workspace");
+				throw(invalid_argument("document of the wrong type, root node != 'Workspace'"));
 			}
 
 		//get version info
@@ -84,7 +83,7 @@ GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 		 else
 		 {
 			 xmlFree(wsVersion);
-			 throw(1);
+			 throw(invalid_argument("We currently only support flowJo version 1.61 and 2.0"));
 		 }
 		 xmlFree(wsVersion);
 

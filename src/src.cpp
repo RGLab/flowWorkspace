@@ -152,7 +152,7 @@ int main(void) {
 	vector<string> fileNames;
 
 	fileNames.push_back("../fjWsExamples/HIPC_trial.xml");
-	fileNames.push_back("../fjWsExamples/LyoplateTest1Yale.wsp");
+	fileNames.push_back("~/rglab/workspace/flowWorkspace/fjWsExamples/LyoplateTest1Yale.wsp");
 	test(fileNames.at(WIN));
 //	Rcpp_test(fileNames.at(WIN));
 
