@@ -2,13 +2,13 @@
 library(flowWorkspace)
 library(Rgraphviz)
 
-#source("/home/wjiang2/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-#source("/home/wjiang2/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("/home/wjiang2/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 
 
-macXML<-"/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml"
-winXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples/LyoplateTest1Yale.wsp"
+macXML<-"~/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial.xml"
+winXML<-"/home/mike/rglab/workspace/flowWorkspace/fjWsExamples/LyoplateTest1Yale.wsp"
 
 
 ############################################################################### 

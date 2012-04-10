@@ -51,6 +51,8 @@ setMethod("initialize","GatingSetInternal"
 #			.Object@metadata<-metadata
 #			browser()			
 			stopifnot(!is.null(xmlFileName))
+			if(!file.exists(xmlFileName))
+				stop(xmlFileName,"not found!")
 			.Object@pointer<-.Call("R_parseWorkspace",xmlFileName,groupID,as.integer(dMode))
 #	validObject(.Object)
 			return(.Object)
