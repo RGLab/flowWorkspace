@@ -1380,7 +1380,7 @@ mkformula<-function(dims2){
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 	if(!x@flag){
 		message("Can't extract population statistics until the data has been gated with 'execute()'\n");
-		return()
+#		return()
 	}
 	
  m<-do.call(rbind,(sapply(RBGL::tsort(x@tree),function(y)list(c(get("fjName",envir=nodeData(x@tree,y,"metadata")[[1]]),getProp(x,y),get("count",envir=nodeData(x@tree,y,"metadata")[[1]]),get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]]),get("parentTot",envir=nodeData(x@tree,y,"metadata")[[1]]),y)))))

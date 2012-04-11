@@ -9,7 +9,7 @@ library(Rgraphviz)
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples"
 
 macXML<-"HIPC_trial.xml"
-macXML<-file.path(path,macXML)
+macXML<-file.path("/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data",macXML)
 
 winXML<-c("LyoplateTest1Yale.wsp","Exp1_Treg.wsp")
 winXML<-file.path(path,winXML)
@@ -62,7 +62,7 @@ lapply(G_list,getPopStats,flowJo=T)
 ###############################################################################
 
 ws<-openWorkspace(macXML)
-G1<-parseWorkspace(ws,name=1,subset=c(1:2),execute=T)
+G1<-parseWorkspace(ws,name=2,execute=F,requiregates=F,subset=c(1:2),useInternal=F,dMode=2)
 G1
 length(G1)
 gh1<-G1[[1]]
@@ -81,3 +81,11 @@ plot(gh1)
 
 pData(G1)<-data.frame(sample=getSamples(G1))
 splitGatingSetByNgates(G1)
+
+
+##############
+#verify stats
+#############
+all(sort(rownames(getPopStats(gh)))==sort(rownames(getPopStats(gh1))))
+all(getPopStats(gh)[sort(rownames(getPopStats(gh))),c("flowJo.count","parent.total")]==getPopStats(gh1)[sort(rownames(getPopStats(gh1))),c("flowJo.count","parent.total")])
+
