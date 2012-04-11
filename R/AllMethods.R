@@ -1397,6 +1397,7 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 	m[1,c(2)]<-1;
 	m[1,5]<-m[1,4]
 	colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
+#	colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","flowJo.freq","node")
 	rownames(m)<-m[,1]
 	m<-m[,2:6]
 	m
@@ -1412,7 +1413,8 @@ setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
 						curStats<-getPopStats(y)
 						if(flowJo)
 						{
-							curStats$flowJo.count/curStats$parent.total
+#							curStats$flowJo.count/curStats$parent.total
+							curStats$flowJo.freq
 						}
 							
 						else

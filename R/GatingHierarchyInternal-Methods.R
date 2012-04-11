@@ -85,20 +85,29 @@ setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),f
 			nodes[ind]
 		})
 #
-setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),function(x,y){
+setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),function(x,y,flowJo=TRUE){
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 			
 			ind<-which(getNodes(x)%in%y)
-			stats<-.getPopStat(x,ind)$flowJo
+			stats<-.getPopStat(x,ind)
+			if(flowJo)
+				unname(stats$flowJo["proportion"])
+			else
+				unname(stats$flowCore["proportion"])
 #			browser()
-			unname(stats["count"]/stats["parent.total"])	
+#			unname(stats["count"]/stats["parent.total"])	
+			
 		})
-setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),function(x,y){
+setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),function(x,y,flowJo=TRUE){
 			ind<-which(getNodes(x)%in%y)
-			stats<-.getPopStat(x,ind)$flowJo
+			stats<-.getPopStat(x,ind)
+			if(flowJo)
+				unname(stats$flowJo["count"])	
+			else
+				unname(stats$flowCore["count"])
 #			browser()
-			unname(stats["count"])
+			
 		})
 
 
@@ -119,21 +128,21 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 		pstats<-stats#list(FlowCore=c(count=0,proportion=0),FlowJo=c(count=0,proportion=0))
 	
 #	browser()	
-#	list(flowCore=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
-#										,1
-#										,stats$FlowCore["count"]/pstats$FlowCore["count"]
-#										)
-#					,count=as.numeric(stats$FlowCore["count"])))
-#		,flowJo=c(proportion=as.numeric(ifelse(pstats$FlowJo["count"]==0
-#										,1
-#										,stats$FlowJo["count"]/pstats$FlowJo["count"]
-#										))
-#					,count=as.numeric(stats$FlowJo["count"]))	
-#		)
-	list(flowCore=c(parent.total=as.numeric(pstats$FlowCore["count"]),count=as.numeric(stats$FlowCore["count"]))
-		,flowJo=c(parent.total=as.numeric(pstats$FlowJo["count"]),count=as.numeric(stats$FlowJo["count"])
-		)	
-	)
+	list(flowCore=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
+										,1
+										,stats$FlowCore["count"]/pstats$FlowCore["count"]
+										)
+					,count=as.numeric(stats$FlowCore["count"])))
+		,flowJo=c(proportion=as.numeric(ifelse(pstats$FlowJo["count"]==0
+										,1
+										,stats$FlowJo["count"]/pstats$FlowJo["count"]
+										))
+					,count=as.numeric(stats$FlowJo["count"]))	
+		)
+#	list(flowCore=c(parent.total=as.numeric(pstats$FlowCore["count"]),count=as.numeric(stats$FlowCore["count"]))
+#		,flowJo=c(parent.total=as.numeric(pstats$FlowJo["count"]),count=as.numeric(stats$FlowJo["count"])
+#					)	
+#	)	
 }
 setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 
@@ -148,10 +157,10 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 						curStats<-.getPopStat(x,ind)
 #						browser()
 						curRes<-c(nodeNamesPath[ind]
-									,curStats$flowCore["parent.total"]
+									,curStats$flowCore["proportion"]
 									,curStats$flowJo["count"]
 									,curStats$flowCore["count"]
-									,curStats$flowJo["parent.total"]
+									,curStats$flowJo["proportion"]
 									,nodeNames[ind]
 									)
 						
@@ -175,21 +184,241 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 
 			m[1,c(2)]<-1;
 #			m[1,5]<-m[1,4]
-			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
+#			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
+			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","flowJo.freq","node")
 			rownames(m)<-m[,1]
 			m<-m[,2:6]
 			m
 		})
 
-#setMethod("getPopStats","GatingSet",function(x,...){
-#			if(!haveSameGatingHierarchy(x)){
-#				message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
+setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+		
+		})
+setMethod("execute",signature(hierarchy="GatingHierarchyInternal"),function(hierarchy,cleanup=FALSE,keep.indices=TRUE,isNcdf=FALSE,ncfs=NULL,dataEnvironment=NULL,...){
+			##Conditional compilation for HAVE_NETCDF
+			if(isNcdf&!TRUE){
+				stop("isNcdf must be FALSE, since you don't have netcdf installed");
+			}
+			if(hierarchy@flag){
+				message("This file is already gated\n")
+				return()
+			}
+			
+			x<-hierarchy@tree;
+			
+			#doc<-workspace@doc
+			nlist<-RBGL::bfs(x,nodes(x)[1]);
+			file<-getSample(hierarchy,isFullPath=TRUE)
+			
+			message("Loading data file: ",file);
+			data<-read.FCS(file);
+			
+			cid<-getCompID(hierarchy)
+#			cid<-get("compID",envir=nodeData(x,nlist[1],"metadata")[[1]])
+#			cal<-hierarchy@transformations;
+			cal<-getTransformations(hierarchy);
+			
+			if(cid!=-1 & cid!=-2){
+				message("Compensating");
+				#compobj<-compensation(.getCompensationMatrices(doc)[[as.numeric(cid)]])
+				compobj<-compensation(getCompensation(hierarchy));
+				#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
+				#I need to handle this case properly.
+				res<-try(compensate(data,compobj),silent=TRUE)
+				if(inherits(res,"try-error")){
+					message("Data is probably stored already compensated");
+				}else{
+					data<-res
+					rm(res);
+					#gc(reset=TRUE);
+				}
+				cnd<-colnames(data)
+				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
+				wh<-cnd%in%parameters(compobj)
+				cnd[wh]<-paste("<",parameters(compobj),">",sep="")
+				
+				#colnames(data)<-cnd;
+				e<-exprs(data)
+				d<-description(data);
+				p<-parameters(data);
+				p@data$name<-cnd
+				colnames(e)<-cnd;
+				data<-new("flowFrame",exprs=e,description=d,parameters=p)						
+				#cmnm<-names(.getCompensationMatrices(doc))[as.numeric(cid)]
+				#Don't need this anymore.
+				# #cal<-.getCalibrationTableSearch(doc,cmnm)
+				# if(length(cal)==0){
+				# 	stop("Can't find the calibration table named : ", cmnm, " in this workspace.");
+				# }
+			}
+			else if(cid==-2){
+				#TODO the matrix may be acquisition defined.
+				message("No compensation");
+			}
+			else if(cid==-1){
+				##Acquisition defined compensation.
+				#nm<-unique(do.call(c,lapply(strsplit(.getCalibrationTableNames(doc)," "),function(x)x[1])))[2]
+				nm<-getCompensation(hierarchy)
+				if(grepl("Acquisition-defined",nm)){
+					###Code to compensate the sample using the acquisition defined compensation matrices.
+					message("Compensating with Acquisition defined compensation matrix");
+					#browser()
+					comp<-compensation(spillover(data)$SPILL)
+					hierarchy@compensation<-spillover(data)$SPILL
+					res<-try(compensate(data,comp),silent=TRUE)
+					if(inherits(res,"try-error")){
+						message("Data is probably stored already compensated");
+					}else{
+						data<-res
+						rm(res);
+						#gc(reset=TRUE);
+					}
+					cnd<-colnames(data)
+					wh<-cnd%in%parameters(comp)
+					cnd[wh]<-paste("<",parameters(comp),">",sep="")
+					e<-exprs(data)
+					d<-description(data);
+					p<-parameters(data);
+					p@data$name<-cnd
+					colnames(e)<-cnd;
+					data<-new("flowFrame",exprs=e,description=d,parameters=p)
+					#gc(reset=TRUE);
+				}
+				#Ditto
+				#cal<-.getCalibrationTableSearch(doc,nm)
+			}
+			#gc(reset=TRUE)
+			message("Transforming");
+			axis.labels<-list();
+			.flowJoTransform(environment(),cal);
+			#gc(reset=TRUE);
+			#wh<-which(data@parameters@data$name=="Time")
+			wh<-grep("^Time$",data@parameters@data$name)
+			if(length(wh!=0)){
+				#gc(reset=TRUE);
+				parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
+				#gc(reset=TRUE);
+				parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
+			}
+			#gc(reset=TRUE);
+			# if(!isNcdf){
+			e<-new.env(parent=.GlobalEnv);
+			# }
+			#########################################
+			#if use ncdfFlowSet,then add the transformed
+			#matrix to the ncdf file,assign it to env
+			#########################################
+			if(!isNcdf)
+				assign("data",data,envir=e)
+			else
+			{
+				sampleName<-getSample(hierarchy)
+				
+				#create ncdf file for indices
+				#moving this code to writeGatesToNetCDF
+				
+				if(.packageLoaded("Rmpi")){
+					#ask for permission to write to netcdf
+					mpi.send.Robj(0,0,3)
+					mpi.recv.Robj(0,4)
+					addFrame(dataEnvironment$ncfs,data,sampleName)
+					
+					
+					#let master know I'm done
+					mpi.send.Robj(0,0,8)
+					
+				}else{
+					addFrame(dataEnvironment$ncfs,data,sampleName)
+				}
+				
+				###all the annotData including colnames for each flowFrame slots are already updated in addFrame funciton
+				###but not the colnames slot in ncdfFlow,this redundant slot seems cause problem,consider to be removed
+				colnames(dataEnvironment$ncfs)<-colnames(data)##currently it is updated repeatedly by each sample
+				colnames(ncfs)<-colnames(data)
+				multiassign(c("data","sampleName"),list(dataEnvironment,sampleName),envir=e)
+			}
+			assign("axis.labels",axis.labels,envir=e);
+			rm(data);
+			#gc(reset=TRUE)
+			nodeDataDefaults(x,"data")<-e;
+			.call("gating",hierarchy@pointer,getSample(hierarchy))
+			#Nodes to parse later
+#			skipforlater<-list();
+#			lastparent<-nlist[1];
+#			for (node in nlist){
+#				#20110314 check if the current node has already been gated
+#				if(.isGated.graphNEL(hierarchy,node))
+#					next
+#				else
+#				{
+#					parentname<-(setdiff(adj(ugraph(x),node)[[1]],adj(x,node)[[1]]));
+#					if(length(parentname)==0){
+#						parentname<-node
+#						
+#						assign("thisTot",as.numeric(nodeData(x,node,"metadata")[[1]][["count"]]),envir=nodeData(x,node,"metadata")[[1]]);
+#						hierarchy@tree<-x;
+#						##the bug discovered and fixed on 06132011
+##					assign("thisIndices",list(getIndices(hierarchy,node),env=nodeData(x,node,"metadata")[[1]]));
+#						l<-list(getIndices(hierarchy,node))
+##					browser()
+#						.saveIndices(x,sampleName,node,l,isNcdf=FALSE)
+#						
+#						#20110314 set the flag after gating
+#						assign("isGated",TRUE,envir=nodeData(x,node,"metadata")[[1]])
+#						lastparent<-parentname;
+#						next;
+#					};
+#					if(lastparent!=parentname&length(skipforlater)!=0){
+#						hierarchy@tree<-x;
+#						for(i in skipforlater){
+##						browser()
+#							
+#							hierarchy<-.calcBooleanGate(hierarchy,i)
+#						}
+#						skipforlater<-list();
+#						lastparent<-parentname;
+#					}
+#					hierarchy@tree<-x;
+#					if(.isBooleanGate.graphNEL(hierarchy,node)){
+#						#Skip Boolean Gates and Compute them later
+#						skipforlater<-c(skipforlater,node);
+#						lastparent<-parentname;
+#						next;
+#					}
+#					#check if the current node has been gated during the skipforlater loop
+#					#Perhaps this check should go into .calcGate?
+#					#Done - check is inside .calcGate
+#					#gating the regular gate
+#					
+#					.calcGate(hierarchy,node)
+#					#}
+#					lastparent<-parentname;
+#				}
 #			}
-#			r<-do.call(cbind,lapply(x,function(y)getPopStats(y)$flowCore.freq))
-#			rownames(r)<-rownames(getPopStats(x[[1]]));
-#			r
-#		})
-#
+#			if(length(skipforlater)!=0){
+#				hierarchy@tree<-x;
+#				for(i in skipforlater){
+#					hierarchy<-.calcBooleanGate(hierarchy,i)
+#				}
+#				skipforlater<-list();
+#			}
+			
+			#Done gating, now write all the indices to netcdf
+			#Checks the ncdf flag of hierarchy in the function
+#		browser()
+			hierarchy@flag<-TRUE;
+#			writeGatesToNetCDF(hierarchy,isNew=TRUE)
+			
+			if(cleanup){
+				nodeDataDefaults(x,"data")<-new.env(parent=.GlobalEnv);
+				#gc(reset=TRUE);
+			}
+#			hierarchy@tree<-x;
+			# message("Computing Boolean Gates");
+			# hierarchy<-.calcBooleanGates(hierarchy);
+			
+#			hierarchy
+		})
 #setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 #			x<-getPopStats(x)
 #			cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));

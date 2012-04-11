@@ -48,22 +48,4 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),f
 #			}
 			return(TRUE)
 		})
-#made change to the original method to add flowJo option
-setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
-			if(!haveSameGatingHierarchy(x)){
-				message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
-			}
-			r<-do.call(cbind,lapply(x,function(y){
-#						browser()
-								curStats<-getPopStats(y)
-								if(flowJo)
-								{
-									curStats$flowJo.count/curStats$parent.total
-								}
-								
-								else
-									curStats$flowCore.freq
-							}))
-			rownames(r)<-rownames(getPopStats(x[[1]]));
-			r
-		})
+

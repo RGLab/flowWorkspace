@@ -101,10 +101,12 @@ public:
 
 	/**/
 //	vector<bool> * getIndice(string popName);
-//	vector<bool> * getData(string popName);
+
+	double** getData(string fileName);
 
 //	void gating(gate& g,string popName);
-	void gating();
+
+	void gating(string);
 	void drawGraph(string out);
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};

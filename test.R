@@ -16,7 +16,7 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[1])
+ws<-openWorkspace(winXML[1])
 
 G<-parseWorkspace(ws,name=1,execute=F,requiregates=F,subset=c(1:2),useInternal=T,dMode=2)
 G
@@ -38,16 +38,16 @@ getParent(gh,"2.Lymphocytes")
 
 
 getChildren(gh,"2.Lymphocytes")
-getChildren(gh,"4.B-Cells")
+getChildren(gh,"4.CD4 subset")
 
-getProp(gh,"2.Lymphocytes")
-getTotal(gh,"2.Lymphocytes")
+getProp(gh,"2.Lymphocytes",flowJo=T)
+getTotal(gh,"2.Lymphocytes",flowJo=T)
 
-flowWorkspace:::.getPopStat(gh,1)
+flowWorkspace:::.getPopStat(gh,2)
 head(getPopStats(gh))
 
 
-plot(G[[1]])
+plot(G[[2]])
 
 
 pData(G)<-data.frame(sample=getSamples(G))

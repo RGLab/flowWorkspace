@@ -6,10 +6,13 @@
  */
 
 #include "include/GatingHierarchy.hpp"
+//#include <ncdfFlow.h>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <fstream>
+//#include <Rcpp.h>
+//using namespace Rcpp;
 
 /*need to be careful that gate within each node of the GatingHierarchy is
  * dynamically allocated,even it GatingHierarchy gets copied before destroyed
@@ -120,10 +123,24 @@ void GatingHierarchy::addGate(gate& g,string popName)
 
 //	boost::add_edge()
 }
-
-void GatingHierarchy::gating()
+/*
+ * load data from ncdfFlow file
+ */
+double** GatingHierarchy::getData(string fileName)
 {
-	cout <<"test gating"<<endl;
+//	fileName
+//		_fileName
+//		readSlice()
+
+}
+void GatingHierarchy::gating(string fileName)
+{
+	cout <<"start gating..."<<endl;
+	//read data
+	getData(fileName);
+
+
+	cout <<"finish gating..."<<endl;
 }
 
 /*

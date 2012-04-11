@@ -1380,8 +1380,8 @@ mkformula<-function(dims2){
 
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 	if(!x@flag){
-		#message("Can't extract population statistics until the data has been gated with 'execute()'\n");
-		#return()
+		message("Can't extract population statistics until the data has been gated with 'execute()'\n");
+#		return()
 	}
 	
  m<-do.call(rbind,(sapply(RBGL::tsort(x@tree),function(y)list(c(get("fjName",envir=nodeData(x@tree,y,"metadata")[[1]]),getProp(x,y),get("count",envir=nodeData(x@tree,y,"metadata")[[1]]),get("thisTot",envir=nodeData(x@tree,y,"metadata")[[1]]),get("parentTot",envir=nodeData(x@tree,y,"metadata")[[1]]),y)))))
@@ -1398,14 +1398,15 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 	m[1,c(2)]<-1;
 	m[1,5]<-m[1,4]
 	colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
+#	colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","flowJo.freq","node")
 	rownames(m)<-m[,1]
 	m<-m[,2:6]
 	m
 })
-
 #made change to the original method to add flowJo option
 setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
-    if(!haveSameGatingHierarchy(x)){
+#			browser()
+	if(!haveSameGatingHierarchy(x)){
         message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
     }
 	r<-do.call(cbind,lapply(x,function(y){
@@ -1413,12 +1414,15 @@ setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
 						curStats<-getPopStats(y)
 						if(flowJo)
 						{
-							curStats$flowJo.count/curStats$parent.total
+#							curStats$flowJo.count/curStats$parent.total
+							curStats$flowJo.freq
 						}
 							
 						else
 							curStats$flowCore.freq
 						}))
+		
+	
 	rownames(r)<-rownames(getPopStats(x[[1]]));
 	r
 })
