@@ -1,6 +1,7 @@
 #unloadNamespace("flowWorkspace")
 library(flowWorkspace)
 library(Rgraphviz)
+dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 #source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
 #source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
@@ -56,13 +57,20 @@ G_list<-flowWorkspace:::splitGatingSetByNgates(G)
 lapply(G_list,getPopStats,flowJo=T)
 
 
+#############################################
+#QUALIFIER
+########################################
+db<-new.env()
+saveToDB(db,G)
+getQAStats(db,isFlowCore=F)
+
 
 ############################################################################### 
 #R parser
 ###############################################################################
 
 ws<-openWorkspace(macXML)
-G1<-parseWorkspace(ws,name=2,execute=F,requiregates=F,subset=c(1:2),useInternal=F,dMode=2)
+G1<-parseWorkspace(ws,name=2,execute=T,requiregates=F,subset=c(1:2),useInternal=F,dMode=2)
 G1
 length(G1)
 gh1<-G1[[1]]

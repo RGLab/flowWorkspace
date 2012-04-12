@@ -126,19 +126,18 @@ void GatingHierarchy::addGate(gate& g,string popName)
 /*
  * load data from ncdfFlow file
  */
-double** GatingHierarchy::getData(string fileName)
+float* GatingHierarchy::getData(VertexID nodeID=0)
 {
-//	fileName
-//		_fileName
-//		readSlice()
 
+//	nc.readSlice()
 }
 void GatingHierarchy::gating(string fileName)
 {
 	cout <<"start gating..."<<endl;
 	//read data
-	getData(fileName);
+	float *mat=getData();
 
+	delete mat;
 
 	cout <<"finish gating..."<<endl;
 }

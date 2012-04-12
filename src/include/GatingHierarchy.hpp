@@ -12,6 +12,7 @@
 #include <vector>
 #include "populationTree.hpp"
 #include "flowJoWorkspace.hpp"
+#include "ncdfFlow.hpp"
 #include <libxml/xpath.h>
 using namespace std;
 typedef map<string,VertexID> VertexID_map;
@@ -65,7 +66,7 @@ class compensation{
 class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
-//	double ** data;
+	ncdfFlow const *nc;
 	string sampleName;
 	populationTree tree;
 	/*
@@ -102,7 +103,7 @@ public:
 	/**/
 //	vector<bool> * getIndice(string popName);
 
-	double** getData(string fileName);
+	float* getData(VertexID nodeID);
 
 //	void gating(gate& g,string popName);
 
