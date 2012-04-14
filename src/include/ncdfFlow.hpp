@@ -9,7 +9,7 @@
 #define NCDFFLOW_HPP_
 #include <string>
 #include <netcdfcpp.h>
-
+#include "flowData.hpp"
 using namespace std;
 
 class ncdfFlow{
@@ -21,6 +21,7 @@ public:
 	void fileName_set(string _fileName);
 	string fileName_get();
 	float * readSlice(unsigned int sampleID);
+	flowData readflowData(unsigned int sampleID);
 
 };
 

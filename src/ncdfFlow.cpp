@@ -59,5 +59,43 @@ float * ncdfFlow::readSlice(unsigned int sampleID)
 	return mat;
 
 }
+/*
+ * another version of readSlice to return the 1-D matrix as well as dimensions info for 2-D matrix
+ * all these info encapsulated within the flowData object
+ */
+flowData ncdfFlow::readflowData(unsigned int sampleID)
+{
+	if(fileName.empty())
+		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
 
+	NcFile dataFile(fileName.c_str(), NcFile::ReadOnly);
+	if (!dataFile.is_valid())
+	{
+	 throw(ios_base::failure("Couldn't open cdf file!\n"));
+
+	}
+
+	NcVar *data = dataFile.get_var("exprsMat");
+	if(!data)
+	   throw(domain_error("can't get variable:exprsMat!"));
+
+	NcAtt *eCounts=data->get_att("eventCount");
+	if(!eCounts)
+	   throw(domain_error("can't get attribute:eventCount!"));
+
+	int nRow=eCounts->as_int(sampleID);
+	delete eCounts;
+
+	unsigned nChannels= dataFile.get_dim("channel")->size();
+
+	unsigned int nSize=nRow*nChannels;
+	float * mat=new float[nSize];
+	data->set_cur(sampleID,0,0);
+
+	data->get(mat,nSize);
+	flowData res(mat,nRow,nChannels);
+
+	return res;
+
+}
 

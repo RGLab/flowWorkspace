@@ -35,11 +35,11 @@ GatingHierarchy::~GatingHierarchy()
 	}
 
 
-	if(data!=NULL)
-	{
-		cout<<"free the data object"<<endl;
-		delete data;
-	}
+//	if(data!=NULL)
+//	{
+//		cout<<"free the data object"<<endl;
+//		delete data;
+//	}
 
 
 
@@ -67,7 +67,7 @@ GatingHierarchy::GatingHierarchy()
  */
 GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow * _nc,unsigned short _dMode)
 {
-	data=NULL;
+//	data=NULL;
 	dMode=_dMode;
 	thisWs=ws;
 	nc=_nc;
@@ -147,24 +147,20 @@ void GatingHierarchy::addGate(gate& g,string popName)
 /*
  * load data from ncdfFlow file
  */
-float* GatingHierarchy::getData(VertexID nodeID)
+flowData GatingHierarchy::getData(VertexID nodeID)
 {
 	cout<<"reading data from ncdf"<<endl;
 	unsigned sampleInd=getSample().find_first_of(sampleName);
 
-	float * res=nc->readSlice(sampleInd);
+	flowData res=nc->readflowData(sampleInd);
 	//subset the results by indices for non-root node
 	if(nodeID>0)
 	{
-		valarray<bool>* indices=vertexIDToNode(nodeID).getIndice();
-
-		data
-
-//		indices.
-//		data[]
+		valarray<bool>* indices=vertexIDToNode(nodeID).thisIndice;
+		return res.subset(*indices);
 	}
-
-	return res;
+	else
+		return res;
 }
 
 void GatingHierarchy::loadData()
@@ -177,7 +173,7 @@ void GatingHierarchy::gating()
 {
 	cout <<"start gating..."<<endl;
 	//read data once for all nodes
-	if(data==NULL)
+	if(data.data==NULL)
 		loadData();
 	VertexID_vec vertices=getVertices(true);
 

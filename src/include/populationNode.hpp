@@ -12,11 +12,10 @@
 #include <string>
 #include <vector>
 #include "gate.hpp"
-#include <valarray>
 using namespace std;
 
 typedef map<string,double> POPSTATS;
-typedef valarray<bool> POPINDICES;
+
 class populationNode{
 public:
 	string thisName;

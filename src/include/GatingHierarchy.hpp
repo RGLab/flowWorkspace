@@ -66,8 +66,8 @@ class compensation{
 class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
-	ncdfFlow *nc;//a pointer to the global data stored within gatingSet
-	float * data;
+	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
+	flowData data;
 	string sampleName;
 	populationTree tree;
 	bool isGated;
@@ -106,7 +106,7 @@ public:
 	/**/
 //	vector<bool> * getIndice(string popName);
 
-	float* getData(VertexID nodeID);
+	flowData getData(VertexID nodeID);
 	void loadData();
 //	void gating(gate& g,string popName);
 
