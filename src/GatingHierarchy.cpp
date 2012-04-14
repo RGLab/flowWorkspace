@@ -22,8 +22,25 @@
 //TODO:try to free the gates
 GatingHierarchy::~GatingHierarchy()
 {
-	//free the gate objects witin each node
-//	boost::vertices(tree).first()
+	//for each node
+	if(isGated)
+	{
+		VertexID_vec vertices=getVertices(false);
+		for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+
+			cout<<"free the gates"<<endl;
+			cout<<"free the indices"<<endl;
+		}
+	}
+
+
+	if(data!=NULL)
+	{
+		cout<<"free the data object"<<endl;
+		delete data;
+	}
+
 
 
 }
@@ -48,10 +65,12 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,unsigned short _dMode=1)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow * _nc,unsigned short _dMode)
 {
+	data=NULL;
 	dMode=_dMode;
 	thisWs=ws;
+	nc=_nc;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
 //	wsRootNode popNode=root;//getPopulation();
@@ -123,25 +142,60 @@ void GatingHierarchy::addGate(gate& g,string popName)
 
 //	boost::add_edge()
 }
+
+
 /*
  * load data from ncdfFlow file
  */
-float* GatingHierarchy::getData(VertexID nodeID=0)
+float* GatingHierarchy::getData(VertexID nodeID)
+{
+	cout<<"reading data from ncdf"<<endl;
+	unsigned sampleInd=getSample().find_first_of(sampleName);
+
+	float * res=nc->readSlice(sampleInd);
+	//subset the results by indices for non-root node
+	if(nodeID>0)
+	{
+		valarray<bool>* indices=vertexIDToNode(nodeID).getIndice();
+
+		data
+
+//		indices.
+//		data[]
+	}
+
+	return res;
+}
+
+void GatingHierarchy::loadData()
 {
 
-//	nc.readSlice()
+	data=getData(0);
 }
-void GatingHierarchy::gating(string fileName)
+
+void GatingHierarchy::gating()
 {
 	cout <<"start gating..."<<endl;
-	//read data
-	float *mat=getData();
+	//read data once for all nodes
+	if(data==NULL)
+		loadData();
+	VertexID_vec vertices=getVertices(true);
 
-	delete mat;
+	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	{
+		VertexID u=*it;
+		gating(u);
+	}
 
 	cout <<"finish gating..."<<endl;
 }
 
+void GatingHierarchy::gating(VertexID u)
+{
+	populationNode node=vertexIDToNode(u);
+	cout <<"gating on:"<<node.getName()<<endl;
+
+}
 /*
  * current output the graph in dot format
  * and further covert it to gxl in order for Rgraphviz to read since it does not support dot directly

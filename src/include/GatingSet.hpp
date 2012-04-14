@@ -21,6 +21,7 @@ using namespace std;
 class GatingSet{
 	workspace * ws;
 	map<string,GatingHierarchy> ghs;
+	ncdfFlow nc;
 	/*
 	 * we assume the GatingSet is mainly for read-access
 	 * so we have a copy of samplenames here as a vector
@@ -38,5 +39,6 @@ public:
 	void parseWorkspace(unsigned short,bool);
 	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);
+	void attachData(string);
 };
 #endif /* GATINGSET_HPP_ */

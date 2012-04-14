@@ -3,21 +3,28 @@
 # Author: wjiang2
 ###############################################################################
 
-#parseWorkspace_cpp<-function(obj,groupIDs,dMode=0,execute=FALSE,...){
-#			
-#			
-#			res<-lapply(groupIDs,function(groupID)
-#								.parseWorkspace(obj,groupID,execute,dMode)
-#						)
-#			if(length(res)==1)
-#				res<-unlist(res)
-#			
-#			res
-#			
-#		}
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,dMode){
+setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
+			if(inherits(value,"ncdfFlowSet"))
+			{
+				
+				.Call("R_setData",this@pointer,value@file)
+			}
+		})
+
+.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,flowSetId=NULL){
 	G<-new("GatingSetInternal",xmlFileName,sampleIDs,execute,dMode)
 	samples<-.Call("R_getSamples",G@pointer)
+	if(execute)
+	{
+		files<-file.path(path,samples)
+		if(isNcdf){
+			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
+			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId))
+		}else{
+			fs<-read.flowSet(files)
+		}
+		setData(G,fs)	
+	}
 	G@set<-sapply(samples,function(x){
 #													ghPtr<-.Call("R_getGatingHierarchyS",G@pointer,i)
 #													new("GatingHierarchyInternal",pointer=ghPtr)

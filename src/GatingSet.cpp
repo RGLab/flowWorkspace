@@ -108,7 +108,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isGating)
 			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy curGh=GatingHierarchy(curSampleNode,ws,isGating,dMode);
+		GatingHierarchy curGh=GatingHierarchy(curSampleNode,ws,isGating,&nc,dMode);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 
@@ -141,3 +141,8 @@ vector<string> GatingSet::getSamples(void)
 		return res;
 		//	return(this->sampleList);
 };
+
+void GatingSet::attachData(string fileName){
+
+	nc.fileName_set(fileName);
+}

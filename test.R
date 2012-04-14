@@ -17,9 +17,12 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(winXML[1])
-
-G<-parseWorkspace(ws,name=1,execute=F,requiregates=F,subset=c(1:2),useInternal=T,dMode=2)
+ws<-openWorkspace(macXML[1])
+time1<-Sys.time()
+G<-parseWorkspace(ws,name=1,execute=F,requiregates=F
+#					,subset=c(1:2)
+					,useInternal=T,dMode=0)
+Sys.time()-time1
 G
 
 length(G)
@@ -70,7 +73,11 @@ getQAStats(db,isFlowCore=F)
 ###############################################################################
 
 ws<-openWorkspace(macXML)
-G1<-parseWorkspace(ws,name=2,execute=T,requiregates=F,subset=c(1:2),useInternal=F,dMode=2)
+time1<-Sys.time()
+G1<-parseWorkspace(ws,name=1,execute=F,requiregates=F
+#					,subset=c(1:2)
+					,useInternal=F,dMode=2)
+Sys.time()-time1
 G1
 length(G1)
 gh1<-G1[[1]]

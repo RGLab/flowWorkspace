@@ -37,6 +37,18 @@ BEGIN_RCPP
 END_RCPP
 }
 
+/*
+ * associate nc file as the raw data to GatingSet
+ */
+RcppExport SEXP R_setData(SEXP _gsPtr,SEXP _fileName) {
+BEGIN_RCPP
+		string fileName=as<string>(_fileName);
+		XPtr<GatingSet>gs(_gsPtr);
+		gs->attachData(fileName);
+
+END_RCPP
+}
+
 //RcppExport SEXP R_getGatingHierarchyS(SEXP _gsPtr,SEXP _sampleName) {
 //BEGIN_RCPP
 //	XPtr<GatingSet>gs(_gsPtr);

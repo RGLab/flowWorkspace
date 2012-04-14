@@ -102,15 +102,15 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _fileName,SEXP _sampleName){
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
 //	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
-	string fileName=as<string>(_fileName);
+
 	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
-	gh.gating(fileName);
+	gh.gating();
 
 END_RCPP
 }

@@ -115,6 +115,13 @@ void test(string xml){
 		}
 
 
+		/*
+		 * do the gating after the parsing
+		 */
+		string ncFile="";
+		gs.attachData(ncFile);
+		gh.getData(0);
+
 
 		/*
 		 * plot gating hierarchy tree

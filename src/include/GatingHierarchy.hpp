@@ -66,9 +66,11 @@ class compensation{
 class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
-	ncdfFlow const *nc;
+	ncdfFlow *nc;//a pointer to the global data stored within gatingSet
+	float * data;
 	string sampleName;
 	populationTree tree;
+	bool isGated;
 	/*
 	 * this field is for the easy query by node name
 	 * since boost does not provide this query feature explicitly,
@@ -77,8 +79,9 @@ class GatingHierarchy{
 	 */
 //	VertexID_map nodelist;
 	workspace * thisWs;
-	unsigned short dMode;//debug mode passed from GatingSet
 public:
+	unsigned short dMode;//debug mode passed from GatingSet
+
 	/*retrieve the gate definition from a particular node*/
 //	gate getGate(unsigned short gateid);
 //	gate getGate(string popName);
@@ -95,7 +98,7 @@ public:
 	GatingHierarchy();
 	~GatingHierarchy();
 //	GatingHierarchy(string sampleID,workspace * ws,unsigned short _dMode);
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,unsigned short _dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,unsigned short _dMode);
 
 	/*associate the tree with data matrix*/
 //	void addData();
@@ -104,10 +107,11 @@ public:
 //	vector<bool> * getIndice(string popName);
 
 	float* getData(VertexID nodeID);
-
+	void loadData();
 //	void gating(gate& g,string popName);
 
-	void gating(string);
+	void gating();
+	void gating(VertexID);
 	void drawGraph(string out);
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};

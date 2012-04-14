@@ -12,22 +12,22 @@
 #include <string>
 #include <vector>
 #include "gate.hpp"
-
+#include <valarray>
 using namespace std;
 
 typedef map<string,double> POPSTATS;
-
+typedef valarray<bool> POPINDICES;
 class populationNode{
 public:
 	string thisName;
 	gate * thisGate;
-	vector<bool> thisIndice;
+	POPINDICES *thisIndice;
 
 	POPSTATS fjStats,fcStats;
 public:
 	populationNode(){thisGate=NULL;};
 //	~populationNode(){delete thisGate;};//since gate is dynamically created,needs to be freed here in destroy method
-	vector<bool> getIndice(){return(this->thisIndice);};
+//	valarray<bool> * getIndice(){return(this->thisIndice);};
 
 	POPSTATS getStats(bool isFlowCore=false){
 		return(isFlowCore?this->fcStats:this->fjStats);
@@ -39,7 +39,7 @@ public:
 		thisName=popName;
 	};
 	void setGate(gate *gate){thisGate=gate;};
-	void setIndice(vector<bool> indice){thisIndice=indice;};
+//	void setIndice(vector<bool> indice){thisIndice=indice;};
 
 
 };
