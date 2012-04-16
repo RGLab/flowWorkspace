@@ -9,40 +9,45 @@
 
 flowData::flowData(){};
 
-flowData::flowData(float* mat,unsigned nEvents,unsigned nChannls){
+flowData::flowData(float* mat,unsigned _nEvents,unsigned _nChannls){
 
-	data=new valarray<float>(mat,nEvents*nChannls);
-	nRow=nEvents;
-	nCol=nChannls;
+//	data=new valarray<float>(mat,nEvents*nChannls);
+	data=mat;
+	nEvents=_nEvents;
+	nChannls=_nChannls;
 }
-flowData::flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls){
 
-	data=new valarray<float>(mat);
-	nRow=nEvents;
-	nCol=nChannls;
-}
+//flowData::flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls){
+//
+//	data=new valarray<float>(mat);
+//	nRow=nEvents;
+//	nCol=nChannls;
+//}
 flowData::~flowData(){
 	if(data!=NULL)
 		delete data;
 }
-
-flowData flowData::subset(POPINDICES rowInd){
-
-//	unsigned newLen=nRow*nCol;
-//	POPINDICES newInd(newLen);
-//	for(unsigned i=0;i<nCol;i++)
-//	{
-//
-//		 valarray<bool> mymask (true,nRow);
-//
-//	}
-//	return data[newInd];
-	/*
-	 * convert the rowInd form valarray<bool> to gslice
-	 */
-	gslice newInd;
-	unsigned nNewRow;//new size of the the data
-	valarray<float> val=(*data);
-	valarray<float> res=val[newInd];
-	return  flowData(res,nNewRow,this->nCol);
+void flowData::params_set(vector<string> _params){
+	if(_params.size()!=nChannls)
+		throw(domain_error("the number of parameters is not consistent with cdf file!"));
+	params=_params;
 }
+//flowData flowData::subset(POPINDICES rowInd){
+//
+////	unsigned newLen=nRow*nCol;
+////	POPINDICES newInd(newLen);
+////	for(unsigned i=0;i<nCol;i++)
+////	{
+////
+////		 valarray<bool> mymask (true,nRow);
+////
+////	}
+////	return data[newInd];
+//	/*
+//	 * convert the rowInd form valarray<bool> to gslice
+//	 */
+//	gslice newInd;
+//
+//	unsigned nNewRow=newInd.size();//new size of the the data
+//	return  flowData((*data)[newInd],nNewRow,this->nCol);
+//}

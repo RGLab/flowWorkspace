@@ -40,14 +40,14 @@ wsSampleNode getSample(T ws,string sampleID){
 GatingSet::~GatingSet()
 {
 	delete ws;
-//	typedef map<string,GatingHierarchy *> map_t;
-//	BOOST_FOREACH(map_t::value_type & it,ghs){
-//			GatingHierarchy * ghPtr=it.second;
-//			string sampleName=ghPtr->getSample();
-//			delete ghPtr;
-//			if(dMode>=1)
-//				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
-//	}
+	typedef map<string,GatingHierarchy *> map_t;
+	BOOST_FOREACH(map_t::value_type & it,ghs){
+			GatingHierarchy * ghPtr=it.second;
+			string sampleName=ghPtr->getSample();
+			delete ghPtr;
+			if(dMode>=1)
+				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
+	}
 
 }
 //read xml file and create the appropriate flowJoWorkspace object
@@ -108,11 +108,11 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isGating)
 			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy curGh=GatingHierarchy(curSampleNode,ws,isGating,&nc,dMode);
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isGating,&nc,dMode);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 
-		curGh.setSample(sampleName);
+		curGh->setSample(sampleName);
 		ghs[sampleName]=curGh;//add to the map
 
 
@@ -123,26 +123,31 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isGating)
 
 }
 
-GatingHierarchy & GatingSet::getGatingHierarchy(string sampleName)
+GatingHierarchy * GatingSet::getGatingHierarchy(string sampleName)
 {
 	return ghs[sampleName];
 }
 
-//GatingHierarchy & GatingSet::getGatingHierarchy(unsigned index)
-//{
-//
-//		return ghs.at(index);
-//}
+GatingHierarchy * GatingSet::getGatingHierarchy(unsigned index)
+{
+		if(index>=ghs.size())
+		throw(out_of_range("index out of range:"));
+
+		return ghs[getSamples().at(index)];
+}
 vector<string> GatingSet::getSamples(void)
 {
 		vector<string> res;
-		typedef map<string,GatingHierarchy> map_t;
-		BOOST_FOREACH(map_t::value_type & it,ghs){res.push_back(it.first);}
+		typedef map<string,GatingHierarchy*> map_t;
+		BOOST_FOREACH(map_t::value_type & it,ghs){
+			res.push_back(it.first);
+		}
 		return res;
 		//	return(this->sampleList);
 };
 
-void GatingSet::attachData(string fileName){
+void GatingSet::attachData(string fileName,vector<string> params){
 
 	nc.fileName_set(fileName);
+	nc.params_set(params);
 }

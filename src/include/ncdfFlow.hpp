@@ -14,11 +14,13 @@ using namespace std;
 
 class ncdfFlow{
 	string fileName;
-//	unsigned short nChannels;
+	vector<string> params;
 public:
 	ncdfFlow();
 	ncdfFlow(string _fileName);
 	void fileName_set(string _fileName);
+	void params_set(vector<string> _params);
+	vector<string> params_get();
 	string fileName_get();
 	float * readSlice(unsigned int sampleID);
 	flowData readflowData(unsigned int sampleID);

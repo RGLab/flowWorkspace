@@ -25,10 +25,10 @@ BEGIN_RCPP
 //	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
-	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 
 	string output=as<string>(_output);
- 	gh.drawGraph(output);
+ 	gh->drawGraph(output);
 //    return wrap(res);
 END_RCPP
 }
@@ -53,11 +53,11 @@ BEGIN_RCPP
 //	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
-	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	bool tsort=as<bool>(_tsort);
 	bool isPath=as<bool>(_isPath);
 
-	return wrap(gh.getPopNames(tsort,isPath));
+	return wrap(gh->getPopNames(tsort,isPath));
 END_RCPP
 }
 
@@ -67,9 +67,9 @@ BEGIN_RCPP
 //	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
-	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	return wrap(gh.getParent(u));
+	return wrap(gh->getParent(u));
 END_RCPP
 }
 
@@ -79,9 +79,9 @@ BEGIN_RCPP
 //	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
-	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	return wrap(gh.getChildren(u));
+	return wrap(gh->getChildren(u));
 END_RCPP
 }
 
@@ -91,12 +91,12 @@ BEGIN_RCPP
 //	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
-	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	populationNode node=gh.vertexIDToNode(u);
+	nodeProperties *node=gh->getNodeProperty(u);
 
-	return List::create(Named("FlowCore",node.getStats(true))
-						,Named("FlowJo",node.getStats(false))
+	return List::create(Named("FlowCore",node->getStats(true))
+						,Named("FlowJo",node->getStats(false))
 						);
 
 END_RCPP
@@ -109,8 +109,8 @@ BEGIN_RCPP
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 
-	GatingHierarchy gh=gs->getGatingHierarchy(sampleName);
-	gh.gating();
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	gh->gating();
 
 END_RCPP
 }

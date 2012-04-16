@@ -12,10 +12,18 @@ ncdfFlow::ncdfFlow(){
 
 void ncdfFlow::fileName_set(string _fileName){
 	fileName=_fileName;
+
 }
 
 string ncdfFlow::fileName_get(){
 	return fileName;
+}
+
+void ncdfFlow::params_set(vector<string> _params){
+	params=_params;
+}
+vector<string> ncdfFlow::params_get(){
+	return params;
 }
 /*
  * it only read the whole slice (1*nChannels*nEvents)
@@ -94,6 +102,7 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 
 	data->get(mat,nSize);
 	flowData res(mat,nRow,nChannels);
+	res.params_set(params);
 
 	return res;
 

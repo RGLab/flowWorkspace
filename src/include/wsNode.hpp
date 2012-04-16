@@ -7,7 +7,7 @@
 
 #ifndef WSNODE_HPP_
 #define WSNODE_HPP_
-#include "populationNode.hpp"
+#include "nodeProperties.hpp"
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 

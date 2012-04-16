@@ -10,7 +10,7 @@
 #include <libxml/parser.h>
 #include <iostream>
 //#include <exception>
-#include <stdexcept>
+
 
 using namespace std;
 
@@ -274,36 +274,39 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 
 	return NULL;
 }
-populationNode flowJoWorkspace::to_popNode(wsRootNode & node){
+/*
+ *Note: nodeProperties is dynamically allocated and up to caller to free it
+ */
+nodeProperties* flowJoWorkspace::to_popNode(wsRootNode & node){
 
-	populationNode pNode;
+	nodeProperties * pNode=new nodeProperties;
 
-	pNode.setName(node.getProperty("name").c_str());
+	pNode->setName(node.getProperty("name").c_str());
 
-	pNode.fjStats["count"]=atoi(node.getProperty("count").c_str());
+	pNode->fjStats["count"]=atoi(node.getProperty("count").c_str());
 
 	return pNode;
 }
 
-populationNode flowJoWorkspace::to_popNode(wsPopNode &node,bool isGating=false){
+nodeProperties* flowJoWorkspace::to_popNode(wsPopNode &node,bool isGating=false){
 
 
-	populationNode pNode;
+	nodeProperties * pNode=new nodeProperties;
 	//add pop name
-	pNode.setName(node.getProperty("name").c_str());
+	pNode->setName(node.getProperty("name").c_str());
 
 	if(dMode>=3)
-			cout<<"parse the population Node:"<<pNode.getName()<<endl;
+			cout<<"parse the population Node:"<<pNode->getName()<<endl;
 	//add pop counts
-	pNode.fjStats["count"]=atoi(node.getProperty("count").c_str());
+	pNode->fjStats["count"]=atoi(node.getProperty("count").c_str());
 
 
 	try
 	{
-		if(isGating)pNode.setGate(getGate(node));
+		if(isGating)pNode->setGate(getGate(node));
 	}
 	catch (int e) {
-		cout<<"extracting gate failed:"<<pNode.getName()<<endl;
+		cout<<"extracting gate failed:"<<pNode->getName()<<endl;
 	}
 	return pNode;
 }

@@ -40,7 +40,7 @@ struct OurVertexPropertyWriterR {
     template <class Vertex>
     void operator() (std::ostream &out, Vertex u) {
 
-    	out<<"[shape=record,label=\""<<g[u].getName()<<"\"]";
+    	out<<"[shape=record,label=\""<<g[u]->getName()<<"\"]";
 
 
     }
@@ -94,7 +94,7 @@ public:
 	void addChild(VertexID parent,VertexID child);
 	void addGate(gate& g,string popName);
 	void addPopulation(VertexID parentID,wsNode * parentNode,bool isGating);
-	VertexID addRoot(populationNode rootNode);
+	VertexID addRoot(nodeProperties* rootNode);
 	GatingHierarchy();
 	~GatingHierarchy();
 //	GatingHierarchy(string sampleID,workspace * ws,unsigned short _dMode);
@@ -111,7 +111,7 @@ public:
 //	void gating(gate& g,string popName);
 
 	void gating();
-	void gating(VertexID);
+//	void gating(VertexID);
 	void drawGraph(string out);
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};
@@ -119,7 +119,7 @@ public:
 	vector<string> getPopNames(bool tsort,bool isPath);
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
-	populationNode vertexIDToNode(VertexID);
+	nodeProperties * getNodeProperty(VertexID);
 };
 
 

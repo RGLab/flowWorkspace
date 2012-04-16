@@ -6,33 +6,33 @@
  */
 
 #include "include/GatingHierarchy.hpp"
-//#include <ncdfFlow.h>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <fstream>
-//#include <Rcpp.h>
-//using namespace Rcpp;
+
+
 
 /*need to be careful that gate within each node of the GatingHierarchy is
  * dynamically allocated,even it GatingHierarchy gets copied before destroyed
  * these gates are already gone since the gate objects were already freed by
  * this destructor
  */
-//TODO:try to free the gates
+
+
 GatingHierarchy::~GatingHierarchy()
 {
 	//for each node
-	if(isGated)
-	{
-		VertexID_vec vertices=getVertices(false);
-		for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-		{
 
-			cout<<"free the gates"<<endl;
-			cout<<"free the indices"<<endl;
-		}
+	VertexID_vec vertices=getVertices(false);
+	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	{
+
+		cout<<"free the node properties from tree"<<endl;
+		delete tree[*it];//free the property bundle
+//			cout<<"free the indices"<<endl;
 	}
+
 
 
 //	if(data!=NULL)
@@ -75,13 +75,15 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
 //	wsRootNode popNode=root;//getPopulation();
 	addPopulation(pVerID,&root,isGating);
+	if(isGating)
+		gating();
 
 }
 /*
  * add root node first before recursively add the other nodes
  * since root node does not have gates as the others do
  */
-VertexID GatingHierarchy::addRoot(populationNode rootNode)
+VertexID GatingHierarchy::addRoot(nodeProperties* rootNode)
 {
 	// Create  vertices in that graph
 	VertexID u = boost::add_vertex(tree);
@@ -107,9 +109,9 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 			VertexID curChildID = boost::add_vertex(tree);
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
-			populationNode curChild=thisWs->to_popNode(curChildNode,isGating);
+			nodeProperties *curChild=thisWs->to_popNode(curChildNode,isGating);
 			if(dMode>=2)
-				cout<<"node created:"<<curChild.getName()<<endl;
+				cout<<"node created:"<<curChild->getName()<<endl;
 			//attach the populationNode to the boost node as property
 			tree[curChildID]=curChild;
 			//add relation between current node and parent node
@@ -143,10 +145,11 @@ void GatingHierarchy::addGate(gate& g,string popName)
 //	boost::add_edge()
 }
 
-
 /*
- * load data from ncdfFlow file
+ * subset operation is done within R,so there is no need for this member function
+ * to apply subsetting within c++ thus avoid unnecessary numeric operation in c++
  */
+
 flowData GatingHierarchy::getData(VertexID nodeID)
 {
 	cout<<"reading data from ncdf"<<endl;
@@ -156,13 +159,16 @@ flowData GatingHierarchy::getData(VertexID nodeID)
 	//subset the results by indices for non-root node
 	if(nodeID>0)
 	{
-		valarray<bool>* indices=vertexIDToNode(nodeID).thisIndice;
-		return res.subset(*indices);
+//		valarray<bool>* indices=vertexIDToNode(nodeID).thisIndice;
+//		return res.subset(*indices);
+		throw(domain_error("accessing data through non-root node is not supported yet!"));
 	}
 	else
 		return res;
 }
-
+/*
+ * load data from ncdfFlow file
+ */
 void GatingHierarchy::loadData()
 {
 
@@ -180,18 +186,16 @@ void GatingHierarchy::gating()
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
-		gating(u);
+		nodeProperties * node=getNodeProperty(u);
+		cout <<"gating on:"<<node->getName()<<endl;
+		gate *g=node->getGate();
+		g->gating(data,node->indices);
 	}
 
 	cout <<"finish gating..."<<endl;
 }
 
-void GatingHierarchy::gating(VertexID u)
-{
-	populationNode node=vertexIDToNode(u);
-	cout <<"gating on:"<<node.getName()<<endl;
 
-}
 /*
  * current output the graph in dot format
  * and further covert it to gxl in order for Rgraphviz to read since it does not support dot directly
@@ -245,7 +249,7 @@ vector<string> GatingHierarchy::getPopNames(bool tsort,bool isPath){
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
-		string nodeName=vertexIDToNode(u).getName();
+		string nodeName=getNodeProperty(u)->getName();
 		/*
 		 * append ancestors on its way of tracing back to the root node
 		 */
@@ -264,7 +268,7 @@ vector<string> GatingHierarchy::getPopNames(bool tsort,bool isPath){
 				{
 					u=parents.at(0);
 					if(u>0)//don't append the root node
-						nodeName=vertexIDToNode(u).getName()+nodeName;
+						nodeName=getNodeProperty(u)->getName()+nodeName;
 				}
 
 			}
@@ -332,14 +336,17 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 	}
 	return(res);
 }
-populationNode GatingHierarchy::vertexIDToNode(VertexID u){
+/*
+ * returning the reference of the vertex bundle
+ */
+nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
 
 
 	if(u>=0&&u<=boost::num_vertices(tree)-1)
 		return(tree[u]);
 	else
 	{
-		cout<<"returning empty node due to the invalid vertexID:"<<u<<endl;
-		return(populationNode());
+		throw(out_of_range("returning empty node due to the invalid vertexID:"+u));
+
 	}
 }

@@ -17,13 +17,12 @@
 #include "flowData.hpp"
 using namespace std;
 
-typedef pair<double,double> coordinate;
+typedef pair<float,float> coordinate;//first is X, second is Y
 class gate {
 public:
 	bool isNegate;
 //	virtual S4SXP to_flowCore()=0;
-	virtual POPINDICES gating(flowData)=0;
-
+	virtual void gating(const flowData &,POPINDICES *)=0;
 };
 
 /*
@@ -34,7 +33,8 @@ class polygonGate:public gate {
 public:
 	vector<string> params;
 	vector<coordinate> vertices;
-	POPINDICES gating(flowData);
+
+	void gating(const flowData &,POPINDICES *);
 };
 
 class rangegate:public gate {
@@ -42,17 +42,17 @@ public:
 	string pName;
 	double min;
 	double max;
-	POPINDICES gating(flowData);
+	void gating(const flowData &,POPINDICES *);
 };
 
 class rectGate:public gate {
 public:
 	vector<rangegate> params;
-	POPINDICES gating(flowData);
+	void gating(const flowData &,POPINDICES *);
 };
 class ellipseGate:public gate {
 public:
 //	vector<rangegate> params;
-	POPINDICES gating(flowData);
+	void gating(const flowData &,POPINDICES *);
 };
 #endif /* GATE_HPP_ */

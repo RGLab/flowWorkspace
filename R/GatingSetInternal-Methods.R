@@ -7,7 +7,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			if(inherits(value,"ncdfFlowSet"))
 			{
 				
-				.Call("R_setData",this@pointer,value@file)
+				.Call("R_setData",this@pointer,value@file,colnames(value))
 			}
 		})
 

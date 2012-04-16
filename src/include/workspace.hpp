@@ -54,9 +54,9 @@ public:
 	 virtual string getSampleName(wsSampleNode &)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
-	 virtual gate * getGate(wsPopNode &)=0;
-	 virtual populationNode to_popNode(wsRootNode &)=0;
-	 virtual populationNode to_popNode(wsPopNode &,bool isGating)=0;
+	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
+	 virtual nodeProperties * to_popNode(wsRootNode &)=0;
+	 virtual nodeProperties * to_popNode(wsPopNode &,bool isGating)=0;
 };
 
 

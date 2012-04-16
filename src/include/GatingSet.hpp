@@ -20,7 +20,7 @@ using namespace std;
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
 	workspace * ws;
-	map<string,GatingHierarchy> ghs;
+	map<string,GatingHierarchy*> ghs;
 	ncdfFlow nc;
 	/*
 	 * we assume the GatingSet is mainly for read-access
@@ -34,11 +34,11 @@ class GatingSet{
 public:
 	~GatingSet();
 	GatingSet(string,unsigned short);
-	GatingHierarchy & getGatingHierarchy(string );
-//	GatingHierarchy & getGatingHierarchy(unsigned int);
+	GatingHierarchy * getGatingHierarchy(string );
+	GatingHierarchy * getGatingHierarchy(unsigned int);
 	void parseWorkspace(unsigned short,bool);
 	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);
-	void attachData(string);
+	void attachData(string,vector<string>);
 };
 #endif /* GATINGSET_HPP_ */

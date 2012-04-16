@@ -40,11 +40,13 @@ END_RCPP
 /*
  * associate nc file as the raw data to GatingSet
  */
-RcppExport SEXP R_setData(SEXP _gsPtr,SEXP _fileName) {
+RcppExport SEXP R_setData(SEXP _gsPtr,SEXP _fileName,SEXP _params) {
 BEGIN_RCPP
 		string fileName=as<string>(_fileName);
+		vector<string> params=as<vector<string> >(_params);
+
 		XPtr<GatingSet>gs(_gsPtr);
-		gs->attachData(fileName);
+		gs->attachData(fileName,params);
 
 END_RCPP
 }

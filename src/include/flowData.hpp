@@ -7,10 +7,11 @@
 
 #ifndef FLOWDATA_HPP_
 #define FLOWDATA_HPP_
-#include <valarray>
-//#include "populationNode.hpp"
+#include <vector>
+#include <string>
+#include <stdexcept>
 using namespace std;
-typedef valarray<bool> POPINDICES;
+typedef vector<bool> POPINDICES;
 
 /*
  * define 2-D matrix class out of valarray to represent channel*events data matrix from one FCS
@@ -20,14 +21,16 @@ typedef valarray<bool> POPINDICES;
 class flowData{
 
 public:
-	valarray<float> * data;
-	unsigned nRow,nCol;
+//	valarray<float> * data;
+	vector<string> params;
+	float * data;
+	unsigned nEvents,nChannls;
 	flowData();
-	flowData(float* mat,unsigned nEvents,unsigned nChannls);
-	flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls);
+	flowData(float* mat,unsigned _nEvents,unsigned _nChannls);
+//	flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls);
 	~flowData();
-	flowData subset(POPINDICES rows);
-
+//	flowData subset(POPINDICES rows);
+	void params_set(vector<string> _params);
 };
 
 
