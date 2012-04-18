@@ -16,6 +16,7 @@ class wsNode{
 public:
 	xmlNodePtr thisNode;
 	string getProperty(string propName);
+	string getContent();
 	xmlXPathObjectPtr xpathInNode(string xpath);
 	wsNode(xmlNodePtr node){thisNode=node;};
 	wsNode(){};

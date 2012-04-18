@@ -34,3 +34,16 @@ string wsNode::getProperty(string propName){
 	return sName;
 
 }
+
+string wsNode::getContent(){
+
+	xmlChar * content = xmlNodeListGetString(thisNode->doc, thisNode->xmlChildrenNode, 1);
+	string res;
+	if(content!=0)
+		res=(const char*)content;
+	xmlFree(content);
+
+	return res;
+
+}
+

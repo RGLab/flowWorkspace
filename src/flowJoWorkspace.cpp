@@ -278,13 +278,24 @@ gate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	throw(domain_error("ellipse gate is not supported yet"));
 	return NULL;
 }
+/*
+ * TODO:query gate node and param node by name instead of by positions
+ */
 gate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			polygonGate * gate=new polygonGate();
+			/*
+			 * re-fetch the children node from the current pop node
+			 */
+			xmlXPathObjectPtr resGate=node.xpathInNode("PolygonGate/*");
+			wsNode pNode(resGate->nodesetval->nodeTab[0]);//gate dimensions
+			wsNode gNode(resGate->nodesetval->nodeTab[2]);//gate type and vertices
+			xmlXPathFreeObject(resGate);
+
 			//get the negate flag
-			gate->isNegate=node.getProperty("eventsInside")=="0";
+			gate->isNegate=!gNode.getProperty("negated").empty();
 
 			//get parameter name
-			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']/*[local-name()='parameter']");
+			xmlXPathObjectPtr resPara=pNode.xpathInNode("StringArray/String");
 			int nParam=resPara->nodesetval->nodeNr;
 			if(nParam!=2)
 			{
@@ -294,13 +305,13 @@ gate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			for(int i=0;i<nParam;i++)
 			{
 				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
-				string curParam=curPNode.getProperty("name");
+				string curParam=curPNode.getContent();
 				gate->params.push_back(curParam);
 			}
 			xmlXPathFreeObject(resPara);
 
 			//get vertices
-			xmlXPathObjectPtr resVert=node.xpathInNode("*[local-name()='vertex']");
+			xmlXPathObjectPtr resVert=gNode.xpathInNode("Polygon/Vertex");
 			for(int i=0;i<resVert->nodesetval->nodeNr;i++)
 			{
 				wsNode curVNode(resVert->nodesetval->nodeTab[i]);
@@ -308,22 +319,11 @@ gate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				/*for each vertice node
 				**get one pair of coordinates
 				*/
-				xmlXPathObjectPtr resCoord=curVNode.xpathInNode("*[local-name()='coordinate']");
 
-				xmlNodeSetPtr nodeSet=resCoord->nodesetval;
-				int nCoord=nodeSet->nodeNr;
-				if(nCoord!=2)
-				{
-//					cout<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
-					throw(domain_error("invalid  number of coordinates!"));
-				}
-				//get the coordinates values from the property of respective node
+				//get the coordinates values from the property
 				pair<float,float> pCoord;
-	//			wsNode xcord(nodeSet->nodeTab[0]);
-	//			string sXcord=xcord.getProperty("value");
-	//			pCoord.first=atof(sXcord.c_str());
-				pCoord.first=atof(wsNode(nodeSet->nodeTab[0]).getProperty("value").c_str());
-				pCoord.second=atof(wsNode(nodeSet->nodeTab[1]).getProperty("value").c_str());
+				pCoord.first=atof(curVNode.getProperty("x").c_str());
+				pCoord.second=atof(curVNode.getProperty("y").c_str());
 				//and push to the vertices vector of the gate object
 				gate->vertices.push_back(pCoord);
 
@@ -332,41 +332,42 @@ gate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			xmlXPathFreeObject(resVert);
 			return gate;
 }
+
 gate* macFlowJoWorkspace::getGate(wsRectGateNode & node){
 			rectGate * gate=new rectGate();
 			//get the negate flag
-			gate->isNegate=node.getProperty("eventsInside")=="0";
-
-			//get parameter name
-			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']");
-			int nParam=resPara->nodesetval->nodeNr;
-			if(nParam!=2)
-			{
-//				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
-				throw(domain_error("invalid  dimension of the rectangle gate!"));
-			}
-			for(int i=0;i<nParam;i++)
-			{
-				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
-
-				//get coordinates from properties
-//				rangegate rGate;
-				pRange r1;
-				string sMin=curPNode.getProperty("min");
-				r1.min=sMin.empty()?numeric_limits<float>::min():atof(sMin.c_str());
-
-				string sMax=curPNode.getProperty("max");
-				r1.max=sMax.empty()?numeric_limits<float>::max():atof(sMax.c_str());
-
-				//get parameter name from the children node
-				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");
-				r1.name=wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name");
-				xmlXPathFreeObject(resPName);
-
-				//push the current rangeGate into rectGate
-				gate->params.push_back(r1);
-			}
-			xmlXPathFreeObject(resPara);
+//			gate->isNegate=node.getProperty("eventsInside")=="0";
+//
+//			//get parameter name
+//			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']");
+//			int nParam=resPara->nodesetval->nodeNr;
+//			if(nParam!=2)
+//			{
+////				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
+//				throw(domain_error("invalid  dimension of the rectangle gate!"));
+//			}
+//			for(int i=0;i<nParam;i++)
+//			{
+//				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
+//
+//				//get coordinates from properties
+////				rangegate rGate;
+//				pRange r1;
+//				string sMin=curPNode.getProperty("min");
+//				r1.min=sMin.empty()?numeric_limits<float>::min():atof(sMin.c_str());
+//
+//				string sMax=curPNode.getProperty("max");
+//				r1.max=sMax.empty()?numeric_limits<float>::max():atof(sMax.c_str());
+//
+//				//get parameter name from the children node
+//				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");
+//				r1.name=wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name");
+//				xmlXPathFreeObject(resPName);
+//
+//				//push the current rangeGate into rectGate
+//				gate->params.push_back(r1);
+//			}
+//			xmlXPathFreeObject(resPara);
 			return gate;
 }
 
@@ -387,21 +388,21 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	const xmlChar * gateType=gNode.thisNode->name;
 	if(xmlStrEqual(gateType,(const xmlChar *)"Polygon"))
 	{
-		wsPolyGateNode pGNode(gNode.thisNode);
+		wsPolyGateNode pGNode(node.thisNode);
 		if(dMode>=4)
 			cout<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"PolyRect"))
 	{
-		wsRectGateNode rGNode(gNode.thisNode);
+		wsRectGateNode rGNode(node.thisNode);
 		if(dMode>=4)
 			cout<<"parsing RectangleGate.."<<endl;
 		return(getGate(rGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"Ellipse"))
 	{
-		wsEllipseGateNode rGNode(gNode.thisNode);
+		wsEllipseGateNode rGNode(node.thisNode);
 		if(dMode>=4)
 			cout<<"parsing EllipseGate.."<<endl;
 		return(getGate(rGNode));
