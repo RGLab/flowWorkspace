@@ -45,7 +45,7 @@ GatingSet::~GatingSet()
 			GatingHierarchy * ghPtr=it.second;
 			string sampleName=ghPtr->getSample();
 			delete ghPtr;
-			if(dMode>=1)
+			if(dMode>=GATING_HIERARCHY_LEVEL)
 				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
 	}
 
@@ -86,7 +86,7 @@ GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 			 throw(invalid_argument("We currently only support flowJo version 1.61 and 2.0"));
 		 }
 		 xmlFree(wsVersion);
-
+		 ws->dMode=_dMode;
 		 dMode=_dMode;
 }
 
@@ -104,7 +104,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 	vector<string>::iterator it;
 	for(it=sampleIDs.begin();it!=sampleIDs.end();it++)
 	{
-		if(dMode>=1)
+		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
@@ -117,7 +117,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 
 
 //		sampleList.push_back(sampleName);
-		if(dMode>=1)
+		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<"Gating hierarchy created: "<<sampleName<<endl;
 	}
 

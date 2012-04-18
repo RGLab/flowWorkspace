@@ -21,7 +21,7 @@ workspace::~workspace(){
 			 *have been allocated by the parser.
 			 */
 			xmlCleanupParser();
-			if(dMode>=1)
+			if(dMode>=GATING_SET_LEVEL)
 				cout<<"xml freed!"<<endl;
 }
 

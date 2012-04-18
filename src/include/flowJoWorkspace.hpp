@@ -38,6 +38,7 @@ public:
 	  gate * getGate(wsPolyGateNode &);
 	  gate * getGate(wsRectGateNode &);
 	  gate * getGate(wsEllipseGateNode &);
+	  gate * getGate(wsRangeGateNode &);
 };
 
 
@@ -51,6 +52,7 @@ public:
 	gate * getGate(wsPolyGateNode &);
 	gate * getGate(wsRectGateNode &);
 	gate * getGate(wsEllipseGateNode &);
+	gate * getGate(wsRangeGateNode &);
 };
 
 

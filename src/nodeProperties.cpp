@@ -12,11 +12,14 @@ nodeProperties::nodeProperties(){
 }
 
 nodeProperties::~nodeProperties(){
-	cout<<"free resources of node:"<<this->thisName<<endl;
+
+
 	if(thisGate!=NULL)
+	{
+		if(dMode>=GATE_LEVEL)
+			cout<<"free gate:"<<this->thisName<<endl;
 		delete thisGate;
-//	if(indices!=NULL)
-//		delete indices;
+	}
 }
 
 

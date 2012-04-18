@@ -10,72 +10,107 @@
 #include "include/gate.hpp"
 #include <algorithm>
 #include <valarray>
-/*
- * modified version of original c function
- * double --> float
- * int --> unsigned
- * int * --> POPINDICES &
- * float * --> const vector<coordinate>&
- * float *--> const flowData &
- */
-//void inPolygon(const flowData & fdata, const vector<coordinate>& vertices, POPINDICES &res) {
-//
-//  unsigned nEvents=fdata.nEvents;
-//  unsigned nChannls=fdata.nChannls;
-//  unsigned nVertex=vertices.size();
-//  valarray<float> data(fdata.data,nChannls*nEvents);
-//  fdata.params
-//
-//  unsigned i, j, counter;
-//  float xinters;
-//  float p1x, p2x, p1y, p2y;
-//
-//  for(i=0; i<nEvents; i++)
-//  {//iterate over points
-//    p1x=vertices.at(0).first;
-//    p1y=vertices.at(0).second;
-//    counter=0;
-//    for(j=1; j <= nVertex; j++)
-//    {// iterate over vertices
-//      /*p1x,p1y and p2x,p2y are the endpoints of the current vertex*/
-//      if (j == nVertex)
-//      {//the last vertice must "loop around"
-//		p2x = vertices.at(0).first;
-//		p2y = vertices.at(0).second;
-//      }
-//      else
-//      {
-//		p2x = vertices.at(j).first;
-//		p2y = vertices.at(j).second;
-//      }
-//      /*if horizontal ray is in range of vertex find the x coordinate where
-//		ray and vertex intersect*/
-//      if(data[i+nEvents] >= min(p1y, p2y) && data[i+nEvents] < max(p1y, p2y) &&data[i] <= max(p1x, p2x))
-//      {
-//		  xinters = (data[i+nEvents]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
-//		/*if intersection x coordinate == point x coordinate it lies on the
-//		  boundary of the polygon, which means "in"*/
-//		if(xinters==data[i])
-//		{
-//		  counter=1;
-//		  break;
-//		}
-//		/*count how many vertices are passed by the ray*/
-//		if (xinters > data[i])counter++;
-//      }
-//      p1x=p2x;
-//      p1y=p2y;
-//    }
-//    /*uneven number of vertices passed means "in"*/
-//    if(counter % 2 == 0)
-//      res[i]=false;
-//    else
-//      res[i]=true;
-//
-//  }
-//}
 
 /*
+ * ellipse gate is parsed as polygon at the parsing xml stage since it is stored in polygon format
+ * we do the calculation of major,minor axis and center coordinates here.
+ * assume four antipodal points of ellipse is provided as input
+ */
+gate * polygonGate::toEllipseGate(){
+	ellipseGate *g=new ellipseGate();
+	//copy parameter names directly from polygate object
+	g->params=this->params;
+	if(this->vertices.size()!=4)
+		throw(domain_error("fail to convert to ellipse since the vertices number is not 4!"));
+
+	/*
+	 * cal major,minor axis and center point
+	 *  by finding min and max distance among four points
+	 */
+
+	float a=numeric_limits<int>::min();//init major axis
+	float b=numeric_limits<int>::max();//init minor axis
+	for(unsigned i=0;i<4;i++)
+		for(unsigned j=i+1;j<4;j++)
+		{
+			coordinate p1=vertices.at(i);
+			coordinate p2=vertices.at(j);
+			float dist=sqrt(pow(p1.x-p2.x,2)+pow(p1.y-p2.y,2))/2;
+			if(dist>a)
+			{
+				//update major axis
+				a=dist;
+				//update center point
+				g->center.x=(p1.x+p2.x)/2;
+				g->center.y=(p1.y+p2.y)/2;
+			}
+
+			if(dist<b)
+				b=dist;//update minor axis
+		}
+
+
+	return g;
+}
+
+gate * polygonGate::toRangeGate(){
+	rangegate *g=new rangegate();
+	if(this->vertices.size()!=2)
+			throw(domain_error("fail to convert to Range Gate since the vertices number is not 2!"));
+
+
+	g->param.name=this->params.at(0);
+	coordinate p1=vertices.at(0);
+	coordinate p2=vertices.at(1);
+	if(p1.x!=p2.x)
+	{
+		g->param.min=min(p1.x,p2.x);
+		g->param.max=max(p1.x,p2.x);
+	}
+	else
+	{
+		g->param.min=min(p1.y,p2.y);
+		g->param.max=max(p1.y,p2.y);
+	}
+
+
+	return g;
+}
+
+
+
+/*
+ * up to caller to free the memory
+ */
+polygonGate* rectGate::toPolygon(){
+	polygonGate* res=new polygonGate();
+	//covert param names
+	res->params.push_back(params.at(0).name);//x
+	res->params.push_back(params.at(1).name);//y
+	//convert vertices
+	coordinate lb,lt,rb,rt;//left bottom,left top,right bottom,right top
+	lb.x=params.at(0).min;
+	lb.y=params.at(1).min;
+
+	lt.x=params.at(0).min;
+	lt.y=params.at(1).max;
+
+	rb.x=params.at(0).max;
+	rb.y=params.at(1).min;
+
+	rt.x=params.at(0).max;
+	rt.y=params.at(1).max;
+
+	res->vertices.push_back(lb);
+	res->vertices.push_back(lt);
+	res->vertices.push_back(rb);
+	res->vertices.push_back(rt);
+
+	return res;
+}
+
+/*
+ * TODO:try within method from boost/geometries forboost.polygon
  *  reimplement c++ version of inPolygon_c
  *  indices are allocated within gating function, so it is up to caller to free it
  *  and now it is freed in destructor of its owner "nodeProperties" object
@@ -84,10 +119,8 @@
 POPINDICES polygonGate::gating(const flowData & fdata){
 
 	//init the indices
-//	ind(fdata.nEvents);
 	POPINDICES ind(fdata.nEvents);
 
-//	inPolygon(fdata.data,vertices,ind);
 	unsigned nEvents=fdata.nEvents;
 	unsigned nChannls=fdata.nChannls;
 	unsigned nVertex=vertices.size();
@@ -118,21 +151,21 @@ POPINDICES polygonGate::gating(const flowData & fdata){
 
 	for(unsigned i=0; i<nEvents; i++)
 	{//iterate over points
-	p1x=vertices.at(0).first;
-	p1y=vertices.at(0).second;
+	p1x=vertices.at(0).x;
+	p1y=vertices.at(0).y;
 	counter=0;
 	for(unsigned j=1; j <= nVertex; j++)
 	{// iterate over vertices
 	  /*p1x,p1y and p2x,p2y are the endpoints of the current vertex*/
 	  if (j == nVertex)
 	  {//the last vertice must "loop around"
-		p2x = vertices.at(0).first;
-		p2y = vertices.at(0).second;
+		p2x = vertices.at(0).x;
+		p2y = vertices.at(0).y;
 	  }
 	  else
 	  {
-		p2x = vertices.at(j).first;
-		p2y = vertices.at(j).second;
+		p2x = vertices.at(j).x;
+		p2y = vertices.at(j).y;
 	  }
 	  /*if horizontal ray is in range of vertex find the x coordinate where
 		ray and vertex intersect*/
@@ -160,44 +193,6 @@ POPINDICES polygonGate::gating(const flowData & fdata){
 	return ind;
 }
 
-/*
- * up to caller to free the memory
- */
-polygonGate* rangegate::toPolygon(){
-
-	throw(domain_error("convertion not valid at this point"));
-	polygonGate* res=new polygonGate();
-//	res->params.push_back(pName)
-
-	return res;
-}
-
-POPINDICES rangegate::gating(const flowData & data){
-
-	polygonGate* res=toPolygon();
-	POPINDICES ind= res->gating(data);
-	delete res;
-	return ind;
-
-}
-/*
- * up to caller to free the memory
- */
-polygonGate* rectGate::toPolygon(){
-	polygonGate* res=new polygonGate();
-	//covert param names
-	res->params.push_back(params.at(0).name);//x
-	res->params.push_back(params.at(1).name);//y
-	//convert vertices
-	res->vertices.push_back(coordinate(params.at(0).min,params.at(1).min));//x1,y1
-	res->vertices.push_back(coordinate(params.at(0).max,params.at(1).max));//x2,y2
-
-	res->vertices.push_back(coordinate(params.at(0).max,params.at(1).min));//x2,y1
-	res->vertices.push_back(coordinate(params.at(0).min,params.at(1).max));//x1,y2
-
-	return res;
-}
-
 POPINDICES rectGate::gating(const flowData & data){
 
 	polygonGate* res=toPolygon();
@@ -206,21 +201,80 @@ POPINDICES rectGate::gating(const flowData & data){
 	return ind;
 }
 
-/*
- * up to caller to free the memory
- */
-polygonGate * ellipseGate::toPolygon(){
+POPINDICES rangegate::gating(const flowData & fdata){
 
-	//gating
+	//init the indices
+	POPINDICES ind(fdata.nEvents);
 
-	polygonGate* res=new polygonGate();
-	return res;
+	unsigned nEvents=fdata.nEvents;
+	unsigned nChannls=fdata.nChannls;
+	//	unsigned nVertex=vertices.size();
+
+
+	/*
+	 * calculate the positions of this gate parameters
+	 */
+	vector<string> channels=fdata.params;
+	vector<string>::iterator it1,it2;
+	it1=channels.begin();
+	it2=channels.end();
+	unsigned paramInd=find(it1,it2,param.name)-it1;
+
+
+	/*
+	 *only get the data arrays of these two parameters
+	 */
+	valarray<float> data(fdata.data,nEvents*nChannls);
+	valarray<float> data_1d=data[slice(paramInd,nEvents,1)];
+
+
+	/*
+	 * actual gating
+	 */
+	for(unsigned i=0;i<nEvents;i++)
+	{
+		ind[i]=data_1d[i]<=param.max&&data_1d[i]>=param.min;
+	}
+	return ind;
+
 }
+POPINDICES ellipseGate::gating(const flowData & fdata){
 
-POPINDICES ellipseGate::gating(const flowData & data){
-	polygonGate* res=toPolygon();
-	POPINDICES ind= res->gating(data);
-	delete res;
+	//init the indices
+	POPINDICES ind(fdata.nEvents);
+
+	unsigned nEvents=fdata.nEvents;
+	unsigned nChannls=fdata.nChannls;
+//	unsigned nVertex=vertices.size();
+
+
+	/*
+	 * calculate the positions of this gate parameters
+	 */
+	string xParam=params.at(0);
+	string yParam=params.at(1);
+	vector<string> channels=fdata.params;
+	vector<string>::iterator it1,it2;
+	it1=channels.begin();
+	it2=channels.end();
+	unsigned xParamInd=find(it1,it2,xParam)-it1;
+	unsigned yParamInd=find(it1,it2,yParam)-it1;
+
+	/*
+	 *only get the data arrays of these two parameters
+	 */
+	valarray<float> data(fdata.data,nEvents*nChannls);
+	valarray<float> xdata=data[slice(xParamInd,nEvents,1)];
+	valarray<float> ydata=data[slice(yParamInd,nEvents,1)];
+
+	/*
+	 * actual gating,using
+	 */
+	for(unsigned i=0;i<nEvents;i++)
+	{
+		float distance=pow(xdata[i]-center.x,2)/pow(a,2)+pow(ydata[i]-center.y,2)/pow(b,2);
+		ind[i]=distance<=1;
+	}
 	return ind;
 }
 

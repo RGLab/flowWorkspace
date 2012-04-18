@@ -144,17 +144,10 @@ void test(string xml){
 		 * plot gating hierarchy tree
 		 */
 
-		gh->drawGraph("../output/test.dot");
-		system("dot2gxl ../output/test.dot -o ../output/test.gxl");
+//		gh->drawGraph("../output/test.dot");
+//		system("dot2gxl ../output/test.dot -o ../output/test.gxl");
 		//	return("test.gxl");
 
-		//construct GatingHierarchy without associate it with sample
-	//	GatingHierarchy gh;
-	//	gh.gating();
-	//	gh.gating();
-		//construct GatingSet that holds GatingHierarchy for each individual sample and gate it afterwards
-
-		//
 
 }
 

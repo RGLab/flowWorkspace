@@ -57,10 +57,14 @@ public:
 class wsEllipseGateNode:public wsNode{
 public:
 	wsEllipseGateNode(xmlNodePtr node){thisNode=node;};
-//	wsPopNode(){};
 };
 
-//typedef vector<wsNode> wsNodeSet;
+class wsRangeGateNode:public wsNode{
+public:
+	wsRangeGateNode(xmlNodePtr node){thisNode=node;};
+};
+
+
 typedef vector<wsPopNode> wsPopNodeSet;
 
 

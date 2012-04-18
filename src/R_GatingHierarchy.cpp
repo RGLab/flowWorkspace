@@ -141,8 +141,8 @@ BEGIN_RCPP
 	vector<float> x,y;
 	for(vector<coordinate>::iterator it=vert.begin();it!=vert.end();it++)
 	{
-		x.push_back(it->first);
-		y.push_back(it->second);
+		x.push_back(it->x);
+		y.push_back(it->y);
 	}
 
 	 List ret=List::create(Named("parameters",g1->getParam())

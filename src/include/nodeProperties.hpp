@@ -20,12 +20,13 @@ typedef map<string,double> POPSTATS;
  *so all its constructor and desctuctor functions should be private
  */
 class nodeProperties{
+
 public:
 	string thisName;
 	gate * thisGate;
 	POPINDICES indices;
-
 	POPSTATS fjStats,fcStats;
+	bool dMode;
 public:
 	nodeProperties();
 	~nodeProperties();//since gate is dynamically created,needs to be freed here in destroy method

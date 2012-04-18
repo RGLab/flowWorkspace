@@ -26,10 +26,12 @@ GatingHierarchy::~GatingHierarchy()
 
 
 	VertexID_vec vertices=getVertices(false);
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+		cout<<"free the node properties from tree"<<endl;
 	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
-
-		cout<<"free the node properties from tree"<<endl;
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"free "<<tree[*it]->getName()<<endl;
 		delete tree[*it];//free the property bundle
 //			cout<<"free the indices"<<endl;
 	}
@@ -38,7 +40,8 @@ GatingHierarchy::~GatingHierarchy()
 
 	if(isLoaded)
 	{
-		cout<<"free the fdata"<<endl;
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"free the flow data"<<endl;
 		delete fdata.data;
 	}
 
@@ -111,7 +114,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
 			nodeProperties *curChild=thisWs->to_popNode(curChildNode,isParseGate);
-			if(dMode>=2)
+			if(dMode>=POPULATION_LEVEL)
 				cout<<"node created:"<<curChild->getName()<<endl;
 			//attach the populationNode to the boost node as property
 			tree[curChildID]=curChild;
