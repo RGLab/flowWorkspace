@@ -22,7 +22,7 @@ public:
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
      nodeProperties * to_popNode(wsRootNode &);
-     nodeProperties * to_popNode(wsPopNode &,bool isGating);
+     nodeProperties * to_popNode(wsPopNode &,bool isParseGate);
      string getSampleName(wsSampleNode &);
 //     virtual string xPathSample(string sampleID)=0;
 
@@ -37,6 +37,7 @@ public:
 	  gate * getGate(wsPopNode &);
 	  gate * getGate(wsPolyGateNode &);
 	  gate * getGate(wsRectGateNode &);
+	  gate * getGate(wsEllipseGateNode &);
 };
 
 
@@ -47,6 +48,9 @@ public:
 	void getTransformation(){};
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);
+	gate * getGate(wsPolyGateNode &);
+	gate * getGate(wsRectGateNode &);
+	gate * getGate(wsEllipseGateNode &);
 };
 
 

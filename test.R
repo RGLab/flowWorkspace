@@ -1,6 +1,7 @@
 #unloadNamespace("flowWorkspace")
 library(flowWorkspace)
 library(Rgraphviz)
+library(ncdfFlow)
 dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 #source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
@@ -59,6 +60,12 @@ G_list<-flowWorkspace:::splitGatingSetByNgates(G)
 
 lapply(G_list,getPopStats,flowJo=T)
 
+###gating
+getData(G[[1]],2)
+getGate(G[[1]],2)
+plotGate(G[[1]],2)
+
+
 
 #############################################
 #QUALIFIER
@@ -74,11 +81,20 @@ getQAStats(db,isFlowCore=F)
 
 ws<-openWorkspace(macXML)
 time1<-Sys.time()
-G1<-parseWorkspace(ws,name=1,execute=F,requiregates=F
-#					,subset=c(1:2)
+G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
+#					,isNcdf=T
+					,subset=c(1:2)
 					,useInternal=F,dMode=2)
 Sys.time()-time1
 G1
+
+##generate file for c++ debugging
+nc1<-ncFlowSet(G1)
+nc1[[1]]
+nc2<-clone.ncdfFlowSet(nc1,fileName="output/test.nc",isEmpty=FALSE)
+nc2[[1]]
+write(file="output/colnames.txt",colnames(nc1))
+
 length(G1)
 gh1<-G1[[1]]
 gh1
@@ -97,6 +113,10 @@ plot(gh1)
 pData(G1)<-data.frame(sample=getSamples(G1))
 splitGatingSetByNgates(G1)
 
+###gating
+getData(G1[[1]],2)
+str(getGate(G1[[1]],2))
+plotGate(G1[[1]],5)
 
 ##############
 #verify stats

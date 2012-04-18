@@ -67,10 +67,11 @@ class GatingHierarchy{
 //	transformation trans;
 //	compensation comp;
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
-	flowData data;
+	flowData fdata;
 	string sampleName;
 	populationTree tree;
 	bool isGated;
+	bool isLoaded;
 	/*
 	 * this field is for the easy query by node name
 	 * since boost does not provide this query feature explicitly,

@@ -23,9 +23,16 @@ flowData::flowData(float* mat,unsigned _nEvents,unsigned _nChannls){
 //	nRow=nEvents;
 //	nCol=nChannls;
 //}
+/*
+ * this object simply serves as a wrapper to hold dimension info, it is up to caller to free raw data that is pointed by this flowData object,
+ */
 flowData::~flowData(){
-	if(data!=NULL)
-		delete data;
+//	if(data!=NULL)
+//	{
+//		delete data;
+//		cout<<"free flowData"<<endl;
+//	}
+
 }
 void flowData::params_set(vector<string> _params){
 	if(_params.size()!=nChannls)

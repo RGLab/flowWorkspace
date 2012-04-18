@@ -81,11 +81,11 @@
  *  and now it is freed in destructor of its owner "nodeProperties" object
  */
 
-void polygonGate::gating(const flowData & fdata,POPINDICES * ind){
+POPINDICES polygonGate::gating(const flowData & fdata){
 
 	//init the indices
 //	ind(fdata.nEvents);
-	ind=new POPINDICES(fdata.nEvents);
+	POPINDICES ind(fdata.nEvents);
 
 //	inPolygon(fdata.data,vertices,ind);
 	unsigned nEvents=fdata.nEvents;
@@ -154,29 +154,73 @@ void polygonGate::gating(const flowData & fdata,POPINDICES * ind){
 	}
 	/*uneven number of vertices passed means "in"*/
 
-	(*ind)[i]=((counter % 2) != 0);
+	ind[i]=((counter % 2) != 0);
 
 	}
-
+	return ind;
 }
 
+/*
+ * up to caller to free the memory
+ */
+polygonGate* rangegate::toPolygon(){
 
-void rangegate::gating(const flowData & data,POPINDICES * ind){
+	throw(domain_error("convertion not valid at this point"));
+	polygonGate* res=new polygonGate();
+//	res->params.push_back(pName)
+
+	return res;
+}
+
+POPINDICES rangegate::gating(const flowData & data){
+
+	polygonGate* res=toPolygon();
+	POPINDICES ind= res->gating(data);
+	delete res;
+	return ind;
+
+}
+/*
+ * up to caller to free the memory
+ */
+polygonGate* rectGate::toPolygon(){
+	polygonGate* res=new polygonGate();
+	//covert param names
+	res->params.push_back(params.at(0).name);//x
+	res->params.push_back(params.at(1).name);//y
+	//convert vertices
+	res->vertices.push_back(coordinate(params.at(0).min,params.at(1).min));//x1,y1
+	res->vertices.push_back(coordinate(params.at(0).max,params.at(1).max));//x2,y2
+
+	res->vertices.push_back(coordinate(params.at(0).max,params.at(1).min));//x2,y1
+	res->vertices.push_back(coordinate(params.at(0).min,params.at(1).max));//x1,y2
+
+	return res;
+}
+
+POPINDICES rectGate::gating(const flowData & data){
+
+	polygonGate* res=toPolygon();
+	POPINDICES ind= res->gating(data);
+	delete res;
+	return ind;
+}
+
+/*
+ * up to caller to free the memory
+ */
+polygonGate * ellipseGate::toPolygon(){
 
 	//gating
 
-	POPINDICES res(data.nEvents);
+	polygonGate* res=new polygonGate();
+	return res;
 }
-void rectGate::gating(const flowData & data,POPINDICES * ind){
 
-	//gating
-
-	POPINDICES res(data.nEvents);
-}
-void ellipseGate::gating(const flowData & data,POPINDICES * ind){
-
-	//gating
-
-	POPINDICES res(data.nEvents);
+POPINDICES ellipseGate::gating(const flowData & data){
+	polygonGate* res=toPolygon();
+	POPINDICES ind= res->gating(data);
+	delete res;
+	return ind;
 }
 

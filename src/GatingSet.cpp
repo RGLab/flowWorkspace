@@ -90,14 +90,14 @@ GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 		 dMode=_dMode;
 }
 
-void GatingSet::parseWorkspace(unsigned short groupID,bool isGating)
+void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)
 {
 	//first get all the sample IDs for given groupID
 	vector<string> sampleID=ws->getSampleID(groupID);
-	parseWorkspace(sampleID,isGating);
+	parseWorkspace(sampleID,isParseGate);
 
 }
-void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isGating)
+void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 {
 
 	//contruct gating hiearchy for each sampleID
@@ -108,7 +108,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isGating)
 			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isGating,&nc,dMode);
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,dMode);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 

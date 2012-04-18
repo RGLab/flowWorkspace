@@ -15,6 +15,10 @@
  */
 #include "include/R_GatingHierarchy.hpp"
 #include "include/R_GatingSet.hpp"
+#include <stdexcept>
+#include "include/gate.hpp"
+using namespace std;
+
 /*
  * only expose gating set pointer to R to avoid gc() by R
  */
@@ -115,3 +119,51 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_getGate(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+BEGIN_RCPP
+
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	int u=as<int>(_i);
+
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	gate *g=gh->getNodeProperty(u)->getGate();
+	gate *g1;
+	if(g->getType()>0)
+		g1=g->toPolygon();
+	else
+		g1=g;
+
+
+
+	vector<coordinate> vert=g1->getVertices();
+	vector<float> x,y;
+	for(vector<coordinate>::iterator it=vert.begin();it!=vert.end();it++)
+	{
+		x.push_back(it->first);
+		y.push_back(it->second);
+	}
+
+	 List ret=List::create(Named("parameters",g1->getParam())
+			 	 	 	 	 ,Named("x",x),Named("y",y)
+			 	 	 	 	 );
+
+	if(g->getType()>0)
+		delete g1;
+	return ret;
+END_RCPP
+}
+
+RcppExport SEXP R_getIndices(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+BEGIN_RCPP
+
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	int u=as<int>(_i);
+
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	return wrap(gh->getNodeProperty(u)->indices);
+
+END_RCPP
+}

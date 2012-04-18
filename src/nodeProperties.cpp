@@ -8,15 +8,15 @@
 
 nodeProperties::nodeProperties(){
 	thisGate=NULL;
-	indices=NULL;
+//	indices=NULL;
 }
 
 nodeProperties::~nodeProperties(){
 	cout<<"free resources of node:"<<this->thisName<<endl;
 	if(thisGate!=NULL)
 		delete thisGate;
-	if(indices!=NULL)
-		delete indices;
+//	if(indices!=NULL)
+//		delete indices;
 }
 
 

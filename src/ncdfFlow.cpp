@@ -96,11 +96,11 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 
 	unsigned nChannels= dataFile.get_dim("channel")->size();
 
-	unsigned int nSize=nRow*nChannels;
+	unsigned int nSize=nChannels*nRow;
 	float * mat=new float[nSize];
 	data->set_cur(sampleID,0,0);
 
-	data->get(mat,nSize);
+	data->get(mat,1,nChannels,nRow);
 	flowData res(mat,nRow,nChannels);
 	res.params_set(params);
 

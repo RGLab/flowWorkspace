@@ -7,6 +7,7 @@
 //============================================================================
 
 #include <iostream>
+#include <fstream>
 #include <string>
 
 #include "include/flowJoWorkspace.hpp"
@@ -23,12 +24,12 @@ using namespace std;
 void test(string xml){
 
 		//create gating set object
-		GatingSet gs(xml,4);
+		GatingSet gs(xml,0);
 
 		//parse a particular sample group
 		unsigned short groupID=0;
 		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
-		gs.parseWorkspace(groupID,false);
+		gs.parseWorkspace(groupID,true);
 
 		//parse a set of sampleIDs
 //		vector<string> sampleIDs;
@@ -63,13 +64,16 @@ void test(string xml){
 		 * and get stats from each node
 		 */
 
-		cout<<endl<<"node list in regular order and stats:"<<endl;
+		cout<<endl<<"node list in regular order and stats,gate"<<endl;
 		vertices=gh->getVertices(false);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
 			nodeProperties *node=gh->getNodeProperty(*it);
 			cout<<*it<<"."<<node->getName()<<":";
 			cout<<node->getStats(false)["count"]<<endl;
+			gate * g=node->getGate();
+			if(g!=NULL)
+				cout<<g->getName()<<endl;
 		}
 
 		/*
@@ -118,11 +122,23 @@ void test(string xml){
 		/*
 		 * do the gating after the parsing
 		 */
-		string ncFile="";
+		string ncFile="/home/wjiang2/rglab/workspace/flowWorkspace/output/test.cdf";
+		//read colnames from text
 		vector<string> params;
+
+		std::ifstream myfile;
+		myfile.open("../output/colnames.txt",ifstream::in);
+		vector<string> myLines;
+		string line;
+		while (std::getline(myfile, line))
+		{
+			params.push_back(line);
+		}
+
+		myfile.close();
 		gs.attachData(ncFile,params);
-		gh->getData(0);
-		gh->gating()
+
+		gh->gating();
 
 		/*
 		 * plot gating hierarchy tree
@@ -169,7 +185,7 @@ int main(void) {
 	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
 	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
-	test(fileNames.at(2));
+	test(fileNames.at(0));
 //	Rcpp_test(fileNames.at(WIN));
 
 

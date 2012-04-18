@@ -8,6 +8,7 @@
 #ifndef FLOWDATA_HPP_
 #define FLOWDATA_HPP_
 #include <vector>
+#include <iostream>
 #include <string>
 #include <stdexcept>
 using namespace std;
@@ -15,6 +16,8 @@ typedef vector<bool> POPINDICES;
 
 /*
  * define 2-D matrix class out of valarray to represent channel*events data matrix from one FCS
+ * Note that the destructor of this class does not free the data,it is up to caller to release the resource for this class
+ * once finish using it
  */
 
 //template <float * INITVAL,unsigned CHANNELS,unsigned EVENTS>

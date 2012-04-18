@@ -191,9 +191,7 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 			m
 		})
 
-setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
-		
-		})
+
 setMethod("execute",signature(hierarchy="GatingHierarchyInternal"),function(hierarchy,cleanup=FALSE,keep.indices=TRUE,isNcdf=FALSE,ncfs=NULL,dataEnvironment=NULL,...){
 			##Conditional compilation for HAVE_NETCDF
 			if(isNcdf&!TRUE){
@@ -341,7 +339,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchyInternal"),function(hier
 			rm(data);
 			#gc(reset=TRUE)
 			nodeDataDefaults(x,"data")<-e;
-			.call("gating",hierarchy@pointer,getSample(hierarchy))
+			.call("R_gating",hierarchy@pointer,getSample(hierarchy))
 			#Nodes to parse later
 #			skipforlater<-list();
 #			lastparent<-nlist[1];
@@ -419,43 +417,21 @@ setMethod("execute",signature(hierarchy="GatingHierarchyInternal"),function(hier
 			
 #			hierarchy
 		})
-#setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
-#			x<-getPopStats(x)
-#			cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));
-#			cv<-as.matrix(cv,nrow=length(cv))
-#			cv[is.nan(cv)]<-0
-#			rownames(cv)<-basename(as.character(rownames(x)));
-#			return(barchart(cv,xlab="Coefficient of Variation",...));
-#		})
-#
-#setMethod("plotPopCV","GatingSet",function(x,...){
-##columns are populations
-##rows are samples
-#			cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
-#			rownames(cv)<-getSamples(x);#Name the rows
-##flatten, generate levels for samples.
-#			nr<-nrow(cv)
-#			nc<-ncol(cv)
-#			populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
-#			samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
-#			cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-#			return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...))));
-#		})
-#setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
-#			if(.isBooleanGate.graphNEL(obj,y)){
-#				g<-get("gate",envir=nodeData(obj@tree,y,"metadata")[[1]])[[1]];
-#				return(g)
-#			}else{
-#				return(get("gate",envir=nodeData(obj@tree,y,"metadata")[[1]]))
-#			}
-#		})
-##return gate y for a given hierarchy (by index)
-#setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
-#			n<-getNodes(obj,tsort=tsort)[y]
-#			if(flowWorkspace:::.isBooleanGate.graphNEL(obj,n)){
-#				g<-get("gate",envir=nodeData(obj@tree,n,"metadata")[[1]])[[1]]
-#				return(g);
-#			}else{
-#				return(get("gate",envir=nodeData(obj@tree,n,"metadata")[[1]]))
-#			}
-#		})
+		
+setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+			ind<-which(getNodes(obj)%in%y)
+			getGate(obj,ind)			
+			
+		})
+		#return gate y for a given hierarchy (by index)
+setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
+			.call("R_getGate",hierarchy@pointer,getSample(hierarchy),y-1)
+		})
+
+setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+			ind<-which(getNodes(obj)%in%y)
+			.call("R_getIndices",hierarchy@pointer,getSample(hierarchy),ind-1)
+			
+		})
+	
+

@@ -24,6 +24,7 @@ GatingHierarchy::~GatingHierarchy()
 {
 	//for each node
 
+
 	VertexID_vec vertices=getVertices(false);
 	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
@@ -35,11 +36,11 @@ GatingHierarchy::~GatingHierarchy()
 
 
 
-//	if(data!=NULL)
-//	{
-//		cout<<"free the data object"<<endl;
-//		delete data;
-//	}
+	if(isLoaded)
+	{
+		cout<<"free the fdata"<<endl;
+		delete fdata.data;
+	}
 
 
 
@@ -65,7 +66,7 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow * _nc,unsigned short _dMode)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,unsigned short _dMode)
 {
 //	data=NULL;
 	dMode=_dMode;
@@ -74,9 +75,9 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
 //	wsRootNode popNode=root;//getPopulation();
-	addPopulation(pVerID,&root,isGating);
-	if(isGating)
-		gating();
+	addPopulation(pVerID,&root,isParseGate);
+//	if(isParseGate)
+//		gating();
 
 }
 /*
@@ -97,7 +98,7 @@ VertexID GatingHierarchy::addRoot(nodeProperties* rootNode)
 /*
  * recursively append the populations to the tree
  */
-void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool isGating)
+void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool isParseGate)
 {
 
 
@@ -109,7 +110,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 			VertexID curChildID = boost::add_vertex(tree);
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
-			nodeProperties *curChild=thisWs->to_popNode(curChildNode,isGating);
+			nodeProperties *curChild=thisWs->to_popNode(curChildNode,isParseGate);
 			if(dMode>=2)
 				cout<<"node created:"<<curChild->getName()<<endl;
 			//attach the populationNode to the boost node as property
@@ -119,7 +120,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 			//update the node map for the easy query by pop name
 //			nodelist[curChild.getName()]=curChildID;
 			//recursively add its descendants
-			addPopulation(curChildID,&curChildNode,isGating);
+			addPopulation(curChildID,&curChildNode,isParseGate);
 		}
 
 
@@ -148,6 +149,7 @@ void GatingHierarchy::addGate(gate& g,string popName)
 /*
  * subset operation is done within R,so there is no need for this member function
  * to apply subsetting within c++ thus avoid unnecessary numeric operation in c++
+ * Note: need to manually free memory pointed by flowData
  */
 
 flowData GatingHierarchy::getData(VertexID nodeID)
@@ -168,28 +170,36 @@ flowData GatingHierarchy::getData(VertexID nodeID)
 }
 /*
  * load data from ncdfFlow file
+ * TODO:the memory for flowData was actually allocated by getData function, it may be safer to set flag within getData in future when
+ * we decide to keep getData seperate from loadData
  */
 void GatingHierarchy::loadData()
 {
 
-	data=getData(0);
+	fdata=getData(0);
+	isLoaded=true;
+
+
 }
 
 void GatingHierarchy::gating()
 {
 	cout <<"start gating..."<<endl;
 	//read data once for all nodes
-	if(data.data==NULL)
+	if(!isLoaded)
 		loadData();
 	VertexID_vec vertices=getVertices(true);
 
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
+		if(u==0)continue;//skip root node
 		nodeProperties * node=getNodeProperty(u);
 		cout <<"gating on:"<<node->getName()<<endl;
 		gate *g=node->getGate();
-		g->gating(data,node->indices);
+		if(g==NULL)
+			throw(domain_error("no gate available for this node"));
+		node->indices=g->gating(fdata);
 	}
 
 	cout <<"finish gating..."<<endl;

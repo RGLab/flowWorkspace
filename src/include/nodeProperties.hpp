@@ -23,7 +23,7 @@ class nodeProperties{
 public:
 	string thisName;
 	gate * thisGate;
-	POPINDICES *indices;
+	POPINDICES indices;
 
 	POPSTATS fjStats,fcStats;
 public:
