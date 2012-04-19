@@ -38,7 +38,7 @@ public:
 	string getName();
 	void setName(const char * popName);
 	void setGate(gate *gate);
-	void computeStats();
+	void computeStats(bool);
 
 
 };

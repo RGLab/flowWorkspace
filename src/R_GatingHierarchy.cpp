@@ -140,7 +140,7 @@ BEGIN_RCPP
 		case POLYGONGATE:
 			{
 				vector<coordinate> vert=g->getVertices();
-				vector<float> x,y;
+				vector<double> x,y;
 				for(vector<coordinate>::iterator it=vert.begin();it!=vert.end();it++)
 				{
 					x.push_back(it->x);

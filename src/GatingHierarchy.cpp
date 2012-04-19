@@ -217,15 +217,20 @@ void GatingHierarchy::gating()
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
-		if(u==0)continue;//skip root node
 		nodeProperties * node=getNodeProperty(u);
+		if(u==0)
+		{
+			node->computeStats(true);
+			continue;//skip gating for root node
+		}
+
 		if(dMode>=POPULATION_LEVEL)
 			cout <<"gating on:"<<node->getName()<<endl;
 		gate *g=node->getGate();
 		if(g==NULL)
 			throw(domain_error("no gate available for this node"));
 		node->indices=g->gating(fdata);
-		node->computeStats();
+		node->computeStats(false);
 	}
 
 	if(dMode>=GATING_HIERARCHY_LEVEL)

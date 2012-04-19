@@ -8,7 +8,8 @@
 #ifndef NCDFFLOW_HPP_
 #define NCDFFLOW_HPP_
 #include <string>
-#include <netcdfcpp.h>
+//#include <netcdfcpp.h>
+#include <netcdf.h>
 #include "flowData.hpp"
 using namespace std;
 

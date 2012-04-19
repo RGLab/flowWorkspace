@@ -26,10 +26,10 @@ class flowData{
 public:
 //	valarray<float> * data;
 	vector<string> params;
-	float * data;
+	double * data;
 	unsigned nEvents,nChannls;
 	flowData();
-	flowData(float* mat,unsigned _nEvents,unsigned _nChannls);
+	flowData(double* mat,unsigned _nEvents,unsigned _nChannls);
 //	flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls);
 	~flowData();
 //	flowData subset(POPINDICES rows);

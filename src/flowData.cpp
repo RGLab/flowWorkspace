@@ -9,7 +9,7 @@
 
 flowData::flowData(){};
 
-flowData::flowData(float* mat,unsigned _nEvents,unsigned _nChannls){
+flowData::flowData(double* mat,unsigned _nEvents,unsigned _nChannls){
 
 //	data=new valarray<float>(mat,nEvents*nChannls);
 	data=mat;

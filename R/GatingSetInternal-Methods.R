@@ -18,6 +18,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	if(execute)
 	{
 		files<-file.path(path,samples)
+#		browser()
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId))
@@ -40,7 +41,10 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			}
 			,USE.NAMES=TRUE)
 	if(execute)
-		lapply(G,function(hierarchy).Call("R_gating",hierarchy@pointer,getSample(hierarchy)))
+		lapply(G,function(hierarchy){
+#					browser()
+					.Call("R_gating",hierarchy@pointer,getSample(hierarchy))	
+				})
 	
 	
 	G	

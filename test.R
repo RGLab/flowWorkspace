@@ -1,13 +1,17 @@
 #unloadNamespace("flowWorkspace")
+
 library(flowWorkspace)
 library(Rgraphviz)
 library(ncdfFlow)
 #dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
-lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+#lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
+source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples"
 
@@ -24,7 +28,7 @@ time1<-Sys.time()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1:2)
 					,isNcdf=T
-					,useInternal=T,dMode=0)
+					,useInternal=T,dMode=4)
 Sys.time()-time1
 G
 
@@ -48,12 +52,14 @@ getParent(gh,nodelist[2])
 getChildren(gh,nodelist[2])
 getChildren(gh,nodelist[4])
 
-getProp(gh,nodelist[2],flowJo=T)
-getTotal(gh,nodelist[3],flowJo=T)
-getTotal(gh,nodelist[2],flowJo=F)
+getProp(G[[1]],nodelist[2],flowJo=T)
+getTotal(G[[1]],nodelist[3],flowJo=T)
+getTotal(G[[1]],nodelist[2],flowJo=F)
 
-flowWorkspace:::.getPopStat(gh,2)
-head(getPopStats(gh))
+
+.getPopStat(G[[1]],2)
+head(getPopStats(G[[1]]))
+head(getPopStats(G1[[1]]))
 
 
 plot(G[[1]])
@@ -67,10 +73,15 @@ lapply(G_list,getPopStats,flowJo=T)
 ###gating
 getGate(G[[1]],2)
 length(which(getIndices(G[[1]],nodelist[2])))
-getData(G[[1]],2)
-plotGate(G[[1]],2)
+getData(G[[1]],nodelist[1])
+getDimensions(G[[1]],nodelist[2])
+getBoundaries(G[[1]],nodelist[2])
 
-G[[1]]@dataEnv$fs[[1]]
+pdf()
+plotGate(G[[1]],6)
+plotGate(G1[[1]],6)
+
+
 
 #############################################
 #QUALIFIER

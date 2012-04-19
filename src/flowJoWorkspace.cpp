@@ -229,10 +229,10 @@ gate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 //				rangegate rGate;
 				pRange r1;
 				string sMin=curPNode.getProperty("min");
-				r1.min=sMin.empty()?numeric_limits<float>::min():atof(sMin.c_str());
+				r1.min=sMin.empty()?numeric_limits<double>::min():atof(sMin.c_str());
 
 				string sMax=curPNode.getProperty("max");
-				r1.max=sMax.empty()?numeric_limits<float>::max():atof(sMax.c_str());
+				r1.max=sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str());
 
 				//get parameter name from the children node
 				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");

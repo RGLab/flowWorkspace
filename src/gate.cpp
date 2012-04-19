@@ -35,7 +35,7 @@ gate * polygonGate::toEllipseGate(){
 		{
 			coordinate p1=vertices.at(i);
 			coordinate p2=vertices.at(j);
-			float dist=sqrt(pow(p1.x-p2.x,2)+pow(p1.y-p2.y,2))/2;
+			double dist=sqrt(pow(p1.x-p2.x,2)+pow(p1.y-p2.y,2))/2;
 			if(dist>g->a)
 			{
 				//update major axis
@@ -141,13 +141,13 @@ POPINDICES polygonGate::gating(const flowData & fdata){
 	/*
 	 *only get the data arrays of these two parameters
 	 */
-	valarray<float> data(fdata.data,nEvents*nChannls);
-	valarray<float> xdata=data[slice(xParamInd,nEvents,1)];
-	valarray<float> ydata=data[slice(yParamInd,nEvents,1)];
+	valarray<double> data(fdata.data,nEvents*nChannls);
+	valarray<double> xdata=data[slice(xParamInd,nEvents,1)];
+	valarray<double> ydata=data[slice(yParamInd,nEvents,1)];
 
 	unsigned counter;
-	float xinters;
-	float p1x, p2x, p1y, p2y;
+	double xinters;
+	double p1x, p2x, p1y, p2y;
 
 	for(unsigned i=0; i<nEvents; i++)
 	{//iterate over points
@@ -224,8 +224,8 @@ POPINDICES rangegate::gating(const flowData & fdata){
 	/*
 	 *only get the data arrays of these two parameters
 	 */
-	valarray<float> data(fdata.data,nEvents*nChannls);
-	valarray<float> data_1d=data[slice(paramInd,nEvents,1)];
+	valarray<double> data(fdata.data,nEvents*nChannls);
+	valarray<double> data_1d=data[slice(paramInd,nEvents,1)];
 
 
 	/*
@@ -263,16 +263,16 @@ POPINDICES ellipseGate::gating(const flowData & fdata){
 	/*
 	 *only get the data arrays of these two parameters
 	 */
-	valarray<float> data(fdata.data,nEvents*nChannls);
-	valarray<float> xdata=data[slice(xParamInd,nEvents,1)];
-	valarray<float> ydata=data[slice(yParamInd,nEvents,1)];
+	valarray<double> data(fdata.data,nEvents*nChannls);
+	valarray<double> xdata=data[slice(xParamInd,nEvents,1)];
+	valarray<double> ydata=data[slice(yParamInd,nEvents,1)];
 
 	/*
 	 * actual gating,using
 	 */
 	for(unsigned i=0;i<nEvents;i++)
 	{
-		float distance=pow(xdata[i]-center.x,2)/pow(a,2)+pow(ydata[i]-center.y,2)/pow(b,2);
+		double distance=pow(xdata[i]-center.x,2)/pow(a,2)+pow(ydata[i]-center.y,2)/pow(b,2);
 		ind[i]=distance<=1;
 	}
 	return ind;
