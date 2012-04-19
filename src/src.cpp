@@ -24,7 +24,7 @@ using namespace std;
 void test(string xml){
 
 		//create gating set object
-		GatingSet gs(xml,0);
+		GatingSet gs(xml,2);
 
 		//parse a particular sample group
 		unsigned short groupID=0;
@@ -139,6 +139,20 @@ void test(string xml){
 		gs.attachData(ncFile,params);
 
 		gh->gating();
+
+
+		cout<<endl<<"print out indices after gating"<<endl;
+		vertices=gh->getVertices(false);
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			nodeProperties *node=gh->getNodeProperty(*it);
+			cout<<*it<<"."<<node->getName()<<":";
+			cout<<"flowjo count:"<<node->getStats(false)["count"]<<endl;
+			cout<<"flowCore count:"<<node->getCounts(true)<<endl;
+			gate * g=node->getGate();
+			if(g!=NULL)
+				cout<<g->getName()<<endl;
+		}
 
 		/*
 		 * plot gating hierarchy tree

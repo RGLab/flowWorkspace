@@ -112,7 +112,6 @@ setMethod("getDataEnv",c("GatingHierarchy"),function(this){
 	nodeDataDefaults(this@tree,"data")[["data"]]
 })
 
-setGeneric("setData",function(this,value)standardGeneric("setData"))
 setMethod("setData",c("GatingHierarchy","flowSet"),function(this,value){
 	if(inherits(value,"ncdfFlowSet")){
 		assign("ncfs",value,nodeDataDefaults(this@tree,"data")[["data"]])

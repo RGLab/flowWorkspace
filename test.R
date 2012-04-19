@@ -20,9 +20,10 @@ winXML<-file.path(path,winXML)
 ###############################################################################
 ws<-openWorkspace(macXML[1])
 time1<-Sys.time()
-G<-parseWorkspace(ws,name=1,execute=F,requiregates=F
-#					,subset=c(1:2)
-					,useInternal=T,dMode=0)
+G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
+					,subset=c(1:2)
+					,isNcdf=T
+					,useInternal=T,dMode=2)
 Sys.time()-time1
 G
 
@@ -52,7 +53,7 @@ flowWorkspace:::.getPopStat(gh,2)
 head(getPopStats(gh))
 
 
-plot(G[[2]])
+plot(G[[1]])
 
 
 pData(G)<-data.frame(sample=getSamples(G))
@@ -61,8 +62,9 @@ G_list<-flowWorkspace:::splitGatingSetByNgates(G)
 lapply(G_list,getPopStats,flowJo=T)
 
 ###gating
-getData(G[[1]],2)
 getGate(G[[1]],2)
+getIndices(G[[1]],getNodes(gh)[3])
+getData(G[[1]],2)
 plotGate(G[[1]],2)
 
 

@@ -33,7 +33,7 @@ public:
 //	valarray<bool> * getIndice(){return(this->thisIndice);};
 
 	POPSTATS getStats(bool);
-
+	unsigned getCounts(bool);
 	gate * getGate();
 	string getName();
 	void setName(const char * popName);

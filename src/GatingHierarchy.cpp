@@ -53,6 +53,7 @@ GatingHierarchy::~GatingHierarchy()
 GatingHierarchy::GatingHierarchy()
 {
 	dMode=1;
+	isLoaded=false;
 }
 //constructor for sampleNode argument
 //GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)
@@ -73,6 +74,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 {
 //	data=NULL;
 	dMode=_dMode;
+	isLoaded=false;
 	thisWs=ws;
 	nc=_nc;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
@@ -178,19 +180,38 @@ flowData GatingHierarchy::getData(VertexID nodeID)
  */
 void GatingHierarchy::loadData()
 {
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout <<"loading raw data.."<<endl;
+	if(!isLoaded)
+	{
+		fdata=getData(0);
+		isLoaded=true;
+	}
 
-	fdata=getData(0);
-	isLoaded=true;
 
 
 }
+void GatingHierarchy::unloadData()
+{
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout <<"unloading raw data.."<<endl;
+	if(isLoaded)
+	{
+		delete fdata.data;
+		isLoaded=false;
+	}
 
+
+
+}
 void GatingHierarchy::gating()
 {
-	cout <<"start gating..."<<endl;
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+		cout <<"start gating:"<<this->sampleName<<endl;
 	//read data once for all nodes
-	if(!isLoaded)
-		loadData();
+
+	loadData();
+
 	VertexID_vec vertices=getVertices(true);
 
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
@@ -198,14 +219,19 @@ void GatingHierarchy::gating()
 		VertexID u=*it;
 		if(u==0)continue;//skip root node
 		nodeProperties * node=getNodeProperty(u);
-		cout <<"gating on:"<<node->getName()<<endl;
+		if(dMode>=POPULATION_LEVEL)
+			cout <<"gating on:"<<node->getName()<<endl;
 		gate *g=node->getGate();
 		if(g==NULL)
 			throw(domain_error("no gate available for this node"));
 		node->indices=g->gating(fdata);
 	}
 
-	cout <<"finish gating..."<<endl;
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+		cout <<"finish gating!"<<endl;
+
+	unloadData();
+
 }
 
 

@@ -118,4 +118,5 @@ setGeneric("exportAsFlowJoXML", function(obj, ...){
 	standardGeneric("exportAsFlowJoXML")
 })
 
+setGeneric("setData",function(this,value)standardGeneric("setData"))
 

@@ -28,25 +28,25 @@ gate * polygonGate::toEllipseGate(){
 	 *  by finding min and max distance among four points
 	 */
 
-	float a=numeric_limits<int>::min();//init major axis
-	float b=numeric_limits<int>::max();//init minor axis
+	g->a=numeric_limits<int>::min();//init major axis
+	g->b=numeric_limits<int>::max();//init minor axis
 	for(unsigned i=0;i<4;i++)
 		for(unsigned j=i+1;j<4;j++)
 		{
 			coordinate p1=vertices.at(i);
 			coordinate p2=vertices.at(j);
 			float dist=sqrt(pow(p1.x-p2.x,2)+pow(p1.y-p2.y,2))/2;
-			if(dist>a)
+			if(dist>g->a)
 			{
 				//update major axis
-				a=dist;
+				g->a=dist;
 				//update center point
 				g->center.x=(p1.x+p2.x)/2;
 				g->center.y=(p1.y+p2.y)/2;
 			}
 
-			if(dist<b)
-				b=dist;//update minor axis
+			if(dist<g->b)
+				g->b=dist;//update minor axis
 		}
 
 

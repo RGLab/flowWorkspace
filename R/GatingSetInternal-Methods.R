@@ -26,12 +26,11 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		setData(G,fs)	
 	}
 	G@set<-sapply(samples,function(x){
-#													ghPtr<-.Call("R_getGatingHierarchyS",G@pointer,i)
-#													new("GatingHierarchyInternal",pointer=ghPtr)
 				new("GatingHierarchyInternal",pointer=G@pointer,name=x)
 			}
 			,USE.NAMES=TRUE)
-	
+	if(execute)
+		lapply(G,function(hierarchy).call("R_gating",hierarchy@pointer,getSample(hierarchy)))
 	G	
 }
 setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){

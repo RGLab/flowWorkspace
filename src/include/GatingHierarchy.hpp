@@ -109,7 +109,7 @@ public:
 
 	flowData getData(VertexID nodeID);
 	void loadData();
-//	void gating(gate& g,string popName);
+	void unloadData();
 
 	void gating();
 //	void gating(VertexID);

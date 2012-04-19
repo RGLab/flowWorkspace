@@ -425,12 +425,13 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),funct
 		})
 		#return gate y for a given hierarchy (by index)
 setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
-			.call("R_getGate",hierarchy@pointer,getSample(hierarchy),y-1)
+			.Call("R_getGate",obj@pointer,getSample(obj),y-1)
 		})
 
 setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 			ind<-which(getNodes(obj)%in%y)
-			.call("R_getIndices",hierarchy@pointer,getSample(hierarchy),ind-1)
+			
+			.Call("R_getIndices",obj@pointer,getSample(obj),ind-1)
 			
 		})
 	
