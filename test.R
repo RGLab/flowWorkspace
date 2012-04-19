@@ -4,10 +4,10 @@ library(Rgraphviz)
 library(ncdfFlow)
 #dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
-lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T),source)
-source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
+#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples"
 
@@ -24,7 +24,7 @@ time1<-Sys.time()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1:2)
 					,isNcdf=T
-					,useInternal=T,dMode=2)
+					,useInternal=T,dMode=0)
 Sys.time()-time1
 G
 
@@ -37,18 +37,20 @@ gh<-G[[1]]
 gh
 
 getSample(gh)
-getNodes(gh)
+nodelist<-getNodes(gh)
+nodelist
 getNodes(gh,tsort=T)
 getNodes(gh,isPath=T)
 getParent(gh,3)
-getParent(gh,"2.Lymphocytes")
+getParent(gh,nodelist[2])
 
 
-getChildren(gh,"2.Lymphocytes")
-getChildren(gh,"4.CD4 subset")
+getChildren(gh,nodelist[2])
+getChildren(gh,nodelist[4])
 
-getProp(gh,"2.Lymphocytes",flowJo=T)
-getTotal(gh,"2.Lymphocytes",flowJo=T)
+getProp(gh,nodelist[2],flowJo=T)
+getTotal(gh,nodelist[3],flowJo=T)
+getTotal(gh,nodelist[2],flowJo=F)
 
 flowWorkspace:::.getPopStat(gh,2)
 head(getPopStats(gh))
@@ -64,11 +66,11 @@ lapply(G_list,getPopStats,flowJo=T)
 
 ###gating
 getGate(G[[1]],2)
-getIndices(G[[1]],getNodes(gh)[3])
+length(which(getIndices(G[[1]],nodelist[2])))
 getData(G[[1]],2)
 plotGate(G[[1]],2)
 
-
+G[[1]]@dataEnv$fs[[1]]
 
 #############################################
 #QUALIFIER
@@ -85,7 +87,7 @@ getQAStats(db,isFlowCore=F)
 ws<-openWorkspace(macXML)
 time1<-Sys.time()
 G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
-#					,isNcdf=T
+					,isNcdf=T
 					,subset=c(1:2)
 					,useInternal=F,dMode=2)
 Sys.time()-time1
@@ -118,7 +120,7 @@ splitGatingSetByNgates(G1)
 
 ###gating
 getData(G1[[1]],2)
-str(getGate(G1[[1]],2))
+getGate(G1[[1]],2)
 plotGate(G1[[1]],5)
 
 ##############

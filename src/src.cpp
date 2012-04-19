@@ -148,7 +148,7 @@ void test(string xml){
 			nodeProperties *node=gh->getNodeProperty(*it);
 			cout<<*it<<"."<<node->getName()<<":";
 			cout<<"flowjo count:"<<node->getStats(false)["count"]<<endl;
-			cout<<"flowCore count:"<<node->getCounts(true)<<endl;
+			cout<<"flowCore count:"<<node->getStats(true)["count"]<<endl;
 			gate * g=node->getGate();
 			if(g!=NULL)
 				cout<<g->getName()<<endl;

@@ -12,7 +12,8 @@ setClass("GatingHierarchyInternal",contains="GatingHierarchy"
 				,compensation="matrix"
 				,dataPath="character"
 				,isNcdf="logical"
-				,pointer="externalptr"))
+				,pointer="externalptr"
+				,dataEnv="environment"))
 
 setMethod("initialize","GatingHierarchyInternal"
 		,function(.Object,name="New Sample",flag=FALSE
@@ -21,9 +22,10 @@ setMethod("initialize","GatingHierarchyInternal"
 				,isNcdf=FALSE
 				,fcsfile=NULL
 				,pointer=NULL){
-#			callNextMethod(.Object,tree,nodes,name,flag,transformations,compensation,dataPath,isNcdf)
+			.Object<-callNextMethod(.Object,name=name,flag=flag,transformations=transformations
+			,compensation=compensation,dataPath=dataPath,isNcdf=isNcdf)
+			
 			.Object@pointer=pointer
-			.Object@name<-name
 			return(.Object)
 		})
 

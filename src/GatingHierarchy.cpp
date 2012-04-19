@@ -225,6 +225,7 @@ void GatingHierarchy::gating()
 		if(g==NULL)
 			throw(domain_error("no gate available for this node"));
 		node->indices=g->gating(fdata);
+		node->computeStats();
 	}
 
 	if(dMode>=GATING_HIERARCHY_LEVEL)

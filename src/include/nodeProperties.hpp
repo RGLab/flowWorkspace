@@ -14,7 +14,7 @@
 #include "gate.hpp"
 using namespace std;
 
-typedef map<string,double> POPSTATS;
+typedef map<string,float> POPSTATS;
 /*
  *TODO: this class should exist apart from populationTree object
  *so all its constructor and desctuctor functions should be private
@@ -30,7 +30,7 @@ public:
 public:
 	nodeProperties();
 	~nodeProperties();//since gate is dynamically created,needs to be freed here in destroy method
-//	valarray<bool> * getIndice(){return(this->thisIndice);};
+
 
 	POPSTATS getStats(bool);
 	unsigned getCounts(bool);
@@ -38,7 +38,7 @@ public:
 	string getName();
 	void setName(const char * popName);
 	void setGate(gate *gate);
-//	void setIndice(vector<bool> indice){thisIndice=indice;};
+	void computeStats();
 
 
 };

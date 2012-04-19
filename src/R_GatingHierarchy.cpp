@@ -128,6 +128,10 @@ BEGIN_RCPP
 	int u=as<int>(_i);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	if(u<0)
+		throw(domain_error("not valid vertexID!"));
+	if(u==0)
+		throw(domain_error("no gate associated with root node."));
 	gate *g=gh->getNodeProperty(u)->getGate();
 //	gate *g1;
 
@@ -177,6 +181,7 @@ BEGIN_RCPP
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	int u=as<int>(_i);
+	if(u<0)throw(domain_error("not valid vertexID!"));
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	return wrap(gh->getNodeProperty(u)->indices);

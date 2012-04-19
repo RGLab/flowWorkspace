@@ -28,15 +28,15 @@ POPSTATS nodeProperties::getStats(bool isFlowCore=false){
 	return(isFlowCore?this->fcStats:this->fjStats);
 }
 
-unsigned nodeProperties::getCounts(bool isFlowCore=false){
-	if(isFlowCore)
-	{
-		return count(indices.begin(),indices.end(),true);
-	}
-	else
-		return this->fjStats["count"];
-
-}
+//unsigned nodeProperties::getCounts(bool isFlowCore=false){
+//	if(isFlowCore)
+//	{
+//		return count(indices.begin(),indices.end(),true);
+//	}
+//	else
+//		return this->fjStats["count"];
+//
+//}
 gate * nodeProperties::getGate(){
 	return(this->thisGate);
 }
@@ -51,4 +51,11 @@ void nodeProperties::setName(const char * popName){
 
 void nodeProperties::setGate(gate *gate){
 	thisGate=gate;
+}
+/*
+ * potentially it is step can be done within the same loop in gating
+ * TODO:MFI can be calculated here as well
+ */
+void nodeProperties::computeStats(){
+	fcStats["count"]=count(indices.begin(),indices.end(),true);
 }

@@ -4,6 +4,7 @@
 ###############################################################################
 
 setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
+			#pass the filename and channels to c structure
 			if(inherits(value,"ncdfFlowSet"))
 			{
 				
@@ -23,14 +24,25 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		}else{
 			fs<-read.flowSet(files)
 		}
-		setData(G,fs)	
+		setData(G,fs)
+		#environment for holding fs data,each gh has the same copy of this environment
+		dataEnv<-new.env()
+		assign("fs",fs,dataEnv)	
 	}
+	
 	G@set<-sapply(samples,function(x){
-				new("GatingHierarchyInternal",pointer=G@pointer,name=x)
+				gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=x)
+				
+				setData(gh,fs)
+				gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
+				gh@dataEnv<-dataEnv
+				gh
 			}
 			,USE.NAMES=TRUE)
 	if(execute)
 		lapply(G,function(hierarchy).Call("R_gating",hierarchy@pointer,getSample(hierarchy)))
+	
+	
 	G	
 }
 setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){
