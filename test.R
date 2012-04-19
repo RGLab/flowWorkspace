@@ -2,11 +2,12 @@
 library(flowWorkspace)
 library(Rgraphviz)
 library(ncdfFlow)
-dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
+#dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
-#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T),source)
+source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples"
 

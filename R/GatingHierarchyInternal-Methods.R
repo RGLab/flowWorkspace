@@ -339,7 +339,7 @@ setMethod("execute",signature(hierarchy="GatingHierarchyInternal"),function(hier
 			rm(data);
 			#gc(reset=TRUE)
 			nodeDataDefaults(x,"data")<-e;
-			.call("R_gating",hierarchy@pointer,getSample(hierarchy))
+			.Call("R_gating",hierarchy@pointer,getSample(hierarchy))
 			#Nodes to parse later
 #			skipforlater<-list();
 #			lastparent<-nlist[1];

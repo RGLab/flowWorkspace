@@ -1,4 +1,4 @@
-PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()" ` -lxml2  -lnetcdf_c++
+PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()" ` -lxml2  -lnetcdf_c++ -lnetcdf
 PKG_CPPFLAGS+=-Wno-deprecated -I./include/ `xml2-config --cflags`
 
 #.PHONY: 	all clean userLibrary 
