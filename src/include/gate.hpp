@@ -36,6 +36,9 @@ struct pRange
 	float min, max;
 };
 
+/*
+ * TODO:possibly implement getCentroid,getMajorAxis,getMinorAxis for all gate types
+ */
 class gate {
 public:
 	bool isNegate;
@@ -47,6 +50,9 @@ public:
 	virtual vector<coordinate> getVertices()=0;
 	virtual gate * toEllipseGate()=0;
 	virtual gate * toRangeGate()=0;
+	virtual coordinate  getCentroid()=0;
+	virtual unsigned  getMajorAxis()=0;
+	virtual unsigned  getMinorAxis()=0;
 };
 /*
  * TODO:using #include <boost/multi_array.hpp> instead to make it easier to convert to R data structure hopefully.
@@ -54,9 +60,13 @@ public:
  */
 class polygonGate:public gate {
 	polygonGate* toPolygon(){throw(domain_error("this is already polygonGate!"));};
+	coordinate  getCentroid(){throw(domain_error("not valid operation!"));};
+	unsigned  getMajorAxis(){throw(domain_error("not valid operation!"));};
+	unsigned  getMinorAxis(){throw(domain_error("not valid operation!"));};
 public:
 	vector<string> params;
 	vector<coordinate> vertices;
+public:
 	const char * getName(){return "polygonGate";}
 	unsigned char getType(){return POLYGONGATE;}
 
@@ -71,21 +81,39 @@ class rangegate:public gate {
 	gate * toEllipseGate(){throw(domain_error("not valid operation!"));};
 	gate * toRangeGate(){throw(domain_error("not valid operation!"));};
 	gate * toPolygon(){throw(domain_error("not valid operation!"));};
+	coordinate  getCentroid(){throw(domain_error("not valid operation!"));};
+	unsigned  getMajorAxis(){throw(domain_error("not valid operation!"));};
+	unsigned  getMinorAxis(){throw(domain_error("not valid operation!"));};
 public:
 	pRange param;
+public:
 	const char * getName(){return "rangeGate";}
 	unsigned char getType(){return RANGEGATE;}
 	POPINDICES gating(const flowData &);
-	vector<string> getParam(){throw(domain_error("need to convert to polygon gate before using this function!"));};
-	vector<coordinate> getVertices(){throw(domain_error("need to convert to polygon gate before using this function!"));};
+	vector<string> getParam(){
+		vector<string> res;
+		res.push_back(param.name);
+		return res;
+	};
+	vector<coordinate> getVertices(){
+		vector<coordinate> res;
+		res.push_back(coordinate{param.min,0});
+		res.push_back(coordinate{param.max,0});
+		return res;
+	};
 
 };
 
 class rectGate:public gate {
 	gate * toEllipseGate(){throw(domain_error("not valid operation!"));};
 	gate * toRangeGate(){throw(domain_error("not valid operation!"));};
+	coordinate  getCentroid(){throw(domain_error("not valid operation!"));};
+	unsigned  getMajorAxis(){throw(domain_error("not valid operation!"));};
+	unsigned  getMinorAxis(){throw(domain_error("not valid operation!"));};
 public:
 	vector<pRange> params;
+
+public:
 	const char * getName(){return "rectGate";}
 	polygonGate* toPolygon();
 	POPINDICES gating(const flowData &);
@@ -105,11 +133,15 @@ public:
 	vector<string> params;
 	unsigned int a,b;
 	coordinate center;
+public:
 	const char * getName(){return "ellipseGate";}
 	POPINDICES gating(const flowData &);
 	unsigned char getType(){return ELLIPSEGATE;}
 	vector<string> getParam(){return params;};
 	vector<coordinate> getVertices(){throw(domain_error("not valid operation!"));};
+	coordinate  getCentroid(){return center;};
+	unsigned  getMajorAxis(){return a;};
+	unsigned  getMinorAxis(){return b;};
 
 };
 #endif /* GATE_HPP_ */

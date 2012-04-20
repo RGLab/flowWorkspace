@@ -149,15 +149,44 @@ BEGIN_RCPP
 
 				 List ret=List::create(Named("parameters",g->getParam())
 						 	 	 	 	 ,Named("x",x),Named("y",y)
+						 	 	 	 	 ,Named("type",POLYGONGATE)
 						 	 	 	 	 );
 				return ret;
 			}
 //		case RECTGATE:
 //
-//		case ELLIPSEGATE:
-//
-//		case RANGEGATE:
 
+		case ELLIPSEGATE:
+			{
+
+
+				 List ret=List::create(Named("parameters",g->getParam())
+									 ,Named("radius",NumericVector::create(Named("a")=g->getMajorAxis()
+																			,Named("b")=g->getMinorAxis())
+											)
+
+						 	 	 	 ,Named("centriod",NumericVector::create(Named("x")=g->getCentroid().x
+																			,Named("y")=g->getCentroid().y
+																			)
+											)
+
+									 ,Named("type",ELLIPSEGATE)
+									 );
+				return ret;
+			}
+		case RANGEGATE:
+			{
+				vector<coordinate> vert=g->getVertices();
+				vector<double> x;
+				for(vector<coordinate>::iterator it=vert.begin();it!=vert.end();it++)
+					x.push_back(it->x);
+
+				List ret=List::create(Named("parameters",g->getParam())
+									 ,Named("range",x)
+									 ,Named("type",POLYGONGATE)
+									 );
+				return ret;
+			}
 		default:
 			throw(domain_error("unknown gate!"));
 
