@@ -24,17 +24,17 @@ using namespace std;
 void test(string xml){
 
 		//create gating set object
-		GatingSet gs(xml,2);
+		GatingSet gs(xml,4);
 
 		//parse a particular sample group
-		unsigned short groupID=0;
-		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
-		gs.parseWorkspace(groupID,true);
+//		unsigned short groupID=0;
+//		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
+//		gs.parseWorkspace(groupID,true);
 
 		//parse a set of sampleIDs
-//		vector<string> sampleIDs;
-//		sampleIDs.push_back("7");
-//		gs.parseWorkspace(sampleIDs,false);
+		vector<string> sampleIDs;
+		sampleIDs.push_back("1");
+		gs.parseWorkspace(sampleIDs,true);
 		/*
 		 * get sample list from gating set
 		 */
@@ -44,8 +44,10 @@ void test(string xml){
 		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
 			cout<<*it<<endl;
 
-//		GatingHierarchy* gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
-		GatingHierarchy* gh=gs.getGatingHierarchy(0);
+		GatingHierarchy* gh;
+//		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
+		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
+//		gh=gs.getGatingHierarchy(0);
 		/*
 		 * getNodes by the T order
 		 */
@@ -68,12 +70,16 @@ void test(string xml){
 		vertices=gh->getVertices(false);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
-			nodeProperties *node=gh->getNodeProperty(*it);
-			cout<<*it<<"."<<node->getName()<<":";
+			VertexID u=*it;
+			nodeProperties *node=gh->getNodeProperty(u);
+			cout<<u<<"."<<node->getName()<<":";
 			cout<<node->getStats(false)["count"]<<endl;
-			gate * g=node->getGate();
-			if(g!=NULL)
-				cout<<g->getName()<<endl;
+			if(u!=ROOTNODE)
+			{
+				cout<<node->getGate()->getName()<<endl;
+
+
+			}
 		}
 
 		/*
@@ -119,10 +125,8 @@ void test(string xml){
 		}
 
 
-		/*
-		 * do the gating after the parsing
-		 */
-		string ncFile="/home/wjiang2/rglab/workspace/flowWorkspace/output/test.cdf";
+		cout<<endl<<"do the gating after the parsing"<<endl;
+		string ncFile="../output/ncfs374b1e4f5530.nc";
 		//read colnames from text
 		vector<string> params;
 
@@ -137,21 +141,23 @@ void test(string xml){
 
 		myfile.close();
 		gs.attachData(ncFile,params);
-
 		gh->gating();
 
 
-		cout<<endl<<"print out indices after gating"<<endl;
+
+
+
+		cout<<endl<<"flowJo(flowcore) counts after gating"<<endl;
 		vertices=gh->getVertices(false);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
-			nodeProperties *node=gh->getNodeProperty(*it);
-			cout<<*it<<"."<<node->getName()<<":";
-			cout<<"flowjo count:"<<node->getStats(false)["count"]<<endl;
-			cout<<"flowCore count:"<<node->getStats(true)["count"]<<endl;
-			gate * g=node->getGate();
-			if(g!=NULL)
-				cout<<g->getName()<<endl;
+			VertexID u=*it;
+			nodeProperties *node=gh->getNodeProperty(u);
+			cout<<u<<"."<<node->getName()<<":";
+			cout<<node->getStats(false)["count"];
+			cout<<"("<<node->getStats(true)["count"]<<") ";
+			if(u!=ROOTNODE)
+				cout<<node->getGate()->getName()<<endl;
 		}
 
 		/*

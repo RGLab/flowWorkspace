@@ -48,6 +48,7 @@ setMethod("initialize","GatingSetInternal"
 				,sampleIDs
 				,execute=FALSE
 				,dMode=1
+				
 				){
 
 #			.Object@set<-set;

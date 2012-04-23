@@ -9,9 +9,10 @@
 //#include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <iostream>
-//#include <exception>
+#include <algorithm>
+#include <math.h>
 
-
+const double PI  =3.141592653589793238462;
 using namespace std;
 
 
@@ -150,11 +151,11 @@ wsPopNodeSet flowJoWorkspace::getSubPop(wsNode * node)
 
 }
 
-gate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
+polygonGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	throw(domain_error("ellipse gate is not supported yet"));
 	return NULL;
 }
-gate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
+polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			polygonGate * gate=new polygonGate();
 			//get the negate flag
 			gate->isNegate=node.getProperty("eventsInside")=="0";
@@ -208,10 +209,10 @@ gate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			xmlXPathFreeObject(resVert);
 			return gate;
 }
-gate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
-			rectGate * gate=new rectGate();
+polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
+			polygonGate * g=new polygonGate();
 			//get the negate flag
-			gate->isNegate=node.getProperty("eventsInside")=="0";
+			g->isNegate=node.getProperty("eventsInside")=="0";
 
 			//get parameter name
 			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']");
@@ -221,29 +222,52 @@ gate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 //				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
 				throw(domain_error("invalid  dimension of the rectangle gate!"));
 			}
+			vector<pRange> r(2);
 			for(int i=0;i<nParam;i++)
 			{
 				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
 
 				//get coordinates from properties
-//				rangegate rGate;
-				pRange r1;
+
 				string sMin=curPNode.getProperty("min");
-				r1.min=sMin.empty()?numeric_limits<double>::min():atof(sMin.c_str());
+				r.at(i).min=sMin.empty()?numeric_limits<double>::min():atof(sMin.c_str());
 
 				string sMax=curPNode.getProperty("max");
-				r1.max=sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str());
+				r.at(i).max=sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str());
 
 				//get parameter name from the children node
 				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");
-				r1.name=wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name");
+				r.at(i).name=wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name");
 				xmlXPathFreeObject(resPName);
 
-				//push the current rangeGate into rectGate
-				gate->params.push_back(r1);
+
 			}
+			/*
+			 * convert pRanges to polygon data structure
+			 */
+			g->params.push_back(r.at(0).name);//x
+			g->params.push_back(r.at(1).name);//y
+
+			coordinate lb,lt,rb,rt;//left bottom,left top,right bottom,right top
+			lb.x=r.at(0).min;
+			lb.y=r.at(1).min;
+
+			lt.x=r.at(0).min;
+			lt.y=r.at(1).max;
+
+			rb.x=r.at(0).max;
+			rb.y=r.at(1).min;
+
+			rt.x=r.at(0).max;
+			rt.y=r.at(1).max;
+
+			g->vertices.push_back(lb);
+			g->vertices.push_back(lt);
+			g->vertices.push_back(rb);
+			g->vertices.push_back(rt);
+
 			xmlXPathFreeObject(resPara);
-			return gate;
+			return g;
 }
 gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 
@@ -275,41 +299,87 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 
 }
 
-
-gate* macFlowJoWorkspace::getGate(wsRangeGateNode & node){
+rangegate* macFlowJoWorkspace::getGate(wsRangeGateNode & node){
 	/*
 	 * using the same routine of polygon gate to parse ellipse
 	 */
 	wsPolyGateNode pGNode(node.thisNode);
-	gate * g=getGate(pGNode);
+	polygonGate * g1=getGate(pGNode);
 	/*
-	 * convert to ellipse gate object afterwards
+	 * convert to the rangeGate data structure after the preliminary parsing step
 	 */
-	gate * res=g->toRangeGate();
-	delete g;
-	return(res);
+	rangegate *g=new rangegate();
+
+	if(g1->vertices.size()!=2)
+			throw(domain_error("fail to convert to Range Gate since the vertices number is not 2!"));
+
+
+	g->param.name=g1->params.at(0);
+	coordinate p1=g1->vertices.at(0);
+	coordinate p2=g1->vertices.at(1);
+	if(p1.x!=p2.x)
+	{
+		g->param.min=min(p1.x,p2.x);
+		g->param.max=max(p1.x,p2.x);
+	}
+	else
+	{
+		g->param.min=min(p1.y,p2.y);
+		g->param.max=max(p1.y,p2.y);
+	}
+	delete g1;
+	return(g);
 
 }
 
+bool compare_x(coordinate i, coordinate j) { return i.x<j.x; }
+bool compare_y(coordinate i, coordinate j) { return i.y<j.y; }
 
-gate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
+
+polygonGate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	/*
 	 * using the same routine of polygon gate to parse ellipse
 	 */
 	wsPolyGateNode pGNode(node.thisNode);
-	gate * g=getGate(pGNode);
+	polygonGate * g=getGate(pGNode);
 	/*
-	 * convert to ellipse gate object afterwards
+	 * using 4 vertices to fit polygon points
 	 */
-	gate * res=g->toEllipseGate();
-	delete g;
-	return(res);
+	vector<coordinate> v=g->vertices;
+	g->vertices.clear();//reset the vertices
+
+	coordinate R=*max_element(v.begin(),v.end(),compare_x);
+	coordinate L=*min_element(v.begin(),v.end(),compare_x);
+
+	coordinate T=*max_element(v.begin(),v.end(),compare_y);
+	coordinate B=*min_element(v.begin(),v.end(),compare_y);
+
+	coordinate E;
+	E.x=hypot(L.x-R.x,L.y-R.y)/2;
+	E.y=hypot(T.x-B.x,T.y-B.y)/2;
+
+	double phi=tan((R.y-L.y)/(R.x-L.x));
+	double CY=(B.y+T.y)/2;
+	double CX=(R.x+L.x)/2;
+
+
+	double delta=2*PI/100;
+	for(unsigned short i=0;i<100;i++)
+	{
+		double S=i*delta;
+		coordinate p;
+		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
+		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
+		g->vertices.push_back(p);
+	}
+
+	return(g);
 
 }
 /*
  * TODO:query gate node and param node by name instead of by positions
  */
-gate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
+polygonGate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			polygonGate * gate=new polygonGate();
 			/*
 			 * re-fetch the children node from the current pop node
@@ -401,6 +471,7 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	else if(xmlStrEqual(gateType,(const xmlChar *)"Range"))
 	{
 		wsRangeGateNode rnGNode(node.thisNode);
+
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing RangeGate.."<<endl;
 		return(getGate(rnGNode));

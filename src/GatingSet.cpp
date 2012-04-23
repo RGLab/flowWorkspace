@@ -88,6 +88,8 @@ GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 		 xmlFree(wsVersion);
 		 ws->dMode=_dMode;
 		 dMode=_dMode;
+		 if(dMode>=GATING_SET_LEVEL)
+			 cout<<"internal gating set created from "<<sFileName<<endl;
 }
 
 void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)

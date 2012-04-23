@@ -134,8 +134,8 @@ BEGIN_RCPP
 		throw(domain_error("no gate associated with root node."));
 	gate *g=gh->getNodeProperty(u)->getGate();
 //	gate *g1;
-
-	switch(g->getType()>0)
+//	cout<<g->getType()<<endl;;
+	switch(g->getType())
 	{
 		case POLYGONGATE:
 			{
@@ -156,24 +156,25 @@ BEGIN_RCPP
 //		case RECTGATE:
 //
 
-		case ELLIPSEGATE:
-			{
+//		case ELLIPSEGATE:
+//			{
 
-
-				 List ret=List::create(Named("parameters",g->getParam())
-									 ,Named("radius",NumericVector::create(Named("a")=g->getMajorAxis()
-																			,Named("b")=g->getMinorAxis())
-											)
-
-						 	 	 	 ,Named("centriod",NumericVector::create(Named("x")=g->getCentroid().x
-																			,Named("y")=g->getCentroid().y
-																			)
-											)
-
-									 ,Named("type",ELLIPSEGATE)
-									 );
-				return ret;
-			}
+//				cout<<"entering ellipse block"<<endl;
+//				g->toPolygon()
+//				 List ret=List::create(Named("parameters",g->getParam())
+//									 ,Named("radius",NumericVector::create(Named("a")=g->getMajorAxis()
+//																			,Named("b")=g->getMinorAxis())
+//											)
+//
+//						 	 	 	 ,Named("centriod",NumericVector::create(Named("x")=g->getCentroid().x
+//																			,Named("y")=g->getCentroid().y
+//																			)
+//											)
+//
+//									 ,Named("type",ELLIPSEGATE)
+//									 );
+//				return ret;
+//			}
 		case RANGEGATE:
 			{
 				vector<coordinate> vert=g->getVertices();
@@ -188,7 +189,10 @@ BEGIN_RCPP
 				return ret;
 			}
 		default:
-			throw(domain_error("unknown gate!"));
+		{
+//			cout<<g->getType()<<endl;
+			throw(domain_error("unknown gate thrown by R_getGate!"));
+		}
 
 	}
 //		g1=g->toPolygon();

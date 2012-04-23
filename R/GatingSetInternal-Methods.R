@@ -13,12 +13,16 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		})
 
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,flowSetId=NULL){
+	print("calling c++ parser...")
+#		browser()
 	G<-new("GatingSetInternal",xmlFileName,sampleIDs,execute,dMode)
+	print("c++ parsing is done!")
 	samples<-.Call("R_getSamples",G@pointer)
+
 	if(execute)
 	{
 		files<-file.path(path,samples)
-#		browser()
+		print("loading FCS files...")
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId))
@@ -32,18 +36,26 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	}
 	
 	G@set<-sapply(samples,function(x){
+				
+				
 				gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=x)
 				
-				setData(gh,fs)
+				if(execute)
+				{
+					setData(gh,fs)
+					gh@dataEnv<-dataEnv	
+				}
+				
 				gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
-				gh@dataEnv<-dataEnv
+		
 				gh
 			}
 			,USE.NAMES=TRUE)
 	if(execute)
 		lapply(G,function(hierarchy){
-#					browser()
-					.Call("R_gating",hierarchy@pointer,getSample(hierarchy))	
+					sampleName<-getSample(hierarchy)
+					print(paste("gating",sampleName,"..."))
+					.Call("R_gating",hierarchy@pointer,sampleName)	
 				})
 	
 	

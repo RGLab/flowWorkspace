@@ -6,13 +6,13 @@ library(ncdfFlow)
 #dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 #lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
-
+#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+#
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples"
 
 macXML<-"HIPC_trial.xml"
@@ -34,7 +34,7 @@ G
 
 length(G)
 getSamples(G)
-getPopStats(G,flowJo=T)
+getPopStats(G,flowJo=F)
 
 
 gh<-G[[1]]
@@ -58,11 +58,11 @@ getTotal(G[[1]],nodelist[2],flowJo=F)
 
 
 .getPopStat(G[[1]],2)
-head(getPopStats(G[[1]]))
-head(getPopStats(G1[[1]]))
+head(getPopStats(G[[1]])[,2:3])
+head(getPopStats(G1[[1]])[,2:3])
 
 
-plot(G[[1]])
+plot(G[[2]])
 
 
 pData(G)<-data.frame(sample=getSamples(G))
@@ -71,16 +71,20 @@ G_list<-flowWorkspace:::splitGatingSetByNgates(G)
 lapply(G_list,getPopStats,flowJo=T)
 
 ###gating
-getGate(G[[1]],2)
-length(which(getIndices(G[[1]],nodelist[2])))
-getData(G[[1]],nodelist[1])
+getGate(G[[1]],nodelist[4])
+length(which(getIndices(G[[1]],nodelist[3])))
+
+
+
 getDimensions(G[[1]],nodelist[2])
 getBoundaries(G[[1]],nodelist[2])
 
 pdf()
-plotGate(G[[1]],6)
-plotGate(G1[[1]],6)
-
+plotGate(G[[1]],3,main="cpp")
+#plotGate(G1[[1]],3)
+xyplot(x=`SSC-W`~`SSC-H`,data=getData(G[[1]],nodelist[3]),smooth=FALSE,main="cpp")
+#xyplot(x=`SSC-W`~`SSC-H`,data=getData(G1[[1]],3),smooth=FALSE)
+dev.off()
 
 
 #############################################
@@ -107,9 +111,9 @@ G1
 ##generate file for c++ debugging
 nc1<-ncFlowSet(G1)
 nc1[[1]]
-nc2<-clone.ncdfFlowSet(nc1,fileName="output/test.nc",isEmpty=FALSE)
-nc2[[1]]
-write(file="output/colnames.txt",colnames(nc1))
+#nc2<-clone.ncdfFlowSet(nc1,fileName="output/test.nc",isEmpty=FALSE)
+#nc2[[1]]
+write(file="../output/colnames.txt",colnames(nc1))
 
 length(G1)
 gh1<-G1[[1]]

@@ -35,10 +35,10 @@ public:
 	  void getTransformation(){};
 	  string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
-	  gate * getGate(wsPolyGateNode &);
-	  gate * getGate(wsRectGateNode &);
-	  gate * getGate(wsEllipseGateNode &);
-	  gate * getGate(wsRangeGateNode &);
+	  polygonGate * getGate(wsPolyGateNode &);
+	  polygonGate * getGate(wsRectGateNode &);
+	  polygonGate * getGate(wsEllipseGateNode &);
+	  rangegate * getGate(wsRangeGateNode &);
 };
 
 
@@ -49,10 +49,10 @@ public:
 	void getTransformation(){};
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);
-	gate * getGate(wsPolyGateNode &);
-	gate * getGate(wsRectGateNode &);
-	gate * getGate(wsEllipseGateNode &);
-	gate * getGate(wsRangeGateNode &);
+	polygonGate * getGate(wsPolyGateNode &);
+//	polygonGate * getGate(wsRectGateNode &);
+	polygonGate * getGate(wsEllipseGateNode &);
+	rangegate * getGate(wsRangeGateNode &);
 };
 
 

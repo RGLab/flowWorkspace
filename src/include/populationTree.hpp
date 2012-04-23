@@ -12,6 +12,7 @@
 #include <boost/graph/adjacency_list.hpp>
 //#include <boost/graph/visitors.hpp>
 #include "nodeProperties.hpp"
+#define ROOTNODE 0
 
 struct Edge{
     // nothing, probably. Or a weight, a distance, a direction, ...

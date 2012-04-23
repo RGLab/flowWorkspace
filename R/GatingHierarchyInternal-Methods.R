@@ -122,7 +122,7 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 
 	stats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(y)-1)
 	pInd<-.Call("R_getParent",x@pointer,getSample(x),as.integer(y)-1)+1
-	browser()
+#	browser()
 	if(length(pInd)>0)#if parent exist
 	{
 		pstats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(pInd)-1)
@@ -424,6 +424,7 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),funct
 			
 			ind<-which(getNodes(obj)%in%y)
 			g<-getGate(obj,ind)
+			g
 			
 		})
 		#return gate y for a given hierarchy (by index)
@@ -433,17 +434,23 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 				return (NA)
 			else
 			{
+#				browser()
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
+				
 				if(g$type==1)
 					polygonGate(.gate=matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
-#				else if(g$type==2)
+				else if(g$type==2)#no equivalent range filter defined in flowCore,so we convert it to rectange gate
+				{
+					print ("not supported in R yet!")	
 #					rangeGate()
+				}
 #				else if(g$type==3)
 					
-#				else if(g$type==4)
-#					ELLIPSEGATE
-				else
-					stop("unknown gate type",g$type)
+				else if(g$type==4)
+				{
+					
+				}
+				
 			}
 		})
 

@@ -38,7 +38,9 @@ POPSTATS nodeProperties::getStats(bool isFlowCore=false){
 //
 //}
 gate * nodeProperties::getGate(){
-	return(this->thisGate);
+	if(thisGate==NULL)
+		throw(domain_error("gate is not parsed!"));
+	return(thisGate);
 }
 
 string nodeProperties::getName(){
