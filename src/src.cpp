@@ -34,6 +34,7 @@ void test(string xml){
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;
 		sampleIDs.push_back("1");
+		sampleIDs.push_back("2");
 		gs.parseWorkspace(sampleIDs,true);
 		/*
 		 * get sample list from gating set
@@ -45,8 +46,8 @@ void test(string xml){
 			cout<<*it<<endl;
 
 		GatingHierarchy* gh;
-//		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
-		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
+		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
+//		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
 //		gh=gs.getGatingHierarchy(0);
 		/*
 		 * getNodes by the T order
@@ -126,12 +127,13 @@ void test(string xml){
 
 
 		cout<<endl<<"do the gating after the parsing"<<endl;
-		string ncFile="../output/ncfs374b1e4f5530.nc";
+//		string ncFile="../output/ncfs374b1e4f5530.nc";
+		string ncFile="../output/Yale/ncfs6fff9d1b9e6.nc";
 		//read colnames from text
 		vector<string> params;
 
 		std::ifstream myfile;
-		myfile.open("../output/colnames.txt",ifstream::in);
+		myfile.open("../output/Yale/colnames.txt",ifstream::in);
 		vector<string> myLines;
 		string line;
 		while (std::getline(myfile, line))
@@ -192,12 +194,12 @@ int main(void) {
 	//read xml file by libxml
 	vector<string> fileNames;
 
-	fileNames.push_back("../fjWsExamples/HIPC_trial.xml");
-	fileNames.push_back("../fjWsExamples/LyoplateTest1Yale.wsp");
+	fileNames.push_back("../data/HIPC_trial/HIPC_trial.xml");
+	fileNames.push_back("../data/Yale/LyoplateTest1Yale.wsp");
 
-	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
-	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
-	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
+//	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
+//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
+//	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 	test(fileNames.at(0));
 //	Rcpp_test(fileNames.at(WIN));
 

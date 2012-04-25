@@ -1,8 +1,10 @@
 #TODO Fix the messed up encoding of quadrant gate names (it works but it's not pretty when it prints)
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
  	message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
+	tmp<-tempfile(fileext=".xml")
+	file.copy(file,tmp)
 	if(inherits(file,"character")){
-		x<-xmlTreeParse(file,useInternal=TRUE);
+		x<-xmlTreeParse(tmp,useInternal=TRUE);
 	}else{
 		stop("Require a filename of a workspace, but received ",class(x)[1]);
 	}
@@ -38,7 +40,6 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSet","missing"),function(
 
 splitGatingSetByNgates<-function(x){
     flowCore:::checkClass(x,"GatingSet");
-#	browser()
     pData(x)$ngates<-unlist(lapply(x,function(x)length(getNodes(x))))
     #cluster by number of gates.. set up the groups
     groups<-by(pData(x),pData(x)$ngates,function(x)as.numeric(rownames(x)))
@@ -88,7 +89,6 @@ setMethod("show",signature("flowJoWorkspace"),function(object){
 	if(object@.cache$flag){
 		cat("Workspace is open.","\n");
 		cat("\nGroups in Workspace\n");
-#		browser()
 		tbl<-table(Name=getSampleGroups(object)$groupName,GroupID=getSampleGroups(object)$groupID)
 		print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
 	}else{	
@@ -513,6 +513,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 		}
 		return(G);
 })
+
 
 #From https://stat.ethz.ch/pipermail/r-help/2005-September/078974.html
 #Detects Rmpi support since Rmpi doesn't have a namespace, and we don't want to "require" it
@@ -2873,38 +2874,38 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 #			browser()
 			win<-!x@version=="2.0"
 			.getSampleGroups(x@doc,win)
-})
+		})
 
 ###add support for win version
 .getSampleGroups<-function(x,win=FALSE){
 	if(!win){
 		do.call(rbind,xpathApply(x,"/Workspace/Groups/GroupNode",function(x){
-			gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
-			sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
-				as.numeric(xmlGetAttr(x,"sampleID"))
-			}))
-			if(is.null(sid)){
-			    sid<-NA;
-			}
-			groups<-na.omit(data.frame(groupName=gid[[1]],groupID=as.numeric(gid[2]),sampleID=as.numeric(sid)));
-		}))
+							gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
+							sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
+												as.numeric(xmlGetAttr(x,"sampleID"))
+											}))
+							if(is.null(sid)){
+								sid<-NA;
+							}
+							groups<-na.omit(data.frame(groupName=gid[[1]],groupID=as.numeric(gid[2]),sampleID=as.numeric(sid)));
+						}))
 	}else{
 		#Note that groupID is from order of groupNode instead of from xml attribute 
 		counter<-1
 		do.call(rbind,xpathApply(x,"/Workspace/Groups/GroupNode",function(x){
 #							browser()
-			gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
-			sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
-				as.numeric(xmlGetAttr(x,"sampleID",default=NA))
-			}))
-			if(is.null(sid)){
-				sid<-NA;
-			}
+							gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
+							sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
+												as.numeric(xmlGetAttr(x,"sampleID",default=NA))
+											}))
+							if(is.null(sid)){
+								sid<-NA;
+							}
 #			browser()
-			groups<-na.omit(data.frame(groupName=gid[[1]],groupID=counter,sampleID=as.numeric(sid)));
-			counter<-counter+1
-			groups
-		}))
+							groups<-na.omit(data.frame(groupName=gid[[1]],groupID=counter,sampleID=as.numeric(sid)));
+							counter<-counter+1
+							groups
+						}))
 	}
 }
 
@@ -3167,7 +3168,7 @@ ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
     #STATS
     sts<-NULL
     for(i in 1:length(x)){
-        stats<-do.call(rbind,lapply(x[[i]],function(x){stats<-getPopStats(x);rownames(stats)[1]<-"";data.frame(Sample=getSample(x),Population=rownames(stats),Freq_Of_Parent=stats$flowCore.freq,Count=stats$flowCore.count)}))
+        stats<-do.call(rbind,lapply(x[[i]],function(x){stats<-getPopStats(x);rownames(stats)[1]<-"";data.frame(Sample=getSample(x),Population=rownames(stats),Freq_Of_Parent=stats$flowCore.freq*100,Count=stats$flowCore.count)}))
         sts<-rbind(sts,stats)
     }
     sts$Population<-gsub("^/","",as.character(sts$Population))

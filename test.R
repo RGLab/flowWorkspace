@@ -1,34 +1,37 @@
 #unloadNamespace("flowWorkspace")
 
 library(flowWorkspace)
-library(Rgraphviz)
+#library(Rgraphviz)
 library(ncdfFlow)
 #dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 #lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 #
-path<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples"
+path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
 
 macXML<-"HIPC_trial.xml"
-macXML<-file.path("/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data",macXML)
+macXML<-file.path("/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial",macXML)
 
-winXML<-c("LyoplateTest1Yale.wsp","Exp1_Treg.wsp")
+winXML<-c("Yale/LyoplateTest1Yale.wsp")
 winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[1])
+ws<-openWorkspace(winXML[1])
 time1<-Sys.time()
+#Rprof()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1:2)
 					,isNcdf=T
 					,useInternal=T,dMode=4)
+#Rprof(NULL)	
+#summaryRprof()
 Sys.time()-time1
 G
 
@@ -79,12 +82,19 @@ length(which(getIndices(G[[1]],nodelist[3])))
 getDimensions(G[[1]],nodelist[2])
 getBoundaries(G[[1]],nodelist[2])
 
-pdf()
-plotGate(G[[1]],3,main="cpp")
-#plotGate(G1[[1]],3)
-xyplot(x=`SSC-W`~`SSC-H`,data=getData(G[[1]],nodelist[3]),smooth=FALSE,main="cpp")
-#xyplot(x=`SSC-W`~`SSC-H`,data=getData(G1[[1]],3),smooth=FALSE)
+png("viable.png")
+plotGate(G[[1]],3)
 dev.off()
+
+png("Singlets.png")
+plotGate(G[[1]],nodelist[3])
+dev.off()
+
+png("Lymph.png")
+plotGate(G[[1]],4)
+dev.off()
+#xyplot(x=`SSC-W`~`SSC-H`,data=getData(G1[[1]],3),smooth=FALSE)
+
 
 
 #############################################
@@ -101,7 +111,7 @@ getQAStats(db,isFlowCore=F)
 
 ws<-openWorkspace(macXML)
 time1<-Sys.time()
-G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
+G1<-parseWorkspace(ws,name=1,execute=F,requiregates=F
 					,isNcdf=T
 					,subset=c(1:2)
 					,useInternal=F,dMode=2)

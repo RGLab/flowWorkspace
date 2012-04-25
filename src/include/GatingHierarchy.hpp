@@ -52,9 +52,6 @@ class transformation{
 
 };
 
-class compensation{
-
-};
 
 
 /*GatingHierarchy is a tree that holds the gate definitions hierarchically,
@@ -65,7 +62,7 @@ class compensation{
 
 class GatingHierarchy{
 //	transformation trans;
-//	compensation comp;
+	compensation comp;
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	flowData fdata;
 	string sampleName;
@@ -98,21 +95,18 @@ public:
 	VertexID addRoot(nodeProperties* rootNode);
 	GatingHierarchy();
 	~GatingHierarchy();
-//	GatingHierarchy(string sampleID,workspace * ws,unsigned short _dMode);
+
 	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,unsigned short _dMode);
 
-	/*associate the tree with data matrix*/
-//	void addData();
 
-	/**/
-//	vector<bool> * getIndice(string popName);
 
 	flowData getData(VertexID nodeID);
 	void loadData();
 	void unloadData();
 
+	compensation getCompensation();
 	void gating();
-//	void gating(VertexID);
+
 	void drawGraph(string out);
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};
@@ -121,6 +115,7 @@ public:
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
+
 };
 
 

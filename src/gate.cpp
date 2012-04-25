@@ -125,6 +125,15 @@
 //	return res;
 //}
 
+unsigned find_pos(vector<string> s,string pattern ){
+	vector<string>::iterator it1,it2,res;
+	it1=s.begin();
+	it2=s.end();
+	res=find(it1,it2,pattern);
+	if(res==it2)
+		throw(domain_error(pattern.append(" not found in ncdfFlowSet!")));
+	return (res-it1);
+}
 /*
  * TODO:try within method from boost/geometries forboost.polygon
  *  reimplement c++ version of inPolygon_c
@@ -148,11 +157,9 @@ POPINDICES polygonGate::gating(const flowData & fdata){
 	string xParam=params.at(0);
 	string yParam=params.at(1);
 	vector<string> channels=fdata.params;
-	vector<string>::iterator it1,it2;
-	it1=channels.begin();
-	it2=channels.end();
-	unsigned xParamInd=find(it1,it2,xParam)-it1;
-	unsigned yParamInd=find(it1,it2,yParam)-it1;
+
+	unsigned xParamInd=find_pos(channels,xParam);
+	unsigned yParamInd=find_pos(channels,yParam);
 
 	/*
 	 *only get the data arrays of these two parameters

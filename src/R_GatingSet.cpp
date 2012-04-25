@@ -28,10 +28,10 @@ BEGIN_RCPP
 		string fileName=as<string>(_fileName);
 		unsigned short dMode=as<unsigned short>(_dMode);
 		StringVec sampleIDs=as<StringVec>(_sampleIDs);
-		bool isGating=as<bool>(_execute);
+		bool isParseGate=as<bool>(_execute);
 //		XPtr<GatingSet>gs(_gsPtr);
 		GatingSet * gs=new GatingSet(fileName,dMode);
-		gs->parseWorkspace(sampleIDs,isGating);
+		gs->parseWorkspace(sampleIDs,isParseGate);
 		return XPtr<GatingSet>(gs);
 //		return R_NilValue;
 END_RCPP

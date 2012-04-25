@@ -57,6 +57,7 @@ setMethod("initialize","GatingSetInternal"
 			stopifnot(!is.null(xmlFileName))
 			if(!file.exists(xmlFileName))
 				stop(xmlFileName," not found!")
+#			browser()
 			.Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,execute,as.integer(dMode))
 #	validObject(.Object)
 			return(.Object)

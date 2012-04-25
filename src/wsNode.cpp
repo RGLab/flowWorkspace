@@ -21,8 +21,27 @@ xmlXPathObjectPtr wsNode::xpathInNode(string xpath)
 	xmlXPathFreeContext(ctxt);
 	return res;
 }
+/*
+ * query from root
+ */
+xmlXPathObjectPtr wsNode::xpath(string xpath)
+{
+	xmlXPathContextPtr ctxt=xmlXPathNewContext(thisNode->doc);
+	xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),ctxt);
+	xmlXPathFreeContext(ctxt);
+	return res;
+}
 
+string wsNode::getNsProperty(string propName,string ns){
 
+	xmlChar * name= xmlGetNsProp(this->thisNode,(xmlChar *)propName.c_str(),(xmlChar *)ns.c_str());
+	string sName;
+	if(name!=0)
+		sName=(const char*)name;
+	xmlFree(name);
+	return sName;
+
+}
 
 string wsNode::getProperty(string propName){
 

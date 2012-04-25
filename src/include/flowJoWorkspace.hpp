@@ -18,7 +18,7 @@ class flowJoWorkspace:public workspace{
 public:
 //	~flowJoWorkspace();
 	 vector <string> getSampleID(unsigned short);
-//	 wsSampleNode getSample(string sampleID);
+
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
      nodeProperties * to_popNode(wsRootNode &);
@@ -31,7 +31,7 @@ public:
 class winFlowJoWorkspace:public flowJoWorkspace{
 public:
 	winFlowJoWorkspace(xmlDoc *);
-	  void getCompensation(){};
+	compensation getCompensation(wsSampleNode sampleNode);
 	  void getTransformation(){};
 	  string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
@@ -45,7 +45,7 @@ public:
 class macFlowJoWorkspace:public flowJoWorkspace{
 public:
 	macFlowJoWorkspace(xmlDoc *);
-	void getCompensation(){};
+	compensation getCompensation(wsSampleNode sampleNode);
 	void getTransformation(){};
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);

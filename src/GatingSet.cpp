@@ -39,6 +39,7 @@ wsSampleNode getSample(T ws,string sampleID){
 
 GatingSet::~GatingSet()
 {
+	cout<<"entring the destructor of GatingSet"<<endl;
 	delete ws;
 	typedef map<string,GatingHierarchy *> map_t;
 	BOOST_FOREACH(map_t::value_type & it,ghs){

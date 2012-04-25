@@ -24,6 +24,7 @@ GatingHierarchy::~GatingHierarchy()
 {
 	//for each node
 
+	cout<<"entring the destructor of GatingHierarchy"<<endl;
 
 	VertexID_vec vertices=getVertices(false);
 	if(dMode>=GATING_HIERARCHY_LEVEL)
@@ -77,9 +78,13 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 	isLoaded=false;
 	thisWs=ws;
 	nc=_nc;
+//	cout<<"get root node"<<endl;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
+	if(isParseGate)
+		this->comp=thisWs->getCompensation(curSampleNode);
+//	cout<<"adding root node"<<endl;
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
-//	wsRootNode popNode=root;//getPopulation();
+//	cout<<"adding population nodes"<<endl;
 	addPopulation(pVerID,&root,isParseGate);
 //	if(isParseGate)
 //		gating();
@@ -95,7 +100,7 @@ VertexID GatingHierarchy::addRoot(nodeProperties* rootNode)
 	VertexID u = boost::add_vertex(tree);
 
 	tree[u]=rootNode;
-//	nodelist[rootNode.getName()]=u;
+	;
 
 	return(u);
 }
@@ -149,6 +154,9 @@ void GatingHierarchy::addGate(gate& g,string popName)
 //	boost::tie(e,b) = boost::add_edge(u,v,g);
 
 //	boost::add_edge()
+}
+compensation GatingHierarchy::getCompensation(){
+	return comp;
 }
 
 /*
@@ -204,6 +212,10 @@ void GatingHierarchy::unloadData()
 
 
 }
+
+/*
+ * assume data has already been compensated and transformed beforehand
+ */
 void GatingHierarchy::gating()
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
@@ -211,6 +223,12 @@ void GatingHierarchy::gating()
 	//read data once for all nodes
 
 	loadData();
+
+//	/*
+//	 * compensating
+//	 */
+//	if(dMode>=GATING_HIERARCHY_LEVEL)
+//			cout <<"compensating:"<<this->sampleName<<endl;
 
 	VertexID_vec vertices=getVertices(true);
 

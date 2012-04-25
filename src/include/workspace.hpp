@@ -30,6 +30,15 @@ using namespace std;
  * this may potentially reduce the amount of code
  *
  */
+class compensation{
+public:
+	string cid;
+	string prefix;
+	string comment;// store "Acquisition-defined" when the spillOver matrix is not supplied and cid==-1
+	vector<string> marker;
+	vector<double> spillOver;
+};
+
 struct xpath{
 	string group;
 	string sampleRef;
@@ -48,7 +57,7 @@ public:
 public:
 	 ~workspace();
 	 virtual string xPathSample(string sampleID)=0;
-	 virtual void getCompensation()=0;
+	 virtual compensation getCompensation(wsSampleNode)=0;
 	 virtual void getTransformation()=0;
 	 virtual vector <string> getSampleID(unsigned short)=0;
 	 virtual string getSampleName(wsSampleNode &)=0;

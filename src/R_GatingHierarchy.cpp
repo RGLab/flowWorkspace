@@ -106,6 +106,28 @@ BEGIN_RCPP
 END_RCPP
 }
 
+
+
+RcppExport SEXP R_getCompensation(SEXP _gsPtr,SEXP _sampleName){
+BEGIN_RCPP
+
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	compensation comp=gh->getCompensation();
+	return(List::create(Named("cid",comp.cid)
+						,Named("prefix",comp.prefix)
+						,Named("comment",comp.comment)
+						,Named("parameters",comp.marker)
+						,Named("spillOver",comp.spillOver))
+			);
+
+END_RCPP
+}
+
+
 RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
