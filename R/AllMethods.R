@@ -2258,6 +2258,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		assign("gr",new("graphNEL",edgemode="directed"),envir=env)
 		gr<-get("gr",env)
 		nodeDataDefaults(gr,"metadata")<-new.env(parent=emptyenv());
+		
 		#Store the compensation matrices
 		if(is.null(xpathApply(x,"./ancestor-or-self::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]])){
 			#No compensation matrix

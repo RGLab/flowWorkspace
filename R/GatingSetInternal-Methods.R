@@ -151,7 +151,11 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 						}
 						cnd<-colnames(data)
 						wh<-cnd%in%parameters(comp)
-						cnd[wh]<-paste("<",parameters(comp),">",sep="")
+#						cnd[wh]<-paste("<",parameters(comp),">",sep="")
+						if(prefix=="<")
+							cnd[wh]<-paste("<",parameters(compobj),">",sep="")
+						else
+							cnd[wh]<-paste(prefix,parameters(compobj),sep="")
 						e<-exprs(data)
 						d<-description(data);
 						p<-parameters(data);
@@ -166,19 +170,20 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 				##################################
 				#Transforming the data
 				##################################
-#					cal<-.Call("R_getTransformation",G@pointer,sampleName)				
-#					message("Transforming");
-#					axis.labels<-list();
-#					.flowJoTransform(environment(),cal);
+#				cal<-.Call("R_getTransformation",G@pointer,sampleName)				
+#				message("Transforming");
+				
+#				axis.labels<-list();
+#				.flowJoTransform(environment(),cal);
+#				#gc(reset=TRUE);
+#				#wh<-which(data@parameters@data$name=="Time")
+#				wh<-grep("^Time$",data@parameters@data$name)
+#				if(length(wh!=0)){
 #					#gc(reset=TRUE);
-#					#wh<-which(data@parameters@data$name=="Time")
-#					wh<-grep("^Time$",data@parameters@data$name)
-#					if(length(wh!=0)){
-#						#gc(reset=TRUE);
-#						parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
-#						#gc(reset=TRUE);
-#						parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
-#					}
+#					parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
+#					#gc(reset=TRUE);
+#					parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
+#				}
 #
 #
 #					e<-new.env(parent=.GlobalEnv);

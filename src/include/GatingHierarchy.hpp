@@ -48,9 +48,6 @@ struct OurVertexPropertyWriterR {
     populationTree &g;
 };
 
-class transformation{
-
-};
 
 
 
@@ -61,7 +58,7 @@ class transformation{
  */
 
 class GatingHierarchy{
-//	transformation trans;
+	transformation * trans;
 	compensation comp;
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	flowData fdata;
@@ -105,6 +102,7 @@ public:
 	void unloadData();
 
 	compensation getCompensation();
+	transformation* getTransformation(){return trans;};
 	void gating();
 
 	void drawGraph(string out);

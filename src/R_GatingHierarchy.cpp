@@ -17,6 +17,7 @@
 #include "include/R_GatingSet.hpp"
 #include <stdexcept>
 #include "include/gate.hpp"
+#include "include/transformation.hpp"
 using namespace std;
 
 /*
@@ -127,6 +128,39 @@ BEGIN_RCPP
 END_RCPP
 }
 
+
+RcppExport SEXP R_getTransformation(SEXP _gsPtr,SEXP _sampleName){
+BEGIN_RCPP
+
+//	XPtr<GatingHierarchy>gh(_ghPtr);
+	XPtr<GatingSet>gs(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	transformation *trans=gh->getTransformation();
+	switch(trans->type)
+	{
+		case LOGICLE:
+			{
+				throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
+
+//				Vector args=Vector::create();
+//
+//				return(List::create(Named("type",LOGICAL)
+//									,Named("arguments",args)
+//									)
+//							);
+			}
+		case CALTBL:
+		{
+			throw(domain_error("calibration table is not supported yet in R_getTransformation!"));
+
+		}
+	}
+
+
+END_RCPP
+}
 
 RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP

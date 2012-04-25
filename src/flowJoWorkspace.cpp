@@ -123,15 +123,8 @@ string flowJoWorkspace::getSampleName(wsSampleNode & node){
 compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 {
 	compensation comp;
+	comp.cid=sampleNode.getProperty("compensationID");
 
-	xmlXPathObjectPtr res=sampleNode.xpathInNode("*[local-name()='spilloverMatrix']");
-	if(res->nodesetval->nodeNr!=1)
-		throw(domain_error("not valid compensation node!"));
-
-	wsNode node(res->nodesetval->nodeTab[0]);
-	xmlXPathFreeObject(res);
-	comp.cid=node.getProperty("id");
-	comp.prefix=node.getProperty("prefix");
 	/*
 	 * -1:Acquisition-defined,to be computed from data
 	 * -2:None
@@ -140,37 +133,54 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	 * 			and this cid serves as id to index that node. in pc version, we observe it is also stored at curent
 	 * 			sampleNode,to keep the parsing consistent,we still look for it from the special compensation node within the context of xml root
 	 */
-	if(comp.cid.compare("-1")!=0&&comp.cid.compare("-2")!=0)
+	if(comp.cid.compare("-1")==0)
+				comp.comment="Acquisition-defined";
+	else if(comp.cid.compare("-2")==0)
+				comp.comment="none";
+	else if(comp.cid.empty())
+				throw(domain_error("empty cid not supported yet!"));
+	else
 	{
-		if(comp.cid.empty())
+		/*
+		 * look for CompensationMatrix nodes
+		 */
+		string path="/Workspace/CompensationMatrices/CompensationMatrix";
+		xmlXPathObjectPtr resMat=sampleNode.xpath(path);
+
+		if(resMat->nodesetval->nodeNr<=0)
+			throw(domain_error("no CompensationMatrix found!"));
+		/*
+		 * look for the particular CompensationMatrix for current sampleNode by cid
+		 */
+		unsigned short cid=atoi(comp.cid.c_str());
+		wsNode curMatNode(resMat->nodesetval->nodeTab[cid]);
+
+		xmlXPathFreeObject(resMat);
+		comp.prefix=curMatNode.getProperty("prefix");
+		comp.suffix=curMatNode.getProperty("suffix");
+
+		xmlXPathObjectPtr resX=curMatNode.xpathInNode("Channel");
+		unsigned nX=resX->nodesetval->nodeNr;
+		for(unsigned i=0;i<nX;i++)
 		{
-			throw(domain_error("empty cid not supported yet!"));
-		}
-		else
-		{
-			string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
-//			cout<<path<<endl;
-			xmlXPathObjectPtr resX=node.xpath(path);
-			unsigned nX=resX->nodesetval->nodeNr;
-			for(unsigned i=0;i<nX;i++)
+			wsNode curMarkerNode_X(resX->nodesetval->nodeTab[i]);
+			comp.marker.push_back(curMarkerNode_X.getProperty("name"));
+			xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("ChannelValue");
+			unsigned nY=resY->nodesetval->nodeNr;
+			if(nX!=nY)
+				throw(domain_error("not the same x,y dimensions in spillover matrix!"));
+			for(unsigned j=0;j<nY;j++)
 			{
-				wsNode curMarkerNode_X(resX->nodesetval->nodeTab[i]);
-				comp.marker.push_back(curMarkerNode_X.getProperty("parameter"));
-				xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("*[local-name()='coefficient']");
-				unsigned nY=resY->nodesetval->nodeNr;
-				if(nX!=nY)
-					throw(domain_error("not the same x,y dimensions in spillover matrix!"));
-				for(unsigned j=0;j<nY;j++)
-				{
-					wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
-					string sValue=curMarkerNode_Y.getProperty("value");
-					comp.spillOver.push_back(atof(sValue.c_str()));
-				}
-				xmlXPathFreeObject(resY);
+				wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
+				string sValue=curMarkerNode_Y.getProperty("value");
+				comp.spillOver.push_back(atof(sValue.c_str()));
 			}
-			xmlXPathFreeObject(resX);
+			xmlXPathFreeObject(resY);
 		}
+		xmlXPathFreeObject(resX);
+
 	}
+
 	if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<"parsing compensation matrix.."<<endl;
 	return comp;

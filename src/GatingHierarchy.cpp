@@ -37,7 +37,8 @@ GatingHierarchy::~GatingHierarchy()
 //			cout<<"free the indices"<<endl;
 	}
 
-
+	if(trans!=NULL)
+		delete trans;
 
 	if(isLoaded)
 	{
@@ -158,6 +159,7 @@ void GatingHierarchy::addGate(gate& g,string popName)
 compensation GatingHierarchy::getCompensation(){
 	return comp;
 }
+
 
 /*
  * subset operation is done within R,so there is no need for this member function

@@ -12,7 +12,6 @@
 #include <libxml/xpath.h>
 #include "wsNode.hpp"
 using namespace std;
-
 /*TODO: so far I will see the differenc between wind and max workspace in terms of xpath(like xpath of sample node)
  * if this is the case eventually we can try to use one template class (eliminate two derived classes )
  * with T structure that stores different versions of xpaths for win/mac,for example:
@@ -34,10 +33,12 @@ class compensation{
 public:
 	string cid;
 	string prefix;
+	string suffix;
 	string comment;// store "Acquisition-defined" when the spillOver matrix is not supplied and cid==-1
 	vector<string> marker;
 	vector<double> spillOver;
 };
+
 
 struct xpath{
 	string group;

@@ -46,8 +46,8 @@ void test(string xml){
 			cout<<*it<<endl;
 
 		GatingHierarchy* gh;
-		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
-//		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
+//		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
+		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
 //		gh=gs.getGatingHierarchy(0);
 		/*
 		 * getNodes by the T order
@@ -127,13 +127,14 @@ void test(string xml){
 
 
 		cout<<endl<<"do the gating after the parsing"<<endl;
-//		string ncFile="../output/ncfs374b1e4f5530.nc";
-		string ncFile="../output/Yale/ncfs6fff9d1b9e6.nc";
+		string ncFile="../output/HIPC_trial/ncfs374b1e4f5530.nc";
+//		string ncFile="../output/Yale/ncfs6fff9d1b9e6.nc";
 		//read colnames from text
 		vector<string> params;
 
 		std::ifstream myfile;
-		myfile.open("../output/Yale/colnames.txt",ifstream::in);
+		myfile.open("../output/HIPC_trial/colnames.txt",ifstream::in);
+//		myfile.open("../output/Yale/colnames.txt",ifstream::in);
 		vector<string> myLines;
 		string line;
 		while (std::getline(myfile, line))
