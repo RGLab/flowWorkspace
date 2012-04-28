@@ -18,6 +18,7 @@ using namespace std;
 typedef map<string,VertexID> VertexID_map;
 typedef vector<VertexID> VertexID_vec;
 
+
 struct OurVertexPropertyWriter {
 
 	OurVertexPropertyWriter(populationTree &g_) : g(g_) {}
@@ -58,7 +59,7 @@ struct OurVertexPropertyWriterR {
  */
 
 class GatingHierarchy{
-	transformation * trans;
+	Trans_map trans;
 	compensation comp;
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	flowData fdata;
@@ -66,14 +67,9 @@ class GatingHierarchy{
 	populationTree tree;
 	bool isGated;
 	bool isLoaded;
-	/*
-	 * this field is for the easy query by node name
-	 * since boost does not provide this query feature explicitly,
-	 * however it adds the potential data inconsistency risk when performing the non-read-only
-	 * operation on the tree
-	 */
-//	VertexID_map nodelist;
+
 	workspace * thisWs;
+	CALTBS *calTbls;//pointer to the global calTbls stored in gs
 public:
 	unsigned short dMode;//debug mode passed from GatingSet
 
@@ -93,7 +89,7 @@ public:
 	GatingHierarchy();
 	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,unsigned short _dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,unsigned short _dMode,CALTBS * _calTbls);
 
 
 
@@ -101,8 +97,10 @@ public:
 	void loadData();
 	void unloadData();
 
+
 	compensation getCompensation();
-	transformation* getTransformation(){return trans;};
+//	transformation* getTransformation(){return trans;};
+	void transforming(bool);
 	void gating();
 
 	void drawGraph(string out);

@@ -11,129 +11,7 @@
 #include <algorithm>
 #include <valarray>
 
-/*
- * ellipse gate is parsed as polygon at the parsing xml stage since it is stored in polygon format
- * we do the calculation of major,minor axis and center coordinates here.
- * assume four antipodal points of ellipse is provided as input
- */
-//gate * polygonGate::toEllipseGate(){
-//	ellipseGate *g=new ellipseGate();
-//	//copy parameter names directly from polygate object
-//	g->params=this->params;
-////	cout<<vertices.size()<<endl;
-//	if(this->vertices.size()!=4)
-//		throw(domain_error("fail to convert to ellipse since the vertices number is not 4!"));
-//
-//	/*
-//	 * cal major,minor axis and center point
-//	 *  by finding min and max distance among four points
-//	 */
-//
-//	g->a=numeric_limits<int>::min();//init major axis
-//	g->b=numeric_limits<int>::max();//init minor axis
-//	for(unsigned i=0;i<4;i++)
-//		for(unsigned j=i+1;j<4;j++)
-//		{
-//			coordinate p1=vertices.at(i);
-//			coordinate p2=vertices.at(j);
-//			double dist=sqrt(pow(p1.x-p2.x,2)+pow(p1.y-p2.y,2))/2;
-//			if(dist>g->a)
-//			{
-//				//update major axis
-//				g->a=dist;
-//				//update center point
-//				g->center.x=(p1.x+p2.x)/2;
-//				g->center.y=(p1.y+p2.y)/2;
-//			}
-//
-//			if(dist<g->b)
-//				g->b=dist;//update minor axis
-//		}
-//
-//
-//	return g;
-//}
 
-//rangegate * polygonGate::toRangeGate(){
-//	rangegate *g=new rangegate();
-//	if(this->vertices.size()!=2)
-//			throw(domain_error("fail to convert to Range Gate since the vertices number is not 2!"));
-//
-//
-//	g->param.name=this->params.at(0);
-//	coordinate p1=vertices.at(0);
-//	coordinate p2=vertices.at(1);
-//	if(p1.x!=p2.x)
-//	{
-//		g->param.min=min(p1.x,p2.x);
-//		g->param.max=max(p1.x,p2.x);
-//	}
-//	else
-//	{
-//		g->param.min=min(p1.y,p2.y);
-//		g->param.max=max(p1.y,p2.y);
-//	}
-//
-//
-//	return g;
-//}
-/*
- * TODO:
- */
-//polygonGate* ellipseGate::toPolygon(){
-//	polygonGate* res=new polygonGate();
-//
-//	res->params=params;
-//
-//	//fit vertices by using R code .ellipseFit
-//	coordinate lb,lt,rb,rt;//left bottom,left top,right bottom,right top
-//
-//	res->vertices.push_back(lb);
-//
-//
-//	return res;
-//}
-
-
-/*
- * up to caller to free the memory
- */
-//polygonGate* rectGate::toPolygon(){
-//	polygonGate* res=new polygonGate();
-//	//covert param names
-//	res->params.push_back(params.at(0).name);//x
-//	res->params.push_back(params.at(1).name);//y
-//	//convert vertices
-//	coordinate lb,lt,rb,rt;//left bottom,left top,right bottom,right top
-//	lb.x=params.at(0).min;
-//	lb.y=params.at(1).min;
-//
-//	lt.x=params.at(0).min;
-//	lt.y=params.at(1).max;
-//
-//	rb.x=params.at(0).max;
-//	rb.y=params.at(1).min;
-//
-//	rt.x=params.at(0).max;
-//	rt.y=params.at(1).max;
-//
-//	res->vertices.push_back(lb);
-//	res->vertices.push_back(lt);
-//	res->vertices.push_back(rb);
-//	res->vertices.push_back(rt);
-//
-//	return res;
-//}
-
-unsigned find_pos(vector<string> s,string pattern ){
-	vector<string>::iterator it1,it2,res;
-	it1=s.begin();
-	it2=s.end();
-	res=find(it1,it2,pattern);
-	if(res==it2)
-		throw(domain_error(pattern.append(" not found in ncdfFlowSet!")));
-	return (res-it1);
-}
 /*
  * TODO:try within method from boost/geometries forboost.polygon
  *  reimplement c++ version of inPolygon_c
@@ -141,33 +19,17 @@ unsigned find_pos(vector<string> s,string pattern ){
  *  and now it is freed in destructor of its owner "nodeProperties" object
  */
 
-POPINDICES polygonGate::gating(const flowData & fdata){
+POPINDICES polygonGate::gating(flowData & fdata){
 
-	//init the indices
-	POPINDICES ind(fdata.nEvents);
 
-	unsigned nEvents=fdata.nEvents;
-	unsigned nChannls=fdata.nChannls;
+
 	unsigned nVertex=vertices.size();
 
-
-	/*
-	 * calculate the positions of this gate parameters
-	 */
-	string xParam=params.at(0);
-	string yParam=params.at(1);
-	vector<string> channels=fdata.params;
-
-	unsigned xParamInd=find_pos(channels,xParam);
-	unsigned yParamInd=find_pos(channels,yParam);
-
-	/*
-	 *only get the data arrays of these two parameters
-	 */
-	valarray<double> data(fdata.data,nEvents*nChannls);
-	valarray<double> xdata=data[slice(xParamInd*nEvents,nEvents,1)];
-	valarray<double> ydata=data[slice(yParamInd*nEvents,nEvents,1)];
-
+	valarray<double> xdata=fdata.subset(params.at(0));
+	valarray<double> ydata=fdata.subset(params.at(1));
+	unsigned nEvents=xdata.size();
+	//init the indices
+	POPINDICES ind(nEvents);
 	unsigned counter;
 	double xinters;
 	double p1x, p2x, p1y, p2y;
@@ -216,40 +78,55 @@ POPINDICES polygonGate::gating(const flowData & fdata){
 	return ind;
 }
 
-//POPINDICES rectGate::gating(const flowData & data){
-//
-//	polygonGate* res=toPolygon();
-//	POPINDICES ind= res->gating(data);
-//	delete res;
-//	return ind;
-//}
+void polygonGate::transforming(Trans_map & trans){
+	/*
+	 * get channel names to select respective transformation functions
+	 */
+	string channel_x=params.at(0);
+	string channel_y=params.at(1);
 
-POPINDICES rangegate::gating(const flowData & fdata){
+	//get vertices in valarray format
+	vertices_valarray vert(getVertices());
 
+	/*
+	 * do the actual transformations
+	 */
+	transformation * trans_x=trans[channel_x];
+	transformation * trans_y=trans[channel_y];
+
+
+	if(trans_x!=NULL)
+	{
+		valarray<double> output_x(trans_x->transforming(vert.x));
+		for(unsigned i=0;i<vertices.size();i++)
+			vertices.at(i).x=output_x[i];// yodate coordinates-based vertices
+	}
+	if(trans_y!=NULL)
+	{
+		valarray<double> output_y(trans_y->transforming(vert.y));
+		for(unsigned i=0;i<vertices.size();i++)
+			vertices.at(i).y=output_y[i];
+	}
+
+}
+
+void rangegate::transforming(Trans_map & trans){
+
+	vertices_valarray vert=getVertices();
+
+	valarray<double> output(trans[param.name]->transforming(vert.x));
+	param.min=output[1];
+	param.max=output[2];
+
+
+}
+POPINDICES rangegate::gating(flowData & fdata){
+
+	valarray<double> data_1d=fdata.subset(param.name);
+
+	unsigned nEvents=data_1d.size();
 	//init the indices
-	POPINDICES ind(fdata.nEvents);
-
-	unsigned nEvents=fdata.nEvents;
-	unsigned nChannls=fdata.nChannls;
-	//	unsigned nVertex=vertices.size();
-
-
-	/*
-	 * calculate the positions of this gate parameters
-	 */
-	vector<string> channels=fdata.params;
-	vector<string>::iterator it1,it2;
-	it1=channels.begin();
-	it2=channels.end();
-	unsigned paramInd=find(it1,it2,param.name)-it1;
-
-
-	/*
-	 *only get the data arrays of these two parameters
-	 */
-	valarray<double> data(fdata.data,nEvents*nChannls);
-	valarray<double> data_1d=data[slice(paramInd,nEvents,1)];
-
+	POPINDICES ind(nEvents);
 
 	/*
 	 * actual gating
@@ -261,51 +138,27 @@ POPINDICES rangegate::gating(const flowData & fdata){
 	return ind;
 
 }
+vertices_valarray polygonGate::getVertices(){
 
-//POPINDICES ellipseGate::gating(const flowData & data){
-//
-//	polygonGate* res=toPolygon();
-//	POPINDICES ind= res->gating(data);
-//	delete res;
-//	return ind;
-//}
-//POPINDICES ellipseGate::gating(const flowData & fdata){
-//
-//	//init the indices
-//	POPINDICES ind(fdata.nEvents);
-//
-//	unsigned nEvents=fdata.nEvents;
-//	unsigned nChannls=fdata.nChannls;
-////	unsigned nVertex=vertices.size();
-//
-//
-//	/*
-//	 * calculate the positions of this gate parameters
-//	 */
-//	string xParam=params.at(0);
-//	string yParam=params.at(1);
-//	vector<string> channels=fdata.params;
-//	vector<string>::iterator it1,it2;
-//	it1=channels.begin();
-//	it2=channels.end();
-//	unsigned xParamInd=find(it1,it2,xParam)-it1;
-//	unsigned yParamInd=find(it1,it2,yParam)-it1;
-//
-//	/*
-//	 *only get the data arrays of these two parameters
-//	 */
-//	valarray<double> data(fdata.data,nEvents*nChannls);
-//	valarray<double> xdata=data[slice(xParamInd,nEvents,1)];
-//	valarray<double> ydata=data[slice(yParamInd,nEvents,1)];
-//
-//	/*
-//	 * actual gating,using
-//	 */
-//	for(unsigned i=0;i<nEvents;i++)
-//	{
-//		double distance=pow(xdata[i]-center.x,2)/pow(a,2)+pow(ydata[i]-center.y,2)/pow(b,2);
-//		ind[i]=distance<=1;
-//	}
-//	return ind;
-//}
+	vertices_valarray res;
+	unsigned nSize=vertices.size();
+	res.resize(nSize);
+	for(unsigned i=0;i<nSize;i++)
+	{
+		res.x[i]=vertices.at(i).x;
+		res.y[i]=vertices.at(i).y;
+	}
+	return res;
+}
+
+
+vertices_valarray rangegate::getVertices(){
+
+	vertices_valarray res;
+	res.resize(2);
+	res.x[0]=param.min;
+	res.x[1]=param.max;
+
+	return res;
+}
 

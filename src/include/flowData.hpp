@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <valarray>
 #include <stdexcept>
 using namespace std;
 typedef vector<bool> POPINDICES;
@@ -26,14 +27,16 @@ class flowData{
 public:
 //	valarray<float> * data;
 	vector<string> params;
-	double * data;
+	valarray<double> data;
 	unsigned nEvents,nChannls;
 	flowData();
 	flowData(double* mat,unsigned _nEvents,unsigned _nChannls);
 //	flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls);
 	~flowData();
-//	flowData subset(POPINDICES rows);
+	slice getSlice(string channel);
+	valarray<double> subset(string channel);
 	void params_set(vector<string> _params);
+	void syn(){};//write data back to cdf
 };
 
 

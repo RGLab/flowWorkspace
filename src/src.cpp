@@ -26,6 +26,9 @@ void test(string xml){
 		//create gating set object
 		GatingSet gs(xml,4);
 
+//		valarray<double> x(gs.ws->toArray(""));
+//		for(unsigned i=0;i<x.size();i++)
+//			cout<<x[i]<<endl;
 		//parse a particular sample group
 //		unsigned short groupID=0;
 //		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
@@ -144,8 +147,11 @@ void test(string xml){
 
 		myfile.close();
 		gs.attachData(ncFile,params);
+		//read transformed data once for all nodes
+		gh->loadData();
+		gh->transforming(false);
 		gh->gating();
-
+		gh->unloadData();
 
 
 

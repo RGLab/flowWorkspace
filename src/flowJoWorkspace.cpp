@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <math.h>
 
+
 const double PI  =3.141592653589793238462;
 using namespace std;
 
@@ -120,6 +121,123 @@ string flowJoWorkspace::getSampleName(wsSampleNode & node){
 	return sampleNode.getProperty("name");//get property name from sampleNode
 
 }
+
+//bool matchName(calibrationTable calTbl){
+//
+//	return calTbl.name.find("Acquisition-defined")==string::npos;
+//}
+/*
+ * get transformation for one particular sample node
+ */
+Trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,CALTBS * calTbls){
+
+//	if(dMode>=GATING_HIERARCHY_LEVEL)
+//			cout<<"parsing transformation..."<<endl;
+
+	Trans_map res;
+	if(cid.compare("-1")==0)
+	{
+		/*
+		 * look for Acquisition-defined witin global calitbls
+		 */
+		for(CALTBS::iterator it=calTbls->begin();it!=calTbls->end();it++)
+		{
+			transformation* curTbl=*it;
+			if(curTbl->name.find("Acquisition-defined")!=string::npos)
+			{
+
+				res[curTbl->channel]=curTbl;
+				if(dMode>=GATING_HIERARCHY_LEVEL)
+					cout<<"adding "<<curTbl->name<<":"<<curTbl->channel<<endl;
+			}
+		}
+//		CALTBS::iterator it=find(calTbls->begin(),calTbls->end(),matchName);
+//		if(it==calTbls->end())
+//			throw(domain_error("can't find Acquisition-defined calibration table"));
+
+	}
+	else if(cid.compare("-2")==0)
+	{
+
+	}
+	else
+	{
+
+	}
+	return res;
+}
+
+
+
+/*
+ * parse global calibration tables
+ */
+CALTBS macFlowJoWorkspace::getCalTbls(){
+
+	CALTBS res;
+
+
+
+	string path="/Workspace/CalibrationTables/Table";
+	xmlXPathContextPtr context = xmlXPathNewContext(doc);
+	xmlXPathObjectPtr result = xmlXPathEval((xmlChar *)path.c_str(), context);
+	if(xmlXPathNodeSetIsEmpty(result->nodesetval))
+	{
+		cout<<"no calibration Tables found!"<<endl;
+		return(res);
+	}
+	for(int i=0;i<result->nodesetval->nodeNr;i++)
+	{
+		wsNode calTblNode(result->nodesetval->nodeTab[i]);
+
+		calibrationTable *t=new calibrationTable();
+		string tname=calTblNode.getProperty("name");
+		if(tname.empty())
+			throw(domain_error("empty name for calibration table"));
+		/*
+		 * parse the string from tname to extract channel name
+		 */
+		size_t nPrefix=tname.find("<");
+		size_t nsuffix=tname.find(">");
+		if((nPrefix==string::npos)|(nsuffix==string::npos))
+			continue;//skip the tables without channel info
+
+		t->name=tname.substr(0,nPrefix);
+		t->channel=tname.substr(nPrefix,tname.length()-nPrefix);
+
+		if(dMode>=GATING_SET_LEVEL)
+				cout<<"parsing calibrationTable:"<<t->name<<":"<<t->channel<<endl;
+
+		t->biExpDecades=atof(calTblNode.getProperty("biexponentialDecades").c_str());
+		t->biExpNegDecades=atof(calTblNode.getProperty("biexponentialNegDecades").c_str());
+		t->w=atof(calTblNode.getProperty("biexponentialWidth").c_str());
+
+		string sTbl=calTblNode.getContent();
+		/*
+		 * parse the stream to x,y double arrays
+		 */
+		valarray<double> tbl(toArray(sTbl));
+		unsigned nX=tbl.size()/2;
+
+
+		t->init(nX);
+
+		t->y=tbl[slice(0,2,nX)];
+		t->x=tbl[slice(1,2,nX)];
+
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<"spline interpolating..."<<endl;
+		t->interpolate();
+
+
+		res.push_back(t);
+
+	}
+
+	xmlXPathFreeObject(result);
+	xmlXPathFreeContext(context);
+	return res;
+}
 compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 {
 	compensation comp;
@@ -134,7 +252,11 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	 * 			sampleNode,to keep the parsing consistent,we still look for it from the special compensation node within the context of xml root
 	 */
 	if(comp.cid.compare("-1")==0)
-				comp.comment="Acquisition-defined";
+	{
+		comp.comment="Acquisition-defined";
+		comp.prefix="<";
+		comp.suffix=">";
+	}
 	else if(comp.cid.compare("-2")==0)
 				comp.comment="none";
 	else if(comp.cid.empty())
@@ -207,36 +329,39 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	 * 			and this cid serves as id to index that node. in pc version, we observe it is also stored at curent
 	 * 			sampleNode,to keep the parsing consistent,we still look for it from the special compensation node within the context of xml root
 	 */
-	if(comp.cid.compare("-1")!=0&&comp.cid.compare("-2")!=0)
+	if(comp.cid.compare("-1")==0)
 	{
-		if(comp.cid.empty())
-		{
-			throw(domain_error("empty cid not supported yet!"));
-		}
-		else
-		{
-			string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
+		comp.comment="Acquisition-defined";
+		comp.prefix="Comp-";
+	}
+	else if(comp.cid.compare("-2")==0)
+		comp.comment="none";
+	else if(comp.cid.empty())
+		throw(domain_error("empty cid not supported yet!"));
+	else
+	{
+		string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
 //			cout<<path<<endl;
-			xmlXPathObjectPtr resX=node.xpath(path);
-			unsigned nX=resX->nodesetval->nodeNr;
-			for(unsigned i=0;i<nX;i++)
+		xmlXPathObjectPtr resX=node.xpath(path);
+		unsigned nX=resX->nodesetval->nodeNr;
+		for(unsigned i=0;i<nX;i++)
+		{
+			wsNode curMarkerNode_X(resX->nodesetval->nodeTab[i]);
+			comp.marker.push_back(curMarkerNode_X.getProperty("parameter"));
+			xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("*[local-name()='coefficient']");
+			unsigned nY=resY->nodesetval->nodeNr;
+			if(nX!=nY)
+				throw(domain_error("not the same x,y dimensions in spillover matrix!"));
+			for(unsigned j=0;j<nY;j++)
 			{
-				wsNode curMarkerNode_X(resX->nodesetval->nodeTab[i]);
-				comp.marker.push_back(curMarkerNode_X.getProperty("parameter"));
-				xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("*[local-name()='coefficient']");
-				unsigned nY=resY->nodesetval->nodeNr;
-				if(nX!=nY)
-					throw(domain_error("not the same x,y dimensions in spillover matrix!"));
-				for(unsigned j=0;j<nY;j++)
-				{
-					wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
-					string sValue=curMarkerNode_Y.getProperty("value");
-					comp.spillOver.push_back(atof(sValue.c_str()));
-				}
-				xmlXPathFreeObject(resY);
+				wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
+				string sValue=curMarkerNode_Y.getProperty("value");
+				comp.spillOver.push_back(atof(sValue.c_str()));
 			}
-			xmlXPathFreeObject(resX);
+			xmlXPathFreeObject(resY);
 		}
+		xmlXPathFreeObject(resX);
+
 	}
 	if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<"parsing compensation matrix.."<<endl;

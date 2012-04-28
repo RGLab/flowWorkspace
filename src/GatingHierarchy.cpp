@@ -10,7 +10,7 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <fstream>
-
+#include <algorithm>
 
 
 /*need to be careful that gate within each node of the GatingHierarchy is
@@ -37,15 +37,15 @@ GatingHierarchy::~GatingHierarchy()
 //			cout<<"free the indices"<<endl;
 	}
 
-	if(trans!=NULL)
-		delete trans;
+//	if(trans!=NULL)
+//		delete trans;
 
-	if(isLoaded)
-	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"free the flow data"<<endl;
-		delete fdata.data;
-	}
+//	if(isLoaded)
+//	{
+//		if(dMode>=GATING_HIERARCHY_LEVEL)
+//			cout<<"free the flow data"<<endl;
+//		delete fdata.data;
+//	}
 
 
 
@@ -72,17 +72,22 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,unsigned short _dMode)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,unsigned short _dMode,CALTBS * _calTbls)
 {
 //	data=NULL;
 	dMode=_dMode;
 	isLoaded=false;
 	thisWs=ws;
 	nc=_nc;
+	calTbls=_calTbls;
 //	cout<<"get root node"<<endl;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	if(isParseGate)
-		this->comp=thisWs->getCompensation(curSampleNode);
+	{
+		comp=thisWs->getCompensation(curSampleNode);
+		trans=thisWs->getTransformation(curSampleNode,comp.cid,calTbls);
+	}
+
 //	cout<<"adding root node"<<endl;
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
 //	cout<<"adding population nodes"<<endl;
@@ -190,10 +195,11 @@ flowData GatingHierarchy::getData(VertexID nodeID)
  */
 void GatingHierarchy::loadData()
 {
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout <<"loading raw data.."<<endl;
+
 	if(!isLoaded)
 	{
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+					cout <<"loading data from cdf.."<<endl;
 		fdata=getData(0);
 		isLoaded=true;
 	}
@@ -203,11 +209,13 @@ void GatingHierarchy::loadData()
 }
 void GatingHierarchy::unloadData()
 {
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout <<"unloading raw data.."<<endl;
+
 	if(isLoaded)
 	{
-		delete fdata.data;
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+					cout <<"unloading raw data.."<<endl;
+//		delete fdata.data;
+		fdata.data.resize(0);
 		isLoaded=false;
 	}
 
@@ -215,16 +223,57 @@ void GatingHierarchy::unloadData()
 
 }
 
+void GatingHierarchy::transforming(bool updateCDF)
+{
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+		cout <<"start transforming:"<<this->sampleName<<endl;
+	if(!isLoaded)
+		throw(domain_error("data is not loaded yet!"));
+
+//	unsigned nEvents=fdata.nEvents;
+//	unsigned nChannls=fdata.nChannls;
+	vector<string> channels=fdata.params;
+
+	/*
+	 * transforming each marker
+	 */
+	for(vector<string>::iterator it1=channels.begin();it1!=channels.end();it1++)
+	{
+		string curChannel=*it1;
+
+		transformation *curTrans=trans[curChannel];
+		if(curTrans!=NULL)
+		{
+			valarray<double> x(this->fdata.subset(curChannel));
+			cout<<"transforming "<<curChannel<<endl;
+			valarray<double> y(curTrans->transforming(x));
+			/*
+			 * update fdata
+			 */
+			fdata.data[fdata.getSlice(curChannel)]=y;
+		}
+	}
+
+	/*
+	 * write the entire slice back to cdf
+	 */
+	if(updateCDF)
+	{
+		fdata.syn();
+	}
+}
+
 /*
- * assume data has already been compensated and transformed beforehand
+ * assume data have already been compensated and transformed
  */
 void GatingHierarchy::gating()
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
 		cout <<"start gating:"<<this->sampleName<<endl;
-	//read data once for all nodes
 
-	loadData();
+	if(!isLoaded)
+			throw(domain_error("data is not loaded yet!"));
+
 
 //	/*
 //	 * compensating
@@ -247,6 +296,13 @@ void GatingHierarchy::gating()
 		if(dMode>=POPULATION_LEVEL)
 			cout <<"gating on:"<<node->getName()<<endl;
 		gate *g=node->getGate();
+		/*
+		 * transform gates if applicable
+		 */
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"transforming gate"<<endl;
+		g->transforming(trans);
+
 		if(g==NULL)
 			throw(domain_error("no gate available for this node"));
 		node->indices=g->gating(fdata);
@@ -256,7 +312,7 @@ void GatingHierarchy::gating()
 	if(dMode>=GATING_HIERARCHY_LEVEL)
 		cout <<"finish gating!"<<endl;
 
-	unloadData();
+
 
 }
 

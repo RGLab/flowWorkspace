@@ -7,14 +7,19 @@
 
 #include "include/flowData.hpp"
 
+#include <algorithm>
+
+
 flowData::flowData(){};
 
 flowData::flowData(double* mat,unsigned _nEvents,unsigned _nChannls){
 
-//	data=new valarray<float>(mat,nEvents*nChannls);
-	data=mat;
+
+//	data=mat;
 	nEvents=_nEvents;
 	nChannls=_nChannls;
+	data.resize(nChannls*nEvents);
+	data=valarray<double>(mat,nEvents*nChannls);
 }
 
 //flowData::flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls){
@@ -39,6 +44,32 @@ void flowData::params_set(vector<string> _params){
 		throw(domain_error("the number of parameters is not consistent with cdf file!"));
 	params=_params;
 }
+
+unsigned find_pos(vector<string> s,string pattern ){
+	vector<string>::iterator it1,it2,res;
+	it1=s.begin();
+	it2=s.end();
+	res=find(it1,it2,pattern);
+	if(res==it2)
+		throw(domain_error(pattern.append(" not found in ncdfFlowSet!")));
+	return (res-it1);
+}
+
+slice flowData::getSlice(string channel){
+
+		unsigned paramInd=find_pos(params,channel);
+
+//		valarray<double> data(this->data,nEvents*nChannls);
+		return slice(paramInd*nEvents,nEvents,1);
+
+}
+
+valarray<double> flowData::subset(string channel){
+		return data[getSlice(channel)];
+
+}
+
+
 //flowData flowData::subset(POPINDICES rowInd){
 //
 ////	unsigned newLen=nRow*nCol;

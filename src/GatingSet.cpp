@@ -50,6 +50,9 @@ GatingSet::~GatingSet()
 				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
 	}
 
+	for(CALTBS::iterator it=calTbls.begin();it!=calTbls.end();it++)
+		delete *it;
+
 }
 //read xml file and create the appropriate flowJoWorkspace object
 GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
@@ -91,6 +94,11 @@ GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 		 dMode=_dMode;
 		 if(dMode>=GATING_SET_LEVEL)
 			 cout<<"internal gating set created from "<<sFileName<<endl;
+		 /*
+		  * parsing global calibration tables
+		  */
+		 calTbls=ws->getCalTbls();
+
 }
 
 void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)
@@ -111,7 +119,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,dMode);
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,dMode,&calTbls);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 

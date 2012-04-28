@@ -27,27 +27,16 @@ RcppExport SEXP R_plotGh(SEXP _gsPtr,SEXP _sampleName,SEXP _output) {
 BEGIN_RCPP
 
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 
 	string output=as<string>(_output);
  	gh->drawGraph(output);
-//    return wrap(res);
+
 END_RCPP
 }
 
-//RcppExport SEXP R_getSample(SEXP _gsPtr,SEXP _sampleName){
-//BEGIN_RCPP
-//
-////	XPtr<GatingHierarchy>gh(_ghPtr);
-//	XPtr<GatingSet>gs(_gsPtr);
-//	string sampleName=as<string>(_sampleName);
-//
-//	 return wrap(gs->getGatingHierarchy(sampleName).getSample());
-//END_RCPP
-//}
 
 /*
  * return node names as a character vector
@@ -55,7 +44,6 @@ END_RCPP
 RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _tsort,SEXP _isPath){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -69,7 +57,6 @@ END_RCPP
 RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
@@ -81,7 +68,7 @@ END_RCPP
 RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
+
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -93,7 +80,7 @@ END_RCPP
 RcppExport SEXP R_getPopStats(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
+
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
@@ -112,7 +99,7 @@ END_RCPP
 RcppExport SEXP R_getCompensation(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
+
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 
@@ -120,6 +107,7 @@ BEGIN_RCPP
 	compensation comp=gh->getCompensation();
 	return(List::create(Named("cid",comp.cid)
 						,Named("prefix",comp.prefix)
+						,Named("suffix",comp.suffix)
 						,Named("comment",comp.comment)
 						,Named("parameters",comp.marker)
 						,Named("spillOver",comp.spillOver))
@@ -132,31 +120,30 @@ END_RCPP
 RcppExport SEXP R_getTransformation(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	transformation *trans=gh->getTransformation();
-	switch(trans->type)
-	{
-		case LOGICLE:
-			{
-				throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
-
-//				Vector args=Vector::create();
+//	transformation *trans=gh->getTransformation();
+//	switch(trans->type)
+//	{
+//		case LOGICLE:
+//			{
+//				throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
 //
-//				return(List::create(Named("type",LOGICAL)
-//									,Named("arguments",args)
-//									)
-//							);
-			}
-		case CALTBL:
-		{
-			throw(domain_error("calibration table is not supported yet in R_getTransformation!"));
-
-		}
-	}
+////				Vector args=Vector::create();
+////
+////				return(List::create(Named("type",LOGICAL)
+////									,Named("arguments",args)
+////									)
+////							);
+//			}
+//		case CALTBL:
+//		{
+////			return (wrap(trans->getCalTbl()));
+//
+//		}
+//	}
 
 
 END_RCPP
@@ -165,12 +152,16 @@ END_RCPP
 RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
+
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	gh->loadData();
+	//gh->compensating();
+	gh->transforming(true);
 	gh->gating();
+	gh->unloadData();
 
 END_RCPP
 }
@@ -178,7 +169,7 @@ END_RCPP
 RcppExport SEXP R_getGate(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
-//	XPtr<GatingHierarchy>gh(_ghPtr);
+
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	int u=as<int>(_i);
@@ -189,57 +180,25 @@ BEGIN_RCPP
 	if(u==0)
 		throw(domain_error("no gate associated with root node."));
 	gate *g=gh->getNodeProperty(u)->getGate();
-//	gate *g1;
-//	cout<<g->getType()<<endl;;
 	switch(g->getType())
 	{
 		case POLYGONGATE:
 			{
-				vector<coordinate> vert=g->getVertices();
-				vector<double> x,y;
-				for(vector<coordinate>::iterator it=vert.begin();it!=vert.end();it++)
-				{
-					x.push_back(it->x);
-					y.push_back(it->y);
-				}
+				vertices_vector vert=g->getVertices().toVector();
 
 				 List ret=List::create(Named("parameters",g->getParam())
-						 	 	 	 	 ,Named("x",x),Named("y",y)
+						 	 	 	 	 ,Named("x",vert.x),Named("y",vert.y)
 						 	 	 	 	 ,Named("type",POLYGONGATE)
 						 	 	 	 	 );
 				return ret;
 			}
-//		case RECTGATE:
-//
 
-//		case ELLIPSEGATE:
-//			{
-
-//				cout<<"entering ellipse block"<<endl;
-//				g->toPolygon()
-//				 List ret=List::create(Named("parameters",g->getParam())
-//									 ,Named("radius",NumericVector::create(Named("a")=g->getMajorAxis()
-//																			,Named("b")=g->getMinorAxis())
-//											)
-//
-//						 	 	 	 ,Named("centriod",NumericVector::create(Named("x")=g->getCentroid().x
-//																			,Named("y")=g->getCentroid().y
-//																			)
-//											)
-//
-//									 ,Named("type",ELLIPSEGATE)
-//									 );
-//				return ret;
-//			}
 		case RANGEGATE:
 			{
-				vector<coordinate> vert=g->getVertices();
-				vector<double> x;
-				for(vector<coordinate>::iterator it=vert.begin();it!=vert.end();it++)
-					x.push_back(it->x);
+				vertices_vector vert=g->getVertices().toVector();
 
 				List ret=List::create(Named("parameters",g->getParam())
-									 ,Named("range",x)
+									 ,Named("range",vert.x)
 									 ,Named("type",POLYGONGATE)
 									 );
 				return ret;
@@ -251,15 +210,6 @@ BEGIN_RCPP
 		}
 
 	}
-//		g1=g->toPolygon();
-//	else
-//		g1=g;
-
-
-
-
-//	if(g->getType()>0)
-//		delete g1;
 
 END_RCPP
 }

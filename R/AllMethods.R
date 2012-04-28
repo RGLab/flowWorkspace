@@ -2680,7 +2680,9 @@ constructTransformations<-function(x,env){
 		}else{	
 			#In Aaron's workspace, the names don't necessarily match the calibration tables. I don't know why that is, but we need to deal with it.
 			
-	r<-unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1]),use.names=FALSE))[grep("Acquisition-defined",unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1]),use.names=FALSE)))]
+	r<-unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1]),use.names=FALSE))[grep("Acquisition-defined",unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<")
+								,function(x)x[1]),use.names=FALSE))
+			)]
 			if(length(r)!=0){	
 				cal<-.getCalibrationTableSearch(xmlRoot(x),r)
 				for(zz in 1:length(cal)){

@@ -92,7 +92,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 				##################################
 				comp<-.Call("R_getCompensation",G@pointer,sampleName)
 				cid<-comp$cid
-				prefix<-comp$prefix
+				
 #				browser()
 				if(cid!="-1" && cid!="-2"){
 					message("Compensating");
@@ -112,10 +112,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					cnd<-colnames(data)
 					if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
 					wh<-cnd%in%parameters(compobj)
-					if(prefix=="<")
-						cnd[wh]<-paste("<",parameters(compobj),">",sep="")
-					else
-						cnd[wh]<-paste(prefix,parameters(compobj),sep="")
+					cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
 					
 					#colnames(data)<-cnd;
 					e<-exprs(data)
@@ -151,11 +148,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 						}
 						cnd<-colnames(data)
 						wh<-cnd%in%parameters(comp)
-#						cnd[wh]<-paste("<",parameters(comp),">",sep="")
-						if(prefix=="<")
-							cnd[wh]<-paste("<",parameters(compobj),">",sep="")
-						else
-							cnd[wh]<-paste(prefix,parameters(compobj),sep="")
+						cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
 						e<-exprs(data)
 						d<-description(data);
 						p<-parameters(data);
@@ -174,7 +167,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 #				message("Transforming");
 				
 #				axis.labels<-list();
-#				.flowJoTransform(environment(),cal);
+				.flowJoTransform(environment(),cal);
 #				#gc(reset=TRUE);
 #				#wh<-which(data@parameters@data$name=="Time")
 #				wh<-grep("^Time$",data@parameters@data$name)

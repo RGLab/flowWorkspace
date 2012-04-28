@@ -19,7 +19,8 @@ using namespace std;
 
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
-	workspace * ws;
+
+	CALTBS calTbls;
 	map<string,GatingHierarchy*> ghs;
 	ncdfFlow nc;
 	/*
@@ -32,10 +33,13 @@ class GatingSet{
 //	vector<string> sampleList;
 	unsigned short dMode;//debug level to control print out
 public:
+	workspace * ws;
+public:
 	~GatingSet();
 	GatingSet(string,unsigned short);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
+
 	void parseWorkspace(unsigned short,bool);
 	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);

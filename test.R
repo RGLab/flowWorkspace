@@ -23,7 +23,7 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(winXML[1])
+ws<-openWorkspace(macXML[1])
 time1<-Sys.time()
 #Rprof()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
@@ -74,7 +74,7 @@ G_list<-flowWorkspace:::splitGatingSetByNgates(G)
 lapply(G_list,getPopStats,flowJo=T)
 
 ###gating
-getGate(G[[1]],nodelist[4])
+str(getGate(G[[1]],nodelist[3]))
 length(which(getIndices(G[[1]],nodelist[3])))
 
 
@@ -144,8 +144,10 @@ pData(G1)<-data.frame(sample=getSamples(G1))
 splitGatingSetByNgates(G1)
 
 ###gating
-getData(G1[[1]],2)
-getGate(G1[[1]],2)
+getData(G1[[1]],5)
+
+getGate(G1[[2]],4)
+getGate(G[[1]],4)
 plotGate(G1[[1]],5)
 
 ##############
