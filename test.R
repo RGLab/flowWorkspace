@@ -120,8 +120,8 @@ getQAStats(db,isFlowCore=F)
 ws<-openWorkspace(macXML)
 time1<-Sys.time()
 G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
-#					,isNcdf=T
-					,subset=c(1)
+					,isNcdf=T
+					,subset=c(1,2)
 					,useInternal=F,dMode=2)
 Sys.time()-time1
 G1

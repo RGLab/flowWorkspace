@@ -118,7 +118,7 @@ public:
  */
 class polygonGate:public gate {
 public:
-	vector<string> params;
+	vector<string> params;//params.at(0) is x, params.at(1) is y axis
 	vector<coordinate> vertices;
 public:
 	const char * getName(){return "polygonGate";}

@@ -644,7 +644,7 @@ polygonGate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			 * re-fetch the children node from the current pop node
 			 */
 			xmlXPathObjectPtr resGate=node.xpathInNode("PolygonGate/*");
-			wsNode pNode(resGate->nodesetval->nodeTab[0]);//gate dimensions
+//			wsNode pNode(resGate->nodesetval->nodeTab[0]);//gate dimensions
 			wsNode gNode(resGate->nodesetval->nodeTab[2]);//gate type and vertices
 			xmlXPathFreeObject(resGate);
 
@@ -652,20 +652,27 @@ polygonGate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			gate->isNegate=!gNode.getProperty("negated").empty();
 
 			//get parameter name
-			xmlXPathObjectPtr resPara=pNode.xpathInNode("StringArray/String");
-			int nParam=resPara->nodesetval->nodeNr;
-			if(nParam!=2)
-			{
-//				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
-				throw(domain_error("invalid dimension of the polygon gate!"));
-			}
-			for(int i=0;i<nParam;i++)
-			{
-				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
-				string curParam=curPNode.getContent();
-				gate->params.push_back(curParam);
-			}
-			xmlXPathFreeObject(resPara);
+//			xmlXPathObjectPtr resPara=pNode.xpathInNode("StringArray/String");
+//			int nParam=resPara->nodesetval->nodeNr;
+//			if(nParam!=2)
+//			{
+////				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
+//				throw(domain_error("invalid dimension of the polygon gate!"));
+//			}
+//			for(int i=0;i<nParam;i++)
+//			{
+//				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
+//				string curParam=curPNode.getContent();
+//				gate->params.push_back(curParam);
+//			}
+//			xmlXPathFreeObject(resPara);
+
+
+			string xAxis=gNode.getProperty("xAxisName");
+			gate->params.push_back(xAxis);
+			string yAxis=gNode.getProperty("yAxisName");
+			if(!yAxis.empty())
+				gate->params.push_back(yAxis);
 
 			//get vertices
 			xmlXPathObjectPtr resVert=gNode.xpathInNode("Polygon/Vertex");
