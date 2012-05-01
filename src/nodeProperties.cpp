@@ -58,9 +58,14 @@ void nodeProperties::setGate(gate *gate){
  * potentially it is step can be done within the same loop in gating
  * TODO:MFI can be calculated here as well
  */
-void nodeProperties::computeStats(bool isRoot){
-	if(isRoot)
-		fcStats["count"]=fjStats["count"];//cpy from flowJo counts if root node
-	else
-		fcStats["count"]=count(indices.begin(),indices.end(),true);
+void nodeProperties::computeStats(){
+		fcStats["count"]=getCounts();
 }
+
+unsigned nodeProperties::getCounts(){
+
+	return count(indices.begin(),indices.end(),true);
+
+}
+
+

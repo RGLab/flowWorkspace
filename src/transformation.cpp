@@ -6,6 +6,7 @@
  */
 
 #include "include/transformation.hpp"
+#include <fstream>
 
 void calibrationTable::init(unsigned nSize){
 	x.resize(nSize);
@@ -49,19 +50,46 @@ void calibrationTable::interpolate(){
 
 valarray<double> calibrationTable::transforming(valarray<double> & input){
 
-//	cout<<"spline eval"<<endl;
-	int nu=input.size();
+
 	int imeth=2;
 	int n=x.size();
+	int nu=input.size();
 	valarray<double> output(nu);
-//	spline_eval(2,input,output,x, y, b, c, d);
 	double *u=new double[nu];
 	double *v=new double[nu];
 
+	for(int i=0;i<nu;i++)
+	{
+		u[i]=input[i];
+	}
+
+
+
+
 	spline_eval(&imeth,&nu,u,v,&n,x1, y1, b1, c1, d1);
 
-	for(unsigned i=0;i<nu;i++)
+//	ofstream xyOutput("../output/c++/xy.csv");
+//	xyOutput<<"x,y,b,c,d"<<endl;
+//	for(int i=0;i<n;i++)
+//	{
+//		xyOutput<<x1[i]<<","<<y1[i]<<","<<b1[i]<<","<<c1[i]<<","<<d1[i]<<endl;;
+//
+//	}
+//
+//	ofstream uvOutput("../output/c++/uv.csv");
+//	uvOutput<<"u,v"<<endl;
+//	for(int i=0;i<nu;i++)
+//	{
+//		uvOutput<<u[i]<<","<<v[i]<<endl;;
+//
+//	}
+
+
+	for(int i=0;i<nu;i++)
+	{
 		output[i]=v[i];
+//		cout<<v[i]<<",";
+	}
 	/*
 	 * small test suite
 	 */

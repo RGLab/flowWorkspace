@@ -245,12 +245,17 @@ void GatingHierarchy::transforming(bool updateCDF)
 		if(curTrans!=NULL)
 		{
 			valarray<double> x(this->fdata.subset(curChannel));
-			cout<<"transforming "<<curChannel<<endl;
+			if(dMode>=GATING_HIERARCHY_LEVEL)
+				cout<<"transforming "<<curChannel<<endl;
 			valarray<double> y(curTrans->transforming(x));
 			/*
 			 * update fdata
 			 */
+//			for(unsigned i=0;i<10;i++)
+//				cout<<y[i]<<",";
+
 			fdata.data[fdata.getSlice(curChannel)]=y;
+
 		}
 	}
 
@@ -259,7 +264,9 @@ void GatingHierarchy::transforming(bool updateCDF)
 	 */
 	if(updateCDF)
 	{
-		fdata.syn();
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"saving transformed data to CDF..."<<endl;
+		nc->writeflowData(fdata);
 	}
 }
 
@@ -289,9 +296,22 @@ void GatingHierarchy::gating()
 		nodeProperties * node=getNodeProperty(u);
 		if(u==0)
 		{
-			node->computeStats(true);
+			node->indices=vector<bool>(fdata.nEvents,true);
+			node->computeStats();
 			continue;//skip gating for root node
 		}
+		/*TODO:boolean gates is not supported yet
+		 * check if parent population is already gated
+		 *
+		 */
+		VertexID_vec pids=getParent(u);
+		if(pids.size()!=1)
+			throw(domain_error("multiple parent nodes found!"));
+
+		nodeProperties *parentNode =getNodeProperty(pids.at(0));
+		if(!parentNode->isGated())
+			throw(domain_error("parent node has not been gated!"));
+
 
 		if(dMode>=POPULATION_LEVEL)
 			cout <<"gating on:"<<node->getName()<<endl;
@@ -305,8 +325,12 @@ void GatingHierarchy::gating()
 
 		if(g==NULL)
 			throw(domain_error("no gate available for this node"));
-		node->indices=g->gating(fdata);
-		node->computeStats(false);
+
+		POPINDICES curIndices=g->gating(fdata);
+		for(unsigned i=0;i<curIndices.size();i++)
+			curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
+		node->indices=curIndices;
+		node->computeStats();
 	}
 
 	if(dMode>=GATING_HIERARCHY_LEVEL)

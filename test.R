@@ -1,17 +1,18 @@
 #unloadNamespace("flowWorkspace")
-
-library(flowWorkspace)
-#library(Rgraphviz)
 library(ncdfFlow)
+library(flowWorkspace)
+
+#library(Rgraphviz)
+
 #dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
-#lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
+#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 #
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
 
@@ -27,7 +28,7 @@ ws<-openWorkspace(macXML[1])
 time1<-Sys.time()
 #Rprof()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
-					,subset=c(1:2)
+					,subset=c(1,2)
 					,isNcdf=T
 					,useInternal=T,dMode=4)
 #Rprof(NULL)	
@@ -80,10 +81,11 @@ length(which(getIndices(G[[1]],nodelist[3])))
 
 
 getDimensions(G[[1]],nodelist[2])
-getBoundaries(G[[1]],nodelist[2])
+getBoundaries(G[[1]],nodelist[5])
+getBoundaries(G1[[1]],getNodes(G1[[1]])[5])
 
 png("viable.png")
-plotGate(G[[1]],3)
+plotGate(G[[1]],5)
 dev.off()
 
 png("Singlets.png")
@@ -91,12 +93,18 @@ plotGate(G[[1]],nodelist[3])
 dev.off()
 
 png("Lymph.png")
-plotGate(G[[1]],4)
+plotGate(G[[1]],3)
 dev.off()
-#xyplot(x=`SSC-W`~`SSC-H`,data=getData(G1[[1]],3),smooth=FALSE)
 
 
+xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=getData(G[[1]],4),smooth=T,filter=getGate(G[[1]],nodelist[5]))
+xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=getData(G1[[1]],4),smooth=T,filter=getGate(G1[[1]],5))
+plotGate(G[[1]],nodelist[5])
 
+getData(G1[[1]],5)
+getData(G[[1]],5)
+
+str(getGate(G[[1]],5))@boundaries
 #############################################
 #QUALIFIER
 ########################################
@@ -113,7 +121,7 @@ ws<-openWorkspace(macXML)
 time1<-Sys.time()
 G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 #					,isNcdf=T
-					,subset=c(1:2)
+					,subset=c(1)
 					,useInternal=F,dMode=2)
 Sys.time()-time1
 G1
@@ -155,4 +163,5 @@ plotGate(G1[[1]],5)
 #############
 all(sort(rownames(getPopStats(gh)))==sort(rownames(getPopStats(gh1))))
 all(getPopStats(gh)[sort(rownames(getPopStats(gh))),c("flowJo.count","parent.total")]==getPopStats(gh1)[sort(rownames(getPopStats(gh1))),c("flowJo.count","parent.total")])
+
 

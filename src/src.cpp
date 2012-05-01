@@ -165,6 +165,7 @@ void test(string xml){
 			cout<<u<<"."<<node->getName()<<":";
 			cout<<node->getStats(false)["count"];
 			cout<<"("<<node->getStats(true)["count"]<<") ";
+
 			if(u!=ROOTNODE)
 				cout<<node->getGate()->getName()<<endl;
 		}
@@ -195,6 +196,65 @@ void Rcpp_test(string xml){
 //	SEXP ghPtr=R_getGatingHierarchyI(gsPtr,IntegerVector(1));
 
 }
+#include "include/spline.hpp"
+void spline_test(){
+
+	double x[4097],y[4097],b[4097],c[4097],d[4097];
+	int n=4097;
+	/*
+	 * read the x,y vector from R output
+	 */
+    string word;
+    ifstream infile_x("../output/R/x.csv");
+    int counter=0;
+    while (getline(infile_x, word, '\n'))
+    {
+//    cout << "Word: " << word << "\n";
+    	x[counter]=atof(word.c_str());
+    counter++;
+    }
+    ifstream infile_y("../output/R/y.csv");
+    cout<<counter<<endl;
+    counter=0;
+    while (getline(infile_y, word, '\n'))
+	{
+    	y[counter]=atof(word.c_str());
+		counter++;
+	}
+    cout<<counter<<endl;
+	/*
+	 * interpolation
+	 */
+	natural_spline(n,x, y, b, c, d);
+	int imeth=2,nu=63680;
+	double u[63680],v[63680];
+	ifstream infile_u("../output/R/u.csv");
+	counter=0;
+	while (getline(infile_u, word, '\n'))
+	{
+//    cout << "Word: " << word << "\n";
+		u[counter]=atof(word.c_str());
+		counter++;
+	}
+	/*
+	 * transformation
+	 */
+	spline_eval(&imeth,&nu,u,v,&n,x, y, b, c, d);
+//	for(unsigned i=0;i<20;i++)
+//		cout<<v[i]<<",";
+
+	/*
+	 * output to text for testing
+	 */
+	ofstream vOutput("../output/c++/v.csv");
+//	ofstream yOutput("../output/c++/y.csv");
+	for(int i=0;i<nu;i++)
+	{
+		vOutput<<v[i]<<",";
+
+	}
+
+}
 
 int main(void) {
 
@@ -209,6 +269,7 @@ int main(void) {
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 	test(fileNames.at(0));
 //	Rcpp_test(fileNames.at(WIN));
+//	spline_test();
 
 
 

@@ -25,88 +25,7 @@ void ncdfFlow::params_set(vector<string> _params){
 vector<string> ncdfFlow::params_get(){
 	return params;
 }
-/*
- * it only read the whole slice (1*nChannels*nEvents)
- * optionally we want to provide the interface for slicing at arbitrary dimensions
- * Note that it is up to caller to free the memory of the returned value
 
- * this c++ version is meant to replace the original C-version APIs of ncdfFlow package
- * for the easy maintenance
- */
-//float * ncdfFlow::readSlice(unsigned int sampleID)
-//{
-//	if(fileName.empty())
-//		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
-//
-//	NcFile dataFile(fileName.c_str(), NcFile::ReadOnly);
-//	if (!dataFile.is_valid())
-//	{
-//	 throw(ios_base::failure("Couldn't open cdf file!\n"));
-//
-//	}
-//
-//	NcVar *data = dataFile.get_var("exprsMat");
-//	if(!data)
-//	   throw(domain_error("can't get variable:exprsMat!"));
-//
-//	NcAtt *eCounts=data->get_att("eventCount");
-//	if(!eCounts)
-//	   throw(domain_error("can't get attribute:eventCount!"));
-//
-//	int nRow=eCounts->as_int(sampleID);
-//	delete eCounts;
-//
-//	unsigned nChannels= dataFile.get_dim("channel")->size();
-//
-//	unsigned int nSize=nRow*nChannels;
-//	float * mat=new float[nSize];
-//	data->set_cur(sampleID,0,0);
-//
-//	data->get(mat,nSize);
-//
-//	return mat;
-//
-//}
-/*
- * another version of readSlice to return the 1-D matrix as well as dimensions info for 2-D matrix
- * all these info encapsulated within the flowData object
- */
-//flowData ncdfFlow::readflowData(unsigned int sampleID)
-//{
-//	if(fileName.empty())
-//		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
-//	cout<<"opening file:"<<fileName.c_str()<<endl;
-//	NcFile dataFile(fileName.c_str(), NcFile::ReadOnly);
-//	if (!dataFile.is_valid())
-//	{
-//	 throw(ios_base::failure("Couldn't open cdf file!\n"));
-//
-//	}
-//
-//	NcVar *data = dataFile.get_var("exprsMat");
-//	if(!data)
-//	   throw(domain_error("can't get variable:exprsMat!"));
-//
-//	NcAtt *eCounts=data->get_att("eventCount");
-//	if(!eCounts)
-//	   throw(domain_error("can't get attribute:eventCount!"));
-//
-//	int nRow=eCounts->as_int(sampleID);
-//	delete eCounts;
-//
-//	unsigned nChannels= dataFile.get_dim("channel")->size();
-//
-//	unsigned int nSize=nChannels*nRow;
-//	float * mat=new float[nSize];
-//	data->set_cur(sampleID,0,0);
-//
-//	data->get(mat,1,nChannels,nRow);
-//	flowData res(mat,nRow,nChannels);
-//	res.params_set(params);
-//
-//	return res;
-//
-//}
 /*
  * modified c version of readSlice,
  * there is conflicts when loading both netcdf_c++ and netcdf shared library
@@ -120,7 +39,7 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
 	cout<<"opening file:"<<fileName.c_str()<<endl;
 
-	int retval, ncid, varid, colStart, colEnd, nRow;
+	int retval, ncid, varid, nRow;
 
 	if ((retval = nc_open(fileName.c_str(), NC_NOWRITE,&ncid)))
 			ERR(retval);
@@ -155,9 +74,87 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 	if((retval = nc_get_vara_double(ncid, varid, start, count, mat)))
 		ERR(retval);
 
-	flowData res(mat,(unsigned int)nRow,(unsigned int)nChannels);
-	res.params_set(params);
+	flowData res(mat,params,(unsigned int)nRow,sampleID);
+
+	delete mat;
+
+	if((retval = nc_close(ncid)))
+		ERR(retval);
 
 	return res;
 
 }
+
+void ncdfFlow::writeflowData(flowData & fdata)
+{
+
+	if(fileName.empty())
+		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
+
+	int retval, ncid, varid;
+
+	if ((retval = nc_open(fileName.c_str(), NC_WRITE,&ncid)))
+			ERR(retval);
+
+	unsigned nChannels=params.size();
+	unsigned nSize=fdata.data.size();
+	unsigned nRow=nSize/nChannels;
+
+	size_t start[] = {fdata.sampleID, 0, 0};
+	size_t count[] = {1,nChannels, nRow};
+	double *mat = new double[nSize];
+
+	for(unsigned i=0;i<nSize;i++)
+		mat[i]=fdata.data[i];
+
+//	for(unsigned i=0;i<10;i++)
+//		cout<<mat[i+6*nRow]<<",";
+//
+//	cout<<"test"<<endl;
+//	cout<<"test"<<endl;
+	if((retval = nc_inq_varid (ncid, "exprsMat", &varid)))
+		ERR(retval);
+
+	if((retval = nc_put_vara_double(ncid, varid, start, count, mat)))
+		ERR(retval);
+
+	delete mat;
+	/*
+	 * assume the new slice is the same size of original one, so no need to update event counts attribute
+	 */
+
+	if((retval = nc_close(ncid)))
+		ERR(retval);
+
+}
+/*
+ * to simply the installation and avoid dealing with both c++ and c library of netCDF
+ * the IO using ncdfFlow package exposed API directly
+ */
+//flowData ncdfFlow::readflowData(unsigned int sampleID)
+//{
+//	if(fileName.empty())
+//		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
+//	cout<<"opening file:"<<fileName.c_str()<<endl;
+//
+//	int nChannel=params.size();
+//	int _channel[2]={1,nChannel};
+//	int _sampleID=sampleID+1;
+//	double * mat=readSlice(fileName.c_str(), _channel,_sampleID);
+//
+//	/*
+//	 * read slice
+//	 */
+//
+//	/*
+//	 * get counts
+//	 */
+//	int nEcount=readEventCounts(fileName.c_str());
+//
+//	/*
+//	 * return a flowData object
+//	 */
+//	flowData res(mat,(unsigned int)nRow,(unsigned int)nChannels);
+//	res.params_set(params);
+//
+//}

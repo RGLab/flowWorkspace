@@ -39,7 +39,10 @@ valarray<double> workspace::toArray(string sCalTable){
 
 	valarray<double> res(tmp.size());
 	for(unsigned i=0;i<tmp.size();i++)
+	{
 		res[i]=tmp.at(i);
+//		cout<<res[i]<<",";
+	}
 	return res;
 }
 

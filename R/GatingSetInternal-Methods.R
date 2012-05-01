@@ -65,6 +65,9 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		}
 		
 			
+	}else
+	{
+		files<-samples
 	}
 	
 	############################################################################
@@ -90,6 +93,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 				##################################
 				#Compensating the data
 				##################################
+				message("Compensating");
 				comp<-.Call("R_getCompensation",G@pointer,sampleName)
 				cid<-comp$cid
 				
@@ -132,13 +136,13 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					##Acquisition defined compensation.
 					nm<-comp$comment
 					
-					if(grepl("Acquisition-defined",cid)){
+					if(grepl("Acquisition-defined",nm)){
 						###Code to compensate the sample using the acquisition defined compensation matrices.
 						message("Compensating with Acquisition defined compensation matrix");
 						#browser()
-						comp<-compensation(spillover(data)$SPILL)
+						compobj<-compensation(spillover(data)$SPILL)
 						gh@compensation<-spillover(data)$SPILL
-						res<-try(compensate(data,comp),silent=TRUE)
+						res<-try(compensate(data,compobj),silent=TRUE)
 						if(inherits(res,"try-error")){
 							message("Data is probably stored already compensated");
 						}else{
@@ -146,8 +150,9 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 							rm(res);
 					
 						}
+#						browser()
 						cnd<-colnames(data)
-						wh<-cnd%in%parameters(comp)
+						wh<-cnd%in%parameters(compobj)
 						cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
 						e<-exprs(data)
 						d<-description(data);
@@ -160,31 +165,12 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					
 				}
 				
-				##################################
-				#Transforming the data
-				##################################
-#				cal<-.Call("R_getTransformation",G@pointer,sampleName)				
-#				message("Transforming");
-				
-#				axis.labels<-list();
-				.flowJoTransform(environment(),cal);
-#				#gc(reset=TRUE);
-#				#wh<-which(data@parameters@data$name=="Time")
-#				wh<-grep("^Time$",data@parameters@data$name)
-#				if(length(wh!=0)){
-#					#gc(reset=TRUE);
-#					parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
-#					#gc(reset=TRUE);
-#					parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
-#				}
-#
-#
-#					e<-new.env(parent=.GlobalEnv);
+				#save compensated data to cdf
+				message("saving compensated data");
 
-				#########################################
-				#if use ncdfFlowSet,then add the transformed
-				#matrix to the ncdf file
-				addFrame(fs,data,sampleName)
+				addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
+				
+				#transformaton is done and cdf data is updated within R_gating call
 			}
 			
 			gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
@@ -192,21 +178,35 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			gh
 		}
 		,USE.NAMES=TRUE)
-#	browser()	
-	colnames(fs)<-colnames(fs[[1]])#update colnames slot for ncdfFlowSet
-
-	#attach filename and colnames to internal stucture for gating
-	setData(G,fs)
-	assign("fs",fs,dataEnv)
 	
 	if(execute)
+	{
+		colnames(fs)<-colnames(fs[[1]])#update colnames slot for ncdfFlowSet
+		
+		#attach filename and colnames to internal stucture for gating
+		setData(G,fs)
+		assign("fs",fs,dataEnv)
+			
+
 		lapply(G,function(gh){
 #					setData(gh,fs)
 					sampleName<-getSample(gh)
 					message(paste("gating",sampleName,"..."))
-					.Call("R_gating",gh@pointer,sampleName)	
+					.Call("R_gating",gh@pointer,sampleName)
+
+					#update range info for flowFrames due to the transformation
+	#				newRange<-apply(exprs(fs@frames$"004_A1_A01.fcs"),2,range)
+	#				pData(parameters(fs@frames$"004_A1_A01.fcs"))[,c("minRange","maxRange")]<-t(newRange)
+				
+#					newRange<-apply(exprs(fs[[sampleName]]),2,range)
+#					pData(parameters(fs[[sampleName]]))[,c("minRange","maxRange")]<-t(newRange)
+				
+				
 				})
+		#update data environment
+		assign("fs",fs,dataEnv)
 	
+	}	
 	
 	G	
 }

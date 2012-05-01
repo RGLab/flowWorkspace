@@ -12,14 +12,16 @@
 
 flowData::flowData(){};
 
-flowData::flowData(double* mat,unsigned _nEvents,unsigned _nChannls){
+flowData::flowData(double* mat,vector<string> _params,unsigned _nEvents,unsigned _sampleID){
 
 
-//	data=mat;
+	params=_params;
+	unsigned nChannls=params.size();
 	nEvents=_nEvents;
-	nChannls=_nChannls;
-	data.resize(nChannls*nEvents);
-	data=valarray<double>(mat,nEvents*nChannls);
+	unsigned nSize=nChannls*nEvents;
+	sampleID=_sampleID;
+	data.resize(nSize);
+	data=valarray<double>(mat,nSize);
 }
 
 //flowData::flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls){
@@ -40,7 +42,7 @@ flowData::~flowData(){
 
 }
 void flowData::params_set(vector<string> _params){
-	if(_params.size()!=nChannls)
+	if(_params.size()!=params.size())
 		throw(domain_error("the number of parameters is not consistent with cdf file!"));
 	params=_params;
 }
@@ -70,22 +72,4 @@ valarray<double> flowData::subset(string channel){
 }
 
 
-//flowData flowData::subset(POPINDICES rowInd){
-//
-////	unsigned newLen=nRow*nCol;
-////	POPINDICES newInd(newLen);
-////	for(unsigned i=0;i<nCol;i++)
-////	{
-////
-////		 valarray<bool> mymask (true,nRow);
-////
-////	}
-////	return data[newInd];
-//	/*
-//	 * convert the rowInd form valarray<bool> to gslice
-//	 */
-//	gslice newInd;
-//
-//	unsigned nNewRow=newInd.size();//new size of the the data
-//	return  flowData((*data)[newInd],nNewRow,this->nCol);
-//}
+

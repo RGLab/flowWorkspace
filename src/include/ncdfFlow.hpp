@@ -23,9 +23,9 @@ public:
 	void params_set(vector<string> _params);
 	vector<string> params_get();
 	string fileName_get();
-	float * readSlice(unsigned int sampleID);
+//	float * readSlice(unsigned int sampleID);
 	flowData readflowData(unsigned int sampleID);
-
+	void writeflowData(flowData & fdata);
 };
 
 #endif /* NCDFFLOW_HPP_ */

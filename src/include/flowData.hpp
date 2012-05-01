@@ -27,16 +27,17 @@ class flowData{
 public:
 //	valarray<float> * data;
 	vector<string> params;
+	unsigned sampleID;
 	valarray<double> data;
-	unsigned nEvents,nChannls;
+	unsigned nEvents;
 	flowData();
-	flowData(double* mat,unsigned _nEvents,unsigned _nChannls);
+	flowData(double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
 //	flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls);
 	~flowData();
 	slice getSlice(string channel);
 	valarray<double> subset(string channel);
 	void params_set(vector<string> _params);
-	void syn(){};//write data back to cdf
+
 };
 
 

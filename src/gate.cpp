@@ -11,7 +11,58 @@
 #include <algorithm>
 #include <valarray>
 
+/*
+ * original c version
+ */
+void inPolygon_c(double *data, int nrd,
+            double *vertices, int nrv, int *res) {
 
+  int i, j, counter;
+  double xinters;
+  double p1x, p2x, p1y, p2y;
+
+  for(i=0; i<nrd; i++){//iterate over points
+    p1x=vertices[0];
+    p1y=vertices[nrv];
+    counter=0;
+    for(j=1; j < nrv+1; j++){// iterate over vertices
+      /*p1x,p1y and p2x,p2y are the endpoints of the current vertex*/
+      if (j == nrv){//the last vertice must "loop around"
+	p2x = vertices[0];
+	p2y = vertices[0+nrv];
+      }//if
+      else{
+	p2x = vertices[j];
+	p2y = vertices[j+nrv];
+      }//else
+      /*if horizontal ray is in range of vertex find the x coordinate where
+	ray and vertex intersect*/
+      if(data[i+nrd] >= min(p1y, p2y) && data[i+nrd] < max(p1y, p2y) &&
+         data[i] <= max(p1x, p2x)){
+	xinters = (data[i+nrd]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
+	/*if intersection x coordinate == point x coordinate it lies on the
+	  boundary of the polygon, which means "in"*/
+	if(xinters==data[i]){
+	  counter=1;
+	  break;
+	}//if
+	/*count how many vertices are passed by the ray*/
+	if (xinters > data[i]){
+	  counter++;
+	}//if
+      }//if
+      p1x=p2x;
+      p1y=p2y;
+    }//for j
+    /*uneven number of vertices passed means "in"*/
+    if(counter % 2 == 0){
+      res[i]=0;
+    }//if
+    else{
+      res[i]=1;
+    }//else
+  }//for i
+}//function
 /*
  * TODO:try within method from boost/geometries forboost.polygon
  *  reimplement c++ version of inPolygon_c
@@ -27,54 +78,100 @@ POPINDICES polygonGate::gating(flowData & fdata){
 
 	valarray<double> xdata=fdata.subset(params.at(0));
 	valarray<double> ydata=fdata.subset(params.at(1));
+
+//	cout<<"print transformed x value"<<endl;
+//	for(unsigned i=0;i<5;i++)
+//		cout<<xdata[i]<<",";
+//	cout<<"print transformed y value"<<endl;
+//	for(unsigned i=0;i<5;i++)
+//		cout<<ydata[i]<<",";
+
 	unsigned nEvents=xdata.size();
 	//init the indices
 	POPINDICES ind(nEvents);
-	unsigned counter;
-	double xinters;
-	double p1x, p2x, p1y, p2y;
 
-	for(unsigned i=0; i<nEvents; i++)
-	{//iterate over points
-	p1x=vertices.at(0).x;
-	p1y=vertices.at(0).y;
-	counter=0;
-	for(unsigned j=1; j <= nVertex; j++)
-	{// iterate over vertices
-	  /*p1x,p1y and p2x,p2y are the endpoints of the current vertex*/
-	  if (j == nVertex)
-	  {//the last vertice must "loop around"
-		p2x = vertices.at(0).x;
-		p2y = vertices.at(0).y;
-	  }
-	  else
-	  {
-		p2x = vertices.at(j).x;
-		p2y = vertices.at(j).y;
-	  }
-	  /*if horizontal ray is in range of vertex find the x coordinate where
-		ray and vertex intersect*/
-	  if(ydata[i] >= min(p1y, p2y) && ydata[i] < max(p1y, p2y) &&xdata[i] <= max(p1x, p2x))
-	  {
-		  xinters = (ydata[i]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
-		/*if intersection x coordinate == point x coordinate it lies on the
-		  boundary of the polygon, which means "in"*/
-		if(xinters==xdata[i])
-		{
-		  counter=1;
-		  break;
-		}
-		/*count how many vertices are passed by the ray*/
-		if (xinters > xdata[i])counter++;
-	  }
-	  p1x=p2x;
-	  p1y=p2y;
+
+
+	/*
+	 * call original c version of polygon gating routine
+	 */
+	int nrd=nEvents;
+	double* _data=new double[2*nrd];
+	for(int i=0;i<nrd;i++)
+	{
+		_data[i]=xdata[i];
+		_data[i+nrd]=ydata[i];
 	}
-	/*uneven number of vertices passed means "in"*/
 
-	ind[i]=((counter % 2) != 0);
-
+	int nrv=nVertex;
+	double * _vertices=new double[2*nrv];
+	for(int i=0;i<nrv;i++)
+	{
+		_vertices[i]=vertices.at(i).x;
+		_vertices[i+nrv]=vertices.at(i).y;
 	}
+
+	int * res=new int[nrd];
+	inPolygon_c(_data,nrd,_vertices,nrv,res);
+	for(int i=0;i<nrd;i++)
+	{
+		ind[i]=res[i];
+//		cout<<ind[i]<<";"<<res[i]<<endl;
+	}
+	delete _data;
+	delete _vertices;
+	delete res;
+
+	/*
+	 * c++ version
+	 */
+
+
+//	unsigned counter;
+//	double xinters;
+//	double p1x, p2x, p1y, p2y;
+//
+//	for(unsigned i=0; i<nEvents; i++)
+//	{//iterate over points
+//	p1x=vertices.at(0).x;
+//	p1y=vertices.at(0).y;
+//	counter=0;
+//	for(unsigned j=1; j <= nVertex; j++)
+//	{// iterate over vertices
+//	  /*p1x,p1y and p2x,p2y are the endpoints of the current vertex*/
+//	  if (j == nVertex)
+//	  {//the last vertice must "loop around"
+//		p2x = vertices.at(0).x;
+//		p2y = vertices.at(0).y;
+//	  }
+//	  else
+//	  {
+//		p2x = vertices.at(j).x;
+//		p2y = vertices.at(j).y;
+//	  }
+//	  /*if horizontal ray is in range of vertex find the x coordinate where
+//		ray and vertex intersect*/
+//	  if(ydata[i] >= min(p1y, p2y) && ydata[i] < max(p1y, p2y) &&xdata[i] <= max(p1x, p2x))
+//	  {
+//		  xinters = (ydata[i]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
+//		/*if intersection x coordinate == point x coordinate it lies on the
+//		  boundary of the polygon, which means "in"*/
+//		if(xinters==xdata[i])
+//		{
+//		  counter=1;
+//		  break;
+//		}
+//		/*count how many vertices are passed by the ray*/
+//		if (xinters > xdata[i])counter++;
+//	  }
+//	  p1x=p2x;
+//	  p1y=p2y;
+//	}
+//	/*uneven number of vertices passed means "in"*/
+//
+//	ind[i]=((counter % 2) != 0);
+//
+//	}
 	return ind;
 }
 

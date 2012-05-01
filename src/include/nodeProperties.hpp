@@ -33,12 +33,13 @@ public:
 
 
 	POPSTATS getStats(bool);
-	unsigned getCounts(bool);
+	unsigned getCounts();
+	bool isGated(){return !indices.empty();};
 	gate * getGate();
 	string getName();
 	void setName(const char * popName);
 	void setGate(gate *gate);
-	void computeStats(bool);
+	void computeStats();
 
 
 };

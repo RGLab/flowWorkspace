@@ -11,7 +11,7 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
-
+#include <fstream>
 
 const double PI  =3.141592653589793238462;
 using namespace std;
@@ -222,8 +222,20 @@ CALTBS macFlowJoWorkspace::getCalTbls(){
 
 		t->init(nX);
 
-		t->y=tbl[slice(0,2,nX)];
-		t->x=tbl[slice(1,2,nX)];
+		t->y=tbl[slice(0,nX,2)];
+		t->x=tbl[slice(1,nX,2)];
+
+		/*
+		 * output to text for testing
+		 */
+//		ofstream xOutput("../output/c++/x.csv");
+//		ofstream yOutput("../output/c++/y.csv");
+//		for(unsigned i=0;i<nX;i++)
+//		{
+//			xOutput<<t->x[i]<<",";
+//			yOutput<<t->y[i]<<",";
+//		}
+
 
 		if(dMode>=GATING_SET_LEVEL)
 			cout<<"spline interpolating..."<<endl;
