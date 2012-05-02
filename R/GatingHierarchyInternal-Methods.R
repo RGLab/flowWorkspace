@@ -463,7 +463,7 @@ setMethod("getData",signature(obj="GatingHierarchyInternal"),function(obj,y=NULL
 				stop("Must run execute() before fetching data");
 			}
 
-			r<-obj@dataEnv$fs[[getSample(obj)]]
+			r<-dataEnv(obj)$fs[[getSample(obj)]]
 #			browser()			
 			if(is.null(y)||y==1||getNodes(obj)[1]==y){
 				return (r)	
@@ -509,9 +509,43 @@ setMethod("getDimensions",signature(obj="GatingHierarchyInternal",y="character")
 				}
 			}
 		})
-setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y=NULL,...){
-#			get("axis.labels",envir=nodeData(obj@tree)[[1]]$data)
-			return (NULL)
+setGeneric("dataEnv",function(obj){
+			standardGeneric("dataEnv")
+		})
+setMethod("dataEnv",signature(obj="GatingHierarchyInternal"),function(obj)obj@dataEnv)
+
+#setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y=NULL,...){
+#			get("axis.labels",envir=dataEnv(obj))
+#			
+#		})
+setMethod("getTransformations","GatingHierarchyInternal",function(x){
+			browser()
+			trans<-.Call("R_getTransformations",x@pointer,sampleName(x))
+			lapply(trans,function(curTrans){
+						
+							f<-function (x, deriv = 0) 
+							{
+							    deriv <- as.integer(deriv)
+							    if (deriv < 0 || deriv > 3) 
+							        stop("'deriv' must be between 0 and 3")
+							    if (deriv > 0) {
+							        z0 <- double(z$n)
+							        z[c("y", "b", "c")] <- switch(deriv, list(y = z$b, b = 2 * 
+							            z$c, c = 3 * z$d), list(y = 2 * z$c, b = 6 * z$d, 
+							            c = z0), list(y = 6 * z$d, b = z0, c = z0))
+							        z[["d"]] <- z0
+							    }
+							    res <- .C(C_spline_eval, z$method, as.integer(length(x)), 
+							        x = as.double(x), y = double(length(x)), z$n, z$x, z$y, 
+							        z$b, z$c, z$d, PACKAGE = "stats")$y
+							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
+							        res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
+							    res
+							}
+							assign("z",curTrans,environment(f))
+							return (f)
+					})
+			
 		})
 setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
 #plotGate1<-function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
@@ -687,6 +721,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 							return(res);
 						}	    	
 					}else{
+						browser()
 						if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
 							scales<-list();
 						}

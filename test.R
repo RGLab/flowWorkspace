@@ -30,7 +30,7 @@ time1<-Sys.time()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
-					,useInternal=T,dMode=0)
+					,useInternal=T,dMode=4)
 #Rprof(NULL)	
 #summaryRprof()
 Sys.time()-time1
@@ -75,26 +75,18 @@ G_list<-flowWorkspace:::splitGatingSetByNgates(G)
 lapply(G_list,getPopStats,flowJo=T)
 
 ###gating
-str(getGate(G[[1]],nodelist[3]))
-length(which(getIndices(G[[1]],nodelist[3])))
-
-
-
+getGate(G[[1]],nodelist[3])
+getIndices(G[[1]],nodelist[3])))
 getDimensions(G[[1]],nodelist[2])
 getBoundaries(G[[1]],nodelist[5])
-getBoundaries(G[[2]],nodelist[5])
-getBoundaries(G1[[1]],getNodes(G1[[1]])[5])
-
-
 getData(G[[1]])
-getData(G[[2]])
 
 
 
-
+plotGate(G[[2]],8)
 plotGate(G1[[2]],8)
-str(getGate(G1[[2]],getNodes(G1[[2]])[8]))
-
+getGate(G[[2]],getNodes(G[[2]])[8])
+getGate(G1[[2]],getNodes(G1[[2]])[8])
 
 fr1<-test_trans
 

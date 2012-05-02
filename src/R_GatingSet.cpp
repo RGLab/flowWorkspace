@@ -30,7 +30,7 @@ BEGIN_RCPP
 		StringVec sampleIDs=as<StringVec>(_sampleIDs);
 		bool isParseGate=as<bool>(_execute);
 //		XPtr<GatingSet>gs(_gsPtr);
-		GatingSet * gs=new GatingSet(fileName,dMode);
+		GatingSet * gs=new GatingSet(fileName,isParseGate,dMode);
 		gs->parseWorkspace(sampleIDs,isParseGate);
 		return XPtr<GatingSet>(gs);
 //		return R_NilValue;

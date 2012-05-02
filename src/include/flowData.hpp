@@ -25,14 +25,13 @@ typedef vector<bool> POPINDICES;
 class flowData{
 
 public:
-//	valarray<float> * data;
+
 	vector<string> params;
 	unsigned sampleID;
 	valarray<double> data;
 	unsigned nEvents;
 	flowData();
 	flowData(double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
-//	flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls);
 	~flowData();
 	slice getSlice(string channel);
 	valarray<double> subset(string channel);
@@ -41,15 +40,6 @@ public:
 };
 
 
-//typedef valarray<valarray<float> > val2d;
-//class flowData{
-//	val2d  data();
-//
-//public:
-//	flowData(unsigned nEvents,unsigned nChannls);
-//	val2d subset(POPINDICES rows,POPINDICES cols);
-//
-//};
 
 
 #endif /* FLOWDATA_HPP_ */

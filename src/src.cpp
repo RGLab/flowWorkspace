@@ -24,7 +24,7 @@ using namespace std;
 void test(string xml){
 
 		//create gating set object
-		GatingSet gs(xml,4);
+		GatingSet gs(xml,true,4);
 
 //		valarray<double> x(gs.ws->toArray(""));
 //		for(unsigned i=0;i<x.size();i++)
@@ -229,7 +229,7 @@ void spline_test(){
 	/*
 	 * interpolation
 	 */
-	natural_spline(n,x, y, b, c, d);
+	natural_spline_C(n,x, y, b, c, d);
 	int imeth=2,nu=63680;
 	double u[63680],v[63680];
 	ifstream infile_u("../output/R/u.csv");
@@ -243,7 +243,7 @@ void spline_test(){
 	/*
 	 * transformation
 	 */
-	spline_eval(&imeth,&nu,u,v,&n,x, y, b, c, d);
+	spline_eval_C(&imeth,&nu,u,v,&n,x, y, b, c, d);
 //	for(unsigned i=0;i<20;i++)
 //		cout<<v[i]<<",";
 

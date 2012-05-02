@@ -57,7 +57,7 @@ GatingSet::~GatingSet()
 
 }
 //read xml file and create the appropriate flowJoWorkspace object
-GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
+GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short _dMode=1)
 {
 
 		LIBXML_TEST_VERSION
@@ -99,7 +99,12 @@ GatingSet::GatingSet(string sFileName,unsigned short _dMode=1)
 		 /*
 		  * parsing global calibration tables
 		  */
-		 calTbls=ws->getCalTbls();
+		 if(isParseGate)
+		 {
+			 if(dMode>=GATING_SET_LEVEL)
+				 cout<<"... start parsing global calibration tables... "<<endl;
+			 calTbls=ws->getCalTbls();
+		 }
 
 }
 

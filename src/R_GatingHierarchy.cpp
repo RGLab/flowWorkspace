@@ -117,33 +117,45 @@ END_RCPP
 }
 
 
-RcppExport SEXP R_getTransformation(SEXP _gsPtr,SEXP _sampleName){
+RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-//	transformation *trans=gh->getTransformation();
-//	switch(trans->type)
-//	{
-//		case LOGICLE:
-//			{
-//				throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
-//
-////				Vector args=Vector::create();
-////
-////				return(List::create(Named("type",LOGICAL)
-////									,Named("arguments",args)
-////									)
-////							);
-//			}
-//		case CALTBL:
-//		{
-////			return (wrap(trans->getCalTbl()));
-//
-//		}
-//	}
+	Trans_map trans=gh->trans;
+	List res;
+
+	for (Trans_map::iterator it=trans.begin();it!=trans.end();it++)
+	{
+		transformation * curTrans=it->second;
+
+		switch(curTrans->type)
+			{
+				case LOGICLE:
+					{
+						throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
+		//
+		////				Vector args=Vector::create();
+		////
+		////				return(List::create(Named("type",LOGICAL)
+		////									,Named("arguments",args)
+		////									)
+		////							);
+					}
+				case CALTBL:
+				{
+					res.push_back(curTrans->getCalTbl());
+					break;
+				}
+				default:
+					throw(domain_error("unknown transformation in R_getTransformations!"));
+			}
+
+	}
+	return (res);
+
 
 
 END_RCPP

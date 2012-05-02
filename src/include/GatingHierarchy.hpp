@@ -59,7 +59,7 @@ struct OurVertexPropertyWriterR {
  */
 
 class GatingHierarchy{
-	Trans_map trans;
+
 	compensation comp;
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	flowData fdata;
@@ -71,6 +71,7 @@ class GatingHierarchy{
 	workspace * thisWs;
 	CALTBS *calTbls;//pointer to the global calTbls stored in gs
 public:
+	Trans_map trans;
 	unsigned short dMode;//debug mode passed from GatingSet
 
 	/*retrieve the gate definition from a particular node*/

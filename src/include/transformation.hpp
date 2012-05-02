@@ -12,11 +12,12 @@
 #define LOGICLE 1
 #include <map>
 #include <string>
+#include <vector>
 #include <stdexcept>
 #include "spline.hpp"
 using namespace std;
 
-//typedef pair<string,double> ARG;
+typedef map<string,vector<double> > Spline_Coefs;
 typedef map<string,double> ARGLIST;
 
 
@@ -27,7 +28,7 @@ public:
 	string channel;
 public:
 	virtual ARGLIST getArgs()=0;
-//	virtual string getCalTbl()=0;
+	virtual Spline_Coefs getCalTbl()=0;
 	virtual void interpolate()=0;
 	virtual valarray<double> transforming(valarray<double> &)=0;
 };
@@ -35,7 +36,7 @@ public:
 typedef map<string,transformation *> Trans_map;
 
 class logicalTrans:public transformation{
-//	string getCalTbl(){throw(domain_error("not valid operation for logicalTrans class"));}
+	Spline_Coefs getCalTbl(){throw(domain_error("not valid operation for logicalTrans class"));}
 	void interpolate(){throw(domain_error("not valid operation for logicalTrans class"));}
 public:
 	ARGLIST args;
@@ -61,7 +62,7 @@ public:
 	 */
 	double biExpDecades,biExpNegDecades,w;
 	valarray<double> x,y,b,c,d;
-	double * x1,*y1,*b1,*c1,*d1;
+//	double * x1,*y1,*b1,*c1,*d1;
 //	int n;
 
 public:
@@ -69,6 +70,6 @@ public:
 	void interpolate();
 	void init(unsigned);
 	valarray<double> transforming(valarray<double> &);
-//	string getCalTbl(){return tbl;}
+	Spline_Coefs getCalTbl();
 };
 #endif /* TRANSFORMATION_HPP_ */

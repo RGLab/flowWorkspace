@@ -36,7 +36,7 @@ public:
 	workspace * ws;
 public:
 	~GatingSet();
-	GatingSet(string,unsigned short);
+	GatingSet(string,bool,unsigned short);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
 

@@ -2951,7 +2951,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 			}else{
 				#based on the range
 				#Inverse transform;
-				f<-splinefun(cal[[j]](seq(rw[1],rw[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
+				f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
 				raw<-signif(f(seq(r[1],r[2],l=20)),2);
 				pos<-signif(cal[[j]](raw),2)
 			}

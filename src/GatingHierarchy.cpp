@@ -24,30 +24,18 @@ GatingHierarchy::~GatingHierarchy()
 {
 	//for each node
 
-	cout<<"entring the destructor of GatingHierarchy"<<endl;
-
-	VertexID_vec vertices=getVertices(false);
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout<<"free the node properties from tree"<<endl;
-	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-	{
-		if(dMode>=POPULATION_LEVEL)
-			cout<<"free "<<tree[*it]->getName()<<endl;
-		delete tree[*it];//free the property bundle
-//			cout<<"free the indices"<<endl;
-	}
-
-//	if(trans!=NULL)
-//		delete trans;
-
-//	if(isLoaded)
+//	cout<<"entring the destructor of GatingHierarchy"<<endl;
+//
+//	VertexID_vec vertices=getVertices(false);
+//	if(dMode>=GATING_HIERARCHY_LEVEL)
+//		cout<<"free the node properties from tree"<<endl;
+//	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 //	{
-//		if(dMode>=GATING_HIERARCHY_LEVEL)
-//			cout<<"free the flow data"<<endl;
-//		delete fdata.data;
+//		if(dMode>=POPULATION_LEVEL)
+//			cout<<"free "<<tree[*it]->getName()<<endl;
+//		delete tree[*it];//free the property bundle
+////			cout<<"free the indices"<<endl;
 //	}
-
-
 
 }
 
