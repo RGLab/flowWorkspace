@@ -195,8 +195,8 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					.Call("R_gating",gh@pointer,sampleName)
 
 					#update range info for flowFrames due to the transformation
-	#				newRange<-apply(exprs(fs@frames$"004_A1_A01.fcs"),2,range)
-	#				pData(parameters(fs@frames$"004_A1_A01.fcs"))[,c("minRange","maxRange")]<-t(newRange)
+#					newRange<-apply(exprs(fs@frames$"004_A1_A01.fcs"),2,range)
+#					pData(parameters(fs@frames$"004_A1_A01.fcs"))[,c("minRange","maxRange")]<-t(newRange)
 				
 					newRange<-apply(exprs(fs[[sampleName]]),2,range)
 					pData(parameters(fs[[sampleName]]))[,c("minRange","maxRange")]<-t(newRange)

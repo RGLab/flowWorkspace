@@ -212,8 +212,8 @@ void rangegate::transforming(Trans_map & trans){
 	vertices_valarray vert=getVertices();
 
 	valarray<double> output(trans[param.name]->transforming(vert.x));
-	param.min=output[1];
-	param.max=output[2];
+	param.min=output[0];
+	param.max=output[1];
 
 
 }

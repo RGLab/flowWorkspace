@@ -26,13 +26,13 @@ winXML<-file.path(path,winXML)
 ###############################################################################
 ws<-openWorkspace(macXML[1])
 time1<-Sys.time()
-Rprof()
+#Rprof()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
-					,useInternal=T,dMode=4)
-Rprof(NULL)	
-summaryRprof()
+					,useInternal=T,dMode=0)
+#Rprof(NULL)	
+#summaryRprof()
 Sys.time()-time1
 G
 
@@ -62,11 +62,9 @@ getTotal(G[[1]],nodelist[2],flowJo=F)
 
 
 .getPopStat(G[[1]],2)
-head(getPopStats(G[[1]])[,2:3])
-getPopStats(G1[[1]])[rownames(getPopStats(G[[1]])),2:3]
+getPopStats(G[[2]])[,2:3]
 
-head(getPopStats(G1[[1]])[,2:3])
-
+plotPopCV(G[[2]])
 
 plot(G[[2]])
 
@@ -91,29 +89,14 @@ getBoundaries(G1[[1]],getNodes(G1[[1]])[5])
 getData(G[[1]])
 getData(G[[2]])
 
-plotGate(G[[2]],5)
-plotGate(G1[[2]],4)
 
-nc<-G[[1]]@dataEnv$fs
 
-G[[1]]@dataEnv$fs<-nc
 
-tmpfile<-nc@file
-nc@file<-tmpfile
+plotGate(G1[[2]],8)
+str(getGate(G1[[2]],getNodes(G1[[2]])[8]))
 
-fr<-nc[[1]]
 
 fr1<-test_trans
-
-identical(exprs(fr),exprs(fr1))
-
-range(exprs(fr)[,c(8,11)])
-range(exprs(fr1)[,c(8,11)])
-
-pData(parameters(nc[[1]]))<-pData(parameters(fr))
-
-newRange<-apply(exprs(fr1),2,range)
-pData(parameters(fr1))[,c("minRange","maxRange")]<-t(newRange)
 
 
 xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=fr,smooth=T,filter=getGate(G[[1]],nodelist[5]))
@@ -139,7 +122,7 @@ getQAStats(db,isFlowCore=F)
 ws<-openWorkspace(macXML)
 time1<-Sys.time()
 G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
-					,isNcdf=T
+#					,isNcdf=T
 					,subset=c(1,2)
 					,useInternal=F,dMode=2)
 Sys.time()-time1

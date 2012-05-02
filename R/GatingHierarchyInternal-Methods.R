@@ -439,11 +439,8 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 				
 				if(g$type==1)
 					polygonGate(.gate=matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
-				else if(g$type==2)#no equivalent range filter defined in flowCore,so we convert it to rectange gate
-				{
-					print ("not supported in R yet!")	
-#					rangeGate()
-				}
+				else if(g$type==2)
+					rectangleGate(.gate=matrix(g$range),dimnames=g$parameters,filterId=getNodes(obj)[y])
 #				else if(g$type==3)
 					
 				else if(g$type==4)

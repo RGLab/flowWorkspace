@@ -199,7 +199,7 @@ BEGIN_RCPP
 
 				List ret=List::create(Named("parameters",g->getParam())
 									 ,Named("range",vert.x)
-									 ,Named("type",POLYGONGATE)
+									 ,Named("type",RANGEGATE)
 									 );
 				return ret;
 			}
