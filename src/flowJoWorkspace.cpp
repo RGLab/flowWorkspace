@@ -419,7 +419,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			//get the negate flag
 			gate->isNegate=node.getProperty("eventsInside")=="0";
 
-			//get parameter name
+			//TODO:get parameter name(make sure the the order of x,y are correct)
 			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']/*[local-name()='parameter']");
 			int nParam=resPara->nodesetval->nodeNr;
 			if(nParam!=2)

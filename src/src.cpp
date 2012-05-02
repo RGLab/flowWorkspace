@@ -50,7 +50,8 @@ void test(string xml){
 
 		GatingHierarchy* gh;
 //		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
-		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
+//		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
+		gh=gs.getGatingHierarchy("004_B1_B01.fcs");
 //		gh=gs.getGatingHierarchy(0);
 		/*
 		 * getNodes by the T order
@@ -130,10 +131,13 @@ void test(string xml){
 
 
 		cout<<endl<<"do the gating after the parsing"<<endl;
-		string ncFile="../output/HIPC_trial/ncfs374b1e4f5530.nc";
+		string ncFile="../output/HIPC_trial/nc1.nc";
 //		string ncFile="../output/Yale/ncfs6fff9d1b9e6.nc";
 		//read colnames from text
 		vector<string> params;
+		vector<string> sampleNames;
+		sampleNames.push_back("004_A1_A01.fcs");
+		sampleNames.push_back("004_B1_B01.fcs");
 
 		std::ifstream myfile;
 		myfile.open("../output/HIPC_trial/colnames.txt",ifstream::in);
@@ -146,10 +150,10 @@ void test(string xml){
 		}
 
 		myfile.close();
-		gs.attachData(ncFile,params);
+		gs.attachData(ncFile,sampleNames,params);
 		//read transformed data once for all nodes
 		gh->loadData();
-		gh->transforming(false);
+//		gh->transforming(true);
 		gh->gating();
 		gh->unloadData();
 
@@ -164,10 +168,10 @@ void test(string xml){
 			nodeProperties *node=gh->getNodeProperty(u);
 			cout<<u<<"."<<node->getName()<<":";
 			cout<<node->getStats(false)["count"];
-			cout<<"("<<node->getStats(true)["count"]<<") ";
+			cout<<"("<<node->getStats(true)["count"]<<") "<<endl;
 
-			if(u!=ROOTNODE)
-				cout<<node->getGate()->getName()<<endl;
+//			if(u!=ROOTNODE)
+//				cout<<node->getGate()->getName()<<endl;
 		}
 
 		/*

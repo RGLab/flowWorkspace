@@ -43,6 +43,6 @@ public:
 	void parseWorkspace(unsigned short,bool);
 	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);
-	void attachData(string,vector<string>);
+	void attachData(string,vector<string>,vector<string>);
 };
 #endif /* GATINGSET_HPP_ */

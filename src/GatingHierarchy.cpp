@@ -175,9 +175,8 @@ compensation GatingHierarchy::getCompensation(){
 flowData GatingHierarchy::getData(VertexID nodeID)
 {
 	cout<<"reading data from ncdf"<<endl;
-	unsigned sampleInd=getSample().find_first_of(sampleName);
 
-	flowData res=nc->readflowData(sampleInd);
+	flowData res=nc->readflowData(sampleName);
 	//subset the results by indices for non-root node
 	if(nodeID>0)
 	{

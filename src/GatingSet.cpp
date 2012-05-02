@@ -159,8 +159,9 @@ vector<string> GatingSet::getSamples(void)
 		//	return(this->sampleList);
 };
 
-void GatingSet::attachData(string fileName,vector<string> params){
+void GatingSet::attachData(string fileName,vector<string> sampleNames,vector<string> params){
 
 	nc.fileName_set(fileName);
 	nc.params_set(params);
+	nc.sample_set(sampleNames);
 }

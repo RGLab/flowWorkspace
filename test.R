@@ -26,13 +26,13 @@ winXML<-file.path(path,winXML)
 ###############################################################################
 ws<-openWorkspace(macXML[1])
 time1<-Sys.time()
-#Rprof()
+Rprof()
 G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
 					,useInternal=T,dMode=4)
-#Rprof(NULL)	
-#summaryRprof()
+Rprof(NULL)	
+summaryRprof()
 Sys.time()-time1
 G
 
@@ -41,7 +41,7 @@ getSamples(G)
 getPopStats(G,flowJo=F)
 
 
-gh<-G[[1]]
+gh<-G[[2]]
 gh
 
 getSample(gh)
@@ -57,12 +57,14 @@ getChildren(gh,nodelist[2])
 getChildren(gh,nodelist[4])
 
 getProp(G[[1]],nodelist[2],flowJo=T)
-getTotal(G[[1]],nodelist[3],flowJo=T)
+getTotal(G[[2]],nodelist[1],flowJo=F)
 getTotal(G[[1]],nodelist[2],flowJo=F)
 
 
 .getPopStat(G[[1]],2)
 head(getPopStats(G[[1]])[,2:3])
+getPopStats(G1[[1]])[rownames(getPopStats(G[[1]])),2:3]
+
 head(getPopStats(G1[[1]])[,2:3])
 
 
@@ -82,22 +84,39 @@ length(which(getIndices(G[[1]],nodelist[3])))
 
 getDimensions(G[[1]],nodelist[2])
 getBoundaries(G[[1]],nodelist[5])
+getBoundaries(G[[2]],nodelist[5])
 getBoundaries(G1[[1]],getNodes(G1[[1]])[5])
 
-png("viable.png")
-plotGate(G[[1]],5)
-dev.off()
 
-png("Singlets.png")
-plotGate(G[[1]],nodelist[3])
-dev.off()
+getData(G[[1]])
+getData(G[[2]])
 
-png("Lymph.png")
-plotGate(G[[1]],3)
-dev.off()
+plotGate(G[[2]],5)
+plotGate(G1[[2]],4)
+
+nc<-G[[1]]@dataEnv$fs
+
+G[[1]]@dataEnv$fs<-nc
+
+tmpfile<-nc@file
+nc@file<-tmpfile
+
+fr<-nc[[1]]
+
+fr1<-test_trans
+
+identical(exprs(fr),exprs(fr1))
+
+range(exprs(fr)[,c(8,11)])
+range(exprs(fr1)[,c(8,11)])
+
+pData(parameters(nc[[1]]))<-pData(parameters(fr))
+
+newRange<-apply(exprs(fr1),2,range)
+pData(parameters(fr1))[,c("minRange","maxRange")]<-t(newRange)
 
 
-xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=getData(G[[1]],4),smooth=T,filter=getGate(G[[1]],nodelist[5]))
+xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=fr,smooth=T,filter=getGate(G[[1]],nodelist[5]))
 xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=getData(G1[[1]],4),smooth=T,filter=getGate(G1[[1]],5))
 plotGate(G[[1]],nodelist[5])
 
@@ -134,7 +153,7 @@ nc1[[1]]
 write(file="../output/colnames.txt",colnames(nc1))
 
 length(G1)
-gh1<-G1[[1]]
+gh1<-G1[[2]]
 gh1
 getSample(gh1)
 getNodes(gh1)

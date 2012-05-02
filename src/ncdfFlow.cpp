@@ -1,6 +1,6 @@
 #include "include/ncdfFlow.hpp"
 #include <stdexcept>
-
+#include <algorithm>
 ncdfFlow::ncdfFlow(string _fileName){
 	fileName=_fileName;
 
@@ -22,6 +22,12 @@ string ncdfFlow::fileName_get(){
 void ncdfFlow::params_set(vector<string> _params){
 	params=_params;
 }
+
+void ncdfFlow::sample_set(vector<string> _sampleNames){
+	sampleNames=_sampleNames;
+}
+
+
 vector<string> ncdfFlow::params_get(){
 	return params;
 }
@@ -32,6 +38,18 @@ vector<string> ncdfFlow::params_get(){
  * so it may be safer to stick to c library if this is the only cdf function we use here
  */
 #define ERR(e) {throw(ios_base::failure(nc_strerror(e)));}
+
+flowData ncdfFlow::readflowData(string sampleName)
+{
+
+	vector<string>::iterator it=find(sampleNames.begin(),sampleNames.end(),sampleName);
+	if(it==sampleNames.end())
+		throw(domain_error("sampleName not found in cdf file!"));
+	unsigned sampleInd=it-sampleNames.begin();
+	return readflowData(sampleInd);
+}
+
+
 
 flowData ncdfFlow::readflowData(unsigned int sampleID)
 {

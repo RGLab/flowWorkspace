@@ -118,8 +118,8 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 	{
 		y<-which(nodes%in%y)
 		
-	}
 
+	}
 	stats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(y)-1)
 	pInd<-.Call("R_getParent",x@pointer,getSample(x),as.integer(y)-1)+1
 #	browser()

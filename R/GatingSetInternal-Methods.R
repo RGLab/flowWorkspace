@@ -8,7 +8,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			if(inherits(value,"ncdfFlowSet"))
 			{
 				
-				.Call("R_setData",this@pointer,value@file,colnames(value))
+				.Call("R_setData",this@pointer,value@file,sampleNames(value),colnames(value))
 			}
 		})
 
@@ -198,9 +198,60 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	#				newRange<-apply(exprs(fs@frames$"004_A1_A01.fcs"),2,range)
 	#				pData(parameters(fs@frames$"004_A1_A01.fcs"))[,c("minRange","maxRange")]<-t(newRange)
 				
-#					newRange<-apply(exprs(fs[[sampleName]]),2,range)
-#					pData(parameters(fs[[sampleName]]))[,c("minRange","maxRange")]<-t(newRange)
+					newRange<-apply(exprs(fs[[sampleName]]),2,range)
+					pData(parameters(fs[[sampleName]]))[,c("minRange","maxRange")]<-t(newRange)
 				
+					#udpate the data range after tranformation
+#					fr<-fs[[sampleName]]
+#					datarange<-sapply(1:dim(range(fr))[2],function(i){
+#								browser()
+#							#added gsub
+#							j<-grep(gsub(">","",gsub("<","",names(range(fr))))[i],names(cal));
+#							if(length(j)!=0){
+#								rw<-range(fr)[,i];
+#								if(attr(cal[[j]],"type")!="gateOnly"){
+#									r<-cal[[j]](c(rw))
+#								}else{
+#									r<-rw
+#								}
+#								###An unfortunate hack. If we use the log transformation, then negative values are undefined, so
+#								##We'll test the transformed range for NaN and convert to zero.
+#								r[is.nan(r)]<-0;
+#								###Is this transformed?
+#								if(all(rw==r)){
+#									#No transformation
+#									raw<-seq(r[1],r[2],by=(r[2]-r[1])/10)
+#									signif(raw,2)
+#									pos<-raw;
+#								}else{
+#									#based on the range
+#									#Inverse transform;
+#									f<-splinefun(cal[[j]](seq(rw[1],rw[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
+#									raw<-signif(f(seq(r[1],r[2],l=20)),2);
+#									pos<-signif(cal[[j]](raw),2)
+#								}
+#								assign("i",i,dataenv)
+#								assign("raw",raw,dataenv);
+#								assign("pos",pos,dataenv);
+#								eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
+#								return(r);
+#							}else{
+#								range(get("data",dataenv))[,i]
+#							}
+#						})
+#				datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
+#				datapar<-parameters(get("data",dataenv));
+#				datapar@data[,c("range","minRange","maxRange")]<-datarange
+#				#gc(reset=TRUE)
+#				assign("datapar",datapar,dataenv)
+#				eval(expression(data@parameters<-datapar),envir=dataenv)
+#					wh<-grep("^Time$",data@parameters@data$name)
+#					if(length(wh!=0)){
+#						#gc(reset=TRUE);
+#						parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
+#						#gc(reset=TRUE);
+#						parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
+#					}
 				
 				})
 		#update data environment
