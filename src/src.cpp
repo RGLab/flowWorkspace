@@ -50,8 +50,8 @@ void test(string xml){
 
 		GatingHierarchy* gh;
 //		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
-//		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
-		gh=gs.getGatingHierarchy("004_B1_B01.fcs");
+		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
+//		gh=gs.getGatingHierarchy("004_B1_B01.fcs");
 //		gh=gs.getGatingHierarchy(0);
 		/*
 		 * getNodes by the T order

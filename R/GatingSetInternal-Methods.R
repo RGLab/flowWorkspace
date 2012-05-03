@@ -22,7 +22,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	print("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
 	#environment for holding fs data,each gh has the same copy of this environment
-	.dataEnv<-new.env()
+	globalDataEnv<-new.env()
 	
 	#loading and filtering data
 	if(execute)
@@ -77,7 +77,9 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			
 			sampleName<-basename(file)
 			gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
-			gh@dataEnv<-.dataEnv
+#			browser()
+			localDataEnv<-nodeDataDefaults(gh@tree,"data")
+			localDataEnv$data<-globalDataEnv
 			
 			#gating (including loading data,compensating,transforming and the actual gating)
 			if(execute)
@@ -185,91 +187,91 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		
 		#attach filename and colnames to internal stucture for gating
 		setData(G,fs)
-		assign("fs",fs,.dataEnv)
+#		browser()
+		assign("ncfs",fs,globalDataEnv)
 			
 
 		lapply(G,function(gh){
 					
-					localDataEnv<-nodeDataDefaults(gh@tree)$data
+					
 					sampleName<-getSample(gh)
-					fr<-fs[[sampleName]]
+					
 					cal<-getTransformations(gh)
 					message(paste("gating",sampleName,"..."))
-					browser()
-					wh<-grep("^Time$",colnames(fr))
-					rawRange<-apply(exprs(fr),2,range)
 					.Call("R_gating",gh@pointer,sampleName)
-
-					#update range info for flowFrames due to the transformation
-					newRange<-apply(exprs(fr),2,function(x){c(diff(range(x)),range(x))})
-					pData(parameters(fs[[sampleName]]))[,c("range","minRange","maxRange")]<-t(newRange)
-				
-					nChannel<-ncol(newRange)
-					#udpate the data range after tranformation
-#					assign("axis.labels",vector(mode="list",nChannel),envir=localDataEnv);
 					
-					axis.labels<-sapply((1:nChannel)[-wh],function(i){
-#								browser()
-							#added gsub
-							j<-grep(gsub(">","",gsub("<","",colnames(newRange)))[i],names(cal));
-							if(length(j)!=0){
-								rw<-rawRange[1:2,i];
-								if(attr(cal[[j]],"type")!="gateOnly"){
-#									r<-cal[[j]](c(rw))
-									r<-newRange[1:2,i];
-								}else{
-									r<-rw
-								}
-								###An unfortunate hack. If we use the log transformation, then negative values are undefined, so
-								##We'll test the transformed range for NaN and convert to zero.
-								r[is.nan(r)]<-0;
-								###Is this transformed?
-								if(all(rw==r)){
-									#No transformation
-									raw<-seq(r[1],r[2],by=(r[2]-r[1])/10)
-									signif(raw,2)
-									pos<-raw;
-								}else{
-									#based on the range
-									#Inverse transform;
-									f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
-									raw<-signif(f(seq(r[1],r[2],l=20)),2);
-									pos<-signif(cal[[j]](raw),2)
-#									
-								}
-								list(label=as.character(raw),at=pos)
-#								assign("i",i,dataenv)
-#								assign("raw",raw,dataenv);
-#								assign("pos",pos,dataenv);
-#								eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
-	
-#								return(r);
-							}else{
-#								range(get("data",dataenv))[,i]
-							}
-						})
-						assign("axis.labels",axis.labels,envir=localDataEnv);
-#				datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
-#				datapar<-parameters(get("data",dataenv));
-#				datapar@data[,c("range","minRange","maxRange")]<-datarange
-#				#gc(reset=TRUE)
-#				assign("datapar",datapar,dataenv)
-#				eval(expression(data@parameters<-datapar),envir=dataenv)
-#					
-#					if(length(wh!=0)){
-#						#gc(reset=TRUE);
-#						parameters(data)@data[wh,4:5]<-range(exprs(data[,wh]));
-#						#gc(reset=TRUE);
-#						parameters(data)@data[wh,3]<-diff(range(exprs(data[,wh])));
-#					}
+					#range info within parameter object is not always the same as the real data range
+					#it is used to display the data.
+					#so we need update this range info by transforming the it
+#					newRange<-apply(exprs(fr),2,function(x){c(diff(range(x)),range(x))})
+					localDataEnv<-nodeDataDefaults(gh@tree,"data")
+		
+					.transformRange(localDataEnv,cal,sampleName)
+					
+#					browser()
 				
 				})
-		#update data environment
-		assign("fs",fs,.dataEnv)
+		
 	
 	}	
 	
 	G	
+}
+.transformRange<-function(dataenv,cal,sampleName){
+#	browser()
+	assign("axis.labels",list(),envir=dataenv);
+	#this should save some memory
+#	fr<-dataenv$data$ncfs[[sampleName]]
+	frmEnv<-dataenv$data$ncfs@frames
+	
+	rawRange<-range(get(sampleName,frmEnv))
+	datarange<-sapply(1:dim(rawRange)[2],function(i){
+				#added gsub
+				j<-grep(gsub(">","",gsub("<","",names(rawRange)))[i],names(cal));
+				if(length(j)!=0){
+					rw<-rawRange[,i];
+					if(attr(cal[[j]],"type")!="gateOnly"){
+						r<-cal[[j]](c(rw))
+					}else{
+						r<-rw
+					}
+					###An unfortunate hack. If we use the log transformation, then negative values are undefined, so
+					##We'll test the transformed range for NaN and convert to zero.
+					r[is.nan(r)]<-0;
+					###Is this transformed?
+					if(all(rw==r)){
+						#No transformation
+						raw<-seq(r[1],r[2],by=(r[2]-r[1])/10)
+						signif(raw,2)
+						pos<-raw;
+					}else{
+						#based on the range
+						#Inverse transform;
+						f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
+						raw<-signif(f(seq(r[1],r[2],l=20)),2);
+						pos<-signif(cal[[j]](raw),2)
+					}
+					assign("i",i,dataenv)
+					assign("raw",raw,dataenv);
+					assign("pos",pos,dataenv);
+					eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
+					
+					return(r);
+				}else{
+					rawRange[,i]
+				}
+			})
+	
+			
+	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
+	datapar<-parameters(get(sampleName,frmEnv))
+	pData(datapar)[,c("range","minRange","maxRange")]<-datarange
+	
+	#gc(reset=TRUE)
+#	assign("datapar",datapar,dataenv)
+	eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
+#	eval(expression(data@parameters<-datapar),envir=dataenv)
+	#gc(reset=TRUE)
 }
 setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){
 #			em<-edgeMatrix(object1)

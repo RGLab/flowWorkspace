@@ -2912,7 +2912,8 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 	}
 }
 
-.flowJoTransform<-function(dataenv,cal){
+.flowJoTransform<-function(dataenv,cal,rangeOnly=FALSE){
+#	browser()
 	assign("axis.labels",list(),envir=dataenv);
 	#this should save some memory
 	for (i in 1:dim(get("data",dataenv))[2]){

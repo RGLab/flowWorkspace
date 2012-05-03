@@ -7,12 +7,12 @@ library(flowWorkspace)
 #dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 ##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 #
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
 
@@ -36,12 +36,13 @@ G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 Sys.time()-time1
 G
 
+
+##accessors
 length(G)
 getSamples(G)
-getPopStats(G,flowJo=F)
 
 
-gh<-G[[2]]
+gh<-G[[1]]
 gh
 
 getSample(gh)
@@ -56,49 +57,46 @@ getParent(gh,nodelist[2])
 getChildren(gh,nodelist[2])
 getChildren(gh,nodelist[4])
 
+#stats
 getProp(G[[1]],nodelist[2],flowJo=T)
 getTotal(G[[2]],nodelist[1],flowJo=F)
 getTotal(G[[1]],nodelist[2],flowJo=F)
 
-
 .getPopStat(G[[1]],2)
-getPopStats(G[[2]])[,2:3]
+getPopStats(G[[1]])[,2:3]
 
-plotPopCV(G[[2]])
-
-plot(G[[2]])
-
+##split into groups
 
 pData(G)<-data.frame(sample=getSamples(G))
 G_list<-flowWorkspace:::splitGatingSetByNgates(G)
 
 lapply(G_list,getPopStats,flowJo=T)
+getPopStats(G,flowJo=F)
 
-###gating
-getGate(G[[1]],nodelist[3])
-getIndices(G[[1]],nodelist[3])))
+
+###gates
+str(getGate(G[[2]],getNodes(G[[2]])[8]))
+str(getGate(G1[[2]],getNodes(G1[[2]])[8]))
+
+getIndices(G[[1]],nodelist[3])
 getDimensions(G[[1]],nodelist[2])
-getBoundaries(G[[1]],nodelist[5])
+
+getBoundaries(G[[2]],getNodes(G[[2]])[8])
+getBoundaries(G1[[2]],getNodes(G1[[2]])[8])
+
 getData(G[[1]])
 
 
-
+##plot
 plotGate(G[[2]],8)
 plotGate(G1[[2]],8)
-getGate(G[[2]],getNodes(G[[2]])[8])
-getGate(G1[[2]],getNodes(G1[[2]])[8])
 
-fr1<-test_trans
+plotPopCV(G[[1]])
+plot(G[[2]])
 
-
-xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=fr,smooth=T,filter=getGate(G[[1]],nodelist[5]))
-xyplot(x=`<Pacific Blue-A>`~`<FITC-A>`,data=getData(G1[[1]],4),smooth=T,filter=getGate(G1[[1]],5))
-plotGate(G[[1]],nodelist[5])
-
-getData(G1[[1]],5)
-getData(G[[1]],5)
-
-str(getGate(G[[1]],5))@boundaries
+ 
+getAxisLabels(G[[1]])
+getAxisLabels(G1[[1]])
 #############################################
 #QUALIFIER
 ########################################
@@ -157,5 +155,6 @@ plotGate(G1[[1]],5)
 #############
 all(sort(rownames(getPopStats(gh)))==sort(rownames(getPopStats(gh1))))
 all(getPopStats(gh)[sort(rownames(getPopStats(gh))),c("flowJo.count","parent.total")]==getPopStats(gh1)[sort(rownames(getPopStats(gh1))),c("flowJo.count","parent.total")])
+
 
 

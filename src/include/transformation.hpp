@@ -17,7 +17,11 @@
 #include "spline.hpp"
 using namespace std;
 
-typedef map<string,vector<double> > Spline_Coefs;
+struct Spline_Coefs{
+	map<string,vector<double> > coefs;
+	int method;
+	string type;
+};
 typedef map<string,double> ARGLIST;
 
 
@@ -54,6 +58,8 @@ public:
 };
 
 class calibrationTable:public transformation{
+	int spline_method;
+	string caltype;
 	ARGLIST getArgs(){throw(domain_error("not valid operation for calibration class"));}
 public:
 	/*
@@ -66,7 +72,11 @@ public:
 //	int n;
 
 public:
-	calibrationTable(){type=CALTBL;};
+	calibrationTable(string _caltype,int _spline_method){
+								type=CALTBL;
+								caltype=_caltype;
+								spline_method=_spline_method;
+							};
 	void interpolate();
 	void init(unsigned);
 	valarray<double> transforming(valarray<double> &);

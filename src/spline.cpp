@@ -17,6 +17,7 @@
  */
 void natural_spline_C(int n, double *x, double *y, double *b, double *c, double *d)
 {
+	cout<<"entering natural_spline_C"<<endl;
     int nm1, i;
     double t;
 
@@ -37,6 +38,8 @@ void natural_spline_C(int n, double *x, double *y, double *b, double *c, double 
 
     nm1 = n - 1;
 
+	cout<<"Set up the tridiagonal system"<<endl;
+
     /* Set up the tridiagonal system */
     /* b = diagonal, d = offdiagonal, c = right hand side */
 
@@ -48,6 +51,8 @@ void natural_spline_C(int n, double *x, double *y, double *b, double *c, double 
 	c[i+1] = (y[i+1] - y[i])/d[i];
 	c[i] = c[i+1] - c[i];
     }
+
+	cout<<"Gaussian elimination"<<endl;
 
     /* Gaussian elimination */
 
@@ -68,6 +73,7 @@ void natural_spline_C(int n, double *x, double *y, double *b, double *c, double 
     c[1] = c[n] = 0.0;
 
     /* Get cubic coefficients */
+	cout<<"Get cubic coefficients"<<endl;
 
     b[1] = (y[2] - y[1])/d[1] - d[i] * c[2];
     c[1] = 0.0;
@@ -260,6 +266,8 @@ void spline_eval(int method, valarray<double> u, valarray<double> & v,
 /* Evaluate  v[l] := spline(u[l], ...),	    l = 1,..,nu, i.e. 0:(nu-1)
  * Nodes x[i], coef (y[i]; b[i],c[i],d[i]); i = 1,..,n , i.e. 0:(*n-1)
  */
+	cout<<"entering spline_eval"<<endl;
+
 	int n=x.size();
 	int nu=u.size();
     const int n_1 = n - 1;

@@ -13,7 +13,9 @@ setClass("GatingHierarchyInternal",contains="GatingHierarchy"
 				,dataPath="character"
 				,isNcdf="logical"
 				,pointer="externalptr"
-				,dataEnv="environment"))
+#				,dataEnv="environment"
+				)
+		)
 
 setMethod("initialize","GatingHierarchyInternal"
 		,function(.Object,name="New Sample",flag=FALSE

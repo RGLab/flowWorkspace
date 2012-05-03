@@ -146,7 +146,15 @@ BEGIN_RCPP
 					}
 				case CALTBL:
 				{
-					res.push_back(curTrans->getCalTbl());
+					Spline_Coefs obj=curTrans->getCalTbl();
+
+					res.push_back(List::create(Named("z",obj.coefs)
+												,Named("method",obj.method)
+												,Named("type",obj.type)
+												)
+									,curTrans->name.append(curTrans->channel)
+
+									);
 					break;
 				}
 				default:

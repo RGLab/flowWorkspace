@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <valarray>
+#define NATURAL 2
 
 using namespace std;
 void natural_spline_C(int n, double *x, double *y, double *b, double *c, double *d);

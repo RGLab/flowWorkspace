@@ -463,7 +463,7 @@ setMethod("getData",signature(obj="GatingHierarchyInternal"),function(obj,y=NULL
 				stop("Must run execute() before fetching data");
 			}
 
-			r<-dataEnv(obj)$fs[[getSample(obj)]]
+			r<-nodeDataDefaults(obj@tree,"data")$data$ncfs[[getSample(obj)]]
 #			browser()			
 			if(is.null(y)||y==1||getNodes(obj)[1]==y){
 				return (r)	
@@ -509,20 +509,21 @@ setMethod("getDimensions",signature(obj="GatingHierarchyInternal",y="character")
 				}
 			}
 		})
-setGeneric("dataEnv",function(obj){
-			standardGeneric("dataEnv")
-		})
-setMethod("dataEnv",signature(obj="GatingHierarchyInternal"),function(obj)obj@dataEnv)
-
-#setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y=NULL,...){
-#			get("axis.labels",envir=dataEnv(obj))
-#			
+#setGeneric("dataEnv",function(obj){
+#			standardGeneric("dataEnv")
 #		})
+#setMethod("dataEnv",signature(obj="GatingHierarchyInternal"),function(obj){
+#			nodeDataDefaults(obj@tree,"data")
+#		})
+
+setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y=NULL,...){
+			get("axis.labels",envir=nodeDataDefaults(obj@tree)$data)
+		})
 setMethod("getTransformations","GatingHierarchyInternal",function(x){
-			browser()
-			trans<-.Call("R_getTransformations",x@pointer,sampleName(x))
+#			browser()
+			trans<-.Call("R_getTransformations",x@pointer,getSample(x))
 			lapply(trans,function(curTrans){
-						
+#						browser()
 							f<-function (x, deriv = 0) 
 							{
 							    deriv <- as.integer(deriv)
@@ -542,7 +543,12 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							        res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
 							    res
 							}
-							assign("z",curTrans,environment(f))
+							z<-curTrans$z
+							z$n<-length(z$x)
+							z$method<-curTrans$method
+							assign("z",z,environment(f))
+							assign("C_spline_eval",environment(splinefun)$C_spline_eval,environment(f))
+							attr(f,"type")<-curTrans$type
 							return (f)
 					})
 			
@@ -643,6 +649,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 					#use dimnames from the data
 					form<-mkformula(rev(dims2));
 					if(length(dims2)==2){
+#						browser()
 						if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
 							scales<-list()
 							xlim=range(parentdata[,dims2[1]])
@@ -733,6 +740,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 						res<-densityplot(x=form,data=data,scales=scales,#prepanel=
 								panel=function(...,gh=x,g=y){
 									panel.densityplot(...);
+									browser()
 									apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
 								},...)
 						return(res)

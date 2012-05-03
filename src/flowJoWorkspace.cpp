@@ -190,7 +190,7 @@ CALTBS macFlowJoWorkspace::getCalTbls(){
 	{
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
-		calibrationTable *t=new calibrationTable();
+		calibrationTable *t=new calibrationTable("flowJo",2);
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
 			throw(domain_error("empty name for calibration table"));
@@ -238,7 +238,8 @@ CALTBS macFlowJoWorkspace::getCalTbls(){
 
 
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<"spline interpolating..."<<endl;
+			cout<<"spline interpolating..."<<t->name<<endl;
+
 		t->interpolate();
 
 

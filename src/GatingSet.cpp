@@ -39,21 +39,21 @@ wsSampleNode getSample(T ws,string sampleID){
 
 GatingSet::~GatingSet()
 {
-//	cout<<"entring the destructor of GatingSet"<<endl;
-//	delete ws;
-//	typedef map<string,GatingHierarchy *> map_t;
-//	BOOST_FOREACH(map_t::value_type & it,ghs){
-//			GatingHierarchy * ghPtr=it.second;
-//			string sampleName=ghPtr->getSample();
-//			delete ghPtr;
-//			if(dMode>=GATING_HIERARCHY_LEVEL)
-//				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
-//	}
-//
-//	if(dMode>=GATING_SET_LEVEL)
-//					cout<<"free calibration tables..."<<endl;
-//	for(CALTBS::iterator it=calTbls.begin();it!=calTbls.end();it++)
-//		delete *it;
+	cout<<"entring the destructor of GatingSet"<<endl;
+	delete ws;
+	typedef map<string,GatingHierarchy *> map_t;
+	BOOST_FOREACH(map_t::value_type & it,ghs){
+			GatingHierarchy * ghPtr=it.second;
+			string sampleName=ghPtr->getSample();
+			delete ghPtr;
+			if(dMode>=GATING_HIERARCHY_LEVEL)
+				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
+	}
+
+	if(dMode>=GATING_SET_LEVEL)
+					cout<<"free calibration tables..."<<endl;
+	for(CALTBS::iterator it=calTbls.begin();it!=calTbls.end();it++)
+		delete *it;
 
 }
 //read xml file and create the appropriate flowJoWorkspace object
