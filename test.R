@@ -7,12 +7,12 @@ library(flowWorkspace)
 #dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 ##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 #
 path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
 
