@@ -436,17 +436,15 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 			{
 #				browser()
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
-				
+#				browser()
 				if(g$type==1)
 					polygonGate(.gate=matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
 				else if(g$type==2)
-					rectangleGate(.gate=matrix(g$range),dimnames=g$parameters,filterId=getNodes(obj)[y])
+					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
 #				else if(g$type==3)
 					
-				else if(g$type==4)
-				{
-					
-				}
+				else
+					stop("not supported gate type",g$type)
 				
 			}
 		})
@@ -728,7 +726,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 							return(res);
 						}	    	
 					}else{
-						browser()
+#						browser()
 						if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
 							scales<-list();
 						}
@@ -740,7 +738,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 						res<-densityplot(x=form,data=data,scales=scales,#prepanel=
 								panel=function(...,gh=x,g=y){
 									panel.densityplot(...);
-									browser()
+#									browser()
 									apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
 								},...)
 						return(res)

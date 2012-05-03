@@ -75,8 +75,8 @@ getPopStats(G,flowJo=F)
 
 
 ###gates
-str(getGate(G[[2]],getNodes(G[[2]])[8]))
-str(getGate(G1[[2]],getNodes(G1[[2]])[8]))
+getGate(G[[2]],getNodes(G[[2]])[8])
+getGate(G1[[2]],getNodes(G1[[2]])[8])
 
 getIndices(G[[1]],nodelist[3])
 getDimensions(G[[1]],nodelist[2])
@@ -88,7 +88,7 @@ getData(G[[1]])
 
 
 ##plot
-plotGate(G[[2]],8)
+plotGate(G[[2]],9)
 plotGate(G1[[2]],8)
 
 plotPopCV(G[[1]])
