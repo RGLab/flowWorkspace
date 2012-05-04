@@ -14,7 +14,8 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,flowSetId=NULL){
 #	browser()
-
+#	time1<-Sys.time()
+	
 	print("calling c++ parser...")
 #		browser()
 	G<-new("GatingSetInternal",xmlFileName,sampleIDs,execute,dMode)
@@ -57,6 +58,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		
 		print("Creating ncdfFlowSet...")
 		files<-file.path(dataPaths,samples)
+#		browser()
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId),isWriteSlice=FALSE)
@@ -69,11 +71,14 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	{
 		files<-samples
 	}
-	
+#	
+#	print(Sys.time()-time1)
+#	
+#	time1<-Sys.time()
 	############################################################################
 	#constructing gating set
 	############################################################################
-	G@set<-	sapply(files,function(file){
+	G@set<-	lapply(files,function(file){
 			
 			sampleName<-basename(file)
 			gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
@@ -95,7 +100,6 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 				##################################
 				#Compensating the data
 				##################################
-				message("Compensating");
 				comp<-.Call("R_getCompensation",G@pointer,sampleName)
 				cid<-comp$cid
 				
@@ -178,8 +182,12 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
 	
 			gh
-		}
-		,USE.NAMES=TRUE)
+		})
+	names(G@set)<-basename(files)		
+	
+#	print(Sys.time()-time1)
+#	
+#	time1<-Sys.time()
 	
 	if(execute)
 	{
@@ -214,6 +222,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		
 	
 	}	
+#	print(Sys.time()-time1)
 	
 	G	
 }

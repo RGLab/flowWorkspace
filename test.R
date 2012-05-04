@@ -25,18 +25,23 @@ winXML<-file.path(path,winXML)
 #cpp parser
 ###############################################################################
 ws<-openWorkspace(macXML[1])
-time1<-Sys.time()
+
+for(i in 2:6)
+time1<-Sys.time()	
 #Rprof()
-G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
+G<-parseWorkspace(ws,name=i,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
-					,useInternal=T,dMode=4)
+					,useInternal=T,dMode=0)
 #Rprof(NULL)	
 #summaryRprof()
 Sys.time()-time1
 G
 
-
+cpp<-c(4.7,16,32)
+rp<-c(19,46,182)
+plot(rp,type="o")
+points(cpp,type="o",col="red")
 ##accessors
 length(G)
 getSamples(G)
@@ -88,13 +93,25 @@ getData(G[[1]])
 
 
 ##plot
-plotGate(G[[2]],9)
-plotGate(G1[[2]],8)
-
-plotPopCV(G[[1]])
-plot(G[[2]])
-
+for(sampleName in getSamples(G[1:2]))
+{
+	
+	gh<-G[[sampleName]]
+	
+	pdf(file=paste("../output/",sampleName,".pdf",sep=""))
+	
+	print(plot(gh))
+	
+	for(i in 2:length(getNodes(gh)))
+	 print(plotGate(gh,i))
  
+	
+	print(plotPopCV(gh))
+	
+	dev.off()
+}
+
+
 getAxisLabels(G[[1]])
 getAxisLabels(G1[[1]])
 #############################################
@@ -110,11 +127,13 @@ getQAStats(db,isFlowCore=F)
 ###############################################################################
 
 ws<-openWorkspace(macXML)
+
+for(i in 2:6)
 time1<-Sys.time()
-G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
-#					,isNcdf=T
+G1<-parseWorkspace(ws,name=i,execute=T,requiregates=F
+					,isNcdf=T
 					,subset=c(1,2)
-					,useInternal=F,dMode=2)
+					,useInternal=F,dMode=0)
 Sys.time()-time1
 G1
 
