@@ -13,7 +13,7 @@
 #include <sstream>
 workspace::~workspace(){
 
-	cout<<"entring the destructor of workspace"<<endl;
+//	cout<<"entring the destructor of workspace"<<endl;
 
 	 /*free the document */
 			xmlFreeDoc(doc);

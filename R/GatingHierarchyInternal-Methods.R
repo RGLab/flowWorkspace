@@ -578,10 +578,6 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 			rootdata<-getData(x);
 			
 			main<-match.call()$main;
-			cols <- colorRampPalette(IDPcolorRamp(21,
-							t(col2hsv(c("blue","green","yellow","red"))),
-							fr=c(0.7,0.1)))
-			
 			##Two cases: gate is boolean, or gate is normal
 			##Boolean gates are treated differently
 #			browser()
@@ -668,63 +664,43 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 						#If 2D use xyplot.
 						#TODO add stains to labels
 						xylab<-gsub("NA","",paste(pData(parameters(rootdata))$name,pData(parameters(rootdata))$desc))
-						if(!fast){		
-#							browser()
-							res<-flowViz:::xyplot(x=form
-												,data=parentdata[,dims2]
-												,smooth=smooth
-												,colramp=cols
-												,xlab=xylab[dim.ind[1]]
-												,ylab=xylab[dim.ind[2]]
-												,frame.plot=TRUE
-												,scales=scales
-												,nbin=512
-									,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
-										gp <- list(...)[["par.settings"]]
-										flowViz:::panel.xyplot.flowframe(...)
-										
-										#the gate names sometimes don't match the dimension names.. 
-										#If there's a mix of compensated and uncompensated samples.
-										dims<-colnames(getBoundaries(gh,g))
+							
+
+						res<-flowViz:::xyplot(x=form
+											,data=parentdata[,dims2]
+											,smooth=smooth
+#											,colramp=cols
+											,xlab=xylab[dim.ind[1]]
+											,ylab=xylab[dim.ind[2]]
+											,frame.plot=TRUE
+											,scales=scales
+											,nbin=512
+								,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
+									gp <- list(...)[["par.settings"]]
+									flowViz:::panel.xyplot.flowframe(...)
+									
+									#the gate names sometimes don't match the dimension names.. 
+									#If there's a mix of compensated and uncompensated samples.
+									dims<-colnames(getBoundaries(gh,g))
 #										browser()
-										if(.isCompensated(gh)){
-											dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
-										}else{
-											tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
-											dims<-colnames(getBoundaries(gh,g))
-											dims<-na.omit(dims[match(tmp,dims)])
-										}
-										#Case for rectangle or polygon gate
-										if(length(dims)>1){
-											panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
-										}else{
-											apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-										}
-										}
-										,...
-									)
-							return(res)
-						}else{
-							res<-hexbinplot(form,data=as.data.frame(exprs(parentdata)),colramp=cols,scales=scales,xlim=xlim,ylim=ylim,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],aspect=1,xbins=128,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
-										panel.hexbinplot(...)
+									if(.isCompensated(gh)){
+										dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
+									}else{
+										tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
 										dims<-colnames(getBoundaries(gh,g))
-										if(.isCompensated(gh)){
-											dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
-										}else{
-											tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
-											dims<-colnames(getBoundaries(gh,g))
-											dims<-na.omit(dims[match(tmp,dims)])
-										}
-										#Case for rectangle or polygon gate
-										if(length(dims)>1){
-											panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
-										}else{
-											apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-										}
-										
-									},...)
-							return(res);
-						}	    	
+										dims<-na.omit(dims[match(tmp,dims)])
+									}
+									#Case for rectangle or polygon gate
+									if(length(dims)>1){
+										panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
+									}else{
+										apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+									}
+									}
+									,...
+								)
+						return(res)
+						
 					}else{
 #						browser()
 						if(is.null(getAxisLabels(x)[[dim.ind[1]]])){

@@ -24,7 +24,7 @@ using namespace std;
 void test(string xml){
 
 		//create gating set object
-		GatingSet gs(xml,true,4);
+		GatingSet gs(xml,true,0);
 
 //		valarray<double> x(gs.ws->toArray(""));
 //		for(unsigned i=0;i<x.size();i++)
@@ -184,7 +184,35 @@ void test(string xml){
 
 
 }
+void ncdf_test(){
+	string ncFile="../output/HIPC_trial/nc1.nc";
 
+	//read colnames from text
+//	vector<string> params;
+//	vector<string> sampleNames;
+//	sampleNames.push_back("004_A1_A01.fcs");
+//	sampleNames.push_back("004_B1_B01.fcs");
+//
+//	std::ifstream myfile;
+//	myfile.open("../output/HIPC_trial/colnames.txt",ifstream::in);
+////		myfile.open("../output/Yale/colnames.txt",ifstream::in);
+//	vector<string> myLines;
+//	string line;
+//	while (std::getline(myfile, line))
+//	{
+//		params.push_back(line);
+//	}
+//
+//	myfile.close();
+	ncdfFlow nc(ncFile);
+//	nc.params_set(params);
+//	nc.sample_set(sampleNames);
+	for(unsigned i=0;i<100;i++)
+		nc.readflowData(0);
+	cout<<"done!"<<endl;
+
+
+}
 /*
  * somehow the Rcpp code can't be run within C++ IDE
  * which makes the debugging in c++ environment impossible
@@ -265,13 +293,14 @@ int main(void) {
 	//read xml file by libxml
 	vector<string> fileNames;
 
-	fileNames.push_back("../data/HIPC_trial/HIPC_trial.xml");
-	fileNames.push_back("../data/Yale/LyoplateTest1Yale.wsp");
+	fileNames.push_back("../data/HIPC_trial/data/HIPC_trial.xml");
+	fileNames.push_back("../data/Yale/data/LyoplateTest1Yale.wsp");
 
 //	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
-	test(fileNames.at(0));
+//	test(fileNames.at(0));
+	ncdf_test();
 //	Rcpp_test(fileNames.at(WIN));
 //	spline_test();
 

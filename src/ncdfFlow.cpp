@@ -55,12 +55,30 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 {
 	if(fileName.empty())
 		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
-	cout<<"opening file:"<<fileName.c_str()<<endl;
 
+//	cout<<"opening file:"<<fileName.c_str()<<endl;
+	/*
+	 *opening file
+	 */
 	int retval, ncid, varid, nRow;
+
+//	int startTime, endTime, totalTime;
+
+//	startTime = time(NULL);
 
 	if ((retval = nc_open(fileName.c_str(), NC_NOWRITE,&ncid)))
 			ERR(retval);
+
+//	endTime = time(NULL);
+//
+//	totalTime = endTime - startTime;
+
+
+	/*
+	 * start reading data
+	 */
+
+//	startTime = time(NULL);
 
 	if((retval = nc_inq_varid (ncid, "exprsMat", &varid)))
 			ERR(retval);
@@ -92,12 +110,24 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 	if((retval = nc_get_vara_double(ncid, varid, start, count, mat)))
 		ERR(retval);
 
+//	endTime = time(NULL);
+
+
+//	std::cout << "reading data cost: " << endTime - startTime << " seconds.";
+
 	flowData res(mat,params,(unsigned int)nRow,sampleID);
 
 	delete mat;
 
+//	startTime = time(NULL);
+
 	if((retval = nc_close(ncid)))
 		ERR(retval);
+
+//	endTime = time(NULL);
+//
+//	totalTime += endTime - startTime;
+//	std::cout << "open/close cost: " << totalTime << " seconds.";
 
 	return res;
 

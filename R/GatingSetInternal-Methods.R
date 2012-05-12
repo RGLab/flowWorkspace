@@ -14,11 +14,13 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,flowSetId=NULL){
 #	browser()
-#	time1<-Sys.time()
-	
+#	time_sum<-0
 	print("calling c++ parser...")
 #		browser()
+	
+	
 	G<-new("GatingSetInternal",xmlFileName,sampleIDs,execute,dMode)
+#	time_sum<<-time_sum+(Sys.time()-time1)
 #	browser()
 	print("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
@@ -58,15 +60,16 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		
 		print("Creating ncdfFlowSet...")
 		files<-file.path(dataPaths,samples)
-#		browser()
+		
+#		time1<-Sys.time()
+		
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId),isWriteSlice=FALSE)
 		}else{
 			fs<-read.flowSet(files)
 		}
-		
-			
+#		time_sum<<-time_sum+(Sys.time()-time1)
 	}else
 	{
 		files<-samples
@@ -206,7 +209,10 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					
 					cal<-getTransformations(gh)
 					message(paste("gating",sampleName,"..."))
+					
+#					time1<-Sys.time()
 					.Call("R_gating",gh@pointer,sampleName)
+#					time_sum<<-time_sum+(Sys.time()-time1)
 					
 					#range info within parameter object is not always the same as the real data range
 					#it is used to display the data.
@@ -223,7 +229,9 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	
 	}	
 #	print(Sys.time()-time1)
-	
+#	time_sum<<-time_sum+(Sys.time()-time1)
+
+#	print(time_sum)
 	G	
 }
 .transformRange<-function(dataenv,cal,sampleName){

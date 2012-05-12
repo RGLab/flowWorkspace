@@ -13,7 +13,7 @@ nodeProperties::nodeProperties(){
 
 nodeProperties::~nodeProperties(){
 
-	cout<<"entring the destructor of nodeProperties"<<endl;
+//	cout<<"entring the destructor of nodeProperties"<<endl;
 
 	if(thisGate!=NULL)
 	{

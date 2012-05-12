@@ -14,10 +14,10 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 #
-path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
+#path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
 
 macXML<-"HIPC_trial.xml"
-macXML<-file.path("/home/wjiang2/rglab/workspace/HIPC-Lyoplate/data/HIPC_trial",macXML)
+macXML<-file.path("/loc/no-backup/mike/HIPC/data/HIPC_trial/data",macXML)
 
 winXML<-c("Yale/LyoplateTest1Yale.wsp")
 winXML<-file.path(path,winXML)
@@ -26,22 +26,46 @@ winXML<-file.path(path,winXML)
 ###############################################################################
 ws<-openWorkspace(macXML[1])
 
+
 for(i in 2:6)
-time1<-Sys.time()	
+#time1<-Sys.time()	
 #Rprof()
-G<-parseWorkspace(ws,name=i,execute=T,requiregates=F
+time_sum<<-0
+G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
 					,useInternal=T,dMode=0)
 #Rprof(NULL)	
 #summaryRprof()
-Sys.time()-time1
+#Sys.time()-time1
+print(time_sum)
 G
 
-cpp<-c(4.7,16,32)
-rp<-c(19,46,182)
-plot(rp,type="o")
-points(cpp,type="o",col="red")
+#performance report
+pdf(file="../output/performance.pdf")
+xx<-c(2,6,12,30)
+cpp<-c(4.7,16,23,32)
+rp<-c(19,46,97,182)
+plot(xx,rp,type="o",xlab="samples",ylab="time(s)",ylim=c(0,200))
+points(xx,cpp,type="o",col="red")
+legend(legend=c("C++","R"),x="top",col=c("red","black"),bty="n",lty=1)
+
+#without read.fcs
+cpp<-c(0.41,0.99,1.97,32)
+rp<-c(19,46,97,182)
+plot(xx,rp,type="o",xlab="samples",ylab="time(s)",ylim=c(0,200))
+points(xx,cpp,type="o",col="red")
+legend(legend=c("C++","R"),x="top",col=c("red","black"),bty="n",lty=1)
+
+
+sec<-c(0.3,0.45,0.35)
+names(sec)<-c("parsing","compensating","transforming&gating")
+pie(sec)
+
+sec1<-c(0.42,6.11-0.42)
+names(sec1)<-c("c++","R")
+pie(sec1)
+dev.off()
 ##accessors
 length(G)
 getSamples(G)
@@ -127,12 +151,12 @@ getQAStats(db,isFlowCore=F)
 ###############################################################################
 
 ws<-openWorkspace(macXML)
-
-for(i in 2:6)
 time1<-Sys.time()
+for(i in 2:3)
+
 G1<-parseWorkspace(ws,name=i,execute=T,requiregates=F
 					,isNcdf=T
-					,subset=c(1,2)
+#					,subset=c(1,2)
 					,useInternal=F,dMode=0)
 Sys.time()-time1
 G1
