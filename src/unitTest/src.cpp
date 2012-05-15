@@ -17,12 +17,12 @@ int main(void) {
 	vector<string> fileNames;
 
 	fileNames.push_back("../data/HIPC_trial/data/HIPC_trial.xml");
-	fileNames.push_back("../data/Yale/data/LyoplateTest1Yale.wsp");
 	fileNames.push_back("../fjWsExamples/Exp2_Tcell.wsp");
+	fileNames.push_back("../data/Yale/data/LyoplateTest1Yale.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	gs_test(fileNames.at(2));
+	gs_test(fileNames.at(1));
 
 //	ncdf_test();
 

@@ -10,7 +10,8 @@
 #ifndef GATINGSET_HPP_
 #define GATINGSET_HPP_
 #include "GatingHierarchy.hpp"
-#include "flowJoWorkspace.hpp"
+#include "macFlowJoWorkspace.hpp"
+#include "winFlowJoWorkspace.hpp"
 #include <string>
 #include <map>
 #include <boost/foreach.hpp>

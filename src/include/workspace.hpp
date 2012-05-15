@@ -10,9 +10,17 @@
 #include <vector>
 #include <string>
 #include <libxml/xpath.h>
+#include <libxml/parser.h>
 #include "wsNode.hpp"
 #include "transformation.hpp"
-//typedef vector<calibrationTable*> CALTBS;
+#include <iostream>
+#include <algorithm>
+#include <math.h>
+#include <fstream>
+
+
+using namespace std;
+
 
 using namespace std;
 /*TODO: so far I will see the differenc between win and mac workspace in terms of xpath(like xpath of sample node)

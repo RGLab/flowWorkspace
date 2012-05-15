@@ -29,34 +29,7 @@ public:
 
 };
 
-class winFlowJoWorkspace:public flowJoWorkspace{
-public:
-	winFlowJoWorkspace(xmlDoc *);
-	compensation getCompensation(wsSampleNode sampleNode);
-	trans_vec getGlobalTrans();
-	trans_map getTransformation(wsSampleNode,string cid,trans_vec *);
-	string xPathSample(string sampleID);
-	  gate * getGate(wsPopNode &);
-	  polygonGate * getGate(wsPolyGateNode &);
-	  polygonGate * getGate(wsRectGateNode &);
-	  polygonGate * getGate(wsEllipseGateNode &);
-	  rangegate * getGate(wsRangeGateNode &);
-};
 
-
-class macFlowJoWorkspace:public flowJoWorkspace{
-public:
-	macFlowJoWorkspace(xmlDoc *);
-	compensation getCompensation(wsSampleNode sampleNode);
-	trans_map getTransformation(wsSampleNode,string cid,trans_vec*);
-	trans_vec getGlobalTrans();
-	string xPathSample(string sampleID);
-	gate * getGate(wsPopNode &);
-	polygonGate * getGate(wsPolyGateNode &);
-//	polygonGate * getGate(wsRectGateNode &);
-	polygonGate * getGate(wsEllipseGateNode &);
-	rangegate * getGate(wsRangeGateNode &);
-};
 
 
 
