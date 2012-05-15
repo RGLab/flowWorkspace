@@ -12,7 +12,8 @@
 #include <libxml/xpath.h>
 #include "wsNode.hpp"
 #include "transformation.hpp"
-typedef vector<calibrationTable*> CALTBS;
+//typedef vector<calibrationTable*> CALTBS;
+
 using namespace std;
 /*TODO: so far I will see the differenc between wind and max workspace in terms of xpath(like xpath of sample node)
  * if this is the case eventually we can try to use one template class (eliminate two derived classes )
@@ -60,9 +61,9 @@ public:
 public:
 	 ~workspace();
 	 virtual string xPathSample(string sampleID)=0;
-	 virtual Trans_map getTransformation(wsSampleNode,string,CALTBS *)=0;
+	 virtual trans_map getTransformation(wsSampleNode,string,trans_vec *)=0;
 	 virtual compensation getCompensation(wsSampleNode)=0;
-	 virtual CALTBS getCalTbls()=0;
+	 virtual trans_vec getTrans()=0;
 	 virtual vector <string> getSampleID(unsigned short)=0;
 	 virtual string getSampleName(wsSampleNode &)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;

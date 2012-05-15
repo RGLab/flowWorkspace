@@ -88,7 +88,7 @@ public:
 
 	virtual vector<string> getParam()=0;
 	virtual vertices_valarray getVertices()=0;
-	virtual void transforming(Trans_map &)=0;
+	virtual void transforming(trans_map &)=0;
 };
 
 /*
@@ -103,7 +103,7 @@ public:
 	const char * getName(){return "rangeGate";}
 	unsigned short getType(){return RANGEGATE;}
 	POPINDICES gating(flowData &);
-	void transforming(Trans_map &);
+	void transforming(trans_map &);
 	vector<string> getParam(){
 		vector<string> res;
 		res.push_back(param.name);
@@ -125,7 +125,7 @@ public:
 	unsigned short getType(){return POLYGONGATE;}
 
 	POPINDICES gating(flowData &);
-	void transforming(Trans_map &);
+	void transforming(trans_map &);
 	vector<string> getParam(){return params;};
 	vertices_valarray getVertices();
 };

@@ -60,20 +60,20 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,unsigned short _dMode,CALTBS * _calTbls)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,unsigned short _dMode,trans_vec * _gTrans)
 {
 //	data=NULL;
 	dMode=_dMode;
 	isLoaded=false;
 	thisWs=ws;
 	nc=_nc;
-	calTbls=_calTbls;
+	gTrans=_gTrans;
 //	cout<<"get root node"<<endl;
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	if(isParseGate)
 	{
 		comp=thisWs->getCompensation(curSampleNode);
-		trans=thisWs->getTransformation(curSampleNode,comp.cid,calTbls);
+		trans=thisWs->getTransformation(curSampleNode,comp.cid,gTrans);
 	}
 
 //	cout<<"adding root node"<<endl;

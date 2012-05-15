@@ -129,18 +129,18 @@ string flowJoWorkspace::getSampleName(wsSampleNode & node){
 /*
  * get transformation for one particular sample node
  */
-Trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,CALTBS * calTbls){
+trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_vec * trans){
 
 //	if(dMode>=GATING_HIERARCHY_LEVEL)
 //			cout<<"parsing transformation..."<<endl;
 
-	Trans_map res;
+	trans_map res;
 	if(cid.compare("-1")==0)
 	{
 		/*
 		 * look for Acquisition-defined witin global calitbls
 		 */
-		for(CALTBS::iterator it=calTbls->begin();it!=calTbls->end();it++)
+		for(trans_vec::iterator it=trans->begin();it!=trans->end();it++)
 		{
 			transformation* curTbl=*it;
 			if(curTbl->name.find("Acquisition-defined")!=string::npos)
@@ -172,9 +172,9 @@ Trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,CALTBS *
 /*
  * parse global calibration tables
  */
-CALTBS macFlowJoWorkspace::getCalTbls(){
+trans_vec macFlowJoWorkspace::getTrans(){
 
-	CALTBS res;
+	trans_vec res;
 
 
 
@@ -190,6 +190,7 @@ CALTBS macFlowJoWorkspace::getCalTbls(){
 	{
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
+		transformation *curTran=new transformation();
 		calibrationTable *t=new calibrationTable("flowJo",2);
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
@@ -202,15 +203,15 @@ CALTBS macFlowJoWorkspace::getCalTbls(){
 		if((nPrefix==string::npos)|(nsuffix==string::npos))
 			continue;//skip the tables without channel info
 
-		t->name=tname.substr(0,nPrefix);
-		t->channel=tname.substr(nPrefix,tname.length()-nPrefix);
+		curTran->name=tname.substr(0,nPrefix);
+		curTran->channel=tname.substr(nPrefix,tname.length()-nPrefix);
 
 		if(dMode>=GATING_SET_LEVEL)
-				cout<<"parsing calibrationTable:"<<t->name<<":"<<t->channel<<endl;
+				cout<<"parsing calibrationTable:"<<curTran->name<<":"<<curTran->channel<<endl;
 
-		t->biExpDecades=atof(calTblNode.getProperty("biexponentialDecades").c_str());
-		t->biExpNegDecades=atof(calTblNode.getProperty("biexponentialNegDecades").c_str());
-		t->w=atof(calTblNode.getProperty("biexponentialWidth").c_str());
+//		t.biExpDecades=atof(calTblNode.getProperty("biexponentialDecades").c_str());
+//		t.biExpNegDecades=atof(calTblNode.getProperty("biexponentialNegDecades").c_str());
+//		t.w=atof(calTblNode.getProperty("biexponentialWidth").c_str());
 
 		string sTbl=calTblNode.getContent();
 		/*
@@ -238,12 +239,13 @@ CALTBS macFlowJoWorkspace::getCalTbls(){
 
 
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<"spline interpolating..."<<t->name<<endl;
+			cout<<"spline interpolating..."<<curTran->name<<endl;
 
 		t->interpolate();
 
+		curTran->calTbl=t;
 
-		res.push_back(t);
+		res.push_back(curTran);
 
 	}
 

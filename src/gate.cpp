@@ -175,7 +175,7 @@ POPINDICES polygonGate::gating(flowData & fdata){
 	return ind;
 }
 
-void polygonGate::transforming(Trans_map & trans){
+void polygonGate::transforming(trans_map & trans){
 	/*
 	 * get channel names to select respective transformation functions
 	 */
@@ -207,7 +207,7 @@ void polygonGate::transforming(Trans_map & trans){
 
 }
 
-void rangegate::transforming(Trans_map & trans){
+void rangegate::transforming(trans_map & trans){
 
 	vertices_valarray vert=getVertices();
 

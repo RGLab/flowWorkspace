@@ -20,7 +20,8 @@ using namespace std;
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
 
-	CALTBS calTbls;
+//	CALTBS calTbls;
+	trans_vec gTrans;
 	map<string,GatingHierarchy*> ghs;
 	ncdfFlow nc;
 	/*

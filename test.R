@@ -200,4 +200,17 @@ all(sort(rownames(getPopStats(gh)))==sort(rownames(getPopStats(gh1))))
 all(getPopStats(gh)[sort(rownames(getPopStats(gh))),c("flowJo.count","parent.total")]==getPopStats(gh1)[sort(rownames(getPopStats(gh1))),c("flowJo.count","parent.total")])
 
 
+vv1<-scan("/home/wjiang2/rglab/workspace/logicle/out.txt")
+plot(vv)
+plot(vv1)
+biexp  <- biexponentialTransform("myTransform")
+vv2<-biexp(as.numeric(0:256))
 
+vv3<-exprs(GvHD[[1]])[,3]
+plot(vv3)
+
+(biexp(vv3))
+
+hist(vv)
+biexponentialTransform( a=.5, b=1, c=.5, d=1, f=0, w=0,
+		tol=.Machine$double.eps^0.25, maxit=as.integer(5000))

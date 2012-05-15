@@ -33,8 +33,8 @@ class winFlowJoWorkspace:public flowJoWorkspace{
 public:
 	winFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
-	CALTBS getCalTbls(){throw(domain_error("getCalTbls not valid for win flowJo yet!"));};
-	Trans_map getTransformation(wsSampleNode,string cid,CALTBS *){throw(domain_error("getTransformation not valid for win flowJo yet!"));};
+	trans_vec getTrans(){throw(domain_error("getCalTbls not valid for win flowJo yet!"));};
+	trans_map getTransformation(wsSampleNode,string cid,trans_vec *){throw(domain_error("getTransformation not valid for win flowJo yet!"));};
 	string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
 	  polygonGate * getGate(wsPolyGateNode &);
@@ -48,8 +48,8 @@ class macFlowJoWorkspace:public flowJoWorkspace{
 public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
-	Trans_map getTransformation(wsSampleNode,string cid,CALTBS*);
-	CALTBS getCalTbls();
+	trans_map getTransformation(wsSampleNode,string cid,trans_vec*);
+	trans_vec getTrans();
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);
 	polygonGate * getGate(wsPolyGateNode &);

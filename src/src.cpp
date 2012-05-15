@@ -184,6 +184,27 @@ void test(string xml){
 
 
 }
+
+int main(void) {
+
+	//read xml file by libxml
+	vector<string> fileNames;
+
+	fileNames.push_back("../data/HIPC_trial/data/HIPC_trial.xml");
+	fileNames.push_back("../data/Yale/data/LyoplateTest1Yale.wsp");
+
+//	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
+//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
+//	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
+	test(fileNames.at(0));
+//	ncdf_test();
+//	Rcpp_test(fileNames.at(WIN));
+//	spline_test();
+
+
+
+	return (0);
+}
 void ncdf_test(){
 	string ncFile="../output/HIPC_trial/nc1.nc";
 
@@ -213,21 +234,7 @@ void ncdf_test(){
 
 
 }
-/*
- * somehow the Rcpp code can't be run within C++ IDE
- * which makes the debugging in c++ environment impossible
- * now, the debug/test has to be done within R after the Rcpp code compiles
- */
-void Rcpp_test(string xml){
-//	CharacterVector _xml(1);
-//	_xml[0]="ddd";
-//	R_openWorkspace(_xml);
-//	XPtr<GatingSet> gsPtr();
-//	R_parseWorkspace(ptr,IntegerVector(1));
-//	R_getSamples(gsPtr);
-//	SEXP ghPtr=R_getGatingHierarchyI(gsPtr,IntegerVector(1));
 
-}
 #include "include/spline.hpp"
 void spline_test(){
 
@@ -288,23 +295,4 @@ void spline_test(){
 
 }
 
-int main(void) {
 
-	//read xml file by libxml
-	vector<string> fileNames;
-
-	fileNames.push_back("../data/HIPC_trial/data/HIPC_trial.xml");
-	fileNames.push_back("../data/Yale/data/LyoplateTest1Yale.wsp");
-
-//	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
-//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
-//	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
-//	test(fileNames.at(0));
-	ncdf_test();
-//	Rcpp_test(fileNames.at(WIN));
-//	spline_test();
-
-
-
-	return (0);
-}

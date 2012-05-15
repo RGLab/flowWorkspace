@@ -124,42 +124,42 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	Trans_map trans=gh->trans;
+	trans_map trans=gh->trans;
 	List res;
 
-	for (Trans_map::iterator it=trans.begin();it!=trans.end();it++)
+	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		transformation * curTrans=it->second;
 
-		switch(curTrans->type)
-			{
-				case LOGICLE:
-					{
-						throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
-		//
-		////				Vector args=Vector::create();
-		////
-		////				return(List::create(Named("type",LOGICAL)
-		////									,Named("arguments",args)
-		////									)
-		////							);
-					}
-				case CALTBL:
-				{
-					Spline_Coefs obj=curTrans->getCalTbl();
-
-					res.push_back(List::create(Named("z",obj.coefs)
-												,Named("method",obj.method)
-												,Named("type",obj.type)
-												)
-									,curTrans->name.append(curTrans->channel)
-
-									);
-					break;
-				}
-				default:
-					throw(domain_error("unknown transformation in R_getTransformations!"));
-			}
+//		switch(curTrans->type)
+//			{
+//				case LOGICLE:
+//					{
+//						throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
+//		//
+//		////				Vector args=Vector::create();
+//		////
+//		////				return(List::create(Named("type",LOGICAL)
+//		////									,Named("arguments",args)
+//		////									)
+//		////							);
+//					}
+//				case CALTBL:
+//				{
+//					Spline_Coefs obj=curTrans->getCalTbl();
+//
+//					res.push_back(List::create(Named("z",obj.coefs)
+//												,Named("method",obj.method)
+//												,Named("type",obj.type)
+//												)
+//									,curTrans->name.append(curTrans->channel)
+//
+//									);
+//					break;
+//				}
+//				default:
+//					throw(domain_error("unknown transformation in R_getTransformations!"));
+//			}
 
 	}
 	return (res);

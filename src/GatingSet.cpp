@@ -51,8 +51,8 @@ GatingSet::~GatingSet()
 	}
 
 	if(dMode>=GATING_SET_LEVEL)
-					cout<<"free calibration tables..."<<endl;
-	for(CALTBS::iterator it=calTbls.begin();it!=calTbls.end();it++)
+					cout<<"free transformatioiins..."<<endl;
+	for(trans_vec::iterator it=gTrans.begin();it!=gTrans.end();it++)
 		delete *it;
 
 }
@@ -103,7 +103,7 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short _dMode=1)
 		 {
 			 if(dMode>=GATING_SET_LEVEL)
 				 cout<<"... start parsing global calibration tables... "<<endl;
-			 calTbls=ws->getCalTbls();
+			 gTrans=ws->getTrans();
 		 }
 
 }
@@ -126,7 +126,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 			cout<<"... start parsing sample: "<<*it<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,dMode,&calTbls);
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,dMode,&gTrans);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 
