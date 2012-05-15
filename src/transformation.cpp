@@ -150,7 +150,7 @@ void biexpTrans::computCalTbl(){
 
 
 //	if(dMode>=GATING_SET_LEVEL)
-		cout<<"spline interpolating..."<<name<<endl;
+//		cout<<"spline interpolating..."<<name<<endl;
 
-	calTbl->interpolate();
+//	calTbl->interpolate();
 }

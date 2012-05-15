@@ -1,30 +1,16 @@
-//============================================================================
-// Name        : src.cpp
-// Author      : Mike jiang
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C, Ansi-style
-//============================================================================
+/*
+ * gatingSet_test.cpp
+ *
+ *  Created on: May 15, 2012
+ *      Author: wjiang2
+ */
 
-#include <iostream>
-#include <fstream>
-#include <string>
+#include "test_header.hpp"
 
-#include "include/flowJoWorkspace.hpp"
-#include "include/GatingSet.hpp"
-#include "include/GatingHierarchy.hpp"
-#include "include/R_GatingSet.hpp"
-using namespace std;
-
-#define MAC 0
-#define WIN 1
-
-
-
-void test(string xml){
+void gs_test(string xml){
 
 		//create gating set object
-		GatingSet gs(xml,true,0);
+		GatingSet gs(xml,true,4);
 
 //		valarray<double> x(gs.ws->toArray(""));
 //		for(unsigned i=0;i<x.size();i++)
@@ -36,8 +22,10 @@ void test(string xml){
 
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;
-		sampleIDs.push_back("1");
-		sampleIDs.push_back("2");
+//		sampleIDs.push_back("1");
+//		sampleIDs.push_back("2");
+		sampleIDs.push_back("14");
+		sampleIDs.push_back("13");
 		gs.parseWorkspace(sampleIDs,true);
 		/*
 		 * get sample list from gating set
@@ -49,8 +37,9 @@ void test(string xml){
 			cout<<*it<<endl;
 
 		GatingHierarchy* gh;
+		gh=gs.getGatingHierarchy("Exp2_Sp005_1_Tcell.fcs");
 //		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
-		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
+//		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
 //		gh=gs.getGatingHierarchy("004_B1_B01.fcs");
 //		gh=gs.getGatingHierarchy(0);
 		/*
@@ -184,115 +173,3 @@ void test(string xml){
 
 
 }
-
-int main(void) {
-
-	//read xml file by libxml
-	vector<string> fileNames;
-
-	fileNames.push_back("../data/HIPC_trial/data/HIPC_trial.xml");
-	fileNames.push_back("../data/Yale/data/LyoplateTest1Yale.wsp");
-
-//	fileNames.push_back("../fjWsExamples/Exp1_DC-Mono-NK.wsp");
-//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
-//	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
-	test(fileNames.at(0));
-//	ncdf_test();
-//	Rcpp_test(fileNames.at(WIN));
-//	spline_test();
-
-
-
-	return (0);
-}
-void ncdf_test(){
-	string ncFile="../output/HIPC_trial/nc1.nc";
-
-	//read colnames from text
-//	vector<string> params;
-//	vector<string> sampleNames;
-//	sampleNames.push_back("004_A1_A01.fcs");
-//	sampleNames.push_back("004_B1_B01.fcs");
-//
-//	std::ifstream myfile;
-//	myfile.open("../output/HIPC_trial/colnames.txt",ifstream::in);
-////		myfile.open("../output/Yale/colnames.txt",ifstream::in);
-//	vector<string> myLines;
-//	string line;
-//	while (std::getline(myfile, line))
-//	{
-//		params.push_back(line);
-//	}
-//
-//	myfile.close();
-	ncdfFlow nc(ncFile);
-//	nc.params_set(params);
-//	nc.sample_set(sampleNames);
-	for(unsigned i=0;i<100;i++)
-		nc.readflowData(0);
-	cout<<"done!"<<endl;
-
-
-}
-
-#include "include/spline.hpp"
-void spline_test(){
-
-	double x[4097],y[4097],b[4097],c[4097],d[4097];
-	int n=4097;
-	/*
-	 * read the x,y vector from R output
-	 */
-    string word;
-    ifstream infile_x("../output/R/x.csv");
-    int counter=0;
-    while (getline(infile_x, word, '\n'))
-    {
-//    cout << "Word: " << word << "\n";
-    	x[counter]=atof(word.c_str());
-    counter++;
-    }
-    ifstream infile_y("../output/R/y.csv");
-    cout<<counter<<endl;
-    counter=0;
-    while (getline(infile_y, word, '\n'))
-	{
-    	y[counter]=atof(word.c_str());
-		counter++;
-	}
-    cout<<counter<<endl;
-	/*
-	 * interpolation
-	 */
-	natural_spline_C(n,x, y, b, c, d);
-	int imeth=2,nu=63680;
-	double u[63680],v[63680];
-	ifstream infile_u("../output/R/u.csv");
-	counter=0;
-	while (getline(infile_u, word, '\n'))
-	{
-//    cout << "Word: " << word << "\n";
-		u[counter]=atof(word.c_str());
-		counter++;
-	}
-	/*
-	 * transformation
-	 */
-	spline_eval_C(&imeth,&nu,u,v,&n,x, y, b, c, d);
-//	for(unsigned i=0;i<20;i++)
-//		cout<<v[i]<<",";
-
-	/*
-	 * output to text for testing
-	 */
-	ofstream vOutput("../output/c++/v.csv");
-//	ofstream yOutput("../output/c++/y.csv");
-	for(int i=0;i<nu;i++)
-	{
-		vOutput<<v[i]<<",";
-
-	}
-
-}
-
-

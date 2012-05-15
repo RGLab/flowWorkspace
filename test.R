@@ -201,8 +201,10 @@ all(getPopStats(gh)[sort(rownames(getPopStats(gh))),c("flowJo.count","parent.tot
 
 
 vv1<-scan("/home/wjiang2/rglab/workspace/logicle/out.txt")
-plot(vv)
-plot(vv1)
+hist(ff(uv$v))
+plot(ff(uv$v))
+ff<-splinefun(y=compCal,x=0:4096,method="natural")
+
 biexp  <- biexponentialTransform("myTransform")
 vv2<-biexp(as.numeric(0:256))
 
@@ -210,6 +212,11 @@ vv3<-exprs(GvHD[[1]])[,3]
 plot(vv3)
 
 (biexp(vv3))
+setwd("/home/wjiang2/rglab/workspace/flowWorkspace/")
+
+compCal<-scan("output/cpp/compCalTbl.txt")
+head(compCal)
+
 
 hist(vv)
 biexponentialTransform( a=.5, b=1, c=.5, d=1, f=0, w=0,

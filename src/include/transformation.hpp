@@ -41,7 +41,7 @@ typedef map<string,transformation *> trans_map;
 typedef vector<transformation*> trans_vec;
 
 class biexpTrans:public transformation{
-private:
+public:
 	int channelRange;
 	double pos, neg, widthBasis, maxValue;
 

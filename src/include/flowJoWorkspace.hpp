@@ -33,8 +33,8 @@ class winFlowJoWorkspace:public flowJoWorkspace{
 public:
 	winFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
-	trans_vec getTrans(){throw(domain_error("getCalTbls not valid for win flowJo yet!"));};
-	trans_map getTransformation(wsSampleNode,string cid,trans_vec *){throw(domain_error("getTransformation not valid for win flowJo yet!"));};
+	trans_vec getGlobalTrans();
+	trans_map getTransformation(wsSampleNode,string cid,trans_vec *);
 	string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
 	  polygonGate * getGate(wsPolyGateNode &);
@@ -49,7 +49,7 @@ public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
 	trans_map getTransformation(wsSampleNode,string cid,trans_vec*);
-	trans_vec getTrans();
+	trans_vec getGlobalTrans();
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);
 	polygonGate * getGate(wsPolyGateNode &);

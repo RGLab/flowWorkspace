@@ -103,7 +103,7 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short _dMode=1)
 		 {
 			 if(dMode>=GATING_SET_LEVEL)
 				 cout<<"... start parsing global calibration tables... "<<endl;
-			 gTrans=ws->getTrans();
+			 gTrans=ws->getGlobalTrans();
 		 }
 
 }

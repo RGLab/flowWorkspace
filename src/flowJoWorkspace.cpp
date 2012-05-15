@@ -167,12 +167,114 @@ trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_ve
 	return res;
 }
 
+trans_map winFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_vec * trans){
 
+//	if(dMode>=GATING_HIERARCHY_LEVEL)
+//			cout<<"parsing transformation..."<<endl;
+
+	trans_map res;
+
+
+	for(trans_vec::iterator it=trans->begin();it!=trans->end();it++)
+	{
+		transformation* curTran=*it;
+		if(curTran->name.find(cid)!=string::npos)
+		{
+
+			res[curTran->channel]=curTran;
+			if(dMode>=GATING_HIERARCHY_LEVEL)
+				cout<<"adding "<<curTran->name<<":"<<curTran->channel<<endl;
+		}
+	}
+
+
+	return res;
+}
 
 /*
- * parse global calibration tables
+ * parse global transformation functions/calibration tables
+ * currently we only extract current used group of trans assuming samples in workspace
+ * will choose from "current" group.
  */
-trans_vec macFlowJoWorkspace::getTrans(){
+trans_vec winFlowJoWorkspace::getGlobalTrans(){
+
+	trans_vec res;
+
+
+
+	string path="/Workspace/CompensationEditor";
+	xmlXPathContextPtr context = xmlXPathNewContext(doc);
+	xmlXPathObjectPtr CompEdres = xmlXPathEval((xmlChar *)path.c_str(), context);
+	if(xmlXPathNodeSetIsEmpty(CompEdres->nodesetval))
+	{
+		cout<<"no CompensationEditor found!"<<endl;
+		xmlXPathFreeObject(CompEdres);
+		xmlXPathFreeContext(context);
+		return(res);
+	}
+	wsNode compEdNode(CompEdres->nodesetval->nodeTab[0]);
+	/*
+	 * TODO::maybe we should get all available transformation groups from here instead of only one
+	 * in case samples would choose from multiple pre-defined trans groups
+	 */
+	string curCompName=compEdNode.getProperty("current");//get current used compensation/trans node
+	if(curCompName.empty())
+	{
+		cout<<"no current compensation name found!"<<endl;
+		xmlXPathFreeObject(CompEdres);
+		xmlXPathFreeContext(context);
+		return(res);
+	}
+	xmlXPathFreeObject(CompEdres);
+	xmlXPathFreeContext(context);
+
+	path="Compensation[@name='"+curCompName+"']";
+	xmlXPathObjectPtr compNodeRes=compEdNode.xpathInNode(path);
+
+	if(compNodeRes->nodesetval->nodeNr!=1)
+	{
+		cout<<"the number of compensation matched is not 1!"<<endl;
+		xmlXPathFreeObject(compNodeRes);
+		return(res);
+	}
+	wsNode compNode(compNodeRes->nodesetval->nodeTab[0]);
+	xmlXPathFreeObject(compNodeRes);
+
+	path="//*[local-name()='logicle']";//|*[local-name()='biex']");
+	xmlXPathObjectPtr compRes=compNode.xpathInNode(path);
+	for(int i=0;i<compRes->nodesetval->nodeNr;i++)
+	{
+		wsNode transNode(compRes->nodesetval->nodeTab[i]);
+
+		string pname=transNode.getProperty("parameter");
+		if(pname.empty())
+			continue;//skip the tables without channel info
+
+		string transType=(const char*)transNode.thisNode->name;
+		if(transType.compare("logicle")==0)
+		{
+
+			if(dMode>=GATING_SET_LEVEL)
+				cout<<"parsing logicle tranformation:"<<":"<<pname<<endl;
+			biexpTrans *curTran=new biexpTrans();
+			curTran->name=curCompName;
+			curTran->channel=pname;
+			curTran->pos=atof(transNode.getProperty("T").c_str());
+			curTran->neg=atof(transNode.getProperty("w").c_str());
+			curTran->widthBasis=atof(transNode.getProperty("m").c_str());
+			res.push_back(curTran);
+		}
+		else
+			throw(domain_error("unknown tranformation type!"));
+
+	}
+
+	xmlXPathFreeObject(compRes);
+
+	return res;
+}
+
+trans_vec macFlowJoWorkspace::getGlobalTrans(){
 
 	trans_vec res;
 
@@ -334,6 +436,7 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 
 	wsNode node(res->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(res);
+
 	comp.cid=node.getProperty("id");
 	comp.prefix=node.getProperty("prefix");
 	/*
