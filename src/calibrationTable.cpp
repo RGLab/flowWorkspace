@@ -7,11 +7,15 @@
 
 #include "include/calibrationTable.hpp"
 #include <fstream>
+calibrationTable::calibrationTable(){
+	isInterpolated=false;
+}
 
 calibrationTable::calibrationTable(string _caltype,int _spline_method){
 //								type=CALTBL;
 		caltype=_caltype;
 		spline_method=_spline_method;
+		isInterpolated=false;
 };
 
 void calibrationTable::init(unsigned nSize){
@@ -68,7 +72,12 @@ void calibrationTable::interpolate(){
 	/*
 	 * c++
 	 */
-	natural_spline(x, y, b, c, d);
+	if(!isInterpolated)
+	{
+		natural_spline(x, y, b, c, d);
+		isInterpolated=true;
+	}
+
 
 }
 /*

@@ -69,9 +69,10 @@ class GatingHierarchy{
 	bool isLoaded;
 
 	workspace * thisWs;
-	isTransMap transFlag;
+
 	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 public:
+	isTransMap transFlag;
 	trans_local trans;
 	unsigned short dMode;//debug mode passed from GatingSet
 

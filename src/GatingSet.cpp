@@ -53,11 +53,13 @@ GatingSet::~GatingSet()
 	for(trans_global_vec::iterator it=gTrans.begin();it!=gTrans.end();it++)
 	{
 		trans_map curTrans=it->trans;
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<"free transformatioin group:"<<it->groupName<<endl;
 		for(trans_map::iterator it1=curTrans.begin();it1!=curTrans.end();it1++)
 		{
 			transformation * curTran=it1->second;
 			if(dMode>=GATING_SET_LEVEL)
-					cout<<"free transformatioin:"<<curTran->name<<curTran->channel<<endl;
+					cout<<"free transformatioin:"<<curTran->channel<<endl;
 			delete curTran;
 		}
 

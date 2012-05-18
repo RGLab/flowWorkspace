@@ -33,11 +33,11 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 /*
  * choose the trans from global trans vector to attach to current sample
  */
-trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,string cid,isTransMap transFlag,trans_global_vec * gTrans){
+trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const isTransMap & transFlag,trans_global_vec * gTrans){
 
 	trans_local res;
 	unsigned sampleID=atoi(root.getProperty("sampleID").c_str());
-	string sPrefix="Comp-";
+	string sPrefix=comp.prefix;
 
 	/*
 	 *  save trans back to trans_local for each channel
@@ -55,7 +55,7 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,string cid,isT
 		{
 
 
-			for(isTransMap::iterator isTransIt=transFlag.begin();isTransIt!=transFlag.end();isTransIt++)
+			for(isTransMap::const_iterator isTransIt=transFlag.begin();isTransIt!=transFlag.end();isTransIt++)
 			{
 				string curChName=isTransIt->first;
 				bool curTranFlag=isTransIt->second;
@@ -67,6 +67,19 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,string cid,isT
 						curTrans=(it->trans)["*"];
 
 					(*trs)[curCmpChName]=curTrans;
+
+					/*
+					 * calculate calibration table from the function
+					 */
+					if(!curTrans->isComputed)
+						curTrans->computCalTbl();
+					if(!curTrans->calTbl->isInterpolated)
+					{
+						if(dMode>=GATING_SET_LEVEL)
+							cout<<"spline interpolating..."<<curTrans->name<<" "<<curTrans->channel<<endl;
+						curTrans->calTbl->interpolate();
+					}
+
 				}
 
 			}
@@ -173,7 +186,10 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 		string compName=compNode.getProperty("name");
 
 		trans_global curTg;
+		curTg.groupName=compName;
 
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<"parsing tranformation group:"<<":"<<compName<<endl;
 		/*
 		 * parse transformations for current compNode
 		 */
@@ -199,7 +215,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 			{
 
 				if(dMode>=GATING_SET_LEVEL)
-					cout<<"parsing logicle tranformation:"<<":"<<pname<<endl;
+					cout<<"logicle tranformation:"<<":"<<pname<<endl;
 				biexpTrans *curTran=new biexpTrans();
 				curTran->name=compName;
 
@@ -215,13 +231,9 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 				curTran->neg=atof(transNode.getProperty("w").c_str());
 				curTran->widthBasis=atof(transNode.getProperty("m").c_str());
 				/*
-				 * calculate calibration table from the function
+				 * do the lazy calibration table calculation and interpolation
+				 * when it gets saved in gh
 				 */
-				curTran->computCalTbl();
-
-				if(dMode>=GATING_SET_LEVEL)
-							cout<<"spline interpolating..."<<curTran->name<<endl;
-				curTran->calTbl->interpolate();
 				(*curTransMap)[curTran->channel]=curTran;
 			}
 			else

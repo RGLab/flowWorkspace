@@ -29,11 +29,9 @@ public:
 	 * TODO:try boost::tokenizer/boost::split and boost::lexical_cast
 	 * or stream and getline to parse it into double array
 	 */
-//	double biExpDecades,biExpNegDecades,w;
-	valarray<double> x,y,b,c,d;
-//	double * x1,*y1,*b1,*c1,*d1;
-//	int n;
 
+	valarray<double> x,y,b,c,d;
+	bool isInterpolated;
 public:
 	calibrationTable();
 	calibrationTable(string _caltype,int _spline_method);

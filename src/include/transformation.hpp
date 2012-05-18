@@ -30,13 +30,15 @@ public:
 	string name;
 	string channel;
 	calibrationTable * calTbl;
+	bool isComputed;//this flag allow lazy computCalTbl/interpolation
+
 public:
+	transformation();
 	~transformation();
 //	virtual ARGLIST getArgs()=0;
 	valarray<double> transforming(valarray<double> & input);
-	void computCalTbl();
+	virtual void computCalTbl()=0;
 };
-//typedef vector<transformation*> trans_vec;
 typedef map<string,transformation *> trans_map;
 typedef map<string,bool> isTransMap;
 class trans_local{
@@ -47,12 +49,18 @@ public:
 
 class trans_global{
 public:
+	string groupName;
 	trans_map trans;
 	vector<int> sampleIDs;
 };
 
 typedef vector<trans_global> trans_global_vec;
 
+class calTrans:public transformation{
+public:
+	calTrans(){isComputed=true;}//always set this flag to be true to assure the subsequent interpolation can be performed
+	void computCalTbl(){};//dummy routine that does nothing
+};
 class biexpTrans:public transformation{
 public:
 	int channelRange;

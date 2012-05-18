@@ -195,7 +195,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	if(trans_x!=NULL)
 	{
 		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming "<<channel_x<<endl;
+			cout<<"transforming: "<<channel_x<<endl;;
 		valarray<double> output_x(trans_x->transforming(vert.x));
 		for(unsigned i=0;i<vertices.size();i++)
 			vertices.at(i).x=output_x[i];// yodate coordinates-based vertices
@@ -203,11 +203,12 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	if(trans_y!=NULL)
 	{
 		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming "<<channel_y<<endl;
+			cout<<"transforming: "<<channel_y<<endl;;
 		valarray<double> output_y(trans_y->transforming(vert.y));
 		for(unsigned i=0;i<vertices.size();i++)
 			vertices.at(i).y=output_y[i];
 	}
+	cout<<endl;
 
 }
 
@@ -219,7 +220,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 	if(curTrans!=NULL)
 	{
 		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming "<<param.name<<endl;
+			cout<<param.name<<endl;
 		valarray<double> output(curTrans->transforming(vert.x));
 		param.min=output[0];
 		param.max=output[1];

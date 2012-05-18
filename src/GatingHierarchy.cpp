@@ -75,7 +75,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 	{
 		transFlag=thisWs->getTransFlag(curSampleNode);
 		comp=thisWs->getCompensation(curSampleNode);
-		trans=thisWs->getTransformation(root,comp.cid,transFlag,gTrans);
+		trans=thisWs->getTransformation(root,comp,transFlag,gTrans);
 	}
 
 //	cout<<"adding root node"<<endl;
@@ -215,7 +215,7 @@ void GatingHierarchy::unloadData()
 void GatingHierarchy::transforming(bool updateCDF)
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<"start transforming:"<<this->sampleName<<endl;
+		cout <<"start transforming data :"<<this->sampleName<<endl;
 	if(!isLoaded)
 		throw(domain_error("data is not loaded yet!"));
 
@@ -237,7 +237,7 @@ void GatingHierarchy::transforming(bool updateCDF)
 		{
 			valarray<double> x(this->fdata.subset(curChannel));
 			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"transforming "<<curChannel<<" by function:"<<curTrans->channel<<endl;
+				cout<<"transforming "<<curChannel<<" with func:"<<curTrans->channel<<endl;
 			valarray<double> y(curTrans->transforming(x));
 			/*
 			 * update fdata
@@ -312,6 +312,7 @@ void GatingHierarchy::gating()
 		/*
 		 * transform gates if applicable
 		 */
+
 		g->transforming(trans,dMode);
 
 		if(g==NULL)

@@ -50,7 +50,7 @@ isTransMap macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 /*
  * get transformation for one particular sample node
  */
-trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,string cid,isTransMap transFlag,trans_global_vec * gTrans){
+trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const isTransMap & transFlag,trans_global_vec * gTrans){
 
 //	if(dMode>=GATING_HIERARCHY_LEVEL)
 //			cout<<"parsing transformation..."<<endl;
@@ -58,6 +58,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,string cid,isT
 	//TODO:unfinished to fix this
 	trans_map trans=gTrans->at(0).trans;
 	trans_local res;
+	string cid=comp.cid;
 	map<string,transformation *> *trs=&(res.transformations);
 	if(cid.compare("-1")==0)
 	{
@@ -110,7 +111,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 	{
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
-		transformation *curTran=new transformation();
+		calTrans *curTran=new calTrans();
 		calibrationTable *t=new calibrationTable("flowJo",2);
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())

@@ -7,9 +7,19 @@
 
 #include "include/transformation.hpp"
 
+
 /*
  * transformation
  */
+
+transformation::transformation(){
+	/*
+	 * if it is pure transformation object,then assume calibration is directly read from ws
+	 * so there is no need to compute calibration
+	 */
+	isComputed=true;
+
+}
 transformation::~transformation(){
 	if(calTbl!=NULL)
 		delete calTbl;
@@ -19,9 +29,6 @@ valarray<double> transformation::transforming(valarray<double> & input){
 		if(calTbl==NULL)
 			throw(domain_error("calibration table not assigned yet!"));
 		return calTbl->transforming(input);
-}
-void transformation::computCalTbl(){
-	throw(domain_error("calibration table can not be computed in abstract tranformation function!"));
 }
 
 transformation * trans_local::getTran(string channel){
@@ -45,6 +52,8 @@ biexpTrans::biexpTrans(){
 	pos=4.5;
 	neg=0;
 	widthBasis=-10;
+	isComputed=false;
+
 }
 /*
  * directly translated from java routine from tree star
@@ -160,6 +169,7 @@ void biexpTrans::computCalTbl(){
 		calTbl->x[chan] = positive[chan];
 	}
 
+	isComputed=true;
 
 //	if(dMode>=GATING_SET_LEVEL)
 //		cout<<"spline interpolating..."<<name<<endl;
