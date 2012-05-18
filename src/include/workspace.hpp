@@ -59,6 +59,8 @@ struct xpath{
 	string popNode;
 };
 
+
+
 class workspace{
 public:
 	 xpath nodePath;
@@ -69,7 +71,8 @@ public:
 public:
 	 ~workspace();
 	 virtual string xPathSample(string sampleID)=0;
-	 virtual trans_local getTransformation(wsRootNode,string,trans_vec *)=0;
+	 virtual isTransMap getTransFlag(wsSampleNode sampleNode)=0;
+	 virtual trans_local getTransformation(wsRootNode,string,isTransMap,trans_global_vec *)=0;
 	 virtual compensation getCompensation(wsSampleNode)=0;
 	 virtual trans_global_vec getGlobalTrans()=0;
 	 virtual vector <string> getSampleID(unsigned short)=0;

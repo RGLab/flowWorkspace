@@ -13,8 +13,9 @@ class winFlowJoWorkspace:public flowJoWorkspace{
 public:
 	winFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
+	isTransMap getTransFlag(wsSampleNode sampleNode);
 	trans_global_vec getGlobalTrans();
-	trans_local getTransformation(wsRootNode,string cid,trans_vec *);
+	trans_local getTransformation(wsRootNode,string cid,isTransMap transFlag,trans_global_vec *);
 	string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
 	  polygonGate * getGate(wsPolyGateNode &);

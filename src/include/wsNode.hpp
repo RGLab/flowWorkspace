@@ -31,6 +31,7 @@ public:
 //	wsSampleNode();
 	wsSampleNode(xmlNodePtr node){thisNode=node;};
 
+
 };
 
 class wsRootNode:public wsNode{

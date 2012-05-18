@@ -35,8 +35,12 @@ string macFlowJoWorkspace::xPathSample(string sampleID){
 }
 
 
+//TODO:unfinishedisTransMap res;
+isTransMap macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 
-
+	isTransMap res;
+	return res;
+}
 
 
 //bool matchName(calibrationTable calTbl){
@@ -46,11 +50,13 @@ string macFlowJoWorkspace::xPathSample(string sampleID){
 /*
  * get transformation for one particular sample node
  */
-trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,string cid,trans_vec * trans){
+trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,string cid,isTransMap transFlag,trans_global_vec * gTrans){
 
 //	if(dMode>=GATING_HIERARCHY_LEVEL)
 //			cout<<"parsing transformation..."<<endl;
 
+	//TODO:unfinished to fix this
+	trans_map trans=gTrans->at(0).trans;
 	trans_local res;
 	map<string,transformation *> *trs=&(res.transformations);
 	if(cid.compare("-1")==0)
@@ -58,9 +64,9 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,string cid,tra
 		/*
 		 * look for Acquisition-defined witin global calitbls
 		 */
-		for(trans_vec::iterator it=trans->begin();it!=trans->end();it++)
+		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
 		{
-			transformation* curTbl=*it;
+			transformation* curTbl=it->second;
 			if(curTbl->name.find("Acquisition-defined")!=string::npos)
 			{
 
@@ -90,7 +96,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
 	trans_global_vec res1;
 	trans_global tg;
-	trans_vec  res;
+	trans_map  res;
 
 	string path="/Workspace/CalibrationTables/Table";
 	xmlXPathContextPtr context = xmlXPathNewContext(doc);
@@ -98,7 +104,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 	if(xmlXPathNodeSetIsEmpty(result->nodesetval))
 	{
 		cout<<"no calibration Tables found!"<<endl;
-		return(res);
+		return(res1);
 	}
 	for(int i=0;i<result->nodesetval->nodeNr;i++)
 	{
@@ -159,12 +165,15 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
 		curTran->calTbl=t;
 
-		res.push_back(curTran);
+		res[curTran->channel]=curTran;
 
 	}
 
 	xmlXPathFreeObject(result);
 	xmlXPathFreeContext(context);
+
+	tg.trans=res;
+	res1.push_back(tg);
 	return res1;
 }
 compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)

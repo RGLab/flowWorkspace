@@ -33,27 +33,72 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 /*
  * choose the trans from global trans vector to attach to current sample
  */
-trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,string cid,trans_vec * trans){
+trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,string cid,isTransMap transFlag,trans_global_vec * gTrans){
 
 	trans_local res;
-
-	string sampleID=root.getProperty("sampleID");
+	unsigned sampleID=atoi(root.getProperty("sampleID").c_str());
 	string sPrefix="Comp-";
+
+	/*
+	 *  save trans back to trans_local for each channel
+	 */
+
+	map<string,transformation *> *trs=&(res.transformations);
+	for(trans_global_vec::iterator it=gTrans->begin();it!=gTrans->end();it++)
+	{
+		vector<int> sampleVec=it->sampleIDs;
+		vector<int>::iterator sampleRes=find(sampleVec.begin(),sampleVec.end(),sampleID);
+		/*
+		 * when sampleID matched, then get trans from current global trans group
+		 */
+		if(sampleRes!=sampleVec.end())
+		{
+
+
+			for(isTransMap::iterator isTransIt=transFlag.begin();isTransIt!=transFlag.end();isTransIt++)
+			{
+				string curChName=isTransIt->first;
+				bool curTranFlag=isTransIt->second;
+				if(curTranFlag)
+				{
+					string curCmpChName=sPrefix+curChName;//append prefix
+					transformation * curTrans=(it->trans)[curCmpChName];
+					if(curTrans==NULL)
+						curTrans=(it->trans)["*"];
+
+					(*trs)[curCmpChName]=curTrans;
+				}
+
+			}
+
+			/*
+			 * assume this sampleID will not appear in any other global trans group
+			 */
+			break;
+		}
+
+
+	}
+
+
+	return res;
+}
+isTransMap winFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
+	isTransMap res;
+
 	/*
 	 * get total number of channels
 	 */
-	string path="../Keywords/*[@name='$PAR']";
-	xmlXPathObjectPtr parRes=root.xpathInNode(path);
+	string path="Keywords/*[@name='$PAR']";
+	xmlXPathObjectPtr parRes=sampleNode.xpathInNode(path);
 	wsNode parNode(parRes->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(parRes);
 	unsigned short nPar=atoi(parNode.getProperty("value").c_str());
 
 	/*
 	 * get info about whether channel should be transformed
-	 * now, this info is not stored directly in gh,but still indirectly present
-	 * in local trans,because if flag is false, then there is no entry matched in the trans_map
 	 */
-	vector<pair<string,bool> > isTrans;
+
 	for(unsigned i=1;i<=nPar;i++)
 	{
 		pair<string,bool> curPair;
@@ -61,61 +106,27 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,string cid,tra
 		 * get curernt param name
 		 */
 		stringstream ss(stringstream::in | stringstream::out);
-		ss << "../Keywords/*[@name='$P"<< i<<"N']";
+		ss << "Keywords/*[@name='$P"<< i<<"N']";
 		path=ss.str();
-		xmlXPathObjectPtr parN=root.xpathInNode(path);
+		xmlXPathObjectPtr parN=sampleNode.xpathInNode(path);
 		wsNode curPNode(parN->nodesetval->nodeTab[0]);
 		xmlXPathFreeObject(parN);
-		curPair.first=curPNode.getProperty("value");
+		string pName=curPNode.getProperty("value");
 
 		/*
 		 * get current display flag
 		 */
 		stringstream ss1(stringstream::in | stringstream::out);
-		ss1 << "../Keywords/*[@name='P"<<i<<"DISPLAY']";
+		ss1 << "Keywords/*[@name='P"<<i<<"DISPLAY']";
 		path=ss1.str();
-		xmlXPathObjectPtr parDisplay=root.xpathInNode(path);
+		xmlXPathObjectPtr parDisplay=sampleNode.xpathInNode(path);
 		wsNode curDisplayNode(parDisplay->nodesetval->nodeTab[0]);
 		xmlXPathFreeObject(parDisplay);
 		string curFlag=curDisplayNode.getProperty("value");
-		if(curFlag.compare("LOG")==0)
-			curPair.second=true;
-//		else if(curFlag.compare("LIN")==0)
-//			curPair.second=false;
-		else
-			curPair.second=false;
-//			throw(domain_error("unknown display type from keywords!"));
-		isTrans.push_back(curPair);
+		res[pName]=(curFlag.compare("LOG")==0);
 	}
-
-
-
-
-	/*
-	 *  save trans back to trans_local for each channel
-	 */
-
-	map<string,transformation *> *trs=&(res.transformations);
-	for(vector<pair<string,bool> >::iterator it=isTrans.begin();it!=isTrans.end();it++)
-	{
-		string curChName=it->first;
-		bool curTranFlag=it->second;
-		if(curTranFlag)
-		{
-			string curCmpChName=sPrefix+curChName;//append prefix
-			transformation * curTrans=tmpTrs[curCmpChName];
-			if(curTrans==NULL)
-				curTrans=tmpTrs["*"];
-
-			(*trs)[curCmpChName]=curTrans;
-		}
-
-	}
-
-
 	return res;
 }
-
 /*
  *parsing transformations from CompensationEditor node and
  *store in global container within gs
@@ -125,11 +136,12 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 
 
 	trans_global_vec res;
-//
-///*
-// * get CompensationEditor node
-// */
-//
+
+
+	/*
+	 * get CompensationEditor node
+	 */
+
 	string path="/Workspace/CompensationEditor";
 	xmlXPathContextPtr context = xmlXPathNewContext(doc);
 	xmlXPathObjectPtr CompEdres = xmlXPathEval((xmlChar *)path.c_str(), context);
@@ -141,85 +153,106 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 		return(res);
 	}
 	wsNode compEdNode(CompEdres->nodesetval->nodeTab[0]);
-	/*
-	 * get Compensation node that contains the current sampleID
-	 */
-	path="/Workspace/CompensationEditor/Compensation/Samples/Sample[@sampleID='"+sampleID+"']/../..";
-	xmlXPathObjectPtr compNodeRes =root.xpath(path);
 
-	if(compNodeRes->nodesetval->nodeNr!=1)
+	/*
+	 * parse all Compensation nodes and store them in global trans container
+	 */
+	path="/Workspace/CompensationEditor/Compensation";
+	wsNode node(doc->children);
+	xmlXPathObjectPtr compNodeRes =node.xpath(path);
+	unsigned short nCompNodes=compNodeRes->nodesetval->nodeNr;
+	if(nCompNodes<=0)
 	{
-		cout<<"the number of compensation matched is not 1!"<<endl;
+		cout<<"compensation not found!"<<endl;
 		xmlXPathFreeObject(compNodeRes);
 		return(res);
 	}
-	wsNode compNode(compNodeRes->nodesetval->nodeTab[0]);
+	for(unsigned i =0;i<nCompNodes;i++)
+	{
+		wsNode compNode(compNodeRes->nodesetval->nodeTab[i]);
+		string compName=compNode.getProperty("name");
+
+		trans_global curTg;
+
+		/*
+		 * parse transformations for current compNode
+		 */
+		map<string,transformation *> * curTransMap=&(curTg.trans);
+		path=".//*[local-name()='logicle']";//get logicle(actually it is biexp)
+		xmlXPathObjectPtr TransRes=compNode.xpathInNode(path);
+		for(int j=0;j<TransRes->nodesetval->nodeNr;j++)
+		{
+			wsNode transNode(TransRes->nodesetval->nodeTab[j]);
+
+			string pname=transNode.getProperty("parameter");
+			/*
+			 * when channel name is not specified
+			 * try to parse it as the generic trans that is applied to channels
+			 * that do not have channel-specific trans defined in workspace
+			 * ,
+			 */
+			if(pname.empty())
+				pname="*";
+
+			string transType=(const char*)transNode.thisNode->name;
+			if(transType.compare("logicle")==0)
+			{
+
+				if(dMode>=GATING_SET_LEVEL)
+					cout<<"parsing logicle tranformation:"<<":"<<pname<<endl;
+				biexpTrans *curTran=new biexpTrans();
+				curTran->name=compName;
+
+	//			/*TODO:detect prefix automatically instead of hard-coded
+	//			 * extract channel name without prefix
+	//			 */
+	//			size_t nPrefix=pname.find("Comp-");
+	//			if((nPrefix==string::npos))
+	//				continue;
+
+				curTran->channel=pname;
+				curTran->pos=atof(transNode.getProperty("T").c_str());
+				curTran->neg=atof(transNode.getProperty("w").c_str());
+				curTran->widthBasis=atof(transNode.getProperty("m").c_str());
+				/*
+				 * calculate calibration table from the function
+				 */
+				curTran->computCalTbl();
+
+				if(dMode>=GATING_SET_LEVEL)
+							cout<<"spline interpolating..."<<curTran->name<<endl;
+				curTran->calTbl->interpolate();
+				(*curTransMap)[curTran->channel]=curTran;
+			}
+			else
+				throw(domain_error("unknown tranformation type!"));
+
+		}
+		xmlXPathFreeObject(TransRes);
+		/*
+		 * parse sample list
+		 */
+		path="Samples/Sample";//get logicle(actually it is biexp)
+		xmlXPathObjectPtr sampleRes=compNode.xpathInNode(path);
+		unsigned nSample=sampleRes->nodesetval->nodeNr;
+		vector<int> sampleIDs;
+		for(unsigned j=0;j<nSample;j++)
+		{
+			wsNode curNode(sampleRes->nodesetval->nodeTab[j]);
+			string curSampleID=curNode.getProperty("sampleID");
+			sampleIDs.push_back(atoi(curSampleID.c_str()));
+		}
+		curTg.sampleIDs=sampleIDs;
+		xmlXPathFreeObject(sampleRes);
+
+		/*
+		 * push the tg object to global container
+		 */
+		res.push_back(curTg);
+	}
 	xmlXPathFreeObject(compNodeRes);
 
-	/*
-	 * parse all the trans from selected Compensation node and push into tempoary trans container
-	 */
-	map<string,transformation *> tmpTrs;
-	path=".//*[local-name()='logicle']";//get logicle(actually it is biexp)
-	xmlXPathObjectPtr compRes=compNode.xpathInNode(path);
-	for(int i=0;i<compRes->nodesetval->nodeNr;i++)
-	{
-		wsNode transNode(compRes->nodesetval->nodeTab[i]);
 
-		string pname=transNode.getProperty("parameter");
-		/*
-		 * when channel name is not specified
-		 * try to parse it as the generic trans that is applied to channels
-		 * that do not have channel-specific trans defined in workspace
-		 * ,
-		 */
-//		if(!pname.empty())
-//		{
-//			//TODO:automatically detect prefix instead of hardcoded
-
-//			size_t nPrefix=sPrefix.length();
-//			string rawChName=pname.substr(nPrefix,pname.length()-nPrefix);
-//		}
-//		else
-		if(pname.empty())
-			pname="*";
-
-		string transType=(const char*)transNode.thisNode->name;
-		if(transType.compare("logicle")==0)
-		{
-
-			if(dMode>=GATING_SET_LEVEL)
-				cout<<"parsing logicle tranformation:"<<":"<<pname<<endl;
-			biexpTrans *curTran=new biexpTrans();
-			curTran->name=cid;
-
-//			/*TODO:detect prefix automatically instead of hard-coded
-//			 * extract channel name without prefix
-//			 */
-//			size_t nPrefix=pname.find("Comp-");
-//			if((nPrefix==string::npos))
-//				continue;
-
-			curTran->channel=pname;
-			curTran->pos=atof(transNode.getProperty("T").c_str());
-			curTran->neg=atof(transNode.getProperty("w").c_str());
-			curTran->widthBasis=atof(transNode.getProperty("m").c_str());
-			/*
-			 * calculate calibration table from the function
-			 */
-			curTran->computCalTbl();
-
-			if(dMode>=GATING_SET_LEVEL)
-						cout<<"spline interpolating..."<<curTran->name<<endl;
-			curTran->calTbl->interpolate();
-			tmpTrs[curTran->channel]=curTran;
-		}
-		else
-			throw(domain_error("unknown tranformation type!"));
-
-	}
-
-	xmlXPathFreeObject(compRes);
 	return res;
 }
 

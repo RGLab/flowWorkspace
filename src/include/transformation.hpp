@@ -36,18 +36,19 @@ public:
 	valarray<double> transforming(valarray<double> & input);
 	void computCalTbl();
 };
-typedef vector<transformation*> trans_vec;
-
+//typedef vector<transformation*> trans_vec;
+typedef map<string,transformation *> trans_map;
+typedef map<string,bool> isTransMap;
 class trans_local{
 public:
-	map<string,transformation *> transformations;
+	trans_map transformations;
 	transformation * getTran(string);
 };
 
 class trans_global{
 public:
-	trans_vec trans;
-	vector<string> sampleIDs;
+	trans_map trans;
+	vector<int> sampleIDs;
 };
 
 typedef vector<trans_global> trans_global_vec;
