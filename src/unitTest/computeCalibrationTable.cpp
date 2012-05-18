@@ -10,7 +10,7 @@
 void compCalTbl(){
 	biexpTrans t;
 	t.computCalTbl();
-	calibrationTable cal=*t.calTbl;
+	calibrationTable cal=t.calTbl;
 	/*
 	 * output to text for testing
 	 */

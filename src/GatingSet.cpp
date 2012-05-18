@@ -58,9 +58,14 @@ GatingSet::~GatingSet()
 		for(trans_map::iterator it1=curTrans.begin();it1!=curTrans.end();it1++)
 		{
 			transformation * curTran=it1->second;
-			if(dMode>=GATING_SET_LEVEL)
-					cout<<"free transformatioin:"<<curTran->channel<<endl;
-			delete curTran;
+			if(curTran!=NULL)
+			{
+				if(dMode>=GATING_SET_LEVEL)
+						cout<<"free transformatioin:"<<curTran->channel<<endl;
+
+				delete curTran;
+			}
+
 		}
 
 	}
@@ -133,7 +138,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 	for(it=sampleIDs.begin();it!=sampleIDs.end();it++)
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"... start parsing sample: "<<*it<<endl;
+			cout<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
 		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,dMode,&gTrans);

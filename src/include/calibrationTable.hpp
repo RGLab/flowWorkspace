@@ -22,9 +22,10 @@ struct Spline_Coefs{
 };
 
 class calibrationTable{
+
+public:
 	int spline_method;
 	string caltype;
-public:
 	/*
 	 * TODO:try boost::tokenizer/boost::split and boost::lexical_cast
 	 * or stream and getline to parse it into double array

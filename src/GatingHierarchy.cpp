@@ -73,14 +73,22 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 	wsRootNode root=thisWs->getRoot(curSampleNode);
 	if(isParseGate)
 	{
-		transFlag=thisWs->getTransFlag(curSampleNode);
+
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<endl<<"parsing compensation..."<<endl;
 		comp=thisWs->getCompensation(curSampleNode);
+
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<endl<<"parsing trans flagsc..."<<endl;
+		transFlag=thisWs->getTransFlag(curSampleNode);
+
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<endl<<"parsing transformation..."<<endl;
 		trans=thisWs->getTransformation(root,comp,transFlag,gTrans);
 	}
-
-//	cout<<"adding root node"<<endl;
+	if(dMode>=POPULATION_LEVEL)
+		cout<<endl<<"parsing populations..."<<endl;
 	VertexID pVerID=addRoot(thisWs->to_popNode(root));
-//	cout<<"adding population nodes"<<endl;
 	addPopulation(pVerID,&root,isParseGate);
 //	if(isParseGate)
 //		gating();
@@ -269,7 +277,7 @@ void GatingHierarchy::transforming(bool updateCDF)
 void GatingHierarchy::gating()
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<"start gating:"<<this->sampleName<<endl;
+		cout <<endl<<"start gating:"<<this->sampleName<<endl;
 
 	if(!isLoaded)
 			throw(domain_error("data is not loaded yet!"));

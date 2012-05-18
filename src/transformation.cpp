@@ -20,15 +20,12 @@ transformation::transformation(){
 	isComputed=true;
 
 }
-transformation::~transformation(){
-	if(calTbl!=NULL)
-		delete calTbl;
-}
+
 
 valarray<double> transformation::transforming(valarray<double> & input){
-		if(calTbl==NULL)
-			throw(domain_error("calibration table not assigned yet!"));
-		return calTbl->transforming(input);
+		if(!calTbl.isInterpolated)
+			throw(domain_error("calibration table not interpolated yet!"));
+		return calTbl.transforming(input);
 }
 
 transformation * trans_local::getTran(string channel){
@@ -160,13 +157,14 @@ void biexpTrans::computCalTbl(){
 	/*
 	 * save the calibration table
 	 */
-	calTbl=new calibrationTable("flowJo",2);
-	calTbl->init(channelRange+1);
+	calTbl.caltype="flowJo";
+	calTbl.spline_method=2;
+	calTbl.init(channelRange+1);
 
 	for (int chan = 0; chan <= channelRange; chan++)
 	{
-		calTbl->y[chan] =chan;
-		calTbl->x[chan] = positive[chan];
+		calTbl.y[chan] =chan;
+		calTbl.x[chan] = positive[chan];
 	}
 
 	isComputed=true;

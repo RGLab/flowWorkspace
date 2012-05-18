@@ -67,13 +67,26 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		 */
 		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
 		{
-			transformation* curTbl=it->second;
-			if(curTbl->name.find("Acquisition-defined")!=string::npos)
+			transformation* curTrans=it->second;
+			if(curTrans->name.find("Acquisition-defined")!=string::npos)
 			{
 
-				(*trs)[curTbl->channel]=curTbl;
+				(*trs)[curTrans->channel]=curTrans;
 				if(dMode>=GATING_HIERARCHY_LEVEL)
-					cout<<"adding "<<curTbl->name<<":"<<curTbl->channel<<endl;
+					cout<<"adding "<<curTrans->name<<":"<<curTrans->channel<<endl;
+
+				if(!curTrans->isComputed)
+					curTrans->computCalTbl();
+				if(!curTrans->calTbl.isInterpolated)
+				{
+					if(dMode>=GATING_HIERARCHY_LEVEL)
+					{
+						cout<<"spline interpolating..."<<curTrans->name<<endl;
+					}
+
+					curTrans->calTbl.interpolate();
+
+				}
 			}
 		}
 //		CALTBS::iterator it=find(calTbls->begin(),calTbls->end(),matchName);
@@ -112,7 +125,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
 		calTrans *curTran=new calTrans();
-		calibrationTable *t=new calibrationTable("flowJo",2);
+		calibrationTable caltbl("flowJo",2);
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
 			throw(domain_error("empty name for calibration table"));
@@ -142,10 +155,10 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		unsigned nX=tbl.size()/2;
 
 
-		t->init(nX);
+		caltbl.init(nX);
 
-		t->y=tbl[slice(0,nX,2)];
-		t->x=tbl[slice(1,nX,2)];
+		caltbl.y=tbl[slice(0,nX,2)];
+		caltbl.x=tbl[slice(1,nX,2)];
 
 		/*
 		 * output to text for testing
@@ -159,12 +172,9 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 //		}
 
 
-		if(dMode>=GATING_SET_LEVEL)
-			cout<<"spline interpolating..."<<curTran->name<<endl;
 
-		t->interpolate();
 
-		curTran->calTbl=t;
+		curTran->calTbl=caltbl;
 
 		res[curTran->channel]=curTran;
 
@@ -242,8 +252,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 
 	}
 
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"parsing compensation matrix.."<<endl;
+
 	return comp;
 }
 

@@ -156,9 +156,9 @@ BEGIN_RCPP
 //					}
 //				case CALTBL:
 //				{
-					if(curTrans->calTbl==NULL)
-						throw(domain_error("empty calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
-					Spline_Coefs obj=curTrans->calTbl->getCalTbl();
+//					if(curTrans->calTbl==NULL)
+//						throw(domain_error("empty calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
+					Spline_Coefs obj=curTrans->calTbl.getCalTbl();
 
 					res.push_back(List::create(Named("z",obj.coefs)
 												,Named("method",obj.method)

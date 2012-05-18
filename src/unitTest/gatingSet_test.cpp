@@ -11,7 +11,7 @@ void getCalTbl_test(GatingHierarchy*gh){
 		for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
 		{
 			transformation * curTrans=it->second;
-			Spline_Coefs obj=curTrans->calTbl->getCalTbl();
+			Spline_Coefs obj=curTrans->calTbl.getCalTbl();
 		}
 }
 

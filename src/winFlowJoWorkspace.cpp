@@ -61,6 +61,7 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				bool curTranFlag=isTransIt->second;
 				if(curTranFlag)
 				{
+
 					string curCmpChName=sPrefix+curChName;//append prefix
 					transformation * curTrans=(it->trans)[curCmpChName];
 					if(curTrans==NULL)
@@ -68,16 +69,23 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 					(*trs)[curCmpChName]=curTrans;
 
+					cout<<curTrans->name<<" "<<curTrans->channel<<endl;
+
 					/*
 					 * calculate calibration table from the function
 					 */
 					if(!curTrans->isComputed)
-						curTrans->computCalTbl();
-					if(!curTrans->calTbl->isInterpolated)
 					{
 						if(dMode>=GATING_SET_LEVEL)
-							cout<<"spline interpolating..."<<curTrans->name<<" "<<curTrans->channel<<endl;
-						curTrans->calTbl->interpolate();
+							cout<<"computing calibration table..."<<endl;
+						curTrans->computCalTbl();
+					}
+
+					if(!curTrans->calTbl.isInterpolated)
+					{
+						if(dMode>=GATING_SET_LEVEL)
+							cout<<"spline interpolating..."<<endl;
+						curTrans->calTbl.interpolate();
 					}
 
 				}
@@ -137,6 +145,9 @@ isTransMap winFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 		xmlXPathFreeObject(parDisplay);
 		string curFlag=curDisplayNode.getProperty("value");
 		res[pName]=(curFlag.compare("LOG")==0);
+
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<pName<<":"<<curFlag<<endl;
 	}
 	return res;
 }
@@ -189,7 +200,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 		curTg.groupName=compName;
 
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<"parsing tranformation group:"<<":"<<compName<<endl;
+			cout<<"group:"<<compName<<endl;
 		/*
 		 * parse transformations for current compNode
 		 */
@@ -215,7 +226,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 			{
 
 				if(dMode>=GATING_SET_LEVEL)
-					cout<<"logicle tranformation:"<<":"<<pname<<endl;
+					cout<<"logicle func:"<<pname<<endl;
 				biexpTrans *curTran=new biexpTrans();
 				curTran->name=compName;
 
@@ -335,8 +346,7 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		xmlXPathFreeObject(resX);
 
 	}
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"parsing compensation matrix.."<<endl;
+
 	return comp;
 }
 

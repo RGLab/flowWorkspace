@@ -29,12 +29,12 @@ public:
 //	unsigned short type;
 	string name;
 	string channel;
-	calibrationTable * calTbl;
+	calibrationTable calTbl;
 	bool isComputed;//this flag allow lazy computCalTbl/interpolation
 
 public:
 	transformation();
-	~transformation();
+
 //	virtual ARGLIST getArgs()=0;
 	valarray<double> transforming(valarray<double> & input);
 	virtual void computCalTbl()=0;

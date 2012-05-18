@@ -219,7 +219,10 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					#so we need update this range info by transforming the it
 
 					localDataEnv<-nodeDataDefaults(gh@tree,"data")
-					comp<-.Call("R_getCompensation",G@pointer,sampleName)		
+					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
+					transFlag<-.Call("R_getTransFlags",G@pointer,sampleName)
+					browser()
+					transFlag
 					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
 					
 #					browser()
@@ -234,6 +237,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 #	print(time_sum)
 	G	
 }
+
 .transformRange<-function(dataenv,cal,sampleName,prefix,suffix){
 #	browser()
 	assign("axis.labels",list(),envir=dataenv);
