@@ -6,7 +6,7 @@
  */
 
 #include "include/winFlowJoWorkspace.hpp"
-
+#include <sstream>
 
 
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
@@ -30,25 +30,86 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 			return xpath;
 
 }
+/*
+ * choose the trans from global trans vector to attach to current sample
+ */
+trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,string cid,trans_vec * trans){
 
-trans_map winFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_vec * trans){
+	trans_local res;
 
-//	if(dMode>=GATING_HIERARCHY_LEVEL)
-//			cout<<"parsing transformation..."<<endl;
+	string sampleID=root.getProperty("sampleID");
+	string sPrefix="Comp-";
+	/*
+	 * get total number of channels
+	 */
+	string path="../Keywords/*[@name='$PAR']";
+	xmlXPathObjectPtr parRes=root.xpathInNode(path);
+	wsNode parNode(parRes->nodesetval->nodeTab[0]);
+	xmlXPathFreeObject(parRes);
+	unsigned short nPar=atoi(parNode.getProperty("value").c_str());
 
-	trans_map res;
-
-
-	for(trans_vec::iterator it=trans->begin();it!=trans->end();it++)
+	/*
+	 * get info about whether channel should be transformed
+	 * now, this info is not stored directly in gh,but still indirectly present
+	 * in local trans,because if flag is false, then there is no entry matched in the trans_map
+	 */
+	vector<pair<string,bool> > isTrans;
+	for(unsigned i=1;i<=nPar;i++)
 	{
-		transformation* curTran=*it;
-		if(curTran->name.find(cid)!=string::npos)
-		{
+		pair<string,bool> curPair;
+		/*
+		 * get curernt param name
+		 */
+		stringstream ss(stringstream::in | stringstream::out);
+		ss << "../Keywords/*[@name='$P"<< i<<"N']";
+		path=ss.str();
+		xmlXPathObjectPtr parN=root.xpathInNode(path);
+		wsNode curPNode(parN->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(parN);
+		curPair.first=curPNode.getProperty("value");
 
-			res[curTran->channel]=curTran;
-			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"adding "<<curTran->name<<":"<<curTran->channel<<endl;
+		/*
+		 * get current display flag
+		 */
+		stringstream ss1(stringstream::in | stringstream::out);
+		ss1 << "../Keywords/*[@name='P"<<i<<"DISPLAY']";
+		path=ss1.str();
+		xmlXPathObjectPtr parDisplay=root.xpathInNode(path);
+		wsNode curDisplayNode(parDisplay->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(parDisplay);
+		string curFlag=curDisplayNode.getProperty("value");
+		if(curFlag.compare("LOG")==0)
+			curPair.second=true;
+//		else if(curFlag.compare("LIN")==0)
+//			curPair.second=false;
+		else
+			curPair.second=false;
+//			throw(domain_error("unknown display type from keywords!"));
+		isTrans.push_back(curPair);
+	}
+
+
+
+
+	/*
+	 *  save trans back to trans_local for each channel
+	 */
+
+	map<string,transformation *> *trs=&(res.transformations);
+	for(vector<pair<string,bool> >::iterator it=isTrans.begin();it!=isTrans.end();it++)
+	{
+		string curChName=it->first;
+		bool curTranFlag=it->second;
+		if(curTranFlag)
+		{
+			string curCmpChName=sPrefix+curChName;//append prefix
+			transformation * curTrans=tmpTrs[curCmpChName];
+			if(curTrans==NULL)
+				curTrans=tmpTrs["*"];
+
+			(*trs)[curCmpChName]=curTrans;
 		}
+
 	}
 
 
@@ -56,16 +117,19 @@ trans_map winFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_ve
 }
 
 /*
- * parse global transformation functions/calibration tables
- * currently we only extract current used group of trans assuming samples in workspace
- * will choose from "current" group.
+ *parsing transformations from CompensationEditor node and
+ *store in global container within gs
+ *
  */
-trans_vec winFlowJoWorkspace::getGlobalTrans(){
-
-	trans_vec res;
+trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 
 
-
+	trans_global_vec res;
+//
+///*
+// * get CompensationEditor node
+// */
+//
 	string path="/Workspace/CompensationEditor";
 	xmlXPathContextPtr context = xmlXPathNewContext(doc);
 	xmlXPathObjectPtr CompEdres = xmlXPathEval((xmlChar *)path.c_str(), context);
@@ -78,22 +142,10 @@ trans_vec winFlowJoWorkspace::getGlobalTrans(){
 	}
 	wsNode compEdNode(CompEdres->nodesetval->nodeTab[0]);
 	/*
-	 * TODO::maybe we should get all available transformation groups from here instead of only one
-	 * in case samples would choose from multiple pre-defined trans groups
+	 * get Compensation node that contains the current sampleID
 	 */
-	string curCompName=compEdNode.getProperty("current");//get current used compensation/trans node
-	if(curCompName.empty())
-	{
-		cout<<"no current compensation name found!"<<endl;
-		xmlXPathFreeObject(CompEdres);
-		xmlXPathFreeContext(context);
-		return(res);
-	}
-	xmlXPathFreeObject(CompEdres);
-	xmlXPathFreeContext(context);
-
-	path="Compensation[@name='"+curCompName+"']";
-	xmlXPathObjectPtr compNodeRes=compEdNode.xpathInNode(path);
+	path="/Workspace/CompensationEditor/Compensation/Samples/Sample[@sampleID='"+sampleID+"']/../..";
+	xmlXPathObjectPtr compNodeRes =root.xpath(path);
 
 	if(compNodeRes->nodesetval->nodeNr!=1)
 	{
@@ -104,15 +156,33 @@ trans_vec winFlowJoWorkspace::getGlobalTrans(){
 	wsNode compNode(compNodeRes->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(compNodeRes);
 
-	path="//*[local-name()='logicle']";//|*[local-name()='biex']");
+	/*
+	 * parse all the trans from selected Compensation node and push into tempoary trans container
+	 */
+	map<string,transformation *> tmpTrs;
+	path=".//*[local-name()='logicle']";//get logicle(actually it is biexp)
 	xmlXPathObjectPtr compRes=compNode.xpathInNode(path);
 	for(int i=0;i<compRes->nodesetval->nodeNr;i++)
 	{
 		wsNode transNode(compRes->nodesetval->nodeTab[i]);
 
 		string pname=transNode.getProperty("parameter");
+		/*
+		 * when channel name is not specified
+		 * try to parse it as the generic trans that is applied to channels
+		 * that do not have channel-specific trans defined in workspace
+		 * ,
+		 */
+//		if(!pname.empty())
+//		{
+//			//TODO:automatically detect prefix instead of hardcoded
+
+//			size_t nPrefix=sPrefix.length();
+//			string rawChName=pname.substr(nPrefix,pname.length()-nPrefix);
+//		}
+//		else
 		if(pname.empty())
-			continue;//skip the tables without channel info
+			pname="*";
 
 		string transType=(const char*)transNode.thisNode->name;
 		if(transType.compare("logicle")==0)
@@ -121,12 +191,28 @@ trans_vec winFlowJoWorkspace::getGlobalTrans(){
 			if(dMode>=GATING_SET_LEVEL)
 				cout<<"parsing logicle tranformation:"<<":"<<pname<<endl;
 			biexpTrans *curTran=new biexpTrans();
-			curTran->name=curCompName;
+			curTran->name=cid;
+
+//			/*TODO:detect prefix automatically instead of hard-coded
+//			 * extract channel name without prefix
+//			 */
+//			size_t nPrefix=pname.find("Comp-");
+//			if((nPrefix==string::npos))
+//				continue;
+
 			curTran->channel=pname;
 			curTran->pos=atof(transNode.getProperty("T").c_str());
 			curTran->neg=atof(transNode.getProperty("w").c_str());
 			curTran->widthBasis=atof(transNode.getProperty("m").c_str());
-			res.push_back(curTran);
+			/*
+			 * calculate calibration table from the function
+			 */
+			curTran->computCalTbl();
+
+			if(dMode>=GATING_SET_LEVEL)
+						cout<<"spline interpolating..."<<curTran->name<<endl;
+			curTran->calTbl->interpolate();
+			tmpTrs[curTran->channel]=curTran;
 		}
 		else
 			throw(domain_error("unknown tranformation type!"));
@@ -134,7 +220,6 @@ trans_vec winFlowJoWorkspace::getGlobalTrans(){
 	}
 
 	xmlXPathFreeObject(compRes);
-
 	return res;
 }
 
@@ -171,9 +256,20 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		throw(domain_error("empty cid not supported yet!"));
 	else
 	{
-		string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
-//			cout<<path<<endl;
-		xmlXPathObjectPtr resX=node.xpath(path);
+		/*
+		 * directly look for comp from spilloverMatrix node under sampleNode
+		 */
+		string path="*[local-name()='spillover']";
+		xmlXPathObjectPtr resX=node.xpathInNode(path);
+
+		/*
+		 * deprecated:look for comp from global comp node.
+		 * currently this is done by matching cid,yet it has been proved to be wrong,
+		 * instead,should look for sampleNode to match sampleID
+		 */
+//		string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
+////			cout<<path<<endl;
+//		xmlXPathObjectPtr resX=node.xpath(path);
 		unsigned nX=resX->nodesetval->nodeNr;
 		for(unsigned i=0;i<nX;i++)
 		{
@@ -257,6 +353,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			xmlXPathFreeObject(resVert);
 			return gate;
 }
+
 polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 			polygonGate * g=new polygonGate();
 			//get the negate flag
@@ -296,7 +393,8 @@ polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 			g->params.push_back(r.at(0).name);//x
 			g->params.push_back(r.at(1).name);//y
 
-			coordinate lb,lt,rb,rt;//left bottom,left top,right bottom,right top
+
+			coordinate lb,lt,rb,rt;//left bottom,left top,right top,right top
 			lb.x=r.at(0).min;
 			lb.y=r.at(1).min;
 
@@ -309,10 +407,15 @@ polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 			rt.x=r.at(0).max;
 			rt.y=r.at(1).max;
 
+			/*
+			 * since rectangle gate in windows version defined differently from mac (simply as 4-point polygon)
+			 * so make sure the order of vertices is correct during the conversion to polygon here
+			 * lb->lt->rt->rb
+			 */
 			g->vertices.push_back(lb);
 			g->vertices.push_back(lt);
-			g->vertices.push_back(rb);
 			g->vertices.push_back(rt);
+			g->vertices.push_back(rb);
 
 			xmlXPathFreeObject(resPara);
 			return g;

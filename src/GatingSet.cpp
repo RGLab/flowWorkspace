@@ -50,10 +50,18 @@ GatingSet::~GatingSet()
 				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
 	}
 
-	if(dMode>=GATING_SET_LEVEL)
-					cout<<"free transformatioiins..."<<endl;
-	for(trans_vec::iterator it=gTrans.begin();it!=gTrans.end();it++)
-		delete *it;
+	for(vector<trans_global>::iterator it=gTrans.begin();it!=gTrans.end();it++)
+	{
+		trans_vec curTrans=it->trans;
+		for(trans_vec::iterator it1=curTrans.begin();it1!=curTrans.end();it1++)
+		{
+			transformation * curTran=*it1;
+			if(dMode>=GATING_SET_LEVEL)
+					cout<<"free transformatioin:"<<curTran->name<<curTran->channel<<endl;
+			delete curTran;
+		}
+
+	}
 
 }
 //read xml file and create the appropriate flowJoWorkspace object
@@ -102,7 +110,7 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short _dMode=1)
 		 if(isParseGate)
 		 {
 			 if(dMode>=GATING_SET_LEVEL)
-				 cout<<"... start parsing global calibration tables... "<<endl;
+				 cout<<"... start parsing global transformations... "<<endl;
 			 gTrans=ws->getGlobalTrans();
 		 }
 

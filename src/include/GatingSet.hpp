@@ -22,7 +22,7 @@ using namespace std;
 class GatingSet{
 
 //	CALTBS calTbls;
-	trans_vec gTrans;
+	trans_global_vec gTrans;
 	map<string,GatingHierarchy*> ghs;
 	ncdfFlow nc;
 	/*

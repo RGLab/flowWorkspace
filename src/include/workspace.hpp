@@ -69,9 +69,9 @@ public:
 public:
 	 ~workspace();
 	 virtual string xPathSample(string sampleID)=0;
-	 virtual trans_map getTransformation(wsSampleNode,string,trans_vec *)=0;
+	 virtual trans_local getTransformation(wsRootNode,string,trans_vec *)=0;
 	 virtual compensation getCompensation(wsSampleNode)=0;
-	 virtual trans_vec getGlobalTrans()=0;
+	 virtual trans_global_vec getGlobalTrans()=0;
 	 virtual vector <string> getSampleID(unsigned short)=0;
 	 virtual string getSampleName(wsSampleNode &)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;

@@ -73,7 +73,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 	if(isParseGate)
 	{
 		comp=thisWs->getCompensation(curSampleNode);
-		trans=thisWs->getTransformation(curSampleNode,comp.cid,gTrans);
+		trans=thisWs->getTransformation(root,comp.cid,gTrans);
 	}
 
 //	cout<<"adding root node"<<endl;
@@ -226,14 +226,16 @@ void GatingHierarchy::transforming(bool updateCDF)
 	 */
 	for(vector<string>::iterator it1=channels.begin();it1!=channels.end();it1++)
 	{
+
 		string curChannel=*it1;
 
-		transformation *curTrans=trans[curChannel];
+		transformation *curTrans=trans.getTran(curChannel);
+
 		if(curTrans!=NULL)
 		{
 			valarray<double> x(this->fdata.subset(curChannel));
 			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"transforming "<<curChannel<<endl;
+				cout<<"transforming "<<curChannel<<" by function:"<<curTrans->channel<<endl;
 			valarray<double> y(curTrans->transforming(x));
 			/*
 			 * update fdata
@@ -244,6 +246,8 @@ void GatingHierarchy::transforming(bool updateCDF)
 			fdata.data[fdata.getSlice(curChannel)]=y;
 
 		}
+
+
 	}
 
 	/*
@@ -306,9 +310,7 @@ void GatingHierarchy::gating()
 		/*
 		 * transform gates if applicable
 		 */
-		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming gate"<<endl;
-		g->transforming(trans);
+		g->transforming(trans,dMode);
 
 		if(g==NULL)
 			throw(domain_error("no gate available for this node"));

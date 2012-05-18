@@ -551,6 +551,11 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 					})
 			
 		})
+		
+##it is currently only for internal use		
+setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
+			.Call("R_getCompensation",x@pointer,getSample(x))
+})
 setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
 #plotGate1<-function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
 			if(!x@flag){

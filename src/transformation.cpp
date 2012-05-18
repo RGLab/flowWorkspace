@@ -24,6 +24,18 @@ void transformation::computCalTbl(){
 	throw(domain_error("calibration table can not be computed in abstract tranformation function!"));
 }
 
+transformation * trans_local::getTran(string channel){
+	if(channel.compare("Time")==0||channel.compare("time")==0)
+		return NULL;
+	transformation * res;
+	res=transformations[channel];
+	/*
+	 * try generic trans when channel specific trans not found
+	 */
+//	if(res==NULL)
+//		res=transformations["*"];
+	return res;
+}
 /*
  *biexpTrans
  */

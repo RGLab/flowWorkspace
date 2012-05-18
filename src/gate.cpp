@@ -175,7 +175,7 @@ POPINDICES polygonGate::gating(flowData & fdata){
 	return ind;
 }
 
-void polygonGate::transforming(trans_map & trans){
+void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	/*
 	 * get channel names to select respective transformation functions
 	 */
@@ -188,18 +188,22 @@ void polygonGate::transforming(trans_map & trans){
 	/*
 	 * do the actual transformations
 	 */
-	transformation * trans_x=trans[channel_x];
-	transformation * trans_y=trans[channel_y];
+	transformation * trans_x=trans.getTran(channel_x);
+	transformation * trans_y=trans.getTran(channel_y);
 
 
 	if(trans_x!=NULL)
 	{
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"transforming "<<channel_x<<endl;
 		valarray<double> output_x(trans_x->transforming(vert.x));
 		for(unsigned i=0;i<vertices.size();i++)
 			vertices.at(i).x=output_x[i];// yodate coordinates-based vertices
 	}
 	if(trans_y!=NULL)
 	{
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"transforming "<<channel_y<<endl;
 		valarray<double> output_y(trans_y->transforming(vert.y));
 		for(unsigned i=0;i<vertices.size();i++)
 			vertices.at(i).y=output_y[i];
@@ -207,13 +211,20 @@ void polygonGate::transforming(trans_map & trans){
 
 }
 
-void rangegate::transforming(trans_map & trans){
+void rangegate::transforming(trans_local & trans,unsigned short dMode){
 
 	vertices_valarray vert=getVertices();
 
-	valarray<double> output(trans[param.name]->transforming(vert.x));
-	param.min=output[0];
-	param.max=output[1];
+	transformation * curTrans=trans.getTran(param.name);
+	if(curTrans!=NULL)
+	{
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"transforming "<<param.name<<endl;
+		valarray<double> output(curTrans->transforming(vert.x));
+		param.min=output[0];
+		param.max=output[1];
+	}
+
 
 
 }

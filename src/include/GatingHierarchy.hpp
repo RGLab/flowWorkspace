@@ -71,7 +71,7 @@ class GatingHierarchy{
 	workspace * thisWs;
 	trans_vec *gTrans;//pointer to the global trans stored in gs
 public:
-	trans_map trans;
+	trans_local trans;
 	unsigned short dMode;//debug mode passed from GatingSet
 
 	/*retrieve the gate definition from a particular node*/

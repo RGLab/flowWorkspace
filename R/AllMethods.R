@@ -2258,7 +2258,6 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		assign("gr",new("graphNEL",edgemode="directed"),envir=env)
 		gr<-get("gr",env)
 		nodeDataDefaults(gr,"metadata")<-new.env(parent=emptyenv());
-		
 		#Store the compensation matrices
 		if(is.null(xpathApply(x,"./ancestor-or-self::Sample",function(x)xmlGetAttr(x,"compensationID"))[[1]])){
 			#No compensation matrix
@@ -2680,9 +2679,7 @@ constructTransformations<-function(x,env){
 		}else{	
 			#In Aaron's workspace, the names don't necessarily match the calibration tables. I don't know why that is, but we need to deal with it.
 			
-	r<-unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1]),use.names=FALSE))[grep("Acquisition-defined",unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<")
-								,function(x)x[1]),use.names=FALSE))
-			)]
+	r<-unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1]),use.names=FALSE))[grep("Acquisition-defined",unique(unlist(lapply(strsplit(.getCalibrationTableNames(xmlRoot(x)),"<"),function(x)x[1]),use.names=FALSE)))]
 			if(length(r)!=0){	
 				cal<-.getCalibrationTableSearch(xmlRoot(x),r)
 				for(zz in 1:length(cal)){
@@ -2912,8 +2909,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 	}
 }
 
-.flowJoTransform<-function(dataenv,cal,rangeOnly=FALSE){
-#	browser()
+.flowJoTransform<-function(dataenv,cal){
 	assign("axis.labels",list(),envir=dataenv);
 	#this should save some memory
 	for (i in 1:dim(get("data",dataenv))[2]){
@@ -2952,7 +2948,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 			}else{
 				#based on the range
 				#Inverse transform;
-				f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
+				f<-splinefun(cal[[j]](seq(rw[1],rw[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
 				raw<-signif(f(seq(r[1],r[2],l=20)),2);
 				pos<-signif(cal[[j]](raw),2)
 			}

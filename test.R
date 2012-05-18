@@ -14,27 +14,27 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 #
-#path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
+path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
 
 macXML<-"HIPC_trial.xml"
 macXML<-file.path("/loc/no-backup/mike/HIPC/data/HIPC_trial/data",macXML)
 
-winXML<-c("Yale/LyoplateTest1Yale.wsp")
+winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
 winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[1])
+ws<-openWorkspace(winXML[1])
 
 
-for(i in 2:6)
+#for(i in 2:6)
 #time1<-Sys.time()	
 #Rprof()
 time_sum<<-0
-G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
+G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
-					,useInternal=T,dMode=0)
+					,useInternal=T,dMode=4)
 #Rprof(NULL)	
 #summaryRprof()
 #Sys.time()-time1
@@ -115,26 +115,112 @@ getBoundaries(G1[[2]],getNodes(G1[[2]])[8])
 
 getData(G[[1]])
 
+####comp and trans
+cal<-getTransformations(G[[1]])
+comp<-getCompensationMatrices(G[[1]])
 
 ##plot
 for(sampleName in getSamples(G[1:2]))
 {
 	
 	gh<-G[[sampleName]]
+	browser()
 	
 	pdf(file=paste("../output/",sampleName,".pdf",sep=""))
 	
 	print(plot(gh))
 	
 	for(i in 2:length(getNodes(gh)))
-	 print(plotGate(gh,i))
- 
-	
+	{
+		browser()
+		 print(plotGate(gh,i))
+ 	}
+ 	
 	print(plotPopCV(gh))
 	
 	dev.off()
 }
 
+manualGate<-function(){
+	fr<-read.FCS(file="../data/Blomberg/data/Exp2_Sp004_1_Tcell.fcs")
+#	save(cal,file="../output/R/cal.rda")
+	
+#	save(fs,file="output/R/fs_comp.rda")
+	data<-fs[[1]]
+	
+	sampleName<-"Exp2_Sp004_1_Tcell.fcs"
+	gh<-G[[1]]
+	nrow(data)
+	getPopStats(gh)[,2,drop=F]
+	names(cal)
+	
+	f<-cal[[2]]
+	
+	g<-getGate(gh,2)
+	g@boundaries
+	data<-Subset(data,g)
+	xyplot(`Comp-FITC-A`~`FSC-A`,data=data
+			,filter=g
+			,smooth=F
+			,xbin=128
+	)
+	
+	##gating through singlets and lymph since they don't require transform
+	g<-getGate(gh,3)
+	
+	xyplot(`FSC-W`~`FSC-A`,data=data
+			,filter=g
+			,smooth=F
+			,xbin=128
+	)
+	data<-Subset(data,g)
+	
+	g<-getGate(gh,4)
+	data<-Subset(data,g)
+	xyplot(`SSC-A`~`FSC-A`,data=data
+			,filter=g
+			,smooth=F
+			,xbin=128
+	)
+	#check cd3+ gate
+	g<-getGate(gh,5)
+	curChannel<-"Comp-Pacific Blue-A"
+	curChannel<-"Comp-FITC-A"
+	#transform the channel
+	tmp<-exprs(data)[,curChannel]
+	tmp<-f(tmp)
+	exprs(data)[,curChannel]<-tmp
+	
+	
+	#transform the range slot
+	ind<-match(curChannel,colnames(data))
+	tmp<-pData(parameters(data))[ind,4:5]
+	tmp<-f(tmp)
+	pData(parameters(data))[ind,4:5]<-tmp
+	
+	#transform the gate
+	
+	tmp<-g@boundaries[,curChannel]
+	tmp<-f(tmp)
+	g@boundaries[,curChannel]<-tmp
+	
+	xyplot(`Comp-FITC-A`~`Comp-Pacific Blue-A`,data=data
+			,filter=g
+			,smooth=F
+			,xbin=128
+	)
+	
+	#check cd4+ gate
+	g<-getGate(gh,6)
+#	curChannel<-"Comp-PerCP-Cy5-5-A"
+	curChannel<-"Comp-APC-Cy7-A"
+	length(which(filter(data,g)@subSet))
+	xyplot(`Comp-APC-Cy7-A`~`Comp-PerCP-Cy5-5-A`,data=data
+			,filter=g
+			,smooth=F
+			,xbin=128
+	)
+}
 
 getAxisLabels(G[[1]])
 getAxisLabels(G1[[1]])
@@ -154,9 +240,9 @@ ws<-openWorkspace(macXML)
 time1<-Sys.time()
 for(i in 2:3)
 
-G1<-parseWorkspace(ws,name=i,execute=T,requiregates=F
+G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,isNcdf=T
-#					,subset=c(1,2)
+					,subset=c(1,2)
 					,useInternal=F,dMode=0)
 Sys.time()-time1
 G1

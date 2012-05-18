@@ -13,8 +13,8 @@ class macFlowJoWorkspace:public flowJoWorkspace{
 public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
-	trans_map getTransformation(wsSampleNode,string cid,trans_vec*);
-	trans_vec getGlobalTrans();
+	trans_local getTransformation(wsRootNode,string cid,trans_vec*);
+	trans_global_vec getGlobalTrans();
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);
 	polygonGate * getGate(wsPolyGateNode &);

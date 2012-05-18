@@ -124,10 +124,10 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	trans_map trans=gh->trans;
+	map<string,transformation* > trans=gh->trans.transformations;
 	List res;
 
-	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
+	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		transformation * curTrans=it->second;
 
@@ -146,15 +146,17 @@ BEGIN_RCPP
 //					}
 //				case CALTBL:
 //				{
-//					Spline_Coefs obj=curTrans->getCalTbl();
-//
-//					res.push_back(List::create(Named("z",obj.coefs)
-//												,Named("method",obj.method)
-//												,Named("type",obj.type)
-//												)
-//									,curTrans->name.append(curTrans->channel)
-//
-//									);
+					if(curTrans->calTbl==NULL)
+						throw(domain_error("empty calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
+					Spline_Coefs obj=curTrans->calTbl->getCalTbl();
+
+					res.push_back(List::create(Named("z",obj.coefs)
+												,Named("method",obj.method)
+												,Named("type",obj.type)
+												)
+									,curTrans->name.append(curTrans->channel)
+
+									);
 //					break;
 //				}
 //				default:

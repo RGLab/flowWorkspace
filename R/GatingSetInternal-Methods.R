@@ -74,7 +74,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	{
 		files<-samples
 	}
-#	
+#	browser()
 #	print(Sys.time()-time1)
 #	
 #	time1<-Sys.time()
@@ -187,7 +187,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			gh
 		})
 	names(G@set)<-basename(files)		
-	
+#	browser()
 #	print(Sys.time()-time1)
 #	
 #	time1<-Sys.time()
@@ -217,10 +217,10 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					#range info within parameter object is not always the same as the real data range
 					#it is used to display the data.
 					#so we need update this range info by transforming the it
-#					newRange<-apply(exprs(fr),2,function(x){c(diff(range(x)),range(x))})
+
 					localDataEnv<-nodeDataDefaults(gh@tree,"data")
-		
-					.transformRange(localDataEnv,cal,sampleName)
+					comp<-.Call("R_getCompensation",G@pointer,sampleName)		
+					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
 					
 #					browser()
 				
@@ -234,7 +234,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 #	print(time_sum)
 	G	
 }
-.transformRange<-function(dataenv,cal,sampleName){
+.transformRange<-function(dataenv,cal,sampleName,prefix,suffix){
 #	browser()
 	assign("axis.labels",list(),envir=dataenv);
 	#this should save some memory
@@ -244,7 +244,8 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	rawRange<-range(get(sampleName,frmEnv))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
-				j<-grep(gsub(">","",gsub("<","",names(rawRange)))[i],names(cal));
+#				browser()
+				j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],names(cal));
 				if(length(j)!=0){
 					rw<-rawRange[,i];
 					if(attr(cal[[j]],"type")!="gateOnly"){

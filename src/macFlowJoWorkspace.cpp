@@ -46,12 +46,13 @@ string macFlowJoWorkspace::xPathSample(string sampleID){
 /*
  * get transformation for one particular sample node
  */
-trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_vec * trans){
+trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,string cid,trans_vec * trans){
 
 //	if(dMode>=GATING_HIERARCHY_LEVEL)
 //			cout<<"parsing transformation..."<<endl;
 
-	trans_map res;
+	trans_local res;
+	map<string,transformation *> *trs=&(res.transformations);
 	if(cid.compare("-1")==0)
 	{
 		/*
@@ -63,7 +64,7 @@ trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_ve
 			if(curTbl->name.find("Acquisition-defined")!=string::npos)
 			{
 
-				res[curTbl->channel]=curTbl;
+				(*trs)[curTbl->channel]=curTbl;
 				if(dMode>=GATING_HIERARCHY_LEVEL)
 					cout<<"adding "<<curTbl->name<<":"<<curTbl->channel<<endl;
 			}
@@ -85,11 +86,11 @@ trans_map macFlowJoWorkspace::getTransformation(wsSampleNode,string cid,trans_ve
 }
 
 
-trans_vec macFlowJoWorkspace::getGlobalTrans(){
+trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
-	trans_vec res;
-
-
+	trans_global_vec res1;
+	trans_global tg;
+	trans_vec  res;
 
 	string path="/Workspace/CalibrationTables/Table";
 	xmlXPathContextPtr context = xmlXPathNewContext(doc);
@@ -164,7 +165,7 @@ trans_vec macFlowJoWorkspace::getGlobalTrans(){
 
 	xmlXPathFreeObject(result);
 	xmlXPathFreeContext(context);
-	return res;
+	return res1;
 }
 compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 {
