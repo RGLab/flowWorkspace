@@ -14,7 +14,7 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 #
-path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data"
+path<-"~/rglab/workspace/flowWorkspace/data"
 
 macXML<-"HIPC_trial.xml"
 macXML<-file.path("/loc/no-backup/mike/HIPC/data/HIPC_trial/data",macXML)
@@ -31,7 +31,7 @@ ws<-openWorkspace(winXML[1])
 #time1<-Sys.time()	
 #Rprof()
 time_sum<<-0
-G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
+G<-parseWorkspace(ws,name=1,execute=F,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
 					,useInternal=T,dMode=4)
@@ -124,7 +124,7 @@ for(sampleName in getSamples(G[1:2]))
 {
 	
 	gh<-G[[sampleName]]
-#	browser()
+	browser()
 	
 	pdf(file=paste("output/",sampleName,".pdf",sep=""))
 	
@@ -147,9 +147,9 @@ manualGate<-function(){
 	
 #	save(fs,file="output/R/fs_comp.rda")
 #	cal<-getTransformations(gh)
-	load("output/R/fs_comp.rda")
+	load("output/R/fs1_comp.rda")
 	
-	data<-fs[[1]]
+	data<-fs1[[1]]
 #	data<-getData(gh)
 	sampleName<-"Exp2_Sp004_1_Tcell.fcs"
 	gh<-G[[1]]

@@ -85,7 +85,7 @@ public:
 	virtual POPINDICES gating(flowData &)=0;
 	virtual const char * getName()=0;
 	virtual unsigned short getType()=0;
-
+	virtual void extend(flowData &)=0;
 	virtual vector<string> getParam()=0;
 	virtual vertices_valarray getVertices()=0;
 	virtual void transforming(trans_local &,unsigned short dMode)=0;
@@ -103,6 +103,7 @@ public:
 	const char * getName(){return "rangeGate";}
 	unsigned short getType(){return RANGEGATE;}
 	POPINDICES gating(flowData &);
+	void extend(flowData &);
 	void transforming(trans_local &,unsigned short dMode);
 	vector<string> getParam(){
 		vector<string> res;
@@ -123,7 +124,7 @@ public:
 public:
 	const char * getName(){return "polygonGate";}
 	unsigned short getType(){return POLYGONGATE;}
-
+	void extend(flowData &);
 	POPINDICES gating(flowData &);
 	void transforming(trans_local &,unsigned short dMode);
 	vector<string> getParam(){return params;};

@@ -63,12 +63,49 @@ void inPolygon_c(double *data, int nrd,
     }//else
   }//for i
 }//function
+
+/*
+ * when the original gate vertices are at the edge of flowFrame range
+ * it is likely that the gates were truncated in flowJo xml
+ * currently what we can do is to extend it to the real data range to avoid losing
+ * the data points that are below flowFrame range (-111 is the constant that is used in flowCore
+ * to cut data range)
+ */
+void polygonGate::extend(flowData & fdata){
+	valarray<double> xdata=fdata.subset(params.at(0));
+	valarray<double> ydata=fdata.subset(params.at(1));
+
+	/*
+	 * get R_min
+	 */
+	double xMin=xdata.min();
+	double yMin=ydata.min();
+	for(unsigned i=0;i<vertices.size();i++)
+	{
+		if(vertices.at(i).x<=-111)
+			vertices.at(i).x=xMin;
+		if(vertices.at(i).y<=-111)
+			vertices.at(i).y=yMin;
+	}
+}
+void rangegate::extend(flowData & fdata){
+	valarray<double> data_1d=fdata.subset(param.name);
+
+	/*
+	 * get R_min
+	 */
+	double xMin=data_1d.min();
+	if(param.min<=-111)
+		param.min=xMin;
+
+}
 /*
  * TODO:try within method from boost/geometries forboost.polygon
  *  reimplement c++ version of inPolygon_c
  *  indices are allocated within gating function, so it is up to caller to free it
  *  and now it is freed in destructor of its owner "nodeProperties" object
  */
+
 
 POPINDICES polygonGate::gating(flowData & fdata){
 

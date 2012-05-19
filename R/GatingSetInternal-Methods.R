@@ -187,7 +187,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			gh
 		})
 	names(G@set)<-basename(files)		
-#	browser()
+	browser()
 #	print(Sys.time()-time1)
 #	
 #	time1<-Sys.time()
