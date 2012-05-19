@@ -156,16 +156,15 @@ BEGIN_RCPP
 //					}
 //				case CALTBL:
 //				{
-//					if(curTrans->calTbl==NULL)
-//						throw(domain_error("empty calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
+					if(!curTrans->calTbl.isInterpolated)
+						throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
 					Spline_Coefs obj=curTrans->calTbl.getCalTbl();
-
+					string transName=curTrans->name+" "+it->first;
 					res.push_back(List::create(Named("z",obj.coefs)
 												,Named("method",obj.method)
 												,Named("type",obj.type)
 												)
-									,curTrans->name.append(curTrans->channel)
-
+									,transName
 									);
 //					break;
 //				}

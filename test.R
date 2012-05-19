@@ -124,51 +124,54 @@ for(sampleName in getSamples(G[1:2]))
 {
 	
 	gh<-G[[sampleName]]
-	browser()
+#	browser()
 	
-	pdf(file=paste("../output/",sampleName,".pdf",sep=""))
+	pdf(file=paste("output/",sampleName,".pdf",sep=""))
 	
-	print(plot(gh))
+#	print(plot(gh))
 	
 	for(i in 2:length(getNodes(gh)))
 	{
-		browser()
-		 print(plotGate(gh,i))
+#		browser()
+		 print(plotGate(gh,i,smooth=F,xbin=128))
  	}
  	
-	print(plotPopCV(gh))
-	
+#	print(plotPopCV(gh))
+#	getNodes(gh)
 	dev.off()
 }
 
 manualGate<-function(){
-	fr<-read.FCS(file="../data/Blomberg/data/Exp2_Sp004_1_Tcell.fcs")
+	fr<-read.FCS(file="data/Blomberg/data/Exp2_Sp004_1_Tcell.fcs")
 #	save(cal,file="../output/R/cal.rda")
 	
 #	save(fs,file="output/R/fs_comp.rda")
-	data<-fs[[1]]
+#	cal<-getTransformations(gh)
+	load("output/R/fs_comp.rda")
 	
+	data<-fs[[1]]
+#	data<-getData(gh)
 	sampleName<-"Exp2_Sp004_1_Tcell.fcs"
 	gh<-G[[1]]
 	nrow(data)
-	getPopStats(gh)[,2,drop=F]
+	getPopStats(gh)[,2:3,drop=F]
 	names(cal)
 	
-	f<-cal[[2]]
+	f<-cal[[4]]
 	
 	g<-getGate(gh,2)
 	g@boundaries
 	data<-Subset(data,g)
 	xyplot(`Comp-FITC-A`~`FSC-A`,data=data
 			,filter=g
-			,smooth=F
+			,smooth=T
 			,xbin=128
 	)
 	
 	##gating through singlets and lymph since they don't require transform
 	g<-getGate(gh,3)
 	
-	xyplot(`FSC-W`~`FSC-A`,data=data
+	xyplot(`FSC-W`~`FSC-A`,data=getData(gh,2)
 			,filter=g
 			,smooth=F
 			,xbin=128
@@ -177,7 +180,7 @@ manualGate<-function(){
 	
 	g<-getGate(gh,4)
 	data<-Subset(data,g)
-	xyplot(`SSC-A`~`FSC-A`,data=data
+	xyplot(`SSC-A`~`FSC-A`,data=getData(gh,3)
 			,filter=g
 			,smooth=F
 			,xbin=128
@@ -204,7 +207,7 @@ manualGate<-function(){
 	tmp<-f(tmp)
 	g@boundaries[,curChannel]<-tmp
 	
-	xyplot(`Comp-FITC-A`~`Comp-Pacific Blue-A`,data=data
+	xyplot(`Comp-FITC-A`~`Comp-Pacific Blue-A`,data=getData(gh,4)
 			,filter=g
 			,smooth=F
 			,xbin=128
@@ -215,7 +218,7 @@ manualGate<-function(){
 #	curChannel<-"Comp-PerCP-Cy5-5-A"
 	curChannel<-"Comp-APC-Cy7-A"
 	length(which(filter(data,g)@subSet))
-	xyplot(`Comp-APC-Cy7-A`~`Comp-PerCP-Cy5-5-A`,data=data
+	xyplot(`Comp-APC-Cy7-A`~`Comp-PerCP-Cy5-5-A`,data=getData(gh,5)
 			,filter=g
 			,smooth=F
 			,xbin=128

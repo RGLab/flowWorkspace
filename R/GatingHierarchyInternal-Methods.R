@@ -556,7 +556,7 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 			.Call("R_getCompensation",x@pointer,getSample(x))
 })
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
+setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
 #plotGate1<-function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
@@ -578,9 +578,9 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 				cl$main<-mtitle
 				return(eval(cl,parent.frame()));
 			}
-			cachedata<-getData(x,y);
+#			cachedata<-getData(x,y);
 			parentdata<-getData(x,getParent(x,y));
-			rootdata<-getData(x);
+#			rootdata<-getData(x);
 			
 			main<-match.call()$main;
 			##Two cases: gate is boolean, or gate is normal
@@ -593,12 +593,16 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 				pd<-parentdata
 				dims<-getDimensions(x,p);
 				if(!.isCompensated(x)){
-					pnames.data<-cachedata@parameters@data$name
-					pnames.desc<-cachedata@parameters@data$desc
+#					pnames.data<-cachedata@parameters@data$name
+#					pnames.desc<-cachedata@parameters@data$desc
+					pnames.data<-parentdata@parameters@data$name
+					pnames.desc<-parentdata@parameters@data$desc
 					pnames<-gsub(">","",gsub("<","",pnames.data))
 				}else{
-					pnames<-pnames.data<-cachedata@parameters@data$name
-					pnames.desc<-cachedata@parameters@data$desc
+#					pnames<-pnames.data<-cachedata@parameters@data$name
+#					pnames.desc<-cachedata@parameters@data$desc
+					pnames<-pnames.data<-parentdata@parameters@data$name
+					pnames.desc<-parentdata@parameters@data$desc
 				}
 				dims<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
 				desc<-pnames.desc[match(dims,pnames)][na.omit(match(pnames,dims))]
@@ -608,11 +612,11 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 				if(add){
 					points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.',xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "));
 				}else{
-					if(!fast){
+#					if(!fast){
 						plot((pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1,smooth=smooth,main=main);
-					}else{
-						plot(hexbin(pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1)
-					}
+#					}else{
+#						plot(hexbin(pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1)
+#					}
 					points(exprs(pd[,dims][ind[ind.p],]),col="red",cex=2,pch='.');
 					
 				}
@@ -632,7 +636,6 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 						
 					}
 					dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
-					#dims2<-dims[na.omit(match(pnames,dims))]
 					dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
 					par.desc<-parameters(parentdata)@data$desc[dim.ind]
 					if(!any(is.na(par.desc))){
@@ -668,42 +671,44 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 						}
 						#If 2D use xyplot.
 						#TODO add stains to labels
-						xylab<-gsub("NA","",paste(pData(parameters(rootdata))$name,pData(parameters(rootdata))$desc))
-							
+#						xylab<-gsub("NA","",paste(pData(parameters(rootdata))$name,pData(parameters(rootdata))$desc))
+						xylab<-gsub("NA","",paste(pData(parameters(parentdata))$name,pData(parameters(parentdata))$desc))
 
-						res<-flowViz:::xyplot(x=form
-											,data=parentdata[,dims2]
-											,smooth=smooth
-#											,colramp=cols
-											,xlab=xylab[dim.ind[1]]
-											,ylab=xylab[dim.ind[2]]
-											,frame.plot=TRUE
-											,scales=scales
-											,nbin=512
-								,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
-									gp <- list(...)[["par.settings"]]
-									flowViz:::panel.xyplot.flowframe(...)
-									
-									#the gate names sometimes don't match the dimension names.. 
-									#If there's a mix of compensated and uncompensated samples.
-									dims<-colnames(getBoundaries(gh,g))
+						res<-xyplot(x=form
+									,data=parentdata[,dims2]
+#									,smooth=smooth
+									,xlab=xylab[dim.ind[1]]
+									,ylab=xylab[dim.ind[2]]
+									,frame.plot=TRUE
+									,scales=scales
+									,nbin=512
+									,filter=getGate(x,y)
+									,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
+#	#									gp <- list(...)[["par.settings"]]
 #										browser()
-									if(.isCompensated(gh)){
-										dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
-									}else{
-										tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
-										dims<-colnames(getBoundaries(gh,g))
-										dims<-na.omit(dims[match(tmp,dims)])
-									}
-									#Case for rectangle or polygon gate
-									if(length(dims)>1){
-										panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
-									}else{
-										apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-									}
+										panel.xyplot.flowframe(...)
+#										
+#										#the gate names sometimes don't match the dimension names.. 
+#										#If there's a mix of compensated and uncompensated samples.
+#										dims<-colnames(getBoundaries(gh,g))
+#	#										browser()
+#										if(.isCompensated(gh)){
+#											dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
+#										}else{
+#											tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
+#											dims<-colnames(getBoundaries(gh,g))
+#											dims<-na.omit(dims[match(tmp,dims)])
+#										}
+#										#Case for rectangle or polygon gate
+#										if(length(dims)>1){
+#											panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
+#										}else{
+#											
+#											apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+#										}
 									}
 									,...
-								)
+									)
 						return(res)
 						
 					}else{
@@ -734,11 +739,11 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 				}
 			}
 		})
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
+setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
 			node<-getNodes(x,tsort=tsort)[y];
 			if(is.na(node)){
 				warning("Can't plot gate ", y, " doesn't exist.");
 				return(1);
 			}
-			plotGate(x,y=node,add=add,border=border,tsort=tsort,fast=fast,...);
+			plotGate(x,y=node,add=add,border=border,tsort=tsort,...);
 		})

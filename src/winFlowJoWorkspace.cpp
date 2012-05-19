@@ -69,7 +69,7 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 					(*trs)[curCmpChName]=curTrans;
 
-					cout<<curTrans->name<<" "<<curTrans->channel<<endl;
+					cout<<curCmpChName<<":"<<curTrans->name<<" "<<curTrans->channel<<endl;
 
 					/*
 					 * calculate calibration table from the function

@@ -7,13 +7,25 @@
 
 #include "test_header.hpp"
 void getCalTbl_test(GatingHierarchy*gh){
+
 	map<string,transformation* > trans=gh->trans.transformations;
-		for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
-		{
-			transformation * curTrans=it->second;
-			Spline_Coefs obj=curTrans->calTbl.getCalTbl();
-		}
+	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
+	{
+		transformation * curTrans=it->second;
+
+
+		if(!curTrans->calTbl.isInterpolated)
+				throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
+		Spline_Coefs obj=curTrans->calTbl.getCalTbl();
+
+		cout<<it->first<<curTrans->name<<" "<<curTrans->channel<<endl;;
+
+	}
 }
+
+
+
+
 
 void gh_accessor_test(GatingHierarchy* gh){
 	/*

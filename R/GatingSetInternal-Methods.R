@@ -220,9 +220,9 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 
 					localDataEnv<-nodeDataDefaults(gh@tree,"data")
 					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
-					transFlag<-.Call("R_getTransFlags",G@pointer,sampleName)
-					browser()
-					transFlag
+#					transFlag<-.Call("R_getTransFlags",G@pointer,sampleName)
+					
+					
 					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
 					
 #					browser()
@@ -239,13 +239,10 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 }
 
 .transformRange<-function(dataenv,cal,sampleName,prefix,suffix){
-#	browser()
-	assign("axis.labels",list(),envir=dataenv);
-	#this should save some memory
-#	fr<-dataenv$data$ncfs[[sampleName]]
+
 	frmEnv<-dataenv$data$ncfs@frames
-	
 	rawRange<-range(get(sampleName,frmEnv))
+	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=dataenv);
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
 #				browser()
@@ -269,14 +266,15 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					}else{
 						#based on the range
 						#Inverse transform;
-						f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
-						raw<-signif(f(seq(r[1],r[2],l=20)),2);
-						pos<-signif(cal[[j]](raw),2)
+#						f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
+#						raw<-signif(f(seq(r[1],r[2],l=20)),2);
+#						pos<-signif(cal[[j]](raw),2)
+						
 					}
-					assign("i",i,dataenv)
-					assign("raw",raw,dataenv);
-					assign("pos",pos,dataenv);
-					eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
+#					assign("i",i,dataenv)
+#					assign("raw",raw,dataenv);
+#					assign("pos",pos,dataenv);
+#					eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
 					
 					return(r);
 				}else{
@@ -284,7 +282,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 				}
 			})
 	
-			
+#	browser()		
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
 	datapar<-parameters(get(sampleName,frmEnv))
 	pData(datapar)[,c("range","minRange","maxRange")]<-datarange
