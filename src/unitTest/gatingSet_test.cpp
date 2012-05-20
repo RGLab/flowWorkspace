@@ -129,6 +129,7 @@ void gh_gating(GatingHierarchy* gh,GatingSet *gs){
 	gs->attachData(ncFile,sampleNames,params);
 	//read transformed data once for all nodes
 	gh->loadData();
+	gh->extendGate();
 	gh->transforming(false);
 	gh->gating();
 	gh->unloadData();

@@ -270,6 +270,33 @@ void GatingHierarchy::transforming(bool updateCDF)
 		nc->writeflowData(fdata);
 	}
 }
+/*
+ * extend gates if necessary
+ */
+void GatingHierarchy::extendGate(){
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout <<endl<<"start extending Gates for:"<<this->sampleName<<endl;
+
+		if(!isLoaded)
+				throw(domain_error("data is not loaded yet!"));
+
+		VertexID_vec vertices=getVertices(false);
+
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			VertexID u=*it;
+			nodeProperties * node=getNodeProperty(u);
+			if(u!=0)
+			{
+				gate *g=node->getGate();
+				if(g==NULL)
+					throw(domain_error("no gate available for this node"));
+				if(dMode>=POPULATION_LEVEL)
+					cout <<node->getName()<<endl;
+				g->extend(fdata,dMode);
+			}
+		}
+}
 
 /*
  * assume data have already been compensated and transformed

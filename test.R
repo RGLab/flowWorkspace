@@ -4,7 +4,7 @@ library(flowWorkspace)
 
 #library(Rgraphviz)
 
-#dyn.load("/home/wjiang2/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
+#dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 ##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
 #source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
@@ -31,7 +31,7 @@ ws<-openWorkspace(winXML[1])
 #time1<-Sys.time()	
 #Rprof()
 time_sum<<-0
-G<-parseWorkspace(ws,name=1,execute=F,requiregates=F
+G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
 					,useInternal=T,dMode=4)
@@ -124,15 +124,15 @@ for(sampleName in getSamples(G[1:2]))
 {
 	
 	gh<-G[[sampleName]]
-	browser()
+#	browser()
 	
-	pdf(file=paste("output/",sampleName,".pdf",sep=""))
+#	pdf(file=paste("output/",sampleName,".pdf",sep=""))
 	
 #	print(plot(gh))
 	
 	for(i in 2:length(getNodes(gh)))
 	{
-#		browser()
+		browser()
 		 print(plotGate(gh,i,smooth=F,xbin=128))
  	}
  	

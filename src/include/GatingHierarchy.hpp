@@ -105,7 +105,7 @@ public:
 //	transformation* getTransformation(){return trans;};
 	void transforming(bool);
 	void gating();
-
+	void extendGate();
 	void drawGraph(string out);
 	string getSample(void){return sampleName;};
 	void setSample(string _sampleName){sampleName=_sampleName;};

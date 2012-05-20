@@ -189,7 +189,7 @@ BEGIN_RCPP
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	gh->loadData();
-	//gh->compensating();
+	gh->extendGate();
 	gh->transforming(true);
 	gh->gating();
 	gh->unloadData();

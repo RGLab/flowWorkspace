@@ -71,7 +71,7 @@ void inPolygon_c(double *data, int nrd,
  * the data points that are below flowFrame range (-111 is the constant that is used in flowCore
  * to cut data range)
  */
-void polygonGate::extend(flowData & fdata){
+void polygonGate::extend(flowData & fdata,unsigned short dMode){
 	valarray<double> xdata=fdata.subset(params.at(0));
 	valarray<double> ydata=fdata.subset(params.at(1));
 
@@ -83,12 +83,21 @@ void polygonGate::extend(flowData & fdata){
 	for(unsigned i=0;i<vertices.size();i++)
 	{
 		if(vertices.at(i).x<=-111)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout <<"extending "<<params.at(0)<<"from "<<vertices.at(i).x<<" to :"<<xMin<<endl;
 			vertices.at(i).x=xMin;
+		}
 		if(vertices.at(i).y<=-111)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout <<"extending "<<params.at(1)<<"from "<<vertices.at(i).y<<" to :"<<yMin<<endl;
 			vertices.at(i).y=yMin;
+
+		}
 	}
 }
-void rangegate::extend(flowData & fdata){
+void rangegate::extend(flowData & fdata,unsigned short dMode){
 	valarray<double> data_1d=fdata.subset(param.name);
 
 	/*
@@ -96,7 +105,12 @@ void rangegate::extend(flowData & fdata){
 	 */
 	double xMin=data_1d.min();
 	if(param.min<=-111)
+	{
+		if(dMode>=POPULATION_LEVEL)
+			cout <<"extending "<<param.name<<"from "<<param.min<<" to :"<<xMin<<endl;
 		param.min=xMin;
+	}
+
 
 }
 /*

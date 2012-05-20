@@ -428,9 +428,12 @@ polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
 
 				//get coordinates from properties
-
+				/*
+				 * be aware that numeric_limits<double>::min() return the minimum positive value
+				 * instead of negative,so we have to use -max()
+				 */
 				string sMin=curPNode.getProperty("min");
-				r.at(i).min=sMin.empty()?numeric_limits<double>::min():atof(sMin.c_str());
+				r.at(i).min=sMin.empty()?-numeric_limits<double>::max():atof(sMin.c_str());
 
 				string sMax=curPNode.getProperty("max");
 				r.at(i).max=sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str());
