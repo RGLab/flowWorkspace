@@ -58,15 +58,28 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 
 
 
-//need to explicitly release the memory after this call
+/*
+ * .sampleName may not always be stored in sampleNode
+ * ,so now it is fetched from keywords/$FIL
+ *  to assure correct sample name is parsed
+ */
 string flowJoWorkspace::getSampleName(wsSampleNode & node){
 
-	xmlXPathObjectPtr res=node.xpathInNode("SampleNode");//get sampleNode
-	wsNode sampleNode(res->nodesetval->nodeTab[0]);
+//	xmlXPathObjectPtr res=node.xpathInNode("SampleNode");//get sampleNode
+//	wsNode sampleNode(res->nodesetval->nodeTab[0]);
+//	xmlXPathFreeObject(res);
+//
+//	return sampleNode.getProperty("name");//get property name from sampleNode
+
+	xmlXPathObjectPtr res=node.xpathInNode("Keywords/Keyword[@name='$FIL']");
+	if(res->nodesetval->nodeNr!=1)
+		throw(domain_error("$FIL keyword not found!"));
+	wsNode kwNode(res->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(res);
-
-	return sampleNode.getProperty("name");//get property name from sampleNode
-
+	string filename=kwNode.getProperty("value");
+	if(filename.empty())
+		throw(domain_error("$FIL value is empty!"));
+	return filename;
 }
 
 //bool matchName(calibrationTable calTbl){
@@ -109,7 +122,10 @@ wsPopNodeSet flowJoWorkspace::getSubPop(wsNode * node)
 
 }
 
-
+/*
+ * TODO:it may be more accurate to use parameter nodes to get flag for mac version
+ * since keywords may not contain the $PnDISPLAY in some cases
+ */
 isTransMap flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 	isTransMap res;
 

@@ -19,6 +19,8 @@ path<-"~/rglab/workspace/flowWorkspace/data"
 macXML<-"HIPC_trial.xml"
 macXML<-file.path("/loc/no-backup/mike/HIPC/data/HIPC_trial/data",macXML)
 
+macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
+
 winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
 winXML<-file.path(path,winXML)
 ############################################################################### 
@@ -26,6 +28,10 @@ winXML<-file.path(path,winXML)
 ###############################################################################
 ws<-openWorkspace(macXML[1])
 
+#subsetID<-flowWorkspace::getFJWSubsetIndices(ws,key="$FIL"
+#											,value=c("01107122_F11_I003.fcs"
+#													,"01177007_F02_I016.fcs")
+#											,group=2)
 
 #for(i in 2:6)
 #time1<-Sys.time()	
@@ -250,7 +256,7 @@ time1<-Sys.time()
 for(i in 2:3)
 
 G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
-					,isNcdf=T
+#					,isNcdf=T
 					,subset=c(1)
 					,useInternal=F,dMode=0)
 Sys.time()-time1

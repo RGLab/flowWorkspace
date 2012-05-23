@@ -13,29 +13,39 @@
 
 int main(void) {
 
-	vector<testSuit> myTest(3);
+	vector<testSuit> myTest(4);
+	unsigned short i;
 
-	myTest.at(0).filename="../data/HIPC_trial/data/HIPC_trial.xml";
-	myTest.at(0).samples["1"]="004_A1_A01.fcs";
-	myTest.at(0).samples["2"]="004_B1_B01.fcs";
-	myTest.at(0).ncfile="../output/HIPC_trial/nc_comp.nc";
-	myTest.at(0).colfile="../output/HIPC_trial/colnames.txt";
+	i=0;
+	myTest.at(i).filename="../data/HIPC_trial/data/HIPC_trial.xml";
+	myTest.at(i).samples["1"]="004_A1_A01.fcs";
+	myTest.at(i).samples["2"]="004_B1_B01.fcs";
+	myTest.at(i).ncfile="../output/HIPC_trial/nc_comp.nc";
+	myTest.at(i).colfile="../output/HIPC_trial/colnames.txt";
 
+	i=1;
+	myTest.at(i).filename="../data/Blomberg/data/Exp2_Tcell.wsp";
+	myTest.at(i).samples["12"]="Exp2_Sp004_1_Tcell.fcs";
+	myTest.at(i).samples["13"]="Exp2_Sp004_2_Tcell.fcs";
+	myTest.at(i).ncfile="../output/Blomberg/nc1_comp.nc";
+	myTest.at(i).colfile="../output/Blomberg/colnames.txt";
 
-	myTest.at(1).filename="../data/Blomberg/data/Exp2_Tcell.wsp";
-	myTest.at(1).samples["12"]="Exp2_Sp004_1_Tcell.fcs";
-	myTest.at(1).samples["13"]="Exp2_Sp004_2_Tcell.fcs";
-	myTest.at(1).ncfile="../output/Blomberg/nc1_comp.nc";
-	myTest.at(1).colfile="../output/Blomberg/colnames.txt";
+	i=2;
+	myTest.at(i).filename="/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml";
+	myTest.at(i).samples["74161"]="01107122_F11_I003.fcs";
+	myTest.at(i).samples["74162"]="01177007_F02_I016.fcs";
+	myTest.at(i).ncfile="../output/ITN/nc1.nc";
+	myTest.at(i).colfile="../output/ITN/colnames.txt";
 
-
-	myTest.at(2).filename="../data/Yale/data/LyoplateTest1Yale.wsp";
-	myTest.at(2).samples["1"]="Specimen_001_A1_A01.fcs";
+	i=3;
+	myTest.at(i).filename="../data/Yale/data/LyoplateTest1Yale.wsp";
+	myTest.at(i).samples["1"]="Specimen_001_A1_A01.fcs";
 
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	gs_test(myTest.at(1));
+	i=1;
+	gs_test(myTest.at(i));
 
 //	ncdf_test();
 

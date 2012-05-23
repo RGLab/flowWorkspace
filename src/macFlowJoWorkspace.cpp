@@ -49,8 +49,14 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 //			cout<<"parsing transformation..."<<endl;
 
 	//TODO:unfinished to fix this
-	trans_map trans=gTrans->at(0).trans;
+
+
 	trans_local res;
+
+	if(gTrans->empty())
+		return res;//return empty results when global trans is empty
+
+	trans_map trans=gTrans->at(0).trans;
 	string cid=comp.cid;
 	map<string,transformation *> *trs=&(res.transformations);
 	if(cid.compare("-1")==0)
@@ -89,7 +95,8 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	}
 	else if(cid.compare("-2")==0)
 	{
-
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"no transformation parsed since cid==-2!"<<endl;
 	}
 	else
 	{
@@ -200,9 +207,12 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		comp.suffix=">";
 	}
 	else if(comp.cid.compare("-2")==0)
-				comp.comment="none";
+		comp.comment="none";
 	else if(comp.cid.empty())
-				throw(domain_error("empty cid not supported yet!"));
+		{
+			comp.comment="none";
+			comp.cid="-2";
+		}
 	else
 	{
 		/*

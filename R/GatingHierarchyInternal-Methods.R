@@ -636,10 +636,8 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 						
 					}
 #					browser()
-#					dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
-#					dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
-					dims2<-pnames.data[match(dims,pnames)]
-					dim.ind<-getDimensions(x,y,index=TRUE)
+					dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
+					dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
 					par.desc<-parameters(parentdata)@data$desc[dim.ind]
 					if(!any(is.na(par.desc))){
 						dflag<-TRUE

@@ -189,7 +189,7 @@ void gs_test(testSuit myTest){
 
 //		getCalTbl_test(gh);
 
-//		gh_accessor_test(gh);
+		gh_accessor_test(gh);
 
 		gh_gating(gh,&gs,myTest);
 
