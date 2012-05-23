@@ -17,7 +17,7 @@ int main(void) {
 	vector<string> fileNames;
 
 	fileNames.push_back("../data/HIPC_trial/data/HIPC_trial.xml");
-	fileNames.push_back("/home/mike/rglab/workspace/flowWorkspace/data/Blomberg/data/Exp2_Tcell.wsp");
+	fileNames.push_back("../data/Blomberg/data/Exp2_Tcell.wsp");
 	fileNames.push_back("../data/Yale/data/LyoplateTest1Yale.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
