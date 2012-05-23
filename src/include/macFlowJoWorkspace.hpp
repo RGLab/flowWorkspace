@@ -13,7 +13,7 @@ class macFlowJoWorkspace:public flowJoWorkspace{
 public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
-	isTransMap getTransFlag(wsSampleNode sampleNode);
+//	isTransMap getTransFlag(wsSampleNode sampleNode);
 	trans_local getTransformation(wsRootNode,const compensation & comp,const isTransMap & transFlag,trans_global_vec*);
 	trans_global_vec getGlobalTrans();
 	string xPathSample(string sampleID);

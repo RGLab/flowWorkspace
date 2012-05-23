@@ -6,7 +6,7 @@
  */
 
 #include "include/winFlowJoWorkspace.hpp"
-#include <sstream>
+
 
 
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
@@ -104,53 +104,53 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 	return res;
 }
-isTransMap winFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
-	isTransMap res;
-
-	/*
-	 * get total number of channels
-	 */
-	string path="Keywords/*[@name='$PAR']";
-	xmlXPathObjectPtr parRes=sampleNode.xpathInNode(path);
-	wsNode parNode(parRes->nodesetval->nodeTab[0]);
-	xmlXPathFreeObject(parRes);
-	unsigned short nPar=atoi(parNode.getProperty("value").c_str());
-
-	/*
-	 * get info about whether channel should be transformed
-	 */
-
-	for(unsigned i=1;i<=nPar;i++)
-	{
-		pair<string,bool> curPair;
-		/*
-		 * get curernt param name
-		 */
-		stringstream ss(stringstream::in | stringstream::out);
-		ss << "Keywords/*[@name='$P"<< i<<"N']";
-		path=ss.str();
-		xmlXPathObjectPtr parN=sampleNode.xpathInNode(path);
-		wsNode curPNode(parN->nodesetval->nodeTab[0]);
-		xmlXPathFreeObject(parN);
-		string pName=curPNode.getProperty("value");
-
-		/*
-		 * get current display flag
-		 */
-		stringstream ss1(stringstream::in | stringstream::out);
-		ss1 << "Keywords/*[@name='P"<<i<<"DISPLAY']";
-		path=ss1.str();
-		xmlXPathObjectPtr parDisplay=sampleNode.xpathInNode(path);
-		wsNode curDisplayNode(parDisplay->nodesetval->nodeTab[0]);
-		xmlXPathFreeObject(parDisplay);
-		string curFlag=curDisplayNode.getProperty("value");
-		res[pName]=(curFlag.compare("LOG")==0);
-
-		if(dMode>=GATING_SET_LEVEL)
-			cout<<pName<<":"<<curFlag<<endl;
-	}
-	return res;
-}
+//isTransMap winFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
+//	isTransMap res;
+//
+//	/*
+//	 * get total number of channels
+//	 */
+//	string path="Keywords/*[@name='$PAR']";
+//	xmlXPathObjectPtr parRes=sampleNode.xpathInNode(path);
+//	wsNode parNode(parRes->nodesetval->nodeTab[0]);
+//	xmlXPathFreeObject(parRes);
+//	unsigned short nPar=atoi(parNode.getProperty("value").c_str());
+//
+//	/*
+//	 * get info about whether channel should be transformed
+//	 */
+//
+//	for(unsigned i=1;i<=nPar;i++)
+//	{
+//		pair<string,bool> curPair;
+//		/*
+//		 * get curernt param name
+//		 */
+//		stringstream ss(stringstream::in | stringstream::out);
+//		ss << "Keywords/*[@name='$P"<< i<<"N']";
+//		path=ss.str();
+//		xmlXPathObjectPtr parN=sampleNode.xpathInNode(path);
+//		wsNode curPNode(parN->nodesetval->nodeTab[0]);
+//		xmlXPathFreeObject(parN);
+//		string pName=curPNode.getProperty("value");
+//
+//		/*
+//		 * get current display flag
+//		 */
+//		stringstream ss1(stringstream::in | stringstream::out);
+//		ss1 << "Keywords/*[@name='P"<<i<<"DISPLAY']";
+//		path=ss1.str();
+//		xmlXPathObjectPtr parDisplay=sampleNode.xpathInNode(path);
+//		wsNode curDisplayNode(parDisplay->nodesetval->nodeTab[0]);
+//		xmlXPathFreeObject(parDisplay);
+//		string curFlag=curDisplayNode.getProperty("value");
+//		res[pName]=(curFlag.compare("LOG")==0);
+//
+//		if(dMode>=GATING_SET_LEVEL)
+//			cout<<pName<<":"<<curFlag<<endl;
+//	}
+//	return res;
+//}
 /*
  *parsing transformations from CompensationEditor node and
  *store in global container within gs
@@ -230,12 +230,6 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 				biexpTrans *curTran=new biexpTrans();
 				curTran->name=compName;
 
-	//			/*TODO:detect prefix automatically instead of hard-coded
-	//			 * extract channel name without prefix
-	//			 */
-	//			size_t nPrefix=pname.find("Comp-");
-	//			if((nPrefix==string::npos))
-	//				continue;
 
 				curTran->channel=pname;
 				curTran->pos=atof(transNode.getProperty("T").c_str());

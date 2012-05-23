@@ -22,7 +22,14 @@
 
 using namespace std;
 
-void gs_test(string);
+struct testSuit{
+	string filename;
+	string colfile;
+	string ncfile;
+	map<string,string> samples;
+} ;
+
+void gs_test(testSuit);
 void ncdf_test();
 void compCalTbl();
 void spline_test();

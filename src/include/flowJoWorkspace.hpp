@@ -10,7 +10,7 @@
 
 #include "workspace.hpp"
 #include "transformation.hpp"
-
+#include <sstream>
 
 
 class flowJoWorkspace:public workspace{
@@ -18,7 +18,7 @@ class flowJoWorkspace:public workspace{
 public:
 //	~flowJoWorkspace();
 	 vector <string> getSampleID(unsigned short);
-
+	 isTransMap getTransFlag(wsSampleNode sampleNode);
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
      nodeProperties * to_popNode(wsRootNode &);

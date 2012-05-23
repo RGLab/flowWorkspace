@@ -79,7 +79,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 		comp=thisWs->getCompensation(curSampleNode);
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<endl<<"parsing trans flagsc..."<<endl;
+			cout<<endl<<"parsing trans flags..."<<endl;
 		transFlag=thisWs->getTransFlag(curSampleNode);
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)

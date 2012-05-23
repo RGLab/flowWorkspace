@@ -35,13 +35,6 @@ string macFlowJoWorkspace::xPathSample(string sampleID){
 }
 
 
-//TODO:unfinishedisTransMap res;
-isTransMap macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
-
-	isTransMap res;
-	return res;
-}
-
 
 //bool matchName(calibrationTable calTbl){
 //

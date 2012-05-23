@@ -104,20 +104,18 @@ void gh_accessor_test(GatingHierarchy* gh){
 			cout<<endl;
 		}
 }
-void gh_gating(GatingHierarchy* gh,GatingSet *gs){
+void gh_gating(GatingHierarchy* gh,GatingSet *gs,testSuit myTest){
 	cout<<endl<<"do the gating after the parsing"<<endl;
-//		string ncFile="../output/HIPC_trial/nc1.nc";
-	string ncFile="../output/Blomberg/nc1_comp.nc";
+	string ncFile=myTest.ncfile;
 	//read colnames from text
 	vector<string> params;
 	vector<string> sampleNames;
-//		sampleNames.push_back("004_A1_A01.fcs");
-//		sampleNames.push_back("004_B1_B01.fcs");
-	sampleNames.push_back("Exp2_Sp004_1_Tcell.fcs");
-	sampleNames.push_back("Exp2_Sp004_2_Tcell.fcs");
+	for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+		sampleNames.push_back(it->second);
+
 	std::ifstream myfile;
-//		myfile.open("../output/HIPC_trial/colnames.txt",ifstream::in);
-	myfile.open("../output/Blomberg/colnames.txt",ifstream::in);
+	myfile.open(myTest.colfile.c_str(),ifstream::in);
+
 	vector<string> myLines;
 	string line;
 	while (std::getline(myfile, line))
@@ -158,10 +156,10 @@ void gh_counts(GatingHierarchy* gh){
 	//	return("test.gxl");
 
 }
-void gs_test(string xml){
+void gs_test(testSuit myTest){
 
 		//create gating set object
-		GatingSet gs(xml,true,4);
+		GatingSet gs(myTest.filename,true,4);
 
 //		valarray<double> x(gs.ws->toArray(""));
 //		for(unsigned i=0;i<x.size();i++)
@@ -173,10 +171,9 @@ void gs_test(string xml){
 
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;
-//		sampleIDs.push_back("1");
-//		sampleIDs.push_back("2");
-		sampleIDs.push_back("12");
-		sampleIDs.push_back("13");
+		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+			sampleIDs.push_back(it->first);
+
 		gs.parseWorkspace(sampleIDs,true);
 		/*
 		 * get sample list from gating set
@@ -188,17 +185,13 @@ void gs_test(string xml){
 			cout<<*it<<endl;
 
 		GatingHierarchy* gh;
-		gh=gs.getGatingHierarchy("Exp2_Sp004_1_Tcell.fcs");
-//		gh=gs.getGatingHierarchy("Specimen_001_A1_A01.fcs");
-//		gh=gs.getGatingHierarchy("004_A1_A01.fcs");
-//		gh=gs.getGatingHierarchy("004_B1_B01.fcs");
-//		gh=gs.getGatingHierarchy(0);
+		gh=gs.getGatingHierarchy(myTest.samples[sampleIDs.at(0)]);
 
 //		getCalTbl_test(gh);
 
 //		gh_accessor_test(gh);
 
-		gh_gating(gh,&gs);
+		gh_gating(gh,&gs,myTest);
 
 		gh_counts(gh);
 

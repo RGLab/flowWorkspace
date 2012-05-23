@@ -110,7 +110,53 @@ wsPopNodeSet flowJoWorkspace::getSubPop(wsNode * node)
 }
 
 
+isTransMap flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
+	isTransMap res;
 
+	/*
+	 * get total number of channels
+	 */
+	string path="Keywords/*[@name='$PAR']";
+	xmlXPathObjectPtr parRes=sampleNode.xpathInNode(path);
+	wsNode parNode(parRes->nodesetval->nodeTab[0]);
+	xmlXPathFreeObject(parRes);
+	unsigned short nPar=atoi(parNode.getProperty("value").c_str());
+
+	/*
+	 * get info about whether channel should be transformed
+	 */
+
+	for(unsigned i=1;i<=nPar;i++)
+	{
+		pair<string,bool> curPair;
+		/*
+		 * get curernt param name
+		 */
+		stringstream ss(stringstream::in | stringstream::out);
+		ss << "Keywords/*[@name='$P"<< i<<"N']";
+		path=ss.str();
+		xmlXPathObjectPtr parN=sampleNode.xpathInNode(path);
+		wsNode curPNode(parN->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(parN);
+		string pName=curPNode.getProperty("value");
+
+		/*
+		 * get current display flag
+		 */
+		stringstream ss1(stringstream::in | stringstream::out);
+		ss1 << "Keywords/*[@name='P"<<i<<"DISPLAY']";
+		path=ss1.str();
+		xmlXPathObjectPtr parDisplay=sampleNode.xpathInNode(path);
+		wsNode curDisplayNode(parDisplay->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(parDisplay);
+		string curFlag=curDisplayNode.getProperty("value");
+		res[pName]=(curFlag.compare("LOG")==0);
+
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<pName<<":"<<curFlag<<endl;
+	}
+	return res;
+}
 /*
  *Note: nodeProperties is dynamically allocated and up to caller to free it
  */

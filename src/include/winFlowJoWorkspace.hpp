@@ -13,7 +13,7 @@ class winFlowJoWorkspace:public flowJoWorkspace{
 public:
 	winFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
-	isTransMap getTransFlag(wsSampleNode sampleNode);
+//	isTransMap getTransFlag(wsSampleNode sampleNode);
 	trans_global_vec getGlobalTrans();
 	trans_local getTransformation(wsRootNode,const compensation & comp,const isTransMap & transFlag,trans_global_vec *);
 	string xPathSample(string sampleID);
