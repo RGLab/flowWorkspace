@@ -626,7 +626,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 				invisible();			
 			}else{
 				if(add==FALSE){
-#					browser()
+#					
 					dims<-getDimensions(x,y)
 					if(!.isCompensated(x)){
 						pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
@@ -635,8 +635,11 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 						pnames<-pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
 						
 					}
-					dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
-					dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
+#					browser()
+#					dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
+#					dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
+					dims2<-pnames.data[match(dims,pnames)]
+					dim.ind<-getDimensions(x,y,index=TRUE)
 					par.desc<-parameters(parentdata)@data$desc[dim.ind]
 					if(!any(is.na(par.desc))){
 						dflag<-TRUE

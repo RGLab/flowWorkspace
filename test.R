@@ -24,24 +24,25 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(winXML[1])
+ws<-openWorkspace(macXML[1])
 
 
 #for(i in 2:6)
 #time1<-Sys.time()	
 #Rprof()
-time_sum<<-0
-G<-parseWorkspace(ws,name=1,execute=T,requiregates=F
+#time_sum<<-0
+G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
 					,subset=c(1,2)
 					,isNcdf=T
-					,useInternal=T,dMode=4)
+					,useInternal=T,dMode=0)
 #Rprof(NULL)	
 #summaryRprof()
 #Sys.time()-time1
-print(time_sum)
+#print(time_sum)
 G
-
+##############################################
 #performance report
+##############################################
 pdf(file="../output/performance.pdf")
 xx<-c(2,6,12,30)
 cpp<-c(4.7,16,23,32)
@@ -66,7 +67,10 @@ sec1<-c(0.42,6.11-0.42)
 names(sec1)<-c("c++","R")
 pie(sec1)
 dev.off()
+
+#############
 ##accessors
+
 length(G)
 getSamples(G)
 
@@ -132,13 +136,15 @@ for(sampleName in getSamples(G[1:2]))
 	
 	for(i in 2:length(getNodes(gh)))
 	{
-		browser()
-		 print(plotGate(gh,i,smooth=F,xbin=128))
+		
+		 print(plotGate(gh,i,smooth=F,xbin=128,margin=F))
+		 browser()
+		 dev.off()
  	}
  	
 #	print(plotPopCV(gh))
 #	getNodes(gh)
-	dev.off()
+#	dev.off()
 }
 
 manualGate<-function(){
@@ -245,7 +251,7 @@ for(i in 2:3)
 
 G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
 					,isNcdf=T
-					,subset=c(1,2)
+					,subset=c(1)
 					,useInternal=F,dMode=0)
 Sys.time()-time1
 G1
