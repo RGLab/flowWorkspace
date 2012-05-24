@@ -15,7 +15,10 @@ int main(void) {
 
 	vector<testSuit> myTest(4);
 	unsigned short i;
-
+/*
+ * currently filename info within the map is not used
+ * since it is not necessarily consistent with samplenames within gs
+ */
 	i=0;
 	myTest.at(i).filename="../data/HIPC_trial/data/HIPC_trial.xml";
 	myTest.at(i).samples["1"]="004_A1_A01.fcs";
@@ -44,7 +47,7 @@ int main(void) {
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=1;
+	i=0;
 	gs_test(myTest.at(i));
 
 //	ncdf_test();

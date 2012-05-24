@@ -109,9 +109,9 @@ void gh_gating(GatingHierarchy* gh,GatingSet *gs,testSuit myTest){
 	string ncFile=myTest.ncfile;
 	//read colnames from text
 	vector<string> params;
-	vector<string> sampleNames;
-	for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
-		sampleNames.push_back(it->second);
+	vector<string> sampleNames=gs->getSamples();
+//	for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+//		sampleNames.push_back(it->second);
 
 	std::ifstream myfile;
 	myfile.open(myTest.colfile.c_str(),ifstream::in);
@@ -185,7 +185,8 @@ void gs_test(testSuit myTest){
 			cout<<*it<<endl;
 
 		GatingHierarchy* gh;
-		gh=gs.getGatingHierarchy(myTest.samples[sampleIDs.at(0)]);
+//		gh=gs.getGatingHierarchy(myTest.samples[sampleIDs.at(0)]);
+		gh=gs.getGatingHierarchy(0);
 
 //		getCalTbl_test(gh);
 

@@ -62,6 +62,8 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
  * .sampleName may not always be stored in sampleNode
  * ,so now it is fetched from keywords/$FIL
  *  to assure correct sample name is parsed
+ *  However the $FIL may not be consistent with the sampleNode "name" attribute and the physical FCS filename
+ *  TODO:so extra efforts may be needed in future to avoid this conflicts
  */
 string flowJoWorkspace::getSampleName(wsSampleNode & node){
 
