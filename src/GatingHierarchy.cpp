@@ -172,7 +172,7 @@ compensation GatingHierarchy::getCompensation(){
 
 flowData GatingHierarchy::getData(VertexID nodeID)
 {
-	cout<<"reading data from ncdf"<<endl;
+//	cout<<"reading data from ncdf"<<endl;
 
 	flowData res=nc->readflowData(sampleName);
 	//subset the results by indices for non-root node
@@ -354,6 +354,7 @@ void GatingHierarchy::gating()
 			throw(domain_error("no gate available for this node"));
 
 		POPINDICES curIndices=g->gating(fdata);
+
 		for(unsigned i=0;i<curIndices.size();i++)
 			curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
 		node->indices=curIndices;

@@ -13,20 +13,19 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		})
 
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,flowSetId=NULL){
-#	browser()
-#	time_sum<-0
+
+
 	print("calling c++ parser...")
-#		browser()
 	
-	
+	time1<-Sys.time()
 	G<-new("GatingSetInternal",xmlFileName,sampleIDs,execute,dMode)
-#	time_sum<<-time_sum+(Sys.time()-time1)
-#	browser()
+#	time_cpp<<-time_cpp+(Sys.time()-time1)
 	print("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env()
 	
+#	browser()
 	#loading and filtering data
 	if(execute)
 	{
@@ -81,112 +80,112 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	############################################################################
 	#constructing gating set
 	############################################################################
-	G@set<-	lapply(files,function(file){
-			
-			sampleName<-basename(file)
-			gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
+	nFiles<-length(files)
+	set<-vector(mode="list",nFiles)	
+	for(i in 1:nFiles)
+	{
+		file<-files[i]		
+		sampleName<-basename(file)
+		gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
 #			browser()
-			localDataEnv<-nodeDataDefaults(gh@tree,"data")
-			localDataEnv$data<-globalDataEnv
+		localDataEnv<-nodeDataDefaults(gh@tree,"data")
+		localDataEnv$data<-globalDataEnv
+		
+		#gating (including loading data,compensating,transforming and the actual gating)
+		if(execute)
+		{
 			
-			#gating (including loading data,compensating,transforming and the actual gating)
-			if(execute)
-			{
-				
-				gh@dataPath<-dirname(file)
-				
+			gh@dataPath<-dirname(file)
+			
 #					file<-getSample(gh,isFullPath=TRUE)
-				
-				message("Loading data file: ",file);
-				data<-read.FCS(file);
-				
-				##################################
-				#Compensating the data
-				##################################
-				comp<-.Call("R_getCompensation",G@pointer,sampleName)
-				cid<-comp$cid
-				
+			
+			message("Loading data file: ",file);
+			data<-read.FCS(file);
+			
+			##################################
+			#Compensating the data
+			##################################
+			comp<-.Call("R_getCompensation",G@pointer,sampleName)
+			cid<-comp$cid
+			
 #				browser()
-				if(cid!="-1" && cid!="-2"){
-					message("Compensating");
-					#compobj<-compensation(.getCompensationMatrices(doc)[[as.numeric(cid)]])
-					marker<-comp$parameters
-					compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
-					
-					#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
-					#I need to handle this case properly.
+			if(cid!="-1" && cid!="-2"){
+				message("Compensating");
+				#compobj<-compensation(.getCompensationMatrices(doc)[[as.numeric(cid)]])
+				marker<-comp$parameters
+				compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+				
+				#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
+				#I need to handle this case properly.
+				res<-try(compensate(data,compobj),silent=TRUE)
+				if(inherits(res,"try-error")){
+					message("Data is probably stored already compensated");
+				}else{
+					data<-res
+					rm(res);
+				}
+				cnd<-colnames(data)
+				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
+				wh<-cnd%in%parameters(compobj)
+				cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+				
+				#colnames(data)<-cnd;
+				e<-exprs(data)
+				d<-description(data);
+				p<-parameters(data);
+				p@data$name<-cnd
+				colnames(e)<-cnd;
+				data<-new("flowFrame",exprs=e,description=d,parameters=p)						
+				
+			}
+			else if(cid=="-2"){
+				#TODO the matrix may be acquisition defined.
+				message("No compensation");
+			}
+			else if(cid=="-1")
+			{
+				##Acquisition defined compensation.
+				nm<-comp$comment
+				
+				if(grepl("Acquisition-defined",nm)){
+					###Code to compensate the sample using the acquisition defined compensation matrices.
+					message("Compensating with Acquisition defined compensation matrix");
+					#browser()
+					compobj<-compensation(spillover(data)$SPILL)
+					gh@compensation<-spillover(data)$SPILL
 					res<-try(compensate(data,compobj),silent=TRUE)
 					if(inherits(res,"try-error")){
 						message("Data is probably stored already compensated");
 					}else{
 						data<-res
 						rm(res);
+				
 					}
+#						browser()
 					cnd<-colnames(data)
-					if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
 					wh<-cnd%in%parameters(compobj)
 					cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-					
-					#colnames(data)<-cnd;
 					e<-exprs(data)
 					d<-description(data);
 					p<-parameters(data);
 					p@data$name<-cnd
 					colnames(e)<-cnd;
-					data<-new("flowFrame",exprs=e,description=d,parameters=p)						
-					
-				}
-				else if(cid=="-2"){
-					#TODO the matrix may be acquisition defined.
-					message("No compensation");
-				}
-				else if(cid=="-1")
-				{
-					##Acquisition defined compensation.
-					nm<-comp$comment
-					
-					if(grepl("Acquisition-defined",nm)){
-						###Code to compensate the sample using the acquisition defined compensation matrices.
-						message("Compensating with Acquisition defined compensation matrix");
-						#browser()
-						compobj<-compensation(spillover(data)$SPILL)
-						gh@compensation<-spillover(data)$SPILL
-						res<-try(compensate(data,compobj),silent=TRUE)
-						if(inherits(res,"try-error")){
-							message("Data is probably stored already compensated");
-						}else{
-							data<-res
-							rm(res);
-					
-						}
-#						browser()
-						cnd<-colnames(data)
-						wh<-cnd%in%parameters(compobj)
-						cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-						e<-exprs(data)
-						d<-description(data);
-						p<-parameters(data);
-						p@data$name<-cnd
-						colnames(e)<-cnd;
-						data<-new("flowFrame",exprs=e,description=d,parameters=p)
-					
-					}
+					data<-new("flowFrame",exprs=e,description=d,parameters=p)
 					
 				}
 				
-				#save compensated data to cdf
-				message("saving compensated data");
-
-				addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
-				
-				#transformaton is done and cdf data is updated within R_gating call
 			}
+			#save raw or compensated data to cdf
+			message("saving compensated data");
+			addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
 			
-			gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
-	
-			gh
-		})
-	names(G@set)<-basename(files)		
+		}
+		
+		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
+		set[[i]]<-gh
+	}
+	names(set)<-basename(files)
+	G@set<-set
 #	browser()
 #	print(Sys.time()-time1)
 #	
@@ -209,11 +208,11 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					
 					cal<-getTransformations(gh)
 					message(paste("gating",sampleName,"..."))
-					
+
 #					time1<-Sys.time()
 					.Call("R_gating",gh@pointer,sampleName)
-#					time_sum<<-time_sum+(Sys.time()-time1)
-					
+#					time_cpp<<-time_cpp+(Sys.time()-time1)
+#				browser()
 					#range info within parameter object is not always the same as the real data range
 					#it is used to display the data.
 					#so we need update this range info by transforming the it
@@ -231,10 +230,9 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		
 	
 	}	
+	message("done!")
 #	print(Sys.time()-time1)
-#	time_sum<<-time_sum+(Sys.time()-time1)
 
-#	print(time_sum)
 	G	
 }
 

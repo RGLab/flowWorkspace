@@ -29,15 +29,17 @@ valarray<double> transformation::transforming(valarray<double> & input){
 }
 
 transformation * trans_local::getTran(string channel){
-	if(channel.compare("Time")==0||channel.compare("time")==0)
-		return NULL;
 	transformation * res;
-	res=transformations[channel];
-	/*
-	 * try generic trans when channel specific trans not found
-	 */
-//	if(res==NULL)
-//		res=transformations["*"];
+	if(channel.compare("Time")==0||channel.compare("time")==0)
+		res=NULL;
+
+
+	trans_map::iterator it=transformations.find(channel);
+	if(it==transformations.end())
+		res=NULL;
+	else
+		res=it->second;
+
 	return res;
 }
 /*

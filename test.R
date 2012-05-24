@@ -36,15 +36,16 @@ ws<-openWorkspace(macXML[1])
 #for(i in 2:6)
 #time1<-Sys.time()	
 #Rprof()
-#time_sum<<-0
+#time_cpp<<-0
 G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
-					,subset=c(1,2)
+					,subset=c(1)
 					,isNcdf=T
 					,useInternal=T,dMode=0)
 #Rprof(NULL)	
-#summaryRprof()
+#summaryRprof()$by.total[1:20,]
+
+#print(time_cpp)
 #Sys.time()-time1
-#print(time_sum)
 G
 ##############################################
 #performance report
@@ -253,13 +254,15 @@ getQAStats(db,isFlowCore=F)
 
 ws<-openWorkspace(macXML)
 time1<-Sys.time()
-for(i in 2:3)
+#for(i in 2:3)
 
-G1<-parseWorkspace(ws,name=1,execute=T,requiregates=F
-#					,isNcdf=T
-					,subset=c(1)
+G1<-parseWorkspace(ws,name=2,execute=T,requiregates=F
+					,isNcdf=T
+					,subset=1:100
 					,useInternal=F,dMode=0)
-Sys.time()-time1
+print(Sys.time()-time1)
+d
+
 G1
 
 ##generate file for c++ debugging

@@ -140,7 +140,8 @@ BEGIN_RCPP
 	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		transformation * curTrans=it->second;
-
+		if(curTrans==NULL)
+			throw(domain_error("empty transformation for channel"+it->first));
 //		switch(curTrans->type)
 //			{
 //				case LOGICLE:

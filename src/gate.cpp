@@ -252,7 +252,8 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		for(unsigned i=0;i<vertices.size();i++)
 			vertices.at(i).y=output_y[i];
 	}
-	cout<<endl;
+	if(dMode>=POPULATION_LEVEL)
+		cout<<endl;
 
 }
 

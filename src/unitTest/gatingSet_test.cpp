@@ -7,8 +7,9 @@
 
 #include "test_header.hpp"
 void getCalTbl_test(GatingHierarchy*gh){
-
+	cout<<endl<<"get trans from gating hierarchy"<<endl;
 	map<string,transformation* > trans=gh->trans.transformations;
+
 	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		transformation * curTrans=it->second;
@@ -110,8 +111,6 @@ void gh_gating(GatingHierarchy* gh,GatingSet *gs,testSuit myTest){
 	//read colnames from text
 	vector<string> params;
 	vector<string> sampleNames=gs->getSamples();
-//	for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
-//		sampleNames.push_back(it->second);
 
 	std::ifstream myfile;
 	myfile.open(myTest.colfile.c_str(),ifstream::in);
@@ -126,11 +125,17 @@ void gh_gating(GatingHierarchy* gh,GatingSet *gs,testSuit myTest){
 	myfile.close();
 	gs->attachData(ncFile,sampleNames,params);
 	//read transformed data once for all nodes
+
 	gh->loadData();
+
 	gh->extendGate();
+
 	gh->transforming(false);
+
 	gh->gating();
+
 	gh->unloadData();
+
 }
 void gh_counts(GatingHierarchy* gh){
 	cout<<endl<<"flowJo(flowcore) counts after gating"<<endl;
@@ -159,7 +164,7 @@ void gh_counts(GatingHierarchy* gh){
 void gs_test(testSuit myTest){
 
 		//create gating set object
-		GatingSet gs(myTest.filename,true,4);
+		GatingSet gs(myTest.filename,true,0);
 
 //		valarray<double> x(gs.ws->toArray(""));
 //		for(unsigned i=0;i<x.size();i++)
@@ -185,12 +190,12 @@ void gs_test(testSuit myTest){
 			cout<<*it<<endl;
 
 		GatingHierarchy* gh;
-//		gh=gs.getGatingHierarchy(myTest.samples[sampleIDs.at(0)]);
+
 		gh=gs.getGatingHierarchy(0);
 
 //		getCalTbl_test(gh);
 
-		gh_accessor_test(gh);
+//		gh_accessor_test(gh);
 
 		gh_gating(gh,&gs,myTest);
 
