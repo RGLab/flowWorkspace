@@ -41,8 +41,8 @@ GatingSet::~GatingSet()
 {
 //	cout<<"entring the destructor of GatingSet"<<endl;
 	delete ws;
-	typedef map<string,GatingHierarchy *> map_t;
-	BOOST_FOREACH(map_t::value_type & it,ghs){
+//	typedef map<string,GatingHierarchy *> map_t;
+	BOOST_FOREACH(gh_map::value_type & it,ghs){
 			GatingHierarchy * ghPtr=it.second;
 			string sampleName=ghPtr->getSample();
 			delete ghPtr;
@@ -158,7 +158,12 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 
 GatingHierarchy * GatingSet::getGatingHierarchy(string sampleName)
 {
-	return ghs[sampleName];
+
+	gh_map::iterator it=ghs.find(sampleName);
+	if(it==ghs.end())
+		throw(domain_error(sampleName+"not found in gating set!"));
+	else
+		return it->second;
 }
 
 GatingHierarchy * GatingSet::getGatingHierarchy(unsigned index)
@@ -166,13 +171,13 @@ GatingHierarchy * GatingSet::getGatingHierarchy(unsigned index)
 		if(index>=ghs.size())
 		throw(out_of_range("index out of range:"));
 
-		return ghs[getSamples().at(index)];
+		return getGatingHierarchy(getSamples().at(index));
 }
 vector<string> GatingSet::getSamples(void)
 {
 		vector<string> res;
-		typedef map<string,GatingHierarchy*> map_t;
-		BOOST_FOREACH(map_t::value_type & it,ghs){
+
+		BOOST_FOREACH(gh_map::value_type & it,ghs){
 			res.push_back(it.first);
 		}
 		return res;

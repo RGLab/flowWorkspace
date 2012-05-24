@@ -47,7 +47,7 @@ int main(void) {
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=0;
+	i=2;
 	gs_test(myTest.at(i));
 
 //	ncdf_test();

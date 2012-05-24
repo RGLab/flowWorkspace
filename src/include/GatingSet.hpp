@@ -17,13 +17,13 @@
 #include <boost/foreach.hpp>
 
 using namespace std;
-
+typedef map<string,GatingHierarchy*> gh_map;
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
 
 //	CALTBS calTbls;
 	trans_global_vec gTrans;
-	map<string,GatingHierarchy*> ghs;
+	gh_map ghs;
 	ncdfFlow nc;
 	/*
 	 * we assume the GatingSet is mainly for read-access

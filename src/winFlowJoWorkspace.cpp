@@ -63,9 +63,12 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				{
 
 					string curCmpChName=sPrefix+curChName;//append prefix
-					transformation * curTrans=(it->trans)[curCmpChName];
-					if(curTrans==NULL)
+					trans_map::iterator resIt=(it->trans).find(curCmpChName);
+					transformation * curTrans;
+					if(resIt==it->trans.end())
 						curTrans=(it->trans)["*"];
+					else
+						curTrans=resIt->second;
 
 					(*trs)[curCmpChName]=curTrans;
 

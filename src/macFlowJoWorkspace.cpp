@@ -36,19 +36,12 @@ string macFlowJoWorkspace::xPathSample(string sampleID){
 
 
 
-//bool matchName(calibrationTable calTbl){
-//
-//	return calTbl.name.find("Acquisition-defined")==string::npos;
-//}
 /*
+ * TODO: we need to finish this routine by testing on some other use cases
+ * currently it is assuming only one calibration table exists in workspace and applied to channels and all samples
  * get transformation for one particular sample node
  */
 trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const isTransMap & transFlag,trans_global_vec * gTrans){
-
-//	if(dMode>=GATING_HIERARCHY_LEVEL)
-//			cout<<"parsing transformation..."<<endl;
-
-	//TODO:unfinished to fix this
 
 
 	trans_local res;
