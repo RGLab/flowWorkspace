@@ -170,7 +170,7 @@ compensation GatingHierarchy::getCompensation(){
  * Note: need to manually free memory pointed by flowData
  */
 
-flowData GatingHierarchy::getData(VertexID nodeID)
+flowData GatingHierarchy::getData(string sampleName,VertexID nodeID)
 {
 //	cout<<"reading data from ncdf"<<endl;
 
@@ -190,14 +190,14 @@ flowData GatingHierarchy::getData(VertexID nodeID)
  * TODO:the memory for flowData was actually allocated by getData function, it may be safer to set flag within getData in future when
  * we decide to keep getData seperate from loadData
  */
-void GatingHierarchy::loadData()
+void GatingHierarchy::loadData(string sampleName)
 {
 
 	if(!isLoaded)
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 					cout <<"loading data from cdf.."<<endl;
-		fdata=getData(0);
+		fdata=getData(sampleName,0);
 		isLoaded=true;
 	}
 
@@ -223,7 +223,7 @@ void GatingHierarchy::unloadData()
 void GatingHierarchy::transforming(bool updateCDF)
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<"start transforming data :"<<this->sampleName<<endl;
+		cout <<"start transforming data :"<<fdata.sampleID<<endl;
 	if(!isLoaded)
 		throw(domain_error("data is not loaded yet!"));
 
@@ -275,7 +275,7 @@ void GatingHierarchy::transforming(bool updateCDF)
  */
 void GatingHierarchy::extendGate(){
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout <<endl<<"start extending Gates for:"<<this->sampleName<<endl;
+			cout <<endl<<"start extending Gates for:"<<fdata.sampleID<<endl;
 
 		if(!isLoaded)
 				throw(domain_error("data is not loaded yet!"));
@@ -304,7 +304,7 @@ void GatingHierarchy::extendGate(){
 void GatingHierarchy::gating()
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<endl<<"start gating:"<<this->sampleName<<endl;
+		cout <<endl<<"start gating:"<<fdata.sampleID<<endl;
 
 	if(!isLoaded)
 			throw(domain_error("data is not loaded yet!"));

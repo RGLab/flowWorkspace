@@ -74,11 +74,7 @@ void gh_accessor_test(GatingHierarchy* gh){
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
 
-		/*
-		 * getSample from gating hierarchy
-		 */
-		cout<<endl<<"get sample name from gating hierarchy"<<endl;
-		cout<<gh->getSample()<<endl;
+
 		/*
 		 * get children and parent node index
 		 */
@@ -105,12 +101,12 @@ void gh_accessor_test(GatingHierarchy* gh){
 			cout<<endl;
 		}
 }
-void gh_gating(GatingHierarchy* gh,GatingSet *gs,testSuit myTest){
+void gh_gating(GatingSet &gs,testSuit myTest){
 	cout<<endl<<"do the gating after the parsing"<<endl;
 	string ncFile=myTest.ncfile;
 	//read colnames from text
 	vector<string> params;
-	vector<string> sampleNames=gs->getSamples();
+	vector<string> sampleNames=gs.getSamples();
 
 	std::ifstream myfile;
 	myfile.open(myTest.colfile.c_str(),ifstream::in);
@@ -123,10 +119,12 @@ void gh_gating(GatingHierarchy* gh,GatingSet *gs,testSuit myTest){
 	}
 
 	myfile.close();
-	gs->attachData(ncFile,sampleNames,params);
-	//read transformed data once for all nodes
 
-	gh->loadData();
+	string curSample=sampleNames.at(0);
+	gs.attachData(ncFile,sampleNames,params);
+	//read transformed data once for all nodes
+	GatingHierarchy* gh=gs.getGatingHierarchy(curSample);
+	gh->loadData(curSample);
 
 	gh->extendGate();
 
@@ -174,38 +172,38 @@ void gating_template_test(testSuit myTest){
 	gs.parseWorkspace(sampleIDs,true);
 
 	//use this gh as template to duplicate n copies of gh
-	unsigned nFile=2;
-	gs.clone(tmpSID,nFile);
-
-	string newData=myTest.ncfile;
-	//read colnames from text
-	vector<string> params;
-	vector<string> newSampleNames;
-
-	std::ifstream myfile;
-	myfile.open(myTest.colfile.c_str(),ifstream::in);
-
-	vector<string> myLines;
-	string line;
-	while (std::getline(myfile, line))
-	{
-		params.push_back(line);
-	}
-
-	myfile.close();
-
-	gs.attachData(newData,newSampleNames,params);
-	//read transformed data once for all nodes
-	for(gh_map::iterator it=gs.ghs)
-	gh->loadData();
-
-	gh->extendGate();
-
-	gh->transforming(false);
-
-	gh->gating();
-
-	gh->unloadData();
+//	unsigned nFile=2;
+//	gs.clone(tmpSID,nFile);
+//
+//	string newData=myTest.ncfile;
+//	//read colnames from text
+//	vector<string> params;
+//	vector<string> newSampleNames;
+//
+//	std::ifstream myfile;
+//	myfile.open(myTest.colfile.c_str(),ifstream::in);
+//
+//	vector<string> myLines;
+//	string line;
+//	while (std::getline(myfile, line))
+//	{
+//		params.push_back(line);
+//	}
+//
+//	myfile.close();
+//
+//	gs.attachData(newData,newSampleNames,params);
+//	//read transformed data once for all nodes
+//	for(gh_map::iterator it=gs.ghs)
+//	gh->loadData();
+//
+//	gh->extendGate();
+//
+//	gh->transforming(false);
+//
+//	gh->gating();
+//
+//	gh->unloadData();
 
 
 }
@@ -220,10 +218,8 @@ void gs_test(testSuit myTest){
 			sampleIDs.push_back(it->first);
 
 		gs.parseWorkspace(sampleIDs,true);
-		/*
-		 * get sample list from gating set
-		 */
-		cout<<endl<<"get samples from gating set"<<endl;
+
+		cout<<endl<<"get sample names from gating set"<<endl;
 
 		vector<string> samples=gs.getSamples();
 		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
@@ -237,7 +233,7 @@ void gs_test(testSuit myTest){
 
 //		gh_accessor_test(gh);
 
-		gh_gating(gh,&gs,myTest);
+		gh_gating(gs,myTest);
 
 		gh_counts(gh);
 

@@ -44,7 +44,7 @@ GatingSet::~GatingSet()
 //	typedef map<string,GatingHierarchy *> map_t;
 	BOOST_FOREACH(gh_map::value_type & it,ghs){
 			GatingHierarchy * ghPtr=it.second;
-			string sampleName=ghPtr->getSample();
+			string sampleName=it.first;
 			delete ghPtr;
 			if(dMode>=GATING_HIERARCHY_LEVEL)
 				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
@@ -145,7 +145,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 
 		string sampleName=ws->getSampleName(curSampleNode);
 
-		curGh->setSample(sampleName);
+//		curGh->setSample(sampleName);
 		ghs[sampleName]=curGh;//add to the map
 
 
@@ -194,6 +194,6 @@ void GatingSet::attachData(string fileName,vector<string> sampleNames,vector<str
 void GatingSet::gating(){
 
 }
-void GatingSet::cloneGatingHierarchy(){
-
-}
+//void GatingSet::cloneGatingHierarchy(){
+//
+//}

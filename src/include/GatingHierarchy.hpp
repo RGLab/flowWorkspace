@@ -63,7 +63,7 @@ class GatingHierarchy{
 	compensation comp;
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	flowData fdata;
-	string sampleName;
+
 	populationTree tree;
 	bool isGated;
 	bool isLoaded;
@@ -96,19 +96,19 @@ public:
 
 
 
-	flowData getData(VertexID nodeID);
-	void loadData();
+	flowData getData(string string,VertexID nodeID);
+	void loadData(string);
 	void unloadData();
 
 
 	compensation getCompensation();
-//	transformation* getTransformation(){return trans;};
+
 	void transforming(bool);
 	void gating();
 	void extendGate();
 	void drawGraph(string out);
-	string getSample(void){return sampleName;};
-	void setSample(string _sampleName){sampleName=_sampleName;};
+//	string getSample(void){return sampleName;};
+//	void setSample(string _sampleName){sampleName=_sampleName;};
 	VertexID_vec getVertices(bool tsort);//return the node list in vertexID order or T order
 	vector<string> getPopNames(bool tsort,bool isPath);
 	VertexID_vec getParent(VertexID);

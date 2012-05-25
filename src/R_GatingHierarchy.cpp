@@ -189,7 +189,7 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	gh->loadData();
+	gh->loadData(sampleName);
 	gh->extendGate();
 	gh->transforming(true);
 	gh->gating();

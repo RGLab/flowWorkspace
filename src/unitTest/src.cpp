@@ -16,7 +16,7 @@ int main(void) {
 	vector<testSuit> myTest(4);
 	unsigned short i;
 /*
- * currently filename info within the map is not used
+ * currently sampleName info within the testSuit is not used
  * since it is not necessarily consistent with samplenames within gs
  */
 	i=0;
@@ -47,10 +47,10 @@ int main(void) {
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=2;
-//	gs_test(myTest.at(i));
+	i=0;
+	gs_test(myTest.at(i));
 
-	gating_template_test(myTest.at(i));
+//	gating_template_test(myTest.at(i));
 //	ncdf_test();
 
 //	Rcpp_test(fileNames.at(WIN));
