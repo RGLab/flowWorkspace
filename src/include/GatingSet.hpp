@@ -17,7 +17,16 @@
 #include <boost/foreach.hpp>
 
 using namespace std;
+/*
+ * have to use pointer GatingHierarchy * here,
+ * because GatingHierarchy's destructor is responsible for clearing dynamically allocated memory
+ * within GatingHierarchy,like nodeProperties * that further contains the gate *.
+ * if don't use GatingHierarchy *,then these children pointers have to be taken care of ouside of
+ * GatingHierarchy class,which could be problematic.
+ *
+ */
 typedef map<string,GatingHierarchy*> gh_map;
+
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
 

@@ -11,6 +11,9 @@ nodeProperties::nodeProperties(){
 //	indices=NULL;
 }
 
+/*
+ * gate is dynamically created,so they are freed here in destroy method
+ */
 nodeProperties::~nodeProperties(){
 
 //	cout<<"entring the destructor of nodeProperties"<<endl;

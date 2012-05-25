@@ -19,6 +19,13 @@ typedef map<string,float> POPSTATS;
  *TODO: this class should exist apart from populationTree object
  *so all its constructor and desctuctor functions should be private
  */
+/* gate is polymorphic memeber,so has to to be pointer
+ * can't be reference either, because this member should belong to nodeProperties
+ * and destroyed by nodeProperties's destructor ,reference member means refer to the object
+ * outside, So it is not possible to instantiate it since we may not need to parse gate if only
+ * stats from flowJo are needed
+ *
+ */
 class nodeProperties{
 
 public:
@@ -29,7 +36,8 @@ public:
 	bool dMode;
 public:
 	nodeProperties();
-	~nodeProperties();//since gate is dynamically created,needs to be freed here in destroy method
+
+	~nodeProperties();
 
 
 	POPSTATS getStats(bool);

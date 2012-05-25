@@ -57,7 +57,8 @@ void gh_accessor_test(GatingHierarchy* gh){
 			cout<<node->getStats(false)["count"]<<endl;
 			if(u!=ROOTNODE)
 			{
-				cout<<node->getGate()->getName()<<endl;
+				gate * g=node->getGate();
+				cout<<typeid(*g).name()<<endl;
 
 
 			}
@@ -231,7 +232,7 @@ void gs_test(testSuit myTest){
 
 //		getCalTbl_test(gh);
 
-//		gh_accessor_test(gh);
+		gh_accessor_test(gh);
 
 		gh_gating(gs,myTest);
 

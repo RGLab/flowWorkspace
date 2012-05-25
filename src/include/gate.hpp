@@ -82,9 +82,12 @@ struct pRange
 class gate {
 public:
 	bool isNegate;
-	virtual POPINDICES gating(flowData &)=0;
-	virtual const char * getName()=0;
+	/*
+	 * exact string returned by std::type_info::name() is compiler-dependent
+	 * so we can't rely on RTTI
+	 */
 	virtual unsigned short getType()=0;
+	virtual POPINDICES gating(flowData &)=0;
 	virtual void extend(flowData &,unsigned short)=0;
 	virtual vector<string> getParam()=0;
 	virtual vertices_valarray getVertices()=0;
@@ -102,7 +105,6 @@ class rangegate:public gate {
 public:
 	pRange param;
 public:
-	const char * getName(){return "rangeGate";}
 	unsigned short getType(){return RANGEGATE;}
 	POPINDICES gating(flowData &);
 	void extend(flowData &,unsigned short);
@@ -126,7 +128,6 @@ public:
 	vector<string> params;//params.at(0) is x, params.at(1) is y axis
 	vector<coordinate> vertices;
 public:
-	const char * getName(){return "polygonGate";}
 	unsigned short getType(){return POLYGONGATE;}
 	void extend(flowData &,unsigned short);
 	POPINDICES gating(flowData &);
