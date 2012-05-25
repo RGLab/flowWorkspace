@@ -161,18 +161,58 @@ void gh_counts(GatingHierarchy* gh){
 	//	return("test.gxl");
 
 }
+void gating_template_test(testSuit myTest){
+
+	GatingSet gs(myTest.filename,true,4);
+	/*
+	 * parse gh from one sample
+	 * use gs as dummy gating set to hold this gh
+	 */
+	string tmpSID=myTest.samples.begin()->first;
+	vector<string> sampleIDs;
+	sampleIDs.push_back(tmpSID);
+	gs.parseWorkspace(sampleIDs,true);
+
+	//use this gh as template to duplicate n copies of gh
+	unsigned nFile=2;
+	gs.clone(tmpSID,nFile);
+
+	string newData=myTest.ncfile;
+	//read colnames from text
+	vector<string> params;
+	vector<string> newSampleNames;
+
+	std::ifstream myfile;
+	myfile.open(myTest.colfile.c_str(),ifstream::in);
+
+	vector<string> myLines;
+	string line;
+	while (std::getline(myfile, line))
+	{
+		params.push_back(line);
+	}
+
+	myfile.close();
+
+	gs.attachData(newData,newSampleNames,params);
+	//read transformed data once for all nodes
+	for(gh_map::iterator it=gs.ghs)
+	gh->loadData();
+
+	gh->extendGate();
+
+	gh->transforming(false);
+
+	gh->gating();
+
+	gh->unloadData();
+
+
+}
 void gs_test(testSuit myTest){
 
 		//create gating set object
 		GatingSet gs(myTest.filename,true,0);
-
-//		valarray<double> x(gs.ws->toArray(""));
-//		for(unsigned i=0;i<x.size();i++)
-//			cout<<x[i]<<endl;
-		//parse a particular sample group
-//		unsigned short groupID=0;
-//		cout<<endl<<"parseWorkspace for Group:"<<groupID<<endl;
-//		gs.parseWorkspace(groupID,true);
 
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;

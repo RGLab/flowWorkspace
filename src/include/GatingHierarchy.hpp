@@ -114,7 +114,7 @@ public:
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
-
+	GatingHierarchy * clone();
 };
 
 

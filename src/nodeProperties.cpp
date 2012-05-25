@@ -69,4 +69,8 @@ unsigned nodeProperties::getCounts(){
 
 }
 
-
+nodeProperties * nodeProperties::clone(){
+		nodeProperties * res=new nodeProperties(*this);
+		res->thisGate=thisGate->clone();
+		return res;
+	}

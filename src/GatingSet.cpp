@@ -190,3 +190,10 @@ void GatingSet::attachData(string fileName,vector<string> sampleNames,vector<str
 	nc.params_set(params);
 	nc.sample_set(sampleNames);
 }
+
+void GatingSet::gating(){
+
+}
+void GatingSet::cloneGatingHierarchy(){
+
+}

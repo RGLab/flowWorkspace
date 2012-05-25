@@ -48,8 +48,9 @@ int main(void) {
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
 	i=2;
-	gs_test(myTest.at(i));
+//	gs_test(myTest.at(i));
 
+	gating_template_test(myTest.at(i));
 //	ncdf_test();
 
 //	Rcpp_test(fileNames.at(WIN));

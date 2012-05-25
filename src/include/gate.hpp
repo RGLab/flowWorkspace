@@ -89,6 +89,8 @@ public:
 	virtual vector<string> getParam()=0;
 	virtual vertices_valarray getVertices()=0;
 	virtual void transforming(trans_local &,unsigned short dMode)=0;
+//	virtual gate * create()=0;
+	virtual gate * clone()=0;
 };
 
 /*
@@ -112,6 +114,8 @@ public:
 	};
 	vertices_valarray getVertices();
 
+	gate * clone(){return new rangegate(*this);};
+
 };
 /*
  * TODO:using #include <boost/multi_array.hpp> instead to make it easier to convert to R data structure hopefully.
@@ -129,6 +133,7 @@ public:
 	void transforming(trans_local &,unsigned short dMode);
 	vector<string> getParam(){return params;};
 	vertices_valarray getVertices();
+	gate * clone(){return new polygonGate(*this);};
 };
 
 

@@ -40,7 +40,7 @@ public:
 	void setName(const char * popName);
 	void setGate(gate *gate);
 	void computeStats();
-
+	nodeProperties * clone();
 
 };
 

@@ -41,7 +41,7 @@ public:
 	GatingSet(string,bool,unsigned short);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
-
+	void gating();
 	void parseWorkspace(unsigned short,bool);
 	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);
