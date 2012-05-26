@@ -61,15 +61,13 @@ struct OurVertexPropertyWriterR {
 class GatingHierarchy{
 
 	compensation comp;
-	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	flowData fdata;
-
 	populationTree tree;
 	bool isGated;
 	bool isLoaded;
 
+	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	workspace * thisWs;
-
 	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 public:
 	isTransMap transFlag;
@@ -114,7 +112,7 @@ public:
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
-	GatingHierarchy * clone();
+	GatingHierarchy * clone(bool onlyGatingTemplate);
 };
 
 

@@ -524,20 +524,31 @@ nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
 	}
 }
 /*
- * update to caller to free the memory
+ *TODO:unfinished
+  update to caller to free the memory
  */
-GatingHierarchy * GatingHierarchy::clone(){
+GatingHierarchy * GatingHierarchy::clone(bool onlyGatingTemplate){
 
-	GatingHierarchy * res=new GatingHierarchy(*this);
-	/*
-	 * update property bundle pointer for each node
-	 */
-	VertexID_vec vertices=res->getVertices(false);
-	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	GatingHierarchy * res;
+	if(onlyGatingTemplate)
 	{
-		VertexID u=*it;
-		nodeProperties * node=res->getNodeProperty(u);
-		node=node->clone();
+		res=new GatingHierarchy();
+//		res->tree=tree.
 	}
+	else
+	{
+		res=new GatingHierarchy(*this);
+		/*
+		 * update property bundle pointer for each node
+		 */
+		VertexID_vec vertices=res->getVertices(false);
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			VertexID u=*it;
+			nodeProperties * node=res->getNodeProperty(u);
+			node=node->clone();
+		}
+	}
+
 	return res;
 }

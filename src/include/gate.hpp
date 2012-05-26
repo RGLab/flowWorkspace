@@ -116,7 +116,7 @@ public:
 	};
 	vertices_valarray getVertices();
 
-	gate * clone(){return new rangegate(*this);};
+	rangegate * clone(){return new rangegate(*this);};
 
 };
 /*
@@ -134,7 +134,7 @@ public:
 	void transforming(trans_local &,unsigned short dMode);
 	vector<string> getParam(){return params;};
 	vertices_valarray getVertices();
-	gate * clone(){return new polygonGate(*this);};
+	polygonGate * clone(){return new polygonGate(*this);};
 };
 
 

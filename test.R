@@ -26,7 +26,7 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[1])
+ws<-openWorkspace(macXML[2])
 
 #subsetID<-flowWorkspace::getFJWSubsetIndices(ws,key="$FIL"
 #											,value=c("01107122_F11_I003.fcs"
