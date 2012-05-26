@@ -55,5 +55,6 @@ public:
 	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);
 	void attachData(string,vector<string>,vector<string>);
+	ncdfFlow getNcObj(){return nc;}
 };
 #endif /* GATINGSET_HPP_ */

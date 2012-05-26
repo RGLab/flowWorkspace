@@ -93,9 +93,11 @@ public:
 	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,unsigned short _dMode,trans_global_vec * _gTrans);
 
 
-
-	flowData getData(string string,VertexID nodeID);
+	flowData getData(VertexID nodeID);//from memory
+	flowData getData(string string,VertexID nodeID);//from cdf
 	void loadData(string);
+	void loadData(const flowData &);
+
 	void unloadData();
 
 

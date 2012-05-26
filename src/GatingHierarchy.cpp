@@ -186,6 +186,24 @@ flowData GatingHierarchy::getData(string sampleName,VertexID nodeID)
 		return res;
 }
 /*
+ * in-memory version
+ */
+flowData GatingHierarchy::getData(VertexID nodeID)
+{
+//	cout<<"reading data from ncdf"<<endl;
+
+	flowData res=fdata;
+	//subset the results by indices for non-root node
+	if(nodeID>0)
+	{
+//		valarray<bool>* indices=vertexIDToNode(nodeID).thisIndice;
+//		return res.subset(*indices);
+		throw(domain_error("accessing data through non-root node is not supported yet!"));
+	}
+	else
+		return res;
+}
+/*
  * load data from ncdfFlow file
  * TODO:the memory for flowData was actually allocated by getData function, it may be safer to set flag within getData in future when
  * we decide to keep getData seperate from loadData
@@ -204,6 +222,24 @@ void GatingHierarchy::loadData(string sampleName)
 
 
 }
+/*
+ * non-cdf version
+*/
+void GatingHierarchy::loadData(const flowData & _fdata)
+{
+
+	if(!isLoaded)
+	{
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+					cout <<"loading data from memory.."<<endl;
+		fdata=_fdata;
+		isLoaded=true;
+	}
+
+
+
+}
+
 void GatingHierarchy::unloadData()
 {
 

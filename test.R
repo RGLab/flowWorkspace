@@ -7,17 +7,17 @@ library(flowWorkspace)
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 ##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
-#
+source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+
 path<-"~/rglab/workspace/flowWorkspace/data"
 
 macXML<-"HIPC_trial.xml"
-macXML<-file.path("/loc/no-backup/mike/HIPC/data/HIPC_trial/data",macXML)
+macXML<-file.path(path,"HIPC_trial/data",macXML)
 
 macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 
@@ -26,7 +26,7 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[2])
+ws<-openWorkspace(macXML[1])
 
 #subsetID<-flowWorkspace::getFJWSubsetIndices(ws,key="$FIL"
 #											,value=c("01107122_F11_I003.fcs"
@@ -34,18 +34,18 @@ ws<-openWorkspace(macXML[2])
 #											,group=2)
 
 #for(i in 2:6)
-#time1<-Sys.time()	
+time1<-Sys.time()	
 #Rprof()
 #time_cpp<<-0
 G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
-					,subset=c(1)
+#					,subset=c(1)
 					,isNcdf=T
 					,useInternal=T,dMode=0)
 #Rprof(NULL)	
 #summaryRprof()$by.total[1:20,]
 
 #print(time_cpp)
-#Sys.time()-time1
+Sys.time()-time1
 G
 ##############################################
 #performance report
