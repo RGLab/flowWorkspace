@@ -13,7 +13,7 @@ macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 ws<-openWorkspace(macXML[2])
 
 res<-vector(mode="list",5)
-nIt<-c(10,50,100,500,1000)
+nIt<-c(10,50,100,500,1000)[4:5]
 for(i in 1:length(nIt))
 {
 	
@@ -27,13 +27,15 @@ for(i in 1:length(nIt))
 				,useInternal=T,dMode=0)
 				
 		subRes[[j]]<-Sys.time()-time1
+		file.remove(ncFlowSet(G)@file)
 	}
 	res[[i]]<-subRes
 	
-	file.remove(ncFlowSet(G)@file)
+	
 	
 }
 names(res)<-nIt
+save(res,file="res1.rda")
 cat("done")
 
-getData(G[[1]])
+#getData(G[[1]])
