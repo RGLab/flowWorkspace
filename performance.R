@@ -13,21 +13,27 @@ macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 ws<-openWorkspace(macXML[2])
 
 res<-vector(mode="list",5)
-for(i in c(10,50,100,500,1000))
+nIt<-c(10,50,100,500,1000)
+for(i in 1:length(nIt))
 {
+	
 	subRes<-vector(mode="list",3)
 	for(j in 1:3)
 	{
 		time1<-Sys.time()	
 		G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
-				,subset=1:i
+				,subset=1:nIt[i]
 				,isNcdf=T
 				,useInternal=T,dMode=0)
 				
 		subRes[[j]]<-Sys.time()-time1
 	}
 	res[[i]]<-subRes
+	
+	file.remove(ncFlowSet(G)@file)
+	
 }
+names(res)<-nIt
 cat("done")
 
-plotGate(G[[1]],2)
+getData(G[[1]])
