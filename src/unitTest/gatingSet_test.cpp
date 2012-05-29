@@ -125,7 +125,14 @@ void gh_gating(GatingSet &gs,testSuit myTest){
 	gs.attachData(ncFile,sampleNames,params);
 	//read transformed data once for all nodes
 	GatingHierarchy* gh=gs.getGatingHierarchy(curSample);
-	gh->loadData(curSample);
+
+//	gh->loadData(curSample);//get flow data from cdf
+
+	/*
+	 * get flow data from memory
+	 */
+	flowData res=gs.getNcObj().readflowData(curSample);
+	gh->loadData(res);//
 
 	gh->extendGate();
 

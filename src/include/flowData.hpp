@@ -27,7 +27,7 @@ class flowData{
 public:
 
 	vector<string> params;
-	unsigned sampleID;
+	unsigned sampleID;//it is only valid when access cdf version of flowdata, used as index for sample dimension
 	valarray<double> data;
 	unsigned nEvents;
 	flowData();
