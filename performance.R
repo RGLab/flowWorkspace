@@ -34,6 +34,7 @@ for(i in 1:length(nIt))
 	
 }
 names(res)<-nIt
+save(res,file="res.rda")
 cat("done")
 
 getData(G[[1]])

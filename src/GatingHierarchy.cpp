@@ -533,6 +533,10 @@ GatingHierarchy * GatingHierarchy::clone(bool onlyGatingTemplate){
 	if(onlyGatingTemplate)
 	{
 		res=new GatingHierarchy();
+		/*
+		 * TODO:explore copying contructor of adjacent_list from bgl to see how
+		 * the property boudle is handled if it is a pointer
+		 */
 //		res->tree=tree.
 	}
 	else
