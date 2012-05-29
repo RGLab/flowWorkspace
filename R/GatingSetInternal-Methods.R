@@ -57,15 +57,17 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			samples<-samples[!excludefiles];
 		}
 		
-		print("Creating ncdfFlowSet...")
+		
 		files<-file.path(dataPaths,samples)
 		
 #		time1<-Sys.time()
 		
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
+			print("Creating ncdfFlowSet...")
 			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId),isWriteSlice=FALSE)
 		}else{
+			print("Creating flowSet...")
 			fs<-read.flowSet(files)
 		}
 #		time_sum<<-time_sum+(Sys.time()-time1)
@@ -82,6 +84,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	############################################################################
 	nFiles<-length(files)
 	set<-vector(mode="list",nFiles)	
+	isColUpdated<-FALSE
 	for(i in 1:nFiles)
 	{
 		file<-files[i]		
@@ -100,8 +103,10 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 #					file<-getSample(gh,isFullPath=TRUE)
 			
 			message("Loading data file: ",file);
-			data<-read.FCS(file);
-			
+			if(isNcdf)
+				data<-read.FCS(file)
+			else
+				data<-fs[[sampleName]]
 			##################################
 			#Compensating the data
 			##################################
@@ -175,10 +180,13 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 				}
 				
 			}
-			#save raw or compensated data to cdf
+#			browser()
+			#save raw or compensated data 
 			message("saving compensated data");
-			addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
-			
+			if(isNcdf)
+				addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
+			else
+			    assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
 		}
 		
 		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
@@ -186,14 +194,17 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	}
 	names(set)<-basename(files)
 	G@set<-set
-#	browser()
+
 #	print(Sys.time()-time1)
 #	
 #	time1<-Sys.time()
 	
 	if(execute)
 	{
-		colnames(fs)<-colnames(fs[[1]])#update colnames slot for ncdfFlowSet
+		#update colnames slot for flowSet
+		#can't do it before fs fully compensated since
+		#compensate function check the consistency colnames between input flowFrame and fs
+		colnames(fs)<-colnames(data)
 		
 		#attach filename and colnames to internal stucture for gating
 		setData(G,fs)
@@ -206,11 +217,22 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					
 					sampleName<-getSample(gh)
 					
-					cal<-getTransformations(gh)
 					message(paste("gating",sampleName,"..."))
 
 #					time1<-Sys.time()
-					.Call("R_gating",gh@pointer,sampleName)
+					if(isNcdf)
+						.Call("R_gating_cdf",gh@pointer,sampleName)
+					else
+					{
+						data<-fs[[sampleName]]
+						mat<-exprs(data)
+						.Call("R_gating",gh@pointer,mat,sampleName)
+						#update fs with transformed data
+						exprs(data)<-mat
+						assign(sampleName,data,fs@frames)##suppose to be faster than [[<-
+						
+					}
+						
 #					time_cpp<<-time_cpp+(Sys.time()-time1)
 #				browser()
 					#range info within parameter object is not always the same as the real data range
@@ -221,7 +243,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
 #					transFlag<-.Call("R_getTransFlags",G@pointer,sampleName)
 					
-					
+					cal<-getTransformations(gh)					
 					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
 					
 #					browser()

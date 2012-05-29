@@ -12,7 +12,7 @@
 
 flowData::flowData(){};
 
-flowData::flowData(double* mat,vector<string> _params,unsigned _nEvents,unsigned _sampleID){
+flowData::flowData(const double* mat,vector<string> _params,unsigned _nEvents,unsigned _sampleID){
 
 
 	params=_params;
@@ -22,6 +22,19 @@ flowData::flowData(double* mat,vector<string> _params,unsigned _nEvents,unsigned
 	sampleID=_sampleID;
 	data.resize(nSize);
 	data=valarray<double>(mat,nSize);
+}
+flowData::flowData(NumericMatrix mat,unsigned _sampleID){
+
+	List dimnames=mat.attr("dimnames");
+	params=dimnames[1];
+	unsigned nChannls=params.size();
+	nEvents=mat.nrow();
+	unsigned nSize=nChannls*nEvents;
+	sampleID=_sampleID;
+	data.resize(nSize);
+	for(unsigned j=0;j<nSize;j++)
+		data[j]=mat[j];
+
 }
 
 //flowData::flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls){

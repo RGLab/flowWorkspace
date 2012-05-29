@@ -38,4 +38,34 @@ names(res)<-nIt
 save(res,file="res1.rda")
 cat("done")
 
+
+require(inline)
+a<-matrix(as.numeric(1:10),ncol=2)
+colnames(a)<-c("A","B")
+
+testfun <- cxxfunction(
+		signature(x="matrix"),
+		body = '
+		NumericMatrix mat(x);	
+		List dimnames=mat.attr("dimnames");
+	
+		std::vector<std::string> params=dimnames[1];
+		unsigned nEvents=mat.nrow();
+	
+		unsigned nChannls=params.size();
+		unsigned nSize=nChannls*nEvents;
+	
+		for(unsigned i=0;i<nSize;i++)
+				mat[i]=i*10;
+		return wrap(mat.size());
+
+		', plugin="Rcpp")
+
+testfun(a)
+
 #getData(G[[1]])
+
+.Call("R_test",a)
+a
+
+

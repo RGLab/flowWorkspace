@@ -12,7 +12,9 @@
 #include <string>
 #include <valarray>
 #include <stdexcept>
+#include <Rcpp.h>
 using namespace std;
+using namespace Rcpp;
 typedef vector<bool> POPINDICES;
 
 /*
@@ -31,7 +33,8 @@ public:
 	valarray<double> data;
 	unsigned nEvents;
 	flowData();
-	flowData(double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
+	flowData(const double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
+	flowData(NumericMatrix mat,unsigned _sampleID);
 	~flowData();
 	slice getSlice(string channel);
 	valarray<double> subset(string channel);

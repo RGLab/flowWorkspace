@@ -7,12 +7,12 @@ library(flowWorkspace)
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 ##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
 path<-"~/rglab/workspace/flowWorkspace/data"
 
@@ -38,9 +38,13 @@ time1<-Sys.time()
 #Rprof()
 #time_cpp<<-0
 G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
-#					,subset=c(1)
-					,isNcdf=T
-					,useInternal=T,dMode=0)
+					,subset=1:2
+					,isNcdf=F
+					,useInternal=T,dMode=4)
+
+getPopStats(G[[1]])[,2:3]
+getPopStats(G[[2]])[,2:3]
+ncFlowSet(G)
 #Rprof(NULL)	
 #summaryRprof()$by.total[1:20,]
 
@@ -103,7 +107,7 @@ getTotal(G[[2]],nodelist[1],flowJo=F)
 getTotal(G[[1]],nodelist[2],flowJo=F)
 
 .getPopStat(G[[1]],2)
-getPopStats(G[[1]])[,2:3]
+getPopStats(G[[2]])[,2:3]
 
 ##split into groups
 
@@ -141,7 +145,7 @@ for(sampleName in getSamples(G[1:2]))
 	
 #	print(plot(gh))
 	
-	for(i in 2:length(getNodes(gh)))
+	for(i in 7:length(getNodes(gh)))
 	{
 		
 		 print(plotGate(gh,i,smooth=F,xbin=128,margin=F))

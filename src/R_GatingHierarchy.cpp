@@ -202,7 +202,8 @@ END_RCPP
 /*
  * non-cdf version
  */
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _params,SEXP _sampleName){
+
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName){
 BEGIN_RCPP
 
 
@@ -210,15 +211,10 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-	vector<string> params=as<vector<string> >(_params);
-	Rcpp::NumericMatrix orig(_mat);	// creates Rcpp matrix from SEXP
-
-	unsigned nEvents=orig.nrow();
-	unsigned nChannel=orig.cols();
+	Rcpp::NumericMatrix orig(_mat);
 	unsigned sampleID=numeric_limits<unsigned>::max();//dummy sample index
-	double * mat=new double [nEvents*nChannel];
-	flowData fdata(mat,params,nEvents,sampleID);
-	delete mat;
+	flowData fdata(orig,sampleID);
+
 	gh->loadData(fdata);
 	gh->extendGate();
 	gh->transforming(false);
@@ -230,14 +226,17 @@ BEGIN_RCPP
 	gh->unloadData();
 
 	/*
-	 * copy data from flowData to rcpp matrix to return
+	 * update the _mat
 	 */
-	Rcpp::NumericMatrix res(_mat);
-	//TODO:find the conveniet way to contruct return matrix
-//	updatedMat
-	return wrap(res);
+	for(int j=0;j<orig.ncol()*orig.nrow();j++)
+		orig[j]=updatedMat[j];
+
+	return (0);
+
 END_RCPP
 }
+
+
 RcppExport SEXP R_getGate(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
