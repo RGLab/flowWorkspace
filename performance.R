@@ -12,8 +12,8 @@ macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 ###############################################################################
 ws<-openWorkspace(macXML[2])
 
-res<-vector(mode="list",5)
-nIt<-c(10,50,100,500,1000)[4:5]
+nIt<-c(10,50,100,500,1000)
+res<-vector(mode="list",length(nIt))
 for(i in 1:length(nIt))
 {
 	
@@ -23,11 +23,11 @@ for(i in 1:length(nIt))
 		time1<-Sys.time()	
 		G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
 				,subset=1:nIt[i]
-				,isNcdf=T
+				,isNcdf=F
 				,useInternal=T,dMode=0)
 				
 		subRes[[j]]<-Sys.time()-time1
-		file.remove(ncFlowSet(G)@file)
+#		file.remove(ncFlowSet(G)@file)
 	}
 	res[[i]]<-subRes
 	
@@ -35,10 +35,12 @@ for(i in 1:length(nIt))
 	
 }
 names(res)<-nIt
-save(res,file="res1.rda")
+save(res,file="res_flowset.rda")
 cat("done")
+#getData(G[[1]])
 
 
+########################inline Rcpp test
 require(inline)
 a<-matrix(as.numeric(1:10),ncol=2)
 colnames(a)<-c("A","B")
@@ -63,9 +65,6 @@ testfun <- cxxfunction(
 
 testfun(a)
 
-#getData(G[[1]])
 
-.Call("R_test",a)
-a
 
 
