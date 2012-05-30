@@ -40,7 +40,17 @@ time1<-Sys.time()
 G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
 					,subset=1:2
 					,isNcdf=F
-					,useInternal=T,dMode=4)
+					,useInternal=T,dMode=0)
+
+############################################################################### 
+##parse as template and apply to new data			
+###############################################################################
+GT<-parseWorkspace(ws,name=2,execute=F,requiregates=F
+		,subset=1
+		,isNcdf=F
+		,useInternal=T,dMode=0)
+newfiles<-list.files("/home/wjiang2/rglab/workspace/flowWorkspace/data/HIPC_trial/data",full=T)[2:3]
+G<-GatingSet(GT[[1]],newfiles,isNcdf=FALSE,dMode=4)
 
 getPopStats(G[[1]])[,2:3]
 getPopStats(G[[2]])[,2:3]

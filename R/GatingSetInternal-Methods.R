@@ -18,22 +18,20 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	print("calling c++ parser...")
 	
 	time1<-Sys.time()
-	G<-new("GatingSetInternal",xmlFileName,sampleIDs,execute,dMode)
+	G<-GatingSet(xmlFileName,sampleIDs,execute,dMode)
 #	time_cpp<<-time_cpp+(Sys.time()-time1)
 	print("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
-	#environment for holding fs data,each gh has the same copy of this environment
-	globalDataEnv<-new.env()
 	
 #	browser()
 	#loading and filtering data
 	if(execute)
 	{
-#		files<-file.path(path,samples)
+
 		dataPaths<-vector("character")
 		excludefiles<-vector("logical")
 		for(file in samples){
-#			browser()
+
 			#########################################################
 			#get full path for each fcs and store in dataPath slot
 			#########################################################
@@ -62,6 +60,71 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		
 #		time1<-Sys.time()
 		
+		
+#		time_sum<<-time_sum+(Sys.time()-time1)
+	}else
+	{
+		files<-samples
+	}
+#	browser()
+#	print(Sys.time()-time1)
+	G<-.gating(G,files,execute,isNcdf)
+#	time1<-Sys.time()
+
+	message("done!")
+#	print(Sys.time()-time1)
+
+	G	
+}
+##construct object from existing gating hierarchy(gating template) and flow data
+setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,isNcdf=FALSE,dMode=1,...){
+			
+			samples<-basename(y)
+			dataPaths<-vector("character")
+			excludefiles<-vector("logical")
+			for(file in y){
+				
+				#########################################################
+				#get full path for each fcs and store in dataPath slot
+				#########################################################
+				##escape "illegal" characters
+				file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
+				absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full=TRUE)
+				
+				if(length(absPath)==0){
+					warning("Can't find ",file," in directory: ",path,"\n");
+					excludefiles<-c(excludefiles,TRUE);
+					
+				}else{
+					dataPaths<-c(dataPaths,dirname(absPath[1]))
+					excludefiles<-c(excludefiles,FALSE);
+				}
+			}
+			#Remove samples where files don't exist.
+			if(length(which(excludefiles))>0){
+				message("Removing ",length(which(excludefiles))," samples from the analysis since we can't find their FCS files.");
+				samples<-samples[!excludefiles];
+			}
+			
+			
+			files<-file.path(dataPaths,samples)
+			
+			
+			Object<-new("GatingSetInternal")
+			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
+			Object<-.gating(Object,files,execute=TRUE,isNcdf)
+			return(Object)
+		})
+############################################################################
+#constructing gating set
+############################################################################
+.gating<-function(G,files,execute,isNcdf){
+	
+	#environment for holding fs data,each gh has the same copy of this environment
+	globalDataEnv<-new.env()
+	
+	if(execute)
+	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			print("Creating ncdfFlowSet...")
@@ -70,18 +133,8 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			print("Creating flowSet...")
 			fs<-read.flowSet(files)
 		}
-#		time_sum<<-time_sum+(Sys.time()-time1)
-	}else
-	{
-		files<-samples
 	}
-#	browser()
-#	print(Sys.time()-time1)
-#	
-#	time1<-Sys.time()
-	############################################################################
-	#constructing gating set
-	############################################################################
+	
 	nFiles<-length(files)
 	set<-vector(mode="list",nFiles)	
 	isColUpdated<-FALSE
@@ -164,7 +217,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					}else{
 						data<-res
 						rm(res);
-				
+						
 					}
 #						browser()
 					cnd<-colnames(data)
@@ -186,7 +239,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			if(isNcdf)
 				addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
 			else
-			    assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
+				assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
 		}
 		
 		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
@@ -194,7 +247,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	}
 	names(set)<-basename(files)
 	G@set<-set
-
+	
 #	print(Sys.time()-time1)
 #	
 #	time1<-Sys.time()
@@ -210,15 +263,15 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 		setData(G,fs)
 #		browser()
 		assign("ncfs",fs,globalDataEnv)
-			
-
+		
+		
 		lapply(G,function(gh){
 					
 					
 					sampleName<-getSample(gh)
 					
 					message(paste("gating",sampleName,"..."))
-
+					
 #					time1<-Sys.time()
 					if(isNcdf)
 						.Call("R_gating_cdf",gh@pointer,sampleName)
@@ -232,13 +285,13 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 						assign(sampleName,data,fs@frames)##suppose to be faster than [[<-
 						
 					}
-						
+					
 #					time_cpp<<-time_cpp+(Sys.time()-time1)
 #				browser()
 					#range info within parameter object is not always the same as the real data range
 					#it is used to display the data.
 					#so we need update this range info by transforming the it
-
+					
 					localDataEnv<-nodeDataDefaults(gh@tree,"data")
 					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
 #					transFlag<-.Call("R_getTransFlags",G@pointer,sampleName)
@@ -247,17 +300,13 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
 					
 #					browser()
-				
+					
 				})
 		
-	
-	}	
-	message("done!")
-#	print(Sys.time()-time1)
-
-	G	
+		
+	}
+	G
 }
-
 .transformRange<-function(dataenv,cal,sampleName,prefix,suffix){
 
 	frmEnv<-dataenv$data$ncfs@frames

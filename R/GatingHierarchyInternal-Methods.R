@@ -3,7 +3,6 @@
 # Author: wjiang2
 ###############################################################################
 
-
 setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 			
 #			browser()

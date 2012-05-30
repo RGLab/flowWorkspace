@@ -39,28 +39,24 @@ setClass("GatingSetInternal",contains="GatingSet"
 			all(unlist(lapply(object@set
 									,function(y)inherits(y,"GatingHierarchy"))))
 		})
-setMethod("initialize","GatingSetInternal"
-		,function(.Object
-#				,set=list(new("GatingHierarchyInternal"))
-#				,metadata=new("AnnotatedDataFrame")
-#				,files=NULL
-#				,isNcdf=FALSE
-#				,flowSetId=NULL
-				,xmlFileName=NULL
-				,sampleIDs
-				,execute=FALSE
-				,dMode=1
-				
-				){
-
-#			.Object@set<-set;
-#			.Object@metadata<-metadata
-#			browser()			
-			stopifnot(!is.null(xmlFileName))
+###########################
+#constructors for GatingSet
+##########################
+setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
+#construct object from xml workspace file and a list of sampleIDs
+setMethod("GatingSet",c("character","character"),function(x,y,execute=FALSE,dMode=1,...){
+			
+			xmlFileName<-x
+			sampleIDs<-y
+			
+			stopifnot(!missing(xmlFileName))
+			
 			if(!file.exists(xmlFileName))
 				stop(xmlFileName," not found!")
-#			browser()
-			.Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,execute,as.integer(dMode))
-#	validObject(.Object)
-			return(.Object)
-		})
+			Object<-new("GatingSetInternal")
+			Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,execute,as.integer(dMode))
+			
+			return(Object)
+})
+		
+		
