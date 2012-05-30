@@ -35,7 +35,6 @@ public:
 	flowData();
 	flowData(const double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
 	flowData(NumericMatrix mat,unsigned _sampleID);
-	~flowData();
 	slice getSlice(string channel);
 	valarray<double> subset(string channel);
 	void params_set(vector<string> _params);

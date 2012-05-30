@@ -92,7 +92,7 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 		ERR(retval);
 	nRow = eCount[sampleID] ;
 
-	delete eCount;
+	delete[] eCount;
 
 	int dimID;
 	long int nChannels;
@@ -117,7 +117,7 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
 
 	flowData res(mat,params,(unsigned int)nRow,sampleID);
 
-	delete mat;
+	delete[] mat;
 
 //	startTime = time(NULL);
 
@@ -166,7 +166,7 @@ void ncdfFlow::writeflowData(flowData & fdata)
 	if((retval = nc_put_vara_double(ncid, varid, start, count, mat)))
 		ERR(retval);
 
-	delete mat;
+	delete[] mat;
 	/*
 	 * assume the new slice is the same size of original one, so no need to update event counts attribute
 	 */

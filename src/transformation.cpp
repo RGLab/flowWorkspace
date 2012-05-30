@@ -171,8 +171,7 @@ void biexpTrans::computCalTbl(){
 
 	isComputed=true;
 
-//	if(dMode>=GATING_SET_LEVEL)
-//		cout<<"spline interpolating..."<<name<<endl;
+	delete[] positive;
+	delete[] negative;
 
-//	calTbl->interpolate();
 }

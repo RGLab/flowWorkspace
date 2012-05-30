@@ -37,23 +37,6 @@ flowData::flowData(NumericMatrix mat,unsigned _sampleID){
 
 }
 
-//flowData::flowData(valarray<float> mat,unsigned nEvents,unsigned nChannls){
-//
-//	data=new valarray<float>(mat);
-//	nRow=nEvents;
-//	nCol=nChannls;
-//}
-/*
- * this object simply serves as a wrapper to hold dimension info, it is up to caller to free raw data that is pointed by this flowData object,
- */
-flowData::~flowData(){
-//	if(data!=NULL)
-//	{
-//		delete data;
-//		cout<<"free flowData"<<endl;
-//	}
-
-}
 void flowData::params_set(vector<string> _params){
 	if(_params.size()!=params.size())
 		throw(domain_error("the number of parameters is not consistent with cdf file!"));

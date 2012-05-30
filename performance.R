@@ -24,7 +24,7 @@ for(i in 1:length(nIt))
 		G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
 				,subset=1:nIt[i]
 				,isNcdf=F
-				,useInternal=T,dMode=0)
+				,useInternal=F,dMode=0)
 				
 		subRes[[j]]<-Sys.time()-time1
 #		file.remove(ncFlowSet(G)@file)

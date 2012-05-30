@@ -135,42 +135,6 @@ POPINDICES polygonGate::gating(flowData & fdata){
 	POPINDICES ind(nEvents);
 
 
-
-	/*
-	 * call original c version of polygon gating routine
-	 */
-//	int nrd=nEvents;
-//	double* _data=new double[2*nrd];
-//	for(int i=0;i<nrd;i++)
-//	{
-//		_data[i]=xdata[i];
-//		_data[i+nrd]=ydata[i];
-//	}
-//
-//	int nrv=nVertex;
-//	double * _vertices=new double[2*nrv];
-//	for(int i=0;i<nrv;i++)
-//	{
-//		_vertices[i]=vertices.at(i).x;
-//		_vertices[i+nrv]=vertices.at(i).y;
-//	}
-//
-//	int * res=new int[nrd];
-//	inPolygon_c(_data,nrd,_vertices,nrv,res);
-//	for(int i=0;i<nrd;i++)
-//	{
-//		ind[i]=res[i];
-//
-//	}
-//	delete _data;
-//	delete _vertices;
-//	delete res;
-
-	/*
-	 * c++ version
-	 */
-
-
 	unsigned counter;
 	double xinters;
 	double p1x, p2x, p1y, p2y;

@@ -20,11 +20,11 @@ int main(void) {
  * since it is not necessarily consistent with samplenames within gs
  */
 	i=0;
-	myTest.at(i).filename="../data/HIPC_trial/data/HIPC_trial.xml";
+	myTest.at(i).filename="/home/wjiang2/rglab/workspace/flowWorkspace/data/HIPC_trial/data/HIPC_trial.xml";
 	myTest.at(i).samples["1"]="004_A1_A01.fcs";
 	myTest.at(i).samples["2"]="004_B1_B01.fcs";
-	myTest.at(i).ncfile="../output/HIPC_trial/nc_comp.nc";
-	myTest.at(i).colfile="../output/HIPC_trial/colnames.txt";
+	myTest.at(i).ncfile="/home/wjiang2/rglab/workspace/flowWorkspace/output/HIPC_trial/nc_comp.nc";
+	myTest.at(i).colfile="/home/wjiang2/rglab/workspace/flowWorkspace/output/HIPC_trial/colnames.txt";
 
 	i=1;
 	myTest.at(i).filename="../data/Blomberg/data/Exp2_Tcell.wsp";
@@ -47,7 +47,7 @@ int main(void) {
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=1;
+	i=0;
 	gs_test(myTest.at(i));
 
 //	gating_template_test(myTest.at(i));
