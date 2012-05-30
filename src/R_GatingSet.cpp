@@ -12,7 +12,6 @@
  * can't use module for exposing overloaded methods
  */
 
-
 typedef vector<string> StringVec;
 RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _execute,SEXP _dMode) {
 BEGIN_RCPP
@@ -22,6 +21,11 @@ BEGIN_RCPP
 		bool isParseGate=as<bool>(_execute);
 		GatingSet * gs=new GatingSet(fileName,isParseGate,dMode);
 		gs->parseWorkspace(sampleIDs,isParseGate);
+		/*
+		 * using default finalizer to delete gs,which is triggered by gc() when
+		 * xptr is out of scope
+		 */
+
 		return XPtr<GatingSet>(gs);
 
 END_RCPP
@@ -40,27 +44,6 @@ BEGIN_RCPP
 
 END_RCPP
 }
-
-//since delete is not working with xptr, make sure it is released by R
-//RcppExport SEXP R_closeWorkspace(SEXP _gsPtr) {
-//BEGIN_RCPP
-//	XPtr<GatingSet>gs(_gsPtr);
-//	delete gs;
-//	cout<<"Gating Set is released!"<<endl;
-//	return 0;
-//END_RCPP
-//	return IntegerVector(-1);
-//}
-//static void cooked_goose(SEXP foo)
-//{
-//    if (TYPEOF(foo) != EXTPTRSXP)
-//        error("argument not external pointer");
-//    GatingSet *x = (GatingSet *) R_ExternalPtrAddr(foo);
-////    int blather = x[0];
-//    Free(x);
-//    cout<<"finalizer ran!"<<endl;
-//}
-//
 
 RcppExport SEXP R_getSamples(SEXP _gsPtr) {
 BEGIN_RCPP

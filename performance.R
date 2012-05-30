@@ -10,21 +10,21 @@ macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[2])
+ws<-openWorkspace(macXML[1])
 
 nIt<-c(10,50,100,500,1000)
 res<-vector(mode="list",length(nIt))
 for(i in 1:length(nIt))
 {
-	
-	subRes<-vector(mode="list",3)
-	for(j in 1:3)
+	m<-3
+	subRes<-vector(mode="list",m)
+	for(j in 1:m)
 	{
 		time1<-Sys.time()	
-		G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
+		G<-parseWorkspace(ws,name=1,execute=F,requiregates=F
 				,subset=1:nIt[i]
 				,isNcdf=F
-				,useInternal=F,dMode=0)
+				,useInternal=T,dMode=0)
 				
 		subRes[[j]]<-Sys.time()-time1
 #		file.remove(ncFlowSet(G)@file)
@@ -45,26 +45,46 @@ require(inline)
 a<-matrix(as.numeric(1:10),ncol=2)
 colnames(a)<-c("A","B")
 
-testfun <- cxxfunction(
-		signature(x="matrix"),
-		body = '
-		NumericMatrix mat(x);	
-		List dimnames=mat.attr("dimnames");
-	
-		std::vector<std::string> params=dimnames[1];
-		unsigned nEvents=mat.nrow();
-	
-		unsigned nChannls=params.size();
-		unsigned nSize=nChannls*nEvents;
-	
-		for(unsigned i=0;i<nSize;i++)
-				mat[i]=i*10;
-		return wrap(mat.size());
+testfun <- cxxfunction(signature(),
+		includes='
+					class AA{
+								public:
+								int a;
+								AA();
+								~AA();
+							};
+					AA::AA(){a=4;};
+					AA::~AA(){std::cout<<"destructor"<<std::endl;};	
+					
+			'
+		,body='
+		
+		
+		
 
+		AA * v=new AA();
+		
+	    return(Rcpp::XPtr<AA>(v));	
 		', plugin="Rcpp")
 
-testfun(a)
+xp<-testfun()
 
-
-
+funx <- cfunction(signature(x = "externalptr" )
+				,includes='
+						class AA{
+						public:
+						int a;
+						AA();
+						~AA();
+						};
+						AA::AA(){a=2;};
+						AA::~AA(){std::cout<<"destructor"<<std::endl;};		
+				 '
+		 		,body='
+				Rcpp::XPtr<AA> p(x) ;
+				return( Rcpp::wrap( p->a) ) ;
+				', Rcpp=TRUE, verbose=FALSE)
+funx(xp)
+rm(xp)
+gc()
 

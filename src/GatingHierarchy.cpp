@@ -24,7 +24,7 @@ GatingHierarchy::~GatingHierarchy()
 {
 	//for each node
 
-	cout<<"entring the destructor of GatingHierarchy"<<endl;
+//	cout<<"entring the destructor of GatingHierarchy"<<endl;
 
 	VertexID_vec vertices=getVertices(false);
 	if(dMode>=GATING_HIERARCHY_LEVEL)

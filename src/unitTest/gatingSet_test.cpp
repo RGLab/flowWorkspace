@@ -215,10 +215,10 @@ void gating_template_test(testSuit myTest){
 
 
 }
-void gs_test(testSuit myTest){
+void gs_test(testSuit myTest,unsigned short dMode){
 
 		//create gating set object
-		GatingSet gs(myTest.filename,true,0);
+		GatingSet gs(myTest.filename,true,dMode);
 
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;

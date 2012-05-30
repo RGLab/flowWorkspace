@@ -48,7 +48,15 @@ int main(void) {
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
 	i=0;
-	gs_test(myTest.at(i));
+//	unsigned loop=4000;
+//	for(unsigned j=0;j<loop;j++)
+//	{
+//		cout << "press any key to continue:\n>";
+//		string input = "";
+//		getline(cin, input);
+		gs_test(myTest.at(i),0);
+//	}
+
 
 //	gating_template_test(myTest.at(i));
 //	ncdf_test();
@@ -61,6 +69,7 @@ int main(void) {
 
 
 	cout<<"done!"<<endl;
+
 
 	return (0);
 }
