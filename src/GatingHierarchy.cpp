@@ -31,9 +31,12 @@ GatingHierarchy::~GatingHierarchy()
 		cout<<"free the node properties from tree"<<endl;
 	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
+		nodeProperties * np=tree[*it];
+		if(np==NULL)
+			throw(domain_error("empty node properties!"));
 		if(dMode>=POPULATION_LEVEL)
-			cout<<"free "<<tree[*it]->getName()<<endl;
-		delete tree[*it];//free the property bundle
+			cout<<"free "<<np->getName()<<endl;
+		delete np;//free the property bundle
 //			cout<<"free the indices"<<endl;
 	}
 
@@ -458,7 +461,11 @@ vector<string> GatingHierarchy::getPopNames(bool tsort,bool isPath){
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
+
 		string nodeName=getNodeProperty(u)->getName();
+
+
+
 		/*
 		 * append ancestors on its way of tracing back to the root node
 		 */
@@ -598,9 +605,14 @@ GatingHierarchy * GatingHierarchy::clone(bool onlyGatingTemplate){
 		VertexID_vec vertices=res->getVertices(false);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
+			/*
+			 * clone the nodeProperties
+			 */
 			VertexID u=*it;
 			nodeProperties * node=res->getNodeProperty(u);
 			node=node->clone();
+			//update the tree node
+			res->tree[u]=node;
 		}
 	}
 

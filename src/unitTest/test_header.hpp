@@ -29,7 +29,8 @@ struct testSuit{
 	map<string,string> samples;
 } ;
 
-void gs_test(testSuit,unsigned short);
+
+void gs_parse(testSuit,unsigned short);
 void ncdf_test();
 void compCalTbl();
 void spline_test();

@@ -182,7 +182,12 @@ nodeProperties* flowJoWorkspace::to_popNode(wsRootNode & node){
 
 	nodeProperties * pNode=new nodeProperties;
 
-	pNode->setName(node.getProperty("name").c_str());
+	/*
+	 * in order to make the pop names comparable accross samples
+	 * force the root node name as "root" (it was stored as fcs filenames in some fj ws)
+	 */
+//	pNode->setName(node.getProperty("name").c_str());
+	pNode->setName("root");
 
 	pNode->fjStats["count"]=atoi(node.getProperty("count").c_str());
 

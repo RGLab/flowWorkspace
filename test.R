@@ -1,5 +1,5 @@
 #unloadNamespace("flowWorkspace")
-library(ncdfFlow)
+#library(ncdfFlow)
 library(flowWorkspace)
 
 #library(Rgraphviz)
@@ -7,12 +7,12 @@ library(flowWorkspace)
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 ##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
 path<-"~/rglab/workspace/flowWorkspace/data"
 
@@ -37,23 +37,28 @@ ws<-openWorkspace(macXML[1])
 time1<-Sys.time()	
 #Rprof()
 #time_cpp<<-0
-G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
-					,subset=1:2
-					,isNcdf=F
-					,useInternal=T,dMode=0)
+#G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
+#					,subset=1:2
+#					,isNcdf=F
+#					,useInternal=T,dMode=0)
 
 ############################################################################### 
 ##parse as template and apply to new data			
 ###############################################################################
-GT<-parseWorkspace(ws,name=2,execute=F,requiregates=F
-		,subset=1
-		,isNcdf=F
-		,useInternal=T,dMode=0)
-newfiles<-list.files("/home/wjiang2/rglab/workspace/flowWorkspace/data/HIPC_trial/data",full=T)[2:3]
-G<-GatingSet(GT[[1]],newfiles,isNcdf=FALSE,dMode=4)
+GT<-parseWorkspace(ws,name=2
+					,execute=F
+					,includeGates=T
+#					,subset=1
+					,isNcdf=F
+					,useInternal=T
+					,dMode=0)
 
-getPopStats(G[[1]])[,2:3]
-getPopStats(G[[2]])[,2:3]
+newSamples<-getSamples(GT)
+#path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/HIPC_trial/data"
+G<-GatingSet(GT[[1]],newSamples[2:3],isNcdf=FALSE,dMode=4)
+
+getPopStats(GT[[3]])[,2,drop=F]
+getPopStats(G[[1]])[,3,drop=F]
 ncFlowSet(G)
 #Rprof(NULL)	
 #summaryRprof()$by.total[1:20,]

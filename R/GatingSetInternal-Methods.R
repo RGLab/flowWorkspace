@@ -12,13 +12,13 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			}
 		})
 
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,flowSetId=NULL){
+.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL){
 
 
 	print("calling c++ parser...")
 	
 	time1<-Sys.time()
-	G<-GatingSet(xmlFileName,sampleIDs,execute,dMode)
+	G<-GatingSet(xmlFileName,sampleIDs,includeGates,dMode)
 #	time_cpp<<-time_cpp+(Sys.time()-time1)
 	print("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
@@ -68,7 +68,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	}
 #	browser()
 #	print(Sys.time()-time1)
-	G<-.gating(G,files,execute,isNcdf)
+	G<-.addGatingHierachy(G,files,execute,isNcdf)
 #	time1<-Sys.time()
 
 	message("done!")
@@ -77,19 +77,19 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 	G	
 }
 ##construct object from existing gating hierarchy(gating template) and flow data
-setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,isNcdf=FALSE,dMode=1,...){
+setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path=".",isNcdf=FALSE,dMode=1,...){
 			
-			samples<-basename(y)
+			samples<-y
 			dataPaths<-vector("character")
 			excludefiles<-vector("logical")
-			for(file in y){
-				
+			for(file in samples){
+#				browser()
 				#########################################################
 				#get full path for each fcs and store in dataPath slot
 				#########################################################
 				##escape "illegal" characters
 				file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
-				absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full=TRUE)
+				absPath<-list.files(pattern=paste("^",file,"$",sep=""),path=path,recursive=TRUE,full=TRUE)
 				
 				if(length(absPath)==0){
 					warning("Can't find ",file," in directory: ",path,"\n");
@@ -106,20 +106,20 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,isNc
 				samples<-samples[!excludefiles];
 			}
 			
-			
+
 			files<-file.path(dataPaths,samples)
-			
-			
 			Object<-new("GatingSetInternal")
+#			browser()
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
-			Object<-.gating(Object,files,execute=TRUE,isNcdf)
+			
+			Object<-.addGatingHierachy(Object,files,execute=TRUE,isNcdf)
 			return(Object)
 		})
 ############################################################################
 #constructing gating set
 ############################################################################
-.gating<-function(G,files,execute,isNcdf){
-	
+.addGatingHierachy<-function(G,files,execute,isNcdf){
+#	browser()
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env()
 	
@@ -165,7 +165,8 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,isNc
 			##################################
 			comp<-.Call("R_getCompensation",G@pointer,sampleName)
 			cid<-comp$cid
-			
+			if(cid=="")
+				cid=-2
 #				browser()
 			if(cid!="-1" && cid!="-2"){
 				message("Compensating");

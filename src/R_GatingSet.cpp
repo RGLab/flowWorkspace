@@ -16,12 +16,12 @@ typedef vector<string> StringVec;
 /*
  * constructing GatingSet from xml file
  */
-RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _execute,SEXP _dMode) {
+RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _isParseGate,SEXP _dMode) {
 BEGIN_RCPP
 		string fileName=as<string>(_fileName);
 		unsigned short dMode=as<unsigned short>(_dMode);
 		StringVec sampleIDs=as<StringVec>(_sampleIDs);
-		bool isParseGate=as<bool>(_execute);
+		bool isParseGate=as<bool>(_isParseGate);
 		GatingSet * gs=new GatingSet(fileName,isParseGate,dMode);
 		gs->parseWorkspace(sampleIDs,isParseGate);
 		/*

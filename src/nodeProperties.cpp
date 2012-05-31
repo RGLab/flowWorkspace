@@ -73,7 +73,15 @@ unsigned nodeProperties::getCounts(){
 }
 
 nodeProperties * nodeProperties::clone(){
-		nodeProperties * res=new nodeProperties(*this);
-		res->thisGate=thisGate->clone();
+		nodeProperties * res=new nodeProperties();
+		//copy pop name
+		res->setName(thisName.c_str());
+		/*
+		 * copying gate if applicable
+		 */
+
+		if(thisGate!=NULL)
+			res->thisGate=thisGate->clone();
+
 		return res;
 	}
