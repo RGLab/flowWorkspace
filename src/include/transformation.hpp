@@ -45,6 +45,7 @@ class trans_local{
 public:
 	trans_map transformations;
 	transformation * getTran(string);
+
 };
 
 class trans_global{
@@ -52,6 +53,7 @@ public:
 	string groupName;
 	trans_map trans;
 	vector<int> sampleIDs;
+//	trans_global clone();
 };
 
 typedef vector<trans_global> trans_global_vec;

@@ -40,7 +40,8 @@ wsSampleNode getSample(T ws,string sampleID){
 GatingSet::~GatingSet()
 {
 //	cout<<"entring the destructor of GatingSet"<<endl;
-	delete ws;
+	if(ws!=NULL)
+		delete ws;
 //	typedef map<string,GatingHierarchy *> map_t;
 	BOOST_FOREACH(gh_map::value_type & it,ghs){
 			GatingHierarchy * ghPtr=it.second;
@@ -70,6 +71,47 @@ GatingSet::~GatingSet()
 
 	}
 
+}
+/*
+ * TODO:current version of this contructor is based on gating template ,simply copying
+ * compensation and transformation,more options can be allowed in future like providing different
+ * comp and trans
+ */
+GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,unsigned short _dMode=1){
+
+	dMode=_dMode;
+	/*
+	 * deep copy gtrans
+	 */
+//	for(trans_global_vec::iterator it=gh_template.gTrans->begin();it!=gh_template.gTrans->end();it++)
+//	{
+//
+//		if(dMode>=GATING_SET_LEVEL)
+//			cout<<"copying transformatioin group:"<<it->groupName<<endl;
+//
+//		trans_global newTransGroup=it->clone();
+//
+//		gTrans.push_back(newTransGroup);
+//
+//	}
+
+
+
+	vector<string>::iterator it;
+	for(it=sampleNames.begin();it!=sampleNames.end();it++)
+	{
+		string curSampleName=*it;
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<endl<<"... start cloning GatingHierarchy for: "<<curSampleName<<"... "<<endl;
+
+
+		GatingHierarchy *curGh=gh_template.clone(false);
+
+		ghs[curSampleName]=curGh;//add to the map
+
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"Gating hierarchy cloned: "<<curSampleName<<endl;
+	}
 }
 //read xml file and create the appropriate flowJoWorkspace object
 GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short _dMode=1)

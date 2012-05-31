@@ -559,8 +559,15 @@ nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
 
 	}
 }
+void GatingHierarchy::reset(){
+	isGated=false;
+	isLoaded=false;
+	nc=NULL;
+	thisWs=NULL;
+	fdata.data.resize(0);
+}
 /*
- *TODO:unfinished
+ *TODO:to deal with trans copying (especially how to sync with gTrans)
   update to caller to free the memory
  */
 GatingHierarchy * GatingHierarchy::clone(bool onlyGatingTemplate){
@@ -578,6 +585,13 @@ GatingHierarchy * GatingHierarchy::clone(bool onlyGatingTemplate){
 	else
 	{
 		res=new GatingHierarchy(*this);
+		res->reset();
+
+		/*
+		 * TODO::deep copy trans_local,how to sync with gTrans
+		 */
+//		res->trans=res->trans->clone();
+
 		/*
 		 * update property bundle pointer for each node
 		 */
@@ -589,6 +603,7 @@ GatingHierarchy * GatingHierarchy::clone(bool onlyGatingTemplate){
 			node=node->clone();
 		}
 	}
+
 
 	return res;
 }

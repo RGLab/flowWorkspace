@@ -68,8 +68,9 @@ class GatingHierarchy{
 
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	workspace * thisWs;
-	trans_global_vec *gTrans;//pointer to the global trans stored in gs
+
 public:
+	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 	isTransMap transFlag;
 	trans_local trans;
 	unsigned short dMode;//debug mode passed from GatingSet
@@ -114,6 +115,7 @@ public:
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
+	void reset();
 	GatingHierarchy * clone(bool onlyGatingTemplate);
 };
 

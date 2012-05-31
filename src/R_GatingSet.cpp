@@ -13,6 +13,9 @@
  */
 
 typedef vector<string> StringVec;
+/*
+ * constructing GatingSet from xml file
+ */
 RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _execute,SEXP _dMode) {
 BEGIN_RCPP
 		string fileName=as<string>(_fileName);
@@ -52,5 +55,38 @@ BEGIN_RCPP
 
 END_RCPP
 }
+
+/*
+ * constructing GatingSet from existing gating hierarchy and new data
+ */
+RcppExport SEXP R_NewGatingSet(SEXP _gsPtr,SEXP _sampleName,SEXP _newSampleNames,SEXP _dMode) {
+BEGIN_RCPP
+
+		/*
+		 * get pointer of existing gating hierarchy
+		 *
+		 */
+		XPtr<GatingSet>gs(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+		unsigned short dMode=as<unsigned short>(_dMode);
+
+		/*
+		 * used gh as the template to clone multiple ghs in the new gs
+		 */
+		StringVec newSampleNames=as<StringVec>(_newSampleNames);
+		GatingSet * newGS=new GatingSet(*gh,newSampleNames,dMode);
+
+		/*
+		 * using default finalizer to delete gs,which is triggered by gc() when
+		 * xptr is out of scope
+		 */
+
+		return XPtr<GatingSet>(newGS);
+
+END_RCPP
+}
+
 
 

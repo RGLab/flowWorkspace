@@ -7,7 +7,51 @@
 
 #include "include/transformation.hpp"
 
+//
+//trans_local trans_local::clone(){
+//
+//	trans_local res(*this);
+//	/*
+//	 * update trans map
+//	 */
+//
+//	for(trans_map::iterator it1=transformations.begin();it1!=transformations.end();it1++)
+//	{
+//		transformation * curTran=it1->second;
+//		if(curTran!=NULL)
+//		{
+////			if(dMode>=GATING_SET_LEVEL)
+//			cout<<"cloning transformatioin:"<<curTran->channel<<endl;
+//
+//			curTran=new transformation(*curTran);
+//		}
+//
+//	}
+//	return res;
+//}
 
+
+//trans_global trans_global::clone(){
+//
+//	trans_global res(*this);
+//	/*
+//	 * update trans map
+//	 */
+//
+//	for(trans_map::iterator it1=trans.begin();it1!=trans.end();it1++)
+//	{
+//		transformation * curTran=it1->second;
+//		if(curTran!=NULL)
+//		{
+////			if(dMode>=GATING_SET_LEVEL)
+//			cout<<"cloning transformatioin:"<<curTran->channel<<endl;
+//
+//			curTran=new transformation(*curTran);
+//		}
+//
+//	}
+//	return res;
+//}
 /*
  * transformation
  */
