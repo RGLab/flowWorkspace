@@ -55,10 +55,12 @@ GT<-parseWorkspace(ws,name=2
 
 newSamples<-getSamples(GT)
 #path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/HIPC_trial/data"
-G<-GatingSet(GT[[1]],newSamples[2:3],isNcdf=FALSE,dMode=4)
+G<-GatingSet(GT[[2]],newSamples[2],isNcdf=FALSE,dMode=4)
 
-getPopStats(GT[[3]])[,2,drop=F]
-getPopStats(G[[1]])[,3,drop=F]
+fj<-getPopStats(GT[[newSamples[1]]])[,2,F]
+fc<-getPopStats(G[[1]])[,3,drop=F]
+barplot(t(as.matrix(cbind(fj,fc))),beside=T)
+
 ncFlowSet(G)
 #Rprof(NULL)	
 #summaryRprof()$by.total[1:20,]

@@ -91,7 +91,7 @@ public:
 	GatingHierarchy();
 	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,unsigned short _dMode,trans_global_vec * _gTrans);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,trans_global_vec * _gTrans);
 
 
 	flowData getData(VertexID nodeID);//from memory
@@ -115,8 +115,8 @@ public:
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
-	void reset();
-	GatingHierarchy * clone(bool onlyGatingTemplate);
+//	void reset();
+	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 };
 
 

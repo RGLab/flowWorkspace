@@ -7,54 +7,32 @@
 
 #include "include/transformation.hpp"
 
-//
-//trans_local trans_local::clone(){
-//
-//	trans_local res(*this);
-//	/*
-//	 * update trans map
-//	 */
-//
-//	for(trans_map::iterator it1=transformations.begin();it1!=transformations.end();it1++)
-//	{
-//		transformation * curTran=it1->second;
-//		if(curTran!=NULL)
-//		{
-////			if(dMode>=GATING_SET_LEVEL)
-//			cout<<"cloning transformatioin:"<<curTran->channel<<endl;
-//
-//			curTran=new transformation(*curTran);
-//		}
-//
-//	}
-//	return res;
-//}
+
+trans_map trans_local::cloneTransMap(){
+
+	trans_map res;
+	/*
+	 * clone trans map
+	 */
+
+	for(trans_map::iterator it=transformations.begin();it!=transformations.end();it++)
+	{
+		transformation * curTran=it->second;
+		if(curTran!=NULL)
+		{
+			cout<<"cloning transformatioin:"<<curTran->channel<<endl;
+			res[it->first]=curTran->clone();
+		}
+	}
+	return res;
+}
 
 
-//trans_global trans_global::clone(){
-//
-//	trans_global res(*this);
-//	/*
-//	 * update trans map
-//	 */
-//
-//	for(trans_map::iterator it1=trans.begin();it1!=trans.end();it1++)
-//	{
-//		transformation * curTran=it1->second;
-//		if(curTran!=NULL)
-//		{
-////			if(dMode>=GATING_SET_LEVEL)
-//			cout<<"cloning transformatioin:"<<curTran->channel<<endl;
-//
-//			curTran=new transformation(*curTran);
-//		}
-//
-//	}
-//	return res;
-//}
 /*
  * transformation
  */
+
+
 
 transformation::transformation(){
 	/*
@@ -89,6 +67,12 @@ transformation * trans_local::getTran(string channel){
 /*
  *biexpTrans
  */
+biexpTrans * biexpTrans::clone(){
+
+	return new biexpTrans(*this);
+}
+
+
 biexpTrans::biexpTrans(){
 	channelRange=4096;
 	maxValue=262144;
@@ -218,4 +202,11 @@ void biexpTrans::computCalTbl(){
 	delete[] positive;
 	delete[] negative;
 
+}
+/*
+ * calTrans
+ */
+calTrans * calTrans::clone(){
+
+	return new calTrans(*this);
 }

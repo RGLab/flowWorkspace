@@ -63,10 +63,10 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,unsigned short _dMode,trans_global_vec * _gTrans)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,trans_global_vec * _gTrans)
 {
 //	data=NULL;
-	dMode=_dMode;
+
 	isLoaded=false;
 	thisWs=ws;
 	nc=_nc;
@@ -566,54 +566,41 @@ nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
 
 	}
 }
-void GatingHierarchy::reset(){
-	isGated=false;
-	isLoaded=false;
-	nc=NULL;
-	thisWs=NULL;
-	fdata.data.resize(0);
-}
+//void GatingHierarchy::reset(){
+//	isGated=false;
+//	isLoaded=false;
+//	nc=NULL;
+//	thisWs=NULL;
+//	fdata.data.resize(0);
+//}
 /*
  *TODO:to deal with trans copying (especially how to sync with gTrans)
   update to caller to free the memory
  */
-GatingHierarchy * GatingHierarchy::clone(bool onlyGatingTemplate){
+GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_vec * _gTrans){
 
-	GatingHierarchy * res;
-	if(onlyGatingTemplate)
+	GatingHierarchy * res=new GatingHierarchy();
+
+	res->trans.transformations=_trans;
+	res->gTrans=_gTrans;
+
+
+	/*
+	 * copy bgl tree and update property bundle pointer for each node
+	 * TODO:explore deep copying facility of bgl library,especially for node property bundle as the pointer
+	 */
+	res->tree=tree;
+	VertexID_vec vertices=res->getVertices(false);
+	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
-		res=new GatingHierarchy();
 		/*
-		 * TODO:explore copying contructor of adjacent_list from bgl to see how
-		 * the property boudle is handled if it is a pointer
+		 * update the pointer for nodeProperties
 		 */
-//		res->tree=tree.
-	}
-	else
-	{
-		res=new GatingHierarchy(*this);
-		res->reset();
-
-		/*
-		 * TODO::deep copy trans_local,how to sync with gTrans
-		 */
-//		res->trans=res->trans->clone();
-
-		/*
-		 * update property bundle pointer for each node
-		 */
-		VertexID_vec vertices=res->getVertices(false);
-		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-		{
-			/*
-			 * clone the nodeProperties
-			 */
-			VertexID u=*it;
-			nodeProperties * node=res->getNodeProperty(u);
-			node=node->clone();
-			//update the tree node
-			res->tree[u]=node;
-		}
+		VertexID u=*it;
+		nodeProperties * node=res->getNodeProperty(u);
+		node=node->clone();
+		//update the tree node
+		res->tree[u]=node;
 	}
 
 

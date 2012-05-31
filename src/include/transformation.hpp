@@ -34,18 +34,19 @@ public:
 
 public:
 	transformation();
-
-//	virtual ARGLIST getArgs()=0;
 	valarray<double> transforming(valarray<double> & input);
 	virtual void computCalTbl()=0;
+	virtual transformation * clone()=0;
 };
+
 typedef map<string,transformation *> trans_map;
 typedef map<string,bool> isTransMap;
+
 class trans_local{
 public:
 	trans_map transformations;
 	transformation * getTran(string);
-
+	trans_map cloneTransMap();
 };
 
 class trans_global{
@@ -53,7 +54,7 @@ public:
 	string groupName;
 	trans_map trans;
 	vector<int> sampleIDs;
-//	trans_global clone();
+
 };
 
 typedef vector<trans_global> trans_global_vec;
@@ -62,6 +63,7 @@ class calTrans:public transformation{
 public:
 	calTrans(){isComputed=true;}//always set this flag to be true to assure the subsequent interpolation can be performed
 	void computCalTbl(){};//dummy routine that does nothing
+	calTrans * clone();
 };
 class biexpTrans:public transformation{
 public:
@@ -81,7 +83,8 @@ public:
 //							};
 	biexpTrans();
 	void computCalTbl();
-//	valarray<double> transforming(valarray<double> &){throw(domain_error("not implemented yet!"));};
+	biexpTrans * clone();
+
 };
 
 

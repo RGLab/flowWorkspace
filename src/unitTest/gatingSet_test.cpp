@@ -177,18 +177,18 @@ void gh_counts(GatingHierarchy* gh){
 void gs_parse(testSuit myTest,unsigned short dMode){
 
 		//create gating set object
-		GatingSet *gs=new GatingSet(myTest.filename,true,dMode);
+		GatingSet gs(myTest.filename,true,dMode);
 
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;
 		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
 			sampleIDs.push_back(it->first);
 
-		gs->parseWorkspace(sampleIDs,true);
+		gs.parseWorkspace(sampleIDs,true);
 
 		cout<<endl<<"get sample names from gating set"<<endl;
 
-		vector<string> samples=gs->getSamples();
+		vector<string> samples=gs.getSamples();
 		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
 			cout<<*it<<endl;
 
@@ -196,7 +196,7 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 
 		GatingHierarchy* gh;
 
-		gh=gs->getGatingHierarchy(0);
+		gh=gs.getGatingHierarchy(0);
 //		getCalTbl_test(gh);
 //		gh_accessor_test(gh);
 //
@@ -209,6 +209,7 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 		 */
 		cout<<"-- cloning getGatingHierarchy ---"<<endl;
 		GatingSet * newGS=new GatingSet(*gh,samples,dMode);
+
 		gh=newGS->getGatingHierarchy(0);
 
 		gh_accessor_test(gh);

@@ -39,23 +39,26 @@ wsSampleNode getSample(T ws,string sampleID){
 
 GatingSet::~GatingSet()
 {
-//	cout<<"entring the destructor of GatingSet"<<endl;
+	if(dMode>=GATING_SET_LEVEL)
+		cout<<endl<<"start to free GatingSet..."<<endl;
 	if(ws!=NULL)
 		delete ws;
-//	typedef map<string,GatingHierarchy *> map_t;
+
 	BOOST_FOREACH(gh_map::value_type & it,ghs){
-			GatingHierarchy * ghPtr=it.second;
-			string sampleName=it.first;
-			delete ghPtr;
-			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"GatingHierarchy freed:"<<sampleName<<endl;
+		GatingHierarchy * ghPtr=it.second;
+		string sampleName=it.first;
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<endl<<"start to free GatingHierarchy:"<<sampleName<<endl;
+
+		delete ghPtr;
+
 	}
 
 	for(trans_global_vec::iterator it=gTrans.begin();it!=gTrans.end();it++)
 	{
 		trans_map curTrans=it->trans;
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<"free transformatioin group:"<<it->groupName<<endl;
+			cout<<endl<<"start to free transformatioin group:"<<it->groupName<<endl;
 		for(trans_map::iterator it1=curTrans.begin();it1!=curTrans.end();it1++)
 		{
 			transformation * curTran=it1->second;
@@ -81,22 +84,19 @@ GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,un
 
 	dMode=_dMode;
 	/*
-	 * deep copy gtrans
+	 * copy trans from gh_template into gtrans
+	 * involve deep copying of transformation pointers
 	 */
-//	for(trans_global_vec::iterator it=gh_template.gTrans->begin();it!=gh_template.gTrans->end();it++)
-//	{
-//
-//		if(dMode>=GATING_SET_LEVEL)
-//			cout<<"copying transformatioin group:"<<it->groupName<<endl;
-//
-//		trans_global newTransGroup=it->clone();
-//
-//		gTrans.push_back(newTransGroup);
-//
-//	}
+	if(dMode>=GATING_SET_LEVEL)
+		cout<<"copying transformation from gh_template..."<<endl;
+	trans_global newTransGroup;
+	trans_map newTmap=gh_template.trans.cloneTransMap();
+	newTransGroup.trans=newTmap;
+	gTrans.push_back(newTransGroup);
 
-
-
+	/*
+	 * use newTmap for all other new ghs
+	 */
 	vector<string>::iterator it;
 	for(it=sampleNames.begin();it!=sampleNames.end();it++)
 	{
@@ -105,7 +105,8 @@ GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,un
 			cout<<endl<<"... start cloning GatingHierarchy for: "<<curSampleName<<"... "<<endl;
 
 
-		GatingHierarchy *curGh=gh_template.clone(false);
+		GatingHierarchy *curGh=gh_template.clone(newTmap,&gTrans);
+		curGh->dMode=_dMode;
 
 		ghs[curSampleName]=curGh;//add to the map
 
@@ -183,8 +184,8 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 			cout<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,dMode,&gTrans);
-
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,&gTrans);
+		curGh->dMode=dMode;
 		string sampleName=ws->getSampleName(curSampleNode);
 
 //		curGh->setSample(sampleName);

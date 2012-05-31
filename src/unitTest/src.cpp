@@ -54,7 +54,7 @@ int main(void) {
 //		cout << "press any key to continue:\n>";
 //		string input = "";
 //		getline(cin, input);
-		gs_parse(myTest.at(i),0);
+		gs_parse(myTest.at(i),4);
 
 //	}
 

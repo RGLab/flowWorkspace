@@ -15,12 +15,12 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL){
 
 
-	print("calling c++ parser...")
+	message("calling c++ parser...")
 	
 	time1<-Sys.time()
 	G<-GatingSet(xmlFileName,sampleIDs,includeGates,dMode)
 #	time_cpp<<-time_cpp+(Sys.time()-time1)
-	print("c++ parsing done!")
+	message("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
 	
 #	browser()
@@ -109,7 +109,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 
 			files<-file.path(dataPaths,samples)
 			Object<-new("GatingSetInternal")
-#			browser()
+			message("generating new GatingSet from the gating template...")
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
 			
 			Object<-.addGatingHierachy(Object,files,execute=TRUE,isNcdf)
@@ -127,10 +127,10 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
-			print("Creating ncdfFlowSet...")
+			message("Creating ncdfFlowSet...")
 			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId),isWriteSlice=FALSE)
 		}else{
-			print("Creating flowSet...")
+			message("Creating flowSet...")
 			fs<-read.flowSet(files)
 		}
 	}
@@ -155,7 +155,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			
 #					file<-getSample(gh,isFullPath=TRUE)
 			
-			message("Loading data file: ",file);
+#			message("Loading data file: ",file);
 			if(isNcdf)
 				data<-read.FCS(file)
 			else
