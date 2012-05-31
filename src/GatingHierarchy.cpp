@@ -583,7 +583,7 @@ GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_v
 
 	res->trans.transformations=_trans;
 	res->gTrans=_gTrans;
-
+	res->comp=comp;
 
 	/*
 	 * copy bgl tree and update property bundle pointer for each node

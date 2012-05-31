@@ -7,12 +7,12 @@ library(flowWorkspace)
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 ##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
+#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
+#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
 path<-"~/rglab/workspace/flowWorkspace/data"
 
@@ -26,7 +26,7 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[1])
+ws<-openWorkspace(macXML[2])
 
 #subsetID<-flowWorkspace::getFJWSubsetIndices(ws,key="$FIL"
 #											,value=c("01107122_F11_I003.fcs"
@@ -48,18 +48,34 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 					,execute=F
 					,includeGates=T
-#					,subset=1
+					,subset=1:10
 					,isNcdf=F
 					,useInternal=T
 					,dMode=0)
 
 newSamples<-getSamples(GT)
-#path<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/HIPC_trial/data"
-G<-GatingSet(GT[[2]],newSamples[2],isNcdf=FALSE,dMode=4)
+datapath<-"/loc/no-backup/mike/ITN029ST/"
+templateSample<-newSamples[1]
+newSamples<-newSamples[-1]
 
-fj<-getPopStats(GT[[newSamples[1]]])[,2,F]
-fc<-getPopStats(G[[1]])[,3,drop=F]
-barplot(t(as.matrix(cbind(fj,fc))),beside=T)
+getPopStats(GT[[templateSample]])[,2:3]
+
+G<-GatingSet(GT[[templateSample]],newSamples,path=datapath,isNcdf=FALSE,dMode=0)
+
+getPopStats(G[[1]])[,2:3]
+
+for(curSample in newSamples)
+{
+#	browser()
+	fj<-getPopStats(GT[[curSample]])[,2,F]
+	fc<-getPopStats(G[[curSample]])[,3,drop=F]
+	toDisplay<-as.matrix(cbind(fj,fc))
+	toDisplay
+	rownames(toDisplay)<-basename(rownames(toDisplay))
+	barplot(t(toDisplay),beside=T,las=2,horiz=T,cex.names=0.8,main=curSample)
+	browser()
+	dev.off()
+}
 
 ncFlowSet(G)
 #Rprof(NULL)	

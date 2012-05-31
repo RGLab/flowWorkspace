@@ -153,13 +153,14 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			
 			gh@dataPath<-dirname(file)
 			
-#					file<-getSample(gh,isFullPath=TRUE)
 			
-#			message("Loading data file: ",file);
+			message("loading data: ",file);
 			if(isNcdf)
 				data<-read.FCS(file)
 			else
 				data<-fs[[sampleName]]
+			
+#			browser()
 			##################################
 			#Compensating the data
 			##################################
@@ -167,7 +168,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			cid<-comp$cid
 			if(cid=="")
 				cid=-2
-#				browser()
+
 			if(cid!="-1" && cid!="-2"){
 				message("Compensating");
 				#compobj<-compensation(.getCompensationMatrices(doc)[[as.numeric(cid)]])
@@ -234,13 +235,23 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				}
 				
 			}
-#			browser()
+
 			#save raw or compensated data 
-			message("saving compensated data");
+			
 			if(isNcdf)
+			{
+				message("saving compensated data");
 				addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
-			else
-				assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
+			}else
+			{
+				if(cid!="-2")#no need to update data when no compensation was done and also if data was loaded as flowSet already
+				{
+					message("saving compensated data");
+					assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
+				}
+					
+			}
+				
 		}
 		
 		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
@@ -272,7 +283,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					sampleName<-getSample(gh)
 					
 					message(paste("gating",sampleName,"..."))
-					
+#					browser()
 #					time1<-Sys.time()
 					if(isNcdf)
 						.Call("R_gating_cdf",gh@pointer,sampleName)
