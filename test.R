@@ -77,6 +77,7 @@ for(curSample in newSamples)
 	dev.off()
 }
 
+
 ncFlowSet(G)
 #Rprof(NULL)	
 #summaryRprof()$by.total[1:20,]
