@@ -26,7 +26,7 @@ winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[2])
+ws<-openWorkspace(macXML[1])
 
 #subsetID<-flowWorkspace::getFJWSubsetIndices(ws,key="$FIL"
 #											,value=c("01107122_F11_I003.fcs"
@@ -48,19 +48,23 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 					,execute=F
 					,includeGates=T
-					,subset=1:10
+#					,subset=1
 					,isNcdf=F
 					,useInternal=T
 					,dMode=0)
 
 newSamples<-getSamples(GT)
-datapath<-"/loc/no-backup/mike/ITN029ST/"
+#datapath<-"/loc/no-backup/mike/ITN029ST/"
 templateSample<-newSamples[1]
 newSamples<-newSamples[-1]
+gh_template<-GT[[templateSample]]
 
-getPopStats(GT[[templateSample]])[,2:3]
+getPopStats(gh_template)[,2:3]
 
-G<-GatingSet(GT[[templateSample]],newSamples,path=datapath,isNcdf=FALSE,dMode=0)
+G<-GatingSet(gh_template
+				,newSamples
+#				,path=datapath
+				,isNcdf=FALSE,dMode=0)
 
 getPopStats(G[[1]])[,2:3]
 
@@ -76,7 +80,16 @@ for(curSample in newSamples)
 	browser()
 	dev.off()
 }
+nodelist<-getNodes(G[[curSample]])
+nodelist
+plotGate(G[[curSample]],2,smooth=F,xbin=128,margin=T)
+plotGate(G[[curSample]],13,smooth=F,xbin=40,margin=F)
 
+getBoundaries(GT[[curSample]],nodelist[2])
+getBoundaries(gh_template,nodelist[2])
+
+head(getPopStats(G))
+head(getPopStats(GT,flowJo=T))
 
 ncFlowSet(G)
 #Rprof(NULL)	
@@ -169,10 +182,10 @@ cal<-getTransformations(G[[1]])
 comp<-getCompensationMatrices(G[[1]])
 
 ##plot
-for(sampleName in getSamples(G[1:2]))
+for(curSample in getSamples(G[1:2]))
 {
 	
-	gh<-G[[sampleName]]
+	gh<-G[[curSample]]
 #	browser()
 	
 #	pdf(file=paste("output/",sampleName,".pdf",sep=""))

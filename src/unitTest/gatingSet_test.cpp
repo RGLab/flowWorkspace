@@ -198,27 +198,27 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 
 		gh=gs.getGatingHierarchy(0);
 //		getCalTbl_test(gh);
-//		gh_accessor_test(gh);
-//
-//		gh_gating(*gs,myTest,0);
-//
-//		gh_counts(gh);
+		gh_accessor_test(gh);
+
+		gs_gating(gs,myTest,0);
+
+		gh_counts(gh);
 
 		/*
 		 * gating_template_test
 		 */
-		cout<<"-- cloning getGatingHierarchy ---"<<endl;
-		GatingSet * newGS=new GatingSet(*gh,samples,dMode);
+//		cout<<"-- cloning getGatingHierarchy ---"<<endl;
+//		GatingSet * newGS=new GatingSet(*gh,samples,dMode);
+//
+//		gh=newGS->getGatingHierarchy(0);
+//
+//		gh_accessor_test(gh);
+//
+//		gs_gating(*newGS,myTest,0);
+//
+//		gh_counts(gh);
 
-		gh=newGS->getGatingHierarchy(0);
-
-		gh_accessor_test(gh);
-
-		gs_gating(*newGS,myTest,0);
-
-		gh_counts(gh);
-
-		delete newGS;
+//		delete newGS;
 }
 
 

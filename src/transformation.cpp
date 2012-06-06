@@ -206,7 +206,7 @@ void biexpTrans::computCalTbl(){
 /*
  * calTrans
  */
-calTrans * calTrans::clone(){
-
-	return new calTrans(*this);
-}
+//calTrans * calTrans::clone(){
+//
+//	return new calTrans(*this);
+//}

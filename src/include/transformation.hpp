@@ -35,8 +35,8 @@ public:
 public:
 	transformation();
 	valarray<double> transforming(valarray<double> & input);
-	virtual void computCalTbl()=0;
-	virtual transformation * clone()=0;
+	virtual void computCalTbl(){};//dummy routine that does nothing
+	virtual transformation * clone(){return new transformation(*this);};
 };
 
 typedef map<string,transformation *> trans_map;
@@ -59,28 +59,17 @@ public:
 
 typedef vector<trans_global> trans_global_vec;
 
-class calTrans:public transformation{
-public:
-	calTrans(){isComputed=true;}//always set this flag to be true to assure the subsequent interpolation can be performed
-	void computCalTbl(){};//dummy routine that does nothing
-	calTrans * clone();
-};
+//class calTrans:public transformation{
+//public:
+//	calTrans(){isComputed=true;}//always set this flag to be true to assure the subsequent interpolation can be performed
+//	calTrans * clone();
+//};
 class biexpTrans:public transformation{
 public:
 	int channelRange;
 	double pos, neg, widthBasis, maxValue;
 
 public:
-//	ARGLIST args;
-public:
-//	ARGLIST getArgs(){return args;}
-//	vector<ARG> getArgs(){
-//							vector<ARG> res;
-//							res.push_back(ARG("m",m));
-//							res.push_back(ARG("t",t));
-//							res.push_back(ARG("w",w));
-//							return res;
-//							};
 	biexpTrans();
 	void computCalTbl();
 	biexpTrans * clone();
@@ -93,8 +82,7 @@ private:
 	int channelRange;
 	double pos, neg, widthBasis, maxValue;
 
-public:
-//	ARGLIST args;
+
 public:
 //	ARGLIST getArgs(){return args;}
 //	vector<ARG> getArgs(){

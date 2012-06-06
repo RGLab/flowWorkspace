@@ -117,7 +117,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 	{
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
-		calTrans *curTran=new calTrans();
+		transformation *curTran=new transformation();
 		calibrationTable caltbl("flowJo",2);
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
@@ -168,6 +168,12 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
 
 		curTran->calTbl=caltbl;
+		/*since it is base class of transformation,which means the caltbl is already given by workspace
+		 * no need to compute later on. so set this flag to be true to assure the subsequent interpolation can be performed
+		 */
+		curTran->isComputed=true;
+
+
 
 		res[curTran->channel]=curTran;
 
