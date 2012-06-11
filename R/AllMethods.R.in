@@ -2986,15 +2986,17 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 		attrs<-xmlAttrs(x);
 	data.frame(tryCatch(as.numeric(attrs[["sampleID"]]),error=function(x)NA),tryCatch(attrs[["name"]],error=function(x)NA),tryCatch(as.numeric(attrs[["count"]]),error=function(x)NA))
 		}))
+#	browser()
+	pop.counts<-as.numeric(unlist(lapply(xpathApply(top,"/Workspace/SampleList/Sample"),function(x)xpathApply(x,"count(descendant::Population)")),use.names=FALSE))
 		if(!win){
 			cid<-as.numeric(paste(xpathApply(top,"/Workspace/SampleList/Sample",function(x)xmlGetAttr(x,"compensationID"))))
-			pop.counts<-as.numeric(unlist(lapply(xpathApply(top,"/Workspace/SampleList/Sample"),function(x)xpathApply(x,"count(descendant::Population)")),use.names=FALSE))
 			s<-data.frame(s,cid,pop.counts)
 			colnames(s)<-c("sampleID","name","count","compID","pop.counts");
 		}else{
 			##Code for flowJo windows 1.6 xml
 			#No compensation ID for windows. Use name
-			colnames(s)<-c("sampleID","name","count");
+			s<-data.frame(s,pop.counts)
+			colnames(s)<-c("sampleID","name","count","pop.counts");
 		}
 		s[,2]<-as.character(s[,2])
 		options("warn"=lastwarn);
