@@ -553,7 +553,35 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 		
 ##it is currently only for internal use		
 setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
-			.Call("R_getCompensation",x@pointer,getSample(x))
+			comp<-.Call("R_getCompensation",x@pointer,getSample(x))
+			cid<-comp$cid
+#			browser()
+			if(cid=="")
+				cid=-2
+			if(cid!="-1" && cid!="-2"){
+				marker<-comp$parameters
+				compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+			}else if(cid=="-2"){
+				#TODO the matrix may be acquisition defined.
+#				message("No compensation");
+				compobj<-NULL
+			}
+			else if(cid=="-1")
+			{
+				##Acquisition defined compensation.
+				nm<-comp$comment
+				
+				if(grepl("Acquisition-defined",nm)){
+					###Code to compensate the sample using the acquisition defined compensation matrices.
+#					message("Compensating with Acquisition defined compensation matrix");
+					#browser()
+					compobj<-compensation(spillover(getData(x))$SPILL)
+						
+				}
+				
+			}
+			compobj
+			
 })
 setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
 #plotGate1<-function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){

@@ -45,7 +45,7 @@ time1<-Sys.time()
 ############################################################################### 
 ##parse as template and apply to new data			
 ###############################################################################
-GT<-parseWorkspace(ws,name=2
+G<-parseWorkspace(ws,name=1
 					,execute=F
 					,includeGates=T
 #					,subset=1
