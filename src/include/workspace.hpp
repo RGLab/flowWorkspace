@@ -57,6 +57,7 @@ struct xpath{
 	string sample;
 	string sampleNode;
 	string popNode;
+	unsigned short sampNloc;//get FCS filename(or sampleName) from either $FIL keyword or name attribute of sampleNode
 };
 
 

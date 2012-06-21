@@ -12,13 +12,13 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			}
 		})
 
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,...){
+.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",...){
 
 
 	message("calling c++ parser...")
 	
 	time1<-Sys.time()
-	G<-GatingSet(xmlFileName,sampleIDs,includeGates,dMode)
+	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,dMode=dMode)
 #	time_cpp<<-time_cpp+(Sys.time()-time1)
 	message("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)

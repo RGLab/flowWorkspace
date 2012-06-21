@@ -115,7 +115,7 @@ GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,un
 	}
 }
 //read xml file and create the appropriate flowJoWorkspace object
-GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short _dMode=1)
+GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,unsigned short _dMode=1)
 {
 
 		LIBXML_TEST_VERSION
@@ -151,6 +151,7 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short _dMode=1)
 		 }
 		 xmlFree(wsVersion);
 		 ws->dMode=_dMode;
+		 ws->nodePath.sampNloc=sampNloc;
 		 dMode=_dMode;
 		 if(dMode>=GATING_SET_LEVEL)
 			 cout<<"internal gating set created from "<<sFileName<<endl;

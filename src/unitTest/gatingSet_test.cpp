@@ -177,7 +177,7 @@ void gh_counts(GatingHierarchy* gh){
 void gs_parse(testSuit myTest,unsigned short dMode){
 
 		//create gating set object
-		GatingSet gs(myTest.filename,true,dMode);
+		GatingSet gs(myTest.filename,true,myTest.sampNloc,dMode);
 
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;

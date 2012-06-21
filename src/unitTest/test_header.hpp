@@ -27,6 +27,7 @@ struct testSuit{
 	string colfile;
 	string ncfile;
 	map<string,string> samples;
+	unsigned short sampNloc;
 } ;
 
 

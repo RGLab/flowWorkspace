@@ -44,17 +44,20 @@ setClass("GatingSetInternal",contains="GatingSet"
 ##########################
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #construct object from xml workspace file and a list of sampleIDs
-setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE,dMode=1,...){
+setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE,dMode=1,sampNloc="keyword",...){
 			
 			xmlFileName<-x
 			sampleIDs<-y
-			
+#			browser()
+			sampNloc<-match(sampNloc,c("keyword","sampleNode"))
+			if(is.na(sampNloc))
+				sampNloc<-0
 			stopifnot(!missing(xmlFileName))
 			
 			if(!file.exists(xmlFileName))
 				stop(xmlFileName," not found!")
 			Object<-new("GatingSetInternal")
-			Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(dMode))
+			Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(dMode))
 			
 			return(Object)
 })

@@ -59,26 +59,41 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 
 
 /*
- * .sampleName may not always be stored in sampleNode
- * ,so now it is fetched from keywords/$FIL
- *  to assure correct sample name is parsed
- *  However the $FIL may not be consistent with the sampleNode "name" attribute and the physical FCS filename
- *  TODO:so extra efforts may be needed in future to avoid this conflicts
+ * .
+ * By default sampleName is fetched from keywords/$FIL
+ *  However the $FIL may not be consistent with the sampleNode "name" attribute
+ *   and the physical FCS filename,so optionally we allow parsing it
+ *   from name attribute from SampleNode
+ *
  */
 string flowJoWorkspace::getSampleName(wsSampleNode & node){
+	string filename;
+	switch(nodePath.sampNloc)
+	{
+		case 1:
+		{
+			xmlXPathObjectPtr res=node.xpathInNode("Keywords/Keyword[@name='$FIL']");
+			if(res->nodesetval->nodeNr!=1)
+				throw(domain_error("$FIL keyword not found!"));
+			wsNode kwNode(res->nodesetval->nodeTab[0]);
+			xmlXPathFreeObject(res);
+			filename=kwNode.getProperty("value");
+			break;
+		}
+		case 2:
+		{
+			xmlXPathObjectPtr res=node.xpathInNode("SampleNode");//get sampleNode
+			wsNode sampleNode(res->nodesetval->nodeTab[0]);
+			xmlXPathFreeObject(res);
 
-//	xmlXPathObjectPtr res=node.xpathInNode("SampleNode");//get sampleNode
-//	wsNode sampleNode(res->nodesetval->nodeTab[0]);
-//	xmlXPathFreeObject(res);
-//
-//	return sampleNode.getProperty("name");//get property name from sampleNode
+			filename=sampleNode.getProperty("name");//get property name from sampleNode
+			break;
+		}
 
-	xmlXPathObjectPtr res=node.xpathInNode("Keywords/Keyword[@name='$FIL']");
-	if(res->nodesetval->nodeNr!=1)
-		throw(domain_error("$FIL keyword not found!"));
-	wsNode kwNode(res->nodesetval->nodeTab[0]);
-	xmlXPathFreeObject(res);
-	string filename=kwNode.getProperty("value");
+		default:
+			throw(domain_error("unknown sampleName Location!It should be either 'keyword' or 'sampleNode'."));
+	}
+
 	if(filename.empty())
 		throw(domain_error("$FIL value is empty!"));
 	return filename;
