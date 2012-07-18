@@ -16,7 +16,7 @@
 class flowJoWorkspace:public workspace{
 
 public:
-//	~flowJoWorkspace();
+
 	 vector <string> getSampleID(unsigned short);
 	 isTransMap getTransFlag(wsSampleNode sampleNode);
      wsRootNode getRoot(wsSampleNode sampleNode);
@@ -24,8 +24,7 @@ public:
      nodeProperties * to_popNode(wsRootNode &);
      nodeProperties * to_popNode(wsPopNode &,bool isParseGate);
      string getSampleName(wsSampleNode &);
-//     valarray<double> toArray(string sCalTable);
-//     virtual string xPathSample(string sampleID)=0;
+
 
 };
 
