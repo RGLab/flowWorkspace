@@ -82,6 +82,12 @@ GatingSet::~GatingSet()
  */
 GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,unsigned short _dMode=1){
 
+	/*
+	 * ws is not needed here since all the info comes from gh_template instead of ws
+	 * but we need to initialize it to NULL to avoid the illegal deletion of the Nil pointer in the gatingset destructor
+	 */
+	ws=NULL;
+
 	dMode=_dMode;
 	/*
 	 * copy trans from gh_template into gtrans

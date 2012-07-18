@@ -47,6 +47,9 @@ GatingHierarchy::GatingHierarchy()
 {
 	dMode=1;
 	isLoaded=false;
+	thisWs=NULL;
+	nc=NULL;
+	gTrans=NULL;
 }
 //constructor for sampleNode argument
 //GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)

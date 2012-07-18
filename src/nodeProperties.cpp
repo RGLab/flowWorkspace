@@ -8,7 +8,7 @@
 #include <algorithm>
 nodeProperties::nodeProperties(){
 	thisGate=NULL;
-//	indices=NULL;
+
 }
 
 /*
