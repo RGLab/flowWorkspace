@@ -107,7 +107,7 @@ setMethod("summary",signature("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
 
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal=TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,...){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal=TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path=obj@path,...){
 	
 	
 			
@@ -121,11 +121,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	#########################################################
 #	if(execute){
     ##m<-match("path",names(list(...))) 
-    path=list(...)$path     
-    if(is.null(path)){ 
+#    path=list(...)$path     
+#    if(is.null(path)){ 
             ##stop("If execute=TRUE, you must specify a path to the fcs files via path= argument"); 
-            path=obj@path 
-    }
+#            path=obj@path 
+#    }
 	#Check that the files exist now so we don't have to wait a long time.
 	filenames<-flowWorkspace:::getFileNames(obj);
 	#sapply(filenames,function(x)list.files(path=path,pattern=x,recursive=T))
@@ -206,7 +206,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	if(useInternal)
 	{
 		sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
-		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,path=path,dMode=dMode,isNcdf=isNcdf,includeGates=includeGates,...))
+		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode,isNcdf=isNcdf,includeGates=includeGates,path=path,...))
 	}
 	#TODO parallelize
 	if(length(grep("snowfall",loadedNamespaces()))==1){

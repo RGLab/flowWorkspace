@@ -11,8 +11,8 @@ importClassesFrom(Biobase, AnnotatedDataFrame)
 
 importClassesFrom(XML, XMLInternalDocument)
 
-importClassesFrom(flowCore, ellipsoidGate, intersectFilter,
-                  polygonGate, rectangleGate, workFlow)
+#importClassesFrom(flowCore, ellipsoidGate, intersectFilter,
+#                  polygonGate, rectangleGate, workFlow)
 
 importClassesFrom(graph, graphNEL)
 
@@ -26,11 +26,11 @@ importFrom(hexbin,hexbin,hexbinplot)
 importFrom(Cairo,CairoPNG)
 importMethodsFrom(XML, addAttributes, free, saveXML)
 
-importMethodsFrom(flowCore, '%in%', Data, Rm, add, assign, colnames,
-                  "colnames<-", compensate, eval, filter, get,
-                  identifier, keyword, mget, ncol, nrow, parameters,
-                  "parameters<-", parent, print, spillover, split,
-                  summary, tree, views)
+#importMethodsFrom(flowCore, '%in%', Data, Rm, add, assign, colnames,
+#                  "colnames<-", compensate, eval, filter, get,
+#                  identifier, keyword, mget, ncol, nrow, parameters,
+#                  "parameters<-", parent, print, spillover, split,
+#                 summary, tree, views)
 
 importMethodsFrom(graph, addEdge, adj, edgeData, nodeData,
                   "nodeData<-", "nodeDataDefaults<-", nodes, subGraph,
