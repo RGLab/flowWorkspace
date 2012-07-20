@@ -225,7 +225,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		/*
 		 * look for the particular CompensationMatrix for current sampleNode by cid
 		 */
-		unsigned short cid=atoi(comp.cid.c_str());
+		unsigned short cid=atoi(comp.cid.c_str())-1;//make sure to convert to C indexing convention.
 		wsNode curMatNode(resMat->nodesetval->nodeTab[cid]);
 
 		xmlXPathFreeObject(resMat);
