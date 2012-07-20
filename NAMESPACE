@@ -22,15 +22,15 @@ importClassesFrom(methods, ANY, character, data.frame, environment,
 importMethodsFrom(Biobase, description, exprs, pData, "pData<-",
                   sampleNames)
 importFrom(hexbin,hexbin,hexbinplot)
-#importMethodsFrom(Rgraphviz, plot)
+importMethodsFrom(Rgraphviz, plot)
 importFrom(Cairo,CairoPNG)
 importMethodsFrom(XML, addAttributes, free, saveXML)
 
-#importMethodsFrom(flowCore, '%in%', Data, Rm, add, assign, colnames,
-#                  "colnames<-", compensate, eval, filter, get,
-#                  identifier, keyword, mget, ncol, nrow, parameters,
-#                  "parameters<-", parent, print, spillover, split,
-#                 summary, tree, views)
+importMethodsFrom(flowCore, '%in%', Data, Rm, add, assign, colnames,
+                  "colnames<-", compensate, eval, filter, get,
+                  identifier, keyword, mget, ncol, nrow, parameters,
+                  "parameters<-", parent, print, spillover, split,
+                 summary, tree, views)
 
 importMethodsFrom(graph, addEdge, adj, edgeData, nodeData,
                   "nodeData<-", "nodeDataDefaults<-", nodes, subGraph,

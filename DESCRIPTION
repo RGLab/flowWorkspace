@@ -8,11 +8,11 @@ Maintainer: Greg Finak <gfinak@fhcrc.org>
 Description: This package is designed to facilitate comparison of automated gating methods against manual gating done in flowJo. This package allows you to import basic flowJo workspaces into BioConductor and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies, groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.  
 License: Artistic-2.0
 LazyLoad: yes
-Imports: Biobase, XML, graph, graphics, lattice, methods, stats, stats4, utils
+Imports: Biobase, XML,flowCore, graph, graphics, lattice, methods, stats, stats4, utils,Rgraphviz
 Collate: AllClasses.R AllGenerics.R AllMethods.R InternalClasses.R GatingHierarchyInternal-Methods.R GatingSetInternal-Methods.R AllExportMethods.R flowWorkspace2flowCore-methods.R flowWorkspaceEdit-methods.R bitVector.R zzz.R
 Depends: Rcpp (>= 0.9.9),Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore, flowViz, Biobase, IDPmisc, tools,hexbin
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Enhances: multicore,Rmpi,ncdfFlow
-Suggests: testthat, flowWorkspaceData, Rgraphviz
+Suggests: testthat, flowWorkspaceData
 LinkingTo:Rcpp
 

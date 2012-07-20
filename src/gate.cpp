@@ -180,6 +180,8 @@ POPINDICES polygonGate::gating(flowData & fdata){
 	ind[i]=((counter % 2) != 0);
 
 	}
+	if(isNegate)
+		ind.flip();
 	return ind;
 }
 
@@ -253,6 +255,11 @@ POPINDICES rangegate::gating(flowData & fdata){
 	{
 		ind[i]=data_1d[i]<=param.max&&data_1d[i]>=param.min;
 	}
+
+
+	if(isNegate)
+		ind.flip();
+
 	return ind;
 
 }
