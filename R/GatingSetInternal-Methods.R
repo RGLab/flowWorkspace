@@ -128,7 +128,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
-			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId),isWriteSlice=FALSE,...)
+			fs<-read.ncdfFlowSet(files,isWriteSlice=FALSE,...)
 		}else{
 			message("Creating flowSet...")
 			fs<-read.flowSet(files,...)
@@ -259,7 +259,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	}
 	names(set)<-basename(files)
 	G@set<-set
-	
+#	browser()
 #	print(Sys.time()-time1)
 #	
 #	time1<-Sys.time()

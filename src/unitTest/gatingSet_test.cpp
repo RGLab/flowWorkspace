@@ -184,7 +184,7 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
 			sampleIDs.push_back(it->first);
 
-		sampleIDs.erase(sampleIDs.begin());
+//		sampleIDs.erase(sampleIDs.begin());
 
 		gs.parseWorkspace(sampleIDs,true);
 
@@ -200,9 +200,9 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 //		getCalTbl_test(gh);
 //		gh_accessor_test(gh);
 
-//		gs_gating(gs,myTest,0);
+		gs_gating(gs,myTest,0);
 
-//		gh_counts(gh);
+		gh_counts(gh);
 
 		/*
 		 * gating_template_test

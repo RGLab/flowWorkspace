@@ -93,6 +93,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
 		{
 			transformation* curTrans=it->second;
+			cout<<curTrans->name<<endl;
 			if(curTrans->name.find(comp.name)!=string::npos)
 			{
 
@@ -120,10 +121,13 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	return res;
 }
 
-
+/*
+ * TODO:split the cal tables into groups by their prefix names(should matched to comp names)
+ */
 trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
 	trans_global_vec res1;
+	map<string,int> trans_Name_id;
 	trans_global tg;
 	trans_map  res;
 

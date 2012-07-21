@@ -13,7 +13,7 @@
 
 int main(void) {
 
-	vector<testSuit> myTest(4);
+	vector<testSuit> myTest(5);
 	unsigned short i;
 
 	i=0;
@@ -49,11 +49,13 @@ int main(void) {
 	myTest.at(i).filename="../data/Cytotrol/NHLBI/data/NHLBI.xml";
 	myTest.at(i).samples["1"]="CytoTrol_CytoTrol_1.fcs";
 	myTest.at(i).sampNloc=1;
+	myTest.at(i).ncfile="../output/NHLBI/nc1_comp.nc";
+	myTest.at(i).colfile="../output/NHLBI/colnames.txt";
 
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=1;
+	i=4;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{
