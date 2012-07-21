@@ -37,8 +37,6 @@ string macFlowJoWorkspace::xPathSample(string sampleID){
 
 
 /*
- * TODO: we need to finish this routine by testing on some other use cases
- * currently it is assuming only one calibration table exists in workspace and applied to channels and all samples
  * get transformation for one particular sample node
  */
 trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const isTransMap & transFlag,trans_global_vec * gTrans){
@@ -81,9 +79,6 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				}
 			}
 		}
-//		CALTBS::iterator it=find(calTbls->begin(),calTbls->end(),matchName);
-//		if(it==calTbls->end())
-//			throw(domain_error("can't find Acquisition-defined calibration table"));
 
 	}
 	else if(cid.compare("-2")==0)
@@ -93,6 +88,33 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	}
 	else
 	{
+		//try to search for trans by matching compensation name with trans name
+
+		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
+		{
+			transformation* curTrans=it->second;
+			if(curTrans->name.find(comp.name)!=string::npos)
+			{
+
+				(*trs)[curTrans->channel]=curTrans;
+				if(dMode>=GATING_HIERARCHY_LEVEL)
+					cout<<"adding "<<curTrans->name<<":"<<curTrans->channel<<endl;
+
+				if(!curTrans->isComputed)
+					curTrans->computCalTbl();
+				if(!curTrans->calTbl.isInterpolated)
+				{
+					if(dMode>=GATING_HIERARCHY_LEVEL)
+					{
+						cout<<"spline interpolating..."<<curTrans->name<<endl;
+					}
+
+					curTrans->calTbl.interpolate();
+
+				}
+			}
+		}
+
 
 	}
 	return res;
@@ -231,6 +253,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		xmlXPathFreeObject(resMat);
 		comp.prefix=curMatNode.getProperty("prefix");
 		comp.suffix=curMatNode.getProperty("suffix");
+		comp.name=curMatNode.getProperty("name");
 
 		xmlXPathObjectPtr resX=curMatNode.xpathInNode("Channel");
 		unsigned nX=resX->nodesetval->nodeNr;

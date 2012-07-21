@@ -45,6 +45,7 @@ public:
 	string cid;
 	string prefix;
 	string suffix;
+	string name;
 	string comment;// store "Acquisition-defined" when the spillOver matrix is not supplied and cid==-1
 	vector<string> marker;
 	vector<double> spillOver;

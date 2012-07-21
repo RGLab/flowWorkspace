@@ -45,6 +45,11 @@ int main(void) {
 	myTest.at(i).samples["1"]="Specimen_001_A1_A01.fcs";
 	myTest.at(i).sampNloc=1;
 
+	i=4;
+	myTest.at(i).filename="../data/Cytotrol/NHLBI/data/NHLBI.xml";
+	myTest.at(i).samples["1"]="CytoTrol_CytoTrol_1.fcs";
+	myTest.at(i).sampNloc=1;
+
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
