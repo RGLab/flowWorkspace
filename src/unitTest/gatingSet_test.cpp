@@ -207,23 +207,23 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 		/*
 		 * gating_template_test
 		 */
-		cout<<"-- cloning getGatingHierarchy ---"<<endl;
-		vector<string> newSamples;
-		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
-			newSamples.push_back(it->second);
-		newSamples.erase(newSamples.begin()+1);
-
-		GatingSet * newGS=new GatingSet(*gh,newSamples,dMode);
-		GatingHierarchy* gh_new;
-		gh_new=newGS->getGatingHierarchy(0);
+//		cout<<"-- cloning getGatingHierarchy ---"<<endl;
+//		vector<string> newSamples;
+//		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+//			newSamples.push_back(it->second);
+//		newSamples.erase(newSamples.begin()+1);
 //
-		gh_accessor_test(gh_new);
+//		GatingSet * newGS=new GatingSet(*gh,newSamples,dMode);
+//		GatingHierarchy* gh_new;
+//		gh_new=newGS->getGatingHierarchy(0);
 //
-		gs_gating(*newGS,myTest,0);
+//		gh_accessor_test(gh_new);
+//
+//		gs_gating(*newGS,myTest,0);
 //
 //		gh_counts(gh);
 
-		delete newGS;
+//		delete newGS;
 }
 
 

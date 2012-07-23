@@ -17,7 +17,7 @@ int main(void) {
 	unsigned short i;
 
 	i=0;
-	myTest.at(i).filename="/home/wjiang2/rglab/workspace/flowWorkspace/data/HIPC_trial/data/HIPC_trial.xml";
+	myTest.at(i).filename="../data/PBMC/HIPC_trial/data/HIPC_trial.xml";
 	myTest.at(i).samples["1"]="004_A1_A01.fcs";
 	myTest.at(i).samples["2"]="004_B1_B01.fcs";
 	myTest.at(i).sampNloc=1;
@@ -25,7 +25,7 @@ int main(void) {
 	myTest.at(i).colfile="/home/wjiang2/rglab/workspace/flowWorkspace/output/HIPC_trial/colnames.txt";
 
 	i=1;
-	myTest.at(i).filename="../data/Blomberg/data/Exp2_Tcell.wsp";
+	myTest.at(i).filename="./data/PBMC/Blomberg/data/Exp2_Tcell.wsp";
 	myTest.at(i).samples["12"]="Exp2_Sp004_1_Tcell.fcs";
 	myTest.at(i).samples["13"]="Exp2_Sp004_2_Tcell.fcs";
 	myTest.at(i).sampNloc=2;
@@ -55,7 +55,7 @@ int main(void) {
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=4;
+	i=2;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

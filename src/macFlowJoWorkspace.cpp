@@ -7,6 +7,8 @@
 
 
 #include "include/macFlowJoWorkspace.hpp"
+#include "include/until.hpp"
+
 //#define PI 3.141592653589793238462
 
 /*constructors of flowJoWorkspace for mac and win derived classes
@@ -34,7 +36,16 @@ string macFlowJoWorkspace::xPathSample(string sampleID){
 
 }
 
-
+trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name){
+	trans_global_vec::iterator it;
+	for(it=tGVec.begin();it!=tGVec.end();it++)
+	{
+		cout<<it->groupName<<it->trans.size()<<endl;
+		if(it->groupName.compare(name)==0)
+			break;
+	}
+	return it;
+}
 
 /*
  * get transformation for one particular sample node
@@ -47,7 +58,14 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	if(gTrans->empty())
 		return res;//return empty results when global trans is empty
 
-	trans_map trans=gTrans->at(0).trans;
+	trans_global_vec::iterator tgIt=findTransGroup(*gTrans,comp.name);
+	if(tgIt==gTrans->end())
+	{
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"no transformation found with the name:"<<comp.name<<endl;
+		return res;
+	}
+	trans_map trans=tgIt->trans;
 	string cid=comp.cid;
 	map<string,transformation *> *trs=&(res.transformations);
 	if(cid.compare("-1")==0)
@@ -121,15 +139,14 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	return res;
 }
 
-/*
- * TODO:split the cal tables into groups by their prefix names(should matched to comp names)
- */
+
+
 trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
-	trans_global_vec res1;
-	map<string,int> trans_Name_id;
-	trans_global tg;
-	trans_map  res;
+	trans_global_vec tgVec;
+
+
+//	trans_map  res;
 
 	string path="/Workspace/CalibrationTables/Table";
 	xmlXPathContextPtr context = xmlXPathNewContext(doc);
@@ -137,8 +154,12 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 	if(xmlXPathNodeSetIsEmpty(result->nodesetval))
 	{
 		cout<<"no calibration Tables found!"<<endl;
-		return(res1);
+		return(tgVec);
 	}
+	/*
+	 * during the traversing of the calibration table list,
+	 * we try to split these tables into groups by their prefix names(which should match the compensation names defined in CompensationMatrices node)
+	 */
 	for(int i=0;i<result->nodesetval->nodeNr;i++)
 	{
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
@@ -156,15 +177,12 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		if((nPrefix==string::npos)|(nsuffix==string::npos))
 			continue;//skip the tables without channel info
 
-		curTran->name=tname.substr(0,nPrefix);
+		curTran->name=trim(tname.substr(0,nPrefix));
 		curTran->channel=tname.substr(nPrefix,tname.length()-nPrefix);
 
 		if(dMode>=GATING_SET_LEVEL)
 				cout<<"parsing calibrationTable:"<<curTran->name<<":"<<curTran->channel<<endl;
 
-//		t.biExpDecades=atof(calTblNode.getProperty("biexponentialDecades").c_str());
-//		t.biExpNegDecades=atof(calTblNode.getProperty("biexponentialNegDecades").c_str());
-//		t.w=atof(calTblNode.getProperty("biexponentialWidth").c_str());
 
 		string sTbl=calTblNode.getContent();
 		/*
@@ -179,38 +197,36 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		caltbl.y=tbl[slice(0,nX,2)];
 		caltbl.x=tbl[slice(1,nX,2)];
 
-		/*
-		 * output to text for testing
-		 */
-//		ofstream xOutput("../output/c++/x.csv");
-//		ofstream yOutput("../output/c++/y.csv");
-//		for(unsigned i=0;i<nX;i++)
-//		{
-//			xOutput<<t->x[i]<<",";
-//			yOutput<<t->y[i]<<",";
-//		}
-
-
-
-
 		curTran->calTbl=caltbl;
 		/*since it is base class of transformation,which means the caltbl is already given by workspace
 		 * no need to compute later on. so set this flag to be true to assure the subsequent interpolation can be performed
 		 */
 		curTran->isComputed=true;
 
+		/*Find the respective reference(iterator) by name from the trans_global_vec
+		 * If not found,push back a new entry in the vector and return its reference
+		 */
+		trans_global_vec::iterator tRes=findTransGroup(tgVec,curTran->name);
 
-
-		res[curTran->channel]=curTran;
+		if(tRes==tgVec.end())
+		{
+			if(dMode>=GATING_SET_LEVEL)
+				cout<<"creating new transformation group:"<<curTran->name<<endl;
+			trans_global newTg;
+			newTg.groupName=curTran->name;
+			tgVec.push_back(newTg);
+			tgVec.back().trans[curTran->channel]=curTran;
+		}
+		else
+			//save the current transformation into the respective transGroup
+			tRes->trans[curTran->channel]=curTran;
 
 	}
 
 	xmlXPathFreeObject(result);
 	xmlXPathFreeContext(context);
 
-	tg.trans=res;
-	res1.push_back(tg);
-	return res1;
+	return tgVec;
 }
 compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 {
