@@ -442,18 +442,93 @@ polygonGate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			return gate;
 }
 
+boolGate* macFlowJoWorkspace::getGate(wsBooleanGateNode & node){
+	boolGate * gate=new boolGate();
+	/*
+	 * re-fetch the children node from the current pop node
+	 */
+	xmlXPathObjectPtr resGate=node.xpathInNode("PolygonGate/*");
+//			wsNode pNode(resGate->nodesetval->nodeTab[0]);//gate dimensions
+	wsNode gNode(resGate->nodesetval->nodeTab[2]);//gate type and vertices
+	xmlXPathFreeObject(resGate);
+
+	//get the negate flag
+	gate->isNegate=!gNode.getProperty("negated").empty();
+
+	//get parameter name
+//			xmlXPathObjectPtr resPara=pNode.xpathInNode("StringArray/String");
+//			int nParam=resPara->nodesetval->nodeNr;
+//			if(nParam!=2)
+//			{
+////				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
+//				throw(domain_error("invalid dimension of the polygon gate!"));
+//			}
+//			for(int i=0;i<nParam;i++)
+//			{
+//				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
+//				string curParam=curPNode.getContent();
+//				gate->params.push_back(curParam);
+//			}
+//			xmlXPathFreeObject(resPara);
+
+
+	string xAxis=gNode.getProperty("xAxisName");
+	gate->params.push_back(xAxis);
+	string yAxis=gNode.getProperty("yAxisName");
+	if(!yAxis.empty())
+		gate->params.push_back(yAxis);
+
+	//get vertices
+	xmlXPathObjectPtr resVert=gNode.xpathInNode("Polygon/Vertex");
+	for(int i=0;i<resVert->nodesetval->nodeNr;i++)
+	{
+		wsNode curVNode(resVert->nodesetval->nodeTab[i]);
+
+		/*for each vertice node
+		**get one pair of coordinates
+		*/
+
+		//get the coordinates values from the property
+		coordinate pCoord;
+		pCoord.x=atof(curVNode.getProperty("x").c_str());
+		pCoord.y=atof(curVNode.getProperty("y").c_str());
+		//and push to the vertices vector of the gate object
+		gate->vertices.push_back(pCoord);
+
+	}
+	xmlXPathFreeObject(resVert);
+	return gate;
+
+}
 
 
 gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 
+	/*
+	 * try BooleanGate first
+	 */
+	xmlXPathObjectPtr resGate=node.xpathInNode("BooleanGate/*");
+	if(resGate->nodesetval->nodeNr==1)
+	{
+		wsBooleanGateNode bGNode(node.thisNode);
+		if(dMode>=GATE_LEVEL)
+			cout<<"parsing BooleanGate.."<<endl;
+		return(getGate(bGNode));
+		xmlXPathFreeObject(resGate);
+	}
 
-	xmlXPathObjectPtr resGate=node.xpathInNode("PolygonGate/*");
+
+	/*
+	 * if not BooleanGate,then try PolygonGate
+	 */
+
+	resGate=node.xpathInNode("PolygonGate/*");
 	if(resGate->nodesetval->nodeNr!=3)
 	{
 		xmlXPathFreeObject(resGate);
 		throw(domain_error("invalid gate node(less than 3 children)"));
 	}
-//	wsNode pNode(resGate->nodesetval->nodeTab[0]);//gate dimensions
+
 	wsNode gNode(resGate->nodesetval->nodeTab[2]);//gate type and vertices
 	xmlXPathFreeObject(resGate);
 

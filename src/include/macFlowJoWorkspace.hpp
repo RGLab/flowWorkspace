@@ -19,7 +19,7 @@ public:
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);
 	polygonGate * getGate(wsPolyGateNode &);
-//	polygonGate * getGate(wsRectGateNode &);
+	boolGate * getGate(wsBooleanGateNode &);
 	polygonGate * getGate(wsEllipseGateNode &);
 	rangegate * getGate(wsRangeGateNode &);
 };

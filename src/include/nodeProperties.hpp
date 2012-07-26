@@ -14,6 +14,7 @@
 #include "gate.hpp"
 using namespace std;
 
+typedef pair<unsigned short,unsigned short> node_op_pair;
 typedef map<string,float> POPSTATS;
 /*
  *TODO: this class should exist apart from populationTree object
@@ -33,7 +34,9 @@ public:
 	gate * thisGate;
 	POPINDICES indices;
 	POPSTATS fjStats,fcStats;
+	vector<node_op_pair> boolOpSpec;//for the node contains boolGate
 	bool dMode;
+
 public:
 	nodeProperties();
 

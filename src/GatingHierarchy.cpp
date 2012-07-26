@@ -66,10 +66,10 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,trans_global_vec * _gTrans)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,trans_global_vec * _gTrans,unsigned short _dMode)
 {
 //	data=NULL;
-
+	dMode=_dMode;
 	isLoaded=false;
 	thisWs=ws;
 	nc=_nc;
@@ -341,7 +341,9 @@ void GatingHierarchy::extendGate(){
 }
 
 /*
- * assume data have already been compensated and transformed
+ * traverse the tree to gate each pops
+ * assuming data have already been compensated and transformed
+ *
  */
 void GatingHierarchy::gating()
 {
@@ -370,37 +372,15 @@ void GatingHierarchy::gating()
 			node->computeStats();
 			continue;//skip gating for root node
 		}
-		/*TODO:boolean gates is not supported yet
-		 * check if parent population is already gated
+		/*
+		 * check if current population is already gated (by boolGate)
 		 *
 		 */
-		VertexID_vec pids=getParent(u);
-		if(pids.size()!=1)
-			throw(domain_error("multiple parent nodes found!"));
+		if(node->isGated())
+			continue;
+		else
+			gating(u);
 
-		nodeProperties *parentNode =getNodeProperty(pids.at(0));
-		if(!parentNode->isGated())
-			throw(domain_error("parent node has not been gated!"));
-
-
-		if(dMode>=POPULATION_LEVEL)
-			cout <<"gating on:"<<node->getName()<<endl;
-		gate *g=node->getGate();
-		/*
-		 * transform gates if applicable
-		 */
-
-		g->transforming(trans,dMode);
-
-		if(g==NULL)
-			throw(domain_error("no gate available for this node"));
-
-		POPINDICES curIndices=g->gating(fdata);
-
-		for(unsigned i=0;i<curIndices.size();i++)
-			curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
-		node->indices=curIndices;
-		node->computeStats();
 	}
 
 	if(dMode>=GATING_HIERARCHY_LEVEL)
@@ -409,7 +389,110 @@ void GatingHierarchy::gating()
 
 
 }
+void GatingHierarchy::gating(VertexID u)
+{
+	nodeProperties * node=getNodeProperty(u);
 
+	/*
+	 * check if parent population is already gated
+	 *
+	 */
+	VertexID_vec pids=getParent(u);
+	if(pids.size()!=1)
+		throw(domain_error("multiple parent nodes found!"));
+
+	nodeProperties *parentNode =getNodeProperty(pids.at(0));
+	if(!parentNode->isGated())
+		throw(domain_error("parent node has not been gated!"));
+
+
+	if(dMode>=POPULATION_LEVEL)
+		cout <<"gating on:"<<node->getName()<<endl;
+
+	gate *g=node->getGate();
+
+	if(g==NULL)
+		throw(domain_error("no gate available for this node"));
+
+	POPINDICES curIndices;
+	if(g->getType()==BOOLGATE)
+	{
+		curIndices=boolGating(u);
+	}
+	else
+	{
+		/*
+		 * transform gates if applicable
+		 */
+
+		g->transforming(trans,dMode);
+		curIndices=g->gating(fdata);
+		for(unsigned i=0;i<curIndices.size();i++)
+			curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
+	}
+
+
+	node->indices=curIndices;
+	node->computeStats();
+}
+POPINDICES GatingHierarchy::boolGating(VertexID u){
+
+	nodeProperties * node=getNodeProperty(u);
+	vector<node_op_pair> boolOpSpec=node->boolOpSpec;
+	//init the indices
+	unsigned nEvents=fdata.nEvents;
+
+	POPINDICES ind(nEvents,true);
+
+	/*
+	 * combine the indices of reference populations
+	 */
+	unsigned short op=AND;
+
+	for(vector<node_op_pair>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+	{
+		/*
+		 * assume the reference node has already added during the parsing stage
+		 */
+		VertexID nodeID=it->first;
+		nodeProperties * curPop=getNodeProperty(nodeID);
+		if(!curPop->isGated())
+			gating(nodeID);
+
+		POPINDICES curPopInd=curPop->indices;
+
+		for(unsigned i=0;i<ind.size();i++)
+		{
+			switch(op)
+			{
+				case AND:
+					ind.at(i)=ind.at(i)&curPopInd.at(i);
+					break;
+				case OR:
+					ind.at(i)=ind.at(i)|curPopInd.at(i);
+					break;
+				case ANDNOT:
+					ind.at(i)=ind.at(i)|(~curPopInd.at(i));
+					break;
+				case ORNOT:
+					ind.at(i)=ind.at(i)|(~curPopInd.at(i));
+					break;
+				default:
+					throw(domain_error("not supported operator!"));
+			}
+		}
+
+		//update operator for the next pop
+		op=it->second;
+
+	}
+
+	if(node->getGate()->isNegate)
+		ind.flip();
+
+	return ind;
+
+}
 
 /*
  * current output the graph in dot format

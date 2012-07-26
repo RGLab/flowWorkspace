@@ -13,7 +13,7 @@
 
 int main(void) {
 
-	vector<testSuit> myTest(5);
+	vector<testSuit> myTest(6);
 	unsigned short i;
 
 	i=0;
@@ -45,6 +45,9 @@ int main(void) {
 	myTest.at(i).samples["1"]="Specimen_001_A1_A01.fcs";
 	myTest.at(i).sampNloc=1;
 
+	/*
+	 * with negated gate
+	 */
 	i=4;
 	myTest.at(i).filename="../data/Cytotrol/NHLBI/data/NHLBI.xml";
 	myTest.at(i).samples["1"]="CytoTrol_CytoTrol_1.fcs";
@@ -52,10 +55,19 @@ int main(void) {
 	myTest.at(i).ncfile="../output/NHLBI/nc1_comp.nc";
 	myTest.at(i).colfile="../output/NHLBI/colnames.txt";
 
+	/*
+	 * with boolean gate
+	 */
+	i=5;
+	myTest.at(i).filename="../data/HVTN054/Workspace/054-wkspace_tmp_tr.xml";
+	myTest.at(i).samples["5345"]="CytoTrol_CytoTrol_1.fcs";
+	myTest.at(i).sampNloc=1;
+	myTest.at(i).ncfile="../output/HVTN054/nc1_comp.nc";
+	myTest.at(i).colfile="../output/HVTN054/colnames.txt";
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=2;
+	i=5;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

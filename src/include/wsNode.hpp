@@ -54,7 +54,7 @@ public:
 class wsPolyGateNode:public wsNode{
 public:
 	wsPolyGateNode(xmlNodePtr node){thisNode=node;};
-//	wsPopNode(){};
+
 };
 
 class wsEllipseGateNode:public wsNode{
@@ -67,6 +67,11 @@ public:
 	wsRangeGateNode(xmlNodePtr node){thisNode=node;};
 };
 
+class wsBooleanGateNode:public wsNode{
+public:
+	wsBooleanGateNode(xmlNodePtr node){thisNode=node;};
+
+};
 
 typedef vector<wsPopNode> wsPopNodeSet;
 

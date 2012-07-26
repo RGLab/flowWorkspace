@@ -26,6 +26,12 @@ using namespace std;
 
 #define POLYGONGATE 1
 #define RANGEGATE 2
+#define BOOLGATE 3
+
+#define AND 1
+#define OR 2
+#define ANDNOT 3
+#define ORNOT 4
 
 struct vertices_vector{
 	vector<double> x;
@@ -87,11 +93,11 @@ public:
 	 * so we can't rely on RTTI
 	 */
 	virtual unsigned short getType()=0;
-	virtual POPINDICES gating(flowData &)=0;
-	virtual void extend(flowData &,unsigned short)=0;
+	virtual POPINDICES gating(flowData &){throw(domain_error("undefined gating function!"));};
+	virtual void extend(flowData &,unsigned short){throw(domain_error("undefined extend function!"));};
 	virtual vector<string> getParam()=0;
-	virtual vertices_valarray getVertices()=0;
-	virtual void transforming(trans_local &,unsigned short dMode)=0;
+	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
+	virtual void transforming(trans_local &,unsigned short dMode){throw(domain_error("undefined transforming function!"));};
 //	virtual gate * create()=0;
 	virtual gate * clone()=0;
 };
@@ -135,6 +141,18 @@ public:
 	vector<string> getParam(){return params;};
 	vertices_valarray getVertices();
 	polygonGate * clone(){return new polygonGate(*this);};
+};
+
+
+class boolGate:public gate {
+public:
+	vector<string> params;//params.at(0) is x, params.at(1) is y axis,only for display purpose
+//	vector<node_op_pair> boolOpSpec;
+//public:
+	unsigned short getType(){return BOOLGATE;}
+//	POPINDICES gating(flowData &);
+	vector<string> getParam(){return params;};
+	boolGate * clone(){return new boolGate(*this);};
 };
 
 

@@ -19,6 +19,7 @@ typedef map<string,VertexID> VertexID_map;
 typedef vector<VertexID> VertexID_vec;
 
 
+
 struct OurVertexPropertyWriter {
 
 	OurVertexPropertyWriter(populationTree &g_) : g(g_) {}
@@ -91,7 +92,7 @@ public:
 	GatingHierarchy();
 	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,trans_global_vec * _gTrans);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,trans_global_vec * _gTrans,unsigned short dMode);
 
 
 	flowData getData(VertexID nodeID);//from memory
@@ -106,6 +107,8 @@ public:
 
 	void transforming(bool);
 	void gating();
+	void gating(VertexID);
+	POPINDICES boolGating(VertexID);
 	void extendGate();
 	void drawGraph(string out);
 //	string getSample(void){return sampleName;};

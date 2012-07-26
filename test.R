@@ -6,7 +6,7 @@ library(flowWorkspace)
 
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
-##lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
+#lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
 #source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
 #source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
 #source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
@@ -14,15 +14,18 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
-path<-"~/rglab/workspace/flowWorkspace/data"
 
-macXML<-"HIPC_trial.xml"
-macXML<-file.path(path,"HIPC_trial/data",macXML)
-
-macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
-
-winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
-winXML<-file.path(path,winXML)
+macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
+#macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
+#path<-"~/rglab/workspace/flowWorkspace/data"
+#
+#macXML<-"HIPC_trial.xml"
+#macXML<-file.path(path,"HIPC_trial/data",macXML)
+#
+#macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
+#
+#winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
+#winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
@@ -45,13 +48,15 @@ time1<-Sys.time()
 ############################################################################### 
 ##parse as template and apply to new data			
 ###############################################################################
-G<-parseWorkspace(ws,name=1
+G<-parseWorkspace(ws,name=27
 					,execute=F
 					,includeGates=T
-#					,subset=1
+					,subset=c(1)
 					,isNcdf=F
 					,useInternal=T
-					,dMode=0)
+					,path
+					,dMode=0
+					)
 
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"

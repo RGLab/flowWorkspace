@@ -191,8 +191,8 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 			cout<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,&gTrans);
-		curGh->dMode=dMode;
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,&gTrans,dMode);
+
 		string sampleName=ws->getSampleName(curSampleNode);
 
 //		curGh->setSample(sampleName);
