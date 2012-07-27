@@ -13,11 +13,12 @@
 #include <libxml/parser.h>
 #include "wsNode.hpp"
 #include "transformation.hpp"
+#include "util.hpp"
 #include <iostream>
 #include <algorithm>
 #include <math.h>
 #include <fstream>
-
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -84,7 +85,7 @@ public:
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
 	 virtual nodeProperties * to_popNode(wsRootNode &)=0;
 	 virtual nodeProperties * to_popNode(wsPopNode &,bool isGating)=0;
-	 valarray<double> toArray(string sCalTable);
+
 };
 
 

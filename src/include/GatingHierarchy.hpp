@@ -111,8 +111,8 @@ public:
 	POPINDICES boolGating(VertexID);
 	void extendGate();
 	void drawGraph(string out);
-//	string getSample(void){return sampleName;};
-//	void setSample(string _sampleName){sampleName=_sampleName;};
+	VertexID getChildren(VertexID source,string childName);
+	VertexID getNodeID(vector<string> gatePath);
 	VertexID_vec getVertices(bool tsort);//return the node list in vertexID order or T order
 	vector<string> getPopNames(bool tsort,bool isPath);
 	VertexID_vec getParent(VertexID);

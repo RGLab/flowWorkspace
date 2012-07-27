@@ -27,24 +27,4 @@ workspace::~workspace(){
 		cout<<"xml freed!"<<endl;
 }
 
-valarray<double> workspace::toArray(string sCalTable){
-
-
-	vector<double> tmp;
-//	sCalTable="3980,1.9428805e5,3981,1.9478264e5,3982,1.9527849e5,3983,1.9577559e5,3984,1.9627398e5";
-	stringstream ss(sCalTable.c_str(),ios_base::in|ios_base::out);
-	string s;
-
-	while (getline(ss, s, ',')) {
-	 tmp.push_back(atof(s.c_str()));
-	}
-
-	valarray<double> res(tmp.size());
-	for(unsigned i=0;i<tmp.size();i++)
-	{
-		res[i]=tmp.at(i);
-//		cout<<res[i]<<",";
-	}
-	return res;
-}
 

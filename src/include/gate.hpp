@@ -14,9 +14,15 @@
 #include "flowData.hpp"
 #include "transformation.hpp"
 
-//#include "transformation.hpp"
+
 using namespace std;
 
+
+typedef struct{
+	vector<string> fullpath;
+	char op;
+	bool isNot;
+	} BOOL_GATE_OP;
 
 
 #define GATING_SET_LEVEL 1
@@ -93,9 +99,10 @@ public:
 	 * so we can't rely on RTTI
 	 */
 	virtual unsigned short getType()=0;
+	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual POPINDICES gating(flowData &){throw(domain_error("undefined gating function!"));};
 	virtual void extend(flowData &,unsigned short){throw(domain_error("undefined extend function!"));};
-	virtual vector<string> getParam()=0;
+	virtual vector<string> getParam(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
 	virtual void transforming(trans_local &,unsigned short dMode){throw(domain_error("undefined transforming function!"));};
 //	virtual gate * create()=0;
@@ -144,14 +151,20 @@ public:
 };
 
 
+/*
+ * instead of defining the gating function here in boolGate
+ * we put the gating logic in GatingHierarchy gating function
+ * because it is needs to access indices from reference nodes
+ * which actually belong to GatingHierarchy object.
+ * And gate classes are sits in more abstract level than GatingHierarchy in the C++ class tree,
+ * thus GatingHierarchy data structure should be invisible to gate.
+ */
 class boolGate:public gate {
 public:
-	vector<string> params;//params.at(0) is x, params.at(1) is y axis,only for display purpose
-//	vector<node_op_pair> boolOpSpec;
-//public:
+	vector<BOOL_GATE_OP> boolOpSpec;//the gatePaths with the their logical operators
+public:
+	vector<BOOL_GATE_OP> getBoolSpec(){return boolOpSpec;};
 	unsigned short getType(){return BOOLGATE;}
-//	POPINDICES gating(flowData &);
-	vector<string> getParam(){return params;};
 	boolGate * clone(){return new boolGate(*this);};
 };
 

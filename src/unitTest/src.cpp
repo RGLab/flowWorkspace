@@ -13,6 +13,10 @@
 
 int main(void) {
 
+//	splitString("S/Lv/L/3+/4+/IFNg+",'/');
+//	toArray("3980,1.9428805e5,3981,1.9478264e5,3982,1.9527849e5,3983,1.9577559e5,3984,1.9627398e5");
+
+
 	vector<testSuit> myTest(6);
 	unsigned short i;
 
@@ -77,6 +81,7 @@ int main(void) {
 		gs_parse(myTest.at(i),4);
 
 //	}
+
 
 
 //	gating_template_test(myTest.at(i));

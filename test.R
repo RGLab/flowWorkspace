@@ -54,8 +54,8 @@ G<-parseWorkspace(ws,name=27
 					,subset=c(1)
 					,isNcdf=F
 					,useInternal=T
-					,path
-					,dMode=0
+					,path="/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/"
+					,dMode=4
 					)
 
 newSamples<-getSamples(GT)

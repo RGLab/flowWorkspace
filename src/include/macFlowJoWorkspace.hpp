@@ -10,10 +10,11 @@
 #include "flowJoWorkspace.hpp"
 
 class macFlowJoWorkspace:public flowJoWorkspace{
+	vector<BOOL_GATE_OP> parseBooleanSpec(string specs,vector<string> gPaths);
 public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
-//	isTransMap getTransFlag(wsSampleNode sampleNode);
+
 	trans_local getTransformation(wsRootNode,const compensation & comp,const isTransMap & transFlag,trans_global_vec*);
 	trans_global_vec getGlobalTrans();
 	string xPathSample(string sampleID);

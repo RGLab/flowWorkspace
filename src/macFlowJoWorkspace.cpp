@@ -442,75 +442,129 @@ polygonGate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			return gate;
 }
 
+/*
+ * the workspace (and its derived classes) are designed to be generic in the way
+ * that only talks to gatingHierarchy (and related classes) through its APIs, So that
+ * gatingHierarchy is not bind to a specific xml structure, while the change of gatingHierarchy class
+ * doesn't affect workspace routines.
+ *
+ * Thus  gatingHierarchy tree structure is invisible to this gate parsing function,
+ * and we can't use the VertexID here to refer to the reference nodes for bool gate
+ * instead, we store a full gating path, and  gatingHierarchy has the routine to further parse it
+ * into VertexID. and this keeps the generic design of classes intact because the gating path is not
+ * xml-structure specific concept.
+ */
 boolGate* macFlowJoWorkspace::getGate(wsBooleanGateNode & node){
 	boolGate * gate=new boolGate();
-	/*
-	 * re-fetch the children node from the current pop node
-	 */
-	xmlXPathObjectPtr resGate=node.xpathInNode("PolygonGate/*");
-//			wsNode pNode(resGate->nodesetval->nodeTab[0]);//gate dimensions
-	wsNode gNode(resGate->nodesetval->nodeTab[2]);//gate type and vertices
-	xmlXPathFreeObject(resGate);
 
 	//get the negate flag
-	gate->isNegate=!gNode.getProperty("negated").empty();
+	gate->isNegate=!node.getProperty("negated").empty();
 
-	//get parameter name
-//			xmlXPathObjectPtr resPara=pNode.xpathInNode("StringArray/String");
-//			int nParam=resPara->nodesetval->nodeNr;
-//			if(nParam!=2)
-//			{
-////				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
-//				throw(domain_error("invalid dimension of the polygon gate!"));
-//			}
-//			for(int i=0;i<nParam;i++)
-//			{
-//				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
-//				string curParam=curPNode.getContent();
-//				gate->params.push_back(curParam);
-//			}
-//			xmlXPathFreeObject(resPara);
+	/*
+	 * get specification string
+	 */
+	string specs=node.getProperty("specification");
 
-
-	string xAxis=gNode.getProperty("xAxisName");
-	gate->params.push_back(xAxis);
-	string yAxis=gNode.getProperty("yAxisName");
-	if(!yAxis.empty())
-		gate->params.push_back(yAxis);
-
-	//get vertices
-	xmlXPathObjectPtr resVert=gNode.xpathInNode("Polygon/Vertex");
-	for(int i=0;i<resVert->nodesetval->nodeNr;i++)
+	//get string vector of gating paths
+	xmlXPathObjectPtr resPaths=node.xpathInNode(".//String");
+	vector<string> gPaths;
+	for(int i=0;i<resPaths->nodesetval->nodeNr;i++)
 	{
-		wsNode curVNode(resVert->nodesetval->nodeTab[i]);
-
-		/*for each vertice node
-		**get one pair of coordinates
-		*/
-
-		//get the coordinates values from the property
-		coordinate pCoord;
-		pCoord.x=atof(curVNode.getProperty("x").c_str());
-		pCoord.y=atof(curVNode.getProperty("y").c_str());
-		//and push to the vertices vector of the gate object
-		gate->vertices.push_back(pCoord);
+		wsNode curGPNode(resPaths->nodesetval->nodeTab[i]);
+		gPaths.push_back(curGPNode.getContent());
 
 	}
-	xmlXPathFreeObject(resVert);
+	xmlXPathFreeObject(resPaths);
+
+	gate->boolOpSpec=parseBooleanSpec(specs,gPaths);
+
 	return gate;
 
 }
 
+vector<BOOL_GATE_OP> macFlowJoWorkspace::parseBooleanSpec(string specs,vector<string> gPaths){
+
+	vector<BOOL_GATE_OP> res;
+
+	/*
+	 * parse the spec strings to get logical operations among populations
+	 */
+//	vector<unsigned short> op_vec;
+	boost::replace_all(specs,"! G","!G");
+	vector<string> tokens;
+	boost::split(tokens, specs, boost::is_any_of(" "));
+	unsigned short nTokens=tokens.size();
+	unsigned short nPopulations=(nTokens+1)/2;
+	if(nPopulations!=gPaths.size())
+	{
+		throw(domain_error("the logical operators and the gating paths do not pair correctly!"));
+	}
+
+	vector<string> popTokens;
+	vector<string> opTokens;
+
+	popTokens.push_back(tokens.at(0));//get the first G
+
+	for(unsigned i=1;i<nPopulations;i++)
+	{
+		opTokens.push_back(tokens.at(i*2-1));//operators: !, &
+		popTokens.push_back(tokens.at(i*2));//like G0, G1...
+
+	}
+
+
+	for(unsigned j=0;j<nPopulations;j++)
+	{
+
+		BOOL_GATE_OP gOpObj;
+
+
+		string curPopToken=popTokens.at(j);
+		string curOpToken;
+		if(j==0)
+			curOpToken="&";//assign and operation to the first token
+		else
+			curOpToken=opTokens.at(j-1);
+		/*
+		 * extract number from token
+		 */
+		string sIndex=boost::erase_all_copy(curPopToken,"!");
+		boost::erase_all(sIndex,"G");
+		unsigned short index=atoi(sIndex.c_str());
+		/*
+		 * select respective gating path string and split it into vector
+		 */
+		string curPath=gPaths.at(index);
+		boost::split(gOpObj.fullpath,curPath,boost::is_any_of("/"));
+
+		gOpObj.isNot=curPopToken.find("!")!=string::npos;
+
+
+		/*
+		 * if not |,we assume it as & by skipping the actual matching with "&"
+		 * since it stores as &amp; in xml
+		 */
+		gOpObj.op=boost::iequals(curOpToken,"|")?'|':'&';
+
+		/*
+		 * push the parsed gating path vector and operator into result vector
+		 */
+		res.push_back(gOpObj);
+
+	}
+	return res;
+
+}
 
 gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 
 	/*
 	 * try BooleanGate first
 	 */
-	xmlXPathObjectPtr resGate=node.xpathInNode("BooleanGate/*");
+	xmlXPathObjectPtr resGate=node.xpathInNode("BooleanGate");
 	if(resGate->nodesetval->nodeNr==1)
 	{
-		wsBooleanGateNode bGNode(node.thisNode);
+		wsBooleanGateNode bGNode(resGate->nodesetval->nodeTab[0]);
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing BooleanGate.."<<endl;
 		return(getGate(bGNode));

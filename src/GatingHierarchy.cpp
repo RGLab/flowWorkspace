@@ -117,6 +117,9 @@ VertexID GatingHierarchy::addRoot(nodeProperties* rootNode)
 
 /*
  * recursively append the populations to the tree
+ * when the boolean gates are encountered before its reference nodes
+ * we still can add it as it is because gating path is stored as population names instead of actual VertexID.
+ * Thus we will deal with the the boolean gate in the actual gating process
  */
 void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool isParseGate)
 {
@@ -138,7 +141,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 			//add relation between current node and parent node
 			boost::add_edge(parentID,curChildID,tree);
 			//update the node map for the easy query by pop name
-//			nodelist[curChild.getName()]=curChildID;
+
 			//recursively add its descendants
 			addPopulation(curChildID,&curChildNode,isParseGate);
 		}
@@ -335,7 +338,8 @@ void GatingHierarchy::extendGate(){
 					throw(domain_error("no gate available for this node"));
 				if(dMode>=POPULATION_LEVEL)
 					cout <<node->getName()<<endl;
-				g->extend(fdata,dMode);
+				if(g->getType()!=BOOLGATE)
+					g->extend(fdata,dMode);
 			}
 		}
 }
@@ -353,12 +357,6 @@ void GatingHierarchy::gating()
 	if(!isLoaded)
 			throw(domain_error("data is not loaded yet!"));
 
-
-//	/*
-//	 * compensating
-//	 */
-//	if(dMode>=GATING_HIERARCHY_LEVEL)
-//			cout <<"compensating:"<<this->sampleName<<endl;
 
 	VertexID_vec vertices=getVertices(true);
 
@@ -398,12 +396,19 @@ void GatingHierarchy::gating(VertexID u)
 	 *
 	 */
 	VertexID_vec pids=getParent(u);
-	if(pids.size()!=1)
+	if(pids.size()!=1) //we only allow one parent per node
 		throw(domain_error("multiple parent nodes found!"));
 
-	nodeProperties *parentNode =getNodeProperty(pids.at(0));
+	VertexID pid=pids.at(0);
+
+	nodeProperties *parentNode =getNodeProperty(pid);
 	if(!parentNode->isGated())
-		throw(domain_error("parent node has not been gated!"));
+	{
+		if(dMode>=POPULATION_LEVEL)
+			cout <<"go to the ungated parent node:"<<parentNode->getName()<<endl;
+		gating(pid);
+	}
+
 
 
 	if(dMode>=POPULATION_LEVEL)
@@ -414,6 +419,9 @@ void GatingHierarchy::gating(VertexID u)
 	if(g==NULL)
 		throw(domain_error("no gate available for this node"));
 
+	/*
+	 * calculate the indices for the current node
+	 */
 	POPINDICES curIndices;
 	if(g->getType()==BOOLGATE)
 	{
@@ -427,18 +435,21 @@ void GatingHierarchy::gating(VertexID u)
 
 		g->transforming(trans,dMode);
 		curIndices=g->gating(fdata);
-		for(unsigned i=0;i<curIndices.size();i++)
-			curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
 	}
 
-
+	//combine with parent indices
+	for(unsigned i=0;i<curIndices.size();i++)
+		curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
 	node->indices=curIndices;
 	node->computeStats();
 }
+
+
 POPINDICES GatingHierarchy::boolGating(VertexID u){
 
 	nodeProperties * node=getNodeProperty(u);
-	vector<node_op_pair> boolOpSpec=node->boolOpSpec;
+	gate * g=node->getGate();
+
 	//init the indices
 	unsigned nEvents=fdata.nEvents;
 
@@ -447,47 +458,47 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 	/*
 	 * combine the indices of reference populations
 	 */
-	unsigned short op=AND;
 
-	for(vector<node_op_pair>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+	vector<BOOL_GATE_OP> boolOpSpec=g->getBoolSpec();
+	for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
 	{
 		/*
 		 * assume the reference node has already added during the parsing stage
 		 */
-		VertexID nodeID=it->first;
+		vector<string> nodePath=it->fullpath;
+		VertexID nodeID=getNodeID(nodePath);
 		nodeProperties * curPop=getNodeProperty(nodeID);
 		if(!curPop->isGated())
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout <<"go to the ungated reference node:"<<curPop->getName()<<endl;
 			gating(nodeID);
+		}
+
 
 		POPINDICES curPopInd=curPop->indices;
 
 		for(unsigned i=0;i<ind.size();i++)
 		{
-			switch(op)
+			if(it->isNot)
+				curPopInd.flip();
+
+			switch(it->op)
 			{
-				case AND:
+				case '&':
 					ind.at(i)=ind.at(i)&curPopInd.at(i);
 					break;
-				case OR:
+				case '|':
 					ind.at(i)=ind.at(i)|curPopInd.at(i);
-					break;
-				case ANDNOT:
-					ind.at(i)=ind.at(i)|(~curPopInd.at(i));
-					break;
-				case ORNOT:
-					ind.at(i)=ind.at(i)|(~curPopInd.at(i));
 					break;
 				default:
 					throw(domain_error("not supported operator!"));
 			}
 		}
 
-		//update operator for the next pop
-		op=it->second;
-
 	}
 
-	if(node->getGate()->isNegate)
+	if(g->isNegate)
 		ind.flip();
 
 	return ind;
@@ -535,6 +546,38 @@ VertexID_vec GatingHierarchy::getVertices(bool tsort=false){
 	return(res);
 
 }
+
+/*
+ * retrieve the VertexID by the gating path
+ * this serves as a parser to convert generic gating path into internal node ID
+ *
+ */
+VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
+
+	/*
+	 * start from the root node
+	 */
+	VertexID parentID=0;
+
+	for(vector<string>::iterator it=gatePath.begin();it!=gatePath.end();it++)
+	{
+		string nodeNameFromPath=*it;
+
+		VertexID curNodeID=getChildren(parentID,nodeNameFromPath);
+		if(curNodeID==-1)
+		{
+			string err="Node not found:";
+			err.append(nodeNameFromPath);
+			throw(domain_error(err));
+		}
+		else
+			parentID=curNodeID;
+
+	}
+	return parentID;
+
+}
+
 /*
  * retrieve population names based on getVertices method
  * isPath flag indicates whether append the ancestor node names
@@ -613,7 +656,9 @@ VertexID_vec GatingHierarchy::getParent(VertexID target){
 	}
 	return(res);
 }
-
+/*
+ * retrieve all children nodes
+ */
 VertexID_vec GatingHierarchy::getChildren(VertexID source){
 
 	VertexID_vec res;
@@ -637,6 +682,24 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 //		res.push_back(0);
 	}
 	return(res);
+}
+/*
+ * retrieve single child node by parent id and child name
+ */
+VertexID GatingHierarchy::getChildren(VertexID source,string childName){
+
+	VertexID curNodeID=-1;
+	VertexID_vec children=getChildren(source);
+	VertexID_vec::iterator it;
+	for(it=children.begin();it!=children.end();it++)
+	{
+		curNodeID=*it;
+		if(getNodeProperty(curNodeID)->getName().compare(childName)==0)
+			break;
+	}
+
+	return(curNodeID);
+
 }
 /*
  * returning the reference of the vertex bundle
