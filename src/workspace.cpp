@@ -28,3 +28,19 @@ workspace::~workspace(){
 }
 
 
+valarray<double> workspace::toArray(string sCalTable){
+
+
+//	sCalTable="3980,1.9428805e5,3981,1.9478264e5,3982,1.9527849e5,3983,1.9577559e5,3984,1.9627398e5";
+	vector<string> stringVec;
+	boost::split(stringVec,sCalTable,boost::is_any_of(","));
+//
+
+	valarray<double> res(stringVec.size());
+	for(unsigned i=0;i<stringVec.size();i++)
+	{
+		res[i]=atof(stringVec.at(i).c_str());
+//		cout<<res[i]<<",";
+	}
+	return res;
+}

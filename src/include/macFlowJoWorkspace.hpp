@@ -15,7 +15,7 @@ public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
 
-	trans_local getTransformation(wsRootNode,const compensation & comp,const isTransMap & transFlag,trans_global_vec*);
+	trans_local getTransformation(wsRootNode,const compensation & comp,const PARAM_VEC & transFlag,trans_global_vec*);
 	trans_global_vec getGlobalTrans();
 	string xPathSample(string sampleID);
 	gate * getGate(wsPopNode &);

@@ -140,11 +140,13 @@ wsPopNodeSet flowJoWorkspace::getSubPop(wsNode * node)
 }
 
 /*
- * TODO:it may be more accurate to use parameter nodes to get flag for mac version
- * since keywords may not contain the $PnDISPLAY in some cases
+ * this is for windows version currently because windows version does not have parameter nodes,
+ * Not sure whether to get "Range" info for windows though
+ *
+ *
  */
-isTransMap flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
-	isTransMap res;
+PARAM_VEC flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
+	PARAM_VEC res;
 
 	/*
 	 * get total number of channels
@@ -161,7 +163,8 @@ isTransMap flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 
 	for(unsigned i=1;i<=nPar;i++)
 	{
-		pair<string,bool> curPair;
+		PARAM curParam;
+
 		/*
 		 * get curernt param name
 		 */
@@ -183,10 +186,14 @@ isTransMap flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 		wsNode curDisplayNode(parDisplay->nodesetval->nodeTab[0]);
 		xmlXPathFreeObject(parDisplay);
 		string curFlag=curDisplayNode.getProperty("value");
-		res[pName]=(curFlag.compare("LOG")==0);
+
+		curParam.param=pName;
+		curParam.log=curFlag.compare("LOG")==0;
+		curParam.range=4096;//not sure how to get this value from win workspaces
 
 		if(dMode>=GATING_SET_LEVEL)
 			cout<<pName<<":"<<curFlag<<endl;
+		res.push_back(curParam);
 	}
 	return res;
 }

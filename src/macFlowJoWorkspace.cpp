@@ -7,7 +7,6 @@
 
 
 #include "include/macFlowJoWorkspace.hpp"
-#include "include/util.hpp"
 
 //#define PI 3.141592653589793238462
 
@@ -48,9 +47,48 @@ trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name)
 }
 
 /*
+ * we overwrite getTransFlag function for mac version to  use parameter nodes for log flags
+ * and keywords may not contain the $PnDISPLAY in some cases
+ * also we need to get transformed Range info and $PnR only contains the raw scale
+ */
+PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
+	PARAM_VEC res;
+
+
+	string path="Parameter";
+	xmlXPathObjectPtr parRes=sampleNode.xpathInNode(path);
+	unsigned short nPar=parRes->nodesetval->nodeNr;
+
+	/*
+	 * get info about whether channel should be transformed
+	 */
+
+	for(unsigned i=0;i<nPar;i++)
+	{
+		PARAM curParam;
+		wsNode parNode(parRes->nodesetval->nodeTab[i]);
+
+		// get curernt param name
+		curParam.param=parNode.getProperty("name");
+
+		// get current display flag
+		curParam.log=parNode.getProperty("log").compare("1")==0;
+
+		// get current range
+		curParam.range=atoi(parNode.getProperty("range").c_str());
+
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<curParam.param<<":"<<curParam.log<<":"<<curParam.range<<endl;
+		res.push_back(curParam);
+	}
+	xmlXPathFreeObject(parRes);
+	return res;
+}
+
+/*
  * get transformation for one particular sample node
  */
-trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const isTransMap & transFlag,trans_global_vec * gTrans){
+trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const PARAM_VEC & transFlag,trans_global_vec * gTrans){
 
 
 	trans_local res;
@@ -62,7 +100,8 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	if(tgIt==gTrans->end())
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"no transformation found with the name:"<<comp.name<<endl;
+			cout<<"no flowJo transformation matched with the name:"<<comp.name<<endl;
+
 		return res;
 	}
 	trans_map trans=tgIt->trans;
@@ -76,24 +115,43 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
 		{
 			transformation* curTrans=it->second;
-			if(curTrans->name.find("Acquisition-defined")!=string::npos)
+			string curChnl=curTrans->channel;
+			PARAM_VEC::iterator paramIt=findTransFlag(transFlag,curChnl);
+			if(paramIt==transFlag.end())
 			{
-
-				(*trs)[curTrans->channel]=curTrans;
-				if(dMode>=GATING_HIERARCHY_LEVEL)
-					cout<<"adding "<<curTrans->name<<":"<<curTrans->channel<<endl;
-
-				if(!curTrans->isComputed)
-					curTrans->computCalTbl();
-				if(!curTrans->calTbl.isInterpolated)
+				string err="no log flag found for this parameter!";
+				err.append(curChnl);
+				throw(domain_error(err.c_str()));
+			}
+			bool isTrans=paramIt->log&paramIt->range<=4096;
+			if(isTrans)
+			{
+				if(curTrans->name.find("Acquisition-defined")!=string::npos)
 				{
+
+					(*trs)[curChnl]=curTrans;
 					if(dMode>=GATING_HIERARCHY_LEVEL)
+						cout<<"adding "<<curTrans->name<<":"<<curChnl<<endl;
+
+					if(!curTrans->isComputed)
+						curTrans->computCalTbl();
+					if(!curTrans->calTbl.isInterpolated)
 					{
-						cout<<"spline interpolating..."<<curTrans->name<<endl;
+						if(dMode>=GATING_HIERARCHY_LEVEL)
+						{
+							cout<<"spline interpolating..."<<curTrans->name<<endl;
+						}
+
+						curTrans->calTbl.interpolate();
+
 					}
-
-					curTrans->calTbl.interpolate();
-
+				}
+				else
+				{
+					/*
+					 * TODO:try the log trans
+					 */
+					throw(domain_error("TODO:try the log trans"));
 				}
 			}
 		}
@@ -111,25 +169,47 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
 		{
 			transformation* curTrans=it->second;
-			cout<<curTrans->name<<endl;
-			if(curTrans->name.find(comp.name)!=string::npos)
+			string curChnl=curTrans->channel;
+			PARAM_VEC::iterator paramIt=findTransFlag(transFlag,curChnl);
+			if(paramIt==transFlag.end())
 			{
-
-				(*trs)[curTrans->channel]=curTrans;
-				if(dMode>=GATING_HIERARCHY_LEVEL)
-					cout<<"adding "<<curTrans->name<<":"<<curTrans->channel<<endl;
-
-				if(!curTrans->isComputed)
-					curTrans->computCalTbl();
-				if(!curTrans->calTbl.isInterpolated)
+				string err="no log flag found for this parameter!";
+				err.append(curChnl);
+				throw(domain_error(err.c_str()));
+			}
+			bool isTrans=paramIt->log&paramIt->range<=4096;
+//			cout<<curTrans->name<<endl;
+			if(isTrans)
+			{
+				if(curTrans->name.find(comp.name)!=string::npos)
 				{
+
+					(*trs)[curTrans->channel]=curTrans;
 					if(dMode>=GATING_HIERARCHY_LEVEL)
+						cout<<"adding "<<curTrans->name<<":"<<curTrans->channel<<endl;
+
+					if(!curTrans->isComputed)
+						curTrans->computCalTbl();
+					if(!curTrans->calTbl.isInterpolated)
 					{
-						cout<<"spline interpolating..."<<curTrans->name<<endl;
+						if(dMode>=GATING_HIERARCHY_LEVEL)
+						{
+							cout<<"spline interpolating..."<<curTrans->name<<endl;
+						}
+
+						curTrans->calTbl.interpolate();
+
 					}
-
-					curTrans->calTbl.interpolate();
-
+				}
+				else
+				{
+					/*
+					 * try the log trans
+					 */
+					/*
+					 * TODO:try the log trans
+					 */
+					throw(domain_error("TODO:try the log trans"));
 				}
 			}
 		}
@@ -144,9 +224,6 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
 	trans_global_vec tgVec;
-
-
-//	trans_map  res;
 
 	string path="/Workspace/CalibrationTables/Table";
 	xmlXPathContextPtr context = xmlXPathNewContext(doc);
@@ -169,28 +246,41 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
 			throw(domain_error("empty name for calibration table"));
+
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<"parsing calibrationTable:"<<tname<<endl;
 		/*
 		 * parse the string from tname to extract channel name
 		 */
 		size_t nPrefix=tname.find("<");
 		size_t nsuffix=tname.find(">");
-		if((nPrefix==string::npos)|(nsuffix==string::npos))
-			continue;//skip the tables without channel info
-
-		curTran->name=trim(tname.substr(0,nPrefix));
-		curTran->channel=tname.substr(nPrefix,tname.length()-nPrefix);
-
-		if(dMode>=GATING_SET_LEVEL)
-				cout<<"parsing calibrationTable:"<<curTran->name<<":"<<curTran->channel<<endl;
-
+		bool isGeneric=(nPrefix==string::npos)|(nsuffix==string::npos);
+		string transGroupName;
+		if(isGeneric)
+		{
+			/*
+			 * generic cal table (non-channel-specific)
+			 */
+			curTran->name=tname;
+			curTran->channel="*";
+			transGroupName="Generic";
+		}
+		else
+		{
+			/*
+			 * channel-specific cal table
+			 */
+			curTran->name=boost::trim_copy((tname.substr(0,nPrefix)));
+			curTran->channel=tname.substr(nPrefix,tname.length()-nPrefix);
+			transGroupName=curTran->name;
+		}
 
 		string sTbl=calTblNode.getContent();
 		/*
 		 * parse the stream to x,y double arrays
 		 */
-		valarray<double> tbl(toArray(sTbl));
+		valarray<double> tbl=toArray(sTbl);
 		unsigned nX=tbl.size()/2;
-
 
 		caltbl.init(nX);
 
@@ -208,17 +298,17 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		 */
 		trans_global_vec::iterator tRes=findTransGroup(tgVec,curTran->name);
 
-		if(tRes==tgVec.end())
+		if(tRes==tgVec.end())//if not exsit yet, then push back the new instance
 		{
 			if(dMode>=GATING_SET_LEVEL)
-				cout<<"creating new transformation group:"<<curTran->name<<endl;
+				cout<<"creating new transformation group:"<<transGroupName<<endl;
 			trans_global newTg;
-			newTg.groupName=curTran->name;
+			newTg.groupName=transGroupName;
 			tgVec.push_back(newTg);
 			tgVec.back().trans[curTran->channel]=curTran;
 		}
 		else
-			//save the current transformation into the respective transGroup
+			//if already exists, then save the current transformation into the respective transGroup
 			tRes->trans[curTran->channel]=curTran;
 
 	}

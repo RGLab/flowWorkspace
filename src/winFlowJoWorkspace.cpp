@@ -33,7 +33,7 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 /*
  * choose the trans from global trans vector to attach to current sample
  */
-trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const isTransMap & transFlag,trans_global_vec * gTrans){
+trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const PARAM_VEC & transFlag,trans_global_vec * gTrans){
 
 	trans_local res;
 	unsigned sampleID=atoi(root.getProperty("sampleID").c_str());
@@ -55,13 +55,12 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		{
 
 
-			for(isTransMap::const_iterator isTransIt=transFlag.begin();isTransIt!=transFlag.end();isTransIt++)
+			for(PARAM_VEC::iterator isTransIt=transFlag.begin();isTransIt!=transFlag.end();isTransIt++)
 			{
-				string curChName=isTransIt->first;
-				bool curTranFlag=isTransIt->second;
-				if(curTranFlag)
+				string curChName=isTransIt->param;
+				if(isTransIt->log)
 				{
-
+					//TODO:check the logic here(compare with mac version)
 					string curCmpChName=sPrefix+curChName;//append prefix
 					trans_map::iterator resIt=(it->trans).find(curCmpChName);
 					transformation * curTrans;
@@ -107,53 +106,7 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 	return res;
 }
-//isTransMap winFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
-//	isTransMap res;
-//
-//	/*
-//	 * get total number of channels
-//	 */
-//	string path="Keywords/*[@name='$PAR']";
-//	xmlXPathObjectPtr parRes=sampleNode.xpathInNode(path);
-//	wsNode parNode(parRes->nodesetval->nodeTab[0]);
-//	xmlXPathFreeObject(parRes);
-//	unsigned short nPar=atoi(parNode.getProperty("value").c_str());
-//
-//	/*
-//	 * get info about whether channel should be transformed
-//	 */
-//
-//	for(unsigned i=1;i<=nPar;i++)
-//	{
-//		pair<string,bool> curPair;
-//		/*
-//		 * get curernt param name
-//		 */
-//		stringstream ss(stringstream::in | stringstream::out);
-//		ss << "Keywords/*[@name='$P"<< i<<"N']";
-//		path=ss.str();
-//		xmlXPathObjectPtr parN=sampleNode.xpathInNode(path);
-//		wsNode curPNode(parN->nodesetval->nodeTab[0]);
-//		xmlXPathFreeObject(parN);
-//		string pName=curPNode.getProperty("value");
-//
-//		/*
-//		 * get current display flag
-//		 */
-//		stringstream ss1(stringstream::in | stringstream::out);
-//		ss1 << "Keywords/*[@name='P"<<i<<"DISPLAY']";
-//		path=ss1.str();
-//		xmlXPathObjectPtr parDisplay=sampleNode.xpathInNode(path);
-//		wsNode curDisplayNode(parDisplay->nodesetval->nodeTab[0]);
-//		xmlXPathFreeObject(parDisplay);
-//		string curFlag=curDisplayNode.getProperty("value");
-//		res[pName]=(curFlag.compare("LOG")==0);
-//
-//		if(dMode>=GATING_SET_LEVEL)
-//			cout<<pName<<":"<<curFlag<<endl;
-//	}
-//	return res;
-//}
+
 /*
  *parsing transformations from CompensationEditor node and
  *store in global container within gs

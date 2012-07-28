@@ -18,7 +18,7 @@ class flowJoWorkspace:public workspace{
 public:
 
 	 vector <string> getSampleID(unsigned short);
-	 isTransMap getTransFlag(wsSampleNode sampleNode);
+	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode);
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
      nodeProperties * to_popNode(wsRootNode &);

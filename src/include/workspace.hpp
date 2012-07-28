@@ -13,7 +13,6 @@
 #include <libxml/parser.h>
 #include "wsNode.hpp"
 #include "transformation.hpp"
-#include "util.hpp"
 #include <iostream>
 #include <algorithm>
 #include <math.h>
@@ -24,7 +23,7 @@ using namespace std;
 
 
 using namespace std;
-/*TODO: so far I will see the differenc between win and mac workspace in terms of xpath(like xpath of sample node)
+/*TODO: so far I have seen the major difference between win and mac workspace is the xpath(like xpath of sample node)
  * if this is the case eventually we can try to use one template class (eliminate two derived classes )
  * with T structure that stores different versions of xpaths for win/mac,for example:
  *
@@ -74,8 +73,8 @@ public:
 public:
 	 ~workspace();
 	 virtual string xPathSample(string sampleID)=0;
-	 virtual isTransMap getTransFlag(wsSampleNode sampleNode)=0;
-	 virtual trans_local getTransformation(wsRootNode,const compensation &,const isTransMap &,trans_global_vec *)=0;
+	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode)=0;
+	 virtual trans_local getTransformation(wsRootNode,const compensation &,const PARAM_VEC &,trans_global_vec *)=0;
 	 virtual compensation getCompensation(wsSampleNode)=0;
 	 virtual trans_global_vec getGlobalTrans()=0;
 	 virtual vector <string> getSampleID(unsigned short)=0;
@@ -85,6 +84,8 @@ public:
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
 	 virtual nodeProperties * to_popNode(wsRootNode &)=0;
 	 virtual nodeProperties * to_popNode(wsPopNode &,bool isGating)=0;
+	 valarray<double> toArray(string sCalTable);
+
 
 };
 
