@@ -33,7 +33,7 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 /*
  * choose the trans from global trans vector to attach to current sample
  */
-trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const PARAM_VEC & transFlag,trans_global_vec * gTrans){
+trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans){
 
 	trans_local res;
 	unsigned sampleID=atoi(root.getProperty("sampleID").c_str());

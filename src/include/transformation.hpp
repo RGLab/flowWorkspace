@@ -47,15 +47,7 @@ typedef struct {
 		} PARAM;
 typedef vector<PARAM> PARAM_VEC;
 
-PARAM_VEC::iterator findTransFlag(const PARAM_VEC & pVec, string name){
-	PARAM_VEC::iterator it;
-	for(it=pVec.begin();it!=pVec.end();it++)
-	{
-		if(it->param.compare(name)==0)
-			break;
-	}
-	return it;
-}
+PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name);
 
 class trans_local{
 public:

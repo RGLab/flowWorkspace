@@ -116,15 +116,15 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_getTransFlags(SEXP _gsPtr,SEXP _sampleName){
-BEGIN_RCPP
-
-	XPtr<GatingSet>gs(_gsPtr);
-	string sampleName=as<string>(_sampleName);
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	return wrap(gh->transFlag);
-END_RCPP
-}
+//RcppExport SEXP R_getTransFlags(SEXP _gsPtr,SEXP _sampleName){
+//BEGIN_RCPP
+//
+//	XPtr<GatingSet>gs(_gsPtr);
+//	string sampleName=as<string>(_sampleName);
+//	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+//	return wrap(gh->transFlag);
+//END_RCPP
+//}
 
 
 RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName){

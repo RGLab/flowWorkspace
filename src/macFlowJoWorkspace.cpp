@@ -88,13 +88,13 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 /*
  * get transformation for one particular sample node
  */
-trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp,const PARAM_VEC & transFlag,trans_global_vec * gTrans){
+trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans){
 
 
 	trans_local res;
-
 	if(gTrans->empty())
-		return res;//return empty results when global trans is empty
+		throw(domain_error("empty global trans!"));
+	string cid=comp.cid;
 
 	trans_global_vec::iterator tgIt=findTransGroup(*gTrans,comp.name);
 	if(tgIt==gTrans->end())
@@ -105,10 +105,21 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		return res;
 	}
 	trans_map trans=tgIt->trans;
-	string cid=comp.cid;
+
 	map<string,transformation *> *trs=&(res.transformations);
-	if(cid.compare("-1")==0)
+	if(cid.compare("-2")==0)
 	{
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"no transformation parsed since cid==-2!"<<endl;
+	}
+	else
+	{
+		string tGName;
+		if(cid.compare("-1")==0)
+			tGName="Acquisition-defined";
+		else
+			tGName==comp.name;
+
 		/*
 		 * look for Acquisition-defined witin global calitbls
 		 */
@@ -123,10 +134,10 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				err.append(curChnl);
 				throw(domain_error(err.c_str()));
 			}
-			bool isTrans=paramIt->log&paramIt->range<=4096;
+			bool isTrans=paramIt->log&(paramIt->range<=4096);
 			if(isTrans)
 			{
-				if(curTrans->name.find("Acquisition-defined")!=string::npos)
+				if(curTrans->name.find(tGName)!=string::npos)
 				{
 
 					(*trs)[curChnl]=curTrans;
@@ -157,65 +168,8 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		}
 
 	}
-	else if(cid.compare("-2")==0)
-	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"no transformation parsed since cid==-2!"<<endl;
-	}
-	else
-	{
-		//try to search for trans by matching compensation name with trans name
-
-		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
-		{
-			transformation* curTrans=it->second;
-			string curChnl=curTrans->channel;
-			PARAM_VEC::iterator paramIt=findTransFlag(transFlag,curChnl);
-			if(paramIt==transFlag.end())
-			{
-				string err="no log flag found for this parameter!";
-				err.append(curChnl);
-				throw(domain_error(err.c_str()));
-			}
-			bool isTrans=paramIt->log&paramIt->range<=4096;
-//			cout<<curTrans->name<<endl;
-			if(isTrans)
-			{
-				if(curTrans->name.find(comp.name)!=string::npos)
-				{
-
-					(*trs)[curTrans->channel]=curTrans;
-					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<"adding "<<curTrans->name<<":"<<curTrans->channel<<endl;
-
-					if(!curTrans->isComputed)
-						curTrans->computCalTbl();
-					if(!curTrans->calTbl.isInterpolated)
-					{
-						if(dMode>=GATING_HIERARCHY_LEVEL)
-						{
-							cout<<"spline interpolating..."<<curTrans->name<<endl;
-						}
-
-						curTrans->calTbl.interpolate();
-
-					}
-				}
-				else
-				{
-					/*
-					 * try the log trans
-					 */
-					/*
-					 * TODO:try the log trans
-					 */
-					throw(domain_error("TODO:try the log trans"));
-				}
-			}
-		}
 
 
-	}
 	return res;
 }
 

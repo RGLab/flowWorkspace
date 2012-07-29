@@ -306,7 +306,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					
 					localDataEnv<-nodeDataDefaults(gh@tree,"data")
 					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
-#					transFlag<-.Call("R_getTransFlags",G@pointer,sampleName)
+
 					
 					cal<-getTransformations(gh)					
 					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)

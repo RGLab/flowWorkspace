@@ -7,7 +7,15 @@
 
 #include "include/transformation.hpp"
 
-
+PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name){
+	PARAM_VEC::iterator it;
+	for(it=pVec.begin();it!=pVec.end();it++)
+	{
+		if(it->param.compare(name)==0)
+			break;
+	}
+	return it;
+}
 trans_map trans_local::cloneTransMap(){
 
 	trans_map res;
