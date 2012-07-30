@@ -112,6 +112,7 @@ GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,un
 
 
 		GatingHierarchy *curGh=gh_template.clone(newTmap,&gTrans);
+		curGh->setNcPtr(&nc);//make sure to assign the global nc pointer to  GatingHierarchy
 		curGh->dMode=_dMode;
 
 		ghs[curSampleName]=curGh;//add to the map

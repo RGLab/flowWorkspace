@@ -107,13 +107,21 @@ void gh_accessor_test(GatingHierarchy* gh){
 			cout<<endl;
 		}
 }
-void gs_gating(GatingSet &gs,testSuit myTest,unsigned short sampleInd){
-	cout<<endl<<"do the gating after the parsing"<<endl;
+void gs_attachCDF(GatingSet & gs,testSuit myTest)
+{
 	string ncFile=myTest.ncfile;
-	//read colnames from text
-	vector<string> params;
-	vector<string> sampleNames=gs.getSamples();
 
+	/*
+	 * get sample names from myTest
+	 */
+	vector<string> params;
+	vector<string> sampleNames;
+	for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+		sampleNames.push_back(it->second);
+
+	/*
+	 * read colnames from text
+	 */
 	std::ifstream myfile;
 	myfile.open(myTest.colfile.c_str(),ifstream::in);
 
@@ -126,17 +134,27 @@ void gs_gating(GatingSet &gs,testSuit myTest,unsigned short sampleInd){
 
 	myfile.close();
 
-	string curSample=sampleNames.at(sampleInd);
+	/*
+	 * attach Data source  to gs
+	 */
 	gs.attachData(ncFile,sampleNames,params);
+}
+void gs_gating(GatingSet &gs,string curSample){
+	cout<<endl<<"do the gating after the parsing"<<endl;
+
 	//read transformed data once for all nodes
 	GatingHierarchy* gh=gs.getGatingHierarchy(curSample);
 
 //	gh->loadData(curSample);//get flow data from cdf
 
 	/*
-	 * get flow data from memory
+	 * read flow data from cdf into memory first (mimic the R code)
 	 */
 	flowData res=gs.getNcObj().readflowData(curSample);
+
+	/*
+	 * then load data from memory (as it(res) is passed from R routine
+	 */
 	gh->loadData(res);//
 
 	gh->extendGate();
@@ -184,7 +202,7 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
 			sampleIDs.push_back(it->first);
 
-//		sampleIDs.erase(sampleIDs.begin());
+		sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
 
 		gs.parseWorkspace(sampleIDs,true);
 
@@ -196,34 +214,51 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 
 		GatingHierarchy* gh;
 
-		gh=gs.getGatingHierarchy(0);
+		string curSample=samples.at(0);
+		gh=gs.getGatingHierarchy(curSample);
 //		getCalTbl_test(gh);
 //		gh_accessor_test(gh);
+		gs_attachCDF(gs,myTest);
 
-		gs_gating(gs,myTest,0);
+		gs_gating(gs,curSample);
 
 		gh_counts(gh);
+
+
 
 		/*
 		 * gating_template_test
 		 */
-//		cout<<"-- cloning getGatingHierarchy ---"<<endl;
-//		vector<string> newSamples;
-//		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
-//			newSamples.push_back(it->second);
-//		newSamples.erase(newSamples.begin()+1);
-//
-//		GatingSet * newGS=new GatingSet(*gh,newSamples,dMode);
-//		GatingHierarchy* gh_new;
-//		gh_new=newGS->getGatingHierarchy(0);
-//
-//		gh_accessor_test(gh_new);
-//
-//		gs_gating(*newGS,myTest,0);
-//
-//		gh_counts(gh);
+		cout<<"-- cloning getGatingHierarchy ---"<<endl;
+		/*
+		 * get sample names from myTest and remove the first one which was used to extract gating template
+		 */
+		vector<string> newSamples;
+		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+			newSamples.push_back(it->second);
+		newSamples.erase(newSamples.begin()+1);
 
-//		delete newGS;
+		/*
+		 * clone the previous parsed gating hierarchy:gh
+		 */
+		GatingSet * newGS=new GatingSet(*gh,newSamples,dMode);
+		gs_attachCDF(*newGS,myTest);
+
+		/*
+		 * do the gating on cloned gating hierarchy
+		 */
+		string newSample=newSamples.at(0);
+		GatingHierarchy* gh_new;
+		gh_new=newGS->getGatingHierarchy(newSample);
+
+//		gh_accessor_test(gh_new);
+
+		gs_gating(*newGS,newSample);
+
+
+		gh_counts(gh_new);
+
+		delete newGS;
 }
 
 

@@ -115,7 +115,7 @@ public:
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
-//	void reset();
+	void setNcPtr(ncdfFlow *_nc){nc=_nc;}
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 };
 
