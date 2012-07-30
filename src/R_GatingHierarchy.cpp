@@ -192,7 +192,7 @@ BEGIN_RCPP
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	gh->loadData(sampleName);
-	gh->extendGate();
+//	gh->extendGate();
 	gh->transforming(true);
 	gh->gating();
 	gh->unloadData();
@@ -216,7 +216,7 @@ BEGIN_RCPP
 	flowData fdata(orig,sampleID);
 
 	gh->loadData(fdata);
-	gh->extendGate();
+//	gh->extendGate();
 	gh->transforming(false);
 	gh->gating();
 	/*
