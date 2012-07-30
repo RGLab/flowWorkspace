@@ -92,37 +92,66 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 
 	trans_local res;
-	if(gTrans->empty())
-		throw(domain_error("empty global trans!"));
+//	if(gTrans->empty())
+//		throw(domain_error("empty global trans!"));
+
 	string cid=comp.cid;
-
-	trans_global_vec::iterator tgIt=findTransGroup(*gTrans,comp.name);
-	if(tgIt==gTrans->end())
-	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"no flowJo transformation matched with the name:"<<comp.name<<endl;
-
-		return res;
-	}
-	trans_map trans=tgIt->trans;
-
+//	/*
+//	 * look for the global trans group by comp name
+//	 */
+//	trans_global_vec::iterator tgIt=findTransGroup(*gTrans,comp.name);
+//	if(tgIt==gTrans->end())
+//	{
+//		if(dMode>=GATING_HIERARCHY_LEVEL)
+//			cout<<"no flowJo transformation matched with the name:"<<comp.name<<endl;
+//
+//		return res;
+//	}
+//	trans_map trans=tgIt->trans;
+//
 	map<string,transformation *> *trs=&(res.transformations);
+
+	string tGName;
+	trans_global_vec::iterator tgIt;
 	if(cid.compare("-2")==0)
-	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"no transformation parsed since cid==-2!"<<endl;
-	}
+		tgIt=gTrans->end();//does not do the trans group name match at all
 	else
 	{
-		string tGName;
+		/*
+		 * try to look for the trans group associated with the current comp name
+		 */
+
 		if(cid.compare("-1")==0)
 			tGName="Acquisition-defined";
 		else
 			tGName==comp.name;
 
-		/*
-		 * look for Acquisition-defined witin global calitbls
-		 */
+		trans_global_vec::iterator tgIt=findTransGroup(*gTrans,tGName);
+	}
+	if(tgIt==gTrans->end())
+	{
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"no flowJo transformation group matched:"<<tGName<<endl;
+
+		for(PARAM_VEC::iterator it=transFlag.begin();it!=transFlag.end();it++)
+		{
+			string curChnl=it->param;
+			if(it->log)
+			{
+				if(it->range<=4096)//do log transform
+					(*trs)[curChnl]=new logTrans();
+				else//do flowJo transform
+				{
+
+				}
+
+			}
+		}
+
+	}
+	else
+	{
+		//	trans_map trans=tgIt->trans;
 		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
 		{
 			transformation* curTrans=it->second;
@@ -168,6 +197,8 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		}
 
 	}
+
+
 
 
 	return res;

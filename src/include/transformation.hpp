@@ -34,7 +34,7 @@ public:
 
 public:
 	transformation();
-	valarray<double> transforming(valarray<double> & input);
+	virtual valarray<double> transforming(valarray<double> & input);
 	virtual void computCalTbl(){};//dummy routine that does nothing
 	virtual transformation * clone(){return new transformation(*this);};
 };
@@ -91,16 +91,10 @@ private:
 
 
 public:
-//	ARGLIST getArgs(){return args;}
-//	vector<ARG> getArgs(){
-//							vector<ARG> res;
-//							res.push_back(ARG("m",m));
-//							res.push_back(ARG("t",t));
-//							res.push_back(ARG("w",w));
-//							return res;
-//							};
-//	logicleTrans(){type=LOGICLE;};
-//	valarray<double> transforming(valarray<double> &){throw(domain_error("not implemented yet!"));};
+};
+
+class logTrans:public transformation{
+	valarray<double> transforming(valarray<double> & input);
 };
 
 

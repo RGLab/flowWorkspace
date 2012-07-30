@@ -50,7 +50,10 @@ transformation::transformation(){
 	isComputed=true;
 
 }
+valarray<double> logTrans::transforming(valarray<double> & input){
 
+		return log10(input);
+}
 
 valarray<double> transformation::transforming(valarray<double> & input){
 		if(!calTbl.isInterpolated)
