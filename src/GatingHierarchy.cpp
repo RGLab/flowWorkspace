@@ -477,11 +477,12 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 
 
 		POPINDICES curPopInd=curPop->indices;
+		if(it->isNot)
+			curPopInd.flip();
 
 		for(unsigned i=0;i<ind.size();i++)
 		{
-			if(it->isNot)
-				curPopInd.flip();
+
 
 			switch(it->op)
 			{

@@ -95,19 +95,6 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 	string cid=comp.cid;
 
-	//	/*
-//	 * look for the global trans group by comp name
-//	 */
-//	trans_global_vec::iterator tgIt=findTransGroup(*gTrans,comp.name);
-//	if(tgIt==gTrans->end())
-//	{
-//		if(dMode>=GATING_HIERARCHY_LEVEL)
-//			cout<<"no flowJo transformation matched with the name:"<<comp.name<<endl;
-//
-//		return res;
-//	}
-
-//
 	/*
 	 * get the pointer to the result local trans map
 	 */
@@ -146,6 +133,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	for(PARAM_VEC::iterator it=transFlag.begin();it!=transFlag.end();it++)
 	{
 		string curChnl=it->param;
+		string curCmpChName=comp.prefix+curChnl+comp.suffix;//append prefix
 		transformation * curTran;
 		if(it->log)
 		{
@@ -155,39 +143,55 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			 */
 			trans_map trans;
 			if(isTransGropuFound)
+			{
 				trans=tgIt->trans;
-			else
-			{
-				if(!gTrans->empty())
-					trans=gTrans->at(0).trans;
-			}
-
-
-			/*
-			 * try to search by channel name within the source map
-			 */
-			trans_map::iterator resIt=trans.find(curChnl);
-			/*
-			 * if no channel name matched,continue to try "*"
-			 */
-			if(resIt==trans.end())
-				resIt=trans.find("*");
-
-
-			if(resIt!=trans.end())
-			{
 				/*
-				 * found the appropriate trans for this particular channel
+				 * try to search by channel name within the source map
 				 */
-				curTran=resIt->second;
-				if(dMode>=GATING_HIERARCHY_LEVEL)
-					cout<<curChnl<<":"<<curTran->name<<" "<<curTran->channel<<endl;
+				trans_map::iterator resIt=trans.find(curCmpChName);
+				/*
+				 * if no channel name matched,continue to try "*"
+				 */
+				if(resIt==trans.end())
+					resIt=trans.find("*");
+
+
+				if(resIt!=trans.end())
+				{
+					/*
+					 * found the appropriate trans for this particular channel
+					 */
+					curTran=resIt->second;
+					if(dMode>=GATING_HIERARCHY_LEVEL)
+						cout<<curCmpChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
+				}
+				else
+				{
+
+					/*
+					 * if no channel matched, try log transform
+					 */
+					if(it->range<=4096)
+					{
+						if(dMode>=GATING_HIERARCHY_LEVEL)
+							cout<<"apply the log10 transformation:"<<curChnl<<endl;
+
+						curTran=new logTrans();
+					}
+
+					else
+					{
+						string err="no valid global trans found for:";
+						err.append(curChnl);
+						throw(domain_error(err));
+					}
+
+				}
 			}
 			else
 			{
-
 				/*
-				 * if no channel matched, try log transform
+				 * first use log transform for the channel that has range<=4096
 				 */
 				if(it->range<=4096)
 				{
@@ -196,22 +200,51 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 					curTran=new logTrans();
 				}
-
 				else
 				{
-					string err="no valid global trans found for:";
-					err.append(curChnl);
-					throw(domain_error(err));
+					/*
+					 * for those has range>4096,try to generic cal tables from flowJo
+					 */
+					if(!gTrans->empty())
+						trans=gTrans->at(0).trans;
+					/*
+					 * try to search by channel name within the source map
+					 */
+					trans_map::iterator resIt=trans.find(curCmpChName);
+
+					/*
+					 * if no channel name matched,continue to try "*"
+					 */
+					if(resIt==trans.end())
+						resIt=trans.find("*");
+
+					if(resIt!=trans.end())
+					{
+						/*
+						 * found the appropriate trans for this particular channel
+						 */
+						curTran=resIt->second;
+						if(dMode>=GATING_HIERARCHY_LEVEL)
+							cout<<curCmpChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
+					}
+					else
+					{
+						string err="no valid global trans found for:";
+						err.append(curChnl);
+						throw(domain_error(err));
+					}
+
 				}
 
 			}
 
+
 			/*
 			 * assign matched global trans to the local map
 			 */
-			(*trs)[curChnl]=curTran;
+			(*trs)[curCmpChName]=curTran;
 			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"adding "<<curTran->name<<":"<<curChnl<<endl;
+				cout<<"adding "<<curTran->name<<":"<<curCmpChName<<endl;
 			/*
 			 * calculate and interpolate the cal table if applicable
 			 */
