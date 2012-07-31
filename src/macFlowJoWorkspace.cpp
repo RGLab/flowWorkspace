@@ -39,7 +39,7 @@ trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name)
 	trans_global_vec::iterator it;
 	for(it=tGVec.begin();it!=tGVec.end();it++)
 	{
-		cout<<it->groupName<<it->trans.size()<<endl;
+//		cout<<it->groupName<<it->trans.size()<<endl;
 		if(it->groupName.compare(name)==0)
 			break;
 	}
@@ -92,11 +92,10 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 
 	trans_local res;
-//	if(gTrans->empty())
-//		throw(domain_error("empty global trans!"));
 
 	string cid=comp.cid;
-//	/*
+
+	//	/*
 //	 * look for the global trans group by comp name
 //	 */
 //	trans_global_vec::iterator tgIt=findTransGroup(*gTrans,comp.name);
@@ -107,8 +106,11 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 //
 //		return res;
 //	}
-//	trans_map trans=tgIt->trans;
+
 //
+	/*
+	 * get the pointer to the result local trans map
+	 */
 	map<string,transformation *> *trs=&(res.transformations);
 
 	string tGName;
@@ -124,79 +126,148 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		if(cid.compare("-1")==0)
 			tGName="Acquisition-defined";
 		else
-			tGName==comp.name;
+			tGName=comp.name;
 
-		trans_global_vec::iterator tgIt=findTransGroup(*gTrans,tGName);
+		tgIt=findTransGroup(*gTrans,tGName);
 	}
-	if(tgIt==gTrans->end())
+	bool isTransGropuFound=(tgIt!=gTrans->end());
+	if(isTransGropuFound)//no matched trans group
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"no flowJo transformation group matched:"<<tGName<<endl;
-
-		for(PARAM_VEC::iterator it=transFlag.begin();it!=transFlag.end();it++)
-		{
-			string curChnl=it->param;
-			if(it->log)
-			{
-				if(it->range<=4096)//do log transform
-					(*trs)[curChnl]=new logTrans();
-				else//do flowJo transform
-				{
-
-				}
-
-			}
-		}
+			cout<<"flowJo transformation group matched:"<<tGName<<endl;
 
 	}
 	else
 	{
-		//	trans_map trans=tgIt->trans;
-		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<"no flowJo transformation group matched:"<<tGName<<endl;
+	}
+
+	for(PARAM_VEC::iterator it=transFlag.begin();it!=transFlag.end();it++)
+	{
+		string curChnl=it->param;
+		transformation * curTran;
+		if(it->log)
 		{
-			transformation* curTrans=it->second;
-			string curChnl=curTrans->channel;
-			PARAM_VEC::iterator paramIt=findTransFlag(transFlag,curChnl);
-			if(paramIt==transFlag.end())
+			/*
+			 * assign source trans map from the matched trans group
+			 * if no matched trans group,use the first one by default
+			 */
+			trans_map trans=isTransGropuFound?(tgIt->trans):(trans=gTrans->at(0).trans);
+
+			/*
+			 * try to search by channel name within the source map
+			 */
+			trans_map::iterator resIt=trans.find(curChnl);
+			/*
+			 * if no channel name matched,continue to try "*"
+			 */
+			if(resIt==trans.end())
+				resIt=trans.find("*");
+
+
+			if(resIt!=trans.end())
 			{
-				string err="no log flag found for this parameter!";
-				err.append(curChnl);
-				throw(domain_error(err.c_str()));
+				/*
+				 * found the appropriate trans for this particular channel
+				 */
+				curTran=resIt->second;
+				if(dMode>=GATING_HIERARCHY_LEVEL)
+					cout<<curChnl<<":"<<curTran->name<<" "<<curTran->channel<<endl;
 			}
-			bool isTrans=paramIt->log&(paramIt->range<=4096);
-			if(isTrans)
+			else
 			{
-				if(curTrans->name.find(tGName)!=string::npos)
+
+				/*
+				 * if no channel matched, try log transform
+				 */
+				if(it->range<=4096)
 				{
-
-					(*trs)[curChnl]=curTrans;
 					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<"adding "<<curTrans->name<<":"<<curChnl<<endl;
+						cout<<"apply the log10 transformation:"<<curChnl<<endl;
 
-					if(!curTrans->isComputed)
-						curTrans->computCalTbl();
-					if(!curTrans->calTbl.isInterpolated)
-					{
-						if(dMode>=GATING_HIERARCHY_LEVEL)
-						{
-							cout<<"spline interpolating..."<<curTrans->name<<endl;
-						}
-
-						curTrans->calTbl.interpolate();
-
-					}
+					curTran=new logTrans();
 				}
+
 				else
 				{
-					/*
-					 * TODO:try the log trans
-					 */
-					throw(domain_error("TODO:try the log trans"));
+					string err="no valid global trans found for:";
+					err.append(curChnl);
+					throw(domain_error(err));
 				}
+
+			}
+
+			/*
+			 * assign matched global trans to the local map
+			 */
+			(*trs)[curChnl]=curTran;
+			if(dMode>=GATING_HIERARCHY_LEVEL)
+				cout<<"adding "<<curTran->name<<":"<<curChnl<<endl;
+			/*
+			 * calculate and interpolate the cal table if applicable
+			 */
+			if(!curTran->isComputed)
+				curTran->computCalTbl();
+			if(!curTran->calTbl.isInterpolated)
+			{
+				if(dMode>=GATING_HIERARCHY_LEVEL)
+					cout<<"spline interpolating..."<<curTran->name<<endl;
+				curTran->calTbl.interpolate();
+
 			}
 		}
-
 	}
+
+
+
+
+//		trans_map trans=tgIt->trans;
+//		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
+//		{
+//			transformation* curTrans=it->second;
+//			string curChnl=curTrans->channel;
+//			PARAM_VEC::iterator paramIt=findTransFlag(transFlag,curChnl);
+//			if(paramIt==transFlag.end())
+//			{
+//				string err="no log flag found for this parameter!";
+//				err.append(curChnl);
+//				throw(domain_error(err.c_str()));
+//			}
+//			bool isTrans=paramIt->log&(paramIt->range<=4096);
+//			if(isTrans)
+//			{
+//				if(curTrans->name.find(tGName)!=string::npos)
+//				{
+//
+//					(*trs)[curChnl]=curTrans;
+//					if(dMode>=GATING_HIERARCHY_LEVEL)
+//						cout<<"adding "<<curTrans->name<<":"<<curChnl<<endl;
+//
+//					if(!curTrans->isComputed)
+//						curTrans->computCalTbl();
+//					if(!curTrans->calTbl.isInterpolated)
+//					{
+//						if(dMode>=GATING_HIERARCHY_LEVEL)
+//						{
+//							cout<<"spline interpolating..."<<curTrans->name<<endl;
+//						}
+//
+//						curTrans->calTbl.interpolate();
+//
+//					}
+//				}
+//				else
+//				{
+//					/*
+//					 * TODO:try the log trans
+//					 */
+//					throw(domain_error("TODO:try the log trans"));
+//				}
+//			}
+//		}
+
+
 
 
 

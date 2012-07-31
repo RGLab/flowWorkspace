@@ -66,11 +66,6 @@ public:
 
 typedef vector<trans_global> trans_global_vec;
 
-//class calTrans:public transformation{
-//public:
-//	calTrans(){isComputed=true;}//always set this flag to be true to assure the subsequent interpolation can be performed
-//	calTrans * clone();
-//};
 class biexpTrans:public transformation{
 public:
 	int channelRange;
@@ -93,7 +88,13 @@ private:
 public:
 };
 
+/*
+ * TODO:right now set two flags to TRUE in the contructor to avoid doing cal table stuff,
+ * we should consider redesign the classes so that logTrans does not share this extra feature from parent class
+ */
 class logTrans:public transformation{
+public:
+	logTrans(){isComputed=true;calTbl.isInterpolated=true;};
 	valarray<double> transforming(valarray<double> & input);
 };
 

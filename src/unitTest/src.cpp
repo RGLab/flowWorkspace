@@ -64,7 +64,7 @@ int main(void) {
 	 */
 	i=5;
 	myTest.at(i).filename="../data/HVTN054/Workspace/054-wkspace_tmp_tr.xml";
-	myTest.at(i).samples["5345"]="CytoTrol_CytoTrol_1.fcs";
+	myTest.at(i).samples["5345"]="180419.fcs";
 	myTest.at(i).sampNloc=1;
 	myTest.at(i).ncfile="../output/HVTN054/nc1_comp.nc";
 	myTest.at(i).colfile="../output/HVTN054/colnames.txt";
