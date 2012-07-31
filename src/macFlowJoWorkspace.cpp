@@ -153,7 +153,15 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			 * assign source trans map from the matched trans group
 			 * if no matched trans group,use the first one by default
 			 */
-			trans_map trans=isTransGropuFound?(tgIt->trans):(trans=gTrans->at(0).trans);
+			trans_map trans;
+			if(isTransGropuFound)
+				trans=tgIt->trans;
+			else
+			{
+				if(!gTrans->empty())
+					trans=gTrans->at(0).trans;
+			}
+
 
 			/*
 			 * try to search by channel name within the source map
