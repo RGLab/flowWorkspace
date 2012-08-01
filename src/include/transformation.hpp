@@ -26,7 +26,8 @@ using namespace std;
 
 class transformation{
 public:
-//	unsigned short type;
+	bool isGateOnly;
+	unsigned short type;
 	string name;
 	string channel;
 	calibrationTable calTbl;
@@ -34,7 +35,7 @@ public:
 
 public:
 	transformation();
-	virtual valarray<double> transforming(valarray<double> & input);
+	virtual void transforming(valarray<double> & input);
 	virtual void computCalTbl(){};//dummy routine that does nothing
 	virtual transformation * clone(){return new transformation(*this);};
 };
@@ -44,6 +45,8 @@ typedef struct {
 		string param;
 		bool log;
 		unsigned range;
+		unsigned highValue;
+		unsigned calibrationIndex;
 		} PARAM;
 typedef vector<PARAM> PARAM_VEC;
 
@@ -94,9 +97,17 @@ public:
  */
 class logTrans:public transformation{
 public:
-	logTrans(){isComputed=true;calTbl.isInterpolated=true;};
-	valarray<double> transforming(valarray<double> & input);
+	logTrans(){isGateOnly=true;isComputed=true;calTbl.isInterpolated=true;};
+	void transforming(valarray<double> & input);
 };
+
+class linTrans:public transformation{
+
+public:
+	linTrans(){isGateOnly=true;isComputed=true;calTbl.isInterpolated=true;};
+	void transforming(valarray<double> & input);
+};
+
 
 
 #endif /* TRANSFORMATION_HPP_ */

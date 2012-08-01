@@ -50,15 +50,21 @@ transformation::transformation(){
 	isComputed=true;
 
 }
-valarray<double> logTrans::transforming(valarray<double> & input){
+/*
+ * these transforming functions change the input data
+ */
+void logTrans::transforming(valarray<double> & input){
 
-		return log10(input);
+		input=log10(input);
 }
+void linTrans::transforming(valarray<double> & input){
 
-valarray<double> transformation::transforming(valarray<double> & input){
+		input*=64;
+}
+void transformation::transforming(valarray<double> & input){
 		if(!calTbl.isInterpolated)
 			throw(domain_error("calibration table not interpolated yet!"));
-		return calTbl.transforming(input);
+		input=calTbl.transforming(input);
 }
 
 transformation * trans_local::getTran(string channel){

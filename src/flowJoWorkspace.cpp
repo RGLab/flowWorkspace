@@ -240,3 +240,26 @@ nodeProperties* flowJoWorkspace::to_popNode(wsPopNode &node,bool isParseGate=fal
 	pNode->dMode=dMode;
 	return pNode;
 }
+
+void flowJoWorkspace::parseVersionList(){
+	wsNode root(this->doc->children);
+	wsNode curNode(root.xpath("/Workspace")->nodesetval->nodeTab[0]);
+	this->versionList=curNode.getProperty("versionList");
+}
+/*
+ * get the minimum initial digit from the version list string
+ */
+unsigned short flowJoWorkspace::getVersionMin(){
+	int res=numeric_limits<int>::max();
+	vector<string> vlist;
+	boost::split(vlist,versionList,boost::is_any_of(";"));
+	for(vector<string>::iterator it=vlist.begin();it!=vlist.end();it++)
+	{
+		string curVer=*it;
+		boost::erase_all(curVer,"Pre");
+		vector<string> digits;
+		boost::split(digits,curVer,boost::is_any_of("."));
+		res=min(res,atoi(digits.at(0).c_str()));
+	}
+	return res;
+}

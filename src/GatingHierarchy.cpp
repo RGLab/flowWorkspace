@@ -264,7 +264,9 @@ void GatingHierarchy::unloadData()
 
 
 }
-
+/*
+ * transform the data
+ */
 void GatingHierarchy::transforming(bool updateCDF)
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
@@ -288,17 +290,22 @@ void GatingHierarchy::transforming(bool updateCDF)
 
 		if(curTrans!=NULL)
 		{
+			if(curTrans->isGateOnly)
+				continue;
+
 			valarray<double> x(this->fdata.subset(curChannel));
 			if(dMode>=GATING_HIERARCHY_LEVEL)
 				cout<<"transforming "<<curChannel<<" with func:"<<curTrans->channel<<endl;
-			valarray<double> y(curTrans->transforming(x));
+//			valarray<double> y(curTrans->transforming(x));
+			curTrans->transforming(x);
 			/*
 			 * update fdata
 			 */
 //			for(unsigned i=0;i<10;i++)
 //				cout<<y[i]<<",";
 
-			fdata.data[fdata.getSlice(curChannel)]=y;
+//			fdata.data[fdata.getSlice(curChannel)]=y;
+			fdata.data[fdata.getSlice(curChannel)]=x;
 
 		}
 

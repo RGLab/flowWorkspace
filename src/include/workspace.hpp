@@ -85,6 +85,7 @@ public:
 	 virtual nodeProperties * to_popNode(wsRootNode &)=0;
 	 virtual nodeProperties * to_popNode(wsPopNode &,bool isGating)=0;
 	 valarray<double> toArray(string sCalTable);
+	 virtual void parseVersionList(){};
 
 
 };

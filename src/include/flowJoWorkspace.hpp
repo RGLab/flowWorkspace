@@ -14,7 +14,7 @@
 
 
 class flowJoWorkspace:public workspace{
-
+	string versionList;
 public:
 
 	 vector <string> getSampleID(unsigned short);
@@ -24,7 +24,8 @@ public:
      nodeProperties * to_popNode(wsRootNode &);
      nodeProperties * to_popNode(wsPopNode &,bool isParseGate);
      string getSampleName(wsSampleNode &);
-
+     void parseVersionList();
+     unsigned short getVersionMin();
 
 };
 

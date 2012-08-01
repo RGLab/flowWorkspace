@@ -162,9 +162,12 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,u
 		 dMode=_dMode;
 		 if(dMode>=GATING_SET_LEVEL)
 			 cout<<"internal gating set created from "<<sFileName<<endl;
+
+		 ws->parseVersionList();
 		 /*
 		  * parsing global calibration tables
 		  */
+
 		 if(isParseGate)
 		 {
 			 if(dMode>=GATING_SET_LEVEL)

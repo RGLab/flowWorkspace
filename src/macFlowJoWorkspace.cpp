@@ -77,6 +77,13 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 		// get current range
 		curParam.range=atoi(parNode.getProperty("range").c_str());
 
+		// get current range
+		curParam.highValue=atoi(parNode.getProperty("highValue").c_str());
+
+		// get current range
+		curParam.calibrationIndex=atoi(parNode.getProperty("calibrationIndex").c_str());
+
+
 		if(dMode>=GATING_SET_LEVEL)
 			cout<<curParam.param<<":"<<curParam.log<<":"<<curParam.range<<endl;
 		res.push_back(curParam);
@@ -87,6 +94,11 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 
 /*
  * get transformation for one particular sample node
+ * TODO:deal with the case when cid!=-2 &version<9  & transLog==false,
+ * we need to use calibrationIndex instead of comp name to search for cal tables
+ *
+ * also need to double check the use case :cid==-2 && version<9
+ * since the current c logic may not be consistent with R code
  */
 trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans){
 
@@ -133,10 +145,11 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	for(PARAM_VEC::iterator it=transFlag.begin();it!=transFlag.end();it++)
 	{
 		string curChnl=it->param;
-		string curCmpChName=comp.prefix+curChnl+comp.suffix;//append prefix
-		transformation * curTran;
+		string transChName;
+		transformation * curTran=0;
 		if(it->log)
 		{
+			transChName=comp.prefix+curChnl+comp.suffix;//append prefix
 			/*
 			 * assign source trans map from the matched trans group
 			 * if no matched trans group,use the first one by default
@@ -148,7 +161,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				/*
 				 * try to search by channel name within the source map
 				 */
-				trans_map::iterator resIt=trans.find(curCmpChName);
+				trans_map::iterator resIt=trans.find(transChName);
 				/*
 				 * if no channel name matched,continue to try "*"
 				 */
@@ -163,7 +176,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 */
 					curTran=resIt->second;
 					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<curCmpChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
+						cout<<transChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
 				}
 				else
 				{
@@ -210,7 +223,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					/*
 					 * try to search by channel name within the source map
 					 */
-					trans_map::iterator resIt=trans.find(curCmpChName);
+					trans_map::iterator resIt=trans.find(transChName);
 
 					/*
 					 * if no channel name matched,continue to try "*"
@@ -225,7 +238,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 						 */
 						curTran=resIt->second;
 						if(dMode>=GATING_HIERARCHY_LEVEL)
-							cout<<curCmpChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
+							cout<<transChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
 					}
 					else
 					{
@@ -239,12 +252,31 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			}
 
 
+
+		}
+		else
+		{
+			transChName=curChnl;
+			int version=getVersionMin();
+			if(version<9)
+			{
+				if(it->highValue==4096)
+				{
+					if(dMode>=GATING_HIERARCHY_LEVEL)
+						cout<<"apply the linear transformation for gates only:"<<curChnl<<endl;
+
+					curTran=new linTrans();
+				}
+			}
+		}
+		if(curTran!=NULL)
+		{
 			/*
 			 * assign matched global trans to the local map
 			 */
-			(*trs)[curCmpChName]=curTran;
+			(*trs)[transChName]=curTran;
 			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"adding "<<curTran->name<<":"<<curCmpChName<<endl;
+				cout<<"adding "<<curTran->name<<":"<<transChName<<endl;
 			/*
 			 * calculate and interpolate the cal table if applicable
 			 */
@@ -258,58 +290,8 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 			}
 		}
+
 	}
-
-
-
-
-//		trans_map trans=tgIt->trans;
-//		for(trans_map::iterator it=trans.begin();it!=trans.end();it++)
-//		{
-//			transformation* curTrans=it->second;
-//			string curChnl=curTrans->channel;
-//			PARAM_VEC::iterator paramIt=findTransFlag(transFlag,curChnl);
-//			if(paramIt==transFlag.end())
-//			{
-//				string err="no log flag found for this parameter!";
-//				err.append(curChnl);
-//				throw(domain_error(err.c_str()));
-//			}
-//			bool isTrans=paramIt->log&(paramIt->range<=4096);
-//			if(isTrans)
-//			{
-//				if(curTrans->name.find(tGName)!=string::npos)
-//				{
-//
-//					(*trs)[curChnl]=curTrans;
-//					if(dMode>=GATING_HIERARCHY_LEVEL)
-//						cout<<"adding "<<curTrans->name<<":"<<curChnl<<endl;
-//
-//					if(!curTrans->isComputed)
-//						curTrans->computCalTbl();
-//					if(!curTrans->calTbl.isInterpolated)
-//					{
-//						if(dMode>=GATING_HIERARCHY_LEVEL)
-//						{
-//							cout<<"spline interpolating..."<<curTrans->name<<endl;
-//						}
-//
-//						curTrans->calTbl.interpolate();
-//
-//					}
-//				}
-//				else
-//				{
-//					/*
-//					 * TODO:try the log trans
-//					 */
-//					throw(domain_error("TODO:try the log trans"));
-//				}
-//			}
-//		}
-
-
-
 
 
 
