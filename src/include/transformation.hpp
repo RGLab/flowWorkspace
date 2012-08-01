@@ -97,7 +97,7 @@ public:
  */
 class logTrans:public transformation{
 public:
-	logTrans(){isGateOnly=true;isComputed=true;calTbl.isInterpolated=true;};
+	logTrans(){isGateOnly=false;isComputed=true;calTbl.isInterpolated=true;};
 	void transforming(valarray<double> & input);
 };
 

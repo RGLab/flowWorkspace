@@ -15,7 +15,7 @@
 #include <Rcpp.h>
 using namespace std;
 using namespace Rcpp;
-typedef vector<bool> POPINDICES;
+typedef vector<bool> POPINDICES;//maybe try boost::dynamic_bitset to speed up
 
 /*
  * define 2-D matrix class out of valarray to represent channel*events data matrix from one FCS

@@ -40,7 +40,7 @@ trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name)
 	for(it=tGVec.begin();it!=tGVec.end();it++)
 	{
 //		cout<<it->groupName<<it->trans.size()<<endl;
-		if(it->groupName.compare(name)==0)
+		if(it->groupName.find(name)!=string::npos)
 			break;
 	}
 	return it;

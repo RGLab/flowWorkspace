@@ -48,6 +48,7 @@ transformation::transformation(){
 	 * so there is no need to compute calibration
 	 */
 	isComputed=true;
+	isGateOnly=false;
 
 }
 /*

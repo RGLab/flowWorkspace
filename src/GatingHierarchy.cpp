@@ -445,8 +445,9 @@ void GatingHierarchy::gating(VertexID u)
 	}
 
 	//combine with parent indices
-	for(unsigned i=0;i<curIndices.size();i++)
-		curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
+	transform (curIndices.begin(), curIndices.end(), parentNode->indices.begin(), curIndices.begin(),logical_and<bool>());
+//	for(unsigned i=0;i<curIndices.size();i++)
+//		curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
 	node->indices=curIndices;
 	node->computeStats();
 }
@@ -487,22 +488,38 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 		if(it->isNot)
 			curPopInd.flip();
 
-		for(unsigned i=0;i<ind.size();i++)
+
+		switch(it->op)
 		{
-
-
-			switch(it->op)
-			{
-				case '&':
-					ind.at(i)=ind.at(i)&curPopInd.at(i);
-					break;
-				case '|':
-					ind.at(i)=ind.at(i)|curPopInd.at(i);
-					break;
-				default:
-					throw(domain_error("not supported operator!"));
-			}
+			case '&':
+				transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_and<bool>());
+				break;
+			case '|':
+				transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_or<bool>());
+				break;
+			default:
+				throw(domain_error("not supported operator!"));
 		}
+
+
+
+
+//		for(unsigned i=0;i<ind.size();i++)
+//		{
+//
+//
+//			switch(it->op)
+//			{
+//				case '&':
+//					ind.at(i)=ind.at(i)&curPopInd.at(i);
+//					break;
+//				case '|':
+//					ind.at(i)=ind.at(i)|curPopInd.at(i);
+//					break;
+//				default:
+//					throw(domain_error("not supported operator!"));
+//			}
+//		}
 
 	}
 

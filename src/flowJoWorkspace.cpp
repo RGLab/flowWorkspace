@@ -99,10 +99,6 @@ string flowJoWorkspace::getSampleName(wsSampleNode & node){
 	return filename;
 }
 
-//bool matchName(calibrationTable calTbl){
-//
-//	return calTbl.name.find("Acquisition-defined")==string::npos;
-//}
 /*
  * get transformation for one particular sample node
  */
