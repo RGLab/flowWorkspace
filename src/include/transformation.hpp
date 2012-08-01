@@ -99,6 +99,7 @@ class logTrans:public transformation{
 public:
 	logTrans(){isGateOnly=false;isComputed=true;calTbl.isInterpolated=true;};
 	void transforming(valarray<double> & input);
+
 };
 
 class linTrans:public transformation{

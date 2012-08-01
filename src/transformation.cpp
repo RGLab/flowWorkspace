@@ -51,12 +51,22 @@ transformation::transformation(){
 	isGateOnly=false;
 
 }
+
+double mylog10(double x) {
+	return x>0?log10(x):0;
+}
 /*
  * these transforming functions change the input data
  */
+
 void logTrans::transforming(valarray<double> & input){
 
-		input=log10(input);
+		/*
+		 * clean the data before log
+		 */
+		input=input.apply(mylog10);
+//		input=log10(input);
+
 }
 void linTrans::transforming(valarray<double> & input){
 
