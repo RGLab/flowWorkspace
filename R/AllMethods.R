@@ -1953,7 +1953,9 @@ setMethod("getBoundaries",signature(obj="GatingHierarchy",y="character"),functio
 #Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
 .isCompensated<-function(x){
     flowCore:::checkClass(x,"GatingHierarchy")
-    !(is.null(rownames(x@compensation))&identical(x@compensation%*%x@compensation,x@compensation))
+	comp<-getCompensationMatrices(x)@spillover
+	
+    !(is.null(rownames(comp))&identical(comp%*%comp,comp))
 }
 setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
 	if(.isBooleanGate.graphNEL(obj,y)){
@@ -3011,7 +3013,9 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 setMethod("getCompensationMatrices","flowJoWorkspace",function(x){
 	.getCompensationMatrices(x@doc);
 })
-
+setMethod("getCompensationMatrices","GatingHierarchy",function(x){
+			x@compensation
+		})
 ## choose the correct transformation based on the compensation ID. If it's -2, we check the Parameters section for the sample.
 setMethod("getTransformations","flowJoWorkspace",function(x){
 	nms<-.getCalibrationTableNames(x@doc)

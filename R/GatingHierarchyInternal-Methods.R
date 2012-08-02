@@ -440,9 +440,22 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 					polygonGate(.gate=matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
 				else if(g$type==2)
 					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
-#				else if(g$type==3)
-					
-				else
+				else if(g$type==3)
+				{
+					nodeNames<-getNodes(obj)
+					nodePaths<-getNodes(obj,isPath=T)
+					refPaths<-unlist(lapply(g$ref,function(curPath){
+										paste(curPath,collapse="/")
+										
+									})
+								)
+					fullPaths<-paste("/",refPaths,sep="")
+					nodes<-nodeNames[match(fullPaths,nodePaths)]
+					names(nodes)<-refPaths
+					g$ref<-nodes
+					attr(g,"class")<-"BooleanGate"	
+					g
+				}else
 					stop("not supported gate type",g$type)
 				
 			}
@@ -472,9 +485,8 @@ setMethod("getData",signature(obj="GatingHierarchyInternal"),function(obj,y=NULL
 			}
 			
 		})
-##dummy function for now
 .isBoolGate<-function(x,y){
-	return (FALSE)
+	return (class(getGate(x,y))=="BooleanGate")
 }
 setMethod("getDimensions",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,index=FALSE){
 #			browser()
@@ -603,40 +615,37 @@ setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 			compobj
 			
 })
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
-#plotGate1<-function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
+
+#TODO: to inverse transform the range in order to display the raw scale
+setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 				return();
 			}
-#			browser()
+			
 			nodelist<-getNodes(x)
 			nodeInd<-nodelist%in%y
-			
+
 			#do we pass a "main" argument for the title?
-			if(is.null(match.call()$main)){
+			if(is.null(main)){
 				#fjName
 				fjName<-getNodes(x,isPath=T)[nodeInd]
 				#sampleName
 				sname<-getSample(x)
 				#construct plot title for this gate
-				mtitle<-paste(sname,fjName,sep="\n")
-				cl<-match.call(expand.dots=TRUE)
-				cl$main<-mtitle
-				return(eval(cl,parent.frame()));
+				main<-paste(sname,fjName,sep="\n")
 			}
-#			cachedata<-getData(x,y);
-			parentdata<-getData(x,getParent(x,y));
-#			rootdata<-getData(x);
-			
-			main<-match.call()$main;
+#			browser()
+			parentdata<-getData(x,getParent(x,y))
+			curGate<-getGate(x,y)
 			##Two cases: gate is boolean, or gate is normal
 			##Boolean gates are treated differently
-#			browser()
-			if(.isBoolGate(x,y)){
+			
+			
+			if(class(curGate)=="BooleanGate"){
 				p<-getParent(x,y);
 				ind<-getIndices(x,y)
-				ind.p<-getIndices(x,p)
+#				ind.p<-getIndices(x,p)
 				pd<-parentdata
 				dims<-getDimensions(x,p);
 				if(!.isCompensated(x)){
@@ -668,24 +677,27 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 					
 				}
 				invisible()
-			}else if(suppressWarnings(is.na(getGate(x,y)))){
+			}else if(suppressWarnings(is.na(curGate))){
 				message("Can't plot. There is no gate defined for node ",y);
 				invisible();			
-			}else{
+			}else
+			{
 				if(add==FALSE){
 #					
 					dims<-getDimensions(x,y)
 					if(!.isCompensated(x)){
-						pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
+#						pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
+						pnames.data<-colnames(parentdata)
 						pnames<-gsub(">","",gsub("<","",pnames.data))
 					}else{
-						pnames<-pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
+#						pnames<-pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
+						pnames<-pnames.data<-colnames(parentdata)
 						
 					}
 #					browser()
 					dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
 					dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
-					par.desc<-parameters(parentdata)@data$desc[dim.ind]
+					par.desc<-pData(parameters(parentdata))$desc[dim.ind]
 					if(!any(is.na(par.desc))){
 						dflag<-TRUE
 					}else{
@@ -694,67 +706,47 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 					pd<-parentdata[,dims2];
 					if(dflag){
 						#warning this may sometimes fail	
-						colnames(pd)<-parameters(pd)@data$desc
+						colnames(pd)<-pData(parameters(pd))$desc
 					}
 					#use dimnames from the data
-					form<-mkformula(rev(dims2));
+					
 					if(length(dims2)==2){
-#						browser()
-						if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-							scales<-list()
-							xlim=range(parentdata[,dims2[1]])
-							ylim=range(parentdata[,dims2[2]])
-						}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-							scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),x=list(rot=45))
-							xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-							ylim=range(parentdata[,dims2[2]])
-						}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-							scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label),x=list(rot=45))
-							xlim=range(parentdata[,dims2[1]])
-							ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-						}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-							scales<-list(x=list(rot=45,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
-							xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-							ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-						}
+					#TODO: transform range back to raw scale and set at and labels for axis
+#						if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#							scales<-list()
+#							xlim=range(parentdata)[,dims2[1]]
+#							ylim=range(parentdata)[,dims2[2]]
+							xlim=unlist(lapply(range(exprs(parentdata)[,dims2[1]]),max,0))
+							ylim=unlist(lapply(range(exprs(parentdata)[,dims2[2]]),max,0))
+#						}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#							scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),x=list(rot=45))
+#							xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+#							ylim=range(parentdata[,dims2[2]])
+#						}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#							scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label),x=list(rot=45))
+#							xlim=range(parentdata[,dims2[1]])
+#							ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
+#						}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#							scales<-list(x=list(rot=45,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
+#							xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+#							ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
+#						}
 						#If 2D use xyplot.
 						#TODO add stains to labels
 #						xylab<-gsub("NA","",paste(pData(parameters(rootdata))$name,pData(parameters(rootdata))$desc))
 						xylab<-gsub("NA","",paste(pData(parameters(parentdata))$name,pData(parameters(parentdata))$desc))
-
+						form<-mkformula(rev(dims2));
 						res<-xyplot(x=form
-									,data=parentdata[,dims2]
-#									,smooth=smooth
+									,data=parentdata
 									,xlab=xylab[dim.ind[1]]
 									,ylab=xylab[dim.ind[2]]
-									,frame.plot=TRUE
-									,scales=scales
-									,nbin=512
-									,filter=getGate(x,y)
-									,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
-#	#									gp <- list(...)[["par.settings"]]
-#										browser()
-										panel.xyplot.flowframe(...)
-#										
-#										#the gate names sometimes don't match the dimension names.. 
-#										#If there's a mix of compensated and uncompensated samples.
-#										dims<-colnames(getBoundaries(gh,g))
-#	#										browser()
-#										if(.isCompensated(gh)){
-#											dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
-#										}else{
-#											tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
-#											dims<-colnames(getBoundaries(gh,g))
-#											dims<-na.omit(dims[match(tmp,dims)])
-#										}
-#										#Case for rectangle or polygon gate
-#										if(length(dims)>1){
-#											panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
-#										}else{
-#											
-#											apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-#										}
-									}
+									,xlim=xlim
+									,ylim=ylim
+#									,frame.plot=TRUE
+#									,scales=scales
+#									,nbin=512
+									,filter=curGate
+									,main=main
 									,...
 									)
 						return(res)
@@ -777,7 +769,8 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 								},...)
 						return(res)
 					}
-				}else{
+				}else
+				{
 					#add=TRUE
 					trellis.focus(highlight=FALSE)
 					dims<-colnames(getBoundaries(x,y))
@@ -786,7 +779,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 					trellis.unfocus();
 				}
 			}
-		})
+})
 setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,...){
 			node<-getNodes(x,tsort=tsort)[y];
 			if(is.na(node)){

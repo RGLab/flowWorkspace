@@ -283,6 +283,29 @@ BEGIN_RCPP
 									 );
 				return ret;
 			}
+		case BOOLGATE:
+			{
+			  boolGate * bg=dynamic_cast<boolGate*>(g);
+			  vector<BOOL_GATE_OP> boolOpSpec=bg->getBoolSpec();
+			  vector<string> v;
+			  vector<char>v2;
+			  vector<vector<string> >ref;
+			  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+			  {
+				  v.push_back(it->isNot?"!":"");
+				  v2.push_back(it->op);
+				  ref.push_back(it->fullpath);
+			  }
+
+			  List ret=List::create(Named("v",v)
+									 ,Named("v2",v2)
+									 ,Named("ref",ref)
+									 ,Named("type",BOOLGATE)
+									 );
+			  return ret;
+
+			}
+
 		default:
 		{
 //			cout<<g->getType()<<endl;
