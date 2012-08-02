@@ -302,7 +302,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #				browser()
 					#range info within parameter object is not always the same as the real data range
 					#it is used to display the data.
-					#so we need update this range info by transforming the it
+					#so we need update this range info by transforming it
 					
 					localDataEnv<-nodeDataDefaults(gh@tree,"data")
 					comp<-.Call("R_getCompensation",G@pointer,sampleName)	

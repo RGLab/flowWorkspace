@@ -142,36 +142,45 @@ BEGIN_RCPP
 		transformation * curTrans=it->second;
 		if(curTrans==NULL)
 			throw(domain_error("empty transformation for channel"+it->first));
-//		switch(curTrans->type)
-//			{
-//				case LOGICLE:
-//					{
-//						throw(domain_error("logicle transformation is not supported yet in R_getTransformation!"));
-//		//
-//		////				Vector args=Vector::create();
-//		////
-//		////				return(List::create(Named("type",LOGICAL)
-//		////									,Named("arguments",args)
-//		////									)
-//		////							);
-//					}
-//				case CALTBL:
-//				{
-					if(!curTrans->calTbl.isInterpolated)
-						throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
-					Spline_Coefs obj=curTrans->calTbl.getCalTbl();
-					string transName=curTrans->name+" "+it->first;
-					res.push_back(List::create(Named("z",obj.coefs)
-												,Named("method",obj.method)
-												,Named("type",obj.type)
-												)
-									,transName
-									);
-//					break;
-//				}
-//				default:
-//					throw(domain_error("unknown transformation in R_getTransformations!"));
-//			}
+
+		string transName=curTrans->name+" "+it->first;
+
+		switch(curTrans->type)
+		{
+
+			case LOG:
+			{
+
+				res.push_back(List::create(Named("type","log"))
+								,transName
+								);
+				break;
+			}
+			case LIN:
+			{
+
+				res.push_back(List::create(Named("type","lin"))
+								,transName
+								);
+				break;
+			}
+			case CALTBL:
+			{
+				if(!curTrans->calTbl.isInterpolated)
+					throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
+				Spline_Coefs obj=curTrans->calTbl.getCalTbl();
+
+				res.push_back(List::create(Named("z",obj.coefs)
+											,Named("method",obj.method)
+											,Named("type",obj.type)
+											)
+								,transName
+								);
+				break;
+			}
+			default:
+				throw(domain_error("unknown transformation in R_getTransformations!"));
+		}
 
 	}
 	return (res);

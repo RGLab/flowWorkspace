@@ -8,7 +8,9 @@
 #ifndef TRANSFORMATION_HPP_
 #define TRANSFORMATION_HPP_
 
-//#define CALTBL 0
+#define CALTBL 0
+#define LOG 1
+#define LIN 2
 //#define LOGICLE 1
 //#define BIEXP 2
 
@@ -97,7 +99,7 @@ public:
  */
 class logTrans:public transformation{
 public:
-	logTrans(){isGateOnly=false;isComputed=true;calTbl.isInterpolated=true;};
+	logTrans(){type=LOG;isGateOnly=false;isComputed=true;calTbl.isInterpolated=true;};
 	void transforming(valarray<double> & input);
 
 };
@@ -105,7 +107,7 @@ public:
 class linTrans:public transformation{
 
 public:
-	linTrans(){isGateOnly=true;isComputed=true;calTbl.isInterpolated=true;};
+	linTrans(){type=LIN;isGateOnly=true;isComputed=true;calTbl.isInterpolated=true;};
 	void transforming(valarray<double> & input);
 };
 

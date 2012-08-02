@@ -25,11 +25,7 @@ class calibrationTable{
 
 public:
 	int spline_method;
-	string caltype;
-	/*
-	 * TODO:try boost::tokenizer/boost::split and boost::lexical_cast
-	 * or stream and getline to parse it into double array
-	 */
+	string caltype;//TODO:move this to transformation class
 
 	valarray<double> x,y,b,c,d;
 	bool isInterpolated;

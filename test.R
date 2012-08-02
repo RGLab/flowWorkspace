@@ -48,8 +48,8 @@ time1<-Sys.time()
 ############################################################################### 
 ##parse as template and apply to new data			
 ###############################################################################
-G<-parseWorkspace(ws,name=27
-					,execute=F
+GT<-parseWorkspace(ws,name=27
+					,execute=T
 					,includeGates=T
 					,subset=c(1)
 					,isNcdf=F

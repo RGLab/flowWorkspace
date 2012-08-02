@@ -516,11 +516,28 @@ setMethod("getDimensions",signature(obj="GatingHierarchyInternal",y="character")
 setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y=NULL,...){
 			get("axis.labels",envir=nodeDataDefaults(obj@tree)$data)
 		})
+
+#this method currently is used convert transformation funtion from c++ to R
+##mainly for transforming range info
 setMethod("getTransformations","GatingHierarchyInternal",function(x){
 #			browser()
 			trans<-.Call("R_getTransformations",x@pointer,getSample(x))
-			lapply(trans,function(curTrans){
+			lapply(trans[1],function(curTrans){
 #						browser()
+						if(curTrans$type=="log")
+						{
+							f<-function(x){x<-log(x,10);x[is.nan(x)]<-0;x[is.infinite(x)]<-0;x}
+							attr(f,"type")<-"log"
+							
+						}
+						else if(curTrans$type=="lin")
+						{
+							f<-function(x){x*64}
+							attr(f,"type")<-"gateOnly"
+							
+							
+						}else 
+						{
 							f<-function (x, deriv = 0) 
 							{
 							    deriv <- as.integer(deriv)
@@ -545,8 +562,11 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							z$method<-curTrans$method
 							assign("z",z,environment(f))
 							assign("C_spline_eval",environment(splinefun)$C_spline_eval,environment(f))
-							attr(f,"type")<-curTrans$type
-							return (f)
+							
+							attr(f,"type")<-curTrans$type	
+						}
+						
+						return (f)
 					})
 			
 		})

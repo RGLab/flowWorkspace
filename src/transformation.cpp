@@ -49,6 +49,7 @@ transformation::transformation(){
 	 */
 	isComputed=true;
 	isGateOnly=false;
+	type=CALTBL;
 
 }
 
