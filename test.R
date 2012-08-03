@@ -57,7 +57,8 @@ GT<-parseWorkspace(ws,name=27
 					,path="/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/"
 					,dMode=4
 					)
-
+	library(gridExtra)
+					
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"
 templateSample<-newSamples[1]
