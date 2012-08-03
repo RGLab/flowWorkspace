@@ -122,9 +122,9 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 		 * try to look for the trans group associated with the current comp name
 		 */
 
-		if(cid.compare("-1")==0)
-			tGName="Acquisition-defined";
-		else
+//		if(cid.compare("-1")==0)
+//			tGName="Acquisition-defined";
+//		else
 			tGName=comp.name;
 
 		tgIt=findTransGroup(*gTrans,tGName);
@@ -402,6 +402,8 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	compensation comp;
 	comp.cid=sampleNode.getProperty("compensationID");
 
+	if(comp.cid.empty())
+		comp.cid="-2";
 	/*
 	 * -1:Acquisition-defined,to be computed from data
 	 * -2:None
@@ -412,17 +414,18 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	 */
 	if(comp.cid.compare("-1")==0)
 	{
+		comp.name="Acquisition-defined";
 		comp.comment="Acquisition-defined";
 		comp.prefix="<";
 		comp.suffix=">";
 	}
 	else if(comp.cid.compare("-2")==0)
+	{
+		comp.prefix="<";
+		comp.suffix=">";
 		comp.comment="none";
-	else if(comp.cid.empty())
-		{
-			comp.comment="none";
-			comp.cid="-2";
-		}
+		comp.name="none";
+	}
 	else
 	{
 		/*

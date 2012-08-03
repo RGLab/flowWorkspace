@@ -171,7 +171,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 
 			if(cid!="-1" && cid!="-2"){
 				message("Compensating");
-				#compobj<-compensation(.getCompensationMatrices(doc)[[as.numeric(cid)]])
+				
 				marker<-comp$parameters
 				compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
 				
@@ -184,18 +184,18 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					data<-res
 					rm(res);
 				}
-				cnd<-colnames(data)
-				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
-				wh<-cnd%in%parameters(compobj)
-				cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-				
-				#colnames(data)<-cnd;
-				e<-exprs(data)
-				d<-description(data);
-				p<-parameters(data);
-				p@data$name<-cnd
-				colnames(e)<-cnd;
-				data<-new("flowFrame",exprs=e,description=d,parameters=p)						
+#				cnd<-colnames(data)
+#				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
+#				wh<-cnd%in%parameters(compobj)
+#				cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+#				
+#				#colnames(data)<-cnd;
+#				e<-exprs(data)
+#				d<-description(data);
+#				p<-parameters(data);
+#				p@data$name<-cnd
+#				colnames(e)<-cnd;
+#				data<-new("flowFrame",exprs=e,description=d,parameters=p)						
 				
 			}
 			else if(cid=="-2"){
@@ -222,35 +222,39 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 						
 					}
 #						browser()
-					cnd<-colnames(data)
-					wh<-cnd%in%parameters(compobj)
-					cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-					e<-exprs(data)
-					d<-description(data);
-					p<-parameters(data);
-					p@data$name<-cnd
-					colnames(e)<-cnd;
-					data<-new("flowFrame",exprs=e,description=d,parameters=p)
+#					cnd<-colnames(data)
+#					wh<-cnd%in%parameters(compobj)
+#					cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+#					e<-exprs(data)
+#					d<-description(data);
+#					p<-parameters(data);
+#					p@data$name<-cnd
+#					colnames(e)<-cnd;
+#					data<-new("flowFrame",exprs=e,description=d,parameters=p)
 					
 				}
 				
 			}
-
-			#save raw or compensated data 
+			##add prefix to parameter names
+			cnd<-colnames(data)
+			if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
+			wh<-cnd%in%parameters(compobj)
+			cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
 			
+			#colnames(data)<-cnd;
+			e<-exprs(data)
+			d<-description(data);
+			p<-parameters(data);
+			p@data$name<-cnd
+			colnames(e)<-cnd;
+			data<-new("flowFrame",exprs=e,description=d,parameters=p)
+#			browser()
+			#save raw or compensated data 
+			message("saving compensated data");
 			if(isNcdf)
-			{
-				message("saving compensated data");
 				addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
-			}else
-			{
-				if(cid!="-2")#no need to update data when no compensation was done and also if data was loaded as flowSet already
-				{
-					message("saving compensated data");
-					assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
-				}
-					
-			}
+			else
+				assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
 				
 		}
 		
@@ -266,6 +270,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	
 	if(execute)
 	{
+#		browser()
 		#update colnames slot for flowSet
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs

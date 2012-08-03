@@ -49,7 +49,7 @@ unsigned find_pos(vector<string> s,string pattern ){
 	it2=s.end();
 	res=find(it1,it2,pattern);
 	if(res==it2)
-		throw(domain_error(pattern.append(" not found in ncdfFlowSet!")));
+		throw(domain_error(pattern.append(" not found in flowData!")));
 	return (res-it1);
 }
 
