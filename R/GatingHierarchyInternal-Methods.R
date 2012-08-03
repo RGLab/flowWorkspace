@@ -658,37 +658,41 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),functi
 			plotGate(x,y,...)
 			
 })
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="mising"),function(x,y,...){
+setMethod("plotGate",signature(x="GatingHierarchyInternal",y="missing"),function(x,y,...){
+#			browser()
 		y<-2:length(getNodes(x))
+		
 		plotGate(x,y,...)
 		})
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function(x,y,bool=FALSE,...){
+setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 				return();
 			}
 			
-			plotObjs<-lapply(y,function(y){
-						
-						if(!.isBoolGate(x,y)||bool)
-							return(.plotGate(x,y,...))
-						
-						
-					},na.omit=TRUE)
-			
+			##filter out boolean gates when bool==FALSE
+			if(!bool)
+			{
+				ind<-unlist(lapply(y,.isBoolGate,x=x))
+				y<-y[!ind]
+			}
+#			browser()
+			plotObjs<-lapply(y,function(y)return(.plotGate(x,y,...)))
 			
 			do.call(grid.arrange,plotObjs)
 			
 })
 .plotGate<-function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,...){			
-			#do we pass a "main" argument for the title?
+#	browser()		
+	#do we pass a "main" argument for the title?
 			if(is.null(main)){
 				#fjName
 				fjName<-getNodes(x,y,isPath=T)
 				#sampleName
-				sname<-getSample(x)
+#				sname<-getSample(x)
 				#construct plot title for this gate
-				main<-paste(sname,fjName,sep="\n")
+#				main<-paste(sname,fjName,sep="\n")
+				main<-fjName
 			}
 			
 			curGate<-getGate(x,y)
