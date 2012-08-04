@@ -84,12 +84,15 @@ setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),fun
 			pind<-getParent(obj,ind)
 			getNodes(obj)[pind]
 		})
-setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
-			nodes<-getNodes(obj)
+setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE){
+			ind<-which(getNodes(obj)%in%y)
+			cind<-getChildren(obj,ind)
+			getNodes(obj)[cind]
+})
+setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y){
 #			browser()
-			ind<-which(nodes%in%y)
-			ind<-.Call("R_getChildren",obj@pointer,getSample(obj),as.integer(ind)-1)+1
-			nodes[ind]
+			.Call("R_getChildren",obj@pointer,getSample(obj),as.integer(y)-1)+1
+			
 		})
 #
 setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),function(x,y,flowJo=TRUE){
@@ -670,40 +673,99 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 				return();
 			}
 			
+			
+#			browser()
 			##filter out boolean gates when bool==FALSE
 			if(!bool)
 			{
-				ind<-unlist(lapply(y,.isBoolGate,x=x))
-				y<-y[!ind]
+				boolInd<-unlist(lapply(y,.isBoolGate,x=x))
+				y<-y[!boolInd]
 			}
+			plotList<-poplist<-as.list(y)
+			names(plotList)<-plotList
+			
+			#check if they have same parents and parameters
+			keylist<-sapply(plotList,function(y){
+						
+						if(!.isBoolGate(x,y))
+						{
+							curGate<-getGate(x,y)
+#							browser()
+							if(extends(class(curGate),"filter"))
+							{
+								pid<-getParent(x,y)
+								params<-paste(sort(unname(parameters(curGate))),collapse="")
+							
+								paste(pid,params,sep="|")
+							}else
+								return(-1)
+							
+						}else
+							return(-2)
+					})
+
+			invalidNodes<-sapply(keylist,function(key)key==-1)
+			poplist<-poplist[!invalidNodes]
+			plotList<-plotList[!invalidNodes]
+			keylist<-keylist[!invalidNodes]
+			
+			boolNodes<-sapply(keylist,function(key)key==-2)
+			keylist<-keylist[!boolNodes]
+			
 #			browser()
-			plotObjs<-lapply(y,function(y)return(.plotGate(x,y,...)))
+			keylistFeq<-table(keylist)
+			toMergeKeyList<-names(keylistFeq[keylistFeq>=2])
+			# construct the a special list object to replace/del the one that needs to be merged
+			for(curKey in toMergeKeyList)
+			{
+				toMerge<-as.numeric(names(keylist[keylist==curKey]))
+				toReplace<-sort(toMerge)[1]#replace the first merged child node with the merge list
+				toRemove<-toMerge[!(toMerge==toReplace)]#remove other children
+				
+				toReplaceInd<-match(toReplace,poplist)
+				toRemoveInd<-match(toRemove,poplist)
+#								browser()
+				
+				curPid<-as.numeric(strsplit(curKey,split="\\|")[[1]][1])#extract pid
+				plotList[[toReplaceInd]]<-list(popIds=toMerge,parentId=curPid)
+				plotList[[toRemoveInd]]<-NULL
+				poplist[[toRemoveInd]]<-NULL#make sure syn y as well vector since it is used to index plotList 
+			}
+			
+					
+			plotObjs<-lapply(plotList,function(y)return(.plotGate(x,y,...)))
 			
 			do.call(grid.arrange,plotObjs)
 			
 })
-.plotGate<-function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,...){			
-#	browser()		
-	#do we pass a "main" argument for the title?
+.plotGate<-function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
+#		browser()
+			if(is.list(y))
+				pid<-y$parentId
+			else
+				pid<-getParent(x,y)
+		
 			if(is.null(main)){
-				#fjName
-				fjName<-getNodes(x,y,isPath=T)
-				#sampleName
-#				sname<-getSample(x)
-				#construct plot title for this gate
-#				main<-paste(sname,fjName,sep="\n")
+				fjName<-getNodes(x,pid,isPath=T)
 				main<-fjName
 			}
 			
-			curGate<-getGate(x,y)
-					
-			if(suppressWarnings(is.na(curGate))){
-				message("Can't plot. There is no gate defined for node ",getNode(x,y));
-				invisible();			
-				return(NULL)
-			}
+			if(is.list(y))
+			{
+				curGate<-filters(lapply(y$popIds,function(y)getGate(x,y)))	
+			}else
+			{
+				curGate<-getGate(x,y)
+	
+				if(suppressWarnings(is.na(curGate))){
+					message("Can't plot. There is no gate defined for node ",getNode(x,y));
+					invisible();			
+					return(NULL)
+				}
+
+			}			
 			
-			parentdata<-getData(x,getParent(x,y))
+			parentdata<-getData(x,pid)
 
 			#################################
 			# setup axis labels and scales
@@ -717,10 +779,12 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 #				attr(curGate,"class")<-"filter"
 				
 				panelFunc<-panel.xyplot.flowFrame.booleanGate
-			}
-			else
+			}else
 			{
-				params<-parameters(curGate)
+				if(class(curGate)=="filters")
+					params<-parameters(curGate[[1]])
+				else
+					params<-parameters(curGate)
 				panelFunc<-panel.xyplot.flowframe
 			}
 		
@@ -805,6 +869,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 						,smooth=smooth
 						#							,scales=scales
 						,main=main
+						,stat=stat
 						,panel=panelFunc
 						,...
 						)	

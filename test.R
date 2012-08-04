@@ -1,7 +1,7 @@
 #unloadNamespace("flowWorkspace")
 #library(ncdfFlow)
 library(flowWorkspace)
-
+library(gridExtra)
 #library(Rgraphviz)
 
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
@@ -37,7 +37,7 @@ ws<-openWorkspace(macXML[1])
 #											,group=2)
 
 #for(i in 2:6)
-time1<-Sys.time()	
+#time1<-Sys.time()	
 #Rprof()
 #time_cpp<<-0
 #G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
@@ -48,16 +48,18 @@ time1<-Sys.time()
 ############################################################################### 
 ##parse as template and apply to new data			
 ###############################################################################
+time1<-Sys.time()	
 GT<-parseWorkspace(ws,name=27
 					,execute=T
 					,includeGates=T
-					,subset=c(1)
+#					,subset=c(19:20)
 					,isNcdf=F
 					,useInternal=T
 					,path="/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/"
-					,dMode=4
+					,dMode=0
 					)
-	library(gridExtra)
+Sys.time()-time1						
+	
 	
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"
@@ -72,20 +74,15 @@ G<-GatingSet(gh_template
 #				,path=datapath
 				,isNcdf=FALSE,dMode=0)
 
-getPopStats(G[[1]])[,2:3]
+getPopStats(GT[[2]])[,2:3]
 
-for(curSample in newSamples)
-{
-#	browser()
-	fj<-getPopStats(GT[[curSample]])[,2,F]
-	fc<-getPopStats(G[[curSample]])[,3,drop=F]
-	toDisplay<-as.matrix(cbind(fj,fc))
-	toDisplay
-	rownames(toDisplay)<-basename(rownames(toDisplay))
-	barplot(t(toDisplay),beside=T,las=2,horiz=T,cex.names=0.8,main=curSample)
-	browser()
-	dev.off()
-}
+##plot
+getNodes(GT[[1]])
+png(file="plotGate.png",width=800,height=800)
+plotGate(GT[[1]])
+dev.off()
+plotGate(GT[[1]],1:10,,bool=T,xbins=128)
+
 nodelist<-getNodes(G[[curSample]])
 nodelist
 plotGate(G[[curSample]],2,smooth=F,xbin=128,margin=T)
@@ -187,113 +184,7 @@ getData(G[[1]])
 cal<-getTransformations(G[[1]])
 comp<-getCompensationMatrices(G[[1]])
 
-##plot
-for(curSample in getSamples(G[1:2]))
-{
-	
-	gh<-G[[curSample]]
-#	browser()
-	
-#	pdf(file=paste("output/",sampleName,".pdf",sep=""))
-	
-#	print(plot(gh))
-	
-	for(i in 7:length(getNodes(gh)))
-	{
-		
-		 print(plotGate(gh,i,smooth=F,xbin=128,margin=F))
-		 browser()
-		 dev.off()
- 	}
- 	
-#	print(plotPopCV(gh))
-#	getNodes(gh)
-#	dev.off()
-}
 
-manualGate<-function(){
-	fr<-read.FCS(file="data/Blomberg/data/Exp2_Sp004_1_Tcell.fcs")
-#	save(cal,file="../output/R/cal.rda")
-	
-#	save(fs,file="output/R/fs_comp.rda")
-#	cal<-getTransformations(gh)
-	load("output/R/fs1_comp.rda")
-	
-	data<-fs1[[1]]
-#	data<-getData(gh)
-	sampleName<-"Exp2_Sp004_1_Tcell.fcs"
-	gh<-G[[1]]
-	nrow(data)
-	getPopStats(gh)[,2:3,drop=F]
-	names(cal)
-	
-	f<-cal[[4]]
-	
-	g<-getGate(gh,2)
-	g@boundaries
-	data<-Subset(data,g)
-	xyplot(`Comp-FITC-A`~`FSC-A`,data=data
-			,filter=g
-			,smooth=T
-			,xbin=128
-	)
-	
-	##gating through singlets and lymph since they don't require transform
-	g<-getGate(gh,3)
-	
-	xyplot(`FSC-W`~`FSC-A`,data=getData(gh,2)
-			,filter=g
-			,smooth=F
-			,xbin=128
-	)
-	data<-Subset(data,g)
-	
-	g<-getGate(gh,4)
-	data<-Subset(data,g)
-	xyplot(`SSC-A`~`FSC-A`,data=getData(gh,3)
-			,filter=g
-			,smooth=F
-			,xbin=128
-	)
-	#check cd3+ gate
-	g<-getGate(gh,5)
-	curChannel<-"Comp-Pacific Blue-A"
-	curChannel<-"Comp-FITC-A"
-	#transform the channel
-	tmp<-exprs(data)[,curChannel]
-	tmp<-f(tmp)
-	exprs(data)[,curChannel]<-tmp
-	
-	
-	#transform the range slot
-	ind<-match(curChannel,colnames(data))
-	tmp<-pData(parameters(data))[ind,4:5]
-	tmp<-f(tmp)
-	pData(parameters(data))[ind,4:5]<-tmp
-	
-	#transform the gate
-	
-	tmp<-g@boundaries[,curChannel]
-	tmp<-f(tmp)
-	g@boundaries[,curChannel]<-tmp
-	
-	xyplot(`Comp-FITC-A`~`Comp-Pacific Blue-A`,data=getData(gh,4)
-			,filter=g
-			,smooth=F
-			,xbin=128
-	)
-	
-	#check cd4+ gate
-	g<-getGate(gh,6)
-#	curChannel<-"Comp-PerCP-Cy5-5-A"
-	curChannel<-"Comp-APC-Cy7-A"
-	length(which(filter(data,g)@subSet))
-	xyplot(`Comp-APC-Cy7-A`~`Comp-PerCP-Cy5-5-A`,data=getData(gh,5)
-			,filter=g
-			,smooth=F
-			,xbin=128
-	)
-}
 
 getAxisLabels(G[[1]])
 getAxisLabels(G1[[1]])
