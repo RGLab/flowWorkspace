@@ -545,7 +545,7 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),f
 setMethod("getTransformations","GatingHierarchyInternal",function(x){
 #			browser()
 			trans<-.Call("R_getTransformations",x@pointer,getSample(x))
-			lapply(trans[1],function(curTrans){
+			lapply(trans,function(curTrans){
 #						browser()
 						if(curTrans$type=="log")
 						{
