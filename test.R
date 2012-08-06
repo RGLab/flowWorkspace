@@ -14,13 +14,14 @@ library(gridExtra)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
-
-macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
+macXML<-"/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/data/NHLBI.xml"
+#macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
 #path<-"~/rglab/workspace/flowWorkspace/data"
 #
 #macXML<-"HIPC_trial.xml"
 #macXML<-file.path(path,"HIPC_trial/data",macXML)
+
 #
 #macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 #
@@ -49,13 +50,13 @@ ws<-openWorkspace(macXML[1])
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-GT<-parseWorkspace(ws,name=27
+G<-parseWorkspace(ws,name=2
 					,execute=T
 					,includeGates=T
 					,subset=c(1)
 					,isNcdf=F
-					,useInternal=T
-					,path="/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/"
+					,useInternal=F
+					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/data/Bcell/"
 					,dMode=0
 					)
 Sys.time()-time1						
@@ -74,7 +75,7 @@ G<-GatingSet(gh_template
 #				,path=datapath
 				,isNcdf=FALSE,dMode=0)
 
-getPopStats(GT[[2]])[,2:3]
+getPopStats(G[[1]])[,2:3]
 
 ##plot
 getNodes(GT[[1]])
@@ -87,7 +88,7 @@ plotGate(GT[[1]],scales=list(x=list(cex=0.5)
 									,par.ylab.text=list(cex=0.5))
 		,stat=F)
 dev.off()
-plotGate(GT[[1]],c(3),xbins=64	)
+plotGate(GT[[1]],4,xbins=64)
 
 nodelist<-getNodes(G[[curSample]])
 nodelist

@@ -137,7 +137,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	
 	nFiles<-length(files)
 	set<-vector(mode="list",nFiles)	
-	isColUpdated<-FALSE
+#	isColUpdated<-FALSE
 	for(i in 1:nFiles)
 	{
 		file<-files[i]		
@@ -238,7 +238,8 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			##add prefix to parameter names
 			cnd<-colnames(data)
 			if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
-			wh<-cnd%in%parameters(compobj)
+			wh<-match(parameters(compobj),cnd)
+			
 			cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
 			
 			#colnames(data)<-cnd;

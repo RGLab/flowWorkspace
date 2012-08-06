@@ -428,7 +428,7 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 		
 setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 			
-			browser()
+#			browser()
 			ind<-which(getNodes(obj,y)%in%y)
 			g<-getGate(obj,ind)
 			g
