@@ -1,7 +1,3 @@
-# TODO: Add comment
-# 
-# Author: wjiang2
-###############################################################################
 
 setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 			
@@ -733,12 +729,16 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 			}
 			
 					
-			plotObjs<-lapply(plotList,function(y)return(.plotGate(x,y,...)))
+			plotObjs<-lapply(plotList,function(y){
+						
+						return(.plotGate(x,y,...))
+					})
 			
+						
 			do.call(grid.arrange,plotObjs)
 			
 })
-.plotGate<-function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
+.plotGate<-function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
 #		browser()
 			if(is.list(y))
 				pid<-y$parentId
@@ -789,15 +789,6 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 			}
 		
 			
-#					if(!.isCompensated(x)){
-#
-#						pnames.data<-colnames(parentdata)
-#						pnames<-gsub(">","",gsub("<","",pnames.data))
-#					}else{
-#
-#						pnames<-pnames.data<-colnames(parentdata)
-#						
-#					}
 			if(length(params)==1)
 			{
 				xParam="FSC-A"
@@ -813,30 +804,32 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 			
 			xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
 			ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
-			
-#				if(length(params)==2){
-			#TODO: transform range back to raw scale and set at and labels for axis
-#						if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-#							scales<-list()
-#							xlim=range(parentdata)[,dims2[1]]
-#							ylim=range(parentdata)[,dims2[2]]
-			if(is.null(xlim))
-				xlim=unlist(lapply(range(exprs(parentdata)[,xObj$name]),max,0))
-			if(is.null(ylim))
-				ylim=unlist(lapply(range(exprs(parentdata)[,yObj$name]),max,0))
-#						}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-#							scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),x=list(rot=45))
-#							xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-#							ylim=range(parentdata[,dims2[2]])
-#						}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-#							scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label),x=list(rot=45))
-#							xlim=range(parentdata[,dims2[1]])
-#							ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-#						}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-#							scales<-list(x=list(rot=45,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
-#							xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-#							ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-#						}
+#			browser()
+				if(length(params)==2){
+					xParam.ind<-match(xParam,pd$name)
+					yParam.ind<-match(yParam,pd$name)
+					x.labels<-getAxisLabels(x)[[xParam.ind]]
+					y.labels<-getAxisLabels(x)[[yParam.ind]]
+					
+					#init the scales and x,y lim
+
+					xlim=range(parentdata)[,xParam]
+					ylim=range(parentdata)[,yParam]
+					#update axis when applicable
+					if(!is.null(x.labels))
+					{
+						xscales<-list(x=list(at=x.labels$at,labels=x.labels$label,rot=45))
+						scales<-lattice:::updateList(xscales,scales)
+						xlim=range(x.labels$at)
+					}
+					if(!is.null(y.labels))
+					{	
+						yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
+						scales<-lattice:::updateList(scales,yscales)
+						ylim=range(y.labels$at)
+					}
+					
+				}
 
 
 
@@ -846,15 +839,15 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 		################################
 		if(add)
 		{
-			if(class(curGate)=="BooleanGate")
-			{
-				points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.',xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "));
-			}else
-			{
-				trellis.focus(highlight=FALSE)
-				panel.polygon(getBoundaries(y),border=border,...)
-				trellis.unfocus();
-			}
+#			if(class(curGate)=="BooleanGate")
+#			{
+#				points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.',xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "));
+#			}else
+#			{
+#				trellis.focus(highlight=FALSE)
+#				panel.polygon(getBoundaries(y),border=border,...)
+#				trellis.unfocus();
+#			}
 		}else
 		{
 			
@@ -867,7 +860,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 						,ylim=ylim
 						,margin=margin
 						,smooth=smooth
-						#							,scales=scales
+						,scales=scales
 						,main=main
 						,stat=stat
 						,panel=panelFunc

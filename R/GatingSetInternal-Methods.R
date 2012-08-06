@@ -329,6 +329,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
 	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=dataenv);
+#	browser()
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
 #				browser()
@@ -344,24 +345,29 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					##We'll test the transformed range for NaN and convert to zero.
 					r[is.nan(r)]<-0;
 					###Is this transformed?
-					if(all(rw==r)){
-						#No transformation
-						raw<-seq(r[1],r[2],by=(r[2]-r[1])/10)
-						signif(raw,2)
-						pos<-raw;
-					}else{
+					if(!all(rw==r)){
+#						#No transformation
+#						raw<-seq(r[1],r[2],by=(r[2]-r[1])/10)
+#						signif(raw,2)
+#						pos<-raw;
+#					}else{
 						#based on the range
 						#Inverse transform;
-#						f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
-#						raw<-signif(f(seq(r[1],r[2],l=20)),2);
-#						pos<-signif(cal[[j]](raw),2)
+#						browser()
+						if(attr(cal[[j]],"type")=="log")
+							f<-function(x){10^x}
+						else
+							f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
+						raw<-signif(f(seq(r[1],r[2],l=20)),2);
+#						browser()
+						pos<-signif(cal[[j]](raw),2)
 						
-					}
-#					assign("i",i,dataenv)
-#					assign("raw",raw,dataenv);
-#					assign("pos",pos,dataenv);
-#					eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
 					
+						assign("i",i,dataenv)
+						assign("raw",raw,dataenv);
+						assign("pos",pos,dataenv);
+						eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
+					}
 					return(r);
 				}else{
 					rawRange[,i]

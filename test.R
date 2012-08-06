@@ -52,7 +52,7 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=27
 					,execute=T
 					,includeGates=T
-#					,subset=c(19:20)
+					,subset=c(1)
 					,isNcdf=F
 					,useInternal=T
 					,path="/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/"
@@ -79,13 +79,19 @@ getPopStats(GT[[2]])[,2:3]
 ##plot
 getNodes(GT[[1]])
 png(file="plotGate.png",width=800,height=800)
-plotGate(GT[[1]])
+plotGate(GT[[1]],scales=list(x=list(cex=0.5)
+							,y=list(cex=0.5)
+							)
+				,par.settings=list(par.main.text=list(cex=0.6)
+									,par.xlab.text=list(cex=0.5)
+									,par.ylab.text=list(cex=0.5))
+		,stat=F)
 dev.off()
-plotGate(GT[[1]],1:10,,bool=T,xbins=128)
+plotGate(GT[[1]],c(3),xbins=64	)
 
 nodelist<-getNodes(G[[curSample]])
 nodelist
-plotGate(G[[curSample]],2,smooth=F,xbin=128,margin=T)
+plotGate(G[[curSample]],smooth=F,xbin=128,margin=T)
 plotGate(G[[curSample]],13,smooth=F,xbin=40,margin=F)
 
 getBoundaries(GT[[curSample]],nodelist[2])
