@@ -50,12 +50,12 @@ ws<-openWorkspace(macXML[1])
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-G<-parseWorkspace(ws,name=2
+GT<-parseWorkspace(ws,name=2
 					,execute=T
 					,includeGates=T
 					,subset=c(1)
 					,isNcdf=F
-					,useInternal=F
+					,useInternal=T
 					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/data/Bcell/"
 					,dMode=0
 					)
@@ -75,7 +75,7 @@ G<-GatingSet(gh_template
 #				,path=datapath
 				,isNcdf=FALSE,dMode=0)
 
-getPopStats(G[[1]])[,2:3]
+getPopStats(GT[[1]])[,2:3]
 
 ##plot
 getNodes(GT[[1]])

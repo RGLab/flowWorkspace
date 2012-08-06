@@ -333,9 +333,10 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #	browser()
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
-#				browser()
+
 				j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],names(cal));
 				if(length(j)!=0){
+#									browser()
 					rw<-rawRange[,i];
 					if(attr(cal[[j]],"type")!="gateOnly"){
 						r<-cal[[j]](c(rw))
@@ -358,7 +359,11 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 						if(attr(cal[[j]],"type")=="log")
 							f<-function(x){10^x}
 						else
-							f<-splinefun(cal[[j]](seq(r[1],r[2],l=100000)),seq(rw[[1]],rw[[2]],l=100000),method="natural")
+						{
+							toScale<-seq(rw[[1]],rw[[2]],l=100000)
+							fromScale<-cal[[j]](toScale)
+							f<-splinefun(fromScale,toScale,method="natural")
+						}
 						raw<-signif(f(seq(r[1],r[2],l=20)),2);
 #						browser()
 						pos<-signif(cal[[j]](raw),2)

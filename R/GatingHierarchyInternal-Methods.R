@@ -714,6 +714,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 			# construct the a special list object to replace/del the one that needs to be merged
 			for(curKey in toMergeKeyList)
 			{
+#				browser()
 				toMerge<-as.numeric(names(keylist[keylist==curKey]))
 				toReplace<-sort(toMerge)[1]#replace the first merged child node with the merge list
 				toRemove<-toMerge[!(toMerge==toReplace)]#remove other children
@@ -724,8 +725,8 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 				
 				curPid<-as.numeric(strsplit(curKey,split="\\|")[[1]][1])#extract pid
 				plotList[[toReplaceInd]]<-list(popIds=toMerge,parentId=curPid)
-				plotList[[toRemoveInd]]<-NULL
-				poplist[[toRemoveInd]]<-NULL#make sure syn y as well vector since it is used to index plotList 
+				plotList[toRemoveInd]<-NULL
+				poplist[toRemoveInd]<-NULL#make sure syn y as well vector since it is used to index plotList 
 			}
 			
 					
@@ -773,7 +774,7 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 			if(class(curGate)=="BooleanGate")
 			{
 				
-				params<-parameters(getGate(x,getParent(x,y)))
+				params<-rev(parameters(getGate(x,getParent(x,y))))
 				ind<-getIndices(x,y)
 				curGate<-getData(x)[ind,params]##get gated pop from indexing the root pop because ind here is global
 #				attr(curGate,"class")<-"filter"
@@ -782,9 +783,9 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 			}else
 			{
 				if(class(curGate)=="filters")
-					params<-parameters(curGate[[1]])
+					params<-rev(parameters(curGate[[1]]))
 				else
-					params<-parameters(curGate)
+					params<-rev(parameters(curGate))
 				panelFunc<-panel.xyplot.flowframe
 			}
 		
@@ -795,8 +796,9 @@ setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function
 				yParam=params	
 			}else
 			{
-				xParam=params[2]
 				yParam=params[1]
+				xParam=params[2]
+				
 			}
 			pd<-pData(parameters(parentdata))
 			xObj<-.getChannelMarker(pd,xParam)
