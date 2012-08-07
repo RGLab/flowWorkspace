@@ -53,7 +53,7 @@ int main(void) {
 	 * with negated gate
 	 */
 	i=4;
-	myTest.at(i).filename="../data/Cytotrol/NHLBI/data/NHLBI.xml";
+	myTest.at(i).filename="../data/Cytotrol/NHLBI/flowJo/NHLBI.xml";
 	myTest.at(i).samples["1"]="CytoTrol_CytoTrol_1.fcs";
 	myTest.at(i).sampNloc=1;
 	myTest.at(i).ncfile="../output/NHLBI/nc1_comp.nc";

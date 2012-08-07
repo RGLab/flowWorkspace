@@ -14,7 +14,7 @@ library(gridExtra)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
-macXML<-"/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/data/NHLBI.xml"
+macXML<-"/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
 #path<-"~/rglab/workspace/flowWorkspace/data"
@@ -50,13 +50,13 @@ ws<-openWorkspace(macXML[1])
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-GT<-parseWorkspace(ws,name=2
+G<-parseWorkspace(ws,name=2
 					,execute=T
 					,includeGates=T
 					,subset=c(1)
 					,isNcdf=F
-					,useInternal=T
-					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/data/Bcell/"
+					,useInternal=F
+					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
 					)
 Sys.time()-time1						
@@ -75,7 +75,7 @@ G<-GatingSet(gh_template
 #				,path=datapath
 				,isNcdf=FALSE,dMode=0)
 
-getPopStats(GT[[1]])[,2:3]
+getPopStats(G[[1]])[,2:3]
 
 ##plot
 getNodes(GT[[1]])
@@ -86,7 +86,8 @@ plotGate(GT[[1]],scales=list(x=list(cex=0.5)
 				,par.settings=list(par.main.text=list(cex=0.6)
 									,par.xlab.text=list(cex=0.5)
 									,par.ylab.text=list(cex=0.5))
-		,stat=F)
+#		,stat=F
+		)
 dev.off()
 plotGate(GT[[1]],4,xbins=64)
 

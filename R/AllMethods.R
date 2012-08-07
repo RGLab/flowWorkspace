@@ -2179,10 +2179,29 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	if(all(dim(x)!=c(4,2))){
 		stop("Coordinates of the ellipse gate are not as expected. Was expecting 4x2 matrix but got ",dim(x))
 	}else{
+		x_orig<-x
+#		browser()
+		x<-scale(x)
 		R<-x[which.max(x[,1]),]
 		L<-x[which.min(x[,1]),]
 		T<-x[which.max(x[,2]),]
 		B<-x[which.min(x[,2]),]
+#		browser()
+#		d1<-as.matrix(dist(x))
+#		major_dist<-max(d1)
+#		major_ind<-which(d1==major_dist,TRUE)[1,]
+#		d1[d1%in%0]<-Inf
+#		minor_dist<-min(d1)
+#		minor_ind<-which(d1==minor_dist,TRUE)[1,]
+#		
+#		major_points<-x[major_ind,]
+#		minor_points<-x[minor_ind,]
+#		
+#		E<-c(major_dist,minor_dist)/2
+#		phi<-atan((major_points[1,2]-major_points[2,2])/(major_points[1,1]-major_points[2,1]))
+#		CY<-sum(major_points[,2])/2
+#		CX<-sum(major_points[,1])/2
+#		c(sum(minor_points[,2])/2,sum(minor_points[,1])/2)
 		E<-c(norm(as.matrix(L-R),"F"),norm(as.matrix(T-B),"F"))/2
 		phi<-tan((R-L)[2]/(R-L)[1])
 		CY<-(B[2]+T[2])/2
@@ -2190,7 +2209,13 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 		S<-seq(0,2*pi,l=l)
 		X<-CX+E[1]*cos(S)*cos(phi)-E[2]*sin(S)*sin(phi);
 		Y<-CY+E[1]*cos(S)*sin(phi)+E[2]*sin(S)*cos(phi);
-		return(data.frame(x=X,y=Y));
+		res<-data.frame(x=X,y=Y)
+		
+		res<-t(t(res)*attr(x,"scaled:scale")+attr(x,"scaled:center"))
+#		plot(res)
+#		points(x_orig,col="red")
+#		browser()
+		return(res);
 	}
 }
 .booleanGate<-function(x,y){
