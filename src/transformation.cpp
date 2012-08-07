@@ -6,6 +6,8 @@
  */
 
 #include "include/transformation.hpp"
+bool compare_x(coordinate i, coordinate j) { return i.x<j.x; }
+bool compare_y(coordinate i, coordinate j) { return i.y<j.y; }
 
 PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name){
 	PARAM_VEC::iterator it;

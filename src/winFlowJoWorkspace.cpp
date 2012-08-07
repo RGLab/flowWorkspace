@@ -305,7 +305,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	return NULL;
 }
 polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
-			polygonGate * gate=new polygonGate();
+			ellipseGate * gate=new ellipseGate();
 			//get the negate flag
 			gate->isNegate=node.getProperty("eventsInside")=="0";
 
@@ -351,7 +351,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				pCoord.x=atof(wsNode(nodeSet->nodeTab[0]).getProperty("value").c_str());
 				pCoord.y=atof(wsNode(nodeSet->nodeTab[1]).getProperty("value").c_str());
 				//and push to the vertices vector of the gate object
-				gate->vertices.push_back(pCoord);
+				gate->antipodal_vertices.push_back(pCoord);
 
 				xmlXPathFreeObject(resCoord);
 			}

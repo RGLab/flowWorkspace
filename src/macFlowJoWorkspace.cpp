@@ -509,46 +509,25 @@ rangegate* macFlowJoWorkspace::getGate(wsRangeGateNode & node){
 
 }
 
-bool compare_x(coordinate i, coordinate j) { return i.x<j.x; }
-bool compare_y(coordinate i, coordinate j) { return i.y<j.y; }
 
 
-polygonGate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
+
+ellipseGate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	/*
-	 * using the same routine of polygon gate to parse ellipse
+	 * using the same routine of polygon gate to parse 4 ellipse coordinates
 	 */
 	wsPolyGateNode pGNode(node.thisNode);
-	polygonGate * g=getGate(pGNode);
+	polygonGate * pg=getGate(pGNode);
+
 	/*
-	 * using 4 vertices to fit polygon points
+	 * copy four coordinates
 	 */
-	vector<coordinate> v=g->vertices;
-	g->vertices.clear();//reset the vertices
-
-	coordinate R=*max_element(v.begin(),v.end(),compare_x);
-	coordinate L=*min_element(v.begin(),v.end(),compare_x);
-
-	coordinate T=*max_element(v.begin(),v.end(),compare_y);
-	coordinate B=*min_element(v.begin(),v.end(),compare_y);
-
-	coordinate E;
-	E.x=hypot(L.x-R.x,L.y-R.y)/2;
-	E.y=hypot(T.x-B.x,T.y-B.y)/2;
-
-	double phi=tan((R.y-L.y)/(R.x-L.x));
-	double CY=(B.y+T.y)/2;
-	double CX=(R.x+L.x)/2;
-
-
-	double delta=2*PI/100;
-	for(unsigned short i=0;i<100;i++)
-	{
-		double S=i*delta;
-		coordinate p;
-		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
-		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
-		g->vertices.push_back(p);
-	}
+	if(pg->vertices.size()!=4)
+		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
+	ellipseGate * g=new ellipseGate();
+	g->antipodal_vertices=pg->vertices;
+	g->params=pg->params;
+	delete pg;
 
 	return(g);
 

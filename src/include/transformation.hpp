@@ -22,7 +22,14 @@
 
 using namespace std;
 
-
+struct coordinate
+{
+	double x,y;
+	coordinate(double _x,double _y){x=_x;y=_y;};
+	coordinate(){};
+};
+bool compare_x(coordinate i, coordinate j);
+bool compare_y(coordinate i, coordinate j);
 //typedef map<string,double> ARGLIST;
 
 

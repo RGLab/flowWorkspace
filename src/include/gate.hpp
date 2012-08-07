@@ -33,6 +33,7 @@ typedef struct{
 #define POLYGONGATE 1
 #define RANGEGATE 2
 #define BOOLGATE 3
+#define ELLIPSEGATE 4
 
 #define AND 1
 #define OR 2
@@ -53,7 +54,18 @@ public:
 		x.resize(nSize);
 		y.resize(nSize);
 	}
+	vertices_valarray(){};
+	vertices_valarray(vector<coordinate> vertices){
 
+			unsigned nSize=vertices.size();
+			resize(nSize);
+			for(unsigned i=0;i<nSize;i++)
+			{
+				x[i]=vertices.at(i).x;
+				y[i]=vertices.at(i).y;
+			}
+
+	}
 	vertices_vector toVector(){
 		vertices_vector res;
 		for(unsigned i=0;i<x.size();i++)
@@ -74,12 +86,7 @@ public:
 	}
 };
 
-struct coordinate
-{
-	double x,y;
-	coordinate(double _x,double _y){x=_x;y=_y;};
-	coordinate(){};
-};
+
 struct pRange
 {
 	string name;
@@ -132,6 +139,7 @@ public:
 	rangegate * clone(){return new rangegate(*this);};
 
 };
+
 /*
  * TODO:using #include <boost/multi_array.hpp> instead to make it easier to convert to R data structure hopefully.
  *
@@ -150,7 +158,21 @@ public:
 	polygonGate * clone(){return new polygonGate(*this);};
 };
 
+/*
+ * TODO: doing the gating without interpolating it into polygon
+ */
+class ellipseGate:public polygonGate {
+public:
+	//four antipodal points of ellipse
+	vector<coordinate> antipodal_vertices;
+public:
+	unsigned short getType(){return ELLIPSEGATE;}
+	void extend(flowData &,unsigned short);
+	void toPolygon(unsigned);
+	void transforming(trans_local &,unsigned short dMode);
+	polygonGate * clone(){return new ellipseGate(*this);};
 
+};
 /*
  * instead of defining the gating function here in boolGate
  * we put the gating logic in GatingHierarchy gating function

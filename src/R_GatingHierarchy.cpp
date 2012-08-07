@@ -260,7 +260,10 @@ BEGIN_RCPP
 	if(u==0)
 		throw(domain_error("no gate associated with root node."));
 	gate *g=gh->getNodeProperty(u)->getGate();
-	switch(g->getType())
+	unsigned short gType=g->getType();
+	if(gType==ELLIPSEGATE)
+		gType=POLYGONGATE;
+	switch(gType)
 	{
 		case POLYGONGATE:
 			{

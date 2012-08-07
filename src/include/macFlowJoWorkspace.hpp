@@ -21,7 +21,7 @@ public:
 	gate * getGate(wsPopNode &);
 	polygonGate * getGate(wsPolyGateNode &);
 	boolGate * getGate(wsBooleanGateNode &);
-	polygonGate * getGate(wsEllipseGateNode &);
+	ellipseGate * getGate(wsEllipseGateNode &);
 	rangegate * getGate(wsRangeGateNode &);
 };
 

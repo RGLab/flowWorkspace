@@ -97,6 +97,65 @@ void polygonGate::extend(flowData & fdata,unsigned short dMode){
 		}
 	}
 }
+void ellipseGate::extend(flowData & fdata,unsigned short dMode){
+
+	/*
+	 * get R_min
+	 */
+
+	for(unsigned i=0;i<vertices.size();i++)
+	{
+		if((vertices.at(i).x<=-111)|(vertices.at(i).y<=-111))
+		{
+			throw(domain_error("try to extend the coordinates for ellipse gate!"));
+		}
+
+	}
+
+}
+
+
+/*
+ * interpolation has to be done on the transformed original 4 coordinates
+ * otherwise, the interpolation results will be wrong
+ */
+void ellipseGate::toPolygon(unsigned nVertices){
+
+
+
+	/*
+	 * using 4 vertices to fit polygon points
+	 */
+	vector<coordinate> v=antipodal_vertices;
+	vertices.clear();//reset the vertices
+
+	coordinate R=*max_element(v.begin(),v.end(),compare_x);
+	coordinate L=*min_element(v.begin(),v.end(),compare_x);
+
+	coordinate T=*max_element(v.begin(),v.end(),compare_y);
+	coordinate B=*min_element(v.begin(),v.end(),compare_y);
+
+	coordinate E;
+	E.x=hypot(L.x-R.x,L.y-R.y)/2;
+	E.y=hypot(T.x-B.x,T.y-B.y)/2;
+
+	double phi=tan((R.y-L.y)/(R.x-L.x));
+	double CY=(B.y+T.y)/2;
+	double CX=(R.x+L.x)/2;
+
+
+	double delta=2*PI/nVertices;
+	for(unsigned short i=0;i<nVertices;i++)
+	{
+		double S=i*delta;
+		coordinate p;
+		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
+		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
+		vertices.push_back(p);
+	}
+
+
+}
 void rangegate::extend(flowData & fdata,unsigned short dMode){
 	valarray<double> data_1d=fdata.subset(param.name);
 
@@ -123,9 +182,17 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
 
 POPINDICES polygonGate::gating(flowData & fdata){
 
-
+	/*
+	 * must interpolate for ellipse gate
+	 */
+	if(getType()==ELLIPSEGATE)
+	{
+		ellipseGate * ep=dynamic_cast<ellipseGate *>(this);
+		ep->toPolygon(100);
+	}
 
 	unsigned nVertex=vertices.size();
+
 
 	valarray<double> xdata=fdata.subset(params.at(0));
 	valarray<double> ydata=fdata.subset(params.at(1));
@@ -184,7 +251,47 @@ POPINDICES polygonGate::gating(flowData & fdata){
 		ind.flip();
 	return ind;
 }
+void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
+	/*
+	 * get channel names to select respective transformation functions
+	 */
+	string channel_x=params.at(0);
+	string channel_y=params.at(1);
 
+	//get vertices in valarray format
+	vertices_valarray vert(antipodal_vertices);
+
+	/*
+	 * do the actual transformations
+	 */
+	transformation * trans_x=trans.getTran(channel_x);
+	transformation * trans_y=trans.getTran(channel_y);
+
+
+	if(trans_x!=NULL)
+	{
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"transforming: "<<channel_x<<endl;;
+
+		trans_x->transforming(vert.x);
+		for(unsigned i=0;i<antipodal_vertices.size();i++)
+			antipodal_vertices.at(i).x=vert.x[i];
+	}
+	if(trans_y!=NULL)
+	{
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"transforming: "<<channel_y<<endl;;
+
+		trans_y->transforming(vert.y);
+		for(unsigned i=0;i<antipodal_vertices.size();i++)
+			antipodal_vertices.at(i).y=vert.y[i];
+	}
+	if(dMode>=POPULATION_LEVEL)
+		cout<<endl;
+
+
+
+}
 void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	/*
 	 * get channel names to select respective transformation functions
