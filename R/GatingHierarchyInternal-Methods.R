@@ -814,9 +814,10 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 					y.labels<-getAxisLabels(x)[[yParam.ind]]
 					
 					#init the scales and x,y lim
-
+					
 					xlim=range(parentdata)[,xParam]
 					ylim=range(parentdata)[,yParam]
+					
 					#update axis when applicable
 					if(!is.null(x.labels))
 					{
@@ -830,12 +831,21 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 						scales<-lattice:::updateList(scales,yscales)
 						ylim=range(y.labels$at)
 					}
-					
+#					browser()	
+					# extend lim by comparing to gate boundary
+#					gateBoundary<-curGate@boundaries
+#					xdataRange<-range(exprs(parentdata)[,xParam])
+#					ydataRange<-range(exprs(parentdata)[,yParam])
+#					xlim[1]<-min(min(xdataRange),xlim[1])
+#					xlim[2]<-max(max(xdataRange),xlim[2])
+#					
+#					ylim[1]<-min(min(ydataRange),ylim[1])
+#					ylim[2]<-max(max(ydataRange),ylim[2])
 				}
 
 
 
-#		browser()	
+	
 		#################################
 		# the actual plotting
 		################################
@@ -858,8 +868,6 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 						,filter=curGate
 						,xlab=xlab
 						,ylab=ylab
-						,xlim=xlim
-						,ylim=ylim
 						,margin=margin
 						,smooth=smooth
 						,scales=scales

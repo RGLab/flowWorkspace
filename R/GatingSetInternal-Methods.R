@@ -118,7 +118,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 ############################################################################
 #constructing gating set
 ############################################################################
-.addGatingHierachy<-function(G,files,execute,isNcdf,...){
+.addGatingHierachy<-function(G,files,execute,isNcdf,compensation=NULL,...){
 #	browser()
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env()
@@ -173,8 +173,11 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				message("Compensating");
 				
 				marker<-comp$parameters
-				compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
 				
+				if(is.null(compensation))
+					compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+				else
+					compobj<-compensation#TODO: to update compensation information in C part
 				#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
 				#I need to handle this case properly.
 				res<-try(compensate(data,compobj),silent=TRUE)
@@ -211,8 +214,16 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					###Code to compensate the sample using the acquisition defined compensation matrices.
 					message("Compensating with Acquisition defined compensation matrix");
 					#browser()
-					compobj<-compensation(spillover(data)$SPILL)
-					gh@compensation<-spillover(data)$SPILL
+					if(is.null(compensation))
+					{
+						compobj<-compensation(spillover(data)$SPILL)
+						gh@compensation<-spillover(data)$SPILL
+					}else
+					{
+						compobj<-compensation
+						gh@compensation<-compensation@spillover
+					}
+					
 					res<-try(compensate(data,compobj),silent=TRUE)
 					if(inherits(res,"try-error")){
 						message("Data is probably stored already compensated");
@@ -364,9 +375,10 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 							fromScale<-cal[[j]](toScale)
 							f<-splinefun(fromScale,toScale,method="natural")
 						}
-						raw<-signif(f(seq(r[1],r[2],l=20)),2);
+						pos<-seq(r[1],r[2],l=20)
+						raw<-signif(f(pos),2);
 #						browser()
-						pos<-signif(cal[[j]](raw),2)
+#						pos<-signif(cal[[j]](raw),2)
 						
 					
 						assign("i",i,dataenv)
