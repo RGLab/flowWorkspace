@@ -246,28 +246,31 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				}
 				
 			}
-			##add prefix to parameter names
-			cnd<-colnames(data)
-			if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
-			wh<-match(parameters(compobj),cnd)
-			
-			cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-			
-			#colnames(data)<-cnd;
-			e<-exprs(data)
-			d<-description(data);
-			p<-parameters(data);
-			p@data$name<-cnd
-			colnames(e)<-cnd;
-			data<-new("flowFrame",exprs=e,description=d,parameters=p)
-#			browser()
-			#save raw or compensated data 
-			message("saving compensated data");
-			if(isNcdf)
-				addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
-			else
-				assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
+			if(cid!="-2")
+			{
 				
+				##add prefix to parameter names
+				cnd<-colnames(data)
+				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
+				wh<-match(parameters(compobj),cnd)
+				
+				cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+				
+				#colnames(data)<-cnd;
+				e<-exprs(data)
+				d<-description(data);
+				p<-parameters(data);
+				p@data$name<-cnd
+				colnames(e)<-cnd;
+				data<-new("flowFrame",exprs=e,description=d,parameters=p)
+	#			browser()
+				#save raw or compensated data 
+				message("saving compensated data");
+				if(isNcdf)
+					addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
+				else
+					assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
+			}	
 		}
 		
 		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
