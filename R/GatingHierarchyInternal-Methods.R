@@ -652,18 +652,18 @@ setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 
 
 #TODO: to inverse transform the range in order to display the raw scale
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="character"),function(x,y,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
 			y<-match(y,getNodes(x))
 			plotGate(x,y,...)
 			
 })
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="missing"),function(x,y,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
 #			browser()
 		y<-2:length(getNodes(x))
 		
 		plotGate(x,y,...)
 		})
-setMethod("plotGate",signature(x="GatingHierarchyInternal",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 				return();

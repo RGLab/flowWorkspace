@@ -711,14 +711,28 @@ setMethod("show","GatingHierarchy",function(object){
 	cat("\tFCS File: ",object@name,"\n");
 	cat("\tGatingHierarchy with ",length(object@nodes)," gates\n");
 })
-setMethod("getNodes","GatingHierarchy",function(x,tsort=FALSE,...){
-	if(!tsort){
-		return(x@nodes)
-	}else{
-		return(RBGL::tsort(x@tree))
-	}
-})
 
+setMethod("getNodes","GatingHierarchy",function(x,y=NULL,tsort=FALSE,isPath=FALSE,...){
+#			browser()
+			if(!tsort){
+				nodeNames<-x@nodes
+			}else{
+				nodeNames<-RBGL::tsort(x@tree)
+			}
+			
+			nodePaths<-unlist(lapply(nodeNames,function(y)mget(c("fjName"),nodeData(x@tree,y,"metadata")[[1]])[[1]]))
+			
+			if(!is.null(y))
+			{
+				if(is.character(y))
+					y<-match(y,nodeNames)
+				ifelse(isPath,nodePaths[y],nodeNames[y])
+			}else
+			if(isPath)
+				nodePaths
+			else
+				nodeNames
+		})
 getFileNames<-function(ws){
 	if(class(ws)!="flowJoWorkspace"){
 		stop("ws should be a flowJoWorkspace")
@@ -1167,194 +1181,194 @@ setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot
 		options("warn"=0)
 })
 
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
-	node<-getNodes(x,tsort=tsort)[y];
-	if(is.na(node)){
-		warning("Can't plot gate ", y, " doesn't exist.");
-		return(1);
-	}
-	plotGate(x,y=node,add=add,border=border,tsort=tsort,fast=fast,...);
-})
-
-setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
-		if(!x@flag){
-				message("Can't plot until you gate the data with 'execute()'\n");
-			return();
-		}
-		#do we pass a "main" argument for the title?
-		if(is.null(match.call()$main)){
-		    #fjName
-		    fjName<-mget(c("fjName"),nodeData(x@tree,y,"metadata")[[1]])
-		    #sampleName
-		    sname<-x@name
-		    #construct plot title for this gate
-            mtitle<-paste(sname,fjName,sep="\n")
-            cl<-match.call(expand.dots=TRUE)
-            cl$main<-mtitle
-            return(eval(cl,parent.frame()));
-        }
-        cachedata<-getData(x,y);
-		parentdata<-getData(x,getParent(x,y));
-		rootdata<-getData(x);
-		
-        main<-match.call()$main;
-		cols <- colorRampPalette(IDPcolorRamp(21,
-		                               t(col2hsv(c("blue","green","yellow","red"))),
-		                               fr=c(0.7,0.1)))
-		
-		##Two cases: gate is boolean, or gate is normal
-		##Boolean gates are treated differently
-		if(.isBooleanGate.graphNEL(x,y)){
-			p<-getParent(x,y);
-			ind<-getIndices(x,y)
-			ind.p<-getIndices(x,p)
-			pd<-parentdata
-			dims<-getDimensions(x,p);
-			if(!.isCompensated(x)){
-			    pnames.data<-cachedata@parameters@data$name
-			    pnames.desc<-cachedata@parameters@data$desc
-			    pnames<-gsub(">","",gsub("<","",pnames.data))
-			}else{
-			    pnames<-pnames.data<-cachedata@parameters@data$name
-    			pnames.desc<-cachedata@parameters@data$desc
-			}
-			dims<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
-			desc<-pnames.desc[match(dims,pnames)][na.omit(match(pnames,dims))]
-			
-			dim.ind<-getDimensions(x,p,index=TRUE)[na.omit(match(pnames,dims))]
-			#dims<-dims[na.omit(match(pnames,dims))]
-			if(add){
-				points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.',xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "));
-			}else{
-			    if(!fast){
-				    plot((pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1,smooth=smooth,main=main);
-			    }else{
-			        plot(hexbin(pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1)
-			    }
-				points(exprs(pd[,dims][ind[ind.p],]),col="red",cex=2,pch='.');
-				
-			}
-			invisible()
-		}else if(suppressWarnings(is.na(getGate(x,y)))){
-			message("Can't plot. There is no gate defined for node ",y);
-			invisible();			
-		}else{
-			if(add==FALSE){
-			dims<-getDimensions(x,y)
-			if(!.isCompensated(x)){
-			    pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
-    			pnames<-gsub(">","",gsub("<","",pnames.data))
-			}else{
-			    pnames<-pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
-    			
-			}
-			dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
-			#dims2<-dims[na.omit(match(pnames,dims))]
-			dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
-			par.desc<-parameters(parentdata)@data$desc[dim.ind]
-			if(!any(is.na(par.desc))){
-				dflag<-TRUE
-			}else{
-				dflag<-FALSE
-			}
-			pd<-parentdata[,dims2];
-			if(dflag){
-				#warning this may sometimes fail	
-				colnames(pd)<-parameters(pd)@data$desc
-			}
-			#use dimnames from the data
-			form<-mkformula(rev(dims2));
-			if(length(dims2)==2){
-			if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list()
-				xlim=range(parentdata[,dims2[1]])
-				ylim=range(parentdata[,dims2[2]])
-			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),x=list(rot=45))
-				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-				ylim=range(parentdata[,dims2[2]])
-			}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label),x=list(rot=45))
-				xlim=range(parentdata[,dims2[1]])
-				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
-				scales<-list(x=list(rot=45,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
-				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
-				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
-			}
-			#If 2D use xyplot.
-			#TODO add stains to labels
-			xylab<-gsub("NA","",paste(pData(parameters(rootdata))$name,pData(parameters(rootdata))$desc))
-if(!fast){								res<-flowViz:::xyplot(x=form,data=parentdata[,dims2],smooth=smooth,colramp=cols,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],frame.plot=TRUE,scales=scales,nbin=512,
-										panel=function(gh=x,g=y,tsort=tsort,main=main,...){
-											gp <- list(...)[["par.settings"]]
-											flowViz:::panel.xyplot.flowframe(...)
-											#the gate names sometimes don't match the dimension names.. 
-											#If there's a mix of compensated and uncompensated samples.
-											dims<-colnames(getBoundaries(gh,g))
-											if(.isCompensated(gh)){
-											    dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
-										    }else{
-										        tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
-										        dims<-colnames(getBoundaries(gh,g))
-										        dims<-na.omit(dims[match(tmp,dims)])
-										    }
-											#Case for rectangle or polygon gate
-											if(length(dims)>1){
-												panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
-											}else{
-												apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-											}
-										},...)
-										return(res)
-	                                }else{
-res<-hexbinplot(form,data=as.data.frame(exprs(parentdata)),colramp=cols,scales=scales,xlim=xlim,ylim=ylim,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],aspect=1,xbins=128,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
-    panel.hexbinplot(...)
-    dims<-colnames(getBoundaries(gh,g))
-	if(.isCompensated(gh)){
-	    dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
-    }else{
-        tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
-        dims<-colnames(getBoundaries(gh,g))
-        dims<-na.omit(dims[match(tmp,dims)])
-    }
-	#Case for rectangle or polygon gate
-	if(length(dims)>1){
-		panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
-	}else{
-		apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-	}
-	
-},...)
-return(res);
-}	    	
-		}else{
-			if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
-				scales<-list();
-			}
-			else{
-				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
-			}
-				data=data.frame(exprs(parentdata[,dim.ind]))
-				colnames(data)<-flowViz:::expr2char(form[[2]])
-								res<-densityplot(x=form,data=data,scales=scales,#prepanel=
-								panel=function(...,gh=x,g=y){
-									panel.densityplot(...);
-									apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
-								},...)
-								return(res)
-		}
-	}else{
-			#add=TRUE
-			trellis.focus(highlight=FALSE)
-			dims<-colnames(getBoundaries(x,y))
-			dims<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
-			panel.polygon(getBoundaries(x,y)[,dims],border="red",...)
-			trellis.unfocus();
-		}
-	}
-})
-
+#setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
+#	node<-getNodes(x,tsort=tsort)[y];
+#	if(is.na(node)){
+#		warning("Can't plot gate ", y, " doesn't exist.");
+#		return(1);
+#	}
+#	plotGate(x,y=node,add=add,border=border,tsort=tsort,fast=fast,...);
+#})
+#
+#setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
+#		if(!x@flag){
+#				message("Can't plot until you gate the data with 'execute()'\n");
+#			return();
+#		}
+#		#do we pass a "main" argument for the title?
+#		if(is.null(match.call()$main)){
+#		    #fjName
+#		    fjName<-mget(c("fjName"),nodeData(x@tree,y,"metadata")[[1]])
+#		    #sampleName
+#		    sname<-x@name
+#		    #construct plot title for this gate
+#            mtitle<-paste(sname,fjName,sep="\n")
+#            cl<-match.call(expand.dots=TRUE)
+#            cl$main<-mtitle
+#            return(eval(cl,parent.frame()));
+#        }
+#        cachedata<-getData(x,y);
+#		parentdata<-getData(x,getParent(x,y));
+#		rootdata<-getData(x);
+#		
+#        main<-match.call()$main;
+#		cols <- colorRampPalette(IDPcolorRamp(21,
+#		                               t(col2hsv(c("blue","green","yellow","red"))),
+#		                               fr=c(0.7,0.1)))
+#		
+#		##Two cases: gate is boolean, or gate is normal
+#		##Boolean gates are treated differently
+#		if(.isBooleanGate.graphNEL(x,y)){
+#			p<-getParent(x,y);
+#			ind<-getIndices(x,y)
+#			ind.p<-getIndices(x,p)
+#			pd<-parentdata
+#			dims<-getDimensions(x,p);
+#			if(!.isCompensated(x)){
+#			    pnames.data<-cachedata@parameters@data$name
+#			    pnames.desc<-cachedata@parameters@data$desc
+#			    pnames<-gsub(">","",gsub("<","",pnames.data))
+#			}else{
+#			    pnames<-pnames.data<-cachedata@parameters@data$name
+#    			pnames.desc<-cachedata@parameters@data$desc
+#			}
+#			dims<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
+#			desc<-pnames.desc[match(dims,pnames)][na.omit(match(pnames,dims))]
+#			
+#			dim.ind<-getDimensions(x,p,index=TRUE)[na.omit(match(pnames,dims))]
+#			#dims<-dims[na.omit(match(pnames,dims))]
+#			if(add){
+#				points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.',xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "));
+#			}else{
+#			    if(!fast){
+#				    plot((pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1,smooth=smooth,main=main);
+#			    }else{
+#			        plot(hexbin(pd[,dims]),xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "),col=as.numeric(ind[ind.p])+1)
+#			    }
+#				points(exprs(pd[,dims][ind[ind.p],]),col="red",cex=2,pch='.');
+#				
+#			}
+#			invisible()
+#		}else if(suppressWarnings(is.na(getGate(x,y)))){
+#			message("Can't plot. There is no gate defined for node ",y);
+#			invisible();			
+#		}else{
+#			if(add==FALSE){
+#			dims<-getDimensions(x,y)
+#			if(!.isCompensated(x)){
+#			    pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
+#    			pnames<-gsub(">","",gsub("<","",pnames.data))
+#			}else{
+#			    pnames<-pnames.data<-(getData(x,y,tsort=tsort)@parameters@data$name)
+#    			
+#			}
+#			dims2<-pnames.data[match(dims,pnames)][na.omit(match(pnames,dims))]
+#			#dims2<-dims[na.omit(match(pnames,dims))]
+#			dim.ind<-getDimensions(x,y,index=TRUE)[na.omit(match(pnames,dims))]
+#			par.desc<-parameters(parentdata)@data$desc[dim.ind]
+#			if(!any(is.na(par.desc))){
+#				dflag<-TRUE
+#			}else{
+#				dflag<-FALSE
+#			}
+#			pd<-parentdata[,dims2];
+#			if(dflag){
+#				#warning this may sometimes fail	
+#				colnames(pd)<-parameters(pd)@data$desc
+#			}
+#			#use dimnames from the data
+#			form<-mkformula(rev(dims2));
+#			if(length(dims2)==2){
+#			if(is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#				scales<-list()
+#				xlim=range(parentdata[,dims2[1]])
+#				ylim=range(parentdata[,dims2[2]])
+#			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),x=list(rot=45))
+#				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+#				ylim=range(parentdata[,dims2[2]])
+#			}else if(is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#				scales<-list(y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label),x=list(rot=45))
+#				xlim=range(parentdata[,dims2[1]])
+#				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
+#			}else if(!is.null(getAxisLabels(x)[[dim.ind[1]]])&!is.null(getAxisLabels(x)[[dim.ind[2]]])){
+#				scales<-list(x=list(rot=45,at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label),y=list(at=getAxisLabels(x)[[dim.ind[2]]]$at,labels=getAxisLabels(x)[[dim.ind[2]]]$label))
+#				xlim=range(getAxisLabels(x)[[dim.ind[1]]]$at)
+#				ylim=range(getAxisLabels(x)[[dim.ind[2]]]$at)		
+#			}
+#			#If 2D use xyplot.
+#			#TODO add stains to labels
+#			xylab<-gsub("NA","",paste(pData(parameters(rootdata))$name,pData(parameters(rootdata))$desc))
+#if(!fast){								res<-flowViz:::xyplot(x=form,data=parentdata[,dims2],smooth=smooth,colramp=cols,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],frame.plot=TRUE,scales=scales,nbin=512,
+#										panel=function(gh=x,g=y,tsort=tsort,main=main,...){
+#											gp <- list(...)[["par.settings"]]
+#											flowViz:::panel.xyplot.flowframe(...)
+#											#the gate names sometimes don't match the dimension names.. 
+#											#If there's a mix of compensated and uncompensated samples.
+#											dims<-colnames(getBoundaries(gh,g))
+#											if(.isCompensated(gh)){
+#											    dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
+#										    }else{
+#										        tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
+#										        dims<-colnames(getBoundaries(gh,g))
+#										        dims<-na.omit(dims[match(tmp,dims)])
+#										    }
+#											#Case for rectangle or polygon gate
+#											if(length(dims)>1){
+#												panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
+#											}else{
+#												apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+#											}
+#										},...)
+#										return(res)
+#	                                }else{
+#res<-hexbinplot(form,data=as.data.frame(exprs(parentdata)),colramp=cols,scales=scales,xlim=xlim,ylim=ylim,xlab=xylab[dim.ind[1]],ylab=xylab[dim.ind[2]],aspect=1,xbins=128,panel=function(gh=x,g=y,tsort=tsort,main=main,...){
+#    panel.hexbinplot(...)
+#    dims<-colnames(getBoundaries(gh,g))
+#	if(.isCompensated(gh)){
+#	    dims<-dims[na.omit(match((getData(gh,g,tsort=tsort)@parameters@data$name),dims))]
+#    }else{
+#        tmp<-gsub(">","",gsub("<","",getData(gh,g,tsort=tsort)@parameters@data$name))
+#        dims<-colnames(getBoundaries(gh,g))
+#        dims<-na.omit(dims[match(tmp,dims)])
+#    }
+#	#Case for rectangle or polygon gate
+#	if(length(dims)>1){
+#		panel.polygon(getBoundaries(gh,g)[,dims],border="red",lwd=list(...)$lwd);
+#	}else{
+#		apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+#	}
+#	
+#},...)
+#return(res);
+#}	    	
+#		}else{
+#			if(is.null(getAxisLabels(x)[[dim.ind[1]]])){
+#				scales<-list();
+#			}
+#			else{
+#				scales<-list(x=list(at=getAxisLabels(x)[[dim.ind[1]]]$at,labels=getAxisLabels(x)[[dim.ind[1]]]$label))
+#			}
+#				data=data.frame(exprs(parentdata[,dim.ind]))
+#				colnames(data)<-flowViz:::expr2char(form[[2]])
+#								res<-densityplot(x=form,data=data,scales=scales,#prepanel=
+#								panel=function(...,gh=x,g=y){
+#									panel.densityplot(...);
+#									apply(getBoundaries(gh,g)[,dims,drop=FALSE],1,function(x)panel.abline(v=x,col="red"))
+#								},...)
+#								return(res)
+#		}
+#	}else{
+#			#add=TRUE
+#			trellis.focus(highlight=FALSE)
+#			dims<-colnames(getBoundaries(x,y))
+#			dims<-dims[na.omit(match((getData(x,y,tsort=tsort)@parameters@data$name),dims))]
+#			panel.polygon(getBoundaries(x,y)[,dims],border="red",...)
+#			trellis.unfocus();
+#		}
+#	}
+#})
+#
 
 
 mkformula<-function(dims2){
