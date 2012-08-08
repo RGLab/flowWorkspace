@@ -2193,7 +2193,7 @@ setMethod("ellipsoidGate2FlowJoVertices",signature(gate="ellipsoidGate"),functio
 	if(all(dim(x)!=c(4,2))){
 		stop("Coordinates of the ellipse gate are not as expected. Was expecting 4x2 matrix but got ",dim(x))
 	}else{
-		x_orig<-x
+#		x_orig<-x
 #		browser()
 		x<-scale(x)
 		R<-x[which.max(x[,1]),]
