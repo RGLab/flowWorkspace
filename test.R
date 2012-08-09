@@ -53,9 +53,9 @@ time1<-Sys.time()
 G<-parseWorkspace(ws,name=2
 					,execute=T
 					,includeGates=T
-					,subset=c(1)
+					,subset=1:2
 					,isNcdf=F
-					,useInternal=F
+					,useInternal=T
 					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
 					)
@@ -89,7 +89,8 @@ plotGate(GT[[1]],scales=list(x=list(cex=0.5)
 #		,stat=F
 		)
 dev.off()
-plotGate(GT[[1]],4,xbins=64)
+plotGate(G_B,xbins=64)
+
 
 nodelist<-getNodes(G[[curSample]])
 nodelist

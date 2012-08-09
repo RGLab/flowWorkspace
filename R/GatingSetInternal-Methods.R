@@ -428,3 +428,14 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),f
 			return(TRUE)
 		})
 
+setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
+#			browser()
+			y<-2:length(getNodes(x[[1]]))
+			plotGate(x,y,...)
+			
+		})
+
+setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,...){
+			for(i in 1:length(x))
+				plotGate(x[[i]],y,...)
+		})
