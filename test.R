@@ -51,11 +51,11 @@ ws<-openWorkspace(macXML[1])
 ###############################################################################
 time1<-Sys.time()	
 G<-parseWorkspace(ws,name=2
-					,execute=T
-					,includeGates=T
+#					,execute=T
+#					,includeGates=T
 					,subset=1:2
-					,isNcdf=F
-					,useInternal=T
+#					,isNcdf=F
+#					,useInternal=T
 					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
 					)
@@ -80,7 +80,7 @@ getPopStats(G[[1]])[,2:3]
 ##plot
 getNodes(GT[[1]])
 png(file="plotGate.png",width=800,height=800)
-plotGate(GT[[1]],scales=list(x=list(cex=0.5)
+plotGate(G[[1]],scales=list(x=list(cex=0.5)
 							,y=list(cex=0.5)
 							)
 				,par.settings=list(par.main.text=list(cex=0.6)
@@ -89,7 +89,8 @@ plotGate(GT[[1]],scales=list(x=list(cex=0.5)
 #		,stat=F
 		)
 dev.off()
-plotGate(G_B,xbins=64)
+
+plotGate(G[[1]],2:4,xbins=128)
 
 
 nodelist<-getNodes(G[[curSample]])
