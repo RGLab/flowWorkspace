@@ -360,7 +360,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		/*
 		 * parse the stream to x,y double arrays
 		 */
-		valarray<double> tbl=toArray(sTbl);
+		valarray<double> tbl(toArray(sTbl));
 		unsigned nX=tbl.size()/2;
 
 		caltbl->init(nX);

@@ -72,8 +72,8 @@ void inPolygon_c(double *data, int nrd,
  * to cut data range)
  */
 void polygonGate::extend(flowData & fdata,unsigned short dMode){
-	valarray<double> xdata=fdata.subset(params.at(0));
-	valarray<double> ydata=fdata.subset(params.at(1));
+	valarray<double> xdata(fdata.subset(params.at(0)));
+	valarray<double> ydata(fdata.subset(params.at(1)));
 
 	/*
 	 * get R_min
@@ -209,7 +209,7 @@ void ellipseGate::toPolygon(unsigned nVertices){
 
 }
 void rangegate::extend(flowData & fdata,unsigned short dMode){
-	valarray<double> data_1d=fdata.subset(param.name);
+	valarray<double> data_1d(fdata.subset(param.name));
 
 	/*
 	 * get R_min
@@ -246,8 +246,8 @@ POPINDICES polygonGate::gating(flowData & fdata){
 	unsigned nVertex=vertices.size();
 
 
-	valarray<double> xdata=fdata.subset(params.at(0));
-	valarray<double> ydata=fdata.subset(params.at(1));
+	valarray<double> xdata(fdata.subset(params.at(0)));
+	valarray<double> ydata(fdata.subset(params.at(1)));
 
 	unsigned nEvents=xdata.size();
 	//init the indices
@@ -388,7 +388,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 
 void rangegate::transforming(trans_local & trans,unsigned short dMode){
 
-	vertices_valarray vert=getVertices();
+	vertices_valarray vert(getVertices());
 
 	transformation * curTrans=trans.getTran(param.name);
 	if(curTrans!=NULL)
@@ -408,7 +408,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 }
 POPINDICES rangegate::gating(flowData & fdata){
 
-	valarray<double> data_1d=fdata.subset(param.name);
+	valarray<double> data_1d(fdata.subset(param.name));
 
 	unsigned nEvents=data_1d.size();
 	//init the indices

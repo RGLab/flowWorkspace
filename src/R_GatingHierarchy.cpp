@@ -231,7 +231,7 @@ BEGIN_RCPP
 	/*
 	 * copy the transformed data from gh before unload it
 	 */
-	valarray<double> updatedMat=gh->getData(0).data;
+	valarray<double> updatedMat(gh->getData(0).data);
 	gh->unloadData();
 
 	/*

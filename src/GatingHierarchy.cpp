@@ -187,8 +187,6 @@ flowData GatingHierarchy::getData(string sampleName,VertexID nodeID)
 	//subset the results by indices for non-root node
 	if(nodeID>0)
 	{
-//		valarray<bool>* indices=vertexIDToNode(nodeID).thisIndice;
-//		return res.subset(*indices);
 		throw(domain_error("accessing data through non-root node is not supported yet!"));
 	}
 	else
@@ -205,8 +203,6 @@ flowData GatingHierarchy::getData(VertexID nodeID)
 	//subset the results by indices for non-root node
 	if(nodeID>0)
 	{
-//		valarray<bool>* indices=vertexIDToNode(nodeID).thisIndice;
-//		return res.subset(*indices);
 		throw(domain_error("accessing data through non-root node is not supported yet!"));
 	}
 	else
@@ -296,15 +292,12 @@ void GatingHierarchy::transforming(bool updateCDF)
 			valarray<double> x(this->fdata.subset(curChannel));
 			if(dMode>=GATING_HIERARCHY_LEVEL)
 				cout<<"transforming "<<curChannel<<" with func:"<<curTrans->channel<<endl;
-//			valarray<double> y(curTrans->transforming(x));
+
 			curTrans->transforming(x);
 			/*
 			 * update fdata
 			 */
-//			for(unsigned i=0;i<10;i++)
-//				cout<<y[i]<<",";
 
-//			fdata.data[fdata.getSlice(curChannel)]=y;
 			fdata.data[fdata.getSlice(curChannel)]=x;
 
 		}
