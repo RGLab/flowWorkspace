@@ -663,7 +663,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 		
 		plotGate(x,y,...)
 		})
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 				return();
@@ -680,56 +680,58 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 			plotList<-poplist<-as.list(y)
 			names(plotList)<-plotList
 			
-			#check if they have same parents and parameters
-			keylist<-sapply(plotList,function(y){
-						
-						if(!.isBoolGate(x,y))
-						{
-							curGate<-getGate(x,y)
-#							browser()
-							if(extends(class(curGate),"filter"))
-							{
-								pid<-getParent(x,y)
-								params<-paste(sort(unname(parameters(curGate))),collapse="")
-							
-								paste(pid,params,sep="|")
-							}else
-								return(-1)
-							
-						}else
-							return(-2)
-					})
-
-			invalidNodes<-sapply(keylist,function(key)key==-1)
-			poplist<-poplist[!invalidNodes]
-			plotList<-plotList[!invalidNodes]
-			keylist<-keylist[!invalidNodes]
-			
-			boolNodes<-sapply(keylist,function(key)key==-2)
-			keylist<-keylist[!boolNodes]
-			
-#			browser()
-			keylistFeq<-table(keylist)
-			toMergeKeyList<-names(keylistFeq[keylistFeq>=2])
-			# construct the a special list object to replace/del the one that needs to be merged
-			for(curKey in toMergeKeyList)
+			if(merge)
 			{
-#				browser()
-				toMerge<-as.numeric(names(keylist[keylist==curKey]))
-				toReplace<-sort(toMerge)[1]#replace the first merged child node with the merge list
-				toRemove<-toMerge[!(toMerge==toReplace)]#remove other children
+				#check if they have same parents and parameters
+				keylist<-sapply(plotList,function(y){
+							
+							if(!.isBoolGate(x,y))
+							{
+								curGate<-getGate(x,y)
+	#							browser()
+								if(extends(class(curGate),"filter"))
+								{
+									pid<-getParent(x,y)
+									params<-paste(sort(unname(parameters(curGate))),collapse="")
+								
+									paste(pid,params,sep="|")
+								}else
+									return(-1)
+								
+							}else
+								return(-2)
+						})
+	
+				invalidNodes<-sapply(keylist,function(key)key==-1)
+				poplist<-poplist[!invalidNodes]
+				plotList<-plotList[!invalidNodes]
+				keylist<-keylist[!invalidNodes]
 				
-				toReplaceInd<-match(toReplace,poplist)
-				toRemoveInd<-match(toRemove,poplist)
-#								browser()
+				boolNodes<-sapply(keylist,function(key)key==-2)
+				keylist<-keylist[!boolNodes]
 				
-				curPid<-as.numeric(strsplit(curKey,split="\\|")[[1]][1])#extract pid
-				plotList[[toReplaceInd]]<-list(popIds=toMerge,parentId=curPid)
-				plotList[toRemoveInd]<-NULL
-				poplist[toRemoveInd]<-NULL#make sure syn y as well vector since it is used to index plotList 
-			}
-			
+	#			browser()
+				keylistFeq<-table(keylist)
+				toMergeKeyList<-names(keylistFeq[keylistFeq>=2])
+				# construct the a special list object to replace/del the one that needs to be merged
+				for(curKey in toMergeKeyList)
+				{
+	#				browser()
+					toMerge<-as.numeric(names(keylist[keylist==curKey]))
+					toReplace<-sort(toMerge)[1]#replace the first merged child node with the merge list
+					toRemove<-toMerge[!(toMerge==toReplace)]#remove other children
 					
+					toReplaceInd<-match(toReplace,poplist)
+					toRemoveInd<-match(toRemove,poplist)
+	#								browser()
+					
+					curPid<-as.numeric(strsplit(curKey,split="\\|")[[1]][1])#extract pid
+					plotList[[toReplaceInd]]<-list(popIds=toMerge,parentId=curPid)
+					plotList[toRemoveInd]<-NULL
+					poplist[toRemoveInd]<-NULL#make sure syn y as well vector since it is used to index plotList 
+				}
+			
+			}	
 			plotObjs<-lapply(plotList,function(y){
 						
 						return(.plotGate(x,y,...))
@@ -794,8 +796,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 			
 			if(length(params)==1)
 			{
-				xParam="FSC-A"
-				yParam=params	
+				xParam=params
+				yParam="SSC-A"
 				params<-c(yParam,xParam)
 			}else
 			{

@@ -50,6 +50,8 @@ importFrom(flowCore, compensation, flowFrame, flowSet, polygonGate,
            read.FCS, read.FCSheader, read.flowSet, rectangleGate,
            transformList, workFlow)
 
+importFrom(gridExtra, grid.arrange)
+
 importFrom(tools, md5sum)
 importFrom(graph, "nodeRenderInfo<-")
 
