@@ -15,7 +15,7 @@ flowData & flowData::operator=(const flowData& source){
 	params=source.params;
 	sampleID=source.sampleID;//it is only valid when access cdf version of flowdata, used as index for sample dimension
 	nEvents=source.nEvents;
-	data.resize(nEvents);
+	data.resize(source.data.size());
 	data=source.data;
 	return *this;
 
