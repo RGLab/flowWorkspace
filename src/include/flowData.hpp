@@ -32,6 +32,7 @@ public:
 	unsigned sampleID;//it is only valid when access cdf version of flowdata, used as index for sample dimension
 	valarray<double> data;
 	unsigned nEvents;
+	flowData & operator=(const flowData& source);//explicitly define the copy assignment since the default one is compiler-specific
 	flowData();
 	flowData(const double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
 	flowData(NumericMatrix mat,unsigned _sampleID);
