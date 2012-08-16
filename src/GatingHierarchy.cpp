@@ -172,6 +172,23 @@ compensation GatingHierarchy::getCompensation(){
 	return comp;
 }
 
+void GatingHierarchy::printLocalTrans(){
+	cout<<endl<<"get trans from gating hierarchy"<<endl;
+	map<string,transformation* > trans=this->trans.transformations;
+
+	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
+	{
+		transformation * curTrans=it->second;
+
+
+		if(!curTrans->calTbl.isInterpolated)
+				throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
+		Spline_Coefs obj=curTrans->calTbl.getCalTbl();
+
+		cout<<it->first<<curTrans->name<<" "<<curTrans->channel<<endl;;
+
+	}
+}
 
 /*
  * subset operation is done within R,so there is no need for this member function

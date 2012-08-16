@@ -108,7 +108,7 @@ public:
 
 
 	compensation getCompensation();
-
+	void printLocalTrans();//for the debugging purpose
 	void transforming(bool);
 	void gating();
 	void gating(VertexID);

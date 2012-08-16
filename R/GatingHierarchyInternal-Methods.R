@@ -875,7 +875,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 						,ylab=ylab
 						,margin=margin
 						,smooth=smooth
-#						,scales=scales
+						,scales=scales
 						,main=main
 						,stat=stat
 						,panel=panelFunc

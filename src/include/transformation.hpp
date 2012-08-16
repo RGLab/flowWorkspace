@@ -86,7 +86,7 @@ public:
 public:
 	biexpTrans();
 	void computCalTbl();
-	biexpTrans * clone();
+	biexpTrans * clone(){return new biexpTrans(*this);};
 
 };
 
@@ -95,7 +95,7 @@ class logicleTrans:public transformation{
 private:
 	int channelRange;
 	double pos, neg, widthBasis, maxValue;
-
+	logicleTrans * clone(){return new logicleTrans(*this);};
 
 public:
 };
@@ -108,7 +108,7 @@ class logTrans:public transformation{
 public:
 	logTrans(){type=LOG;isGateOnly=false;isComputed=true;calTbl.isInterpolated=true;};
 	void transforming(valarray<double> & input);
-
+	logTrans * clone(){return new logTrans(*this);};
 };
 
 class linTrans:public transformation{
@@ -116,6 +116,7 @@ class linTrans:public transformation{
 public:
 	linTrans(){type=LIN;isGateOnly=true;isComputed=true;calTbl.isInterpolated=true;};
 	void transforming(valarray<double> & input);
+	linTrans * clone(){return new linTrans(*this);};
 };
 
 

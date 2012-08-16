@@ -6,23 +6,7 @@
  */
 
 #include "test_header.hpp"
-void getCalTbl_test(GatingHierarchy*gh){
-	cout<<endl<<"get trans from gating hierarchy"<<endl;
-	map<string,transformation* > trans=gh->trans.transformations;
 
-	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
-	{
-		transformation * curTrans=it->second;
-
-
-		if(!curTrans->calTbl.isInterpolated)
-				throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
-		Spline_Coefs obj=curTrans->calTbl.getCalTbl();
-
-		cout<<it->first<<curTrans->name<<" "<<curTrans->channel<<endl;;
-
-	}
-}
 
 
 
@@ -202,7 +186,7 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
 			sampleIDs.push_back(it->first);
 
-//		sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
+		sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
 
 		gs.parseWorkspace(sampleIDs,true);
 
@@ -217,49 +201,50 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 		string curSample=samples.at(0);
 		gs_attachCDF(gs,myTest);
 		gh=gs.getGatingHierarchy(curSample);
-//		getCalTbl_test(gh);
+//		gh->printLocalTrans();
 //		gh_accessor_test(gh);
 
 
-		gs_gating(gs,curSample);
+//		gs_gating(gs,curSample);
 
-		gh_counts(gh);
+//		gh_counts(gh);
 
 
 
 		/*
 		 * gating_template_test
 		 */
-//		cout<<"-- cloning getGatingHierarchy ---"<<endl;
-//		/*
-//		 * get sample names from myTest and remove the first one which was used to extract gating template
-//		 */
-//		vector<string> newSamples;
-//		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
-//			newSamples.push_back(it->second);
-//		newSamples.erase(newSamples.begin()+1);
-//
-//		/*
-//		 * clone the previous parsed gating hierarchy:gh
-//		 */
-//		GatingSet * newGS=new GatingSet(*gh,newSamples,dMode);
-//		gs_attachCDF(*newGS,myTest);
-//
-//		/*
-//		 * do the gating on cloned gating hierarchy
-//		 */
-//		string newSample=newSamples.at(0);
-//		GatingHierarchy* gh_new;
-//		gh_new=newGS->getGatingHierarchy(newSample);
-//
-////		gh_accessor_test(gh_new);
-//
-//		gs_gating(*newGS,newSample);
-//
-//
-//		gh_counts(gh_new);
-//
-//		delete newGS;
+		cout<<"-- cloning getGatingHierarchy ---"<<endl;
+		/*
+		 * get sample names from myTest and remove the first one which was used to extract gating template
+		 */
+		vector<string> newSamples;
+		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+			newSamples.push_back(it->second);
+		newSamples.erase(newSamples.begin()+1);
+
+		/*
+		 * clone the previous parsed gating hierarchy:gh
+		 */
+//		gh->printLocalTrans();
+		GatingSet * newGS=new GatingSet(gh,newSamples,dMode);
+		gs_attachCDF(*newGS,myTest);
+
+		/*
+		 * do the gating on cloned gating hierarchy
+		 */
+		string newSample=newSamples.at(0);
+		GatingHierarchy* gh_new;
+		gh_new=newGS->getGatingHierarchy(newSample);
+		gh_new->printLocalTrans();
+//		gh_accessor_test(gh_new);
+
+		gs_gating(*newGS,newSample);
+
+
+		gh_counts(gh_new);
+
+		delete newGS;
 }
 
 

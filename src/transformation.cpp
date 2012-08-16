@@ -95,13 +95,6 @@ transformation * trans_local::getTran(string channel){
 
 	return res;
 }
-/*
- *biexpTrans
- */
-biexpTrans * biexpTrans::clone(){
-
-	return new biexpTrans(*this);
-}
 
 
 biexpTrans::biexpTrans(){

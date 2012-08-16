@@ -80,7 +80,7 @@ GatingSet::~GatingSet()
  * compensation and transformation,more options can be allowed in future like providing different
  * comp and trans
  */
-GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,unsigned short _dMode=1){
+GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,unsigned short _dMode=1){
 
 	/*
 	 * ws is not needed here since all the info comes from gh_template instead of ws
@@ -96,7 +96,8 @@ GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,un
 	if(dMode>=GATING_SET_LEVEL)
 		cout<<"copying transformation from gh_template..."<<endl;
 	trans_global newTransGroup;
-	trans_map newTmap=gh_template.trans.cloneTransMap();
+//	gh_template->printLocalTrans();
+	trans_map newTmap=gh_template->trans.cloneTransMap();
 	newTransGroup.trans=newTmap;
 	gTrans.push_back(newTransGroup);
 
@@ -111,7 +112,7 @@ GatingSet::GatingSet(GatingHierarchy & gh_template,vector<string> sampleNames,un
 			cout<<endl<<"... start cloning GatingHierarchy for: "<<curSampleName<<"... "<<endl;
 
 
-		GatingHierarchy *curGh=gh_template.clone(newTmap,&gTrans);
+		GatingHierarchy *curGh=gh_template->clone(newTmap,&gTrans);
 		curGh->setNcPtr(&nc);//make sure to assign the global nc pointer to  GatingHierarchy
 		curGh->dMode=_dMode;
 

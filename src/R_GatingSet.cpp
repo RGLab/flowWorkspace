@@ -77,7 +77,7 @@ BEGIN_RCPP
 		 * used gh as the template to clone multiple ghs in the new gs
 		 */
 		StringVec newSampleNames=as<StringVec>(_newSampleNames);
-		GatingSet * newGS=new GatingSet(*gh,newSampleNames,dMode);
+		GatingSet * newGS=new GatingSet(gh,newSampleNames,dMode);
 
 		/*
 		 * using default finalizer to delete gs,which is triggered by gc() when
