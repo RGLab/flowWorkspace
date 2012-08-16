@@ -321,7 +321,9 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
 		transformation *curTran=new transformation();
-		calibrationTable caltbl("flowJo",2);
+		calibrationTable *caltbl=&(curTran->calTbl);
+		caltbl->caltype="flowJo";
+		caltbl->spline_method=2;
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
 			throw(domain_error("empty name for calibration table"));
@@ -361,12 +363,13 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		valarray<double> tbl=toArray(sTbl);
 		unsigned nX=tbl.size()/2;
 
-		caltbl.init(nX);
+		caltbl->init(nX);
 
-		caltbl.y=tbl[slice(0,nX,2)];
-		caltbl.x=tbl[slice(1,nX,2)];
+		caltbl->y=tbl[slice(0,nX,2)];
+		caltbl->x=tbl[slice(1,nX,2)];
 
-		curTran->calTbl=caltbl;
+//		curTran->calTbl=caltbl;#avoid using object assignment
+
 		/*since it is base class of transformation,which means the caltbl is already given by workspace
 		 * no need to compute later on. so set this flag to be true to assure the subsequent interpolation can be performed
 		 */
