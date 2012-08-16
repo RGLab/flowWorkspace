@@ -101,6 +101,7 @@ struct pRange
 class gate {
 public:
 	bool isNegate;
+	bool isTransformed;
 	/*
 	 * exact string returned by std::type_info::name() is compiler-dependent
 	 * so we can't rely on RTTI

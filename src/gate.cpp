@@ -304,106 +304,112 @@ POPINDICES polygonGate::gating(flowData & fdata){
 	return ind;
 }
 void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
-	/*
-	 * get channel names to select respective transformation functions
-	 */
-	string channel_x=params.at(0);
-	string channel_y=params.at(1);
-
-	//get vertices in valarray format
-	vertices_valarray vert(antipodal_vertices);
-
-	/*
-	 * do the actual transformations
-	 */
-	transformation * trans_x=trans.getTran(channel_x);
-	transformation * trans_y=trans.getTran(channel_y);
-
-
-	if(trans_x!=NULL)
+	if(!isTransformed)
 	{
+		/*
+		 * get channel names to select respective transformation functions
+		 */
+		string channel_x=params.at(0);
+		string channel_y=params.at(1);
+
+		//get vertices in valarray format
+		vertices_valarray vert(antipodal_vertices);
+
+		/*
+		 * do the actual transformations
+		 */
+		transformation * trans_x=trans.getTran(channel_x);
+		transformation * trans_y=trans.getTran(channel_y);
+
+
+		if(trans_x!=NULL)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"transforming: "<<channel_x<<endl;;
+
+			trans_x->transforming(vert.x);
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).x=vert.x[i];
+		}
+		if(trans_y!=NULL)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"transforming: "<<channel_y<<endl;;
+
+			trans_y->transforming(vert.y);
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).y=vert.y[i];
+		}
 		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming: "<<channel_x<<endl;;
+			cout<<endl;
 
-		trans_x->transforming(vert.x);
-		for(unsigned i=0;i<antipodal_vertices.size();i++)
-			antipodal_vertices.at(i).x=vert.x[i];
+		isTransformed=true;
 	}
-	if(trans_y!=NULL)
-	{
-		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming: "<<channel_y<<endl;;
-
-		trans_y->transforming(vert.y);
-		for(unsigned i=0;i<antipodal_vertices.size();i++)
-			antipodal_vertices.at(i).y=vert.y[i];
-	}
-	if(dMode>=POPULATION_LEVEL)
-		cout<<endl;
-
-
-
 }
 void polygonGate::transforming(trans_local & trans,unsigned short dMode){
-	/*
-	 * get channel names to select respective transformation functions
-	 */
-	string channel_x=params.at(0);
-	string channel_y=params.at(1);
-
-	//get vertices in valarray format
-	vertices_valarray vert(getVertices());
-
-	/*
-	 * do the actual transformations
-	 */
-	transformation * trans_x=trans.getTran(channel_x);
-	transformation * trans_y=trans.getTran(channel_y);
-
-
-	if(trans_x!=NULL)
+	if(!isTransformed)
 	{
-		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming: "<<channel_x<<endl;;
-//		valarray<double> output_x(trans_x->transforming(vert.x));
-		trans_x->transforming(vert.x);
-		for(unsigned i=0;i<vertices.size();i++)
-//			vertices.at(i).x=output_x[i];// yodate coordinates-based vertices
-			vertices.at(i).x=vert.x[i];
-	}
-	if(trans_y!=NULL)
-	{
-		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming: "<<channel_y<<endl;;
-//		valarray<double> output_y(trans_y->transforming(vert.y));
-		trans_y->transforming(vert.y);
-		for(unsigned i=0;i<vertices.size();i++)
-//			vertices.at(i).y=output_y[i];
-			vertices.at(i).y=vert.y[i];
-	}
-	if(dMode>=POPULATION_LEVEL)
-		cout<<endl;
+		/*
+		 * get channel names to select respective transformation functions
+		 */
+		string channel_x=params.at(0);
+		string channel_y=params.at(1);
 
+		//get vertices in valarray format
+		vertices_valarray vert(getVertices());
+
+		/*
+		 * do the actual transformations
+		 */
+		transformation * trans_x=trans.getTran(channel_x);
+		transformation * trans_y=trans.getTran(channel_y);
+
+
+		if(trans_x!=NULL)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"transforming: "<<channel_x<<endl;;
+	//		valarray<double> output_x(trans_x->transforming(vert.x));
+			trans_x->transforming(vert.x);
+			for(unsigned i=0;i<vertices.size();i++)
+	//			vertices.at(i).x=output_x[i];// yodate coordinates-based vertices
+				vertices.at(i).x=vert.x[i];
+		}
+		if(trans_y!=NULL)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"transforming: "<<channel_y<<endl;;
+	//		valarray<double> output_y(trans_y->transforming(vert.y));
+			trans_y->transforming(vert.y);
+			for(unsigned i=0;i<vertices.size();i++)
+	//			vertices.at(i).y=output_y[i];
+				vertices.at(i).y=vert.y[i];
+		}
+		if(dMode>=POPULATION_LEVEL)
+			cout<<endl;
+		isTransformed=true;
+	}
 }
 
 void rangegate::transforming(trans_local & trans,unsigned short dMode){
-
-	vertices_valarray vert(getVertices());
-
-	transformation * curTrans=trans.getTran(param.name);
-	if(curTrans!=NULL)
+	if(!isTransformed)
 	{
-		if(dMode>=POPULATION_LEVEL)
-			cout<<"transforming "<<param.name<<endl;
-//		valarray<double> output(curTrans->transforming(vert.x));
-//		param.min=output[0];
-//		param.max=output[1];
-		curTrans->transforming(vert.x);
-		param.min=vert.x[0];
-		param.max=vert.x[1];
+		vertices_valarray vert(getVertices());
+
+		transformation * curTrans=trans.getTran(param.name);
+		if(curTrans!=NULL)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"transforming "<<param.name<<endl;
+	//		valarray<double> output(curTrans->transforming(vert.x));
+	//		param.min=output[0];
+	//		param.max=output[1];
+			curTrans->transforming(vert.x);
+			param.min=vert.x[0];
+			param.max=vert.x[1];
+		}
+		isTransformed=true;
 	}
-
-
 
 }
 POPINDICES rangegate::gating(flowData & fdata){
