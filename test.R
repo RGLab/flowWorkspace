@@ -50,11 +50,11 @@ ws<-openWorkspace(macXML[1])
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-G<-parseWorkspace(ws,name=2
-#					,execute=T
+GT<-parseWorkspace(ws,name=2
+#					,execute=F
 #					,includeGates=T
-					,subset=1:2
-#					,isNcdf=F
+					,subset=1
+#					,isNcdf=T
 #					,useInternal=T
 					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
@@ -89,7 +89,8 @@ plotGate(G[[1]],scales=list(x=list(cex=0.5)
 #		,stat=F
 		)
 dev.off()
-
+CairoX11()
+plotGate(G[[1]])
 plotGate(G[[1]],2:4,xbins=128)
 
 

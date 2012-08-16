@@ -405,8 +405,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	compensation comp;
 	comp.cid=sampleNode.getProperty("compensationID");
 
-	if(comp.cid.empty())
-		comp.cid="-2";
+
 	/*
 	 * -1:Acquisition-defined,to be computed from data
 	 * -2:None
@@ -415,6 +414,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	 * 			and this cid serves as id to index that node. in pc version, we observe it is also stored at curent
 	 * 			sampleNode,to keep the parsing consistent,we still look for it from the special compensation node within the context of xml root
 	 */
+
 	if(comp.cid.compare("-1")==0)
 	{
 		comp.name="Acquisition-defined";
@@ -426,6 +426,17 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	{
 		comp.prefix="<";
 		comp.suffix=">";
+		comp.comment="none";
+		comp.name="none";
+	}
+	else if(comp.cid.empty())
+	{
+		/*
+		 * empty cid may have gate parameters defined without prefix
+		 */
+		comp.cid="-2";
+		comp.prefix="";
+		comp.suffix="";
 		comp.comment="none";
 		comp.name="none";
 	}

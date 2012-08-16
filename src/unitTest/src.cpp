@@ -37,7 +37,7 @@ int main(void) {
 	myTest.at(i).colfile="../output/Blomberg/colnames.txt";
 
 	i=2;
-	myTest.at(i).filename="/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml";
+	myTest.at(i).filename="/loc/no-backup/mike/ITN029ST/QA_template.xml";
 	myTest.at(i).samples["74161"]="01107122_F11_I003.fcs";
 	myTest.at(i).samples["74162"]="01177007_F02_I016.fcs";
 	myTest.at(i).sampNloc=1;
@@ -71,7 +71,7 @@ int main(void) {
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=1;
+	i=5;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

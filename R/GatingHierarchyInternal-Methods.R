@@ -742,7 +742,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 			
 })
 .plotGate<-function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
-#		browser()
+		
 			if(is.list(y))
 				pid<-y$parentId
 			else
@@ -796,6 +796,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 			{
 				xParam="FSC-A"
 				yParam=params	
+				params<-c(yParam,xParam)
 			}else
 			{
 				yParam=params[1]
@@ -864,15 +865,15 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 #			}
 		}else
 		{
-			
-			res<-xyplot(x=mkformula(params)
+			f1<-mkformula(params)
+			res<-xyplot(x=f1
 						,data=parentdata[,params]
 						,filter=curGate
 						,xlab=xlab
 						,ylab=ylab
 						,margin=margin
 						,smooth=smooth
-						,scales=scales
+#						,scales=scales
 						,main=main
 						,stat=stat
 						,panel=panelFunc

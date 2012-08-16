@@ -394,7 +394,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 	if(curTrans!=NULL)
 	{
 		if(dMode>=POPULATION_LEVEL)
-			cout<<param.name<<endl;
+			cout<<"transforming "<<param.name<<endl;
 //		valarray<double> output(curTrans->transforming(vert.x));
 //		param.min=output[0];
 //		param.max=output[1];
