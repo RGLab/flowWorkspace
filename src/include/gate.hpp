@@ -87,21 +87,49 @@ public:
 };
 
 
-struct pRange
+class paramRange
 {
 	string name;
 	double min, max;
-	pRange(double _min,double _max,string _name){min=_min;max=_max;name=_name;};
-	pRange(){};
+public:
+	paramRange(double _min,double _max,string _name){min=_min;max=_max;name=_name;};
+	paramRange(){};
+	vertices_valarray toValarray();
+	void setName(string _n){name=_n;};
+	string getName(){return name;}
+	vector<string> getNameArray(){
+			vector<string> res;
+			res.push_back(name);
+			return res;
+		};
+	double getMin(){return min;};
+	void setMin(double _v){min=_v;};
+	double getMax(){return max;};
+	void setMax(double _v){max=_v;};
 };
+class paramPoly
+{
+	vector<string> params;//params.at(0) is x, params.at(1) is y axis
+	vector<coordinate> vertices;
+public:
+	vector<coordinate> getVertices(){return vertices;};
+	void setVertices(vector<coordinate> _v){vertices=_v;};
+	vector<string>  getNameArray(){return params;};
+	void setName(vector<string> _params){params=_params;};
+	vertices_valarray toValarray();
+	string xName(){return params.at(0);};
+	string yName(){return params.at(1);};
+};
+
 
 /*
  * TODO:possibly implement getCentroid,getMajorAxis,getMinorAxis for all gate types
  */
 class gate {
-public:
-	bool isNegate;
+protected:
+	bool neg;
 	bool isTransformed;
+public:
 	/*
 	 * exact string returned by std::type_info::name() is compiler-dependent
 	 * so we can't rely on RTTI
@@ -110,11 +138,16 @@ public:
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual POPINDICES gating(flowData &){throw(domain_error("undefined gating function!"));};
 	virtual void extend(flowData &,unsigned short){throw(domain_error("undefined extend function!"));};
-	virtual vector<string> getParam(){throw(domain_error("undefined getParam function!"));};
+	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
 	virtual void transforming(trans_local &,unsigned short dMode){throw(domain_error("undefined transforming function!"));};
 //	virtual gate * create()=0;
 	virtual gate * clone()=0;
+
+	virtual bool isNegate(){return neg;};
+	virtual void setNegate(bool _neg){neg=_neg;};
+	virtual bool Transformed(){return isTransformed;};
+	virtual void setTransformed(bool _isTransformed){isTransformed=_isTransformed;};
 };
 
 /*
@@ -123,20 +156,16 @@ public:
  * if it is decided that there is no need to keep them as separate classes
  */
 class rangegate:public gate {
-public:
-	pRange param;
+	paramRange param;
 public:
 	unsigned short getType(){return RANGEGATE;}
 	POPINDICES gating(flowData &);
 	void extend(flowData &,unsigned short);
 	void transforming(trans_local &,unsigned short dMode);
-	vector<string> getParam(){
-		vector<string> res;
-		res.push_back(param.name);
-		return res;
-	};
-	vertices_valarray getVertices();
-
+	paramRange getParam(){return param;};
+	vector<string> getParamNames(){return param.getNameArray();};
+	void setParam(paramRange _param){param=_param;};
+	vertices_valarray getVertices(){return param.toValarray();};
 	rangegate * clone(){return new rangegate(*this);};
 
 };
@@ -146,16 +175,18 @@ public:
  *
  */
 class polygonGate:public gate {
-public:
-	vector<string> params;//params.at(0) is x, params.at(1) is y axis
-	vector<coordinate> vertices;
+protected:
+	paramPoly param;
+
 public:
 	unsigned short getType(){return POLYGONGATE;}
 	void extend(flowData &,unsigned short);
 	POPINDICES gating(flowData &);
 	void transforming(trans_local &,unsigned short dMode);
-	vector<string> getParam(){return params;};
-	vertices_valarray getVertices();
+	vertices_valarray getVertices(){return param.toValarray();};
+	void setParam(paramPoly _param){param=_param;};
+	paramPoly getParam(){return param;};
+	vector<string> getParamNames(){return param.getNameArray();};
 	polygonGate * clone(){return new polygonGate(*this);};
 };
 
@@ -163,10 +194,11 @@ public:
  * TODO: doing the gating without interpolating it into polygon
  */
 class ellipseGate:public polygonGate {
-public:
 	//four antipodal points of ellipse
 	vector<coordinate> antipodal_vertices;
 public:
+	vector<coordinate> getAntipodal(){return antipodal_vertices;};
+	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
 	unsigned short getType(){return ELLIPSEGATE;}
 	void extend(flowData &,unsigned short);
 	void toPolygon(unsigned);

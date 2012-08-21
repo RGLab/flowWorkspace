@@ -56,16 +56,16 @@ GatingSet::~GatingSet()
 
 	for(trans_global_vec::iterator it=gTrans.begin();it!=gTrans.end();it++)
 	{
-		trans_map curTrans=it->trans;
+		trans_map curTrans=it->getTransMap();
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<endl<<"start to free transformatioin group:"<<it->groupName<<endl;
+			cout<<endl<<"start to free transformatioin group:"<<it->getGroupName()<<endl;
 		for(trans_map::iterator it1=curTrans.begin();it1!=curTrans.end();it1++)
 		{
 			transformation * curTran=it1->second;
 			if(curTran!=NULL)
 			{
 				if(dMode>=GATING_SET_LEVEL)
-						cout<<"free transformatioin:"<<curTran->channel<<endl;
+						cout<<"free transformatioin:"<<curTran->getChannel()<<endl;
 
 				delete curTran;
 			}
@@ -97,8 +97,8 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 		cout<<"copying transformation from gh_template..."<<endl;
 	trans_global newTransGroup;
 //	gh_template->printLocalTrans();
-	trans_map newTmap=gh_template->trans.cloneTransMap();
-	newTransGroup.trans=newTmap;
+	trans_map newTmap=gh_template->getLocalTrans().cloneTransMap();
+	newTransGroup.setTransMap(newTmap);
 	gTrans.push_back(newTransGroup);
 
 	/*

@@ -43,10 +43,10 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	 *  save trans back to trans_local for each channel
 	 */
 
-	map<string,transformation *> *trs=&(res.transformations);
+	map<string,transformation *> tp=res.getTransMap();
 	for(trans_global_vec::iterator it=gTrans->begin();it!=gTrans->end();it++)
 	{
-		vector<int> sampleVec=it->sampleIDs;
+		vector<int> sampleVec=it->getSampleIDs();
 		vector<int>::iterator sampleRes=find(sampleVec.begin(),sampleVec.end(),sampleID);
 		/*
 		 * when sampleID matched, then get trans from current global trans group
@@ -62,32 +62,33 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				{
 					//TODO:check the logic here(compare with mac version)
 					string curCmpChName=sPrefix+curChName;//append prefix
-					trans_map::iterator resIt=(it->trans).find(curCmpChName);
+					trans_map curtp=it->getTransMap();
+					trans_map::iterator resIt=curtp.find(curCmpChName);
 					transformation * curTrans;
-					if(resIt==it->trans.end())
-						curTrans=(it->trans)["*"];
+					if(resIt==curtp.end())
+						curTrans=curtp["*"];
 					else
 						curTrans=resIt->second;
 
-					(*trs)[curCmpChName]=curTrans;
+					tp[curCmpChName]=curTrans;
 
-					cout<<curCmpChName<<":"<<curTrans->name<<" "<<curTrans->channel<<endl;
+					cout<<curCmpChName<<":"<<curTrans->getName()<<" "<<curTrans->getChannel()<<endl;
 
 					/*
 					 * calculate calibration table from the function
 					 */
-					if(!curTrans->isComputed)
+					if(!curTrans->computed())
 					{
 						if(dMode>=GATING_SET_LEVEL)
 							cout<<"computing calibration table..."<<endl;
 						curTrans->computCalTbl();
 					}
 
-					if(!curTrans->calTbl.isInterpolated)
+					if(!curTrans->isInterpolated())
 					{
 						if(dMode>=GATING_SET_LEVEL)
 							cout<<"spline interpolating..."<<endl;
-						curTrans->calTbl.interpolate();
+						curTrans->interpolate();
 					}
 
 				}
@@ -103,7 +104,7 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 	}
 
-
+	res.setTransMap(tp);
 	return res;
 }
 
@@ -153,14 +154,14 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 		string compName=compNode.getProperty("name");
 
 		trans_global curTg;
-		curTg.groupName=compName;
+		curTg.setGroupName(compName);
 
 		if(dMode>=GATING_SET_LEVEL)
 			cout<<"group:"<<compName<<endl;
 		/*
 		 * parse transformations for current compNode
 		 */
-		map<string,transformation *> * curTransMap=&(curTg.trans);
+		map<string,transformation *> curTp=curTg.getTransMap();
 		path=".//*[local-name()='logicle']";//get logicle(actually it is biexp)
 		xmlXPathObjectPtr TransRes=compNode.xpathInNode(path);
 		for(int j=0;j<TransRes->nodesetval->nodeNr;j++)
@@ -177,17 +178,17 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 			if(pname.empty())
 				pname="*";
 
-			string transType=(const char*)transNode.thisNode->name;
+			string transType=(const char*)transNode.getNodePtr()->name;
 			if(transType.compare("logicle")==0)
 			{
 
 				if(dMode>=GATING_SET_LEVEL)
 					cout<<"logicle func:"<<pname<<endl;
 				biexpTrans *curTran=new biexpTrans();
-				curTran->name=compName;
+				curTran->setName(compName);
 
 
-				curTran->channel=pname;
+				curTran->setChannel(pname);
 				curTran->pos=atof(transNode.getProperty("T").c_str());
 				curTran->neg=atof(transNode.getProperty("w").c_str());
 				curTran->widthBasis=atof(transNode.getProperty("m").c_str());
@@ -195,7 +196,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 				 * do the lazy calibration table calculation and interpolation
 				 * when it gets saved in gh
 				 */
-				(*curTransMap)[curTran->channel]=curTran;
+				curTp[curTran->getChannel()]=curTran;
 			}
 			else
 				throw(domain_error("unknown tranformation type!"));
@@ -215,9 +216,9 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 			string curSampleID=curNode.getProperty("sampleID");
 			sampleIDs.push_back(atoi(curSampleID.c_str()));
 		}
-		curTg.sampleIDs=sampleIDs;
+		curTg.setSampleIDs(sampleIDs);
 		xmlXPathFreeObject(sampleRes);
-
+		curTg.setTransMap(curTp);
 		/*
 		 * push the tg object to global container
 		 */
@@ -307,7 +308,10 @@ polygonGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			ellipseGate * gate=new ellipseGate();
 			//get the negate flag
-			gate->isNegate=node.getProperty("eventsInside")=="0";
+			gate->setNegate(node.getProperty("eventsInside")=="0");
+			paramPoly p;
+			vector<coordinate> v;
+			vector<string> pn;
 
 			//TODO:get parameter name(make sure the the order of x,y are correct)
 			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']/*[local-name()='parameter']");
@@ -321,7 +325,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			{
 				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
 				string curParam=curPNode.getProperty("name");
-				gate->params.push_back(curParam);
+				pn.push_back(curParam);
 			}
 			xmlXPathFreeObject(resPara);
 
@@ -351,18 +355,21 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				pCoord.x=atof(wsNode(nodeSet->nodeTab[0]).getProperty("value").c_str());
 				pCoord.y=atof(wsNode(nodeSet->nodeTab[1]).getProperty("value").c_str());
 				//and push to the vertices vector of the gate object
-				gate->antipodal_vertices.push_back(pCoord);
+				v.push_back(pCoord);
 
 				xmlXPathFreeObject(resCoord);
 			}
 			xmlXPathFreeObject(resVert);
+			gate->setAntipodal(v);
+			p.setName(pn);
+			gate->setParam(p);
 			return gate;
 }
 
 polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 			polygonGate * g=new polygonGate();
 			//get the negate flag
-			g->isNegate=node.getProperty("eventsInside")=="0";
+			g->setNegate(node.getProperty("eventsInside")=="0");
 
 			//get parameter name
 			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']");
@@ -372,7 +379,8 @@ polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 //				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
 				throw(domain_error("invalid  dimension of the rectangle gate!"));
 			}
-			vector<pRange> r(2);
+
+			vector<paramRange> r(2);
 			for(int i=0;i<nParam;i++)
 			{
 				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
@@ -383,14 +391,14 @@ polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 				 * instead of negative,so we have to use -max()
 				 */
 				string sMin=curPNode.getProperty("min");
-				r.at(i).min=sMin.empty()?-numeric_limits<double>::max():atof(sMin.c_str());
+				r.at(i).setMin(sMin.empty()?-numeric_limits<double>::max():atof(sMin.c_str()));
 
 				string sMax=curPNode.getProperty("max");
-				r.at(i).max=sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str());
+				r.at(i).setMax(sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str()));
 
 				//get parameter name from the children node
 				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");
-				r.at(i).name=wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name");
+				r.at(i).setName(wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name"));
 				xmlXPathFreeObject(resPName);
 
 
@@ -398,34 +406,41 @@ polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 			/*
 			 * convert pRanges to polygon data structure
 			 */
-			g->params.push_back(r.at(0).name);//x
-			g->params.push_back(r.at(1).name);//y
+			paramPoly p;
+			vector<coordinate> v;
+			vector<string> pn;
+			pn.push_back(r.at(0).getName());//x
+			pn.push_back(r.at(1).getName());//y
 
 
 			coordinate lb,lt,rb,rt;//left bottom,left top,right top,right top
-			lb.x=r.at(0).min;
-			lb.y=r.at(1).min;
+			lb.x=r.at(0).getMin();
+			lb.y=r.at(1).getMin();
 
-			lt.x=r.at(0).min;
-			lt.y=r.at(1).max;
+			lt.x=r.at(0).getMin();
+			lt.y=r.at(1).getMax();
 
-			rb.x=r.at(0).max;
-			rb.y=r.at(1).min;
+			rb.x=r.at(0).getMax();
+			rb.y=r.at(1).getMin();
 
-			rt.x=r.at(0).max;
-			rt.y=r.at(1).max;
+			rt.x=r.at(0).getMax();
+			rt.y=r.at(1).getMax();
 
 			/*
 			 * since rectangle gate in windows version defined differently from mac (simply as 4-point polygon)
 			 * so make sure the order of vertices is correct during the conversion to polygon here
 			 * lb->lt->rt->rb
 			 */
-			g->vertices.push_back(lb);
-			g->vertices.push_back(lt);
-			g->vertices.push_back(rt);
-			g->vertices.push_back(rb);
+			v.push_back(lb);
+			v.push_back(lt);
+			v.push_back(rt);
+			v.push_back(rb);
+
 
 			xmlXPathFreeObject(resPara);
+			p.setVertices(v);
+			p.setName(pn);
+			g->setParam(p);
 			return g;
 }
 gate* winFlowJoWorkspace::getGate(wsPopNode & node){
@@ -434,10 +449,10 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	xmlXPathObjectPtr resGate=node.xpathInNode("Gate/*");
 	wsNode gNode(resGate->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(resGate);
-	const xmlChar * gateType=gNode.thisNode->name;
+	const xmlChar * gateType=gNode.getNodePtr()->name;
 	if(xmlStrEqual(gateType,(const xmlChar *)"PolygonGate"))
 	{
-		wsPolyGateNode pGNode(gNode.thisNode);
+		wsPolyGateNode pGNode(gNode.getNodePtr());
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
@@ -445,7 +460,7 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"RectangleGate"))
 	{
-		wsRectGateNode rGNode(gNode.thisNode);
+		wsRectGateNode rGNode(gNode.getNodePtr());
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing RectangleGate.."<<endl;
 		return(getGate(rGNode));

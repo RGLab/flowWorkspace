@@ -174,18 +174,18 @@ compensation GatingHierarchy::getCompensation(){
 
 void GatingHierarchy::printLocalTrans(){
 	cout<<endl<<"get trans from gating hierarchy"<<endl;
-	map<string,transformation* > trans=this->trans.transformations;
+	map<string,transformation* > trans=this->trans.getTransMap();
 
 	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		transformation * curTrans=it->second;
 
 
-		if(!curTrans->calTbl.isInterpolated)
-				throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
-		Spline_Coefs obj=curTrans->calTbl.getCalTbl();
+		if(!curTrans->isInterpolated())
+				throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
 
-		cout<<it->first<<curTrans->name<<" "<<curTrans->channel<<endl;;
+
+		cout<<it->first<<curTrans->getName()<<" "<<curTrans->getChannel()<<endl;;
 
 	}
 }
@@ -270,7 +270,7 @@ void GatingHierarchy::unloadData()
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 					cout <<"unloading raw data.."<<endl;
 //		delete fdata.data;
-		fdata.data.resize(0);
+		fdata.clear();
 		isLoaded=false;
 	}
 
@@ -283,13 +283,13 @@ void GatingHierarchy::unloadData()
 void GatingHierarchy::transforming(bool updateCDF)
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<"start transforming data :"<<fdata.sampleID<<endl;
+		cout <<"start transforming data :"<<fdata.getSampleID()<<endl;
 	if(!isLoaded)
 		throw(domain_error("data is not loaded yet!"));
 
 //	unsigned nEvents=fdata.nEvents;
 //	unsigned nChannls=fdata.nChannls;
-	vector<string> channels=fdata.params;
+	vector<string> channels=fdata.getParams();
 
 	/*
 	 * transforming each marker
@@ -303,19 +303,19 @@ void GatingHierarchy::transforming(bool updateCDF)
 
 		if(curTrans!=NULL)
 		{
-			if(curTrans->isGateOnly)
+			if(curTrans->gateOnly())
 				continue;
 
 			valarray<double> x(this->fdata.subset(curChannel));
 			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"transforming "<<curChannel<<" with func:"<<curTrans->channel<<endl;
+				cout<<"transforming "<<curChannel<<" with func:"<<curTrans->getChannel()<<endl;
 
 			curTrans->transforming(x);
 			/*
 			 * update fdata
 			 */
-
-			fdata.data[fdata.getSlice(curChannel)]=x;
+			fdata.updateSlice(curChannel,x);
+//			fdata.data[fdata.getSlice(curChannel)]=x;
 
 		}
 
@@ -337,7 +337,7 @@ void GatingHierarchy::transforming(bool updateCDF)
  */
 void GatingHierarchy::extendGate(){
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout <<endl<<"start extending Gates for:"<<fdata.sampleID<<endl;
+			cout <<endl<<"start extending Gates for:"<<fdata.getSampleID()<<endl;
 
 		if(!isLoaded)
 				throw(domain_error("data is not loaded yet!"));
@@ -369,7 +369,7 @@ void GatingHierarchy::extendGate(){
 void GatingHierarchy::gating()
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<endl<<"start gating:"<<fdata.sampleID<<endl;
+		cout <<endl<<"start gating:"<<fdata.getSampleID()<<endl;
 
 	if(!isLoaded)
 			throw(domain_error("data is not loaded yet!"));
@@ -383,7 +383,7 @@ void GatingHierarchy::gating()
 		nodeProperties * node=getNodeProperty(u);
 		if(u==0)
 		{
-			node->indices=vector<bool>(fdata.nEvents,true);
+			node->setIndices(vector<bool>(fdata.getEventsCount(),true));
 			node->computeStats();
 			continue;//skip gating for root node
 		}
@@ -455,10 +455,10 @@ void GatingHierarchy::gating(VertexID u)
 	}
 
 	//combine with parent indices
-	transform (curIndices.begin(), curIndices.end(), parentNode->indices.begin(), curIndices.begin(),logical_and<bool>());
+	transform (curIndices.begin(), curIndices.end(), parentNode->getIndices().begin(), curIndices.begin(),logical_and<bool>());
 //	for(unsigned i=0;i<curIndices.size();i++)
 //		curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
-	node->indices=curIndices;
+	node->setIndices(curIndices);
 	node->computeStats();
 }
 
@@ -469,7 +469,7 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 	gate * g=node->getGate();
 
 	//init the indices
-	unsigned nEvents=fdata.nEvents;
+	unsigned nEvents=fdata.getEventsCount();
 
 	POPINDICES ind(nEvents,true);
 
@@ -494,7 +494,7 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 		}
 
 
-		POPINDICES curPopInd=curPop->indices;
+		POPINDICES curPopInd=curPop->getIndices();
 		if(it->isNot)
 			curPopInd.flip();
 
@@ -533,7 +533,7 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 
 	}
 
-	if(g->isNegate)
+	if(g->isNegate())
 		ind.flip();
 
 	return ind;
@@ -765,7 +765,8 @@ GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_v
 
 	GatingHierarchy * res=new GatingHierarchy();
 
-	res->trans.transformations=_trans;
+
+	res->trans.setTransMap(_trans);
 	res->gTrans=_gTrans;
 	res->comp=comp;
 

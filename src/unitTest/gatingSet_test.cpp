@@ -176,7 +176,7 @@ void gh_counts(GatingHierarchy* gh){
 }
 
 
-void gs_parse(testSuit myTest,unsigned short dMode){
+void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate){
 
 		//create gating set object
 		GatingSet gs(myTest.filename,true,myTest.sampNloc,dMode);
@@ -185,8 +185,8 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 		vector<string> sampleIDs;
 		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
 			sampleIDs.push_back(it->first);
-
-		sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
+		if(isTemplate)
+			sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
 
 		gs.parseWorkspace(sampleIDs,true);
 
@@ -205,46 +205,50 @@ void gs_parse(testSuit myTest,unsigned short dMode){
 //		gh_accessor_test(gh);
 
 
-//		gs_gating(gs,curSample);
+		gs_gating(gs,curSample);
 
-//		gh_counts(gh);
+		gh_counts(gh);
 
+
+		if(isTemplate)
+		{
 
 
 		/*
 		 * gating_template_test
 		 */
-		cout<<"-- cloning getGatingHierarchy ---"<<endl;
-		/*
-		 * get sample names from myTest and remove the first one which was used to extract gating template
-		 */
-		vector<string> newSamples;
-		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
-			newSamples.push_back(it->second);
-		newSamples.erase(newSamples.begin()+1);
+			cout<<"-- cloning getGatingHierarchy ---"<<endl;
+			/*
+			 * get sample names from myTest and remove the first one which was used to extract gating template
+			 */
+			vector<string> newSamples;
+			for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+				newSamples.push_back(it->second);
+			newSamples.erase(newSamples.begin()+1);
 
-		/*
-		 * clone the previous parsed gating hierarchy:gh
-		 */
-//		gh->printLocalTrans();
-		GatingSet * newGS=new GatingSet(gh,newSamples,dMode);
-		gs_attachCDF(*newGS,myTest);
+			/*
+			 * clone the previous parsed gating hierarchy:gh
+			 */
+	//		gh->printLocalTrans();
+			GatingSet * newGS=new GatingSet(gh,newSamples,dMode);
+			gs_attachCDF(*newGS,myTest);
 
-		/*
-		 * do the gating on cloned gating hierarchy
-		 */
-		string newSample=newSamples.at(0);
-		GatingHierarchy* gh_new;
-		gh_new=newGS->getGatingHierarchy(newSample);
-		gh_new->printLocalTrans();
-//		gh_accessor_test(gh_new);
+			/*
+			 * do the gating on cloned gating hierarchy
+			 */
+			string newSample=newSamples.at(0);
+			GatingHierarchy* gh_new;
+			gh_new=newGS->getGatingHierarchy(newSample);
+			gh_new->printLocalTrans();
+	//		gh_accessor_test(gh_new);
 
-		gs_gating(*newGS,newSample);
+			gs_gating(*newGS,newSample);
 
 
-		gh_counts(gh_new);
+			gh_counts(gh_new);
 
-		delete newGS;
+			delete newGS;
+		}
 }
 
 

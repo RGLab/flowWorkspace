@@ -29,26 +29,28 @@ typedef map<string,float> POPSTATS;
  *
  */
 class nodeProperties{
-
-public:
 	string thisName;
 	gate * thisGate;
 	POPINDICES indices;
 	POPSTATS fjStats,fcStats;
-	bool dMode;
+
 
 public:
+	bool dMode;
 	nodeProperties();
 
 	~nodeProperties();
 
 
-	POPSTATS getStats(bool);
+	POPSTATS getStats(bool isFlowCore);
+	void setStats(POPSTATS s,bool isFlowCore);
 	unsigned getCounts();
 	bool isGated(){return !indices.empty();};
 	gate * getGate();
 	string getName();
 	void setName(const char * popName);
+	POPINDICES getIndices(){return indices;};
+	void setIndices(POPINDICES _ind){indices=_ind;};
 	void setGate(gate *gate);
 	void computeStats();
 	nodeProperties * clone();

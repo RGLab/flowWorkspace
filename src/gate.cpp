@@ -72,40 +72,44 @@ void inPolygon_c(double *data, int nrd,
  * to cut data range)
  */
 void polygonGate::extend(flowData & fdata,unsigned short dMode){
-	valarray<double> xdata(fdata.subset(params.at(0)));
-	valarray<double> ydata(fdata.subset(params.at(1)));
+	string x=param.xName();
+	string y=param.yName();
+	valarray<double> xdata(fdata.subset(x));
+	valarray<double> ydata(fdata.subset(y));
 
+	vector<coordinate> v=param.getVertices();
 	/*
 	 * get R_min
 	 */
 	double xMin=xdata.min();
 	double yMin=ydata.min();
-	for(unsigned i=0;i<vertices.size();i++)
+	for(unsigned i=0;i<v.size();i++)
 	{
-		if(vertices.at(i).x<=-111)
+		if(v.at(i).x<=-111)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout <<"extending "<<params.at(0)<<"from "<<vertices.at(i).x<<" to :"<<xMin<<endl;
-			vertices.at(i).x=xMin;
+				cout <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
+			v.at(i).x=xMin;
 		}
-		if(vertices.at(i).y<=-111)
+		if(v.at(i).y<=-111)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout <<"extending "<<params.at(1)<<"from "<<vertices.at(i).y<<" to :"<<yMin<<endl;
-			vertices.at(i).y=yMin;
+				cout <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
+			v.at(i).y=yMin;
 
 		}
 	}
+	param.setVertices(v);
 }
 void ellipseGate::extend(flowData & fdata,unsigned short dMode){
 
 	/*
 	 * get R_min
 	 */
-
-	for(unsigned i=0;i<vertices.size();i++)
+	vector<coordinate> v=param.getVertices();
+	for(unsigned i=0;i<v.size();i++)
 	{
-		if((vertices.at(i).x<=-111)|(vertices.at(i).y<=-111))
+		if((v.at(i).x<=-111)|(v.at(i).y<=-111))
 		{
 			throw(domain_error("try to extend the coordinates for ellipse gate!"));
 		}
@@ -123,10 +127,12 @@ void ellipseGate::toPolygon(unsigned nVertices){
 
 
 
+
 	/*
 	 * using 4 vertices to fit polygon points
 	 */
 	vector<coordinate> v=antipodal_vertices;
+	vector<coordinate> vertices=param.getVertices();
 	vertices.clear();//reset the vertices
 
 	unsigned nSize=v.size();
@@ -205,21 +211,22 @@ void ellipseGate::toPolygon(unsigned nVertices){
 		vertices.push_back(p);
 	}
 
-
+	param.setVertices(vertices);
 
 }
 void rangegate::extend(flowData & fdata,unsigned short dMode){
-	valarray<double> data_1d(fdata.subset(param.name));
+	string pName=param.getName();
+	valarray<double> data_1d(fdata.subset(pName));
 
 	/*
 	 * get R_min
 	 */
 	double xMin=data_1d.min();
-	if(param.min<=-111)
+	if(param.getMin()<=-111)
 	{
 		if(dMode>=POPULATION_LEVEL)
-			cout <<"extending "<<param.name<<"from "<<param.min<<" to :"<<xMin<<endl;
-		param.min=xMin;
+			cout <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
+		param.setMin(xMin);
 	}
 
 
@@ -234,6 +241,7 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
 
 POPINDICES polygonGate::gating(flowData & fdata){
 
+
 	/*
 	 * must interpolate for ellipse gate
 	 */
@@ -243,11 +251,13 @@ POPINDICES polygonGate::gating(flowData & fdata){
 		ep->toPolygon(100);
 	}
 
+	vector<coordinate> vertices=param.getVertices();
 	unsigned nVertex=vertices.size();
 
-
-	valarray<double> xdata(fdata.subset(params.at(0)));
-	valarray<double> ydata(fdata.subset(params.at(1)));
+	string x=param.xName();
+	string y=param.yName();
+	valarray<double> xdata(fdata.subset(x));
+	valarray<double> ydata(fdata.subset(y));
 
 	unsigned nEvents=xdata.size();
 	//init the indices
@@ -299,18 +309,18 @@ POPINDICES polygonGate::gating(flowData & fdata){
 	ind[i]=((counter % 2) != 0);
 
 	}
-	if(isNegate)
+	if(isNegate())
 		ind.flip();
 	return ind;
 }
 void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
-	if(!isTransformed)
+	if(!Transformed())
 	{
 		/*
 		 * get channel names to select respective transformation functions
 		 */
-		string channel_x=params.at(0);
-		string channel_y=params.at(1);
+		string channel_x=param.xName();
+		string channel_y=param.yName();
 
 		//get vertices in valarray format
 		vertices_valarray vert(antipodal_vertices);
@@ -347,16 +357,17 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 	}
 }
 void polygonGate::transforming(trans_local & trans,unsigned short dMode){
-	if(!isTransformed)
+	if(!Transformed())
 	{
+		vector<coordinate> vertices=param.getVertices();
 		/*
 		 * get channel names to select respective transformation functions
 		 */
-		string channel_x=params.at(0);
-		string channel_y=params.at(1);
+		string channel_x=param.xName();
+		string channel_y=param.yName();
 
 		//get vertices in valarray format
-		vertices_valarray vert(getVertices());
+		vertices_valarray vert(vertices);
 
 		/*
 		 * do the actual transformations
@@ -387,26 +398,27 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		}
 		if(dMode>=POPULATION_LEVEL)
 			cout<<endl;
+		param.setVertices(vertices);
 		isTransformed=true;
 	}
 }
 
 void rangegate::transforming(trans_local & trans,unsigned short dMode){
-	if(!isTransformed)
+	if(!Transformed())
 	{
 		vertices_valarray vert(getVertices());
 
-		transformation * curTrans=trans.getTran(param.name);
+		transformation * curTrans=trans.getTran(param.getName());
 		if(curTrans!=NULL)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"transforming "<<param.name<<endl;
+				cout<<"transforming "<<param.getName()<<endl;
 	//		valarray<double> output(curTrans->transforming(vert.x));
 	//		param.min=output[0];
 	//		param.max=output[1];
 			curTrans->transforming(vert.x);
-			param.min=vert.x[0];
-			param.max=vert.x[1];
+			param.setMin(vert.x[0]);
+			param.setMax(vert.x[1]);
 		}
 		isTransformed=true;
 	}
@@ -414,7 +426,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 }
 POPINDICES rangegate::gating(flowData & fdata){
 
-	valarray<double> data_1d(fdata.subset(param.name));
+	valarray<double> data_1d(fdata.subset(param.getName()));
 
 	unsigned nEvents=data_1d.size();
 	//init the indices
@@ -425,17 +437,17 @@ POPINDICES rangegate::gating(flowData & fdata){
 	 */
 	for(unsigned i=0;i<nEvents;i++)
 	{
-		ind[i]=data_1d[i]<=param.max&&data_1d[i]>=param.min;
+		ind[i]=data_1d[i]<=param.getMax()&&data_1d[i]>=param.getMin();
 	}
 
 
-	if(isNegate)
+	if(isNegate())
 		ind.flip();
 
 	return ind;
 
 }
-vertices_valarray polygonGate::getVertices(){
+vertices_valarray paramPoly::toValarray(){
 
 	vertices_valarray res;
 	unsigned nSize=vertices.size();
@@ -449,12 +461,12 @@ vertices_valarray polygonGate::getVertices(){
 }
 
 
-vertices_valarray rangegate::getVertices(){
+vertices_valarray paramRange::toValarray(){
 
 	vertices_valarray res;
 	res.resize(2);
-	res.x[0]=param.min;
-	res.x[1]=param.max;
+	res.x[0]=min;
+	res.x[1]=max;
 
 	return res;
 }

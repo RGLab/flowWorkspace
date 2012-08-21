@@ -207,8 +207,9 @@ nodeProperties* flowJoWorkspace::to_popNode(wsRootNode & node){
 //	pNode->setName(node.getProperty("name").c_str());
 	pNode->setName("root");
 
-	pNode->fjStats["count"]=atoi(node.getProperty("count").c_str());
-
+	POPSTATS fjStats;
+	fjStats["count"]=atoi(node.getProperty("count").c_str());
+	pNode->setStats(fjStats,false);
 	pNode->dMode=dMode;
 	return pNode;
 }
@@ -223,8 +224,9 @@ nodeProperties* flowJoWorkspace::to_popNode(wsPopNode &node,bool isParseGate=fal
 	if(dMode>=POPULATION_LEVEL)
 			cout<<"parse the population Node:"<<pNode->getName()<<endl;
 	//add pop counts
-	pNode->fjStats["count"]=atoi(node.getProperty("count").c_str());
-
+	POPSTATS fjStats;
+	fjStats["count"]=atoi(node.getProperty("count").c_str());
+	pNode->setStats(fjStats,false);
 
 	try
 	{

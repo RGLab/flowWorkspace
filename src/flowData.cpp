@@ -44,8 +44,14 @@ flowData::flowData(NumericMatrix mat,unsigned _sampleID){
 		data[j]=mat[j];
 
 }
-
-void flowData::params_set(vector<string> _params){
+valarray<double> flowData::getData(){
+	return data;
+}
+void flowData::getData(double * mat,unsigned nSize){
+	for(unsigned i=0;i<nSize;i++)
+		mat[i]=data[i];
+}
+void flowData::setParams(vector<string> _params){
 	if(_params.size()!=params.size())
 		throw(domain_error("the number of parameters is not consistent with cdf file!"));
 	params=_params;
@@ -59,6 +65,11 @@ unsigned find_pos(vector<string> s,string pattern ){
 	if(res==it2)
 		throw(domain_error(pattern.append(" not found in flowData!")));
 	return (res-it1);
+}
+
+
+void flowData::updateSlice(string channel,valarray<double> x){
+	data[getSlice(channel)]=x;
 }
 
 slice flowData::getSlice(string channel){

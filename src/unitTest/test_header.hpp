@@ -31,7 +31,7 @@ struct testSuit{
 } ;
 
 
-void gs_parse(testSuit,unsigned short);
+void gs_parse(testSuit,unsigned short,bool);
 void ncdf_test();
 void compCalTbl();
 void spline_test();

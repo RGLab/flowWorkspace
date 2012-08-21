@@ -134,7 +134,7 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	map<string,transformation* > trans=gh->trans.transformations;
+	map<string,transformation* > trans=gh->getLocalTrans().getTransMap();
 	List res;
 
 	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
@@ -143,9 +143,9 @@ BEGIN_RCPP
 		if(curTrans==NULL)
 			throw(domain_error("empty transformation for channel"+it->first));
 
-		string transName=curTrans->name+" "+it->first;
+		string transName=curTrans->getName()+" "+it->first;
 
-		switch(curTrans->type)
+		switch(curTrans->getType())
 		{
 
 			case LOG:
@@ -166,9 +166,9 @@ BEGIN_RCPP
 			}
 			case CALTBL:
 			{
-				if(!curTrans->calTbl.isInterpolated)
-					throw(domain_error("non-interpolated calibration table:"+curTrans->name+curTrans->channel+" from channel"+it->first));
-				Spline_Coefs obj=curTrans->calTbl.getCalTbl();
+				if(!curTrans->isInterpolated())
+					throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
+				Spline_Coefs obj=curTrans->getSplineCoefs();
 
 				res.push_back(List::create(Named("z",obj.coefs)
 											,Named("method",obj.method)
@@ -231,7 +231,7 @@ BEGIN_RCPP
 	/*
 	 * copy the transformed data from gh before unload it
 	 */
-	valarray<double> updatedMat(gh->getData(0).data);
+	valarray<double> updatedMat(gh->getData(0).getData());
 	gh->unloadData();
 
 	/*
@@ -269,7 +269,7 @@ BEGIN_RCPP
 			{
 				vertices_vector vert=g->getVertices().toVector();
 
-				 List ret=List::create(Named("parameters",g->getParam())
+				 List ret=List::create(Named("parameters",g->getParamNames())
 						 	 	 	 	 ,Named("x",vert.x),Named("y",vert.y)
 						 	 	 	 	 ,Named("type",POLYGONGATE)
 						 	 	 	 	 );
@@ -280,7 +280,7 @@ BEGIN_RCPP
 			{
 				vertices_vector vert=g->getVertices().toVector();
 
-				List ret=List::create(Named("parameters",g->getParam())
+				List ret=List::create(Named("parameters",g->getParamNames())
 									 ,Named("range",vert.x)
 									 ,Named("type",RANGEGATE)
 									 );
@@ -329,7 +329,7 @@ BEGIN_RCPP
 	if(u<0)throw(domain_error("not valid vertexID!"));
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	return wrap(gh->getNodeProperty(u)->indices);
+	return wrap(gh->getNodeProperty(u)->getIndices());
 
 END_RCPP
 }

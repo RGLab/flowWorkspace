@@ -22,20 +22,37 @@ struct Spline_Coefs{
 };
 
 class calibrationTable{
-
-public:
+	valarray<double> x,y,b,c,d;
 	int spline_method;
 	string caltype;//TODO:move this to transformation class
-
-	valarray<double> x,y,b,c,d;
-	bool isInterpolated;
+	bool flag;
 public:
 	calibrationTable();
+	calibrationTable & operator=(const calibrationTable& source);
 	calibrationTable(string _caltype,int _spline_method);
 	void interpolate();
 	void init(unsigned);
 	valarray<double> transforming(valarray<double> &);
-	Spline_Coefs getCalTbl();
+	Spline_Coefs getSplineCoefs();
+	valarray<double> getX(){return x;};
+	valarray<double> getY(){return y;};
+	void setY(valarray<double> _y){
+			y.resize(_y.size());
+			y=_y;
+			};
+	void setX(valarray<double> _x){
+				x.resize(_x.size());
+				x=_x;
+				};
+	valarray<double> getB(){return b;};
+	valarray<double> getC(){return c;};
+	valarray<double> getD(){return d;};
+	void setCaltype(string _caltype){caltype=_caltype;};
+	string getCaltype(){return caltype;};
+	void setMethod(int _spline_method){spline_method=_spline_method;};
+	int getMethod(){return spline_method;};
+	void setInterpolated(bool _flag){flag=_flag;};
+	bool isInterpolated(){return flag;}
 };
 
 

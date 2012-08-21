@@ -40,7 +40,7 @@ trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name)
 	for(it=tGVec.begin();it!=tGVec.end();it++)
 	{
 //		cout<<it->groupName<<it->trans.size()<<endl;
-		if(it->groupName.find(name)!=string::npos)
+		if(it->getGroupName().find(name)!=string::npos)
 			break;
 	}
 	return it;
@@ -110,7 +110,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	/*
 	 * get the pointer to the result local trans map
 	 */
-	map<string,transformation *> *trs=&(res.transformations);
+	map<string,transformation *> trs=res.getTransMap();
 
 	string tGName;
 	trans_global_vec::iterator tgIt;
@@ -157,7 +157,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			trans_map trans;
 			if(isTransGropuFound)
 			{
-				trans=tgIt->trans;
+				trans=tgIt->getTransMap();
 				/*
 				 * try to search by channel name within the source map
 				 */
@@ -176,7 +176,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 */
 					curTran=resIt->second;
 					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<transChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
+						cout<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
 				}
 				else
 				{
@@ -219,7 +219,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 * for those has range>4096,try to generic cal tables from flowJo
 					 */
 					if(!gTrans->empty())
-						trans=gTrans->at(0).trans;
+						trans=gTrans->at(0).getTransMap();
 					/*
 					 * try to search by channel name within the source map
 					 */
@@ -238,7 +238,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 						 */
 						curTran=resIt->second;
 						if(dMode>=GATING_HIERARCHY_LEVEL)
-							cout<<transChName<<":"<<curTran->name<<" "<<curTran->channel<<endl;
+							cout<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
 					}
 					else
 					{
@@ -274,26 +274,26 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			/*
 			 * assign matched global trans to the local map
 			 */
-			(*trs)[transChName]=curTran;
+			trs[transChName]=curTran;
 			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"adding "<<curTran->name<<":"<<transChName<<endl;
+				cout<<"adding "<<curTran->getName()<<":"<<transChName<<endl;
 			/*
 			 * calculate and interpolate the cal table if applicable
 			 */
-			if(!curTran->isComputed)
+			if(!curTran->computed())
 				curTran->computCalTbl();
-			if(!curTran->calTbl.isInterpolated)
+			if(!curTran->isInterpolated())
 			{
 				if(dMode>=GATING_HIERARCHY_LEVEL)
-					cout<<"spline interpolating..."<<curTran->name<<endl;
-				curTran->calTbl.interpolate();
+					cout<<"spline interpolating..."<<curTran->getName()<<endl;
+				curTran->interpolate();
 
 			}
 		}
 
 	}
 
-
+	res.setTransMap(trs);
 
 	return res;
 }
@@ -321,9 +321,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
 		transformation *curTran=new transformation();
-		calibrationTable *caltbl=&(curTran->calTbl);
-		caltbl->caltype="flowJo";
-		caltbl->spline_method=2;
+		calibrationTable caltbl("flowJo",2);
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
 			throw(domain_error("empty name for calibration table"));
@@ -342,8 +340,8 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 			/*
 			 * generic cal table (non-channel-specific)
 			 */
-			curTran->name=tname;
-			curTran->channel="*";
+			curTran->setName(tname);
+			curTran->setChannel("*");
 			transGroupName="Generic";
 		}
 		else
@@ -351,9 +349,9 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 			/*
 			 * channel-specific cal table
 			 */
-			curTran->name=boost::trim_copy((tname.substr(0,nPrefix)));
-			curTran->channel=tname.substr(nPrefix,tname.length()-nPrefix);
-			transGroupName=curTran->name;
+			curTran->setName(boost::trim_copy((tname.substr(0,nPrefix))));
+			curTran->setChannel(tname.substr(nPrefix,tname.length()-nPrefix));
+			transGroupName=curTran->getName();
 		}
 
 		string sTbl=calTblNode.getContent();
@@ -363,35 +361,35 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		valarray<double> tbl(toArray(sTbl));
 		unsigned nX=tbl.size()/2;
 
-		caltbl->init(nX);
+		caltbl.init(nX);
 
-		caltbl->y=tbl[slice(0,nX,2)];
-		caltbl->x=tbl[slice(1,nX,2)];
+		caltbl.setY(tbl[slice(0,nX,2)]);
+		caltbl.setX(tbl[slice(1,nX,2)]);
 
-//		curTran->calTbl=caltbl;#avoid using object assignment
+		curTran->setCalTbl(caltbl);
 
 		/*since it is base class of transformation,which means the caltbl is already given by workspace
 		 * no need to compute later on. so set this flag to be true to assure the subsequent interpolation can be performed
 		 */
-		curTran->isComputed=true;
+		curTran->setComputeFlag(true);
 
 		/*Find the respective reference(iterator) by name from the trans_global_vec
 		 * If not found,push back a new entry in the vector and return its reference
 		 */
-		trans_global_vec::iterator tRes=findTransGroup(tgVec,curTran->name);
+		trans_global_vec::iterator tRes=findTransGroup(tgVec,curTran->getName());
 
 		if(tRes==tgVec.end())//if not exsit yet, then push back the new instance
 		{
 			if(dMode>=GATING_SET_LEVEL)
 				cout<<"creating new transformation group:"<<transGroupName<<endl;
 			trans_global newTg;
-			newTg.groupName=transGroupName;
+			newTg.setGroupName(transGroupName);
 			tgVec.push_back(newTg);
-			tgVec.back().trans[curTran->channel]=curTran;
+			tgVec.back().addTrans(curTran->getChannel(),curTran);
 		}
 		else
 			//if already exists, then save the current transformation into the respective transGroup
-			tRes->trans[curTran->channel]=curTran;
+			tRes->addTrans(curTran->getChannel(),curTran);
 
 	}
 
@@ -494,30 +492,33 @@ rangegate* macFlowJoWorkspace::getGate(wsRangeGateNode & node){
 	/*
 	 * using the same routine of polygon gate to parse ellipse
 	 */
-	wsPolyGateNode pGNode(node.thisNode);
+	wsPolyGateNode pGNode(node.getNodePtr());
 	polygonGate * g1=getGate(pGNode);
 	/*
 	 * convert to the rangeGate data structure after the preliminary parsing step
 	 */
 	rangegate *g=new rangegate();
 
-	if(g1->vertices.size()!=2)
+
+	vector<coordinate> v=g1->getParam().getVertices();
+	if(v.size()!=2)
 			throw(domain_error("fail to convert to Range Gate since the vertices number is not 2!"));
 
-
-	g->param.name=g1->params.at(0);
-	coordinate p1=g1->vertices.at(0);
-	coordinate p2=g1->vertices.at(1);
+	paramRange pRange;
+	pRange.setName(g1->getParam().getNameArray().at(0));
+	coordinate p1=v.at(0);
+	coordinate p2=v.at(1);
 	if(p1.x!=p2.x)
 	{
-		g->param.min=min(p1.x,p2.x);
-		g->param.max=max(p1.x,p2.x);
+		pRange.setMin(min(p1.x,p2.x));
+		pRange.setMax(max(p1.x,p2.x));
 	}
 	else
 	{
-		g->param.min=min(p1.y,p2.y);
-		g->param.max=max(p1.y,p2.y);
+		pRange.setMin(min(p1.y,p2.y));
+		pRange.setMax(max(p1.y,p2.y));
 	}
+	g->setParam(pRange);
 	delete g1;
 	return(g);
 
@@ -530,17 +531,20 @@ ellipseGate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	/*
 	 * using the same routine of polygon gate to parse 4 ellipse coordinates
 	 */
-	wsPolyGateNode pGNode(node.thisNode);
+	wsPolyGateNode pGNode(node.getNodePtr());
 	polygonGate * pg=getGate(pGNode);
+	vector<coordinate> v=pg->getParam().getVertices();
+	paramPoly pPoly;
 
 	/*
 	 * copy four coordinates
 	 */
-	if(pg->vertices.size()!=4)
+	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
 	ellipseGate * g=new ellipseGate();
-	g->antipodal_vertices=pg->vertices;
-	g->params=pg->params;
+	pPoly.setName(pg->getParam().getNameArray());
+	g->setParam(pPoly);
+	g->setAntipodal(v);
 	delete pg;
 
 	return(g);
@@ -560,30 +564,17 @@ polygonGate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			xmlXPathFreeObject(resGate);
 
 			//get the negate flag
-			gate->isNegate=!gNode.getProperty("negated").empty();
-
-			//get parameter name
-//			xmlXPathObjectPtr resPara=pNode.xpathInNode("StringArray/String");
-//			int nParam=resPara->nodesetval->nodeNr;
-//			if(nParam!=2)
-//			{
-////				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
-//				throw(domain_error("invalid dimension of the polygon gate!"));
-//			}
-//			for(int i=0;i<nParam;i++)
-//			{
-//				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
-//				string curParam=curPNode.getContent();
-//				gate->params.push_back(curParam);
-//			}
-//			xmlXPathFreeObject(resPara);
+			gate->setNegate(!gNode.getProperty("negated").empty());
 
 
+			paramPoly p;
+			vector<coordinate> v;
+			vector<string> pn;
 			string xAxis=gNode.getProperty("xAxisName");
-			gate->params.push_back(xAxis);
+			pn.push_back(xAxis);
 			string yAxis=gNode.getProperty("yAxisName");
 			if(!yAxis.empty())
-				gate->params.push_back(yAxis);
+				pn.push_back(yAxis);
 
 			//get vertices
 			xmlXPathObjectPtr resVert=gNode.xpathInNode("Polygon/Vertex");
@@ -600,10 +591,13 @@ polygonGate* macFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				pCoord.x=atof(curVNode.getProperty("x").c_str());
 				pCoord.y=atof(curVNode.getProperty("y").c_str());
 				//and push to the vertices vector of the gate object
-				gate->vertices.push_back(pCoord);
+				v.push_back(pCoord);
 
 			}
 			xmlXPathFreeObject(resVert);
+			p.setVertices(v);
+			p.setName(pn);
+			gate->setParam(p);
 			return gate;
 }
 
@@ -623,7 +617,7 @@ boolGate* macFlowJoWorkspace::getGate(wsBooleanGateNode & node){
 	boolGate * gate=new boolGate();
 
 	//get the negate flag
-	gate->isNegate=!node.getProperty("negated").empty();
+	gate->setNegate(!node.getProperty("negated").empty());
 
 	/*
 	 * get specification string
@@ -752,31 +746,31 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	xmlXPathFreeObject(resGate);
 
 
-	const xmlChar * gateType=gNode.thisNode->name;
+	const xmlChar * gateType=gNode.getNodePtr()->name;
 	if(xmlStrEqual(gateType,(const xmlChar *)"Polygon"))
 	{
-		wsPolyGateNode pGNode(node.thisNode);
+		wsPolyGateNode pGNode(node.getNodePtr());
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"PolyRect"))//parse rect as polygon gate
 	{
-		wsPolyGateNode pGNode(node.thisNode);
+		wsPolyGateNode pGNode(node.getNodePtr());
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing RectangleGate.."<<endl;
 		return(getGate(pGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"Ellipse"))
 	{
-		wsEllipseGateNode eGNode(node.thisNode);
+		wsEllipseGateNode eGNode(node.getNodePtr());
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing EllipseGate.."<<endl;
 		return(getGate(eGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"Range"))
 	{
-		wsRangeGateNode rnGNode(node.thisNode);
+		wsRangeGateNode rnGNode(node.getNodePtr());
 
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing RangeGate.."<<endl;

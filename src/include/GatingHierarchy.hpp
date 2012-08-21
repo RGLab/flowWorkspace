@@ -74,15 +74,13 @@ class GatingHierarchy{
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	workspace * thisWs;
 
-public:
 	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 	PARAM_VEC transFlag;
 	trans_local trans;
+public:
+
 	unsigned short dMode;//debug mode passed from GatingSet
 
-	/*retrieve the gate definition from a particular node*/
-//	gate getGate(unsigned short gateid);
-//	gate getGate(string popName);
 
 	/*remove the gate from */
 //	void removeGate(unsigned short popId);
@@ -108,6 +106,7 @@ public:
 
 
 	compensation getCompensation();
+	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
 	void transforming(bool);
 	void gating();

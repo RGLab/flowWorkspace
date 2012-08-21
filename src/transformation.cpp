@@ -25,12 +25,12 @@ trans_map trans_local::cloneTransMap(){
 	 * clone trans map
 	 */
 
-	for(trans_map::iterator it=transformations.begin();it!=transformations.end();it++)
+	for(trans_map::iterator it=tp.begin();it!=tp.end();it++)
 	{
 		transformation * curTran=it->second;
 		if(curTran!=NULL)
 		{
-			cout<<"cloning transformatioin:"<<curTran->channel<<endl;
+			cout<<"cloning transformatioin:"<<curTran->getChannel()<<endl;
 			res[it->first]=curTran->clone();
 		}
 	}
@@ -76,19 +76,22 @@ void linTrans::transforming(valarray<double> & input){
 		input*=64;
 }
 void transformation::transforming(valarray<double> & input){
-		if(!calTbl.isInterpolated)
+		if(!calTbl.isInterpolated())
 			throw(domain_error("calibration table not interpolated yet!"));
 		input=calTbl.transforming(input);
 }
 
+void transformation::setCalTbl(calibrationTable _tbl){
+	calTbl=_tbl;
+}
 transformation * trans_local::getTran(string channel){
 	transformation * res;
 	if(channel.compare("Time")==0||channel.compare("time")==0)
 		res=NULL;
 
 
-	trans_map::iterator it=transformations.find(channel);
-	if(it==transformations.end())
+	trans_map::iterator it=tp.find(channel);
+	if(it==tp.end())
 		res=NULL;
 	else
 		res=it->second;
@@ -211,15 +214,17 @@ void biexpTrans::computCalTbl(){
 	/*
 	 * save the calibration table
 	 */
-	calTbl.caltype="flowJo";
-	calTbl.spline_method=2;
+	calTbl.setCaltype("flowJo");
+	calTbl.setMethod(2);
 	calTbl.init(channelRange+1);
-
+	valarray<double> x(channelRange+1),y(channelRange+1);
 	for (int chan = 0; chan <= channelRange; chan++)
 	{
-		calTbl.y[chan] =chan;
-		calTbl.x[chan] = positive[chan];
+		y[chan] =chan;
+		x[chan] = positive[chan];
 	}
+	calTbl.setX(x);
+	calTbl.setY(y);
 
 	isComputed=true;
 

@@ -145,21 +145,19 @@ void ncdfFlow::writeflowData(flowData & fdata)
 			ERR(retval);
 
 	unsigned nChannels=params.size();
-	unsigned nSize=fdata.data.size();
+	unsigned nSize=fdata.dataSize();
 	unsigned nRow=nSize/nChannels;
 
-	size_t start[] = {fdata.sampleID, 0, 0};
+	size_t start[] = {fdata.getSampleID(), 0, 0};
 	size_t count[] = {1,nChannels, nRow};
 	double *mat = new double[nSize];
 
-	for(unsigned i=0;i<nSize;i++)
-		mat[i]=fdata.data[i];
+	fdata.getData(mat,nSize);
+//	for(unsigned i=0;i<nSize;i++)
+//		mat[i]=fdata.data[i];
 
 //	for(unsigned i=0;i<10;i++)
 //		cout<<mat[i+6*nRow]<<",";
-//
-//	cout<<"test"<<endl;
-//	cout<<"test"<<endl;
 	if((retval = nc_inq_varid (ncid, "exprsMat", &varid)))
 		ERR(retval);
 

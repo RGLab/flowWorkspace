@@ -28,19 +28,18 @@ nodeProperties::~nodeProperties(){
 
 
 POPSTATS nodeProperties::getStats(bool isFlowCore=false){
-//		return(isFlowCore?this->fcStats:this->fjStats);
+
 	return(isFlowCore?this->fcStats:this->fjStats);
 }
 
-//unsigned nodeProperties::getCounts(bool isFlowCore=false){
-//	if(isFlowCore)
-//	{
-//		return count(indices.begin(),indices.end(),true);
-//	}
-//	else
-//		return this->fjStats["count"];
-//
-//}
+void nodeProperties::setStats(POPSTATS s,bool isFlowCore=false){
+	if(isFlowCore)
+		fcStats=s;
+	else
+		fjStats=s;
+
+}
+
 gate * nodeProperties::getGate(){
 	if(thisGate==NULL)
 		throw(domain_error("gate is not parsed!"));

@@ -13,13 +13,16 @@
 
 
 class wsNode{
-public:
+
 	xmlNodePtr thisNode;
+public:
 	string getProperty(string propName);
 	string getNsProperty(string propName,string ns);
 	string getContent();
 	xmlXPathObjectPtr xpathInNode(string xpath);
 	xmlXPathObjectPtr xpath(string xpath);
+	xmlNodePtr getNodePtr(){return thisNode;};
+	void setNodePtr(xmlNodePtr n){thisNode=n;};
 	wsNode(xmlNodePtr node){thisNode=node;};
 	wsNode(){};
 };
@@ -29,47 +32,47 @@ public:
 class wsSampleNode:public wsNode{
 public:
 //	wsSampleNode();
-	wsSampleNode(xmlNodePtr node){thisNode=node;};
+	wsSampleNode(xmlNodePtr node){setNodePtr(node);};
 
 
 };
 
 class wsRootNode:public wsNode{
 public:
-	wsRootNode(xmlNodePtr node){thisNode=node;};
+	wsRootNode(xmlNodePtr node){setNodePtr(node);};
 };
 
 class wsPopNode:public wsNode{
 public:
-	wsPopNode(xmlNodePtr node){thisNode=node;};
+	wsPopNode(xmlNodePtr node){setNodePtr(node);};
 //	wsPopNode(){};
 };
 
 class wsRectGateNode:public wsNode{
 public:
-	wsRectGateNode(xmlNodePtr node){thisNode=node;};
+	wsRectGateNode(xmlNodePtr node){setNodePtr(node);};
 //	wsPopNode(){};
 };
 
 class wsPolyGateNode:public wsNode{
 public:
-	wsPolyGateNode(xmlNodePtr node){thisNode=node;};
+	wsPolyGateNode(xmlNodePtr node){setNodePtr(node);};
 
 };
 
 class wsEllipseGateNode:public wsNode{
 public:
-	wsEllipseGateNode(xmlNodePtr node){thisNode=node;};
+	wsEllipseGateNode(xmlNodePtr node){setNodePtr(node);};
 };
 
 class wsRangeGateNode:public wsNode{
 public:
-	wsRangeGateNode(xmlNodePtr node){thisNode=node;};
+	wsRangeGateNode(xmlNodePtr node){setNodePtr(node);};
 };
 
 class wsBooleanGateNode:public wsNode{
 public:
-	wsBooleanGateNode(xmlNodePtr node){thisNode=node;};
+	wsBooleanGateNode(xmlNodePtr node){setNodePtr(node);};
 
 };
 
