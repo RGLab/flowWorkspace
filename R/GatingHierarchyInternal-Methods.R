@@ -771,7 +771,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 			}			
 			
 			parentdata<-getData(x,pid)
-
+#			browser()
+			smooth<-ifelse(nrow(parentdata)<100,TRUE,smooth)
 			#################################
 			# setup axis labels and scales
 			################################
