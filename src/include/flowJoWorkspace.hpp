@@ -14,7 +14,17 @@
 
 
 class flowJoWorkspace:public workspace{
+//	friend std::ostream & operator<<(std::ostream &os, const flowJoWorkspace &gh);
+	friend class boost::serialization::access;
+private:
 	string versionList;
+
+	template<class Archive>
+		    void serialize(Archive &ar, const unsigned int version)
+		    {
+        		ar & boost::serialization::base_object<workspace>(*this);
+				ar & versionList;
+		    }
 public:
 
 	 vector <string> getSampleID(unsigned short);

@@ -24,7 +24,16 @@ using namespace std;
 
 struct coordinate
 {
+//	friend class boost::serialization::access;
+
 	double x,y;
+	template<class Archive>
+						void serialize(Archive &ar, const unsigned int version)
+						{
+
+
+							ar & x & y;
+						}
 	coordinate(double _x,double _y){x=_x;y=_y;};
 	coordinate(){};
 };
@@ -34,6 +43,8 @@ bool compare_y(coordinate i, coordinate j);
 
 
 class transformation{
+//	friend std::ostream & operator<<(std::ostream &os, const transformation &gh);
+	friend class boost::serialization::access;
 
 protected:
 	calibrationTable calTbl;
@@ -42,7 +53,19 @@ protected:
 	string name;
 	string channel;
 	bool isComputed;//this flag allow lazy computCalTbl/interpolation
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
 
+
+					ar & calTbl;
+					ar & isGateOnly;
+					ar & type;
+					ar & name;
+					ar & channel;
+					ar & isComputed;
+				}
 public:
 	transformation();
 	virtual void transforming(valarray<double> & input);
@@ -72,13 +95,28 @@ typedef struct {
 		unsigned range;
 		unsigned highValue;
 		unsigned calibrationIndex;
+		template<class Archive>
+			void serialize(Archive &ar, const unsigned int version)
+			{
+
+
+				ar & param & log & range & highValue & calibrationIndex;
+			}
 		} PARAM;
 typedef vector<PARAM> PARAM_VEC;
 
 PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name);
 
 class trans_local{
+	friend std::ostream & operator<<(std::ostream &os, const trans_local &gh);
+	friend class boost::serialization::access;
+private:
 	trans_map tp;
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & tp;
+				}
 public:
 	trans_map getTransMap(){return tp;};
 	void setTransMap(trans_map _tp){tp=_tp;};
@@ -88,9 +126,19 @@ public:
 };
 
 class trans_global:public trans_local{
-
+//	friend std::ostream & operator<<(std::ostream &os, const trans_global &gh);
+	friend class boost::serialization::access;
+private:
 	string groupName;
 	vector<int> sampleIDs;
+	template<class Archive>
+			    void serialize(Archive &ar, const unsigned int version)
+			    {
+        			ar & boost::serialization::base_object<trans_local>(*this);
+					ar & groupName;
+					ar & sampleIDs;
+
+			    }
 public:
 	void setSampleIDs(vector<int> _sampleIDs){sampleIDs=_sampleIDs;}
 	vector<int> getSampleIDs(){return sampleIDs;}

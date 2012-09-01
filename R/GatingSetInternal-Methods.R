@@ -2,7 +2,28 @@
 # 
 # Author: wjiang2
 ###############################################################################
+archive<-function(G,dir=tempdir()){
+	rds.file<-tempfile(tmpdir=dir,fileext=".rds")
+	dat.file<-sub(".rds",".dat",rds.file)
+#	browser()
+	
+	#save external pointer object
+	.Call("R_saveGatingSet",G@pointer,dat.file)
+#	G@pointer<-NULL
+	saveRDS(G,rds.file)
+	message("GatingSet is saved in folder ",dir,"\nUse 'unarchive' to reload it.")
+	
+} 
 
+unarchive<-function(dir){
+	dat.file<-list.files(path=dir,pattern=".dat",full.names=T)
+	rds.file<-list.files(path=dir,pattern=sub(".dat",".rds",basename(dat.file)),full.names=T)
+	gs<-readRDS(rds.file)
+#	browser()
+	gs@pointer<-.Call("R_loadGatingSet",dat.file)
+	return (gs)
+}
+	
 setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			#pass the filename and channels to c structure
 			if(inherits(value,"ncdfFlowSet"))

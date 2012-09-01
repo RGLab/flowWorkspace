@@ -89,5 +89,35 @@ BEGIN_RCPP
 END_RCPP
 }
 
+/*
+ * save/load GatingSet
+ */
+RcppExport SEXP R_saveGatingSet(SEXP _gsPtr,SEXP _fileName) {
+BEGIN_RCPP
+
+
+		XPtr<GatingSet>gs(_gsPtr);
+		string fileName=as<string>(_fileName);
+		save_gs(*gs,fileName);
+
+
+END_RCPP
+}
+
+
+RcppExport SEXP R_loadGatingSet(SEXP _fileName) {
+BEGIN_RCPP
+
+
+		GatingSet * gs=new GatingSet();
+		string fileName=as<string>(_fileName);
+		restore_gs(*gs,fileName);
+
+		return XPtr<GatingSet>(gs);
+
+
+END_RCPP
+}
+
 
 

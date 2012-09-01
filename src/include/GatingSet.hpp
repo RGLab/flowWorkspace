@@ -16,6 +16,9 @@
 #include <map>
 #include <boost/foreach.hpp>
 
+
+
+
 using namespace std;
 /*
  * have to use pointer GatingHierarchy * here,
@@ -29,14 +32,39 @@ typedef map<string,GatingHierarchy*> gh_map;
 
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
+//	friend std::ostream & operator<<(std::ostream &os, const GatingSet &gs);
+	friend class boost::serialization::access;
 
 	trans_global_vec gTrans;
 	gh_map ghs;
 	ncdfFlow nc;
 	unsigned short dMode;//debug level to control print out
 	workspace * ws;
+
+private:
+	template<class Archive>
+	    void serialize(Archive &ar, const unsigned int version)
+	    {
+
+
+
+			ar.register_type(static_cast<biexpTrans *>(NULL));
+			ar.register_type(static_cast<logicleTrans *>(NULL));
+			ar.register_type(static_cast<logTrans *>(NULL));
+			ar.register_type(static_cast<linTrans *>(NULL));
+			ar & gTrans;
+
+			ar & nc;
+			ar & ghs;
+
+	        ar & dMode;
+
+//	        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
+//			ar & ws;
+	    }
 public:
 	~GatingSet();
+	GatingSet(){};
 	GatingSet(string,bool,unsigned short,unsigned short);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short);
 	GatingHierarchy * getGatingHierarchy(string );
@@ -48,5 +76,9 @@ public:
 	void attachData(string,vector<string>,vector<string>);
 	ncdfFlow getNcObj(){return nc;}
 	workspace const * getWorkspace(){return ws;}
+
 };
+void save_gs(const GatingSet &gs,string filename);
+void restore_gs(GatingSet &s, string filename);
+
 #endif /* GATINGSET_HPP_ */

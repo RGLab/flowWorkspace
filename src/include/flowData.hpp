@@ -15,17 +15,45 @@
 #include <Rcpp.h>
 using namespace std;
 using namespace Rcpp;
+
+#include <boost/archive/tmpdir.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/valarray.hpp>
+#include <boost/graph/adj_list_serialize.hpp>
+#include <boost/serialization/assume_abstract.hpp>
+
+
+
 typedef vector<bool> POPINDICES;//maybe try boost::dynamic_bitset to speed up
 
 /*
  * representing one FCS data
  */
 class flowData{
-
+	friend std::ostream & operator<<(std::ostream &os, const flowData &fdata);
+	friend class boost::serialization::access;
+private:
 	vector<string> params;
 	unsigned sampleID;//it is only valid when access cdf version of flowdata, used as index for sample dimension
 	valarray<double> data;
 	unsigned nEvents;
+
+	template<class Archive>
+		    void serialize(Archive &ar, const unsigned int version)
+		    {
+
+					ar & params;
+					ar & sampleID;
+					ar & data;
+					ar & nEvents;
+
+		    }
 public:
 	flowData & operator=(const flowData& source);//explicitly define the copy assignment since the default one is compiler-specific
 	flowData();

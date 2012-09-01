@@ -10,6 +10,14 @@
 #include "flowJoWorkspace.hpp"
 
 class winFlowJoWorkspace:public flowJoWorkspace{
+	friend class boost::serialization::access;
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::base_object<flowJoWorkspace>(*this);
+
+				}
 public:
 	winFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);

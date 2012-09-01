@@ -14,9 +14,21 @@
 using namespace std;
 
 class ncdfFlow{
+	friend std::ostream & operator<<(std::ostream &os, const ncdfFlow &nc);
+	friend class boost::serialization::access;
+private:
 	string fileName;
 	vector<string> sampleNames;
 	vector<string> params;
+
+	template<class Archive>
+			void serialize(Archive &ar, const unsigned int version)
+			{
+
+					ar & fileName;
+					ar & sampleNames;
+					ar & params;
+			}
 public:
 	ncdfFlow();
 	ncdfFlow(string _fileName);

@@ -22,6 +22,14 @@ typedef struct{
 	vector<string> fullpath;
 	char op;
 	bool isNot;
+	template<class Archive>
+				    void serialize(Archive &ar, const unsigned int version)
+				    {
+
+						ar & fullpath;
+						ar & op;
+						ar & isNot;
+				    }
 	} BOOL_GATE_OP;
 
 
@@ -89,8 +97,20 @@ public:
 
 class paramRange
 {
+//	friend std::ostream & operator<<(std::ostream &os, const paramRange &gh);
+	friend class boost::serialization::access;
+private:
+
 	string name;
 	double min, max;
+	template<class Archive>
+						void serialize(Archive &ar, const unsigned int version)
+						{
+
+							ar & name;
+							ar & min;
+							ar & max;
+						}
 public:
 	paramRange(double _min,double _max,string _name){min=_min;max=_max;name=_name;};
 	paramRange(){};
@@ -109,8 +129,21 @@ public:
 };
 class paramPoly
 {
+//	friend std::ostream & operator<<(std::ostream &os, const paramPoly &gh);
+	friend class boost::serialization::access;
+private:
+
+
 	vector<string> params;//params.at(0) is x, params.at(1) is y axis
 	vector<coordinate> vertices;
+
+	template<class Archive>
+					void serialize(Archive &ar, const unsigned int version)
+					{
+
+						ar & params;
+						ar & vertices;
+					}
 public:
 	vector<coordinate> getVertices(){return vertices;};
 	void setVertices(vector<coordinate> _v){vertices=_v;};
@@ -126,9 +159,21 @@ public:
  * TODO:possibly implement getCentroid,getMajorAxis,getMinorAxis for all gate types
  */
 class gate {
+//	friend std::ostream & operator<<(std::ostream &os, const gate &gh);
+	friend class boost::serialization::access;
+
 protected:
 	bool neg;
 	bool isTransformed;
+private:
+	template<class Archive>
+			void serialize(Archive &ar, const unsigned int version)
+			{
+
+				ar & neg;
+				ar & isTransformed;
+
+			}
 public:
 	/*
 	 * exact string returned by std::type_info::name() is compiler-dependent
@@ -156,7 +201,18 @@ public:
  * if it is decided that there is no need to keep them as separate classes
  */
 class rangegate:public gate {
+	friend class boost::serialization::access;
+
+private:
 	paramRange param;
+
+	template<class Archive>
+			void serialize(Archive &ar, const unsigned int version)
+			{
+				ar & boost::serialization::base_object<gate>(*this);
+				ar & param;
+
+			}
 public:
 	unsigned short getType(){return RANGEGATE;}
 	POPINDICES gating(flowData &);
@@ -175,9 +231,17 @@ public:
  *
  */
 class polygonGate:public gate {
+	friend class boost::serialization::access;
 protected:
 	paramPoly param;
+private:
+	template<class Archive>
+			void serialize(Archive &ar, const unsigned int version)
+			{
+				ar & boost::serialization::base_object<gate>(*this);
+				ar & param;
 
+			}
 public:
 	unsigned short getType(){return POLYGONGATE;}
 	void extend(flowData &,unsigned short);
@@ -194,8 +258,18 @@ public:
  * TODO: doing the gating without interpolating it into polygon
  */
 class ellipseGate:public polygonGate {
+	friend class boost::serialization::access;
+private:
 	//four antipodal points of ellipse
 	vector<coordinate> antipodal_vertices;
+	template<class Archive>
+			void serialize(Archive &ar, const unsigned int version)
+			{
+				ar & boost::serialization::base_object<gate>(*this);
+				ar & antipodal_vertices;
+
+			}
+
 public:
 	vector<coordinate> getAntipodal(){return antipodal_vertices;};
 	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
@@ -215,8 +289,19 @@ public:
  * thus GatingHierarchy data structure should be invisible to gate.
  */
 class boolGate:public gate {
+	friend class boost::serialization::access;
+
+
 public:
 	vector<BOOL_GATE_OP> boolOpSpec;//the gatePaths with the their logical operators
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::base_object<gate>(*this);
+					ar & boolOpSpec;
+
+				}
 public:
 	vector<BOOL_GATE_OP> getBoolSpec(){return boolOpSpec;};
 	unsigned short getType(){return BOOLGATE;}

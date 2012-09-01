@@ -15,6 +15,22 @@
 using namespace std;
 
 
+void save_gs(const GatingSet &gs,string filename){
+	    // make an archive
+	    std::ofstream ofs(filename.c_str());
+	    boost::archive::binary_oarchive oa(ofs);
+	    oa << gs;
+	}
+void restore_gs(GatingSet &s, string filename)
+{
+    // open the archive
+    std::ifstream ifs(filename.c_str());
+    boost::archive::binary_iarchive ia(ifs);
+
+    ia >> s;
+}
+
+
 template <class T>
 wsSampleNode getSample(T ws,string sampleID){
 

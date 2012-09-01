@@ -25,8 +25,9 @@ int main(void) {
 	myTest.at(i).samples["1"]="004_A1_A01.fcs";
 	myTest.at(i).samples["2"]="004_B1_B01.fcs";
 	myTest.at(i).sampNloc=1;
-	myTest.at(i).ncfile="/home/wjiang2/rglab/workspace/flowWorkspace/output/HIPC_trial/nc_comp.nc";
-	myTest.at(i).colfile="/home/wjiang2/rglab/workspace/flowWorkspace/output/HIPC_trial/colnames.txt";
+	myTest.at(i).ncfile="../output/HIPC_trial/nc_comp.nc";
+	myTest.at(i).colfile="../output/HIPC_trial/colnames.txt";
+	myTest.at(i).archive="../output/HIPC_trial/gs.dat";
 
 	i=1;
 	myTest.at(i).filename="../data/PBMC/Blomberg/data/Exp2_Tcell.wsp";
@@ -35,6 +36,7 @@ int main(void) {
 	myTest.at(i).sampNloc=2;
 	myTest.at(i).ncfile="../output/Blomberg/nc1_comp.nc";
 	myTest.at(i).colfile="../output/Blomberg/colnames.txt";
+	myTest.at(i).archive="../output/Blomberg/gs.dat";
 
 	i=2;
 	myTest.at(i).filename="/loc/no-backup/mike/ITN029ST/QA_template.xml";
@@ -43,12 +45,13 @@ int main(void) {
 	myTest.at(i).sampNloc=1;
 	myTest.at(i).ncfile="../output/ITN/nc1.nc";
 	myTest.at(i).colfile="../output/ITN/colnames.txt";
+	myTest.at(i).archive="../output//ITN/gs.dat";
 
 	i=3;
 	myTest.at(i).filename="../data/PBMC/Yale/data/LyoplateTest1Yale.wsp";
 	myTest.at(i).samples["1"]="Specimen_001_A1_A01.fcs";
 	myTest.at(i).sampNloc=1;
-
+	myTest.at(i).archive="../output/Yale/gs.dat";
 	/*
 	 * with negated gate
 	 */
@@ -58,7 +61,7 @@ int main(void) {
 	myTest.at(i).sampNloc=1;
 	myTest.at(i).ncfile="../output/NHLBI/nc1_comp.nc";
 	myTest.at(i).colfile="../output/NHLBI/colnames.txt";
-
+	myTest.at(i).archive="../output/NHLBI/gs.dat";
 	/*
 	 * with boolean gate
 	 */
@@ -68,17 +71,18 @@ int main(void) {
 	myTest.at(i).sampNloc=1;
 	myTest.at(i).ncfile="../output/HVTN054/nc1_comp.nc";
 	myTest.at(i).colfile="../output/HVTN054/colnames.txt";
+	myTest.at(i).archive="../output/HVTN054/gs.dat";
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=2;
+	i=0;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{
 //		cout << "press any key to continue:\n>";
 //		string input = "";
 //		getline(cin, input);
-		gs_parse(myTest.at(i),4,true);
+		gs_parse(myTest.at(i),4,false,true);
 
 //	}
 

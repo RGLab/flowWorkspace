@@ -72,4 +72,4 @@ exportClasses(flowJoWorkspace,GatingHierarchy,GatingSet);
 exportMethods("openWorkspace","show","closeWorkspace","summary","parseWorkspace","[","[[","length","lapply","getNodes","execute","plot","plotGate","getPopStats","plotPopCV","getData","getGate","getParent","getBoundaries","getDimensions","getIndices","getChildren","getProp","getTotal","getSamples","getSample","getSampleGroups","[<-","[[<-","getCompensationMatrices","getTransformations","getKeywords","keyword","flowWorkspace2flowCore","exportAsFlowJoXML","ellipsoidGate2FlowJoVertices","getNcdf","getIndiceFile","haveSameGatingHierarchy","setData","copyGatingHierarchyFromTo"
 				,"ncFlowSet","ncFlowSet<-","GatingSet")
 
-export("plotWf","getFJWSubsetIndices","saveNcdf","recomputeGatingSet","ExportTSVAnalysis","includedGate2ExcludedGate","includedChannel2ExcludedChannel");
+export("archive","unarchive","plotWf","getFJWSubsetIndices","saveNcdf","recomputeGatingSet","ExportTSVAnalysis","includedGate2ExcludedGate","includedChannel2ExcludedChannel");

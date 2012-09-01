@@ -175,11 +175,17 @@ void gh_counts(GatingHierarchy* gh){
 
 }
 
+void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadArchive){
 
-void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate){
-
+		GatingSet *gs;
 		//create gating set object
-		GatingSet gs(myTest.filename,true,myTest.sampNloc,dMode);
+		if(isLoadArchive)
+		{
+			gs=new GatingSet();
+			restore_gs(*gs,myTest.archive);
+		}
+		else
+			gs=new GatingSet(myTest.filename,true,myTest.sampNloc,dMode);
 
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;
@@ -188,27 +194,31 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate){
 		if(isTemplate)
 			sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
 
-		gs.parseWorkspace(sampleIDs,true);
+		if(!isLoadArchive)
+			gs->parseWorkspace(sampleIDs,true);
 
 		cout<<endl<<"get sample names from gating set"<<endl;
 
-		vector<string> samples=gs.getSamples();
+		vector<string> samples=gs->getSamples();
 		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
 			cout<<*it<<endl;
 
 		GatingHierarchy* gh;
 
 		string curSample=samples.at(0);
-		gs_attachCDF(gs,myTest);
-		gh=gs.getGatingHierarchy(curSample);
+		if(!isLoadArchive)
+			gs_attachCDF(*gs,myTest);
+		gh=gs->getGatingHierarchy(curSample);
 //		gh->printLocalTrans();
 //		gh_accessor_test(gh);
 
-
-		gs_gating(gs,curSample);
+		if(!isLoadArchive)
+			gs_gating(*gs,curSample);
 
 		gh_counts(gh);
 
+		if(!isLoadArchive)
+			save_gs(*gs,myTest.archive);
 
 		if(isTemplate)
 		{
@@ -249,6 +259,9 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate){
 
 			delete newGS;
 		}
+
+		delete gs;
+
 }
 
 

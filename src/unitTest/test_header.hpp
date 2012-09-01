@@ -28,10 +28,11 @@ struct testSuit{
 	string ncfile;
 	map<string,string> samples;
 	unsigned short sampNloc;
+	string archive;
 } ;
 
 
-void gs_parse(testSuit,unsigned short,bool);
+void gs_parse(testSuit,unsigned short,bool,bool);
 void ncdf_test();
 void compCalTbl();
 void spline_test();

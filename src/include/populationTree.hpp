@@ -15,6 +15,12 @@
 #define ROOTNODE 0
 
 struct Edge{
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+
+
+				}
     // nothing, probably. Or a weight, a distance, a direction, ...
 };
 

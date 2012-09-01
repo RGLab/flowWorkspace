@@ -41,6 +41,9 @@ using namespace std;
  *
  */
 class compensation{
+//	friend std::ostream & operator<<(std::ostream &os, const compensation &gh);
+	friend class boost::serialization::access;
+
 public:
 	string cid;
 	string prefix;
@@ -49,6 +52,18 @@ public:
 	string comment;// store "Acquisition-defined" when the spillOver matrix is not supplied and cid==-1
 	vector<string> marker;
 	vector<double> spillOver;
+private:
+template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & cid;
+					ar & prefix;
+					ar & suffix;
+					ar & name;
+					ar & comment;
+					ar & marker;
+					ar & spillOver;
+				}
 };
 
 
@@ -59,17 +74,34 @@ struct xpath{
 	string sampleNode;
 	string popNode;
 	unsigned short sampNloc;//get FCS filename(or sampleName) from either $FIL keyword or name attribute of sampleNode
+	template<class Archive>
+		void serialize(Archive &ar, const unsigned int version)
+		{
+
+
+			ar & group & sampleRef & sample & sampleNode & popNode & sampNloc;
+		}
 };
 
 
 
 class workspace{
+//	friend std::ostream & operator<<(std::ostream &os, const workspace &gh);
+	friend class boost::serialization::access;
 public:
 	 xpath nodePath;
 //protected:
 
 	 xmlDoc * doc;
 	 unsigned short dMode;//debug mode passed from gatingset class
+private:
+	 template<class Archive>
+	 		    void serialize(Archive &ar, const unsigned int version)
+	 		    {
+	 				ar & nodePath;
+	 				ar & doc;
+	 				ar & dMode;
+	 		    }
 public:
 	 ~workspace();
 	 virtual string xPathSample(string sampleID)=0;

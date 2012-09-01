@@ -29,14 +29,34 @@ typedef map<string,float> POPSTATS;
  *
  */
 class nodeProperties{
+//	friend std::ostream & operator<<(std::ostream &os, const nodeProperties &gh);
+	friend class boost::serialization::access;
+private:
 	string thisName;
 	gate * thisGate;
 	POPINDICES indices;
 	POPSTATS fjStats,fcStats;
-
-
 public:
 	bool dMode;
+private:
+	template<class Archive>
+			    void serialize(Archive &ar, const unsigned int version)
+			    {
+
+					ar & thisName;
+
+					ar.register_type(static_cast<polygonGate *>(NULL));
+					ar.register_type(static_cast<ellipseGate *>(NULL));
+					ar.register_type(static_cast<boolGate *>(NULL));
+					ar.register_type(static_cast<rangegate *>(NULL));
+					ar & thisGate;
+
+					ar & indices;
+			        ar & fjStats;
+			        ar & fcStats;
+			        ar & dMode;
+			    }
+public:
 	nodeProperties();
 
 	~nodeProperties();

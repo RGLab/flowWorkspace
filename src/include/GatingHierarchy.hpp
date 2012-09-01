@@ -14,6 +14,10 @@
 #include "flowJoWorkspace.hpp"
 #include "ncdfFlow.hpp"
 #include <libxml/xpath.h>
+
+
+
+
 using namespace std;
 typedef map<string,VertexID> VertexID_map;
 typedef vector<VertexID> VertexID_vec;
@@ -60,7 +64,9 @@ struct OurVertexPropertyWriterR {
  */
 
 class GatingHierarchy{
-
+//	friend std::ostream & operator<<(std::ostream &os, const GatingHierarchy &gh);
+	friend class boost::serialization::access;
+private:
 	compensation comp;/*compensation is currently done in R due to the linear Algebra
 						e[, cols] <- t(solve(t(spillover))%*%t(e[,cols]))
 						we can try uBlas for this simple task, but when cid=="-1",we still need to
@@ -77,6 +83,32 @@ class GatingHierarchy{
 	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 	PARAM_VEC transFlag;
 	trans_local trans;
+
+	template<class Archive>
+		    void serialize(Archive &ar, const unsigned int version)
+		    {
+
+				ar & comp;
+				ar & fdata;
+				ar & tree;
+		        ar & isGated;
+		        ar & isLoaded;
+		        ar & nc;
+
+//		        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
+//		        ar & thisWs;
+
+		        ar.register_type(static_cast<biexpTrans *>(NULL));
+				ar.register_type(static_cast<logicleTrans *>(NULL));
+				ar.register_type(static_cast<logTrans *>(NULL));
+				ar.register_type(static_cast<linTrans *>(NULL));
+		        ar & gTrans;
+
+		        ar & transFlag;
+
+		        ar & trans;
+		        ar & dMode;
+		    }
 public:
 
 	unsigned short dMode;//debug mode passed from GatingSet

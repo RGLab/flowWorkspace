@@ -51,17 +51,21 @@ ws<-openWorkspace(macXML[1])
 ###############################################################################
 time1<-Sys.time()	
 GT<-parseWorkspace(ws,name=2
-#					,execute=F
+					,execute=F
 #					,includeGates=T
 					,subset=1
 #					,isNcdf=T
-#					,useInternal=T
+					,useInternal=T
 					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
 					)
 Sys.time()-time1						
 	
 	
+##serialzation
+archive(GT)
+G1<-unarchive("/tmp/Rtmp3C5b1u")
+
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"
 templateSample<-newSamples[1]
@@ -77,16 +81,16 @@ G<-GatingSet(gh_template
 
 getPopStats(G[[1]])[,2:3]
 
+
+
 ##plot
 getNodes(GT[[1]])
 png(file="plotGate.png",width=800,height=800)
-plotGate(G[[1]],scales=list(x=list(cex=0.5)
-							,y=list(cex=0.5)
-							)
-				,par.settings=list(par.main.text=list(cex=0.6)
+plotGate(GT[[1]],8:10,par.settings=list(par.main.text=list(cex=0.6)
 									,par.xlab.text=list(cex=0.5)
 									,par.ylab.text=list(cex=0.5))
-#		,stat=F
+		,stat=T
+		,xbin=128
 		)
 dev.off()
 CairoX11()
@@ -199,6 +203,8 @@ comp<-getCompensationMatrices(G[[1]])
 
 getAxisLabels(G[[1]])
 getAxisLabels(G1[[1]])
+
+
 #############################################
 #QUALIFIER
 ########################################

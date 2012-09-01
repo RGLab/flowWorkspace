@@ -10,6 +10,15 @@
 #include "flowJoWorkspace.hpp"
 
 class macFlowJoWorkspace:public flowJoWorkspace{
+friend class boost::serialization::access;
+
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::base_object<flowJoWorkspace>(*this);
+
+				}
 	vector<BOOL_GATE_OP> parseBooleanSpec(string specs,vector<string> gPaths);
 public:
 	macFlowJoWorkspace(xmlDoc *);

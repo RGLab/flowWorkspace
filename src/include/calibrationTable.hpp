@@ -15,6 +15,18 @@
 #include "spline.hpp"
 using namespace std;
 
+#include <boost/archive/tmpdir.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/valarray.hpp>
+#include <boost/graph/adj_list_serialize.hpp>
+#include <boost/serialization/assume_abstract.hpp>
+
 struct Spline_Coefs{
 	map<string,vector<double> > coefs;
 	int method;
@@ -22,10 +34,28 @@ struct Spline_Coefs{
 };
 
 class calibrationTable{
+	friend std::ostream & operator<<(std::ostream &os, const calibrationTable &gh);
+	friend class boost::serialization::access;
+private:
 	valarray<double> x,y,b,c,d;
 	int spline_method;
 	string caltype;//TODO:move this to transformation class
 	bool flag;
+	template<class Archive>
+					void serialize(Archive &ar, const unsigned int version)
+					{
+
+
+						ar & x;
+						ar & y;
+						ar & b;
+						ar & c;
+						ar & d;
+						ar & spline_method;
+						ar & caltype;
+						ar & flag;
+					}
+
 public:
 	calibrationTable();
 	calibrationTable & operator=(const calibrationTable& source);
