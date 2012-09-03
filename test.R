@@ -14,7 +14,7 @@ library(gridExtra)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
-macXML<-"/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
 #path<-"~/rglab/workspace/flowWorkspace/data"
@@ -51,20 +51,20 @@ ws<-openWorkspace(macXML[1])
 ###############################################################################
 time1<-Sys.time()	
 GT<-parseWorkspace(ws,name=2
-					,execute=F
+#					,execute=F
 #					,includeGates=T
-					,subset=1
+					,subset=1:2
 #					,isNcdf=T
 					,useInternal=T
-					,path="/loc/no-backup/mike/HIPC/data/Cytotrol/NHLBI/Bcell/"
+					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
 					)
 Sys.time()-time1						
 	
 	
 ##serialzation
-archive(GT)
-G1<-unarchive("/tmp/Rtmp3C5b1u")
+archive(GT,dir="output/NHLBI")
+G1<-unarchive("output/NHLBI")
 
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"
@@ -86,12 +86,15 @@ getPopStats(G[[1]])[,2:3]
 ##plot
 getNodes(GT[[1]])
 png(file="plotGate.png",width=800,height=800)
-plotGate(GT[[1]],8:10,par.settings=list(par.main.text=list(cex=0.6)
+plotGate(GT,8:10,par.settings=list(par.main.text=list(cex=0.6)
 									,par.xlab.text=list(cex=0.5)
 									,par.ylab.text=list(cex=0.5))
 		,stat=T
 		,xbin=128
 		)
+getGate(GT[[1]],8)		
+getParent(GT[[1]],8)
+plotGate_labkey(GT,7,y="<R660-A>" ,x="<G560-A>")		
 dev.off()
 CairoX11()
 plotGate(G[[1]])

@@ -456,7 +456,191 @@ setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
 			
 		})
 
-setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,...){
-			for(i in 1:length(x))
-				plotGate(x[[i]],y,...)
+setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
+			if(lattice)
+			{
+				plotList<-.mergeGates(x[[1]],y,bool,merge)
+				lapply(plotList,function(y){
+							
+							return(.plotGateGS(x,y,...))
+						})
+				
+				
+				
+			}else
+			{
+				for(i in 1:length(x))
+					plotGate(x[[i]],y,bool=bool,merge=merge,...)
+			}
+			
 		})
+#TODO:merge this to .plotGate routine
+.plotGateGS<-function(x,y,formula=NULL,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
+	gh<-x[[1]]
+	if(is.list(y))
+		pid<-y$parentId
+	else
+		pid<-getParent(gh,y)
+	
+	if(is.null(main)){
+		fjName<-getNodes(gh,pid,isPath=T)
+		main<-fjName
+	}
+	
+	if(is.list(y))
+	{
+#		browser()
+		curGates<-sapply(getSamples(x),function(curSample){
+					
+					filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
+				},simplify=F)
+		curGates<-as(curGates,"filtersList")
+	}else
+	{
+		curGates<-sapply(getSamples(x),function(curSample){
+					
+					getGate(x[[curSample]],y)
+				},simplify=F)
+		
+		if(suppressWarnings(is.na(curGates))){
+			message("Can't plot. There is no gate defined for node ",getNode(gh,y));
+			invisible();			
+			return(NULL)
+		}
+		
+	}			
+	
+	parentdata<-getData(x,pid)
+	parentFrame<-parentdata[[1]]
+#			browser()
+	smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
+	#################################
+	# setup axis labels and scales
+	################################
+	if(class(curGates)=="BooleanGate")
+	{
+		stop("bool gate plot is not supported for gatingSet yet! ")
+#		params<-rev(parameters(getGate(gh,getParent(gh,y))))
+#		ind<-getIndices(gh,y)
+#		curGate<-getData(x)[ind,params]##get gated pop from indexing the root pop because ind here is global
+#		
+#		panelFunc<-panel.xyplot.flowFrame.booleanGate
+	}else
+	{
+		if(class(curGates[[1]])=="filters")
+			params<-rev(parameters(curGates[[1]][[1]]))
+		else
+			params<-rev(parameters(curGates[[1]]))
+		panelFunc<-panel.xyplot.flowset
+	}
+	
+	
+	if(length(params)==1)
+	{
+		xParam=params
+		yParam="SSC-A"
+		params<-c(yParam,xParam)
+	}else
+	{
+		yParam=params[1]
+		xParam=params[2]
+		
+	}
+	pd<-pData(parameters(parentFrame))
+	xObj<-.getChannelMarker(pd,xParam)
+	yObj<-.getChannelMarker(pd,yParam)
+	
+	xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
+	ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
+#			browser()
+	if(length(params)==2){
+		xParam.ind<-match(xParam,pd$name)
+		yParam.ind<-match(yParam,pd$name)
+		x.labels<-getAxisLabels(gh)[[xParam.ind]]
+		y.labels<-getAxisLabels(gh)[[yParam.ind]]
+		
+		#init the scales and x,y lim
+		
+		xlim=range(parentFrame)[,xParam]
+		ylim=range(parentFrame)[,yParam]
+		
+		#update axis when applicable
+		if(!is.null(x.labels))
+		{
+			xscales<-list(x=list(at=x.labels$at,labels=x.labels$label,rot=45))
+			scales<-lattice:::updateList(xscales,scales)
+			xlim=range(x.labels$at)
+		}
+		if(!is.null(y.labels))
+		{	
+			yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
+			scales<-lattice:::updateList(scales,yscales)
+			ylim=range(y.labels$at)
+		}
+		
+	}
+	
+	
+	
+	
+	#################################
+	# the actual plotting
+	################################
+	if(is.null(formula))
+		formula<-mkformula(params)
+	res<-xyplot(x=formula
+			,data=parentdata[,params]
+			,filter=curGates
+			,xlab=xlab
+			,ylab=ylab
+			,margin=margin
+			,smooth=smooth
+			,scales=scales
+			,main=main
+			,stat=stat
+			,panel=panelFunc
+			,...
+	)	
+	return(res)	
+}
+
+plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
+#	res<-QUALIFIER:::.queryStats(db,statsType="proportion",pop=pop,gsid=1,isTerminal=T)
+#	res<-as.data.frame(cast(res,...~stats))
+#	QUALIFIER:::qa.GroupPlot(db=db,df=res,statsType="proportion",par=.db$lattice)
+	#get all childrens
+	cids<-getChildren(G[[1]],parentID)
+	if(length(cids)>0)
+	{
+		#try to match to projections
+#		browser()
+		isMatched<-lapply(cids,function(cid){
+					g<-getGate(G[[1]],cid)
+					prj<-parameters(g)
+					revPrj<-rev(prj)
+					if((x==prj[1]&&y==prj[2])||(x==revPrj[1]&&y==revPrj[2]))
+						return (TRUE)
+					else
+						return (FALSE)
+				})
+		
+		ind<-which(unlist(isMatched))
+		if(length(ind)>0)
+			isPlotGate<-TRUE
+		else
+			isPlotGate<-FALSE
+	}else
+		isPlotGate<-FALSE
+#	formula1<-as.formula(paste("`",y,"`~`",x,"`",sep=""))
+	formula1<-mkformula(c(y,x))
+	if(isPlotGate)
+		plotGate(G,cids[ind],formula=formula1,smooth=smooth,...)
+	else
+	{
+		fs<-getData(G,parentID)
+		xyplot(formula1,fs,smooth=smooth,...)
+	}
+		
+	
+	
+}

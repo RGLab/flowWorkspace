@@ -671,67 +671,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 			
 			
 #			browser()
-			##filter out boolean gates when bool==FALSE
-			if(!bool)
-			{
-				boolInd<-unlist(lapply(y,.isBoolGate,x=x))
-				y<-y[!boolInd]
-			}
-			plotList<-poplist<-as.list(y)
-			names(plotList)<-plotList
-			
-			if(merge)
-			{
-				#check if they have same parents and parameters
-				keylist<-sapply(plotList,function(y){
-							
-							if(!.isBoolGate(x,y))
-							{
-								curGate<-getGate(x,y)
-	#							browser()
-								if(extends(class(curGate),"filter"))
-								{
-									pid<-getParent(x,y)
-									params<-paste(sort(unname(parameters(curGate))),collapse="")
-								
-									paste(pid,params,sep="|")
-								}else
-									return(-1)
-								
-							}else
-								return(-2)
-						})
-	
-				invalidNodes<-sapply(keylist,function(key)key==-1)
-				poplist<-poplist[!invalidNodes]
-				plotList<-plotList[!invalidNodes]
-				keylist<-keylist[!invalidNodes]
-				
-				boolNodes<-sapply(keylist,function(key)key==-2)
-				keylist<-keylist[!boolNodes]
-				
-	#			browser()
-				keylistFeq<-table(keylist)
-				toMergeKeyList<-names(keylistFeq[keylistFeq>=2])
-				# construct the a special list object to replace/del the one that needs to be merged
-				for(curKey in toMergeKeyList)
-				{
-	#				browser()
-					toMerge<-as.numeric(names(keylist[keylist==curKey]))
-					toReplace<-sort(toMerge)[1]#replace the first merged child node with the merge list
-					toRemove<-toMerge[!(toMerge==toReplace)]#remove other children
-					
-					toReplaceInd<-match(toReplace,poplist)
-					toRemoveInd<-match(toRemove,poplist)
-	#								browser()
-					
-					curPid<-as.numeric(strsplit(curKey,split="\\|")[[1]][1])#extract pid
-					plotList[[toReplaceInd]]<-list(popIds=toMerge,parentId=curPid)
-					plotList[toRemoveInd]<-NULL
-					poplist[toRemoveInd]<-NULL#make sure syn y as well vector since it is used to index plotList 
-				}
-			
-			}	
+			plotList<-.mergeGates(x,y,bool,merge)
 			plotObjs<-lapply(plotList,function(y){
 						
 						return(.plotGate(x,y,...))
@@ -743,7 +683,72 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 				plotObjs
 			
 })
-.plotGate<-function(x,y,add=FALSE,border="red",tsort=FALSE,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
+.mergeGates<-function(gh,i,bool,merge){
+	##filter out boolean gates when bool==FALSE
+#	browser()
+	if(!bool)
+	{
+		boolInd<-unlist(lapply(i,.isBoolGate,x=gh))
+		i<-i[!boolInd]
+	}
+	plotList<-poplist<-as.list(i)
+	names(plotList)<-plotList
+	
+	if(merge)
+	{
+		#check if they have same parents and parameters
+		keylist<-sapply(plotList,function(y){
+					
+					if(!.isBoolGate(gh,y))
+					{
+						curGate<-getGate(gh,y)
+						#							browser()
+						if(extends(class(curGate),"filter"))
+						{
+							pid<-getParent(gh,y)
+							params<-paste(sort(unname(parameters(curGate))),collapse="")
+							
+							paste(pid,params,sep="|")
+						}else
+							return(-1)
+						
+					}else
+						return(-2)
+				})
+		
+		invalidNodes<-sapply(keylist,function(key)key==-1)
+		poplist<-poplist[!invalidNodes]
+		plotList<-plotList[!invalidNodes]
+		keylist<-keylist[!invalidNodes]
+		
+		boolNodes<-sapply(keylist,function(key)key==-2)
+		keylist<-keylist[!boolNodes]
+		
+		#			browser()
+		keylistFeq<-table(keylist)
+		toMergeKeyList<-names(keylistFeq[keylistFeq>=2])
+		# construct the a special list object to replace/del the one that needs to be merged
+		for(curKey in toMergeKeyList)
+		{
+			#				browser()
+			toMerge<-as.numeric(names(keylist[keylist==curKey]))
+			toReplace<-sort(toMerge)[1]#replace the first merged child node with the merge list
+			toRemove<-toMerge[!(toMerge==toReplace)]#remove other children
+			
+			toReplaceInd<-match(toReplace,poplist)
+			toRemoveInd<-match(toRemove,poplist)
+			#								browser()
+			
+			curPid<-as.numeric(strsplit(curKey,split="\\|")[[1]][1])#extract pid
+			plotList[[toReplaceInd]]<-list(popIds=toMerge,parentId=curPid)
+			plotList[toRemoveInd]<-NULL
+			poplist[toRemoveInd]<-NULL#make sure syn y as well vector since it is used to index plotList 
+		}
+		
+	}
+	plotList
+}
+.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
 		
 			if(is.list(y))
 				pid<-y$parentId
@@ -837,16 +842,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 						scales<-lattice:::updateList(scales,yscales)
 						ylim=range(y.labels$at)
 					}
-#					browser()	
-					# extend lim by comparing to gate boundary
-#					gateBoundary<-curGate@boundaries
-#					xdataRange<-range(exprs(parentdata)[,xParam])
-#					ydataRange<-range(exprs(parentdata)[,yParam])
-#					xlim[1]<-min(min(xdataRange),xlim[1])
-#					xlim[2]<-max(max(xdataRange),xlim[2])
-#					
-#					ylim[1]<-min(min(ydataRange),ylim[1])
-#					ylim[2]<-max(max(ydataRange),ylim[2])
+
 				}
 
 
@@ -855,35 +851,23 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 		#################################
 		# the actual plotting
 		################################
-		if(add)
-		{
-#			if(class(curGate)=="BooleanGate")
-#			{
-#				points(exprs(pd[,dims]),col=as.numeric(ind[ind.p])+1,pch='.',xlab=paste(trimWhiteSpace(na.omit(dims[1])),desc[1],sep=" "),ylab=paste(trimWhiteSpace(na.omit(dims[2])),desc[2],sep=" "));
-#			}else
-#			{
-#				trellis.focus(highlight=FALSE)
-#				panel.polygon(getBoundaries(y),border=border,...)
-#				trellis.unfocus();
-#			}
-		}else
-		{
-			f1<-mkformula(params)
-			res<-xyplot(x=f1
-						,data=parentdata[,params]
-						,filter=curGate
-						,xlab=xlab
-						,ylab=ylab
-						,margin=margin
-						,smooth=smooth
-						,scales=scales
-						,main=main
-						,stat=stat
-						,panel=panelFunc
-						,...
-						)	
-			return(res)
-		}
+		
+		f1<-mkformula(params)
+		res<-xyplot(x=f1
+					,data=parentdata[,params]
+					,filter=curGate
+					,xlab=xlab
+					,ylab=ylab
+					,margin=margin
+					,smooth=smooth
+					,scales=scales
+					,main=main
+					,stat=stat
+					,panel=panelFunc
+					,...
+					)	
+		return(res)
+		
 				
 			
 			
