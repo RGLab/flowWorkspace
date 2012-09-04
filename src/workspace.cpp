@@ -16,15 +16,19 @@ workspace::~workspace(){
 //	cout<<"entring the destructor of workspace"<<endl;
 
 	 /*free the document */
-	xmlFreeDoc(doc);
+	if(doc!=NULL)
+	{
+		xmlFreeDoc(doc);
 
-	/*
-	 *Free the global variables that may
-	 *have been allocated by the parser.
-	 */
-	xmlCleanupParser();
-	if(dMode>=GATING_SET_LEVEL)
-		cout<<"xml freed!"<<endl;
+
+		/*
+		 *Free the global variables that may
+		 *have been allocated by the parser.
+		 */
+		xmlCleanupParser();
+		if(dMode>=GATING_SET_LEVEL)
+			cout<<"xml freed!"<<endl;
+	}
 }
 
 

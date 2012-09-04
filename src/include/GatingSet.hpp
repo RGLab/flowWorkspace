@@ -64,7 +64,7 @@ private:
 	    }
 public:
 	~GatingSet();
-	GatingSet(){};
+	GatingSet(){ws=NULL;};
 	GatingSet(string,bool,unsigned short,unsigned short);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short);
 	GatingHierarchy * getGatingHierarchy(string );

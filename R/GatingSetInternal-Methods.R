@@ -21,6 +21,11 @@ unarchive<-function(dir){
 	gs<-readRDS(rds.file)
 #	browser()
 	gs@pointer<-.Call("R_loadGatingSet",dat.file)
+	#update the pointer in each gating hierarchy
+	for(i in 1:length(gs@set))
+	{
+		gs@set[[i]]@pointer<-gs@pointer
+	}
 	return (gs)
 }
 	
