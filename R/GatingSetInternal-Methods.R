@@ -3,6 +3,8 @@
 # Author: wjiang2
 ###############################################################################
 archive<-function(G,dir=tempdir()){
+	if(!file.exists(dir))
+		dir.create(dir)
 	rds.file<-tempfile(tmpdir=dir,fileext=".rds")
 	dat.file<-sub(".rds",".dat",rds.file)
 #	browser()

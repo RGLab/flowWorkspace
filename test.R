@@ -63,8 +63,8 @@ Sys.time()-time1
 	
 	
 ##serialzation
-archive(GT,dir="output/NHLBI")
-G1<-unarchive("output/NHLBI")
+archive(GT,dir="output/NHLBI/gs")
+G<-unarchive("output/NHLBI/gs")
 
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"
@@ -84,21 +84,21 @@ getPopStats(G[[1]])[,2:3]
 
 
 ##plot
-getNodes(GT[[1]])
+getNodes(G[[1]])
 png(file="plotGate.png",width=800,height=800)
-plotGate(GT,8:10
+plotGate(G,8:10
 #		,par.settings=list(par.main.text=list(cex=0.6)
 #									,par.xlab.text=list(cex=0.5)
 #									,par.ylab.text=list(cex=0.5))
 #		,stat=T
 #		,xbin=128
 		)
-getGate(GT[[1]],8)		
-getParent(GT[[1]],8)
-plotGate_labkey(GT,7,x="<R660-A>" ,y="<G560-A>")		
+getGate(G[[1]],4)		
+getParent(G[[1]],8)
+plotGate_labkey(G,7,x="<R660-A>" ,y="<G560-A>")		
 dev.off()
 CairoX11()
-plotGate(G[[1]])
+plotGate(GT[[1]])
 plotGate(G[[1]],2:4,xbins=128)
 
 
