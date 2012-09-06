@@ -29,6 +29,7 @@ BEGIN_RCPP
 
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
+
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 
 	string output=as<string>(_output);

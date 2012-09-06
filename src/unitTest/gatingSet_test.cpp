@@ -8,9 +8,16 @@
 #include "test_header.hpp"
 
 
+	/*
+	 * plot gating hierarchy tree
+	 */
 
 
+void plotGraph(GatingHierarchy* gh){
 
+			gh->drawGraph("../output/test.dot");
+			system("dot2gxl ../output/test.dot -o ../output/test.gxl");
+}
 
 void gh_accessor_test(GatingHierarchy* gh){
 	/*
@@ -165,13 +172,8 @@ void gh_counts(GatingHierarchy* gh){
 //				cout<<node->getGate()->getName()<<endl;
 	}
 
-	/*
-	 * plot gating hierarchy tree
-	 */
 
-//		gh->drawGraph("../output/test.dot");
-//		system("dot2gxl ../output/test.dot -o ../output/test.gxl");
-	//	return("test.gxl");
+
 
 }
 
@@ -211,6 +213,7 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadAr
 		gh=gs->getGatingHierarchy(curSample);
 //		gh->printLocalTrans();
 //		gh_accessor_test(gh);
+//		plotGraph(gh);
 
 		if(!isLoadArchive)
 			gs_gating(*gs,curSample);

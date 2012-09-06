@@ -18,10 +18,23 @@ archive<-function(G,dir=tempdir()){
 } 
 
 unarchive<-function(dir){
+	if(!file.exists(dir))
+		stop("folder '",dir,"' not found!")
+	
 	dat.file<-list.files(path=dir,pattern=".dat",full.names=T)
 	rds.file<-list.files(path=dir,pattern=sub(".dat",".rds",basename(dat.file)),full.names=T)
-	gs<-readRDS(rds.file)
 #	browser()
+	if(length(dat.file)==0)
+		stop(".dat file missing in ",dir)
+	if(length(rds.file)==0)
+		stop(".rds file missing in ",dir)
+	if(length(dat.file)>1)
+		stop("multiple .dat files found in ",dir)
+	if(length(rds.file)>1)
+		stop("multiple .rds files found in ",dir)
+	
+	gs<-readRDS(rds.file)
+	
 	gs@pointer<-.Call("R_loadGatingSet",dat.file)
 	#update the pointer in each gating hierarchy
 	for(i in 1:length(gs@set))

@@ -24,20 +24,20 @@ typedef vector<VertexID> VertexID_vec;
 
 
 
-struct OurVertexPropertyWriter {
-
-	OurVertexPropertyWriter(populationTree &g_) : g(g_) {}
-
-    template <class Vertex>
-    void operator() (std::ostream &out, Vertex u) {
-
-    	out<<"[shape=record,label=\"{"<<g[u].getName()<<"|count:"<<g[u].fjStats["count"]<<"}\"]";
-
-
-    }
-
-    populationTree &g;
-};
+//struct OurVertexPropertyWriter {
+//
+//	OurVertexPropertyWriter(populationTree &g_) : g(g_) {}
+//
+//    template <class Vertex>
+//    void operator() (std::ostream &out, Vertex u) {
+//
+//    	out<<"[shape=record,label=\"{"<<g[u].getName()<<"|count:"<<g[u].fjStats["count"]<<"}\"]";
+//
+//
+//    }
+//
+//    populationTree &g;
+//};
 
 struct OurVertexPropertyWriterR {
 
@@ -45,8 +45,14 @@ struct OurVertexPropertyWriterR {
 
     template <class Vertex>
     void operator() (std::ostream &out, Vertex u) {
-
-    	out<<"[shape=record,label=\""<<g[u]->getName()<<"\"]";
+    	nodeProperties *curNode=g[u];
+    	bool isBoolGate=false;
+    	if(!u==0)
+    	{
+    		unsigned short gateType=curNode->getGate()->getType();
+    		isBoolGate=(gateType==BOOLGATE);
+    	}
+    	out<<"[shape=record,label=\""<<curNode->getName()<<"\",isBool="<<isBoolGate<<"]";
 
 
     }

@@ -61,7 +61,7 @@ int main(void) {
 	myTest.at(i).sampNloc=1;
 	myTest.at(i).ncfile="../output/NHLBI/nc1_comp.nc";
 	myTest.at(i).colfile="../output/NHLBI/colnames.txt";
-	myTest.at(i).archive="../output/NHLBI/gs.dat";
+	myTest.at(i).archive="../output/NHLBI/gs/file41e925ffb2f5.dat";
 	/*
 	 * with boolean gate
 	 */
@@ -71,18 +71,18 @@ int main(void) {
 	myTest.at(i).sampNloc=1;
 	myTest.at(i).ncfile="../output/HVTN054/nc1_comp.nc";
 	myTest.at(i).colfile="../output/HVTN054/colnames.txt";
-	myTest.at(i).archive="../output/HVTN054/gs.dat";
+	myTest.at(i).archive="../output/HVTN054/gs/gs.dat";
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=0;
+	i=5;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{
 //		cout << "press any key to continue:\n>";
 //		string input = "";
 //		getline(cin, input);
-		gs_parse(myTest.at(i),4,false,true);
+		gs_parse(myTest.at(i),4,false,false);
 
 //	}
 

@@ -548,12 +548,9 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 void GatingHierarchy::drawGraph(string output)
 {
 	ofstream outputFile(output.c_str());
-	//...
+
 	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriterR(tree));
 	outputFile.close();
-//	system("dot2gxl ../output/test.dot -o ../output/test.gxl");
-//	return("test.gxl");
-//	system("pwd");
 
 
 }

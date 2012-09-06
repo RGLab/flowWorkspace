@@ -3,7 +3,7 @@ setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,lay
 			
 #			browser()
 			DotFile<-tempfile()
-			.Call("R_plotGh",x@pointer,getSample(x),DotFile)
+			.Call("R_plotGh",x@pointer,getSample(x),DotFile,FALSE)
 			GXLFile<-tempfile()
 			system(paste("dot2gxl",DotFile, "-o",GXLFile))
 			
@@ -13,18 +13,21 @@ setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,lay
 			
 			rm(DotFile)
 			rm(GXLFile)
-			nAttrs <- list()
-			nAttrs$label<-unlist(nodeData(g,attr="label"))
-#			browser()
-#			attrs <- list(node=list(shape="rectangle"
-#									, fixedsize=F
-##									,fontsize=10
-##									,height=1
-#									,fillcolor="lightgreen")
-#						)
-#			plot(g,nodeAttrs=nAttrs,attrs=attrs)
 			
 #			browser()
+			##remove bool gates if necessary
+			if(!boolean)
+			{
+				nodes<-nodeData(g,attr="isBool")
+				for(i in 1:length(nodes))
+				{
+					if(as.logical(as.integer(nodes[[i]])))
+						g <- removeNode(names(nodes[i]), g)
+				}
+			}
+			nAttrs <- list()
+			nAttrs$label<-unlist(nodeData(g,attr="label"))
+			
 			options("warn"=-1)
 			lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
 										,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
