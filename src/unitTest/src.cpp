@@ -75,7 +75,7 @@ int main(void) {
 	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
 //	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=5;
+	i=4;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

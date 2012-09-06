@@ -53,11 +53,17 @@ setMethod("show",signature("GatingHierarchyInternal"),function(object){
 
 
 
-setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,tsort=FALSE,isPath=FALSE,...){
+setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular",isPath=FALSE,...){
 #			browser()
-			nodePaths<-.Call("R_getNodes",x@pointer,getSample(x),tsort,isPath)
+			orderInd<-match(order,c("regular","tsort","bfs"))
+			if(length(orderInd)==0)
+				orderInd<-0
+			else
+				orderInd<-orderInd-1
 			
-			nodeNames<-c(nodePaths[1],paste(2:length(nodePaths),nodePaths[-1],sep="."))
+			nodePaths<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath)
+			nodeNames[1]<-"root"
+#			nodeNames<-c(nodePaths[1],paste(2:length(nodePaths),nodePaths[-1],sep="."))
 				
 			if(!is.null(y))
 			{
@@ -437,7 +443,8 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),funct
 			g
 			
 		})
-		#return gate y for a given hierarchy (by index)
+#return gate y for a given hierarchy (by index)
+#Note that this index is ordered by regular sorting method
 setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
 			vertexID=y-1
 			if(vertexID<=0)

@@ -24,9 +24,21 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 * getNodes by the T order
 		 */
 
-//		cout<<endl<<"tsorted node list"<<endl;
+		cout<<endl<<"tsorted node list"<<endl;
 		VertexID_vec vertices;
-		vertices=gh->getVertices(true);
+		vertices=gh->getVertices(TSORT);
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			nodeProperties *node=gh->getNodeProperty(*it);
+			cout<<*it<<"."<<node->getName()<<endl;
+		}
+
+		/*
+		 * getNodes BFS
+		 */
+		cout<<endl<<"bfs node list"<<endl;
+
+		vertices=gh->getVertices(BFS);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
 			nodeProperties *node=gh->getNodeProperty(*it);
@@ -44,7 +56,7 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 */
 
 		cout<<endl<<"node list in regular order and stats,gate"<<endl;
-		vertices=gh->getVertices(false);
+		vertices=gh->getVertices(REGULAR);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
 			VertexID u=*it;
@@ -64,10 +76,10 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 * getPopNames with full path
 		 */
 		cout<<endl<<"node list with/without full path:"<<endl;
-		vector<string> popNames=gh->getPopNames(false,true);
+		vector<string> popNames=gh->getPopNames(REGULAR,true);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
-		popNames=gh->getPopNames(false,false);
+		popNames=gh->getPopNames(REGULAR,false);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
 
@@ -159,7 +171,7 @@ void gs_gating(GatingSet &gs,string curSample){
 }
 void gh_counts(GatingHierarchy* gh){
 	cout<<endl<<"flowJo(flowcore) counts after gating"<<endl;
-	VertexID_vec vertices=gh->getVertices(false);
+	VertexID_vec vertices=gh->getVertices(0);
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
@@ -212,7 +224,7 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadAr
 			gs_attachCDF(*gs,myTest);
 		gh=gs->getGatingHierarchy(curSample);
 //		gh->printLocalTrans();
-//		gh_accessor_test(gh);
+		gh_accessor_test(gh);
 //		plotGraph(gh);
 
 		if(!isLoadArchive)

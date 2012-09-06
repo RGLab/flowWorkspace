@@ -14,9 +14,16 @@
 #include "flowJoWorkspace.hpp"
 #include "ncdfFlow.hpp"
 #include <libxml/xpath.h>
+#include <fstream>
+#include <algorithm>
+#include <boost/graph/graphviz.hpp>
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/graph/breadth_first_search.hpp>
 
-
-
+#define REGULAR 0
+#define TSORT 1
+#define BFS 2
 
 using namespace std;
 typedef map<string,VertexID> VertexID_map;
@@ -59,7 +66,6 @@ struct OurVertexPropertyWriterR {
 
     populationTree &g;
 };
-
 
 
 
@@ -155,8 +161,8 @@ public:
 	void drawGraph(string out);
 	VertexID getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
-	VertexID_vec getVertices(bool tsort);//return the node list in vertexID order or T order
-	vector<string> getPopNames(bool tsort,bool isPath);
+	VertexID_vec getVertices(unsigned short order);//return the node list in vertexID order or T order
+	vector<string> getPopNames(unsigned short order,bool isPath);
 	VertexID_vec getParent(VertexID);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);

@@ -42,16 +42,16 @@ END_RCPP
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _tsort,SEXP _isPath){
+RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath){
 BEGIN_RCPP
 
 	XPtr<GatingSet>gs(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	bool tsort=as<bool>(_tsort);
+	unsigned short order=as<unsigned short>(_order);
 	bool isPath=as<bool>(_isPath);
 
-	return wrap(gh->getPopNames(tsort,isPath));
+	return wrap(gh->getPopNames(order,isPath));
 END_RCPP
 }
 

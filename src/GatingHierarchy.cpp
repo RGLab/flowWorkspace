@@ -6,11 +6,8 @@
  */
 
 #include "include/GatingHierarchy.hpp"
-#include <boost/graph/graphviz.hpp>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <fstream>
-#include <algorithm>
+
+
 
 
 /*need to be careful that gate within each node of the GatingHierarchy is
@@ -26,7 +23,7 @@ GatingHierarchy::~GatingHierarchy()
 
 //	cout<<"entring the destructor of GatingHierarchy"<<endl;
 
-	VertexID_vec vertices=getVertices(false);
+	VertexID_vec vertices=getVertices(0);
 	if(dMode>=GATING_HIERARCHY_LEVEL)
 		cout<<"free the node properties from tree"<<endl;
 	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
@@ -342,7 +339,7 @@ void GatingHierarchy::extendGate(){
 		if(!isLoaded)
 				throw(domain_error("data is not loaded yet!"));
 
-		VertexID_vec vertices=getVertices(false);
+		VertexID_vec vertices=getVertices(0);
 
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
@@ -375,7 +372,7 @@ void GatingHierarchy::gating()
 			throw(domain_error("data is not loaded yet!"));
 
 
-	VertexID_vec vertices=getVertices(true);
+	VertexID_vec vertices=getVertices(0);
 
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
@@ -555,24 +552,69 @@ void GatingHierarchy::drawGraph(string output)
 
 }
 
+class custom_bfs_visitor : public boost::default_bfs_visitor
+{
+
+public:
+	custom_bfs_visitor(VertexID_vec& v) : vlist(v) { }
+	VertexID_vec & vlist;
+  template < typename Vertex, typename Graph >
+  void discover_vertex(Vertex u, const Graph & g) const
+  {
+	  vlist.push_back(u);
+//	  v=u;
+  }
+
+};
+
 /*
- * retrieve the vertexIDs in topological order or in regular order
+ * retrieve the vertexIDs in topological order,BFS or in regular order
  */
-VertexID_vec GatingHierarchy::getVertices(bool tsort=false){
+
+VertexID_vec GatingHierarchy::getVertices(unsigned short order=0){
 
 	VertexID_vec res, vertices;
-	if(tsort)
+	switch (order)
 	{
-		boost::topological_sort(tree,back_inserter(vertices));
-		for(VertexID_vec::reverse_iterator it=vertices.rbegin();it!=vertices.rend();it++)
-			res.push_back(*it);
-	}
-	else
-	{
-		VertexIt it_begin,it_end;
-		tie(it_begin,it_end)=boost::vertices(tree);
-		for(VertexIt it=it_begin;it!=it_end;it++)
-			res.push_back((unsigned long)*it);
+
+		case REGULAR:
+		{
+			VertexIt it_begin,it_end;
+			tie(it_begin,it_end)=boost::vertices(tree);
+			for(VertexIt it=it_begin;it!=it_end;it++)
+				res.push_back((unsigned long)*it);
+		}
+		break;
+
+		case TSORT:
+		{
+			boost::topological_sort(tree,back_inserter(vertices));
+			for(VertexID_vec::reverse_iterator it=vertices.rbegin();it!=vertices.rend();it++)
+				res.push_back(*it);
+		}
+		break;
+
+		case BFS:
+		{
+			custom_bfs_visitor vis(res);
+//			vector<VertexID> p(num_vertices(tree));
+//			populationTree tree_copy(num_vertices(tree));
+			boost::breadth_first_search(tree, vertex(0, tree)
+										, boost::visitor(
+												vis
+//												boost::make_bfs_visitor(boost::record_predecessors(&p[0]
+//																									 ,boost::on_tree_edge()
+//																									)
+//																					)
+														)
+										);
+//			res=vis.vlist;
+
+		}
+		break;
+
+		default:
+			throw(domain_error("not valid sort type for tree traversal!"));
 	}
 
 	return(res);
@@ -615,9 +657,9 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
  * isPath flag indicates whether append the ancestor node names
  * the assumption is each node only has one parent
  */
-vector<string> GatingHierarchy::getPopNames(bool tsort,bool isPath){
+vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath){
 
-	VertexID_vec vertices=getVertices(tsort);
+	VertexID_vec vertices=getVertices(order);
 	vector<string> res;
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
@@ -651,6 +693,11 @@ vector<string> GatingHierarchy::getPopNames(bool tsort,bool isPath){
 			}
 
 
+		}else
+		{
+			string prefix=boost::lexical_cast<string>(u);
+
+			nodeName=prefix+"."+nodeName;
 		}
 
 		res.push_back(nodeName);
@@ -772,7 +819,7 @@ GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_v
 	 * TODO:explore deep copying facility of bgl library,especially for node property bundle as the pointer
 	 */
 	res->tree=tree;
-	VertexID_vec vertices=res->getVertices(false);
+	VertexID_vec vertices=res->getVertices(0);
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		/*
