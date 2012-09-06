@@ -43,7 +43,7 @@ bool compare_y(coordinate i, coordinate j);
 
 
 class transformation{
-//	friend std::ostream & operator<<(std::ostream &os, const transformation &gh);
+
 	friend class boost::serialization::access;
 
 protected:
@@ -126,7 +126,7 @@ public:
 };
 
 class trans_global:public trans_local{
-//	friend std::ostream & operator<<(std::ostream &os, const trans_global &gh);
+
 	friend class boost::serialization::access;
 private:
 	string groupName;
@@ -149,9 +149,22 @@ public:
 typedef vector<trans_global> trans_global_vec;
 
 class biexpTrans:public transformation{
+	friend class boost::serialization::access;
 public:
 	int channelRange;
 	double pos, neg, widthBasis, maxValue;
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::base_object<transformation>(*this);
+
+					ar & channelRange;
+					ar & pos;
+					ar & neg;
+					ar & widthBasis;
+					ar & maxValue;
+				}
 
 public:
 	biexpTrans();
@@ -163,8 +176,22 @@ public:
 
 class logicleTrans:public transformation{
 
+	friend class boost::serialization::access;
+private:
 	int channelRange;
 	double pos, neg, widthBasis, maxValue;
+
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::base_object<transformation>(*this);
+
+					ar & channelRange;
+					ar & pos;
+					ar & neg;
+					ar & widthBasis;
+					ar & maxValue;
+				}
 
 
 public:
@@ -176,6 +203,15 @@ public:
  * we should consider redesign the classes so that logTrans does not share this extra feature from parent class
  */
 class logTrans:public transformation{
+	friend class boost::serialization::access;
+private:
+		template<class Archive>
+					void serialize(Archive &ar, const unsigned int version)
+					{
+						ar & boost::serialization::base_object<transformation>(*this);
+
+					}
+
 public:
 	logTrans(){type=LOG;isGateOnly=false;isComputed=true;calTbl.setInterpolated(true);};
 	void transforming(valarray<double> & input);
@@ -183,6 +219,14 @@ public:
 };
 
 class linTrans:public transformation{
+friend class boost::serialization::access;
+	private:
+			template<class Archive>
+						void serialize(Archive &ar, const unsigned int version)
+						{
+							ar & boost::serialization::base_object<transformation>(*this);
+
+						}
 
 public:
 	linTrans(){type=LIN;isGateOnly=true;isComputed=true;calTbl.setInterpolated(true);};

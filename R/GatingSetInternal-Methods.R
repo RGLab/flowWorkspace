@@ -22,14 +22,15 @@ unarchive<-function(dir){
 		stop("folder '",dir,"' not found!")
 	
 	dat.file<-list.files(path=dir,pattern=".dat",full.names=T)
-	rds.file<-list.files(path=dir,pattern=sub(".dat",".rds",basename(dat.file)),full.names=T)
+	tofind<-sub(".dat",".rds",basename(dat.file))
+	rds.file<-list.files(path=dir,pattern=tofind,full.names=T)
 #	browser()
 	if(length(dat.file)==0)
 		stop(".dat file missing in ",dir)
-	if(length(rds.file)==0)
-		stop(".rds file missing in ",dir)
 	if(length(dat.file)>1)
 		stop("multiple .dat files found in ",dir)
+	if(length(rds.file)==0)
+		stop(tofind," missing in ",dir)
 	if(length(rds.file)>1)
 		stop("multiple .rds files found in ",dir)
 	

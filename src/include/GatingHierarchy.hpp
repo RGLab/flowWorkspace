@@ -112,6 +112,7 @@ private:
 
 		        ar & transFlag;
 
+
 		        ar & trans;
 		        ar & dMode;
 		    }
