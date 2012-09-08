@@ -2,49 +2,91 @@
 # 
 # Author: wjiang2
 ###############################################################################
-archive<-function(G,dir=tempdir()){
-	if(!file.exists(dir))
-		dir.create(dir)
-	rds.file<-tempfile(tmpdir=dir,fileext=".rds")
-	dat.file<-sub(".rds",".dat",rds.file)
+archive<-function(G,file=tempfile()){
+	
+	filename<-basename(file)
+	dirname<-dirname(file)
+	filename<-sub(".tar$","",filename)
 #	browser()
+	if(!file.exists(dirname))
+		stop("Folder '",dirname, "' does not exist!")
+	rds.file<-tempfile(tmpdir=dirname,fileext=".rds")
+	dat.file<-tempfile(tmpdir=dirname,fileext=".dat")
+	
+	#save ncdf file
+	if(isNcdf(G[[1]]))
+	{
+		from<-ncFlowSet(G)@file
+		ncFile<-file.path(dirname,basename(from))
+		file.copy(from=from,to=ncFile)
+	}
+		
 	
 	#save external pointer object
 	.Call("R_saveGatingSet",G@pointer,dat.file)
-#	G@pointer<-NULL
+	#save R object
 	saveRDS(G,rds.file)
-	message("GatingSet is saved in folder ",dir,"\nUse 'unarchive' to reload it.")
+
+#	browser()
+	#tar files
+	toTar<-c(rds.file,dat.file,ncFile)
+	system(paste("tar -cf ",file,paste(toTar,collapse=" ")))
+#	tar(tarfile=file,files=toTar) #somehow the R internal tar doesn't work
+	
+	#remove intermediate files
+	file.remove(toTar)
+	cat("GatingSet is archived \nTo reload it, use 'unarchive' function\n")
 	
 } 
 
-unarchive<-function(dir){
-	if(!file.exists(dir))
-		stop("folder '",dir,"' not found!")
+unarchive<-function(file){
 	
-	dat.file<-list.files(path=dir,pattern=".dat",full.names=T)
-	tofind<-sub(".dat",".rds",basename(dat.file))
-	rds.file<-list.files(path=dir,pattern=tofind,full.names=T)
+	if(!file.exists(file))
+		stop(file,"' not found!")
+	
+	files<-untar(tarfile=file,list=TRUE)
+	
+	message("extracting files...")
+	untar(tarfile=file)
+	
+	dat.file<-files[grep(".dat$",files)]
+	rds.file<-files[grep(".rds$",files)]
+	
+	nc.file<-files[grep(".nc$",files)]
 #	browser()
 	if(length(dat.file)==0)
-		stop(".dat file missing in ",dir)
+		stop(".dat file missing in ",file)
 	if(length(dat.file)>1)
-		stop("multiple .dat files found in ",dir)
+		stop("multiple .dat files found in ",file)
 	if(length(rds.file)==0)
-		stop(tofind," missing in ",dir)
+		stop(".rds file missing in ",file)
 	if(length(rds.file)>1)
-		stop("multiple .rds files found in ",dir)
+		stop("multiple .rds files found in ",file)
 	
+	message("loading rds file...")
 	gs<-readRDS(rds.file)
-	
+
+	message("loading dat file...")
 	gs@pointer<-.Call("R_loadGatingSet",dat.file)
 	#update the pointer in each gating hierarchy
 	for(i in 1:length(gs@set))
 	{
 		gs@set[[i]]@pointer<-gs@pointer
 	}
-	return (gs)
-}
+	if(flowWorkspace:::isNcdf(gs[[1]]))
+	{
+		if(length(nc.file)==0)
+			stop(".nc file missing in ",file)
+		ncFlowSet(gs)@file<-nc.file
+	}
 	
+	#clean up the intermediate files
+	file.remove(c(dat.file,rds.file))
+	return (gs)
+	
+}
+
+
 setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			#pass the filename and channels to c structure
 			if(inherits(value,"ncdfFlowSet"))

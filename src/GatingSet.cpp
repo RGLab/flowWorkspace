@@ -17,7 +17,7 @@ using namespace std;
 
 void save_gs(const GatingSet &gs,string filename){
 	    // make an archive
-	    std::ofstream ofs(filename.c_str());
+	    std::ofstream ofs(filename.c_str(),std::ios::out|std::ios::binary|std::ios::trunc);
 	    boost::archive::binary_oarchive oa(ofs);
 	    oa << gs;
 	}

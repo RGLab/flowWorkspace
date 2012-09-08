@@ -1,3 +1,15 @@
+#20110314
+#TODO wrap isNcdf slot with get/set methods
+setGeneric("isNcdf", function(x){standardGeneric("isNcdf")})
+setMethod("isNcdf",signature("GatingHierarchyInternal"),function(x){
+#			browser()
+			fs<-x@tree@nodeData@defaults$data$data$ncfs
+			return (class(fs)=="ncdfFlowSet")
+			
+		})
+setMethod("isNcdf",signature("GatingHierarchy"),function(x){
+			return(x@isNcdf)
+		})
 
 setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 			
@@ -54,26 +66,28 @@ setMethod("show",signature("GatingHierarchyInternal"),function(object){
 
 
 setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular",isPath=FALSE,...){
-#			browser()
+
 			orderInd<-match(order,c("regular","tsort","bfs"))
 			if(length(orderInd)==0)
 				orderInd<-0
 			else
 				orderInd<-orderInd-1
 			
-			nodePaths<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath)
-			nodeNames[1]<-"root"
+			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath)
+#			browser()
+			nodeNames[1]<-sub("0.","",nodeNames[1])
 #			nodeNames<-c(nodePaths[1],paste(2:length(nodePaths),nodePaths[-1],sep="."))
 				
 			if(!is.null(y))
 			{
 				if(is.character(y))
 					y<-match(y,nodeNames)
-				ifelse(isPath,nodePaths[y],nodeNames[y])
+				nodeNames[y]
+#				ifelse(isPath,nodePaths[y],nodeNames[y])
 			}else
-				if(isPath)
-					nodePaths
-				else
+#				if(isPath)
+#					nodePaths
+#				else
 					nodeNames
 		})
 

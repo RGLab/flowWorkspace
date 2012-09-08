@@ -27,7 +27,9 @@ RcppExport SEXP R_plotGh(SEXP _gsPtr,SEXP _sampleName,SEXP _output) {
 BEGIN_RCPP
 
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
@@ -45,7 +47,9 @@ END_RCPP
 RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath){
 BEGIN_RCPP
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	unsigned short order=as<unsigned short>(_order);
@@ -58,7 +62,10 @@ END_RCPP
 RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
+
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
@@ -70,7 +77,9 @@ RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
@@ -82,7 +91,9 @@ RcppExport SEXP R_getPopStats(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
@@ -101,7 +112,9 @@ RcppExport SEXP R_getCompensation(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -117,21 +130,14 @@ BEGIN_RCPP
 END_RCPP
 }
 
-//RcppExport SEXP R_getTransFlags(SEXP _gsPtr,SEXP _sampleName){
-//BEGIN_RCPP
-//
-//	XPtr<GatingSet>gs(_gsPtr);
-//	string sampleName=as<string>(_sampleName);
-//	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-//	return wrap(gh->transFlag);
-//END_RCPP
-//}
 
 
 RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -197,7 +203,9 @@ RcppExport SEXP R_gating_cdf(SEXP _gsPtr,SEXP _sampleName){
 BEGIN_RCPP
 
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -217,7 +225,9 @@ RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName){
 BEGIN_RCPP
 
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
@@ -251,7 +261,9 @@ RcppExport SEXP R_getGate(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 	int u=as<int>(_i);
 
@@ -324,7 +336,9 @@ END_RCPP
 RcppExport SEXP R_getIndices(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	string sampleName=as<string>(_sampleName);
 	int u=as<int>(_i);
 	if(u<0)throw(domain_error("not valid vertexID!"));

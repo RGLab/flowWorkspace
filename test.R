@@ -53,7 +53,7 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
-					,subset=1:2
+#					,subset=1:2
 #					,isNcdf=T
 					,useInternal=T
 					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
@@ -63,8 +63,8 @@ Sys.time()-time1
 	
 	
 ##serialzation
-archive(GT,dir="output/NHLBI/gs")
-G<-unarchive("output/NHLBI/gs")
+archive(GT,dir="/home/wjiang2/rglab/workspace/flowWorkspace/output/NHLBI/gs/")
+G<-unarchive("~/rglab/workspace/flowWorkspace/output/NHLBI/gs")
 
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"

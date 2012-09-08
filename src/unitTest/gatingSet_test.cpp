@@ -224,7 +224,7 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadAr
 			gs_attachCDF(*gs,myTest);
 		gh=gs->getGatingHierarchy(curSample);
 //		gh->printLocalTrans();
-		gh_accessor_test(gh);
+//		gh_accessor_test(gh);
 //		plotGraph(gh);
 
 		if(!isLoadArchive)

@@ -40,10 +40,12 @@ END_RCPP
  */
 RcppExport SEXP R_setData(SEXP _gsPtr,SEXP _fileName,SEXP _sampleNames,SEXP _params) {
 BEGIN_RCPP
+
 		string fileName=as<string>(_fileName);
 		vector<string> params=as<vector<string> >(_params);
 		vector<string> sampleNames=as<vector<string> >(_sampleNames);
 		XPtr<GatingSet>gs(_gsPtr);
+
 		gs->attachData(fileName,sampleNames,params);
 
 END_RCPP
@@ -51,7 +53,11 @@ END_RCPP
 
 RcppExport SEXP R_getSamples(SEXP _gsPtr) {
 BEGIN_RCPP
+
+
+
 	XPtr<GatingSet>gs(_gsPtr);
+
 	return wrap(gs->getSamples());
 
 END_RCPP
@@ -67,7 +73,10 @@ BEGIN_RCPP
 		 * get pointer of existing gating hierarchy
 		 *
 		 */
+
+
 		XPtr<GatingSet>gs(_gsPtr);
+
 		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
@@ -96,7 +105,9 @@ RcppExport SEXP R_saveGatingSet(SEXP _gsPtr,SEXP _fileName) {
 BEGIN_RCPP
 
 
+
 		XPtr<GatingSet>gs(_gsPtr);
+
 		string fileName=as<string>(_fileName);
 		save_gs(*gs,fileName);
 

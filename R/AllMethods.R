@@ -1090,12 +1090,6 @@ writeGatesToNetCDF<-function(hierarchy,isNew=FALSE){
 	}
 }
 
-#20110314
-#TODO wrap isNcdf slot with get/set methods
-isNcdf<-function(x){
-	if(inherits(x,"GatingHierarchy"))
-	return(x@isNcdf)
-}
 setNcdf<-function(x,y){
 	if(inherits(x,"GatingHierarchy")&class(y)=="logical"){
 		x@isNcdf=y
