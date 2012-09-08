@@ -86,6 +86,7 @@ unarchive<-function(file){
 	
 	#clean up the intermediate files
 	file.remove(c(dat.file,rds.file))
+	message("Done")
 	return (gs)
 	
 }
