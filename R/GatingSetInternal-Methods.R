@@ -12,32 +12,36 @@ archive<-function(G,file=tempfile()){
 		stop("Folder '",dirname, "' does not exist!")
 	rds.file<-tempfile(tmpdir=dirname,fileext=".rds")
 	dat.file<-tempfile(tmpdir=dirname,fileext=".dat")
-	
+	toTar<-c(rds.file,dat.file)
 	#save ncdf file
-	if(isNcdf(G[[1]]))
-	{
+	if(flowWorkspace:::isNcdf(G[[1]]))
+	{	
+		message("saving ncdf...")
 		from<-ncFlowSet(G)@file
 		ncFile<-file.path(dirname,basename(from))
 		file.copy(from=from,to=ncFile)
+		toTar<-c(toTar,ncFile)
 	}
 		
-	
+	message("saving tree object...")
 	#save external pointer object
 	.Call("R_saveGatingSet",G@pointer,dat.file)
-	#save R object
+
+	message("saving R object...")
 	saveRDS(G,rds.file)
 
 #	browser()
-	#tar files
-	toTar<-c(rds.file,dat.file,ncFile)
+#	message("Archive the GatingSet...")
+	
 	system(paste("tar -cf ",file,paste(toTar,collapse=" ")))
 #	tar(tarfile=file,files=toTar) #somehow the R internal tar doesn't work
 	
 	#remove intermediate files
 	file.remove(toTar)
-	cat("GatingSet is archived \nTo reload it, use 'unarchive' function\n")
+	message("Done\nTo reload it, use 'unarchive' function\n")
 	
-} 
+}
+	
 
 unarchive<-function(file){
 	
@@ -46,7 +50,7 @@ unarchive<-function(file){
 	
 	files<-untar(tarfile=file,list=TRUE)
 	
-	message("extracting files...")
+#	message("extracting files...")
 	untar(tarfile=file)
 	
 	dat.file<-files[grep(".dat$",files)]
@@ -63,10 +67,10 @@ unarchive<-function(file){
 	if(length(rds.file)>1)
 		stop("multiple .rds files found in ",file)
 	
-	message("loading rds file...")
+	message("loading R object...")
 	gs<-readRDS(rds.file)
 
-	message("loading dat file...")
+	message("loading tree object...")
 	gs@pointer<-.Call("R_loadGatingSet",dat.file)
 	#update the pointer in each gating hierarchy
 	for(i in 1:length(gs@set))
