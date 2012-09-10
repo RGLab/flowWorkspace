@@ -199,7 +199,7 @@ END_RCPP
 /*
  * cdf version
  */
-RcppExport SEXP R_gating_cdf(SEXP _gsPtr,SEXP _sampleName){
+RcppExport SEXP R_gating_cdf(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeInd,SEXP _recompute){
 BEGIN_RCPP
 
 
@@ -207,12 +207,21 @@ BEGIN_RCPP
 	XPtr<GatingSet>gs(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
+	unsigned short nodeInd=as<unsigned short>(_nodeInd);
+	bool recompute=as<bool>(_recompute);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	gh->loadData(sampleName);
-	gh->extendGate();
-	gh->transforming(true);
-	gh->gating();
+	/*
+	 * assume the data has been transformed when recompute==true
+	 */
+	if(!recompute)
+	{
+		gh->extendGate();
+		gh->transforming(true);
+	}
+
+	gh->gating(nodeInd,recompute);
 	gh->unloadData();
 
 END_RCPP
@@ -221,7 +230,7 @@ END_RCPP
  * non-cdf version
  */
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName){
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _nodeInd,SEXP _recompute){
 BEGIN_RCPP
 
 
@@ -229,6 +238,8 @@ BEGIN_RCPP
 	XPtr<GatingSet>gs(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
+	unsigned short nodeInd=as<unsigned short>(_nodeInd);
+	bool recompute=as<bool>(_recompute);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
 	Rcpp::NumericMatrix orig(_mat);
@@ -236,9 +247,12 @@ BEGIN_RCPP
 	flowData fdata(orig,sampleID);
 
 	gh->loadData(fdata);
-	gh->extendGate();
-	gh->transforming(false);
-	gh->gating();
+	if(!recompute)
+	{
+		gh->extendGate();
+		gh->transforming(false);
+	}
+	gh->gating(nodeInd,recompute);
 	/*
 	 * copy the transformed data from gh before unload it
 	 */

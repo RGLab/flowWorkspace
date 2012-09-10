@@ -358,56 +358,53 @@ void GatingHierarchy::extendGate(){
 		}
 }
 
+
 /*
  * traverse the tree to gate each pops
  * assuming data have already been compensated and transformed
  *
  */
-void GatingHierarchy::gating()
+void GatingHierarchy::gating(VertexID u,bool recompute=false)
 {
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<endl<<"start gating:"<<fdata.getSampleID()<<endl;
 
-	if(!isLoaded)
-			throw(domain_error("data is not loaded yet!"));
+//	if(!isLoaded)
+//			throw(domain_error("data is not loaded yet!"));
 
 
-	VertexID_vec vertices=getVertices(0);
-
-	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	nodeProperties * node=getNodeProperty(u);
+	if(u==0)
 	{
-		VertexID u=*it;
-		nodeProperties * node=getNodeProperty(u);
-		if(u==0)
-		{
-			node->setIndices(vector<bool>(fdata.getEventsCount(),true));
-			node->computeStats();
-			continue;//skip gating for root node
-		}
+		node->setIndices(vector<bool>(fdata.getEventsCount(),true));
+		node->computeStats();
+	}else
+	{
 		/*
 		 * check if current population is already gated (by boolGate)
 		 *
 		 */
-		if(node->isGated())
-			continue;
-		else
-			gating(u);
-
+		if(recompute||!node->isGated())
+			calgate(u);
 	}
 
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout <<"finish gating!"<<endl;
 
 
+	//recursively gate all the descendants of u
+	VertexID_vec children=getChildren(u);
+	for(VertexID_vec::iterator it=children.begin();it!=children.end();it++)
+	{
+		//add boost node
+		VertexID curChildID = *it;
+		gating(curChildID,recompute);
+	}
 
 }
-void GatingHierarchy::gating(VertexID u)
+void GatingHierarchy::calgate(VertexID u)
 {
 	nodeProperties * node=getNodeProperty(u);
 
 	/*
 	 * check if parent population is already gated
-	 *
+	 * because the boolgate's parent might be visited later than boolgate itself
 	 */
 	VertexID_vec pids=getParent(u);
 	if(pids.size()!=1) //we only allow one parent per node
@@ -420,7 +417,7 @@ void GatingHierarchy::gating(VertexID u)
 	{
 		if(dMode>=POPULATION_LEVEL)
 			cout <<"go to the ungated parent node:"<<parentNode->getName()<<endl;
-		gating(pid);
+		calgate(pid);
 	}
 
 
@@ -487,7 +484,7 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout <<"go to the ungated reference node:"<<curPop->getName()<<endl;
-			gating(nodeID);
+			calgate(nodeID);
 		}
 
 

@@ -32,12 +32,14 @@ archive<-function(G,file=tempfile()){
 
 #	browser()
 #	message("Archive the GatingSet...")
-	
-	system(paste("tar -cf ",file,paste(toTar,collapse=" ")))
+	curDir<-getwd()
+	setwd(dirname)
+	system(paste("tar -cf ",file,paste(basename(toTar),collapse=" ")))
 #	tar(tarfile=file,files=toTar) #somehow the R internal tar doesn't work
 	
 	#remove intermediate files
 	file.remove(toTar)
+	setwd(curDir)
 	message("Done\nTo reload it, use 'unarchive' function\n")
 	
 }
@@ -47,16 +49,18 @@ unarchive<-function(file){
 	
 	if(!file.exists(file))
 		stop(file,"' not found!")
-	
+#	browser()
 	files<-untar(tarfile=file,list=TRUE)
 	
 #	message("extracting files...")
-	untar(tarfile=file)
+	output<-tempdir()
+	system(paste("tar -xf ",file))
+	untar(tarfile=file,exdir=output)
 	
-	dat.file<-files[grep(".dat$",files)]
-	rds.file<-files[grep(".rds$",files)]
+	dat.file<-file.path(output,basename(files[grep(".dat$",files)]))
+	rds.file<-file.path(output,basename(files[grep(".rds$",files)]))
 	
-	nc.file<-files[grep(".nc$",files)]
+	nc.file<-file.path(output,basename(files[grep(".nc$",files)]))
 #	browser()
 	if(length(dat.file)==0)
 		stop(".dat file missing in ",file)
@@ -395,12 +399,12 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #					browser()
 #					time1<-Sys.time()
 					if(isNcdf)
-						.Call("R_gating_cdf",gh@pointer,sampleName)
+						.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=0,recompute=FALSE)
 					else
 					{
 						data<-fs[[sampleName]]
 						mat<-exprs(data)
-						.Call("R_gating",gh@pointer,mat,sampleName)
+						.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=0,recompute=FALSE)
 						#update fs with transformed data
 						exprs(data)<-mat
 						assign(sampleName,data,fs@frames)##suppose to be faster than [[<-
@@ -428,6 +432,8 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	}
 	G
 }
+
+
 .transformRange<-function(dataenv,cal,sampleName,prefix,suffix){
 
 	frmEnv<-dataenv$data$ncfs@frames
@@ -723,4 +729,33 @@ setMethod("clone",c("GatingSetInternal"),function(x){
 			gs
 		})
 			
+setGeneric("recompute", function(x,...){standardGeneric("recompute")})
+setMethod("recompute",c("GatingSetInternal"),function(x,y){
+			if(missing(y))
+				y<-0
+			if(is.character(y))
+				y<-match(y,getNodes(x[[1]]))
 			
+			lapply(x,function(gh){
+						
+						
+						sampleName<-getSample(gh)
+						
+						message(paste("gating",sampleName,"..."))
+#					browser()
+#					time1<-Sys.time()
+						if(flowWorkspace:::isNcdf(gh))
+							.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=as.integer(y),recompute=TRUE)
+						else
+						{
+							data<-getData(gh)
+							mat<-exprs(data)
+							.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=as.integer(y),recompute=TRUE)
+							
+						}
+					})
+			message("done!")
+			invisible()
+						
+		})
+

@@ -164,7 +164,7 @@ void gs_gating(GatingSet &gs,string curSample){
 
 	gh->transforming(false);
 
-	gh->gating();
+	gh->gating(0,false);
 
 	gh->unloadData();
 

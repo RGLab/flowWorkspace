@@ -154,8 +154,8 @@ public:
 	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
 	void transforming(bool);
-	void gating();
-	void gating(VertexID);
+	void gating(VertexID,bool);
+	void calgate(VertexID);
 	POPINDICES boolGating(VertexID);
 	void extendGate();
 	void drawGraph(string out);
