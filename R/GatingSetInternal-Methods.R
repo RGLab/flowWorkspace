@@ -712,3 +712,15 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
 	
 	
 }
+
+
+setGeneric("clone", function(x){standardGeneric("clone")})
+setMethod("clone",c("GatingSetInternal"),function(x){
+#			browser()
+			tmpfile<-tempfile()
+			archive(x,file=tmpfile)
+			gs<-unarchive(tmpfile)
+			gs
+		})
+			
+			

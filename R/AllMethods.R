@@ -622,6 +622,7 @@ setMethod("[",signature("GatingSet"),function(x,i,j,...,drop){
 
 #TODO test if the clone is update properly in all its environments
 #TODO major bug here. cloning is not wokring properly
+#TODO:to merge to new clone method
 cloneGatingSet<-function(x,clone.data=FALSE,clone.gating=FALSE){
 	clone<-x
 	gdata<-new.env();
