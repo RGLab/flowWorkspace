@@ -720,15 +720,19 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
 }
 
 
-setGeneric("clone", function(x){standardGeneric("clone")})
-setMethod("clone",c("GatingSetInternal"),function(x){
+setGeneric("clone", function(x,...){standardGeneric("clone")})
+setMethod("clone",c("GatingSetInternal"),function(x,...){
 #			browser()
 			tmpfile<-tempfile()
 			archive(x,file=tmpfile)
 			gs<-unarchive(tmpfile)
 			gs
 		})
-			
+setMethod("clone",c("GatingSet"),function(x,...){
+#			browser()
+			cloneGatingSet(x,...)
+		})
+
 setGeneric("recompute", function(x,...){standardGeneric("recompute")})
 setMethod("recompute",c("GatingSetInternal"),function(x,y){
 			if(missing(y))
@@ -758,4 +762,6 @@ setMethod("recompute",c("GatingSetInternal"),function(x,y){
 			invisible()
 						
 		})
-
+setMethod("recompute",c("GatingSet"),function(x,y){
+			recomputeGate(x=x,gate=y)
+		})
