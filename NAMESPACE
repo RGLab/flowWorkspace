@@ -67,7 +67,7 @@ importFrom(stats4, plot)
 
 importFrom(utils, menu)
 
-exportClasses(flowJoWorkspace,GatingHierarchy,GatingSet);
+exportClasses(flowJoWorkspace,GatingHierarchy,GatingSet,GatingSetInternal,GatingHierarchyInternal);
 
 exportMethods("clone","recompute","openWorkspace","show","closeWorkspace","summary","parseWorkspace","[","[[","length","lapply","getNodes","execute","plot","plotGate","getPopStats","plotPopCV","getData","getGate","getParent","getBoundaries","getDimensions","getIndices","getChildren","getProp","getTotal","getSamples","getSample","getSampleGroups","[<-","[[<-","getCompensationMatrices","getTransformations","getKeywords","keyword","flowWorkspace2flowCore","exportAsFlowJoXML","ellipsoidGate2FlowJoVertices","getNcdf","getIndiceFile","haveSameGatingHierarchy","setData","copyGatingHierarchyFromTo"
 				,"ncFlowSet","ncFlowSet<-","GatingSet")
