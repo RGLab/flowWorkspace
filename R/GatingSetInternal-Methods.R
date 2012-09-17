@@ -54,13 +54,13 @@ unarchive<-function(file){
 	
 #	message("extracting files...")
 	output<-tempdir()
-	system(paste("tar -xf ",file))
+#	system(paste("tar -xf ",file))
 	untar(tarfile=file,exdir=output)
 	
-	dat.file<-file.path(output,basename(files[grep(".dat$",files)]))
-	rds.file<-file.path(output,basename(files[grep(".rds$",files)]))
+	dat.file<-file.path(output,files[grep(".dat$",files)])
+	rds.file<-file.path(output,files[grep(".rds$",files)])
 	
-	nc.file<-file.path(output,basename(files[grep(".nc$",files)]))
+	nc.file<-file.path(output,files[grep(".nc$",files)])
 #	browser()
 	if(length(dat.file)==0)
 		stop(".dat file missing in ",file)

@@ -63,8 +63,8 @@ Sys.time()-time1
 	
 	
 ##serialzation
-archive(GT,dir="/home/wjiang2/rglab/workspace/flowWorkspace/output/NHLBI/gs/")
-G<-unarchive("~/rglab/workspace/flowWorkspace/output/NHLBI/gs")
+archive(GT,file="/home/wjiang2/rglab/workspace/flowWorkspace/output/NHLBI/gs/gs.tar")
+G<-unarchive("~/rglab/workspace/flowWorkspace/output/NHLBI/gs/gs.tar")
 
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"
