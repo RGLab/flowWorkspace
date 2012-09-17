@@ -736,7 +736,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 setGeneric("recompute", function(x,...){standardGeneric("recompute")})
 setMethod("recompute",c("GatingSetInternal"),function(x,y){
 			if(missing(y))
-				y<-0
+				y<-1
 			if(is.character(y))
 				y<-match(y,getNodes(x[[1]]))
 			
@@ -746,15 +746,15 @@ setMethod("recompute",c("GatingSetInternal"),function(x,y){
 						sampleName<-getSample(gh)
 						
 						message(paste("gating",sampleName,"..."))
-					browser()
+#					browser()
 #					time1<-Sys.time()
 						if(flowWorkspace:::isNcdf(gh))
-							.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=as.integer(y),recompute=TRUE)
+							.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=as.integer(y)-1,recompute=TRUE)
 						else
 						{
 							data<-getData(gh)
 							mat<-exprs(data)
-							.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=as.integer(y),recompute=TRUE)
+							.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=as.integer(y)-1,recompute=TRUE)
 							
 						}
 					})
