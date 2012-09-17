@@ -34,11 +34,11 @@ archive<-function(G,file=tempfile()){
 #	message("Archive the GatingSet...")
 	curDir<-getwd()
 	setwd(dirname)
-	system(paste("tar -cf ",file,paste(basename(toTar),collapse=" ")))
+	system(paste("tar -cf ",basename(file),paste(basename(toTar),collapse=" ")))
 #	tar(tarfile=file,files=toTar) #somehow the R internal tar doesn't work
 	
 	#remove intermediate files
-	file.remove(toTar)
+	file.remove(basename(toTar))
 	setwd(curDir)
 	message("Done\nTo reload it, use 'unarchive' function\n")
 	
@@ -746,7 +746,7 @@ setMethod("recompute",c("GatingSetInternal"),function(x,y){
 						sampleName<-getSample(gh)
 						
 						message(paste("gating",sampleName,"..."))
-#					browser()
+					browser()
 #					time1<-Sys.time()
 						if(flowWorkspace:::isNcdf(gh))
 							.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=as.integer(y),recompute=TRUE)
