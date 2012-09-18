@@ -723,12 +723,12 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
 setGeneric("clone", function(x,...){standardGeneric("clone")})
 setMethod("clone",c("GatingSetInternal"),function(x,...){
 #			browser()
-			tmpfile<-tempfile()
-			archive(x,file=tmpfile)
-			gs<-unarchive(tmpfile)
+#			tmpfile<-tempfile()
+#			archive(x,file=tmpfile)
+#			gs<-unarchive(tmpfile)
 			#TODO:clone R object in memory (environment)
-#			gs<-x
-#			gs@pointer<-.Call("R_CloneGatingSet",x@pointer)
+			gs<-x
+			gs@pointer<-.Call("R_CloneGatingSet",x@pointer)
 			gs
 		})
 setMethod("clone",c("GatingSet"),function(x,...){

@@ -98,14 +98,13 @@ GatingSet::~GatingSet()
 GatingSet* GatingSet::clone(){
 	// make an archive
 //	std::streambuf buf();
-	std::ostringstream out;
-	std::istringstream in;
-	boost::archive::binary_oarchive oa(out);
+	stringstream ss (stringstream::in | stringstream::out);
+	boost::archive::binary_oarchive oa(ss);
 	oa << *this;
 
 	GatingSet * newGS=new GatingSet();
 
-	boost::archive::binary_iarchive ia(in);
+	boost::archive::binary_iarchive ia(ss);
 
 	ia >> *newGS;
 

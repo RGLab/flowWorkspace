@@ -201,6 +201,13 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadAr
 		else
 			gs=new GatingSet(myTest.filename,true,myTest.sampNloc,dMode);
 
+		/*
+		 * test cloning function
+		 */
+//		GatingSet *clonedGs=gs->clone();
+//		delete gs;
+//		gs=clonedGs;
+
 		//parse a set of sampleIDs
 		vector<string> sampleIDs;
 		for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
