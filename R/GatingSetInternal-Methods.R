@@ -85,6 +85,7 @@ unarchive<-function(file){
 		if(length(nc.file)==0)
 			stop(".nc file missing in ",file)
 		ncFlowSet(gs)@file<-nc.file
+		
 	}
 	
 	#clean up the intermediate files
@@ -99,7 +100,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			#pass the filename and channels to c structure
 			if(inherits(value,"ncdfFlowSet"))
 			{
-				
+				message("associate the ncdfFlowSet to tree structure...")
 				.Call("R_setData",this@pointer,value@file,sampleNames(value),colnames(value))
 			}
 		})
@@ -759,6 +760,7 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			
 			ncFlowSet(clone)<-fs			
 			
+			
 			message("GatingSet cloned!")
 			clone
 		})
@@ -799,3 +801,17 @@ setMethod("recompute",c("GatingSetInternal"),function(x,y){
 setMethod("recompute",c("GatingSet"),function(x,y){
 			recomputeGate(x=x,gate=y)
 		})
+
+
+setReplaceMethod("ncFlowSet",signature(x="GatingSetInternal"),function(x,value){
+			
+			callNextMethod(x,value)
+			#associate the internal structure with the new cdf
+			setData(x,value)
+			x
+			
+		})
+
+
+			
+
