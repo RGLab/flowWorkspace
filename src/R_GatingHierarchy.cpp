@@ -270,7 +270,6 @@ BEGIN_RCPP
 			orig[j]=updatedMat[j];
 	}
 	gh->unloadData();
-//	return (0);
 
 END_RCPP
 }

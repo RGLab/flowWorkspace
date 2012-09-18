@@ -727,7 +727,11 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			#clone c structure
 			message("cloning tree structure...")
 			clone@pointer<-.Call("R_CloneGatingSet",x@pointer)
-			
+			#update the pointer in each gating hierarchy
+			for(i in 1:length(clone@set))
+			{
+				clone@set[[i]]@pointer<-clone@pointer
+			}
 			#create new global data environment
 			gdata<-new.env();
 #			copyEnv(x[[1]]@tree@nodeData@defaults$data[["data"]],gdata)
@@ -813,5 +817,16 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSetInternal"),function(x,value){
 		})
 
 
+setMethod("show","GatingSetInternal",function(object){
 			
+			callNextMethod(object)
+			
+			for(i in 1:length(object@set))
+			{
+#				browser()
+				if(!identical(object@set[[i]]@pointer,object@pointer))
+					stop("GatingHierarchy ",names(object@set)[i]," has a differnent pointer than GatingSet!")
+			}
+			
+		})			
 
