@@ -261,7 +261,7 @@ BEGIN_RCPP
 		 * copy the transformed data from gh before unload it
 		 */
 		valarray<double> updatedMat(gh->getData(0).getData());
-		gh->unloadData();
+
 
 		/*
 		 * update the _mat
@@ -269,7 +269,8 @@ BEGIN_RCPP
 		for(int j=0;j<orig.ncol()*orig.nrow();j++)
 			orig[j]=updatedMat[j];
 	}
-	return (0);
+	gh->unloadData();
+//	return (0);
 
 END_RCPP
 }
