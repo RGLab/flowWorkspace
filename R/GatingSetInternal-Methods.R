@@ -1,6 +1,5 @@
-# TODO: Add comment
-# 
-# Author: wjiang2
+# TODO: currently archive save the entire cdf file instead of the current view of cdf
+# it could cause data redudancy if only a subset(view of ncdfFlowSet) is desired to be saved
 ###############################################################################
 archive<-function(G,file=tempfile()){
 	
@@ -722,18 +721,50 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
 
 setGeneric("clone", function(x,...){standardGeneric("clone")})
 setMethod("clone",c("GatingSetInternal"),function(x,...){
+
+			clone<-x
+			#clone c structure
+			message("cloning tree structure...")
+			clone@pointer<-.Call("R_CloneGatingSet",x@pointer)
+			
+			#create new global data environment
+			gdata<-new.env();
+#			copyEnv(x[[1]]@tree@nodeData@defaults$data[["data"]],gdata)
 #			browser()
-#			tmpfile<-tempfile()
-#			archive(x,file=tmpfile)
-#			gs<-unarchive(tmpfile)
-			#TODO:clone R object in memory (environment)
-			gs<-x
-			gs@pointer<-.Call("R_CloneGatingSet",x@pointer)
-			gs
+			#update data environment for each gh
+			for(i in 1:length(x)){
+				
+				nd<-x[[i]]@tree@nodeData
+				nd@defaults$metadata<-new.env()
+				nd@defaults$data<-new.env()
+				copyEnv(x[[i]]@tree@nodeData@defaults$data,nd@defaults$data)
+				nd@defaults$data[["data"]]<-gdata
+				copyEnv(x[[i]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
+#				nlist<-replicate(length(nd@data),list(list(metadata=new.env())))
+#				for(j in 1:length(nlist)){
+#					copyEnv(nd@data[[j]]$metadata,nlist[[j]]$metadata)
+#				}
+#				names(nlist)<-names(nd@data)
+#				nd@data<-nlist
+				clone[[i]]@tree@nodeData<-nd
+			}
+			
+			#deep copying flowSet/ncdfFlowSet
+			message("cloning flow data...")
+			fs<-ncFlowSet(x)
+			if(flowWorkspace:::isNcdf(x[[1]]))
+				fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=TRUE)
+			else
+				fs<-flowCore:::copyFlowSet(fs)
+			
+			ncFlowSet(clone)<-fs			
+			
+			message("GatingSet cloned!")
+			clone
 		})
 setMethod("clone",c("GatingSet"),function(x,...){
 #			browser()
-			cloneGatingSet(x,...)
+			.cloneGatingSet(x,...)
 		})
 
 setGeneric("recompute", function(x,...){standardGeneric("recompute")})
