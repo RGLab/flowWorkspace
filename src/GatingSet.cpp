@@ -91,6 +91,27 @@ GatingSet::~GatingSet()
 	}
 
 }
+
+/*
+ * up to caller to free the memory
+ */
+GatingSet* GatingSet::clone(){
+	// make an archive
+//	std::streambuf buf();
+	std::ostringstream out;
+	std::istringstream in;
+	boost::archive::binary_oarchive oa(out);
+	oa << *this;
+
+	GatingSet * newGS=new GatingSet();
+
+	boost::archive::binary_iarchive ia(in);
+
+	ia >> *newGS;
+
+	return newGS;
+}
+
 /*
  * TODO:current version of this contructor is based on gating template ,simply copying
  * compensation and transformation,more options can be allowed in future like providing different

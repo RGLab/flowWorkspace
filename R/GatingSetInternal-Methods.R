@@ -726,6 +726,9 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			tmpfile<-tempfile()
 			archive(x,file=tmpfile)
 			gs<-unarchive(tmpfile)
+			#TODO:clone R object in memory (environment)
+#			gs<-x
+#			gs@pointer<-.Call("R_CloneGatingSet",x@pointer)
 			gs
 		})
 setMethod("clone",c("GatingSet"),function(x,...){

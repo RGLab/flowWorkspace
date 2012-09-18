@@ -252,19 +252,23 @@ BEGIN_RCPP
 		gh->extendGate();
 		gh->transforming(false);
 	}
+
 	gh->gating(nodeInd,recompute);
-	/*
-	 * copy the transformed data from gh before unload it
-	 */
-	valarray<double> updatedMat(gh->getData(0).getData());
-	gh->unloadData();
 
-	/*
-	 * update the _mat
-	 */
-	for(int j=0;j<orig.ncol()*orig.nrow();j++)
-		orig[j]=updatedMat[j];
+	if(!recompute)
+	{
+		/*
+		 * copy the transformed data from gh before unload it
+		 */
+		valarray<double> updatedMat(gh->getData(0).getData());
+		gh->unloadData();
 
+		/*
+		 * update the _mat
+		 */
+		for(int j=0;j<orig.ncol()*orig.nrow();j++)
+			orig[j]=updatedMat[j];
+	}
 	return (0);
 
 END_RCPP
