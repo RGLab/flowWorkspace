@@ -101,7 +101,7 @@ setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
 			if(inherits(value,"ncdfFlowSet"))
 			{
 				message("associate the ncdfFlowSet to tree structure...")
-				.Call("R_setData",this@pointer,value@file,sampleNames(value),colnames(value))
+				.Call("R_setData",this@pointer,value@file,value@origSampleVector,value@origColnames)
 			}
 		})
 
