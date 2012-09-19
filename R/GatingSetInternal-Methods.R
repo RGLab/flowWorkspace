@@ -678,10 +678,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	return(res)	
 }
 
-plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
-#	res<-QUALIFIER:::.queryStats(db,statsType="proportion",pop=pop,gsid=1,isTerminal=T)
-#	res<-as.data.frame(cast(res,...~stats))
-#	QUALIFIER:::qa.GroupPlot(db=db,df=res,statsType="proportion",par=.db$lattice)
+plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 	#get all childrens
 	cids<-getChildren(G[[1]],parentID)
 	if(length(cids)>0)
@@ -705,8 +702,12 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
 			isPlotGate<-FALSE
 	}else
 		isPlotGate<-FALSE
-#	formula1<-as.formula(paste("`",y,"`~`",x,"`",sep=""))
-	formula1<-mkformula(c(y,x))
+	formula1<-paste("`",y,"`~`",x,"`",sep="")
+	if(!is.null(cond))
+#		formula1<-mkformula(c(y,x))
+		formula1<-paste(formula1,cond,sep="|")
+	formula1<-as.formula(formula1)
+#	browser()
 	if(isPlotGate)
 		plotGate(G,cids[ind],formula=formula1,smooth=smooth,...)
 	else
@@ -714,8 +715,6 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,...){
 		fs<-getData(G,parentID)
 		xyplot(formula1,fs,smooth=smooth,...)
 	}
-		
-	
 	
 }
 
@@ -828,5 +827,28 @@ setMethod("show","GatingSetInternal",function(object){
 					stop("GatingHierarchy ",names(object@set)[i]," has a differnent pointer than GatingSet!")
 			}
 			
-		})			
+		})		
+setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
+#			browser()
+			fs<-callNextMethod(obj,y,tsort)
+			pData(fs)<-pData(obj)[sampleNames(fs),]
+			varM<-varMetadata(phenoData(fs))
+			varM[-1,]<-rownames(varM)[-1]
+			varMetadata(phenoData(fs))<-varM			
+			fs
+		})
+#note:it doesn't use metadata slot of GatingSet, instead it directly access the pData of flowSet/ncdfFlowSet
+setMethod("pData","GatingSetInternal",function(object){
+			pData(ncFlowSet(object))
+		})
+setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,value){
+			env<-nodeDataDefaults(object[[1]]@tree,"data")$data
+
+#			browser()
+			assign("value",value,env)
+			expr1<-expression({pData(ncfs)<-value;varM<-varMetadata(phenoData(ncfs));varM[-1,]<-rownames(varM)[-1];varMetadata(phenoData(ncfs))<-varM})
+			eval(expr1,envir=env)
+			rm("value",envir=env)
+			return (object)
+		})
 
