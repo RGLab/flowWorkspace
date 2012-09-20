@@ -72,10 +72,17 @@ int main(void) {
 	myTest.at(i).ncfile="../output/HVTN054/nc1_comp.nc";
 	myTest.at(i).colfile="../output/HVTN054/colnames.txt";
 	myTest.at(i).archive="../output/HVTN054/gs/gs.dat";
-	//	fileNames.push_back("../fjWsExamples/Exp1_Treg.wsp");
-//	fileNames.push_back("../fjWsExamples/Exp2_DC-Mono-NK.wsp");
 
-	i=0;
+	i=6;
+	myTest.at(i).filename="../data/HVTN080/FCSRAWDATA/XML/080 Batch 1057 M.xml";
+	myTest.at(i).samples["5345"]="517614.fcs";
+	myTest.at(i).sampNloc=1;
+	myTest.at(i).ncfile="../output/HVTN080/nc_comp.nc";
+	myTest.at(i).colfile="../output/HVTN080/colnames.txt";
+	myTest.at(i).archive="../output/HVTN080/gs/gs.dat";
+
+
+	i=6;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

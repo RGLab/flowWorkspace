@@ -695,7 +695,18 @@ vector<BOOL_GATE_OP> macFlowJoWorkspace::parseBooleanSpec(string specs,vector<st
 		 */
 		string curPath=gPaths.at(index);
 		boost::split(gOpObj.fullpath,curPath,boost::is_any_of("/"));
+		/*
+		 * the path could be either absolute full path or relative parent name
+		 * if it is relative parent name, we need extra efforts to search for
+		 * this parent node and return a full path of it
+		 */
+		if(gOpObj.fullpath.size()==2&&gOpObj.fullpath.at(0).empty())
+		{
+			string refNodeName=gOpObj.fullpath.at(0);
 
+		}
+
+		// parse negate operator
 		gOpObj.isNot=curPopToken.find("!")!=string::npos;
 
 
