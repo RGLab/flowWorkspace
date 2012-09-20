@@ -846,7 +846,7 @@ setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,val
 
 #			browser()
 			assign("value",value,env)
-			expr1<-expression({pData(ncfs)<-value;varM<-varMetadata(phenoData(ncfs));varM[-1,]<-rownames(varM)[-1];varMetadata(phenoData(ncfs))<-varM})
+			expr1<-expression({value<-value[match(sampleNames(ncfs),value$name),];rownames(value)<-value$name;pData(ncfs)<-value;varM<-varMetadata(phenoData(ncfs));varM[-1,]<-rownames(varM)[-1];varMetadata(phenoData(ncfs))<-varM})
 			eval(expr1,envir=env)
 			rm("value",envir=env)
 			return (object)
