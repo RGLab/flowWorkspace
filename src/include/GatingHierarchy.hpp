@@ -161,6 +161,7 @@ public:
 	void drawGraph(string out);
 	VertexID getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
+	VertexID getNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order);//return the node list in vertexID order or T order
 	vector<string> getPopNames(unsigned short order,bool isPath);
 	VertexID_vec getParent(VertexID);

@@ -19,14 +19,14 @@ using namespace std;
 
 
 typedef struct{
-	vector<string> fullpath;
+	vector<string> path;
 	char op;
 	bool isNot;
 	template<class Archive>
 				    void serialize(Archive &ar, const unsigned int version)
 				    {
 
-						ar & fullpath;
+						ar & path;
 						ar & op;
 						ar & isNot;
 				    }

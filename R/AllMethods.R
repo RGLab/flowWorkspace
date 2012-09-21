@@ -553,6 +553,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 			nd<-nd[[1]]
 			paste(xmlGetAttr(nd,"nn"),xmlGetAttr(nd,"name"),sep=".");
 		}else{
+			browser()
 			prefix<-"./ancestor::Sample/";
 			query<-paste(prefix,sapply(strsplit(nme,"/")[[1]][!strsplit(nme,"/")[[1]]==""],function(q){
 				paste("descendant::Population[@name='",q,"']",sep="")

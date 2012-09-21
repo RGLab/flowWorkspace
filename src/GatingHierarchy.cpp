@@ -475,10 +475,26 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 	for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
 	{
 		/*
+		 * find id of reference node
+		 */
+		VertexID nodeID;
+		/*
 		 * assume the reference node has already added during the parsing stage
 		 */
-		vector<string> nodePath=it->fullpath;
-		VertexID nodeID=getNodeID(nodePath);
+		vector<string> nodePath=it->path;
+		if(nodePath.size()==1)
+		{
+			//search ID by nearest ancestor
+			nodeID=getNodeID(u,nodePath.at(0));
+		}
+		else
+		{
+
+			nodeID=getNodeID(nodePath);//search ID by path
+		}
+
+
+
 		nodeProperties * curPop=getNodeProperty(nodeID);
 		if(!curPop->isGated())
 		{
@@ -504,26 +520,6 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 			default:
 				throw(domain_error("not supported operator!"));
 		}
-
-
-
-
-//		for(unsigned i=0;i<ind.size();i++)
-//		{
-//
-//
-//			switch(it->op)
-//			{
-//				case '&':
-//					ind.at(i)=ind.at(i)&curPopInd.at(i);
-//					break;
-//				case '|':
-//					ind.at(i)=ind.at(i)|curPopInd.at(i);
-//					break;
-//				default:
-//					throw(domain_error("not supported operator!"));
-//			}
-//		}
 
 	}
 
@@ -619,22 +615,27 @@ VertexID_vec GatingHierarchy::getVertices(unsigned short order=0){
 }
 
 /*
- * retrieve the VertexID by the gating path
+ * retrieve the VertexID by the gating path(could be subpath)
  * this serves as a parser to convert generic gating path into internal node ID
  *
  */
 VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 
 	/*
-	 * start from the root node
+	 * search for the start node in the path
 	 */
-	VertexID parentID=0;
-
-	for(vector<string>::iterator it=gatePath.begin();it!=gatePath.end();it++)
+	string start=gatePath.at(0);
+	VertexID nodeID=getNodeID(0,start);
+	/*
+	 * then trace down from the start node until the end
+	 */
+	for(vector<string>::iterator it=gatePath.begin()+1;it!=gatePath.end();it++)
 	{
 		string nodeNameFromPath=*it;
-
-		VertexID curNodeID=getChildren(parentID,nodeNameFromPath);
+		/*
+		 * search the children node of nodeID
+		 */
+		VertexID curNodeID=getChildren(nodeID,nodeNameFromPath);
 		if(curNodeID==-1)
 		{
 			string err="Node not found:";
@@ -642,10 +643,52 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 			throw(domain_error(err));
 		}
 		else
-			parentID=curNodeID;
+			nodeID=curNodeID;//update the
 
 	}
-	return parentID;
+	return nodeID;
+
+}
+/*
+ * retrieve VertexID of nearest ancestor that matches population name
+ */
+VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
+
+	/*
+	 * bottom-up search for the node from the current node
+	 */
+
+	while(u!=0)
+	{
+		u=getParent(u).at(0);
+		if(getNodeProperty(u)->getName().compare(popName)==0)
+			break;
+
+	}
+
+	/*
+	 * if not found, try traverse the entire tree (top-down searching from the root)
+	 * and assuming there is only on node will be matched to popName in the tree
+	 */
+	if(u==0)
+	{
+		VertexID_vec nodeIDs=getVertices();
+		VertexID_vec::iterator it;
+		for(it=nodeIDs.begin();it!=nodeIDs.end();it++)
+		{
+			u=*it;
+			if(getNodeProperty(u)->getName().compare(popName)==0)
+				break;
+		}
+		if(it==nodeIDs.end())
+		{
+			string err=popName+" not found in the tree!";
+			throw(domain_error(err));
+		}
+
+	}
+
+	return u;
 
 }
 

@@ -328,7 +328,7 @@ BEGIN_RCPP
 			  {
 				  v.push_back(it->isNot?"!":"");
 				  v2.push_back(it->op);
-				  ref.push_back(it->fullpath);
+				  ref.push_back(it->path);
 			  }
 
 			  List ret=List::create(Named("v",v)
