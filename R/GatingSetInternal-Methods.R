@@ -687,12 +687,15 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 #		browser()
 		isMatched<-lapply(cids,function(cid){
 					g<-getGate(G[[1]],cid)
-					prj<-parameters(g)
-					revPrj<-rev(prj)
-					if((x==prj[1]&&y==prj[2])||(x==revPrj[1]&&y==revPrj[2]))
-						return (TRUE)
-					else
-						return (FALSE)
+					if(class(g)!="BooleanGate") 
+					{
+						prj<-parameters(g)
+						revPrj<-rev(prj)
+						if((x==prj[1]&&y==prj[2])||(x==revPrj[1]&&y==revPrj[2]))
+							return (TRUE)
+						else
+							return (FALSE)
+					}
 				})
 		
 		ind<-which(unlist(isMatched))
@@ -709,7 +712,7 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 	formula1<-as.formula(formula1)
 #	browser()
 	if(isPlotGate)
-		plotGate(G,cids[ind],formula=formula1,smooth=smooth,...)
+		flowWorkspace::plotGate(G,cids[ind],formula=formula1,smooth=smooth,...)
 	else
 	{
 		fs<-getData(G,parentID)
@@ -718,6 +721,7 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 	
 }
 
+plotGate_labkey(G[1:2], parentID = "3.L", x = "<APC-A>", y = "<PE Tx RD-A>")
 
 setGeneric("clone", function(x,...){standardGeneric("clone")})
 setMethod("clone",c("GatingSetInternal"),function(x,...){
@@ -829,11 +833,12 @@ setMethod("show","GatingSetInternal",function(object){
 			
 		})		
 setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
-#			browser()
+
 			fs<-callNextMethod(obj,y,tsort)
-			pData(fs)<-pData(obj)[sampleNames(fs),]
+			pData(fs)<-pData(obj)[sampleNames(fs),,drop=FALSE]
 			varM<-varMetadata(phenoData(fs))
 			varM[-1,]<-rownames(varM)[-1]
+#						browser()
 			varMetadata(phenoData(fs))<-varM			
 			fs
 		})
