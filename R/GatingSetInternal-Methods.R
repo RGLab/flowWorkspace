@@ -695,7 +695,8 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 							return (TRUE)
 						else
 							return (FALSE)
-					}
+					}else
+					return (FALSE)
 				})
 		
 		ind<-which(unlist(isMatched))
@@ -721,7 +722,7 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 	
 }
 
-plotGate_labkey(G[1:2], parentID = "3.L", x = "<APC-A>", y = "<PE Tx RD-A>")
+
 
 setGeneric("clone", function(x,...){standardGeneric("clone")})
 setMethod("clone",c("GatingSetInternal"),function(x,...){
