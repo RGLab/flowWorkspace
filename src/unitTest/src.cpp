@@ -82,7 +82,7 @@ int main(void) {
 	myTest.at(i).archive="../output/HVTN080/gs/gs.dat";
 
 
-	i=6;
+	i=4;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

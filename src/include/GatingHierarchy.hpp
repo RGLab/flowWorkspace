@@ -164,7 +164,9 @@ public:
 	VertexID getNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order);//return the node list in vertexID order or T order
 	vector<string> getPopNames(unsigned short order,bool isPath);
+	VertexID getAncestor(VertexID u,unsigned short level);
 	VertexID_vec getParent(VertexID);
+	VertexID getDescendant(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
 	void setNcPtr(ncdfFlow *_nc){nc=_nc;}

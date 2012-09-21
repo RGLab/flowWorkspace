@@ -89,7 +89,7 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 */
 
 		cout<<endl<<"check parent node"<<endl;
-		for(int i=-1;i<=11;i++)
+		for(size_t i=0;i<=vertices.size();i++)
 		{
 			VertexID_vec parent=gh->getParent(i);
 			cout<<i<<"<--";
@@ -101,7 +101,7 @@ void gh_accessor_test(GatingHierarchy* gh){
 
 
 		cout<<endl<<"check children node"<<endl;
-		for(int i=-1;i<=11;i++)
+		for(size_t i=0;i<=vertices.size();i++)
 		{
 			VertexID_vec children=gh->getChildren(i);
 			cout<<i<<"-->";
@@ -231,7 +231,7 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadAr
 			gs_attachCDF(*gs,myTest);
 		gh=gs->getGatingHierarchy(curSample);
 //		gh->printLocalTrans();
-//		gh_accessor_test(gh);
+		gh_accessor_test(gh);
 //		plotGraph(gh);
 
 		if(!isLoadArchive)

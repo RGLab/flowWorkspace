@@ -649,44 +649,63 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 	return nodeID;
 
 }
+
+VertexID GatingHierarchy::getDescendant(VertexID u,string name){
+	VertexID_vec nodesTomatch;
+	custom_bfs_visitor vis(nodesTomatch);
+	boost::breadth_first_search(tree, u, boost::visitor(vis));
+	VertexID_vec::iterator it;
+	for(it=nodesTomatch.begin();it!=nodesTomatch.end();it++)
+	{
+		u=*it;
+		if(getNodeProperty(u)->getName().compare(name)==0)
+			return u;
+	}
+	if(it==nodesTomatch.end())
+	{
+		if(dMode>=POPULATION_LEVEL)
+			cout<<name<<" not found under the node: "<<boost::lexical_cast<string>(u)<<". returning the root instead."<<endl;;
+		return 0;
+	}
+
+}
+
 /*
- * retrieve VertexID of nearest ancestor that matches population name
+ * retrieve VertexID that matches population name
  */
 VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
 
+
+
 	/*
-	 * bottom-up search for the node from the current node
+	 * get the ancestor of 2 level above
 	 */
+	if(u!=0)
+		u=getAncestor(u,1);	/*
+							 *  this is the hack for now. it may break when the reference node is under the ancestor of N>=3 level above
+							 *  other than root.
+							 *  it would be more robust to have a nearest ancestor searching,but it is unclear
+							 *  regarding to definition of the distance between nodes at the moment.
+							 *
+							 */
 
-	while(u!=0)
-	{
-		u=getParent(u).at(0);
-		if(getNodeProperty(u)->getName().compare(popName)==0)
-			break;
-
-	}
+	/*
+	 * top-down searching from that ancestor
+	 */
+	u=getDescendant(u,popName);
 
 	/*
 	 * if not found, try traverse the entire tree (top-down searching from the root)
 	 * and assuming there is only on node will be matched to popName in the tree
 	 */
+
 	if(u==0)
 	{
-		VertexID_vec nodeIDs=getVertices();
-		VertexID_vec::iterator it;
-		for(it=nodeIDs.begin();it!=nodeIDs.end();it++)
-		{
-			u=*it;
-			if(getNodeProperty(u)->getName().compare(popName)==0)
-				break;
-		}
-		if(it==nodeIDs.end())
-		{
-			string err=popName+" not found in the tree!";
-			throw(domain_error(err));
-		}
-
+		if(dMode>=POPULATION_LEVEL)
+			cout<<"searching from the root."<<endl;
+		u=getDescendant(u,popName);
 	}
+
 
 	return u;
 
@@ -744,6 +763,15 @@ vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath){
 
 	}
 	return res;
+}
+/*
+ * assume getParent only returns one parent node
+ */
+VertexID GatingHierarchy::getAncestor(VertexID u,unsigned short level){
+
+	for(unsigned short i=0;i<level;i++)
+		u=getParent(u).at(0);
+	return(u);
 }
 /*
  * using boost in_edges out_edges to retrieve adjacent vertices
