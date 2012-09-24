@@ -25,15 +25,18 @@ setGeneric("addGate",function(obj,gate,parent,...){
 })
 
 
-
+#to deprecated by "flowSet"
 setGeneric("getNcdf",function(obj){
 	standardGeneric("getNcdf")
 })
 
-
+#to  be  deprecated by "flowSet"
 setGeneric("ncFlowSet", function(x) standardGeneric("ncFlowSet"))
+#to  be  deprecated by "flowSet"
 setGeneric("ncFlowSet<-", function(x,value) standardGeneric("ncFlowSet<-"))
 
+setGeneric("flowSet")
+setGeneric("flowSet<-", function(x,value) standardGeneric("flowSet<-"))
 
 setGeneric("getIndiceFile",function(obj){
 			standardGeneric("getIndiceFile")
@@ -45,9 +48,6 @@ setGeneric("execute",function(hierarchy,...){
 setGeneric("plotGate",function(x,y,...){
 	standardGeneric("plotGate")
 })
-# setGeneric("plotWf",function(x,...){
-# 			standardGeneric("plotWf");
-# 		})
 
 setGeneric("getPopStats",function(x,...){
 	standardGeneric("getPopStats");
@@ -96,12 +96,15 @@ setGeneric("getProp",function(x,y,...){
 setGeneric("getTotal",function(x,y,...){
 	standardGeneric("getTotal");
 })
+
 setGeneric("getSamples",function(x,...){
 	standardGeneric("getSamples");
 })
+
 setGeneric("getSample",function(x,...){
 			standardGeneric("getSample");
 		})
+
 setGeneric("getSampleGroups",function(x){
 	standardGeneric("getSampleGroups")
 })
@@ -111,6 +114,7 @@ setGeneric("getCompensationMatrices",function(x){
 setGeneric("getTransformations",function(x){
 	standardGeneric("getTransformations")
 })
+
 setGeneric("getKeywords",function(obj,y){
 	standardGeneric("getKeywords")
 })

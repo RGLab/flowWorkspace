@@ -833,15 +833,24 @@ setMethod("show","GatingSetInternal",function(object){
 			}
 			
 		})		
+#getData is used to extract gated data,thus always construct a flowSet on the fly 
+#because it needs to subset flowSet based on row indices. Order to get the entire dataset
+#try to use flowSet method.
 setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
-
-			fs<-callNextMethod(obj,y,tsort)
-			pData(fs)<-pData(obj)[sampleNames(fs),,drop=FALSE]
-			varM<-varMetadata(phenoData(fs))
-			varM[-1,]<-rownames(varM)[-1]
+			
+			if(is.null(y))
+				nodeDataDefaults(obj[[1]]@tree,"data")[["data"]]$ncfs[getSamples(obj)]
+			else
+			{
+				fs<-callNextMethod(obj,y,tsort)
+				pData(fs)<-pData(obj)[sampleNames(fs),,drop=FALSE]
+				varM<-varMetadata(phenoData(fs))
+				varM[-1,]<-rownames(varM)[-1]
 #						browser()
-			varMetadata(phenoData(fs))<-varM			
-			fs
+				varMetadata(phenoData(fs))<-varM			
+				fs	
+			}
+			
 		})
 #note:it doesn't use metadata slot of GatingSet, instead it directly access the pData of flowSet/ncdfFlowSet
 setMethod("pData","GatingSetInternal",function(object){
@@ -858,3 +867,11 @@ setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,val
 			return (object)
 		})
 
+#Return the value of the keyword given a flowWorkspace and the keyword name
+setMethod("keyword",signature("GatingHierarchyInternal","character"),function(object,keyword){
+			
+			keyword(getData(object),keyword)
+		})
+setMethod("getKeywords",signature("GatingHierarchyInternal","missing"),function(obj,y){
+			keyword(getData(obj))
+		})

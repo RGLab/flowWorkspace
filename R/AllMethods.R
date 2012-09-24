@@ -1464,34 +1464,41 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(
 	get("axis.labels",envir=nodeData(obj@tree)[[1]]$data)
 })
 
-#to be replaced by method "ncdfFlowSet"
-setMethod("getNcdf",signature(obj="GatingSet"),function(obj){
-	getNcdf(obj[[1]])
-})
 
-#to be replaced by method "ncdfFlowSet"
-setMethod("getNcdf",signature(obj="GatingHierarchy"),function(obj){
-	.getNcdf(obj)
-})
 
 ######################################################
 #read/update ncdfFlowSet object stored in GatingSet
 ######################################################
 setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
-	getNcdf(x[[1]])
+
+			getNcdf(x[[1]])
 })
 
 setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
-	.getNcdf(x)
+
+			.getNcdf(x)
 })
 
 
 setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
-	ncFlowSet(x[[1]])<-value
-	x
+
+			ncFlowSet(x[[1]])<-value
+			x
 })
+#to be replaced by method "ncdfFlowSet"
+setMethod("getNcdf",signature(obj="GatingSet"),function(obj){
+			warning("this method is deprecated by 'ncFlowSet'")
+			getNcdf(obj[[1]])
+		})
+
+#to be replaced by method "ncdfFlowSet"
+setMethod("getNcdf",signature(obj="GatingHierarchy"),function(obj){
+			warning("this method is deprecated by 'ncFlowSet'")
+			.getNcdf(obj)
+		})
 
 setReplaceMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x,value){
+
 			
 	if(!inherits(x,"GatingHierarchy")){
 		stop("obj must be of class GatingHierarchy")
