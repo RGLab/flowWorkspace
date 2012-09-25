@@ -336,6 +336,9 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),f
 
 #this method currently is used convert transformation funtion from c++ to R
 ##mainly for transforming range info
+setMethod("getTransformations","GatingHierarchy",function(x){
+			x@transformations
+		})
 setMethod("getTransformations","GatingHierarchyInternal",function(x){
 #			browser()
 			trans<-.Call("R_getTransformations",x@pointer,getSample(x))

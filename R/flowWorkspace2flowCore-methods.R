@@ -3,6 +3,7 @@
 # all the gates from GatingHierarchy object in flowWorkspace package
 # and convert them to the respective components of workFlow class for flowCore package  
 # so that the ALLExportMethods.R can further deal with flowCore objects and export to flowjo IssueID #3 @2h
+#TODO: to deprecate 'flowWorkspace2flowCore' with 'Workflow' 
 # Author: mike
 ###############################################################################
 #getPramaNames<-function(transNames)
@@ -204,7 +205,12 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingSet"),function(obj,...){
 		}
 		workFlowList
 })
-
+setMethod("flowWorkspace2flowCore",signature(obj="GatingSetInternal"),function(obj,...){
+			stop("GatingSetInternal not supported yet!")
+		})
+setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchyInternal"),function(obj,...){
+			stop("GatingHierarchyInternal not supported yet!")
+		})
 setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj,...){
 			if(is.null(list(...)$path)){
 				stop("You must specify a path to the fcs files via the path= argument.");
@@ -219,6 +225,7 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 
 ####fcsfiles point to multiple gatingHierarchies with the same structure,
 ###which can be merged to the same workflow
+#TODO:to finish for GatingHierarchyInternal
 .gatinghierarchy2workflow<-function(hierarchy,fcsfiles){
 						
 			#######################################################
@@ -226,35 +233,40 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 			######################################################
 			x<-hierarchy@tree
 			##get node list
-			nlist<-RBGL::bfs(x,nodes(x)[1]);
+#			browser()
+			if(class(hierarchy)=="GatingHierarchyInternal")
+				nlist<-getNodes(hierarchy,order="bfs")
+			else
+				nlist<-RBGL::bfs(x,nodes(x)[1]);
 			
 			#########create workflow object out of workframes from workspace
 			
 			fs<-read.flowSet(fcsfiles)
 			wf1 <- workFlow(fs)
-#				views(wf1)
 			
 			#########################################
 			#convert compensation matrix to workflow
 			#########################################
 			message("converting compensation matrix")
-			Comp.mat<-hierarchy@compensation
-			
-			if(!all(is.na(Comp.mat)))
+			Comp<-getCompensationMatrices(hierarchy)
+			if(!class(Comp)=="compensation")
+				Comp<-compensation(Comp)
+			if(!all(is.na(Comp@spillover)))
 			{
-				Comp<-compensation(Comp.mat)
+				
 				add(wf1,Comp,name="CompensationView")
-				views(wf1)
+#				views(wf1)
 				
 				#update the colnames of flowset with brackets
 				compfs<-Data(wf1[["CompensationView"]])
 				#add namespace of flowCore to make sure correct method of colnames is called 
 				colNames<-colnames(compfs)
-				compParams<-colnames(Comp.mat)
+				compParams<-parameters(Comp)
 				updatedCompParams<-paste("<",compParams,">",sep="")
 				colNames[which(colNames%in%compParams)]<-updatedCompParams
-				compfs@colnames <- colNames
-				flowCore:::"colnames<-"(compfs,colNames);
+				colnames(compfs)<- colNames
+#				compfs@colnames <- colNames
+#				flowCore:::"colnames<-"(compfs,colNames);
 				
 				#update the comp with the new flowset
 				assign(wf1[["CompensationView"]]@data@ID,compfs,wf1[["CompensationView"]]@data@env)
@@ -271,18 +283,18 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 			############################################
 			message("converting transformations")
 			
-			transfromList<-hierarchy@transformations
+			transfromList<-getTransformations(hierarchy)
 			paramNames<-Data(wf1[["base view"]])@colnames
 			orderedParamNames<-.getTransParamList(paramNames,transfromList)
-			if(!all(is.na(Comp.mat)))
-				orderedParamNames<-.addBrackets(orderedParamNames,colnames(Comp.mat))
+			if(!all(is.na(Comp@spillover)))
+				orderedParamNames<-.addBrackets(orderedParamNames,parameters(Comp))
 			tl <- transformList(from=orderedParamNames,tfun=transfromList)
 			
 			add(wf1,tl,parent=transParentViewName,name=nlist[1])
-			views(wf1)
+#			views(wf1)
 			
 			#######################################################
-			#extract non-boolean gates and add them to workflow
+			#extract gates and add them to workflow
 			######################################################
 			nids<-vector("character",length(nlist))
 			nids[1]<-nlist[1]
@@ -291,23 +303,26 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 				#get current node name
 				n<-nlist[i]
 				#get the gate from workspace by the node name
+#				g<-getGate(hierarchy,n)
 				g<-get("gate",envir=nodeData(x,n,"metadata")[[1]]);
 				#get the parent node name and node ID
+#				pid<-getParent(hierarchy,n)
 				parentName<-(setdiff(adj(ugraph(x),n)[[1]],adj(x,n)[[1]]))
 				pid<-nids[which(nlist==parentName)]
 				
-				if(!(flowWorkspace:::.isBooleanGate.graphNEL(hierarchy,n)))
+				if(!(flowWorkspace:::.isBoolGate(hierarchy,n)))
 				{
 					message("Gate attached to view: ", n);
 					#attach the gate to the parent view
-					add(wf1,g,parent=pid)	
+					add(wf1,g,parent=pid)
+					
 					isNegated<-get("negated",envir=nodeData(x,n,"metadata")[[1]])
 				}else #boolean gates
 				{
 					
-					neg.Indicators<-g[[1]]$v
-					gOperators<-g[[1]]$v2
-					g.nodes<-g[[1]]$ref
+					neg.Indicators<-g$v
+					gOperators<-g$v2
+					g.nodes<-g$ref
 					#				g.vector<-get("gate",env=nodeData(x,g.nodes[1],"metadata")[[1]])
 					#				expr<-paste(neg.Indicators[1],"g.vector[[1]]",sep="")
 					expr<-NULL
