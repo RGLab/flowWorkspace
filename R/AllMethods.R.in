@@ -2635,7 +2635,7 @@ constructTransformations<-function(x,env){
 					}
 				}
 			}
-			if(.getWorkspaceGeneratedVersion(x)<9){
+			if((.getWorkspaceGeneratedVersion(x)[,"major"]*10+.getWorkspaceGeneratedVersion(x)[,"minor"])<88){
 				cal<-.constructCalTables8.2(cal,x,compID,compnames)
 			}
 			assign("transformations",cal,env);
@@ -2717,7 +2717,7 @@ constructTransformations<-function(x,env){
 					}
 				}
 			}
-			if(.getWorkspaceGeneratedVersion(x)<9){
+			if((.getWorkspaceGeneratedVersion(x)[,"major"]*10+.getWorkspaceGeneratedVersion(x)[,"minor"])<88){
 				cal<-.constructCalTables8.2(cal,x,compID,compnames)
 			}
 			
@@ -2747,7 +2747,7 @@ constructTransformations<-function(x,env){
 			#Probably need to do something here for 8.2 flowJo workspaces.
 			#Yes we do! It's broken!
 			
-			if(.getWorkspaceGeneratedVersion(x)<9){
+			if((.getWorkspaceGeneratedVersion(x)[,"major"]*10+.getWorkspaceGeneratedVersion(x)[,"minor"])<88){
 				cal<-.constructCalTables8.2(cal,x,compID)
 			}else
 			{
@@ -2818,7 +2818,19 @@ constructTransformations<-function(x,env){
 }
 .getWorkspaceGeneratedVersion<-function(x){
     ch<-as.character(xpathApply(x,"/Workspace",function(x)xmlGetAttr(x,"versionList"))[[1]]);
-    min(na.omit(as.numeric(sapply(gsub("Pre ","",strsplit(ch,";")[[1]]),function(x)strsplit(x,"\\.")[[1]][1]))))
+	lists<-lapply(gsub("\\s","",gsub("Pre ","",strsplit(ch,";")[[1]])),function(x)strsplit(x,"\\.")[[1]])
+    #min(na.omit(as.numeric(sapply(gsub("Pre ","",strsplit(ch,";")[[1]]),function(x)strsplit(x,"\\.")[[1]][1]))))
+	len<-length(lists)
+	ver<-t(as.matrix(as.numeric(lists[[len]])))
+	nc<-ncol(ver)
+	colnames(ver)<-c("major","minor","revision")[1:nc]
+	if(nc==1){
+		ver<-cbind(ver,minor=0,revision=0)
+	}
+	else if(nc==2){
+		ver<-cbind(ver,revision=0)
+	}
+	ver
 }
 
 setMethod("getSamples","flowJoWorkspace",function(x){
@@ -3126,7 +3138,7 @@ ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
     #STATS
     sts<-NULL
     for(i in 1:length(x)){
-        stats<-do.call(rbind,lapply(x[[i]],function(x){stats<-getPopStats(x);rownames(stats)[1]<-"";data.frame(Sample=getSample(x),Population=rownames(stats),Freq_Of_Parent=stats$flowCore.freq,Count=stats$flowCore.count)}))
+        stats<-do.call(rbind,lapply(x[[i]],function(x){stats<-getPopStats(x);rownames(stats)[1]<-"";data.frame(Sample=getSample(x),Population=rownames(stats),Freq_Of_Parent=stats$flowCore.freq*100,Count=stats$flowCore.count)}))
         sts<-rbind(sts,stats)
     }
     sts$Population<-gsub("^/","",as.character(sts$Population))
@@ -3140,7 +3152,7 @@ ExportTSVAnalysis<-function(x=NULL, Keywords=NULL,EXPORT="export"){
         pops<-sapply(nds,function(i)get("fjName",nodeData(x@tree,i,"metadata")[[1]]))
         dir.create(gsub("\\.fcs","",s),showWarnings=FALSE)
         plots<-lapply(as.list(nds),function(y){
-            p<-plotGate(x,y,fast=TRUE)
+            p<-plotGate(x,y,fast=FALSE)
         })
         paths<-do.call(c,lapply(plots,function(i){
             CairoPNG(filename="tmp.png",width=300,height=300)
