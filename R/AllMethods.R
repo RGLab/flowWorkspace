@@ -184,6 +184,13 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 			stop("Invalid sample group name.")
 		result<-match(name,groups)
 	}
+	if(is.factor(subset)){
+		subset<-as.character(subset)
+	}
+	if(is.character(subset)){
+	#subset s sg by file name
+		sg <- subset(sg,name%in%subset)
+	}
 	if(wsversion=="2.0"){
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
@@ -198,8 +205,14 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 #	browser()
 	# Allow import of a subset of samples
 	if(!missing(subset)){
+	if(is.numeric(subset)){
 		if(max(subset)<=length(l)&min(subset)>=1)
 		l<-l[subset]
+	}
+	}
+	if(length(l)==0){
+		message("No samples in this workspace to parse!")
+		return(new("GatingSet"))
 	}
 	message("Parsing ",length(l)," samples");
 #	browser()
