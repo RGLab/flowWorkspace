@@ -1,6 +1,6 @@
 #TODO Fix the messed up encoding of quadrant gate names (it works but it's not pretty when it prints)
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
- 	message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
+ 	#message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	tmp<-tempfile(fileext=".xml")
 	file.copy(file,tmp)
 	if(inherits(file,"character")){
