@@ -1471,12 +1471,20 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(
 ######################################################
 setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
 
-			getNcdf(x[[1]])
+			ncFlowSet(x[[1]])[getSamples(x),]
 })
 
 setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
 
-			.getNcdf(x)
+			
+			if(!x@flag&!x@isNcdf){
+				stop("Object doesn't hold ncdf data");
+			}
+			
+			r<-nodeDataDefaults(x@tree,"data")[["data"]];
+			if(class(r)=="environment"){
+				r$ncfs
+			}
 })
 
 
@@ -1487,13 +1495,13 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
 })
 #to be replaced by method "ncdfFlowSet"
 setMethod("getNcdf",signature(obj="GatingSet"),function(obj){
-			warning("this method is deprecated by 'ncFlowSet'")
+			.Deprecated("ncFlowSet")
 			getNcdf(obj[[1]])
 		})
 
 #to be replaced by method "ncdfFlowSet"
 setMethod("getNcdf",signature(obj="GatingHierarchy"),function(obj){
-			warning("this method is deprecated by 'ncFlowSet'")
+			.Deprecated("ncFlowSet")
 			.getNcdf(obj)
 		})
 

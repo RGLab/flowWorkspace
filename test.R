@@ -1,5 +1,5 @@
 #unloadNamespace("flowWorkspace")
-#library(ncdfFlow)
+library(ncdfFlow)
 library(flowWorkspace)
 library(gridExtra)
 #library(Rgraphviz)
@@ -54,8 +54,8 @@ GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
 #					,subset=1:2
-#					,isNcdf=T
-					,useInternal=T
+					,isNcdf=T
+#					,useInternal=T
 					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
 					)
