@@ -631,6 +631,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 setMethod("[",signature("GatingSet"),function(x,i,j,...,drop){
 	x@set<-x@set[i]
 	x@metadata<-x@metadata[i]
+	
 	return(x);
 })
 
@@ -1484,7 +1485,7 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(
 ######################################################
 setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
 
-			ncFlowSet(x[[1]])[getSamples(x),]
+			ncFlowSet(x[[1]])
 })
 
 setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){

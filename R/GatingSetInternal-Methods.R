@@ -839,11 +839,11 @@ setMethod("show","GatingSetInternal",function(object){
 setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
 			
 			if(is.null(y))
-				nodeDataDefaults(obj[[1]]@tree,"data")[["data"]]$ncfs[getSamples(obj)]
+				ncFlowSet(obj)
 			else
 			{
 				fs<-callNextMethod(obj,y,tsort)
-				pData(fs)<-pData(obj)[sampleNames(fs),,drop=FALSE]
+				pData(fs)<-pData(obj)
 				varM<-varMetadata(phenoData(fs))
 				varM[-1,]<-rownames(varM)[-1]
 #						browser()
@@ -857,13 +857,19 @@ setMethod("pData","GatingSetInternal",function(object){
 			pData(ncFlowSet(object))
 		})
 setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,value){
-			env<-nodeDataDefaults(object[[1]]@tree,"data")$data
-
-#			browser()
-			assign("value",value,env)
-			expr1<-expression({value<-value[match(sampleNames(ncfs),value$name),];rownames(value)<-value$name;pData(ncfs)<-value;varM<-varMetadata(phenoData(ncfs));varM[-1,]<-rownames(varM)[-1];varMetadata(phenoData(ncfs))<-varM})
-			eval(expr1,envir=env)
-			rm("value",envir=env)
+#			env<-nodeDataDefaults(object[[1]]@tree,"data")$data
+#		
+#			assign("value",value,env)
+#			expr1<-expression({value<-value[match(sampleNames(ncfs),value$name),];rownames(value)<-value$name;pData(ncfs)<-value;varM<-varMetadata(phenoData(ncfs));varM[-1,]<-rownames(varM)[-1];varMetadata(phenoData(ncfs))<-varM})
+#			eval(expr1,envir=env)
+#			rm("value",envir=env)
+			fs<-ncFlowSet(object)
+			rownames(value)<-value$name
+			pData(fs)<-value
+			varM<-varMetadata(phenoData(fs))
+			varM[-1,]<-rownames(varM)[-1]
+			varMetadata(phenoData(fs))<-varM
+			ncFlowSet(object)<-fs
 			return (object)
 		})
 
@@ -874,4 +880,11 @@ setMethod("keyword",signature("GatingHierarchyInternal","character"),function(ob
 		})
 setMethod("getKeywords",signature("GatingHierarchyInternal","missing"),function(obj,y){
 			keyword(getData(obj))
+		})
+##overload the original method to add subetting on flowSet/ncdfFlowSet
+setMethod("[",signature("GatingSetInternal"),function(x,i,j,...,drop){
+			x@set<-x@set[i]
+			fs<-ncFlowSet(x)
+			ncFlowSet(x)<-fs[i,]
+			return(x);
 		})
