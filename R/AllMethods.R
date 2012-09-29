@@ -114,8 +114,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	if(isNcdf&!TRUE){
 	stop("isNcdf must be FALSE since you don't have netcdf installed");
 	}
-	message("We do not fully support all versions of flowJo XML workspaces at this time.")
-	message("If your workspace is not supported or if this package throws an error, we encourage you to contact the package maintainter with a bug report. We will endeavour to add support for other features upon request.")
+	#message("We do not fully support all versions of flowJo XML workspaces at this time.")
+	#message("If your workspace is not supported or if this package throws an error, we encourage you to contact the package maintainter with a bug report. We will endeavour to add support for other features upon request.")
 	##########################################################
 	#path needs to be specified anyway to get full path of fcs
 	#########################################################
