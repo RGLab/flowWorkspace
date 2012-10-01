@@ -275,6 +275,9 @@ vector<string> GatingSet::getSamples(void)
 		//	return(this->sampleList);
 };
 
+/*
+ * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
+ */
 void GatingSet::attachData(string fileName,vector<string> sampleNames,vector<string> params){
 
 	nc.fileName_set(fileName);

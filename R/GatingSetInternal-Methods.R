@@ -396,12 +396,14 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					sampleName<-getSample(gh)
 					
 					message(paste("gating",sampleName,"..."))
-#					browser()
-#					time1<-Sys.time()
-					if(isNcdf)
-						.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=0,recompute=FALSE)
-					else
-					{
+					#stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
+
+				
+
+#					if(isNcdf)
+#						.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=0,recompute=FALSE)
+#					else
+#					{
 						data<-fs[[sampleName]]
 						mat<-exprs(data)
 						.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=0,recompute=FALSE)
@@ -409,7 +411,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 						exprs(data)<-mat
 						assign(sampleName,data,fs@frames)##suppose to be faster than [[<-
 						
-					}
+#					}
 					
 #					time_cpp<<-time_cpp+(Sys.time()-time1)
 #				browser()
@@ -815,7 +817,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSetInternal"),function(x,value){
 			
 			callNextMethod(x,value)
 			#associate the internal structure with the new cdf
-			setData(x,value)
+#			setData(x,value)
 			x
 			
 		})

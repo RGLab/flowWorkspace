@@ -88,7 +88,9 @@ private:
 	populationTree tree;
 	bool isGated;
 	bool isLoaded;
-
+	/*
+	 * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
+	 */
 	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	workspace * thisWs;
 

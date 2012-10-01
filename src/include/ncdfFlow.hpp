@@ -1,10 +1,8 @@
 /*
  * ncdfFlow.hpp
  *
- *  Created on: Apr 11, 2012
- *      Author: wjiang2
+ * this entire class is deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
  */
-
 #ifndef NCDFFLOW_HPP_
 #define NCDFFLOW_HPP_
 #include <string>

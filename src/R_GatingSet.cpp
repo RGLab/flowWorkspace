@@ -37,19 +37,20 @@ END_RCPP
 
 /*
  * associate nc file as the raw data to GatingSet
+ * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
  */
-RcppExport SEXP R_setData(SEXP _gsPtr,SEXP _fileName,SEXP _sampleNames,SEXP _params) {
-BEGIN_RCPP
-
-		string fileName=as<string>(_fileName);
-		vector<string> params=as<vector<string> >(_params);
-		vector<string> sampleNames=as<vector<string> >(_sampleNames);
-		XPtr<GatingSet>gs(_gsPtr);
-
-		gs->attachData(fileName,sampleNames,params);
-
-END_RCPP
-}
+//RcppExport SEXP R_setData(SEXP _gsPtr,SEXP _fileName,SEXP _sampleNames,SEXP _params) {
+//BEGIN_RCPP
+//
+//		string fileName=as<string>(_fileName);
+//		vector<string> params=as<vector<string> >(_params);
+//		vector<string> sampleNames=as<vector<string> >(_sampleNames);
+//		XPtr<GatingSet>gs(_gsPtr);
+//
+//		gs->attachData(fileName,sampleNames,params);
+//
+//END_RCPP
+//}
 
 RcppExport SEXP R_getSamples(SEXP _gsPtr) {
 BEGIN_RCPP

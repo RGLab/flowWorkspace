@@ -198,34 +198,37 @@ END_RCPP
 }
 /*
  * cdf version
+ * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++ due to the
+ * data consistency concerns
+ * even though it increases the communication overhead from R to C by using R_gating method
  */
-RcppExport SEXP R_gating_cdf(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeInd,SEXP _recompute){
-BEGIN_RCPP
-
-
-
-	XPtr<GatingSet>gs(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
-	unsigned short nodeInd=as<unsigned short>(_nodeInd);
-	bool recompute=as<bool>(_recompute);
-
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	gh->loadData(sampleName);
-	/*
-	 * assume the data has been transformed when recompute==true
-	 */
-	if(!recompute)
-	{
-		gh->extendGate();
-		gh->transforming(true);
-	}
-
-	gh->gating(nodeInd,recompute);
-	gh->unloadData();
-
-END_RCPP
-}
+//RcppExport SEXP R_gating_cdf(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeInd,SEXP _recompute){
+//BEGIN_RCPP
+//
+//
+//
+//	XPtr<GatingSet>gs(_gsPtr);
+//
+//	string sampleName=as<string>(_sampleName);
+//	unsigned short nodeInd=as<unsigned short>(_nodeInd);
+//	bool recompute=as<bool>(_recompute);
+//
+//	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+//	gh->loadData(sampleName);
+//	/*
+//	 * assume the data has been transformed when recompute==true
+//	 */
+//	if(!recompute)
+//	{
+//		gh->extendGate();
+//		gh->transforming(true);
+//	}
+//
+//	gh->gating(nodeInd,recompute);
+//	gh->unloadData();
+//
+//END_RCPP
+//}
 /*
  * non-cdf version
  */

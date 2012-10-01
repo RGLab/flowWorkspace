@@ -192,7 +192,9 @@ void GatingHierarchy::printLocalTrans(){
  * to apply subsetting within c++ thus avoid unnecessary numeric operation in c++
  * Note: need to manually free memory pointed by flowData
  */
-
+/*
+ * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
+ */
 flowData GatingHierarchy::getData(string sampleName,VertexID nodeID)
 {
 //	cout<<"reading data from ncdf"<<endl;
@@ -226,6 +228,9 @@ flowData GatingHierarchy::getData(VertexID nodeID)
  * load data from ncdfFlow file
  * TODO:the memory for flowData was actually allocated by getData function, it may be safer to set flag within getData in future when
  * we decide to keep getData seperate from loadData
+ */
+/*
+ * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
  */
 void GatingHierarchy::loadData(string sampleName)
 {
