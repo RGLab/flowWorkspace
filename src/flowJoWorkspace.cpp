@@ -257,7 +257,14 @@ unsigned short flowJoWorkspace::getVersionMin(){
 		boost::erase_all(curVer,"Pre");
 		vector<string> digits;
 		boost::split(digits,curVer,boost::is_any_of("."));
-		res=min(res,atoi(digits.at(0).c_str()));
+		curVer=digits.at(0).c_str();
+		boost::algorithm::trim((curVer));
+		if(!curVer.empty())
+		{
+			int toCompare=boost::lexical_cast<int>(curVer);
+			res=min(res,toCompare);
+		}
+
 	}
 	return res;
 }

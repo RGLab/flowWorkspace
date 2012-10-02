@@ -11,7 +11,7 @@
 #include "workspace.hpp"
 #include "transformation.hpp"
 #include <sstream>
-
+#include <boost/lexical_cast.hpp>
 
 class flowJoWorkspace:public workspace{
 //	friend std::ostream & operator<<(std::ostream &os, const flowJoWorkspace &gh);
