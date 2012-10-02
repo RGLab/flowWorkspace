@@ -96,14 +96,7 @@ unarchive<-function(file){
 }
 
 
-setMethod("setData",c("GatingSetInternal","flowSet"),function(this,value){
-			#pass the filename and channels to c structure
-			if(inherits(value,"ncdfFlowSet"))
-			{
-				message("associate the ncdfFlowSet to tree structure...")
-				.Call("R_setData",this@pointer,value@file,value@origSampleVector,value@origColnames)
-			}
-		})
+
 
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",...){
 
@@ -385,7 +378,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 		colnames(fs)<-colnames(data)
 		
 		#attach filename and colnames to internal stucture for gating
-		setData(G,fs)
+
 #		browser()
 		assign("ncfs",fs,globalDataEnv)
 		
@@ -817,7 +810,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSetInternal"),function(x,value){
 			
 			callNextMethod(x,value)
 			#associate the internal structure with the new cdf
-#			setData(x,value)
+
 			x
 			
 		})
@@ -885,8 +878,36 @@ setMethod("getKeywords",signature("GatingHierarchyInternal","missing"),function(
 		})
 ##overload the original method to add subetting on flowSet/ncdfFlowSet
 setMethod("[",signature("GatingSetInternal"),function(x,i,j,...,drop){
-			x@set<-x@set[i]
-			fs<-ncFlowSet(x)
-			ncFlowSet(x)<-fs[i,]
-			return(x);
+			
+			clone<-x
+			
+			#deep copying flowSet/ncdfFlowSet
+			fs<-ncFlowSet(clone)
+			if(flowWorkspace:::isNcdf(clone[[1]]))
+				fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
+			else
+				fs<-flowCore:::copyFlowSet(fs)
+			
+						
+			#update data environment for each gh
+			gdata<-new.env();
+			for(ind in 1:length(clone)){
+				
+				nd<-clone[[ind]]@tree@nodeData
+				nd@defaults$metadata<-new.env()
+				nd@defaults$data<-new.env()
+				copyEnv(clone[[ind]]@tree@nodeData@defaults$data,nd@defaults$data)
+				nd@defaults$data[["data"]]<-gdata
+				copyEnv(clone[[ind]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
+				clone[[ind]]@tree@nodeData<-nd
+			}
+			
+
+			#subsetting flowSet
+			ncFlowSet(clone)<-fs[i]			
+			
+			#subsetting R object
+			clone@set<-clone@set[i]
+			
+			return(clone);
 		})
