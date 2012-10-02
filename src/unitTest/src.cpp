@@ -17,7 +17,7 @@ int main(void) {
 //	toArray("3980,1.9428805e5,3981,1.9478264e5,3982,1.9527849e5,3983,1.9577559e5,3984,1.9627398e5");
 
 
-	vector<testSuit> myTest(7);
+	vector<testSuit> myTest(8);
 	unsigned short i;
 
 	i=0;
@@ -81,8 +81,16 @@ int main(void) {
 	myTest.at(i).colfile="../output/HVTN080/colnames.txt";
 	myTest.at(i).archive="../output/HVTN080/gs/gs.dat";
 
+	i=7;
+	myTest.at(i).filename="../data/NormalizationData/XML files/080 batch 0939.xml";
+	myTest.at(i).samples["18"]="461648.fcs";
+	myTest.at(i).sampNloc=1;
+	myTest.at(i).ncfile="../output/NormalizationData/nc_comp.nc";
+	myTest.at(i).colfile="../output/NormalizationData/colnames.txt";
+	myTest.at(i).archive="../output/NormalizationData/gs/gs.dat";
 
-	i=4;
+
+	i=7;
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{
