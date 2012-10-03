@@ -107,7 +107,7 @@ private:
 				ar & tree;
 		        ar & isGated;
 		        ar & isLoaded;
-		        ar & nc;
+//		        ar & nc;
 
 //		        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
 //		        ar & thisWs;
@@ -156,7 +156,7 @@ public:
 	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
 	void transforming(bool);
-	void gating(VertexID,bool);
+	void gating(VertexID,bool recompute=false);
 	void calgate(VertexID);
 	POPINDICES boolGating(VertexID);
 	void extendGate();
@@ -164,7 +164,7 @@ public:
 	VertexID getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getNodeID(VertexID u,string popName);
-	VertexID_vec getVertices(unsigned short order);//return the node list in vertexID order or T order
+	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
 	vector<string> getPopNames(unsigned short order,bool isPath);
 	VertexID getAncestor(VertexID u,unsigned short level);
 	VertexID_vec getParent(VertexID);
@@ -173,6 +173,7 @@ public:
 	nodeProperties * getNodeProperty(VertexID);
 	void setNcPtr(ncdfFlow *_nc){nc=_nc;}
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
+	GatingHierarchy * clone();
 };
 
 

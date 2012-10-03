@@ -369,7 +369,7 @@ void GatingHierarchy::extendGate(){
  * assuming data have already been compensated and transformed
  *
  */
-void GatingHierarchy::gating(VertexID u,bool recompute=false)
+void GatingHierarchy::gating(VertexID u,bool recompute)
 {
 
 //	if(!isLoaded)
@@ -569,7 +569,7 @@ public:
  * retrieve the vertexIDs in topological order,BFS or in regular order
  */
 
-VertexID_vec GatingHierarchy::getVertices(unsigned short order=0){
+VertexID_vec GatingHierarchy::getVertices(unsigned short order){
 
 	VertexID_vec res, vertices;
 	switch (order)
@@ -876,7 +876,7 @@ nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
 //}
 /*
  *TODO:to deal with trans copying (especially how to sync with gTrans)
-  update to caller to free the memory
+  up to caller to free the memory
  */
 GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_vec * _gTrans){
 
@@ -900,7 +900,40 @@ GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_v
 		 */
 		VertexID u=*it;
 		nodeProperties * node=res->getNodeProperty(u);
-		node=node->clone();
+		node=node->clone();//only copy gate definition without copying gating results
+		//update the tree node
+		res->tree[u]=node;
+	}
+
+
+	return res;
+}
+/*
+ * TODO:this overloading function is a temporary solution:
+ * difference from the above one is:
+ * 1.does not copy trans
+ * 2.copy stats and indices as well for each node
+ */
+GatingHierarchy * GatingHierarchy::clone(){
+
+	GatingHierarchy * res=new GatingHierarchy();
+
+	res->comp=comp;
+
+	/*
+	 * copy bgl tree and update property bundle pointer for each node
+	 * TODO:explore deep copying facility of bgl library,especially for node property bundle as the pointer
+	 */
+	res->tree=tree;
+	VertexID_vec vertices=res->getVertices(0);
+	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	{
+		/*
+		 * update the pointer for nodeProperties
+		 */
+		VertexID u=*it;
+		nodeProperties * node=res->getNodeProperty(u);
+		node=node->clone(true);//copy gates results as well
 		//update the tree node
 		res->tree[u]=node;
 	}

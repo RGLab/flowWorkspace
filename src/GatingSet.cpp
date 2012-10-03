@@ -110,13 +110,59 @@ GatingSet* GatingSet::clone(){
 
 	return newGS;
 }
+/*
+ *TODO: trans is not copied for now since it involves copying the global trans vector
+ *and rematch them to each individual hierarchy
+ */
+void GatingSet::add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode){
 
+	/*
+	 * ws is not needed here since all the info comes from gh_template instead of ws
+	 * but we need to initialize it to NULL to avoid the illegal deletion of the Nil pointer in the gatingset destructor
+	 */
+//	ws=NULL;
+
+	dMode=_dMode;
+	/*
+	 * copy trans from gh_template into gtrans
+	 * involve deep copying of transformation pointers
+	 */
+//	if(dMode>=GATING_SET_LEVEL)
+//		cout<<"copying transformation from gh_template..."<<endl;
+//	trans_global newTransGroup;
+
+//	trans_map newTmap=gh_template->getLocalTrans().cloneTransMap();
+//	newTransGroup.setTransMap(newTmap);
+//	gTrans.push_back(newTransGroup);
+
+	/*
+	 * use newTmap for all other new ghs
+	 */
+	vector<string>::iterator it;
+	for(it=sampleNames.begin();it!=sampleNames.end();it++)
+	{
+		string curSampleName=*it;
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<endl<<"... copying GatingHierarchy: "<<curSampleName<<"... "<<endl;
+
+
+		GatingHierarchy *toCopy=gs.getGatingHierarchy(curSampleName);
+
+		GatingHierarchy * curGh=toCopy->clone();
+
+//		curGh->setNcPtr(NULL);
+		curGh->dMode=_dMode;
+
+		ghs[curSampleName]=curGh;//add to the map
+
+	}
+}
 /*
  * TODO:current version of this contructor is based on gating template ,simply copying
  * compensation and transformation,more options can be allowed in future like providing different
  * comp and trans
  */
-GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,unsigned short _dMode=1){
+GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,unsigned short _dMode){
 
 	/*
 	 * ws is not needed here since all the info comes from gh_template instead of ws
@@ -159,7 +205,7 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 	}
 }
 //read xml file and create the appropriate flowJoWorkspace object
-GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,unsigned short _dMode=1)
+GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,unsigned short _dMode)
 {
 
 		LIBXML_TEST_VERSION
