@@ -912,7 +912,7 @@ setMethod("rbind2",signature("GatingSetInternal","GatingSetInternal"),function(x
 			if(flowWorkspace:::isNcdf(x[[1]])==flowWorkspace:::isNcdf(y[[1]])){
 				fs1<-getData(x);
 				fs2<-getData(y);
-				fs<-rbind2(fs1,fs2);
+				fs<-rbind2(fs1,fs2,...);
 #				browser()
 				pointer<-.Call("R_combineGatingSet",x@pointer,y@pointer,getSamples(x),getSamples(y))
 				G<-new("GatingSetInternal")
