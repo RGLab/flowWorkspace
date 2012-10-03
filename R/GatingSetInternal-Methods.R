@@ -392,30 +392,24 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					#stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
 
 				
-
-#					if(isNcdf)
-#						.Call("R_gating_cdf",gh@pointer,sampleName,nodeInd=0,recompute=FALSE)
-#					else
-#					{
-						data<-fs[[sampleName]]
-						mat<-exprs(data)
-						.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=0,recompute=FALSE)
-						#update fs with transformed data
-						exprs(data)<-mat
-						assign(sampleName,data,fs@frames)##suppose to be faster than [[<-
-						
-#					}
 					
+					data<-fs[[sampleName]]
+					mat<-exprs(data)
+					.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=0,recompute=FALSE)
+					#update data with transformed data
+					exprs(data)<-mat
+					fs[[sampleName]]<-data#update original flowSet/ncdfFlowSet
+						
 #					time_cpp<<-time_cpp+(Sys.time()-time1)
 #				browser()
 					#range info within parameter object is not always the same as the real data range
 					#it is used to display the data.
 					#so we need update this range info by transforming it
-					
+			
 					localDataEnv<-nodeDataDefaults(gh@tree,"data")
 					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
 
-					
+#					browser()
 					cal<-getTransformations(gh)					
 					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
 					
@@ -434,7 +428,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
 	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=dataenv);
-#	browser()
+	
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
 
