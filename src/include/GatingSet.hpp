@@ -54,7 +54,7 @@ private:
 			ar.register_type(static_cast<linTrans *>(NULL));
 			ar & gTrans;
 
-			ar & nc;
+//			ar & nc;
 			ar & ghs;
 
 	        ar & dMode;
@@ -65,8 +65,8 @@ private:
 public:
 	~GatingSet();
 	GatingSet(){ws=NULL;};
-	GatingSet(string,bool,unsigned short,unsigned short);
-	GatingSet(GatingHierarchy *,vector<string>,unsigned short);
+	GatingSet(string,bool,unsigned short,unsigned short _dMode=1);
+	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
 	void gating();
@@ -77,6 +77,7 @@ public:
 	ncdfFlow getNcObj(){return nc;}
 	workspace const * getWorkspace(){return ws;}
 	GatingSet * clone();
+	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
 
 };
 void save_gs(const GatingSet &gs,string filename);

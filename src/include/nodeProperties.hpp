@@ -62,8 +62,8 @@ public:
 	~nodeProperties();
 
 
-	POPSTATS getStats(bool isFlowCore);
-	void setStats(POPSTATS s,bool isFlowCore);
+	POPSTATS getStats(bool isFlowCore=false);
+	void setStats(POPSTATS s,bool isFlowCore=false);
 	unsigned getCounts();
 	bool isGated(){return !indices.empty();};
 	gate * getGate();
@@ -73,7 +73,7 @@ public:
 	void setIndices(POPINDICES _ind){indices=_ind;};
 	void setGate(gate *gate);
 	void computeStats();
-	nodeProperties * clone();
+	nodeProperties * clone(bool gateResult=false);
 
 };
 

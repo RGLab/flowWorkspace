@@ -144,3 +144,26 @@ BEGIN_RCPP
 
 END_RCPP
 }
+
+RcppExport SEXP R_combineGatingSet(SEXP _gsPtr1,SEXP _gsPtr2,SEXP _samples1,SEXP _samples2) {
+BEGIN_RCPP
+
+
+		XPtr<GatingSet>gs1(_gsPtr1);
+		XPtr<GatingSet>gs2(_gsPtr2);
+		StringVec samples1=as<StringVec>(_samples1);
+		StringVec samples2=as<StringVec>(_samples2);
+
+		GatingSet * newGS=new GatingSet();
+
+//		GatingSet * gs_new=gs1->clone();
+		newGS->add(*gs1,samples1);
+		newGS->add(*gs2,samples2);
+
+		return XPtr<GatingSet>(newGS);
+
+
+END_RCPP
+}
+
+

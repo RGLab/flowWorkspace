@@ -27,12 +27,12 @@ nodeProperties::~nodeProperties(){
 }
 
 
-POPSTATS nodeProperties::getStats(bool isFlowCore=false){
+POPSTATS nodeProperties::getStats(bool isFlowCore){
 
 	return(isFlowCore?this->fcStats:this->fjStats);
 }
 
-void nodeProperties::setStats(POPSTATS s,bool isFlowCore=false){
+void nodeProperties::setStats(POPSTATS s,bool isFlowCore){
 	if(isFlowCore)
 		fcStats=s;
 	else
@@ -71,7 +71,7 @@ unsigned nodeProperties::getCounts(){
 
 }
 
-nodeProperties * nodeProperties::clone(){
+nodeProperties * nodeProperties::clone(bool gateResult){
 		nodeProperties * res=new nodeProperties();
 		//copy pop name
 		res->setName(thisName.c_str());
@@ -80,7 +80,17 @@ nodeProperties * nodeProperties::clone(){
 		 */
 
 		if(thisGate!=NULL)
-			res->thisGate=thisGate->clone();
+			res->setGate(thisGate->clone());
+
+		/*
+		 * copy gated results
+		 */
+		if(gateResult)
+		{
+			res->setStats(fcStats,true);
+			res->setStats(fjStats,false);
+			res->setIndices(indices);
+		}
 
 		return res;
 	}
