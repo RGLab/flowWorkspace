@@ -719,7 +719,7 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			clone<-x
 			#clone c structure
 			message("cloning tree structure...")
-			clone@pointer<-.Call("R_CloneGatingSet",x@pointer)
+			clone@pointer<-.Call("R_CloneGatingSet",x@pointer,getSamples(x))
 			#update the pointer in each gating hierarchy
 			for(i in 1:length(clone@set))
 			{

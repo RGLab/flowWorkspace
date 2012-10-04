@@ -76,7 +76,8 @@ public:
 	void attachData(string,vector<string>,vector<string>);
 	ncdfFlow getNcObj(){return nc;}
 	workspace const * getWorkspace(){return ws;}
-	GatingSet * clone();
+	GatingSet * clone(vector<string> samples);
+
 	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
 
 };

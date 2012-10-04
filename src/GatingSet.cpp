@@ -20,6 +20,7 @@ void save_gs(const GatingSet &gs,string filename){
 	    std::ofstream ofs(filename.c_str(),std::ios::out|std::ios::binary|std::ios::trunc);
 	    boost::archive::binary_oarchive oa(ofs);
 	    oa << gs;
+
 	}
 void restore_gs(GatingSet &s, string filename)
 {
@@ -95,9 +96,9 @@ GatingSet::~GatingSet()
 /*
  * up to caller to free the memory
  */
-GatingSet* GatingSet::clone(){
-	// make an archive
-//	std::streambuf buf();
+GatingSet* GatingSet::clone(vector<string> samples){
+
+
 	stringstream ss (stringstream::in | stringstream::out);
 	boost::archive::binary_oarchive oa(ss);
 	oa << *this;
@@ -108,8 +109,26 @@ GatingSet* GatingSet::clone(){
 
 	ia >> *newGS;
 
+	//remove unused samples
+	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
+			GatingHierarchy * ghPtr=it.second;
+			string sampleName=it.first;
+			/*
+			 * if the sampleName not in the clone sample list ,remove it from the tree map
+			 */
+			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
+			if(fit==samples.end())
+			{
+				delete ghPtr;
+				newGS->ghs.erase(sampleName);
+			}
+
+
+		}
+
 	return newGS;
 }
+
 /*
  *TODO: trans is not copied for now since it involves copying the global trans vector
  *and rematch them to each individual hierarchy

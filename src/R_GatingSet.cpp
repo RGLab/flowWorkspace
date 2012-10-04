@@ -132,12 +132,14 @@ END_RCPP
 }
 
 
-RcppExport SEXP R_CloneGatingSet(SEXP _gsPtr) {
+RcppExport SEXP R_CloneGatingSet(SEXP _gsPtr,SEXP _samples) {
 BEGIN_RCPP
 
 
 		XPtr<GatingSet>gs(_gsPtr);
-		GatingSet * gs_new=gs->clone();
+		StringVec samples=as<StringVec>(_samples);
+
+		GatingSet * gs_new=gs->clone(samples);
 
 		return XPtr<GatingSet>(gs_new);
 
