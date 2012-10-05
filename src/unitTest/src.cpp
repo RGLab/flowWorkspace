@@ -91,6 +91,8 @@ int main(void) {
 
 
 	i=7;
+
+	clone_test("../output/NormalizationData/gs/file.dat");
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

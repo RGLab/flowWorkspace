@@ -31,7 +31,7 @@ struct testSuit{
 	string archive;
 } ;
 
-
+void clone_test(string archive);
 void gs_parse(testSuit,unsigned short,bool,bool);
 void ncdf_test();
 void compCalTbl();

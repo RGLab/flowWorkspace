@@ -1,6 +1,7 @@
 #unloadNamespace("flowWorkspace")
-library(ncdfFlow)
+
 library(flowWorkspace)
+library(ncdfFlow)
 library(gridExtra)
 #library(Rgraphviz)
 
@@ -209,6 +210,14 @@ getAxisLabels(G[[1]])
 getAxisLabels(G1[[1]])
 
 
+###############################
+# clone and subsetting and rbind
+################################
+G1<-clone(GT[1])
+G2<-clone(GT[2])
+G4<-clone(GT[4])
+gslist<-GatingSetList(list(G1,G2,G4))
+G<-rbind(gslist)
 #############################################
 #QUALIFIER
 ########################################

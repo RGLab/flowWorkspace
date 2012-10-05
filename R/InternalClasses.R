@@ -3,6 +3,7 @@
 # Author: wjiang2
 ###############################################################################
 
+
 setClass("GatingHierarchyInternal",contains="GatingHierarchy"
 		,representation(tree="graphNEL"
 				,nodes="character"
@@ -61,5 +62,14 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
 			
 			return(Object)
 })
+
+##this class is mainly for method dispatching
 		
-		
+setClass("GatingSetList",contains="list")	
+## Constructor
+GatingSetList <- function(x)
+{
+	flowCore:::checkClass(x, "list")
+	x <- new("GatingSetList", .Data=x)
+	return(x)
+}
