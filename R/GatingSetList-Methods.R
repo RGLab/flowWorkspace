@@ -1,6 +1,6 @@
-setMethod("rbind",
+setMethod("rbind2",
 		signature=signature("GatingSetList"),
-		definition=function(x)
+		definition=function(x,...)
 		{
 			
 			isNcdfList<-lapply(x,function(gs)flowWorkspace:::isNcdf(gs[[1]]))
@@ -9,7 +9,7 @@ setMethod("rbind",
 				#combine flowset/ncdfFlowSet
 				fsList<-lapply(x,getData)
 				if(isNcdfList[[1]])
-					fs<-rbind(ncdfFlowList(fsList));
+					fs<-rbind2(ncdfFlowList(fsList),...);
 #				else
 #					fs<-rbind(flowList(fsList));##TODO
 

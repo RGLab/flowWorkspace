@@ -213,11 +213,15 @@ getAxisLabels(G1[[1]])
 ###############################
 # clone and subsetting and rbind
 ################################
+archive(GT,file="tmp.tar")
+GT<-unarchive(file="tmp.tar")
 G1<-clone(GT[1])
 G2<-clone(GT[2])
 G4<-clone(GT[4])
 gslist<-GatingSetList(list(G1,G2,G4))
-G<-rbind(gslist)
+G<-rbind2(gslist,file="tmp.nc")
+ncFlowSet(G)
+plotGate(G,6,lattice=T,xbin=64)
 #############################################
 #QUALIFIER
 ########################################
