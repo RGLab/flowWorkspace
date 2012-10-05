@@ -139,7 +139,7 @@ BEGIN_RCPP
 		XPtr<GatingSet>gs(_gsPtr);
 		StringVec samples=as<StringVec>(_samples);
 
-		GatingSet * gs_new=gs->clone(samples);
+		GatingSet * gs_new=gs->clone_treeOnly(samples);
 
 		return XPtr<GatingSet>(gs_new);
 

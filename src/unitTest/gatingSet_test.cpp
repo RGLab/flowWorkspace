@@ -192,7 +192,7 @@ void gh_counts(GatingHierarchy* gh){
 void clone_test(string archive){
 	GatingSet *gs=new GatingSet();
 	restore_gs(*gs,archive);
-	gs->clone(gs->getSamples());
+	gs->clone_treeOnly(gs->getSamples());
 
 }
 void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadArchive){

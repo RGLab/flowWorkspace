@@ -96,18 +96,42 @@ GatingSet::~GatingSet()
 /*
  * up to caller to free the memory
  */
-GatingSet* GatingSet::clone(vector<string> samples){
+/*
+ * non-serialization version,should be faster
+ * but no transformation object gets copied
+ */
+GatingSet* GatingSet::clone_treeOnly(vector<string> samples){
 
 
-	stringstream ss (stringstream::in | stringstream::out);
-	boost::archive::binary_oarchive oa(ss);
-	oa << *this;
 
 	GatingSet * newGS=new GatingSet();
 
-	boost::archive::binary_iarchive ia(ss);
+	newGS->add(*this,samples);
 
-	ia >> *newGS;
+	return newGS;
+}
+/*
+ * memory buffer version
+ */
+GatingSet* GatingSet::clone_sstream(vector<string> samples){
+
+
+	stringstream ss (stringstream::in | stringstream::out | stringstream::binary);
+
+	{
+		boost::archive::binary_oarchive oa(ss);
+		oa << *this;
+	}
+
+
+	GatingSet * newGS=new GatingSet();
+
+	{
+		boost::archive::binary_iarchive ia(ss);
+		ia >> *newGS;
+	}
+
+
 
 	//remove unused samples
 	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
@@ -128,7 +152,37 @@ GatingSet* GatingSet::clone(vector<string> samples){
 
 	return newGS;
 }
+/*
+ * disk version because stringstream has size limit
+ */
+GatingSet* GatingSet::clone_fstream(vector<string> samples){
 
+
+	save_gs(*this,"tmp");
+
+	GatingSet * newGS=new GatingSet();
+
+	restore_gs(*newGS,"tmp");
+
+	//remove unused samples
+	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
+			GatingHierarchy * ghPtr=it.second;
+			string sampleName=it.first;
+			/*
+			 * if the sampleName not in the clone sample list ,remove it from the tree map
+			 */
+			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
+			if(fit==samples.end())
+			{
+				delete ghPtr;
+				newGS->ghs.erase(sampleName);
+			}
+
+
+		}
+
+	return newGS;
+}
 /*
  *TODO: trans is not copied for now since it involves copying the global trans vector
  *and rematch them to each individual hierarchy
