@@ -22,8 +22,8 @@ private:
 	template<class Archive>
 		    void serialize(Archive &ar, const unsigned int version)
 		    {
-        		ar & boost::serialization::base_object<workspace>(*this);
-				ar & versionList;
+        		ar & boost::serialization::make_nvp("workspace",boost::serialization::base_object<workspace>(*this));
+				ar & BOOST_SERIALIZATION_NVP(versionList);
 		    }
 public:
 

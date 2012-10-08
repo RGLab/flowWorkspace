@@ -57,6 +57,30 @@ void nodeProperties::setName(const char * popName){
 void nodeProperties::setGate(gate *gate){
 	thisGate=gate;
 }
+
+vector<bool> nodeProperties::getIndices(){
+		if(!this->isGated())
+			throw(domain_error("trying to get Indices for unGated node!"));
+		return indices->getIndices();
+		}
+
+void nodeProperties::setIndices(unsigned _nEvent){
+
+		ROOTINDICES *ind=new ROOTINDICES(_nEvent);
+		indices.reset(ind);
+}
+void nodeProperties::setIndices(vector<bool> _ind){
+	unsigned nEvents=count(_ind.begin(),_ind.end(),true);
+	unsigned nSizeInt=sizeof(unsigned)*nEvents;
+	unsigned nSizeBool=_ind.size()/8;
+
+	POPINDICES * ind;
+	if(nSizeInt<nSizeBool)
+		ind=new INTINDICES(_ind);
+	else
+		ind=new BOOLINDICES(_ind);
+	indices.reset(ind);
+}
 /*
  * potentially it is step can be done within the same loop in gating
  * TODO:MFI can be calculated here as well
@@ -66,8 +90,9 @@ void nodeProperties::computeStats(){
 }
 
 unsigned nodeProperties::getCounts(){
-
-	return count(indices.begin(),indices.end(),true);
+	if(!this->isGated())
+		throw(domain_error("trying to get counts for unGated node!"));
+	return indices->getCount();
 
 }
 
@@ -89,7 +114,7 @@ nodeProperties * nodeProperties::clone(bool gateResult){
 		{
 			res->setStats(fcStats,true);
 			res->setStats(fjStats,false);
-			res->setIndices(indices);
+			res->indices.reset(indices->clone());
 		}
 
 		return res;

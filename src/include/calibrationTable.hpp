@@ -46,14 +46,14 @@ private:
 					{
 
 
-						ar & x;
-						ar & y;
-						ar & b;
-						ar & c;
-						ar & d;
-						ar & spline_method;
-						ar & caltype;
-						ar & flag;
+						ar & BOOST_SERIALIZATION_NVP(x);
+						ar & BOOST_SERIALIZATION_NVP(y);
+						ar & BOOST_SERIALIZATION_NVP(b);
+						ar & BOOST_SERIALIZATION_NVP(c);
+						ar & BOOST_SERIALIZATION_NVP(d);
+						ar & BOOST_SERIALIZATION_NVP(spline_method);
+						ar & BOOST_SERIALIZATION_NVP(caltype);
+						ar & BOOST_SERIALIZATION_NVP(flag);
 					}
 
 public:

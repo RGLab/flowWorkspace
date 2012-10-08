@@ -102,11 +102,11 @@ private:
 		    void serialize(Archive &ar, const unsigned int version)
 		    {
 
-				ar & comp;
-				ar & fdata;
-				ar & tree;
-		        ar & isGated;
-		        ar & isLoaded;
+				ar & BOOST_SERIALIZATION_NVP(comp);
+				ar & BOOST_SERIALIZATION_NVP(fdata);
+				ar & BOOST_SERIALIZATION_NVP(tree);
+		        ar & BOOST_SERIALIZATION_NVP(isGated);
+		        ar & BOOST_SERIALIZATION_NVP(isLoaded);
 //		        ar & nc;
 
 //		        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
@@ -116,13 +116,13 @@ private:
 				ar.register_type(static_cast<logicleTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
-		        ar & gTrans;
+		        ar & BOOST_SERIALIZATION_NVP(gTrans);
 
-		        ar & transFlag;
+		        ar & BOOST_SERIALIZATION_NVP(transFlag);
 
 
-		        ar & trans;
-		        ar & dMode;
+		        ar & BOOST_SERIALIZATION_NVP(trans);
+		        ar & BOOST_SERIALIZATION_NVP(dMode);
 		    }
 public:
 
@@ -158,7 +158,7 @@ public:
 	void transforming(bool);
 	void gating(VertexID,bool recompute=false);
 	void calgate(VertexID);
-	POPINDICES boolGating(VertexID);
+	vector<bool> boolGating(VertexID);
 	void extendGate();
 	void drawGraph(string out);
 	VertexID getChildren(VertexID source,string childName);

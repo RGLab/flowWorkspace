@@ -32,7 +32,7 @@ struct coordinate
 						{
 
 
-							ar & x & y;
+							ar & BOOST_SERIALIZATION_NVP(x) & BOOST_SERIALIZATION_NVP(y);
 						}
 	coordinate(double _x,double _y){x=_x;y=_y;};
 	coordinate(){};
@@ -59,12 +59,12 @@ private:
 				{
 
 
-					ar & calTbl;
-					ar & isGateOnly;
-					ar & type;
-					ar & name;
-					ar & channel;
-					ar & isComputed;
+					ar & BOOST_SERIALIZATION_NVP(calTbl);
+					ar & BOOST_SERIALIZATION_NVP(isGateOnly);
+					ar & BOOST_SERIALIZATION_NVP(type);
+					ar & BOOST_SERIALIZATION_NVP(name);
+					ar & BOOST_SERIALIZATION_NVP(channel);
+					ar & BOOST_SERIALIZATION_NVP(isComputed);
 				}
 public:
 	transformation();
@@ -100,7 +100,7 @@ typedef struct {
 			{
 
 
-				ar & param & log & range & highValue & calibrationIndex;
+				ar & BOOST_SERIALIZATION_NVP(param) & BOOST_SERIALIZATION_NVP(log) & BOOST_SERIALIZATION_NVP(range) & BOOST_SERIALIZATION_NVP(highValue) & BOOST_SERIALIZATION_NVP(calibrationIndex);
 			}
 		} PARAM;
 typedef vector<PARAM> PARAM_VEC;
@@ -115,7 +115,7 @@ private:
 	template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
 				{
-					ar & tp;
+					ar & BOOST_SERIALIZATION_NVP(tp);
 				}
 public:
 	trans_map getTransMap(){return tp;};
@@ -134,9 +134,9 @@ private:
 	template<class Archive>
 			    void serialize(Archive &ar, const unsigned int version)
 			    {
-        			ar & boost::serialization::base_object<trans_local>(*this);
-					ar & groupName;
-					ar & sampleIDs;
+        			ar & boost::serialization::make_nvp("trans_local",boost::serialization::base_object<trans_local>(*this));
+					ar & BOOST_SERIALIZATION_NVP(groupName);
+					ar & BOOST_SERIALIZATION_NVP(sampleIDs);
 
 			    }
 public:
@@ -157,13 +157,13 @@ private:
 	template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
 				{
-					ar & boost::serialization::base_object<transformation>(*this);
+					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
 
-					ar & channelRange;
-					ar & pos;
-					ar & neg;
-					ar & widthBasis;
-					ar & maxValue;
+					ar & BOOST_SERIALIZATION_NVP(channelRange);
+					ar & BOOST_SERIALIZATION_NVP(pos);
+					ar & BOOST_SERIALIZATION_NVP(neg);
+					ar & BOOST_SERIALIZATION_NVP(widthBasis);
+					ar & BOOST_SERIALIZATION_NVP(maxValue);
 				}
 
 public:
@@ -184,13 +184,13 @@ private:
 	template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
 				{
-					ar & boost::serialization::base_object<transformation>(*this);
+					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
 
-					ar & channelRange;
-					ar & pos;
-					ar & neg;
-					ar & widthBasis;
-					ar & maxValue;
+					ar & BOOST_SERIALIZATION_NVP(channelRange);
+					ar & BOOST_SERIALIZATION_NVP(pos);
+					ar & BOOST_SERIALIZATION_NVP(neg);
+					ar & BOOST_SERIALIZATION_NVP(widthBasis);
+					ar & BOOST_SERIALIZATION_NVP(maxValue);
 				}
 
 
@@ -208,7 +208,7 @@ private:
 		template<class Archive>
 					void serialize(Archive &ar, const unsigned int version)
 					{
-						ar & boost::serialization::base_object<transformation>(*this);
+						ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
 
 					}
 
@@ -224,7 +224,7 @@ friend class boost::serialization::access;
 			template<class Archive>
 						void serialize(Archive &ar, const unsigned int version)
 						{
-							ar & boost::serialization::base_object<transformation>(*this);
+							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
 
 						}
 

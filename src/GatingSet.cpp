@@ -17,9 +17,11 @@ using namespace std;
 
 void save_gs(const GatingSet &gs,string filename){
 	    // make an archive
-	    std::ofstream ofs(filename.c_str(),std::ios::out|std::ios::binary|std::ios::trunc);
+	    std::ofstream ofs(filename.c_str(),std::ios::out|std::ios::trunc|std::ios::binary);
+//	    boost::archive::text_oarchive oa(ofs);
 	    boost::archive::binary_oarchive oa(ofs);
-	    oa << gs;
+//	    boost::archive::xml_oarchive oa(ofs);
+	    oa << BOOST_SERIALIZATION_NVP(gs);
 
 	}
 void restore_gs(GatingSet &s, string filename)
@@ -28,7 +30,7 @@ void restore_gs(GatingSet &s, string filename)
     std::ifstream ifs(filename.c_str());
     boost::archive::binary_iarchive ia(ifs);
 
-    ia >> s;
+    ia >> BOOST_SERIALIZATION_NVP(s);
 }
 
 

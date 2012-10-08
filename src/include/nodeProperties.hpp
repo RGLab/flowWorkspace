@@ -8,10 +8,7 @@
 #ifndef NODEPROPERTIES_HPP_
 #define NODEPROPERTIES_HPP_
 
-#include <map>
-#include <string>
-#include <vector>
-#include "gate.hpp"
+#include "POPINDICES.hpp"
 using namespace std;
 
 
@@ -34,7 +31,7 @@ class nodeProperties{
 private:
 	string thisName;
 	gate * thisGate;
-	POPINDICES indices;
+	boost::scoped_ptr<POPINDICES> indices;
 	POPSTATS fjStats,fcStats;
 public:
 	bool dMode;
@@ -43,18 +40,21 @@ private:
 			    void serialize(Archive &ar, const unsigned int version)
 			    {
 
-					ar & thisName;
+					ar & BOOST_SERIALIZATION_NVP(thisName);
 
 					ar.register_type(static_cast<polygonGate *>(NULL));
 					ar.register_type(static_cast<ellipseGate *>(NULL));
 					ar.register_type(static_cast<boolGate *>(NULL));
 					ar.register_type(static_cast<rangegate *>(NULL));
-					ar & thisGate;
+					ar & BOOST_SERIALIZATION_NVP(thisGate);
 
-					ar & indices;
-			        ar & fjStats;
-			        ar & fcStats;
-			        ar & dMode;
+					ar.register_type(static_cast<BOOLINDICES *>(NULL));
+					ar.register_type(static_cast<INTINDICES *>(NULL));
+					ar.register_type(static_cast<ROOTINDICES *>(NULL));
+					ar & BOOST_SERIALIZATION_NVP(indices);
+			        ar & BOOST_SERIALIZATION_NVP(fjStats);
+			        ar & BOOST_SERIALIZATION_NVP(fcStats);
+			        ar & BOOST_SERIALIZATION_NVP(dMode);
 			    }
 public:
 	nodeProperties();
@@ -65,12 +65,13 @@ public:
 	POPSTATS getStats(bool isFlowCore=false);
 	void setStats(POPSTATS s,bool isFlowCore=false);
 	unsigned getCounts();
-	bool isGated(){return !indices.empty();};
+	bool isGated(){return indices.get()!=NULL;};
 	gate * getGate();
 	string getName();
 	void setName(const char * popName);
-	POPINDICES getIndices(){return indices;};
-	void setIndices(POPINDICES _ind){indices=_ind;};
+	vector<bool> getIndices();
+	void setIndices(vector<bool> _ind);
+	void setIndices(unsigned _nEvent);
 	void setGate(gate *gate);
 	void computeStats();
 	nodeProperties * clone(bool gateResult=false);

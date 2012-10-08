@@ -189,7 +189,8 @@ void gh_counts(GatingHierarchy* gh){
 
 }
 
-void clone_test(string archive){
+void clone_test(testSuit myTest){
+	string archive=myTest.archive;
 	GatingSet *gs=new GatingSet();
 	restore_gs(*gs,archive);
 	gs->clone_treeOnly(gs->getSamples());

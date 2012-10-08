@@ -52,12 +52,12 @@ private:
 			ar.register_type(static_cast<logicleTrans *>(NULL));
 			ar.register_type(static_cast<logTrans *>(NULL));
 			ar.register_type(static_cast<linTrans *>(NULL));
-			ar & gTrans;
+			ar & BOOST_SERIALIZATION_NVP(gTrans);
 
 //			ar & nc;
-			ar & ghs;
+			ar & BOOST_SERIALIZATION_NVP(ghs);
 
-	        ar & dMode;
+	        ar & BOOST_SERIALIZATION_NVP(dMode);
 
 //	        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
 //			ar & ws;

@@ -56,13 +56,13 @@ private:
 template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
 				{
-					ar & cid;
-					ar & prefix;
-					ar & suffix;
-					ar & name;
-					ar & comment;
-					ar & marker;
-					ar & spillOver;
+					ar & BOOST_SERIALIZATION_NVP(cid);
+					ar & BOOST_SERIALIZATION_NVP(prefix);
+					ar & BOOST_SERIALIZATION_NVP(suffix);
+					ar & BOOST_SERIALIZATION_NVP(name);
+					ar & BOOST_SERIALIZATION_NVP(comment);
+					ar & BOOST_SERIALIZATION_NVP(marker);
+					ar & BOOST_SERIALIZATION_NVP(spillOver);
 				}
 };
 
@@ -79,7 +79,12 @@ struct xpath{
 		{
 
 
-			ar & group & sampleRef & sample & sampleNode & popNode & sampNloc;
+			ar & BOOST_SERIALIZATION_NVP(group);
+			ar & BOOST_SERIALIZATION_NVP(sampleRef);
+			ar & BOOST_SERIALIZATION_NVP(sample);
+			ar & BOOST_SERIALIZATION_NVP(sampleNode);
+			ar & BOOST_SERIALIZATION_NVP(popNode);
+			ar & BOOST_SERIALIZATION_NVP(sampNloc);
 		}
 };
 
@@ -98,9 +103,9 @@ private:
 	 template<class Archive>
 	 		    void serialize(Archive &ar, const unsigned int version)
 	 		    {
-	 				ar & nodePath;
-	 				ar & doc;
-	 				ar & dMode;
+	 				ar & BOOST_SERIALIZATION_NVP(nodePath);
+	 				ar & BOOST_SERIALIZATION_NVP(doc);
+	 				ar & BOOST_SERIALIZATION_NVP(dMode);
 	 		    }
 public:
 	 ~workspace();

@@ -18,8 +18,13 @@ using namespace Rcpp;
 
 
 #include <boost/archive/tmpdir.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/serialization/scoped_ptr.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/list.hpp>
@@ -31,7 +36,7 @@ using namespace Rcpp;
 
 
 
-typedef vector<bool> POPINDICES;//maybe try boost::dynamic_bitset to speed up
+
 
 /*
  * representing one FCS data
@@ -49,10 +54,10 @@ private:
 		    void serialize(Archive &ar, const unsigned int version)
 		    {
 
-					ar & params;
-					ar & sampleID;
-					ar & data;
-					ar & nEvents;
+					ar & BOOST_SERIALIZATION_NVP(params);
+					ar & BOOST_SERIALIZATION_NVP(sampleID);
+					ar & BOOST_SERIALIZATION_NVP(data);
+					ar & BOOST_SERIALIZATION_NVP(nEvents);
 
 		    }
 public:

@@ -379,7 +379,7 @@ void GatingHierarchy::gating(VertexID u,bool recompute)
 	nodeProperties * node=getNodeProperty(u);
 	if(u==0)
 	{
-		node->setIndices(vector<bool>(fdata.getEventsCount(),true));
+		node->setIndices(fdata.getEventsCount());
 		node->computeStats();
 	}else
 	{
@@ -438,7 +438,7 @@ void GatingHierarchy::calgate(VertexID u)
 	/*
 	 * calculate the indices for the current node
 	 */
-	POPINDICES curIndices;
+	vector<bool> curIndices;
 	if(g->getType()==BOOLGATE)
 	{
 		curIndices=boolGating(u);
@@ -462,7 +462,7 @@ void GatingHierarchy::calgate(VertexID u)
 }
 
 
-POPINDICES GatingHierarchy::boolGating(VertexID u){
+vector<bool> GatingHierarchy::boolGating(VertexID u){
 
 	nodeProperties * node=getNodeProperty(u);
 	gate * g=node->getGate();
@@ -470,7 +470,7 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 	//init the indices
 	unsigned nEvents=fdata.getEventsCount();
 
-	POPINDICES ind(nEvents,true);
+	vector<bool> ind(nEvents,true);
 
 	/*
 	 * combine the indices of reference populations
@@ -509,7 +509,7 @@ POPINDICES GatingHierarchy::boolGating(VertexID u){
 		}
 
 
-		POPINDICES curPopInd=curPop->getIndices();
+		vector<bool> curPopInd=curPop->getIndices();
 		if(it->isNot)
 			curPopInd.flip();
 

@@ -90,9 +90,9 @@ int main(void) {
 	myTest.at(i).archive="../output/NormalizationData/gs/gs.dat";
 
 
-	i=7;
+	i=4;
 
-	clone_test("../output/NormalizationData/gs/file.dat");
+	clone_test(myTest.at(i));
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

@@ -221,9 +221,12 @@ G4<-clone(GT[4])
 gslist<-GatingSetList(list(G1,G2,G4))
 G<-rbind2(gslist,file="tmp.nc")
 ncFlowSet(G)
-plotGate(G5,7,lattice=T,xbin=64)
+plotGate(G,7,lattice=T,xbin=64)
 G5<-clone(G)
 ncFlowSet(G5)
+plotGate(G5,7,lattice=T,xbin=64)
+archive(G5,file="tmp1.tar")
+G5<-unarchive(file="tmp1.tar")
 #############################################
 #QUALIFIER
 ########################################

@@ -239,7 +239,7 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
  */
 
 
-POPINDICES polygonGate::gating(flowData & fdata){
+vector<bool> polygonGate::gating(flowData & fdata){
 
 
 	/*
@@ -261,7 +261,7 @@ POPINDICES polygonGate::gating(flowData & fdata){
 
 	unsigned nEvents=xdata.size();
 	//init the indices
-	POPINDICES ind(nEvents);
+	vector<bool> ind(nEvents);
 
 
 	unsigned counter;
@@ -424,13 +424,13 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 	}
 
 }
-POPINDICES rangegate::gating(flowData & fdata){
+vector<bool> rangegate::gating(flowData & fdata){
 
 	valarray<double> data_1d(fdata.subset(param.getName()));
 
 	unsigned nEvents=data_1d.size();
 	//init the indices
-	POPINDICES ind(nEvents);
+	vector<bool> ind(nEvents);
 
 	/*
 	 * actual gating

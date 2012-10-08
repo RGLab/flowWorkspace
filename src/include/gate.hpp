@@ -26,9 +26,9 @@ typedef struct{
 				    void serialize(Archive &ar, const unsigned int version)
 				    {
 
-						ar & path;
-						ar & op;
-						ar & isNot;
+						ar & BOOST_SERIALIZATION_NVP(path);
+						ar & BOOST_SERIALIZATION_NVP(op);
+						ar & BOOST_SERIALIZATION_NVP(isNot);
 				    }
 	} BOOL_GATE_OP;
 
@@ -97,7 +97,7 @@ public:
 
 class paramRange
 {
-//	friend std::ostream & operator<<(std::ostream &os, const paramRange &gh);
+
 	friend class boost::serialization::access;
 private:
 
@@ -107,9 +107,9 @@ private:
 						void serialize(Archive &ar, const unsigned int version)
 						{
 
-							ar & name;
-							ar & min;
-							ar & max;
+							ar & BOOST_SERIALIZATION_NVP(name);
+							ar & BOOST_SERIALIZATION_NVP(min);
+							ar & BOOST_SERIALIZATION_NVP(max);
 						}
 public:
 	paramRange(double _min,double _max,string _name){min=_min;max=_max;name=_name;};
@@ -141,8 +141,8 @@ private:
 					void serialize(Archive &ar, const unsigned int version)
 					{
 
-						ar & params;
-						ar & vertices;
+						ar & BOOST_SERIALIZATION_NVP(params);
+						ar & BOOST_SERIALIZATION_NVP(vertices);
 					}
 public:
 	vector<coordinate> getVertices(){return vertices;};
@@ -170,8 +170,8 @@ private:
 			void serialize(Archive &ar, const unsigned int version)
 			{
 
-				ar & neg;
-				ar & isTransformed;
+				ar & BOOST_SERIALIZATION_NVP(neg);
+				ar & BOOST_SERIALIZATION_NVP(isTransformed);
 
 			}
 public:
@@ -181,7 +181,7 @@ public:
 	 */
 	virtual unsigned short getType()=0;
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
-	virtual POPINDICES gating(flowData &){throw(domain_error("undefined gating function!"));};
+	virtual vector<bool> gating(flowData &){throw(domain_error("undefined gating function!"));};
 	virtual void extend(flowData &,unsigned short){throw(domain_error("undefined extend function!"));};
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
@@ -209,13 +209,13 @@ private:
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
-				ar & boost::serialization::base_object<gate>(*this);
-				ar & param;
+				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
+				ar & BOOST_SERIALIZATION_NVP(param);
 
 			}
 public:
 	unsigned short getType(){return RANGEGATE;}
-	POPINDICES gating(flowData &);
+	vector<bool> gating(flowData &);
 	void extend(flowData &,unsigned short);
 	void transforming(trans_local &,unsigned short dMode);
 	paramRange getParam(){return param;};
@@ -238,14 +238,14 @@ private:
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
-				ar & boost::serialization::base_object<gate>(*this);
-				ar & param;
+				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
+				ar & BOOST_SERIALIZATION_NVP(param);
 
 			}
 public:
 	unsigned short getType(){return POLYGONGATE;}
 	void extend(flowData &,unsigned short);
-	POPINDICES gating(flowData &);
+	vector<bool> gating(flowData &);
 	void transforming(trans_local &,unsigned short dMode);
 	vertices_valarray getVertices(){return param.toValarray();};
 	void setParam(paramPoly _param){param=_param;};
@@ -265,8 +265,8 @@ private:
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
-				ar & boost::serialization::base_object<polygonGate>(*this);
-				ar & antipodal_vertices;
+				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<polygonGate>(*this));
+				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
 
 			}
 
@@ -298,8 +298,8 @@ private:
 	template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
 				{
-					ar & boost::serialization::base_object<gate>(*this);
-					ar & boolOpSpec;
+					ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
+					ar & BOOST_SERIALIZATION_NVP(boolOpSpec);
 
 				}
 public:

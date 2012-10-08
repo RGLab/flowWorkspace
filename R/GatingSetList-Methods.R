@@ -9,8 +9,9 @@ setMethod("rbind2",
 				#combine flowset/ncdfFlowSet
 				fsList<-lapply(x,getData)
 				if(isNcdfList[[1]])
-					fs<-rbind2(ncdfFlowList(fsList),...);
-#				else
+					fs<-rbind2(ncdfFlowList(fsList),...)
+				else
+					stop("rbind2 is not supported for non-cdf GatingSet yet!")
 #					fs<-rbind(flowList(fsList));##TODO
 
 				#combine tree structure
