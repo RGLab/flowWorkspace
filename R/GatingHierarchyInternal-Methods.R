@@ -549,6 +549,21 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 	}
 	plotList
 }
+#copy from sfsmisc package
+pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7) 
+{
+	eT <- floor(log10(abs(x)) + 10^-digits.fuzz)
+	mT <- signif(x/10^eT, digits.fuzz)
+	ss <- vector("list", length(x))
+	for (i in seq(along = x)) ss[[i]] <- if (x[i] == 0) 
+					quote(0)
+				else if (drop.1 && mT[i] == 1) 
+					substitute(10^E, list(E = eT[i]))
+				else if (drop.1 && mT[i] == -1) 
+					substitute(-10^E, list(E = eT[i]))
+				else substitute(A %*% 10^E, list(A = mT[i], E = eT[i]))
+	do.call("expression", ss)
+}
 .plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
 		
 			if(is.list(y))
@@ -625,6 +640,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 					x.labels<-getAxisLabels(x)[[xParam.ind]]
 					y.labels<-getAxisLabels(x)[[yParam.ind]]
 					
+												
 					#init the scales and x,y lim
 					
 					xlim=range(parentdata)[,xParam]
@@ -633,12 +649,14 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 					#update axis when applicable
 					if(!is.null(x.labels))
 					{
-						xscales<-list(x=list(at=x.labels$at,labels=x.labels$label,rot=45))
+						x.labels$label<-pretty10exp(as.numeric(x.labels$label),drop.1=TRUE)
+						xscales<-list(x=list(at=x.labels$at,labels=x.labels$label))
 						scales<-lattice:::updateList(xscales,scales)
 						xlim=range(x.labels$at)
 					}
 					if(!is.null(y.labels))
 					{	
+						y.labels$label<-pretty10exp(as.numeric(y.labels$label),drop.1=TRUE)
 						yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
 						scales<-lattice:::updateList(scales,yscales)
 						ylim=range(y.labels$at)
@@ -648,7 +666,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 
 
 
-	
+#		browser()
 		#################################
 		# the actual plotting
 		################################

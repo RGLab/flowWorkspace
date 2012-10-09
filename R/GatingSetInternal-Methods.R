@@ -444,30 +444,36 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					###An unfortunate hack. If we use the log transformation, then negative values are undefined, so
 					##We'll test the transformed range for NaN and convert to zero.
 					r[is.nan(r)]<-0;
+					
 					###Is this transformed?
 					if(!all(rw==r)){
-#						#No transformation
-#						raw<-seq(r[1],r[2],by=(r[2]-r[1])/10)
-#						signif(raw,2)
-#						pos<-raw;
-#					}else{
-						#based on the range
-						#Inverse transform;
-#						browser()
-						if(attr(cal[[j]],"type")=="log")
-							f<-function(x){10^x}
-						else
-						{
-							toScale<-seq(rw[[1]],rw[[2]],l=100000)
-							fromScale<-cal[[j]](toScale)
-							f<-splinefun(fromScale,toScale,method="natural")
-						}
-						pos<-seq(r[1],r[2],l=20)
-						raw<-signif(f(pos),2);
-#						browser()
-#						pos<-signif(cal[[j]](raw),2)
+						######################################
+						#equal interal at transformed scale
+						######################################
+#						if(attr(cal[[j]],"type")=="log")
+#							f<-function(x){10^x}
+#						else
+#						{
+#							
+#							toScale<-seq(rw[[1]],rw[[2]],l=100000)
+#							fromScale<-cal[[j]](toScale)
+#							f<-splinefun(fromScale,toScale,method="natural")
+#							
+#						}
+#						pos<-seq(r[1],r[2],l=20)
+#						raw<-signif(f(pos),2);
 						
-					
+						
+#						browser()
+						######################################
+						#equal interal at raw scale
+						######################################						
+						base10raw<-unlist(lapply(2:6,function(e)10^e))
+						base10raw<-c(0,base10raw)
+						raw<-base10raw[base10raw>min(rw)&base10raw<max(rw)]
+						pos<-signif(cal[[j]](raw))
+						
+						
 						assign("i",i,dataenv)
 						assign("raw",raw,dataenv);
 						assign("pos",pos,dataenv);
