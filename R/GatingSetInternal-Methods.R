@@ -909,39 +909,7 @@ setMethod("rbind2",signature("GatingSetInternal","GatingSetInternal"),function(x
 #			if(!haveSameGatingHierarchy(x,y)){
 #				stop("x and y must have the same gating hierarchy for each sample")
 #			}
-			if(flowWorkspace:::isNcdf(x[[1]])==flowWorkspace:::isNcdf(y[[1]])){
-				fs1<-getData(x);
-				fs2<-getData(y);
-				fs<-rbind2(fs1,fs2,...);
-#				browser()
-				pointer<-.Call("R_combineGatingSet",x@pointer,y@pointer,getSamples(x),getSamples(y))
-				G<-new("GatingSetInternal")
-				G@pointer<-pointer
-				
-				ne<-new.env();
-				assign("ncfs",fs,envir=ne)
-
-				set<-c(x@set,y@set)
-				#deep copying of tree
-				for(i in seq_along(set))
-				{
-					#create new local data environment that stores axis and flowData environment
-					localDataEnvOld<-nodeDataDefaults(set[[i]]@tree,"data")
-					localDataEnv<-new.env()
-					copyEnv(localDataEnvOld,localDataEnv)
-					#update flowData environment with new ncfs
-					assign("data",ne,localDataEnv)
-					#sync back to tree
-					nodeDataDefaults(set[[i]]@tree,"data")<-localDataEnv
-					#upodate pointer
-					set[[i]]@pointer<-pointer
-				}
-				
-				G@set<-set
-
-			}else{
-				stop("Can't combine gating sets. They should all use the same storage method. (Netcdf, or not..)")
-			}
-			return(G);
+			
+			rbind2(GatingSetList(list(x,y)),...)		
 		})
 

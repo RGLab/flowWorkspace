@@ -1,18 +1,22 @@
 setMethod("rbind2",
-		signature=signature("GatingSetList"),
-		definition=function(x,...)
+		signature=signature("GatingSetList","missing"),
+		definition=function(x,y="missing",...)
 		{
-			
+#			browser()
 			isNcdfList<-lapply(x,function(gs)flowWorkspace:::isNcdf(gs[[1]]))
 			if(all(duplicated(unlist(isNcdfList))[-1])){
-				
+#				browser()
 				#combine flowset/ncdfFlowSet
 				fsList<-lapply(x,getData)
 				if(isNcdfList[[1]])
 					fs<-rbind2(ncdfFlowList(fsList),...)
 				else
-					stop("rbind2 is not supported for non-cdf GatingSet yet!")
-#					fs<-rbind(flowList(fsList));##TODO
+				{
+					##using original flowCore::rbind2 for flowSet
+					fs<-fsList[[1]]
+					for(i in 2:length(fsList))
+						fs<-rbind2(fs,fsList[[i]])
+				}
 
 				#combine tree structure
 				ptrlist<-lapply(x,function(gs)gs@pointer)
