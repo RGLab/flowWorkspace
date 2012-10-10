@@ -564,7 +564,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				else substitute(A %*% 10^E, list(A = mT[i], E = eT[i]))
 	do.call("expression", ss)
 }
-.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
+.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
 		
 			if(is.list(y))
 				pid<-y$parentId
@@ -627,44 +627,8 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				xParam=params[2]
 				
 			}
-			pd<-pData(parameters(parentdata))
-			xObj<-.getChannelMarker(pd,xParam)
-			yObj<-.getChannelMarker(pd,yParam)
-			
-			xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
-			ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
-#			browser()
-				if(length(params)==2){
-					xParam.ind<-match(xParam,pd$name)
-					yParam.ind<-match(yParam,pd$name)
-					x.labels<-getAxisLabels(x)[[xParam.ind]]
-					y.labels<-getAxisLabels(x)[[yParam.ind]]
-					
-												
-					#init the scales and x,y lim
-					
-					xlim=range(parentdata)[,xParam]
-					ylim=range(parentdata)[,yParam]
-					
-					#update axis when applicable
-					if(!is.null(x.labels))
-					{
-						x.labels$label<-pretty10exp(as.numeric(x.labels$label),drop.1=TRUE)
-						xscales<-list(x=list(at=x.labels$at,labels=x.labels$label))
-						scales<-lattice:::updateList(xscales,scales)
-						xlim=range(x.labels$at)
-					}
-					if(!is.null(y.labels))
-					{	
-						y.labels$label<-pretty10exp(as.numeric(y.labels$label),drop.1=TRUE)
-						yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
-						scales<-lattice:::updateList(scales,yscales)
-						ylim=range(y.labels$at)
-					}
-
-				}
-
-
+		
+		axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
 
 #		browser()
 		#################################
@@ -675,11 +639,11 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 		res<-xyplot(x=f1
 					,data=parentdata[,params]
 					,filter=curGate
-					,xlab=xlab
-					,ylab=ylab
+					,xlab=axisObject$xlab
+					,ylab=axisObject$ylab
 					,margin=margin
 					,smooth=smooth
-					,scales=scales
+					,scales=axisObject$scales
 					,main=main
 					,stat=stat
 					,panel=panelFunc
@@ -691,7 +655,47 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 			
 			
 }
-
+##x is a gatingHierarchy, data is a flowFrame
+.formatAxis<-function(x,data,xParam,yParam,scales=list(),...){
+	pd<-pData(parameters(data))
+	xObj<-.getChannelMarker(pd,xParam)
+	yObj<-.getChannelMarker(pd,yParam)
+	
+	xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
+	ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
+#			browser()
+	
+		xParam.ind<-match(xParam,pd$name)
+		yParam.ind<-match(yParam,pd$name)
+		x.labels<-getAxisLabels(x)[[xParam.ind]]
+		y.labels<-getAxisLabels(x)[[yParam.ind]]
+		
+		
+		#init the scales and x,y lim
+		
+		xlim=range(data)[,xParam]
+		ylim=range(data)[,yParam]
+		
+		#update axis when applicable
+		if(!is.null(x.labels))
+		{
+			x.labels$label<-pretty10exp(as.numeric(x.labels$label),drop.1=TRUE)
+			xscales<-list(x=list(at=x.labels$at,labels=x.labels$label))
+			scales<-lattice:::updateList(xscales,scales)
+			xlim=range(x.labels$at)
+		}
+		if(!is.null(y.labels))
+		{	
+			y.labels$label<-pretty10exp(as.numeric(y.labels$label),drop.1=TRUE)
+			yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
+			scales<-lattice:::updateList(scales,yscales)
+			ylim=range(y.labels$at)
+		}
+		
+	
+	
+	list(scales=scales,xlab=xlab,ylab=ylab)
+}
 panel.xyplot.flowFrame.booleanGate<-function(x,y
 		,frames
 		,filter=NULL#filter here is actually a subsetted flowFrame

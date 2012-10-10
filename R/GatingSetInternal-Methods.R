@@ -544,7 +544,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			
 		})
 #TODO:merge this to .plotGate routine
-.plotGateGS<-function(x,y,formula=NULL,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,scales=list(),...){			
+.plotGateGS<-function(x,y,formula=NULL,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
 	gh<-x[[1]]
 	if(is.list(y))
 		pid<-y$parentId
@@ -615,41 +615,8 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 		xParam=params[2]
 		
 	}
-	pd<-pData(parameters(parentFrame))
-	xObj<-.getChannelMarker(pd,xParam)
-	yObj<-.getChannelMarker(pd,yParam)
-	
-	xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
-	ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
-#			browser()
-	if(length(params)==2){
-		xParam.ind<-match(xParam,pd$name)
-		yParam.ind<-match(yParam,pd$name)
-		x.labels<-getAxisLabels(gh)[[xParam.ind]]
-		y.labels<-getAxisLabels(gh)[[yParam.ind]]
-		
-		#init the scales and x,y lim
-		
-		xlim=range(parentFrame)[,xParam]
-		ylim=range(parentFrame)[,yParam]
-		
-		#update axis when applicable
-		if(!is.null(x.labels))
-		{
-			xscales<-list(x=list(at=x.labels$at,labels=x.labels$label,rot=45))
-			scales<-lattice:::updateList(xscales,scales)
-			xlim=range(x.labels$at)
-		}
-		if(!is.null(y.labels))
-		{	
-			yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
-			scales<-lattice:::updateList(scales,yscales)
-			ylim=range(y.labels$at)
-		}
-		
-	}
-	
-	
+
+	axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
 	
 	
 	#################################
@@ -660,11 +627,11 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	res<-xyplot(x=formula
 			,data=parentdata[,params]
 			,filter=curGates
-			,xlab=xlab
-			,ylab=ylab
+			,xlab=axisObject$xlab
+			,ylab=axisObject$ylab
 			,margin=margin
 			,smooth=smooth
-			,scales=scales
+			,scales=axisObject$scales
 			,main=main
 			,stat=stat
 			,panel=panelFunc
@@ -708,11 +675,18 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 	formula1<-as.formula(formula1)
 #	browser()
 	if(isPlotGate)
-		flowWorkspace::plotGate(G,cids[ind],formula=formula1,smooth=smooth,...)
+		plotGate(G,cids[ind],formula=formula1,smooth=smooth,...)
 	else
 	{
 		fs<-getData(G,parentID)
-		xyplot(formula1,fs,smooth=smooth,...)
+		axisObject<-.formatAxis(x=G[[1]],data=fs[[1]],xParam=x,yParam=y,...)
+		xyplot(formula1
+				,fs
+				,smooth=smooth
+				,xlab=axisObject$xlab
+				,ylab=axisObject$ylab
+				,scales=axisObject$scales
+				,...)
 	}
 	
 }

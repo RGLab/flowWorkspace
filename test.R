@@ -54,7 +54,7 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
-					,subset=1
+#					,subset=1
 #					,isNcdf=T
 #					,useInternal=T
 					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
@@ -87,17 +87,18 @@ getPopStats(G[[1]])[,2:3]
 ##plot
 getNodes(G[[1]])
 png(file="plotGate.png",width=800,height=800)
-plotGate(GT[[1]]
-#		,1:2
+plotGate(GT
+		,4:5
 		,par.settings=list(par.main.text=list(cex=0.8)
 									,par.xlab.text=list(cex=0.5)
 									,par.ylab.text=list(cex=0.5))
 		,stat=T
-#		,xbin=64
+		,xbin=64
 		)
 getGate(G[[1]],4)		
 getParent(G[[1]],8)
-plotGate_labkey(G,7,x="<R660-A>" ,y="<G560-A>")		
+plotGate_labkey(GT,7,x="<R660-A>" ,y="<G560-A>")		
+plotGate_labkey(GT,7,x="SSC-A" ,y="<G560-A>")
 dev.off()
 CairoX11()
 plotGate(GT[[1]],6,xbin=64)
