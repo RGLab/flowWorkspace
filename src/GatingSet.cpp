@@ -185,6 +185,14 @@ GatingSet* GatingSet::clone_fstream(vector<string> samples){
 
 	return newGS;
 }
+void GatingSet::add(gate * g,string parentName,string nodeName,unsigned short _dMode){
+
+	BOOST_FOREACH(gh_map::value_type & it,ghs){
+
+				GatingHierarchy * gh=it.first;
+				gh->addGate(g,parentName,nodeName);
+			}
+}
 /*
  *TODO: trans is not copied for now since it involves copying the global trans vector
  *and rematch them to each individual hierarchy
@@ -279,6 +287,34 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 			cout<<"Gating hierarchy cloned: "<<curSampleName<<endl;
 	}
 }
+
+GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
+
+
+	ws=NULL;
+	dMode=_dMode;
+
+	vector<string>::iterator it;
+	for(it=sampleNames.begin();it!=sampleNames.end();it++)
+	{
+		string curSampleName=*it;
+		if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout<<endl<<"... start adding GatingHierarchy for: "<<curSampleName<<"... "<<endl;
+
+
+		GatingHierarchy *curGh=new GatingHierarchy();
+		curGh->setNcPtr(NULL);
+		curGh->dMode=_dMode;
+
+		curGh->addRoot();//add default root
+
+
+		ghs[curSampleName]=curGh;//add to the map
+
+	}
+}
+
+
 //read xml file and create the appropriate flowJoWorkspace object
 GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,unsigned short _dMode)
 {

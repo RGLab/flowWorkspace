@@ -48,18 +48,9 @@ GatingHierarchy::GatingHierarchy()
 	nc=NULL;
 	gTrans=NULL;
 }
-//constructor for sampleNode argument
-//GatingHierarchy::GatingHierarchy(string sampleID,workspace * ws)
-//{
-//	thisWs=ws;
-//
-//	wsSampleNode curSampleNode=thisWs->getSample(sampleID);
-//	wsRootNode root=thisWs->getRoot(curSampleNode);
-//	VertexID pVerID=addRoot(thisWs->to_popNode(&root));
-////	wsRootNode popNode=root;//getPopulation();
-//	addPopulation(pVerID,&root);
-//
-//}
+
+
+
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
@@ -107,7 +98,22 @@ VertexID GatingHierarchy::addRoot(nodeProperties* rootNode)
 	VertexID u = boost::add_vertex(tree);
 
 	tree[u]=rootNode;
-	;
+
+
+	return(u);
+}
+/*
+ * add empty root with only name set as default 'root'
+ */
+VertexID GatingHierarchy::addRoot(){
+
+	nodeProperties * rootNode=new nodeProperties;
+	rootNode->setName("root");
+	// Create  vertices in that graph
+	VertexID u = boost::add_vertex(tree);
+
+	tree[u]=rootNode;
+
 
 	return(u);
 }
@@ -148,22 +154,25 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 /*
  * this is for semi-automated pipeline to add populations sequetially
  */
-void GatingHierarchy::addGate(gate& g,string popName)
+void GatingHierarchy::addGate(gate* g,string parentName,string popName)
 {
 
 	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
 
-	// Create  vertices in that graph
-//	vertex_t u = boost::add_vertex(tree);
+	VertexID parentID=getNodeID(0,popName);
+	VertexID curChildID = boost::add_vertex(tree);
 
 
-//	vertex_t v = boost::add_vertex(g);
+	nodeProperties *curChild=new nodeProperties();
+	curChild->setName(popName.c_str());
+	curChild->setGate(g);
+	if(dMode>=POPULATION_LEVEL)
+		cout<<"node created:"<<curChild->getName()<<endl;
+	//attach the populationNode to the boost node as property
+	tree[curChildID]=curChild;
+	//add relation between current node and parent node
+	boost::add_edge(parentID,curChildID,tree);
 
-	// Create an edge conecting those two vertices
-//	edge_t e; bool b;
-//	boost::tie(e,b) = boost::add_edge(u,v,g);
-
-//	boost::add_edge()
 }
 compensation GatingHierarchy::getCompensation(){
 	return comp;

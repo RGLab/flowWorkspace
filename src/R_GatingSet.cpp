@@ -100,6 +100,26 @@ END_RCPP
 }
 
 /*
+ * constructing GatingSet with only root node for each sample
+ */
+RcppExport SEXP R_NewGatingSet_rootOnly(SEXP _sampleNames,SEXP _dMode) {
+BEGIN_RCPP
+
+
+		StringVec sampleNames=as<StringVec>(_sampleNames);
+
+
+		unsigned short dMode=as<unsigned short>(_dMode);
+
+
+		GatingSet * newGS=new GatingSet(sampleNames,dMode);
+
+		return XPtr<GatingSet>(newGS);
+
+END_RCPP
+}
+
+/*
  * save/load GatingSet
  */
 RcppExport SEXP R_saveGatingSet(SEXP _gsPtr,SEXP _fileName) {
@@ -169,4 +189,20 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_addGate(SEXP _gsPtr,SEXP _filterList,SEXP _parent,SEXP _popName) {
+BEGIN_RCPP
+
+
+		XPtr<GatingSet>gs(_gsPtr);
+		string parent=as<string>(_parent);
+		string popName=as<string>(_popName);
+		List flist(_filterList);
+		gate * g;//TODO::convert R filter to gate class
+		gs->add(g,parent,popName);
+
+
+
+
+END_RCPP
+}
 
