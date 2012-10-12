@@ -652,11 +652,18 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 					if(class(g)!="BooleanGate") 
 					{
 						prj<-parameters(g)
-						revPrj<-rev(prj)
-						if((x==prj[1]&&y==prj[2])||(x==revPrj[1]&&y==revPrj[2]))
-							return (TRUE)
-						else
-							return (FALSE)
+						if(length(prj)==1)
+						{
+							return (prj%in%c(x,y))
+							
+						}else
+						{
+							revPrj<-rev(prj)
+							if((x==prj[1]&&y==prj[2])||(x==revPrj[1]&&y==revPrj[2]))
+								return (TRUE)
+							else
+								return (FALSE)	
+						}
 					}else
 					return (FALSE)
 				})
