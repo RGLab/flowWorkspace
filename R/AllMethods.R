@@ -1840,7 +1840,10 @@ setMethod("getData",signature(obj="GatingSet"),function(obj,y=NULL,tsort=FALSE){
 	}else if(is.numeric(y)){
 		return(flowSet(lapply(obj,function(x)getData(x,y,tsort=tsort))))
 	}else{
-		stop("Invalid value for y. Must be class \"numeric\"");
+		nodeNames<-getNodes(obj[[1]])
+		y<-match(y,nodenames)
+		return(flowSet(lapply(obj,function(x)getData(x,y,tsort=tsort))))
+#		stop("Invalid value for y. Must be class \"numeric\"");
 	}
 })
 setMethod("getKeywords",signature("flowJoWorkspace","character"),function(obj,y){
