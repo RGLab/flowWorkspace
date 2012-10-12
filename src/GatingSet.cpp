@@ -185,14 +185,14 @@ GatingSet* GatingSet::clone_fstream(vector<string> samples){
 
 	return newGS;
 }
-void GatingSet::add(gate * g,string parentName,string nodeName,unsigned short _dMode){
-
-	BOOST_FOREACH(gh_map::value_type & it,ghs){
-
-				GatingHierarchy * gh=it.first;
-				gh->addGate(g,parentName,nodeName);
-			}
-}
+//void GatingSet::add(gate * g,string parentName,string nodeName,unsigned short _dMode){
+//
+//	BOOST_FOREACH(gh_map::value_type & it,ghs){
+//
+//				GatingHierarchy * gh=it.second;
+//				gh->addGate(g,parentName,nodeName);
+//			}
+//}
 /*
  *TODO: trans is not copied for now since it involves copying the global trans vector
  *and rematch them to each individual hierarchy

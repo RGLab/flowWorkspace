@@ -28,8 +28,8 @@
 using namespace std;
 typedef map<string,VertexID> VertexID_map;
 typedef vector<VertexID> VertexID_vec;
-
-
+typedef vector<string> StringVec;
+typedef vector<double> DoubleVec;
 
 //struct OurVertexPropertyWriter {
 //
@@ -135,7 +135,8 @@ public:
 
 	/*append the gate to the tree*/
 	void addChild(VertexID parent,VertexID child);
-	void addGate(gate* g,string parentName,string popName);
+	void addGate(gate* g,VertexID parentID,string popName);
+	void removeGate(VertexID nodeID);
 	void addPopulation(VertexID parentID,wsNode * parentNode,bool isGating);
 	VertexID addRoot(nodeProperties* rootNode);
 	VertexID addRoot();

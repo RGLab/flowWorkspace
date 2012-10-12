@@ -13,6 +13,7 @@
  * thus it is not initialized by Rcpp module as S4 class within R. So have to use this tedious way to
  * write R API
  */
+
 #include "include/R_GatingHierarchy.hpp"
 #include "include/R_GatingSet.hpp"
 #include <stdexcept>
@@ -369,3 +370,114 @@ BEGIN_RCPP
 
 END_RCPP
 }
+
+RcppExport SEXP R_addGate(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _parentID,SEXP _popName) {
+BEGIN_RCPP
+
+
+		XPtr<GatingSet>gs(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+		unsigned parentID=as<unsigned>(_parentID);
+		string popName=as<string>(_popName);
+
+		/*
+		 * convert R filter to specific gate class
+		 */
+		List filter=as<List>(_filter);
+
+		StringVec names=filter.names();
+
+		unsigned short gateType=as<unsigned short>(filter["type"]);
+		StringVec params=as<StringVec>(filter["params"]);
+		bool isNeg=as<bool>(filter["negated"]);
+		gate * g;
+
+		switch(gateType)
+		{
+			case RANGEGATE:
+			{
+				rangegate * rg=new rangegate();
+				rg->setNegate(isNeg);
+
+				DoubleVec p=as<DoubleVec>(filter["range"]);
+
+				paramRange pRange;
+				pRange.setName(params.at(0));
+				pRange.setMin(p.at(0));
+				pRange.setMax(p.at(1));
+
+				rg->setParam(pRange);
+
+				g=rg;
+
+				break;
+			}
+			case POLYGONGATE:
+			{
+				polygonGate * pg=new polygonGate();
+
+				pg->setNegate(isNeg);
+
+				paramPoly pp;
+				pp.setName(params);
+
+				vector<coordinate> v;
+				NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+				for(int i=0;i<boundaries.nrow();i++)
+				{
+					coordinate pCoord;
+					pCoord.x=boundaries(i,0);
+					pCoord.y=boundaries(i,1);
+					v.push_back(pCoord);
+
+				}
+				pp.setVertices(v);
+
+				pg->setParam(pp);
+
+				g=pg;
+
+				break;
+			}
+			default:
+				throw(domain_error("unsupported gate type!valid type: c(1,2,3)"));
+
+		}
+
+
+
+		gh->addGate(g,parentID,popName);
+
+
+
+
+
+
+END_RCPP
+}
+
+RcppExport SEXP R_removeGate(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID) {
+BEGIN_RCPP
+
+
+		XPtr<GatingSet>gs(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+
+		unsigned nodeID=as<unsigned>(_nodeID);
+
+
+
+		gh->removeGate(nodeID);
+
+
+
+
+
+
+END_RCPP
+}
+

@@ -331,7 +331,10 @@ setMethod("getData",signature(obj="GatingHierarchyInternal"),function(obj,y=NULL
 #		})
 
 setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y=NULL,...){
-			get("axis.labels",envir=nodeDataDefaults(obj@tree)$data)
+			if(exists("axis.labels",envir=nodeDataDefaults(obj@tree)$data))
+				return (get("axis.labels",envir=nodeDataDefaults(obj@tree)$data))
+			else
+				return (NULL)
 		})
 
 #this method currently is used convert transformation funtion from c++ to R

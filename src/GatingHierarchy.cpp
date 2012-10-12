@@ -154,12 +154,11 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 /*
  * this is for semi-automated pipeline to add populations sequetially
  */
-void GatingHierarchy::addGate(gate* g,string parentName,string popName)
+void GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 {
 
 	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
 
-	VertexID parentID=getNodeID(0,popName);
 	VertexID curChildID = boost::add_vertex(tree);
 
 
@@ -173,6 +172,19 @@ void GatingHierarchy::addGate(gate* g,string parentName,string popName)
 	//add relation between current node and parent node
 	boost::add_edge(parentID,curChildID,tree);
 
+}
+void GatingHierarchy::removeGate(VertexID nodeID)
+{
+
+	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
+
+//	VertexID nodeID=getNodeID(0,popName);
+	nodeProperties *curNode=tree[nodeID];
+
+	if(dMode>=POPULATION_LEVEL)
+		cout<<"removing node:"<<curNode->getName()<<endl;
+	delete curNode;
+	boost::remove_vertex(nodeID,tree);
 }
 compensation GatingHierarchy::getCompensation(){
 	return comp;
@@ -421,7 +433,9 @@ void GatingHierarchy::calgate(VertexID u)
 	 * because the boolgate's parent might be visited later than boolgate itself
 	 */
 	VertexID_vec pids=getParent(u);
-	if(pids.size()!=1) //we only allow one parent per node
+	if(pids.size()==0)
+		throw(domain_error("parent node not found!"));
+	if(pids.size()>1) //we only allow one parent per node
 		throw(domain_error("multiple parent nodes found!"));
 
 	VertexID pid=pids.at(0);

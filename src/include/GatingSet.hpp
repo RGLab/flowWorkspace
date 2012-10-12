@@ -82,7 +82,7 @@ public:
 	GatingSet * clone_sstream(vector<string> samples);
 	GatingSet * clone_fstream(vector<string> samples);
 	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
-	void add(gate * g,string parentName,string nodeName,unsigned short _dMode=1);
+//	void add(gate * g,string parentName,string nodeName,unsigned short _dMode=1);
 };
 void save_gs(const GatingSet &gs,string filename);
 void restore_gs(GatingSet &s, string filename);
