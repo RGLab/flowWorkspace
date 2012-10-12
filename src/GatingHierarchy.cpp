@@ -154,7 +154,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 /*
  * this is for semi-automated pipeline to add populations sequetially
  */
-void GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
+VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 {
 
 	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
@@ -171,6 +171,7 @@ void GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 	tree[curChildID]=curChild;
 	//add relation between current node and parent node
 	boost::add_edge(parentID,curChildID,tree);
+	return curChildID;
 
 }
 void GatingHierarchy::removeGate(VertexID nodeID)

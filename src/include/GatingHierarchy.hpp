@@ -135,7 +135,7 @@ public:
 
 	/*append the gate to the tree*/
 	void addChild(VertexID parent,VertexID child);
-	void addGate(gate* g,VertexID parentID,string popName);
+	VertexID addGate(gate* g,VertexID parentID,string popName);
 	void removeGate(VertexID nodeID);
 	void addPopulation(VertexID parentID,wsNode * parentNode,bool isGating);
 	VertexID addRoot(nodeProperties* rootNode);

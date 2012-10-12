@@ -448,10 +448,10 @@ BEGIN_RCPP
 
 
 
-		gh->addGate(g,parentID,popName);
+		VertexID nodeID=gh->addGate(g,parentID,popName);
 
 
-
+		return wrap(nodeID);
 
 
 
