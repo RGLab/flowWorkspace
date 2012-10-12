@@ -873,12 +873,14 @@ setMethod("[",signature("GatingSetInternal"),function(x,i,j,...,drop){
 				clone[[ind]]@tree@nodeData<-nd
 			}
 			
-
-			#subsetting flowSet
-			ncFlowSet(clone)<-fs[i]			
-			
 			#subsetting R object
 			clone@set<-clone@set[i]
+			
+			
+			#subsetting flowSet
+			ncFlowSet(clone)<-fs[names(clone@set)]			
+			
+			
 			
 			return(clone);
 		})
