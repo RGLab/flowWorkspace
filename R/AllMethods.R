@@ -1841,7 +1841,7 @@ setMethod("getData",signature(obj="GatingSet"),function(obj,y=NULL,tsort=FALSE){
 		return(flowSet(lapply(obj,function(x)getData(x,y,tsort=tsort))))
 	}else{
 		nodeNames<-getNodes(obj[[1]])
-		y<-match(y,nodenames)
+		y<-match(y,nodeNames)
 		return(flowSet(lapply(obj,function(x)getData(x,y,tsort=tsort))))
 #		stop("Invalid value for y. Must be class \"numeric\"");
 	}
