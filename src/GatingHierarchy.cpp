@@ -179,8 +179,8 @@ void GatingHierarchy::removeGate(VertexID nodeID)
 
 	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
 
-//	VertexID nodeID=getNodeID(0,popName);
-	nodeProperties *curNode=tree[nodeID];
+
+	nodeProperties *curNode=getNodeProperty(nodeID);
 
 	if(dMode>=POPULATION_LEVEL)
 		cout<<"removing node:"<<curNode->getName()<<endl;
@@ -879,6 +879,8 @@ VertexID GatingHierarchy::getChildren(VertexID source,string childName){
 }
 /*
  * returning the reference of the vertex bundle
+ * make sure to use this API always since since it is safe way to access tree nodes due to the validity check
+ *
  */
 nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
 
