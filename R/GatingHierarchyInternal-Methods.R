@@ -93,7 +93,7 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular"
 			nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
 			#add ID only when there is conflicts in nodeNames
 			toAppendIDs<-duplicated(nodeNames)
-			nodeNames[toAppendIDs]<-NodeIDs[toAppendIDs]
+			nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")
 			
 			if(!is.null(y))
 			{
