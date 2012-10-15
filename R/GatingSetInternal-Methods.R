@@ -846,14 +846,7 @@ setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,val
 			return (object)
 		})
 
-#Return the value of the keyword given a flowWorkspace and the keyword name
-setMethod("keyword",signature("GatingHierarchyInternal","character"),function(object,keyword){
-			
-			keyword(getData(object),keyword)
-		})
-setMethod("getKeywords",signature("GatingHierarchyInternal","missing"),function(obj,y){
-			keyword(getData(obj))
-		})
+
 ##overload the original method to add subetting on flowSet/ncdfFlowSet
 setMethod("[",signature("GatingSetInternal"),function(x,i,j,...,drop){
 			

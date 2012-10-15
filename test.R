@@ -54,7 +54,7 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
-#					,subset=1
+					,subset=1
 #					,isNcdf=T
 #					,useInternal=T
 					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"

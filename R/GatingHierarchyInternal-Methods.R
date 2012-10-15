@@ -1,3 +1,4 @@
+
 #20110314
 #TODO wrap isNcdf slot with get/set methods
 setGeneric("isNcdf", function(x){standardGeneric("isNcdf")})
@@ -63,8 +64,17 @@ setMethod("show",signature("GatingHierarchyInternal"),function(object){
 			cat("\n")
 		})
 
-
-
+#Return the value of the keyword given a flowWorkspace and the keyword name
+setMethod("keyword",signature("GatingHierarchyInternal","character"),function(object,keyword){
+			
+			keyword(getData(object),keyword)
+		})
+setMethod("getKeywords",signature("GatingHierarchyInternal","missing"),function(obj,y){
+			keyword(getData(obj))
+		})
+#Note:integer indices of nodes are based on regular order
+#so whenver need to map from character node name to integer node ID,make sure
+#to use default order which is regular.
 setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular",isPath=FALSE,...){
 
 			orderInd<-match(order,c("regular","tsort","bfs"))
@@ -74,20 +84,32 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular"
 				orderInd<-orderInd-1
 			
 			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath)
-#			browser()
-			nodeNames[1]<-sub("0.","",nodeNames[1])
-#			nodeNames<-c(nodePaths[1],paste(2:length(nodePaths),nodePaths[-1],sep="."))
-				
+
+			
+			dotPos<-regexpr("\\.",nodeNames)
+			#get unique IDs for each node
+			NodeIDs<-as.integer(substr(nodeNames,0,dotPos-1))
+			#strip IDs from nodeNames
+			nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
+			#add ID only when there is conflicts in nodeNames
+			toAppendIDs<-duplicated(nodeNames)
+			nodeNames[toAppendIDs]<-NodeIDs[toAppendIDs]
+			
 			if(!is.null(y))
 			{
 				if(is.character(y))
-					y<-match(y,nodeNames)
-				nodeNames[y]
-#				ifelse(isPath,nodePaths[y],nodeNames[y])
+					ind<-match(y,nodeNames)
+				else
+					ind<-y
+				if(is.na(ind))
+					stop("Node:", y," not found!")
+				
+				res<-nodeNames[ind]
+				if(is.na(res)||length(res)==0)
+					stop("Node:", y," not found!")
+				res
+
 			}else
-#				if(isPath)
-#					nodePaths
-#				else
 					nodeNames
 		})
 
@@ -99,12 +121,16 @@ setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),funct
 		})
 setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 #			browser()
-			ind<-which(getNodes(obj)%in%y)
+			ind<-match(y,getNodes(obj))
+			if(is.na(ind)||length(ind)==0)
+				stop("Node:", y," not found!")
 			pind<-getParent(obj,ind)
 			getNodes(obj)[pind]
 		})
 setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE){
-			ind<-which(getNodes(obj)%in%y)
+			ind<-match(y,getNodes(obj))
+			if(is.na(ind)||length(ind)==0)
+				stop("Node:", y," not found!")
 			cind<-getChildren(obj,ind)
 			getNodes(obj)[cind]
 })
@@ -118,7 +144,9 @@ setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),functio
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 			
-			ind<-which(getNodes(x)%in%y)
+			ind<-match(y,getNodes(x))
+			if(is.na(ind)||length(ind)==0)
+				stop("Node:", y," not found!")
 			stats<-.getPopStat(x,ind)
 			if(flowJo)
 				unname(stats$flowJo["proportion"])
@@ -129,7 +157,9 @@ setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),functio
 			
 		})
 setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),function(x,y,flowJo=TRUE){
-			ind<-which(getNodes(x)%in%y)
+			ind<-match(y,getNodes(x))
+			if(is.na(ind)||length(ind)==0)
+				stop("Node:", y," not found!")
 			stats<-.getPopStat(x,ind)
 			if(flowJo)
 				unname(stats$flowJo["count"])	
@@ -227,6 +257,8 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),funct
 			
 #			browser()
 			ind<-match(y,getNodes(obj))
+			if(is.na(ind)||length(ind)==0)
+				stop("Node:", y," not found!")
 			g<-getGate(obj,ind)
 			g
 			
@@ -268,7 +300,9 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 		})
 
 setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
-			ind<-which(getNodes(obj)%in%y)
+			ind<-match(y,getNodes(obj))
+			if(is.na(ind)||length(ind)==0)
+				stop("Node:", y," not found!")
 #			browser()
 			getIndices(obj,ind)
 			
@@ -279,21 +313,20 @@ setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="numeric"),func
 			.Call("R_getIndices",obj@pointer,getSample(obj),as.integer(y-1))
 			
 		})	
+#tsort argument is not used (for the compatibility with old API)
+#once the R paser is deprecated,it can be safely removed as well
 setMethod("getData",signature(obj="GatingHierarchyInternal"),function(obj,y=NULL,tsort=FALSE){
 			if(!obj@flag){
 				stop("Must run execute() before fetching data");
 			}
 
 			r<-nodeDataDefaults(obj@tree,"data")$data$ncfs[[getSample(obj)]]
-#			browser()			
+					
 			if(is.null(y)||y==1||getNodes(obj)[1]==y){
 				return (r)	
-			}else if(is.numeric(y)){
-				n<-getNodes(obj,tsort=tsort)[y]
-				return (getData(obj,n,tsort=tsort))
-			}else{
+			}else
 				return (r[getIndices(obj,y),])
-			}
+			
 			
 		})
 .isBoolGate<-function(x,y){
@@ -457,8 +490,11 @@ setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 
 #TODO: to inverse transform the range in order to display the raw scale
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
-			y<-match(y,getNodes(x))
-			plotGate(x,y,...)
+			
+			ind<-match(y,getNodes(x))
+			if(is.na(ind)||length(ind)==0)
+				stop("Node:", y," not found!")
+			plotGate(x,ind,...)
 			
 })
 setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
