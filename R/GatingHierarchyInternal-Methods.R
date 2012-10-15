@@ -273,11 +273,18 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 			{
 #				browser()
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
-#				browser()
+				filterId<-getNodes(obj)[y]
 				if(g$type==1)
-					polygonGate(.gate=matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
-				else if(g$type==2)
-					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=getNodes(obj)[y])
+				{
+					
+					
+					mat<-matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters))
+					if(nrow(mat)==2)#convert to rectangleGate
+						rectangleGate(.gate=mat,filterId=filterId)
+					else
+						polygonGate(.gate=mat,filterId=filterId)
+				}else if(g$type==2)
+					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=filterId)
 				else if(g$type==3)
 				{
 					nodeNames<-getNodes(obj)
