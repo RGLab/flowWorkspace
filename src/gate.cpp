@@ -231,6 +231,7 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
 
 
 }
+
 /*
  * TODO:try within method from boost/geometries forboost.polygon
  *  reimplement c++ version of inPolygon_c
@@ -424,6 +425,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 	}
 
 }
+
 vector<bool> rangegate::gating(flowData & fdata){
 
 	valarray<double> data_1d(fdata.subset(param.getName()));
@@ -438,6 +440,49 @@ vector<bool> rangegate::gating(flowData & fdata){
 	for(unsigned i=0;i<nEvents;i++)
 	{
 		ind[i]=data_1d[i]<=param.getMax()&&data_1d[i]>=param.getMin();
+	}
+
+
+	if(isNegate())
+		ind.flip();
+
+	return ind;
+
+}
+
+vector<bool> rectgate::gating(flowData & fdata){
+
+	vector<coordinate> vertices=param.getVertices();
+	unsigned nVertex=vertices.size();
+	if(nVertex!=2)
+		throw(domain_error("invalid number of vertices for rectgate!"));
+	string x=param.xName();
+	string y=param.yName();
+	valarray<double> xdata(fdata.subset(x));
+	valarray<double> ydata(fdata.subset(y));
+
+	unsigned nEvents=xdata.size();
+	//init the indices
+	vector<bool> ind(nEvents);
+
+	/*
+	 * actual gating
+	 */
+	for(unsigned i=0;i<nEvents;i++)
+	{
+		bool inX,inY;
+		double xMin=vertices.at(0).x;
+		double yMin=vertices.at(0).y;
+
+		double xMax=vertices.at(1).x;
+		double yMax=vertices.at(1).y;
+
+		if(xMin>xMax||yMin>yMax)
+			throw(domain_error("invalid vertices for rectgate!"));
+
+		inX=xdata[i]<=xMax&&xdata[i]>=xMin;
+		inY=ydata[i]<=yMax&&ydata[i]>=yMin;
+		ind[i]=inX&&inY;
 	}
 
 

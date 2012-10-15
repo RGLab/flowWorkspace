@@ -42,6 +42,7 @@ typedef struct{
 #define RANGEGATE 2
 #define BOOLGATE 3
 #define ELLIPSEGATE 4
+#define RECTGATE 5
 
 #define AND 1
 #define OR 2
@@ -195,11 +196,6 @@ public:
 	virtual void setTransformed(bool _isTransformed){isTransformed=_isTransformed;};
 };
 
-/*
- * rangeGate and rectGate are currently converted to polygon gate for gating
- * so they may be merged to polygonGate class in the future
- * if it is decided that there is no need to keep them as separate classes
- */
 class rangegate:public gate {
 	friend class boost::serialization::access;
 
@@ -243,17 +239,32 @@ private:
 
 			}
 public:
-	unsigned short getType(){return POLYGONGATE;}
-	void extend(flowData &,unsigned short);
-	vector<bool> gating(flowData &);
-	void transforming(trans_local &,unsigned short dMode);
-	vertices_valarray getVertices(){return param.toValarray();};
+	virtual unsigned short getType(){return POLYGONGATE;}
+	virtual void extend(flowData &,unsigned short);
+	virtual vector<bool> gating(flowData &);
+	virtual void transforming(trans_local &,unsigned short dMode);
+	virtual vertices_valarray getVertices(){return param.toValarray();};
 	void setParam(paramPoly _param){param=_param;};
-	paramPoly getParam(){return param;};
-	vector<string> getParamNames(){return param.getNameArray();};
+	virtual paramPoly getParam(){return param;};
+	virtual vector<string> getParamNames(){return param.getNameArray();};
 	polygonGate * clone(){return new polygonGate(*this);};
 };
+/*
+ * rectgate is a special polygon require simpler gating routine
+ */
+class rectgate:public polygonGate {
+	friend class boost::serialization::access;
 
+private:
+	template<class Archive>
+			void serialize(Archive &ar, const unsigned int version)
+			{
+				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
+
+			}
+public:
+	vector<bool> gating(flowData &);
+};
 /*
  * TODO: doing the gating without interpolating it into polygon
  */
@@ -277,7 +288,7 @@ public:
 	void extend(flowData &,unsigned short);
 	void toPolygon(unsigned);
 	void transforming(trans_local &,unsigned short dMode);
-	polygonGate * clone(){return new ellipseGate(*this);};
+	ellipseGate * clone(){return new ellipseGate(*this);};
 
 };
 /*

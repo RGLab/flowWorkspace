@@ -343,7 +343,6 @@ BEGIN_RCPP
 			  return ret;
 
 			}
-
 		default:
 		{
 //			cout<<g->getType()<<endl;
@@ -440,6 +439,33 @@ BEGIN_RCPP
 				g=pg;
 
 				break;
+			}
+			case RECTGATE:
+			{
+				polygonGate * rectg=new rectgate();
+
+				rectg->setNegate(isNeg);
+
+				paramPoly pp;
+				pp.setName(params);
+
+				vector<coordinate> v;
+				NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+				for(int i=0;i<boundaries.nrow();i++)
+				{
+					coordinate pCoord;
+					pCoord.x=boundaries(i,0);
+					pCoord.y=boundaries(i,1);
+					v.push_back(pCoord);
+
+				}
+				pp.setVertices(v);
+
+				rectg->setParam(pp);
+
+				g=rectg;
+				break;
+
 			}
 			default:
 				throw(domain_error("unsupported gate type!valid type: c(1,2,3)"));
