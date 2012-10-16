@@ -535,12 +535,17 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 #	browser()
 	if(!bool)
 	{
+		
 		boolInd<-unlist(lapply(i,.isBoolGate,x=gh))
+		if(which(boolInd)>0)
+			message("removing boolean gates!")
 		i<-i[!boolInd]
 	}
+	
 	plotList<-poplist<-as.list(i)
 	names(plotList)<-plotList
-	
+	if(length(plotList)==0)
+		stop("not gates to plot")
 	if(merge)
 	{
 		#check if they have same parents and parameters

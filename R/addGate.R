@@ -26,12 +26,22 @@ setMethod("add",
 		nodeID
 			
 		})
-
+setMethod("add",
+		signature=signature("GatingSetInternal", "filter"),
+		definition=function(wf, action, ...)
+		{
+			
+			message("replicating filter '",identifier(action),"' across samples!")
+			
+			actions<-sapply(getSamples(wf),function(x)return(action))
+			add(wf,actions,...)
+			
+		})
 .addGate<-function(gh,filterObject,parent=NULL, name=NULL,negated=FALSE){
 
 	if(is.null(name))
 		name<-filterObject$filterId
-	
+#	browser()
 	##get node ID
 	nodes<-getNodes(gh)
 	if(is.null(parent))
@@ -95,7 +105,42 @@ setMethod("add",
 		
 			.addGate(wf,filterObject,...)
 		})
-
+setMethod("add",
+		signature=signature("GatingHierarchyInternal", "booleanFilter"),
+		definition=function(wf, action, ...)
+		{
+			
+			
+#			browser()
+			expr<-action@deparse
+			pattern<-"&|\\|"
+			#get the position of logical operators
+			op_ind<-unlist(gregexpr(pattern=pattern,expr))
+			#extract these operators
+			op<-trimWhiteSpace(substring(expr,op_ind,op_ind+1))
+			##append & for the first node element(as C parser convention requires)
+			op<-c("&",op)
+			#split into node elements by operators
+			refs<-unlist(strsplit(expr,split=pattern)) 
+			refs<-trimWhiteSpace(refs)
+			#extract is not operator
+			isNot<-as.logical(regexpr("!",refs)+1) 
+			#strip is not operator from node elements
+			refs<-gsub("!","",refs)
+			
+			nNodes<-length(refs)
+			if(length(isNot)!=nNodes)
+				stop("the number of ! operators are inconsistent with nodes!")
+			if(length(op)!=nNodes)
+				stop("the number of logical operators are inconsistent with nodes!")
+			filterObject<-list(type=as.integer(3)
+								,refs=refs
+								,isNot=isNot
+								,op=op
+								,filterId=action@filterId)	
+#						browser()
+			.addGate(wf,filterObject,...)
+		})
 setMethod("add",
 		signature=signature("GatingHierarchyInternal", "quadGate"),
 		definition=function(wf, action,names=NULL,... )

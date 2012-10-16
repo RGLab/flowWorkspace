@@ -389,7 +389,7 @@ BEGIN_RCPP
 		StringVec names=filter.names();
 
 		unsigned short gateType=as<unsigned short>(filter["type"]);
-		StringVec params=as<StringVec>(filter["params"]);
+
 		bool isNeg=as<bool>(filter["negated"]);
 		gate * g;
 
@@ -397,6 +397,7 @@ BEGIN_RCPP
 		{
 			case RANGEGATE:
 			{
+				StringVec params=as<StringVec>(filter["params"]);
 				rangegate * rg=new rangegate();
 				rg->setNegate(isNeg);
 
@@ -415,6 +416,7 @@ BEGIN_RCPP
 			}
 			case POLYGONGATE:
 			{
+				StringVec params=as<StringVec>(filter["params"]);
 				polygonGate * pg=new polygonGate();
 
 				pg->setNegate(isNeg);
@@ -442,6 +444,7 @@ BEGIN_RCPP
 			}
 			case RECTGATE:
 			{
+				StringVec params=as<StringVec>(filter["params"]);
 				polygonGate * rectg=new rectgate();
 
 				rectg->setNegate(isNeg);
@@ -464,6 +467,41 @@ BEGIN_RCPP
 				rectg->setParam(pp);
 
 				g=rectg;
+				break;
+
+			}
+			case BOOLGATE:
+			{
+				boolGate * bg=new boolGate();
+
+				bg->setNegate(isNeg);
+				/*
+				 * get specification from R
+				 */
+				StringVec refs=as<StringVec>(filter["refs"]);
+				StringVec op=as<StringVec>(filter["op"]);
+				BoolVec isNot=as<BoolVec>(filter["isNot"]);
+
+				/*
+				 * convert to c class
+				 */
+				vector<BOOL_GATE_OP> res;
+				for(unsigned i=0;i<refs.size();i++)
+				{
+
+					BOOL_GATE_OP gOpObj;
+
+					boost::split(gOpObj.path,refs.at(i),boost::is_any_of("/"));
+					if(gOpObj.path.at(0).empty())
+						gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
+
+					gOpObj.isNot=isNot.at(i);
+					gOpObj.op=boost::iequals(op.at(i),"|")?'|':'&';
+
+					res.push_back(gOpObj);
+				}
+				bg->boolOpSpec=res;
+				g=bg;
 				break;
 
 			}

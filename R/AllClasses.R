@@ -57,3 +57,52 @@ setMethod("initialize","GatingSet",function(.Object,set=list(new("GatingHierarch
 })
 
 
+## ===========================================================================
+## BooleanGate
+## ---------------------------------------------------------------------------
+## A class describing logical operation (& or |) of the reference populations 
+## ---------------------------------------------------------------------------
+setClass("booleanFilter"
+		,contains=c("expressionFilter")
+)
+
+## Constructor: We allow for the following inputs:
+##  expr is always an expression
+##  ... are further arguments to the expression
+booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter")
+{
+	subs <- substitute(expr)
+	if(missing(filterId)){
+		filterId <- deparse(subs)
+		if(length(filterId)>1)
+			filterId <- paste(gsub("^ *", "", filterId[2]), "...", sep="")
+	}else flowCore:::checkClass(filterId, "character", 1)
+	new("booleanFilter", filterId=filterId, expr=as.expression(subs),
+			args=list(...), deparse=deparse(subs))
+}
+
+## Constructor from a character string: We allow for the following inputs:
+##  expr is always a character string
+char2booleanFilter <- function(expr, ...,
+		filterId="defaultBooleanFilter")
+{
+	flowCore:::checkClass(expr, "character", 1)
+	subs <- parse(text=expr)
+	if(missing(filterId))
+		filterId <- expr
+	else
+		flowCore:::checkClass(filterId, "character", 1)
+	new("expressionFilter", filterId=filterId, expr=subs,
+			args=list(...), deparse=expr)
+}
+
+
+setMethod("show",signature("booleanFilter"),function(object){
+			
+			msg <- paste("booleanFilter filter '", identifier(object),
+					"' evaluating the expression:\n",
+					paste(object@deparse, collapse="\n"), sep="")
+			cat(msg)
+			cat("\n")
+			invisible(msg)
+		})

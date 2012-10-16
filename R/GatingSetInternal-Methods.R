@@ -529,6 +529,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			if(lattice)
 			{
 				plotList<-.mergeGates(x[[1]],y,bool,merge)
+				
 				lapply(plotList,function(y){
 							
 							return(.plotGateGS(x,y,...))
@@ -581,18 +582,19 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	
 	parentdata<-getData(x,pid)
 	parentFrame<-parentdata[[1]]
-#			browser()
+			
 	smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
 	#################################
 	# setup axis labels and scales
 	################################
-	if(class(curGates)=="BooleanGate")
+	if(class(curGates[[1]])=="BooleanGate")
 	{
 		stop("bool gate plot is not supported for gatingSet yet! ")
-#		params<-rev(parameters(getGate(gh,getParent(gh,y))))
-#		ind<-getIndices(gh,y)
-#		curGate<-getData(x)[ind,params]##get gated pop from indexing the root pop because ind here is global
-#		
+		params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
+		ind<-getIndices(x[[1]],y)
+		curGate<-getData(x)[ind,params]##get gated pop from indexing the root pop because ind here is global
+
+		#TODO:add logical filter support to flowViz in order to viz booleanGate		
 #		panelFunc<-panel.xyplot.flowFrame.booleanGate
 	}else
 	{
@@ -895,3 +897,6 @@ setMethod("rbind2",signature("GatingSetInternal","GatingSetInternal"),function(x
 			rbind2(GatingSetList(list(x,y)),...)		
 		})
 
+setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE){
+			lapply(obj,function(x)getGate(x,y))
+		})
