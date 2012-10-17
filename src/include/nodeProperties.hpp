@@ -46,6 +46,7 @@ private:
 					ar.register_type(static_cast<ellipseGate *>(NULL));
 					ar.register_type(static_cast<boolGate *>(NULL));
 					ar.register_type(static_cast<rangegate *>(NULL));
+					ar.register_type(static_cast<rectgate *>(NULL));
 					ar & BOOST_SERIALIZATION_NVP(thisGate);
 
 					ar.register_type(static_cast<BOOLINDICES *>(NULL));

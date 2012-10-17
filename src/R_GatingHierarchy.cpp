@@ -445,7 +445,7 @@ BEGIN_RCPP
 			case RECTGATE:
 			{
 				StringVec params=as<StringVec>(filter["params"]);
-				polygonGate * rectg=new rectgate();
+				rectgate * rectg=new rectgate();
 
 				rectg->setNegate(isNeg);
 
@@ -522,7 +522,7 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_removeGate(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID) {
+RcppExport SEXP R_removeNode(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID) {
 BEGIN_RCPP
 
 
@@ -535,7 +535,7 @@ BEGIN_RCPP
 
 
 
-		gh->removeGate(nodeID);
+		gh->removeNode(nodeID);
 
 
 

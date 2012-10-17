@@ -152,7 +152,9 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 
 }
 /*
- * this is for semi-automated pipeline to add populations sequetially
+ * this is for semi-automated pipeline to add population node associated with gate
+ * assuming gate split the parent population into two subpops, one of which is to keep
+ * depends on isNegate flag of the gate
  */
 VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 {
@@ -174,7 +176,10 @@ VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 	return curChildID;
 
 }
-void GatingHierarchy::removeGate(VertexID nodeID)
+/*
+ * remove the node and associated population properities including indices and gates
+ */
+void GatingHierarchy::removeNode(VertexID nodeID)
 {
 
 	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
@@ -185,7 +190,15 @@ void GatingHierarchy::removeGate(VertexID nodeID)
 	if(dMode>=POPULATION_LEVEL)
 		cout<<"removing node:"<<curNode->getName()<<endl;
 	delete curNode;
+
+	//remove edge associated with this node
+	EdgeID e=getInEdges(nodeID);
+	/*removing vertex cause the rearrange node index
+	 * so make sure do it after get edge descriptor
+	 */
+	boost::remove_edge(e,tree);
 	boost::remove_vertex(nodeID,tree);
+
 }
 compensation GatingHierarchy::getCompensation(){
 	return comp;
@@ -433,13 +446,8 @@ void GatingHierarchy::calgate(VertexID u)
 	 * check if parent population is already gated
 	 * because the boolgate's parent might be visited later than boolgate itself
 	 */
-	VertexID_vec pids=getParent(u);
-	if(pids.size()==0)
-		throw(domain_error("parent node not found!"));
-	if(pids.size()>1) //we only allow one parent per node
-		throw(domain_error("multiple parent nodes found!"));
 
-	VertexID pid=pids.at(0);
+	VertexID pid=getParent(u);
 
 	nodeProperties *parentNode =getNodeProperty(pid);
 	if(!parentNode->isGated())
@@ -664,15 +672,7 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 		/*
 		 * search the children node of nodeID
 		 */
-		VertexID curNodeID=getChildren(nodeID,nodeNameFromPath);
-		if(curNodeID==-1)
-		{
-			string err="Node not found:";
-			err.append(nodeNameFromPath);
-			throw(domain_error(err));
-		}
-		else
-			nodeID=curNodeID;//update the
+		nodeID=getChildren(nodeID,nodeNameFromPath);
 
 	}
 	return nodeID;
@@ -688,15 +688,15 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string name){
 	{
 		u=*it;
 		if(getNodeProperty(u)->getName().compare(name)==0)
-			return u;
+			break;
 	}
 	if(it==nodesTomatch.end())
 	{
 		if(dMode>=POPULATION_LEVEL)
 			cout<<name<<" not found under the node: "<<boost::lexical_cast<string>(u)<<". returning the root instead."<<endl;;
-		return 0;
+		u=0;
 	}
-
+	return u;
 }
 
 /*
@@ -762,21 +762,13 @@ vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath){
 		 */
 		if(isPath)
 		{
-			while(u>0)//if u==0, it is a root vertex
+			while(u!=0)//if u==0, it is a root vertex
 			{
 				nodeName="/"+nodeName;
-				VertexID_vec parents=getParent(u);
-				if(parents.size()>1)
-				{
-					cout<<"multiple parent nodes."<<endl;
-					break;
-				}
-				else
-				{
-					u=parents.at(0);
+				u=getParent(u);
 					if(u>0)//don't append the root node
 						nodeName=getNodeProperty(u)->getName()+nodeName;
-				}
+
 
 			}
 
@@ -799,38 +791,46 @@ vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath){
 VertexID GatingHierarchy::getAncestor(VertexID u,unsigned short level){
 
 	for(unsigned short i=0;i<level;i++)
-		u=getParent(u).at(0);
+		u=getParent(u);
 	return(u);
 }
 /*
  * using boost in_edges out_edges to retrieve adjacent vertices
+ * assuming only one parent for each node
  */
-VertexID_vec GatingHierarchy::getParent(VertexID target){
-	VertexID_vec res;
+EdgeID GatingHierarchy::getInEdges(VertexID target){
+	vector<EdgeID> res;
+	string err;
+	err.append(boost::lexical_cast<string>(target));
+
 	if(target>=0&&target<=boost::num_vertices(tree)-1)
 	{
-//		cout<<"getting parent of "<<target<<"."<<tree[target].getName()<<endl;
 
-		EdgeID e;
 		boost::graph_traits<populationTree>::in_edge_iterator in_i, in_end;
 
 		for (tie(in_i, in_end) = in_edges(target,tree);
 			         in_i != in_end; ++in_i)
 		{
-		  e = *in_i;
-		  VertexID  sarg = boost::source(e, tree);
-		  res.push_back(sarg);
+			EdgeID e = *in_i;
+			res.push_back(e);
 		}
-
 
 	}
 	else
-	{
-		cout<<"Warning:invalid vertexID:"<<target<<endl;
-//		  res.push_back(0);
+		throw(domain_error(err+" :invalid vertexID!"));
 
-	}
-	return(res);
+
+	if(res.size()==0)
+		throw(domain_error(err+" :parent not found!"));
+	if(res.size()>1) //we only allow one parent per node
+		throw(domain_error(err+" :multiple parent nodes found!"));
+
+	return(res.at(0));
+}
+
+VertexID GatingHierarchy::getParent(VertexID target){
+	EdgeID e=getInEdges(target);
+	return  boost::source(e, tree);
 }
 /*
  * retrieve all children nodes
@@ -864,7 +864,7 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
  */
 VertexID GatingHierarchy::getChildren(VertexID source,string childName){
 
-	VertexID curNodeID=-1;
+	VertexID curNodeID;
 	VertexID_vec children=getChildren(source);
 	VertexID_vec::iterator it;
 	for(it=children.begin();it!=children.end();it++)
@@ -873,6 +873,13 @@ VertexID GatingHierarchy::getChildren(VertexID source,string childName){
 		if(getNodeProperty(curNodeID)->getName().compare(childName)==0)
 			break;
 	}
+	if(it==children.end())
+	{
+		string err="Node not found:";
+		err.append(childName);
+		throw(domain_error(err));
+	}
+
 
 	return(curNodeID);
 

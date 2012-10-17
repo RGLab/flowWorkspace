@@ -138,7 +138,7 @@ public:
 	/*append the gate to the tree*/
 	void addChild(VertexID parent,VertexID child);
 	VertexID addGate(gate* g,VertexID parentID,string popName);
-	void removeGate(VertexID nodeID);
+	void removeNode(VertexID nodeID);
 	void addPopulation(VertexID parentID,wsNode * parentNode,bool isGating);
 	VertexID addRoot(nodeProperties* rootNode);
 	VertexID addRoot();
@@ -171,7 +171,8 @@ public:
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
 	vector<string> getPopNames(unsigned short order,bool isPath);
 	VertexID getAncestor(VertexID u,unsigned short level);
-	VertexID_vec getParent(VertexID);
+	EdgeID getInEdges(VertexID target);
+	VertexID getParent(VertexID);
 	VertexID getDescendant(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);

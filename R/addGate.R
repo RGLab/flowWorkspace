@@ -203,7 +203,7 @@ setMethod("Rm",
 			nid<-match(symbol,getNodes(envir))
 			if(length(nid)==0)
 				stop(symbol," not found in gating tree")
-			.Call("R_removeGate",envir@pointer,getSample(envir),nid-1)
+			.Call("R_removeNode",envir@pointer,getSample(envir),nid-1)
 		})
 #construct a gatingset with empty trees (just root node) 
 setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){

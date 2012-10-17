@@ -92,7 +92,7 @@ int main(void) {
 
 	i=4;
 
-	clone_test(myTest.at(i));
+//	clone_test(myTest.at(i));
 //	unsigned loop=4000;
 //	for(unsigned j=0;j<loop;j++)
 //	{

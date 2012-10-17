@@ -89,19 +89,20 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 */
 
 		cout<<endl<<"check parent node"<<endl;
-		for(size_t i=0;i<=vertices.size();i++)
+		for(size_t i=0;i<vertices.size();i++)
 		{
-			VertexID_vec parent=gh->getParent(i);
-			cout<<i<<"<--";
-			for(VertexID_vec::iterator it=parent.begin();it!=parent.end();it++)
-				cout<<*it<<" ";
-			cout<<endl;
+			if(i!=0)
+			{
+				VertexID parent=gh->getParent(i);
+				cout<<i<<"<--"<<parent<<" ";
+				cout<<endl;
+			}
 		}
 
 
 
 		cout<<endl<<"check children node"<<endl;
-		for(size_t i=0;i<=vertices.size();i++)
+		for(size_t i=0;i<vertices.size();i++)
 		{
 			VertexID_vec children=gh->getChildren(i);
 			cout<<i<<"-->";
@@ -189,6 +190,10 @@ void gh_counts(GatingHierarchy* gh){
 
 }
 
+void gh_removeGate(GatingHierarchy* gh){
+	gh->removeNode(5);
+
+}
 void clone_test(testSuit myTest){
 	string archive=myTest.archive;
 	GatingSet *gs=new GatingSet();
@@ -245,6 +250,10 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadAr
 			gs_gating(*gs,curSample);
 
 		gh_counts(gh);
+
+		gh_removeGate(gh);
+
+		gh_accessor_test(gh);
 
 		if(!isLoadArchive)
 			save_gs(*gs,myTest.archive);

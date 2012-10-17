@@ -251,6 +251,8 @@ public:
 };
 /*
  * rectgate is a special polygon require simpler gating routine
+ * it doesn't overload getType member function, which means it is exposed to R
+ * as a regular polygonGate
  */
 class rectgate:public polygonGate {
 	friend class boost::serialization::access;

@@ -179,14 +179,20 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 		
 
 	}
-	stats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(y)-1)
-	pInd<-.Call("R_getParent",x@pointer,getSample(x),as.integer(y)-1)+1
 #	browser()
-	if(length(pInd)>0)#if parent exist
+	stats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(y)-1)
+	
+	pInd<-try(.Call("R_getParent", x@pointer, getSample(x), as.integer(y) -1),silent=T)
+	
+	
+	if(class(pInd)=="try-error")#if parent exist
+		pstats<-stats
+	else
 	{
+		pInd<-pInd+1 #convert c convention to R
 		pstats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(pInd)-1)
-	}else
-		pstats<-stats#list(FlowCore=c(count=0,proportion=0),FlowJo=c(count=0,proportion=0))
+	}
+		
 	
 #	browser()	
 	list(flowCore=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
@@ -200,10 +206,6 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 										))
 					,count=as.numeric(stats$FlowJo["count"]))	
 		)
-#	list(flowCore=c(parent.total=as.numeric(pstats$FlowCore["count"]),count=as.numeric(stats$FlowCore["count"]))
-#		,flowJo=c(parent.total=as.numeric(pstats$FlowJo["count"]),count=as.numeric(stats$FlowJo["count"])
-#					)	
-#	)	
 }
 setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 
