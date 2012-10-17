@@ -537,7 +537,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 	{
 		
 		boolInd<-unlist(lapply(i,.isBoolGate,x=gh))
-		if(which(boolInd)>0)
+#		browser()
+		if(length(which(boolInd))>0)
 			message("removing boolean gates!")
 		i<-i[!boolInd]
 	}
