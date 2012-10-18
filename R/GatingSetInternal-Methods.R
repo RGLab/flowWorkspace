@@ -59,7 +59,7 @@ unarchive<-function(file){
 	dat.file<-file.path(output,files[grep(".dat$",files)])
 	rds.file<-file.path(output,files[grep(".rds$",files)])
 	
-	nc.file<-file.path(output,files[grep(".nc$",files)])
+	nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
 #	browser()
 	if(length(dat.file)==0)
 		stop(".dat file missing in ",file)
