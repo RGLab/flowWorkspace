@@ -505,8 +505,14 @@ BEGIN_RCPP
 				break;
 
 			}
+			case LOGICALGATE:
+			{
+				//TODO:create and implement logical gate class
+				throw(domain_error("LOGICALGATE is not unsupported yet!"));
+				break;
+			}
 			default:
-				throw(domain_error("unsupported gate type!valid type: c(1,2,3)"));
+				throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));
 
 		}
 

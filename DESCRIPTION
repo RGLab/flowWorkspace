@@ -9,7 +9,7 @@ Description: This package is designed to facilitate comparison of automated gati
 License: Artistic-2.0
 LazyLoad: yes
 Imports: Biobase, XML,flowCore, graph, graphics, lattice, methods, stats, stats4, utils,Rgraphviz
-Collate: AllClasses.R AllGenerics.R AllMethods.R InternalClasses.R GatingHierarchyInternal-Methods.R GatingSetInternal-Methods.R GatingSetList-Methods.R AllExportMethods.R flowWorkspace2flowCore-methods.R flowWorkspaceEdit-methods.R bitVector.R addGate.R zzz.R
+Collate: AllClasses.R AllGenerics.R AllMethods.R InternalClasses.R GatingHierarchyInternal-Methods.R GatingSetInternal-Methods.R GatingSetList-Methods.R AllExportMethods.R flowWorkspace2flowCore-methods.R flowWorkspaceEdit-methods.R bitVector.R add-methods.R zzz.R
 Depends: Rcpp (>= 0.9.9),Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore, flowViz, Biobase, IDPmisc, tools,hexbin,gridExtra
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Enhances: multicore,Rmpi,ncdfFlow

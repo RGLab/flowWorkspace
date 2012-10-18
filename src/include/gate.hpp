@@ -43,6 +43,7 @@ typedef struct{
 #define BOOLGATE 3
 #define ELLIPSEGATE 4
 #define RECTGATE 5
+#define LOGICALGATE 6
 
 #define AND 1
 #define OR 2
