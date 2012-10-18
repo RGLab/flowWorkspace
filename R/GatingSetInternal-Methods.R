@@ -154,7 +154,7 @@ unarchive<-function(file){
 	}
 #	browser()
 #	print(Sys.time()-time1)
-	G<-.addGatingHierachy(G,files,execute,isNcdf,...)
+	G<-.addGatingHierarchy(G,files,execute,isNcdf,...)
 #	time1<-Sys.time()
 
 	message("done!")
@@ -198,13 +198,13 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			message("generating new GatingSet from the gating template...")
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
 			
-			Object<-.addGatingHierachy(Object,files,execute=TRUE,isNcdf)
+			Object<-.addGatingHierarchy(Object,files,execute=TRUE,isNcdf)
 			return(Object)
 		})
 ############################################################################
 #constructing gating set
 ############################################################################
-.addGatingHierachy<-function(G,files,execute,isNcdf,compensation=NULL,...){
+.addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,...){
 #	browser()
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env()
@@ -356,6 +356,10 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
 				else
 					assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
+			}else{
+				#if cid is -2 add to ncdf flow set. Fixes bug where a missing compensation matrix with ncdfFlow does not save the uncompensated data.
+				if(isNcdf)
+					addFrame(fs,data,sampleName)
 			}	
 		}
 		
