@@ -250,7 +250,7 @@ public:
 	polygonGate * clone(){return new polygonGate(*this);};
 };
 /*
- * rectgate is a special polygon require simpler gating routine
+ * rectgate is a special polygon requires simpler gating routine
  * it doesn't overload getType member function, which means it is exposed to R
  * as a regular polygonGate
  */
@@ -261,7 +261,7 @@ private:
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
-				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
+				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
 
 			}
 public:
@@ -278,7 +278,7 @@ private:
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
-				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<polygonGate>(*this));
+				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
 				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
 
 			}
