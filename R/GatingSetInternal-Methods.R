@@ -549,7 +549,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			
 		})
 #TODO:merge this to .plotGate routine
-.plotGateGS<-function(x,y,formula=NULL,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
+.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
 	gh<-x[[1]]
 	if(is.list(y))
 		pid<-y$parentId
@@ -624,12 +624,17 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 
 	axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
 	
-	
+#	browser()
 	#################################
 	# the actual plotting
 	################################
 	if(is.null(formula))
-		formula<-mkformula(params)
+		formula<-mkformula(params,isChar=T)
+	if(!is.null(cond))
+	{
+		formula<-paste(formula,cond,sep="|")
+		formula<-as.formula(formula)
+	}
 	res<-xyplot(x=formula
 			,data=parentdata[,params]
 			,filter=curGates
@@ -683,7 +688,6 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 		isPlotGate<-FALSE
 	formula1<-paste("`",y,"`~`",x,"`",sep="")
 	if(!is.null(cond))
-#		formula1<-mkformula(c(y,x))
 		formula1<-paste(formula1,cond,sep="|")
 	formula1<-as.formula(formula1)
 #	browser()

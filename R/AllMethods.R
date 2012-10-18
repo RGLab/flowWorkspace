@@ -1381,12 +1381,14 @@ setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot
 #
 
 
-mkformula<-function(dims2){
+mkformula<-function(dims2,isChar=FALSE){
 	if(length(dims2)==1){
-		form<-as.formula(paste(c("",sapply((dims2), function(x) paste("`",x, "`", sep = ""))), collapse = "~"))
+		form<-paste(c("",sapply((dims2), function(x) paste("`",x, "`", sep = ""))), collapse = "~")
 	}else{
-		form<-as.formula(paste(sapply((dims2),function(x)paste("`",x,"`",sep="")),collapse="~"))
+		form<-paste(sapply((dims2),function(x)paste("`",x,"`",sep="")),collapse="~")
 	}
+	if(!isChar)
+		form<-as.formula(form)	
 	return(form)
 }
 #plotgate.panelfun<-function(gh=x,g=y,tsort=tsort,...){
