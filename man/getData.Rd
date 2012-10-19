@@ -2,13 +2,15 @@
 \alias{getData}
 \alias{getData-methods}
 \alias{getData,GatingHierarchy-method}
+\alias{getData,GatingHierarchyInternal-method}
 \alias{getData,GatingSet-method}
+\alias{getData,GatingSetInternal-method}
 \alias{getData,graphNEL-method}
 \title{
-Return the flowFrame associated with a GatingHierarchy
+Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 }
 \description{
-Return the \code{flowFrame} associated with a \code{GatingHierarchy}
+Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 }
 \usage{
 \S4method{getData}{GatingHierarchy}(obj,y=NULL,tsort=FALSE)
@@ -23,14 +25,17 @@ A \code{GatingHierarchy}, \code{GatingSet}, or \code{graphNEL} object extracted 
 \code{character} node name or \code{numeric} node index. Default is \code{NULL}. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. Defaults to \code{NULL}, will return the complete flowFrame at the root node.
 }
 	\item{tsort}{
-	\code{TRUE|FALSE} logical indicating whether to retrieve the node list in topological sort order. Defaults to FALSE for internal compatibility.
+	deprecated.
 	}
 }
 \details{
-Returns a flowFrame containing the events in the gate defined at node \code{y}. Subset membership can be obtained using \code{getIndices}. Population statistics can be obtained using \code{getPop} and \code{getPopStats}. When calling \code{getData} on a GatingSet, \code{y="numeric"} only. Furthermore, the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure, facilitating identical node ordering with tsort=TRUE, and numeric indexing of the nodes.
+Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}. 
+Subset membership can be obtained using \code{getIndices}. 
+Population statistics can be obtained using \code{getPop} and \code{getPopStats}. 
+When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure, facilitating identical node ordering with tsort=TRUE, and numeric indexing of the nodes.
 }
 \value{
-A \code{flowFrame} object if \code{obj} is a GatingHierarchy or graphNEL. A \code{flowSet} if 
+A \code{flowFrame} object if \code{obj} is a GatingHierarchy or graphNEL. A \code{flowSet} if a \code{GatingSet} 
 }
 \references{
 \url{http://www.rglab.org/}

@@ -2,17 +2,17 @@
 #20110314
 #TODO wrap isNcdf slot with get/set methods
 setGeneric("isNcdf", function(x){standardGeneric("isNcdf")})
-setMethod("isNcdf",signature("GatingHierarchyInternal"),function(x){
+setMethod("isNcdf",c("GatingHierarchyInternal"),function(x){
 #			browser()
 			fs<-x@tree@nodeData@defaults$data$data$ncfs
 			return (class(fs)=="ncdfFlowSet")
 			
 		})
-setMethod("isNcdf",signature("GatingHierarchy"),function(x){
+setMethod("isNcdf",c("GatingHierarchy"),function(x){
 			return(x@isNcdf)
 		})
 
-setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
+setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 			
 #			browser()
 			DotFile<-tempfile()
@@ -57,7 +57,7 @@ setMethod("plot",signature("GatingHierarchyInternal","missing"),function(x,y,lay
 			
 })
 
-setMethod("show",signature("GatingHierarchyInternal"),function(object){
+setMethod("show","GatingHierarchyInternal",function(object){
 			cat("\tFCS File: ",getSample(object),"\n");
 			cat("\tGatingHierarchy with ",length(getNodes(object))," gates\n");
 			print(object@pointer)
@@ -65,11 +65,11 @@ setMethod("show",signature("GatingHierarchyInternal"),function(object){
 		})
 
 #Return the value of the keyword given a flowWorkspace and the keyword name
-setMethod("keyword",signature("GatingHierarchyInternal","character"),function(object,keyword){
+setMethod("keyword",c("GatingHierarchyInternal","character"),function(object,keyword){
 			
 			keyword(getData(object),keyword)
 		})
-setMethod("getKeywords",signature("GatingHierarchyInternal","missing"),function(obj,y){
+setMethod("getKeywords",c("GatingHierarchyInternal","missing"),function(obj,y){
 			keyword(getData(obj))
 		})
 #Note:integer indices of nodes are based on regular order

@@ -2,6 +2,7 @@
 \alias{getProp}
 \alias{getProp-methods}
 \alias{getProp,GatingHierarchy,character-method}
+\alias{getProp,GatingHierarchyInternal,character-method}
 \title{
 Get the population proportions of a node (population) in a GatingHierarchy
 }

@@ -1,13 +1,17 @@
 \name{getGate}
 \alias{getGate}
 \alias{getGate,GatingHierarchy,character-method}
+\alias{getGate,GatingHierarchyInternal,character-method}
 \alias{getGate,GatingHierarchy,numeric-method}
+\alias{getGate,GatingHierarchyInternal,numeric-method}
 \alias{getGate,GatingSet,numeric-method}
+\alias{getGate,GatingSetInternal,character-method}
+\alias{getGate,GatingSetInternal,numeric-method}
 \title{
-Return the flowCore gate definition associated with a node in a GatingHierarchy.
+Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.
 }
 \description{
-Return the flowCore gate definition object associated with a node in a \code{GatingHierarchy} object.
+Return the flowCore gate definition object associated with a node in a \code{GatingHierarchy} or \code{GatingSet} object.
 }
 \usage{
 \S4method{getGate}{GatingHierarchy,character}(obj, y)
@@ -20,10 +24,10 @@ Return the flowCore gate definition object associated with a node in a \code{Gat
 A \code{GatingHierrarchy} or \code{GatingSet}
 }
   \item{y}{
-A \code{character} when \code{obj} is a GatingHierarchy: the name of the node of interest.  Or, a \code{numeric} when \code{obj} is either a GatingHierarchy or GatingSet. An index into the node list of nodes in the \code{GatingHierarchy} or \code{GatingSet}.
+A \code{character} the name of the node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy} or \code{GatingSet}.
 }
 \item{tsort}{
-\code{TRUE|FALSE} if true, return the index \code{y} will access the nodes in topological sort order.
+deprecated.
 }
 }
 \value{
@@ -43,10 +47,10 @@ Greg Finak \email{gfinak@fhcrc.org}
 \code{\link{getData}} \code{\link{getNodes}}
 }
 \examples{
-\dontrun{	#G is a GatingHierarchy
-	getGate(G,5,tsort=TRUE) #return the gate for the fifth node in the tree.
-	getGate(G,getNodes(G,tsort=TRUE)[5]) #return the gate for the fifth node in the tree, but fetch it by name.
+\dontrun{	#gh is a GatingHierarchy
+	getGate(gh,5) #return the gate for the fifth node in the tree.
+	getGate(gh,getNodes(gh)[5]) #return the gate for the fifth node in the tree, but fetch it by name.
 	#G is a GatingSet
-	getGate(G,5,tsort=TRUE) #return a list of gates for the fifth node in each tree, assuming topological sort ordering.
+	getGate(G,5) #return a list of gates for the fifth node in each tree
 }}
 \keyword{ manip }

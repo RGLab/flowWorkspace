@@ -82,7 +82,7 @@ setMethod("haveSameGatingHierarchy",signature=c("list","missing"),function(objec
 	}
 })
 
-setMethod("show",signature("flowJoWorkspace"),function(object){
+setMethod("show",c("flowJoWorkspace"),function(object){
 	cat("FlowJo Workspace Version ",object@version,"\n");
 	cat("File location: ",object@path,"\n");
 	cat("File name: ",object@file,"\n");
@@ -103,7 +103,7 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 })
 setOldClass("summary")
 
-setMethod("summary",signature("flowJoWorkspace"),function(object,...){
+setMethod("summary",c("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
 
@@ -628,7 +628,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	#assign("thisIndices",list(),env=nodeData(g,nm,"metadata")[[1]])
 	return(g);
 }
-setMethod("[",signature("GatingSet"),function(x,i,j,...,drop){
+setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 	x@set<-x@set[i]
 	x@metadata<-x@metadata[i]
 	
@@ -676,7 +676,7 @@ setMethod("[",signature("GatingSet"),function(x,i,j,...,drop){
 	clone
 }
 
-setMethod("[[",signature("GatingSet"),function(x,i,j,...){
+setMethod("[[",c("GatingSet"),function(x,i,j,...){
 	return(x@set[[i]]);
 })
 setReplaceMethod("[[",signature("GatingSet",value="GatingHierarchy"),function(x,i,j,...,value){
@@ -1848,7 +1848,7 @@ setMethod("getData",signature(obj="GatingSet"),function(obj,y=NULL,tsort=FALSE){
 #		stop("Invalid value for y. Must be class \"numeric\"");
 	}
 })
-setMethod("getKeywords",signature("flowJoWorkspace","character"),function(obj,y){
+setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
 	w <- which(xpathApply(obj@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value"))%in%y)
 	l<-xpathApply(obj@doc,paste("/Workspace/SampleList/Sample[",w,"]/Keywords/node()",sep=""),xmlAttrs)
 	names(l)<-lapply(l,function(x)x[["name"]])
@@ -1926,11 +1926,11 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	return(l)
 }
 
-setMethod("getKeywords",signature("GatingHierarchy","missing"),function(obj,y){
+setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
 	get("keywords",envir=nodeData(obj@tree)[[1]]$metadata);
 })
 #Return the list of keywords given a GatingSet and a sample name
-setMethod("getKeywords",signature("GatingSet","character"),function(obj,y){
+setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
 	ind<-which(getSamples(obj)%in%y)
 	if(length(ind)>0){
 		getKeywords(obj,ind);
@@ -1938,7 +1938,7 @@ setMethod("getKeywords",signature("GatingSet","character"),function(obj,y){
 		stop(paste("Sample ",y," not in GatingSet",sep=""));
 	}
 })
-setMethod("getKeywords",signature("GatingSet","numeric"),function(obj,y){
+setMethod("getKeywords",c("GatingSet","numeric"),function(obj,y){
 	if(length(obj)<y){
 		stop("index out of range");
 	}else{
@@ -1946,11 +1946,11 @@ setMethod("getKeywords",signature("GatingSet","numeric"),function(obj,y){
 	}
 })
 #Return the value of the keyword given a flowWorkspace and the keyword name
-setMethod("keyword",signature("GatingHierarchy","character"),function(object,keyword){
+setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 	kw<-as.environment(getKeywords(object))
 	mget(keyword,kw);
 })
-setMethod("keyword",signature("GatingSet","character"),function(object,keyword){
+setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 	tmp<-data.frame(unlist(lapply(object,function(x)keyword(x,keyword)),use.names=FALSE));
 	tmp<-data.frame(matrix(tmp[[1]],ncol=length(keyword),byrow=T))
 	colnames(tmp)<-keyword

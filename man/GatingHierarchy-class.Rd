@@ -2,37 +2,17 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{GatingHierarchy-class}
-%\alias{[[<-,GatingSet,ANY,ANY,GatingHierarchy-method}
-%\alias{execute,GatingHierarchy-method}
-%\alias{flowWorkspace2flowCore,GatingHierarchy-method}
-%\alias{getBoundaries,GatingHierarchy,character-method}
-%\alias{getChildren,GatingHierarchy,character-method}
-%\alias{getData,GatingHierarchy-method}
-%\alias{getDimensions,GatingHierarchy,character-method}
-%\alias{getGate,GatingHierarchy,character-method}
-%\alias{getGate,GatingHierarchy,numeric-method}
-%\alias{getIndices,GatingHierarchy,character-method}
-%\alias{getKeywords,GatingHierarchy,missing-method}
-%\alias{getNodes,GatingHierarchy-method}
-%\alias{getParent,GatingHierarchy,character-method}
-%\alias{getParent,GatingHierarchy,numeric-method}
-%\alias{getPopStats,GatingHierarchy-method}
-%\alias{getProp,GatingHierarchy,character-method}
-%\alias{getSample,GatingHierarchy-method}
-%\alias{getTotal,GatingHierarchy,character-method}
-%\alias{keyword,GatingHierarchy,character-method}
-%\alias{plot,GatingHierarchy,missing-method}
-%\alias{plotGate,GatingHierarchy,character-method}
-%\alias{plotGate,GatingHierarchy,numeric-method}
-%\alias{plotPopCV,GatingHierarchy-method}
-%\alias{show,GatingHierarchy-method}
+\alias{GatingHierarchyInternal-class}
 
 \title{Class \code{"GatingHierarchy"}}
 \description{
-GatingHierarchy is a class for representing the gating hierarchy imported from a flowJo workspace. 
+GatingHierarchy is a class for representing the gating hierarchy,which can be either imported from a flowJo workspace or constructed in R.
+GatingHierarchyInternal is a derived class which represents the tree structure in C data structure. 
 }
 \section{Details}{
 There is a one-to-one correspondence between GatingHierarchy objects and FCS files in the flowJo workspace. Each sample (FCS file) is associated with it's own GatingHierarchy. This is different from the workflow representation used in flowCore.
+
+It is also more space efficient by storing gating results as logical/bit vector instead of copying the raw data.
 
 A GatingHierarchy can have two ``states''. After a call to parseWorkspace(...,execute=FALSE), the workspace is imported but the data is not. A call to execute() is needed in order to load, transform, compensate, and gate the associated data. Alternately, one may call parseWorkspace(...,execute=TRUE). Whether or not a GatingHierarchy has been applied to data is encoded in the \code{flag} slot. Some methods will warn the user, or may not function correctly if the GatingHierarchy has not been execute()d.This mechanism is in place, largely for the purpose of memory efficiency when working with larger workspaces. It allows the use to load a workspace and subset desired samples before proceeding to load the data. If one has netCDF 4 library installed, then memory is no longer an issue.
 
@@ -88,6 +68,7 @@ http://www.rglab.org/import-flowjo-workspaces-into-r-bioconductor/
 }
 \author{
 Greg Finak <gfinak@fhcrc.org>
+Mike Jiang <wjiang2@fhcrc.org>
 }
 
 \seealso{

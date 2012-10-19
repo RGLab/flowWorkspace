@@ -3,10 +3,10 @@
 \alias{getNcdf,GatingHierarchy-method}
 \alias{getNcdf,GatingSet-method}
 \title{
-Return the ncdfFlow object storing the data
+Return the ncdfFlow object storing the data.Deprecated. use getData instead.
 }
 \description{
-Returns the netcdfFlowSet object that stores the data
+Returns the ncdfFlowSet object that stores the data
 }
 \usage{
 \S4method{getNcdf}{GatingHierarchy}(obj)

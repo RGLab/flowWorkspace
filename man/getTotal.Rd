@@ -2,6 +2,8 @@
 \alias{getTotal}
 \alias{getTotal-methods}
 \alias{getTotal,GatingHierarchy,character-method}
+\alias{getTotal,GatingHierarchyInternal,character-method}
+
 \title{
 Fetch the total number of events in a gate defined in a GatingHierarchy
 }

@@ -861,7 +861,7 @@ setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,val
 
 
 ##overload the original method to add subetting on flowSet/ncdfFlowSet
-setMethod("[",signature("GatingSetInternal"),function(x,i,j,...,drop){
+setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 			
 			clone<-x
 			
@@ -899,7 +899,7 @@ setMethod("[",signature("GatingSetInternal"),function(x,i,j,...,drop){
 		})
 		
 		
-setMethod("rbind2",signature("GatingSetInternal","GatingSetInternal"),function(x,y,...){
+setMethod("rbind2",c("GatingSetInternal","GatingSetInternal"),function(x,y,...){
 			#up to user to make sure x,y have the same gating hierarchy
 #			if(!haveSameGatingHierarchy(x,y)){
 #				stop("x and y must have the same gating hierarchy for each sample")

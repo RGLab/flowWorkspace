@@ -2,6 +2,7 @@
 \alias{getKeywords}
 \alias{getKeywords-methods}
 \alias{getKeywords,GatingHierarchy,missing-method}
+\alias{getKeywords,GatingHierarchyInternal,missing-method}
 \alias{getKeywords,GatingSet,character-method}
 \alias{getKeywords,GatingSet,numeric-method}
 \alias{getKeywords,flowJoWorkspace,character-method}

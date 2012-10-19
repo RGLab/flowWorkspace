@@ -2,6 +2,7 @@
 \alias{getSample}
 \alias{getSample-method}
 \alias{getSample,GatingHierarchy-method}
+\alias{getSample,GatingHierarchyInternal-method}
 \alias{getSample,graphNEL-method}
 \title{
 Get the sample name associated with a GatingHierarchy

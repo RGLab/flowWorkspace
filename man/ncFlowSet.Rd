@@ -7,7 +7,7 @@
 \alias{ncFlowSet<-,GatingHierarchy-method}
 \alias{ncFlowSet<-,GatingSet-method}
 \title{
-Fetch or replace the ncdfFlowSet object in a GatingSet or GatingHierarchy
+Fetch or replace the ncdfFlowSet object in a GatingSet or GatingHierarchy. Deprecated by getData method.
 }
 \description{
 Accessor method that sets or replaces the ncdfFlowSet object in a GatingSet or GatingHierarchy

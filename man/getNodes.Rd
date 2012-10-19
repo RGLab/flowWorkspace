@@ -2,6 +2,7 @@
 \alias{getNodes}
 \alias{getNodes-methods}
 \alias{getNodes,GatingHierarchy-method}
+\alias{getNodes,GatingHierarchyInternal-method}
 \title{
 Get the names of all nodes in a gating hierarchy
 }
@@ -9,15 +10,21 @@ Get the names of all nodes in a gating hierarchy
 Returns a character vector of names of the nodes (populations) in the \code{GatingHierarchy}.
 }
 \usage{
-\S4method{getNodes}{GatingHierarchy}(x,tsort=FALSE,...)
+\S4method{getNodes}{GatingHierarchy}(x,y=NULL,order="regular",isPath=FALSE,...)
 }
 \arguments{
   \item{x}{
 A \code{GatingHierarchy}
 }
-  \item{tsort}{
-	\code{tsort=TRUE|FALSE} returns the nodes in topological sort (TRUE) order.
+\item{y}{
+A \code{character} the name of the node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
 }
+  \item{order}{
+	\code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
+		"regular" is default.
+		}
+	\item{isPath}{ A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
+		}
 	\item{...}{
 	Additional arguments.
 	}
@@ -38,7 +45,8 @@ Greg Finak \email{gfinak@fhcrc.org}
 \examples{
 \dontrun{
 	#G is a gating hierarchy
-	getNodes(G,tsort=TRUE)#return nodes in topological sort order.
+	getNodes(G[[1]])#return node names
+	getNodes(G[[1]],isPath=TRUE)#return the full path
 }
 }
 \keyword{ manip }

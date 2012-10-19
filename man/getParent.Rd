@@ -3,6 +3,8 @@
 \alias{getParent-methods}
 \alias{getParent,GatingHierarchy,character-method}
 \alias{getParent,GatingHierarchy,numeric-method}
+\alias{getParent,GatingHierarchyInternal,character-method}
+\alias{getParent,GatingHierarchyInternal,numeric-method}
 \title{
 Return the name of the parent population of the current population in the GatingHierarchy
 }
@@ -20,7 +22,7 @@ A \code{GatingHierarchy}}
 The population whose parent you want to retrieve, either \code{character} or \code{numeric}
 }
 \item{tsort}{
-\code{logical} If TRUE, nodes are ordered by topological sort. Important when comparing across identical trees and using numeric indices. Default FALSE.
+deprecated.
 }
 }
 \value{
@@ -40,7 +42,7 @@ Greg Finak \email{gfinak@fhcrc.org}
 \dontrun{
 	#G is a gatinghierarchy
 	#return the name of the parent of the fifth node in the hierarchy.
-	getParent(G,getNodes(G,tsort=TRUE)[5])
+	getParent(G,getNodes(G[[1)[5])
 }
 }
 \keyword{ manip }

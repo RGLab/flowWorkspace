@@ -2,25 +2,14 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{GatingSet-class}
+\alias{GatingSetInternal-class}
 \alias{[,GatingSet,ANY-method}
-%\alias{[<-,GatingSet,ANY,ANY,GatingSet-method}
 \alias{[[,GatingSet,ANY-method}
-%\alias{[[<-,GatingSet,ANY,ANY,GatingHierarchy-method}
-%\alias{flowWorkspace2flowCore,GatingSet-method}
-%\alias{getData,GatingSet-method}
-%\alias{getGate,GatingSet,numeric-method}
-%\alias{getKeywords,GatingSet,character-method}
-%\alias{getKeywords,GatingSet,numeric-method}
-%\alias{getSamples,GatingSet-method}
-%\alias{keyword,GatingSet,character-method}
-%\alias{lapply,GatingSet-method}
-%\alias{length,GatingSet-method}
-%\alias{plotPopCV,GatingSet-method}
-%\alias{show,GatingSet-method}
 
 \title{Class \code{"GatingSet"}}
 \description{
-Class that holds a set of \code{GatingHierarchy} objects, representing a set of samples and the gating scheme associated with each. 
+GatingSet holds a set of \code{GatingHierarchy} objects, representing a set of samples and the gating scheme associated with each.
+GatingSetInternal is the derived class that holds \code{GatingHierarchyInternal} objects.
 }
 \section{Objects from the Class}{
 Objects can be created by a call to parseWorkspace().

@@ -2,12 +2,14 @@
 \alias{getPopStats}
 \alias{getPopStats-methods}
 \alias{getPopStats,GatingHierarchy-method}
+\alias{getPopStats,GatingHierarchyInternal-method}
 \alias{getPopStats,GatingSet-method}
+\alias{getPopStats,GatingSetInternal-method}
 \title{
-Return a table of population statistics for all populations in a GatingHierarchy
+Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
 }
 \description{
-More useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}. Includes the flowJo counts, flowCore counts and frequencies.
+More useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the flowJo counts, flowCore counts and frequencies.
 }
 \usage{
 \S4method{getPopStats}{GatingHierarchy}(x,...)

@@ -1,5 +1,5 @@
 setMethod("add",
-		signature=signature(wf="GatingSet", "list"),
+		signature=c(wf="GatingSet", "list"),
 		definition=function(wf, action, ...)
 		{
 			
@@ -8,7 +8,7 @@ setMethod("add",
 			
 		})
 setMethod("add",
-		signature=signature("GatingSetInternal", "filterList"),
+		signature=c("GatingSetInternal", "filterList"),
 		definition=function(wf, action, ...)
 		{
 			nodeIDs<-lapply(names(action),function(sample){
@@ -27,7 +27,7 @@ setMethod("add",
 			
 		})
 setMethod("add",
-		signature=signature("GatingSetInternal", "filter"),
+		signature=c("GatingSetInternal", "filter"),
 		definition=function(wf, action, ...)
 		{
 			
@@ -58,7 +58,7 @@ setMethod("add",
 	nodeID+1
 }
 setMethod("add",
-		signature=signature("GatingHierarchyInternal", "rectangleGate"),
+		signature=c("GatingHierarchyInternal", "rectangleGate"),
 		definition=function(wf, action,... )
 		{
 #			browser()
@@ -90,7 +90,7 @@ setMethod("add",
 		})
 
 setMethod("add",
-		signature=signature("GatingHierarchyInternal", "polygonGate"),
+		signature=c("GatingHierarchyInternal", "polygonGate"),
 		definition=function(wf, action, ...)
 		{
 
@@ -106,7 +106,7 @@ setMethod("add",
 			.addGate(wf,filterObject,...)
 		})
 setMethod("add",
-		signature=signature("GatingHierarchyInternal", "booleanFilter"),
+		signature=c("GatingHierarchyInternal", "booleanFilter"),
 		definition=function(wf, action, ...)
 		{
 			
@@ -142,7 +142,7 @@ setMethod("add",
 			.addGate(wf,filterObject,...)
 		})
 setMethod("add",
-		signature=signature("GatingHierarchyInternal", "quadGate"),
+		signature=c("GatingHierarchyInternal", "quadGate"),
 		definition=function(wf, action,names=NULL,... )
 		{
 			
@@ -183,7 +183,7 @@ setMethod("add",
 ## to save the efforts of adding new filter type, but the extra contructor is necessary to 
 ## convert logical vector to filterResult.
 setMethod("add",
-		signature=signature("GatingHierarchyInternal", "logicalGate"),
+		signature=c("GatingHierarchyInternal", "logicalGate"),
 		definition=function(wf, action, name,...)
 		{
 			
@@ -203,7 +203,7 @@ setMethod("add",
 		})
 
 setMethod("Rm",
-		signature=signature(symbol="character",
+		signature=c(symbol="character",
 				envir="GatingSetInternal",
 				subSymbol="character"),
 		definition=function(symbol, envir, subSymbol, ...)
@@ -215,7 +215,7 @@ setMethod("Rm",
 		})
 
 setMethod("Rm",
-		signature=signature(symbol="character",
+		signature=c(symbol="character",
 				envir="GatingHierarchyInternal",
 				subSymbol="character"),
 		definition=function(symbol, envir, subSymbol, ...)

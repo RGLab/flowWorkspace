@@ -2,25 +2,31 @@
 \alias{getCompensationMatrices}
 \alias{getCompensationMatrices-methods}
 \alias{getCompensationMatrices,flowJoWorkspace-method}
+\alias{getCompensationMatrices,GatingHierarchy-method}
+\alias{getCompensationMatrices,GatingHierarchyInternal-method}
+
 \title{
-Retrieve the compensation matrices from a flowJo Workspace
+Retrieve the compensation matrices from a flowJo Workspace or GatingHierarchy
 }
 \description{
-Retrieve all the compensation matrices from a flowJo workspace
+Retrieve the compensation matrices from a flowJo workspace or GatingHierarchy.
 }
 \usage{
 \S4method{getCompensationMatrices}{flowJoWorkspace}(x)
+\S4method{getCompensationMatrices}{GatingHierarchy}(x)
 }
 \arguments{
   \item{x}{
-A \code{flowJoWorkspace} object.
+A \code{flowJoWorkspace} or \code{GatingHierarchy} object.
 }
 }
 \details{
-Return all the compensation matrices in a flowJoWorkspace object.
+Return all the compensation matrices in a flowJoWorkspace object or a compensation matrix in a GatingHierarchy.
 }
 \value{
 A list of \code{matrix} representing the spillover matrices in the \code{flowJoWorkspace}
+or a spillover matrix in \code{GatingHierarchy}
+
 }
 \references{
 \url{http://www.rglab.org/}

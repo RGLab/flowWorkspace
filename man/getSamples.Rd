@@ -2,6 +2,7 @@
 \alias{getSamples}
 \alias{getSamples-methods}
 \alias{getSamples,GatingSet-method}
+\alias{getSamples,GatingSetInternal-method}
 \alias{getSamples,flowJoWorkspace-method}
 \title{
 Get a list of samples in a flowJo workspace or a GatingSet

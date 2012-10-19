@@ -2,7 +2,10 @@
 \docType{methods}
 \alias{keyword}
 \alias{keyword,GatingHierarchy,character-method}
+\alias{keyword,GatingHierarchyInternal,character-method}
 \alias{keyword,GatingHierarchy,character}
+\alias{keyword,GatingHierarchyInternal,character}
+
 \alias{keyword,GatingSet,character-method}
 \alias{keyword,GatingSet,character}
 \title{ Methods to retrieve keywords associated with an FCS sample}

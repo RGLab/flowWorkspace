@@ -25,6 +25,9 @@ A \code{flowJoWorkspace} to be parsed.
 	\item{isNcdf}{
 	\code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.
 	}
+	\item{useInternal}{
+	\code{TRUE|FALSE} a logical scalar specifying wether to parse the workspace as internal C structure or regular R object. internal structure will create \code{GatingSetInternal} object which is of the derived class from \code{GatingSet}
+	}
 	\item{subset}{
 	\code{numeric} vector specifying the subset of samples in a group to import.
 	}
@@ -66,5 +69,7 @@ Greg Finak \email{gfinak@fhcrc.org}
 	ws<-openWorkspace(f)
 	G<-parseWorkspace(ws,execute=TRUE,isNcdf=FALSE,path="."); #assume that the fcs files are below the current directory.
 	#G is a GatingSet.
+	G1<-parseWorkspace(ws,userInternal=TRUE)
+	#G1 is a GatingSetInternal.
 }}
 \keyword{ manip }
