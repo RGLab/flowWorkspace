@@ -633,12 +633,13 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	# the actual plotting
 	################################
 	if(is.null(formula))
-		formula<-mkformula(params,isChar=T)
-	if(!is.null(cond))
 	{
-		formula<-paste(formula,cond,sep="|")
+		formula<-mkformula(params,isChar=TRUE)
+		if(!is.null(cond))
+			formula<-paste(formula,cond,sep="|")
 		formula<-as.formula(formula)
 	}
+	
 	res<-xyplot(x=formula
 			,data=parentdata[,params]
 			,filter=curGates
