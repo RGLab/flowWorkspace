@@ -672,8 +672,12 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 			
 			if(length(params)==1)
 			{
-				xParam=params
-				yParam="SSC-A"
+				yParam<-"SSC-A"
+				
+				if(params=="SSC-A")
+					xParam<-"FSC-A"
+				else
+					xParam<-params
 				params<-c(yParam,xParam)
 			}else
 			{

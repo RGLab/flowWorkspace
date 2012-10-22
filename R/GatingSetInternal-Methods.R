@@ -612,8 +612,12 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	
 	if(length(params)==1)
 	{
-		xParam=params
-		yParam="SSC-A"
+		yParam<-"SSC-A"
+		
+		if(params=="SSC-A")
+			xParam<-"FSC-A"
+		else
+			xParam<-params
 		params<-c(yParam,xParam)
 	}else
 	{
