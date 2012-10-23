@@ -500,10 +500,13 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 	gate * g=node->getGate();
 
 	//init the indices
-	unsigned nEvents=fdata.getEventsCount();
+//	unsigned nEvents=fdata.getEventsCount();
 
-	vector<bool> ind(nEvents,true);
-
+//	vector<bool> ind(nEvents,true);
+	/*it is kinda of expensive to init a long bool vector
+	 *
+	 */
+	vector<bool> ind;
 	/*
 	 * combine the indices of reference populations
 	 */
@@ -540,22 +543,29 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 			calgate(nodeID);
 		}
 
-
 		vector<bool> curPopInd=curPop->getIndices();
 		if(it->isNot)
 			curPopInd.flip();
 
-
-		switch(it->op)
+		/*
+		 * for the first reference node
+		 * assign the indices directly without logical operation
+		 */
+		if(it==boolOpSpec.begin())
+			ind=curPopInd;
+		else
 		{
-			case '&':
-				transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_and<bool>());
-				break;
-			case '|':
-				transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_or<bool>());
-				break;
-			default:
-				throw(domain_error("not supported operator!"));
+			switch(it->op)
+			{
+				case '&':
+					transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_and<bool>());
+					break;
+				case '|':
+					transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_or<bool>());
+					break;
+				default:
+					throw(domain_error("not supported operator!"));
+			}
 		}
 
 	}

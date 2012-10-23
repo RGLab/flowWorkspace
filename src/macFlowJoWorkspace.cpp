@@ -681,7 +681,7 @@ vector<BOOL_GATE_OP> macFlowJoWorkspace::parseBooleanSpec(string specs,vector<st
 		string curPopToken=popTokens.at(j);
 		string curOpToken;
 		if(j==0)
-			curOpToken="&";//assign and operation to the first token
+			curOpToken="&";//assign and operation to the first token and actually it is not used
 		else
 			curOpToken=opTokens.at(j-1);
 		/*

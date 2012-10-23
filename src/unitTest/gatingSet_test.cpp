@@ -251,9 +251,9 @@ void gs_parse(testSuit myTest,unsigned short dMode,bool isTemplate,bool isLoadAr
 
 		gh_counts(gh);
 
-		gh_removeGate(gh);
+//		gh_removeGate(gh);
 
-		gh_accessor_test(gh);
+//		gh_accessor_test(gh);
 
 		if(!isLoadArchive)
 			save_gs(*gs,myTest.archive);
