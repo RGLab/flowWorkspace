@@ -117,7 +117,7 @@ setMethod("add",
 			#get the position of logical operators
 			op_ind<-unlist(gregexpr(pattern=pattern,expr))
 			#extract these operators
-			op<-trimWhiteSpace(substring(expr,op_ind,op_ind+1))
+			op<-trimWhiteSpace(substring(expr,op_ind,op_ind))
 			##append & for the first node element(as C parser convention requires)
 			op<-c("&",op)
 			#split into node elements by operators
