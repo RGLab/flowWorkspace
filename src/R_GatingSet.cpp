@@ -8,6 +8,14 @@
  */
 #include "include/R_GatingSet.hpp"
 
+GatingSet * getGsPtr(SEXP _gsPtr){
+
+	if(R_ExternalPtrAddr(_gsPtr)==0)
+			throw(domain_error("Null GatingSet pointer!"));
+	XPtr<GatingSet>gs(_gsPtr);
+
+	return gs;
+}
 /*
  * can't use module for exposing overloaded methods
  */
@@ -57,7 +65,7 @@ BEGIN_RCPP
 
 
 
-	XPtr<GatingSet>gs(_gsPtr);
+	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	return wrap(gs->getSamples());
 
@@ -76,7 +84,7 @@ BEGIN_RCPP
 		 */
 
 
-		XPtr<GatingSet>gs(_gsPtr);
+		GatingSet *	gs=getGsPtr(_gsPtr);
 
 		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -127,7 +135,7 @@ BEGIN_RCPP
 
 
 
-		XPtr<GatingSet>gs(_gsPtr);
+		GatingSet *	gs=getGsPtr(_gsPtr);
 
 		string fileName=as<string>(_fileName);
 		save_gs(*gs,fileName);
@@ -156,7 +164,7 @@ RcppExport SEXP R_CloneGatingSet(SEXP _gsPtr,SEXP _samples) {
 BEGIN_RCPP
 
 
-		XPtr<GatingSet>gs(_gsPtr);
+		GatingSet *	gs=getGsPtr(_gsPtr);
 		StringVec samples=as<StringVec>(_samples);
 
 		GatingSet * gs_new=gs->clone_treeOnly(samples);
@@ -177,7 +185,7 @@ BEGIN_RCPP
 
 		for(unsigned i=0;i<gsList.size();i++)
 		{
-			XPtr<GatingSet>gs((SEXP)gsList[i]);
+			GatingSet *	gs=getGsPtr((SEXP)gsList[i]);
 			StringVec samples=as<StringVec>(sampleList[i]);
 			newGS->add(*gs,samples);
 		}

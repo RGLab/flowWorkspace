@@ -26,4 +26,6 @@ RcppExport SEXP R_getGatingHierarchyS(SEXP _gsPtr,SEXP _sampleName);
 RcppExport SEXP R_getGatingHierarchyI(SEXP _gsPtr,SEXP _i);
 
 RcppExport SEXP R_getSamples(SEXP _gsPtr);
+
+GatingSet * getGsPtr(SEXP _gsPtr);
 #endif /* R_GATINGSET_HPP_ */
