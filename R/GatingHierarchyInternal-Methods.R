@@ -75,7 +75,7 @@ setMethod("getKeywords",c("GatingHierarchyInternal","missing"),function(obj,y){
 #Note:integer indices of nodes are based on regular order
 #so whenver need to map from character node name to integer node ID,make sure
 #to use default order which is regular.
-setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular",isPath=FALSE,...){
+setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,...){
 
 			orderInd<-match(order,c("regular","tsort","bfs"))
 			if(length(orderInd)==0)
@@ -85,15 +85,19 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular"
 			
 			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath)
 
+			#try to remove ID prefix from node name without causing name duplication
+			if(!prefix)
+			{
+				dotPos<-regexpr("\\.",nodeNames)
+				#get unique IDs for each node
+				NodeIDs<-as.integer(substr(nodeNames,0,dotPos-1))
+				#strip IDs from nodeNames
+				nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
+				#add ID only when there is conflicts in nodeNames
+				toAppendIDs<-duplicated(nodeNames)
+				nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")	
+			}
 			
-			dotPos<-regexpr("\\.",nodeNames)
-			#get unique IDs for each node
-			NodeIDs<-as.integer(substr(nodeNames,0,dotPos-1))
-			#strip IDs from nodeNames
-			nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
-			#add ID only when there is conflicts in nodeNames
-			toAppendIDs<-duplicated(nodeNames)
-			nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")
 			
 			if(!is.null(y))
 			{
