@@ -522,6 +522,7 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),f
 			return(TRUE)
 		})
 
+#plot by children index
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
 #			browser()
 			y<-2:length(getNodes(x[[1]]))
@@ -549,7 +550,10 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			
 		})
 #TODO:merge this to .plotGate routine
-.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
+.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,fitGate=FALSE,...){
+
+	type<- match.arg(type)
+	
 	gh<-x[[1]]
 	if(is.list(y))
 		pid<-y$parentId
@@ -609,53 +613,84 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 		panelFunc<-panel.xyplot.flowset
 	}
 	
-	
-	if(length(params)==1)
-	{
-		yParam<-"SSC-A"
 		
-		if(params=="SSC-A")
-			xParam<-"FSC-A"
-		else
-			xParam<-params
-		params<-c(yParam,xParam)
+	
+	if(type=="xyplot")
+	{
+		if(length(params)==1)
+		{
+			yParam<-"SSC-A"
+			
+			if(params=="SSC-A")
+				xParam<-"FSC-A"
+			else
+				xParam<-params
+			params<-c(yParam,xParam)
+		}else
+		{
+			yParam=params[1]
+			xParam=params[2]
+			
+		}
+	
+		axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
+		#################################
+		# the actual plotting
+		################################
+		if(is.null(formula))
+		{
+			formula<-mkformula(params,isChar=TRUE)
+			if(!is.null(cond))
+				formula<-paste(formula,cond,sep="|")
+			formula<-as.formula(formula)
+		}
+		
+		res<-xyplot(x=formula
+				,data=parentdata[,params]
+				,filter=curGates
+				,xlab=axisObject$xlab
+				,ylab=axisObject$ylab
+				,margin=margin
+				,smooth=smooth
+				,scales=axisObject$scales
+				,main=main
+				,stat=stat
+				,panel=panelFunc
+				,...
+		)
 	}else
 	{
-		yParam=params[1]
-		xParam=params[2]
-		
+		if(length(params)==1)
+		{
+			
+#			browser()
+			axisObject<-.formatAxis(gh,parentFrame,xParam=params,yParam=NULL,...)
+			if(is.null(formula))
+			{
+				formula<-mkformula(params,isChar=TRUE)
+				if(!is.null(cond))
+					formula<-paste(formula,cond,sep="|")
+				formula<-as.formula(formula)
+			}
+			res<-densityplot(x=formula
+								,data=parentdata[,params]
+								,filter=curGates
+								,xlab=axisObject$xlab
+#								,ylab=axisObject$ylab
+								,margin=margin
+#								,smooth=smooth
+#								,scales=axisObject$scales
+								,main=main
+								,stat=stat
+								,fitGate=fitGate
+#								,panel=panelFunc
+								,...
+								)
+		}
 	}
-
-	axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
-	
-#	browser()
-	#################################
-	# the actual plotting
-	################################
-	if(is.null(formula))
-	{
-		formula<-mkformula(params,isChar=TRUE)
-		if(!is.null(cond))
-			formula<-paste(formula,cond,sep="|")
-		formula<-as.formula(formula)
-	}
-	
-	res<-xyplot(x=formula
-			,data=parentdata[,params]
-			,filter=curGates
-			,xlab=axisObject$xlab
-			,ylab=axisObject$ylab
-			,margin=margin
-			,smooth=smooth
-			,scales=axisObject$scales
-			,main=main
-			,stat=stat
-			,panel=panelFunc
-			,...
-	)	
 	return(res)	
 }
-
+##plot by prarent index
 plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 	#get all childrens
 	cids<-getChildren(G[[1]],parentID)

@@ -472,11 +472,13 @@ setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 			compobj
 			
 })
-.getChannelMarker<-function(pd,name)
+.getChannelMarker<-function(pd,name=NULL)
 {
 	#try stain name
 	
 #	browser()
+	if(is.null(name))
+		return(NULL)
 	ind<-which(toupper(pd$name)%in%toupper(name))
 	
 	
@@ -622,8 +624,9 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				else substitute(A %*% 10^E, list(A = mT[i], E = eT[i]))
 	do.call("expression", ss)
 }
-.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,...){			
+.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,fitGate=FALSE,type=c("xyplot","densityplot"),...){			
 		
+			type<- match.arg(type)
 			if(is.list(y))
 				pid<-y$parentId
 			else
@@ -673,44 +676,69 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				panelFunc<-panel.xyplot.flowframe
 			}
 		
-			
-			if(length(params)==1)
+			if(type=="xyplot")
 			{
-				yParam<-"SSC-A"
+
+				if(length(params)==1)
+				{
+					yParam<-"SSC-A"
+					
+					if(params=="SSC-A")
+						xParam<-"FSC-A"
+					else
+						xParam<-params
+					params<-c(yParam,xParam)
+				}else
+				{
+					yParam=params[1]
+					xParam=params[2]
+				}
+				axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
+				#################################
+				# the actual plotting
+				################################
 				
-				if(params=="SSC-A")
-					xParam<-"FSC-A"
-				else
-					xParam<-params
-				params<-c(yParam,xParam)
+				f1<-mkformula(params)
+				res<-xyplot(x=f1
+							,data=parentdata[,params]
+							,filter=curGate
+							,xlab=axisObject$xlab
+							,ylab=axisObject$ylab
+							,margin=margin
+							,smooth=smooth
+							,scales=axisObject$scales
+							,main=main
+							,stat=stat
+							,panel=panelFunc
+							,...
+						)
 			}else
 			{
-				yParam=params[1]
-				xParam=params[2]
-				
+				if(length(params)==1)
+				{
+#					browser()
+					axisObject<-.formatAxis(x,parentdata,xParam=params,yParam=NULL,...)
+					f1<-mkformula(params)
+					res<-densityplot(x=f1
+									,data=parentdata[,params]
+									,filter=curGate
+									,xlab=axisObject$xlab
+		#							,ylab=axisObject$ylab
+									,margin=margin
+		#							,smooth=smooth
+		#							,scales=axisObject$scales
+									,main=main
+									,stat=stat
+									,fitGate=fitGate
+		#							,panel=panelFunc
+									,...
+									)
+				}else
+					stop("Can't plot densityplot because there are two parameters associated with this gate!")
 			}
-		
-		axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
 
-#		browser()
-		#################################
-		# the actual plotting
-		################################
 		
-		f1<-mkformula(params)
-		res<-xyplot(x=f1
-					,data=parentdata[,params]
-					,filter=curGate
-					,xlab=axisObject$xlab
-					,ylab=axisObject$ylab
-					,margin=margin
-					,smooth=smooth
-					,scales=axisObject$scales
-					,main=main
-					,stat=stat
-					,panel=panelFunc
-					,...
-					)	
+			
 		return(res)
 		
 				
@@ -720,6 +748,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 ##x is a gatingHierarchy, data is a flowFrame
 .formatAxis<-function(x,data,xParam,yParam,scales=list(),...){
 	pd<-pData(parameters(data))
+#	browser()
 	xObj<-.getChannelMarker(pd,xParam)
 	yObj<-.getChannelMarker(pd,yParam)
 	
