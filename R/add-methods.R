@@ -11,7 +11,12 @@ setMethod("add",
 		signature=c("GatingSetInternal", "filterList"),
 		definition=function(wf, action, ...)
 		{
-			nodeIDs<-lapply(names(action),function(sample){
+			samples<-getSamples(wf)
+			
+			if(!setequal(names(action),samples))
+				stop("names of filterList do not match with the sample names in the gating set!")			
+			
+			nodeIDs<-lapply(samples,function(sample){
 								curFilter<-action[[sample]]
 								gh<-wf[[sample]]
 #								browser()
