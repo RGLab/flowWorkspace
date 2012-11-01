@@ -859,21 +859,28 @@ setMethod("show","GatingSetInternal",function(object){
 			}
 			
 		})		
-#getData is used to extract gated data,thus always construct a flowSet on the fly 
-#because it needs to subset flowSet based on row indices. Order to get the entire dataset
-#try to use flowSet method.
+
 setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
 			
 			if(is.null(y))
 				ncFlowSet(obj)
 			else
 			{
-				fs<-callNextMethod(obj,y,tsort)
-				pData(fs)<-pData(obj)
-				varM<-varMetadata(phenoData(fs))
-				varM[-1,]<-rownames(varM)[-1]
-#						browser()
-				varMetadata(phenoData(fs))<-varM			
+#				browser()
+				#fs<-callNextMethod(obj,y,tsort)
+				#update pData
+#				pData(fs)<-pData(obj)
+#				varM<-varMetadata(phenoData(fs))
+#				varM[-1,]<-rownames(varM)[-1]
+#				varMetadata(phenoData(fs))<-varM
+				
+				
+				#get raw data
+				fs<-getData(obj)
+				#subset by indices
+				indices<-lapply(obj,getIndices,y)
+				fs<-Subset(fs,indices)
+							
 				fs	
 			}
 			

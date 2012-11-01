@@ -163,9 +163,9 @@ setMethod("add",
 			#clock-wise from top left quadrant
 			if(is.null(names))
 				names <- matrix(c(sprintf("%s-%s+", desc[1], desc[2]),
-											sprintf("%s-%s-", desc[1], desc[2]),
 											sprintf("%s+%s+", desc[1], desc[2]),
 											sprintf("%s+%s-", desc[1], desc[2])),
+											sprintf("%s-%s-", desc[1], desc[2]),
 										ncol=2)
 			if(length(unique(names))!=4)
 				stop("names have to be four unique strings!")
