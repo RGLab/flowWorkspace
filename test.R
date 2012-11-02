@@ -2,7 +2,7 @@
 
 library(flowWorkspace)
 library(ncdfFlow)
-library(gridExtra)
+#library(gridExtra)
 #library(Rgraphviz)
 
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
@@ -55,7 +55,7 @@ GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
 					,subset=1
-#					,isNcdf=T
+					,isNcdf=T
 #					,useInternal=T
 					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=0
