@@ -158,8 +158,13 @@ setMethod("add",
 			
 			v <- action@boundary[params[1]]
 			h <- action@boundary[params[2]]
-			mat <- matrix(c(-Inf, v, h, Inf, v, Inf, h, Inf, -Inf, v, -Inf,
-							h, v, Inf, -Inf, h), byrow=TRUE, ncol=4)              
+			mat <- matrix(c(-Inf, v, h, Inf
+							, v, Inf, h, Inf
+							, v, Inf, -Inf, h
+							, -Inf, v, -Inf,h
+							)
+						, byrow=TRUE
+						, ncol=4)              
 			#clock-wise from top left quadrant
 			if(is.null(names))
 				names <- matrix(c(sprintf("%s-%s+", desc[1], desc[2]),
