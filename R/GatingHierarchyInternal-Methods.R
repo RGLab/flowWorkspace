@@ -624,7 +624,10 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				else substitute(A %*% 10^E, list(A = mT[i], E = eT[i]))
 	do.call("expression", ss)
 }
-.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,fitGate=FALSE,type=c("xyplot","densityplot"),...){			
+
+#fitGate is used to disable behavior of plotting the gate region in 1d densityplot
+#overlay is either the gate indices or logical vector(i.e. event indices)
+.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL,...){			
 		
 			type<- match.arg(type)
 			if(is.list(y))
@@ -655,27 +658,34 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 			parentdata<-getData(x,pid)
 #			browser()
 			smooth<-ifelse(nrow(parentdata)<100,TRUE,smooth)
+			
+			
+			
 			#################################
 			# setup axis labels and scales
 			################################
 			if(class(curGate)=="BooleanGate")
 			{
-				
+
+				if(!is.null(overlay))
+					stop("no overlay is supported for booleangate!In order to visualize multiple gates,try to add a new booleanGate first.")
 				params<-rev(parameters(getGate(x,getParent(x,y))))
-				ind<-getIndices(x,y)
-				curGate<-getData(x)[ind,params]##get gated pop from indexing the root pop because ind here is global
-#				attr(curGate,"class")<-"filter"
+				overlay<-getIndices(x,y)
+				curGate<-NULL									
 				
-				panelFunc<-panel.xyplot.flowFrame.booleanGate
+#				panelFunc<-panel.xyplot.flowFrame.booleanGate
 			}else
 			{
 				if(class(curGate)=="filters")
 					params<-rev(parameters(curGate[[1]]))
 				else
 					params<-rev(parameters(curGate))
-				panelFunc<-panel.xyplot.flowframe
+				
 			}
-		
+			panelFunc<-panel.xyplot.flowframe
+			
+			
+			
 			if(type=="xyplot")
 			{
 
@@ -694,6 +704,22 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 					xParam=params[2]
 				}
 				axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
+				
+				#################################
+				# calcuate overlay frame
+				################################
+				if(!is.null(overlay))
+				{
+					#gate indices
+					if(class(overlay)=="numeric")
+					{
+						if(length(overlay)>1)
+							stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
+						overlay<-getData(x,overlay)[,params]
+					}else
+						overlay<-Subset(getData(x),overlay)[,params]
+				}
+				
 				#################################
 				# the actual plotting
 				################################
@@ -710,6 +736,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 							,main=main
 							,stat=stat
 							,panel=panelFunc
+							,overlay=overlay
 							,...
 						)
 			}else

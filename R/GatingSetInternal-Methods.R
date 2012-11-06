@@ -550,8 +550,11 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			
 		})
 #TODO:merge this to .plotGate routine
-.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,fitGate=FALSE,...){
+#fitGate is used to disable behavior of plotting the gate region in 1d densityplot
+#overlay is either the gate indice list or event indices list
+.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,fitGate=FALSE,overlay=NULL,...){
 
+	samples<-getSamples(x)
 	type<- match.arg(type)
 	
 	gh<-x[[1]]
@@ -568,17 +571,14 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	if(is.list(y))
 	{
 #		browser()
-		curGates<-sapply(getSamples(x),function(curSample){
+		curGates<-sapply(samples,function(curSample){
 					
 					filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
 				},simplify=F)
 		curGates<-as(curGates,"filtersList")
 	}else
 	{
-		curGates<-sapply(getSamples(x),function(curSample){
-					
-					getGate(x[[curSample]],y)
-				},simplify=F)
+		curGates<-getGate(x,y)
 		
 		if(suppressWarnings(is.na(curGates))){
 			message("Can't plot. There is no gate defined for node ",getNode(gh,y));
@@ -597,22 +597,18 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	################################
 	if(class(curGates[[1]])=="BooleanGate")
 	{
-		stop("bool gate plot is not supported for gatingSet yet! ")
 		params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
-		ind<-getIndices(x[[1]],y)
-		curGate<-getData(x)[ind,params]##get gated pop from indexing the root pop because ind here is global
-
-		#TODO:add logical filter support to flowViz in order to viz booleanGate		
-#		panelFunc<-panel.xyplot.flowFrame.booleanGate
+		overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
+		curGates<-NULL
 	}else
 	{
 		if(class(curGates[[1]])=="filters")
 			params<-rev(parameters(curGates[[1]][[1]]))
 		else
 			params<-rev(parameters(curGates[[1]]))
-		panelFunc<-panel.xyplot.flowset
+		
 	}
-	
+	panelFunc<-panel.xyplot.flowset
 		
 	
 	if(type=="xyplot")
@@ -634,6 +630,22 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 		}
 	
 		axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
+		
+		#################################
+		# calcuate overlay frames
+		################################
+		if(!is.null(overlay))
+		{
+			#gate indices
+			if(class(overlay)=="numeric")
+			{
+				if(length(overlay)>1)
+					stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
+				overlay<-getData(x,overlay)[,params]
+			}else
+				overlay<-Subset(getData(x),overlay)[,params]
+		}
+		
 		#################################
 		# the actual plotting
 		################################
@@ -656,6 +668,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 				,main=main
 				,stat=stat
 				,panel=panelFunc
+				,overlay=overlay
 				,...
 		)
 	}else
