@@ -83,17 +83,17 @@ booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter")
 
 ## Constructor from a character string: We allow for the following inputs:
 ##  expr is always a character string
-char2booleanFilter <- function(expr, ...,
-		filterId="defaultBooleanFilter")
-{
-	flowCore:::checkClass(expr, "character", 1)
-	subs <- parse(text=expr)
-	if(missing(filterId))
-		filterId <- expr
-	else
-		flowCore:::checkClass(filterId, "character", 1)
-	new("expressionFilter", filterId=filterId, expr=subs,
-			args=list(...), deparse=expr)
+char2booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter") {
+  flowCore:::checkClass(expr, "character", 1)
+  subs <- parse(text=expr)
+  if (missing(filterId)) {
+    filterId <- expr
+  }
+  else {
+    flowCore:::checkClass(filterId, "character", 1)
+  }
+  new("booleanFilter", filterId = filterId, expr = subs, args = list(...),
+      deparse = expr)
 }
 
 
