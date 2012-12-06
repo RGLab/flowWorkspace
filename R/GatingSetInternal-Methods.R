@@ -43,8 +43,8 @@ archive<-function(G,file=tempfile()){
 	
 }
 	
-
-unarchive<-function(file){
+#path specifies the temporary folder to store the unzipped dat (and nc) files
+unarchive<-function(file,path=tempdir()){
 	
 	if(!file.exists(file))
 		stop(file,"' not found!")
@@ -52,7 +52,8 @@ unarchive<-function(file){
 	files<-untar(tarfile=file,list=TRUE)
 	
 #	message("extracting files...")
-	output<-tempdir()
+	#output<-tempdir()
+	output<-path
 #	system(paste("tar -xf ",file))
 	untar(tarfile=file,exdir=output)
 	
