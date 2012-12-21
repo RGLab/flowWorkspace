@@ -193,25 +193,25 @@ setMethod("add",
 ## Or we could try to use filterResult and filterResultList from flowCore
 ## to save the efforts of adding new filter type, but the extra contructor is necessary to 
 ## convert logical vector to filterResult.
-setMethod("add",
-		signature=c("GatingHierarchyInternal", "logicalGate"),
-		definition=function(wf, action, name,...)
-		{
-			
-			
-#			browser()
-			if(missing(name))
-				stop("population name is required!")
-			if(length(action)!=nrow(getData(wf)))
-				stop("the length of logical vector is different from events number in: ",getSample(wf))
-			
-			
-			filterObject<-list(type=as.integer(6)
-								,indices=action
-								)	
-			
-			.addGate(wf,filterObject,...)
-		})
+#setMethod("add",
+#		signature=c("GatingHierarchyInternal", "logicalGate"),
+#		definition=function(wf, action, name,...)
+#		{
+#			
+#			
+##			browser()
+#			if(missing(name))
+#				stop("population name is required!")
+#			if(length(action)!=nrow(getData(wf)))
+#				stop("the length of logical vector is different from events number in: ",getSample(wf))
+#			
+#			
+#			filterObject<-list(type=as.integer(6)
+#								,indices=action
+#								)	
+#			
+#			.addGate(wf,filterObject,...)
+#		})
 
 setMethod("Rm",
 		signature=c(symbol="character",
