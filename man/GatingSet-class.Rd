@@ -5,6 +5,7 @@
 \alias{GatingSetInternal-class}
 \alias{[,GatingSet,ANY-method}
 \alias{[[,GatingSet,ANY-method}
+\alias{rbind2,GatingSet,GatingSet-method}
 
 \title{Class \code{"GatingSet"}}
 \description{
@@ -41,6 +42,7 @@ Objects store a collection of GatingHierarchies and represent a group in a flowJ
     \item{length}{\code{signature(x = "GatingSet")}: Return the length of the GatingSet, number of GatingHierarhcy objects }
     \item{plotPopCV}{\code{signature(x = "GatingSet")}: plot the population coefficients of variation between flowJo and flowCore for all populations and all samples }
     \item{show}{\code{signature(object = "GatingSet")}: Print information about the GatingSet. }
+     \item{rbind2}{\code{signature(x = "GatingSetInternal",y = "GatingSetInternal")}:combine two GatingSets into one. }
 	 }
 }
 \references{
