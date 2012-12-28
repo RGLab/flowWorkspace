@@ -58,8 +58,7 @@ A \code{filter} or a list of \code{filter}s to be added to the  \code{GatingHier
       \item{names}{ a \code{character} vector of length four,which specifies the population names resulted by adding a \code{quadGate}.
                     The order of the names is clock-wise starting from the top left quadrant population.
                     } 
-	\item{dMode}{An \code{integer} scalar specifying the level of print-out that is used for the debug purpose.
-	}   
+	  
 \item{...}{some other arguments to specify how the gates are added to the gating tree.
 
 \itemize{
