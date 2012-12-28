@@ -25,6 +25,7 @@ Close a flowJoWorkspace, destroying the internal representation of the XML docum
   \item{workspace}{
 A \code{flowJoWorkspace}
 }
+}
 \details{
 	Open an XML flowJo workspace file and return a \code{flowJoWorkspace} object. The workspace is represented using a \code{XMLInternalDocument} object.
 	Close a flowJoWorkpsace after finishing with it. This is necessary to explicitly clean up the C-based representation of the XML tree. (See the XML package).

@@ -2,7 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{GatingSetList-class}
-\alias{GatingSetInternal-class}
 \alias{GatingSetList}
 \alias{show,GatingSetList-method}
 \alias{getSamples,GatingSetList-method}

@@ -9,7 +9,7 @@ Parse a flowJo Workspace
 Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{execute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
 }
 \usage{
-\S4method{parseWorkspace}{flowJoWorkspace}(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,...)
+\S4method{parseWorkspace}{flowJoWorkspace}(obj,useInternal = TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path = obj@path,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -40,12 +40,9 @@ A \code{flowJoWorkspace} to be parsed.
 	\item{includeGates}{
 	\code{logical} Should gates be imported, or just the data with compensation and transformation?
 	}
-	\item{...}{
-	Additional arguments.
-	\code{path="character"}{
-	The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.
-	}
-	}
+	\item{dMode}{An \code{integer} scalar specifying the level of print-out that is used for the debug purpose.}
+       \code{path="character"}{ The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.}	
+       \item{...}{ 	Additional arguments.}
 }
 \details{
 A flowJoWorkspace is generated with a call to \code{openWorkspace()}, passing the name of the xml workspace file. This returns a \code{flowJoWorkspace}, which can be parsed using the \code{parseWorkspace()} method. The function can be called non-interactively by passing the index or name of the group of samples to be imported via \code{parseWorkspace(obj,name=x)}, where \code{x} is either the numeric index, or the name.

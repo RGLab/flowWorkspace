@@ -10,7 +10,8 @@ Get the names of all nodes in a gating hierarchy
 Returns a character vector of names of the nodes (populations) in the \code{GatingHierarchy}.
 }
 \usage{
-\S4method{getNodes}{GatingHierarchy}(x,y=NULL,order="regular",isPath=FALSE,...)
+\S4method{getNodes}{GatingHierarchy}(x,y=NULL,tsort=FALSE,isPath=FALSE,...)
+\S4method{getNodes}{GatingHierarchyInternal}(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,...)
 }
 \arguments{
   \item{x}{
@@ -25,6 +26,9 @@ A \code{character} the name of the node of interest.  Or, a \code{numeric} index
 		}
 	\item{isPath}{ A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
 		}
+	\item{prefix}{ A \code{logical} scalar to tell the method whether to add internal node index as the prefix to the node name}
+	\item{tsort}{ A \code{logical} scalar to tell the method whether to return the nodes in topological sort order.It is replaced by \code{order} argument for \code{GatingHierarchyInternal} class.}
+
 	\item{...}{
 	Additional arguments.
 	}

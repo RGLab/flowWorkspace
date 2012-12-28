@@ -241,7 +241,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	    sfExport("tf","TEMP")
 	    rm(tmp)
 	  #  gc()
-	    clusterEvalQ(sfGetCluster(),{load(tf);tmp<-xmlRoot(xmlTreeParse(tmp, asText = TRUE, useInternal = TRUE));invisible()})
+	    clusterEvalQ(sfGetCluster(),{load(tf);tmp<-xmlRoot(xmlTreeParse(tmp, asText = TRUE, useInternalNodes = TRUE));invisible()})
 	    message("parsing")
 		G<-sfLapply(l,function(x){
 		    #parse the exported variable

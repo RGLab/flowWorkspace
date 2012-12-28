@@ -124,7 +124,7 @@ unarchive<-function(file,path=tempdir()){
 			#########################################################
 			##escape "illegal" characters
 			file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
-			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full=TRUE)
+			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
 			
 			if(length(absPath)==0){
 				warning("Can't find ",file," in directory: ",path,"\n");
@@ -582,7 +582,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 		curGates<-getGate(x,y)
 		
 		if(suppressWarnings(is.na(curGates))){
-			message("Can't plot. There is no gate defined for node ",getNode(gh,y));
+			message("Can't plot. There is no gate defined for node ",getNodes(gh,y));
 			invisible();			
 			return(NULL)
 		}

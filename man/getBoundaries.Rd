@@ -30,12 +30,13 @@ A \code{character}, the name of the node / gate / population of interest .
 	\code{TRUE | FALSE} a logical indicating whether we should return the names of the dimensions (FALSE, default) or the indices of the dimensions (TRUE)
 
 }
+}
 \details{
 Each node in a GatingHierarchy represents a population. That population is defined by a gate. \code{getBoundaries} will return the vertices of the gate. 
 }
 \value{
-\S4method{getBoundaries} returns a \code{matrix} with column names corresponding to channels / dimensions, and rows to \code{x,y} tuples of vertices for polygon gates in these dimensions. 
-\S4method{getDimensions} returns a \code{character} vector of dimension names on which the gate is applied (when index=FALSE), or a \code{numeric} vector of the indices of the dimensions on which the gate is applied (when index=TRUE). 
+\code{getBoundaries} returns a \code{matrix} with column names corresponding to channels / dimensions, and rows to \code{x,y} tuples of vertices for polygon gates in these dimensions. 
+\code{getDimensions} returns a \code{character} vector of dimension names on which the gate is applied (when index=FALSE), or a \code{numeric} vector of the indices of the dimensions on which the gate is applied (when index=TRUE). 
 
 }
 \references{

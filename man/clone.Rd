@@ -10,7 +10,7 @@ clone a GatingSet
 clone a GatingSet
 }
 \usage{
-\S4method{getSamples}{GatingSet}(x,...)
+\S4method{clone}{GatingSet}(x,...)
 }
 \arguments{
   \item{x}{

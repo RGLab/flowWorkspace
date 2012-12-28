@@ -5,7 +5,9 @@
 \alias{getData,GatingHierarchyInternal-method}
 \alias{getData,GatingSet-method}
 \alias{getData,GatingSetInternal-method}
-\alias{getData,graphNEL-method}
+\alias{getData,graphNEL-method
+\alias{getNcdf,GatingSet-method}
+}
 \title{
 Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 }
@@ -32,10 +34,10 @@ A \code{GatingHierarchy}, \code{GatingSet}, or \code{graphNEL} object extracted 
 Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}. 
 Subset membership can be obtained using \code{getIndices}. 
 Population statistics can be obtained using \code{getPop} and \code{getPopStats}. 
-When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure, facilitating identical node ordering with tsort=TRUE, and numeric indexing of the nodes.
-}
+When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.}
 \value{
-A \code{flowFrame} object if \code{obj} is a GatingHierarchy or graphNEL. A \code{flowSet} if a \code{GatingSet} 
+A \code{flowFrame} object if \code{obj} is a GatingHierarchy or graphNEL. A \code{flowSet} if a \code{GatingSet}.
+A \code{ncdfFlowSet} if the node name/index (\code{y}) is NULL and the flow data is stored as cdf. 
 }
 \references{
 \url{http://www.rglab.org/}

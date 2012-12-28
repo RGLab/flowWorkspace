@@ -55,7 +55,7 @@ setMethod("add",
 	{
 		pid<-match(parent,getNodes(gh))
 		if(length(pid)==0)
-			stop(node," not found in gating tree")
+			stop(parent," not found in gating tree")
 	}
 	filterObject$negated<-negated
 #	browser()	

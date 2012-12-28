@@ -37,8 +37,8 @@ deprecated.
 }
 }
 \value{
-\S4method{getParent} returns a \code{character} vector, the name of the parent population.
-\S4method{getChildren} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
+\code{getParent} returns a \code{character} vector, the name of the parent population.
+\code{getChildren} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
 
 }
 \references{

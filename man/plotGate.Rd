@@ -6,7 +6,7 @@
 \alias{plotGate,GatingHierarchy,missing-method}
 \alias{plotGate,GatingSet,numeric-method}
 \alias{plotGate,GatingSet,missing-method}
-
+\alias{plotGate_labkey}
 
 \title{
 Plot a Gate and Cell Population
@@ -15,7 +15,8 @@ Plot a Gate and Cell Population
 Plots a flowJo gate and associated cell population using it's \code{flowCore} definition contained in a \code{GatingHierarchy}
 }
 \usage{
-\S4method{plotGate}{GatingHierarchy,character}(x, y, bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE,...)
+\S4method{plotGate}{GatingHierarchy,character}(x, y,...)
+\S4method{plotGate}{GatingHierarchy,numeric}(x, y, bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE,...)
 \S4method{plotGate}{GatingSet,character}(x, y, lattice=TRUE,bool=FALSE,merge=TRUE,...)
 }
 \arguments{

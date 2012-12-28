@@ -117,7 +117,7 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular"
 					nodeNames
 		})
 
-setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
+setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y){
 #			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
 			#make sure the index conversion is done properly between C and R convention
 #			browser()
@@ -419,7 +419,7 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							            c = z0), list(y = 6 * z$d, b = z0, c = z0))
 							        z[["d"]] <- z0
 							    }
-							    res <- .C(C_spline_eval, z$method, as.integer(length(x)), 
+							    res <- .C("C_spline_eval", z$method, as.integer(length(x)), 
 							        x = as.double(x), y = double(length(x)), z$n, z$x, z$y, 
 							        z$b, z$c, z$d, PACKAGE = "stats")$y
 							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
@@ -648,7 +648,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				curGate<-getGate(x,y)
 	
 				if(suppressWarnings(is.na(curGate))){
-					message("Can't plot. There is no gate defined for node ",getNode(x,y));
+					message("Can't plot. There is no gate defined for node ",getNodes(x,y));
 					invisible();			
 					return(NULL)
 				}
