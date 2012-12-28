@@ -419,7 +419,7 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							            c = z0), list(y = 6 * z$d, b = z0, c = z0))
 							        z[["d"]] <- z0
 							    }
-							    res <- .C("C_spline_eval", z$method, as.integer(length(x)), 
+							    res <- .C(C_SplineEval, z$method, as.integer(length(x)), 
 							        x = as.double(x), y = double(length(x)), z$n, z$x, z$y, 
 							        z$b, z$c, z$d, PACKAGE = "stats")$y
 							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 

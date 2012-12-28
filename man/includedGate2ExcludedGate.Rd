@@ -22,9 +22,7 @@ A \code{character} vector of flowJo gating paths for the gates in \code{gs}
 %%     ~~Describe \code{includegates} here~~
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
 A \code{numeric} vector of gate indices to be used with \code{\link[flowStats]{normalizeGatingSet}}.
 }
@@ -34,15 +32,7 @@ A \code{numeric} vector of gate indices to be used with \code{\link[flowStats]{n
 \author{
 Greg Finak <gfinak@fhcrc.org>
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 ##---- Should be DIRECTLY executable !! ----
 ##-- ==>  Define data, use random,

@@ -11,12 +11,19 @@ clone a GatingSet
 }
 \usage{
 \S4method{clone}{GatingSet}(x,...)
+\S4method{clone}{GatingSetInternal}(x,...)
+
 }
 \arguments{
   \item{x}{
 A \code{GatingSet}
 }
-
+\item{...}{ additional arguments to be passed to \code{clone} method for \code{GatingSet} (not used by \code{GatingSetInternal}).
+			\itemize{
+			\item clone.data=FALSE:\code{logical} scalar indicating whether to clone the flow data 
+			\item clone.gating=FALSE:\code{logical} scalar indicating whether to clone the gates
+			}
+		}
 }
 \details{
 Note that the regular R assignment operation on a \code{GatingSet} object does not return the copy as

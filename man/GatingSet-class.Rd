@@ -6,7 +6,9 @@
 \alias{[,GatingSetInternal,ANY-method}
 \alias{[[,GatingSet,ANY-method}
 \alias{rbind2,GatingSet,GatingSet-method}
+\alias{GatingSet}
 \alias{GatingSet,flowSet-method}
+\alias{GatingSet,flowSet,ANY-method}
 \alias{GatingSet,character,character-method}
 \alias{GatingSet,GatingHierarchyInternal,character-method}
 \alias{show,GatingSetInternal-method}

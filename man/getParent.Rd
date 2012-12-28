@@ -22,7 +22,7 @@ Returns the name of the parent population or a character/numeric vector of all t
 \S4method{getParent}{GatingHierarchy,character}(obj, y)
 \S4method{getParent}{GatingHierarchy,numeric}(obj, y, tsort=FALSE)
 \S4method{getChildren}{GatingHierarchy,character}(obj, y)
-\S4method{getChildren}{GatingHierarchyInternal,character}(obj, y)
+\S4method{getChildren}{GatingHierarchyInternal,character, tsort = FALSE}(obj, y)
 \S4method{getChildren}{GatingHierarchyInternal,numeric}(obj, y)
 }
 \arguments{

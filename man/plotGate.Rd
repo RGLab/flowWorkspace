@@ -5,6 +5,7 @@
 \alias{plotGate,GatingHierarchy,numeric-method}
 \alias{plotGate,GatingHierarchy,missing-method}
 \alias{plotGate,GatingSet,numeric-method}
+\alias{plotGate,GatingSet,character-method}
 \alias{plotGate,GatingSet,missing-method}
 \alias{plotGate_labkey}
 

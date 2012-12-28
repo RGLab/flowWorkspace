@@ -16,7 +16,7 @@ char2booleanFilter(expr, ..., filterId="defaultBooleanFilter")
 expr is an expression or a character string.
 }
 \section{Description}{
-It inherits class \code{\link{flowCore::expressionFilter}} and exists for the purpose of methods dispatching.
+It inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
 }
 
 \section{Methods}{

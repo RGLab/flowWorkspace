@@ -21,9 +21,7 @@ A \code{GatingSet}.
 A \code{character} vector of channel / parameter names in the gating set.%%     ~~Describe \code{includedims} here~~
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
 A \code{character} vector of channel names. The complement of \code{includedims}.
 }
@@ -33,15 +31,7 @@ A \code{character} vector of channel names. The complement of \code{includedims}
 \author{
 Greg Finak <gfinak@fhcrc.org>
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 ##---- Should be DIRECTLY executable !! ----
 ##-- ==>  Define data, use random,

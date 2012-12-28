@@ -4,7 +4,7 @@ setMethod("openWorkspace",signature=signature(file="character"),definition= func
 	tmp<-tempfile(fileext=".xml")
 	file.copy(file,tmp)
 	if(inherits(file,"character")){
-		x<-xmlTreeParse(tmp,useInternal=TRUE);
+		x<-xmlTreeParse(tmp,useInternalNodes=TRUE);
 	}else{
 		stop("Require a filename of a workspace, but received ",class(x)[1]);
 	}

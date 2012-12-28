@@ -5,7 +5,7 @@
 \alias{getData,GatingHierarchyInternal-method}
 \alias{getData,GatingSet-method}
 \alias{getData,GatingSetInternal-method}
-\alias{getData,graphNEL-method
+\alias{getData,graphNEL-method}
 
 
 }

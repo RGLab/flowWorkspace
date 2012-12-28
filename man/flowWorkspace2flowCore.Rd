@@ -5,6 +5,9 @@
 \alias{flowWorkspace2flowCore,GatingHierarchy-method}
 \alias{flowWorkspace2flowCore,GatingSet-method}
 \alias{flowWorkspace2flowCore,GatingSetInternal-method}
+\alias{flowWorkspace2flowCore,GatingHierarchyInternal-method}
+
+
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{

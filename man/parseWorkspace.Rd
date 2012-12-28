@@ -40,9 +40,17 @@ A \code{flowJoWorkspace} to be parsed.
 	\item{includeGates}{
 	\code{logical} Should gates be imported, or just the data with compensation and transformation?
 	}
-	\item{dMode}{An \code{integer} scalar specifying the level of print-out that is used for the debug purpose.}
-       \code{path="character"}{ The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.}	
-       \item{...}{ 	Additional arguments.}
+	\item{dMode}{An \code{integer} scalar specifying the level of print-out that is used for the debug purpose.
+	}
+     \item{path}{The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.
+     }	
+     \item{...}{
+     \itemize{
+     	\item sampNloc="keyword": a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
+     	\item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
+     	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
+     	}
+     }
 }
 \details{
 A flowJoWorkspace is generated with a call to \code{openWorkspace()}, passing the name of the xml workspace file. This returns a \code{flowJoWorkspace}, which can be parsed using the \code{parseWorkspace()} method. The function can be called non-interactively by passing the index or name of the group of samples to be imported via \code{parseWorkspace(obj,name=x)}, where \code{x} is either the numeric index, or the name.
@@ -58,7 +66,7 @@ Greg Finak \email{gfinak@fhcrc.org}
 }
 
 \seealso{
-\code{\link{getSampleGroups}}
+\code{\link{getSampleGroups}},\code{\link{GatingSet}}
 }
 \examples{
 \dontrun{

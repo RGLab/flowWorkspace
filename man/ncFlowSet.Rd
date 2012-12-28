@@ -7,6 +7,7 @@
 \alias{ncFlowSet<-,GatingHierarchy-method}
 \alias{ncFlowSet<-,GatingSet-method}
 \alias{ncFlowSet<-,GatingSetInternal-method}
+\alias{getNcdf}
 \alias{getNcdf,GatingSet-method}
 \alias{getNcdf,GatingHierarchy-method}
 \title{
