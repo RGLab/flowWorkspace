@@ -6,7 +6,8 @@
 \alias{getData,GatingSet-method}
 \alias{getData,GatingSetInternal-method}
 \alias{getData,graphNEL-method
-\alias{getNcdf,GatingSet-method}
+
+
 }
 \title{
 Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet

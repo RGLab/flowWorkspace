@@ -6,6 +6,7 @@
 \alias{haveSameGatingHierarchy,GatingSet,GatingHierarchy-method}
 \alias{haveSameGatingHierarchy,GatingSet,GatingSet-method}
 \alias{haveSameGatingHierarchy,GatingSet,missing-method}
+\alias{haveSameGatingHierarchy,GatingSetInternal,missing-method}
 \alias{haveSameGatingHierarchy,list,missing-method}
 \title{
 Tests whether two GatingHierarchy or GatingSet objects have the same gating structure.

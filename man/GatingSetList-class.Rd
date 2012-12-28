@@ -12,7 +12,7 @@
 \description{
  A list of of \code{GatingSet} objects. This class exists for method dispatching.}
 \section{Objects from the Class}{
-Objects can be created by the constructor to GatingSetList(x).
+Objects can be created by the constructor GatingSetList(x).
 x is a list of GatingSets.
 }
 \section{Description}{

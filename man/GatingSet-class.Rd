@@ -1,12 +1,16 @@
 \name{GatingSet-class}
-\Rdversion{1.1}
 \docType{class}
 \alias{GatingSet-class}
 \alias{GatingSetInternal-class}
 \alias{[,GatingSet,ANY-method}
+\alias{[,GatingSetInternal,ANY-method}
 \alias{[[,GatingSet,ANY-method}
 \alias{rbind2,GatingSet,GatingSet-method}
-
+\alias{GatingSet,flowSet-method}
+\alias{GatingSet,character,character-method}
+\alias{GatingSet,GatingHierarchyInternal,character-method}
+\alias{show,GatingSetInternal-method}
+\alias{show,GatingHierarchyInternal-method}
 \title{Class \code{"GatingSet"}}
 \description{
 GatingSet holds a set of \code{GatingHierarchy} objects, representing a set of samples and the gating scheme associated with each.
@@ -15,6 +19,11 @@ GatingSetInternal is the derived class that holds \code{GatingHierarchyInternal}
 \section{Objects from the Class}{
 Objects can be created by a call to parseWorkspace().
 The annotated data frame can be populated with the keywords from each sample.
+Or by:
+GatingSet(x,dMode=0,...),x is a flowSet/ncdfFlowSet. It creates an empty gating tree with only root node associated with flow data where \code{\link{add}} methods can be used to add gates. 
+or by 
+GatingSet(x,y,path=".",isNcdf=FALSE,dMode=1,...),x is an existing gating hierarchy(used as a gating template) and y is the flow data to be gated (flowSet/ncdfFlowSet).
+It creates the GatingSet from the FCS files and copies the gates defined in the existing gating hierarchy to the new GatingSet.
 }
 \section{Description}{
 Objects store a collection of GatingHierarchies and represent a group in a flowJo workspace.

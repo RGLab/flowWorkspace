@@ -5,6 +5,7 @@
 \alias{getGate,GatingHierarchy,numeric-method}
 \alias{getGate,GatingHierarchyInternal,numeric-method}
 \alias{getGate,GatingSet,numeric-method}
+\alias{getGate,GatingSet,character-method}
 \alias{getGate,GatingSetInternal,character-method}
 \alias{getGate,GatingSetInternal,numeric-method}
 \title{

@@ -2,6 +2,8 @@
 \alias{plot}
 \alias{plot-methods}
 \alias{plot,GatingHierarchy,missing-method}
+\alias{plot,GatingHierarchyInternal,missing-method}
+
 \title{Plot a GatingHierarchy}
 \description{
 Plot a tree representing the GatingHierarchy

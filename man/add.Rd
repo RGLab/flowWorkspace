@@ -13,6 +13,8 @@
 \alias{Rm,character,GatingHierarchyInternal,character-method}
 \alias{recompute}
 \alias{recompute,GatingSetInternal-method}
+\alias{recompute,GatingSet-method}
+
 \title{
 Create a GatingSet and add/remove the flowCore gate(or population) to/from a GatingHierarchy/GatingSet.
 
@@ -115,12 +117,18 @@ nodeID<-add(gs, rg)#it is added to root node by default if parent is not specifi
 nodeID
 getNodes(gs[[1]]) #the second population is named after filterId of the gate 
 
-#add another gate
+#add a quadGate
 qg <- quadGate("FL1-H"=2, "FL2-H"=4)
 nodeIDs<-add(gs,qg,parent="rectangle")
 nodeIDs #quadGate produces four population nodes
 getNodes(gs[[1]]) #population names are named after dimensions of gate if not specified
 
+#add a boolean Gate
+bg<-booleanFilter(`CD15 FITC-CD45 PE+`|`CD15 FITC+CD45 PE-`)
+bg
+nodeID2<-add(gs,bg,parent="rectangle")
+nodeID2
+getNodes(gs[[1]])
 #do the actual gating
 recompute(gs)
 
@@ -131,7 +139,8 @@ plotGate(gs[[1]],nodeIDs) #may be smoothed automatically if there are not enough
 #plot gates across samples using lattice plot
 plotGate(gs,nodeID)
 #plot all gates for one sample
-plotGate(gs[[1]]) 
+plotGate(gs[[1]])#boolean gate is skipped by default 
+plotGate(gs[[1]],bool=TRUE)
 
 #plot the gating hierarchy
 require(Rgraphviz)

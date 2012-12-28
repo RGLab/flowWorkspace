@@ -6,6 +6,9 @@
 \alias{ncFlowSet,GatingSet-method}
 \alias{ncFlowSet<-,GatingHierarchy-method}
 \alias{ncFlowSet<-,GatingSet-method}
+\alias{ncFlowSet<-,GatingSetInternal-method}
+\alias{getNcdf,GatingSet-method}
+\alias{getNcdf,GatingHierarchy-method}
 \title{
 Fetch or replace the ncdfFlowSet object in a GatingSet or GatingHierarchy. Deprecated by getData method.
 }
