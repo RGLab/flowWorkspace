@@ -8,7 +8,7 @@
 \alias{getData,graphNEL-method}
 
 
-}
+
 \title{
 Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 }

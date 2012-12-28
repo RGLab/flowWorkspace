@@ -26,9 +26,7 @@ A \code{character} vector of flowJo gating paths for the gates in \code{gs}
 \value{
 A \code{numeric} vector of gate indices to be used with \code{\link[flowStats]{normalizeGatingSet}}.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
 Greg Finak <gfinak@fhcrc.org>
 }

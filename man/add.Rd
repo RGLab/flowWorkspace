@@ -27,8 +27,6 @@ They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \
 }
 \usage{
 
-\S4method{GatingSet}{flowSet}(x,dMode=0)
-
 \S4method{add}{GatingHierarchyInternal,rectangleGate}(wf, action,...)
 \S4method{add}{GatingHierarchyInternal,polygonGate}(wf, action,...)
 \S4method{add}{GatingHierarchyInternal,booleanFilter}(wf, action,...)

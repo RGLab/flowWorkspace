@@ -407,6 +407,7 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							
 						}else 
 						{
+							#define the dummy spline function(simplied version of the one from stats package)
 							f<-function (x, deriv = 0) 
 							{
 							    deriv <- as.integer(deriv)
@@ -419,18 +420,19 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							            c = z0), list(y = 6 * z$d, b = z0, c = z0))
 							        z[["d"]] <- z0
 							    }
-							    res <- .C(C_SplineEval, z$method, as.integer(length(x)), 
-							        x = as.double(x), y = double(length(x)), z$n, z$x, z$y, 
-							        z$b, z$c, z$d, PACKAGE = "stats")$y
+								xout<-vector("numeric",z$n)
+							    res <- .Call(C_SplineEval, xout,z, PACKAGE = "stats")
 							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
 							        res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
 							    res
 							}
+							#update the parameters of the function
 							z<-curTrans$z
 							z$n<-length(z$x)
 							z$method<-curTrans$method
 							assign("z",z,environment(f))
-							assign("C_spline_eval",environment(splinefun)$C_spline_eval,environment(f))
+							#update the spline c call with the one specifed in splinefun routine
+							assign("C_SplineEval",environment(splinefun)$C_SplineEval,environment(f))
 							
 							attr(f,"type")<-curTrans$type	
 						}

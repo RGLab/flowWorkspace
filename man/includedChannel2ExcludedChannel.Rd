@@ -25,9 +25,7 @@ A \code{character} vector of channel / parameter names in the gating set.%%     
 \value{
 A \code{character} vector of channel names. The complement of \code{includedims}.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
 Greg Finak <gfinak@fhcrc.org>
 }
