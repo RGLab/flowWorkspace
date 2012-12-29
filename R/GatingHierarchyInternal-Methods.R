@@ -421,7 +421,7 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							        z[["d"]] <- z0
 							    }
 								xout<-vector("numeric",z$n)
-							    res <- .Call("C_SplineEval", xout,z, PACKAGE = "stats")
+							    res <- .Call(C_SplineEval, xout,z, PACKAGE = "stats")
 							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
 							        res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
 							    res
