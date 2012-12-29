@@ -420,8 +420,8 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							            c = z0), list(y = 6 * z$d, b = z0, c = z0))
 							        z[["d"]] <- z0
 							    }
-								xout<-vector("numeric",z$n)
-							    res <- .Call(C_SplineEval, xout,z, PACKAGE = "stats")
+								xout<-vector("numeric",length(x))
+							    res <- stats::: .splinefun(xout,z)
 							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
 							        res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
 							    res
@@ -431,8 +431,6 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							z$n<-length(z$x)
 							z$method<-curTrans$method
 							assign("z",z,environment(f))
-							#update the spline c call with the one specifed in splinefun routine
-							assign("C_SplineEval",environment(splinefun)$C_SplineEval,environment(f))
 							
 							attr(f,"type")<-curTrans$type	
 						}
