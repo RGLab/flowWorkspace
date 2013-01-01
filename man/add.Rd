@@ -95,7 +95,7 @@ Mike Jiang \email{wjiang2@fhcrc.org}
 \code{\link{GatingSet-class}}
 }
 \examples{
-
+\dontrun{
 data(GvHD)
 #select raw flow data
 fs<-GvHD[1:3]
@@ -148,5 +148,6 @@ plot(gs[[1]])
 #remove one node causing the removal of all the descendants 
 Rm('rectangle', gs)
 getNodes(gs[[1]])
+}
 }
 \keyword{add }

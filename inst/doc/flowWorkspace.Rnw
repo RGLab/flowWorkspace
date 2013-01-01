@@ -52,12 +52,11 @@ We see that this a version 2.0 workspace file. It's location and filename are pr
 With the workspace file open, we have not yet imported the XML document. The next step parses the XML workspace and creates R data structures to represent some of the information therein. Specifically, by calling \Rfunction{parseWorkspace()} the user will be presented with a list of \textit{groups} in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a \Rclass{GatingHierarchy} for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a \Rclass{GatingSet} object. Calling \Rfunction{parseWorkspace()} is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument \texttt{execute=T/F} specifies whether you want to load, compensate, transform the data and compute statistics immediately after parsing the XML tree.
 
 <<parsews,results=hide>>=
-G<-parseWorkspace(ws,name=1,path=ws@path,isNcdf=FALSE,cleanup=FALSE,keep.indices=TRUE,useInternal=FALSE); #import the first group
+G<-parseWorkspace(ws,name=1,path=ws@path,isNcdf=FALSE,cleanup=FALSE,keep.indices=TRUE); #import the first group
 #Lots of output here suppressed for the vignette.
 @
 
 When isNcdf flag is set TRUE,the data is stored in ncdf format on disk.
-
 <<summary,results=verbatim>>=
 G
 @
@@ -68,69 +67,83 @@ At this point we have parsed the workspace file and generate the gating hierarch
 
 We can plot the gating hierarchy for a given sample:
 <<plotGH,include=TRUE,fig=TRUE>>=
-require(Rgraphviz)
-plot(G[[1]])
+gh<-G[[1]]
+plot(gh)
 @
 
 We can list the nodes (populations) in the gating hierarchy:
 
 <<getNodes>>=
-getNodes(G[[1]])
+nodelist<-getNodes(gh)
+nodelist
 @
 Note that the number preceding the period in the node names is just an identifier to help uniquely label populations in the gating hierarchy. It does not represent any information about population statistics.
+When the node name itself is already unique,such as "Live","B Cell" ,the prefix is ommitted by default. 
+We can force the prefix to be added to each node by setting \Robject{prefix} TRUE.
+<<getNodes-prefix>>
+getNodes(gh,prefix=TRUE)
+@
+Alternativly, the the full path of the node can be displayed by setting \Robject{isPath} TRUE.
+<<getNodes-path>>
+getNodes(gh,isPath=TRUE)
+@
+
 We can get a specific gate definition:
 
 <<getGate>>=
-getGate(G[[1]],getNodes(G[[1]])[3])
-@
-
-We can extract the dimensions relating to a specific gate:
-
-<<getDims>>=
-getDimensions(G[[1]],getNodes(G[[1]])[3])
+node<-nodelist[3]
+g<-getGate(gh,node)
+g
 @
 
 We can extract vertices of a gate:
 <<getBound>>=
-getBoundaries(G[[1]],getNodes(G[[1]])[3])
+getBoundaries(gh,node)
 @
 
 We can get the population proportion (relative to its parent) for a single population:
 <<getProp>>=
-getProp(G[[1]],getNodes(G[[1]])[3])
+getProp(gh,node)
 @
 
 Or we can retrieve the population statistics for all populations in the sample:
 <<getStats>>=
-getPopStats(G[[1]])
+getPopStats(gh)
 @
 
 We can plot the coefficients of variation between the counts derived using flowJo and flowCore for each population:
 <<plotPCV,fig=TRUE,include=TRUE>>=
-print(plotPopCV(G[[2]]))
+print(plotPopCV(gh))
 @
 
 We can plot individual gates: note the scale of the transformed axes.
 
 <<plotGate,fig=TRUE,include=TRUE>>=
-print(plotGate(G[[1]],getNodes(G[[1]])[6],lwd=2,cex=2))
+print(plotGate(gh,nodelist[6],lwd=2,cex=2))
 @
 
 If we have  metadata associated with the experiment, it can be attached to the \Robject{GatingSet}.
 <<annotate>>=
 d<-data.frame(sample=factor(c("sample 1", "sample 2")),treatment=factor(c("sample","control")) )
-G@metadata<-new("AnnotatedDataFrame",data=d)
+pd<-pData(G)
+pd<-cbind(pd,d)
+pData(G)<-pd
 pData(G);
 @
 
 We can retrieve the subset of data associated with a node:
-<<getData>>=
-getData(G[[1]],getNodes(G[[1]])[3]);
+<<getData-gh>>=
+getData(gh,node);
+
+@
+When applied to a \Robject{GatingSet},a \Rojbect{flowSet} or \Rojbect{ncdfFlowSet} is returned. 
+<<getData-G>>=
+getData(G,node);
 @
 
 Or we can retrieve the indices specifying if an event is included inside or outside a gate using:
 <<getInd>>=
-table(getIndices(G[[1]],getNodes(G[[1]])[3]))
+table(getIndices(gh,node)
 @
 The indices returned are relative to the parent population (member of parent AND member of current gate), so they reflect the true hierarchical gating structure.
 
@@ -170,37 +183,137 @@ getSampleGroups(ws)
 
 The \texttt{compID} column tells you which compensation matrix to apply to a group of files, and similarly, based on the name of the compensation matrix, which transformations to apply.
 
-\subsection{Converting to flowCore Objects}
-You may want to convert the imported workspace into \Robject{flowCore} objects, such as workflows. We provide this functionality via the \Rfunction{flowWorkspace2flowCore} function.
+%\subsection{Converting to flowCore Objects}
+%You may want to convert the imported workspace into \Robject{flowCore} objects, such as workflows. We provide this functionality via the \Rfunction{flowWorkspace2flowCore} function.
+%
+%\Rfunction{flowWorkspace2flowCore} extracts the compensation matrices,transformation functions and all the gates from GatingHierarchies generated by flowWorkspace package and converts them to the respective views and actionItems of workFlows defined by flowCore package.
+% It takes a gatingHierarchy, flowJoWorkspace or GatingSet as the input, and returns one or multiple workflows as the result, depending on whether the gating hierarchies for each sample (including gate coordinates) are identical.
+%
+%
+%<<convert2flowcore>>=
+%wfs<-flowWorkspace2flowCore(G,path=ws@path);
+%wfs
+%
+%@
+%
+%\Rfunction{plotWf} plots the workflow tree
+%
+%<<plotworkflow,fig=TRUE,include=TRUE>>=
+%plotWf(wfs[[1]])
+%@
+%
+%Finally, when we are finished with the workspace, we close it:
+%
+%<<closews>>=
+%closeWorkspace(ws);
+%ws
+%@
+\subsection{add/remove gates}
+\Robject{GatingSet} is equivalent dto the \Robject{workFlow} in flowCore package
+,which provides methods to create a GatingSet from raw FCS files, add or remove the flowCore gate(or population) to or from a GatingHierarchy/GatingSet.
+Firstly,we have a flowSet containing raw flow data:
+<<create gs>>=
+data(GvHD)
+#select raw flow data
+fs<-GvHD[1:3]
+@
+Then transform the raw data:
+<<transform>>=
+tf <- transformList(colnames(fs[[1]])[3:6], asinh, transformationId="asinh")
+fs_trans<-transform(fs,tf)
+@
+and create a gatingset from the transformed data:
+<<create gs>>= 
+gs <- GatingSet(fs_trans)
+gs
+gh1<-gs[[1]]
+getNodes(gh1) 
+@
+It only contains the root node at this point.Then we add one rectangleGate:
+<<add-rectGate>>=
+rg <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400),
+                    filterId="rectangle")
 
-\Rfunction{flowWorkspace2flowCore} extracts the compensation matrices,transformation functions and all the gates from GatingHierarchies generated by flowWorkspace package and converts them to the respective views and actionItems of workFlows defined by flowCore package.
- It takes a gatingHierarchy, flowJoWorkspace or GatingSet as the input, and returns one or multiple workflows as the result, depending on whether the gating hierarchies for each sample (including gate coordinates) are identical.
+nodeID<-add(gs, rg)
+nodeID
+getNodes(gh1)  
+@
+Note that the gate is added to root node by default if parent is not specified.
+Then we add a quadGate to the new population generated by the rectangeGate which is named after filterId of the gate because the name is not specified when \Robject{add} method is called.
+<<add-quadGate>>=
+qg <- quadGate("FL1-H"=2, "FL2-H"=4)
+nodeIDs<-add(gs,qg,parent="rectangle")
+nodeIDs 
+getNodes(gh1)
+@
+Here quadGate produces four population nodes/populations whose names are named after dimensions of gate if not specified.
 
-<<convert2flowcore>>=
-wfs<-flowWorkspace2flowCore(G,path=ws@path);
-wfs
-
+Boolean Gate can also be defined and added to GatingSet:
+<<add-boolGate>>=
+bg<-booleanFilter(`CD15 FITC-CD45 PE+`|`CD15 FITC+CD45 PE-`)
+bg
+nodeID2<-add(gs,bg,parent="rectangle")
+nodeID2
+getNodes(gh1)
+@
+Now the gating tree is finished but the actual gating is done by \Robject{recompute} method:
+<<recompute>>=
+recompute(gs)
+@
+After gating is finished,gating results can be visualized by \Robject{plotGate} method:
+<<plotGate>>=
+plotGate(gh1,"rectangle") #plot one Gate
+@
+The second argument of \Robject{plotGate} is used to specify node index/name. 
+Multiple gates can be plotted on the same pannel:
+<<plotGate-multiple>>=
+plotGate(gh1,nodeIDs) 
+@
+We may also want to plot all the gates without specifying the gate index:
+<<plotGate-gh-all>>=
+plotGate(gh1)
+@
+Boolean gate is skipped by default and can be enabled by:
+<<plotGate-gh-bool,eval=FALSE>>=
+plotGate(gh1,bool=TRUE)
+@
+Note that smoothing may be applied automatically if there are not enough events after gating
+Sometime it is more useful to compare gates across samples using lattice plot by applying \Robjecdt{plotGate}
+to a \Robject{GatingSet}:
+<<plotGate-gs>>=
+plotGate(gs,nodeID)
 @
 
-\Rfunction{plotWf} plots the workflow tree
-
-<<plotworkflow,fig=TRUE,include=TRUE>>=
-plotWf(wfs[[1]])
+The gating hierarchy is plotted by:
+<<plot-gh>>=
+plot(gh1)
 @
-
-Finally, when we are finished with the workspace, we close it:
-
-<<closews>>=
-closeWorkspace(ws);
-ws
+If we want to remove one node, simply:
+<<rm>>= 
+Rm('rectangle', gs)
+getNodes(gh1)
 @
-
+As we see,removing one node causes all its descendants to be removed as well.
+\subsection{archive and clone}
+Oftentime, we need to save a GatingSet including the gated flow data,gates and populations to disk and reload it later on.
+It can be achieved by:
+<<archive,eval=FALSE>>=
+	archive(gs,file="gs.tar")
+	G1<-unarchive(file="gs.tar")
+@ 
+We also provide the \Robject{clone} method to make a full copy of an existing \Robject{GatingSet}:
+<<clone,eval=FALSE>>=
+	gs_cloned<-clone(gs)
+@
+Note that the \Robject{GatingSet} contains environment slots and external pointer that point to the internal C data structure.
+So make sure to use these methods in order to save or make a copy of existing object.
+The regular R assignment (<-) or \Robject{save} routine doesn't work as expected for the \Robject{GatingSet} object.
 
 \subsection{Exporting to FlowJo OSX 9.2}
 The \Rfunction{exportAsFlowJoXML} function can be used to export a \Robject{flowCore::workFlow} as an XML workspace for FlowJo 9.2 OSX. If flowWorkspace has been used to import an existing FlowJo workspace, \Rfunction{flowWorkspace2flowCore} can be used to obtain a \Robject{workFlow} for exporting. Currently this function can export one workFlow at a time.
 
-\subsection{Parallel Support}
-Parsing and gating can be time--consuming. This latest version (>1.0.0) of flowWorkspace supports parallelization via multicore, snowfall, and Rmpi. If multicore is loaded, or a snowfall cluster is initialized, flowWorkspace will use snowfall or multicore (in that order of preference) to parse the workspace. Parallel gating of the workspace can be performed by loading Rmpi and running parseWorkspace(). This corresponds to the execute() step of the parseWorkspace function. Rmpi is needed to handle concurrent reads/writes to the ncdfFlowSet file. Parallel gating / parsing will work with netCDF-backed data or if data is stored in RAM.
+%\subsection{Parallel Support}
+%Parsing and gating can be time--consuming. This latest version (>1.0.0) of flowWorkspace supports parallelization via multicore, snowfall, and Rmpi. If multicore is loaded, or a snowfall cluster is initialized, flowWorkspace will use snowfall or multicore (in that order of preference) to parse the workspace. Parallel gating of the workspace can be performed by loading Rmpi and running parseWorkspace(). This corresponds to the execute() step of the parseWorkspace function. Rmpi is needed to handle concurrent reads/writes to the ncdfFlowSet file. Parallel gating / parsing will work with netCDF-backed data or if data is stored in RAM.
 
 \subsection{Deprecated Functionality}
 The following behaviour is no longer supported and has been replace by more extensive netCDF support via the ncdfFlow package.
