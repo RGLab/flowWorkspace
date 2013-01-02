@@ -420,8 +420,8 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 							            c = z0), list(y = 6 * z$d, b = z0, c = z0))
 							        z[["d"]] <- z0
 							    }
-								xout<-vector("numeric",length(x))
-							    res <- stats::: .splinefun(xout,z)
+
+							    res <- stats::: .splinefun(x,z)
 							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
 							        res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
 							    res
