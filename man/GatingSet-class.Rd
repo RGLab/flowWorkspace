@@ -27,6 +27,7 @@ or by
 GatingSet(x,y,path=".",isNcdf=FALSE,dMode=1,...),x is an existing gating hierarchy(used as a gating template) and y is the flow data to be gated (flowSet/ncdfFlowSet).
 It creates the GatingSet from the FCS files and copies the gates defined in the existing gating hierarchy to the new GatingSet.
 \code{dMode} specifies the level of print-out that is used for the debug purpose.
+\code{...} are the arguments passed to \link{read.flowSet} or \link{read.ncdfFlowSet} functions.
 	
 }
 \section{Description}{
