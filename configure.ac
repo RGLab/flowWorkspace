@@ -19,7 +19,9 @@ AC_ARG_WITH(boost,
            [AS_HELP_STRING([--with-boost=DIR],
                            [root directory of boost installation (defaults to /usr/local)])],
            [BOOST_DIR="${with_boost}"],
-	   [BOOST_DIR="yes"])
+	   [BOOST_DIR="/usr/local"])#default should be set empty once bundled boost library is included
+
+
 
 # Checks for programs.
 AC_PROG_CXX
@@ -82,27 +84,27 @@ fi
 
 
 #boost serialzation library
-AC_MSG_NOTICE([setting boost serialzation flags...])
-if test  "${BOOST_DIR}" = "yes" ; then
-        AC_MSG_NOTICE([No directory was specified for --with-boost. Trying with /usr/local.])
-
-        BOOST_CFLAGS="-I/usr/local/include/boost"
-	BOOST_LIBS="-L/usr/local/lib -lboost_serialization"
-        
+#AC_MSG_NOTICE([setting boost serialzation flags...])
+if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
+        AC_MSG_NOTICE([No directory was specified for --with-boost. Using bundled boost.])
+#	AC_MSG_ERROR("bundled")
+#        BOOST_CFLAGS="-I/usr/local/include/boost"
+#	BOOST_LIBS="-L/usr/local/lib -lboost_serialization"
+ 	BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
+	BOOST_LIBS="-lboost_serialization"
+       
 else
-        AC_MSG_NOTICE([Using boost dir '${BOOST_DIR}'])
-
+        AC_MSG_NOTICE([Using external boost '${BOOST_DIR}'])
+#	AC_MSG_ERROR("external")
         BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
         BOOST_LIBS="-L${BOOST_DIR}/lib -lboost_serialization"
 fi
 
-#determine R_HOME
-AC_MSG_NOTICE([determine "R_HOME"...])
-R_HOME="`R RHOME`"
+#boost
 
 #append  RCPP Ld flags
-PKG_CPPFLAGS="./include $XML2_CFLAGS $NETCDF_CFLAGS $BOOST_CFLAGS"
-PKG_LIBS="`$R_HOME/bin/Rscript -e "Rcpp:::LdFlags()"` $XML2_LIBS $NETCDF_LIBS $BOOST_LIBS"
+PKG_CPPFLAGS="$XML2_CFLAGS $NETCDF_CFLAGS $BOOST_CFLAGS"
+PKG_LIBS="$XML2_LIBS $NETCDF_LIBS $BOOST_LIBS"
 
 # Checks for library functions.
 AC_MSG_NOTICE([Using the following compilation and linking flags for flowWorkspace])

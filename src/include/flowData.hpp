@@ -16,7 +16,7 @@
 using namespace std;
 using namespace Rcpp;
 
-
+#include <boost/config.hpp>
 #include <boost/archive/tmpdir.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
