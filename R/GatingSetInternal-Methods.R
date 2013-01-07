@@ -199,7 +199,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			message("generating new GatingSet from the gating template...")
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
 			
-			Object<-.addGatingHierarchy(Object,files,execute=TRUE,isNcdf)
+			Object<-.addGatingHierarchy(Object,files,execute=TRUE,isNcdf=isNcdf,...)
 			return(Object)
 		})
 ############################################################################
