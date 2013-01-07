@@ -8,10 +8,10 @@
 #ifndef TREE_HPP_
 #define TREE_HPP_
 
-//#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/adjacency_list.hpp>
-//#include <boost/graph/visitors.hpp>
 #include "nodeProperties.hpp"
+#include <boost/graph/adjacency_list.hpp>
+
+
 #define ROOTNODE 0
 
 struct Edge{
