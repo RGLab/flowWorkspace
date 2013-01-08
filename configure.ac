@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([flowWorkspace], [1.5.55], [wjiang2@fhcrc.org])
+AC_INIT([flowWorkspace], [1.5.58], [wjiang2@fhcrc.org])
 AC_CONFIG_SRCDIR([src/GatingHierarchy.cpp])
 #AC_CONFIG_HEADERS([config.h])
 AC_ARG_WITH(xml2,
@@ -19,7 +19,7 @@ AC_ARG_WITH(boost,
            [AS_HELP_STRING([--with-boost=DIR],
                            [root directory of boost installation (defaults to /usr/local)])],
            [BOOST_DIR="${with_boost}"],
-	   [BOOST_DIR="/usr/local"])#default should be set empty once bundled boost library is included
+	   [BOOST_DIR=""])
 
 
 
@@ -30,6 +30,7 @@ AC_PROG_CC
 # Checks for libraries.
 
 # Checks for header files.
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -87,10 +88,24 @@ fi
 #AC_MSG_NOTICE([setting boost serialzation flags...])
 if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         AC_MSG_NOTICE([No directory was specified for --with-boost. Using bundled boost.])
-#	AC_MSG_ERROR("bundled")
-#        BOOST_CFLAGS="-I/usr/local/include/boost"
-#	BOOST_LIBS="-L/usr/local/lib -lboost_serialization"
- 	BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
+	
+	BASEBOOSTNAME=rbgl_trimmed_boost_1_52_0
+	BOOSTTGZNAME=${BASEBOOSTNAME}.tar.gz
+	if test -d ./src/${BASEBOOSTNAME};
+		then 
+			echo 'found ' $BASEBOOSTNAME ' header sources and tar archive;\n using what is there.'
+		else
+			echo "untarring boost include tree...";
+			cd src; gunzip -dc ${BOOSTTGZNAME} | tar xf -;
+	fi;
+	
+    AC_MSG_NOTICE([compiling boost serialization library.])
+
+	PKG_DIR=`pwd`
+	cd "src/trimmed_boost_1_52_0/libs/serialization/build/"
+	./build.sh
+	cd "${PKG_DIR}"
+    BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
 	BOOST_LIBS="-lboost_serialization"
        
 else
