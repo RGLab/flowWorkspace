@@ -88,23 +88,24 @@ fi
 #AC_MSG_NOTICE([setting boost serialzation flags...])
 if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         AC_MSG_NOTICE([No directory was specified for --with-boost. Using bundled boost.])
-	
+
+	PKG_DIR=`pwd`	
 	BASEBOOSTNAME="trimmed_boost_1_52_0"
 	BOOSTTGZNAME=${BASEBOOSTNAME}.tar.gz
 	if test -d ./src/${BASEBOOSTNAME};
 		then 
-			echo 'found ' $BASEBOOSTNAME ' header sources and tar archive;\n using what is there.'
+			echo 'found ' $BASEBOOSTNAME ' header sources and tar archive;using what is there.'
 		else
 			echo "untarring boost include tree...";
 			cd src; gunzip -dc ${BOOSTTGZNAME} | tar xf -;
 	fi;
 	
     AC_MSG_NOTICE([compiling boost serialization library.])
-
-	PKG_DIR=`pwd`
 	cd "src/trimmed_boost_1_52_0/libs/serialization/build/"
 	./build.sh
+	#echo `pwd`
 	cd "${PKG_DIR}"
+	#echo `pwd`
     BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
 	BOOST_LIBS="-lboost_serialization"
        
