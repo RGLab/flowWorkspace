@@ -106,17 +106,16 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
 	#echo `pwd`
 	cd "${PKG_DIR}"
 	#echo `pwd`
-    BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
-	BOOST_LIBS="-L./src/trimmed_boost_1_52_0/libs/serialization/src -lboost_serialization"
-       
+   	 BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
+	#BOOST_LIBS="-Ltrimmed_boost_1_52_0/libs/serialization/src -lboost_serialization"
+       BOOST_LIBS="trimmed_boost_1_52_0/libs/serialization/src/*.o"
 else
         AC_MSG_NOTICE([Using external boost '${BOOST_DIR}'])
-#	AC_MSG_ERROR("external")
         BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
         BOOST_LIBS="-L${BOOST_DIR}/lib -lboost_serialization"
 fi
 
-#boost
+
 
 #append  RCPP Ld flags
 PKG_CPPFLAGS="$XML2_CFLAGS $NETCDF_CFLAGS $BOOST_CFLAGS"
