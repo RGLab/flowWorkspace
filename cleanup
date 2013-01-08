@@ -1,2 +1,2 @@
 echo "removing exploded boost header source..."
-cd src; rm -rf rbgl_trimmed_boost_1_52_0
+cd src; rm -rf trimmed_boost_1_52_0

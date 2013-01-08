@@ -107,7 +107,7 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
 	cd "${PKG_DIR}"
 	#echo `pwd`
     BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
-	BOOST_LIBS="-lboost_serialization"
+	BOOST_LIBS="-L./src/trimmed_boost_1_52_0/libs/serialization/src -lboost_serialization"
        
 else
         AC_MSG_NOTICE([Using external boost '${BOOST_DIR}'])

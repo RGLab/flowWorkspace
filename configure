@@ -3731,11 +3731,11 @@ $as_echo "$as_me: No directory was specified for --with-boost. Using bundled boo
 $as_echo "$as_me: compiling boost serialization library." >&6;}
 	cd "src/trimmed_boost_1_52_0/libs/serialization/build/"
 	./build.sh
-	echo `pwd`
+	#echo `pwd`
 	cd "${PKG_DIR}"
-	echo `pwd`
+	#echo `pwd`
     BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
-	BOOST_LIBS="-lboost_serialization"
+	BOOST_LIBS="-L./src/trimmed_boost_1_52_0/libs/serialization/src -lboost_serialization"
 
 else
         { $as_echo "$as_me:${as_lineno-$LINENO}: Using external boost '${BOOST_DIR}'" >&5
