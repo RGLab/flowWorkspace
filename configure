@@ -3729,7 +3729,7 @@ $as_echo "$as_me: No directory was specified for --with-boost. Using bundled boo
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: compiling boost serialization library." >&5
 $as_echo "$as_me: compiling boost serialization library." >&6;}
-	cd "src/trimmed_boost_1_52_0/libs/serialization/build/"
+	cd "trimmed_boost_1_52_0/libs/serialization/build/"
 	./build.sh
 	#echo `pwd`
 	cd "${PKG_DIR}"
