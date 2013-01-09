@@ -60,7 +60,7 @@ importFrom(graphics, axis, points, polygon, text)
 
 importFrom(lattice, barchart)
 
-importFrom(methods, "@<-", is, new)
+importFrom(methods, is, new)
 
 importFrom(stats, na.omit, optimize, qchisq, sd, splinefun)
 
