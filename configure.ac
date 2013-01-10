@@ -97,11 +97,11 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
 			echo 'found ' $BASEBOOSTNAME ' header sources and tar archive;using what is there.'
 		else
 			echo "untarring boost include tree...";
-			cd src; gunzip -dc ${BOOSTTGZNAME} | tar xf -;
+			cd src; gunzip -dc ${BOOSTTGZNAME} | tar xf -;cd ..;
 	fi;
 	
     AC_MSG_NOTICE([compiling boost serialization library.])
-	cd "trimmed_boost_1_52_0/libs/serialization/build/"
+	cd "src/trimmed_boost_1_52_0/libs/serialization/build/"
 	./build.sh
 	#echo `pwd`
 	cd "${PKG_DIR}"
