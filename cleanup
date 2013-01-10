@@ -1,2 +1,13 @@
 echo "removing exploded boost header source..."
-cd src; rm -rf trimmed_boost_1_52_0
+if [ -e src/trimmed_boost_1_52_0 ]; then
+	rm -rf src/trimmed_boost_1_52_0
+fi
+for f in ./config.*; do
+	rm -f $f
+done
+for f in ./autom4*; do
+	rm -rf $f
+done
+if [ -e src/Makevars ]; then
+	rm -f src/Makevars
+fi
