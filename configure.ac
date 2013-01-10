@@ -10,11 +10,6 @@ AC_ARG_WITH(xml2,
                            [root directory of xml2 installation (defaults to /usr/local)])],
            [XML2_DIR="${with_xml2}"],
 	   [XML2_DIR="yes"])
-AC_ARG_WITH(netcdf,
-           [AS_HELP_STRING([--with-netcdf=DIR],
-                           [root directory of netcdf installation (defaults to /usr/local)])],
-           [NETCDF_DIR="${with_netcdf}"],
-	   [NETCDF_DIR="yes"])
 AC_ARG_WITH(boost,
            [AS_HELP_STRING([--with-boost=DIR],
                            [root directory of boost installation (defaults to /usr/local)])],
@@ -61,43 +56,21 @@ else
 fi
 
 
-#netcdf
-AC_MSG_NOTICE([setting netcdf flags...])
-if test  "${NETCDF_DIR}" = "yes" ; then
-        AC_MSG_NOTICE([No directory was specified for --with-netcdf. Trying to find  using other methods.])
-        AC_PATH_PROG(NETCDF_CONFIG, nc-config)
-
-        if test -z "${NETCDF_CONFIG}" ; then
-                AC_MSG_NOTICE([nc-config was not detected. Verify netcdf is installed correctly.])
-                AC_MSG_NOTICE([Trying with /usr/local anyway.])
-                NETCDF_CFLAGS="-I/usr/local/include"
-		NETCDF_LIBS="-L/usr/local/lib -lnetcdf"        
-	else
-                NETCDF_CFLAGS="`${NETCDF_CONFIG} --cflags`"
-                NETCDF_LIBS="`${NETCDF_CONFIG} --libs`"
-        fi
-else
-        AC_MSG_NOTICE([Using netcdf dir '${NETCDF_DIR}'])
-
-        NETCDF_CFLAGS="-I${NETCDF_DIR}/include"
-        NETCDF_LIBS="-L${NETCDF_DIR}/lib -lnetcdf"
-fi
-
-
 #boost serialzation library
 #AC_MSG_NOTICE([setting boost serialzation flags...])
 if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         AC_MSG_NOTICE([No directory was specified for --with-boost. Using bundled boost.])
 
-	PKG_DIR=`pwd`	
+	PKG_DIR=`pwd`
+	cd src
 	BASEBOOSTNAME="trimmed_boost_1_52_0"
 	BOOSTTGZNAME=${BASEBOOSTNAME}.tar.gz
-	if test -d ./src/${BASEBOOSTNAME};
+	if test -d ./${BASEBOOSTNAME};
 		then 
 			echo 'found ' $BASEBOOSTNAME ' header sources and tar archive;using what is there.'
 		else
 			echo "untarring boost include tree...";
-			cd src; gunzip -dc ${BOOSTTGZNAME} | tar xf -;
+			gunzip -dc ${BOOSTTGZNAME} | tar xf -;
 	fi;
 	
     AC_MSG_NOTICE([compiling boost serialization library.])
@@ -112,14 +85,14 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
 else
         AC_MSG_NOTICE([Using external boost '${BOOST_DIR}'])
         BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
-        BOOST_LIBS="-L${BOOST_DIR}/lib -lboost_serialization"
+        BOOST_LIBS="-L${BOOST_DIR}/lib -L${BOOST_DIR}/lib64 -lboost_serialization"
 fi
 
 
 
-#append  RCPP Ld flags
-PKG_CPPFLAGS="$XML2_CFLAGS $NETCDF_CFLAGS $BOOST_CFLAGS"
-PKG_LIBS="$XML2_LIBS $NETCDF_LIBS $BOOST_LIBS"
+#netcdf library is now bundled in ncdfFlow package so just compile and link against ncdfFlow
+PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS"
+PKG_LIBS="$XML2_LIBS $BOOST_LIBS"
 
 # Checks for library functions.
 AC_MSG_NOTICE([Using the following compilation and linking flags for flowWorkspace])
