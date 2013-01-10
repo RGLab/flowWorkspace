@@ -3663,7 +3663,7 @@ else
         { $as_echo "$as_me:${as_lineno-$LINENO}: Using external boost '${BOOST_DIR}'" >&5
 $as_echo "$as_me: Using external boost '${BOOST_DIR}'" >&6;}
         BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
-        BOOST_LIBS="-L${BOOST_DIR}/lib -lboost_serialization"
+        BOOST_LIBS="-L${BOOST_DIR}/lib -L${BOOST_DIR}/lib64 -lboost_serialization"
 fi
 
 
