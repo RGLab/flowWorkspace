@@ -189,7 +189,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	}
 	if(is.character(subset)){
 	#subset s sg by file name
-		sg <- subset(sg,name%in%subset)
+          #pull the file names from the keywords
+          filenames<-.getKeyword(ws,"$FIL")
+          #need to match filename to sampleID
+          sg<-cbind(sg,filename=sapply(sg$sampleID,function(x).getKeywordsBySampleID(obj,x,"$FIL")))
+          sg<-subset(sg,filename%in%subset)
 	}
 	if(wsversion=="2.0"){
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
@@ -1848,6 +1852,17 @@ setMethod("getData",signature(obj="GatingSet"),function(obj,y=NULL,tsort=FALSE){
 #		stop("Invalid value for y. Must be class \"numeric\"");
 	}
 })
+
+.getKeywordsBySampleID <- function(obj,sid,kw=NULL){
+  kws<-xpathApply(obj@doc,sprintf("/Workspace/SampleList/Sample[@sampleID='%s']/Keywords/Keyword",sid),xmlAttrs)
+  if(!is.null(kw)){
+    unlist(lapply(kws,function(x)x["value"][x["name"]%in%kw]))
+  }else{
+    kws
+  }
+}
+
+
 setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
 	w <- which(xpathApply(obj@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value"))%in%y)
 	l<-xpathApply(obj@doc,paste("/Workspace/SampleList/Sample[",w,"]/Keywords/node()",sep=""),xmlAttrs)
