@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Import flowJo Workspaces into BioConductor and replicate flowJo gating with flowCore 
-Version: 1.5.61
+Version: 1.5.62
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang, Mose Andre
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -14,5 +14,5 @@ Depends:  R (>= 2.16.0),Rcpp (>= 0.9.9),Cairo, BiocGenerics, methods, RBGL, grap
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Enhances: multicore,Rmpi
 Suggests: testthat, flowWorkspaceData
-LinkingTo:Rcpp
+LinkingTo:Rcpp,ncdfFlow
 
