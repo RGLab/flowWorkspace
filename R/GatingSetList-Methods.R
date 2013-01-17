@@ -9,7 +9,7 @@ setMethod("rbind2",
 				#combine flowset/ncdfFlowSet
 				fsList<-lapply(x,getData)
 				if(isNcdfList[[1]])
-					fs<-rbind2(ncdfFlowList(fsList),...)
+					fs<-rbind2(as(fsList,"ncdfFlowList"),...)
 				else
 				{
 					##using original flowCore::rbind2 for flowSet
