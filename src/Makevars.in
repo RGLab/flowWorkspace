@@ -1,5 +1,5 @@
 
 PKG_CPPFLAGS =-Wno-deprecated @PKG_CPPFLAGS@
-PKG_LIBS =`${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags();cat(' ');ncdfFlow:::LdFlags()"` @PKG_LIBS@ 
+PKG_LIBS =`${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags();cat(' ');ncdfFlow:::LdFlags(FALSE)"` @PKG_LIBS@ 
 
  
