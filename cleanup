@@ -1,6 +1,6 @@
-echo "removing exploded boost header source..."
 if [ -e src/trimmed_boost_1_52_0 ]; then
-	rm -rf src/trimmed_boost_1_52_0
+	echo "removing .o files"
+	rm -f src/trimmed_boost_1_52_0/libs/serialization/src/*.o
 fi
 for f in ./config.*; do
 	rm -f $f

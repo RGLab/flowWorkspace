@@ -3627,10 +3627,9 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: No directory was specified for --with-boost. Using bundled boost." >&5
 $as_echo "$as_me: No directory was specified for --with-boost. Using bundled boost." >&6;}
 
-	PKG_DIR=`pwd`
-	cd src
 	BASEBOOSTNAME="trimmed_boost_1_52_0"
 	BOOSTTGZNAME=${BASEBOOSTNAME}.tar.gz
+	cd src
 	if test -d ./${BASEBOOSTNAME};
 		then
 			echo 'found ' $BASEBOOSTNAME ' header sources and tar archive;using what is there.'
@@ -3638,17 +3637,7 @@ $as_echo "$as_me: No directory was specified for --with-boost. Using bundled boo
 			echo "untarring boost include tree...";
 			gunzip -dc ${BOOSTTGZNAME} | tar xf -;
 	fi;
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: compiling boost serialization library." >&5
-$as_echo "$as_me: compiling boost serialization library." >&6;}
-	cd "trimmed_boost_1_52_0/libs/serialization/build/"
-	./build.sh
-	#echo `pwd`
-	cd "${PKG_DIR}"
-	#echo `pwd`
-   	 BOOST_CFLAGS="-Itrimmed_boost_1_52_0"
-	#BOOST_LIBS="-Ltrimmed_boost_1_52_0/libs/serialization/src -lboost_serialization"
-       BOOST_LIBS="trimmed_boost_1_52_0/libs/serialization/src/*.o"
+	cd ../
 else
         { $as_echo "$as_me:${as_lineno-$LINENO}: Using external boost '${BOOST_DIR}'" >&5
 $as_echo "$as_me: Using external boost '${BOOST_DIR}'" >&6;}
