@@ -15,10 +15,10 @@ setMethod("isNcdf",c("GatingHierarchy"),function(x){
 setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 			
 #			browser()
-			DotFile<-tempfile()
+			DotFile<-tempfile(fileext=".dot")
 			.Call("R_plotGh",x@pointer,getSample(x),DotFile,FALSE)
-			GXLFile<-tempfile()
-			system(paste("dot2gxl",DotFile, "-o",GXLFile))
+			GXLFile<-tempfile(fileext=".gxl")
+			system(paste("dot2gxl",DotFile, ">>",GXLFile))
 			
 			sf<-file(GXLFile)
 			g<-fromGXL(sf)
