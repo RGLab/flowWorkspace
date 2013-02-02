@@ -53,13 +53,16 @@ setMethod("add",
 		pid<-1
 	else
 	{
-		pid<-match(parent,getNodes(gh))
-		if(length(pid)==0)
+		if(is.numeric(parent))
+			pid<-parent
+		else
+			pid<-match(parent,getNodes(gh))
+		if(is.na(pid)||length(pid)==0)
 			stop(parent," not found in gating tree")
 	}
 	filterObject$negated<-negated
 #	browser()	
-	nodeID<-.Call("R_addGate",gh@pointer,getSample(gh),filterObject,pid-1,name)
+	nodeID<-.Call("R_addGate",gh@pointer,getSample(gh),filterObject,as.integer(pid-1),name)
 	nodeID+1
 }
 setMethod("add",
