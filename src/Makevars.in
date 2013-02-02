@@ -1,7 +1,10 @@
-boost_basename=trimmed_boost_1_52_0
-bgl_cppflags=-I$(boost_basename)/
-bgl_src=${wildcard ${boost_basename}/libs/serialization/src/*.cpp}
-bgl_objs=${bgl_src:.cpp=.o}
+boost_bundled=@boost_bundled@
+ifeq ($(boost_bundled),yes)
+	boost_basename=trimmed_boost_1_52_0
+	bgl_cppflags=-I$(boost_basename)/
+	bgl_src=${wildcard ${boost_basename}/libs/serialization/src/*.cpp} 
+	bgl_objs=${bgl_src:.cpp=.o}
+endif
 
 PKG_CPPFLAGS =-Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags}
 PKG_LIBS =${bgl_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags();cat(' ');ncdfFlow:::LdFlags(FALSE)"` @PKG_LIBS@ 

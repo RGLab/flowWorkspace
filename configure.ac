@@ -72,10 +72,12 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
 			gunzip -dc ${BOOSTTGZNAME} | tar xf -;
 	fi;
 	cd ../
+	boost_bundled=yes
 else
         AC_MSG_NOTICE([Using external boost '${BOOST_DIR}'])
         BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
         BOOST_LIBS="-L${BOOST_DIR}/lib -L${BOOST_DIR}/lib64 -lboost_serialization"
+        boost_bundled=no
 fi
 
 
@@ -90,5 +92,6 @@ AC_MSG_NOTICE([   PKG_CPPFLAGS=${PKG_CPPFLAGS}])
 AC_SUBST(PKG_CPPFLAGS)
 AC_MSG_NOTICE([   PKG_LIBS=${PKG_LIBS}])
 AC_SUBST(PKG_LIBS)
+AC_SUBST(boost_bundled)
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT
