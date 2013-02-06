@@ -432,8 +432,8 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 
 	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
-	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=dataenv);
-	
+	tempenv<-new.env()
+	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=tempenv);
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
 
@@ -478,17 +478,18 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 						raw<-base10raw[base10raw>min(rw)&base10raw<max(rw)]
 						pos<-signif(cal[[j]](raw))
 						
-						
-						assign("i",i,dataenv)
-						assign("raw",raw,dataenv);
-						assign("pos",pos,dataenv);
-						eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=dataenv);
+							
+						assign("i",i,tempenv)
+						assign("raw",raw,tempenv);
+						assign("pos",pos,tempenv);
+						eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=tempenv);
 					}
 					return(r);
 				}else{
 					rawRange[,i]
 				}
 			})
+	copyEnv(tempenv,dataenv);
 	
 #	browser()		
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
