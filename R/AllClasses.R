@@ -6,12 +6,12 @@ setClass("GatingHierarchy",representation(tree="graphNEL",nodes="character",name
 
 setMethod("initialize","GatingHierarchy",function(.Object,tree=new("graphNEL",edgemode="directed"),nodes=character(),name="New Sample",flag=FALSE,transformations=rep(list({f<-function(x){x};attr(f,"type")<-"identity";f}),8),compensation=diag(8),dataPath=".",isNcdf=FALSE,fcsfile=NULL){
 	#callNextMethod(.Object,tree,nodes,name,flag,transformations,compensation,dataPath,isNcdf)
-	m<-new.env()
+	m<-new.env(parent=emptyenv())
 	
 	multiassign(c("compID","fcsfile","fjName","gate","negated","isBooleanGate","thisIndices","parentTot","thisTot","isGated","keywords"),list(NULL,fcsfile,fcsfile,NA,FALSE,FALSE,list(),NA,0,FALSE,NULL),env=m)
 	nodeDataDefaults(tree,"metadata")<-m
-	d<-new.env();
-	data<-new.env();
+	d<-new.env(parent=emptyenv());
+	data<-new.env(parent=emptyenv());
 	assign("data",data,env=d);
 	if(!isNcdf){
 		assign("data",new("flowSet"),env=data)

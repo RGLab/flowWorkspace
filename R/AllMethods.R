@@ -644,17 +644,17 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #TODO:to merge to new clone method
 .cloneGatingSet<-function(x,clone.data=FALSE,clone.gating=FALSE){
 	clone<-x
-	gdata<-new.env();
+	gdata<-new.env(parent=emptyenv());
 	#copy the global data environment
 	copyEnv(x[[1]]@tree@nodeData@defaults$data[["data"]],gdata)
 	for(i in 1:length(x)){
 		nd<-x[[i]]@tree@nodeData
-		nd@defaults$metadata<-new.env()
-		nd@defaults$data<-new.env()
+		nd@defaults$metadata<-new.env(parent=emptyenv())
+		nd@defaults$data<-new.env(parent=emptyenv())
 		copyEnv(x[[i]]@tree@nodeData@defaults$data,nd@defaults$data)
 		nd@defaults$data[["data"]]<-gdata
 		copyEnv(x[[i]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
-		nlist<-replicate(length(nd@data),list(list(metadata=new.env())))
+		nlist<-replicate(length(nd@data),list(list(metadata=new.env(parent=emptyenv()))))
 		for(j in 1:length(nlist)){
 			copyEnv(nd@data[[j]]$metadata,nlist[[j]]$metadata)
 		}
@@ -1535,7 +1535,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x,value){
 		stop("Object doesn't hold ncdf data");
 	}
 	r<-nodeDataDefaults(x@tree,"data")[["data"]];
-	r$ncfs<-value
+	r$ncfs<-flowCore:::copyFlowSet(value)
 	x
 			
 })
@@ -1568,7 +1568,7 @@ setMethod("combine",signature("GatingSet","GatingSet"),function(x,y,...){
 		nc3<-rbind2(a,b);
 		#create a new gating hierarchy
 		G<-new("GatingSet",set=c(x@set,y@set),new("AnnotatedDataFrame",rbind(pData(x),pData(y))))
-		ne<-new.env();
+		ne<-new.env(parent=emptyenv());
 		assign("ncfs",nc3,envir=ne)
 		for(i in seq_along(G))
 		{
@@ -1619,7 +1619,7 @@ setMethod("copyGatingHierarchyFromTo",signature("GatingHierarchy","GatingSet"),f
 			#thisIndices
 			#parentTot
 			#thisTot
-			new.meta<-replicate(length(no),list(list(metadata=new.env())))
+			new.meta<-replicate(length(no),list(list(metadata=new.env(parent=emptyenv()))))
 			names(new.meta)<-no
 			copyEnv(b[[i]]@tree@nodeData@data[[1]]$metadata,new.meta[[1]]$metadata)
 			
@@ -2514,7 +2514,7 @@ multiassign(c("compID","fjName","gate","negated","isBooleanGate","thisIndices","
 .hasNN<-function(x){
 	if(is.null(xmlGetAttr(xpathApply(x,"/Workspace/SampleList/descendant::Sample[1]")[[1]],"nn"))){
 		message("Need to do some preprocessing of the XML document tree for the first time. \n This will take a moment.");
-	env<-new.env();
+	env<-new.env(parent=emptyenv());
 	assign("nn",1,envir=env);
 	xpathApply(x,"/Workspace/SampleList/descendant::Sample|/Workspace/SampleList/descendant::Population|/Workspace/SampleList/descendant::SampleNode",function(x,e=env){addAttributes(x,"nn"=e[["nn"]]);e[["nn"]]<-e[["nn"]]+1;})
 	return(0);	

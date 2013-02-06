@@ -26,7 +26,7 @@ setMethod("rbind2",
 				G@pointer<-pointer
 				
 				#combine R objects
-				ne<-new.env();
+				ne<-new.env(parent=emptyenv());
 				assign("ncfs",fs,envir=ne)
 				set<-unlist(lapply(x,function(gs)gs@set))
 				#deep copying of tree
@@ -34,7 +34,7 @@ setMethod("rbind2",
 				{
 					#create new local data environment that stores axis and flowData environment
 					localDataEnvOld<-nodeDataDefaults(set[[i]]@tree,"data")
-					localDataEnv<-new.env()
+					localDataEnv<-new.env(parent=emptyenv())
 					copyEnv(localDataEnvOld,localDataEnv)
 					#update flowData environment with new ncfs
 					assign("data",ne,localDataEnv)
