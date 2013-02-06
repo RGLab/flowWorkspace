@@ -208,7 +208,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 .addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,...){
 #	browser()
 	#environment for holding fs data,each gh has the same copy of this environment
-	globalDataEnv<-new.env()
+	globalDataEnv<-new.env(parent=emptyenv())
 	
 	if(execute)
 	{
@@ -777,38 +777,32 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 				clone@set[[i]]@pointer<-clone@pointer
 			}
 			#create new global data environment
-			gdata<-new.env();
-#			copyEnv(x[[1]]@tree@nodeData@defaults$data[["data"]],gdata)
-#			browser()
+			gdata<-new.env(parent=emptyenv());
+
 			#update data environment for each gh
 			for(i in 1:length(x)){
 				
 				nd<-x[[i]]@tree@nodeData
-				nd@defaults$metadata<-new.env()
-				nd@defaults$data<-new.env()
+				
+				nd@defaults$metadata<-new.env(hash=TRUE, parent=emptyenv())
+				nd@defaults$data<-new.env(hash=TRUE, parent=emptyenv())
 				copyEnv(x[[i]]@tree@nodeData@defaults$data,nd@defaults$data)
+				
 				nd@defaults$data[["data"]]<-gdata
 				copyEnv(x[[i]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
-#				nlist<-replicate(length(nd@data),list(list(metadata=new.env())))
-#				for(j in 1:length(nlist)){
-#					copyEnv(nd@data[[j]]$metadata,nlist[[j]]$metadata)
-#				}
-#				names(nlist)<-names(nd@data)
-#				nd@data<-nlist
 				clone[[i]]@tree@nodeData<-nd
 			}
-			
+
 			#deep copying flowSet/ncdfFlowSet
 			message("cloning flow data...")
 			fs<-ncFlowSet(x)
 			if(flowWorkspace:::isNcdf(x[[1]]))
-				fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=TRUE,...)
+				fs_clone<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=TRUE,...)
 			else
-				fs<-flowCore:::copyFlowSet(fs)
-			
-			ncFlowSet(clone)<-fs			
-			
-			
+				fs_clone<-flowCore:::copyFlowSet(fs)
+			browser()
+			ncFlowSet(clone)<-fs_clone			
+			rm(fs_clone)
 			message("GatingSet cloned!")
 			clone
 		})
@@ -935,12 +929,12 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 			
 						
 			#update data environment for each gh
-			gdata<-new.env();
+			gdata<-new.env(parent=emptyenv());
 			for(ind in 1:length(clone)){
 				
 				nd<-clone[[ind]]@tree@nodeData
-				nd@defaults$metadata<-new.env()
-				nd@defaults$data<-new.env()
+				nd@defaults$metadata<-new.env(parent=emptyenv())
+				nd@defaults$data<-new.env(parent=emptyenv())
 				copyEnv(clone[[ind]]@tree@nodeData@defaults$data,nd@defaults$data)
 				nd@defaults$data[["data"]]<-gdata
 				copyEnv(clone[[ind]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)

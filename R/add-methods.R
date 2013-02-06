@@ -253,7 +253,7 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 			G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
 			
 			
-			globalDataEnv<-new.env()
+			globalDataEnv<-new.env(parent=emptyenv())
 			
 			assign("ncfs",x,globalDataEnv)
 #			nFiles<-length(samples)

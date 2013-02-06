@@ -19,7 +19,7 @@
 #	setGate(obj,nname[1])<-gate
 #	obj@nodes<-c(obj@nodes,nname[1])
 #	#set metadata
-#	m<-new.env()
+#	m<-new.env(parent=emptyenv())
 #	mpar<-obj@tree@nodeData@data[[parent]]$metadata
 #	copyEnv(mpar,m)
 #	ptot<-mpar[["thisTot"]]

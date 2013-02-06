@@ -146,7 +146,7 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingSet"),function(obj,...){
 		}
 		isCompare<-ifelse(is.null(list(...)$isCompare),T,list(...)$isCompare)
 
-		env1<-new.env()
+		env1<-new.env(parent=emptyenv())
 		assign("GS",obj,env1)
 		#######################################################
 		#group gatinghierarchies based on the comparison results
@@ -375,7 +375,7 @@ setMethod("flowWorkspace2flowCore",signature(obj="GatingHierarchy"),function(obj
 	if(!isTRUE(all.equal(env1$GS[[i]]@transformations,env1$GS[[j]]@transformations)))return(F)
 	
 	#######save two trees in the new environment so that they can be access by reference
-	env2 <- new.env()
+	env2 <- new.env(parent=emptyenv())
 	assign("gh1",env1$GS[[i]], envir=env2)
 	assign("gh2",env1$GS[[j]], envir=env2)
 	
