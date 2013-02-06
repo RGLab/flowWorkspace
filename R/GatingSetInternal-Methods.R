@@ -782,7 +782,7 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			#update data environment for each gh
 			for(i in 1:length(x)){
 				
-				nd<-x[[i]]@tree@nodeData
+				nd<-clone[[i]]@tree@nodeData
 				
 				nd@defaults$metadata<-new.env(hash=TRUE, parent=emptyenv())
 				nd@defaults$data<-new.env(hash=TRUE, parent=emptyenv())
@@ -790,6 +790,8 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 				
 				nd@defaults$data[["data"]]<-gdata
 				copyEnv(x[[i]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
+				clone[[i]]@tree@nodeData<-nd
+				
 				clone[[i]]@tree@nodeData<-nd
 			}
 
@@ -801,7 +803,11 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			else
 				fs_clone<-flowCore:::copyFlowSet(fs)
 			browser()
-			ncFlowSet(clone)<-fs_clone			
+#			ncFlowSet(clone)<-fs_clone
+			gdata$
+			assign("ncfs",fs_clone,gdata)
+			ls(gdata)		
+			
 			rm(fs_clone)
 			message("GatingSet cloned!")
 			clone

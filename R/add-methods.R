@@ -247,15 +247,15 @@ setMethod("Rm",
 #construct a gatingset with empty trees (just root node) 
 setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 			
-			
-			samples<-sampleNames(x)
+			fs_clone<-flowCore:::copyFlowSet(x)
+			samples<-sampleNames(fs_clone)
 			G<-new("GatingSetInternal")
 			G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
 			
 			
 			globalDataEnv<-new.env(parent=emptyenv())
 			
-			assign("ncfs",x,globalDataEnv)
+			assign("ncfs",fs_clone,globalDataEnv)
 #			nFiles<-length(samples)
 #			set<-vector(mode="list",nFiles)	
 #
