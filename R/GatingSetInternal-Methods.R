@@ -775,6 +775,7 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			for(i in 1:length(clone@set))
 			{
 				clone@set[[i]]@pointer<-clone@pointer
+				clone@set[[i]]@transformations<-list()#update trans slot since it contains environment and does not get deep copied automatically
 			}
 			#create new global data environment
 			gdata<-new.env(parent=emptyenv());
@@ -790,9 +791,10 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 				
 				nd@defaults$data[["data"]]<-gdata
 				copyEnv(x[[i]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
-				clone[[i]]@tree@nodeData<-nd
 				
 				clone[[i]]@tree@nodeData<-nd
+				
+				
 			}
 
 			#deep copying flowSet/ncdfFlowSet
@@ -802,13 +804,10 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 				fs_clone<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=TRUE,...)
 			else
 				fs_clone<-flowCore:::copyFlowSet(fs)
-			browser()
+		
 #			ncFlowSet(clone)<-fs_clone
-			gdata$
-			assign("ncfs",fs_clone,gdata)
-			ls(gdata)		
 			
-			rm(fs_clone)
+			assign("ncfs",fs_clone,gdata)
 			message("GatingSet cloned!")
 			clone
 		})

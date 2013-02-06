@@ -1535,7 +1535,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x,value){
 		stop("Object doesn't hold ncdf data");
 	}
 	r<-nodeDataDefaults(x@tree,"data")[["data"]];
-	r$ncfs<-value
+	r$ncfs<-flowCore:::copyFlowSet(value)
 	x
 			
 })
