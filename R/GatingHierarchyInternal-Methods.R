@@ -472,6 +472,7 @@ setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 			compobj
 			
 })
+#TODO:try to merge it with the getChannelMarker in openCyto
 .getChannelMarker<-function(pd,name=NULL)
 {
 	#try stain name
