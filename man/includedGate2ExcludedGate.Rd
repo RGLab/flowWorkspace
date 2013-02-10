@@ -3,10 +3,10 @@
 \alias{.includedGate2ExcludedGate}
 \title{
 
-Convert a set of gates given by their flowJo gate paths to its complement (and excluding Boolean gates), referenced by gate indices recognized by \code{\link[flowStats]{normalizeGatingSet}}.
+Convert a set of gates given by their flowJo gate paths to its complement (and excluding Boolean gates), referenced by gate indices recognized by \code{\link[flowStats]{normalize}}.
 }
 \description{
-Convert a set of gates given by their flowJo gate paths to its complement (and excluding Boolean gates), referenced by gate indices recognized by \code{\link[flowStats]{normalizeGatingSet}}.
+Convert a set of gates given by their flowJo gate paths to its complement (and excluding Boolean gates), referenced by gate indices recognized by \code{\link[flowStats]{normalize}}.
 }
 
 \usage{
@@ -24,7 +24,7 @@ A \code{character} vector of flowJo gating paths for the gates in \code{gs}
 }
 
 \value{
-A \code{numeric} vector of gate indices to be used with \code{\link[flowStats]{normalizeGatingSet}}.
+A \code{numeric} vector of gate indices to be used with \code{\link[flowStats]{normalize}}.
 }
 
 \author{
