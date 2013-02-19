@@ -257,7 +257,7 @@ Here quadGate produces four population nodes/populations whose names are named a
 
 Boolean Gate can also be defined and added to GatingSet:
 <<add-boolGate>>=
-bg<-booleanFilter(`CD15 FITC-CD45 PE+`|`CD15 FITC+CD45 PE-`)
+bg<-booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC+CD45 PE-`)
 bg
 nodeID2<-add(gs,bg,parent="rectangle")
 nodeID2
@@ -293,7 +293,7 @@ plotGate(gs,nodeID)
 
 The gating hierarchy is plotted by:
 <<plot-gh,eval=FALSE>>=
-plot(gh1)
+plot(gh1,bool=TRUE)
 @
 If we want to remove one node, simply:
 <<rm>>= 
