@@ -744,7 +744,15 @@ VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
 			cout<<"searching from the root."<<endl;
 		u=getDescendant(u,popName);
 	}
-
+	/*
+	 * still not found, then report the error
+	 */
+	if(u==0)
+	{
+		string err="Node not found:";
+		err.append(popName);
+		throw(domain_error(err));
+	}
 
 	return u;
 
