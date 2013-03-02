@@ -12,6 +12,14 @@
 #include <valarray>
 
 /*
+* init the bool values in constructors
+*/
+rangegate::rangegate(){isTransformed=false;neg=false;}
+polygonGate::polygonGate(){isTransformed=false;neg=false;}
+boolGate::boolGate(){isTransformed=false;neg=false;}
+
+
+/*
  * original c version
  */
 void inPolygon_c(double *data, int nrd,

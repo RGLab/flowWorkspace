@@ -202,7 +202,6 @@ class rangegate:public gate {
 
 private:
 	paramRange param;
-
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
@@ -211,6 +210,7 @@ private:
 
 			}
 public:
+	rangegate();
 	unsigned short getType(){return RANGEGATE;}
 	vector<bool> gating(flowData &);
 	void extend(flowData &,unsigned short);
@@ -240,6 +240,7 @@ private:
 
 			}
 public:
+	polygonGate();
 	virtual unsigned short getType(){return POLYGONGATE;}
 	virtual void extend(flowData &,unsigned short);
 	virtual vector<bool> gating(flowData &);
@@ -307,6 +308,7 @@ class boolGate:public gate {
 
 
 public:
+	boolGate();
 	vector<BOOL_GATE_OP> boolOpSpec;//the gatePaths with the their logical operators
 private:
 	template<class Archive>
