@@ -648,7 +648,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 			{
 				curGate<-getGate(x,y)
 	
-				if(suppressWarnings(is.na(curGate))){
+				if(suppressWarnings(any(is.na(curGate)))){
 					message("Can't plot. There is no gate defined for node ",getNodes(x,y));
 					invisible();			
 					return(NULL)

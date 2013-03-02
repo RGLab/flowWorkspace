@@ -582,7 +582,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	{
 		curGates<-getGate(x,y)
 		
-		if(suppressWarnings(is.na(curGates))){
+		if(suppressWarnings(any(is.na(curGates)))){
 			message("Can't plot. There is no gate defined for node ",getNodes(gh,y));
 			invisible();			
 			return(NULL)
