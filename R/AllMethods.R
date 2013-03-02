@@ -190,7 +190,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	if(is.character(subset)){
 	#subset s sg by file name
           #pull the file names from the keywords
-          filenames<-.getKeyword(ws,"$FIL")
+          filenames<-.getKeyword(obj,"$FIL")
           #need to match filename to sampleID
           sg<-cbind(sg,filename=sapply(sg$sampleID,function(x).getKeywordsBySampleID(obj,x,"$FIL")))
           sg<-subset(sg,filename%in%subset)
