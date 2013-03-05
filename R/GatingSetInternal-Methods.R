@@ -17,7 +17,7 @@ archive<-function(G,file=tempfile()){
 	{	
 		message("saving ncdf...")
 		from<-ncFlowSet(G)@file
-		ncFile<-file.path(dirname,basename(from))
+		ncFile<-tempfile(tmpdir=dirname,fileext=".nc")
 		file.copy(from=from,to=ncFile)
 		toTar<-c(toTar,ncFile)
 	}
@@ -29,8 +29,6 @@ archive<-function(G,file=tempfile()){
 	message("saving R object...")
 	saveRDS(G,rds.file)
 
-#	browser()
-#	message("Archive the GatingSet...")
 	curDir<-getwd()
 	setwd(dirname)
 	system(paste("tar -cf ",basename(file),paste(basename(toTar),collapse=" ")))
