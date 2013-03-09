@@ -40,13 +40,14 @@ setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,layout="dot
 			}
 			nAttrs <- list()
 			nAttrs$label<-unlist(nodeData(g,attr="label"))
-			
+#			browser()
 			options("warn"=-1)
 			lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
 										,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
 													,node=list(fixedsize=FALSE
+                                                                ,fillcolor="gray"
 																,fontsize=fontsize
-																,shape="rectangle"
+																,shape="ellipse"
 																)
 													)
 										)

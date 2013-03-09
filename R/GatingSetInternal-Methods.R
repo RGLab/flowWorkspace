@@ -205,6 +205,8 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 ############################################################################
 .addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,...){
 #	browser()
+    if(length(files)==0)
+      stop("not sample to be added to GatingSet!")
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env(parent=emptyenv())
 	
@@ -870,8 +872,12 @@ setMethod("show","GatingSetInternal",function(object){
 					stop("GatingHierarchy ",names(object@set)[i]," has a differnent pointer than GatingSet!")
 			}
 			
-		})		
-
+		})
+#overload the getSamples for GatingSet to ensure the sample names comes from pdata of fs    
+setMethod("getSamples","GatingSetInternal",function(x){
+      sampleNames(getData(x))
+    })
+          
 setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
 			
 			if(is.null(y))
@@ -921,7 +927,12 @@ setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,val
 
 ##overload the original method to add subetting on flowSet/ncdfFlowSet
 setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
-			
+            
+            #convert non-character indices to character
+            if(extends(class(i), "numeric")||class(i) == "logical"){
+              i <- getSamples(x)[i]
+            }
+      
 			clone<-x
 			
 			#deep copying flowSet/ncdfFlowSet
@@ -950,7 +961,7 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 			
 			
 			#subsetting flowSet
-			ncFlowSet(clone)<-fs[names(clone@set)]			
+			ncFlowSet(clone)<-fs[i]			
 			
 			
 			
