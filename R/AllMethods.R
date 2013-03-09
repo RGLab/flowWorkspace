@@ -633,6 +633,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	return(g);
 }
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
+    #convert non-character indices to character
+    if(extends(class(i), "numeric")||class(i) == "logical"){
+      i <- getSamples(x)[i]
+    }
+      
 	x@set<-x@set[i]
 	x@metadata<-x@metadata[i]
 	
@@ -681,17 +686,32 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 }
 
 setMethod("[[",c("GatingSet"),function(x,i,j,...){
+      #convert non-character indices to character
+      if(extends(class(i), "numeric")||class(i) == "logical"){
+        i <- getSamples(x)[i]
+      }
+        
 	return(x@set[[i]]);
 })
 setReplaceMethod("[[",signature("GatingSet",value="GatingHierarchy"),function(x,i,j,...,value){
 	if(length(i)!=1){
 		stop("subscript out of bounds (index must have length 1)");
 	}
+    #convert non-character indices to character
+    if(extends(class(i), "numeric")||class(i) == "logical"){
+      i <- getSamples(x)[i]
+    }
+    
 	x@set[[i]]<-value
 	return(x)
 })
 ## Test this method.. not sure if it works correctly.
 setReplaceMethod("[",signature("GatingSet",value="GatingSet"),function(x,i,j,...,value){
+      #convert non-character indices to character
+      if(extends(class(i), "numeric")||class(i) == "logical"){
+        i <- getSamples(x)[i]
+      }
+      
 	x@set[i]<-value@set
 	pData(x)[i,]<-pData(value)[i,]
 	return(x);
@@ -1490,8 +1510,8 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(
 #read/update ncdfFlowSet object stored in GatingSet
 ######################################################
 setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
-
-			ncFlowSet(x[[1]])
+            first_sample <- names(x@set)[[1]]
+			ncFlowSet(x[[first_sample]])
 })
 
 setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
@@ -1509,8 +1529,8 @@ setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
 
 
 setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
-
-			ncFlowSet(x[[1]])<-value
+            first_sample <- names(x@set)[[1]]
+			ncFlowSet(x[[first_sample]])<-value
 			x
 })
 #to be replaced by method "ncdfFlowSet"

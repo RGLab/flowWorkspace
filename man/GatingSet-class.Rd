@@ -5,6 +5,7 @@
 \alias{[,GatingSet,ANY-method}
 \alias{[,GatingSetInternal,ANY-method}
 \alias{[[,GatingSet,ANY-method}
+\alias{[[,GatingSetInternal,ANY-method}
 \alias{rbind2,GatingSet,GatingSet-method}
 \alias{GatingSet}
 \alias{GatingSet,flowSet-method}
