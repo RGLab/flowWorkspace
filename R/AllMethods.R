@@ -1510,8 +1510,8 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(
 #read/update ncdfFlowSet object stored in GatingSet
 ######################################################
 setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
-
-			ncFlowSet(x[[1]])
+            first_sample <- names(x@set)[[1]]
+			ncFlowSet(x[[first_sample]])
 })
 
 setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
@@ -1529,8 +1529,8 @@ setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
 
 
 setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
-
-			ncFlowSet(x[[1]])<-value
+            first_sample <- names(x@set)[[1]]
+			ncFlowSet(x[[first_sample]])<-value
 			x
 })
 #to be replaced by method "ncdfFlowSet"
