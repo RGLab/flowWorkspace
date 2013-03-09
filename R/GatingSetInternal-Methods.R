@@ -205,7 +205,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 ############################################################################
 .addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,...){
 #	browser()
-    if(lengh(files)==0)
+    if(length(files)==0)
       stop("not sample to be added to GatingSet!")
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env(parent=emptyenv())
