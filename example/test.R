@@ -15,9 +15,10 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
-macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+#macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
+macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
 #path<-"~/rglab/workspace/flowWorkspace/data"
 #
 #macXML<-"HIPC_trial.xml"
@@ -54,18 +55,28 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
-					,subset=1
-					,isNcdf=T
-#					,useInternal=T
-					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
-					,dMode=0
+#                    ,subset=1
+					,subset=c("517614.fcs")
+#					,isNcdf=T
+					,useInternal=T
+                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+					,dMode=4
 					)
 Sys.time()-time1						
 	
-	
+plotGate(GT[[1]],2:5,smooth=T)	
+getPopStats(GT[[1]])[1:10,c(1,4)]
+getTransformations(GT[[1]])
+getGate(GT[[1]],3)@boundaries
+hist(exprs(getData(GT[[1]]))[,8])
+
 ##serialzation
 archive(GT,file="/home/wjiang2/rglab/workspace/flowWorkspace/output/NHLBI/gs/gs.tar")
 G<-unarchive("~/rglab/workspace/flowWorkspace/output/NHLBI/gs/gs.tar")
+tt<-logTransform(transformationId="log10-transformation", logbase=10, r=1, d=1)
+fr_trans<-transform(fr,`Am Cyan-A`=tt(`Am Cyan-A`))
+apply(exprs(fr_trans),2,range)
 
 newSamples<-getSamples(GT)
 #datapath<-"/loc/no-backup/mike/ITN029ST/"
