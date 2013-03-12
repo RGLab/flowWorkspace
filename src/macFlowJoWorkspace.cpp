@@ -187,9 +187,15 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					if(it->range<=4096)
 					{
 						if(dMode>=GATING_HIERARCHY_LEVEL)
-							cout<<"apply the log10 transformation:"<<curChnl<<endl;
+							cout<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
-						curTran=new logTrans();
+//						curTran=new logTrans();
+						/*
+						 * use bioexp trans instead of logTrans
+						 * since log doesn't handle the negative value well
+						 */
+						curTran=new biexpTrans();
+
 					}
 
 					else
@@ -209,9 +215,11 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				if(it->range<=4096)
 				{
 					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<"apply the log10 transformation:"<<curChnl<<endl;
+						cout<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
-					curTran=new logTrans();
+//					curTran=new logTrans();
+					curTran=new biexpTrans();
+
 				}
 				else
 				{
