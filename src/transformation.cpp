@@ -62,6 +62,7 @@ transformation::transformation(){
  */
 double mylog10(double x) {
 	return x>0?log10(x):0;
+	throw(domain_error("the current log transforming is broken!"));
 }
 /*
  * these transforming functions change the input data
