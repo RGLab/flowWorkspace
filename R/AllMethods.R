@@ -215,8 +215,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	}
 	}
 	if(length(l)==0){
-		message("No samples in this workspace to parse!")
-		return(new("GatingSet"))
+		stop("No samples in this workspace to parse!")
+#		return(new("GatingSet"))
 	}
 	message("Parsing ",length(l)," samples");
 #	browser()
