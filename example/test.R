@@ -66,7 +66,9 @@ GT<-parseWorkspace(ws,name=2
 Sys.time()-time1
 plotGate(GT[[1]])
 getData(GT)
-pData(gg)
+getSamples(GT)
+pData(GT[c("CytoTrol_CytoTrol_1.fcs","CytoTrol_CytoTrol_2.fcs")])
+
 
 plotGate(GT[[1]],2:5,smooth=T)	
 getPopStats(GT[[1]])[1:10,c(1,4)]
