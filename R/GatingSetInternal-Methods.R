@@ -932,17 +932,23 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
             if(extends(class(i), "numeric")||class(i) == "logical"){
               i <- getSamples(x)[i]
             }
-      
-			clone<-x
+            
+            #copy the R structure          
+            clone <-x
+            
+            #subsetting flowSet
+			fs<-ncFlowSet(clone)[i]
+            #deep copying flowSet/ncdfFlowSet
+            if(flowWorkspace:::isNcdf(clone[[1]]))
+              fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
+            else
+              fs<-flowCore:::copyFlowSet(fs)
+            
+            
+            
+            #subsetting R object
+            clone@set <- clone@set[i]
 			
-			#deep copying flowSet/ncdfFlowSet
-			fs<-ncFlowSet(clone)
-			if(flowWorkspace:::isNcdf(clone[[1]]))
-				fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
-			else
-				fs<-flowCore:::copyFlowSet(fs)
-			
-						
 			#update data environment for each gh
 			gdata<-new.env(parent=emptyenv());
 			for(ind in 1:length(clone)){
@@ -956,15 +962,9 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 				clone[[ind]]@tree@nodeData<-nd
 			}
 			
-			#subsetting R object
-			clone@set<-clone@set[i]
-			
-			
-			#subsetting flowSet
-			ncFlowSet(clone)<-fs[i]			
-			
-			
-			
+            #update the data for clone            
+            ncFlowSet(clone)<-fs
+            
 			return(clone);
 		})
 		

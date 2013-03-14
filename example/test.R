@@ -55,16 +55,19 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
-#                    ,subset=1
-					,subset=c("517614.fcs")
+                    ,subset=1:2
+#					,subset=c("517614.fcs")
 #					,isNcdf=T
 					,useInternal=T
-                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+#                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=4
 					)
-Sys.time()-time1						
-	
+Sys.time()-time1
+plotGate(GT[[1]])
+getData(GT)
+pData(gg)
+
 plotGate(GT[[1]],2:5,smooth=T)	
 getPopStats(GT[[1]])[1:10,c(1,4)]
 getTransformations(GT[[1]])
