@@ -944,22 +944,22 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
             else
               fs<-flowCore:::copyFlowSet(fs)
             
-            
+#            browser()
             
             #subsetting R object
             clone@set <- clone@set[i]
 			
 			#update data environment for each gh
 			gdata<-new.env(parent=emptyenv());
-			for(ind in 1:length(clone)){
-				
-				nd<-clone[[ind]]@tree@nodeData
+			for(sample in names(clone@set)){
+#				browser()
+				nd<-clone[[sample]]@tree@nodeData
 				nd@defaults$metadata<-new.env(parent=emptyenv())
 				nd@defaults$data<-new.env(parent=emptyenv())
-				copyEnv(clone[[ind]]@tree@nodeData@defaults$data,nd@defaults$data)
+				copyEnv(clone[[sample]]@tree@nodeData@defaults$data,nd@defaults$data)
 				nd@defaults$data[["data"]]<-gdata
-				copyEnv(clone[[ind]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
-				clone[[ind]]@tree@nodeData<-nd
+				copyEnv(clone[[sample]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
+				clone[[sample]]@tree@nodeData<-nd
 			}
 			
             #update the data for clone            
