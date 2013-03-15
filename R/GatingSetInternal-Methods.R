@@ -632,7 +632,12 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 		}
 	
 		axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
-		
+        if(is.null(xlab)){
+          xlab <- axisObject$xlab
+        }
+        if(is.null(ylab)){
+          ylab <- axisObject$ylab
+        }
 		#################################
 		# calcuate overlay frames
 		################################
@@ -662,8 +667,8 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 		res<-xyplot(x=formula
 				,data=parentdata[,params]
 				,filter=curGates
-				,xlab=axisObject$xlab
-				,ylab=axisObject$ylab
+				,xlab=xlab
+				,ylab=ylab
 				,margin=margin
 				,smooth=smooth
 				,scales=axisObject$scales
@@ -680,6 +685,9 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			
 #			browser()
 			axisObject<-.formatAxis(gh,parentFrame,xParam=params,yParam=NULL,...)
+            if(is.null(xlab)){
+              xlab <- axisObject$xlab
+            }
 			if(is.null(formula))
 			{
 				formula<-mkformula(params,isChar=TRUE)
@@ -690,7 +698,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			res<-densityplot(x=formula
 								,data=parentdata[,params]
 								,filter=curGates
-								,xlab=axisObject$xlab
+								,xlab=xlab
 #								,ylab=axisObject$ylab
 								,margin=margin
 #								,smooth=smooth
@@ -706,7 +714,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 	return(res)	
 }
 ##plot by prarent index
-plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
+plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,xlab=NULL,ylab=NULL,...){
 	#get all childrens
 	cids<-getChildren(G[[1]],parentID)
 	if(length(cids)>0)
@@ -747,16 +755,22 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,...){
 	formula1<-as.formula(formula1)
 #	browser()
 	if(isPlotGate)
-		plotGate(G,cids[ind],formula=formula1,smooth=smooth,...)
+		plotGate(G,cids[ind],formula=formula1,smooth=smooth,xlab=xlab,ylab=ylab,...)
 	else
 	{
 		fs<-getData(G,parentID)
 		axisObject<-.formatAxis(x=G[[1]],data=fs[[1]],xParam=x,yParam=y,...)
+        if(is.null(xlab)){
+          xlab <- axisObject$xlab
+        }
+        if(is.null(ylab)){
+          ylab <- axisObject$ylab
+        }
 		xyplot(formula1
 				,fs
 				,smooth=smooth
-				,xlab=axisObject$xlab
-				,ylab=axisObject$ylab
+				,xlab=xlab
+				,ylab=ylab
 				,scales=axisObject$scales
 				,...)
 	}
