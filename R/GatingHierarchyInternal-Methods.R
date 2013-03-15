@@ -708,7 +708,12 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 					xParam=params[2]
 				}
 				axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
-				
+				if(is.null(xlab)){
+                  xlab <- axisObject$xlab
+                }
+                if(is.null(ylab)){
+                  ylab <- axisObject$ylab
+                }
 				#################################
 				# calcuate overlay frame
 				################################
@@ -732,8 +737,8 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				res<-xyplot(x=f1
 							,data=parentdata[,params]
 							,filter=curGate
-							,xlab=axisObject$xlab
-							,ylab=axisObject$ylab
+							,xlab= xlab
+							,ylab=ylab
 							,margin=margin
 							,smooth=smooth
 							,scales=axisObject$scales
@@ -749,11 +754,14 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				{
 #					browser()
 					axisObject<-.formatAxis(x,parentdata,xParam=params,yParam=NULL,...)
-					f1<-mkformula(params)
+                    if(is.null(xlab)){
+                      xlab <- axisObject$xlab
+                    }
+                    f1<-mkformula(params)
 					res<-densityplot(x=f1
 									,data=parentdata[,params]
 									,filter=curGate
-									,xlab=axisObject$xlab
+									,xlab=xlab
 		#							,ylab=axisObject$ylab
 									,margin=margin
 		#							,smooth=smooth
