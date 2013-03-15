@@ -12,20 +12,22 @@ setMethod("isNcdf",c("GatingHierarchy"),function(x){
 			return(x@isNcdf)
 		})
 
+#return a graphNEL object that only contans the node Name and isBool flags    
+.getGraph <- function(x){
+  DotFile<-tempfile(fileext=".dot")
+  .Call("R_plotGh",x@pointer,getSample(x),DotFile,FALSE)
+  GXLFile<-tempfile(fileext=".gxl")
+  system(paste("dot2gxl",DotFile, ">>",GXLFile))
+  
+  sf<-file(GXLFile)
+  g<-fromGXL(sf)
+  close(sf)
+  g
+}    
 setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
 			
 #			browser()
-			DotFile<-tempfile(fileext=".dot")
-			.Call("R_plotGh",x@pointer,getSample(x),DotFile,FALSE)
-			GXLFile<-tempfile(fileext=".gxl")
-			system(paste("dot2gxl",DotFile, ">>",GXLFile))
-			
-			sf<-file(GXLFile)
-			g<-fromGXL(sf)
-			close(sf)
-			
-			rm(DotFile)
-			rm(GXLFile)
+			g <- .getGraph(x)
 			
 #			browser()
 			##remove bool gates if necessary
