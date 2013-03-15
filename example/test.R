@@ -68,8 +68,14 @@ plotGate(GT[[1]])
 getData(GT)
 getSamples(GT)
 pData(GT[c("CytoTrol_CytoTrol_1.fcs","CytoTrol_CytoTrol_2.fcs")])
-
-
+gg <- .getGraph(GT[[1]])
+plot(GT[[1]])
+plotGate(GT,3,smooth=T
+#          ,xlab="test",ylab="testy"
+        )
+plotGate_labkey(GT,2,smooth=T,x="FSC-A",y="FSC-H"
+          ,xlab="test",ylab="testy"
+)        
 plotGate(GT[[1]],2:5,smooth=T)	
 getPopStats(GT[[1]])[1:10,c(1,4)]
 getTransformations(GT[[1]])
