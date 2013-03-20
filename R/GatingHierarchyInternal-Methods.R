@@ -89,17 +89,20 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular"
 			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath)
 
 			#try to remove ID prefix from node name without causing name duplication
-			if(!prefix)
-			{
-				dotPos<-regexpr("\\.",nodeNames)
-				#get unique IDs for each node
-				NodeIDs<-as.integer(substr(nodeNames,0,dotPos-1))
-				#strip IDs from nodeNames
-				nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
-				#add ID only when there is conflicts in nodeNames
-				toAppendIDs<-duplicated(nodeNames)
-				nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")	
-			}
+            if(!isPath){
+              if(!prefix)
+              {
+                dotPos<-regexpr("\\.",nodeNames)
+                #get unique IDs for each node
+                NodeIDs<-as.integer(substr(nodeNames,0,dotPos-1))
+                #strip IDs from nodeNames
+                nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
+                #add ID only when there is conflicts in nodeNames
+                toAppendIDs<-duplicated(nodeNames)
+                nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")  
+              }  
+            }
+			
 			
 			
 			if(!is.null(y))
