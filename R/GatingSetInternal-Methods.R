@@ -1,34 +1,81 @@
 # TODO: currently archive save the entire cdf file instead of the current view of cdf
 # it could cause data redudancy if only a subset(view of ncdfFlowSet) is desired to be saved
 ###############################################################################
+
+###serialization functions to be called by wrapper APIs
+.save_gs <- function(G,path){
+    if(!file.exists(path))
+      stop("Folder '",path, "' does not exist!")
+    rds.file<-tempfile(tmpdir=path,fileext=".rds")
+    dat.file<-tempfile(tmpdir=path,fileext=".dat")
+    filestoSave <- c(rds.file,dat.file)
+    #save ncdf file
+    if(flowWorkspace:::isNcdf(G[[1]]))
+    {   
+      message("saving ncdf...")
+      from<-ncFlowSet(G)@file
+      ncFile<-tempfile(tmpdir=path,fileext=".nc")
+      file.copy(from=from,to=ncFile)
+      filestoSave<-c(filestoSave,ncFile)
+    }
+    
+    message("saving tree object...")
+    #save external pointer object
+    .Call("R_saveGatingSet",G@pointer,dat.file)
+    
+    message("saving R object...")
+    saveRDS(G,rds.file)
+    
+    filestoSave
+  
+}
+###unserialization functions to be called by wrapper APIs
+.load_gs <- function(output,files){
+      dat.file<-file.path(output,files[grep(".dat$",files)])
+      rds.file<-file.path(output,files[grep(".rds$",files)])
+      
+      nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
+    #   browser()
+      if(length(dat.file)==0)
+        stop(".dat file missing in ",file)
+      if(length(dat.file)>1)
+        stop("multiple .dat files found in ",file)
+      if(length(rds.file)==0)
+        stop(".rds file missing in ",file)
+      if(length(rds.file)>1)
+        stop("multiple .rds files found in ",file)
+      
+      message("loading R object...")
+      gs<-readRDS(rds.file)
+      
+      message("loading tree object...")
+      gs@pointer<-.Call("R_loadGatingSet",dat.file)
+      #update the pointer in each gating hierarchy
+      for(i in 1:length(gs@set))
+      {
+        gs@set[[i]]@pointer<-gs@pointer
+      }
+      if(flowWorkspace:::isNcdf(gs[[1]]))
+      {
+        if(length(nc.file)==0)
+          stop(".nc file missing in ",file)
+        ncFlowSet(gs)@file<-nc.file
+        
+      }
+      message("Done")
+      list(gs=gs,files=c(dat.file,rds.file))
+}
+######################################
+##archive/unarchive to/from a tar file
+######################################
 archive<-function(G,file=tempfile()){
 	
 	filename<-basename(file)
 	dirname<-dirname(file)
 	filename<-sub(".tar$","",filename)
 #	browser()
-	if(!file.exists(dirname))
-		stop("Folder '",dirname, "' does not exist!")
-	rds.file<-tempfile(tmpdir=dirname,fileext=".rds")
-	dat.file<-tempfile(tmpdir=dirname,fileext=".dat")
-	toTar<-c(rds.file,dat.file)
-	#save ncdf file
-	if(flowWorkspace:::isNcdf(G[[1]]))
-	{	
-		message("saving ncdf...")
-		from<-ncFlowSet(G)@file
-		ncFile<-tempfile(tmpdir=dirname,fileext=".nc")
-		file.copy(from=from,to=ncFile)
-		toTar<-c(toTar,ncFile)
-	}
-		
-	message("saving tree object...")
-	#save external pointer object
-	.Call("R_saveGatingSet",G@pointer,dat.file)
-
-	message("saving R object...")
-	saveRDS(G,rds.file)
-
+    toTar<- .save_gs(G,path  = dirname)
+	
 	curDir<-getwd()
 	setwd(dirname)
 	system(paste("tar -cf ",basename(file),paste(basename(toTar),collapse=" ")))
@@ -50,52 +97,64 @@ unarchive<-function(file,path=tempdir()){
 	files<-untar(tarfile=file,list=TRUE)
 	
 #	message("extracting files...")
-	#output<-tempdir()
+	
 	output<-path
-#	system(paste("tar -xf ",file))
 	untar(tarfile=file,exdir=output)
-	
-	dat.file<-file.path(output,files[grep(".dat$",files)])
-	rds.file<-file.path(output,files[grep(".rds$",files)])
-	
-	nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
-#	browser()
-	if(length(dat.file)==0)
-		stop(".dat file missing in ",file)
-	if(length(dat.file)>1)
-		stop("multiple .dat files found in ",file)
-	if(length(rds.file)==0)
-		stop(".rds file missing in ",file)
-	if(length(rds.file)>1)
-		stop("multiple .rds files found in ",file)
-	
-	message("loading R object...")
-	gs<-readRDS(rds.file)
-
-	message("loading tree object...")
-	gs@pointer<-.Call("R_loadGatingSet",dat.file)
-	#update the pointer in each gating hierarchy
-	for(i in 1:length(gs@set))
-	{
-		gs@set[[i]]@pointer<-gs@pointer
-	}
-	if(flowWorkspace:::isNcdf(gs[[1]]))
-	{
-		if(length(nc.file)==0)
-			stop(".nc file missing in ",file)
-		ncFlowSet(gs)@file<-nc.file
-		
-	}
-	
+     
+    res <- .load_gs(output = path, files = files)
+    toRemove <- res$files
+    gs <- res$gs
 	#clean up the intermediate files
-	file.remove(c(dat.file,rds.file))
+	file.remove(toRemove)
 	message("Done")
 	return (gs)
 	
 }
 
+######################################
+##archive/unarchive to/from a folder 
+##it is faster than tar-version,but require
+##a new dest folder to avoid overwriting
+##the old data by mistake
+##currently not exposed to end user
+######################################
+save_gs<-function(G,path,overwrite = FALSE){
+#  browser()
+  
+  if(file.exists(path)){
+    path <- normalizePath(path,mustWork = TRUE)
+    if(overwrite){
+#      browser()
+      res <- unlink(path, recursive = TRUE)
+      if(res == 1){
+        stop("failed to delete ",path)
+      }
+    }else{
+      stop(path,"' already exists!")  
+    }
+    
+  }
+  
+  dir.create(path = path)
+  #do the dir normalization again after it is created
+  path <- normalizePath(path,mustWork = TRUE)
+  invisible(.save_gs(G,path = path))
+  message("Done\nTo reload it, use 'load_gs' function\n")
+
+  
+}
 
 
+load_gs<-function(path){
+#  browser()
+  path <- normalizePath(path,mustWork = TRUE)
+  if(!file.exists(path))
+    stop(path,"' not found!")
+  files<-list.files(path)
+#   browser()
+  .load_gs(output = path, files = files)$gs
+  
+}
 
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",...){
 
