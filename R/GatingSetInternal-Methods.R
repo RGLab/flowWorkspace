@@ -180,7 +180,7 @@ load_gs<-function(path){
 			#get full path for each fcs and store in dataPath slot
 			#########################################################
 			##escape "illegal" characters
-			file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
+			file<-gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",file)))))))
 			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
 			
 			if(length(absPath)==0){
