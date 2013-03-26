@@ -65,7 +65,7 @@ private:
 public:
 	~GatingSet();
 	GatingSet(){ws=NULL;};
-	GatingSet(string,bool,unsigned short,unsigned short _dMode=1);
+	GatingSet(string,bool,unsigned short,int,unsigned short _dMode=1);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
 	GatingSet(vector<string>,unsigned short _dMode=1);
 	GatingHierarchy * getGatingHierarchy(string );

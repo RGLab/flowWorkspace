@@ -1,4 +1,4 @@
-setGeneric("openWorkspace", function(file){
+setGeneric("openWorkspace", function(file,...){
 	standardGeneric("openWorkspace");
 })
 setGeneric("closeWorkspace",function(workspace){

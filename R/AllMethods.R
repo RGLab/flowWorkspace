@@ -1,15 +1,15 @@
 #TODO Fix the messed up encoding of quadrant gate names (it works but it's not pretty when it prints)
-setMethod("openWorkspace",signature=signature(file="character"),definition= function(file){
+setMethod("openWorkspace",signature=signature(file="character"),definition= function(file,options = 0,...){
  	#message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	tmp<-tempfile(fileext=".xml")
 	file.copy(file,tmp)
 	if(inherits(file,"character")){
-		x<-xmlTreeParse(tmp,useInternalNodes=TRUE);
+		x<-xmlTreeParse(tmp,useInternalNodes=TRUE,options = options, ...);
 	}else{
 		stop("Require a filename of a workspace, but received ",class(x)[1]);
 	}
 	ver<-xpathApply(x,"/Workspace",function(x)xmlGetAttr(x,"version"))[[1]]
-	x<-new("flowJoWorkspace",version=ver,.cache=new.env(parent=emptyenv()),file=basename(file),path=dirname(file),doc=x)
+	x<-new("flowJoWorkspace",version=ver,.cache=new.env(parent=emptyenv()),file=basename(file),path=dirname(file),doc=x, options = as.integer(options))
 	x@.cache$flag=TRUE;
 	return(x);
 })
@@ -106,7 +106,7 @@ setOldClass("summary")
 setMethod("summary",c("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
-
+#options is passed to xmlTreeParse
 setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal=TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path=obj@path,...){
 	
 	
@@ -223,7 +223,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	if(useInternal)
 	{
 		sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
-		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode,isNcdf=isNcdf,includeGates=includeGates,path=path,...))
+		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode,isNcdf=isNcdf,includeGates=includeGates,path=path, xmlParserOption = obj@options,...))
 	}
 	#TODO parallelize
 	if(length(grep("snowfall",loadedNamespaces()))==1){

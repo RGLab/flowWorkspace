@@ -14,13 +14,19 @@ Close a flowJoWorkspace, destroying the internal representation of the XML docum
 
 }
 \usage{
-\S4method{openWorkspace}{character}(file)
+\S4method{openWorkspace}{character}(file,...)
 \S4method{closeWorkspace}{flowJoWorkspace}(workspace)
 
 }
 \arguments{
   \item{file}{
 	Full path to the XML flowJo workspace file.
+}
+\item{options}{
+	xml parsing options passed to \code{\link{xmlTreeParse}}
+}
+\item{...}{
+	other arguments passed to \code{\link{xmlTreeParse}}
 }
   \item{workspace}{
 A \code{flowJoWorkspace}

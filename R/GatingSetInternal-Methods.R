@@ -156,13 +156,13 @@ load_gs<-function(path){
   
 }
 
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",...){
+.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",xmlParserOption,...){
 
 
 	message("calling c++ parser...")
-	
+#	browser()
 	time1<-Sys.time()
-	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,dMode=dMode)
+	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,xmlParserOption = xmlParserOption,dMode=dMode)
 #	time_cpp<<-time_cpp+(Sys.time()-time1)
 	message("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)

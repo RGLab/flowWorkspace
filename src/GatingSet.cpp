@@ -316,13 +316,13 @@ GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
 
 
 //read xml file and create the appropriate flowJoWorkspace object
-GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,unsigned short _dMode)
+GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,int xmlParserOption,unsigned short _dMode)
 {
 
 		LIBXML_TEST_VERSION
 
 		/*parse the file and get the DOM */
-		xmlDocPtr doc = xmlReadFile(sFileName.c_str(), NULL, 0);
+		xmlDocPtr doc = xmlReadFile(sFileName.c_str(), NULL, xmlParserOption);
 		if (doc == NULL ) {
 //				fprintf(stderr,"Document not parsed successfully. \n");
 				throw(ios_base::failure("Document not parsed successfully.Check if the path is valid."));
