@@ -1747,7 +1747,7 @@ recomputeGate<-function(x,gate,boolean=FALSE){
 		
 }
 
-setMethod("getData",signature(obj="graphNEL"),function(obj,y=NULL,tsort=FALSE){
+setMethod("getData",signature(obj="graphNEL",y="ANY"),function(obj,y=NULL,tsort=FALSE){
     mpiflag<-FALSE;
     #message("do we have the token? ",options("flowWorkspace_mpi_read_token")[[1]], " mpiflag: ",mpiflag)
 	if(!is.null(options("flowWorkspace_mpi_communication")[[1]])){
@@ -1813,7 +1813,7 @@ setMethod("getData",signature(obj="graphNEL"),function(obj,y=NULL,tsort=FALSE){
 }
 
 
-setMethod("getData",signature(obj="GatingHierarchy"),function(obj,y=NULL,tsort=FALSE){
+setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y=NULL,tsort=FALSE){
 	if(!obj@flag){
 		stop("Must run execute() before fetching data");
 	}
@@ -1860,7 +1860,7 @@ setMethod("getData",signature(obj="GatingHierarchy"),function(obj,y=NULL,tsort=F
 	}
 	r
 })
-setMethod("getData",signature(obj="GatingSet"),function(obj,y=NULL,tsort=FALSE){
+setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y=NULL,tsort=FALSE){
 	if(is.null(y)){
 		return(flowSet(lapply(obj,function(x)getData(x,tsort=tsort))))
 	}else if(is.numeric(y)){

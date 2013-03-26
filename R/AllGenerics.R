@@ -55,7 +55,7 @@ setGeneric("getPopStats",function(x,...){
 setGeneric("plotPopCV",function(x,...){
 	standardGeneric("plotPopCV");
 })
-setGeneric("getData",function(obj,...){
+setGeneric("getData",function(obj,y,...){
 	standardGeneric("getData")
 })
 setGeneric("getGate",function(obj,y,...){

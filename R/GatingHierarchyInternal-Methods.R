@@ -334,20 +334,36 @@ setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="numeric"),func
 		})	
 #tsort argument is not used (for the compatibility with old API)
 #once the R paser is deprecated,it can be safely removed as well
-setMethod("getData",signature(obj="GatingHierarchyInternal"),function(obj,y=NULL,tsort=FALSE){
-			if(!obj@flag){
-				stop("Must run execute() before fetching data");
-			}
+setMethod("getData",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y,tsort=FALSE){
+      if(!obj@flag){
+        stop("Must run execute() before fetching data");
+      }
+      
+      nodeDataDefaults(obj@tree,"data")$data$ncfs[[getSample(obj)]]
+            
+      
+    })
 
-			r<-nodeDataDefaults(obj@tree,"data")$data$ncfs[[getSample(obj)]]
-					
-			if(is.null(y)||y==1||getNodes(obj)[1]==y){
-				return (r)	
-			}else
-				return (r[getIndices(obj,y),])
-			
+setMethod("getData",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
+            
+            this_node <- getNodes(obj)[y]
+            getData(obj,this_node)
 			
 		})
+    
+setMethod("getData",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE){
+      
+      
+      this_data <- getData(obj)                        
+      if(y == "root"){
+        return (this_data)  
+      }else{
+        this_indice <- getIndices(obj,y)
+        return (this_data[this_indice,])
+      }
+      
+    })
+    
 .isBoolGate<-function(x,y){
 	return (class(getGate(x,y))=="BooleanGate")
 }

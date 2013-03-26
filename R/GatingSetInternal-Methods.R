@@ -950,29 +950,28 @@ setMethod("show","GatingSetInternal",function(object){
 setMethod("getSamples","GatingSetInternal",function(x){
       sampleNames(getData(x))
     })
-          
-setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
+setMethod("getData",signature(obj="GatingSetInternal",y="missing"),function(obj,y,tsort=FALSE){
+      
+        ncFlowSet(obj)
+    })
+setMethod("getData",signature(obj="GatingSetInternal",y="numeric"),function(obj,y,tsort=FALSE){
+      
+      this_node <- getNodes(obj[[1]])[y]
+      getData(obj,this_node)
+      
+    })
+
+setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(obj,y,tsort=FALSE){
 			
-			if(is.null(y))
-				ncFlowSet(obj)
-			else
-			{
-#				browser()
-				#fs<-callNextMethod(obj,y,tsort)
-				#update pData
-#				pData(fs)<-pData(obj)
-#				varM<-varMetadata(phenoData(fs))
-#				varM[-1,]<-rownames(varM)[-1]
-#				varMetadata(phenoData(fs))<-varM
-				
-				
-				#get raw data
-				fs<-getData(obj)
+            this_data <- getData(obj)                        
+            if(y == "root"){
+              this_data  
+            }else{
 				#subset by indices
 				indices<-lapply(obj,getIndices,y)
-				fs<-Subset(fs,indices)
+                this_data <- Subset(this_data,indices)
 							
-				fs	
+                this_data	
 			}
 			
 		})
