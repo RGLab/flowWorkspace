@@ -14,7 +14,7 @@ Close a flowJoWorkspace, destroying the internal representation of the XML docum
 
 }
 \usage{
-\S4method{openWorkspace}{character}(file,...)
+\S4method{openWorkspace}{character}(file, options =0, ...)
 \S4method{closeWorkspace}{flowJoWorkspace}(workspace)
 
 }
