@@ -845,31 +845,38 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			#clone c structure
 			message("cloning tree structure...")
 			clone@pointer<-.Call("R_CloneGatingSet",x@pointer,getSamples(x))
+            
+              
+            #create new global data environment
+            gdata<-new.env(parent=emptyenv());
+#            browser()
 			#update the pointer in each gating hierarchy
 			for(i in 1:length(clone@set))
 			{
-				clone@set[[i]]@pointer<-clone@pointer
-				clone@set[[i]]@transformations<-list()#update trans slot since it contains environment and does not get deep copied automatically
+				this_gh <- clone@set[[i]]
+                this_gh@pointer<-clone@pointer
+                this_gh@transformations<-list()#update trans slot since it contains environment and does not get deep copied automatically
+            
+                #update data environment for each gh
+                nd<-this_gh@tree@nodeData
+                
+                nd@defaults$metadata<-new.env(hash=TRUE, parent=emptyenv())
+                nd@defaults$data<-new.env(hash=TRUE, parent=emptyenv())
+                
+                source_gh <- x@set[[i]] 
+                copyEnv(source_gh@tree@nodeData@defaults$data,nd@defaults$data)
+                
+                nd@defaults$data[["data"]]<-gdata
+                copyEnv(source_gh@tree@nodeData@defaults$metadata,nd@defaults$metadata)
+                
+                this_gh@tree@nodeData<-nd
+                
+                clone@set[[i]] <- this_gh
 			}
-			#create new global data environment
-			gdata<-new.env(parent=emptyenv());
-
-			#update data environment for each gh
-			for(i in 1:length(x)){
-				
-				nd<-clone[[i]]@tree@nodeData
-				
-				nd@defaults$metadata<-new.env(hash=TRUE, parent=emptyenv())
-				nd@defaults$data<-new.env(hash=TRUE, parent=emptyenv())
-				copyEnv(x[[i]]@tree@nodeData@defaults$data,nd@defaults$data)
-				
-				nd@defaults$data[["data"]]<-gdata
-				copyEnv(x[[i]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
-				
-				clone[[i]]@tree@nodeData<-nd
-				
-				
-			}
+			
+          
+			
+			
 
 			#deep copying flowSet/ncdfFlowSet
 			message("cloning flow data...")
