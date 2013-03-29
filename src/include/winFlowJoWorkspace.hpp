@@ -23,7 +23,7 @@ public:
 	compensation getCompensation(wsSampleNode sampleNode);
 //	isTransMap getTransFlag(wsSampleNode sampleNode);
 	trans_global_vec getGlobalTrans();
-	trans_local getTransformation(wsRootNode,const compensation & comp,PARAM_VEC & transFlag,trans_global_vec *);
+	trans_local getTransformation(wsRootNode,const compensation & comp,PARAM_VEC & transFlag,trans_global_vec *,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans);
 	string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
 	  polygonGate * getGate(wsPolyGateNode &);

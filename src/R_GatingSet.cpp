@@ -38,7 +38,11 @@ BEGIN_RCPP
 		 * using default finalizer to delete gs,which is triggered by gc() when
 		 * xptr is out of scope
 		 */
-
+		/*
+		 * release ws right away after parsing is done
+		 * since the xml uses lots of memory
+		 */
+		gs->freeWorkspace();
 		return XPtr<GatingSet>(gs);
 
 END_RCPP

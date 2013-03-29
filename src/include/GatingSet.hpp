@@ -34,8 +34,9 @@ typedef map<string,GatingHierarchy*> gh_map;
 class GatingSet{
 //	friend std::ostream & operator<<(std::ostream &os, const GatingSet &gs);
 	friend class boost::serialization::access;
-
-	trans_global_vec gTrans;
+	biexpTrans globalBiExpTrans; //default bi-exponential transformation functions
+	linTrans globalLinTrans;
+	trans_global_vec gTrans;//parsed from xml workspace
 	gh_map ghs;
 	ncdfFlow nc;
 	unsigned short dMode;//debug level to control print out
@@ -52,8 +53,8 @@ private:
 			ar.register_type(static_cast<logicleTrans *>(NULL));
 			ar.register_type(static_cast<logTrans *>(NULL));
 			ar.register_type(static_cast<linTrans *>(NULL));
+			ar & BOOST_SERIALIZATION_NVP(globalBiExpTrans);
 			ar & BOOST_SERIALIZATION_NVP(gTrans);
-
 //			ar & nc;
 			ar & BOOST_SERIALIZATION_NVP(ghs);
 
@@ -76,8 +77,8 @@ public:
 	vector<string> getSamples(void);
 	void attachData(string,vector<string>,vector<string>);
 	ncdfFlow getNcObj(){return nc;}
-	workspace const * getWorkspace(){return ws;}
-
+//	workspace const * getWorkspace(){return ws;}
+	void freeWorkspace();
 	GatingSet * clone_treeOnly(vector<string> samples);
 	GatingSet * clone_sstream(vector<string> samples);
 	GatingSet * clone_fstream(vector<string> samples);

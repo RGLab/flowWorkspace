@@ -100,7 +100,7 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
  * also need to double check the use case :cid==-2 && version<9
  * since the current c logic may not be consistent with R code
  */
-trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans){
+trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans){
 
 
 	trans_local res;
@@ -189,12 +189,11 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 						if(dMode>=GATING_HIERARCHY_LEVEL)
 							cout<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
-//						curTran=new logTrans();
 						/*
 						 * use bioexp trans instead of logTrans
 						 * since log doesn't handle the negative value well
 						 */
-						curTran=new biexpTrans();
+						curTran=_globalBiExpTrans;
 
 					}
 
@@ -217,8 +216,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					if(dMode>=GATING_HIERARCHY_LEVEL)
 						cout<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
-//					curTran=new logTrans();
-					curTran=new biexpTrans();
+					curTran=_globalBiExpTrans;
 
 				}
 				else
@@ -273,7 +271,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					if(dMode>=GATING_HIERARCHY_LEVEL)
 						cout<<"apply the linear transformation for gates only:"<<curChnl<<endl;
 
-					curTran=new linTrans();
+					curTran=_globalLinTrans;
 				}
 			}
 		}
