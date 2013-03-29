@@ -26,7 +26,7 @@ struct coordinate
 {
 //	friend class boost::serialization::access;
 
-	double x,y;
+	float x,y;
 	template<class Archive>
 						void serialize(Archive &ar, const unsigned int version)
 						{
@@ -34,12 +34,12 @@ struct coordinate
 
 							ar & BOOST_SERIALIZATION_NVP(x) & BOOST_SERIALIZATION_NVP(y);
 						}
-	coordinate(double _x,double _y){x=_x;y=_y;};
+	coordinate(float _x,float _y){x=_x;y=_y;};
 	coordinate(){};
 };
 bool compare_x(coordinate i, coordinate j);
 bool compare_y(coordinate i, coordinate j);
-//typedef map<string,double> ARGLIST;
+//typedef map<string,float> ARGLIST;
 
 
 class transformation{
@@ -68,7 +68,7 @@ private:
 				}
 public:
 	transformation();
-	virtual void transforming(valarray<double> & input);
+	virtual void transforming(valarray<float> & input);
 	virtual void computCalTbl(){};//dummy routine that does nothing
 	virtual Spline_Coefs getSplineCoefs(){return calTbl.getSplineCoefs();};
 	virtual void setCalTbl(calibrationTable _tbl);
@@ -152,7 +152,7 @@ class biexpTrans:public transformation{
 	friend class boost::serialization::access;
 public:
 	int channelRange;
-	double pos, neg, widthBasis, maxValue;
+	float pos, neg, widthBasis, maxValue;
 private:
 	template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
@@ -179,7 +179,7 @@ class logicleTrans:public transformation{
 	friend class boost::serialization::access;
 private:
 	int channelRange;
-	double pos, neg, widthBasis, maxValue;
+	float pos, neg, widthBasis, maxValue;
 
 	template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
@@ -214,7 +214,7 @@ private:
 
 public:
 	logTrans(){type=LOG;isGateOnly=false;isComputed=true;calTbl.setInterpolated(true);};
-	void transforming(valarray<double> & input);
+	void transforming(valarray<float> & input);
 	logTrans * clone(){return new logTrans(*this);};
 };
 
@@ -230,7 +230,7 @@ friend class boost::serialization::access;
 
 public:
 	linTrans(){type=LIN;isGateOnly=true;isComputed=true;calTbl.setInterpolated(true);};
-	void transforming(valarray<double> & input);
+	void transforming(valarray<float> & input);
 	linTrans * clone(){return new linTrans(*this);};
 };
 

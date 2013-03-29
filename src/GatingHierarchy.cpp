@@ -344,7 +344,7 @@ void GatingHierarchy::transforming(bool updateCDF)
 			if(curTrans->gateOnly())
 				continue;
 
-			valarray<double> x(this->fdata.subset(curChannel));
+			valarray<float> x(this->fdata.subset(curChannel));
 			if(dMode>=GATING_HIERARCHY_LEVEL)
 				cout<<"transforming "<<curChannel<<" with func:"<<curTrans->getChannel()<<endl;
 

@@ -29,7 +29,7 @@ using namespace std;
 typedef map<string,VertexID> VertexID_map;
 typedef vector<VertexID> VertexID_vec;
 typedef vector<string> StringVec;
-typedef vector<double> DoubleVec;
+typedef vector<float> DoubleVec;
 typedef vector<bool> BoolVec;
 
 

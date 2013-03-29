@@ -28,7 +28,7 @@ using namespace std;
 #include <boost/serialization/assume_abstract.hpp>
 
 struct Spline_Coefs{
-	map<string,vector<double> > coefs;
+	map<string,vector<float> > coefs;
 	int method;
 	string type;
 };
@@ -37,7 +37,7 @@ class calibrationTable{
 	friend std::ostream & operator<<(std::ostream &os, const calibrationTable &gh);
 	friend class boost::serialization::access;
 private:
-	valarray<double> x,y,b,c,d;
+	valarray<float> x,y,b,c,d;
 	int spline_method;
 	string caltype;//TODO:move this to transformation class
 	bool flag;
@@ -62,21 +62,21 @@ public:
 	calibrationTable(string _caltype,int _spline_method);
 	void interpolate();
 	void init(unsigned);
-	valarray<double> transforming(valarray<double> &);
+	valarray<float> transforming(valarray<float> &);
 	Spline_Coefs getSplineCoefs();
-	valarray<double> getX(){return x;};
-	valarray<double> getY(){return y;};
-	void setY(valarray<double> _y){
+	valarray<float> getX(){return x;};
+	valarray<float> getY(){return y;};
+	void setY(valarray<float> _y){
 			y.resize(_y.size());
 			y=_y;
 			};
-	void setX(valarray<double> _x){
+	void setX(valarray<float> _x){
 				x.resize(_x.size());
 				x=_x;
 				};
-	valarray<double> getB(){return b;};
-	valarray<double> getC(){return c;};
-	valarray<double> getD(){return d;};
+	valarray<float> getB(){return b;};
+	valarray<float> getC(){return c;};
+	valarray<float> getD(){return d;};
 	void setCaltype(string _caltype){caltype=_caltype;};
 	string getCaltype(){return caltype;};
 	void setMethod(int _spline_method){spline_method=_spline_method;};

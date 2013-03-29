@@ -71,10 +71,10 @@ void calibrationTable::interpolate(){
  */
 Spline_Coefs calibrationTable::getSplineCoefs(){
 
-	map<string,vector<double> > coefs;
+	map<string,vector<float> > coefs;
 	unsigned nX=x.size();
 
-	vector<double> _x(nX),_y(nX),_b(nX),_c(nX),_d(nX);
+	vector<float> _x(nX),_y(nX),_b(nX),_c(nX),_d(nX);
 	for(unsigned i=0;i<nX;i++)
 	{
 		_x[i]=x[i];
@@ -97,12 +97,12 @@ Spline_Coefs calibrationTable::getSplineCoefs(){
 
 	return res;
 }
-valarray<double> calibrationTable::transforming(valarray<double> & input){
+valarray<float> calibrationTable::transforming(valarray<float> & input){
 
 
 	int imeth=2;
 	int nu=input.size();
-	valarray<double> output(nu);
+	valarray<float> output(nu);
 
 	spline_eval(imeth,input,output,x, y, b, c, d);
 	return output;

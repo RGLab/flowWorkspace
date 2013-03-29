@@ -51,14 +51,14 @@ typedef struct{
 #define ORNOT 4
 
 struct vertices_vector{
-	vector<double> x;
-	vector<double> y;
+	vector<float> x;
+	vector<float> y;
 };
 
 class vertices_valarray{
 public:
-	valarray<double> x;
-	valarray<double> y;
+	valarray<float> x;
+	valarray<float> y;
 public:
 	void resize(unsigned nSize){
 		x.resize(nSize);
@@ -104,7 +104,7 @@ class paramRange
 private:
 
 	string name;
-	double min, max;
+	float min, max;
 	template<class Archive>
 						void serialize(Archive &ar, const unsigned int version)
 						{
@@ -114,7 +114,7 @@ private:
 							ar & BOOST_SERIALIZATION_NVP(max);
 						}
 public:
-	paramRange(double _min,double _max,string _name){min=_min;max=_max;name=_name;};
+	paramRange(float _min,float _max,string _name){min=_min;max=_max;name=_name;};
 	paramRange(){};
 	vertices_valarray toValarray();
 	void setName(string _n){name=_n;};
@@ -124,10 +124,10 @@ public:
 			res.push_back(name);
 			return res;
 		};
-	double getMin(){return min;};
-	void setMin(double _v){min=_v;};
-	double getMax(){return max;};
-	void setMax(double _v){max=_v;};
+	float getMin(){return min;};
+	void setMin(float _v){min=_v;};
+	float getMax(){return max;};
+	void setMax(float _v){max=_v;};
 };
 class paramPoly
 {

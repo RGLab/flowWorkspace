@@ -15,11 +15,11 @@
  * x,y:coordinates of input points
  * b,c,d:output with the same length of x
  */
-void natural_spline_C(int n, double *x, double *y, double *b, double *c, double *d)
+void natural_spline_C(int n, float *x, float *y, float *b, float *c, float *d)
 {
 //	cout<<"entering natural_spline_C"<<endl;
     int nm1, i;
-    double t;
+    float t;
 
     x--; y--; b--; c--; d--;
 
@@ -98,15 +98,15 @@ void natural_spline_C(int n, double *x, double *y, double *b, double *c, double 
  * v:is the output vector y
  * n,x,y, b,c,d: from spline_coef
  */
-void spline_eval_C(int *method, int *nu, double *u, double *v,
-		 int *n, double *x, double *y, double *b, double *c, double *d)
+void spline_eval_C(int *method, int *nu, float *u, float *v,
+		 int *n, float *x, float *y, float *b, float *c, float *d)
 {
 /* Evaluate  v[l] := spline(u[l], ...),	    l = 1,..,nu, i.e. 0:(nu-1)
  * Nodes x[i], coef (y[i]; b[i],c[i],d[i]); i = 1,..,n , i.e. 0:(*n-1)
  */
     const int n_1 = *n - 1;
     int i, j, k, l;
-    double ul, dx, tmp;
+    float ul, dx, tmp;
 
     if(*method == 1 && *n > 1) { /* periodic */
 	dx = x[n_1] - x[0];
@@ -147,10 +147,10 @@ void spline_eval_C(int *method, int *nu, double *u, double *v,
  * valarray version
  */
 
-void natural_spline(valarray<double>x, valarray<double> y, valarray<double>& b,valarray<double>& c,valarray<double>& d)
+void natural_spline(valarray<float>x, valarray<float> y, valarray<float>& b,valarray<float>& c,valarray<float>& d)
 {
     int nm1, i;
-    double t;
+    float t;
     int n=x.size();
 //    x--; y--; b--; c--; d--;
 
@@ -217,8 +217,8 @@ void natural_spline(valarray<double>x, valarray<double> y, valarray<double>& b,v
 
 }
 
-void spline_eval(int method, valarray<double> u, valarray<double> & v,
-		  const valarray<double> & x, const valarray<double> & y, const valarray<double> & b, const valarray<double> & c, const valarray<double> & d)
+void spline_eval(int method, valarray<float> u, valarray<float> & v,
+		  const valarray<float> & x, const valarray<float> & y, const valarray<float> & b, const valarray<float> & c, const valarray<float> & d)
 {
 /* Evaluate  v[l] := spline(u[l], ...),	    l = 1,..,nu, i.e. 0:(nu-1)
  * Nodes x[i], coef (y[i]; b[i],c[i],d[i]); i = 1,..,n , i.e. 0:(*n-1)
@@ -229,7 +229,7 @@ void spline_eval(int method, valarray<double> u, valarray<double> & v,
 	int nu=u.size();
     const int n_1 = n - 1;
     int i, j, k, l;
-    double ul, dx, tmp;
+    float ul, dx, tmp;
 
     if(method == 1 && n > 1) { /* periodic */
 	dx = x[n_1] - x[0];

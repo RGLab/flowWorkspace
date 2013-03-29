@@ -22,12 +22,12 @@ boolGate::boolGate(){isTransformed=false;neg=false;}
 /*
  * original c version
  */
-void inPolygon_c(double *data, int nrd,
-            double *vertices, int nrv, int *res) {
+void inPolygon_c(float *data, int nrd,
+            float *vertices, int nrv, int *res) {
 
   int i, j, counter;
-  double xinters;
-  double p1x, p2x, p1y, p2y;
+  float xinters;
+  float p1x, p2x, p1y, p2y;
 
   for(i=0; i<nrd; i++){//iterate over points
     p1x=vertices[0];
@@ -82,15 +82,15 @@ void inPolygon_c(double *data, int nrd,
 void polygonGate::extend(flowData & fdata,unsigned short dMode){
 	string x=param.xName();
 	string y=param.yName();
-	valarray<double> xdata(fdata.subset(x));
-	valarray<double> ydata(fdata.subset(y));
+	valarray<float> xdata(fdata.subset(x));
+	valarray<float> ydata(fdata.subset(y));
 
 	vector<coordinate> v=param.getVertices();
 	/*
 	 * get R_min
 	 */
-	double xMin=xdata.min();
-	double yMin=ydata.min();
+	float xMin=xdata.min();
+	float yMin=ydata.min();
 	for(unsigned i=0;i<v.size();i++)
 	{
 		if(v.at(i).x<=-111)
@@ -194,17 +194,17 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	/*
 	 * calculate the rotation angle
 	 */
-	double phi=tan((R.y-L.y)/(R.x-L.x));
-	double CY=(B.y+T.y)/2;
-	double CX=(R.x+L.x)/2;
+	float phi=tan((R.y-L.y)/(R.x-L.x));
+	float CY=(B.y+T.y)/2;
+	float CX=(R.x+L.x)/2;
 
-	double delta=2*PI/nVertices;
+	float delta=2*PI/nVertices;
 	/*
 	 * fit the polygon points
 	 */
 	for(unsigned short i=0;i<nVertices;i++)
 	{
-		double S=i*delta;
+		float S=i*delta;
 		coordinate p;
 		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
 		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
@@ -224,12 +224,12 @@ void ellipseGate::toPolygon(unsigned nVertices){
 }
 void rangegate::extend(flowData & fdata,unsigned short dMode){
 	string pName=param.getName();
-	valarray<double> data_1d(fdata.subset(pName));
+	valarray<float> data_1d(fdata.subset(pName));
 
 	/*
 	 * get R_min
 	 */
-	double xMin=data_1d.min();
+	float xMin=data_1d.min();
 	if(param.getMin()<=-111)
 	{
 		if(dMode>=POPULATION_LEVEL)
@@ -265,8 +265,8 @@ vector<bool> polygonGate::gating(flowData & fdata){
 
 	string x=param.xName();
 	string y=param.yName();
-	valarray<double> xdata(fdata.subset(x));
-	valarray<double> ydata(fdata.subset(y));
+	valarray<float> xdata(fdata.subset(x));
+	valarray<float> ydata(fdata.subset(y));
 
 	unsigned nEvents=xdata.size();
 	//init the indices
@@ -274,8 +274,8 @@ vector<bool> polygonGate::gating(flowData & fdata){
 
 
 	unsigned counter;
-	double xinters;
-	double p1x, p2x, p1y, p2y;
+	float xinters;
+	float p1x, p2x, p1y, p2y;
 
 	for(unsigned i=0; i<nEvents; i++)
 	{//iterate over points
@@ -389,7 +389,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout<<"transforming: "<<channel_x<<endl;;
-	//		valarray<double> output_x(trans_x->transforming(vert.x));
+	//		valarray<float> output_x(trans_x->transforming(vert.x));
 			trans_x->transforming(vert.x);
 			for(unsigned i=0;i<vertices.size();i++)
 	//			vertices.at(i).x=output_x[i];// yodate coordinates-based vertices
@@ -399,7 +399,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout<<"transforming: "<<channel_y<<endl;;
-	//		valarray<double> output_y(trans_y->transforming(vert.y));
+	//		valarray<float> output_y(trans_y->transforming(vert.y));
 			trans_y->transforming(vert.y);
 			for(unsigned i=0;i<vertices.size();i++)
 	//			vertices.at(i).y=output_y[i];
@@ -422,7 +422,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout<<"transforming "<<param.getName()<<endl;
-	//		valarray<double> output(curTrans->transforming(vert.x));
+	//		valarray<float> output(curTrans->transforming(vert.x));
 	//		param.min=output[0];
 	//		param.max=output[1];
 			curTrans->transforming(vert.x);
@@ -436,7 +436,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 
 vector<bool> rangegate::gating(flowData & fdata){
 
-	valarray<double> data_1d(fdata.subset(param.getName()));
+	valarray<float> data_1d(fdata.subset(param.getName()));
 
 	unsigned nEvents=data_1d.size();
 	//init the indices
@@ -466,8 +466,8 @@ vector<bool> rectgate::gating(flowData & fdata){
 		throw(domain_error("invalid number of vertices for rectgate!"));
 	string x=param.xName();
 	string y=param.yName();
-	valarray<double> xdata(fdata.subset(x));
-	valarray<double> ydata(fdata.subset(y));
+	valarray<float> xdata(fdata.subset(x));
+	valarray<float> ydata(fdata.subset(y));
 
 	unsigned nEvents=xdata.size();
 	//init the indices
@@ -479,11 +479,11 @@ vector<bool> rectgate::gating(flowData & fdata){
 	for(unsigned i=0;i<nEvents;i++)
 	{
 		bool inX,inY;
-		double xMin=vertices.at(0).x;
-		double yMin=vertices.at(0).y;
+		float xMin=vertices.at(0).x;
+		float yMin=vertices.at(0).y;
 
-		double xMax=vertices.at(1).x;
-		double yMax=vertices.at(1).y;
+		float xMax=vertices.at(1).x;
+		float yMax=vertices.at(1).y;
 
 		if(xMin>xMax||yMin>yMax)
 			throw(domain_error("invalid vertices for rectgate!"));

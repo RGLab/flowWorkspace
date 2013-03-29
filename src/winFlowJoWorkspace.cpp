@@ -387,14 +387,14 @@ polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
 
 				//get coordinates from properties
 				/*
-				 * be aware that numeric_limits<double>::min() return the minimum positive value
+				 * be aware that numeric_limits<float>::min() return the minimum positive value
 				 * instead of negative,so we have to use -max()
 				 */
 				string sMin=curPNode.getProperty("min");
-				r.at(i).setMin(sMin.empty()?-numeric_limits<double>::max():atof(sMin.c_str()));
+				r.at(i).setMin(sMin.empty()?-numeric_limits<float>::max():atof(sMin.c_str()));
 
 				string sMax=curPNode.getProperty("max");
-				r.at(i).setMax(sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str()));
+				r.at(i).setMax(sMax.empty()?numeric_limits<float>::max():atof(sMax.c_str()));
 
 				//get parameter name from the children node
 				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");
