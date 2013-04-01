@@ -111,50 +111,7 @@ unarchive<-function(file,path=tempdir()){
 	
 }
 
-######################################
-##archive/unarchive to/from a folder 
-##it is faster than tar-version,but require
-##a new dest folder to avoid overwriting
-##the old data by mistake
-##currently not exposed to end user
-######################################
-save_gs<-function(G,path,overwrite = FALSE){
-#  browser()
-  
-  if(file.exists(path)){
-    path <- normalizePath(path,mustWork = TRUE)
-    if(overwrite){
-#      browser()
-      res <- unlink(path, recursive = TRUE)
-      if(res == 1){
-        stop("failed to delete ",path)
-      }
-    }else{
-      stop(path,"' already exists!")  
-    }
-    
-  }
-  
-  dir.create(path = path)
-  #do the dir normalization again after it is created
-  path <- normalizePath(path,mustWork = TRUE)
-  invisible(.save_gs(G,path = path))
-  message("Done\nTo reload it, use 'load_gs' function\n")
 
-  
-}
-
-
-load_gs<-function(path){
-#  browser()
-  path <- normalizePath(path,mustWork = TRUE)
-  if(!file.exists(path))
-    stop(path,"' not found!")
-  files<-list.files(path)
-#   browser()
-  .load_gs(output = path, files = files)$gs
-  
-}
 
 .parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",xmlParserOption,...){
 
