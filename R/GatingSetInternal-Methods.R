@@ -3,14 +3,15 @@
 ###############################################################################
 
 ###serialization functions to be called by wrapper APIs
-.save_gs <- function(G,path){
+### when copy.cdf == FALSE, skip copying cdf file
+.save_gs <- function(G,path, copy.cdf = TRUE){
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
     rds.file<-tempfile(tmpdir=path,fileext=".rds")
     dat.file<-tempfile(tmpdir=path,fileext=".dat")
     filestoSave <- c(rds.file,dat.file)
     #save ncdf file
-    if(flowWorkspace:::isNcdf(G[[1]]))
+    if(copy.cdf&&flowWorkspace:::isNcdf(G[[1]]))
     {   
       message("saving ncdf...")
       from<-ncFlowSet(G)@file
