@@ -46,19 +46,12 @@ class BOOLINDICES:public POPINDICES{
 	friend class boost::serialization::access;
 private:
 	vector <bool> x;
-//	template<class Archive>
-//								void serialize(Archive &ar, const unsigned int version)
-//								{
-//									ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
-//									ar & BOOST_SERIALIZATION_NVP(x);
-//
-//								}
 	template<class Archive>
 						void save(Archive & ar, const unsigned int version) const
 							{
 
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
-//								ar & BOOST_SERIALIZATION_NVP(x);
+
 								/*
 								 * pack bits into bytes
 								 */
@@ -80,7 +73,8 @@ private:
 	template<class Archive>
 						void load(Archive & ar, const unsigned int version) {
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
-//								ar & BOOST_SERIALIZATION_NVP(x);
+								if(version>0){
+//									cout<<"unpacking bits"<<endl;
 									unsigned nBits=nEvents;
 									unsigned nBytes=ceil(float(nBits)/8);
 									vector<unsigned char> x_bytes(nBytes,0);
@@ -93,9 +87,15 @@ private:
 										unsigned byteIndex = i / 8;
 										unsigned bitIndex = i % 8;
 
-									    x[i] = x_bytes[byteIndex] & (1 << bitIndex);
+										x[i] = x_bytes[byteIndex] & (1 << bitIndex);
 									}
 
+								}
+								else
+								{
+//									cout<<"old version."<<endl;
+									ar & BOOST_SERIALIZATION_NVP(x);
+								}
 
 							}
 
@@ -109,7 +109,7 @@ public:
 	POPINDICES * clone();
 
 };
-
+BOOST_CLASS_VERSION(BOOLINDICES,1)
 /*
  * int vector
  */

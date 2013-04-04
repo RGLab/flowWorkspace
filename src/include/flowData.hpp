@@ -34,7 +34,7 @@ using namespace Rcpp;
 #include <boost/graph/adj_list_serialize.hpp>
 #include <boost/serialization/assume_abstract.hpp>
 #include <boost/serialization/split_member.hpp>
-
+#include <boost/serialization/version.hpp>
 
 
 
