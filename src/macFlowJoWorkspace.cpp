@@ -97,7 +97,7 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
  * TODO:deal with the case when cid!=-2 &version<9  & transLog==false,
  * we need to use calibrationIndex instead of comp name to search for cal tables
  *
- * also need to float check the use case :cid==-2 && version<9
+ * also need to double check the use case :cid==-2 && version<9
  * since the current c logic may not be consistent with R code
  */
 trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans){
@@ -362,9 +362,9 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
 		string sTbl=calTblNode.getContent();
 		/*
-		 * parse the stream to x,y float arrays
+		 * parse the stream to x,y double arrays
 		 */
-		valarray<float> tbl(toArray(sTbl));
+		valarray<double> tbl(toArray(sTbl));
 		unsigned nX=tbl.size()/2;
 
 		caltbl.init(nX);

@@ -47,7 +47,7 @@ class flowData{
 private:
 	vector<string> params;
 	unsigned sampleID;//it is only valid when access cdf version of flowdata, used as index for sample dimension
-	valarray<float> data;
+	valarray<double> data;
 	unsigned nEvents;
 
 	template<class Archive>
@@ -63,11 +63,11 @@ private:
 public:
 	flowData & operator=(const flowData& source);//explicitly define the copy assignment since the default one is compiler-specific
 	flowData();
-	flowData(const float* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
+	flowData(const double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
 	flowData(NumericMatrix mat,unsigned _sampleID);
 	slice getSlice(string channel);
-	void updateSlice(string channel,valarray<float> x);
-	valarray<float> subset(string channel);
+	void updateSlice(string channel,valarray<double> x);
+	valarray<double> subset(string channel);
 	/*
 	 * accessors
 	 */
@@ -80,8 +80,8 @@ public:
 
 	void clear(){data.resize(0);};
 	unsigned dataSize(){return data.size();};
-	void getData(float * mat,unsigned nSize);
-	valarray<float> getData();
+	void getData(double * mat,unsigned nSize);
+	valarray<double> getData();
 };
 
 

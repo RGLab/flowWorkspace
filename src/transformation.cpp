@@ -60,7 +60,7 @@ transformation::transformation(){
  * to handle negative values more appropriately
  * (e.g. replace the negative value with the minimum positive value instead of zero
  */
-float mylog10(float x) {
+double mylog10(double x) {
 	return x>0?log10(x):0;
 	throw(domain_error("the current log transforming is broken!"));
 }
@@ -68,7 +68,7 @@ float mylog10(float x) {
  * these transforming functions change the input data
  */
 
-void logTrans::transforming(valarray<float> & input){
+void logTrans::transforming(valarray<double> & input){
 
 		/*
 		 * clean the data before log
@@ -77,11 +77,11 @@ void logTrans::transforming(valarray<float> & input){
 //		input=log10(input);
 
 }
-void linTrans::transforming(valarray<float> & input){
+void linTrans::transforming(valarray<double> & input){
 
 		input*=64;
 }
-void transformation::transforming(valarray<float> & input){
+void transformation::transforming(valarray<double> & input){
 		if(!calTbl.isInterpolated())
 			throw(domain_error("calibration table not interpolated yet!"));
 		input=calTbl.transforming(input);
@@ -118,16 +118,16 @@ biexpTrans::biexpTrans(){
 /*
  * directly translated from java routine from tree star
  */
- float logRoot(float b, float w)
+ double logRoot(double b, double w)
 {
-	float xLo = 0;
-	float xHi = b;
-	float d = (xLo + xHi) / 2;
-	float dX = abs((long) (xLo - xHi));
-	float dXLast = dX;
-	float fB = -2 * log(b) + w * b;
-	float f = 2. * log(d) + w * b + fB;
-	float dF = 2 / d + w;
+	double xLo = 0;
+	double xHi = b;
+	double d = (xLo + xHi) / 2;
+	double dX = abs((long) (xLo - xHi));
+	double dXLast = dX;
+	double fB = -2 * log(b) + w * b;
+	double f = 2. * log(d) + w * b + fB;
+	double dF = 2 / d + w;
 	if (w == 0) return b;
 	for (long i = 0; i < 100; i++)
 	{
@@ -142,7 +142,7 @@ biexpTrans::biexpTrans(){
 		else
 		{
 			dX = f / dF;
-			float t = d;
+			double t = d;
 			d -= dX;
 			if (d == t)
 				return d;
@@ -161,16 +161,16 @@ biexpTrans::biexpTrans(){
   * directly translated from java routine from tree star
   */
 
-void logInterpolate(float *f, int i, long n, float x)
+void logInterpolate(double *f, int i, long n, double x)
 {
-	float minVal = f[i];
-	float maxVal = x;
-	float logMinVal = log(minVal);
-	float logMaxVal = log(maxVal);
+	double minVal = f[i];
+	double maxVal = x;
+	double logMinVal = log(minVal);
+	double logMaxVal = log(maxVal);
 	for (int j = i; j < n; j++)
 	{
 		float frxn = (float)(j - i) / (float)(n - i);
-		float curVal = frxn * (logMaxVal - logMinVal) + logMinVal;
+		double curVal = frxn * (logMaxVal - logMinVal) + logMinVal;
 		f[j] = exp(curVal);
 	}
 }
@@ -179,14 +179,14 @@ void biexpTrans::computCalTbl(){
 	 * directly translated from java routine from tree star
 	 */
 
-	float ln10 = log(10.0);
-	float decades = pos;
-	float lowScale = widthBasis;
-	float width = log10(-lowScale);
+	double ln10 = log(10.0);
+	double decades = pos;
+	double lowScale = widthBasis;
+	double width = log10(-lowScale);
 
 	if (width < 0.5 || width > 3) width = 0.5;
 	decades -= width / 2;
-	float extra = neg;
+	double extra = neg;
 	if (extra < 0) extra = 0;
 	extra += width / 2;
 
@@ -196,18 +196,18 @@ void biexpTrans::computCalTbl(){
 	if (zeroChan > 0) decades = extra * channelRange / zeroChan;
 	width /= 2 * decades;        // 1.1
 
-	float maximum = maxValue;
-	float positiveRange = ln10 * decades;
-	float minimum = maximum / exp(positiveRange);
-	float negativeRange = logRoot(positiveRange, width);
+	double maximum = maxValue;
+	double positiveRange = ln10 * decades;
+	double minimum = maximum / exp(positiveRange);
+	double negativeRange = logRoot(positiveRange, width);
 
-	float *positive = new float[channelRange + 1];
-	float *negative = new float[channelRange + 1];
+	double *positive = new double[channelRange + 1];
+	double *negative = new double[channelRange + 1];
 	positive[0] = negative[0] = 1.;
 	logInterpolate(positive, 0, channelRange + 1, exp(positiveRange));
 	logInterpolate(negative, 0, channelRange + 1, exp(-negativeRange));
 
-	float s = exp((positiveRange + negativeRange) * (width + extra / decades));
+	double s = exp((positiveRange + negativeRange) * (width + extra / decades));
 	int j;
 	for (j = 0; j < channelRange + 1; j++)
 		negative[j] *= s;
@@ -223,7 +223,7 @@ void biexpTrans::computCalTbl(){
 	calTbl.setCaltype("flowJo");
 	calTbl.setMethod(2);
 	calTbl.init(channelRange+1);
-	valarray<float> x(channelRange+1),y(channelRange+1);
+	valarray<double> x(channelRange+1),y(channelRange+1);
 	for (int chan = 0; chan <= channelRange; chan++)
 	{
 		y[chan] =chan;

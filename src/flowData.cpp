@@ -20,7 +20,7 @@ flowData & flowData::operator=(const flowData& source){
 	return *this;
 
 }
-flowData::flowData(const float* mat,vector<string> _params,unsigned _nEvents,unsigned _sampleID){
+flowData::flowData(const double* mat,vector<string> _params,unsigned _nEvents,unsigned _sampleID){
 
 
 	params=_params;
@@ -29,7 +29,7 @@ flowData::flowData(const float* mat,vector<string> _params,unsigned _nEvents,uns
 	unsigned nSize=nChannls*nEvents;
 	sampleID=_sampleID;
 	data.resize(nSize);
-	data=valarray<float>(mat,nSize);
+	data=valarray<double>(mat,nSize);
 }
 flowData::flowData(NumericMatrix mat,unsigned _sampleID){
 
@@ -44,10 +44,10 @@ flowData::flowData(NumericMatrix mat,unsigned _sampleID){
 		data[j]=mat[j];
 
 }
-valarray<float> flowData::getData(){
+valarray<double> flowData::getData(){
 	return data;
 }
-void flowData::getData(float * mat,unsigned nSize){
+void flowData::getData(double * mat,unsigned nSize){
 	for(unsigned i=0;i<nSize;i++)
 		mat[i]=data[i];
 }
@@ -68,7 +68,7 @@ unsigned find_pos(vector<string> s,string pattern ){
 }
 
 
-void flowData::updateSlice(string channel,valarray<float> x){
+void flowData::updateSlice(string channel,valarray<double> x){
 	data[getSlice(channel)]=x;
 }
 
@@ -76,12 +76,12 @@ slice flowData::getSlice(string channel){
 
 		unsigned paramInd=find_pos(params,channel);
 
-//		valarray<float> data(this->data,nEvents*nChannls);
+//		valarray<double> data(this->data,nEvents*nChannls);
 		return slice(paramInd*nEvents,nEvents,1);
 
 }
 
-valarray<float> flowData::subset(string channel){
+valarray<double> flowData::subset(string channel){
 		return data[getSlice(channel)];
 
 }

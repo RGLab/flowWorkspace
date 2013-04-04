@@ -264,7 +264,7 @@ BEGIN_RCPP
 		/*
 		 * copy the transformed data from gh before unload it
 		 */
-		valarray<float> updatedMat(gh->getData(0).getData());
+		valarray<double> updatedMat(gh->getData(0).getData());
 
 
 		/*

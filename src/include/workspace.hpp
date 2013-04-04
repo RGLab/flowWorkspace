@@ -51,7 +51,7 @@ public:
 	string name;
 	string comment;// store "Acquisition-defined" when the spillOver matrix is not supplied and cid==-1
 	vector<string> marker;
-	vector<float> spillOver;
+	vector<double> spillOver;
 private:
 template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)
@@ -122,7 +122,7 @@ public:
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
 	 virtual nodeProperties * to_popNode(wsRootNode &)=0;
 	 virtual nodeProperties * to_popNode(wsPopNode &,bool isGating)=0;
-	 valarray<float> toArray(string sCalTable);
+	 valarray<double> toArray(string sCalTable);
 	 virtual void parseVersionList(){};
 
 

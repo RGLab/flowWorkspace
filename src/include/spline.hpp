@@ -16,12 +16,12 @@
 #define NATURAL 2
 
 using namespace std;
-void natural_spline_C(int n, float *x, float *y, float *b, float *c, float *d);
+void natural_spline_C(int n, double *x, double *y, double *b, double *c, double *d);
 
-void spline_eval_C(int *method, int *nu, float *u, float *v,
-		 int *n, float *x, float *y, float *b, float *c, float *d);
+void spline_eval_C(int *method, int *nu, double *u, double *v,
+		 int *n, double *x, double *y, double *b, double *c, double *d);
 
 
-void natural_spline(valarray<float>x, valarray<float> y, valarray<float>& b,valarray<float>& c,valarray<float>& d);
-void spline_eval(int method, valarray<float> u, valarray<float> & v,const valarray<float> & x, const valarray<float> & y, const valarray<float> & b, const valarray<float> & c, const valarray<float> & d);
+void natural_spline(valarray<double>x, valarray<double> y, valarray<double>& b,valarray<double>& c,valarray<double>& d);
+void spline_eval(int method, valarray<double> u, valarray<double> & v,const valarray<double> & x, const valarray<double> & y, const valarray<double> & b, const valarray<double> & c, const valarray<double> & d);
 #endif /* SPLINE_HPP_ */

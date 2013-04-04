@@ -105,9 +105,9 @@ flowData ncdfFlow::readflowData(unsigned int sampleID)
     size_t start[] = {sampleID, 0, 0};
 	size_t count[] = {1,nChannels, nRow};
 
-	float * mat=new float[nSize];
+	double * mat=new double[nSize];
 
-	if((retval = nc_get_vara_float(ncid, varid, start, count, mat)))
+	if((retval = nc_get_vara_double(ncid, varid, start, count, mat)))
 		ERR(retval);
 
 //	endTime = time(NULL);
@@ -150,7 +150,7 @@ void ncdfFlow::writeflowData(flowData & fdata)
 
 	size_t start[] = {fdata.getSampleID(), 0, 0};
 	size_t count[] = {1,nChannels, nRow};
-	float *mat = new float[nSize];
+	double *mat = new double[nSize];
 
 	fdata.getData(mat,nSize);
 //	for(unsigned i=0;i<nSize;i++)
@@ -161,7 +161,7 @@ void ncdfFlow::writeflowData(flowData & fdata)
 	if((retval = nc_inq_varid (ncid, "exprsMat", &varid)))
 		ERR(retval);
 
-	if((retval = nc_put_vara_float(ncid, varid, start, count, mat)))
+	if((retval = nc_put_vara_double(ncid, varid, start, count, mat)))
 		ERR(retval);
 
 	delete[] mat;
@@ -186,7 +186,7 @@ void ncdfFlow::writeflowData(flowData & fdata)
 //	int nChannel=params.size();
 //	int _channel[2]={1,nChannel};
 //	int _sampleID=sampleID+1;
-//	float * mat=readSlice(fileName.c_str(), _channel,_sampleID);
+//	double * mat=readSlice(fileName.c_str(), _channel,_sampleID);
 //
 //	/*
 //	 * read slice
