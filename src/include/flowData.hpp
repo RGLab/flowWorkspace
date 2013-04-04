@@ -33,7 +33,7 @@ using namespace Rcpp;
 #include <boost/serialization/valarray.hpp>
 #include <boost/graph/adj_list_serialize.hpp>
 #include <boost/serialization/assume_abstract.hpp>
-
+#include <boost/serialization/split_member.hpp>
 
 
 
