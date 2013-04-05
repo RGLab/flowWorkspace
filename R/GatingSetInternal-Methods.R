@@ -975,7 +975,7 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
             
             #subsetting flowSet
 			fs<-ncFlowSet(clone)[i]
-            #deep copying flowSet/ncdfFlowSet
+            #deep copying flowSet/ncdfFlowSet R object(but still pointing to the same cdf)
             if(flowWorkspace:::isNcdf(clone[[1]]))
               fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
             else

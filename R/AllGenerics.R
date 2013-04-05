@@ -87,9 +87,6 @@ setGeneric("writeIndice",function(obj,y,z,...){
 			standardGeneric("writeIndice");
 		})
 
-setGeneric("getIndices",function(obj,y,...){
-	standardGeneric("getIndices");
-})
 setGeneric("getProp",function(x,y,...){
 	standardGeneric("getProp");
 })
