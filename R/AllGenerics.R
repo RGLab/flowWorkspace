@@ -1,4 +1,4 @@
-setGeneric("openWorkspace", function(file){
+setGeneric("openWorkspace", function(file,...){
 	standardGeneric("openWorkspace");
 })
 setGeneric("closeWorkspace",function(workspace){
@@ -55,7 +55,7 @@ setGeneric("getPopStats",function(x,...){
 setGeneric("plotPopCV",function(x,...){
 	standardGeneric("plotPopCV");
 })
-setGeneric("getData",function(obj,...){
+setGeneric("getData",function(obj,y,...){
 	standardGeneric("getData")
 })
 setGeneric("getGate",function(obj,y,...){
@@ -87,9 +87,6 @@ setGeneric("writeIndice",function(obj,y,z,...){
 			standardGeneric("writeIndice");
 		})
 
-setGeneric("getIndices",function(obj,y,...){
-	standardGeneric("getIndices");
-})
 setGeneric("getProp",function(x,y,...){
 	standardGeneric("getProp");
 })

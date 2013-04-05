@@ -15,10 +15,10 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 
-#macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
-macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
+#macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
 #path<-"~/rglab/workspace/flowWorkspace/data"
 #
 #macXML<-"HIPC_trial.xml"
@@ -55,14 +55,30 @@ time1<-Sys.time()
 GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
-                    ,subset=1:2
+                    ,subset=1
 #					,subset=c("517614.fcs")
-#					,isNcdf=T
+					,isNcdf=T
 					,useInternal=T
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
 					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=4
 					)
+#save to tar
+tmpdir <- "~/rglab/workspace/temp"
+list.files(tmpdir)
+archive(GT,file=file.path(tmpdir,"test.tar"))
+
+gg <- unarchive(file.path(tmpdir,"test.tar"))
+getData(gg[[1]])
+getData(gg)
+#save to folder without tarring
+tmp2<-file.path(tmpdir,"t1")
+save_gs(GT,path=tmp2
+        , overwrite =T
+        )          
+gg <- load_gs(path=tmp2)
+list.files(tmp2)
+
 Sys.time()-time1
 plotGate(GT[[1]])
 getData(GT)

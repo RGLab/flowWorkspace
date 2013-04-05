@@ -55,13 +55,20 @@ wsSampleNode getSample(T ws,string sampleID){
 }
 
 
+void GatingSet::freeWorkspace(){
+	if(ws!=NULL)
+	{
+		delete ws;
+		ws = NULL;
+	}
 
+}
 GatingSet::~GatingSet()
 {
 	if(dMode>=GATING_SET_LEVEL)
 		cout<<endl<<"start to free GatingSet..."<<endl;
-	if(ws!=NULL)
-		delete ws;
+
+	freeWorkspace();
 
 	BOOST_FOREACH(gh_map::value_type & it,ghs){
 		GatingHierarchy * ghPtr=it.second;
@@ -87,6 +94,7 @@ GatingSet::~GatingSet()
 						cout<<"free transformatioin:"<<curTran->getChannel()<<endl;
 
 				delete curTran;
+				curTran = NULL;
 			}
 
 		}
@@ -316,13 +324,13 @@ GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
 
 
 //read xml file and create the appropriate flowJoWorkspace object
-GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,unsigned short _dMode)
+GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,int xmlParserOption,unsigned short _dMode)
 {
-
+		ws=NULL;
 		LIBXML_TEST_VERSION
 
 		/*parse the file and get the DOM */
-		xmlDocPtr doc = xmlReadFile(sFileName.c_str(), NULL, 0);
+		xmlDocPtr doc = xmlReadFile(sFileName.c_str(), NULL, xmlParserOption);
 		if (doc == NULL ) {
 //				fprintf(stderr,"Document not parsed successfully. \n");
 				throw(ios_base::failure("Document not parsed successfully.Check if the path is valid."));
@@ -368,7 +376,6 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,u
 				 cout<<"... start parsing global transformations... "<<endl;
 			 gTrans=ws->getGlobalTrans();
 		 }
-
 }
 
 void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)
@@ -389,7 +396,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 			cout<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,&gTrans,dMode);
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,&gTrans,&globalBiExpTrans,&globalLinTrans,dMode);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 

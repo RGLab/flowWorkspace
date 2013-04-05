@@ -145,7 +145,7 @@ public:
 	GatingHierarchy();
 	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,trans_global_vec * _gTrans,unsigned short dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
 
 
 	flowData getData(VertexID nodeID);//from memory

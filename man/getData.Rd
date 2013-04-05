@@ -1,11 +1,15 @@
 \name{getData}
 \alias{getData}
 \alias{getData-methods}
-\alias{getData,GatingHierarchy-method}
-\alias{getData,GatingHierarchyInternal-method}
-\alias{getData,GatingSet-method}
-\alias{getData,GatingSetInternal-method}
-\alias{getData,graphNEL-method}
+\alias{getData,GatingHierarchy,ANY-method}
+\alias{getData,GatingHierarchyInternal,missing-method}
+\alias{getData,GatingHierarchyInternal,numeric-method}
+\alias{getData,GatingHierarchyInternal,character-method}
+\alias{getData,GatingSet,ANY-method}
+\alias{getData,GatingSetInternal,missing-method}
+\alias{getData,GatingSetInternal,numeric-method}
+\alias{getData,GatingSetInternal,character-method}
+\alias{getData,graphNEL,ANY-method}
 
 
 
@@ -19,13 +23,17 @@ Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 \S4method{getData}{GatingHierarchy}(obj,y=NULL,tsort=FALSE)
 \S4method{getData}{GatingSet}(obj,y=NULL,tsort=FALSE)
 \S4method{getData}{graphNEL}(obj,y=NULL,tsort=FALSE)
+\S4method{getData}{GatingHierarchyInternal}(obj,y,tsort=FALSE)
+\S4method{getData}{GatingSetInternal}(obj,y,tsort=FALSE)
+
 }
 \arguments{
   \item{obj}{
 A \code{GatingHierarchy}, \code{GatingSet}, or \code{graphNEL} object extracted from a \code{GatingHierarchy} \code{@tree} slot. 
 }
   \item{y}{
-\code{character} node name or \code{numeric} node index. Default is \code{NULL}. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. Defaults to \code{NULL}, will return the complete flowFrame at the root node.
+\code{character} node name or \code{numeric} node index. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. 
+		If not specified, will return the complete flowFrame/flowSet at the root node.
 }
 	\item{tsort}{
 	deprecated.
@@ -47,8 +55,6 @@ A \code{ncdfFlowSet} if the node name/index (\code{y}) is NULL and the flow data
 Greg Finak \email{gfinak@fhcrc.org}
 }
 \note{
-The argument \code{tsort} ensures that the nodes are ordered in topological sort order. This is useful if you are using numeric node indices to access data across two or more identical trees (GatingHierarchies) with different node names (population names).
-
 WARNING
 The trees in a GatingSet are assumed to have the same structure, such that a topological sort of the nodes in any tree will return the populations in the same order.
 
@@ -63,9 +69,10 @@ The trees in a GatingSet are assumed to have the same structure, such that a top
 \dontrun{
 	#G is a GatingSet
 	geData(G,3) #get a flowSet constructed from the third node / population in the tree.
+	geData(G,"cd4")
 	
-	#G is a GatingHierarchy
-	getData(G,)
+	#gh is a GatingHierarchy
+	getData(gh)
 	
 }
 }

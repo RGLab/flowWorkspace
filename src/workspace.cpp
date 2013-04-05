@@ -19,7 +19,7 @@ workspace::~workspace(){
 	if(doc!=NULL)
 	{
 		xmlFreeDoc(doc);
-
+		doc = NULL;
 
 		/*
 		 *Free the global variables that may
