@@ -47,14 +47,59 @@ class BOOLINDICES:public POPINDICES{
 private:
 	vector <bool> x;
 	template<class Archive>
-							void serialize(Archive &ar, const unsigned int version)
+						void save(Archive & ar, const unsigned int version) const
 							{
+
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
-								ar & BOOST_SERIALIZATION_NVP(x);
+
+								/*
+								 * pack bits into bytes
+								 */
+								unsigned nBits=x.size();
+								unsigned nBytes=ceil(float(nBits)/8);
+								vector<unsigned char> x_bytes(nBytes,0);
+								for(unsigned i =0 ; i < nBits; i++) {
+									unsigned byteIndex = i / 8;
+									unsigned bitIndex = i % 8;
+									if(x[i]) {
+									    // set bit
+										unsigned char mask  = 1 << bitIndex;
+										x_bytes[byteIndex] = x_bytes[byteIndex] | mask;
+									}
+								}
+								ar & BOOST_SERIALIZATION_NVP(x_bytes);
+//
+							}
+	template<class Archive>
+						void load(Archive & ar, const unsigned int version) {
+								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
+								if(version>0){
+//									cout<<"unpacking bits"<<endl;
+									unsigned nBits=nEvents;
+									unsigned nBytes=ceil(float(nBits)/8);
+									vector<unsigned char> x_bytes(nBytes,0);
+									x.resize(nBits,false);
+									ar & BOOST_SERIALIZATION_NVP(x_bytes);
+									/*
+									 * unpack bytes into bits
+									 */
+									for(unsigned i =0 ; i < nBits; i++) {
+										unsigned byteIndex = i / 8;
+										unsigned bitIndex = i % 8;
+
+										x[i] = x_bytes[byteIndex] & (1 << bitIndex);
+									}
+
+								}
+								else
+								{
+//									cout<<"old version."<<endl;
+									ar & BOOST_SERIALIZATION_NVP(x);
+								}
 
 							}
 
-
+	  BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	BOOLINDICES(){nEvents=0;};
 	BOOLINDICES(vector <bool> _ind);
@@ -64,7 +109,7 @@ public:
 	POPINDICES * clone();
 
 };
-
+BOOST_CLASS_VERSION(BOOLINDICES,1)
 /*
  * int vector
  */

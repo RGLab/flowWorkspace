@@ -9,7 +9,7 @@ Parse a flowJo Workspace
 Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{execute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
 }
 \usage{
-\S4method{parseWorkspace}{flowJoWorkspace}(obj,useInternal = TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path = obj@path,...)
+\S4method{parseWorkspace}{flowJoWorkspace}(obj,useInternal = TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path = obj@path, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -48,6 +48,7 @@ A \code{flowJoWorkspace} to be parsed.
      \itemize{
      	\item sampNloc="keyword": a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
      	\item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
+     	\item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
      	}
      }
