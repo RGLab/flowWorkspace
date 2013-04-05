@@ -34,6 +34,7 @@ GatingHierarchy::~GatingHierarchy()
 		if(dMode>=POPULATION_LEVEL)
 			cout<<"free "<<np->getName()<<endl;
 		delete np;//free the property bundle
+		np = NULL;
 //			cout<<"free the indices"<<endl;
 	}
 
@@ -54,7 +55,7 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,trans_global_vec * _gTrans,unsigned short _dMode)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short _dMode)
 {
 //	data=NULL;
 	dMode=_dMode;
@@ -78,7 +79,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing transformation..."<<endl;
-		trans=thisWs->getTransformation(root,comp,transFlag,gTrans);
+		trans=thisWs->getTransformation(root,comp,transFlag,gTrans,_globalBiExpTrans,_globalLinTrans);
 	}
 	if(dMode>=POPULATION_LEVEL)
 		cout<<endl<<"parsing populations..."<<endl;

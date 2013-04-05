@@ -1,6 +1,6 @@
 #All class definitions
 setOldClass("XMLInternalDocument")
-setClass("flowJoWorkspace",representation(version="character",file="character",.cache="environment",path="character",doc="XMLInternalDocument"))
+setClass("flowJoWorkspace",representation(version="character",file="character",.cache="environment",path="character",doc="XMLInternalDocument",options="integer"))
 
 setClass("GatingHierarchy",representation(tree="graphNEL",nodes="character",name="character",flag="logical",transformations="list",compensation="matrix",dataPath="character",isNcdf="logical"))
 

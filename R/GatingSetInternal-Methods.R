@@ -1,34 +1,82 @@
 # TODO: currently archive save the entire cdf file instead of the current view of cdf
 # it could cause data redudancy if only a subset(view of ncdfFlowSet) is desired to be saved
 ###############################################################################
+
+###serialization functions to be called by wrapper APIs
+### when copy.cdf == FALSE, skip copying cdf file
+.save_gs <- function(G,path, copy.cdf = TRUE){
+    if(!file.exists(path))
+      stop("Folder '",path, "' does not exist!")
+    rds.file<-tempfile(tmpdir=path,fileext=".rds")
+    dat.file<-tempfile(tmpdir=path,fileext=".dat")
+    filestoSave <- c(rds.file,dat.file)
+    #save ncdf file
+    if(copy.cdf&&flowWorkspace:::isNcdf(G[[1]]))
+    {   
+      message("saving ncdf...")
+      from<-ncFlowSet(G)@file
+      ncFile<-tempfile(tmpdir=path,fileext=".nc")
+      file.copy(from=from,to=ncFile)
+      filestoSave<-c(filestoSave,ncFile)
+    }
+    
+    message("saving tree object...")
+    #save external pointer object
+    .Call("R_saveGatingSet",G@pointer,dat.file)
+    
+    message("saving R object...")
+    saveRDS(G,rds.file)
+    
+    filestoSave
+  
+}
+###unserialization functions to be called by wrapper APIs
+.load_gs <- function(output,files){
+      dat.file<-file.path(output,files[grep(".dat$",files)])
+      rds.file<-file.path(output,files[grep(".rds$",files)])
+      
+      nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
+    #   browser()
+      if(length(dat.file)==0)
+        stop(".dat file missing in ",file)
+      if(length(dat.file)>1)
+        stop("multiple .dat files found in ",file)
+      if(length(rds.file)==0)
+        stop(".rds file missing in ",file)
+      if(length(rds.file)>1)
+        stop("multiple .rds files found in ",file)
+      
+      message("loading R object...")
+      gs<-readRDS(rds.file)
+      
+      message("loading tree object...")
+      gs@pointer<-.Call("R_loadGatingSet",dat.file)
+      #update the pointer in each gating hierarchy
+      for(i in 1:length(gs@set))
+      {
+        gs@set[[i]]@pointer<-gs@pointer
+      }
+      if(flowWorkspace:::isNcdf(gs[[1]]))
+      {
+        if(length(nc.file)==0)
+          stop(".nc file missing in ",file)
+        ncFlowSet(gs)@file<-nc.file
+        
+      }
+      message("Done")
+      list(gs=gs,files=c(dat.file,rds.file))
+}
+######################################
+##archive/unarchive to/from a tar file
+######################################
 archive<-function(G,file=tempfile()){
 	
 	filename<-basename(file)
 	dirname<-dirname(file)
 	filename<-sub(".tar$","",filename)
 #	browser()
-	if(!file.exists(dirname))
-		stop("Folder '",dirname, "' does not exist!")
-	rds.file<-tempfile(tmpdir=dirname,fileext=".rds")
-	dat.file<-tempfile(tmpdir=dirname,fileext=".dat")
-	toTar<-c(rds.file,dat.file)
-	#save ncdf file
-	if(flowWorkspace:::isNcdf(G[[1]]))
-	{	
-		message("saving ncdf...")
-		from<-ncFlowSet(G)@file
-		ncFile<-tempfile(tmpdir=dirname,fileext=".nc")
-		file.copy(from=from,to=ncFile)
-		toTar<-c(toTar,ncFile)
-	}
-		
-	message("saving tree object...")
-	#save external pointer object
-	.Call("R_saveGatingSet",G@pointer,dat.file)
-
-	message("saving R object...")
-	saveRDS(G,rds.file)
-
+    toTar<- .save_gs(G,path  = dirname)
+	
 	curDir<-getwd()
 	setwd(dirname)
 	system(paste("tar -cf ",basename(file),paste(basename(toTar),collapse=" ")))
@@ -50,45 +98,15 @@ unarchive<-function(file,path=tempdir()){
 	files<-untar(tarfile=file,list=TRUE)
 	
 #	message("extracting files...")
-	#output<-tempdir()
+	
 	output<-path
-#	system(paste("tar -xf ",file))
 	untar(tarfile=file,exdir=output)
-	
-	dat.file<-file.path(output,files[grep(".dat$",files)])
-	rds.file<-file.path(output,files[grep(".rds$",files)])
-	
-	nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
-#	browser()
-	if(length(dat.file)==0)
-		stop(".dat file missing in ",file)
-	if(length(dat.file)>1)
-		stop("multiple .dat files found in ",file)
-	if(length(rds.file)==0)
-		stop(".rds file missing in ",file)
-	if(length(rds.file)>1)
-		stop("multiple .rds files found in ",file)
-	
-	message("loading R object...")
-	gs<-readRDS(rds.file)
-
-	message("loading tree object...")
-	gs@pointer<-.Call("R_loadGatingSet",dat.file)
-	#update the pointer in each gating hierarchy
-	for(i in 1:length(gs@set))
-	{
-		gs@set[[i]]@pointer<-gs@pointer
-	}
-	if(flowWorkspace:::isNcdf(gs[[1]]))
-	{
-		if(length(nc.file)==0)
-			stop(".nc file missing in ",file)
-		ncFlowSet(gs)@file<-nc.file
-		
-	}
-	
+     
+    res <- .load_gs(output = path, files = files)
+    toRemove <- res$files
+    gs <- res$gs
 	#clean up the intermediate files
-	file.remove(c(dat.file,rds.file))
+	file.remove(toRemove)
 	message("Done")
 	return (gs)
 	
@@ -96,14 +114,13 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",...){
+.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",xmlParserOption,...){
 
 
 	message("calling c++ parser...")
-	
+#	browser()
 	time1<-Sys.time()
-	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,dMode=dMode)
+	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,xmlParserOption = xmlParserOption,dMode=dMode)
 #	time_cpp<<-time_cpp+(Sys.time()-time1)
 	message("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
@@ -121,7 +138,7 @@ unarchive<-function(file,path=tempdir()){
 			#get full path for each fcs and store in dataPath slot
 			#########################################################
 			##escape "illegal" characters
-			file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
+			file<-gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",file)))))))
 			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
 			
 			if(length(absPath)==0){
@@ -786,31 +803,38 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			#clone c structure
 			message("cloning tree structure...")
 			clone@pointer<-.Call("R_CloneGatingSet",x@pointer,getSamples(x))
+            
+              
+            #create new global data environment
+            gdata<-new.env(parent=emptyenv());
+#            browser()
 			#update the pointer in each gating hierarchy
 			for(i in 1:length(clone@set))
 			{
-				clone@set[[i]]@pointer<-clone@pointer
-				clone@set[[i]]@transformations<-list()#update trans slot since it contains environment and does not get deep copied automatically
+				this_gh <- clone@set[[i]]
+                this_gh@pointer<-clone@pointer
+                this_gh@transformations<-list()#update trans slot since it contains environment and does not get deep copied automatically
+            
+                #update data environment for each gh
+                nd<-this_gh@tree@nodeData
+                
+                nd@defaults$metadata<-new.env(hash=TRUE, parent=emptyenv())
+                nd@defaults$data<-new.env(hash=TRUE, parent=emptyenv())
+                
+                source_gh <- x@set[[i]] 
+                copyEnv(source_gh@tree@nodeData@defaults$data,nd@defaults$data)
+                
+                nd@defaults$data[["data"]]<-gdata
+                copyEnv(source_gh@tree@nodeData@defaults$metadata,nd@defaults$metadata)
+                
+                this_gh@tree@nodeData<-nd
+                
+                clone@set[[i]] <- this_gh
 			}
-			#create new global data environment
-			gdata<-new.env(parent=emptyenv());
-
-			#update data environment for each gh
-			for(i in 1:length(x)){
-				
-				nd<-clone[[i]]@tree@nodeData
-				
-				nd@defaults$metadata<-new.env(hash=TRUE, parent=emptyenv())
-				nd@defaults$data<-new.env(hash=TRUE, parent=emptyenv())
-				copyEnv(x[[i]]@tree@nodeData@defaults$data,nd@defaults$data)
-				
-				nd@defaults$data[["data"]]<-gdata
-				copyEnv(x[[i]]@tree@nodeData@defaults$metadata,nd@defaults$metadata)
-				
-				clone[[i]]@tree@nodeData<-nd
-				
-				
-			}
+			
+          
+			
+			
 
 			#deep copying flowSet/ncdfFlowSet
 			message("cloning flow data...")
@@ -891,29 +915,28 @@ setMethod("show","GatingSetInternal",function(object){
 setMethod("getSamples","GatingSetInternal",function(x){
       sampleNames(getData(x))
     })
-          
-setMethod("getData",signature(obj="GatingSetInternal"),function(obj,y=NULL,tsort=FALSE){
+setMethod("getData",signature(obj="GatingSetInternal",y="missing"),function(obj,y,tsort=FALSE){
+      
+        ncFlowSet(obj)
+    })
+setMethod("getData",signature(obj="GatingSetInternal",y="numeric"),function(obj,y,tsort=FALSE){
+      
+      this_node <- getNodes(obj[[1]])[y]
+      getData(obj,this_node)
+      
+    })
+
+setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(obj,y,tsort=FALSE){
 			
-			if(is.null(y))
-				ncFlowSet(obj)
-			else
-			{
-#				browser()
-				#fs<-callNextMethod(obj,y,tsort)
-				#update pData
-#				pData(fs)<-pData(obj)
-#				varM<-varMetadata(phenoData(fs))
-#				varM[-1,]<-rownames(varM)[-1]
-#				varMetadata(phenoData(fs))<-varM
-				
-				
-				#get raw data
-				fs<-getData(obj)
+            this_data <- getData(obj)                        
+            if(y == "root"){
+              this_data  
+            }else{
 				#subset by indices
 				indices<-lapply(obj,getIndices,y)
-				fs<-Subset(fs,indices)
+                this_data <- Subset(this_data,indices)
 							
-				fs	
+                this_data	
 			}
 			
 		})
@@ -952,7 +975,7 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
             
             #subsetting flowSet
 			fs<-ncFlowSet(clone)[i]
-            #deep copying flowSet/ncdfFlowSet
+            #deep copying flowSet/ncdfFlowSet R object(but still pointing to the same cdf)
             if(flowWorkspace:::isNcdf(clone[[1]]))
               fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
             else

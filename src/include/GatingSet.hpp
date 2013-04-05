@@ -34,8 +34,9 @@ typedef map<string,GatingHierarchy*> gh_map;
 class GatingSet{
 //	friend std::ostream & operator<<(std::ostream &os, const GatingSet &gs);
 	friend class boost::serialization::access;
-
-	trans_global_vec gTrans;
+	biexpTrans globalBiExpTrans; //default bi-exponential transformation functions
+	linTrans globalLinTrans;
+	trans_global_vec gTrans;//parsed from xml workspace
 	gh_map ghs;
 	ncdfFlow nc;
 	unsigned short dMode;//debug level to control print out
@@ -43,29 +44,49 @@ class GatingSet{
 
 private:
 	template<class Archive>
-	    void serialize(Archive &ar, const unsigned int version)
-	    {
+		void save(Archive & ar, const unsigned int version) const
+			{
 
 
 
-			ar.register_type(static_cast<biexpTrans *>(NULL));
-			ar.register_type(static_cast<logicleTrans *>(NULL));
-			ar.register_type(static_cast<logTrans *>(NULL));
-			ar.register_type(static_cast<linTrans *>(NULL));
-			ar & BOOST_SERIALIZATION_NVP(gTrans);
 
-//			ar & nc;
-			ar & BOOST_SERIALIZATION_NVP(ghs);
+				ar.register_type(static_cast<biexpTrans *>(NULL));
+				ar.register_type(static_cast<logicleTrans *>(NULL));
+				ar.register_type(static_cast<logTrans *>(NULL));
+				ar.register_type(static_cast<linTrans *>(NULL));
+				ar & BOOST_SERIALIZATION_NVP(globalBiExpTrans);
+				ar & BOOST_SERIALIZATION_NVP(globalLinTrans);
+				ar & BOOST_SERIALIZATION_NVP(gTrans);
+	//			ar & nc;
+				ar & BOOST_SERIALIZATION_NVP(ghs);
 
-	        ar & BOOST_SERIALIZATION_NVP(dMode);
+				ar & BOOST_SERIALIZATION_NVP(dMode);
 
-//	        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
-//			ar & ws;
+	//	        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
+	//			ar & ws;
 	    }
+	template<class Archive>
+		void load(Archive & ar, const unsigned int version) {
+				ar.register_type(static_cast<biexpTrans *>(NULL));
+				ar.register_type(static_cast<logicleTrans *>(NULL));
+				ar.register_type(static_cast<logTrans *>(NULL));
+				ar.register_type(static_cast<linTrans *>(NULL));
+				if(version>0){
+					ar & BOOST_SERIALIZATION_NVP(globalBiExpTrans);
+					ar & BOOST_SERIALIZATION_NVP(globalLinTrans);
+				}
+
+
+				ar & BOOST_SERIALIZATION_NVP(gTrans);
+				ar & BOOST_SERIALIZATION_NVP(ghs);
+				ar & BOOST_SERIALIZATION_NVP(dMode);
+
+		}
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	~GatingSet();
 	GatingSet(){ws=NULL;};
-	GatingSet(string,bool,unsigned short,unsigned short _dMode=1);
+	GatingSet(string,bool,unsigned short,int,unsigned short _dMode=1);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
 	GatingSet(vector<string>,unsigned short _dMode=1);
 	GatingHierarchy * getGatingHierarchy(string );
@@ -76,14 +97,17 @@ public:
 	vector<string> getSamples(void);
 	void attachData(string,vector<string>,vector<string>);
 	ncdfFlow getNcObj(){return nc;}
-	workspace const * getWorkspace(){return ws;}
-
+//	workspace const * getWorkspace(){return ws;}
+	void freeWorkspace();
 	GatingSet * clone_treeOnly(vector<string> samples);
 	GatingSet * clone_sstream(vector<string> samples);
 	GatingSet * clone_fstream(vector<string> samples);
 	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
 //	void add(gate * g,string parentName,string nodeName,unsigned short _dMode=1);
 };
+
+BOOST_CLASS_VERSION(GatingSet,1)
+
 void save_gs(const GatingSet &gs,string filename);
 void restore_gs(GatingSet &s, string filename);
 
