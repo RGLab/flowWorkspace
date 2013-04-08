@@ -19,13 +19,46 @@ Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 \description{
 Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 }
-\usage{
-\S4method{getData}{GatingHierarchy}(obj,y=NULL,tsort=FALSE)
-\S4method{getData}{GatingSet}(obj,y=NULL,tsort=FALSE)
-\S4method{getData}{graphNEL}(obj,y=NULL,tsort=FALSE)
-\S4method{getData}{GatingHierarchyInternal}(obj,y,tsort=FALSE)
-\S4method{getData}{GatingSetInternal}(obj,y,tsort=FALSE)
+\section{Methods}{
+\describe{
 
+\item{\code{signature(obj = "GatingHierarchy", y = "ANY")}}{
+%%  ~~describe this method here~~
+}
+
+\item{\code{signature(obj = "GatingHierarchyInternal", y = "character")}}{
+%%  ~~describe this method here~~
+}
+
+\item{\code{signature(obj = "GatingHierarchyInternal", y = "missing")}}{
+%%  ~~describe this method here~~
+}
+
+\item{\code{signature(obj = "GatingHierarchyInternal", y = "numeric")}}{
+%%  ~~describe this method here~~
+}
+
+\item{\code{signature(obj = "GatingSet", y = "ANY")}}{
+%%  ~~describe this method here~~
+}
+
+\item{\code{signature(obj = "GatingSetInternal", y = "character")}}{
+%%  ~~describe this method here~~
+}
+
+\item{\code{signature(obj = "GatingSetInternal", y = "missing")}}{
+%%  ~~describe this method here~~
+}
+
+
+\item{\code{signature(obj = "GatingSetInternal", y = "numeric")}}{
+%%  ~~describe this method here~~
+}
+
+\item{\code{signature(obj = "graphNEL", y = "ANY")}}{
+%%  ~~describe this method here~~
+}
+}
 }
 \arguments{
   \item{obj}{
