@@ -83,6 +83,8 @@ private:
 
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+	void freeWorkspace();//this is private because it is not supposed to be called anywhere other than destructor
 public:
 	~GatingSet();
 	GatingSet(){ws=NULL;};
@@ -98,7 +100,7 @@ public:
 	void attachData(string,vector<string>,vector<string>);
 	ncdfFlow getNcObj(){return nc;}
 //	workspace const * getWorkspace(){return ws;}
-	void freeWorkspace();
+
 	GatingSet * clone_treeOnly(vector<string> samples);
 	GatingSet * clone_sstream(vector<string> samples);
 	GatingSet * clone_fstream(vector<string> samples);

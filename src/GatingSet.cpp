@@ -54,7 +54,11 @@ wsSampleNode getSample(T ws,string sampleID){
 		return sample;
 }
 
-
+/*
+ * this should be called only in GatingSet destructor
+ * because it is shared by every GatingHiearchy class
+ * thus should not be deleted separately (otherwise it causes some segfault particulary on mac)
+ */
 void GatingSet::freeWorkspace(){
 	if(ws!=NULL)
 	{
