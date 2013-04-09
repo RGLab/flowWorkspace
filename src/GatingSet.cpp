@@ -290,7 +290,7 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 
 
 		GatingHierarchy *curGh=gh_template->clone(newTmap,&gTrans);
-		curGh->setNcPtr(&nc);//make sure to assign the global nc pointer to  GatingHierarchy
+//		curGh->setNcPtr(&nc);//make sure to assign the global nc pointer to  GatingHierarchy
 		curGh->dMode=_dMode;
 
 		ghs[curSampleName]=curGh;//add to the map
@@ -315,7 +315,7 @@ GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
 
 
 		GatingHierarchy *curGh=new GatingHierarchy();
-		curGh->setNcPtr(NULL);
+//		curGh->setNcPtr(NULL);
 		curGh->dMode=_dMode;
 
 		curGh->addRoot();//add default root
@@ -400,7 +400,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 			cout<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
 		wsSampleNode curSampleNode=getSample(ws,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&nc,&gTrans,&globalBiExpTrans,&globalLinTrans,dMode);
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&gTrans,&globalBiExpTrans,&globalLinTrans,dMode);
 
 		string sampleName=ws->getSampleName(curSampleNode);
 

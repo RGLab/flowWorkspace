@@ -254,7 +254,7 @@ BEGIN_RCPP
 	if(!recompute)
 	{
 		gh->extendGate();
-		gh->transforming(false);
+		gh->transforming();
 	}
 
 	gh->gating(nodeInd,recompute);

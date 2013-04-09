@@ -90,10 +90,8 @@ private:
 	populationTree tree;
 //	bool isGated;
 	bool isLoaded;
-	/*
-	 * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
-	 */
-	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
+
+//	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	workspace * thisWs;
 
 	trans_global_vec *gTrans;//pointer to the global trans stored in gs
@@ -145,12 +143,12 @@ public:
 	GatingHierarchy();
 	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,ncdfFlow *,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
 
 
-	flowData getData(VertexID nodeID);//from memory
-	flowData getData(string string,VertexID nodeID);//from cdf
-	void loadData(string);
+//	flowData getData(VertexID nodeID);//from memory
+//	flowData getData(string string,VertexID nodeID);//from cdf
+//	void loadData(string);
 	void loadData(const flowData &);
 
 	void unloadData();
@@ -159,7 +157,7 @@ public:
 	compensation getCompensation();
 	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
-	void transforming(bool);
+	void transforming();
 	void gating(VertexID,bool recompute=false);
 	void calgate(VertexID);
 	vector<bool> boolGating(VertexID);
@@ -176,7 +174,7 @@ public:
 	VertexID getDescendant(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
-	void setNcPtr(ncdfFlow *_nc){nc=_nc;}
+//	void setNcPtr(ncdfFlow *_nc){nc=_nc;}
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
 };

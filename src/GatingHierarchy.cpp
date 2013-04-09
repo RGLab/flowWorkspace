@@ -47,7 +47,7 @@ GatingHierarchy::GatingHierarchy()
 	isLoaded=false;
 //	isGated=false;
 	thisWs=NULL;
-	nc=NULL;
+//	nc=NULL;
 	gTrans=NULL;
 }
 
@@ -56,14 +56,14 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,ncdfFlow * _nc,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short _dMode)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short _dMode)
 {
 //	data=NULL;
 	dMode=_dMode;
 	isLoaded=false;
 //	isGated=false;
 	thisWs=ws;
-	nc=_nc;
+//	nc=_nc;
 	gTrans=_gTrans;
 //	cout<<"get root node"<<endl;
 
@@ -233,35 +233,35 @@ void GatingHierarchy::printLocalTrans(){
 /*
  * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
  */
-flowData GatingHierarchy::getData(string sampleName,VertexID nodeID)
-{
-//	cout<<"reading data from ncdf"<<endl;
-
-	flowData res=nc->readflowData(sampleName);
-	//subset the results by indices for non-root node
-	if(nodeID>0)
-	{
-		throw(domain_error("accessing data through non-root node is not supported yet!"));
-	}
-	else
-		return res;
-}
+//flowData GatingHierarchy::getData(string sampleName,VertexID nodeID)
+//{
+////	cout<<"reading data from ncdf"<<endl;
+//
+//	flowData res=nc->readflowData(sampleName);
+//	//subset the results by indices for non-root node
+//	if(nodeID>0)
+//	{
+//		throw(domain_error("accessing data through non-root node is not supported yet!"));
+//	}
+//	else
+//		return res;
+//}
 /*
  * in-memory version
  */
-flowData GatingHierarchy::getData(VertexID nodeID)
-{
-//	cout<<"reading data from ncdf"<<endl;
-
-	flowData res=fdata;
-	//subset the results by indices for non-root node
-	if(nodeID>0)
-	{
-		throw(domain_error("accessing data through non-root node is not supported yet!"));
-	}
-	else
-		return res;
-}
+//flowData GatingHierarchy::getData(VertexID nodeID)
+//{
+////	cout<<"reading data from ncdf"<<endl;
+//
+//	flowData res=fdata;
+//	//subset the results by indices for non-root node
+//	if(nodeID>0)
+//	{
+//		throw(domain_error("accessing data through non-root node is not supported yet!"));
+//	}
+//	else
+//		return res;
+//}
 /*
  * load data from ncdfFlow file
  * TODO:the memory for flowData was actually allocated by getData function, it may be safer to set flag within getData in future when
@@ -270,20 +270,20 @@ flowData GatingHierarchy::getData(VertexID nodeID)
 /*
  * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
  */
-void GatingHierarchy::loadData(string sampleName)
-{
-
-	if(!isLoaded)
-	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
-					cout <<"loading data from cdf.."<<endl;
-		fdata=getData(sampleName,0);
-		isLoaded=true;
-	}
-
-
-
-}
+//void GatingHierarchy::loadData(string sampleName)
+//{
+//
+//	if(!isLoaded)
+//	{
+//		if(dMode>=GATING_HIERARCHY_LEVEL)
+//					cout <<"loading data from cdf.."<<endl;
+//		fdata=getData(sampleName,0);
+//		isLoaded=true;
+//	}
+//
+//
+//
+//}
 /*
  * non-cdf version
 */
@@ -320,7 +320,7 @@ void GatingHierarchy::unloadData()
 /*
  * transform the data
  */
-void GatingHierarchy::transforming(bool updateCDF)
+void GatingHierarchy::transforming()
 {
 	if(dMode>=GATING_HIERARCHY_LEVEL)
 		cout <<"start transforming data :"<<fdata.getSampleID()<<endl;
@@ -365,12 +365,12 @@ void GatingHierarchy::transforming(bool updateCDF)
 	/*
 	 * write the entire slice back to cdf
 	 */
-	if(updateCDF)
-	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"saving transformed data to CDF..."<<endl;
-		nc->writeflowData(fdata);
-	}
+//	if(updateCDF)
+//	{
+//		if(dMode>=GATING_HIERARCHY_LEVEL)
+//			cout<<"saving transformed data to CDF..."<<endl;
+//		nc->writeflowData(fdata);
+//	}
 }
 /*
  * extend gates if necessary
