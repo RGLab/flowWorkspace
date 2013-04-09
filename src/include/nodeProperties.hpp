@@ -34,7 +34,7 @@ private:
 	boost::scoped_ptr<POPINDICES> indices;
 	POPSTATS fjStats,fcStats;
 public:
-	bool dMode;
+	unsigned short dMode;
 private:
 	template<class Archive>
 			    void serialize(Archive &ar, const unsigned int version)

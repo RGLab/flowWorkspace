@@ -88,7 +88,7 @@ private:
 	 	 	 	 	  */
 	flowData fdata;
 	populationTree tree;
-	bool isGated;
+//	bool isGated;
 	bool isLoaded;
 	/*
 	 * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
@@ -107,7 +107,7 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(comp);
 				ar & BOOST_SERIALIZATION_NVP(fdata);
 				ar & BOOST_SERIALIZATION_NVP(tree);
-		        ar & BOOST_SERIALIZATION_NVP(isGated);
+//		        ar & BOOST_SERIALIZATION_NVP(isGated);
 		        ar & BOOST_SERIALIZATION_NVP(isLoaded);
 //		        ar & nc;
 

@@ -45,6 +45,7 @@ GatingHierarchy::GatingHierarchy()
 {
 	dMode=1;
 	isLoaded=false;
+//	isGated=false;
 	thisWs=NULL;
 	nc=NULL;
 	gTrans=NULL;
@@ -60,6 +61,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 //	data=NULL;
 	dMode=_dMode;
 	isLoaded=false;
+//	isGated=false;
 	thisWs=ws;
 	nc=_nc;
 	gTrans=_gTrans;
