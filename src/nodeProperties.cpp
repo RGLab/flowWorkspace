@@ -65,21 +65,18 @@ vector<bool> nodeProperties::getIndices(){
 		}
 
 void nodeProperties::setIndices(unsigned _nEvent){
-
-		ROOTINDICES *ind=new ROOTINDICES(_nEvent);
-		indices.reset(ind);
+		indices.reset(new ROOTINDICES(_nEvent));
 }
 void nodeProperties::setIndices(vector<bool> _ind){
 	unsigned nEvents=count(_ind.begin(),_ind.end(),true);
 	unsigned nSizeInt=sizeof(unsigned)*nEvents;
 	unsigned nSizeBool=_ind.size()/8;
 
-	POPINDICES * ind;
 	if(nSizeInt<nSizeBool)
-		ind=new INTINDICES(_ind);
+		indices.reset(new INTINDICES(_ind));
 	else
-		ind=new BOOLINDICES(_ind);
-	indices.reset(ind);
+		indices.reset(new BOOLINDICES(_ind));
+
 }
 /*
  * potentially it is step can be done within the same loop in gating
