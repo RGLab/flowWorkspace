@@ -48,7 +48,7 @@ GatingHierarchy::GatingHierarchy()
 //	isGated=false;
 	thisWs=NULL;
 //	nc=NULL;
-	gTrans=NULL;
+//	gTrans=NULL;
 }
 
 
@@ -64,7 +64,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 //	isGated=false;
 	thisWs=ws;
 //	nc=_nc;
-	gTrans=_gTrans;
+//	gTrans=_gTrans;
 //	cout<<"get root node"<<endl;
 
 	wsRootNode root=thisWs->getRoot(curSampleNode);
@@ -81,7 +81,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing transformation..."<<endl;
-		trans=thisWs->getTransformation(root,comp,transFlag,gTrans,_globalBiExpTrans,_globalLinTrans);
+		trans=thisWs->getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans);
 	}
 	if(dMode>=POPULATION_LEVEL)
 		cout<<endl<<"parsing populations..."<<endl;
@@ -938,7 +938,7 @@ GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_v
 
 
 	res->trans.setTransMap(_trans);
-	res->gTrans=_gTrans;
+//	res->gTrans=_gTrans;
 	res->comp=comp;
 
 	/*

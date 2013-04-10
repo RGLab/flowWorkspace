@@ -94,7 +94,7 @@ private:
 //	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
 	workspace * thisWs;
 
-	trans_global_vec *gTrans;//pointer to the global trans stored in gs
+//	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 	PARAM_VEC transFlag;
 	trans_local trans;
 
@@ -116,7 +116,7 @@ private:
 				ar.register_type(static_cast<logicleTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
-		        ar & BOOST_SERIALIZATION_NVP(gTrans);
+//		        ar & BOOST_SERIALIZATION_NVP(gTrans);
 
 		        ar & BOOST_SERIALIZATION_NVP(transFlag);
 
