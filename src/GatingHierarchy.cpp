@@ -46,7 +46,7 @@ GatingHierarchy::GatingHierarchy()
 	dMode=1;
 	isLoaded=false;
 //	isGated=false;
-	thisWs=NULL;
+//	thisWs=NULL;
 //	nc=NULL;
 //	gTrans=NULL;
 }
@@ -62,31 +62,31 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool 
 	dMode=_dMode;
 	isLoaded=false;
 //	isGated=false;
-	thisWs=ws;
+//	thisWs=ws;
 //	nc=_nc;
 //	gTrans=_gTrans;
 //	cout<<"get root node"<<endl;
 
-	wsRootNode root=thisWs->getRoot(curSampleNode);
+	wsRootNode root=ws->getRoot(curSampleNode);
 	if(isParseGate)
 	{
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing compensation..."<<endl;
-		comp=thisWs->getCompensation(curSampleNode);
+		comp=ws->getCompensation(curSampleNode);
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing trans flags..."<<endl;
-		transFlag=thisWs->getTransFlag(curSampleNode);
+		transFlag=ws->getTransFlag(curSampleNode);
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing transformation..."<<endl;
-		trans=thisWs->getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans);
+		trans=ws->getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans);
 	}
 	if(dMode>=POPULATION_LEVEL)
 		cout<<endl<<"parsing populations..."<<endl;
-	VertexID pVerID=addRoot(thisWs->to_popNode(root));
-	addPopulation(pVerID,&root,isParseGate);
+	VertexID pVerID=addRoot(ws->to_popNode(root));
+	addPopulation(pVerID,ws,&root,isParseGate);
 //	if(isParseGate)
 //		gating();
 
@@ -127,11 +127,11 @@ VertexID GatingHierarchy::addRoot(){
  * we still can add it as it is because gating path is stored as population names instead of actual VertexID.
  * Thus we will deal with the the boolean gate in the actual gating process
  */
-void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool isParseGate)
+void GatingHierarchy::addPopulation(VertexID parentID,workspace * ws,wsNode * parentNode,bool isParseGate)
 {
 
 
-	wsPopNodeSet children =thisWs->getSubPop(parentNode);
+	wsPopNodeSet children =ws->getSubPop(parentNode);
 	wsPopNodeSet::iterator it;
 		for(it=children.begin();it!=children.end();it++)
 		{
@@ -139,7 +139,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 			VertexID curChildID = boost::add_vertex(tree);
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
-			nodeProperties *curChild=thisWs->to_popNode(curChildNode,isParseGate);
+			nodeProperties *curChild=ws->to_popNode(curChildNode,isParseGate);
 			if(dMode>=POPULATION_LEVEL)
 				cout<<"node created:"<<curChild->getName()<<endl;
 			//attach the populationNode to the boost node as property
@@ -149,7 +149,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,wsNode * parentNode,bool i
 			//update the node map for the easy query by pop name
 
 			//recursively add its descendants
-			addPopulation(curChildID,&curChildNode,isParseGate);
+			addPopulation(curChildID,ws,&curChildNode,isParseGate);
 		}
 
 

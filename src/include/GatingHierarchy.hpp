@@ -92,7 +92,7 @@ private:
 	bool isLoaded;
 
 //	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
-	workspace * thisWs;
+//	workspace * thisWs;
 
 //	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 	PARAM_VEC transFlag;
@@ -137,7 +137,7 @@ public:
 	void addChild(VertexID parent,VertexID child);
 	VertexID addGate(gate* g,VertexID parentID,string popName);
 	void removeNode(VertexID nodeID);
-	void addPopulation(VertexID parentID,wsNode * parentNode,bool isGating);
+	void addPopulation(VertexID parentID,workspace * ws,wsNode * parentNode,bool isGating);
 	VertexID addRoot(nodeProperties* rootNode);
 	VertexID addRoot();
 	GatingHierarchy();
