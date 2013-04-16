@@ -105,7 +105,12 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(comp);
 				ar & BOOST_SERIALIZATION_NVP(fdata);
 				ar & BOOST_SERIALIZATION_NVP(tree);
-//		        ar & BOOST_SERIALIZATION_NVP(isGated);
+				if(version==0){
+					bool isGated;
+					ar & BOOST_SERIALIZATION_NVP(isGated);
+				}
+
+
 		        ar & BOOST_SERIALIZATION_NVP(isLoaded);
 //		        ar & nc;
 
@@ -178,7 +183,7 @@ public:
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
 };
-
+BOOST_CLASS_VERSION(GatingHierarchy,1)
 
 
 #endif /* GATINGHIERARCHY_HPP_ */
