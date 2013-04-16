@@ -55,7 +55,14 @@ private:
 					ar & BOOST_SERIALIZATION_NVP(indices);
 			        ar & BOOST_SERIALIZATION_NVP(fjStats);
 			        ar & BOOST_SERIALIZATION_NVP(fcStats);
-			        ar & BOOST_SERIALIZATION_NVP(dMode);
+			        if(version==0){
+			        	bool _dMode;
+			        	ar & BOOST_SERIALIZATION_NVP(_dMode);
+			        }else
+			        {
+			        	ar & BOOST_SERIALIZATION_NVP(dMode);
+			        }
+
 			    }
 public:
 	nodeProperties();
@@ -78,6 +85,6 @@ public:
 	nodeProperties * clone(bool gateResult=false);
 
 };
-
+BOOST_CLASS_VERSION(nodeProperties,1)
 
 #endif /* NODEPROPERTIES_HPP_ */
