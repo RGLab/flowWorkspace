@@ -1006,14 +1006,14 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 		})
 		
 		
-setMethod("rbind2",c("GatingSetInternal","GatingSetInternal"),function(x,y,...){
-			#up to user to make sure x,y have the same gating hierarchy
-#			if(!haveSameGatingHierarchy(x,y)){
-#				stop("x and y must have the same gating hierarchy for each sample")
-#			}
-			
-			rbind2(GatingSetList(list(x,y)),...)		
-		})
+#setMethod("rbind2",c("GatingSetInternal","GatingSetInternal"),function(x,y,...){
+#			#up to user to make sure x,y have the same gating hierarchy
+##			if(!haveSameGatingHierarchy(x,y)){
+##				stop("x and y must have the same gating hierarchy for each sample")
+##			}
+#			
+#			rbind2(GatingSetList(list(x,y)),...)		
+#		})
 
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE){
 			lapply(obj,function(x)getGate(x,y))
