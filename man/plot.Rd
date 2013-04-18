@@ -9,7 +9,7 @@
 Plot a tree representing the GatingHierarchy
 }
 \usage{
-\S4method{plot}{GatingHierarchy,missing}(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...)
+\S4method{plot}{GatingHierarchy,missing}(x,y,...)
 }
 \arguments{
   \item{x}{
@@ -18,33 +18,37 @@ Plot a tree representing the GatingHierarchy
 	\item{y}{
 	missing.
 	}
-	\item{layout}{
-	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
-	}
-	\item{width}{
-	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+	\item{...}{ other arguments:
 	
+		layout:
+		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+		
+		width:
+		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+		
+		
+		height
+		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+		
+		fontsize
+		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+		
+		labelfontsize
+		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+		
+		
+		fixedsize
+		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+		
+		
+		boolean
+		\code{TRUE|FALSE} logical specifying whether to plot boolean gate nodes. Defaults to FALSE.
+		
+		...
+		Additional arguments passed to plot in Rgraphviz
+		
 	}
-	\item{height}{
-	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
-	}
-	\item{fontsize}{
-	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
-	}
-	\item{labelfontsize}{
-	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
 	
-	}
-	\item{fixedsize}{
-	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
-	
-	}
-	\item{boolean}{
-	\code{TRUE|FALSE} logical specifying whether to plot boolean gate nodes. Defaults to FALSE.
-	}
-	\item{...}{
-	Additional arguments passed to plot in Rgraphviz
-	}
 }
 \details{
 	Plot a GatingHierarchy object using the Rgraphviz plot function.

@@ -24,41 +24,42 @@ setMethod("isNcdf",c("GatingHierarchy"),function(x){
   close(sf)
   g
 }    
-setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
-			
-#			browser()
-			g <- .getGraph(x)
-			
-#			browser()
-			##remove bool gates if necessary
-			if(!boolean)
-			{
-				nodes<-nodeData(g,attr="isBool")
-				for(i in 1:length(nodes))
-				{
-					if(as.logical(as.integer(nodes[[i]])))
-						g <- removeNode(names(nodes[i]), g)
-				}
-			}
-			nAttrs <- list()
-			nAttrs$label<-unlist(nodeData(g,attr="label"))
-#			browser()
-			options("warn"=-1)
-			lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
-										,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
-													,node=list(fixedsize=FALSE
-                                                                ,fillcolor="gray"
-																,fontsize=fontsize
-																,shape="ellipse"
-																)
-													)
-										)
-			renderGraph(lay)
-			#plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
-			options("warn"=0)
-			
-			
-})
+.plotGatingTree<-function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE){
+#  browser()
+  ##remove bool gates if necessary
+  if(!boolean)
+  {
+    nodes<-nodeData(g,attr="isBool")
+    for(i in 1:length(nodes))
+    {
+      if(as.logical(as.integer(nodes[[i]])))
+        g <- removeNode(names(nodes[i]), g)
+    }
+  }
+  nAttrs <- list()
+  nAttrs$label<-unlist(nodeData(g,attr="label"))
+#           browser()
+  options("warn"=-1)
+  lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
+      ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
+          ,node=list(fixedsize=FALSE
+              ,fillcolor="gray"
+              ,fontsize=fontsize
+              ,shape="ellipse"
+          )
+      )
+  )
+  renderGraph(lay)
+  #plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
+  options("warn"=0)
+}
+setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,...){
+      
+#           browser()
+      g <- .getGraph(x)
+      .plotGatingTree(g,...)
+      
+    })
 
 setMethod("show","GatingHierarchyInternal",function(object){
 			cat("\tFCS File: ",getSample(object),"\n");

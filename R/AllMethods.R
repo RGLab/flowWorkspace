@@ -1198,21 +1198,24 @@ setNcdf<-function(x,y){
 	return(x);
 }
 
-setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
-	if(!boolean){	
-			sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",envir=x)),use.names=FALSE))],x@tree)
-	}else{
-		sub<-x@tree
-	}
-		nn<-sapply(nodes(sub),function(x)strsplit(x,"\\.")[[1]][2])
-		nn[1]<-nodes(sub)[1]
-		natr<-list();
-		natr$label<-nn;
-		options("warn"=-1)
-		lay<-Rgraphviz::layoutGraph(sub,layoutType=layout,nodeAttrs=natr,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle")))
-		renderGraph(lay)
-		#plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
-		options("warn"=0)
+.plotgh_old<-function(x,y,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,...){
+  if(!boolean){ 
+    sub<-subGraph(x@nodes[which(!unlist(lapply(nodeData(x@tree,x@nodes,"metadata"),function(x)get("isBooleanGate",envir=x)),use.names=FALSE))],x@tree)
+  }else{
+    sub<-x@tree
+  }
+  nn<-sapply(nodes(sub),function(x)strsplit(x,"\\.")[[1]][2])
+  nn[1]<-nodes(sub)[1]
+  natr<-list();
+  natr$label<-nn;
+  options("warn"=-1)
+  lay<-Rgraphviz::layoutGraph(sub,layoutType=layout,nodeAttrs=natr,attrs=list(graph=list(rankdir="LR",page=c(8.5,11)),node=list(fixedsize=FALSE,fontsize=fontsize,shape="rectangle")))
+  renderGraph(lay)
+  #plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
+  options("warn"=0)
+}
+setMethod("plot",signature("GatingHierarchy","missing"),function(x,y,...){
+      .plotgh_old(x=x,y=y,...)	
 })
 
 #setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,add=FALSE,border="red",tsort=FALSE,smooth=FALSE,fast=FALSE,...){
