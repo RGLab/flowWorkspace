@@ -132,16 +132,12 @@ setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),funct
 		})
 setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 #			browser()
-			ind<-match(y,getNodes(obj))
-			if(is.na(ind)||length(ind)==0)
-				stop("Node:", y," not found!")
+			ind<-.getNodeInd(obj,y)
 			pind<-getParent(obj,ind)
 			getNodes(obj)[pind]
 		})
 setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE){
-			ind<-match(y,getNodes(obj))
-			if(is.na(ind)||length(ind)==0)
-				stop("Node:", y," not found!")
+			ind<-.getNodeInd(obj,y)
 			cind<-getChildren(obj,ind)
 			getNodes(obj)[cind]
 })
@@ -155,9 +151,7 @@ setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),functio
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 			
-			ind<-match(y,getNodes(x))
-			if(is.na(ind)||length(ind)==0)
-				stop("Node:", y," not found!")
+            ind<-.getNodeInd(x,y)
 			stats<-.getPopStat(x,ind)
 			if(flowJo)
 				unname(stats$flowJo["proportion"])
@@ -168,9 +162,8 @@ setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),functio
 			
 		})
 setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),function(x,y,flowJo=TRUE){
-			ind<-match(y,getNodes(x))
-			if(is.na(ind)||length(ind)==0)
-				stop("Node:", y," not found!")
+            ind<-.getNodeInd(x,y)
+      
 			stats<-.getPopStat(x,ind)
 			if(flowJo)
 				unname(stats$flowJo["count"])	
@@ -269,9 +262,7 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 			
 #			browser()
-			ind<-match(y,getNodes(obj))
-			if(is.na(ind)||length(ind)==0)
-				stop("Node:", y," not found!")
+            ind<-.getNodeInd(obj,y)
 			g<-getGate(obj,ind)
 			g
 			
@@ -318,13 +309,17 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 				
 			}
 		})
-
+        
+.getNodeInd<-function(obj,y,...){
+  ind<-match(y,getNodes(obj))
+  if(is.na(ind)||length(ind)==0)
+    stop("Node:", y," not found!")
+  return (ind)
+}
 setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
-			ind<-match(y,getNodes(obj))
-			if(is.na(ind)||length(ind)==0)
-				stop("Node:", y," not found!")
+			
 #			browser()
-			getIndices(obj,ind)
+			getIndices(obj,.getNodeInd(obj,y))
 			
 		})
 setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y){
@@ -530,9 +525,7 @@ setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 #TODO: to inverse transform the range in order to display the raw scale
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
 			
-			ind<-match(y,getNodes(x))
-			if(is.na(ind)||length(ind)==0)
-				stop("Node:", y," not found!")
+            ind <- .getNodeInd(x,y)
 			plotGate(x,ind,...)
 			
 })
@@ -877,3 +870,15 @@ panel.xyplot.flowFrame.booleanGate<-function(x,y
 	
 	
 }
+
+setMethod("setNode"
+        ,signature(x="GatingHierarchy",y="numeric",value="character")
+        ,function(x,y,value,...){
+      
+    })
+
+setMethod("setNode"
+    ,signature(x="GatingHierarchy",y="character",value="character")
+    ,function(x,y,value,...){
+      
+    })

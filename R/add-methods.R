@@ -56,9 +56,7 @@ setMethod("add",
 		if(is.numeric(parent))
 			pid<-parent
 		else
-			pid<-match(parent,getNodes(gh))
-		if(is.na(pid)||length(pid)==0)
-			stop(parent," not found in gating tree")
+			pid<-.getNodeInd(gh,parent)
 	}
 	filterObject$negated<-negated
 #	browser()	
@@ -239,9 +237,8 @@ setMethod("Rm",
 			childrenNodes<-getChildren(envir,symbol)
 			lapply(childrenNodes,function(child)Rm(child,envir))
 			
-			nid<-match(symbol,getNodes(envir))
-			if(length(nid)==0)
-				stop(symbol," not found in gating tree")
+            
+			nid<-.getNodeInd(envir,symbol)
 			.Call("R_removeNode",envir@pointer,getSample(envir),nid-1)
 		})
 #construct a gatingset with empty trees (just root node) 

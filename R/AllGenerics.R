@@ -10,6 +10,9 @@ setGeneric("parseWorkspace",function(obj,...){
 setGeneric("getNodes",function(x,...){
 	standardGeneric("getNodes");
 })
+setGeneric("setNode",function(x,y,value,...){
+      standardGeneric("setNode"); 
+    })
 setGeneric("flowWorkspace2flowCore",function(obj,...){
 	standardGeneric("flowWorkspace2flowCore");
 })
@@ -61,6 +64,10 @@ setGeneric("getData",function(obj,y,...){
 setGeneric("getGate",function(obj,y,...){
 	standardGeneric("getGate");
 })
+setGeneric("setGate",function(obj,y,value,...){
+      standardGeneric("setGate");
+ })
+
 setGeneric("getParent",function(obj,y,...){
 	standardGeneric("getParent")
 })
@@ -120,4 +127,6 @@ setGeneric("exportAsFlowJoXML", function(obj, ...){
 })
 
 setGeneric("setData",function(this,value)standardGeneric("setData"))
+
+
 
