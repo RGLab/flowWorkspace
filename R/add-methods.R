@@ -31,6 +31,7 @@ setMethod("add",
 		nodeID
 			
 		})
+    
 setMethod("add",
 		signature=c("GatingSetInternal", "filter"),
 		definition=function(wf, action, ...)
@@ -63,90 +64,17 @@ setMethod("add",
 	nodeID<-.Call("R_addGate",gh@pointer,getSample(gh),filterObject,as.integer(pid-1),name)
 	nodeID+1
 }
+
+
 setMethod("add",
-		signature=c("GatingHierarchyInternal", "rectangleGate"),
+		signature=c("GatingHierarchyInternal", "filter"),
 		definition=function(wf, action,... )
 		{
-#			browser()
 			
-			params<-parameters(action)
-			
-			if(length(params)==1)
-			{
-				#convert to rangeGate
-				filterObject<-list(type=as.integer(2)
-									,params=params
-									,range=c(action@min,action@max)	
-									,filterId=action@filterId
-									)
-				
-			}else
-			{
-				#convert to polygon gate
-				mat<-rbind(action@min,action@max)
-				filterObject<-list(type=as.integer(5)
-						,params=params
-						,boundaries=mat
-						,filterId=action@filterId)	
-			}
-			
-			.addGate(wf,filterObject,...)
-				
-			
+			.addGate(wf,filterObject(action),...)
 		})
 
-setMethod("add",
-		signature=c("GatingHierarchyInternal", "polygonGate"),
-		definition=function(wf, action, ...)
-		{
 
-			
-#			browser()
-			params<-parameters(action)
-			
-			filterObject<-list(type=as.integer(1)
-								,params=params
-								,boundaries=action@boundaries
-								,filterId=action@filterId)	
-		
-			.addGate(wf,filterObject,...)
-		})
-setMethod("add",
-		signature=c("GatingHierarchyInternal", "booleanFilter"),
-		definition=function(wf, action, ...)
-		{
-			
-			
-#			browser()
-			expr<-action@deparse
-			pattern<-"&|\\|"
-			#get the position of logical operators
-			op_ind<-unlist(gregexpr(pattern=pattern,expr))
-			#extract these operators
-			op<-trimWhiteSpace(substring(expr,op_ind,op_ind))
-			##append & for the first node element(as C parser convention requires)
-			op<-c("&",op)
-			#split into node elements by operators
-			refs<-unlist(strsplit(expr,split=pattern)) 
-			refs<-trimWhiteSpace(refs)
-			#extract is not operator
-			isNot<-as.logical(regexpr("!",refs)+1) 
-			#strip is not operator from node elements
-			refs<-gsub("!","",refs)
-			
-			nNodes<-length(refs)
-			if(length(isNot)!=nNodes)
-				stop("the number of ! operators are inconsistent with nodes!")
-			if(length(op)!=nNodes)
-				stop("the number of logical operators are inconsistent with nodes!")
-			filterObject<-list(type=as.integer(3)
-								,refs=refs
-								,isNot=isNot
-								,op=op
-								,filterId=action@filterId)	
-#						browser()
-			.addGate(wf,filterObject,...)
-		})
 setMethod("add",
 		signature=c("GatingHierarchyInternal", "quadGate"),
 		definition=function(wf, action,names=NULL,... )
@@ -241,44 +169,4 @@ setMethod("Rm",
 			nid<-.getNodeInd(envir,symbol)
 			.Call("R_removeNode",envir@pointer,getSample(envir),nid-1)
 		})
-#construct a gatingset with empty trees (just root node) 
-setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
-			
-			fs_clone<-flowCore:::copyFlowSet(x)
-			samples<-sampleNames(fs_clone)
-			G<-new("GatingSetInternal")
-			G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
-			
-			
-			globalDataEnv<-new.env(parent=emptyenv())
-			
-			assign("ncfs",fs_clone,globalDataEnv)
-#			nFiles<-length(samples)
-#			set<-vector(mode="list",nFiles)	
-#
-#			for(i in 1:nFiles)
-#			{
-#				file<-files[i]		
-#				sampleName<-samples[i]
-#				gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
-##			browser()
-#				localDataEnv<-nodeDataDefaults(gh@tree,"data")
-#				localDataEnv$data<-globalDataEnv
-#				
-#				gh@flag<-FALSE #set gate flag
-#				set[[i]]<-gh
-#			}
-#			names(set)<-samples
-#			G@set<-set
-						
-			G@set<-sapply(samples,function(sampleName){
-						gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
-						localDataEnv<-nodeDataDefaults(gh@tree,"data")
-						localDataEnv$data<-globalDataEnv
-						gh@flag<-TRUE #set gate flag
-						gh
-					})
-			recompute(G)
-			G
-			
-		})
+

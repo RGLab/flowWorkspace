@@ -3,15 +3,24 @@
 \alias{getNodes-methods}
 \alias{getNodes,GatingHierarchy-method}
 \alias{getNodes,GatingHierarchyInternal-method}
+\alias{setNode}
 \title{
-Get the names of all nodes in a gating hierarchy
+Get the names of all nodes in a gating hierarchy.
+Update the name of one node in a gating hierarchy/GatingSet.
 }
 \description{
-Returns a character vector of names of the nodes (populations) in the \code{GatingHierarchy}.
+\code{getNodes} returns a character vector of names of the nodes (populations) in the \code{GatingHierarchy}.
+\code{setNode} update the name of one node in a gating hierarchy/GatingSet.
+
 }
 \usage{
 \S4method{getNodes}{GatingHierarchy}(x,y=NULL,tsort=FALSE,isPath=FALSE,...)
 \S4method{getNodes}{GatingHierarchyInternal}(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,...)
+
+\S4method{setNode}{"GatingHierarchy","numeric","character"}(x,y,value,...)
+\S4method{setNode}{"GatingHierarchy","character","character"}(x,y,value,...)
+\S4method{setNode}{"GatingSet","numeric","character"}(x,y,value,...)
+\S4method{setNode}{"GatingSet","character","character"}(x,y,value,...)
 }
 \arguments{
   \item{x}{
@@ -32,9 +41,14 @@ A \code{character} the name of the node of interest.  Or, a \code{numeric} index
 	\item{...}{
 	Additional arguments.
 	}
+\item{value}{
+A \code{character} the name of the node.
+}
+	
 }
 \value{
-a \code{character} vector of node/population names, ordered appropriately.
+getNodes returns a \code{character} vector of node/population names, ordered appropriately.
+setNodes update the node name without returning any thing.
 }
 \references{
 \url{http://www.rglab.org/}
@@ -51,6 +65,7 @@ Greg Finak \email{gfinak@fhcrc.org}
 	#G is a gating hierarchy
 	getNodes(G[[1]])#return node names
 	getNodes(G[[1]],isPath=TRUE)#return the full path
+	setNode(G,"L","lymph")
 }
 }
 \keyword{ manip }

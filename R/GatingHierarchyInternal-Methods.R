@@ -874,11 +874,12 @@ panel.xyplot.flowFrame.booleanGate<-function(x,y
 setMethod("setNode"
         ,signature(x="GatingHierarchy",y="numeric",value="character")
         ,function(x,y,value,...){
-      
+        .Call("R_setNodeName",x@pointer,getSample(x),as.integer(y-1),value)
     })
 
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="character")
     ,function(x,y,value,...){
-      
+      setNode(x,.getNodeInd(x,y),value)
     })
+

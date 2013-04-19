@@ -1018,3 +1018,16 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE){
 			lapply(obj,function(x)getGate(x,y))
 		})
+
+setMethod("setNode"
+    ,signature(x="GatingSet",y="numeric",value="character")
+    ,function(x,y,value,...){
+      lapply(x,function(gh){
+            setNode(gh,y,value,...)
+          })
+    })
+setMethod("setNode"
+    ,signature(x="GatingSet",y="character",value="character")
+    ,function(x,y,value,...){
+      setNode(x,.getNodeInd(x[[1]],y),value)
+    })

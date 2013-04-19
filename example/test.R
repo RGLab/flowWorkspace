@@ -57,7 +57,7 @@ GT<-parseWorkspace(ws,name=2
 #					,includeGates=T
                     ,subset=1
 #					,subset=c("517614.fcs")
-					,isNcdf=T
+#					,isNcdf=T
 					,useInternal=T
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
 					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
@@ -80,7 +80,17 @@ gg <- load_gs(path=tmp2)
 list.files(tmp2)
 
 Sys.time()-time1
-plotGate(GT[[1]])
+gh<-GT[[1]]
+getParent(gh,5)
+getParent(gh,"Lv")
+getChildren(gh,5)
+getChildren(gh,"Lv")
+getProp(gh,"Lv")
+getTotal(gh,"Lv")
+getGate(gh,"Lv")
+length(which(getIndices(gh,"Lv")))
+plotGate(gh,"Lv")
+
 getData(GT)
 getSamples(GT)
 pData(GT[c("CytoTrol_CytoTrol_1.fcs","CytoTrol_CytoTrol_2.fcs")])

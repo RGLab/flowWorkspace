@@ -3,10 +3,12 @@
 \alias{add,GatingSet,list-method}
 \alias{add,GatingSetInternal,filterList-method}
 \alias{add,GatingSetInternal,filter-method}
-\alias{add,GatingHierarchyInternal,rectangleGate-method}
-\alias{add,GatingHierarchyInternal,polygonGate-method}
-\alias{add,GatingHierarchyInternal,booleanFilter-method}
 \alias{add,GatingHierarchyInternal,quadGate-method}
+\alias{setGate}
+\alias{setGate,GatingSetInternal,ANY,list-method}
+\alias{setGate,GatingSetInternal,ANY,filterList-method}
+\alias{setGate,GatingHierarchyInternal,numeric,filter-method}
+\alias{setGate,GatingHierarchyInternal,character,filter-method}
 \alias{Rm}
 \alias{Rm,character,GatingSetInternal,character-method}
 \alias{Rm,character,GatingHierarchyInternal,character-method}
@@ -21,19 +23,23 @@ Create a GatingSet and add/remove the flowCore gate(or population) to/from a Gat
 \description{
 \code{GatingSet} method creates a gatingset from a flowSet with the ungated data as the root node.
 \code{add} method add the flowCore gate to a GatingHierarchy/GatingSet.
+\code{setGate} method update the gate of one population node in GatingHierarchy/GatingSet.
+
 \code{Rm} method Remove the population node from a GatingHierarchy/GatingSet. 
 They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \code{flowCore} package. 
 \code{recompute} method does the actual gating after the gate is added,i.e. calculating the event indices according to the gate definition.   
 }
 \usage{
-
-\S4method{add}{GatingHierarchyInternal,rectangleGate}(wf, action,...)
-\S4method{add}{GatingHierarchyInternal,polygonGate}(wf, action,...)
-\S4method{add}{GatingHierarchyInternal,booleanFilter}(wf, action,...)
 \S4method{add}{GatingHierarchyInternal,quadGate}(wf, action, names = NULL,...)
 \S4method{add}{GatingSetInternal,filter}(wf, action,...)
 \S4method{add}{GatingSetInternal,filterList}(wf, action,...)
 \S4method{add}{GatingSet,list}(wf, action,...)
+
+\S4method{setGate}{GatingHierarchyInternal,numeric,filter}(obj, y, value , negated = FALSE,...)
+\S4method{setGate}{GatingHierarchyInternal,character,filter}(obj, y, value , ...)
+\S4method{setGate}{GatingSetInternal,ANY,filterList}(obj, y, value,...)
+\S4method{setGate}{GatingSetInternal,ANY,list}(obj, y, value,...)
+
 
 \S4method{Rm}{character,GatingHierarchyInternal,character}(symbol,envir,subSymbol,...)
 \S4method{Rm}{character,GatingSetInternal,character}(symbol,envir,subSymbol,...)

@@ -64,3 +64,44 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
 })
 
 
+#construct a gatingset with empty trees (just root node) 
+setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
+      
+      fs_clone<-flowCore:::copyFlowSet(x)
+      samples<-sampleNames(fs_clone)
+      G<-new("GatingSetInternal")
+      G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
+      
+      
+      globalDataEnv<-new.env(parent=emptyenv())
+      
+      assign("ncfs",fs_clone,globalDataEnv)
+#           nFiles<-length(samples)
+#           set<-vector(mode="list",nFiles) 
+#
+#           for(i in 1:nFiles)
+#           {
+#               file<-files[i]      
+#               sampleName<-samples[i]
+#               gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
+      ##          browser()
+#               localDataEnv<-nodeDataDefaults(gh@tree,"data")
+#               localDataEnv$data<-globalDataEnv
+#               
+#               gh@flag<-FALSE #set gate flag
+#               set[[i]]<-gh
+#           }
+#           names(set)<-samples
+#           G@set<-set
+      
+      G@set<-sapply(samples,function(sampleName){
+            gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
+            localDataEnv<-nodeDataDefaults(gh@tree,"data")
+            localDataEnv$data<-globalDataEnv
+            gh@flag<-TRUE #set gate flag
+            gh
+          })
+      recompute(G)
+      G
+      
+    })
