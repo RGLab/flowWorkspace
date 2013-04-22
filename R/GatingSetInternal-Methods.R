@@ -260,7 +260,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			
 			message("loading data: ",file);
 			if(isNcdf)
-				data<-read.FCS(file)
+				data<-read.FCS(file)[,colnames(fs)]
 			else
 				data<-fs[[sampleName]]
 			

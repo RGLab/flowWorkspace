@@ -14,8 +14,8 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
-
-macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
+#macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
 #macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
@@ -32,7 +32,7 @@ macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[1])
+ws<-openWorkspace(macXML[1],options=1)
 
 #subsetID<-flowWorkspace::getFJWSubsetIndices(ws,key="$FIL"
 #											,value=c("01107122_F11_I003.fcs"
@@ -52,17 +52,23 @@ ws<-openWorkspace(macXML[1])
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-GT<-parseWorkspace(ws,name=2
+GT<-parseWorkspace(ws,name=4
 #					,execute=F
 #					,includeGates=T
-                    ,subset=1
+#                    ,subset=10:11
 #					,subset=c("517614.fcs")
-#					,isNcdf=T
-					,useInternal=T
+					,isNcdf=T
+#					,useInternal=T
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 					,dMode=4
+#                    ,column.pattern=colP
 					)
+
+GT[[1]]
+getNodes(GT[[1]])
+getPopStats(GT[[2]])[1:10,2:3]
 #save to tar
 tmpdir <- "~/rglab/workspace/temp"
 list.files(tmpdir)
