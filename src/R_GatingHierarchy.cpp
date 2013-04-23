@@ -242,12 +242,7 @@ BEGIN_RCPP
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
-	map<string,float> gains;
-	NumericVector gainsVec= as<NumericVector>(_gains);
-	vector<string> chnlNames = gainsVec.names();
-	for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
-		gains[*it]=gainsVec[*it];
-	}
+
 	unsigned short nodeInd=as<unsigned short>(_nodeInd);
 	bool recompute=as<bool>(_recompute);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -259,6 +254,12 @@ BEGIN_RCPP
 	gh->loadData(fdata);
 	if(!recompute)
 	{
+		map<string,float> gains;
+		NumericVector gainsVec= as<NumericVector>(_gains);
+		vector<string> chnlNames = gainsVec.names();
+		for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
+			gains[*it]=gainsVec[*it];
+		}
 		gh->extendGate();
 		gh->adjustGate(gains);
 		gh->transforming();

@@ -909,7 +909,7 @@ setMethod("recompute",c("GatingSetInternal"),function(x,y){
 						data<-getData(gh)
 						mat<-exprs(data)
 						lapply(y,function(nodeID){
-									.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=as.integer(nodeID)-1,recompute=TRUE)			
+									.Call("R_gating",gh@pointer,mat,sampleName,gains=NULL,nodeInd=as.integer(nodeID)-1,recompute=TRUE)			
 								})
 						
 						
