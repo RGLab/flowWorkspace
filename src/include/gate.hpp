@@ -167,6 +167,7 @@ class gate {
 protected:
 	bool neg;
 	bool isTransformed;
+	bool isGained;
 private:
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
@@ -174,6 +175,8 @@ private:
 
 				ar & BOOST_SERIALIZATION_NVP(neg);
 				ar & BOOST_SERIALIZATION_NVP(isTransformed);
+				if(version>0)
+					ar & BOOST_SERIALIZATION_NVP(isGained);
 
 			}
 public:
@@ -185,6 +188,7 @@ public:
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual vector<bool> gating(flowData &){throw(domain_error("undefined gating function!"));};
 	virtual void extend(flowData &,unsigned short){throw(domain_error("undefined extend function!"));};
+	virtual void gain(map<string,float> &,unsigned short){throw(domain_error("undefined gain function!"));};
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
 	virtual void transforming(trans_local &,unsigned short dMode){throw(domain_error("undefined transforming function!"));};
@@ -196,6 +200,7 @@ public:
 	virtual bool Transformed(){return isTransformed;};
 	virtual void setTransformed(bool _isTransformed){isTransformed=_isTransformed;};
 };
+BOOST_CLASS_VERSION(gate,1)
 
 class rangegate:public gate {
 	friend class boost::serialization::access;
@@ -214,6 +219,7 @@ public:
 	unsigned short getType(){return RANGEGATE;}
 	vector<bool> gating(flowData &);
 	void extend(flowData &,unsigned short);
+	void gain(map<string,float> &,unsigned short);
 	void transforming(trans_local &,unsigned short dMode);
 	paramRange getParam(){return param;};
 	vector<string> getParamNames(){return param.getNameArray();};
@@ -243,6 +249,7 @@ public:
 	polygonGate();
 	virtual unsigned short getType(){return POLYGONGATE;}
 	virtual void extend(flowData &,unsigned short);
+	virtual void gain(map<string,float> &,unsigned short);
 	virtual vector<bool> gating(flowData &);
 	virtual void transforming(trans_local &,unsigned short dMode);
 	virtual vertices_valarray getVertices(){return param.toValarray();};
@@ -290,6 +297,7 @@ public:
 	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
 	unsigned short getType(){return ELLIPSEGATE;}
 	void extend(flowData &,unsigned short);
+	void gain(map<string,float> &,unsigned short);
 	void toPolygon(unsigned);
 	void transforming(trans_local &,unsigned short dMode);
 	ellipseGate * clone(){return new ellipseGate(*this);};

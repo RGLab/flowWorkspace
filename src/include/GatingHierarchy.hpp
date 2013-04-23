@@ -171,6 +171,7 @@ public:
 	void calgate(VertexID);
 	vector<bool> boolGating(VertexID);
 	void extendGate();
+	void adjustGate(map<string,float> & gains);
 	void drawGraph(string out);
 	VertexID getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);

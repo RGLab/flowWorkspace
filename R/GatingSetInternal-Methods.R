@@ -264,7 +264,6 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			else
 				data<-fs[[sampleName]]
 			
-#			browser()
 			##################################
 			#Compensating the data
 			##################################
@@ -417,7 +416,35 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					
 					data<-fs[[sampleName]]
 					mat<-exprs(data)
-					.Call("R_gating",gh@pointer,mat,sampleName,nodeInd=0,recompute=FALSE)
+                    #get gains from keywords
+                    this_pd <- pData(parameters(data))
+                    paramIDs <- rownames(pData(parameters(data)))
+                    key_names <- paste(paramIDs,"G",sep="")
+                    kw <- keyword(data)
+                    kw_gains <- kw[key_names]
+                    gains <- as.numeric(kw_gains)
+                    names(gains) <- this_pd$name
+                    #select the gain that is not 1
+#                    gains <- gains[as.integer(gains)!=1]
+                    #check gates that needs to be updated by gains
+#                    allNodes<-getNodes(gh)[-1]
+#                    lapply(allNodes,function(this_node){
+#                          browser()
+#                          this_gate <- getGate(gh,this_node)
+#                          this_params <- parameters(this_gate)
+#                          lapply(this_params,function(this_param){
+#                                browser()
+#                                matchInd <- match(this_param,names(gains))
+#                                if(!is.na(matchInd)){
+#                                  this_gain <- gains[matchInd]
+#                                  
+#                                }
+#                              })
+#                        })
+                    
+                    
+                                        
+					.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE)
 					#update data with transformed data
 					exprs(data)<-mat
 					fs[[sampleName]]<-data#update original flowSet/ncdfFlowSet
@@ -503,7 +530,15 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					}
 					return(r);
 				}else{
-					rawRange[,i]
+                  this_chnl <- names(rawRange)[i]
+                  #update time range with the real data range
+                  if(grepl("[Tt]ime",this_chnl))
+                  {
+                    range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
+                  }else{
+                    rawRange[,i]
+                  }
+					
 				}
 			})
 	copyEnv(tempenv,dataenv);

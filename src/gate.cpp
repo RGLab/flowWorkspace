@@ -14,9 +14,9 @@
 /*
 * init the bool values in constructors
 */
-rangegate::rangegate(){isTransformed=false;neg=false;}
-polygonGate::polygonGate(){isTransformed=false;neg=false;}
-boolGate::boolGate(){isTransformed=false;neg=false;}
+rangegate::rangegate(){isTransformed=false;neg=false;isGained=false;}
+polygonGate::polygonGate(){isTransformed=false;neg=false;isGained=false;}
+boolGate::boolGate(){isTransformed=false;neg=false;isGained=false;}
 
 
 /*
@@ -109,6 +109,52 @@ void polygonGate::extend(flowData & fdata,unsigned short dMode){
 	}
 	param.setVertices(v);
 }
+
+void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
+
+	if(!isGained)
+		{
+			vector<coordinate> vertices=param.getVertices();
+			/*
+			 * get channel names to select respective transformation functions
+			 */
+			string channel_x=param.xName();
+			string channel_y=param.yName();
+
+
+
+			map<string,float>::iterator it=gains.find(channel_x);
+			if(it!=gains.end())
+			{
+				float this_gain = it->second;
+				if(dMode>=POPULATION_LEVEL)
+					cout<<"adjusting: "<<channel_x<<endl;;
+
+				for(unsigned i=0;i<vertices.size();i++)
+					vertices.at(i).x=vertices.at(i).x/this_gain;
+			}
+
+			it=gains.find(channel_y);
+			if(it!=gains.end())
+			{
+				float this_gain = it->second;
+				if(dMode>=POPULATION_LEVEL)
+					cout<<"adjusting: "<<channel_y<<endl;;
+
+				for(unsigned i=0;i<vertices.size();i++)
+					vertices.at(i).y=vertices.at(i).y/this_gain;
+			}
+
+
+			if(dMode>=POPULATION_LEVEL)
+				cout<<endl;
+			param.setVertices(vertices);
+			isGained=true;
+		}
+
+
+
+}
 void ellipseGate::extend(flowData & fdata,unsigned short dMode){
 
 	/*
@@ -126,7 +172,9 @@ void ellipseGate::extend(flowData & fdata,unsigned short dMode){
 
 }
 
-
+void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
+	throw(domain_error("try to adjust the coordinates for ellipse gate!"));
+}
 /*
  * interpolation has to be done on the transformed original 4 coordinates
  * otherwise, the interpolation results will be wrong
@@ -238,6 +286,25 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
 	}
 
 
+}
+void rangegate::gain(map<string,float> & gains,unsigned short dMode){
+	if(!isGained)
+	{
+		vertices_valarray vert(getVertices());
+
+		map<string,float>::iterator it=gains.find(param.getName().c_str());
+		if(it!=gains.end())
+		{
+			float this_gain = it->second;
+
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"adjusting "<<param.getName()<<endl;
+
+			param.setMin(param.getMin()/this_gain);
+			param.setMax(param.getMax()/this_gain);
+		}
+		isGained=true;
+	}
 }
 
 /*

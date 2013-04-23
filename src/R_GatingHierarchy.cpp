@@ -234,7 +234,7 @@ END_RCPP
  * non-cdf version
  */
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _nodeInd,SEXP _recompute){
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute){
 BEGIN_RCPP
 
 
@@ -242,6 +242,12 @@ BEGIN_RCPP
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
+	map<string,float> gains;
+	NumericVector gainsVec= as<NumericVector>(_gains);
+	vector<string> chnlNames = gainsVec.names();
+	for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
+		gains[*it]=gainsVec[*it];
+	}
 	unsigned short nodeInd=as<unsigned short>(_nodeInd);
 	bool recompute=as<bool>(_recompute);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -254,6 +260,7 @@ BEGIN_RCPP
 	if(!recompute)
 	{
 		gh->extendGate();
+		gh->adjustGate(gains);
 		gh->transforming();
 	}
 

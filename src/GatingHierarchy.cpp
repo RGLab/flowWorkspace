@@ -401,6 +401,32 @@ void GatingHierarchy::extendGate(){
 		}
 }
 
+/*
+ * adjust gates by gains
+ */
+void GatingHierarchy::adjustGate(map<string,float> &gains){
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+			cout <<endl<<"start rescale Gates by gains for:"<<fdata.getSampleID()<<endl;
+
+
+		VertexID_vec vertices=getVertices(0);
+
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			VertexID u=*it;
+			nodeProperties * node=getNodeProperty(u);
+			if(u!=0)
+			{
+				gate *g=node->getGate();
+				if(g==NULL)
+					throw(domain_error("no gate available for this node"));
+				if(dMode>=POPULATION_LEVEL)
+					cout <<node->getName()<<endl;
+				if(g->getType()!=BOOLGATE)
+					g->gain(gains,dMode);
+			}
+		}
+}
 
 /*
  * traverse the tree to gate each pops
