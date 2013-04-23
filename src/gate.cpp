@@ -173,7 +173,38 @@ void ellipseGate::extend(flowData & fdata,unsigned short dMode){
 }
 
 void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
-	throw(domain_error("try to adjust the coordinates for ellipse gate!"));
+	if(!isGained)
+	{
+		/*
+		 * get channel names to select respective transformation functions
+		 */
+		string channel_x=param.xName();
+		string channel_y=param.yName();
+
+
+		map<string,float>::iterator it=gains.find(channel_x);
+		if(it!=gains.end())
+		{
+			float this_gain = it->second;
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"adjusting: "<<channel_x<<endl;;
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).x=antipodal_vertices.at(i).x/this_gain;
+		}
+		it=gains.find(channel_y);
+		if(it!=gains.end())
+		{
+			float this_gain = it->second;
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"adjusting: "<<channel_y<<endl;;
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).y=antipodal_vertices.at(i).y/this_gain;
+		}
+		if(dMode>=POPULATION_LEVEL)
+			cout<<endl;
+
+		isGained=true;
+	}
 }
 /*
  * interpolation has to be done on the transformed original 4 coordinates
