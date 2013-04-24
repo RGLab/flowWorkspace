@@ -315,7 +315,15 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
   #match by path
   if(grepl("/",y)){
     allNodes <- getNodes(obj,isPath=TRUE)
-    ind<-grep(y,allNodes,fixed=TRUE)#partial string match
+    #escape non-metacharacters
+    this_pattern <- gsub("\\+","\\\\+",y)
+    this_pattern <- gsub("\\|","\\\\|",this_pattern)
+    this_pattern <- gsub("\\.","\\\\.",this_pattern)
+    this_pattern <- gsub("\\$","\\\\$",this_pattern)
+    this_pattern <- gsub("\\*","\\\\*",this_pattern)
+    this_pattern <- gsub("\\?","\\\\?",this_pattern)
+    this_pattern <- paste(this_pattern,"$",sep="")#only match it as terminal node
+    ind<-grep(this_pattern,allNodes)#partial string match
   }else{
     allNodes <- getNodes(obj)
     ind<-match(y,allNodes)#strict string match  
