@@ -29,7 +29,7 @@ Returns the name of the parent population or a character/numeric vector of all t
   \item{obj}{
 A \code{GatingHierarchy}}
   \item{y}{
-a \code{character/numeric} name or node indices of the node / population.
+a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.
 
 }
 \item{tsort}{

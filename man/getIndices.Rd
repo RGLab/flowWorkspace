@@ -19,7 +19,7 @@ Returns a logical vector that describes whether each event in a sample is includ
 A \code{GatingHierarchy} representing a sample.
 }
   \item{y}{
-A \code{character} or \code{numeric} giving the name or index of the population / node of interest.
+A \code{character} or \code{numeric} giving the name or full(/partial) gating path or index of the population / node of interest.
 }
 }
 \details{

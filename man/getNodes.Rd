@@ -27,7 +27,7 @@ Update the name of one node in a gating hierarchy/GatingSet.
 A \code{GatingHierarchy}
 }
 \item{y}{
-A \code{character} the name of the node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
+A \code{character} the name or full(/partial) gating path of the population node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
 }
   \item{order}{
 	\code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.

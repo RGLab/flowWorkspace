@@ -311,9 +311,22 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 		})
         
 .getNodeInd<-function(obj,y,...){
-  ind<-match(y,getNodes(obj))
-  if(is.na(ind)||length(ind)==0)
+#  browser()
+  #match by path
+  if(grepl("/",y)){
+    allNodes <- getNodes(obj,isPath=TRUE)
+    ind<-grep(y,allNodes,fixed=TRUE)#partial string match
+  }else{
+    allNodes <- getNodes(obj)
+    ind<-match(y,allNodes)#strict string match  
+  }
+  
+  if(is.na(ind)||length(ind)==0){
     stop("Node:", y," not found!")
+  }else if(length(ind)>1){
+    stop(y," is ambiguous!")
+  }
+  
   return (ind)
 }
 setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){

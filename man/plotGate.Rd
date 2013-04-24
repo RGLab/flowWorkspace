@@ -25,7 +25,7 @@ Plots a flowJo gate and associated cell population using it's \code{flowCore} de
  A \code{GatingHierarchy}
 }
   \item{y}{
-A \code{character} or \code{numeric} representing the node in the \code{GatingHierarchy}. Nodes can be accessed with \code{getNodes(GatingHierarchy)}.
+A \code{character} (the node name or full(/partial) gating path) or \code{numeric} representing the node in the \code{GatingHierarchy}. Nodes can be accessed with \code{getNodes(GatingHierarchy)}.
 }
   \item{bool}{
 \code{TRUE|FALSE} logical specifying whether to plot boolean gates.

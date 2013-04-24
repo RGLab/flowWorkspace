@@ -65,7 +65,7 @@ Return the flowFrame/flowSet associated with a GatingHierarchy/GatingSet
 A \code{GatingHierarchy}, \code{GatingSet}, or \code{graphNEL} object extracted from a \code{GatingHierarchy} \code{@tree} slot. 
 }
   \item{y}{
-\code{character} node name or \code{numeric} node index. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. 
+\code{character}  the node name or full(/partial) gating path or \code{numeric} node index. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. 
 		If not specified, will return the complete flowFrame/flowSet at the root node.
 }
 	\item{tsort}{

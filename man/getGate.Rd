@@ -25,7 +25,7 @@ Return the flowCore gate definition object associated with a node in a \code{Gat
 A \code{GatingHierrarchy} or \code{GatingSet}
 }
   \item{y}{
-A \code{character} the name of the node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy} or \code{GatingSet}.
+A \code{character} the name or full(/partial) gating path of the node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy} or \code{GatingSet}.
 }
 \item{tsort}{
 deprecated.
