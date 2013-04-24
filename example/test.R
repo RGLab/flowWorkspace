@@ -14,8 +14,8 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
-#macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
-macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
+#macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
 #macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
@@ -60,8 +60,8 @@ GT<-parseWorkspace(ws,name=4
 #					,isNcdf=T
 #					,useInternal=T
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
-					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
+                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4
 #                    ,column.pattern=colP
 					)
@@ -71,7 +71,9 @@ getNodes(GT@set[[1]])
 
 length(which(getIndices(GT[[1]],"Excl")))
 getGate(GT[[1]],"Excl")@boundaries
-recompute(GT,"3+")
+recompute(GT,"Excl/4+")
+recompute(GT,"4+")
+getNodes(GT[[1]])
 getPopStats(GT[[1]])[,c(2:3)]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
@@ -110,9 +112,16 @@ getSamples(GT)
 pData(GT[c("CytoTrol_CytoTrol_1.fcs","CytoTrol_CytoTrol_2.fcs")])
 gg <- .getGraph(GT[[1]])
 plot(GT[[1]])
-plotGate(GT,3,smooth=T
+plotGate(GT,6,smooth=T
 #          ,xlab="test",ylab="testy"
         )
+plotGate(GT[1],"IL2+",smooth=T)
+plotGate(GT[1],"4+/IL2+",smooth=T)
+getNodes(GT[[1]])
+Rm("Excl/8+",GT)
+getGate(GT,"4+/TNFa+")
+getNodes(GT[[1]],isPath=T)
+getProp(GT[[1]],"4+/IL2+")
 plotGate_labkey(GT,2,smooth=T,x="FSC-A",y="FSC-H"
           ,xlab="test",ylab="testy"
 )        

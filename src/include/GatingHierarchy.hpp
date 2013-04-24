@@ -106,7 +106,7 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(fdata);
 				ar & BOOST_SERIALIZATION_NVP(tree);
 				if(version==0){
-					bool isGated;
+					bool isGated=false;
 					ar & BOOST_SERIALIZATION_NVP(isGated);
 				}
 

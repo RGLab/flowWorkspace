@@ -56,7 +56,7 @@ private:
 			        ar & BOOST_SERIALIZATION_NVP(fjStats);
 			        ar & BOOST_SERIALIZATION_NVP(fcStats);
 			        if(version==0){
-			        	bool _dMode;
+			        	bool _dMode=false;
 			        	ar & BOOST_SERIALIZATION_NVP(_dMode);
 			        }else
 			        {

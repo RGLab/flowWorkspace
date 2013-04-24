@@ -310,32 +310,26 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 			}
 		})
         
-.getNodeInd<-function(obj,y,...){
+.getNodeInd<-function(obj,y, ...){
 #  browser()
-  #match by path
   if(grepl("/",y)){
-    allNodes <- getNodes(obj,isPath=TRUE)
-    #escape non-metacharacters
-    this_pattern <- gsub("\\+","\\\\+",y)
-    this_pattern <- gsub("\\|","\\\\|",this_pattern)
-    this_pattern <- gsub("\\.","\\\\.",this_pattern)
-    this_pattern <- gsub("\\$","\\\\$",this_pattern)
-    this_pattern <- gsub("\\*","\\\\*",this_pattern)
-    this_pattern <- gsub("\\?","\\\\?",this_pattern)
-    this_pattern <- paste(this_pattern,"$",sep="")#only match it as terminal node
-    ind<-grep(this_pattern,allNodes)#partial string match
+    this_path <- strsplit(split="/",y)[[1]]
+    ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
+    ind <- ind + 1 # convert to R index
   }else{
     allNodes <- getNodes(obj)
     ind<-match(y,allNodes)#strict string match  
+    if(is.na(ind)||length(ind)==0){
+        stop("Node:", y," not found!")
+      }else if(length(ind)>1){
+        stop(y," is ambiguous!")
+    }else{
+      ind  
+    }
+    
   }
   
-  if(is.na(ind)||length(ind)==0){
-    stop("Node:", y," not found!")
-  }else if(length(ind)>1){
-    stop(y," is ambiguous!")
-  }
   
-  return (ind)
 }
 setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
 			

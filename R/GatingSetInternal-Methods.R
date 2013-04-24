@@ -603,6 +603,12 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			}
 			
 		})
+setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
+     
+      ind <- .getNodeInd(x[[1]],y)
+      plotGate(x,ind,...)
+    })
+
 #TODO:merge this to .plotGate routine
 #fitGate is used to disable behavior of plotting the gate region in 1d densityplot
 #overlay is either the gate indice list or event indices list
@@ -895,7 +901,8 @@ setMethod("recompute",c("GatingSetInternal"),function(x,y){
 			if(missing(y))
 				y<-1
 			if(is.character(y))
-				y<-match(y,getNodes(x[[1]]))
+                y <- .getNodeInd(x[[1]],y)
+				
 			
 			lapply(x,function(gh){
 						

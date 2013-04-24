@@ -60,6 +60,23 @@ BEGIN_RCPP
 END_RCPP
 }
 
+/*
+ * query by path
+ */
+RcppExport SEXP R_getNodeID(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
+BEGIN_RCPP
+
+	GatingSet *	gs=getGsPtr(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	StringVec gatePath=as<StringVec>(_gatePath);
+	return wrap(gh->getNodeID(gatePath));
+
+
+END_RCPP
+}
+
+
 RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
 
