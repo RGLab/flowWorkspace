@@ -116,9 +116,9 @@ plotGate(GT,6,smooth=T
 #          ,xlab="test",ylab="testy"
         )
 plotGate(GT[1],"IL2+",smooth=T)
-plotGate(GT[1],"4+/IL2+",smooth=T)
+plotGate(GT[1],"8+/IL2+",smooth=T)
 getNodes(GT[[1]])
-Rm("Excl/8+",GT)
+Rm("Excl/4+",GT)
 getGate(GT,"4+/TNFa+")
 getNodes(GT[[1]],isPath=T)
 getProp(GT[[1]],"4+/IL2+")

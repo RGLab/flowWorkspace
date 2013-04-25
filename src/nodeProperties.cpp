@@ -51,6 +51,9 @@ string nodeProperties::getName(){
 }
 
 void nodeProperties::setName(const char * popName){
+	if(string(popName).find('/') != std::string::npos){
+		throw(domain_error("pop name contains '/' character!"));
+	}
 	thisName=popName;
 }
 

@@ -44,9 +44,17 @@ setMethod("add",
 			
 		})
 .addGate<-function(gh,filterObject,parent=NULL, name=NULL,negated=FALSE){
-
+#  browser()
 	if(is.null(name))
 		name<-filterObject$filterId
+    #replace the slash with colon 
+    #since forward slash is reserved for gating path
+  if(grepl("/",name)){
+    old_name <- name
+    name <- gsub("/",":",name)
+    warning(old_name, " is replaced with ", name)
+  }
+    
 #	browser()
 	##get node ID
 	nodes<-getNodes(gh)
@@ -168,8 +176,8 @@ setMethod("Rm",
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion
             childrenPaths <- getNodes(envir, isPath = TRUE)[childrenNodeIds]
-            #strip the first slash
-            childrenPaths <- sapply(childrenPaths,function(thisPath)substr(thisPath,2,nchar(thisPath)),USE.NAMES=F)
+#            #strip the first slash
+#            childrenPaths <- sapply(childrenPaths,function(thisPath)substr(thisPath,2,nchar(thisPath)),USE.NAMES=F)
 			lapply(childrenPaths,function(child)Rm(child,envir))
 			
             

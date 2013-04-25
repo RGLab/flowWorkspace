@@ -313,7 +313,12 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 .getNodeInd<-function(obj,y, ...){
 #  browser()
   if(grepl("/",y)){
+    
     this_path <- strsplit(split="/",y)[[1]]
+    #remove empty string
+    isEmpty <- sapply(this_path,function(this_char)nchar(this_char)==0)
+    this_path <- this_path[!isEmpty]
+    
     ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
     ind <- ind + 1 # convert to R index
   }else{
@@ -889,6 +894,7 @@ panel.xyplot.flowFrame.booleanGate<-function(x,y
 setMethod("setNode"
         ,signature(x="GatingHierarchy",y="numeric",value="character")
         ,function(x,y,value,...){
+#         value <- gsub("/",":",value)
         .Call("R_setNodeName",x@pointer,getSample(x),as.integer(y-1),value)
     })
 
