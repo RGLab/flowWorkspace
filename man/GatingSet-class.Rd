@@ -40,6 +40,7 @@ Objects store a collection of GatingHierarchies and represent a group in a flowJ
   \describe{
     \item{\code{set}:}{Object of class \code{"list"}. A list of GatingHierarchy objects }
     \item{\code{metadata}:}{Object of class \code{"AnnotatedDataFrame"}. Stores the metadata associated with this set of FCS samples.  }
+  \item{\code{guid}:}{Object of class \code{"character"}. the unique identifier for GatingSet object.}
   }
 }
 \section{Methods}{

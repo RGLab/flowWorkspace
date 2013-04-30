@@ -28,6 +28,7 @@ macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
 #macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 #
 #winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
+macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples/B CELLS PUMIR016.wsp"
 #winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
