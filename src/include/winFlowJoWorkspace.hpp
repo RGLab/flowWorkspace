@@ -43,7 +43,6 @@ private:
 				}
 public:
 	xFlowJoWorkspace(xmlDoc * _doc);
-	compensation getCompensation(wsSampleNode sampleNode);
 	trans_global_vec getGlobalTrans(){trans_global_vec res;
 										return res;
 										};

@@ -338,11 +338,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 	return res;
 }
 
-compensation xFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
-{
-	compensation comp;
-	return comp;
-}
+
 compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 {
 	compensation comp;
