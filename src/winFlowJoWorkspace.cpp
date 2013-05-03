@@ -17,10 +17,14 @@ winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
 	nodePath.sample="/Workspace/SampleList/Sample";//abs path
 	nodePath.sampleNode="./SampleNode";//relative to sample
 	nodePath.popNode="./*/Population";//relative to sampleNode
+	nodePath.polyGateDim="*[local-name()='dimension']/*[local-name()='parameter']";//relative to gateNode
 	this->doc=doc;
 
 }
 
+xFlowJoWorkspace::xFlowJoWorkspace(xmlDoc * _doc):winFlowJoWorkspace(_doc){
+	nodePath.polyGateDim="*[local-name()='dimension']/*[local-name()='fcs-dimension']";//relative to gateNode};
+}
 
 string winFlowJoWorkspace::xPathSample(string sampleID){
 			string xpath=nodePath.sample;
@@ -29,6 +33,110 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 			xpath.append("']/..");
 			return xpath;
 
+}
+trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans){
+
+	trans_local res;
+
+	/*
+	 * get transformations node
+	 */
+	xmlXPathObjectPtr transParentNodeRes=root.xpathInNode("../Transformations");
+	unsigned short nTransParentNodes=transParentNodeRes->nodesetval->nodeNr;
+	if(nTransParentNodes<=0)
+	{
+		cout<<"compensation not found!"<<endl;
+		xmlXPathFreeObject(transParentNodeRes);
+		return(res);
+	}else if(nTransParentNodes>1){
+		throw(domain_error("More than one 'Transformations' node found!"));
+	}
+
+	wsNode transParentNode(transParentNodeRes->nodesetval->nodeTab[0]);
+
+	/*
+	 * parse each individual transformation
+	 */
+	xmlXPathObjectPtr transRes=transParentNode.xpathInNode("child::*");
+
+	map<string,transformation *> curTp=res.getTransMap();
+
+	for(int j=0;j<transRes->nodesetval->nodeNr;j++)
+	{
+		wsNode transNode(transRes->nodesetval->nodeTab[j]);
+
+		//parse the parameter name
+		string pname;
+		xmlXPathObjectPtr paramRes=transNode.xpathInNode("*[local-name()='parameter']");
+		if(paramRes->nodesetval->nodeNr!=1)
+			pname="";
+		else{
+			wsNode paramNode(paramRes->nodesetval->nodeTab[0]);
+			pname=paramNode.getProperty("name");
+			}
+
+
+		xmlXPathFreeObject(paramRes);
+		/*
+		 * when channel name is not specified
+		 * try to parse it as the generic trans that is applied to channels
+		 * that do not have channel-specific trans defined in workspace
+		 * ,
+		 */
+		if(pname.empty())
+			pname="*";
+
+		string transType=(const char*)transNode.getNodePtr()->name;
+		if(transType.compare("biex")==0)
+		{
+
+			if(dMode>=GATING_SET_LEVEL)
+				cout<<"biex func:"<<pname<<endl;
+			biexpTrans *curTran=new biexpTrans();
+			curTran->setName("");
+			curTran->setChannel(pname);
+			curTran->pos=atof(transNode.getProperty("pos").c_str());
+			curTran->neg=atof(transNode.getProperty("neg").c_str());
+			curTran->widthBasis=atof(transNode.getProperty("width").c_str());
+			curTran->maxValue=atof(transNode.getProperty("maxRange").c_str());
+			unsigned short thisLen=atoi(transNode.getProperty("length").c_str());
+			if(thisLen!=256)
+				throw(domain_error("length is not 256 for biex transformation!"));
+			/*
+			 * do the lazy calibration table calculation and interpolation
+			 * when it gets saved in gh
+			 */
+			curTp[curTran->getChannel()]=curTran;
+		}else if(transType.compare("linear")==0){
+			if(dMode>=GATING_SET_LEVEL)
+				cout<<"flin func:"<<pname<<endl;
+			double minRange=atof(transNode.getProperty("minRange").c_str());
+			double maxRange=atof(transNode.getProperty("maxRange").c_str());
+			flinTrans *curTran=new flinTrans(minRange,maxRange);
+			curTran->setName("");
+			curTran->setChannel(pname);
+
+			curTp[curTran->getChannel()]=curTran;
+		}else if(transType.compare("log")==0){
+			if(dMode>=GATING_SET_LEVEL)
+				cout<<"flog func:"<<pname<<endl;
+			double offset=atof(transNode.getProperty("offset").c_str());
+			double decade=atof(transNode.getProperty("decades").c_str());
+			logTrans *curTran=new logTrans(offset,decade);
+			curTran->setName("");
+			curTran->setChannel(pname);
+
+			curTp[curTran->getChannel()]=curTran;
+		}
+		else
+			throw(domain_error("unknown tranformation type!"));
+
+	}
+	xmlXPathFreeObject(transRes);
+	xmlXPathFreeObject(transParentNodeRes);
+
+	res.setTransMap(curTp);
+	return res;
 }
 /*
  * choose the trans from global trans vector to attach to current sample
@@ -230,7 +338,11 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 	return res;
 }
 
-
+compensation xFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
+{
+	compensation comp;
+	return comp;
+}
 compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 {
 	compensation comp;
@@ -314,7 +426,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			vector<string> pn;
 
 			//TODO:get parameter name(make sure the the order of x,y are correct)
-			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']/*[local-name()='parameter']");
+			xmlXPathObjectPtr resPara=node.xpathInNode(nodePath.polyGateDim);
 			int nParam=resPara->nodesetval->nodeNr;
 			if(nParam!=2)
 			{

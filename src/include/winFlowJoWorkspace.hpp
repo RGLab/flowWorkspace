@@ -32,6 +32,22 @@ public:
 	  rangegate * getGate(wsRangeGateNode &);
 };
 
+class xFlowJoWorkspace:public winFlowJoWorkspace{
+	friend class boost::serialization::access;
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::base_object<winFlowJoWorkspace>(*this);
 
+				}
+public:
+	xFlowJoWorkspace(xmlDoc * _doc);
+	compensation getCompensation(wsSampleNode sampleNode);
+	trans_global_vec getGlobalTrans(){trans_global_vec res;
+										return res;
+										};
+	trans_local getTransformation(wsRootNode,const compensation & comp,PARAM_VEC & transFlag,trans_global_vec *,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans);
+};
 
 #endif /* WINFLOWJOWORKSPACE_HPP_ */

@@ -357,6 +357,8 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 			 ws=new winFlowJoWorkspace(doc);
 		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"2.0"))
 			 ws=new macFlowJoWorkspace(doc);
+		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"1.8"))
+			 ws=new xFlowJoWorkspace(doc);
 		 else
 		 {
 			 xmlFree(wsVersion);

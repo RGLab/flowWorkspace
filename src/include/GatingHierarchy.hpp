@@ -118,7 +118,7 @@ private:
 //		        ar & thisWs;
 
 		        ar.register_type(static_cast<biexpTrans *>(NULL));
-				ar.register_type(static_cast<logicleTrans *>(NULL));
+				ar.register_type(static_cast<flinTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
 				if(version==0){

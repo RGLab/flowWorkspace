@@ -55,14 +55,44 @@ transformation::transformation(){
 
 }
 
+logTrans::logTrans(){
+	type=LOG;
+//	isGateOnly=false;//already init by base contructor
+//	isComputed=true;
+	calTbl.setInterpolated(true);
+}
+logTrans::logTrans(double _offset,double _decade){
+	logTrans();
+	offset=_offset;
+	decade=_decade;
+}
+
+linTrans::linTrans(){
+	type=LIN;
+	isGateOnly=true;
+	calTbl.setInterpolated(true);
+}
+flinTrans::flinTrans(){
+	type=FLIN;
+	isGateOnly=false;
+	calTbl.setInterpolated(true);
+}
+flinTrans::flinTrans(double _minRange, double _maxRange){
+	flinTrans();
+	min=_minRange;
+	max=_maxRange;
+}
 /*
- * TODO:need to change this log transformation
- * to handle negative values more appropriately
+ *
+ *
  * (e.g. replace the negative value with the minimum positive value instead of zero
  */
-double mylog10(double x) {
-	return x>0?log10(x):0;
-	throw(domain_error("the current log transforming is broken!"));
+double logTrans::flog(double x,double T,double _min) {
+
+	double M=decade;
+//	return x>0?(log10(x/T)/M+offset):_min;
+	return x>0?(log10((x+offset)/T)/M):_min;
+
 }
 /*
  * these transforming functions change the input data
@@ -70,21 +100,56 @@ double mylog10(double x) {
 
 void logTrans::transforming(valarray<double> & input){
 
-		/*
-		 * clean the data before log
-		 */
-		input=input.apply(mylog10);
+
+		double thisMax=input.max();
+		double thisMin=input.min();
+
+		for(unsigned i=0;i<input.size();i++){
+			input[i]=flog(input[i],thisMax,thisMin);
+		}
+
+
 //		input=log10(input);
 
+}
+double flinTrans::flin(double x){
+	double T=max;
+	double A=min;
+	return (x+A)/(T+A);
 }
 void linTrans::transforming(valarray<double> & input){
 
 		input*=64;
 }
+
+void flinTrans::transforming(valarray<double> & input){
+
+	for(unsigned i=0;i<input.size();i++){
+		input[i]=flin(input[i]);
+	}
+
+}
 void transformation::transforming(valarray<double> & input){
-		if(!calTbl.isInterpolated())
-			throw(domain_error("calibration table not interpolated yet!"));
+		if(!calTbl.isInterpolated()){
+			 /* calculate calibration table from the function
+			 */
+			if(!computed())
+			{
+
+				cout<<"computing calibration table..."<<endl;
+				computCalTbl();
+			}
+
+			if(!isInterpolated())
+			{
+
+				cout<<"spline interpolating..."<<endl;
+				interpolate();
+			}
+		}
+
 		input=calTbl.transforming(input);
+
 }
 
 void transformation::setCalTbl(calibrationTable _tbl){
