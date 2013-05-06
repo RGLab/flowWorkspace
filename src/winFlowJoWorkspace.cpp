@@ -536,11 +536,11 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 				lb.x=r.at(0).getMin();
 				lb.y=r.at(1).getMin();
 
-				lt.x=r.at(0).getMin();
-				lt.y=r.at(1).getMax();
+//				lt.x=r.at(0).getMin();
+//				lt.y=r.at(1).getMax();
 
-				rb.x=r.at(0).getMax();
-				rb.y=r.at(1).getMin();
+//				rb.x=r.at(0).getMax();
+//				rb.y=r.at(1).getMin();
 
 				rt.x=r.at(0).getMax();
 				rt.y=r.at(1).getMax();
@@ -551,9 +551,9 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 				 * lb->lt->rt->rb
 				 */
 				v.push_back(lb);
-				v.push_back(lt);
+//				v.push_back(lt);
 				v.push_back(rt);
-				v.push_back(rb);
+//				v.push_back(rb);
 
 				p.setVertices(v);
 				p.setName(pn);
