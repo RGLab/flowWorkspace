@@ -191,8 +191,13 @@ BEGIN_RCPP
 			}
 			case CALTBL:
 			{
-				if(!curTrans->isInterpolated())
-					throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
+				if(!curTrans->computed()){
+					curTrans->computCalTbl();
+				}
+				if(!curTrans->isInterpolated()){
+					curTrans->interpolate();
+				}
+//					throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
 				Spline_Coefs obj=curTrans->getSplineCoefs();
 
 				res.push_back(List::create(Named("z",obj.coefs)
@@ -413,7 +418,7 @@ gate * newGate(List filter){
 		case RANGEGATE:
 		{
 			StringVec params=as<StringVec>(filter["params"]);
-			rangegate * rg=new rangegate();
+			rangeGate * rg=new rangeGate();
 			rg->setNegate(isNeg);
 
 			DoubleVec p=as<DoubleVec>(filter["range"]);
@@ -460,7 +465,7 @@ gate * newGate(List filter){
 		case RECTGATE:
 		{
 			StringVec params=as<StringVec>(filter["params"]);
-			rectgate * rectg=new rectgate();
+			rectGate * rectg=new rectGate();
 
 			rectg->setNegate(isNeg);
 

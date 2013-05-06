@@ -199,7 +199,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
 			})
-	}else if(substr(wsversion,1,3)=="1.6"){
+	}else if(substr(wsversion,1,3)%in%c("1.6","1.8")){
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample/DataSet[@sampleID='",i,"']",sep=""))[[1]]
 			})

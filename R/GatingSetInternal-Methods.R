@@ -226,6 +226,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			Object<-.addGatingHierarchy(Object,files,execute=TRUE,isNcdf=isNcdf,...)
 			return(Object)
 		})
+   
 ############################################################################
 #constructing gating set
 ############################################################################
@@ -250,7 +251,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	
 	nFiles<-length(files)
 	set<-vector(mode="list",nFiles)	
-#	isColUpdated<-FALSE
+
 	for(i in 1:nFiles)
 	{
 		file<-files[i]		
@@ -272,6 +273,9 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				data<-read.FCS(file)[,colnames(fs)]
 			else
 				data<-fs[[sampleName]]
+              
+            #alter colnames(replace "/" with "_") so that it is consistent with flowJO convention
+            colnames(data) <- gsub("/","_",colnames(data))
 			
 			##################################
 			#Compensating the data
@@ -299,18 +303,6 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					data<-res
 					rm(res);
 				}
-#				cnd<-colnames(data)
-#				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
-#				wh<-cnd%in%parameters(compobj)
-#				cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-#				
-#				#colnames(data)<-cnd;
-#				e<-exprs(data)
-#				d<-description(data);
-#				p<-parameters(data);
-#				p@data$name<-cnd
-#				colnames(e)<-cnd;
-#				data<-new("flowFrame",exprs=e,description=d,parameters=p)						
 				
 			}
 			else if(cid=="-2"){
@@ -344,16 +336,6 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 						rm(res);
 						
 					}
-#						browser()
-#					cnd<-colnames(data)
-#					wh<-cnd%in%parameters(compobj)
-#					cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-#					e<-exprs(data)
-#					d<-description(data);
-#					p<-parameters(data);
-#					p@data$name<-cnd
-#					colnames(e)<-cnd;
-#					data<-new("flowFrame",exprs=e,description=d,parameters=p)
 					
 				}
 				
@@ -464,13 +446,13 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					#it is used to display the data.
 					#so we need update this range info by transforming it
 			
-					localDataEnv<-nodeDataDefaults(gh@tree,"data")
-					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
+#					localDataEnv<-nodeDataDefaults(gh@tree,"data")
+#					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
 
 #					browser()
-					cal<-getTransformations(gh)					
-					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
-					
+#					cal<-getTransformations(gh)					
+#					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
+                    .transformRange_new(gh)
 #					browser()
 					
 				})
@@ -480,17 +462,86 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	G
 }
 
+.transformRange_new<-function(gh){
+        sampleName <- getSample(gh)
+        dataenv <- nodeDataDefaults(gh@tree,"data")
+        frmEnv<-dataenv$data$ncfs@frames
+        rawRange<-range(get(sampleName,frmEnv))
+        tempenv<-new.env()
+        assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=tempenv);
+        cal<-getTransformations(gh)
 
+        cal_names <-trimWhiteSpace(names(cal))
+#         browser()
+        datarange<-sapply(1:dim(rawRange)[2],function(i){
+#              message(i)
+          j <- match(names(rawRange)[i],cal_names)
+          if(!is.na(j)){
+  #                                   browser()
+            rw<-rawRange[,i];
+            if(attr(cal[[j]],"type")!="gateOnly"){
+              r<-cal[[j]](c(rw))
+            }else{
+              r<-rw
+            }
+            ###An unfortunate hack. If we use the log transformation, then negative values are undefined, so
+            ##We'll test the transformed range for NaN and convert to zero.
+            r[is.nan(r)]<-0;
+            
+            ###Is this transformed?
+            if(!all(rw==r)){
+              
+  #                       browser()
+              ######################################
+              #equal interal at raw scale
+              ######################################                      
+              base10raw<-unlist(lapply(2:6,function(e)10^e))
+              base10raw<-c(0,base10raw)
+              raw<-base10raw[base10raw>min(rw)&base10raw<max(rw)]
+              pos<-signif(cal[[j]](raw))
+              
+              
+              assign("i",i,tempenv)
+              assign("raw",raw,tempenv);
+              assign("pos",pos,tempenv);
+              eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=tempenv);
+            }
+            return(r);
+          }else{
+            this_chnl <- names(rawRange)[i]
+            #update time range with the real data range
+            if(grepl("[Tt]ime",this_chnl))
+            {
+              range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
+            }else{
+              rawRange[,i]
+            }
+            
+          }
+      })
+  copyEnv(tempenv,dataenv);
+  
+#   browser()       
+  datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
+  datapar<-parameters(get(sampleName,frmEnv))
+  pData(datapar)[,c("range","minRange","maxRange")]<-datarange
+  
+  #gc(reset=TRUE)
+#   assign("datapar",datapar,dataenv)
+  eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
+}
 .transformRange<-function(dataenv,cal,sampleName,prefix,suffix){
 
 	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
 	tempenv<-new.env()
 	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=tempenv);
+#    browser()
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
-
-				j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],names(cal));
+#browser()
+#				j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],names(cal));
+                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],names(cal));
 				if(length(j)!=0){
 #									browser()
 					rw<-rawRange[,i];
@@ -505,22 +556,6 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					
 					###Is this transformed?
 					if(!all(rw==r)){
-						######################################
-						#equal interal at transformed scale
-						######################################
-#						if(attr(cal[[j]],"type")=="log")
-#							f<-function(x){10^x}
-#						else
-#						{
-#							
-#							toScale<-seq(rw[[1]],rw[[2]],l=100000)
-#							fromScale<-cal[[j]](toScale)
-#							f<-splinefun(fromScale,toScale,method="natural")
-#							
-#						}
-#						pos<-seq(r[1],r[2],l=20)
-#						raw<-signif(f(pos),2);
-						
 						
 #						browser()
 						######################################
