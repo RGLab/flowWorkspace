@@ -31,7 +31,7 @@ public:
 	polygonGate * getGate(wsPolyGateNode &);
 	boolGate * getGate(wsBooleanGateNode &);
 	ellipseGate * getGate(wsEllipseGateNode &);
-	rangegate * getGate(wsRangeGateNode &);
+	rangeGate * getGate(wsRangeGateNode &);
 };
 
 

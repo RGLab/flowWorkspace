@@ -27,9 +27,9 @@ public:
 	string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
 	  polygonGate * getGate(wsPolyGateNode &);
-	  polygonGate * getGate(wsRectGateNode &);
+	  gate * getGate(wsRectGateNode &);
 	  polygonGate * getGate(wsEllipseGateNode &);
-	  rangegate * getGate(wsRangeGateNode &);
+	  rangeGate * getGate(wsRangeGateNode &);
 };
 
 class xFlowJoWorkspace:public winFlowJoWorkspace{

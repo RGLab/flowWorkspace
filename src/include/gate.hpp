@@ -202,7 +202,7 @@ public:
 };
 BOOST_CLASS_VERSION(gate,1)
 
-class rangegate:public gate {
+class rangeGate:public gate {
 	friend class boost::serialization::access;
 
 private:
@@ -215,7 +215,7 @@ private:
 
 			}
 public:
-	rangegate();
+	rangeGate();
 	unsigned short getType(){return RANGEGATE;}
 	vector<bool> gating(flowData &);
 	void extend(flowData &,unsigned short);
@@ -225,7 +225,7 @@ public:
 	vector<string> getParamNames(){return param.getNameArray();};
 	void setParam(paramRange _param){param=_param;};
 	vertices_valarray getVertices(){return param.toValarray();};
-	rangegate * clone(){return new rangegate(*this);};
+	rangeGate * clone(){return new rangeGate(*this);};
 
 };
 
@@ -263,7 +263,7 @@ public:
  * it doesn't overload getType member function, which means it is exposed to R
  * as a regular polygonGate
  */
-class rectgate:public polygonGate {
+class rectGate:public polygonGate {
 	friend class boost::serialization::access;
 
 private:

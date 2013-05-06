@@ -14,7 +14,7 @@
 /*
 * init the bool values in constructors
 */
-rangegate::rangegate(){isTransformed=false;neg=false;isGained=false;}
+rangeGate::rangeGate(){isTransformed=false;neg=false;isGained=false;}
 polygonGate::polygonGate(){isTransformed=false;neg=false;isGained=false;}
 boolGate::boolGate(){isTransformed=false;neg=false;isGained=false;}
 
@@ -301,7 +301,7 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	param.setVertices(vertices);
 
 }
-void rangegate::extend(flowData & fdata,unsigned short dMode){
+void rangeGate::extend(flowData & fdata,unsigned short dMode){
 	string pName=param.getName();
 	valarray<double> data_1d(fdata.subset(pName));
 
@@ -318,7 +318,7 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
 
 
 }
-void rangegate::gain(map<string,float> & gains,unsigned short dMode){
+void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
 	if(!isGained)
 	{
 		vertices_valarray vert(getVertices());
@@ -510,7 +510,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	}
 }
 
-void rangegate::transforming(trans_local & trans,unsigned short dMode){
+void rangeGate::transforming(trans_local & trans,unsigned short dMode){
 	if(!Transformed())
 	{
 		vertices_valarray vert(getVertices());
@@ -532,7 +532,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 
 }
 
-vector<bool> rangegate::gating(flowData & fdata){
+vector<bool> rangeGate::gating(flowData & fdata){
 
 	valarray<double> data_1d(fdata.subset(param.getName()));
 
@@ -556,7 +556,7 @@ vector<bool> rangegate::gating(flowData & fdata){
 
 }
 
-vector<bool> rectgate::gating(flowData & fdata){
+vector<bool> rectGate::gating(flowData & fdata){
 
 	vector<coordinate> vertices=param.getVertices();
 	unsigned nVertex=vertices.size();
