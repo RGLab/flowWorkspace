@@ -10,7 +10,7 @@
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
     if(isGUID){
-      guid <- gs@guid
+      guid <- G@guid
       rds.file<-file.path(path,paste(guid,"rds",sep="."))
       dat.file<-file.path(path,paste(guid,"dat",sep="."))
     }else{
