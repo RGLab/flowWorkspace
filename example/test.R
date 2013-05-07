@@ -15,7 +15,9 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
-#macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+macXML<-"/loc/no-backup/FlowWorkspaceTest/Lyoplate/Centralized B-cell.xml"
+
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
 #macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
@@ -53,7 +55,7 @@ ws<-openWorkspace(macXML[1],options=1)
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-GT<-parseWorkspace(ws,name=4
+GT<-parseWorkspace(ws,name=3
 #					,execute=F
 #					,includeGates=T
                     ,subset=1
@@ -61,15 +63,17 @@ GT<-parseWorkspace(ws,name=4
 #					,isNcdf=T
 #					,useInternal=T
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
-#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+#                    ,path="/loc/no-backup/FlowWorkspaceTest/Lyoplate/B-cell\ FCS\ files/B-cells\ NHLBI/"
 					,dMode=4
 #                    ,column.pattern=colP
 					)
 
 GT[[1]]
-getNodes(GT@set[[1]])
+getNodes(GT[[1]])
 
+setNode(GT@set[[1]],"(19+ 20-)","19+20-")
 length(which(getIndices(GT[[1]],"Excl")))
 getGate(GT[[1]],"Excl")@boundaries
 recompute(GT,"Excl/4+")
@@ -78,8 +82,8 @@ getNodes(GT[[1]])
 getPopStats(GT[[1]])[,c(2:3)]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
-plotGate(GT[[1]])
-
+plotGate(GT[[1]],xbin=64)
+plot(GT[[1]],bool=T)
 #save to tar
 tmpdir <- "~/rglab/workspace/temp"
 list.files(tmpdir)
