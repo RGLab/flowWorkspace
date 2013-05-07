@@ -548,16 +548,19 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #    browser()
     cal_names <-trimWhiteSpace(names(cal))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
+              
 				#added gsub
               if(wsversion == "1.8"){
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
-                j <- match(names(rawRange)[i],cal_names) 
+                j <- match(names(rawRange)[i],cal_names)
+                isMatched <- !is.na(j) 
               }else{
                 j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],cal_names);
+                isMatched <- length(j)!=0
               }
                 
                 
-				if(length(j)!=0){
+				if(isMatched){
 #									browser()
 					rw<-rawRange[,i];
 					if(attr(cal[[j]],"type")!="gateOnly"){

@@ -28,7 +28,7 @@ macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
 #macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 #
 #winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
-macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
+#macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
 #winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
@@ -62,8 +62,8 @@ GT<-parseWorkspace(ws,name=4
 #					,useInternal=T
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
-					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
+                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4
 #                    ,column.pattern=colP
 					)
