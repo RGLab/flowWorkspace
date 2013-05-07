@@ -223,7 +223,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 	if(useInternal)
 	{
 		sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
-		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode,isNcdf=isNcdf,includeGates=includeGates,path=path, xmlParserOption = obj@options,...))
+		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode,isNcdf=isNcdf,includeGates=includeGates,path=path, xmlParserOption = obj@options,wsversion=wsversion,...))
 	}
 	#TODO parallelize
 	if(length(grep("snowfall",loadedNamespaces()))==1){

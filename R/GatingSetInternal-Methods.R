@@ -230,7 +230,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 ############################################################################
 #constructing gating set
 ############################################################################
-.addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,...){
+.addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,wsversion,...){
 #	browser()
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -450,9 +450,12 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
 
 #					browser()
-#					cal<-getTransformations(gh)					
-#					.transformRange(localDataEnv,cal,sampleName,prefix=comp$prefix,suffix=comp$suffix)
-                    .transformRange_new(gh)
+#					cal<-getTransformations(gh)
+                    
+                    .transformRange(gh,wsversion)  
+                    
+					
+                    
 #					browser()
 					
 				})
@@ -462,7 +465,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	G
 }
 
-.transformRange_new<-function(gh){
+.transformRange_vX<-function(gh){
         sampleName <- getSample(gh)
         dataenv <- nodeDataDefaults(gh@tree,"data")
         frmEnv<-dataenv$data$ncfs@frames
@@ -530,18 +533,30 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #   assign("datapar",datapar,dataenv)
   eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
 }
-.transformRange<-function(dataenv,cal,sampleName,prefix,suffix){
+.transformRange<-function(gh,wsversion){
 
+    sampleName <- getSample(gh)
+    dataenv <- nodeDataDefaults(gh@tree,"data")
+     cal<-getTransformations(gh)
+     comp<-.Call("R_getCompensation",gh@pointer,sampleName)
+     prefix <- comp$prefix
+     suffix <- comp$suffix
 	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
 	tempenv<-new.env()
 	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=tempenv);
 #    browser()
+    cal_names <-trimWhiteSpace(names(cal))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 				#added gsub
-#browser()
-#				j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],names(cal));
-                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],names(cal));
+              if(wsversion == "1.8"){
+                #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
+                j <- match(names(rawRange)[i],cal_names) 
+              }else{
+                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],cal_names);
+              }
+                
+                
 				if(length(j)!=0){
 #									browser()
 					rw<-rawRange[,i];
