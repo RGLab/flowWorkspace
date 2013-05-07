@@ -17,7 +17,7 @@ winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
 	nodePath.sampleNode="./SampleNode";//relative to sample
 	nodePath.popNode="./*/Population";//relative to sampleNode
 	nodePath.gateDim="*[local-name()='dimension']";//relative to gateNode
-	nodePath.gateParam="*[local-name()='dimension']";//relative to dimNode
+	nodePath.gateParam="*[local-name()='parameter']";//relative to dimNode
 	this->doc=doc;
 
 }
@@ -415,7 +415,12 @@ polygonGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	return NULL;
 }
 polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
-			ellipseGate * gate=new ellipseGate();
+	/*
+	 * not sure what is the criteria for using ellipseGate
+	 * since it is of the same format of polygonGate
+	 */
+	//	ellipseGate * gate=new ellipseGate();
+			polygonGate * gate=new polygonGate();
 			//get the negate flag
 			gate->setNegate(node.getProperty("eventsInside")=="0");
 			paramPoly p;
@@ -470,8 +475,9 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				xmlXPathFreeObject(resCoord);
 			}
 			xmlXPathFreeObject(resVert);
-			gate->setAntipodal(v);
+//			gate->setAntipodal(v);
 			p.setName(pn);
+			p.setVertices(v);
 			gate->setParam(p);
 			return gate;
 }
