@@ -5,7 +5,7 @@ ifeq ($(boost_bundled),yes)
 	bgl_src=${wildcard ${boost_basename}/libs/serialization/src/*.cpp} 
 	bgl_objs=${bgl_src:.cpp=.o}
 endif
-#-I../inst/include
+
 PKG_CPPFLAGS =-Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags}
 PKG_LIBS =${bgl_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags();cat(' ');ncdfFlow:::LdFlags(FALSE)"` @PKG_LIBS@ 
 

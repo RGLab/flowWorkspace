@@ -22,7 +22,7 @@ macXML<-"/loc/no-backup/FlowWorkspaceTest/Lyoplate/Centralized B-cell.xml"
 
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
-#macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
+macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
 #path<-"~/rglab/workspace/flowWorkspace/data"
 #
 #macXML<-"HIPC_trial.xml"
@@ -58,7 +58,7 @@ ws<-openWorkspace(macXML[1],options=1)
 ###############################################################################
 time1<-Sys.time()	
 
-GT<-parseWorkspace(ws,name=2
+GT<-parseWorkspace(ws,name=4
 #					,execute=F
 #					,includeGates=T
                     ,subset=1
@@ -67,8 +67,8 @@ GT<-parseWorkspace(ws,name=2
 #					,useInternal=T
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
-                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4
 #                    ,column.pattern=colP
