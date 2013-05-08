@@ -535,6 +535,7 @@ gate * newGate(List filter){
 			throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));
 
 	}
+	g->setTransformed(TRUE);
 	return g;
 
 }
