@@ -41,6 +41,9 @@ setClass("GatingSetInternal",contains="GatingSet"
 			all(unlist(lapply(object@set
 									,function(y)inherits(y,"GatingHierarchy"))))
 		})
+.uuid_gen<-function(){
+  system("uuidgen",intern = TRUE)
+}    
 ###########################
 #constructors for GatingSet
 ##########################
@@ -60,7 +63,8 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
 				stop(xmlFileName," not found!")
 			Object<-new("GatingSetInternal")
 			Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(dMode))
-			
+            Object@guid <- .uuid_gen()
+            
 			return(Object)
 })
 
@@ -72,7 +76,7 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
       samples<-sampleNames(fs_clone)
       G<-new("GatingSetInternal")
       G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
-      
+      G@guid <- .uuid_gen()
       
       globalDataEnv<-new.env(parent=emptyenv())
       

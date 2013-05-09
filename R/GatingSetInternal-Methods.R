@@ -4,19 +4,20 @@
 
 ###serialization functions to be called by wrapper APIs
 ### when save.cdf == FALSE, skip saving cdf file
-.save_gs <- function(G,path, isGUID = TRUE, save.cdf = TRUE, move.cdf = FALSE){
+.save_gs <- function(G,path, save.cdf = TRUE, move.cdf = FALSE){
     
 #    browser()
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
-    if(isGUID){
-      guid <- G@guid
-      rds.file<-file.path(path,paste(guid,"rds",sep="."))
-      dat.file<-file.path(path,paste(guid,"dat",sep="."))
-    }else{
-      rds.file<-tempfile(tmpdir=path,fileext=".rds")
-      dat.file<-tempfile(tmpdir=path,fileext=".dat")  
+    #generate uuid for the legacy GatingSet Object
+    if(length(G@guid)==0){
+      G@guid <- .uuid_gen()
     }
+    guid <- G@guid
+    
+    rds.file<-file.path(path,paste(guid,"rds",sep="."))
+    dat.file<-file.path(path,paste(guid,"dat",sep="."))
+  
     
     filestoSave <- c(rds.file,dat.file)
     #save ncdf file
@@ -63,8 +64,15 @@
       message("loading R object...")
       gs<-readRDS(rds.file)
       
+      guid <- try(slot(gs,"guid"),silent=T)
+      if(class(guid)=="try-error"){
+        #generate the guid for the legacy archive
+        gs@guid <- .uuid_gen()
+      }
+      
       message("loading tree object...")
       gs@pointer<-.Call("R_loadGatingSet",dat.file)
+      
       #update the pointer in each gating hierarchy
       for(i in 1:length(gs@set))
       {
@@ -227,7 +235,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			Object<-new("GatingSetInternal")
 			message("generating new GatingSet from the gating template...")
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
-			
+            Object@guid <- .uuid_gen()
 			Object<-.addGatingHierarchy(Object,files,execute=TRUE,isNcdf=isNcdf,...)
 			return(Object)
 		})
@@ -911,7 +919,7 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			#clone c structure
 			message("cloning tree structure...")
 			clone@pointer<-.Call("R_CloneGatingSet",x@pointer,getSamples(x))
-            
+            clone@guid <- .uuid_gen()
               
             #create new global data environment
             gdata<-new.env(parent=emptyenv());
@@ -1110,7 +1118,7 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 			
             #update the data for clone            
             ncFlowSet(clone)<-fs
-            
+            clone@guid <- .uuid_gen()
 			return(clone);
 		})
 		
