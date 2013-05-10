@@ -4,9 +4,11 @@
 
 ###serialization functions to be called by wrapper APIs
 ### when save.cdf == FALSE, skip saving cdf file
-.save_gs <- function(G,path, save.cdf = TRUE, move.cdf = FALSE){
+.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink")){
     
 #    browser()
+    cdf <- match.arg(cdf)
+    
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
     #generate uuid for the legacy GatingSet Object
@@ -21,19 +23,24 @@
     
     filestoSave <- c(rds.file,dat.file)
     #save ncdf file
-    if(save.cdf&&flowWorkspace:::isNcdf(G[[1]]))
-    {   
-      message("saving ncdf...")
+    if(cdf != "skip" && flowWorkspace:::isNcdf(G[[1]]))
+    {
       from<-ncFlowSet(G)@file
       
-      if(move.cdf){
+      if(cdf == "copy"){
+        message("saving ncdf...")
+        ncFile<-tempfile(tmpdir=path,fileext=".nc")
+        file.copy(from=from,to=ncFile)
+      }else if(cdf == "move"){
+        message("moving ncdf...")
         ncFile <- file.path(path,basename(from))
         system(paste("mv",from,ncFile))
         #reset the file path for ncdfFlowSet
         ncFlowSet(G)@file <- ncFile
-      }else{
+      }else if(cdf == "symlink"){
+        message("creating the symbolic link to ncdf...")
         ncFile<-tempfile(tmpdir=path,fileext=".nc")
-        file.copy(from=from,to=ncFile)
+        file.symlink(from=from,to=ncFile)
       }
       
       filestoSave<-c(filestoSave,ncFile)
