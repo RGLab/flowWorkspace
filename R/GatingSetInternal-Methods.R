@@ -25,10 +25,11 @@
     {   
       message("saving ncdf...")
       from<-ncFlowSet(G)@file
-      ncFile<-tempfile(tmpdir=path,fileext=".nc")
+      
       if(move.cdf){
-        system(paste("mv",from,ncFile))  
+        system(paste("mv",from,path))  
       }else{
+        ncFile<-tempfile(tmpdir=path,fileext=".nc")
         file.copy(from=from,to=ncFile)
       }
       
