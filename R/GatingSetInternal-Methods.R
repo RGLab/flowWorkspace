@@ -4,7 +4,7 @@
 
 ###serialization functions to be called by wrapper APIs
 ### when save.cdf == FALSE, skip saving cdf file
-.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink")){
+.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link")){
     
 #    browser()
     cdf <- match.arg(cdf)
@@ -27,21 +27,28 @@
     {
       from<-ncFlowSet(G)@file
       
-      if(cdf == "copy"){
-        message("saving ncdf...")
-        ncFile<-tempfile(tmpdir=path,fileext=".nc")
-        file.copy(from=from,to=ncFile)
-      }else if(cdf == "move"){
+      if(cdf == "move"){
         message("moving ncdf...")
         ncFile <- file.path(path,basename(from))
         system(paste("mv",from,ncFile))
         #reset the file path for ncdfFlowSet
         ncFlowSet(G)@file <- ncFile
-      }else if(cdf == "symlink"){
-        message("creating the symbolic link to ncdf...")
+      }else{
+        
         ncFile<-tempfile(tmpdir=path,fileext=".nc")
-        file.symlink(from=from,to=ncFile)
-      }
+        
+        if(cdf == "copy"){
+          message("saving ncdf...")
+          file.copy(from=from,to=ncFile)
+        }
+        else if(cdf == "symlink"){
+          message("creating the symbolic link to ncdf...")
+          file.symlink(from=from,to=ncFile)
+        }else if(cdf == "link"){
+          message("creating the hard link to ncdf...")
+          file.link(from=from,to=ncFile)
+        }
+      } 
       
       filestoSave<-c(filestoSave,ncFile)
     }
