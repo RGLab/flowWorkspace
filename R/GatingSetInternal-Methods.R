@@ -27,7 +27,8 @@
       from<-ncFlowSet(G)@file
       
       if(move.cdf){
-        system(paste("mv",from,path))  
+        ncFile <- file.path(path,basename(from))
+        system(paste("mv",from,ncFile))  
       }else{
         ncFile<-tempfile(tmpdir=path,fileext=".nc")
         file.copy(from=from,to=ncFile)
