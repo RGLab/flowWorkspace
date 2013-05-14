@@ -1456,28 +1456,31 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 	m<-m[,2:6]
 	m
 })
-#made change to the original method to add flowJo option
-setMethod("getPopStats","GatingSet",function(x,flowJo=FALSE,...){
-#			browser()
-	if(!haveSameGatingHierarchy(x)){
-        message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
-    }
-	r<-do.call(cbind,lapply(x,function(y){
-#						browser()
-						curStats<-getPopStats(y)
-						if(flowJo)
-						{
-#							curStats$flowJo.count/curStats$parent.total
-							curStats$flowJo.freq
-						}
-							
-						else
-							curStats$flowCore.freq
-						}))
-		
-	
-	rownames(r)<-rownames(getPopStats(x[[1]]));
-	r
+
+setMethod("getPopStats", "GatingSet",
+          function(x, statistic = c("freq", "count"), flowJo = FALSE, ...) {
+
+  # Based on the choice of statistic, the population statistics are returned for
+  # each Gating Hierarchy within the GatingSet.
+  statistic <- match.arg(statistic)
+
+  # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
+  # are returned.
+  if (flowJo) {
+    statistic <- paste("flowJo", statistic, sep = ".")
+  } else {
+    statistic <- paste("flowCore", statistic, sep = ".")
+  }
+
+  if (!haveSameGatingHierarchy(x)) {
+    message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
+  }
+
+  pop_stats <- do.call(cbind, lapply(x, function(y) {
+    getPopStats(y)[[statistic]]
+  }))
+  rownames(pop_stats) <- rownames(getPopStats(x[[1]]))
+  pop_stats
 })
 
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
