@@ -851,7 +851,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 								,filter=curGates
 								,xlab=xlab
 #								,ylab=axisObject$ylab
-								,margin=margin
+#								,margin=margin
 #								,smooth=smooth
 #								,scales=axisObject$scales
 								,main=main

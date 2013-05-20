@@ -830,9 +830,17 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 	
 		xParam.ind<-match(xParam,pd$name)
 		yParam.ind<-match(yParam,pd$name)
-		x.labels<-getAxisLabels(x)[[xParam.ind]]
-		y.labels<-getAxisLabels(x)[[yParam.ind]]
-		
+        if(is.null(xParam)){
+          x.labels <- NULL
+        }else{
+          x.labels<-getAxisLabels(x)[[xParam.ind]]  
+        }
+          
+        if(is.null(yParam)){
+          y.labels <- NULL
+        }else{
+		  y.labels<-getAxisLabels(x)[[yParam.ind]]
+        }
 		
 		#init the scales and x,y lim
 		
