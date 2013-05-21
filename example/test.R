@@ -30,6 +30,7 @@ macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
 
 #
 #macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
+macXML<-"/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST/QA_template.xml"
 #
 #winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
 macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
@@ -68,6 +69,7 @@ GT<-parseWorkspace(ws,name=4
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
                     ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4

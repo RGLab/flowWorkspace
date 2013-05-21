@@ -443,8 +443,13 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
                     paramIDs <- rownames(pData(parameters(data)))
                     key_names <- paste(paramIDs,"G",sep="")
                     kw <- keyword(data)
-                    kw_gains <- kw[key_names]
-                    gains <- as.numeric(kw_gains)
+                    if(as.numeric(kw[["FCSversion"]])>=3){
+                      kw_gains <- kw[key_names]
+                      gains <- as.numeric(kw_gains)                      
+                    }else{
+                      gains <- rep(1,length(paramIDs))
+                    }
+
                     names(gains) <- this_pd$name
                     #select the gain that is not 1
 #                    gains <- gains[as.integer(gains)!=1]
