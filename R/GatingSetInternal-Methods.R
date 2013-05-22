@@ -305,8 +305,9 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			else
 				data<-fs[[sampleName]]
               
-            #alter colnames(replace "/" with "_") so that it is consistent with flowJO convention
-            colnames(data) <- gsub("/","_",colnames(data))
+            #alter colnames(replace "/" with "_") for flowJo X
+            if(wsversion == "1.8")
+              colnames(data) <- gsub("/","_",colnames(data))
 			
 			##################################
 			#Compensating the data

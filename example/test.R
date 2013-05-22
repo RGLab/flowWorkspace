@@ -18,7 +18,7 @@ macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
 macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 
 macXML<-"/loc/no-backup/FlowWorkspaceTest/Lyoplate/Centralized B-cell.xml"
-
+macXML<-list.files(pattern="xml",path="/loc/no-backup/greg/Newell/Newell/data/ITN507/XML workspaces",full=TRUE)[1]
 
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
@@ -67,8 +67,9 @@ GT<-parseWorkspace(ws,name=4
 #					,isNcdf=T
 #					,useInternal=T
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
-#                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#                    ,path="/loc/no-backup/greg/Newell/Newell/data/ITN507/"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
@@ -85,7 +86,7 @@ getGate(GT[[1]],"Excl")@boundaries
 recompute(GT,"Excl/4+")
 recompute(GT,"4+")
 getNodes(GT[[1]])
-getPopStats(GT[[1]])[1:10,c(1,4)]
+getPopStats(GT[[1]])[1:10,c(2:3)]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
 
