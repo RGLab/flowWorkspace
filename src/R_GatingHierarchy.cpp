@@ -256,7 +256,7 @@ END_RCPP
  * non-cdf version
  */
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute){
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val){
 BEGIN_RCPP
 
 
@@ -276,13 +276,15 @@ BEGIN_RCPP
 	gh->loadData(fdata);
 	if(!recompute)
 	{
+		float extend_val = as<float>(_extend_val);
+
 		map<string,float> gains;
 		NumericVector gainsVec= as<NumericVector>(_gains);
 		vector<string> chnlNames = gainsVec.names();
 		for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
 			gains[*it]=gainsVec[*it];
 		}
-		gh->extendGate();
+		gh->extendGate(extend_val);
 		gh->adjustGate(gains);
 		gh->transforming();
 	}

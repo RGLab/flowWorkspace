@@ -170,7 +170,7 @@ public:
 	void gating(VertexID,bool recompute=false);
 	void calgate(VertexID);
 	vector<bool> boolGating(VertexID);
-	void extendGate();
+	void extendGate(float);
 	void adjustGate(map<string,float> & gains);
 	void drawGraph(string out);
 	VertexID getChildren(VertexID source,string childName);

@@ -1,9 +1,6 @@
 #unloadNamespace("flowWorkspace")
 
 library(flowWorkspace)
-#library(ncdfFlow)
-#library(gridExtra)
-#library(Rgraphviz)
 
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
@@ -18,7 +15,7 @@ macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
 macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 
 macXML<-"/loc/no-backup/FlowWorkspaceTest/Lyoplate/Centralized B-cell.xml"
-macXML<-list.files(pattern="xml",path="/loc/no-backup/greg/Newell/Newell/data/ITN507/XML workspaces",full=TRUE)[1]
+macXML<-list.files(pattern="xml",path="~/rglab/workspace/flowWorkspace/data/Newell/XML workspaces",full=TRUE)[1]
 
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
@@ -59,7 +56,7 @@ ws<-openWorkspace(macXML[1],options=1)
 ###############################################################################
 time1<-Sys.time()	
 
-GT<-parseWorkspace(ws,name=4
+GT<-parseWorkspace(ws,name=1
 #					,execute=F
 #					,includeGates=T
                     ,subset=1
@@ -69,11 +66,12 @@ GT<-parseWorkspace(ws,name=4
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
                     ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
-#                    ,path="/loc/no-backup/greg/Newell/Newell/data/ITN507/"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4
+                    ,extend_val=0
 #                    ,column.pattern=colP
 					)
 getSamples(ws)

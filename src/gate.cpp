@@ -73,13 +73,13 @@ void inPolygon_c(double *data, int nrd,
 }//function
 
 /*
- * when the original gate vertices are at the edge of flowFrame range
+ * when the original gate vertices are at the threshold
  * it is likely that the gates were truncated in flowJo xml
  * currently what we can do is to extend it to the real data range to avoid losing
- * the data points that are below flowFrame range (-111 is the constant that is used in flowCore
+ * the data points that are below this theshold range
  * to cut data range)
  */
-void polygonGate::extend(flowData & fdata,unsigned short dMode){
+void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	string x=param.xName();
 	string y=param.yName();
 	valarray<double> xdata(fdata.subset(x));
@@ -93,13 +93,13 @@ void polygonGate::extend(flowData & fdata,unsigned short dMode){
 	double yMin=ydata.min();
 	for(unsigned i=0;i<v.size();i++)
 	{
-		if(v.at(i).x<=-111)
+		if(v.at(i).x<=extend_val)
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
 			v.at(i).x=xMin;
 		}
-		if(v.at(i).y<=-111)
+		if(v.at(i).y<=extend_val)
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
@@ -155,7 +155,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 
 
 }
-void ellipseGate::extend(flowData & fdata,unsigned short dMode){
+void ellipseGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 
 	/*
 	 * get R_min
@@ -163,7 +163,7 @@ void ellipseGate::extend(flowData & fdata,unsigned short dMode){
 	vector<coordinate> v=param.getVertices();
 	for(unsigned i=0;i<v.size();i++)
 	{
-		if((v.at(i).x<=-111)|(v.at(i).y<=-111))
+		if((v.at(i).x<=extend_val)|(v.at(i).y<=extend_val))
 		{
 			throw(domain_error("try to extend the coordinates for ellipse gate!"));
 		}
@@ -301,7 +301,7 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	param.setVertices(vertices);
 
 }
-void rangeGate::extend(flowData & fdata,unsigned short dMode){
+void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	string pName=param.getName();
 	valarray<double> data_1d(fdata.subset(pName));
 
@@ -309,7 +309,7 @@ void rangeGate::extend(flowData & fdata,unsigned short dMode){
 	 * get R_min
 	 */
 	double xMin=data_1d.min();
-	if(param.getMin()<=-111)
+	if(param.getMin()<=extend_val)
 	{
 		if(dMode>=POPULATION_LEVEL)
 			cout <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;

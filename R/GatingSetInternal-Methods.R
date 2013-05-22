@@ -154,13 +154,13 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",xmlParserOption,...){
+.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,flowSetId=NULL,sampNloc="keyword",xmlParserOption, ...){
 
 
 	message("calling c++ parser...")
 #	browser()
 	time1<-Sys.time()
-	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,xmlParserOption = xmlParserOption,dMode=dMode)
+	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,xmlParserOption = xmlParserOption, dMode=dMode)
 #	time_cpp<<-time_cpp+(Sys.time()-time1)
 	message("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
@@ -261,7 +261,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 ############################################################################
 #constructing gating set
 ############################################################################
-.addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,wsversion,...){
+.addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,wsversion,extend_val = 0,...){
 #	browser()
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -472,7 +472,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
                     
                     
                                         
-					.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE)
+					.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
 					#update data with transformed data
 					exprs(data)<-mat
 					fs[[sampleName]]<-data#update original flowSet/ncdfFlowSet

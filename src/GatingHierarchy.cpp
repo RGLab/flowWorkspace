@@ -375,7 +375,7 @@ void GatingHierarchy::transforming()
 /*
  * extend gates if necessary
  */
-void GatingHierarchy::extendGate(){
+void GatingHierarchy::extendGate(float extend_val){
 	if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout <<endl<<"start extending Gates for:"<<fdata.getSampleID()<<endl;
 
@@ -396,7 +396,7 @@ void GatingHierarchy::extendGate(){
 				if(dMode>=POPULATION_LEVEL)
 					cout <<node->getName()<<endl;
 				if(g->getType()!=BOOLGATE)
-					g->extend(fdata,dMode);
+					g->extend(fdata,extend_val,dMode);
 			}
 		}
 }
