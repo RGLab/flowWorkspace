@@ -56,7 +56,7 @@ ws<-openWorkspace(macXML[1],options=1)
 ###############################################################################
 time1<-Sys.time()	
 
-GT<-parseWorkspace(ws,name=1
+GT<-parseWorkspace(ws,name=4
 #					,execute=F
 #					,includeGates=T
                     ,subset=1

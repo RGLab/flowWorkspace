@@ -30,7 +30,7 @@
       if(cdf == "move"){
         message("moving ncdf...")
         ncFile <- file.path(path,basename(from))
-        system(paste("mv",from,ncFile))
+        file.rename(from,ncFile)
         #reset the file path for ncdfFlowSet
         ncFlowSet(G)@file <- ncFile
       }else{
