@@ -26,11 +26,11 @@
     if(cdf != "skip" && flowWorkspace:::isNcdf(G[[1]]))
     {
       from<-ncFlowSet(G)@file
-      
+#      browser()
       if(cdf == "move"){
         message("moving ncdf...")
         ncFile <- file.path(path,basename(from))
-        file.rename(from,ncFile)
+        res <- file.rename(from,ncFile)
         #reset the file path for ncdfFlowSet
         ncFlowSet(G)@file <- ncFile
       }else{
@@ -39,17 +39,19 @@
         
         if(cdf == "copy"){
           message("saving ncdf...")
-          file.copy(from=from,to=ncFile)
+          res <- file.copy(from=from,to=ncFile)
         }
         else if(cdf == "symlink"){
           message("creating the symbolic link to ncdf...")
-          file.symlink(from=from,to=ncFile)
+          res <- file.symlink(from=from,to=ncFile)
         }else if(cdf == "link"){
           message("creating the hard link to ncdf...")
-          file.link(from=from,to=ncFile)
+          res <- file.link(from=from,to=ncFile)
         }
       } 
-      
+      if(!res){
+        stop("failed to ",cdf," ",from,"!")
+      }
       filestoSave<-c(filestoSave,ncFile)
     }
     
