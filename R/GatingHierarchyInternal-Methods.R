@@ -60,7 +60,74 @@ setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,...){
       .plotGatingTree(g,...)
       
     })
+.getAllDescendants <- function(gh,startNode,nodelist){
+  
+  children_nodes <- getChildren(gh,startNode)
+  if(length(children_nodes)>0){
+    for(this_parent in children_nodes){
+      nodelist$v <- c(nodelist$v, this_parent)
+      .getAllDescendants (gh,this_parent,nodelist)
+    }  
+  }
+  
+}
+#plot subgraph
+#TODO:merge with plot method in flowWorkspace
+setMethod("plot",c("GatingHierarchyInternal","numeric"),function(x,y,...){
+      
+      
+      # get graphNEL object
+      g <- flowWorkspace:::.getGraph(x)
+      
+      
+      if(length(y)==1){#use it as the root
+        nodelist <- new.env(parent=emptyenv())
+        nodelist$v <-integer()
+        .getAllDescendants (x,y,nodelist)  
+        
+        
+        
+        nodelist$v <- c(nodelist$v,y)
+        #assume the number y is consistent with  R graph node name: N_x
+        subNode_Ind <- nodelist$v
+        
+        #convert numeric index to node name
+        #      allNodes <- nodes(g)
+        #      startNode <- paste("N",y,sep="_")
+        
+        #get ride of parents (since dfs doesn't like it)
+        #      g <- subGraph(allNodes[-(1:(y-1))],g)
+        #do dfs search
+        #      subGraphs <-dfs(g,startNode)
+        #      if(any(grepl("discovered",names(subGraphs)))){
+        #        
+        #        subNodes <- subGraphs$discovered  
+        #      }else{
+        #        #if muliple graphs,pick the first one that contains the current startNode
+        #        subGraphs <- subGraphs[[1]]
+        #        subNodes <- subGraphs$discovered
+        #      }
+        
+        
+      }else{
+        #when y is a vector, use it to subset the graph
+        subNode_Ind <- y
+      }
+      
+      subNodes <- paste("N",subNode_Ind-1,sep="_")
+      if(length(subNodes)<=1){
+        stop("Rgraphviz doesn't know how to plot leaf node!")
+      }
+      g <- subGraph(subNodes, g)
+      flowWorkspace:::.plotGatingTree(g,...)
+      
+    })
 
+setMethod("plot",c("GatingHierarchyInternal","character"),function(x,y,...){
+      
+      plot(x,flowWorkspace:::.getNodeInd(x,y))
+      
+    })
 setMethod("show","GatingHierarchyInternal",function(object){
 			cat("\tFCS File: ",getSample(object),"\n");
 			cat("\tGatingHierarchy with ",length(getNodes(object))," gates\n");

@@ -2,6 +2,107 @@
 # it could cause data redudancy if only a subset(view of ncdfFlowSet) is desired to be saved
 ###############################################################################
 
+######################################
+##archive/unarchive to/from a folder 
+##it is faster than tar-version,but require
+##a new dest folder to avoid overwriting
+##the old data by mistake
+##currently not exposed to end user
+######################################
+save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
+#  browser()
+  cdf <- match.arg(cdf,c("copy","move","skip","symlink","link"))
+  guid <- G@guid
+  if(length(guid)==0){
+    G@guid <- flowWorkspace:::.uuid_gen()
+    guid <- G@guid
+  }
+  rds_toSave <- paste(guid,"rds",sep=".")
+  dat_toSave <- paste(guid,"dat",sep=".")
+  
+  if(file.exists(path)){
+    path <- normalizePath(path,mustWork = TRUE)
+    if(overwrite){
+      this_files <- list.files(path)
+      #validity check for non-empty folder
+      if(length(this_files)!=0)
+      {
+        rds_ind <- grep("\\.rds$",this_files)
+        dat_ind <- grep("\\.dat$",this_files)
+        
+        if(length(rds_ind)!=1||length(dat_ind)!=1){
+          stop("Not a valid GatingSet archiving folder!")
+        }else{
+          this_rds <- this_files[rds_ind]
+          this_dat <- this_files[dat_ind]
+          
+          if(this_rds!=rds_toSave||this_dat!=dat_toSave){
+            stop("The GatingSet doesn't match the archived files in: ", path)
+          }
+        }
+      }
+      
+      #validity check for cdf
+      if(flowWorkspace:::isNcdf(G[[1]])){
+        if(length(this_files)!=0){
+          cdf_ind <- grep("\\.nc$",this_files)
+          if(length(cdf_ind) != 1){
+            stop("Not a valid GatingSet archiving folder!")
+          }  
+        }
+        
+      }
+      if(length(this_files)!=0)
+      {
+        #start to delete the old files in path
+        file.remove(file.path(path,rds_toSave))
+        file.remove(file.path(path,dat_toSave))
+        
+        if(flowWorkspace:::isNcdf(G[[1]])){
+          #check if the target path is the same as current cdf path
+#            browser()
+          this_cdf <- file.path(path,this_files[cdf_ind])
+          if(normalizePath(getData(G)@file)==this_cdf){
+            cdf <- "skip"
+          }
+          if(cdf != "skip"){
+            file.remove(this_cdf)
+          }
+        }
+      }
+      
+    }else{
+      stop(path,"' already exists!")  
+    }
+    
+  }else{
+    dir.create(path = path)
+    #do the dir normalization again after it is created
+    path <- normalizePath(path,mustWork = TRUE)
+    
+  }
+#  browser()
+  invisible(flowWorkspace:::.save_gs(G=G,path = path, cdf = cdf, ...))
+  message("Done\nTo reload it, use 'load_gs' function\n")
+  
+  
+}
+
+
+load_gs<-function(path){
+#  browser()
+  path <- normalizePath(path,mustWork = TRUE)
+  if(!file.exists(path))
+    stop(path,"' not found!")
+  files<-list.files(path)
+#   browser()
+  flowWorkspace:::.load_gs(output = path, files = files)$gs
+  
+}
+
+
+
+
 ###serialization functions to be called by wrapper APIs
 ### when save.cdf == FALSE, skip saving cdf file
 .save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link")){
