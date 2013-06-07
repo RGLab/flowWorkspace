@@ -45,16 +45,21 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
       #get the position of logical operators
       op_ind<-unlist(gregexpr(pattern=pattern,expr))
       #extract these operators
-      op<-trimWhiteSpace(substring(expr,op_ind,op_ind))
+      op<-flowWorkspace:::trimWhiteSpace(substring(expr,op_ind,op_ind))
       ##append & for the first node element(as C parser convention requires)
-      op<-c("&",op)
+      if(nchar(op)==0){
+        op <- "&"
+      }else{
+        op <- c("&",op)        
+      }
+
       #split into node elements by operators
       refs<-unlist(strsplit(expr,split=pattern)) 
       refs<-trimWhiteSpace(refs)
       #extract is not operator
-      isNot<-as.logical(regexpr("!",refs)+1) 
+      isNot <- as.logical(regexpr("!",refs)+1) 
       #strip is not operator from node elements
-      refs<-gsub("!","",refs)
+      refs <- gsub("!","",refs)
       
       nNodes<-length(refs)
       if(length(isNot)!=nNodes)
