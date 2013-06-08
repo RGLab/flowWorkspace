@@ -47,8 +47,10 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
       #extract these operators
       op<-flowWorkspace:::trimWhiteSpace(substring(expr,op_ind,op_ind))
       ##append & for the first node element(as C parser convention requires)
-      if(nchar(op)==0){
-        op <- "&"
+      if(length(op)==1){
+        if(nchar(op)==0){
+          op <- "&"
+        }
       }else{
         op <- c("&",op)        
       }

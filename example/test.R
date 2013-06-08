@@ -1,4 +1,4 @@
-#unloadNamespace("flowWorkspace")
+unloadNamespace("flowWorkspace")
 
 library(flowWorkspace)
 
@@ -77,7 +77,9 @@ GT<-parseWorkspace(ws,name=4
 getSamples(ws)
 GT[[1]]
 getNodes(GT[[1]])
-
+g <- getGate(GT[[1]],110)
+add(GT,g,parent="4+",name="test")
+plotGate(GT[[1]],110,bool=T)
 setNode(GT@set[[1]],"(19+ 20-)","19+20-")
 length(which(getIndices(GT[[1]],"Excl")))
 getGate(GT[[1]],"Excl")@boundaries

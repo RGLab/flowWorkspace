@@ -857,7 +857,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	#################################
 	# setup axis labels and scales
 	################################
-	if(class(curGates[[1]])=="BooleanGate")
+	if(class(curGates[[1]])=="booleanFilter")
 	{
 		params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
 		overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
@@ -983,7 +983,7 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,xlab=NULL,ylab=N
 #		browser()
 		isMatched<-lapply(cids,function(cid){
 					g<-getGate(G[[1]],cid)
-					if(class(g)!="BooleanGate") 
+					if(class(g)!="booleanFilter") 
 					{
 						prj<-parameters(g)
 						if(length(prj)==1)

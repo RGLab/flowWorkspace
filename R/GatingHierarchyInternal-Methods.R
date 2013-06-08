@@ -342,7 +342,7 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 				return (NA)
 			else
 			{
-#				browser()
+
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
 				filterId<-getNodes(obj)[y]
 				if(g$type==1)
@@ -368,8 +368,16 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
 					fullPaths<-paste("/",refPaths,sep="")
 					nodes<-nodeNames[match(fullPaths,nodePaths)]
 					names(nodes)<-refPaths
-					g$ref<-nodes
-					attr(g,"class")<-"BooleanGate"	
+                    #get rid of the first op
+                    g$v2[1] <- "" 
+                    boolExpr <- paste(g$v2, g$v,refPaths,sep="")
+                    boolExpr <- paste(boolExpr,collapse="")
+#                   browser()
+                    boolExpr <- as.symbol(boolExpr)
+#                    boolExpr <- deparse(boolExpr)
+                    g <- eval(substitute(booleanFilter(xx),list(xx=boolExpr)))
+#					g$ref<-nodes
+#					attr(g,"class")<-"BooleanGate"	
 					g
 				}else
 					stop("not supported gate type",g$type)
@@ -448,7 +456,7 @@ setMethod("getData",signature(obj="GatingHierarchyInternal",y="character"),funct
     })
     
 .isBoolGate<-function(x,y){
-	return (class(getGate(x,y))=="BooleanGate")
+	return (class(getGate(x,y))=="booleanFilter")
 }
 #setMethod("getDimensions",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,index=FALSE){
 ##			browser()
@@ -768,7 +776,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 			#################################
 			# setup axis labels and scales
 			################################
-			if(class(curGate)=="BooleanGate")
+			if(class(curGate)=="booleanFilter")
 			{
 
 				if(!is.null(overlay))
