@@ -50,6 +50,8 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
       if(length(op)==1){
         if(nchar(op)==0){
           op <- "&"
+        }else{
+          op <- c("&",op)
         }
       }else{
         op <- c("&",op)        
