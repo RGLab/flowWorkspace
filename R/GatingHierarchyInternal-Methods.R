@@ -1,7 +1,7 @@
 
 #20110314
 #TODO wrap isNcdf slot with get/set methods
-setGeneric("isNcdf", function(x){standardGeneric("isNcdf")})
+setGeneric("isNcdf", function(x)standardGeneric("isNcdf"))
 setMethod("isNcdf",c("GatingHierarchyInternal"),function(x){
 #			browser()
 			fs<-x@tree@nodeData@defaults$data$data$ncfs

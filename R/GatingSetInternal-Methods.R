@@ -936,6 +936,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 				,stat=stat
 				,panel=panelFunc
 				,overlay=overlay
+                ,xlim = xlim
+                ,ylim = ylim
 				,...
 		)
 	}else
@@ -959,14 +961,10 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 								,data=parentdata[,params]
 								,filter=curGates
 								,xlab=xlab
-#								,ylab=axisObject$ylab
-#								,margin=margin
-#								,smooth=smooth
-#								,scales=axisObject$scales
 								,main=main
 								,stat=stat
 								,fitGate=fitGate
-#								,panel=panelFunc
+                                ,xlim = xlim
 								,...
 								)
 		}
@@ -1039,7 +1037,7 @@ plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,xlab=NULL,ylab=N
 
 
 
-setGeneric("clone", function(x,...){standardGeneric("clone")})
+setGeneric("clone", function(x,...)standardGeneric("clone"))
 setMethod("clone",c("GatingSetInternal"),function(x,...){
 
 			clone<-x
@@ -1098,7 +1096,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 			.cloneGatingSet(x,...)
 		})
 
-setGeneric("recompute", function(x,...){standardGeneric("recompute")})
+setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 setMethod("recompute",c("GatingSetInternal"),function(x,y){
 			if(missing(y))
 				y<-1
