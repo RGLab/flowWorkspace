@@ -739,7 +739,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 
 #fitGate is used to disable behavior of plotting the gate region in 1d densityplot
 #overlay is either the gate indices or logical vector(i.e. event indices)
-.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,xlim=NULL,ylim=NULL,stat=TRUE,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL,...){			
+.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,stat=TRUE,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL,...){			
 		
 			type<- match.arg(type)
 			if(is.list(y))
