@@ -814,7 +814,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #TODO:merge this to .plotGate routine
 #fitGate is used to disable behavior of plotting the gate region in 1d densityplot
 #overlay is either the gate indice list or event indices list
-.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,stat=TRUE,fitGate=FALSE,overlay=NULL,...){
+.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,stat=TRUE,fitGate=FALSE,overlay=NULL, stats, ...){
 
 	samples<-getSamples(x)
 	type<- match.arg(type)
@@ -837,7 +837,16 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 					
 					filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
 				},simplify=F)
-		curGates<-as(curGates,"filtersList")
+        curGates<-as(curGates,"filtersList")
+        
+        if(missing(stats)){
+          stats <- lapply(x,function(curGh){
+                      lapply(y$popIds,function(y){
+                          getProp(curGh,getNodes(curGh,y),flowJo = F)
+                        })
+              })  
+        }    
+		
 	}else
 	{
 		curGates<-getGate(x,y)
@@ -847,7 +856,12 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 			invisible();			
 			return(NULL)
 		}
-		
+        if(missing(stats)){
+          stats <- lapply(x,function(curGh){
+                getProp(curGh,getNodes(curGh,y),flowJo = F)
+              }) 
+        }    
+        
 	}			
 	
 	parentdata<-getData(x,pid)
@@ -913,6 +927,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 				overlay<-Subset(getData(x),overlay)[,params]
 		}
 		
+     
 		#################################
 		# the actual plotting
 		################################
@@ -924,6 +939,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 			formula<-as.formula(formula)
 		}
 		
+        
 		res<-xyplot(x=formula
 				,data=parentdata[,params]
 				,filter=curGates
@@ -933,7 +949,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 				,smooth=smooth
 				,scales=axisObject$scales
 				,main=main
-				,stat=stat
+				,stats=stats
 				,panel=panelFunc
 				,overlay=overlay
 				,...
