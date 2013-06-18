@@ -883,7 +883,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 		#							,smooth=smooth
 		#							,scales=axisObject$scales
 									,main=main
-									,stat=stat
+                                    ,stats=stats
 									,fitGate=fitGate
 		#							,panel=panelFunc
 									,...

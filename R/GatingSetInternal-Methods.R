@@ -976,7 +976,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 								,filter=curGates
 								,xlab=xlab
 								,main=main
-								,stat=stat
+                                ,stats=stats
 								,fitGate=fitGate
 								,...
 								)
