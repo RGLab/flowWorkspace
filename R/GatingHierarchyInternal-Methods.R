@@ -739,7 +739,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 
 #fitGate is used to disable behavior of plotting the gate region in 1d densityplot
 #overlay is either the gate indices or logical vector(i.e. event indices)
-.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,stat=TRUE,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL, stats,...){			
+.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL, stats, ...){			
 		
 			type<- match.arg(type)
 			if(is.list(y))
@@ -802,7 +802,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 					params<-rev(parameters(curGate))
 				
 			}
-			panelFunc<-panel.xyplot.flowframe
+#			panelFunc<-panel.xyplot.flowSet
 			
 			
 			
@@ -860,7 +860,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 							,scales=axisObject$scales
 							,main=main
 							,stats = stats
-							,panel=panelFunc
+#							,panel=panelFunc
 							,overlay=overlay
 							,...
 						)

@@ -814,7 +814,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #TODO:merge this to .plotGate routine
 #fitGate is used to disable behavior of plotting the gate region in 1d densityplot
 #overlay is either the gate indice list or event indices list
-.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,stat=TRUE,fitGate=FALSE,overlay=NULL, stats, ...){
+.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats, ...){
 
 	samples<-getSamples(x)
 	type<- match.arg(type)
