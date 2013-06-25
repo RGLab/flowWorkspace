@@ -385,7 +385,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	
 	nFiles<-length(files)
 	set<-vector(mode="list",nFiles)	
-
+    prefixColNames <- NULL
 	for(i in 1:nFiles)
 	{
 		file<-files[i]		
@@ -478,31 +478,36 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			if(cid!="-2")
 			{
 				
-				##add prefix to parameter names
-				cnd<-colnames(data)
-				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
-				wh<-match(parameters(compobj),cnd)
+				#get prefix if it is not set yet
+                if(is.null(prefixColNames)){
+                  cnd<-colnames(data)
+                  if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
+                  wh<-match(parameters(compobj),cnd)
+                  
+                  cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+                  
+                  prefixColNames <- cnd  
+                }
 				
-				cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
 				
-				#colnames(data)<-cnd;
+                #update colnames in flowFrame with prefix 
 				e<-exprs(data)
 				d<-description(data);
 				p<-parameters(data);
-				p@data$name<-cnd
-				colnames(e)<-cnd;
+				p@data$name<-prefixColNames
+				colnames(e)<-prefixColNames;
 				data<-new("flowFrame",exprs=e,description=d,parameters=p)
 	#			browser()
 				#save raw or compensated data 
 				message("saving compensated data");
 				if(isNcdf)
-					addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
+					fs[[sampleName, check.names = FALSE]] <- data #once comp is moved to c++,this step can be skipped
 				else
 					assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
 			}else{
 				#if cid is -2 add to ncdf flow set. Fixes bug where a missing compensation matrix with ncdfFlow does not save the uncompensated data.
 				if(isNcdf)
-					addFrame(fs,data,sampleName)
+					fs[[sampleName]] <- data
 			}	
 		}
 		
@@ -522,7 +527,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 		#update colnames slot for flowSet
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
-		colnames(fs)<-colnames(data)
+		colnames(fs) <- prefixColNames 
 		
 		#attach filename and colnames to internal stucture for gating
 
@@ -578,7 +583,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 					.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
 					#update data with transformed data
 					exprs(data)<-mat
-					fs[[sampleName]]<-data#update original flowSet/ncdfFlowSet
+					fs[[sampleName]] <- data#update original flowSet/ncdfFlowSet
 						
 #					time_cpp<<-time_cpp+(Sys.time()-time1)
 #				browser()
