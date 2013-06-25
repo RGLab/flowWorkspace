@@ -850,7 +850,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                             curGh <- x[[thisSample]]
                           getProp(curGh,getNodes(curGh,y),flowJo = F)
                         })
-              })  
+              },simplify = FALSE)  
         }    
 		
 	}else
@@ -866,7 +866,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
           stats <- sapply(samples,function(thisSample){
                           curGh <- x[[thisSample]]
                           getProp(curGh,getNodes(curGh,y),flowJo = F)
-              }) 
+              },simplify = FALSE) 
         }    
         
 	}			
