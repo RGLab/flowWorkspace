@@ -845,8 +845,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         curGates<-as(curGates,"filtersList")
         
         if(missing(stats)){
-          stats <- lapply(x,function(curGh){
+          stats <- lapply(samples,function(thisSample){
                       lapply(y$popIds,function(y){
+                            curGh <- x[[thisSample]]
                           getProp(curGh,getNodes(curGh,y),flowJo = F)
                         })
               })  
