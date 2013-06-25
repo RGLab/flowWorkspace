@@ -159,7 +159,7 @@ setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30
       }
 #      browser()
       res <- lapply(obj,function(gs){
-                NcdfFlowSetToFlowSet(getData(gs,y))
+                as.flowSet(getData(gs,y))
           })
       fs<-res[[1]]
       if(length(res)>1){
