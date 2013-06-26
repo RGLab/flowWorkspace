@@ -56,18 +56,18 @@ ws<-openWorkspace(macXML[1],options=1)
 ###############################################################################
 time1<-Sys.time()	
 
-GT<-parseWorkspace(ws,name=4
+GT<-parseWorkspace(ws,name=2
 #					,execute=F
 #					,includeGates=T
                     ,subset=1
 #					,subset=c("517614.fcs")
-#					,isNcdf=T
+					,isNcdf=T
 #					,useInternal=T
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
-                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+#                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
-#                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
+                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4

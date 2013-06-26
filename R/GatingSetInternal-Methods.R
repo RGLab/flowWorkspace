@@ -534,7 +534,8 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 		#update colnames 
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
-		colnames(fs) <- prefixColNames 
+		if(!is.null(prefixColNames))
+          colnames(fs) <- prefixColNames 
 		
 		#attach filename and colnames to internal stucture for gating
 
