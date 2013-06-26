@@ -491,19 +491,26 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				
 				
                 #update colnames in flowFrame with prefix 
-				e<-exprs(data)
-				d<-description(data);
-				p<-parameters(data);
-				p@data$name<-prefixColNames
-				colnames(e)<-prefixColNames;
-				data<-new("flowFrame",exprs=e,description=d,parameters=p)
+#				e<-exprs(data)
+#				d<-description(data);
+#				p<-parameters(data);
+#				p@data$name<-prefixColNames
+#				colnames(e)<-prefixColNames;
+#				data<-new("flowFrame",exprs=e,description=d,parameters=p)
 	#			browser()
-				#save raw or compensated data 
+				
+                #save raw or compensated data
+                #once comp is moved to c++,this step can be skipped
 				message("saving compensated data");
-				if(isNcdf)
-					fs[[sampleName, check.names = FALSE]] <- data #once comp is moved to c++,this step can be skipped
+				if(isNcdf){
+                  #save mat only    
+                  fs[[sampleName, only.exprs = TRUE]] <- data 
+                  #update descriptions since it is empty at this point
+                  fs@frames[[sampleName]]@description <- description(data)
+                }
+					
 				else
-					assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
+					assign(sampleName,data,fs@frames)
 			}else{
 				#if cid is -2 add to ncdf flow set. Fixes bug where a missing compensation matrix with ncdfFlow does not save the uncompensated data.
 				if(isNcdf)
@@ -524,7 +531,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	if(execute)
 	{
 #		browser()
-		#update colnames slot for flowSet
+		#update colnames 
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
 		colnames(fs) <- prefixColNames 
