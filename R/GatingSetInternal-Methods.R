@@ -819,8 +819,8 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			
 		})
 setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
-     
-      ind <- .getNodeInd(x[[1]],y)
+#     browser()
+      ind <- sapply(y, function(i).getNodeInd(x[[1]],i))
       plotGate(x,ind,...)
     })
 
