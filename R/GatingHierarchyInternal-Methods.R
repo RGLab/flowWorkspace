@@ -620,7 +620,7 @@ setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
 #TODO: to inverse transform the range in order to display the raw scale
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
 			
-            ind <- .getNodeInd(x,y)
+      ind <- sapply(y, function(i).getNodeInd(x, i))
 			plotGate(x,ind,...)
 			
 })
