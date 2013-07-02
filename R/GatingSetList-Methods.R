@@ -157,17 +157,8 @@ setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30
       if(length(getSamples(obj))>max){
         stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
       }
-#      browser()
-      res <- lapply(obj,function(gs){
-                as.flowSet(getData(gs,y))
-          })
-      fs<-res[[1]]
-      if(length(res)>1){
-        for(i in 2:length(res))
-          fs<-rbind2(fs,res[[i]])  
-      }
+    #to speed up reading, we need to do subsetting on channels before the coersion
       
-      fs
     })
 
 setMethod("pData","GatingSetList",function(object){
@@ -209,9 +200,11 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,
 setMethod("plotGate",signature(x="GatingSetList",y="numeric"),function(x,y, ...){
       selectMethod("plotGate",sig=c(x="GatingSetInternal",y="numeric"))(x=x, y=y, ...)
       
-      
     })
 
+setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
+      selectMethod("plotGate",sig=c(x="GatingSetInternal",y="character"))(x=x, y=y, ...)
+    })
 
 setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats,...)

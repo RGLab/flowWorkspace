@@ -630,7 +630,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 		
 		plotGate(x,y,...)
 		})
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE,...){
+    
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 				return();
@@ -643,9 +644,9 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 						
 						return(.plotGate(x,y,...))
 					})
-			
+#			browser()
 			if(arrange)			
-				do.call(grid.arrange,c(plotObjs,main=main))
+				do.call(grid.arrange,c(plotObjs,main=main,gpar))
 			else
 				plotObjs
 			

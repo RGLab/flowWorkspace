@@ -824,12 +824,93 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       plotGate(x,ind,...)
     })
 
+#' preporcess the gating tree to prepare for the plotGate
+#' return the params, gates and axis
+.preplot <- function(x, y, type, stats, ...){
+  samples <- getSamples(x)
+#  browser()
+  if(is.list(y))
+  {
+#       browser()
+    curGates<-sapply(samples,function(curSample){
+          
+          filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
+        },simplify=F)
+    curGates<-as(curGates,"filtersList")
+    
+    if(missing(stats)){
+      stats <- sapply(samples,function(thisSample){
+            lapply(y$popIds,function(y){
+                  curGh <- x[[thisSample]]
+                  getProp(curGh,getNodes(curGh,y),flowJo = F)
+                })
+          },simplify = FALSE)  
+    }    
+    
+  }else
+  {
+    curGates<-getGate(x,y)
+    
+    if(suppressWarnings(any(is.na(curGates)))){
+      message("Can't plot. There is no gate defined for node ",getNodes(gh,y));
+      invisible();            
+      return(NULL)
+    }
+    if(missing(stats)){
+      stats <- sapply(samples,function(thisSample){
+            curGh <- x[[thisSample]]
+            getProp(curGh,getNodes(curGh,y),flowJo = F)
+          },simplify = FALSE) 
+    }else
+      stats = stats
+    
+  }
+  
+  if(class(curGates[[1]])=="booleanFilter")
+  {
+    params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
+    overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
+    curGates<-NULL
+  }else
+  {
+    if(class(curGates[[1]])=="filters")
+      params<-rev(parameters(curGates[[1]][[1]]))
+    else
+      params<-rev(parameters(curGates[[1]]))
+    
+  }
+  if(type=="xyplot")
+  {
+    if(length(params)==1)
+    {
+      yParam<-"SSC-A"
+      
+      if(params=="SSC-A")
+        xParam<-"FSC-A"
+      else
+        xParam<-params
+#      params<-c(yParam,xParam)
+    }else
+    {
+      yParam=params[1]
+      xParam=params[2]
+      
+    }
+    
+  }else{
+    xParam=params
+    yParam <- NULL
+  }
+  
+  
+  list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats)
+}
 #TODO:merge this to .plotGate routine
 #fitGate is used to disable behavior of plotting the gate region in 1d densityplot
 #overlay is either the gate indice list or event indices list
-.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats, ...){
+.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats , ...){
 
-	samples<-getSamples(x)
+	
 	type<- match.arg(type)
 	
 	gh<-x[[1]]
@@ -838,95 +919,62 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	else
 		pid<-getParent(gh,y)
 	
+    #set the title  
 	if(is.null(main)){
 		fjName<-getNodes(gh,pid,isPath=T)
 		main<-fjName
 	}
 	
-	if(is.list(y))
-	{
-#		browser()
-		curGates<-sapply(samples,function(curSample){
-					
-					filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
-				},simplify=F)
-        curGates<-as(curGates,"filtersList")
-        
-        if(missing(stats)){
-          stats <- sapply(samples,function(thisSample){
-                      lapply(y$popIds,function(y){
-                            curGh <- x[[thisSample]]
-                          getProp(curGh,getNodes(curGh,y),flowJo = F)
-                        })
-              },simplify = FALSE)  
-        }    
-		
-	}else
-	{
-		curGates<-getGate(x,y)
-		
-		if(suppressWarnings(any(is.na(curGates)))){
-			message("Can't plot. There is no gate defined for node ",getNodes(gh,y));
-			invisible();			
-			return(NULL)
-		}
-        if(missing(stats)){
-          stats <- sapply(samples,function(thisSample){
-                          curGh <- x[[thisSample]]
-                          getProp(curGh,getNodes(curGh,y),flowJo = F)
-              },simplify = FALSE) 
-        }    
-        
-	}			
-	
+	#get data
 	parentdata<-getData(x,pid)
 	parentFrame<-parentdata[[1]]
-			
+
+    #set the smoothing option
 	smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
+    
+#    browser()
 	#################################
 	# setup axis labels and scales
 	################################
-	if(class(curGates[[1]])=="booleanFilter")
-	{
-		params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
-		overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
-		curGates<-NULL
-	}else
-	{
-		if(class(curGates[[1]])=="filters")
-			params<-rev(parameters(curGates[[1]][[1]]))
-		else
-			params<-rev(parameters(curGates[[1]]))
-		
-	}
-	panelFunc<-panel.xyplot.flowset
-		
-	
+    parseRes <- .preplot (x, y, type, stats, ...)
+    
+    curGates <- parseRes$gates
+    xParam <- parseRes$xParam
+    yParam <- parseRes$yParam
+    params <- c(yParam,xParam)
+    stats <- parseRes$stats
+    
+    axisObject<-.formatAxis(gh,parentFrame, xParam, yParam,...)
+    
+    if(is.null(xlab)){
+      xlab <- axisObject$xlab
+    }
+    
+    #set the formula
+    if(is.null(formula))
+    {
+      formula<-mkformula(params,isChar=TRUE)
+      if(!is.null(cond))
+        formula<-paste(formula,cond,sep="|")
+      formula<-as.formula(formula)
+    }
+
+    thisCall<-quote(plot(x=formula
+                          ,data=parentdata[,params]
+                          ,filter=curGates
+                          ,xlab=xlab
+                          ,scales=axisObject$scales
+                          ,main=main
+                          ,...
+                          )
+                      )
+#    browser()                      
+    if(!is.null(stats)){
+      thisCall <- as.call(c(as.list(thisCall),list(stats = stats)))
+    }                      
 	if(type=="xyplot")
 	{
-		if(length(params)==1)
-		{
-			yParam<-"SSC-A"
-			
-			if(params=="SSC-A")
-				xParam<-"FSC-A"
-			else
-				xParam<-params
-			params<-c(yParam,xParam)
-		}else
-		{
-			yParam=params[1]
-			xParam=params[2]
-			
-		}
-	
-		axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
-        if(is.null(xlab)){
-          xlab <- axisObject$xlab
-        }
-        if(is.null(ylab)){
-          ylab <- axisObject$ylab
-        }
+		
 		#################################
 		# calcuate overlay frames
 		################################
@@ -942,62 +990,35 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 				overlay<-Subset(getData(x),overlay)[,params]
 		}
 		
-     
+        
+        if(is.null(ylab)){
+          ylab <- axisObject$ylab
+        }
 		#################################
 		# the actual plotting
 		################################
-		if(is.null(formula))
-		{
-			formula<-mkformula(params,isChar=TRUE)
-			if(!is.null(cond))
-				formula<-paste(formula,cond,sep="|")
-			formula<-as.formula(formula)
-		}
+#        browser()
+        thisCall<-as.call(c(as.list(thisCall)
+                            ,ylab=ylab
+                            ,smooth=smooth
+                            ,overlay=overlay
+                            )
+                          )
+        thisCall[[1]]<-quote(xyplot)                          
 		
-        
-		res<-xyplot(x=formula
-				,data=parentdata[,params]
-				,filter=curGates
-				,xlab=xlab
-				,ylab=ylab
-				,margin=margin
-				,smooth=smooth
-				,scales=axisObject$scales
-				,main=main
-				,stats=stats
-				,panel=panelFunc
-				,overlay=overlay
-				,...
-		)
 	}else
 	{
 		if(length(params)==1)
 		{
-			
-#			browser()
-			axisObject<-.formatAxis(gh,parentFrame,xParam=params,yParam=NULL,...)
-            if(is.null(xlab)){
-              xlab <- axisObject$xlab
-            }
-			if(is.null(formula))
-			{
-				formula<-mkformula(params,isChar=TRUE)
-				if(!is.null(cond))
-					formula<-paste(formula,cond,sep="|")
-				formula<-as.formula(formula)
-			}
-			res<-densityplot(x=formula
-								,data=parentdata[,params]
-								,filter=curGates
-								,xlab=xlab
-								,main=main
-                                ,stats=stats
-								,fitGate=fitGate
-								,...
-								)
+            
+          thisCall<-as.call(c(as.list(thisCall)
+                              ,fitGate=fitGate
+                              )
+                           )
+          thisCall[[1]]<-quote(densityplot) 	
 		}
 	}
-	return(res)	
+	return(eval(thisCall))	
 }
 ##plot by prarent index
 plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,xlab=NULL,ylab=NULL,...){
