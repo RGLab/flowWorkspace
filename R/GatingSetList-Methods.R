@@ -158,7 +158,16 @@ setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30
         stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
       }
     #to speed up reading, we need to do subsetting on channels before the coersion
+      res <- lapply(obj,function(gs){
+            as.flowSet(getData(gs,y))
+          })
+      fs<-res[[1]]
+      if(length(res)>1){
+        for(i in 2:length(res))
+          fs<-rbind2(fs,res[[i]])
+      }
       
+      fs
     })
 
 setMethod("pData","GatingSetList",function(object){
