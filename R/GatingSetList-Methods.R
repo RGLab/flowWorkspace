@@ -150,16 +150,17 @@ setMethod("getData",c(obj="GatingSetList",y="missing"),function(obj,y,...){
 setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,...){
 #      browser()
       this_node <- getNodes(obj[[1]])[y]
-      getData(obj,this_node)
+      getData(obj,this_node,...)
     })
 setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30, ...){
 #      browser()
       if(length(getSamples(obj))>max){
         stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
       }
-    #to speed up reading, we need to do subsetting on channels before the coersion
+    
       res <- lapply(obj,function(gs){
-            as.flowSet(getData(gs,y))
+            ncfs <- getData(gs,y, ...)
+            as.flowSet(ncfs)
           })
       fs<-res[[1]]
       if(length(res)>1){

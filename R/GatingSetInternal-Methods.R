@@ -925,13 +925,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		main<-fjName
 	}
 	
-	#get data
-	parentdata<-getData(x,pid)
-	parentFrame<-parentdata[[1]]
-
-    #set the smoothing option
-	smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
-    
+	    
 #    browser()
 	#################################
 	# setup axis labels and scales
@@ -943,6 +937,16 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     yParam <- parseRes$yParam
     params <- c(yParam,xParam)
     stats <- parseRes$stats
+    
+    #get data 
+    #params is used for GatingSetList to subset on channels to speed up loading data from disk
+    #it is ignored for GatingSet
+    parentdata<-getData(x,pid,params = params)
+    parentFrame<-parentdata[[1]]
+    
+    #set the smoothing option
+    smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
+    
     
     axisObject<-.formatAxis(gh,parentFrame, xParam, yParam,...)
     
@@ -1206,18 +1210,20 @@ setMethod("show","GatingSetInternal",function(object){
 setMethod("getSamples","GatingSetInternal",function(x){
       sampleNames(getData(x))
     })
-setMethod("getData",signature(obj="GatingSetInternal",y="missing"),function(obj,y,tsort=FALSE){
-      
-        ncFlowSet(obj)
+setMethod("getData",signature(obj="GatingSetInternal",y="missing"),function(obj,y,tsort=FALSE, params = NULL, ...){
+      this_data <- ncFlowSet(obj)
+      if(!is.null(params))
+        this_data <- this_data[,params]
+      this_data  
     })
-setMethod("getData",signature(obj="GatingSetInternal",y="numeric"),function(obj,y,tsort=FALSE){
+setMethod("getData",signature(obj="GatingSetInternal",y="numeric"),function(obj,y,tsort=FALSE, ...){
       
       this_node <- getNodes(obj[[1]])[y]
-      getData(obj,this_node)
+      getData(obj,this_node, ...)
       
     })
 
-setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(obj,y,tsort=FALSE){
+setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(obj,y,tsort=FALSE, params = NULL, ...){
 			
             this_data <- getData(obj)                        
             if(y == "root"){
@@ -1226,7 +1232,10 @@ setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(ob
 				#subset by indices
 				indices<-lapply(obj,getIndices,y)
                 this_data <- Subset(this_data,indices)
-							
+                #to speed up reading, we need to do subsetting on channels before the coersion
+                if(!is.null(params))
+                  this_data <- this_data[,params]
+                
                 this_data	
 			}
 			
