@@ -1,3 +1,11 @@
+#  GNUMakefile
+ 
+# Just a snippet to stop executing under other make(1) commands
+# that won't understand these lines
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
 boost_bundled=@boost_bundled@
 ifeq ($(boost_bundled),yes)
 	boost_basename=trimmed_boost_1_52_0
