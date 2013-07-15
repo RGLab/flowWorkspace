@@ -503,7 +503,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
             ##################################
             message(paste("gating ..."))
             #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
-            mat<-exprs(data)
+            mat<-data@exprs #using @ is faster than exprs()
             #get gains from keywords
             this_pd <- pData(parameters(data))
             paramIDs <- rownames(pData(parameters(data)))
@@ -536,7 +536,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
               colnames(mat) <- cnd
             }
             
-            exprs(data)<-mat
+            data@exprs<-mat #circumvent the validity check of exprs<- to speed up
             if(isNcdf){
               fs[[sampleName]] <- data 
 
@@ -629,7 +629,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
             #update time range with the real data range
             if(grepl("[Tt]ime",this_chnl))
             {
-              range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
+              range(dataenv$data$ncfs[[sampleName]]@exprs[,this_chnl])
             }else{
               rawRange[,i]
             }
