@@ -313,7 +313,7 @@ unarchive<-function(file,path=tempdir()){
 	}
 #	browser()
 #	print(Sys.time()-time1)
-	G<-.addGatingHierarchy(G,files,execute,isNcdf,...)
+	G<-.addGatingHierarchies(G,files,execute,isNcdf,...)
 #	time1<-Sys.time()
 
 	message("done!")
@@ -357,20 +357,21 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			message("generating new GatingSet from the gating template...")
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
             Object@guid <- .uuid_gen()
-			Object<-.addGatingHierarchy(Object,files,execute=TRUE,isNcdf=isNcdf,...)
+			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
 			return(Object)
 		})
    
 ############################################################################
 #constructing gating set
 ############################################################################
-.addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,wsversion,extend_val = 0,...){
+.addGatingHierarchies<-function(G,files,execute,isNcdf,compensation=NULL,wsversion,extend_val = 0,...){
 #	browser()
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env(parent=emptyenv())
 	
+    #load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
@@ -407,11 +408,15 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				data<-read.FCS(file)[,colnames(fs)]
 			else
 				data<-fs[[sampleName]]
-              
+             
+            cnd<-colnames(data)
+            
             #alter colnames(replace "/" with "_") for flowJo X
-            if(wsversion == "1.8")
-              colnames(data) <- gsub("/","_",colnames(data))
-			
+            if(wsversion == "1.8"){
+              colnames(data) <- gsub("/","_",cnd)
+              cnd<-colnames(data)
+            }
+              
 			##################################
 			#Compensating the data
 			##################################
@@ -477,45 +482,77 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			}
 			if(cid!="-2")
 			{
-				
+#				browser()
 				#get prefix if it is not set yet
                 if(is.null(prefixColNames)){
-                  cnd<-colnames(data)
-                  if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
-                  wh<-match(parameters(compobj),cnd)
                   
-                  cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+                  if(is.null(cnd)){
+                    cnd<-as.vector(parameters(data)@data$name)
+                  }
+                  prefixColNames <- cnd
                   
-                  prefixColNames <- cnd  
+                  wh<-match(parameters(compobj),prefixColNames)
+                  
+                  prefixColNames[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+                  
+                    
                 }
-				
-				
-                #update colnames in flowFrame with prefix 
-#				e<-exprs(data)
-#				d<-description(data);
-#				p<-parameters(data);
-#				p@data$name<-prefixColNames
-#				colnames(e)<-prefixColNames;
-#				data<-new("flowFrame",exprs=e,description=d,parameters=p)
-	#			browser()
-				
-                #save raw or compensated data
-                #once comp is moved to c++,this step can be skipped
-				message("saving compensated data");
-				if(isNcdf){
-                  #save mat only    
-                  fs[[sampleName, only.exprs = TRUE]] <- data 
-                  #update descriptions since it is empty at this point
-                  fs@frames[[sampleName]]@description <- description(data)
-                }
-					
-				else
-					assign(sampleName,data,fs@frames)
-			}else{
-				#if cid is -2 add to ncdf flow set. Fixes bug where a missing compensation matrix with ncdfFlow does not save the uncompensated data.
-				if(isNcdf)
-					fs[[sampleName]] <- data
-			}	
+              }
+            ##################################
+            #transforming and gating
+            ##################################
+            message(paste("gating ..."))
+            #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
+            mat<-exprs(data)
+            #get gains from keywords
+            this_pd <- pData(parameters(data))
+            paramIDs <- rownames(pData(parameters(data)))
+            key_names <- paste(paramIDs,"G",sep="")
+            kw <- keyword(data)
+            if(as.numeric(kw[["FCSversion"]])>=3){
+              kw_gains <- kw[key_names]
+              gains <- as.numeric(kw_gains)                      
+            }else{
+              gains <- rep(1,length(paramIDs))
+            }
+            
+            names(gains) <- this_pd$name
+            
+            #update colnames in order for the gating to find right dims
+            if(!is.null(prefixColNames)){
+              colnames(mat) <- prefixColNames  
+            }
+            
+            .Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
+#            browser()
+            #restore the non-prefixed colnames for updating data in fs with [[<- 
+            #since colnames(fs) is not udpated yet.
+            if(!is.null(prefixColNames)){
+              #restore the orig colnames(replace "_" with "/") for flowJo X
+              if(wsversion == "1.8"){
+                cnd <- gsub("_","/",cnd)
+                colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX 
+              }
+              colnames(mat) <- cnd
+            }
+            
+            exprs(data)<-mat
+            if(isNcdf){
+              fs[[sampleName]] <- data 
+
+            }else{
+              assign(sampleName,data,fs@frames)
+            }
+            #range info within parameter object is not always the same as the real data range
+            #it is used to display the data.
+            #so we need update this range info by transforming it
+            tInd <- grepl("[Tt]ime",cnd)
+            tRg  <- range(mat[,tInd])
+            tempenv <- .transformRange(gh,wsversion,fs@frames,timeRange = tRg)
+            dataenv <- nodeDataDefaults(gh@tree,"data")
+            assign("axis.labels",tempenv$axis.labels,dataenv)
+            
+
 		}
 		
 		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
@@ -523,10 +560,6 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	}
 	names(set)<-basename(files)
 	G@set<-set
-#	browser()
-#	print(Sys.time()-time1)
-#	
-#	time1<-Sys.time()
 	
 	if(execute)
 	{
@@ -538,80 +571,8 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
           colnames(fs) <- prefixColNames 
 		
 		#attach filename and colnames to internal stucture for gating
-
 #		browser()
 		assign("ncfs",fs,globalDataEnv)
-		
-		
-		lapply(G,function(gh){
-					
-					
-					sampleName<-getSample(gh)
-					
-					message(paste("gating",sampleName,"..."))
-					#stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
-
-				
-					
-					data<-fs[[sampleName]]
-					mat<-exprs(data)
-                    #get gains from keywords
-                    this_pd <- pData(parameters(data))
-                    paramIDs <- rownames(pData(parameters(data)))
-                    key_names <- paste(paramIDs,"G",sep="")
-                    kw <- keyword(data)
-                    if(as.numeric(kw[["FCSversion"]])>=3){
-                      kw_gains <- kw[key_names]
-                      gains <- as.numeric(kw_gains)                      
-                    }else{
-                      gains <- rep(1,length(paramIDs))
-                    }
-
-                    names(gains) <- this_pd$name
-                    #select the gain that is not 1
-#                    gains <- gains[as.integer(gains)!=1]
-                    #check gates that needs to be updated by gains
-#                    allNodes<-getNodes(gh)[-1]
-#                    lapply(allNodes,function(this_node){
-#                          browser()
-#                          this_gate <- getGate(gh,this_node)
-#                          this_params <- parameters(this_gate)
-#                          lapply(this_params,function(this_param){
-#                                browser()
-#                                matchInd <- match(this_param,names(gains))
-#                                if(!is.na(matchInd)){
-#                                  this_gain <- gains[matchInd]
-#                                  
-#                                }
-#                              })
-#                        })
-                    
-                    
-                                        
-					.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
-					#update data with transformed data
-					exprs(data)<-mat
-					fs[[sampleName]] <- data#update original flowSet/ncdfFlowSet
-						
-#					time_cpp<<-time_cpp+(Sys.time()-time1)
-#				browser()
-					#range info within parameter object is not always the same as the real data range
-					#it is used to display the data.
-					#so we need update this range info by transforming it
-			
-#					localDataEnv<-nodeDataDefaults(gh@tree,"data")
-#					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
-
-#					browser()
-#					cal<-getTransformations(gh)
-                    
-                    .transformRange(gh,wsversion)  
-                    
-					
-                    
-#					browser()
-					
-				})
 		
 		
 	}
@@ -686,19 +647,21 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #   assign("datapar",datapar,dataenv)
   eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
 }
-.transformRange<-function(gh,wsversion){
 
+#' transform the range slot and construct axis label and pos for the plotting
+.transformRange<-function(gh,wsversion,frmEnv, timeRange = NULL){
+#  browser()
     sampleName <- getSample(gh)
-    dataenv <- nodeDataDefaults(gh@tree,"data")
+#    dataenv <- nodeDataDefaults(gh@tree,"data")
      cal<-getTransformations(gh)
      comp<-.Call("R_getCompensation",gh@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
-	frmEnv<-dataenv$data$ncfs@frames
+#	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
 	tempenv<-new.env()
 	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=tempenv);
-#    browser()
+    
     cal_names <-trimWhiteSpace(names(cal))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
               
@@ -749,25 +712,24 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
                   #update time range with the real data range
                   if(grepl("[Tt]ime",this_chnl))
                   {
-                    range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
+                    timeRange
+#                    range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
                   }else{
                     rawRange[,i]
                   }
 					
 				}
 			})
-	copyEnv(tempenv,dataenv);
+#	copyEnv(tempenv,dataenv);
 	
 #	browser()		
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
 	datapar<-parameters(get(sampleName,frmEnv))
 	pData(datapar)[,c("range","minRange","maxRange")]<-datarange
 	
-	#gc(reset=TRUE)
-#	assign("datapar",datapar,dataenv)
 	eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
-#	eval(expression(data@parameters<-datapar),envir=dataenv)
-	#gc(reset=TRUE)
+
+    tempenv
 }
 setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){
 #			em<-edgeMatrix(object1)

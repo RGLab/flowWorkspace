@@ -37,43 +37,33 @@ macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
 ###############################################################################
 ws<-openWorkspace(macXML[1],options=1)
 
-#subsetID<-flowWorkspace::getFJWSubsetIndices(ws,key="$FIL"
-#											,value=c("01107122_F11_I003.fcs"
-#													,"01177007_F02_I016.fcs")
-#											,group=2)
-
-#for(i in 2:6)
-#time1<-Sys.time()	
-#Rprof()
-#time_cpp<<-0
-#G<-parseWorkspace(ws,name=2,execute=T,requiregates=F
-#					,subset=1:2
-#					,isNcdf=F
-#					,useInternal=T,dMode=0)
-
 ############################################################################### 
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-
-GT<-parseWorkspace(ws,name=2
+#Rprof()
+GT<-parseWorkspace(ws
+                    ,name=4
 #					,execute=F
 #					,includeGates=T
-                    ,subset=1
+#                    ,subset=1
 #					,subset=c("517614.fcs")
 					,isNcdf=T
 #					,useInternal=T
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
-                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
+#                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4
                     ,extend_val=0
 #                    ,column.pattern=colP
 					)
+Sys.time()-time1                    
+Rprof(NULL)
+summaryRprof()
 getSamples(ws)
 GT[[1]]
 getNodes(GT[[1]])
@@ -86,12 +76,12 @@ getGate(GT[[1]],"Excl")@boundaries
 recompute(GT,"Excl/4+")
 recompute(GT,"4+")
 getNodes(GT[[1]])
-getPopStats(GT[[1]])[1:10,c(2:3)]
+getPopStats(GT[[1]])[1:20,c(2:3)]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
 
 x11()
-plotGate(GT[[1]],xbin=64)
+plotGate(GT[[1]],xbin=64, margin =T)
 plot(GT[[1]])
 #save to tar
 tmpdir <- "~/rglab/workspace/temp"
@@ -109,7 +99,7 @@ save_gs(GT,path=tmp2
 gg <- load_gs(path=tmp2)
 list.files(tmp2)
 
-Sys.time()-time1
+
 gh<-GT[[1]]
 getParent(gh,5)
 getParent(gh,"Lv")
