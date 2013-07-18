@@ -434,7 +434,8 @@ setMethod("getData",signature(obj="GatingHierarchyInternal",y="missing"),functio
       }
       
       ncfs <- nodeDataDefaults(obj@tree,"data")$data$ncfs
-      ncfs[getSample(obj),...][[1]]
+
+      ncfs[getSample(obj)][[1,...]]
       
     })
 

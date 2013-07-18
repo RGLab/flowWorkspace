@@ -46,7 +46,7 @@ GT<-parseWorkspace(ws
                     ,name=4
 #					,execute=F
 #					,includeGates=T
-#                    ,subset=1
+                    ,subset=1
 #					,subset=c("517614.fcs")
 					,isNcdf=T
 #					,useInternal=T
@@ -390,3 +390,12 @@ head(compCal)
 hist(vv)
 biexponentialTransform( a=.5, b=1, c=.5, d=1, f=0, w=0,
 		tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
+    
+pattern <- "\\+/TNFa\\+$"
+pops[matchNode(pattern
+                , pops
+                , fixed = F
+                , isTerminal = T
+                , fullString = T
+              )
+          ]
