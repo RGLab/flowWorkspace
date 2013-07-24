@@ -358,14 +358,15 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
             Object@guid <- .uuid_gen()
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
+            message("done!")
 			return(Object)
 		})
    
-############################################################################
-#constructing gating set
-############################################################################
-.addGatingHierarchies<-function(G,files,execute,isNcdf,compensation=NULL,wsversion,extend_val = 0,...){
-#	browser()
+
+#' constructing gating set
+#' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
+.addGatingHierarchies<-function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
+	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
 	#environment for holding fs data,each gh has the same copy of this environment
@@ -410,11 +411,12 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				data<-fs[[sampleName]]
              
             cnd<-colnames(data)
-            
+#            browser()
             #alter colnames(replace "/" with "_") for flowJo X
             if(wsversion == "1.8"){
-              colnames(data) <- gsub("/","_",cnd)
-              cnd<-colnames(data)
+                colnames(data) <- gsub("/","_",cnd)
+                cnd<-colnames(data)
+            
             }
               
 			##################################
@@ -484,7 +486,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			{
 #				browser()
 				#get prefix if it is not set yet
-                if(is.null(prefixColNames)){
+                if(is.null(prefixColNames)&&prefix){
                   
                   if(is.null(cnd)){
                     cnd<-as.vector(parameters(data)@data$name)

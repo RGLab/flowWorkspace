@@ -13,6 +13,7 @@ library(flowWorkspace)
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
 macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
+macXML<-"/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK.xml"
 
 macXML<-"/loc/no-backup/FlowWorkspaceTest/Lyoplate/Centralized B-cell.xml"
 macXML<-list.files(pattern="xml",path="~/rglab/workspace/flowWorkspace/data/Newell/XML workspaces",full=TRUE)[1]
@@ -43,16 +44,17 @@ ws<-openWorkspace(macXML[1],options=1)
 time1<-Sys.time()	
 #Rprof()
 GT<-parseWorkspace(ws
-                    ,name=4
+                    ,name=2
 #					,execute=F
 #					,includeGates=T
-                    ,subset=1
+                    ,subset=2
 #					,subset=c("517614.fcs")
-					,isNcdf=T
+#					,isNcdf=T
 #					,useInternal=T
+                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
@@ -60,6 +62,7 @@ GT<-parseWorkspace(ws
 					,dMode=4
                     ,extend_val=0
 #                    ,column.pattern=colP
+                     ,prefix=F
 					)
 Sys.time()-time1                    
 Rprof(NULL)
