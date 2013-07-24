@@ -47,7 +47,7 @@ GT<-parseWorkspace(ws
                     ,name=2
 #					,execute=F
 #					,includeGates=T
-                    ,subset=2
+#                    ,subset=2
 #					,subset=c("517614.fcs")
 #					,isNcdf=T
 #					,useInternal=T

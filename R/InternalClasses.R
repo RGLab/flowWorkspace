@@ -42,8 +42,8 @@ setClass("GatingSetInternal",contains="GatingSet"
 									,function(y)inherits(y,"GatingHierarchy"))))
 		})
 .uuid_gen<-function(){
-  system("uuidgen",intern = TRUE)
-#  flowCore:::guid()
+#  system("uuidgen",intern = TRUE)
+  flowCore:::guid()
 }    
 ###########################
 #constructors for GatingSet
