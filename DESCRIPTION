@@ -10,7 +10,7 @@ License: Artistic-2.0
 LazyLoad: yes
 Imports: Biobase, XML,flowCore, graph, graphics, lattice, methods, stats, stats4, utils
 Collate: AllClasses.R AllGenerics.R AllMethods.R InternalClasses.R GatingHierarchyInternal-Methods.R GatingSetInternal-Methods.R AllExportMethods.R flowWorkspace2flowCore-methods.R bitVector.R filterObject-methods.R add-methods.R setGate-methods.R GatingSetList-Methods.R
-Depends:  R (>= 2.16.0),Rcpp (>= 0.9.9),Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore (>= 1.25.9), flowViz (>= 1.25.5), Biobase, IDPmisc, tools,hexbin,gridExtra,Rgraphviz,ncdfFlow(>= 2.7.07)
+Depends:  R (>= 2.16.0),Rcpp (>= 0.9.9),Cairo, BiocGenerics, methods, RBGL, graph, XML, flowCore (>= 1.25.9), flowViz (>= 1.25.5), Biobase, IDPmisc, tools,hexbin,gridExtra,Rgraphviz,ncdfFlow(>= 2.7.09)
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Enhances: multicore,Rmpi
 Suggests: testthat, flowWorkspaceData
