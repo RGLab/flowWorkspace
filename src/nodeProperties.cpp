@@ -110,8 +110,9 @@ nodeProperties * nodeProperties::clone(bool gateResult){
 		/*
 		 * copy gated results
 		 */
-		if(gateResult)
+		if(gateResult&&isGated())
 		{
+
 			res->setStats(fcStats,true);
 			res->setStats(fjStats,false);
 			res->indices.reset(indices->clone());
