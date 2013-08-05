@@ -417,35 +417,39 @@ setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),fu
 			getIndices(obj,.getNodeInd(obj,y))
 			
 		})
+    
 setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y){
 			
 
 			.Call("R_getIndices",obj@pointer,getSample(obj),as.integer(y-1))
 			
 		})	
-#tsort argument is not used (for the compatibility with old API)
-#once the R paser is deprecated,it can be safely removed as well
-setMethod("getData",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y,tsort=FALSE){
+#' @param tsort not used (for the compatibility with old API)
+#' once the R paser is deprecated,it can be safely removed as well
+#' @param ... arguments passed to ncdfFlow::[[  
+#' j a \code{numeric} or \code{character} used as channel index
+setMethod("getData",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y,tsort=FALSE, ...){
       if(!obj@flag){
         stop("Must run execute() before fetching data");
       }
       
-      nodeDataDefaults(obj@tree,"data")$data$ncfs[[getSample(obj)]]
-            
+      ncfs <- nodeDataDefaults(obj@tree,"data")$data$ncfs
+
+      ncfs[getSample(obj)][[1,...]]
       
     })
 
-setMethod("getData",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
+setMethod("getData",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE, ...){
             
             this_node <- getNodes(obj)[y]
-            getData(obj,this_node)
+            getData(obj,this_node, ...)
 			
 		})
     
-setMethod("getData",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE){
+setMethod("getData",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE, ...){
       
       
-      this_data <- getData(obj)                        
+      this_data <- getData(obj, ...)                        
       if(y == "root"){
         return (this_data)  
       }else{
@@ -630,7 +634,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 		
 		plotGate(x,y,...)
 		})
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE,...){
+    
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
 				return();
@@ -643,9 +648,9 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 						
 						return(.plotGate(x,y,...))
 					})
-			
+#			browser()
 			if(arrange)			
-				do.call(grid.arrange,c(plotObjs,main=main))
+				do.call(grid.arrange,c(plotObjs,main=main,gpar))
 			else
 				plotObjs
 			
@@ -775,10 +780,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
                 }
 			}			
 			
-			parentdata<-getData(x,pid)
-#			browser()
-			smooth<-ifelse(nrow(parentdata)<100,TRUE,smooth)
-			
 			
 			
 			#################################
@@ -802,8 +803,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 					params<-rev(parameters(curGate))
 				
 			}
-#			panelFunc<-panel.xyplot.flowSet
-			
+	
 			
 			
 			if(type=="xyplot")
@@ -823,13 +823,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 					yParam=params[1]
 					xParam=params[2]
 				}
-				axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
-				if(is.null(xlab)){
-                  xlab <- axisObject$xlab
-                }
-                if(is.null(ylab)){
-                  ylab <- axisObject$ylab
-                }
 				#################################
 				# calcuate overlay frame
 				################################
@@ -844,14 +837,36 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 					}else
 						overlay<-Subset(getData(x),overlay)[,params]
 				}
-				
-				#################################
+            }else
+            {
+             
+              yParam <- NULL
+             
+            } 
+           
+           parentdata<-getData(x, pid, j = params)
+#           browser()
+           smooth<-ifelse(nrow(parentdata)<100,TRUE,smooth)
+           
+           axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
+           
+           if(is.null(xlab)){
+             xlab <- axisObject$xlab
+           }
+           f1<-mkformula(params)
+           
+            if(type=="xyplot")
+            {
+                #################################
 				# the actual plotting
 				################################
-				
-				f1<-mkformula(params)
+                
+                if(is.null(ylab)){
+                  ylab <- axisObject$ylab
+                }
+			
 				res<-xyplot(x=f1
-							,data=parentdata[,params]
+							,data=parentdata
 							,filter=curGate
 							,xlab= xlab
 							,ylab=ylab
@@ -860,7 +875,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 							,scales=axisObject$scales
 							,main=main
 							,stats = stats
-#							,panel=panelFunc
 							,overlay=overlay
 							,...
 						)
@@ -869,23 +883,15 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				if(length(params)==1)
 				{
 #					browser()
-					axisObject<-.formatAxis(x,parentdata,xParam=params,yParam=NULL,...)
-                    if(is.null(xlab)){
-                      xlab <- axisObject$xlab
-                    }
-                    f1<-mkformula(params)
+            
 					res<-densityplot(x=f1
-									,data=parentdata[,params]
+									,data=parentdata
 									,filter=curGate
 									,xlab=xlab
-		#							,ylab=axisObject$ylab
-									,margin=margin
-		#							,smooth=smooth
-		#							,scales=axisObject$scales
+		    						,margin=margin
 									,main=main
                                     ,stats=stats
 									,fitGate=fitGate
-		#							,panel=panelFunc
 									,...
 									)
 				}else

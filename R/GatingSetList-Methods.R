@@ -150,21 +150,22 @@ setMethod("getData",c(obj="GatingSetList",y="missing"),function(obj,y,...){
 setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,...){
 #      browser()
       this_node <- getNodes(obj[[1]])[y]
-      getData(obj,this_node)
+      getData(obj,this_node,...)
     })
 setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30, ...){
 #      browser()
       if(length(getSamples(obj))>max){
         stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
       }
-#      browser()
+    
       res <- lapply(obj,function(gs){
-                NcdfFlowSetToFlowSet(getData(gs,y))
+            ncfs <- getData(gs,y, ...)
+            as.flowSet(ncfs)
           })
       fs<-res[[1]]
       if(length(res)>1){
         for(i in 2:length(res))
-          fs<-rbind2(fs,res[[i]])  
+          fs<-rbind2(fs,res[[i]])
       }
       
       fs
@@ -209,9 +210,11 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,
 setMethod("plotGate",signature(x="GatingSetList",y="numeric"),function(x,y, ...){
       selectMethod("plotGate",sig=c(x="GatingSetInternal",y="numeric"))(x=x, y=y, ...)
       
-      
     })
 
+setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
+      selectMethod("plotGate",sig=c(x="GatingSetInternal",y="character"))(x=x, y=y, ...)
+    })
 
 setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats,...)

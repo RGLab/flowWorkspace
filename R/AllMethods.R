@@ -906,17 +906,17 @@ setMethod("execute",signature(hierarchy="GatingHierarchy"),function(hierarchy,cl
 				#ask for permission to write to netcdf
 				mpi.send.Robj(0,0,3)
 				mpi.recv.Robj(0,4)
-				addFrame(dataEnvironment$ncfs,data,sampleName)
+				dataEnvironment$ncfs[[sampleName, check.names = FALSE]] <- data
 		
 				
 				#let master know I'm done
 				mpi.send.Robj(0,0,8)
 
 			}else{
-				addFrame(dataEnvironment$ncfs,data,sampleName)
+				dataEnvironment$ncfs[[sampleName, check.names = FALSE]] <- data
 			}
 
-			###all the annotData including colnames for each flowFrame slots are already updated in addFrame funciton
+			###all the annotData including colnames for each flowFrame slots are already updated [[<-
 			###but not the colnames slot in ncdfFlow,this redundant slot seems cause problem,consider to be removed
 			colnames(dataEnvironment$ncfs)<-colnames(data)##currently it is updated repeatedly by each sample
 			colnames(ncfs)<-colnames(data)

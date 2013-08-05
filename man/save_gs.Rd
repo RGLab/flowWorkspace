@@ -30,9 +30,10 @@ load_gslist(path)
    
    \item{...}{other arguments:
    
-   			 copy.cdf = TRUE: a logical scalar indicating whether to copy the cdf data file. Sometime it is more efficient to move the existing cdf file to the archived folder than to copy it. 
-   							  however, by moving instead of copying the cdf file, the cdf is not accessible to the original GatingSet object anymore.
-   							  So it is up to user to turn this "cp" off and manually do the "mv" the file to the destination folder.  
+   			 cdf: a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file. 
+   			 				 Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
+   			 				 It is useful to "skip" archiving cdf file if raw data has not been changed.  
+  
    				}    					
 }
 

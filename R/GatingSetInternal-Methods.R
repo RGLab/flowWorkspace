@@ -313,7 +313,7 @@ unarchive<-function(file,path=tempdir()){
 	}
 #	browser()
 #	print(Sys.time()-time1)
-	G<-.addGatingHierarchy(G,files,execute,isNcdf,...)
+	G<-.addGatingHierarchies(G,files,execute,isNcdf,...)
 #	time1<-Sys.time()
 
 	message("done!")
@@ -357,20 +357,22 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			message("generating new GatingSet from the gating template...")
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
             Object@guid <- .uuid_gen()
-			Object<-.addGatingHierarchy(Object,files,execute=TRUE,isNcdf=isNcdf,...)
+			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
+            message("done!")
 			return(Object)
 		})
    
-############################################################################
-#constructing gating set
-############################################################################
-.addGatingHierarchy<-function(G,files,execute,isNcdf,compensation=NULL,wsversion,extend_val = 0,...){
-#	browser()
+
+#' constructing gating set
+#' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
+.addGatingHierarchies<-function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
+	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
 	#environment for holding fs data,each gh has the same copy of this environment
 	globalDataEnv<-new.env(parent=emptyenv())
 	
+    #load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
@@ -385,7 +387,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	
 	nFiles<-length(files)
 	set<-vector(mode="list",nFiles)	
-
+    prefixColNames <- NULL
 	for(i in 1:nFiles)
 	{
 		file<-files[i]		
@@ -407,11 +409,16 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 				data<-read.FCS(file)[,colnames(fs)]
 			else
 				data<-fs[[sampleName]]
-              
+             
+            cnd<-colnames(data)
+#            browser()
             #alter colnames(replace "/" with "_") for flowJo X
-            if(wsversion == "1.8")
-              colnames(data) <- gsub("/","_",colnames(data))
-			
+            if(wsversion == "1.8"){
+                colnames(data) <- gsub("/","_",cnd)
+                cnd<-colnames(data)
+            
+            }
+              
 			##################################
 			#Compensating the data
 			##################################
@@ -477,33 +484,77 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			}
 			if(cid!="-2")
 			{
-				
-				##add prefix to parameter names
-				cnd<-colnames(data)
-				if(is.null(cnd)){cnd<-as.vector(parameters(data)@data$name)}
-				wh<-match(parameters(compobj),cnd)
-				
-				cnd[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-				
-				#colnames(data)<-cnd;
-				e<-exprs(data)
-				d<-description(data);
-				p<-parameters(data);
-				p@data$name<-cnd
-				colnames(e)<-cnd;
-				data<-new("flowFrame",exprs=e,description=d,parameters=p)
-	#			browser()
-				#save raw or compensated data 
-				message("saving compensated data");
-				if(isNcdf)
-					addFrame(fs,data,sampleName)#once comp is moved to c++,this step can be skipped
-				else
-					assign(sampleName,data,fs@frames)#can't use [[<- directly since the colnames are inconsistent at this point
-			}else{
-				#if cid is -2 add to ncdf flow set. Fixes bug where a missing compensation matrix with ncdfFlow does not save the uncompensated data.
-				if(isNcdf)
-					addFrame(fs,data,sampleName)
-			}	
+#				browser()
+				#get prefix if it is not set yet
+                if(is.null(prefixColNames)&&prefix){
+                  
+                  if(is.null(cnd)){
+                    cnd<-as.vector(parameters(data)@data$name)
+                  }
+                  prefixColNames <- cnd
+                  
+                  wh<-match(parameters(compobj),prefixColNames)
+                  
+                  prefixColNames[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+                  
+                    
+                }
+              }
+            ##################################
+            #transforming and gating
+            ##################################
+            message(paste("gating ..."))
+            #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
+            mat<-data@exprs #using @ is faster than exprs()
+            #get gains from keywords
+            this_pd <- pData(parameters(data))
+            paramIDs <- rownames(pData(parameters(data)))
+            key_names <- paste(paramIDs,"G",sep="")
+            kw <- keyword(data)
+            if(as.numeric(kw[["FCSversion"]])>=3){
+              kw_gains <- kw[key_names]
+              gains <- as.numeric(kw_gains)                      
+            }else{
+              gains <- rep(1,length(paramIDs))
+            }
+            
+            names(gains) <- this_pd$name
+            
+            #update colnames in order for the gating to find right dims
+            if(!is.null(prefixColNames)){
+              colnames(mat) <- prefixColNames  
+            }
+            
+            .Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
+#            browser()
+            #restore the non-prefixed colnames for updating data in fs with [[<- 
+            #since colnames(fs) is not udpated yet.
+            if(!is.null(prefixColNames)){
+              #restore the orig colnames(replace "_" with "/") for flowJo X
+              if(wsversion == "1.8"){
+                cnd <- gsub("_","/",cnd)
+                colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX 
+              }
+              colnames(mat) <- cnd
+            }
+            
+            data@exprs<-mat #circumvent the validity check of exprs<- to speed up
+            if(isNcdf){
+              fs[[sampleName]] <- data 
+
+            }else{
+              assign(sampleName,data,fs@frames)
+            }
+            #range info within parameter object is not always the same as the real data range
+            #it is used to display the data.
+            #so we need update this range info by transforming it
+            tInd <- grepl("[Tt]ime",cnd)
+            tRg  <- range(mat[,tInd])
+            tempenv <- .transformRange(gh,wsversion,fs@frames,timeRange = tRg)
+            dataenv <- nodeDataDefaults(gh@tree,"data")
+            assign("axis.labels",tempenv$axis.labels,dataenv)
+            
+
 		}
 		
 		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
@@ -511,94 +562,19 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	}
 	names(set)<-basename(files)
 	G@set<-set
-#	browser()
-#	print(Sys.time()-time1)
-#	
-#	time1<-Sys.time()
 	
 	if(execute)
 	{
 #		browser()
-		#update colnames slot for flowSet
+		#update colnames 
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
-		colnames(fs)<-colnames(data)
+		if(!is.null(prefixColNames))
+          colnames(fs) <- prefixColNames 
 		
 		#attach filename and colnames to internal stucture for gating
-
 #		browser()
 		assign("ncfs",fs,globalDataEnv)
-		
-		
-		lapply(G,function(gh){
-					
-					
-					sampleName<-getSample(gh)
-					
-					message(paste("gating",sampleName,"..."))
-					#stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
-
-				
-					
-					data<-fs[[sampleName]]
-					mat<-exprs(data)
-                    #get gains from keywords
-                    this_pd <- pData(parameters(data))
-                    paramIDs <- rownames(pData(parameters(data)))
-                    key_names <- paste(paramIDs,"G",sep="")
-                    kw <- keyword(data)
-                    if(as.numeric(kw[["FCSversion"]])>=3){
-                      kw_gains <- kw[key_names]
-                      gains <- as.numeric(kw_gains)                      
-                    }else{
-                      gains <- rep(1,length(paramIDs))
-                    }
-
-                    names(gains) <- this_pd$name
-                    #select the gain that is not 1
-#                    gains <- gains[as.integer(gains)!=1]
-                    #check gates that needs to be updated by gains
-#                    allNodes<-getNodes(gh)[-1]
-#                    lapply(allNodes,function(this_node){
-#                          browser()
-#                          this_gate <- getGate(gh,this_node)
-#                          this_params <- parameters(this_gate)
-#                          lapply(this_params,function(this_param){
-#                                browser()
-#                                matchInd <- match(this_param,names(gains))
-#                                if(!is.na(matchInd)){
-#                                  this_gain <- gains[matchInd]
-#                                  
-#                                }
-#                              })
-#                        })
-                    
-                    
-                                        
-					.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
-					#update data with transformed data
-					exprs(data)<-mat
-					fs[[sampleName]]<-data#update original flowSet/ncdfFlowSet
-						
-#					time_cpp<<-time_cpp+(Sys.time()-time1)
-#				browser()
-					#range info within parameter object is not always the same as the real data range
-					#it is used to display the data.
-					#so we need update this range info by transforming it
-			
-#					localDataEnv<-nodeDataDefaults(gh@tree,"data")
-#					comp<-.Call("R_getCompensation",G@pointer,sampleName)	
-
-#					browser()
-#					cal<-getTransformations(gh)
-                    
-                    .transformRange(gh,wsversion)  
-                    
-					
-                    
-#					browser()
-					
-				})
 		
 		
 	}
@@ -655,7 +631,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
             #update time range with the real data range
             if(grepl("[Tt]ime",this_chnl))
             {
-              range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
+              range(dataenv$data$ncfs[[sampleName]]@exprs[,this_chnl])
             }else{
               rawRange[,i]
             }
@@ -673,19 +649,21 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 #   assign("datapar",datapar,dataenv)
   eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
 }
-.transformRange<-function(gh,wsversion){
 
+#' transform the range slot and construct axis label and pos for the plotting
+.transformRange<-function(gh,wsversion,frmEnv, timeRange = NULL){
+#  browser()
     sampleName <- getSample(gh)
-    dataenv <- nodeDataDefaults(gh@tree,"data")
+#    dataenv <- nodeDataDefaults(gh@tree,"data")
      cal<-getTransformations(gh)
      comp<-.Call("R_getCompensation",gh@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
-	frmEnv<-dataenv$data$ncfs@frames
+#	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
 	tempenv<-new.env()
 	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=tempenv);
-#    browser()
+    
     cal_names <-trimWhiteSpace(names(cal))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
               
@@ -736,25 +714,24 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
                   #update time range with the real data range
                   if(grepl("[Tt]ime",this_chnl))
                   {
-                    range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
+                    timeRange
+#                    range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
                   }else{
                     rawRange[,i]
                   }
 					
 				}
 			})
-	copyEnv(tempenv,dataenv);
+#	copyEnv(tempenv,dataenv);
 	
 #	browser()		
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
 	datapar<-parameters(get(sampleName,frmEnv))
 	pData(datapar)[,c("range","minRange","maxRange")]<-datarange
 	
-	#gc(reset=TRUE)
-#	assign("datapar",datapar,dataenv)
 	eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
-#	eval(expression(data@parameters<-datapar),envir=dataenv)
-	#gc(reset=TRUE)
+
+    tempenv
 }
 setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){
 #			em<-edgeMatrix(object1)
@@ -811,12 +788,93 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       plotGate(x,ind,...)
     })
 
+#' preporcess the gating tree to prepare for the plotGate
+#' return the params, gates and axis
+.preplot <- function(x, y, type, stats, ...){
+  samples <- getSamples(x)
+#  browser()
+  if(is.list(y))
+  {
+#       browser()
+    curGates<-sapply(samples,function(curSample){
+          
+          filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
+        },simplify=F)
+    curGates<-as(curGates,"filtersList")
+    
+    if(missing(stats)){
+      stats <- sapply(samples,function(thisSample){
+            lapply(y$popIds,function(y){
+                  curGh <- x[[thisSample]]
+                  getProp(curGh,getNodes(curGh,y),flowJo = F)
+                })
+          },simplify = FALSE)  
+    }    
+    
+  }else
+  {
+    curGates<-getGate(x,y)
+    
+    if(suppressWarnings(any(is.na(curGates)))){
+      message("Can't plot. There is no gate defined for node ",getNodes(gh,y));
+      invisible();            
+      return(NULL)
+    }
+    if(missing(stats)){
+      stats <- sapply(samples,function(thisSample){
+            curGh <- x[[thisSample]]
+            getProp(curGh,getNodes(curGh,y),flowJo = F)
+          },simplify = FALSE) 
+    }else
+      stats = stats
+    
+  }
+  
+  if(class(curGates[[1]])=="booleanFilter")
+  {
+    params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
+    overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
+    curGates<-NULL
+  }else
+  {
+    if(class(curGates[[1]])=="filters")
+      params<-rev(parameters(curGates[[1]][[1]]))
+    else
+      params<-rev(parameters(curGates[[1]]))
+    
+  }
+  if(type=="xyplot")
+  {
+    if(length(params)==1)
+    {
+      yParam<-"SSC-A"
+      
+      if(params=="SSC-A")
+        xParam<-"FSC-A"
+      else
+        xParam<-params
+#      params<-c(yParam,xParam)
+    }else
+    {
+      yParam=params[1]
+      xParam=params[2]
+      
+    }
+    
+  }else{
+    xParam=params
+    yParam <- NULL
+  }
+  
+  
+  list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats)
+}
 #TODO:merge this to .plotGate routine
 #fitGate is used to disable behavior of plotting the gate region in 1d densityplot
 #overlay is either the gate indice list or event indices list
-.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,margin=FALSE,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats, ...){
+.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats , ...){
 
-	samples<-getSamples(x)
+	
 	type<- match.arg(type)
 	
 	gh<-x[[1]]
@@ -825,93 +883,65 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	else
 		pid<-getParent(gh,y)
 	
+    #set the title  
 	if(is.null(main)){
 		fjName<-getNodes(gh,pid,isPath=T)
 		main<-fjName
 	}
 	
-	if(is.list(y))
-	{
-#		browser()
-		curGates<-sapply(samples,function(curSample){
-					
-					filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
-				},simplify=F)
-        curGates<-as(curGates,"filtersList")
-        
-        if(missing(stats)){
-          stats <- lapply(x,function(curGh){
-                      lapply(y$popIds,function(y){
-                          getProp(curGh,getNodes(curGh,y),flowJo = F)
-                        })
-              })  
-        }    
-		
-	}else
-	{
-		curGates<-getGate(x,y)
-		
-		if(suppressWarnings(any(is.na(curGates)))){
-			message("Can't plot. There is no gate defined for node ",getNodes(gh,y));
-			invisible();			
-			return(NULL)
-		}
-        if(missing(stats)){
-          stats <- lapply(x,function(curGh){
-                getProp(curGh,getNodes(curGh,y),flowJo = F)
-              }) 
-        }    
-        
-	}			
-	
-	parentdata<-getData(x,pid)
-	parentFrame<-parentdata[[1]]
-			
-	smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
+	    
+#    browser()
 	#################################
 	# setup axis labels and scales
 	################################
-	if(class(curGates[[1]])=="booleanFilter")
-	{
-		params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
-		overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
-		curGates<-NULL
-	}else
-	{
-		if(class(curGates[[1]])=="filters")
-			params<-rev(parameters(curGates[[1]][[1]]))
-		else
-			params<-rev(parameters(curGates[[1]]))
-		
-	}
-	panelFunc<-panel.xyplot.flowset
-		
-	
+    parseRes <- .preplot (x, y, type, stats, ...)
+    
+    curGates <- parseRes$gates
+    xParam <- parseRes$xParam
+    yParam <- parseRes$yParam
+    params <- c(yParam,xParam)
+    stats <- parseRes$stats
+    
+    #get data 
+    #subset on channels to speed up loading data from disk
+    parentdata<-getData(x,pid,j = params)
+    parentFrame<-parentdata[[1]]
+    
+    #set the smoothing option
+    smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
+    
+    
+    axisObject<-.formatAxis(gh,parentFrame, xParam, yParam,...)
+    
+    if(is.null(xlab)){
+      xlab <- axisObject$xlab
+    }
+    
+    #set the formula
+    if(is.null(formula))
+    {
+      formula<-mkformula(params,isChar=TRUE)
+      if(!is.null(cond))
+        formula<-paste(formula,cond,sep="|")
+      formula<-as.formula(formula)
+    }
+
+    thisCall<-quote(plot(x=formula
+                          ,data=parentdata
+                          ,filter=curGates
+                          ,xlab=xlab
+                          ,scales=axisObject$scales
+                          ,main=main
+                          ,...
+                          )
+                      )
+#    browser()                      
+    if(!is.null(stats)){
+      thisCall <- as.call(c(as.list(thisCall),list(stats = stats)))
+    }                      
 	if(type=="xyplot")
 	{
-		if(length(params)==1)
-		{
-			yParam<-"SSC-A"
-			
-			if(params=="SSC-A")
-				xParam<-"FSC-A"
-			else
-				xParam<-params
-			params<-c(yParam,xParam)
-		}else
-		{
-			yParam=params[1]
-			xParam=params[2]
-			
-		}
-	
-		axisObject<-.formatAxis(gh,parentFrame,xParam,yParam,...)
-        if(is.null(xlab)){
-          xlab <- axisObject$xlab
-        }
-        if(is.null(ylab)){
-          ylab <- axisObject$ylab
-        }
+		
 		#################################
 		# calcuate overlay frames
 		################################
@@ -927,62 +957,35 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 				overlay<-Subset(getData(x),overlay)[,params]
 		}
 		
-     
+        
+        if(is.null(ylab)){
+          ylab <- axisObject$ylab
+        }
 		#################################
 		# the actual plotting
 		################################
-		if(is.null(formula))
-		{
-			formula<-mkformula(params,isChar=TRUE)
-			if(!is.null(cond))
-				formula<-paste(formula,cond,sep="|")
-			formula<-as.formula(formula)
-		}
+#        browser()
+        thisCall<-as.call(c(as.list(thisCall)
+                            ,ylab=ylab
+                            ,smooth=smooth
+                            ,overlay=overlay
+                            )
+                          )
+        thisCall[[1]]<-quote(xyplot)                          
 		
-        
-		res<-xyplot(x=formula
-				,data=parentdata[,params]
-				,filter=curGates
-				,xlab=xlab
-				,ylab=ylab
-				,margin=margin
-				,smooth=smooth
-				,scales=axisObject$scales
-				,main=main
-				,stats=stats
-				,panel=panelFunc
-				,overlay=overlay
-				,...
-		)
 	}else
 	{
 		if(length(params)==1)
 		{
-			
-#			browser()
-			axisObject<-.formatAxis(gh,parentFrame,xParam=params,yParam=NULL,...)
-            if(is.null(xlab)){
-              xlab <- axisObject$xlab
-            }
-			if(is.null(formula))
-			{
-				formula<-mkformula(params,isChar=TRUE)
-				if(!is.null(cond))
-					formula<-paste(formula,cond,sep="|")
-				formula<-as.formula(formula)
-			}
-			res<-densityplot(x=formula
-								,data=parentdata[,params]
-								,filter=curGates
-								,xlab=xlab
-								,main=main
-                                ,stats=stats
-								,fitGate=fitGate
-								,...
-								)
+            
+          thisCall<-as.call(c(as.list(thisCall)
+                              ,fitGate=fitGate
+                              )
+                           )
+          thisCall[[1]]<-quote(densityplot) 	
 		}
 	}
-	return(res)	
+	return(eval(thisCall))	
 }
 ##plot by prarent index
 plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,xlab=NULL,ylab=NULL,...){
@@ -1170,27 +1173,29 @@ setMethod("show","GatingSetInternal",function(object){
 setMethod("getSamples","GatingSetInternal",function(x){
       sampleNames(getData(x))
     })
-setMethod("getData",signature(obj="GatingSetInternal",y="missing"),function(obj,y,tsort=FALSE){
-      
-        ncFlowSet(obj)
+#' to speed up reading data from disk later on, 
+#' we can optionally pass j to ncdfFlow::[ to subset on channel
+setMethod("getData",signature(obj="GatingSetInternal",y="missing"),function(obj,y,tsort=FALSE, ...){
+      ncFlowSet(obj)[,...]
+  
     })
-setMethod("getData",signature(obj="GatingSetInternal",y="numeric"),function(obj,y,tsort=FALSE){
+setMethod("getData",signature(obj="GatingSetInternal",y="numeric"),function(obj,y,tsort=FALSE, ...){
       
       this_node <- getNodes(obj[[1]])[y]
-      getData(obj,this_node)
+      getData(obj,this_node, ...)
       
     })
 
-setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(obj,y,tsort=FALSE){
+setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(obj,y,tsort=FALSE, ...){
 			
-            this_data <- getData(obj)                        
+            this_data <- getData(obj, ...)                        
             if(y == "root"){
               this_data  
             }else{
 				#subset by indices
 				indices<-lapply(obj,getIndices,y)
                 this_data <- Subset(this_data,indices)
-							
+               
                 this_data	
 			}
 			
