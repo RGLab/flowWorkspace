@@ -755,7 +755,33 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),f
 			return(TRUE)
 		})
 
-#plot by children index
+    
+#' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
+#' 
+#' When applied to a \code{GatingHierarchy},\code{arrange} is set as TRUE, then all the gates associated with it are plotted as different panel on the same page.
+#' If \code{arrange} is FALSE, then it plots one gate at a time.
+#' By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
+#' When applied to a \code{GatingSet}, if lattice is TRUE,it plots one gate (multiple samples) per page , otherwise, one sample (with multiple gates) per page.   
+
+#' @param x \code{\linkS4class{GatingSet}} object
+#' @param y \code{character} the node name or full(/partial) gating path 
+#'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
+#'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
+#'          Nodes can be accessed with \code{\link{getNodes}}.
+#' @param bool \code{logical} specifying whether to plot boolean gates.
+
+#' @param main \code{character}, The main title of the plot. Default is the sample name.
+#' @param arrange \code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.
+#' @param merge \code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;
+#' @param lattice \code{logical} indicating whether to draw one node/gate on multiple samples on the same page through lattice plot;
+#' @param ...
+#' @param formula \code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.
+#' @param cond \code{character} the conditioning variable to be passed to lattice plot.
+#' @param overlay either a \code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay. 
+#' @param ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
+#' @return  a \code{trellis} object if \code{arrange} is \code{FALSE}, 
+#' @references \url{http://www.rglab.org/}
+#' @example 
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
 #			browser()
 			y<-2:length(getNodes(x[[1]]))
@@ -763,6 +789,7 @@ setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
 			
 		})
 
+    
 setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
 			if(lattice)
 			{
@@ -782,15 +809,21 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 			}
 			
 		})
+    
 setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
-#     browser()
+
       ind <- sapply(y, function(i).getNodeInd(x[[1]],i))
       plotGate(x,ind,...)
     })
 
 #' preporcess the gating tree to prepare for the plotGate
-#' return the params, gates and axis
-.preplot <- function(x, y, type, stats, ...){
+#' 
+#' @param x a \code{GatingSet}
+#' @param y gate index
+#' @param type \code{character} either 'xyplot' or 'densityplot'
+#' @param stats \code{numeric} proportions of cell population. If \code{missing} then extract it from \code{gatingHiearchy}
+#' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
+.preplot <- function(x, y, type, stats, formula, ...){
   samples <- getSamples(x)
 #  browser()
   if(is.list(y))
@@ -847,13 +880,18 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   {
     if(length(params)==1)
     {
-      yParam<-"SSC-A"
+      if(is.null(formula)){
+        yParam <- "SSC-A"
+      }else{
+        yParam <- flowViz:::expr2char(formula[[2]])
+      }
       
-      if(params=="SSC-A")
+      
+      if(params=="SSC-A" && yParam == "SSC-A")
         xParam<-"FSC-A"
       else
         xParam<-params
-#      params<-c(yParam,xParam)
+
     }else
     {
       yParam=params[1]
@@ -862,16 +900,17 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     }
     
   }else{
-    xParam=params
+    xParam <- params
     yParam <- NULL
   }
   
   
   list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats)
 }
-#TODO:merge this to .plotGate routine
-#fitGate is used to disable behavior of plotting the gate region in 1d densityplot
-#overlay is either the gate indice list or event indices list
+#' the actual plotGate engine
+#' 
+#' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
+#' @overlay either the gate indice list or event indices list
 .plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats , ...){
 
 	
@@ -894,7 +933,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	#################################
 	# setup axis labels and scales
 	################################
-    parseRes <- .preplot (x, y, type, stats, ...)
+    parseRes <- .preplot (x, y, type, stats, formula,...)
     
     curGates <- parseRes$gates
     xParam <- parseRes$xParam
@@ -987,69 +1026,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	}
 	return(eval(thisCall))	
 }
-##plot by prarent index
-plotGate_labkey<-function(G,parentID,x,y,smooth=FALSE,cond=NULL,xlab=NULL,ylab=NULL,...){
-	#get all childrens
-	cids<-getChildren(G[[1]],parentID)
-	if(length(cids)>0)
-	{
-		#try to match to projections
-#		browser()
-		isMatched<-lapply(cids,function(cid){
-					g<-getGate(G[[1]],cid)
-					if(class(g)!="booleanFilter") 
-					{
-						prj<-parameters(g)
-						if(length(prj)==1)
-						{
-							return (prj%in%c(x,y))
-							
-						}else
-						{
-							revPrj<-rev(prj)
-							if((x==prj[1]&&y==prj[2])||(x==revPrj[1]&&y==revPrj[2]))
-								return (TRUE)
-							else
-								return (FALSE)	
-						}
-					}else
-					return (FALSE)
-				})
-		
-		ind<-which(unlist(isMatched))
-		if(length(ind)>0)
-			isPlotGate<-TRUE
-		else
-			isPlotGate<-FALSE
-	}else
-		isPlotGate<-FALSE
-	formula1<-paste("`",y,"`~`",x,"`",sep="")
-	if(!is.null(cond))
-		formula1<-paste(formula1,cond,sep="|")
-	formula1<-as.formula(formula1)
-#	browser()
-	if(isPlotGate)
-		plotGate(G,cids[ind],formula=formula1,smooth=smooth,xlab=xlab,ylab=ylab,...)
-	else
-	{
-		fs<-getData(G,parentID)
-		axisObject<-.formatAxis(x=G[[1]],data=fs[[1]],xParam=x,yParam=y,...)
-        if(is.null(xlab)){
-          xlab <- axisObject$xlab
-        }
-        if(is.null(ylab)){
-          ylab <- axisObject$ylab
-        }
-		xyplot(formula1
-				,fs
-				,smooth=smooth
-				,xlab=xlab
-				,ylab=ylab
-				,scales=axisObject$scales
-				,...)
-	}
-	
-}
+
 
 
 

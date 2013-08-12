@@ -24,6 +24,8 @@ setGeneric("flowSet<-", function(x,value) standardGeneric("flowSet<-"))
 setGeneric("getIndiceFile",function(obj)standardGeneric("getIndiceFile"))
 
 setGeneric("execute",function(hierarchy,...)standardGeneric("execute"))
+
+#' @exportMethod plotGate
 setGeneric("plotGate",function(x,y,...)standardGeneric("plotGate"))
 
 setGeneric("getPopStats",function(x,...)standardGeneric("getPopStats"))
