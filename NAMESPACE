@@ -73,5 +73,5 @@ exportClasses(flowJoWorkspace,GatingHierarchy,GatingSet,GatingSetInternal,Gating
 exportMethods("getIndices","setNode","setGate","add","Rm","clone","recompute","openWorkspace","show","closeWorkspace","summary","parseWorkspace","[","[[","length","lapply","getNodes","execute","plot","plotGate","getPopStats","plotPopCV","getData","getGate","getParent","getBoundaries","getDimensions","getIndices","getChildren","getProp","getTotal","getSamples","getSample","getSampleGroups","[<-","[[<-","getCompensationMatrices","getTransformations","getKeywords","keyword","flowWorkspace2flowCore","exportAsFlowJoXML","ellipsoidGate2FlowJoVertices","getNcdf","getIndiceFile","haveSameGatingHierarchy","setData","copyGatingHierarchyFromTo"
 				,"ncFlowSet","ncFlowSet<-","GatingSet")
 
-export("plotGate_labkey","archive","unarchive","plotWf","getFJWSubsetIndices","saveNcdf","recomputeGatingSet","ExportTSVAnalysis","includedGate2ExcludedGate","includedChannel2ExcludedChannel", "booleanFilter","save_gs","load_gs","save_gslist","load_gslist", GatingSetList);
+export("archive","unarchive","plotWf","getFJWSubsetIndices","saveNcdf","recomputeGatingSet","ExportTSVAnalysis","includedGate2ExcludedGate","includedChannel2ExcludedChannel", "booleanFilter","save_gs","load_gs","save_gslist","load_gslist", GatingSetList);
 

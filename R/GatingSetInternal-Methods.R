@@ -781,7 +781,11 @@ setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),f
 #' @param ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
 #' @return  a \code{trellis} object if \code{arrange} is \code{FALSE}, 
 #' @references \url{http://www.rglab.org/}
-#' @example 
+#' @examples \dontrun{
+#' 	#G is a GatingHierarchy
+#' 	plotGate(G,getNodes(G)[5]);#plot the gate for the  fifth node
+#' }
+ 
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
 #			browser()
 			y<-2:length(getNodes(x[[1]]))

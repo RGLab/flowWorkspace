@@ -7,7 +7,7 @@
 \alias{plotGate,GatingSet,numeric-method}
 \alias{plotGate,GatingSet,character-method}
 \alias{plotGate,GatingSet,missing-method}
-\alias{plotGate_labkey}
+
 
 \title{
 Plot a Gate and Cell Population
