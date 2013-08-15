@@ -1261,14 +1261,14 @@ setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y,tsor
 		})
 
 setMethod("setNode"
-    ,signature(x="GatingSet",y="numeric",value="character")
+    ,signature(x="GatingSet",y="numeric",value="ANY")
     ,function(x,y,value,...){
       lapply(x,function(gh){
             setNode(gh,y,value,...)
           })
     })
 setMethod("setNode"
-    ,signature(x="GatingSet",y="character",value="character")
+    ,signature(x="GatingSet",y="character",value="ANY")
     ,function(x,y,value,...){
       setNode(x,.getNodeInd(x[[1]],y),value)
     })
