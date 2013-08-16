@@ -2,7 +2,6 @@
 
 #' convert flowCore filter to a list (filterObject) 
 #' that can be understood by c++ code
-
 setMethod("filterObject",signature=c("rectangleGate"),function(x,...){
       params<-parameters(x)
       
