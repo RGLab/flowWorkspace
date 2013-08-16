@@ -1,4 +1,3 @@
-#' @include AllGenerics.R
 #' @include AllClasses.R
 
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file,options = 0,...){

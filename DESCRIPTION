@@ -25,6 +25,15 @@ Imports:
     stats4,
     utils
 Collate:
+    'AllGenerics.R'
+    'AllClasses.R'
+    'flowJoWorkspace-Methods.R'
+    'GatingHierarchy-Methods.R'
+    'GatingSet-Methods.R'
+    'GatingSetList-Methods.R'
+    'filterObject-Methods.R'
+    'add-Methods.R'
+    'setGate-Methods.R'
 Depends:
     R (>= 2.16.0),Rcpp (>= 0.9.9),Cairo,
     BiocGenerics,

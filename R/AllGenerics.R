@@ -1,3 +1,7 @@
+setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
+setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))
+setGeneric("haveSameGatingHierarchy",function(object1,object2,...)standardGeneric("haveSameGatingHierarchy"))
+
 setGeneric("openWorkspace", function(file,...)standardGeneric("openWorkspace"))
 setGeneric("closeWorkspace",function(workspace)standardGeneric("closeWorkspace"))
 setGeneric("parseWorkspace",function(obj,...)standardGeneric("parseWorkspace"))
@@ -55,6 +59,4 @@ setGeneric("getTransformations",function(x)standardGeneric("getTransformations")
 setGeneric("getKeywords",function(obj,y)standardGeneric("getKeywords"))
 
 setGeneric("setData",function(this,value)standardGeneric("setData"))
-setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
-setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))
 
