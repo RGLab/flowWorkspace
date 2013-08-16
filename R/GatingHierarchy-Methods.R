@@ -1,8 +1,9 @@
+#' @include AllClasses.R
 
 #20110314
 #TODO wrap isNcdf slot with get/set methods
 setGeneric("isNcdf", function(x)standardGeneric("isNcdf"))
-setMethod("isNcdf",c("GatingHierarchyInternal"),function(x){
+setMethod("isNcdf",c("GatingHierarchy"),function(x){
 #			browser()
 			fs<-x@tree@nodeData@defaults$data$data$ncfs
 			return (class(fs)=="ncdfFlowSet")
@@ -53,7 +54,7 @@ setMethod("isNcdf",c("GatingHierarchy"),function(x){
   #plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
   options("warn"=0)
 }
-setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,...){
+setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
       
 #           browser()
       g <- .getGraph(x)
@@ -73,7 +74,7 @@ setMethod("plot",c("GatingHierarchyInternal","missing"),function(x,y,...){
 }
 #plot subgraph
 #TODO:merge with plot method in flowWorkspace
-setMethod("plot",c("GatingHierarchyInternal","numeric"),function(x,y,...){
+setMethod("plot",c("GatingHierarchy","numeric"),function(x,y,...){
       
       
       # get graphNEL object
@@ -123,12 +124,12 @@ setMethod("plot",c("GatingHierarchyInternal","numeric"),function(x,y,...){
       
     })
 
-setMethod("plot",c("GatingHierarchyInternal","character"),function(x,y,...){
+setMethod("plot",c("GatingHierarchy","character"),function(x,y,...){
       
       plot(x,flowWorkspace:::.getNodeInd(x,y))
       
     })
-setMethod("show","GatingHierarchyInternal",function(object){
+setMethod("show","GatingHierarchy",function(object){
 			cat("\tFCS File: ",getSample(object),"\n");
 			cat("\tGatingHierarchy with ",length(getNodes(object))," gates\n");
 			print(object@pointer)
@@ -136,17 +137,17 @@ setMethod("show","GatingHierarchyInternal",function(object){
 		})
 
 #Return the value of the keyword given a flowWorkspace and the keyword name
-setMethod("keyword",c("GatingHierarchyInternal","character"),function(object,keyword){
+setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 			
 			keyword(getData(object),keyword)
 		})
-setMethod("getKeywords",c("GatingHierarchyInternal","missing"),function(obj,y){
+setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
 			keyword(getData(obj))
 		})
 #Note:integer indices of nodes are based on regular order
 #so whenver need to map from character node name to integer node ID,make sure
 #to use default order which is regular.
-setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,...){
+setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,...){
 
 			orderInd<-match(order,c("regular","tsort","bfs"))
 			if(length(orderInd)==0)
@@ -191,30 +192,30 @@ setMethod("getNodes","GatingHierarchyInternal",function(x,y=NULL,order="regular"
 					nodeNames
 		})
 
-setMethod("getParent",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y){
+setMethod("getParent",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
 #			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
 			#make sure the index conversion is done properly between C and R convention
 #			browser()
 			.Call("R_getParent",obj@pointer,getSample(obj),as.integer(y)-1)+1
 		})
-setMethod("getParent",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 #			browser()
 			ind<-.getNodeInd(obj,y)
 			pind<-getParent(obj,ind)
 			getNodes(obj)[pind]
 		})
-setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE){
+setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE){
 			ind<-.getNodeInd(obj,y)
 			cind<-getChildren(obj,ind)
 			getNodes(obj)[cind]
 })
-setMethod("getChildren",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y){
+setMethod("getChildren",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
 #			browser()
 			.Call("R_getChildren",obj@pointer,getSample(obj),as.integer(y)-1)+1
 			
 		})
 #
-setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),function(x,y,flowJo=TRUE){
+setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo=TRUE){
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 			
@@ -228,7 +229,7 @@ setMethod("getProp",signature(x="GatingHierarchyInternal",y="character"),functio
 #			unname(stats["count"]/stats["parent.total"])	
 			
 		})
-setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),function(x,y,flowJo=TRUE){
+setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo=TRUE){
             ind<-.getNodeInd(x,y)
       
 			stats<-.getPopStat(x,ind)
@@ -278,7 +279,7 @@ setMethod("getTotal",signature(x="GatingHierarchyInternal",y="character"),functi
 					,count=as.numeric(stats$FlowJo["count"]))	
 		)
 }
-setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
+setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			
 #			stopifnot(!missing(y)&&(is.numeric(y)||is.integer(y)))
@@ -325,8 +326,16 @@ setMethod("getPopStats","GatingHierarchyInternal",function(x,...){
 			m
 		})
 
-		
-setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
+      x<-getPopStats(x)
+      cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));
+      cv<-as.matrix(cv,nrow=length(cv))
+      cv[is.nan(cv)]<-0
+      rownames(cv)<-basename(as.character(rownames(x)));
+      return(barchart(cv,xlab="Coefficient of Variation",...));
+    })
+        
+setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
 #			browser()
             ind<-.getNodeInd(obj,y)
@@ -336,7 +345,7 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="character"),funct
 		})
 #return gate y for a given hierarchy (by index)
 #Note that this index is ordered by regular sorting method
-setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE){
+setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,tsort=FALSE){
 			vertexID=y-1
 			if(vertexID<=0)
 				return (NA)
@@ -411,14 +420,14 @@ setMethod("getGate",signature(obj="GatingHierarchyInternal",y="numeric"),functio
   
   
 }
-setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y){
+setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
 #			browser()
 			getIndices(obj,.getNodeInd(obj,y))
 			
 		})
     
-setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y){
+setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
 			
 
 			.Call("R_getIndices",obj@pointer,getSample(obj),as.integer(y-1))
@@ -428,7 +437,7 @@ setMethod("getIndices",signature(obj="GatingHierarchyInternal",y="numeric"),func
 #' once the R paser is deprecated,it can be safely removed as well
 #' @param ... arguments passed to ncdfFlow::[[  
 #' j a \code{numeric} or \code{character} used as channel index
-setMethod("getData",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y,tsort=FALSE, ...){
       if(!obj@flag){
         stop("Must run execute() before fetching data");
       }
@@ -439,14 +448,14 @@ setMethod("getData",signature(obj="GatingHierarchyInternal",y="missing"),functio
       
     })
 
-setMethod("getData",signature(obj="GatingHierarchyInternal",y="numeric"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,tsort=FALSE, ...){
             
             this_node <- getNodes(obj)[y]
             getData(obj,this_node, ...)
 			
 		})
     
-setMethod("getData",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE, ...){
       
       
       this_data <- getData(obj, ...)                        
@@ -458,11 +467,46 @@ setMethod("getData",signature(obj="GatingHierarchyInternal",y="character"),funct
       }
       
     })
-    
+
+setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
+      
+      
+      if(!x@flag&!x@isNcdf){
+        stop("Object doesn't hold ncdf data");
+      }
+      
+      r<-nodeDataDefaults(x@tree,"data")[["data"]];
+      if(class(r)=="environment"){
+        r$ncfs
+      }
+    })
+
+
+#to be replaced by method "ncdfFlowSet"
+setMethod("getNcdf",signature(obj="GatingHierarchy"),function(obj){
+      .Deprecated("ncFlowSet")
+      .getNcdf(obj)
+    })
+
+setReplaceMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x,value){
+      
+      
+      if(!inherits(x,"GatingHierarchy")){
+        stop("obj must be of class GatingHierarchy")
+      }
+      if(!x@flag&!x@isNcdf){
+        stop("Object doesn't hold ncdf data");
+      }
+      r<-nodeDataDefaults(x@tree,"data")[["data"]];
+      r$ncfs<-flowCore:::copyFlowSet(value)
+      x
+      
+    })
+
 .isBoolGate<-function(x,y){
 	return (class(getGate(x,y))=="booleanFilter")
 }
-#setMethod("getDimensions",signature(obj="GatingHierarchyInternal",y="character"),function(obj,y,index=FALSE){
+#setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
 ##			browser()
 #			if(.isBoolGate(obj,y)){
 #				getDimensions(obj,getParent(obj,y),index=index);
@@ -493,7 +537,7 @@ setMethod("getData",signature(obj="GatingHierarchyInternal",y="character"),funct
 #			}
 #		})
 
-setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),function(obj,y=NULL,...){
+setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(obj,y=NULL,...){
 			if(exists("axis.labels",envir=nodeDataDefaults(obj@tree)$data))
 				return (get("axis.labels",envir=nodeDataDefaults(obj@tree)$data))
 			else
@@ -505,7 +549,7 @@ setMethod("getAxisLabels",signature(obj="GatingHierarchyInternal",y="missing"),f
 setMethod("getTransformations","GatingHierarchy",function(x){
 			x@transformations
 		})
-setMethod("getTransformations","GatingHierarchyInternal",function(x){
+setMethod("getTransformations","GatingHierarchy",function(x){
 #			browser()
 			trans<-.Call("R_getTransformations",x@pointer,getSample(x))
 			lapply(trans,function(curTrans){
@@ -558,7 +602,7 @@ setMethod("getTransformations","GatingHierarchyInternal",function(x){
 		})
 		
 ##it is currently only for internal use		
-setMethod("getCompensationMatrices","GatingHierarchyInternal",function(x){
+setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 			comp<-.Call("R_getCompensation",x@pointer,getSample(x))
 			cid<-comp$cid
 #			browser()
@@ -1001,3 +1045,7 @@ setMethod("setNode"
       setNode(x,.getNodeInd(x,y),value)
     })
 
+setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
+      ifelse(isFullPath,file.path(x@dataPath,x@name),x@name)
+      
+    })

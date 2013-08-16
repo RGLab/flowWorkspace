@@ -1,3 +1,5 @@
+#' @include GatingHierarchy-Methods.R
+
 # TODO: currently archive save the entire cdf file instead of the current view of cdf
 # it could cause data redudancy if only a subset(view of ncdfFlowSet) is desired to be saved
 ###############################################################################
@@ -322,7 +324,7 @@ unarchive<-function(file,path=tempdir()){
 	G	
 }
 ##construct object from existing gating hierarchy(gating template) and flow data
-setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path=".",isNcdf=FALSE,dMode=1,...){
+setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isNcdf=FALSE,dMode=1,...){
 			
 			samples<-y
 			dataPaths<-vector("character")
@@ -353,7 +355,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 			
 
 			files<-file.path(dataPaths,samples)
-			Object<-new("GatingSetInternal")
+			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
 			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
             Object@guid <- .uuid_gen()
@@ -392,7 +394,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 	{
 		file<-files[i]		
 		sampleName<-basename(file)
-		gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
+		gh<-new("GatingHierarchy",pointer=G@pointer,name=sampleName)
 #			browser()
 		localDataEnv<-nodeDataDefaults(gh@tree,"data")
 		localDataEnv$data<-globalDataEnv
@@ -733,7 +735,7 @@ setMethod("GatingSet",c("GatingHierarchyInternal","character"),function(x,y,path
 
     tempenv
 }
-setMethod("haveSameGatingHierarchy",signature=c("GatingSetInternal","missing"),function(object1,object2=NULL){
+setMethod("haveSameGatingHierarchy",signature=c("GatingSet","missing"),function(object1,object2=NULL){
 #			em<-edgeMatrix(object1)
 #			if(length(em)>=2){
 #				return(all(sapply(2:length(em),function(i)
@@ -1035,7 +1037,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 
 
 setGeneric("clone", function(x,...)standardGeneric("clone"))
-setMethod("clone",c("GatingSetInternal"),function(x,...){
+setMethod("clone",c("GatingSet"),function(x,...){
 
 			clone<-x
 			#clone c structure
@@ -1088,13 +1090,9 @@ setMethod("clone",c("GatingSetInternal"),function(x,...){
 			message("GatingSet cloned!")
 			clone
 		})
-setMethod("clone",c("GatingSet"),function(x,...){
-#			browser()
-			.cloneGatingSet(x,...)
-		})
 
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
-setMethod("recompute",c("GatingSetInternal"),function(x,y){
+setMethod("recompute",c("GatingSet"),function(x,y){
 			if(missing(y))
 				y<-1
 			if(is.character(y))
@@ -1128,7 +1126,7 @@ setMethod("recompute",c("GatingSet"),function(x,y){
 		})
 
 
-setReplaceMethod("ncFlowSet",signature(x="GatingSetInternal"),function(x,value){
+setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
 			
 			callNextMethod(x,value)
 			#associate the internal structure with the new cdf
@@ -1138,7 +1136,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSetInternal"),function(x,value){
 		})
 
 
-setMethod("show","GatingSetInternal",function(object){
+setMethod("show","GatingSet",function(object){
 			
 			callNextMethod(object)
 			
@@ -1151,23 +1149,23 @@ setMethod("show","GatingSetInternal",function(object){
 			
 		})
 #overload the getSamples for GatingSet to ensure the sample names comes from pdata of fs    
-setMethod("getSamples","GatingSetInternal",function(x){
+setMethod("getSamples","GatingSet",function(x){
       sampleNames(getData(x))
     })
 #' to speed up reading data from disk later on, 
 #' we can optionally pass j to ncdfFlow::[ to subset on channel
-setMethod("getData",signature(obj="GatingSetInternal",y="missing"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y,tsort=FALSE, ...){
       ncFlowSet(obj)[,...]
   
     })
-setMethod("getData",signature(obj="GatingSetInternal",y="numeric"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE, ...){
       
       this_node <- getNodes(obj[[1]])[y]
       getData(obj,this_node, ...)
       
     })
 
-setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE, ...){
 			
             this_data <- getData(obj, ...)                        
             if(y == "root"){
@@ -1181,11 +1179,30 @@ setMethod("getData",signature(obj="GatingSetInternal",y="character"),function(ob
 			}
 			
 		})
+######################################################
+#read/update ncdfFlowSet object stored in GatingSet
+######################################################
+setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
+      first_sample <- names(x@set)[[1]]
+      ncFlowSet(x[[first_sample]])
+    })
+
+setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
+      first_sample <- names(x@set)[[1]]
+      ncFlowSet(x[[first_sample]])<-value
+      x
+    })
+#to be replaced by method "ncdfFlowSet"
+setMethod("getNcdf",signature(obj="GatingSet"),function(obj){
+      .Deprecated("ncFlowSet")
+      getNcdf(obj[[1]])
+    })
+    
 #note:it doesn't use metadata slot of GatingSet, instead it directly access the pData of flowSet/ncdfFlowSet
-setMethod("pData","GatingSetInternal",function(object){
+setMethod("pData","GatingSet",function(object){
 			pData(ncFlowSet(object))
 		})
-setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,value){
+setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 #			env<-nodeDataDefaults(object[[1]]@tree,"data")$data
 #		
 #			assign("value",value,env)
@@ -1204,7 +1221,7 @@ setReplaceMethod("pData",c("GatingSetInternal","data.frame"),function(object,val
 
 
 ##overload the original method to add subetting on flowSet/ncdfFlowSet
-setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
+setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
             
             #convert non-character indices to character
             if(extends(class(i), "numeric")||class(i) == "logical"){
@@ -1247,19 +1264,14 @@ setMethod("[",c("GatingSetInternal"),function(x,i,j,...,drop){
 		})
 		
 		
-#setMethod("rbind2",c("GatingSetInternal","GatingSetInternal"),function(x,y,...){
-#			#up to user to make sure x,y have the same gating hierarchy
-##			if(!haveSameGatingHierarchy(x,y)){
-##				stop("x and y must have the same gating hierarchy for each sample")
-##			}
-#			
-#			rbind2(GatingSetList(list(x,y)),...)		
-#		})
 
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE){
 			lapply(obj,function(x)getGate(x,y))
 		})
-
+setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE){
+      lapply(obj,function(x)getGate(x,y,tsort=tsort))
+    })
+    
 setMethod("setNode"
     ,signature(x="GatingSet",y="numeric",value="ANY")
     ,function(x,y,value,...){
@@ -1271,4 +1283,87 @@ setMethod("setNode"
     ,signature(x="GatingSet",y="character",value="ANY")
     ,function(x,y,value,...){
       setNode(x,.getNodeInd(x[[1]],y),value)
+    })
+setMethod("[[",c("GatingSet"),function(x,i,j,...){
+      #convert non-character indices to character
+      if(extends(class(i), "numeric")||class(i) == "logical"){
+        i <- getSamples(x)[i]
+      }
+      
+      return(x@set[[i]]);
+    })
+setMethod("length","GatingSet",function(x){
+      length(x@set);
+    })
+
+setMethod("show","GatingSet",function(object){
+      cat("A GatingSet with ",length(object), " samples\n")
+      for(i in 1:length(object)){
+        cat(i,". ");
+        show(object[[i]])
+      }
+    })
+setMethod("getPopStats", "GatingSet",
+    function(x, statistic = c("freq", "count"), flowJo = FALSE, ...) {
+      
+      # Based on the choice of statistic, the population statistics are returned for
+      # each Gating Hierarchy within the GatingSet.
+      statistic <- match.arg(statistic)
+      
+      # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
+      # are returned.
+      if (flowJo) {
+        statistic <- paste("flowJo", statistic, sep = ".")
+      } else {
+        statistic <- paste("flowCore", statistic, sep = ".")
+      }
+      
+      if (!haveSameGatingHierarchy(x)) {
+        message("Can't retrieve population statistics table for GatingSet. The samples don't all have the same gating schemes.")
+      }
+      
+      pop_stats <- do.call(cbind, lapply(x, function(y) {
+                getPopStats(y)[[statistic]]
+              }))
+      rownames(pop_stats) <- rownames(getPopStats(x[[1]]))
+      pop_stats
+    })
+setMethod("plotPopCV","GatingSet",function(x,...){
+#columns are populations
+#rows are samples
+      cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
+      rownames(cv)<-getSamples(x);#Name the rows
+#flatten, generate levels for samples.
+      nr<-nrow(cv)
+      nc<-ncol(cv)
+      populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
+      samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
+      cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
+      return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...))));
+    })
+
+setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(obj,y=NULL,...){
+      get("axis.labels",envir=nodeData(obj@tree)[[1]]$data)
+    })
+#Return the list of keywords given a GatingSet and a sample name
+setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
+      ind<-which(getSamples(obj)%in%y)
+      if(length(ind)>0){
+        getKeywords(obj,ind);
+      }else{
+        stop(paste("Sample ",y," not in GatingSet",sep=""));
+      }
+    })
+setMethod("getKeywords",c("GatingSet","numeric"),function(obj,y){
+      if(length(obj)<y){
+        stop("index out of range");
+      }else{
+        getKeywords(obj[[y]]);
+      }
+    })
+setMethod("keyword",c("GatingSet","character"),function(object,keyword){
+      tmp<-data.frame(unlist(lapply(object,function(x)keyword(x,keyword)),use.names=FALSE));
+      tmp<-data.frame(matrix(tmp[[1]],ncol=length(keyword),byrow=T))
+      colnames(tmp)<-keyword
+      tmp
     })

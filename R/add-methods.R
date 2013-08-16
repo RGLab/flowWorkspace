@@ -1,3 +1,5 @@
+#' @include filterObject-Methods.R
+
 setMethod("add",
 		signature=c(wf="GatingSet", "list"),
 		definition=function(wf, action, ...)
@@ -8,7 +10,7 @@ setMethod("add",
 			
 		})
 setMethod("add",
-		signature=c("GatingSetInternal", "filterList"),
+		signature=c("GatingSet", "filterList"),
 		definition=function(wf, action, ...)
 		{
 			samples<-getSamples(wf)
@@ -33,7 +35,7 @@ setMethod("add",
 		})
     
 setMethod("add",
-		signature=c("GatingSetInternal", "filter"),
+		signature=c("GatingSet", "filter"),
 		definition=function(wf, action, ...)
 		{
 			
@@ -75,7 +77,7 @@ setMethod("add",
 
 
 setMethod("add",
-		signature=c("GatingHierarchyInternal", "filter"),
+		signature=c("GatingHierarchy", "filter"),
 		definition=function(wf, action,... )
 		{
 			
@@ -84,7 +86,7 @@ setMethod("add",
 
 
 setMethod("add",
-		signature=c("GatingHierarchyInternal", "quadGate"),
+		signature=c("GatingHierarchy", "quadGate"),
 		definition=function(wf, action,names=NULL,... )
 		{
 			
@@ -131,7 +133,7 @@ setMethod("add",
 ## to save the efforts of adding new filter type, but the extra contructor is necessary to 
 ## convert logical vector to filterResult.
 #setMethod("add",
-#		signature=c("GatingHierarchyInternal", "logicalGate"),
+#		signature=c("GatingHierarchy", "logicalGate"),
 #		definition=function(wf, action, name,...)
 #		{
 #			
@@ -152,7 +154,7 @@ setMethod("add",
 
 setMethod("Rm",
 		signature=c(symbol="character",
-				envir="GatingSetInternal",
+				envir="GatingSet",
 				subSymbol="character"),
 		definition=function(symbol, envir, subSymbol, ...)
 		{
@@ -164,7 +166,7 @@ setMethod("Rm",
 
 setMethod("Rm",
 		signature=c(symbol="character",
-				envir="GatingHierarchyInternal",
+				envir="GatingHierarchy",
 				subSymbol="character"),
 		definition=function(symbol, envir, subSymbol, ...)
 		{

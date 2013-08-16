@@ -1,3 +1,5 @@
+#' @include GatingSet-Methods.R
+
 
 setMethod("rbind2",
     signature=signature("GatingSetList","missing"),
@@ -23,7 +25,7 @@ setMethod("rbind2",
         ptrlist<-lapply(x,function(gs)gs@pointer)
         sampleList<-lapply(x,getSamples)
         pointer<-.Call("R_combineGatingSet",ptrlist,sampleList,package="flowWorkspace")
-        G<-new("GatingSetInternal")
+        G<-new("GatingSet")
         G@pointer<-pointer
         G@guid<-flowWorkspace:::.uuid_gen()
         
@@ -208,12 +210,12 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,
 
 
 setMethod("plotGate",signature(x="GatingSetList",y="numeric"),function(x,y, ...){
-      selectMethod("plotGate",sig=c(x="GatingSetInternal",y="numeric"))(x=x, y=y, ...)
+      selectMethod("plotGate",sig=c(x="GatingSet",y="numeric"))(x=x, y=y, ...)
       
     })
 
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
-      selectMethod("plotGate",sig=c(x="GatingSetInternal",y="character"))(x=x, y=y, ...)
+      selectMethod("plotGate",sig=c(x="GatingSet",y="character"))(x=x, y=y, ...)
     })
 
 setMethod("getPopStats","GatingSetList",function(x,...){

@@ -1,7 +1,7 @@
-# convert flowCore filter to a list (filterObject) 
-# that can be understood by c++ code
-###############################################################################
-setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))
+#' @include GatingSet-Methods.R
+
+#' convert flowCore filter to a list (filterObject) 
+#' that can be understood by c++ code
 
 setMethod("filterObject",signature=c("rectangleGate"),function(x,...){
       params<-parameters(x)

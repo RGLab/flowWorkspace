@@ -1,5 +1,7 @@
+#' @include filterObject-Methods.R
+
 setMethod("setGate"
-    ,signature(obj="GatingHierarchyInternal",y="numeric",value="filter")
+    ,signature(obj="GatingHierarchy",y="numeric",value="filter")
     ,function(obj,y,value,negated=FALSE,...){
       this_fobj <- filterObject(value)
       this_fobj$negated<-negated
@@ -7,12 +9,12 @@ setMethod("setGate"
       
     })
 setMethod("setGate"
-    ,signature(obj="GatingHierarchyInternal",y="character",value="filter")
+    ,signature(obj="GatingHierarchy",y="character",value="filter")
     ,function(obj,y,value,...){
       setGate(obj,.getNodeInd(obj,y),value,...)
     })
 setMethod("setGate",
-    signature=c(obj="GatingSetInternal",y="ANY", value = "list"),
+    signature=c(obj="GatingSet",y="ANY", value = "list"),
     definition=function(obj, y, value,...)
     {
       
@@ -21,7 +23,7 @@ setMethod("setGate",
       
     })
 setMethod("setGate",
-    signature=c(obj="GatingSetInternal",y="ANY", value = "filterList"),
+    signature=c(obj="GatingSet",y="ANY", value = "filterList"),
     definition=function(obj, y, value,...)
     {
       samples<-getSamples(obj)
