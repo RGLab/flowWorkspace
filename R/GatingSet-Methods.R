@@ -323,7 +323,14 @@ unarchive<-function(file,path=tempdir()){
 
 	G	
 }
-##construct object from existing gating hierarchy(gating template) and flow data
+
+#' constructors for GatingSet
+#' 
+#' construct object from existing gating hierarchy(gating template) and flow data
+#' 
+#' @rdname GatingSet-methods
+#' @aliases
+#' GatingSet,GatingHierarchyInternal,character-method
 setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isNcdf=FALSE,dMode=1,...){
 			
 			samples<-y

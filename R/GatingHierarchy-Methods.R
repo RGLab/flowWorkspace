@@ -1,17 +1,17 @@
 #' @include AllClasses.R
 
-#20110314
-#TODO wrap isNcdf slot with get/set methods
-setGeneric("isNcdf", function(x)standardGeneric("isNcdf"))
-setMethod("isNcdf",c("GatingHierarchy"),function(x){
+
+#' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
+#' 
+#' @param x \code{GatingHiearchy} object
+#' @return \code{logical}
+#' @export 
+isNcdf <- function(x){
 #			browser()
 			fs<-x@tree@nodeData@defaults$data$data$ncfs
 			return (class(fs)=="ncdfFlowSet")
 			
-		})
-setMethod("isNcdf",c("GatingHierarchy"),function(x){
-			return(x@isNcdf)
-		})
+		}
 
 #return a graphNEL object that only contans the node Name and isBool flags    
 .getGraph <- function(x){
@@ -54,6 +54,38 @@ setMethod("isNcdf",c("GatingHierarchy"),function(x){
   #plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
   options("warn"=0)
 }
+
+#' plot a GatingHierarchy
+#' 
+#' Plot a tree/graph representing the GatingHierarchy
+#' 
+#' @param x \code{GatingHierarchy} to be plotted
+#' @param y \code{missing}.
+#' @param ... other arguments:
+#' \item{layout}{
+#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
+#'	\item{width}{
+#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
+#'	\item{height}{		
+#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
+#'	\item{fontsize}{
+#'      See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
+#'	\item{labelfontsize}{		
+#'  	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
+#'	\item{fixedsize}{		
+#'  	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
+#' @param boolean \code{TRUE|FALSE} logical specifying whether to plot boolean gate nodes. Defaults to FALSE.
+#' 	
+#' @examples 
+#' \dontrun{
+#' 	#G is a GatingHierarchy
+#' 	plot(G);
+#' }
+#' 
+#' @rdname plot-methods
+#' @aliases
+#' plot,GatingHierarchy,missing-method
+#' @export 
 setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
       
 #           browser()
@@ -129,6 +161,10 @@ setMethod("plot",c("GatingHierarchy","character"),function(x,y,...){
       plot(x,flowWorkspace:::.getNodeInd(x,y))
       
     })
+
+#' @rdname GatingHierarchy-class
+#' @aliases show,GatingHierarchy
+#' @export 
 setMethod("show","GatingHierarchy",function(object){
 			cat("\tFCS File: ",getSample(object),"\n");
 			cat("\tGatingHierarchy with ",length(getNodes(object))," gates\n");

@@ -1,5 +1,6 @@
 #' @include filterObject-Methods.R
 
+ 
 setMethod("add",
 		signature=c(wf="GatingSet", "list"),
 		definition=function(wf, action, ...)
