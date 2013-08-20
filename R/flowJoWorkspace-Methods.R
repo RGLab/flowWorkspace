@@ -1,5 +1,33 @@
 #' @include AllClasses.R
 
+#' Open/Close a flowJo workspace
+#' 
+#' Open a flowJo workspace and return a \code{flowJoWorkspace} object.
+#' Close a flowJoWorkspace, destroying the internal representation of the XML document, and freeing the associated memory.
+#' 
+#' @param file Full path to the XML flowJo workspace file.
+#' @param options xml parsing options passed to \code{\link{xmlTreeParse}}
+#' @param ... other arguments passed to \code{\link{xmlTreeParse}}
+#' @param workspace A \code{flowJoWorkspace}
+#' @details
+#' 	Open an XML flowJo workspace file and return a \code{flowJoWorkspace} object. The workspace is represented using a \code{XMLInternalDocument} object.
+#' 	Close a flowJoWorkpsace after finishing with it. This is necessary to explicitly clean up the C-based representation of the XML tree. (See the XML package).
+#' @return  a \code{flowJoWorkspace} object.
+#' @examples
+#' \dontrun{
+#' 	file<-"myworkspace.xml"
+#' 	ws<-openWorkspace(file);
+#' 	class(ws); #flowJoWorkspace
+#' 	closeWorkspace(ws);
+#' @importFrom XML xmlTreeParse xmlAttrs xmlGetAttr xmlTreeParse xmlRoot xmlValue xpathApply
+#' 
+#' @aliases
+#' openWorkspace
+#' openWorkspace-methods
+#' openWorkspace,character-method
+#' closeWorkspace
+#' closeWorkspace-methods
+#' closeWorkspace,flowJoWorkspace-method
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file,options = 0,...){
  	#message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	tmp<-tempfile(fileext=".xml")
@@ -37,47 +65,69 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 	}
 })
 
-
+#' @importFrom XML free
 setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 	free(workspace@doc);
 	workspace@.cache$flag<-FALSE;
 })
-setOldClass("summary")
 
+#setOldClass("summary")
+# @importFrom base summary
 setMethod("summary",c("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
-#options is passed to xmlTreeParse
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal=TRUE,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path=obj@path,...){
+
+#' Parse a flowJo Workspace
+#' 
+#' Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{execute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
+#' @param obj A \code{flowJoWorkspace} to be parsed.
+#' @param name \code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.
+#' @param execute \code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default. 
+#' @param isNcdf \code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.
+#' @param subset \code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.
+#' @param requiregates \code{logical} Should samples that have no gates be included?
+#' @param includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
+#' @param dMode An \code{integer} scalar specifying the level of print-out that is used for the debug purpose.
+#' @param path The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.
+#' @param ...
+#'      \itemize{
+#'      	\item sampNloc="keyword": a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
+#'      	\item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
+#'      	\item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
+#'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
+#'      	}
+#' @details
+#' A flowJoWorkspace is generated with a call to \code{openWorkspace()}, passing the name of the xml workspace file. This returns a \code{flowJoWorkspace}, which can be parsed using the \code{parseWorkspace()} method. The function can be called non-interactively by passing the index or name of the group of samples to be imported via \code{parseWorkspace(obj,name=x)}, where \code{x} is either the numeric index, or the name. 
+#' The \code{subset} argument allows one to select a set of files from the chosen sample group. The routine will take the intersection of the files in the sample group, the files specified in \code{subset} and the files available on disk, and import them. 
+#' @return 
+#'  a \code{GatingSet}, which is a wrapper around a list of \code{GatingHierarchy} objects, each representing a single sample in the workspace. The \code{GatingHierarchy} objects contain \code{graphNEL} trees that  represent the gating hierarchy of each sample. Each node in the \code{GatingHierarchy} has associated data, including the population counts from flowJo, the parent population counts, the \code{flowCore} gates generated from the flowJo workspace gate definitions. Data are not yet loaded or acted upon at this stage. To execute the gating of each data file, a call to \code{execute()} must be made on each \code{GatingHierarchy} object in the \code{GatingSet}. This is done automatically by default, and there is no more reason to set this argument to FALSE. 
+#' @seealso \code{\link{getSampleGroups}},\code{\link{GatingSet}}
+#' @examples
+#' \dontrun{
+#' 	 #f is a xml file name of a flowJo workspace
+#' 	ws<-openWorkspace(f)
+#' 	G<-parseWorkspace(ws,execute=TRUE,isNcdf=FALSE,path="."); #assume that the fcs files are below the current directory.
+#' 	#G is a GatingSet.
+#' 	G1<-parseWorkspace(ws)
+#' 	#G1 is a GatingSet.
+#' }
+#'
+#' @aliases
+#' parseWorkspace
+#' parseWorkspace-methods
+#' parseWorkspace,flowJoWorkspace-method
+#' 
+#' @importFrom utils menu
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path=obj@path,...){
 	
 	
 			
 	if(isNcdf&!TRUE){
 	stop("isNcdf must be FALSE since you don't have netcdf installed");
 	}
-	#message("We do not fully support all versions of flowJo XML workspaces at this time.")
-	#message("If your workspace is not supported or if this package throws an error, we encourage you to contact the package maintainter with a bug report. We will endeavour to add support for other features upon request.")
-	##########################################################
-	#path needs to be specified anyway to get full path of fcs
-	#########################################################
-#	if(execute){
-    ##m<-match("path",names(list(...))) 
-#    path=list(...)$path     
-#    if(is.null(path)){ 
-            ##stop("If execute=TRUE, you must specify a path to the fcs files via path= argument"); 
-#            path=obj@path 
-#    }
-	#Check that the files exist now so we don't have to wait a long time.
+	
 	filenames<-flowWorkspace:::getFileNames(obj);
-	#sapply(filenames,function(x)list.files(path=path,pattern=x,recursive=T))
-	#	missingfiles<-!file.exists()
-	#	if(length(which(missingfiles))/length(filenames)>=0.25){
-	#		#warning(length(which(missingfiles))/length(filenames)*100,"% of the ",length(filenames)," FCS files can't be found at ",obj@path);
-	#		#warning("They will be excluded from the import");
-	#		#warning("Perhaps you want to specify a correct path to the files or copy the missing files over?")
-	#	}
-#	}
-#	browser()
+	
 	x<-obj@doc;
 	.hasNN(x);
 	wsversion<-xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]];
@@ -101,16 +151,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 		##Keep samples with compID = NA and set it to -2
 		#If the compID = NA, check the Sample Parameter attributes for the transformation information.
 		message("Version recognised. Continuing..")
-	}#else if (wsversion=="1.6"){
-		#Windows compensation and transformation work differently.. there is no comp id
-	
-#		stop("Sorry, we don't support this type of workspace (flowJo Windows) at the moment. But we are working on it!")
-		
-	#}
-	else{
-		useInternal<-TRUE
-#		stop("Workspace Version not supported");
 	}
+	
 	sg$groupName<-factor(sg$groupName)
 	groups<-levels(sg$groupName)
 	if(is.null(name)){
@@ -160,316 +202,18 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,useInternal
 #		return(new("GatingSet"))
 	}
 	message("Parsing ",length(l)," samples");
-#	browser()
-	if(useInternal)
-	{
-		sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
-		return (.parseWorkspace(xmlFileName=file.path(obj@path,obj@file),sampleIDs,execute=execute,dMode=dMode,isNcdf=isNcdf,includeGates=includeGates,path=path, xmlParserOption = obj@options,wsversion=wsversion,...))
-	}
-	#TODO parallelize
-	if(length(grep("snowfall",loadedNamespaces()))==1){
-	    if(is.null(sfGetCluster())){
-	        stop("Must initialize snowfall cluster first")
-	    }
-	    sfLibrary(flowWorkspace)
-	    for(Z in 1:length(l)){
-	        l[[Z]]<-xmlGetAttr(l[[Z]],"nn")
-        }
-	    #I believe this breaks because the underlying C xml object is not available on the other nodes, and I'm not sure how to export it.
-	    #here's what we'll do.. send the "nn" id for the top level nodes in l.
-	    #convert the document to a character representation and save/send it to the nodes (x)
-	    #Each node parses the document and pulls up the necessary "nn" node, then continues. 
-	    tmp<-saveXML(xmlRoot(x))
-	    message("exporting XML tree to nodes")
-	    tf<-tempfile()
-	    save(tmp,file=tf);
-	    sfExport("tf","TEMP")
-	    rm(tmp)
-	  #  gc()
-	    clusterEvalQ(sfGetCluster(),{load(tf);tmp<-xmlRoot(xmlTreeParse(tmp, asText = TRUE, useInternalNodes = TRUE));invisible()})
-	    message("parsing")
-		G<-sfLapply(l,function(x){
-		    #parse the exported variable
-		    #x<-xmlRoot(xmlTreeParse(tmp, asText = TRUE, useInternal = TRUE))
-		    x<-xpathApply(tmp,paste("//node()[@nn=",x,"]",sep="\'"))[[1]]
-			message("Parsing sampleID ",xmlGetAttr(x,"sampleID"));
-			.getPopulations(x,env=NULL,includegates=includeGates);
-			graph<-get("gr",get("env",globalenv()))
-			if(exists("transformations",env)){
-				transformations<-get("transformations",get("env",globalenv()))
-			}else{
-				transformations<-list();
-			}
-			if(exists("compensation",env)){
-				compensation<-get("compensation",get("env",globalenv()))
-			}else{
-				compensation<-matrix();
-			}
-			rm(x)
-			#gc()
-			tf<-tempfile()
-			ret<-list(graph=graph,transformations=transformations,compensation=compensation)
-			if(!file.exists(TEMP)){
-			    dir.create(TEMP,recursive=TRUE)
-			}
-			save(ret,file=file.path(TEMP,basename(tf)));
-			return(file.path(TEMP,basename(tf)));
-			})
-			#run through G and reconstruct the object)
-			for(i in seq_along(G)){
-			    load(G[[i]]);
-			    G[[i]]<-ret;
-			    cat(".")
-			}
-			#seems to work.. passing the large data back and forth is not optimal.. could save to disk and have the master node read it from disk and construct the required object.
-		#stop the snowfall cluster, we're done.
-		sfStop();	
-	}else if(length(grep("multicore",loadedNamespaces()))==1){
-	    G<-multicore::mclapply(l,function(x){
-	        message("Parsing sampleID ",xmlGetAttr(x,"sampleID"));
-			.getPopulations(x,env=NULL,includegates=includeGates);
-			graph<-get("gr",get("env",globalenv()))
-			if(exists("transformations",env)){
-				transformations<-get("transformations",get("env",globalenv()))
-			}else{
-				transformations<-list();
-			}
-			if(exists("compensation",env)){
-				compensation<-get("compensation",get("env",globalenv()))
-			}else{
-				compensation<-matrix();
-			}
-			list(graph=graph,transformations=transformations,compensation=compensation)
-	    })
-	}else{
-	G<-lapply(l,function(x){
-		message("Parsing sampleID ",xmlGetAttr(x,"sampleID"));
-		.getPopulations(x,env=NULL,includegates=includeGates);
-		graph<-get("gr",get("env",globalenv()))
-		if(exists("transformations",env)){
-			transformations<-get("transformations",get("env",globalenv()))
-		}else{
-			transformations<-list();
-		}
-		if(exists("compensation",env)){
-			compensation<-get("compensation",get("env",globalenv()))
-		}else{
-			compensation<-matrix();
-		}
-		list(graph=graph,transformations=transformations,compensation=compensation)
-		})
-	}
-	
-		fn<-do.call(c,lapply(G,function(x){		
-			get("fcsfile",envir=nodeDataDefaults(x$graph,"metadata"))
-		}))
-		names(G)<-fn
-	
-		excludefiles<-vector("numeric")
-		for(i in 1:length(G)){
-			nodeDataDefaults(G[[i]]$graph,"group")<-groups[result]
-			#########################################################
-			#get full path for each fcs and store in dataPath slot
-			#########################################################
-			file<-names(G[i])
-			lastwarn<-options("warn")[[1]];
-			options("warn"=-1);
-			##escape "illegal" characters
-			file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
-			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full=TRUE)
-			options("warn"=lastwarn)
-			if(length(absPath)==0){
-				warning("Can't find ",file," in directory: ",path,"\n");
-				excludefiles<-c(excludefiles,i);
-			}else{
-				G[[i]]$dataPath<-dirname(absPath[1])
-			}
-		}
-		#Remove samples where files don't exist.
-		if(length(excludefiles)>0){
-			message("Removing ",length(excludefiles)," samples from the analysis since we can't find their FCS files.");
-			G<-G[-excludefiles];
-		}
+    sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
+	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
+                    ,sampleIDs
+                    ,execute=execute
+                    ,dMode=dMode
+                    ,isNcdf=isNcdf
+                    ,includeGates=includeGates
+                    ,path=path
+                    ,xmlParserOption = obj@options
+                    ,wsversion=wsversion
+                    ,...)
 		
-		G<-lapply(G,function(x)new("GatingHierarchy",tree=x$graph,nodes=nodes(x$graph),name=get("fcsfile",envir=nodeDataDefaults(x$graph,"metadata")),flag=FALSE,transformations=x$transformations,compensation=x$compensation,dataPath=x$dataPath,isNcdf=isNcdf))
-		G<-new("GatingSet",set=G);
-		##################################################
-		#create ncdf file without adding matrices yet
-		#################################################	
-		
-		if(execute){
-			#comments:maybe execute should not be exposed to 
-			#users for gating separately from parseWorkspace because ncdfFlow object is created during
-			#executing provess and stored in gatingHierarchy after transformation
-			if(isNcdf){
-				ncfs1  <-read.ncdfFlowSet(files=getSamples(G,isFullPath=TRUE),flowSetId="fs1",isWriteSlice=TRUE)				
-				dataEnvironment=new.env(parent=.GlobalEnv);
-				assign("ncfs",ncfs1,envir=dataEnvironment)
-			}else{
-			    dataEnvironment<-NULL
-			    ncfs1<-NULL
-			}
-			if(.packageLoaded("Rmpi")){	
-				#nslaves=4
-				mpi.spawn.Rslaves(nslaves=nslaves)
-				mpi.remote.exec(library(flowWorkspace))
-				if(isNcdf){
-				    mpi.remote.exec(library(ncdfFlow))
-			    }
-				mpi.bcast.Robj2slave(ws)
-				mpi.bcast.Robj2slave(G)
-				mpi.remote.exec(options("flowWorkspace_mpi_communication"=TRUE));
-				mpi.remote.exec(options("flowWorkspace_mpi_read_token"=FALSE    ));
-				options("flowWorkspace_mpi_communication"=FALSE)
-				mpi.bcast.Robj2slave(ncfs1)
-				mpi.bcast.Robj2slave(dataEnvironment)
-				wrapper<-function(){
-					more<-1;
-					while(more==1){
-						#ask for a task
-						mpi.send.Robj(0,0,1)
-						i<-mpi.recv.Robj(0,2)
-						if(!is.na(i)){
-						g<-execute(G[[i]],isNcdf=isNcdf(G[[i]]),ncfs=ncfs1,dataEnvironment=dataEnvironment)
-						
-						mpi.send.Robj(g,0,5)
-    					rm(g)
-    					#gc(reset=T);	
-
-    					#are there more tasks?
-    					mpi.recv.Robj(0,mpi.any.tag())
-    					sourcetag<-mpi.get.sourcetag();
-    					if(sourcetag[2]==7){
-    						#Nope I'm done!
-    						more<-0
-    						next;
-    					}
-					}else{
-					    more<-0;
-					    next;
-					}
-						
-					}
-				}
-				
-				#in master
-				mpi.bcast.Robj2slave(wrapper);
-				mpi.bcast.cmd(wrapper())
-				
-				#divy up the tasks
-				ntasks<-length(G);
-				tasks<-1:ntasks
-				state<-0;
-				readlock<-0;
-				readqueue<-NULL;
-				writequeue<-NULL
-				pending<-NULL
-				results<-NULL;
-				while(length(tasks)>0|length(results)<ntasks){
-					#message("length(tasks): ", length(tasks), " length(results): ", length(results))
-					#message("checking if anyone needs to write")
-					if(readlock==0&state==0&length(writequeue)>0){
-						#okay, go for it
-						#message("they can write")
-						mpi.send.Robj(0,writequeue[1],4)
-						#message("okay, they're writing")
-						writequeue<-writequeue[-1L]
-						state<-1;
-					}
-					#give permission to the next thread to read
-					if(state==0&readlock==0&length(readqueue)>0){
-					    #11 permission to read
-					    mpi.send.Robj(0,readqueue[1],11)
-					    readqueue<-readqueue[-1L]
-					    readlock<-1;
-					}
-					#listen for a request
-					#message("listening")
-					obj<-mpi.recv.Robj(mpi.any.source(),mpi.any.tag())
-					sourcetag<-mpi.get.sourcetag();
-					who<-sourcetag[1]
-					what<-sourcetag[2]
-					#Asking for data
-					if(what==1){
-						#message("they want data")
-						if(length(tasks)>0){
-						    mpi.send.Robj(tasks[1],sourcetag[1],2);
-						    message("Gating");
-    						tasks<-tasks[-1L]
-					    }else{
-					        mpi.send.Robj(NA,sourcetag[1],2);
-					    }
-						#message("sent them data")
-					}
-					#Needs permission to write to NetCDF
-					if(what==3){
-						#queue up
-						#message("they want do write to ncdf")
-						writequeue<-c(writequeue,who)
-					}
-					#They sent me a result
-					if(what==5){
-						#message("they have a result")
-						results<-c(results,obj)
-						#Do I have any more data to hand out?
-						if(length(tasks)>0){
-							#message("there's more results for ",who)
-							mpi.send.Robj(0,who,6)
-							#message("they got more results")
-						}else{
-							#message("there's no more results for ", who)
-							mpi.send.Robj(0,who,7)
-							#message("moving on")
-						}
-					}
-					if(what==8){
-						#message("they're done writing")
-						state<-0
-					}
-					#read lock..
-					#12 done reading
-					if(what==12){
-					    readlock<-0;
-					}
-					#10 permission to read
-					if(what==10){
-					    #Asking Permission to Read
-					   readqueue<-c(readqueue,who);
-					}
-				}
-				#Need to clear any remaining requests;
-				
-                #message("done gating; Merging results")
-				#results is a list. Need to merge the ncdfFlowSet metadata.
-				if(isNcdf){
-				    ncfses<-lapply(results,function(x)nodeData(x@tree,getNodes(x)[1],"data")[[1]][["data"]]$ncfs)
-				    names(ncfses)<-unlist(lapply(results,function(x)x@name),use.names=FALSE)
-				    snames<-names(ncfses)
-				    message("Cloning flowset")
-				    newnc<-ncdfFlow::clone.ncdfFlowSet(ncfses[[1]],isNew=FALSE,isEmpty=FALSE)
-				    for(samp in snames){
-        				newnc@frames[[samp]]<-ncfses[[samp]]@frames[[samp]]
-        			}
-        			colnames(newnc)<-colnames(as.list(newnc@frames)[[1]])
-        			denv<-nodeData(results[[1]]@tree,getNodes(results[[1]])[[1]],"data")[[1]][["data"]]
-        			assign("ncfs",newnc,denv)
-        			for(i in 1:length(results)){
-        				assign("data",denv,nodeData(results[[i]]@tree,getNodes(results[[i]])[1],"data")[[1]])
-        			}            
-			    }else{
-			        
-			    }
-				G<-new("GatingSet",set=results)
-				rm(results);
-				#gc(reset=TRUE);
-				mpi.remote.exec(options("flowWorkspace_mpi_communication"=FALSE));
-				options("flowWorkspace_mpi_communication"=NULL)
-			}
-			else{
-				G<-lapply(G,function(x)execute(hierarchy=x,isNcdf=isNcdf(x),ncfs=ncfs1,dataEnvironment=dataEnvironment))
-			}
-		}
-		return(G);
 })
 
 
@@ -500,19 +244,6 @@ l[[i]]<-from[[i]]
 l})
 
 
-.getNcdf<-function(obj){
-	if(!inherits(obj,"GatingHierarchy")){
-		stop("obj must be of class GatingHierarchy")
-	}
-	if(!obj@flag&!obj@isNcdf){
-		stop("Object doesn't hold ncdf data");
-	}
-	r<-nodeDataDefaults(obj@tree,"data")[["data"]];
-	if(class(r)=="environment"){
-		r$ncfs
-	}
-}
-
 .getKeywordsBySampleID <- function(obj,sid,kw=NULL){
   kws<-xpathApply(obj@doc,sprintf("/Workspace/SampleList/Sample[@sampleID='%s']/Keywords/Keyword",sid),xmlAttrs)
   if(!is.null(kw)){
@@ -540,6 +271,22 @@ setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
 	
 }
 
+#' Fetch the indices for a subset of samples in a flowJo workspace, based on a keyword value pair
+#'
+#' Returns an index vector into the samples in a flowJo workspace for use with parseWorkspace(subset=), based on a keyword/value filter in a specific group of samples.
+#'
+#' @description 
+#' This function will calculate the indices of a subset of samples in a flowJoWorkspace, based on a keyword/value filter. It is applied to a specific group of samples in the workspace. The output is meant to be passed to the subset= argument of parseWorkspace.
+#' 
+#' @param ws \code{flowJoWorkspace} object
+#' @param key \code{character} The name of the keyword. 
+#' @param value \code{character} The value of the keyword.
+#' @param group \code{numeric} The group of samples to subset. 
+#' @param requiregates \code{TRUE} or \code{FALSE}, specifying whether we include only samples that have gates attached or whether we include any sample in the workspace.
+#' 
+#' @return A numeric vector of indices.
+#' @seealso \code{\link{parseWorkspace}}
+#' @export 
 getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	if(!is.numeric(group)){
 		stop("group must be numeric")
@@ -588,14 +335,6 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	return(l)
 }
 
-setMethod("getBoundaries",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-	g<-getGate(obj,y);
-	if(length(g@parameters)==1){
-		rbind(g@min,g@max)
-	}else{
-		g@boundaries
-	}
-})
 
 #Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
 .isCompensated<-function(x){
@@ -648,7 +387,25 @@ trimWhiteSpace<-function (x)
 setMethod("getSamples","flowJoWorkspace",function(x){
 	.getSamples(x@doc)
 })
-###add support for win version
+
+#' Get a table of sample groups from a flowJo workspace
+#' 
+#'   Return a data frame of sample group information from a flowJo workspace
+#' @param x A \code{flowJoWorkspace} object.
+#' @details Returns a table of samples and groups defined in the flowJo workspace
+#' @return  
+#'   A \code{data.frame} containing the \code{groupName}, \code{groupID}, and \code{sampleID} for each sample in the workspace. Each sample may be associated with multiple groups.
+#' @seealso \code{\link{flowJoWorkspace-class}} \code{\link{openWorkspace}}
+#' 
+#' @examples
+#'   \dontrun{
+#'     #ws is a flowJoWorkspace
+#'     getSampleGroups(ws);
+#'   }
+#' @aliases 
+#' getSampleGroups
+#' getSampleGroups-methods
+#' getSampleGroups,flowJoWorkspace-method
 setMethod("getSampleGroups","flowJoWorkspace",function(x){
 #			browser()
 			win<-!x@version=="2.0"
@@ -760,6 +517,7 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	unlist(tblnames,use.names=FALSE);
 }
 
+#' @importFrom stats na.omit sd splinefun
 .getCalibrationTable<-function(x,name){
 	top<-xmlRoot(x)
 	if(inherits(name,"character")&length(name)==1){

@@ -30,21 +30,12 @@ setMethod("rbind2",
         G@guid<-flowWorkspace:::.uuid_gen()
         
         #combine R objects
-        ne<-new.env(parent=emptyenv());
-        assign("ncfs",fs,envir=ne)
+        
+        flowData(G) <- fs
         set<-unlist(lapply(x,function(gs)gs@set))
-        #deep copying of tree
+        #upodate pointer
         for(i in seq_along(set))
         {
-          #create new local data environment that stores axis and flowData environment
-          localDataEnvOld<-nodeDataDefaults(set[[i]]@tree,"data")
-          localDataEnv<-new.env(parent=emptyenv())
-          copyEnv(localDataEnvOld,localDataEnv)
-          #update flowData environment with new ncfs
-          assign("data",ne,localDataEnv)
-          #sync back to tree
-          nodeDataDefaults(set[[i]]@tree,"data")<-localDataEnv
-          #upodate pointer
           set[[i]]@pointer<-pointer
         }
         

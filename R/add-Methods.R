@@ -1,6 +1,7 @@
 #' @include filterObject-Methods.R
 
- 
+#' @export 
+#' @importFrom flowCore add
 setMethod("add",
 		signature=c(wf="GatingSet", "list"),
 		definition=function(wf, action, ...)
@@ -10,6 +11,8 @@ setMethod("add",
 			add(wf,flist,...)
 			
 		})
+    
+#' @importClassesFrom flowCore filterList ellipsoidGate intersectFilter polygonGate rectangleGate
 setMethod("add",
 		signature=c("GatingSet", "filterList"),
 		definition=function(wf, action, ...)
@@ -153,6 +156,7 @@ setMethod("add",
 #			.addGate(wf,filterObject,...)
 #		})
 
+#' @importFrom flowCore Rm
 setMethod("Rm",
 		signature=c(symbol="character",
 				envir="GatingSet",

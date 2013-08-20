@@ -8,11 +8,12 @@
 #' @export 
 isNcdf <- function(x){
 #			browser()
-			fs<-x@tree@nodeData@defaults$data$data$ncfs
-			return (class(fs)=="ncdfFlowSet")
+			
+			return (class(flowData(x))=="ncdfFlowSet")
 			
 		}
-
+#' @importClassesFrom graph graphNEL
+#' @importMethodsFrom graph fromGXL
 #return a graphNEL object that only contans the node Name and isBool flags    
 .getGraph <- function(x){
   DotFile<-tempfile(fileext=".dot")
@@ -24,7 +25,10 @@ isNcdf <- function(x){
   g<-fromGXL(sf)
   close(sf)
   g
-}    
+}
+
+#' @importMethodsFrom graph nodeData removeNode
+#' @importMethodsFrom Rgraphviz renderGraph
 .plotGatingTree<-function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE){
 #  browser()
   ##remove bool gates if necessary
@@ -77,7 +81,7 @@ isNcdf <- function(x){
 #' @param boolean \code{TRUE|FALSE} logical specifying whether to plot boolean gate nodes. Defaults to FALSE.
 #' 	
 #' @examples 
-#' \dontrun{
+#' dontrun{
 #' 	#G is a GatingHierarchy
 #' 	plot(G);
 #' }
@@ -86,6 +90,7 @@ isNcdf <- function(x){
 #' @aliases
 #' plot,GatingHierarchy,missing-method
 #' @export 
+#' @importFrom graphics plot
 setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
       
 #           browser()
@@ -104,13 +109,14 @@ setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
   }
   
 }
-#plot subgraph
+#' plot subgraph
 #TODO:merge with plot method in flowWorkspace
+#' @importMethodsFrom graph subGraph
 setMethod("plot",c("GatingHierarchy","numeric"),function(x,y,...){
       
       
       # get graphNEL object
-      g <- flowWorkspace:::.getGraph(x)
+      g <- .getGraph(x)
       
       
       if(length(y)==1){#use it as the root
@@ -124,23 +130,6 @@ setMethod("plot",c("GatingHierarchy","numeric"),function(x,y,...){
         #assume the number y is consistent with  R graph node name: N_x
         subNode_Ind <- nodelist$v
         
-        #convert numeric index to node name
-        #      allNodes <- nodes(g)
-        #      startNode <- paste("N",y,sep="_")
-        
-        #get ride of parents (since dfs doesn't like it)
-        #      g <- subGraph(allNodes[-(1:(y-1))],g)
-        #do dfs search
-        #      subGraphs <-dfs(g,startNode)
-        #      if(any(grepl("discovered",names(subGraphs)))){
-        #        
-        #        subNodes <- subGraphs$discovered  
-        #      }else{
-        #        #if muliple graphs,pick the first one that contains the current startNode
-        #        subGraphs <- subGraphs[[1]]
-        #        subNodes <- subGraphs$discovered
-        #      }
-        
         
       }else{
         #when y is a vector, use it to subset the graph
@@ -152,13 +141,13 @@ setMethod("plot",c("GatingHierarchy","numeric"),function(x,y,...){
         stop("Rgraphviz doesn't know how to plot leaf node!")
       }
       g <- subGraph(subNodes, g)
-      flowWorkspace:::.plotGatingTree(g,...)
+      .plotGatingTree(g,...)
       
     })
 
 setMethod("plot",c("GatingHierarchy","character"),function(x,y,...){
       
-      plot(x,flowWorkspace:::.getNodeInd(x,y))
+      plot(x,.getNodeInd(x,y))
       
     })
 
@@ -172,7 +161,27 @@ setMethod("show","GatingHierarchy",function(object){
 			cat("\n")
 		})
 
-#Return the value of the keyword given a flowWorkspace and the keyword name
+    
+#' Methods to retrieve keywords associated with an FCS sample
+#' 
+#' See Methods for function \code{keyword} in Package `flowCore'
+#' 
+#' @details Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet}
+#' 
+#' @param object \code{GatingHierarchy) or \code{GatingSet}
+#' @param keyword \code{character}.
+#' 
+#' @seealso \code{\link[flowCore]{keyword-methods}}
+#' 
+#' @aliases 
+#' keyword 
+#' keyword,GatingHierarchy,character-method 
+#' keyword,GatingHierarchy,character
+#' keyword,GatingSet,character-method
+#' keyword,GatingSet,character
+#' 
+#' @importFrom flowCore keyword
+#' @export 
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 			
 			keyword(getData(object),keyword)
@@ -180,9 +189,37 @@ setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
 			keyword(getData(obj))
 		})
-#Note:integer indices of nodes are based on regular order
-#so whenver need to map from character node name to integer node ID,make sure
-#to use default order which is regular.
+    
+
+#'  Get the names of all nodes in a gating hierarchy.
+#' 
+#'   \code{getNodes} returns a character vector of names of the nodes (populations) in the \code{GatingHierarchy}.
+#' @param x A \code{GatingHierarchy}
+#' @param y A \code{character} the name or full(/partial) gating path of the population node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
+#' @param order \code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
+#'     "regular" is default.
+#' @param isPath A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
+#' @param prefix A \code{logical} scalar to tell the method whether to add internal node index as the prefix to the node name
+#' @param ... Additional arguments.
+#' 
+#' @details 
+#' integer indices of nodes are based on regular order,so whenver need to map from character node name to integer node ID,make sure
+#' to use default order which is regular.
+#' @return 
+#' getNodes returns a \code{character} vector of node/population names, ordered appropriately.
+#' 
+#' @examples
+#'   dontrun{
+#'     #G is a gating hierarchy
+#'     getNodes(G[[1]])#return node names
+#'     getNodes(G[[1]],isPath=TRUE)#return the full path
+#'     setNode(G,"L","lymph")
+#'   }
+#' @aliases
+#' getNodes
+#' getNodes-methods
+#' getNodes,GatingHierarchy-method
+#' @importFrom BiocGenerics duplicated
 setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,...){
 
 			orderInd<-match(order,c("regular","tsort","bfs"))
@@ -228,8 +265,36 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=
 					nodeNames
 		})
 
+
+#' Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy
+#' 
+#' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
+#' @param obj A \code{GatingHierarchy}
+#' @param y a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.
+#' @return 
+#'   \code{getParent} returns a \code{character} vector, the name of the parent population.
+#'   \code{getChildren} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
+#' @seealso \code{\link{getNodes}}
+#' 
+#' @examples
+#'   dontrun{
+#'     #G is a gatinghierarchy
+#'     #return the name of the parent of the fifth node in the hierarchy.
+#'     getParent(G,getNodes(G[[1)[5])
+#'     n<-getNodes(G,tsort=T)[4];
+#'     getChildren(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
+#'     getChildren(G,4);#Get the ids of the child nodes 
+#'   }
+#' @aliases
+#' getParent
+#' getParent-methods
+#' getParent,GatingHierarchy,character-method
+#' getParent,GatingHierarchy,numeric-method
+#' getChildren
+#' getChildren-methods
+#' getChildren,GatingHierarchy,character-method
+#' getChildren,GatingHierarchy,numeric-method
 setMethod("getParent",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
-#			return(match(getParent(obj,getNodes(obj,tsort=tsort)[y]),getNodes(obj,tsort=tsort)));
 			#make sure the index conversion is done properly between C and R convention
 #			browser()
 			.Call("R_getParent",obj@pointer,getSample(obj),as.integer(y)-1)+1
@@ -261,8 +326,6 @@ setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,fl
 				unname(stats$flowJo["proportion"])
 			else
 				unname(stats$flowCore["proportion"])
-#			browser()
-#			unname(stats["count"]/stats["parent.total"])	
 			
 		})
 setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo=TRUE){
@@ -361,7 +424,7 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 			m<-m[,2:6]
 			m
 		})
-
+#' @importFrom lattice barchart
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
       x<-getPopStats(x)
       cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));
@@ -456,6 +519,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
   
   
 }
+#' @importFrom ncdfFlow getIndices
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
 #			browser()
@@ -468,30 +532,63 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 
 			.Call("R_getIndices",obj@pointer,getSample(obj),as.integer(y-1))
 			
-		})	
-#' @param tsort not used (for the compatibility with old API)
+		})
+#' get gated flow data from a GatingHierarchy/GatingSet
+#' 
+#' get gated flow data from a GatingHierarchy/GatingSet 
+#'
+#' @details 
+#' Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}. 
+#' Subset membership can be obtained using \code{getIndices}. 
+#' Population statistics can be obtained using \code{getPop} and \code{getPopStats}. 
+#' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.}
+
+#' @param obj A \code{GatingHierarchy}, \code{GatingSet} object.
+#' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. 
+#' 		If not specified, will return the complete flowFrame/flowSet at the root node.
 #' once the R paser is deprecated,it can be safely removed as well
 #' @param ... arguments passed to ncdfFlow::[[  
 #' j a \code{numeric} or \code{character} used as channel index
-setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y,tsort=FALSE, ...){
+#' @return  
+#' A \code{flowFrame} object if \code{obj} is a GatingHierarchy or graphNEL. A \code{flowSet} if a \code{GatingSet}.
+#' A \code{ncdfFlowSet} if the node name/index (\code{y}) is NULL and the flow data is stored as cdf. 
+#' @seealso
+#'   \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
+#' 
+#' @examples
+#'   dontrun{
+#'     #G is a GatingSet
+#'     geData(G,3) #get a flowSet constructed from the third node / population in the tree.
+#'     geData(G,"cd4")
+#'     
+#'     #gh is a GatingHierarchy
+#'     getData(gh)
+#' }
+#' @aliases 
+#' getData,GatingHierarchy,missing-method}
+#' getData,GatingHierarchy,numeric-method}
+#' getData,GatingHierarchy,character-method}
+#' @rdname getData-methods
+#' @export 
+setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y, ...){
       if(!obj@flag){
         stop("Must run execute() before fetching data");
       }
       
-      ncfs <- nodeDataDefaults(obj@tree,"data")$data$ncfs
+      fs <- flowData(obj)
 
-      ncfs[getSample(obj)][[1,...]]
+      fs[getSample(obj)][[1,...]]
       
     })
 
-setMethod("getData",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingHierarchy",y="numeric"),function(obj,y, ...){
             
             this_node <- getNodes(obj)[y]
             getData(obj,this_node, ...)
 			
 		})
     
-setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
       
       
       this_data <- getData(obj, ...)                        
@@ -504,84 +601,37 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
       
     })
 
-setMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x){
-      
-      
-      if(!x@flag&!x@isNcdf){
-        stop("Object doesn't hold ncdf data");
-      }
-      
-      r<-nodeDataDefaults(x@tree,"data")[["data"]];
-      if(class(r)=="environment"){
-        r$ncfs
-      }
-    })
-
-
-#to be replaced by method "ncdfFlowSet"
-setMethod("getNcdf",signature(obj="GatingHierarchy"),function(obj){
-      .Deprecated("ncFlowSet")
-      .getNcdf(obj)
-    })
-
-setReplaceMethod("ncFlowSet",signature(x="GatingHierarchy"),function(x,value){
-      
-      
-      if(!inherits(x,"GatingHierarchy")){
-        stop("obj must be of class GatingHierarchy")
-      }
-      if(!x@flag&!x@isNcdf){
-        stop("Object doesn't hold ncdf data");
-      }
-      r<-nodeDataDefaults(x@tree,"data")[["data"]];
-      r$ncfs<-flowCore:::copyFlowSet(value)
-      x
-      
-    })
-
 .isBoolGate<-function(x,y){
 	return (class(getGate(x,y))=="booleanFilter")
 }
-#setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
-##			browser()
-#			if(.isBoolGate(obj,y)){
-#				getDimensions(obj,getParent(obj,y),index=index);
-#			}else{
-#				if(!index){
-#					if(length(getGate(obj,y)@parameters)==1){
-#						c(getGate(obj,y)@parameters[[1]]@parameters);
-#					}else{
-#						c(getGate(obj,y)@parameters[[1]]@parameters,getGate(obj,y)@parameters[[2]]@parameters)
-#					}
-#				}else{
-#					if(length(getGate(obj,y)@parameters)==1){
-#						if(.isCompensated(obj)){
-#							tmp<-parameters(getData(obj,y))@data$name
-#						}else{
-#							tmp<-gsub(">","",gsub("<","",parameters(getData(obj,y))@data$name))
-#						}
-#						c(match(getGate(obj,y)@parameters[[1]]@parameters,tmp))	
-#					}else{
-#						if(.isCompensated(obj)){
-#							tmp<-parameters(getData(obj,y))@data$name
-#						}else{
-#							tmp<-gsub(">","",gsub("<","",parameters(getData(obj,y))@data$name))
-#						}
-#						c(match(getGate(obj,y)@parameters[[1]]@parameters,tmp),match(getGate(obj,y)@parameters[[2]]@parameters,tmp))
-#					}
-#				}
-#			}
-#		})
 
-setMethod("getAxisLabels",signature(obj="GatingHierarchy",y="missing"),function(obj,y=NULL,...){
-			if(exists("axis.labels",envir=nodeDataDefaults(obj@tree)$data))
-				return (get("axis.labels",envir=nodeDataDefaults(obj@tree)$data))
-			else
-				return (NULL)
-		})
 
-#this method currently is used convert transformation funtion from c++ to R
-##mainly for transforming range info
+getAxisLabels <- function(obj,...){
+              obj@axis.labels
+		}
+
+#' Return a list of transformations or a transformation in a flowJo workspace/GatingHierarchy
+#'
+#' Return a list of all the transformations or a transformation in a flowJo workspace/GatingHierarchy
+#' 
+#' @param x A \code{flowJoWorkspace} or \code{GatingHierarchy} object
+#' 
+#' @details
+#' Returns a list of the transformations or a transformation in the flowJo workspace. The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples in the \code{flowJoWorkspace}. Each element of \code{L} is itself a \code{list} of length \code{M}, where \code{M} is the number of parameters that were transformed for a sample or group of samples in a \code{flowJoWorkspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis, using two different sets of transformations, then L will be of length 2, and each element of L will be of length 5. The elements of \code{L} represent channel- or parameter-specific transformation functions that map from raw intensity values to channel-space used by flowJo.
+#' this method currently is used convert transformation funtion from c++ to R
+#' mainly for transforming range info
+#' @return 
+#' lists of functions, with each element of the list representing a transformation applied to a specific channel/parameter of a sample. 
+#' @examples
+#' dontrun{
+#' 	#Assume f is a flowJoWorkspace
+#' 	getTransformations(f);
+#' }
+#' @aliases
+#' getTransformations
+#' getTransformations-methods
+#' getTransformations,flowJoWorkspace-method
+#' getTransformations,GatingHierarchy-method
 setMethod("getTransformations","GatingHierarchy",function(x){
 			x@transformations
 		})
@@ -714,7 +764,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 		
 		plotGate(x,y,...)
 		})
-    
+#' @importFrom gridExtra grid.arrange   
 setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data with 'execute()'\n");
@@ -822,8 +872,9 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 	do.call("expression", ss)
 }
 
-#fitGate is used to disable behavior of plotting the gate region in 1d densityplot
-#overlay is either the gate indices or logical vector(i.e. event indices)
+#' @param fitGate is used to disable behavior of plotting the gate region in 1d densityplot
+#' @param overlay is either the gate indices or logical vector(i.e. event indices)
+#' @importMethodsFrom flowViz xyplot densityplot
 .plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL, stats, ...){			
 		
 			type<- match.arg(type)
@@ -874,7 +925,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 				overlay<-getIndices(x,y)
 				curGate<-NULL									
 				
-#				panelFunc<-panel.xyplot.flowFrame.booleanGate
+
 			}else
 			{
 				if(class(curGate)=="filters")
@@ -986,7 +1037,8 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 			
 			
 }
-##x is a gatingHierarchy, data is a flowFrame
+#' @param x a gatingHierarchy
+#' @param data a flowFrame
 .formatAxis<-function(x,data,xParam,yParam,scales=list(),...){
 	pd<-pData(parameters(data))
 #	browser()
@@ -1036,42 +1088,23 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 	
 	list(scales=scales,xlab=xlab,ylab=ylab)
 }
-panel.xyplot.flowFrame.booleanGate<-function(x,y
-		,frames
-		,filter=NULL#filter here is actually a subsetted flowFrame
-		,channel.x.name
-		,channel.y.name
-		,binTrans=sqrt
-		,xbins=0
-		,...){
-	
-	
 
-	x.b <- exprs(filter[,channel.x.name])
-	y.b <- exprs(filter[,channel.y.name])
-	
-	if(xbins>0)
-	{
-		#using hexbin package to do the hexagon plot	
-		bin<-hexbin(x,y,xbins=xbins)
-	
-		grid.hexagons(bin,trans=binTrans)		
-#		plotType("gpoints", c(channel.x.name, channel.y.name))
-	}else
-	{
-		panel.points(x,y,col="black",pch=".")
-			
-	}
-#	browser()	
-	panel.points(x.b,y.b,col="red",pch=".")
-	
-	
-}
+#'  Update the name of one node in a gating hierarchy/GatingSet.
+#' 
+#'  \code{setNode} update the name of one node in a gating hierarchy/GatingSet.
+#' @param value A \code{character} the name of the node.
+#' @examples
+#'   dontrun{
+#'     #G is a gating hierarchy
+#'     getNodes(G[[1]])#return node names
+#'     getNodes(G[[1]],isPath=TRUE)#return the full path
+#'     setNode(G,"L","lymph")
+#'   }
 
 setMethod("setNode"
         ,signature(x="GatingHierarchy",y="numeric",value="character")
         ,function(x,y,value,...){
-#         value <- gsub("/",":",value)
+
         .Call("R_setNodeName",x@pointer,getSample(x),as.integer(y-1),value)
     })
 
@@ -1081,6 +1114,26 @@ setMethod("setNode"
       setNode(x,.getNodeInd(x,y),value)
     })
 
+
+#' Get the sample name associated with a GatingHierarchy
+#' 
+#'   Return  the sample name
+#' @param x A \code{GatingHierarchy} or a \code{graphNEL} object from the \code{@tree} slot of a GatingHierarchy
+#' @param isFullPath \code{isFullPath} is a logical value indicating whether the full path of the sample FCS file is returned.Default is FALSE.
+#' 
+#' @details Returns the name of the sample, or the path to the FCS file.
+#' @return  A "character" vector of length 1. Either the sample name or the path to the FCS file.
+#' 
+#' @examples
+#'   dontrun{
+#'     #G is  a GatingHierarhcy
+#'     getSample(G)
+#'   }
+#' @aliases
+#' getSample
+#' getSample-method
+#' getSample,GatingHierarchy-method
+#' getSample,graphNEL-method
 setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
       ifelse(isFullPath,file.path(x@dataPath,x@name),x@name)
       

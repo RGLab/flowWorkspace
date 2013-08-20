@@ -1,6 +1,6 @@
 #' @include AllGenerics.R
 
-
+#' @importClassesFrom XML, XMLInternalDocument
 setOldClass("XMLInternalDocument")
 
 #' An R representation of a flowJo workspace.
@@ -53,14 +53,10 @@ setClass("flowJoWorkspace"
 #'   
 #'   \section{Slots}{
 #'       \describe{
-#'       \item{\code{tree}:}{Object of class \code{"graphNEL"} representing the tree-structured gating hierarchy.}
-#'       \item{\code{nodes}:}{Object of class \code{"character"}. A vector of node names representing the populations/gates in the tree. }
 #'       \item{\code{name}:}{Object of class \code{"character"}. The name of the sample. Usually the FCS filename, but it depends on how it was defined in the flowJo workspace. }
 #'       \item{\code{flag}:}{Object of class \code{"logical"}. A flag indicating whether the gates, transformations, and compensation matrices have been applied to data, or simply imported.}
-#'       \item{\code{transformations}:}{Object of class \code{"list"}. The list of transformations applied to each dimension of the data.}
-#'       \item{\code{compensation}:}{Object of class \code{"matrix"}. The compensation matrix applied to the data}
 #'       \item{\code{dataPath}:}{Object of class \code{"character"}. A path to the fcs file associated with this GatingHierarchy }
-#'       \item{\code{isNcdf}:}{Flag indicating whether ncdf is used to store data and gating indices}  
+#'      \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}  
 #'       }
 #'       }
 #' 
@@ -81,66 +77,19 @@ setClass("flowJoWorkspace"
 #'  thisNode <- nodes[4]
 #' 	plotGate(gh,thisNode);
 #' 	getGate(gh,thisNode);
-#' 	getBoundaries(gh,thisNode)
 #' 	getData(gh,thisNode)
 #' 
 #' @name GatingHierarchy-class
 #' @rdname GatingHierarchy-class
 #' @exportClass GatingHierarchy
 setClass("GatingHierarchy"
-        ,representation(tree="graphNEL"
-                        ,nodes="character"
-                        ,name="character"
+        ,representation(name="character"
                         ,flag="logical"
-                        ,transformations="list"
-                        ,compensation="matrix"
-                        ,dataPath="character"
-                        ,isNcdf="logical"
+                        ,dataPath = "character"
+                        ,axis.labels = "list"
                         ,pointer="externalptr")
                 )
                 
-
-                
-setMethod("initialize","GatingHierarchy"
-          ,function(.Object
-                      ,tree=new("graphNEL",edgemode="directed"),nodes=character()
-                      ,name="New Sample"
-                      ,flag=FALSE
-                      ,transformations=rep(list({f<-function(x){x};attr(f,"type")<-"identity";f}),8)
-                      ,compensation=diag(8)
-                      ,dataPath="."
-                      ,isNcdf=FALSE
-                      ,fcsfile=NULL
-                      ,pointer=NULL){
-	#callNextMethod(.Object,tree,nodes,name,flag,transformations,compensation,dataPath,isNcdf)
-	m<-new.env(parent=emptyenv())
-	
-	multiassign(c("compID","fcsfile","fjName","gate","negated","isBooleanGate","thisIndices","parentTot","thisTot","isGated","keywords"),list(NULL,fcsfile,fcsfile,NA,FALSE,FALSE,list(),NA,0,FALSE,NULL),env=m)
-	nodeDataDefaults(tree,"metadata")<-m
-	d<-new.env(parent=emptyenv());
-	data<-new.env(parent=emptyenv());
-	assign("data",data,env=d);
-	if(!isNcdf){
-		assign("data",new("flowSet"),env=data)
-	}else{
-		assign("ncfs",new("ncdfFlowSet"),env=data);
-	}
-	nodeDataDefaults(tree,"data")<-d
-	.Object@nodes<-nodes
-	.Object@tree<-tree
-	.Object@name<-name
-	if (!is.null(fcsfile)&name=="New Sample"){
-		.Object@name<-fcsfile
-	}
-	.Object@flag<-flag
-	.Object@transformations<-transformations
-	.Object@compensation<-compensation
-	.Object@dataPath<-dataPath
-	.Object@isNcdf<-isNcdf
-    .Object@pointer <- pointer
-	validObject(.Object)
-	return(.Object)
-})
 
 
 .uuid_gen<-function(){
@@ -158,7 +107,8 @@ setMethod("initialize","GatingHierarchy"
 #' \section{Slots}{
 #'   \describe{
 #'     \item{\code{set}:}{Object of class \code{"list"}. A list of GatingHierarchy objects }
-#'     \item{\code{metadata}:}{Object of class \code{"AnnotatedDataFrame"}. Stores the metadata associated with this set of FCS samples.  }
+#'     \item{\code{data}:}{Object of class \code{"flowSet"}. flow data associated with this GatingHierarchy }
+#'     \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}
 #'     \item{\code{guid}:}{Object of class \code{"character"}. the unique identifier for GatingSet object.}
 #'   }
 #' }
@@ -183,30 +133,11 @@ setClass("GatingSet"
           ,representation(set="list"
                           ,metadata="AnnotatedDataFrame"
                           ,pointer="externalptr"
+                          ,data = "flowSet"
                           ,guid = "character"
                           )
           ,validity=function(object){
 	all(unlist(lapply(object@set,function(y)inherits(y,"GatingHierarchy"))))
-})
-
-setMethod("initialize","GatingSet",function(.Object,set=list(new("GatingHierarchy")),metadata=new("AnnotatedDataFrame"),files=NULL,isNcdf=FALSE,flowSetId=NULL){
-	if(!is.null(files)){
-		if(isNcdf){
-			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
-			fs<-read.ncdfFlowSet(files,flowSetId=ifelse(is.null(flowSetId),"New FlowSet",flowSetId))
-		}else{
-			fs<-read.flowSet(files)
-		}
-		set<-vector("list",length(fs))
-		for(i in seq_along(fs)){
-			set[[i]]<-new("GatingHierarchy",fcsfile=files[i],dataPath=dirname(files[i]),name=basename(files[i]),isNcdf=isNcdf)
-			setData(set[[i]],fs)
-		}
-	}
-	.Object@set<-set;
-	.Object@metadata<-metadata
-	validObject(.Object)
-	return(.Object)
 })
 
 
@@ -229,7 +160,7 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
       
       if(!file.exists(xmlFileName))
         stop(xmlFileName," not found!")
-      Object<-new("GatingSetInternal")
+      Object<-new("GatingSet")
       Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(xmlParserOption), as.integer(dMode))
       Object@guid <- .uuid_gen()
       
@@ -248,18 +179,14 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
       
       fs_clone<-flowCore:::copyFlowSet(x)
       samples<-sampleNames(fs_clone)
-      G<-new("GatingSetInternal")
+      G<-new("GatingSet")
       G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
       G@guid <- .uuid_gen()
       
-      globalDataEnv<-new.env(parent=emptyenv())
-      
-      assign("ncfs",fs_clone,globalDataEnv)
+      flowData(G) <- fs_clone
       
       G@set<-sapply(samples,function(sampleName){
-            gh<-new("GatingHierarchyInternal",pointer=G@pointer,name=sampleName)
-            localDataEnv<-nodeDataDefaults(gh@tree,"data")
-            localDataEnv$data<-globalDataEnv
+            gh<-new("GatingHierarchy",pointer=G@pointer,name=sampleName)
             gh@flag<-TRUE #set gate flag
             gh
           })
@@ -466,6 +393,7 @@ GatingSetList <- function(x,samples = NULL)
 #' @name booleanFilter-class
 #' @rdname booleanFilter-class
 #' @exportClass booleanFilter
+#' @importClassesFrom flowCore filter concreteFilter expressionFilter
 setClass("booleanFilter"
 		,contains=c("expressionFilter")
 )
@@ -513,6 +441,7 @@ char2booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter") {
 #' @aliases 
 #' show,booleanFilter-method
 #' @export 
+#' @importMethodsFrom flowCore identifier
 setMethod("show",signature("booleanFilter"),function(object){
 			
 			msg <- paste("booleanFilter filter '", identifier(object),
