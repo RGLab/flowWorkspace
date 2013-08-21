@@ -433,8 +433,30 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
       rownames(cv)<-basename(as.character(rownames(x)));
       return(barchart(cv,xlab="Coefficient of Variation",...));
     })
-        
-setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+
+
+#'  Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.
+#' 
+#'  Return the flowCore gate definition object associated with a node in a \code{GatingHierarchy} or \code{GatingSet} object.
+#' @param obj A \code{GatingHierrarchy} or \code{GatingSet}
+#' @param y A \code{character} the name or full(/partial) gating path of the node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy} or \code{GatingSet}.
+#' @return  A gate object from \code{flowCore}. Usually a \code{polygonGate}, but may be a \code{rectangleGate}. Boolean gates are represented by a \code{"BooleanGate"} S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If \code{obj} is a \code{GatingSet}, assuming the trees associated with each \code{GatingHierarchy} are identical, then this method will return a list of gates, one for each sample in the \code{GatingSet} corresponding to the same population indexed by \code{y}.
+#' @note You should not have to deal with boolean gates. It is sufficient to retrieve the contents of a boolean gate node with \code{getData}.
+#' @seealso \code{\link{getData}} \code{\link{getNodes}}
+#' @examples
+#'   dontrun{	#gh is a GatingHierarchy
+#'     getGate(gh,5) #return the gate for the fifth node in the tree.
+#'     getGate(gh,getNodes(gh)[5]) #return the gate for the fifth node in the tree, but fetch it by name.
+#'     #G is a GatingSet
+#'     getGate(G,5) #return a list of gates for the fifth node in each tree
+#'   }
+#' @aliases 
+#' getGate
+#' getGate,GatingHierarchy,character-method
+#' getGate,GatingHierarchy,numeric-method
+#' getGate,GatingSet,numeric-method
+#' getGate,GatingSet,character-method
+etMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
 #			browser()
             ind<-.getNodeInd(obj,y)
@@ -519,6 +541,28 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
   
   
 }
+
+
+#'  Get the membership indices for each event with respect to a particular gate in a GatingHierarchy
+#' 
+#'   Returns a logical vector that describes whether each event in a sample is included or excluded by this gate. 
+#' @param obj A \code{GatingHierarchy} representing a sample.
+#' @param y A \code{character} or \code{numeric} giving the name or full(/partial) gating path or index of the population / node of interest.
+#' @details  Returns a logical vector that describes whether each event in the data file is included in the given gate of this \code{GatingHierarchy}. The indices are for all events in the file, and do not reflect the population counts relative to the parent but relative to the root. To get population frequencies relative to the parent one cross-tabulate the  indices of \code{y} with the indices of its parent.
+#' @return  A logical vector of length equal to the number of events in the FCS file that determines whether each event is or is not included in the current gate.
+#' @note Generally you should not need to use \code{getIndices} but the more convenient methods \code{getProp} and \code{getPopStats} which return population frequencies relative to the parent node.
+#' The indices returned reference all events in the file and are not directly suitable for computing population statistics, unless subsets are taken with respect to the parent populations.
+#' @seealso \code{\link{getProp}}, \code{\link{getPopStats}}
+#' @examples
+#'   dontrun{
+#'     #G is a gating hierarchy
+#'     #Return the indices for population 5 (topological sort)
+#'     getIndices(G,getNodes(G,tsort=TRUE)[5]);
+#' @aliases 
+#' getIndices
+#' getIndices-methods
+#' getIndices,GatingHierarchy,character-method
+#' getIndices,GatingHierarchy,numeric-method
 #' @importFrom ncdfFlow getIndices
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
@@ -568,11 +612,15 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' getData,GatingHierarchy,missing-method}
 #' getData,GatingHierarchy,numeric-method}
 #' getData,GatingHierarchy,character-method}
+#' getData,GatingSet,ANY-method
+#' getData,GatingSet,missing-method
+#' getData,GatingSet,numeric-method
+#' getData,GatingSet,character-method
 #' @rdname getData-methods
 #' @export 
 setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y, ...){
       if(!obj@flag){
-        stop("Must run execute() before fetching data");
+        stop("Must gate the data before fetching data");
       }
       
       fs <- flowData(obj)
@@ -686,8 +734,30 @@ setMethod("getTransformations","GatingHierarchy",function(x){
 					})
 			
 		})
-		
-##it is currently only for internal use		
+        
+        
+
+#'  Retrieve the compensation matrices from a flowJo Workspace or GatingHierarchy
+#' 
+#'  Retrieve the compensation matrices from a flowJo workspace or GatingHierarchy.
+#' @param x A \code{flowJoWorkspace} or \code{GatingHierarchy} object.
+#' @details Return all the compensation matrices in a flowJoWorkspace object or a compensation matrix in a GatingHierarchy.
+#' @return 
+#'   A list of \code{matrix} representing the spillover matrices in the \code{flowJoWorkspace}
+#'   or a spillover matrix in \code{GatingHierarchy}
+#' @seealso \code{\link{openWorkspace}}
+#' @examples
+#'   dontrun{
+#'     #ws is a flowJoWorkspace
+#'   file<-"myworkspace.xml"
+#'   ws<-openWorkspace(file)
+#'   getCompensationMatrices(ws);
+#' }
+#' @aliases 
+#' getCompensationMatrices
+#' getCompensationMatrices-methods
+#' getCompensationMatrices,flowJoWorkspace-method
+#' getCompensationMatrices,GatingHierarchy-method
 setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 			comp<-.Call("R_getCompensation",x@pointer,getSample(x))
 			cid<-comp$cid
@@ -767,7 +837,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 #' @importFrom gridExtra grid.arrange   
 setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
 			if(!x@flag){
-				message("Can't plot until you gate the data with 'execute()'\n");
+				message("Can't plot until you gate the data \n");
 				return();
 			}
 			

@@ -37,11 +37,6 @@ setGeneric("flowData", function(x,...) standardGeneric("flowData"))
 setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 
 
-#' @export
-setGeneric("ncFlowSet", function(x) standardGeneric("ncFlowSet"))
-
-#' @export
-setGeneric("ncFlowSet<-", function(x,value) standardGeneric("ncFlowSet<-"))
 
 #' @export
 setGeneric("getDimensions",function(obj,y,...)standardGeneric("getDimensions"))

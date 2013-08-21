@@ -32,6 +32,7 @@
 #' 	save_gslist(gslist1,path="tempFolder")
 #' 	gslist2<-load_gslist(path="tempFolder")
 #' 
+#' @rdname save_gs
 #' @export 
 #' @aliases save_gs load_gs save_gslist load_gslist
 save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
@@ -113,7 +114,7 @@ save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
   
 }
 
-#' load GatingSet from disk 
+#' @rdname save_gs
 #' @export 
 load_gs<-function(path){
 #  browser()
@@ -236,6 +237,11 @@ load_gs<-function(path){
 }
 
 #' archive/unarchive to/from a tar file
+#' 
+#' Deprecated by save_gs/load_gs
+#' @aliases archive unarchive
+#' @rdname archive
+#' @export 
 archive<-function(G,file=tempfile()){
 	.Deprecated("save_gs")
 	filename<-basename(file)
@@ -256,7 +262,8 @@ archive<-function(G,file=tempfile()){
 	
 }
 	
-#' @param path specifies the temporary folder to store the unzipped dat (and nc) files
+#' @export 
+#' @rdname archive
 unarchive<-function(file,path=tempdir()){
     .Deprecated("load_gs")	
 	if(!file.exists(file))
@@ -982,6 +989,24 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 
 
 
+#'  clone a GatingSet
+#' 
+#'   clone a GatingSet
+#' @param x A \code{GatingSet}
+#' @param ...
+#'     ncdfFile = NULL: see \code{\link{clone.ncdfFlowSet}} 
+#' @details
+#'   Note that the regular R assignment operation on a \code{GatingSet} object does not return the copy as
+#'   one would normally expect because the \code{GatingSet} contains environment slots (and external pointer for \code{GatingSet}),
+#'   which require deep-copying. So make sure to use this clone method in order to make a copy of existing object.
+#' @return A copy of a given \code{GatingSet}.
+#' @examples
+#'   dontrun{
+#'     #G is  a GatingSet
+#'     G1<-clone(G)
+#'     
+#'   }
+#' @aliases clone clone-methods clone,GatingSet-method
 #' @exportMethod clone
 setGeneric("clone", function(x,...)standardGeneric("clone"))
 setMethod("clone",c("GatingSet"),function(x,...){
@@ -1128,12 +1153,26 @@ setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsor
 		})
 
 
+#' @export
+setGeneric("ncFlowSet", function(x) standardGeneric("ncFlowSet"))
+#' Fetch the flowData object associated with a GatingSet .
+#' 
 #' Deprecated by \code{flowData} method
+#' @export
 setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
       .Defunct("flowData")
       
     })
+
+#' @export
+setGeneric("ncFlowSet<-", function(x,value) standardGeneric("ncFlowSet<-"))
+
+#' replace the flowData object associated with a GatingSet .
+#' 
 #' Deprecated by \code{flowData} method
+#' 
+#' @name ncFlowSet<-
+#' @export
 setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
       .Defunct("flowData<-")
     })
@@ -1290,17 +1329,13 @@ setMethod("show","GatingSet",function(object){
 #' getPopStats
 #' getPopStats-methods
 #' getPopStats,GatingHierarchy-method
-#' getPopStats,GatingHierarchyInternal-method
 #' getPopStats,GatingSet-method
-#' getPopStats,GatingSetInternal-method
 #' getProp
 #' getProp-methods
 #' getProp,GatingHierarchy,character-method
-#' getProp,GatingHierarchyInternal,character-method
 #' getTotal
 #' getTotal-methods
 #' getTotal,GatingHierarchy,character-method
-#' getTotal,GatingHierarchyInternal,character-method
 setMethod("getPopStats", "GatingSet",
     function(x, statistic = c("freq", "count"), flowJo = FALSE, ...) {
       
@@ -1332,7 +1367,7 @@ setMethod("getPopStats", "GatingSet",
 #' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.
 #' @param \dots Additional arguments to the \code{barplot} methods.
 #' @details The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.
-#' @value Nothing is returned.
+#' @return Nothing is returned.
 #' @seealso \code{\link{getPopStats}}
 #' @examples
 #'   \dontrun{
@@ -1356,8 +1391,31 @@ setMethod("plotPopCV","GatingSet",function(x,...){
     })
 
 
-#Return the list of keywords given a GatingSet and a sample name
-setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
+#' Get List of Keywords for a Flow Sample
+#' 
+#' Retrieve the list of keywords associated with a sample}
+#' @param obj A \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy}
+#' @param y can be omitted if \code{obj} is a \code{GatingHierarchy}. A \code{character}, or \code{numeric} if \code{obj} is a \code{GatingSet}. A \code{character} if \code{obj} is a \code{flowJoWorkspace}
+#' 
+#' @details
+#'   Retrieve a list of keywords from a \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy} for a particular sample. The sample is specified via \code{y}, either a numeric index into a \code{GatingSet}, or a sample name (\code{character}) for all other types of \code{obj}. 
+#' @return A list of keyword - value pairs. 
+#' @examples
+#'     dontrun{
+#'       #G is a GatingHierarchy
+#'       getKeywords(G);
+#'       #G is a GatingSet
+#'       getKeywords(G[[1]])
+#'       getKeywords(G,1)
+#'     }
+#' @aliases 
+#' getKeywords
+#' getKeywords-methods
+#' getKeywords,GatingHierarchy,missing-method
+#' getKeywords,GatingSet,character-method
+#' getKeywords,GatingSet,numeric-method
+#' getKeywords,flowJoWorkspace,character-method
+etMethod("getKeywords",c("GatingSet","character"),function(obj,y){
       ind<-which(getSamples(obj)%in%y)
       if(length(ind)>0){
         getKeywords(obj,ind);

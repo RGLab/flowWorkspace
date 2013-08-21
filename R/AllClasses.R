@@ -114,7 +114,6 @@ setClass("GatingHierarchy"
 #' }
 #' 
 #' @seealso
-#'   \code{\linkS4class{AnnotatedDataFrame}}
 #'   \code{\linkS4class{GatingHierarchy}}
 #'   \code{\linkS4class{flowJoWorkspace}}
 #' 
@@ -129,9 +128,20 @@ setClass("GatingHierarchy"
 #' @name GatingSet-class
 #' @rdname GatingSet-class
 #' @exportClass GatingSet
+#' @aliases 
+#' GatingSet-class
+#' [,GatingSet,ANY-method
+#' [[,GatingSet,ANY-method
+#' rbind2,GatingSet,GatingSet-method
+#' GatingSet
+#' GatingSet,flowSet-method
+#' GatingSet,flowSet,ANY-method
+#' GatingSet,character,character-method
+#' GatingSet,GatingHierarchy,character-method
+#' show,GatingSet-method
+#' show,GatingHierarchy-method
 setClass("GatingSet"
           ,representation(set="list"
-                          ,metadata="AnnotatedDataFrame"
                           ,pointer="externalptr"
                           ,data = "flowSet"
                           ,guid = "character"
@@ -277,6 +287,29 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #' @name GatingSetList-class
 #' @rdname GatingSetList-class
 #' @exportClass GatingSetList
+#' @aliases 
+#' GatingSetList-class
+#' GatingSetList
+#' show,GatingSetList-method
+#' getSamples,GatingSetList-method
+#' lapply,GatingSetList-method
+#' rbind2,GatingSetList,missing-method
+#' [[,GatingSetList,numeric-method
+#' [[,GatingSetList,logical-method
+#' [[,GatingSetList,character-method
+#' [,GatingSetList,numeric-method
+#' [,GatingSetList,logical-method
+#' [,GatingSetList,character-method
+#' getData,GatingSetList,numeric-method
+#' getData,GatingSetList,logical-method
+#' getData,GatingSetList,character-method
+#' pData,GatingSetList-method
+#' pData<-,GatingSetList,data.frame-method
+#' getGate,GatingSetList,numeric-method
+#' getGate,GatingSetList,character-method
+#' plotGate,GatingSetList,numeric-method
+#' getQAStats,GatingSetList-method
+#' getPopStats,GatingSetList-method
 setClass("GatingSetList"
     ,representation=representation(
         data = "list"
@@ -386,10 +419,11 @@ GatingSetList <- function(x,samples = NULL)
 }
 
 
-#' BooleanGate class
-#' 
 #' A class describing logical operation (& or |) of the reference populations
 #' 
+#' It inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
+#' 
+#' @seealso \code{\link{add}} \code{\linkS4class{GatingHierarchy}}
 #' @name booleanFilter-class
 #' @rdname booleanFilter-class
 #' @exportClass booleanFilter

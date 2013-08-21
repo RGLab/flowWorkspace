@@ -79,7 +79,7 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 
 #' Parse a flowJo Workspace
 #' 
-#' Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{execute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
+#' Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{recompute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
 #' @param obj A \code{flowJoWorkspace} to be parsed.
 #' @param name \code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.
 #' @param execute \code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default. 
@@ -343,6 +343,34 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	
     !(is.null(rownames(comp))&identical(comp%*%comp,comp))
 }
+
+
+#' Get the boundaries of a gate or dimensions on which a gate is applied within a GatingHierarchy
+#' 
+#' Get the boundaries (vertices) of a flowJo gate on the transformed scale or the dimension names on which a gate in a \code{GatingHierarchy} is applied.
+#' @param obj A \code{GatingHierarchy}
+#' @param y A \code{character}, the name of the node / gate / population of interest .
+#' @param index \code{TRUE | FALSE} a logical indicating whether we should return the names of the dimensions (FALSE, default) or the indices of the dimensions (TRUE)
+#' @details Each node in a GatingHierarchy represents a population. That population is defined by a gate. \code{getBoundaries} will return the vertices of the gate. 
+#' @return 
+#'   \code{getBoundaries} returns a \code{matrix} with column names corresponding to channels / dimensions, and rows to \code{x,y} tuples of vertices for polygon gates in these dimensions. 
+#'   \code{getDimensions} returns a \code{character} vector of dimension names on which the gate is applied (when index=FALSE), or a \code{numeric} vector of the indices of the dimensions on which the gate is applied (when index=TRUE). 
+#' @seealso \code{\link{getGate}},\code{\link{getNodes}}
+#' @examples
+#' dontrun{
+#'     file<-"myworkspace.xml"
+#'     ws<-openWorkspace(file)
+#'     G<-parseWorkspace(ws,execute=TRUE,path=".")
+#'     n<-getNodes(G[[1]],tsort=TRUE)[3] #get the third node in the first gating hierarchy (topological sort order)
+#'     getGate(G[[1]],n); #return the gate for that node.
+#'     #Fetch the dimensions for the fifth population in the hierarchy.
+#'     getDimensions(G,getNodes(G)[5],index=FALSE)	
+#'     getBoundaries(G,getNodes(G)[5])
+#'   }
+#' @aliases 
+#' getDimensions
+#' getDimensions-methods
+#' getDimensions,GatingHierarchy,character-method
 setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
 	if(.isBooleanGate.graphNEL(obj,y)){
 		getDimensions(obj,getParent(obj,y),index=index);
