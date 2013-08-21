@@ -3,6 +3,10 @@
 \alias{getData,GatingHierarchy,character-method}}
 \alias{getData,GatingHierarchy,missing-method}}
 \alias{getData,GatingHierarchy,numeric-method}}
+\alias{getData,GatingSet,ANY-method}
+\alias{getData,GatingSet,character-method}
+\alias{getData,GatingSet,missing-method}
+\alias{getData,GatingSet,numeric-method}
 \title{get gated flow data from a GatingHierarchy/GatingSet}
 \arguments{
   \item{obj}{A \code{GatingHierarchy}, \code{GatingSet}

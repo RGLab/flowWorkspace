@@ -3,8 +3,15 @@
 \alias{load_gslist}
 \alias{save_gs}
 \alias{save_gslist}
+\title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
   save_gs(G, path, overwrite = FALSE, cdf = "copy", ...)
+
+  load_gs(path)
+
+  save_gslist(gslist, path, ...)
+
+  load_gslist(path)
 }
 \arguments{
   \item{G}{A \code{GatingSet}}
@@ -17,20 +24,30 @@
   \item{overwrite}{A logical scalar specifying whether to
   overwrite the existing folder.}
 
-  \item{...}{other arguments: cdf: a character scalar. The
-  valid options are :"copy","move","skip","symlink","link"
-  specifying what to do with the cdf data file.  Sometime
-  it is more efficient to move or create a link of the
-  existing cdf file to the archived folder.  It is useful
-  to "skip" archiving cdf file if raw data has not been
-  changed.}
+  \item{...}{other arguments:
+
+  \itemize{
+
+  \item{cdf}{ a character scalar. The valid options are
+  :"copy","move","skip","symlink","link" specifying what to
+  do with the cdf data file.  Sometime it is more efficient
+  to move or create a link of the existing cdf file to the
+  archived folder.  It is useful to "skip" archiving cdf
+  file if raw data has not been changed.  } }}
 }
 \value{
   \code{load_gs} returns a GatingSet object
   \code{load_gslist} returns a GatingSetList object
 }
+\description{
+  Save/load a GatingSet/GatingSetList which is the gated
+  flow data including gates and populations to/from the
+  disk. The \code{GatingSet} object The internal C data
+  structure (gating tree),\code{ncdfFlowSet} object(if
+  applicable)
+}
 \examples{
-dontrun{
+\dontrun{
 	#G is a GatingSet
 	save_gs(G,path="tempFolder")
 	G1<-load_gs(path="tempFolder")
@@ -39,6 +56,7 @@ dontrun{
 
 	save_gslist(gslist1,path="tempFolder")
 	gslist2<-load_gslist(path="tempFolder")
+}
 }
 \seealso{
   \code{\link{GatingSet-class}},\code{\link{GatingSetList-class}}

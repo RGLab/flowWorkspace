@@ -456,7 +456,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 #' getGate,GatingHierarchy,numeric-method
 #' getGate,GatingSet,numeric-method
 #' getGate,GatingSet,character-method
-etMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
 #			browser()
             ind<-.getNodeInd(obj,y)

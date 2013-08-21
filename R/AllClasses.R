@@ -18,7 +18,6 @@
 #'     Depends: \tab methods, RBGL, graph, XML, flowCore, flowViz, Rgraphviz, Biobase\cr
 #'   }
 #' @author Greg Finak, Mike Jiang
-#' @Maintainer: Mike Jiang \email{wjiang2@fhcrc.org}
 #' @references \url{http://www.rglab.org/
 #' @keywords 
 #' package

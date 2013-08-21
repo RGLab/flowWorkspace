@@ -214,20 +214,10 @@ setMethod("getPopStats","GatingSetList",function(x,...){
       do.call(cbind,res)
     })
 
+#' @rdname save_gs
+#' @export
 save_gslist<-function(gslist,path,...){
     
-#  if(file.exists(path)){
-#    path <- normalizePath(path,mustWork = TRUE)
-#    if(overwrite){
-#      res <- unlink(path, recursive = TRUE)
-#      if(res == 1){
-#        stop("failed to delete ",path)
-#      }
-#    }else{
-#      stop(path,"' already exists!")  
-#    }
-#    
-#  }
   if(!file.exists(path))
     dir.create(path = path)
   #do the dir normalization again after it is created
@@ -254,7 +244,8 @@ save_gslist<-function(gslist,path,...){
   
 }
 
-
+#' @rdname save_gs
+#' @export
 load_gslist<-function(path){
 #  browser()
   path <- normalizePath(path,mustWork = TRUE)

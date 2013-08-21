@@ -1,5 +1,15 @@
 \name{GatingSet-class}
+\alias{[,GatingSet,ANY-method}
+\alias{[[,GatingSet,ANY-method}
+\alias{GatingSet}
 \alias{GatingSet-class}
+\alias{GatingSet,character,character-method}
+\alias{GatingSet,flowSet-method}
+\alias{GatingSet,flowSet,ANY-method}
+\alias{GatingSet,GatingHierarchy,character-method}
+\alias{rbind2,GatingSet,GatingSet-method}
+\alias{show,GatingHierarchy-method}
+\alias{show,GatingSet-method}
 \title{Class \code{"GatingSet"}}
 \description{
   GatingSet holds a set of \code{GatingHierarchy} objects,

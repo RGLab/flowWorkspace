@@ -76,8 +76,8 @@
   Function to parse a flowJo Workspace, generate a
   \code{GatingHierarchy} or \code{GatingSet} object, and
   associated flowCore gates. The data are not loaded or
-  acted upon until an explicit call to \code{execute()} is
-  made on the \code{GatingHierarchy} objects in the
+  acted upon until an explicit call to \code{recompute()}
+  is made on the \code{GatingHierarchy} objects in the
   \code{GatingSet}.
 }
 \details{

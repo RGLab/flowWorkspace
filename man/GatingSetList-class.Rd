@@ -1,5 +1,26 @@
 \name{GatingSetList-class}
+\alias{[,GatingSetList,character-method}
+\alias{[,GatingSetList,logical-method}
+\alias{[,GatingSetList,numeric-method}
+\alias{[[,GatingSetList,character-method}
+\alias{[[,GatingSetList,logical-method}
+\alias{[[,GatingSetList,numeric-method}
+\alias{GatingSetList}
 \alias{GatingSetList-class}
+\alias{getData,GatingSetList,character-method}
+\alias{getData,GatingSetList,logical-method}
+\alias{getData,GatingSetList,numeric-method}
+\alias{getGate,GatingSetList,character-method}
+\alias{getGate,GatingSetList,numeric-method}
+\alias{getPopStats,GatingSetList-method}
+\alias{getQAStats,GatingSetList-method}
+\alias{getSamples,GatingSetList-method}
+\alias{lapply,GatingSetList-method}
+\alias{pData,GatingSetList-method}
+\alias{pData<-,GatingSetList,data.frame-method}
+\alias{plotGate,GatingSetList,numeric-method}
+\alias{rbind2,GatingSetList,missing-method}
+\alias{show,GatingSetList-method}
 \title{Class \code{"GatingSetList"}}
 \description{
   A list of of \code{GatingSet} objects. This class exists
