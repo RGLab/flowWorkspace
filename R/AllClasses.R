@@ -1,6 +1,9 @@
 #' @include AllGenerics.R
 NULL
 
+#' @useDynLib flowWorkspace
+NULL
+
 #' @name flowWorkspace-package
 #' @aliases 
 #' flowWorkspace-package
@@ -75,7 +78,7 @@ setClass("flowJoWorkspace"
 #' \describe{
 #'       \item{\code{name}:}{Object of class \code{"character"}. The name of the sample. Usually the FCS filename, but it depends on how it was defined in the flowJo workspace. }
 #'       \item{\code{flag}:}{Object of class \code{"logical"}. A flag indicating whether the gates, transformations, and compensation matrices have been applied to data, or simply imported.}
-#'       \item{\code{dataPath}:}{Object of class \code{"character"}. A path to the fcs file associated with this GatingHierarchy }
+#'       \item{\code{FCSPath}:}{Object of class \code{"character"}. A path to the fcs file associated with this GatingHierarchy }
 #'      \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}  
 #'      }
 #' 
@@ -104,7 +107,8 @@ setClass("flowJoWorkspace"
 setClass("GatingHierarchy"
         ,representation(name="character"
                         ,flag="logical"
-                        ,dataPath = "character"
+                        ,FCSPath = "character"
+                        ,dataEnv = "environment"
                         ,axis.labels = "list"
                         ,pointer="externalptr")
                 )

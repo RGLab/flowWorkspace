@@ -1,13 +1,12 @@
 unloadNamespace("flowWorkspace")
 
 library(flowWorkspace)
-
+library(XML)
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 #lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
 #source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-#source("~/rglab/workspace/flowWorkspace/R/AllMethods.R")
-#source("~/rglab/workspace/flowWorkspace/R/InternalClasses.R")
+#source("~/rglab/workspace/flowWorkspace/R/AllClasses.R")
 #source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
 #source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
@@ -49,8 +48,7 @@ GT<-parseWorkspace(ws
 #					,includeGates=T
                     ,subset=2
 #					,subset=c("517614.fcs")
-					,isNcdf=T
-#					,useInternal=T
+#					,isNcdf=T
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
@@ -78,13 +76,13 @@ length(which(getIndices(GT[[1]],"Excl")))
 getGate(GT[[1]],"Excl")@boundaries
 recompute(GT,"Excl/4+")
 recompute(GT,"4+")
-getNodes(GT[[1]])
+
 getPopStats(GT[[1]])[1:20,c(2:3)]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
-
+flowData(GT)
 x11()
-plotGate(GT[[1]],xbin=64, margin =T)
+plotGate(GT[[1]],xbin=32, margin =T)
 plot(GT[[1]])
 #save to tar
 tmpdir <- "~/rglab/workspace/temp"

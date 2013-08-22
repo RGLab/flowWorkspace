@@ -318,7 +318,7 @@ unarchive<-function(file,path=tempdir()){
 		for(file in samples){
 
 			#########################################################
-			#get full path for each fcs and store in dataPath slot
+			#get full path for each fcs and store in FCSPath slot
 			#########################################################
 			##escape "illegal" characters
 			file<-gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",file)))))))
@@ -449,7 +449,7 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 		if(execute)
 		{
 			
-			gh@dataPath<-dirname(file)
+			gh@FCSPath<-dirname(file)
 			
 			
 			message("loading data: ",file);
@@ -598,8 +598,7 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
             #so we need update this range info by transforming it
             tInd <- grepl("[Tt]ime",cnd)
             tRg  <- range(mat[,tInd])
-            tempenv <- .transformRange(gh,wsversion,fs@frames,timeRange = tRg)
-            gh@axis.labels <- axis.labels 
+            gh@axis.labels <- .transformRange(gh,wsversion,fs@frames,timeRange = tRg)
 
 		}
 		
@@ -629,6 +628,13 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 
 
 #' transform the range slot and construct axis label and pos for the plotting
+#' @param gh \code{GatingHierarchy}
+#' @param wsversion \code{character} flowJo workspace version
+#' @param frmEnv \code{environment} point to the \code{frames} slot of the original \code{flowSet}
+#' @param timeRange \code{numeric} vector specifying the range for 'time' channel
+#' 
+#' @return 
+#' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
 .transformRange<-function(gh,wsversion,frmEnv, timeRange = NULL){
 #  browser()
     sampleName <- getSample(gh)
@@ -708,7 +714,7 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 	
 	eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
 
-    tempenv
+    tempenv$axis.labels
 }
 
     

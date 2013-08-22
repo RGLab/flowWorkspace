@@ -131,7 +131,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	filenames<-flowWorkspace:::getFileNames(obj);
 	
 	x<-obj@doc;
-	.hasNN(x);
+	
 	wsversion<-xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]];
 #	browser()
 	if(!wsversion=="2.0"){

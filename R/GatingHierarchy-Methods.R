@@ -1210,6 +1210,6 @@ setMethod("setNode"
 #' getSample-method
 #' getSample,GatingHierarchy-method
 setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
-      ifelse(isFullPath,file.path(x@dataPath,x@name),x@name)
+      ifelse(isFullPath,file.path(x@FCSPath,x@name),x@name)
       
     })
