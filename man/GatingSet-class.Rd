@@ -20,15 +20,15 @@
   Objects store a collection of GatingHierarchies and
   represent a group in a flowJo workspace.
 
-  \section{Slots}{ \describe{ \item{\code{set}:}{Object of
-  class \code{"list"}. A list of GatingHierarchy objects }
+  \describe{ \item{\code{set}:}{Object of class
+  \code{"list"}. A list of GatingHierarchy objects }
   \item{\code{data}:}{Object of class \code{"flowSet"}.
   flow data associated with this GatingHierarchy }
   \item{\code{pointer}:}{Object of class
   \code{"externalptr"}. points to the gating hierarchy
   stored in C data structure.} \item{\code{guid}:}{Object
   of class \code{"character"}. the unique identifier for
-  GatingSet object.} } }
+  GatingSet object.} }
 }
 \examples{
 require(flowWorkspaceData)

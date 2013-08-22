@@ -1,4 +1,5 @@
 #' @include AllGenerics.R
+NULL
 
 #' @name flowWorkspace-package
 #' @aliases 
@@ -15,24 +16,20 @@
 #'     Date: \tab 2011-03-04\cr
 #'     License: \tab Artistic 2.0 \cr
 #'     LazyLoad: \tab yes\cr
-#'     Depends: \tab methods, RBGL, graph, XML, flowCore, flowViz, Rgraphviz, Biobase\cr
+#'     Depends: \tab R (>= 2.16.0),Rcpp (>= 0.9.9)\cr
 #'   }
 #' @author Greg Finak, Mike Jiang
-#' @references \url{http://www.rglab.org/
-#' @keywords 
-#' package
-#' utilities
+#' @references \url{http://www.rglab.org/}
 NULL
 
-#' @importClassesFrom XML, XMLInternalDocument
+#' @importClassesFrom XML XMLInternalDocument
 setOldClass("XMLInternalDocument")
 
 #' An R representation of a flowJo workspace.
 #' 
 #' Objects can be created by calls of the form \code{new("flowJoWorkspace.xml", ...)}.
 #' 
-#' \section{Slots}{
-#'   \describe{
+#' \describe{
 #'   \item{\code{version}:}{Object of class \code{"character"}. The version of the XML workspace. }
 #'   \item{\code{file}:}{Object of class \code{"character"}. The file name. }
 #'   \item{\code{.cache}:}{Object of class \code{"environment"}. An environment for internal use.  }
@@ -40,7 +37,7 @@ setOldClass("XMLInternalDocument")
 #'   \item{\code{doc}:}{Object of class \code{"XMLInternalDocument"}. The XML document object. }
 #'   \item{\code{options}:}{Object of class \code{"integer"}. The XML parsing options passed to \code{\link{xmlTreeParse}}. }
 #'   }
-#' }
+#' 
 #' @seealso 
 #'   \code{\linkS4class{GatingSet}} 
 #'   \code{\linkS4class{GatingHierarchy}}
@@ -70,19 +67,17 @@ setClass("flowJoWorkspace"
 #' GatingHierarchy is a class for representing the gating hierarchy,which can be either imported from a flowJo workspace or constructed in R.
 #'  
 #' @details 
-#'   There is a one-to-one correspondence between GatingHierarchy objects and FCS files in the flowJo workspace. Each sample (FCS file) is associated with it's own GatingHierarchy. This is different from the workflow representation used in flowCore.
-#'   It is also more space efficient by storing gating results as logical/bit vector instead of copying the raw data.
-#'   A GatingHierarchy can have two ``states''. After a call to parseWorkspace(...,execute=FALSE), the workspace is imported but the data is not. A call to execute() is needed in order to load, transform, compensate, and gate the associated data. Alternately, one may call parseWorkspace(...,execute=TRUE). Whether or not a GatingHierarchy has been applied to data is encoded in the \code{flag} slot. Some methods will warn the user, or may not function correctly if the GatingHierarchy has not been execute()d.This mechanism is in place, largely for the purpose of memory efficiency when working with larger workspaces. It allows the use to load a workspace and subset desired samples before proceeding to load the data. If one has netCDF 4 library installed, then memory is no longer an issue.
-#'   Given a GatingHierarchy, one can extract the data associated with any subpopulation, extract gates, plot gates, and extract population proportions. This facilitates the comparison of manual gating methods with automated gating algorithms.
+#' There is a one-to-one correspondence between GatingHierarchy objects and FCS files in the flowJo workspace. Each sample (FCS file) is associated with it's own GatingHierarchy. This is different from the workflow representation used in flowCore.
+#' It is also more space efficient by storing gating results as logical/bit vector instead of copying the raw data.
+#' A GatingHierarchy can have two ``states''. After a call to parseWorkspace(...,execute=FALSE), the workspace is imported but the data is not. A call to execute() is needed in order to load, transform, compensate, and gate the associated data. Alternately, one may call parseWorkspace(...,execute=TRUE). Whether or not a GatingHierarchy has been applied to data is encoded in the \code{flag} slot. Some methods will warn the user, or may not function correctly if the GatingHierarchy has not been execute()d.This mechanism is in place, largely for the purpose of memory efficiency when working with larger workspaces. It allows the use to load a workspace and subset desired samples before proceeding to load the data. If one has netCDF 4 library installed, then memory is no longer an issue.
+#' Given a GatingHierarchy, one can extract the data associated with any subpopulation, extract gates, plot gates, and extract population proportions. This facilitates the comparison of manual gating methods with automated gating algorithms.
 #'   
-#'   \section{Slots}{
-#'       \describe{
+#' \describe{
 #'       \item{\code{name}:}{Object of class \code{"character"}. The name of the sample. Usually the FCS filename, but it depends on how it was defined in the flowJo workspace. }
 #'       \item{\code{flag}:}{Object of class \code{"logical"}. A flag indicating whether the gates, transformations, and compensation matrices have been applied to data, or simply imported.}
 #'       \item{\code{dataPath}:}{Object of class \code{"character"}. A path to the fcs file associated with this GatingHierarchy }
 #'      \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}  
-#'       }
-#'       }
+#'      }
 #' 
 #' @seealso
 #' \code{\link{parseWorkspace}}
@@ -128,14 +123,12 @@ setClass("GatingHierarchy"
 #' @details 
 #' Objects store a collection of GatingHierarchies and represent a group in a flowJo workspace.
 #' 
-#' \section{Slots}{
-#'   \describe{
+#' \describe{
 #'     \item{\code{set}:}{Object of class \code{"list"}. A list of GatingHierarchy objects }
 #'     \item{\code{data}:}{Object of class \code{"flowSet"}. flow data associated with this GatingHierarchy }
 #'     \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}
 #'     \item{\code{guid}:}{Object of class \code{"character"}. the unique identifier for GatingSet object.}
 #'   }
-#' }
 #' 
 #' @seealso
 #'   \code{\linkS4class{GatingHierarchy}}
@@ -231,7 +224,7 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 
 #' Class \code{"GatingSetList"}
 #' 
-#'   A list of of \code{GatingSet} objects. This class exists for method dispatching.}
+#'   A list of of \code{GatingSet} objects. This class exists for method dispatching.
 #' 
 #' @details 
 #'   Objects store a collection of GatingSets,which usually has the same gating trees and markers.
@@ -244,9 +237,9 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #' @examples
 #'   \dontrun{
 #'     #load several GatingSets from disk
-#'    gs_list<-lapply(list.files("~/rglab/workspace/flowIncubator/output/gs_toMerge",full=T),function(this_folder){
-#'           load_gs(this_folder)
-#'         })
+#'    gs_list<-lapply(list.files("../gs_toMerge",full=T) ,function(this_folder){
+#'                      load_gs(this_folder)
+#'                      })
 #'     
 #'    #gs_list is a list
 #'     gs_groups <- merge(gs_list)
@@ -307,7 +300,8 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #'     #convert GatingSetList into one GatingSet by rbind2
 #'     gs_merged2 <- rbind2(gslist2,ncdfFile=path.expand(tempfile(tmpdir="~/rglab/workspace/flowIncubator/output/",fileext=".nc")))
 #'     gs_merged2
-#'     
+#'   }
+#' 
 #' @name GatingSetList-class
 #' @rdname GatingSetList-class
 #' @exportClass GatingSetList
@@ -422,14 +416,12 @@ setValidity("GatingSetList", validGatingSetListObject)
   return (setequal(unlist(lapply(object,getSamples)),samples))
 }
 
-#' Constructor for a GatingSetList
+#' @description use \code{GatingSetList} constructor to create a GatingSetList from a list of GatingSet
 #' 
-#' construct a GatingSetList from a list of GatingSet
-#' 
-#' @param x a \code{list} of \code{GatingSet}s
-#' @param samples \code{{character} vector specifying the sample names
-#' if NULL, the sample names are extracted from GatingSets
-#' 
+#' @param x a \code{list} of \code{GatingSet}
+#' @param samples \code{character} vector specifying the sample names. if NULL, the sample names are extracted from GatingSets
+#'
+#' @rdname GatingSetList-class 
 #' @export 
 GatingSetList <- function(x,samples = NULL)
 {
@@ -445,7 +437,7 @@ GatingSetList <- function(x,samples = NULL)
 
 #' A class describing logical operation (& or |) of the reference populations
 #' 
-#' It inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
+#' \code{booleanFilter} class inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
 #' 
 #' @seealso \code{\link{add}} \code{\linkS4class{GatingHierarchy}}
 #' @name booleanFilter-class
@@ -456,12 +448,11 @@ setClass("booleanFilter"
 		,contains=c("expressionFilter")
 )
 
-#' Constructor for booleanFilter
-#' 
-#' Constructor from an expression
-#' @param expr \code{expression}
+#' \code{booleanFilter} is a constructor from an expression
+#' @param expr \code{expression} or \code{character}
 #' @param ... further arguments to the expression
 #' @param filterId \code{character} identifier
+#' @rdname booleanFilter-class
 #' @export 
 booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter")
 {
@@ -475,12 +466,8 @@ booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter")
 			args=list(...), deparse=deparse(subs))
 }
 
-#' Constructor for booleanFilter
-#'  
-#' Constructor from a character string
-#' @param expr a \code{character} string
-#' @param ... further arguments to the expression
-#' @param filterId \code{character} identifier
+#' \code{char2booleanFilter} is a constructor from a character string
+#' @rdname booleanFilter-class 
 #' @export 
 char2booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter") {
   flowCore:::checkClass(expr, "character", 1)

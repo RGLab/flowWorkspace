@@ -5,6 +5,7 @@
 \alias{openWorkspace}
 \alias{openWorkspace-methods}
 \alias{openWorkspace,character-method}
+\title{Open/Close a flowJo workspace}
 \arguments{
   \item{file}{Full path to the XML flowJo workspace file.}
 
@@ -18,6 +19,12 @@
 }
 \value{
   a \code{flowJoWorkspace} object.
+}
+\description{
+  Open a flowJo workspace and return a
+  \code{flowJoWorkspace} object. Close a flowJoWorkspace,
+  destroying the internal representation of the XML
+  document, and freeing the associated memory.
 }
 \details{
   Open an XML flowJo workspace file and return a
@@ -33,5 +40,6 @@
 	ws<-openWorkspace(file);
 	class(ws); #flowJoWorkspace
 	closeWorkspace(ws);
+}
 }
 

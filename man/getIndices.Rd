@@ -41,10 +41,11 @@
   subsets are taken with respect to the parent populations.
 }
 \examples{
-dontrun{
+\dontrun{
     #G is a gating hierarchy
     #Return the indices for population 5 (topological sort)
     getIndices(G,getNodes(G,tsort=TRUE)[5]);
+}
 }
 \seealso{
   \code{\link{getProp}}, \code{\link{getPopStats}}

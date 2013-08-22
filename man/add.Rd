@@ -14,6 +14,7 @@
 \alias{setGate,GatingHierarchy,numeric,filter-method}
 \alias{setGate,GatingSet,ANY,filterList-method}
 \alias{setGate,GatingSet,ANY,list-method}
+\title{Create a GatingSet and add/remove the flowCore gate(or population) to/from a GatingHierarchy/GatingSet.}
 \arguments{
   \item{wf}{A \code{GatingHierrarchy} or \code{GatingSet}}
 
@@ -36,7 +37,7 @@
   population.}
 
   \item{...}{some other arguments to specify how the gates
-  are added to the gating tree. itemize{ \item parent: a
+  are added to the gating tree. \itemize{ \item parent: a
   \code{character} scalar to specify the parent node name
   where the new gate to be added to, by default it is
   NULL,which indicates the root node \item name: a
@@ -62,8 +63,22 @@
   adding a \code{quadGate}) that uniquely identify the
   population node within a \code{GatingHierarchy}.
 }
+\description{
+  \code{GatingSet} method creates a gatingset from a
+  flowSet with the ungated data as the root node.
+  \code{add} method add the flowCore gate to a
+  GatingHierarchy/GatingSet. \code{setGate} method update
+  the gate of one population node in
+  GatingHierarchy/GatingSet. \code{Rm} method Remove the
+  population node from a GatingHierarchy/GatingSet. They
+  are equivalent to the \code{workFlow},\code{add} and
+  \code{Rm} methods in \code{flowCore} package.
+  \code{recompute} method does the actual gating after the
+  gate is added,i.e. calculating the event indices
+  according to the gate definition.
+}
 \examples{
-dontrun{
+\dontrun{
     data(GvHD)
 #select raw flow data
     fs<-GvHD[1:3]
@@ -116,6 +131,7 @@ dontrun{
 #remove one node causing the removal of all the descendants
     Rm('rectangle', gs)
     getNodes(gs[[1]])
+ }
 }
 \seealso{
   \code{\link{GatingSet-class}}

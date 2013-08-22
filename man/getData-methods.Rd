@@ -1,8 +1,8 @@
 \name{getData}
 \alias{getData}
-\alias{getData,GatingHierarchy,character-method}}
-\alias{getData,GatingHierarchy,missing-method}}
-\alias{getData,GatingHierarchy,numeric-method}}
+\alias{getData,GatingHierarchy,character-method}
+\alias{getData,GatingHierarchy,missing-method}
+\alias{getData,GatingHierarchy,numeric-method}
 \alias{getData,GatingSet,ANY-method}
 \alias{getData,GatingSet,character-method}
 \alias{getData,GatingSet,missing-method}
@@ -46,10 +46,10 @@
   \code{getPopStats}. When calling \code{getData} on a
   GatingSet,the trees representing the GatingHierarchy for
   each sample in the GaingSet are presumed to have the same
-  structure.}
+  structure.
 }
 \examples{
-dontrun{
+\dontrun{
     #G is a GatingSet
     geData(G,3) #get a flowSet constructed from the third node / population in the tree.
     geData(G,"cd4")

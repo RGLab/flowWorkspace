@@ -1,10 +1,15 @@
 #' @importClassesFrom methods ANY character data.frame environment list logical matrix missing numeric oldClass
 #' @importMethodsFrom methods coerce show
+NULL
 
 #' @export
 #' @docType methods
 #' @rdname GatingSet-methods
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
+
+#' @export
+setGeneric("summary",function(object,...)standardGeneric("summary"))
+
 
 #' @export
 setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))

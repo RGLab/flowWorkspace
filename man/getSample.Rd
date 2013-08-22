@@ -2,11 +2,9 @@
 \alias{getSample}
 \alias{getSample-method}
 \alias{getSample,GatingHierarchy-method}
-\alias{getSample,graphNEL-method}
 \title{Get the sample name associated with a GatingHierarchy}
 \arguments{
-  \item{x}{A \code{GatingHierarchy} or a \code{graphNEL}
-  object from the \code{}
+  \item{x}{A \code{GatingHierarchy}}
 
   \item{isFullPath}{\code{isFullPath} is a logical value
   indicating whether the full path of the sample FCS file

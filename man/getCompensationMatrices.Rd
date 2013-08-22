@@ -22,7 +22,7 @@
   object or a compensation matrix in a GatingHierarchy.
 }
 \examples{
-dontrun{
+\dontrun{
     #ws is a flowJoWorkspace
   file<-"myworkspace.xml"
   ws<-openWorkspace(file)

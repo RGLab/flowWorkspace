@@ -6,18 +6,17 @@
   \code{new("flowJoWorkspace.xml", ...)}.
 }
 \details{
-  \section{Slots}{ \describe{ \item{\code{version}:}{Object
-  of class \code{"character"}. The version of the XML
-  workspace. } \item{\code{file}:}{Object of class
-  \code{"character"}. The file name. }
-  \item{\code{.cache}:}{Object of class
+  \describe{ \item{\code{version}:}{Object of class
+  \code{"character"}. The version of the XML workspace. }
+  \item{\code{file}:}{Object of class \code{"character"}.
+  The file name. } \item{\code{.cache}:}{Object of class
   \code{"environment"}. An environment for internal use.  }
   \item{\code{path}:}{Object of class \code{"character"}.
   The path to the file. } \item{\code{doc}:}{Object of
   class \code{"XMLInternalDocument"}. The XML document
   object. } \item{\code{options}:}{Object of class
   \code{"integer"}. The XML parsing options passed to
-  \code{\link{xmlTreeParse}}. } } }
+  \code{\link{xmlTreeParse}}. } }
 }
 \examples{
 require(flowWorkspaceData)

@@ -1,4 +1,5 @@
 #' @include AllClasses.R
+NULL
 
 #' Open/Close a flowJo workspace
 #' 
@@ -19,6 +20,8 @@
 #' 	ws<-openWorkspace(file);
 #' 	class(ws); #flowJoWorkspace
 #' 	closeWorkspace(ws);
+#' }
+#' 
 #' @importFrom XML xmlTreeParse xmlAttrs xmlGetAttr xmlTreeParse xmlRoot xmlValue xpathApply
 #' 
 #' @aliases
@@ -72,7 +75,6 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 })
 
 #setOldClass("summary")
-# @importFrom base summary
 setMethod("summary",c("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
@@ -357,7 +359,7 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 #'   \code{getDimensions} returns a \code{character} vector of dimension names on which the gate is applied (when index=FALSE), or a \code{numeric} vector of the indices of the dimensions on which the gate is applied (when index=TRUE). 
 #' @seealso \code{\link{getGate}},\code{\link{getNodes}}
 #' @examples
-#' dontrun{
+#' \dontrun{
 #'     file<-"myworkspace.xml"
 #'     ws<-openWorkspace(file)
 #'     G<-parseWorkspace(ws,execute=TRUE,path=".")

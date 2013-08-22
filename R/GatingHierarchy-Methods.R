@@ -1,5 +1,5 @@
 #' @include AllClasses.R
-
+NULL
 
 #' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
 #' 
@@ -66,22 +66,25 @@ isNcdf <- function(x){
 #' @param x \code{GatingHierarchy} to be plotted
 #' @param y \code{missing}.
 #' @param ... other arguments:
-#' \item{layout}{
-#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
-#'	\item{width}{
-#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
-#'	\item{height}{		
-#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
-#'	\item{fontsize}{
-#'      See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
-#'	\item{labelfontsize}{		
-#'  	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
-#'	\item{fixedsize}{		
-#'  	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz}
+#' \itemize{
+#' \item{layout}:
+#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+#'	\item{width}:
+#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+#'	\item{height}:		
+#' 		See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+#'	\item{fontsize}:
+#'      See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+#'	\item{labelfontsize}:		
+#'  	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+#'	\item{fixedsize}:		
+#'  	See \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
+#' }
+#' 
 #' @param boolean \code{TRUE|FALSE} logical specifying whether to plot boolean gate nodes. Defaults to FALSE.
 #' 	
 #' @examples 
-#' dontrun{
+#' \dontrun{
 #' 	#G is a GatingHierarchy
 #' 	plot(G);
 #' }
@@ -90,7 +93,7 @@ isNcdf <- function(x){
 #' @aliases
 #' plot,GatingHierarchy,missing-method
 #' @export 
-#' @importFrom graphics plot
+#' @importFrom stats4 plot
 setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
       
 #           browser()
@@ -109,8 +112,8 @@ setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
   }
   
 }
-#' plot subgraph
-#TODO:merge with plot method in flowWorkspace
+#' plot a subgraph
+#' @rdname plot-methods
 #' @importMethodsFrom graph subGraph
 setMethod("plot",c("GatingHierarchy","numeric"),function(x,y,...){
       
@@ -162,13 +165,13 @@ setMethod("show","GatingHierarchy",function(object){
 		})
 
     
-#' Methods to retrieve keywords associated with an FCS sample
+#' Retrieve keywords associated with an FCS sample
 #' 
-#' See Methods for function \code{keyword} in Package `flowCore'
+#' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet}
 #' 
-#' @details Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet}
+#' @details See \code{keyword} in Package `flowCore' 
 #' 
-#' @param object \code{GatingHierarchy) or \code{GatingSet}
+#' @param object \code{GatingHierarchy} or \code{GatingSet}
 #' @param keyword \code{character}.
 #' 
 #' @seealso \code{\link[flowCore]{keyword-methods}}
@@ -209,7 +212,7 @@ setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
 #' getNodes returns a \code{character} vector of node/population names, ordered appropriately.
 #' 
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #G is a gating hierarchy
 #'     getNodes(G[[1]])#return node names
 #'     getNodes(G[[1]],isPath=TRUE)#return the full path
@@ -277,7 +280,7 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=
 #' @seealso \code{\link{getNodes}}
 #' 
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #G is a gatinghierarchy
 #'     #return the name of the parent of the fifth node in the hierarchy.
 #'     getParent(G,getNodes(G[[1)[5])
@@ -444,7 +447,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 #' @note You should not have to deal with boolean gates. It is sufficient to retrieve the contents of a boolean gate node with \code{getData}.
 #' @seealso \code{\link{getData}} \code{\link{getNodes}}
 #' @examples
-#'   dontrun{	#gh is a GatingHierarchy
+#'   \dontrun{	#gh is a GatingHierarchy
 #'     getGate(gh,5) #return the gate for the fifth node in the tree.
 #'     getGate(gh,getNodes(gh)[5]) #return the gate for the fifth node in the tree, but fetch it by name.
 #'     #G is a GatingSet
@@ -554,10 +557,12 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 #' The indices returned reference all events in the file and are not directly suitable for computing population statistics, unless subsets are taken with respect to the parent populations.
 #' @seealso \code{\link{getProp}}, \code{\link{getPopStats}}
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #G is a gating hierarchy
 #'     #Return the indices for population 5 (topological sort)
 #'     getIndices(G,getNodes(G,tsort=TRUE)[5]);
+#' }
+#' 
 #' @aliases 
 #' getIndices
 #' getIndices-methods
@@ -577,6 +582,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 			.Call("R_getIndices",obj@pointer,getSample(obj),as.integer(y-1))
 			
 		})
+    
 #' get gated flow data from a GatingHierarchy/GatingSet
 #' 
 #' get gated flow data from a GatingHierarchy/GatingSet 
@@ -585,7 +591,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}. 
 #' Subset membership can be obtained using \code{getIndices}. 
 #' Population statistics can be obtained using \code{getPop} and \code{getPopStats}. 
-#' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.}
+#' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
 
 #' @param obj A \code{GatingHierarchy}, \code{GatingSet} object.
 #' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. 
@@ -600,7 +606,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #'   \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
 #' 
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #G is a GatingSet
 #'     geData(G,3) #get a flowSet constructed from the third node / population in the tree.
 #'     geData(G,"cd4")
@@ -609,9 +615,9 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #'     getData(gh)
 #' }
 #' @aliases 
-#' getData,GatingHierarchy,missing-method}
-#' getData,GatingHierarchy,numeric-method}
-#' getData,GatingHierarchy,character-method}
+#' getData,GatingHierarchy,missing-method
+#' getData,GatingHierarchy,numeric-method
+#' getData,GatingHierarchy,character-method
 #' getData,GatingSet,ANY-method
 #' getData,GatingSet,missing-method
 #' getData,GatingSet,numeric-method
@@ -671,7 +677,7 @@ getAxisLabels <- function(obj,...){
 #' @return 
 #' lists of functions, with each element of the list representing a transformation applied to a specific channel/parameter of a sample. 
 #' @examples
-#' dontrun{
+#' \dontrun{
 #' 	#Assume f is a flowJoWorkspace
 #' 	getTransformations(f);
 #' }
@@ -747,7 +753,7 @@ setMethod("getTransformations","GatingHierarchy",function(x){
 #'   or a spillover matrix in \code{GatingHierarchy}
 #' @seealso \code{\link{openWorkspace}}
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #ws is a flowJoWorkspace
 #'   file<-"myworkspace.xml"
 #'   ws<-openWorkspace(file)
@@ -1164,7 +1170,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #'  \code{setNode} update the name of one node in a gating hierarchy/GatingSet.
 #' @param value A \code{character} the name of the node.
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #G is a gating hierarchy
 #'     getNodes(G[[1]])#return node names
 #'     getNodes(G[[1]],isPath=TRUE)#return the full path
@@ -1188,7 +1194,7 @@ setMethod("setNode"
 #' Get the sample name associated with a GatingHierarchy
 #' 
 #'   Return  the sample name
-#' @param x A \code{GatingHierarchy} or a \code{graphNEL} object from the \code{@tree} slot of a GatingHierarchy
+#' @param x A \code{GatingHierarchy}  
 #' @param isFullPath \code{isFullPath} is a logical value indicating whether the full path of the sample FCS file is returned.Default is FALSE.
 #' 
 #' @details Returns the name of the sample, or the path to the FCS file.
@@ -1203,7 +1209,6 @@ setMethod("setNode"
 #' getSample
 #' getSample-method
 #' getSample,GatingHierarchy-method
-#' getSample,graphNEL-method
 setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
       ifelse(isFullPath,file.path(x@dataPath,x@name),x@name)
       

@@ -29,7 +29,7 @@
   current population in the given \code{GatingHierarchy}
 }
 \examples{
-dontrun{
+\dontrun{
     #G is a gatinghierarchy
     #return the name of the parent of the fifth node in the hierarchy.
     getParent(G,getNodes(G[[1)[5])

@@ -1,4 +1,5 @@
 #' @include GatingSet-Methods.R
+NULL
 
 # convert flowCore filter to a list (filterObject) 
 # that can be understood by c++ code

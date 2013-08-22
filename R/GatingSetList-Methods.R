@@ -1,5 +1,5 @@
 #' @include GatingSet-Methods.R
-
+NULL
 
 setMethod("rbind2",
     signature=signature("GatingSetList","missing"),
@@ -60,6 +60,7 @@ setMethod("getSamples",
       x@samples      
     })
 
+#' @importFrom BiocGenerics lapply
 setMethod("lapply","GatingSetList",function(X,FUN,...){
       lapply(X@data,FUN,...)
     })

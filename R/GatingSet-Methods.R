@@ -1,5 +1,5 @@
 #' @include GatingHierarchy-Methods.R
-
+NULL
 
 #' @title save/load a GatingSet/GatingSetList to/from disk.
 #' 
@@ -412,7 +412,9 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 
 #' constructing gating set
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
-#' @importMethodsFrom flowCore colnames colnames<- compensate spillover compensation flowFrame flowSet polygonGate read.FCS read.FCSheader read.flowSet rectangleGate
+#' @importMethodsFrom flowCore colnames colnames<- compensate spillover
+#' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
+#' @importClassesFrom flowCore flowFrame flowSet
 .addGatingHierarchies<-function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
 	
     if(length(files)==0)
@@ -1010,7 +1012,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #'   which require deep-copying. So make sure to use this clone method in order to make a copy of existing object.
 #' @return A copy of a given \code{GatingSet}.
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #G is  a GatingSet
 #'     G1<-clone(G)
 #'     
@@ -1132,9 +1134,9 @@ setMethod("show","GatingSet",function(object){
 setMethod("getSamples","GatingSet",function(x){
       sampleNames(getData(x))
     })
-#' to speed up reading data from disk later on, 
-#' we can optionally pass j to ncdfFlow::[ to subset on channel
-#' @export 
+
+# to speed up reading data from disk later on, 
+# we can optionally pass j to ncdfFlow::[ to subset on channel
 setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y,tsort=FALSE, ...){
       flowData(obj)[,...]
   
@@ -1192,16 +1194,17 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
 #' 
 #' @param x A \code{GatingSet}
 #' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
-#' @details
-#'   Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.
+#' 
+#' @details Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.
 #' 
 #' @return the object with the new flowSet in place.
+#' 
 #' @aliases 
 #' flowData<-
 #' flowData
 #' flowData-methods
-#' flowData,GatingSet-method}
-#' flowData<-,GatingSet-method}
+#' flowData,GatingSet-method
+#' flowData<-,GatingSet-method
 setMethod("flowData",signature("GatingSet"),function(x,...){
         x@data
     })
@@ -1288,7 +1291,7 @@ setMethod("[[",c("GatingSet"),function(x,i,j,...){
     })
 
 
-#' Methods to get the length of a GatingSet }
+#' Methods to get the length of a GatingSet
 #' 
 #' Return the length of a \code{GatingSet} object (number of samples).
 #' @aliases length-methods length,GatingSet-method
@@ -1402,7 +1405,8 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 
 #' Get List of Keywords for a Flow Sample
 #' 
-#' Retrieve the list of keywords associated with a sample}
+#' Retrieve the list of keywords associated with a sample
+#' 
 #' @param obj A \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy}
 #' @param y can be omitted if \code{obj} is a \code{GatingHierarchy}. A \code{character}, or \code{numeric} if \code{obj} is a \code{GatingSet}. A \code{character} if \code{obj} is a \code{flowJoWorkspace}
 #' 

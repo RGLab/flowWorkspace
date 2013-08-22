@@ -25,7 +25,7 @@
   existing object.
 }
 \examples{
-dontrun{
+\dontrun{
     #G is  a GatingSet
     G1<-clone(G)
 

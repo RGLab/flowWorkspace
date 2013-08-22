@@ -37,7 +37,7 @@
   node with \code{getData}.
 }
 \examples{
-dontrun{	#gh is a GatingHierarchy
+\dontrun{	#gh is a GatingHierarchy
     getGate(gh,5) #return the gate for the fifth node in the tree.
     getGate(gh,getNodes(gh)[5]) #return the gate for the fifth node in the tree, but fetch it by name.
     #G is a GatingSet

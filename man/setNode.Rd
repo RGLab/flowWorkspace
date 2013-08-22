@@ -9,7 +9,7 @@
   hierarchy/GatingSet.
 }
 \examples{
-dontrun{
+\dontrun{
     #G is a gating hierarchy
     getNodes(G[[1]])#return node names
     getNodes(G[[1]],isPath=TRUE)#return the full path

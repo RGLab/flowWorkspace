@@ -22,9 +22,22 @@
 \alias{rbind2,GatingSetList,missing-method}
 \alias{show,GatingSetList-method}
 \title{Class \code{"GatingSetList"}}
+\usage{
+  GatingSetList(x, samples = NULL)
+}
+\arguments{
+  \item{x}{a \code{list} of \code{GatingSet}}
+
+  \item{samples}{\code{character} vector specifying the
+  sample names. if NULL, the sample names are extracted
+  from GatingSets}
+}
 \description{
   A list of of \code{GatingSet} objects. This class exists
-  for method dispatching.}
+  for method dispatching.
+
+  use \code{GatingSetList} constructor to create a
+  GatingSetList from a list of GatingSet
 }
 \details{
   Objects store a collection of GatingSets,which usually
@@ -34,9 +47,9 @@
 \examples{
 \dontrun{
     #load several GatingSets from disk
-   gs_list<-lapply(list.files("~/rglab/workspace/flowIncubator/output/gs_toMerge",full=T),function(this_folder){
-          load_gs(this_folder)
-        })
+   gs_list<-lapply(list.files("../gs_toMerge",full=T) ,function(this_folder){
+                     load_gs(this_folder)
+                     })
 
    #gs_list is a list
     gs_groups <- merge(gs_list)
@@ -97,6 +110,7 @@
     #convert GatingSetList into one GatingSet by rbind2
     gs_merged2 <- rbind2(gslist2,ncdfFile=path.expand(tempfile(tmpdir="~/rglab/workspace/flowIncubator/output/",fileext=".nc")))
     gs_merged2
+  }
 }
 \seealso{
   \code{\linkS4class{GatingSet}}

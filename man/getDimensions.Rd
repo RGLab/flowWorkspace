@@ -35,7 +35,7 @@
   gate.
 }
 \examples{
-dontrun{
+\dontrun{
     file<-"myworkspace.xml"
     ws<-openWorkspace(file)
     G<-parseWorkspace(ws,execute=TRUE,path=".")

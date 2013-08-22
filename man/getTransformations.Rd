@@ -36,7 +36,7 @@
   funtion from c++ to R mainly for transforming range info
 }
 \examples{
-dontrun{
+\dontrun{
 	#Assume f is a flowJoWorkspace
 	getTransformations(f);
 }

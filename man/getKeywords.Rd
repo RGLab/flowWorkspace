@@ -20,7 +20,7 @@
   A list of keyword - value pairs.
 }
 \description{
-  Retrieve the list of keywords associated with a sample}
+  Retrieve the list of keywords associated with a sample
 }
 \details{
   Retrieve a list of keywords from a

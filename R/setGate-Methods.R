@@ -1,4 +1,5 @@
 #' @include filterObject-Methods.R
+NULL
 
 setMethod("setGate"
     ,signature(obj="GatingHierarchy",y="numeric",value="filter")
