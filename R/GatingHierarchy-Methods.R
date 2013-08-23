@@ -941,7 +941,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #' @param overlay is either the gate indices or logical vector(i.e. event indices)
 #' @importMethodsFrom flowViz xyplot densityplot
 .plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL, stats, ...){			
-		browser()
+#		browser()
 			type<- match.arg(type)
 			if(is.list(y))
 				pid<-y$parentId
@@ -1112,7 +1112,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 	
 	xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
 	ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
-			browser()
+#			browser()
 	
 #		xParam.ind<-match(xParam,pd$name)
 #		yParam.ind<-match(yParam,pd$name)
