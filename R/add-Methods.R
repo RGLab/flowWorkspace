@@ -116,6 +116,7 @@ setMethod("add",
 		})
     
 #' @importClassesFrom flowCore filterList ellipsoidGate intersectFilter polygonGate rectangleGate
+#' @importFrom flowCore filterList
 setMethod("add",
 		signature=c("GatingSet", "filterList"),
 		definition=function(wf, action, ...)

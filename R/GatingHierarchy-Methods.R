@@ -1,17 +1,6 @@
 #' @include AllClasses.R
 NULL
 
-#' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
-#' 
-#' @param x \code{GatingHiearchy} object
-#' @return \code{logical}
-#' @export 
-isNcdf <- function(x){
-#			browser()
-			
-			return (class(flowData(x))=="ncdfFlowSet")
-			
-		}
 #' @importClassesFrom graph graphNEL
 #' @importMethodsFrom graph fromGXL
 #return a graphNEL object that only contans the node Name and isBool flags    
@@ -158,9 +147,8 @@ setMethod("plot",c("GatingHierarchy","character"),function(x,y,...){
 #' @aliases show,GatingHierarchy
 #' @export 
 setMethod("show","GatingHierarchy",function(object){
-			cat("\tFCS File: ",getSample(object),"\n");
+			cat("\tSample: ",getSample(object),"\n");
 			cat("\tGatingHierarchy with ",length(getNodes(object))," gates\n");
-			print(object@pointer)
 			cat("\n")
 		})
 
@@ -467,8 +455,10 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 			g
 			
 		})
-#return gate y for a given hierarchy (by index)
-#Note that this index is ordered by regular sorting method
+    
+#' return gate y for a given hierarchy (by index)
+#' Note that this index is ordered by regular sorting method
+#' @importFrom flowCore polygonGate rectangleGate
 setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,tsort=FALSE){
 			vertexID=y-1
 			if(vertexID<=0)
@@ -569,6 +559,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 #' getIndices,GatingHierarchy,character-method
 #' getIndices,GatingHierarchy,numeric-method
 #' @importFrom ncdfFlow getIndices
+#' @export 
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
 #			browser()
@@ -661,7 +652,7 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
 
 
 getAxisLabels <- function(obj,...){
-              obj@axis.labels
+              obj@axis[[1]]
 		}
 
 #' Return a list of transformations or a transformation in a flowJo workspace/GatingHierarchy
@@ -687,61 +678,59 @@ getAxisLabels <- function(obj,...){
 #' getTransformations,flowJoWorkspace-method
 #' getTransformations,GatingHierarchy-method
 setMethod("getTransformations","GatingHierarchy",function(x){
-			x@transformations
-		})
-setMethod("getTransformations","GatingHierarchy",function(x){
 #			browser()
-			trans<-.Call("R_getTransformations",x@pointer,getSample(x))
-			lapply(trans,function(curTrans){
-#						browser()
-						if(curTrans$type=="log")
-						{
-							f<-function(x){x<-log(x,10);x[is.nan(x)]<-0;x[is.infinite(x)]<-0;x}
-							attr(f,"type")<-"log"
-							
-						}
-						else if(curTrans$type=="lin")
-						{
-							f<-function(x){x*64}
-							attr(f,"type")<-"gateOnly"
-							
-							
-						}else 
-						{
-							#define the dummy spline function(simplied version of the one from stats package)
-							f<-function (x, deriv = 0) 
-							{
-							    deriv <- as.integer(deriv)
-							    if (deriv < 0 || deriv > 3) 
-							        stop("'deriv' must be between 0 and 3")
-							    if (deriv > 0) {
-							        z0 <- double(z$n)
-							        z[c("y", "b", "c")] <- switch(deriv, list(y = z$b, b = 2 * 
-							            z$c, c = 3 * z$d), list(y = 2 * z$c, b = 6 * z$d, 
-							            c = z0), list(y = 6 * z$d, b = z0, c = z0))
-							        z[["d"]] <- z0
-							    }
-
-							    res <- stats::: .splinefun(x,z)
-							    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
-							        res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
-							    res
-							}
-							#update the parameters of the function
-							z<-curTrans$z
-							z$n<-length(z$x)
-							z$method<-curTrans$method
-							assign("z",z,environment(f))
-							
-							attr(f,"type")<-curTrans$type	
-						}
-						
-						return (f)
-					})
-			
+      .getTransformations(x@pointer,getSample(x))
 		})
-        
-        
+.getTransformations <- function(pointer,sampleName){        
+    trans<-.Call("R_getTransformations",pointer,sampleName)
+    lapply(trans,function(curTrans){
+#						browser()
+          if(curTrans$type=="log")
+          {
+            f<-function(x){x<-log(x,10);x[is.nan(x)]<-0;x[is.infinite(x)]<-0;x}
+            attr(f,"type")<-"log"
+            
+          }
+          else if(curTrans$type=="lin")
+          {
+            f<-function(x){x*64}
+            attr(f,"type")<-"gateOnly"
+            
+            
+          }else 
+          {
+            #define the dummy spline function(simplied version of the one from stats package)
+            f<-function (x, deriv = 0) 
+            {
+              deriv <- as.integer(deriv)
+              if (deriv < 0 || deriv > 3) 
+                stop("'deriv' must be between 0 and 3")
+              if (deriv > 0) {
+                z0 <- double(z$n)
+                z[c("y", "b", "c")] <- switch(deriv, list(y = z$b, b = 2 * 
+                            z$c, c = 3 * z$d), list(y = 2 * z$c, b = 6 * z$d, 
+                        c = z0), list(y = 6 * z$d, b = z0, c = z0))
+                z[["d"]] <- z0
+              }
+              
+              res <- stats::: .splinefun(x,z)
+              if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L])) 
+                res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
+              res
+            }
+            #update the parameters of the function
+            z<-curTrans$z
+            z$n<-length(z$x)
+            z$method<-curTrans$method
+            assign("z",z,environment(f))
+            
+            attr(f,"type")<-curTrans$type	
+          }
+          
+          return (f)
+        })
+  }
+    
 
 #'  Retrieve the compensation matrices from a flowJo Workspace or GatingHierarchy
 #' 
@@ -952,7 +941,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #' @param overlay is either the gate indices or logical vector(i.e. event indices)
 #' @importMethodsFrom flowViz xyplot densityplot
 .plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL, stats, ...){			
-		
+		browser()
 			type<- match.arg(type)
 			if(is.list(y))
 				pid<-y$parentId
@@ -1050,8 +1039,8 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
               yParam <- NULL
              
             } 
-           
-           parentdata<-getData(x, pid, j = params)
+#           browser()
+           parentdata <- getData(x, pid, j = params)
 #           browser()
            smooth<-ifelse(nrow(parentdata)<100,TRUE,smooth)
            
@@ -1123,20 +1112,20 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 	
 	xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
 	ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
-#			browser()
+			browser()
 	
-		xParam.ind<-match(xParam,pd$name)
-		yParam.ind<-match(yParam,pd$name)
+#		xParam.ind<-match(xParam,pd$name)
+#		yParam.ind<-match(yParam,pd$name)
         if(is.null(xParam)){
           x.labels <- NULL
         }else{
-          x.labels<-getAxisLabels(x)[[xParam.ind]]  
+          x.labels<-getAxisLabels(x)[[xParam]]  
         }
           
         if(is.null(yParam)){
           y.labels <- NULL
         }else{
-		  y.labels<-getAxisLabels(x)[[yParam.ind]]
+		  y.labels<-getAxisLabels(x)[[yParam]]
         }
 		
 		#init the scales and x,y lim
@@ -1210,6 +1199,10 @@ setMethod("setNode"
 #' getSample-method
 #' getSample,GatingHierarchy-method
 setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
-      ifelse(isFullPath,file.path(x@FCSPath,x@name),x@name)
+      thisSample <- getSamples(x)
+      
+      if(isFullPath)
+        thisSample <- file.path(x@FCSPath,thisSample)
+      thisSample
       
     })

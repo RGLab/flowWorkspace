@@ -6,11 +6,11 @@ setMethod("rbind2",
     definition=function(x,y="missing",...)
     {
 #           browser()
-      isNcdfList<-lapply(x,function(gs)flowWorkspace:::isNcdf(gs[[1]]))
+      isNcdfList<-lapply(x,isNcdf, level = 1)
       if(all(duplicated(unlist(isNcdfList))[-1])){
 #               browser()
         #combine flowset/ncdfFlowSet
-        fsList<-lapply(x,getData)
+        fsList <- lapply(x, getData, level =1)
         if(isNcdfList[[1]])
           fs<-rbind2(as(fsList,"ncdfFlowList"),...)
         else
@@ -22,24 +22,16 @@ setMethod("rbind2",
         }
         
         #combine tree structure
-        ptrlist<-lapply(x,function(gs)gs@pointer)
-        sampleList<-lapply(x,getSamples)
-        pointer<-.Call("R_combineGatingSet",ptrlist,sampleList,package="flowWorkspace")
-        G<-new("GatingSet")
-        G@pointer<-pointer
-        G@guid<-flowWorkspace:::.uuid_gen()
-        
+        ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
+        sampleList <- lapply(x, getSamples, level =1)
+        pointer <- .Call("R_combineGatingSet",ptrlist,sampleList,package="flowWorkspace")
+        G <- new("GatingSet")
+        G@pointer <- pointer
+        G@guid <- .uuid_gen()
+        G@flag <- TRUE
         #combine R objects
         
         flowData(G) <- fs
-        set<-unlist(lapply(x,function(gs)gs@set))
-        #upodate pointer
-        for(i in seq_along(set))
-        {
-          set[[i]]@pointer<-pointer
-        }
-        
-        G@set<-set
         
       }else{
         stop("Can't combine gating sets. They should all use the same storage method. (Netcdf, or not..)")
@@ -60,9 +52,24 @@ setMethod("getSamples",
       x@samples      
     })
 
-#' @importFrom BiocGenerics lapply
-setMethod("lapply","GatingSetList",function(X,FUN,...){
-      lapply(X@data,FUN,...)
+
+#' @param X \code{GatingSet} or \code{GatingSetList} object
+#' @param FUN \code{function} to apply
+#' @param level \code{numeric}. When \code{X} is a \code{GatingSetList}, \code{level} 2 (default value)
+#' \code{FUN} is applied to each individual \code{GatingHierarchy}. When it is set to 1, \code{FUN} is applied to each \code{GatingSet}  
+#' 
+#' @rdname lapply-methods
+#' @export 
+setMethod("lapply","GatingSetList",function(X,FUN, level = 2,...){
+      if(level == 1)
+        lapply(X@data,FUN,...)
+      else
+      {
+        sapply(getSamples(X),function(thisSample,...){
+              gh <- X[[thisSample]]
+              FUN(gh, ...)
+            }, simplify = TRUE, ...)
+      }
     })
 
 setMethod("[[",c(x="GatingSetList",i="numeric"),function(x,i,j,...){
@@ -130,7 +137,7 @@ setMethod("[",c(x="GatingSetList",i="character"),function(x,i,j,...){
                   }else{
                     NULL
                   }
-                })
+                }, level =1)
       res <- res[!unlist(lapply(res,is.null))]
       res <- GatingSetList(res)
       res@samples <- samples[matchInd]
@@ -155,7 +162,7 @@ setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30
       res <- lapply(obj,function(gs){
             ncfs <- getData(gs,y, ...)
             as.flowSet(ncfs)
-          })
+          }, level =1)
       fs<-res[[1]]
       if(length(res)>1){
         for(i in 2:length(res))
@@ -167,9 +174,7 @@ setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30
 
 setMethod("pData","GatingSetList",function(object){
 
-      res <- lapply(object,function(gs){
-              pData(gs)      
-          })
+      res <- lapply(object,pData, level =1)
 #            browser()
       res <- do.call(rbind,res)
       res[object@samples,,drop=FALSE]
@@ -183,7 +188,7 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
                     this_pd <- subset(value,name%in%getSamples(gs))
                     pData(gs) <- this_pd
                     gs
-                  })
+                  }, level =1)
               
       res <- GatingSetList(res)
       res        
@@ -195,7 +200,7 @@ setMethod("getGate",signature(obj="GatingSetList",y="numeric"),function(obj,y,ts
 setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,tsort=FALSE){
       res <- lapply(obj,function(gs){
             getGate(gs,y)      
-          })
+          }, level =1)
       unlist(res,recur=FALSE)
       
     })
@@ -211,7 +216,7 @@ setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ..
     })
 
 setMethod("getPopStats","GatingSetList",function(x,...){
-      res <- lapply(x,getPopStats,...)
+      res <- lapply(x,getPopStats, level =1,...)
       do.call(cbind,res)
     })
 
@@ -236,7 +241,7 @@ save_gslist<-function(gslist,path,...){
 
 #        invisible(flowWorkspace:::.save_gs(gs,path = this_dir, ...))
         suppressMessages(save_gs(gs,path = this_dir, ...))
-      })
+      }, level =1)
 #  browser()
   #save sample vector
   saveRDS(gslist@samples,file=file.path(path,"samples.rds"))

@@ -1,7 +1,7 @@
 unloadNamespace("flowWorkspace")
 
 library(flowWorkspace)
-library(XML)
+#library(XML)
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 #lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
@@ -52,11 +52,11 @@ GT<-parseWorkspace(ws
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
-					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
+#					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 					,dMode=4
                     ,extend_val=0
 #                    ,column.pattern=colP
@@ -66,11 +66,11 @@ Sys.time()-time1
 Rprof(NULL)
 summaryRprof()
 getSamples(ws)
-GT[[1]]
-getNodes(GT[[1]])
-g <- getGate(GT[[1]],110)
+gh <- GT[[1]]
+getNodes(gh)
+g <- getGate(GT[[1]],10)
 add(GT,g,parent="4+",name="test")
-plotGate(GT[[1]],110,bool=T)
+plotGate(GT[[1]],"4+",bool=T)
 setNode(GT@set[[1]],"(19+ 20-)","19+20-")
 length(which(getIndices(GT[[1]],"Excl")))
 getGate(GT[[1]],"Excl")@boundaries
@@ -84,12 +84,6 @@ flowData(GT)
 x11()
 plotGate(GT[[1]],xbin=32, margin =T)
 plot(GT[[1]])
-#save to tar
-tmpdir <- "~/rglab/workspace/temp"
-list.files(tmpdir)
-archive(GT,file=file.path(tmpdir,"test.tar"))
-
-gg <- unarchive(file.path(tmpdir,"test.tar"))
 getData(gg[[1]])
 getData(gg)
 #save to folder without tarring
@@ -103,21 +97,23 @@ list.files(tmp2)
 
 gh<-GT[[1]]
 getParent(gh,5)
-getParent(gh,"Lv")
+getParent(gh,"CD3+")
 getChildren(gh,5)
-getChildren(gh,"Lv")
-getProp(gh,"Lv")
-getTotal(gh,"Lv")
-getGate(gh,"Lv")
-length(which(getIndices(gh,"Lv")))
-plotGate(gh,"Lv")
+getChildren(gh,"CD3+")
+getProp(gh,"CD3+")
+getTotal(gh,"CD3+")
+getGate(gh,"CD3+")
+length(which(getIndices(gh,"CD3+")))
+x11()
+plotGate(gh,"CD3+")
 
 getData(GT)
 getSamples(GT)
 pData(GT[c("CytoTrol_CytoTrol_1.fcs","CytoTrol_CytoTrol_2.fcs")])
 gg <- .getGraph(GT[[1]])
 plot(GT[[1]])
-plotGate(GT,6,smooth=T
+plotGate(GT[1],"CD3+"
+        ,smooth=T
 #          ,xlab="test",ylab="testy"
         )
 plotGate(GT[1],"IL2+",smooth=T)
@@ -137,8 +133,8 @@ getGate(GT[[1]],3)@boundaries
 hist(exprs(getData(GT[[1]]))[,8])
 
 ##serialzation
-archive(GT,file="/home/wjiang2/rglab/workspace/flowWorkspace/output/NHLBI/gs/gs.tar")
-G<-unarchive("~/rglab/workspace/flowWorkspace/output/NHLBI/gs/gs.tar")
+save_gs(GT,path="/home/wjiang2/rglab/workspace/flowWorkspace/output/NHLBI/gs",overwrite=T)
+G<- load_gs("~/rglab/workspace/flowWorkspace/output/NHLBI/gs")
 tt<-logTransform(transformationId="log10-transformation", logbase=10, r=1, d=1)
 fr_trans<-transform(fr,`Am Cyan-A`=tt(`Am Cyan-A`))
 apply(exprs(fr_trans),2,range)

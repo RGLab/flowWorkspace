@@ -8,6 +8,6 @@
   unarchive(file, path = tempdir())
 }
 \description{
-  Deprecated by save_gs/load_gs
+  Defunct by save_gs/load_gs
 }
 

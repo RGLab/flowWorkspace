@@ -30,6 +30,9 @@
   Return the flowCore gate definition object associated
   with a node in a \code{GatingHierarchy} or
   \code{GatingSet} object.
+
+  return gate y for a given hierarchy (by index) Note that
+  this index is ordered by regular sorting method
 }
 \note{
   You should not have to deal with boolean gates. It is

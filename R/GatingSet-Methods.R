@@ -1,6 +1,18 @@
 #' @include GatingHierarchy-Methods.R
 NULL
 
+#' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
+#' 
+#' @param x \code{GatingHiearchy} object
+#' @return \code{logical}
+#' @export 
+isNcdf <- function(x){
+#			browser()
+  
+  return (class(flowData(x))=="ncdfFlowSet")
+  
+}
+
 #' @title save/load a GatingSet/GatingSetList to/from disk.
 #' 
 #' @description 
@@ -46,8 +58,8 @@ save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
 #  browser()
   cdf <- match.arg(cdf,c("copy","move","skip","symlink","link"))
   guid <- G@guid
-  if(length(guid)==0){
-    G@guid <- flowWorkspace:::.uuid_gen()
+  if(length(guid) == 0){
+    G@guid <- .uuid_gen()
     guid <- G@guid
   }
   rds_toSave <- paste(guid,"rds",sep=".")
@@ -76,7 +88,7 @@ save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
       }
       
       #validity check for cdf
-      if(flowWorkspace:::isNcdf(G[[1]])){
+      if(isNcdf(G)){
         if(length(this_files)!=0){
           cdf_ind <- grep("\\.nc$",this_files)
           if(length(cdf_ind) != 1){
@@ -91,7 +103,7 @@ save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
         file.remove(file.path(path,rds_toSave))
         file.remove(file.path(path,dat_toSave))
         
-        if(flowWorkspace:::isNcdf(G[[1]])){
+        if(isNcdf(G)){
           #check if the target path is the same as current cdf path
 #            browser()
           this_cdf <- file.path(path,this_files[cdf_ind])
@@ -159,7 +171,7 @@ load_gs<-function(path){
     
     filestoSave <- c(rds.file,dat.file)
     #save ncdf file
-    if(cdf != "skip" && flowWorkspace:::isNcdf(G[[1]]))
+    if(cdf != "skip" && isNcdf(G))
     {
       from<-flowData(G)@file
 #      browser()
@@ -229,12 +241,8 @@ load_gs<-function(path){
       message("loading tree object...")
       gs@pointer<-.Call("R_loadGatingSet",dat.file)
       
-      #update the pointer in each gating hierarchy
-      for(i in 1:length(gs@set))
-      {
-        gs@set[[i]]@pointer<-gs@pointer
-      }
-      if(flowWorkspace:::isNcdf(gs[[1]]))
+      
+      if(isNcdf(gs))
       {
         if(length(nc.file)==0)
           stop(".nc file missing in ",file)
@@ -247,12 +255,12 @@ load_gs<-function(path){
 
 #' archive/unarchive to/from a tar file
 #' 
-#' Deprecated by save_gs/load_gs
+#' Defunct by save_gs/load_gs
 #' @aliases archive unarchive
 #' @rdname archive
 #' @export 
 archive<-function(G,file=tempfile()){
-	.Deprecated("save_gs")
+	.Defunct("save_gs")
 	filename<-basename(file)
 	dirname<-dirname(file)
 	filename<-sub(".tar$","",filename)
@@ -274,7 +282,7 @@ archive<-function(G,file=tempfile()){
 #' @export 
 #' @rdname archive
 unarchive<-function(file,path=tempdir()){
-    .Deprecated("load_gs")	
+    .Defunct("load_gs")	
 	if(!file.exists(file))
 		stop(file,"' not found!")
 #	browser()
@@ -303,8 +311,14 @@ unarchive<-function(file,path=tempdir()){
 	message("calling c++ parser...")
 #	browser()
 	time1<-Sys.time()
-	G<-GatingSet(x=xmlFileName,y=sampleIDs,includeGates=includeGates,sampNloc=sampNloc,xmlParserOption = xmlParserOption, dMode=dMode)
-#	time_cpp<<-time_cpp+(Sys.time()-time1)
+	G <- GatingSet(x = xmlFileName
+                  , y = sampleIDs
+                  , includeGates = includeGates
+                  , sampNloc=sampNloc
+                  , xmlParserOption = xmlParserOption
+                  , dMode=dMode
+                  )
+
 	message("c++ parsing done!")
 	samples<-.Call("R_getSamples",G@pointer)
 	
@@ -343,21 +357,17 @@ unarchive<-function(file,path=tempdir()){
 		
 		files<-file.path(dataPaths,samples)
 		
-#		time1<-Sys.time()
-		
-		
-#		time_sum<<-time_sum+(Sys.time()-time1)
 	}else
 	{
 		files<-samples
 	}
-#	browser()
-#	print(Sys.time()-time1)
+    G@FCSPath <- dataPaths
+    
 	G<-.addGatingHierarchies(G,files,execute,isNcdf,...)
-#	time1<-Sys.time()
+
 
 	message("done!")
-#	print(Sys.time()-time1)
+
 
 	G	
 }
@@ -369,11 +379,11 @@ unarchive<-function(file,path=tempdir()){
 #' @rdname GatingSet-methods
 #' @aliases
 #' GatingSet,GatingHierarchy,character-method
-setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isNcdf=FALSE,dMode=1,...){
+setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE, dMode=1, ...){
 			
-			samples<-y
-			dataPaths<-vector("character")
-			excludefiles<-vector("logical")
+			samples <- y
+			dataPaths <- vector("character")
+			excludefiles <- vector("logical")
 			for(file in samples){
 #				browser()
 				#########################################################
@@ -402,8 +412,9 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 			files<-file.path(dataPaths,samples)
 			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
-			Object@pointer<-.Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
+			Object@pointer <- .Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
             Object@guid <- .uuid_gen()
+            Object@FCSPath <- dataPaths
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
             message("done!")
 			return(Object)
@@ -412,15 +423,13 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 
 #' constructing gating set
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
-#' @importMethodsFrom flowCore colnames colnames<- compensate spillover
+#' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
 .addGatingHierarchies<-function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
 	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
-	#environment for holding fs data,each gh has the same copy of this environment
-	globalDataEnv<-new.env(parent=emptyenv())
 	
     #load the raw data from FCS
 	if(execute)
@@ -435,22 +444,22 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 		}
 	}
 	
-	nFiles<-length(files)
-	set<-vector(mode="list",nFiles)	
+	#global variable storing prefixed colnames
+    tempenv<-new.env(parent = emptyenv())	
     prefixColNames <- NULL
-	for(i in 1:nFiles)
-	{
-		file<-files[i]		
+    assign("prefixColNames",NULL,tempenv)
+    
+	axis <- lapply(files,function(file,tempenv){
+		
+        #get global variable
+        prefixColNames <- tempenv$prefixColNames
+        
 		sampleName<-basename(file)
-		gh<-new("GatingHierarchy",pointer=G@pointer,name=sampleName)
-#			browser()
+        
 		
 		#gating (including loading data,compensating,transforming and the actual gating)
 		if(execute)
 		{
-			
-			gh@FCSPath<-dirname(file)
-			
 			
 			message("loading data: ",file);
 			if(isNcdf)
@@ -470,7 +479,7 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 			##################################
 			#Compensating the data
 			##################################
-			comp<-.Call("R_getCompensation",G@pointer,sampleName)
+			comp <- .Call("R_getCompensation", G@pointer, sampleName)
 			cid<-comp$cid
 			if(cid=="")
 				cid=-2
@@ -511,11 +520,11 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 					if(is.null(compensation))
 					{
 						compobj<-compensation(spillover(data)$SPILL)
-						gh@compensation<-spillover(data)$SPILL
+						
 					}else
 					{
 						compobj<-compensation
-						gh@compensation<-compensation@spillover
+						
 					}
 					
 					res<-try(compensate(data,compobj),silent=TRUE)
@@ -573,7 +582,7 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
               colnames(mat) <- prefixColNames  
             }
             
-            .Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
+            .Call("R_gating",G@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<- 
             #since colnames(fs) is not udpated yet.
@@ -598,15 +607,19 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
             #so we need update this range info by transforming it
             tInd <- grepl("[Tt]ime",cnd)
             tRg  <- range(mat[,tInd])
-            gh@axis.labels <- .transformRange(gh,wsversion,fs@frames,timeRange = tRg)
+            axis.labels <- .transformRange(G,sampleName,wsversion,fs@frames,timeRange = tRg)
 
 		}
-		
-		gh@flag<-execute #assume the excution would succeed if the entire G gets returned finally
-		set[[i]]<-gh
-	}
-	names(set)<-basename(files)
-	G@set<-set
+        #set global variable
+        tempenv$prefixColNames <- prefixColNames
+        
+        #return axis.labels
+        axis.labels
+	},tempenv)
+    
+    names(axis) <- basename(files)
+    G@axis <- axis
+    G@flag <- execute #assume the excution would succeed if the entire G gets returned finally
 	
 	if(execute)
 	{
@@ -614,8 +627,8 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 		#update colnames 
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
-		if(!is.null(prefixColNames))
-          colnames(fs) <- prefixColNames 
+		if(!is.null(tempenv$prefixColNames))
+          colnames(fs) <- tempenv$prefixColNames 
 		
 		#attach filename and colnames to internal stucture for gating
 #		browser()
@@ -635,11 +648,11 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 #' 
 #' @return 
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
-.transformRange<-function(gh,wsversion,frmEnv, timeRange = NULL){
+.transformRange<-function(G,sampleName, wsversion,frmEnv, timeRange = NULL){
 #  browser()
-    sampleName <- getSample(gh)
-     cal<-getTransformations(gh)
-     comp<-.Call("R_getCompensation",gh@pointer,sampleName)
+    
+     cal<-.getTransformations(G@pointer, sampleName)
+     comp<-.Call("R_getCompensation",G@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
 #	frmEnv<-dataenv$data$ncfs@frames
@@ -660,7 +673,8 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
                 isMatched <- length(j)!=0
               }
                 
-                
+              this_chnl <- names(rawRange)[i]
+              prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")
 				if(isMatched){
 #									browser()
 					rw<-rawRange[,i];
@@ -686,14 +700,14 @@ setMethod("GatingSet",c("GatingHierarchy","character"),function(x,y,path=".",isN
 						pos<-signif(cal[[j]](raw))
 						
 							
-						assign("i",i,tempenv)
+						assign("prefixedChnl",prefixedChnl,tempenv)
 						assign("raw",raw,tempenv);
 						assign("pos",pos,tempenv);
-						eval(expression(axis.labels[[i]]<-list(label=as.character(raw),at=pos)),envir=tempenv);
+						eval(expression(axis.labels[[prefixedChnl]]<-list(label=as.character(raw),at=pos)),envir=tempenv);
 					}
 					return(r);
 				}else{
-                  this_chnl <- names(rawRange)[i]
+                  
                   #update time range with the real data range
                   if(grepl("[Tt]ime",this_chnl))
                   {
@@ -799,6 +813,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param type \code{character} either 'xyplot' or 'densityplot'
 #' @param stats \code{numeric} proportions of cell population. If \code{missing} then extract it from \code{gatingHiearchy}
 #' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
+#' @importClassesFrom flowCore filters filtersList
+#' @importFrom flowCore filters filtersList
 .preplot <- function(x, y, type, stats, formula, ...){
   samples <- getSamples(x)
 #  browser()
@@ -1028,29 +1044,21 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 setGeneric("clone", function(x,...)standardGeneric("clone"))
 setMethod("clone",c("GatingSet"),function(x,...){
 
-			clone<-x
+			clone <- x
 			#clone c structure
 			message("cloning tree structure...")
-			clone@pointer<-.Call("R_CloneGatingSet",x@pointer,getSamples(x))
+			clone@pointer <- .Call("R_CloneGatingSet",x@pointer,getSamples(x))
             clone@guid <- .uuid_gen()
-              
-			#update the pointer in each gating hierarchy
-			for(i in 1:length(clone@set))
-			{
-				this_gh <- clone@set[[i]]
-                this_gh@pointer<-clone@pointer
-                clone@set[[i]] <- this_gh
-			}
 
 			#deep copying flow Data
 			message("cloning flow data...")
-			fs<-flowData(x)
-			if(flowWorkspace:::isNcdf(x[[1]]))
+			fs <- flowData(x)
+			if(isNcdf(x))
 				fs_clone<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=TRUE,...)
 			else
 				fs_clone<-flowCore:::copyFlowSet(fs)
 		
-			flowData(clone)<-fs_clone
+			flowData(clone) <- fs_clone
 
 			message("GatingSet cloned!")
 			clone
@@ -1058,7 +1066,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
         
 #' @exportMethod recompute
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
-setMethod("recompute",c("GatingSet"),function(x,y){
+setMethod("recompute",c("GatingSet"),function(x, y){
 			if(missing(y))
 				y<-1
 			if(is.character(y))
@@ -1074,8 +1082,8 @@ setMethod("recompute",c("GatingSet"),function(x,y){
 #					browser()
 #					time1<-Sys.time()
 						
-						data<-getData(gh)
-						mat<-exprs(data)
+						data <- getData(gh)
+						mat <- exprs(data)
 						lapply(y,function(nodeID){
 									.Call("R_gating",gh@pointer,mat,sampleName,gains=NULL,nodeInd=as.integer(nodeID)-1,recompute=TRUE)			
 								})
@@ -1087,24 +1095,23 @@ setMethod("recompute",c("GatingSet"),function(x,y){
 			invisible()
 						
 		})
-setMethod("recompute",c("GatingSet"),function(x,y){
-			recomputeGate(x=x,gate=y)
-		})
 
-
-
-
-
+#' apply \code{FUN} to each sample (i.e. \code{GatingHierarchy})
+#' 
+#' sample names are used for names of the returned list
+#'  
+#' @rdname lapply-methods
+#' @importFrom BiocGenerics lapply
+setMethod("lapply","GatingSet",function(X,FUN,...){
+      sapply(getSamples(X),function(thisSample,...){
+            gh <- X[[thisSample]]
+            FUN(gh, ...)
+          }, simplify = FALSE, ...)
+            
+      
+    })    
 setMethod("show","GatingSet",function(object){
-			
-			callNextMethod(object)
-			
-			for(i in 1:length(object@set))
-			{
-#				browser()
-				if(!identical(object@set[[i]]@pointer,object@pointer))
-					stop("GatingHierarchy ",names(object@set)[i]," has a differnent pointer than GatingSet!")
-			}
+			lapply(object, show)
 			
 		})
    
@@ -1138,7 +1145,7 @@ setMethod("show","GatingSet",function(object){
 #' getSamples,flowJoWorkspace-method
 #' @export    
 setMethod("getSamples","GatingSet",function(x){
-      sampleNames(getData(x))
+      sampleNames(flowData(x))
     })
 
 # to speed up reading data from disk later on, 
@@ -1154,6 +1161,7 @@ setMethod("getData",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=
       
     })
 
+#' @importMethodsFrom flowCore Subset
 setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE, ...){
 			
             this_data <- getData(obj, ...)                        
@@ -1211,6 +1219,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
 #' flowData-methods
 #' flowData,GatingSet-method
 #' flowData<-,GatingSet-method
+#' @export 
 setMethod("flowData",signature("GatingSet"),function(x,...){
         x@data
     })
@@ -1223,10 +1232,12 @@ setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
 
 #' it doesn't use metadata slot of GatingSet, instead it directly access the pData of flow data
 #' @importFrom Biobase pData description exprs sampleNames
+#' @export 
 setMethod("pData","GatingSet",function(object){
 			pData(flowData(object))
 		})
-#' @importFrom Biobase pData<-   
+#' @importFrom Biobase pData<-
+#' @export   
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 			fs<-flowData(object)
 			rownames(value)<-value$name
@@ -1238,28 +1249,35 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 			return (object)
 		})
 
-
-##overload the original method to add subetting on flowdata
+#' @description \code{[} subsets a \code{GatingSet} or \code{GatingSetList} using the familiar bracket notation
+#' 
+#' @param x \code{GatingSet} or \code{GatingSetList}
+#' @param i \code{numeric} or \code{logical} or \code{character} used as sample index
+#' @param j not used
+#' @param drop not used
+#' @param ... not used
+#'  
+#' @rdname GatingSet-class
+#' @export 
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
-            
+#            browser()
             #convert non-character indices to character
             if(extends(class(i), "numeric")||class(i) == "logical"){
               i <- getSamples(x)[i]
             }
             
             #copy the R structure          
-            clone <-x
+            clone <- x
             
             #subsetting data
-			fs<-flowData(clone)[i]
+			fs <- flowData(clone)[i]
             #deep copying flowData(but still pointing to the same cdf)
-            if(flowWorkspace:::isNcdf(clone[[1]]))
+            if(isNcdf(clone))
               fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
             else
               fs<-flowCore:::copyFlowSet(fs)
             
             
-            clone@set <- clone@set[i]
             #update the data for clone            
             flowData(clone) <- fs
             clone@guid <- .uuid_gen()
@@ -1268,11 +1286,11 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 		
 		
 
-setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE){
+setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
 			lapply(obj,function(x)getGate(x,y))
 		})
-setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE){
-      lapply(obj,function(x)getGate(x,y,tsort=tsort))
+setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y){
+      lapply(obj,function(x)getGate(x,y))
     })
     
 setMethod("setNode"
@@ -1287,23 +1305,34 @@ setMethod("setNode"
     ,function(x,y,value,...){
       setNode(x,.getNodeInd(x[[1]],y),value)
     })
-setMethod("[[",c("GatingSet"),function(x,i,j,...){
-      #convert non-character indices to character
-      if(extends(class(i), "numeric")||class(i) == "logical"){
-        i <- getSamples(x)[i]
-      }
+
+#' @description \code{[[} extract a \code{GatingHierarchy} object from a \code{GatingSet} or \code{GatingSetList}
+#' 
+#' @rdname GatingSet-class
+#' @export 
+setMethod("[[",c(x="GatingSet",i="numeric"),function(x,i,j,...){
+      x[[getSamples(x)[i]]]
       
-      return(x@set[[i]]);
     })
 
+
+setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
+            
+      x[[getSamples(x)[i]]]
+      
+    })
+setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
+      as(x[i], "GatingHierarchy");
+    })
 
 #' Methods to get the length of a GatingSet
 #' 
 #' Return the length of a \code{GatingSet} object (number of samples).
+#' 
 #' @aliases length-methods length,GatingSet-method
 #' @export  
 setMethod("length","GatingSet",function(x){
-      length(x@set);
+      length(flowData(x));
     })
 
 setMethod("show","GatingSet",function(object){
@@ -1435,7 +1464,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #' getKeywords,GatingSet,numeric-method
 #' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
-      ind<-which(getSamples(obj)%in%y)
+      ind <- which(getSamples(obj)%in%y)
       if(length(ind)>0){
         getKeywords(obj,ind);
       }else{
@@ -1443,10 +1472,10 @@ setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
       }
     })
 setMethod("getKeywords",c("GatingSet","numeric"),function(obj,y){
-      if(length(obj)<y){
+      if(length(obj) < y){
         stop("index out of range");
       }else{
-        getKeywords(obj[[y]]);
+        lapply(obj, getKeywords);
       }
     })
 setMethod("keyword",c("GatingSet","character"),function(object,keyword){
