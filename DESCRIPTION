@@ -16,7 +16,6 @@ License: Artistic-2.0
 LazyLoad: yes
 Imports:
     Biobase,
-    flowCore,
     BiocGenerics,
     graph,
     graphics,
@@ -28,12 +27,10 @@ Imports:
     RBGL,
     graph,
     XML,
-    flowCore (>= 1.25.9),
-    flowViz (>= 1.25.5),
     Biobase,
     IDPmisc,
     Cairo,
-    tools,hexbin,gridExtra,Rgraphviz,ncdfFlow(>= 2.7.09)
+    tools,hexbin,gridExtra,Rgraphviz
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
@@ -45,7 +42,7 @@ Collate:
     'add-Methods.R'
     'setGate-Methods.R'
 Depends:
-    R (>= 2.16.0),Rcpp (>= 0.9.9)
+    R (>= 2.16.0),Rcpp (>= 0.9.9),flowCore (>= 1.25.9),flowViz (>= 1.25.5),ncdfFlow(>= 2.7.09),gridExtra
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,

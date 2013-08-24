@@ -71,7 +71,7 @@ getNodes(gh)
 g <- getGate(GT[[1]],10)
 add(GT,g,parent="4+",name="test")
 plotGate(GT[[1]],"4+",bool=T)
-setNode(GT@set[[1]],"(19+ 20-)","19+20-")
+
 length(which(getIndices(GT[[1]],"Excl")))
 getGate(GT[[1]],"Excl")@boundaries
 recompute(GT,"Excl/4+")
@@ -80,9 +80,9 @@ recompute(GT,"4+")
 getPopStats(GT[[1]])[1:20,c(2:3)]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
-flowData(GT)
+flowData(GT)[[1]]
 x11()
-plotGate(GT[[1]],xbin=32, margin =T)
+plotGate(GT[[1]],"4+",xbin=32, margin =T)
 plot(GT[[1]])
 getData(gg[[1]])
 getData(gg)
