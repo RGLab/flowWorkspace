@@ -46,13 +46,13 @@ GT<-parseWorkspace(ws
                     ,name=4
 #					,execute=F
 #					,includeGates=T
-                    ,subset=2
+                    ,subset=1:2
 #					,subset=c("517614.fcs")
-#					,isNcdf=T
+					,isNcdf=T
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
-#                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
@@ -81,8 +81,22 @@ getPopStats(GT[[1]])[1:20,c(2:3)]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
 flowData(GT)[[1]]
+dev.off()
 x11()
-plotGate(GT[[1]],"4+",xbin=32, margin =T)
+#Rprof()
+#gh <- GT[1]
+plotGate(GT[[1]],xbin=32, margin =T)
+#plotGate(GT[[1]],3, xbin=32, margin =T)
+#xyplot(`FSC-H`~`FSC-A`
+#      ,getData(GT)[1]
+#      ,getGate(GT,3)[1]
+#      ,stats=T,smooth=F,xbin=32
+#      ,defaultCond= NULL
+#      )
+#Rprof(NULL)
+summaryRprof()
+
+
 plot(GT[[1]])
 getData(gg[[1]])
 getData(gg)
@@ -97,15 +111,15 @@ list.files(tmp2)
 
 gh<-GT[[1]]
 getParent(gh,5)
-getParent(gh,"CD3+")
+getParent(gh,"3+")
 getChildren(gh,5)
-getChildren(gh,"CD3+")
-getProp(gh,"CD3+")
-getTotal(gh,"CD3+")
-getGate(gh,"CD3+")
-length(which(getIndices(gh,"CD3+")))
+getChildren(gh,"3+")
+getProp(gh,"3+")
+getTotal(gh,"3+")
+getGate(gh,"3+")
+length(which(getIndices(gh,"3+")))
 x11()
-plotGate(gh,"CD3+")
+plotGate(gh,"3+")
 
 getData(GT)
 getSamples(GT)

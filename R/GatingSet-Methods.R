@@ -230,8 +230,43 @@ load_gs<-function(path){
         stop("multiple .rds files found in ",file)
       
       message("loading R object...")
-      gs<-readRDS(rds.file)
+      gs <- readRDS(rds.file)
       
+      #deal with legacy archive
+      if(class(gs) == "GatingSetInternal")
+      {
+        thisSet <- attr(gs,"set")
+        thisGuid <- attr(gs,"guid")
+        if(is.null(thisGuid))
+          thisGuid <- .uuid_gen()
+#        browser()
+        thisGH <- thisSet[[1]]
+        thisTree <- attr(thisGH, "tree")
+        thisPath <- dirname(attr(thisGH, "dataPath"))
+        thisData <- graph::nodeDataDefaults(thisTree)[["data"]]
+        fs <- thisData[["data"]][["ncfs"]]
+        
+        axis <- sapply(thisSet, function(gh){
+                            thisTree <- attr(thisGH, "tree")
+                            thisData <- graph::nodeDataDefaults(thisTree)[["data"]]
+#                            browser()
+                            thisSample <- attr(thisGH, "name")
+                            thisChnls <- colnames(fs@frames[[thisSample]])
+                            thisAxis <- thisData[["axis.labels"]]
+                            if(is.null(thisAxis))
+                              list()
+                            else{
+                              names(thisAxis) <- thisChnls
+                              thisAxis  
+                            }
+                            
+                          }, simplify = FALSE)
+                      
+        
+        gs <- new("GatingSet", flag = TRUE, FCSPath = thisPath, guid = thisGuid, axis = axis, data = fs)
+      }
+      
+#      browser()
       guid <- try(slot(gs,"guid"),silent=T)
       if(class(guid)=="try-error"){
         #generate the guid for the legacy archive
@@ -246,7 +281,7 @@ load_gs<-function(path){
       {
         if(length(nc.file)==0)
           stop(".nc file missing in ",file)
-        flowData(gs)@file<-nc.file
+        flowData(gs)@file <- nc.file
         
       }
       message("Done")

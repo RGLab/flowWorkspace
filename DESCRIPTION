@@ -42,7 +42,7 @@ Collate:
     'add-Methods.R'
     'setGate-Methods.R'
 Depends:
-    R (>= 2.16.0),Rcpp (>= 0.9.9),flowCore (>= 1.25.9),flowViz (>= 1.25.5),ncdfFlow(>= 2.7.09),gridExtra
+    R (>= 2.16.0),Rcpp (>= 0.9.9),flowCore (>= 1.25.9),flowViz (>= 1.25.5),ncdfFlow(>= 2.7.10),gridExtra
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
