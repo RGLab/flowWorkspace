@@ -147,8 +147,8 @@ setMethod("plot",c("GatingHierarchy","character"),function(x,y,...){
 #' @aliases show,GatingHierarchy
 #' @export 
 setMethod("show","GatingHierarchy",function(object){
-			cat("\tSample: ",getSample(object),"\n");
-			cat("\tGatingHierarchy with ",length(getNodes(object))," gates\n");
+			cat("Sample: ",getSample(object),"\n");
+			cat("GatingHierarchy with ",length(getNodes(object))," gates\n");
 			cat("\n")
 		})
 
@@ -840,8 +840,8 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 #			browser()
 			plotList<-.mergeGates(x,y,bool,merge)
 			plotObjs<-lapply(plotList,function(y){
-						
-						return(.plotGate(x,y,...))
+						#defaultCond is passed to flowViz::xyplot to disable lattice strip
+						return(.plotGate(x, y, defaultCond = NULL,...))
 					})
 #			browser()
 			if(arrange)			
@@ -937,171 +937,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 	do.call("expression", ss)
 }
 
-#' @param fitGate is used to disable behavior of plotting the gate region in 1d densityplot
-#' @param overlay is either the gate indices or logical vector(i.e. event indices)
-#' @importMethodsFrom flowViz xyplot densityplot
-.plotGate<-function(x,y,main=NULL,margin=FALSE,smooth=FALSE,xlab=NULL,ylab=NULL,fitGate=FALSE,type=c("xyplot","densityplot"),overlay=NULL, stats, ...){			
-#		browser()
-			type<- match.arg(type)
-			if(is.list(y))
-				pid<-y$parentId
-			else
-				pid<-getParent(x,y)
-		
-			if(is.null(main)){
-				fjName<-getNodes(x,pid,isPath=T)
-				main<-fjName
-			}
-			
-			if(is.list(y))
-			{
-				curGate<-filters(lapply(y$popIds,function(y)getGate(x,y)))	
-                if(missing(stats)){
-                  stats <-lapply(y$popIds,function(y){
-                              getProp(x,getNodes(x,y),flowJo = F)
-                              })
-                  }    
-			}else
-			{
-				curGate<-getGate(x,y)
-	
-				if(suppressWarnings(any(is.na(curGate)))){
-					message("Can't plot. There is no gate defined for node ",getNodes(x,y));
-					invisible();			
-					return(NULL)
-				}
-                if(missing(stats)){
-                  stats <- getProp(x,getNodes(x,y),flowJo = F)
-                      
-                }
-			}			
-			
-			
-			
-			#################################
-			# setup axis labels and scales
-			################################
-			if(class(curGate)=="booleanFilter")
-			{
-
-				if(!is.null(overlay))
-					stop("no overlay is supported for booleangate!In order to visualize multiple gates,try to add a new booleanGate first.")
-				params<-rev(parameters(getGate(x,getParent(x,y))))
-				overlay<-getIndices(x,y)
-				curGate<-NULL									
-				
-
-			}else
-			{
-				if(class(curGate)=="filters")
-					params<-rev(parameters(curGate[[1]]))
-				else
-					params<-rev(parameters(curGate))
-				
-			}
-	
-			
-			
-			if(type=="xyplot")
-			{
-
-				if(length(params)==1)
-				{
-					yParam<-"SSC-A"
-					
-					if(params=="SSC-A")
-						xParam<-"FSC-A"
-					else
-						xParam<-params
-					params<-c(yParam,xParam)
-				}else
-				{
-					yParam=params[1]
-					xParam=params[2]
-				}
-				#################################
-				# calcuate overlay frame
-				################################
-				if(!is.null(overlay))
-				{
-					#gate indices
-					if(class(overlay)=="numeric")
-					{
-						if(length(overlay)>1)
-							stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
-						overlay<-getData(x,overlay)[,params]
-					}else
-						overlay<-Subset(getData(x),overlay)[,params]
-				}
-            }else
-            {
-             
-              yParam <- NULL
-             
-            } 
-#           browser()
-           parentdata <- getData(x, pid, j = params)
-#           browser()
-           smooth<-ifelse(nrow(parentdata)<100,TRUE,smooth)
-           
-           axisObject<-.formatAxis(x,parentdata,xParam,yParam,...)
-           
-           if(is.null(xlab)){
-             xlab <- axisObject$xlab
-           }
-           f1<-mkformula(params)
-           
-            if(type=="xyplot")
-            {
-                #################################
-				# the actual plotting
-				################################
-                
-                if(is.null(ylab)){
-                  ylab <- axisObject$ylab
-                }
-			
-				res<-xyplot(x=f1
-							,data=parentdata
-							,filter=curGate
-							,xlab= xlab
-							,ylab=ylab
-							,margin=margin
-							,smooth=smooth
-							,scales=axisObject$scales
-							,main=main
-							,stats = stats
-							,overlay=overlay
-							,...
-						)
-			}else
-			{
-				if(length(params)==1)
-				{
-#					browser()
-            
-					res<-densityplot(x=f1
-									,data=parentdata
-									,filter=curGate
-									,xlab=xlab
-		    						,margin=margin
-									,main=main
-                                    ,stats=stats
-									,fitGate=fitGate
-									,...
-									)
-				}else
-					stop("Can't plot densityplot because there are two parameters associated with this gate!")
-			}
-
-		
-			
-		return(res)
-		
-				
-			
-			
-}
 #' @param x a gatingHierarchy
 #' @param data a flowFrame
 .formatAxis<-function(x,data,xParam,yParam,scales=list(),...){

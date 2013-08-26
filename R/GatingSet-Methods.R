@@ -787,7 +787,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 				
 				lapply(plotList,function(y){
 							
-							return(.plotGateGS(x,y,...))
+							return(.plotGate(x,y,...))
 						})
 				
 				
@@ -904,12 +904,16 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
 #' @param overlay either the gate indice list or event indices list
 #' @importMethodsFrom flowCore nrow parameters parameters<-
-.plotGateGS<-function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats , ...){
+#' @importMethodsFrom flowViz xyplot densityplot
+.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats , ...){
 
 	
 	type<- match.arg(type)
-	
-	gh<-x[[1]]
+    
+    #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
+    x <- as(x, "GatingSet")
+    gh <- x[[1]] 
+    
 	if(is.list(y))
 		pid<-y$parentId
 	else
@@ -934,13 +938,12 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     params <- c(yParam,xParam)
     stats <- parseRes$stats
     
-    #get data 
+        #get data 
     #subset on channels to speed up loading data from disk
-    parentdata<-getData(x,pid,j = params)
-    parentFrame<-parentdata[[1]]
-    
+    parentData <- getData(x,pid,j = params)
+    parentFrame <- parentData[[1]]      
     #set the smoothing option
-    smooth<-ifelse(nrow(parentFrame)<100,TRUE,smooth)
+    smooth <- as.logical(ifelse(nrow(parentFrame)<100,TRUE,smooth))
     
     
     axisObject<-.formatAxis(gh,parentFrame, xParam, yParam,...)
@@ -959,7 +962,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     }
 
     thisCall<-quote(plot(x=formula
-                          ,data=parentdata
+                          ,data=parentData
                           ,filter=curGates
                           ,xlab=xlab
                           ,scales=axisObject$scales
@@ -997,7 +1000,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		# the actual plotting
 		################################
 #        browser()
-        thisCall<-as.call(c(as.list(thisCall)
+        thisCall <- as.call(c(as.list(thisCall)
                             ,ylab=ylab
                             ,smooth=smooth
                             ,overlay=overlay
@@ -1110,10 +1113,7 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
             
       
     })    
-setMethod("show","GatingSet",function(object){
-			lapply(object, show)
-			
-		})
+
    
 #' Get a list of samples in a flowJo workspace or a GatingSet
 #' 
@@ -1272,10 +1272,10 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
             #subsetting data
 			fs <- flowData(clone)[i]
             #deep copying flowData(but still pointing to the same cdf)
-            if(isNcdf(clone))
-              fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
-            else
-              fs<-flowCore:::copyFlowSet(fs)
+#            if(isNcdf(clone))
+#              fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
+#            else
+#              fs<-flowCore:::copyFlowSet(fs)
             
             
             #update the data for clone            
@@ -1336,11 +1336,7 @@ setMethod("length","GatingSet",function(x){
     })
 
 setMethod("show","GatingSet",function(object){
-      cat("A GatingSet with ",length(object), " samples\n")
-      for(i in 1:length(object)){
-        cat(i,". ");
-        show(object[[i]])
-      }
+      cat("A GatingSet with",length(object), "samples\n")
     })
 
 

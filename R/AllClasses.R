@@ -166,7 +166,11 @@ setClass("GatingSet"
 #' @name GatingHierarchy-class
 #' @rdname GatingHierarchy-class
 #' @exportClass GatingHierarchy
-setClass("GatingHierarchy", contains = "GatingSet")
+setClass("GatingHierarchy"
+          , contains = "GatingSet"
+#          , representation(name = "character")
+#          , prototype(name = "")
+        )
 
 
 #' constructors for GatingSet
