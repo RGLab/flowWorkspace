@@ -222,7 +222,9 @@ setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats, level =1,...)
       do.call(cbind,res)
     })
-
+setMethod("length","GatingSetList",function(x){
+      length(getSamples(gslist));
+    })
 #' @rdname save_gs
 #' @export
 save_gslist<-function(gslist,path,...){

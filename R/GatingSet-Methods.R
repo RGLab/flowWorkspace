@@ -843,6 +843,88 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       plotGate(x,ind,...)
     })
 
+##recursively parsing conditional variables
+.parseCond<-function(cond){
+#			browser()
+  groupBy<-NULL
+  if(length(cond)==1)
+    groupBy<-as.character(cond)
+  else
+  {
+    for(i in 1:length(cond))
+    {
+      curCond<-cond[[i]]
+#				browser()
+      if(length(curCond)==3)
+      {
+        res<-.parseCond(curCond)
+        groupBy<-c(res,groupBy)
+      }else
+      {
+        curCond<-as.character(curCond)
+        if(!curCond%in%c(":","*","+"))
+          groupBy<-c(groupBy,curCond)	
+      }
+      
+    }	
+  }
+  
+  groupBy
+}
+# naive formula parser to extract basic compenents (like x,y,groupBy)
+.formulaParser <- function(formula)
+{
+#	browser()
+  
+  #parse the b term
+  bTerm<-formula[[3]]
+  cond<-NULL
+  if(length(bTerm)>2)
+  {
+    xTerm<-bTerm[[2]]
+    cond<-bTerm[[3]]
+  }else
+  {
+    xTerm<-bTerm
+  }
+#	browser()
+  ##parse the conditional variable
+  if(!is.null(cond))
+  {
+    groupBy<-.parseCond(cond)
+    
+  }else
+  {
+    groupBy<-NULL
+  }
+  
+  #parse the xterm
+  xfunc<-NULL
+  if(length(xTerm)==2)
+  {
+    xfunc<-xTerm[[1]]
+    xTerm<-xTerm[[2]]
+  }else
+  {
+    if(length(xTerm)>=3)
+      stop("not supported formula!")
+  }
+  
+  
+  yTerm<-formula[[2]]
+  yfunc<-NULL
+  if(length(yTerm)==2)
+  {
+    yfunc<-yTerm[[1]]
+    yTerm<-yTerm[[2]]
+  }else
+  {
+    if(length(yTerm)>=3)
+      stop("not supported formula!")
+  }
+  
+  list(xTerm=xTerm,yTerm=yTerm,xfunc=xfunc,yfunc=yfunc,groupBy=groupBy)
+}
 #' preporcess the gating tree to prepare for the plotGate
 #' 
 #' @param x a \code{GatingSet}
@@ -912,15 +994,19 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     {
       if(is.null(formula)){
         yParam <- "SSC-A"
+
+        if(params=="SSC-A" && yParam == "SSC-A")
+          xParam<-"FSC-A"
+        else
+          xParam <- params
+        
       }else{
-        yParam <- flowViz:::expr2char(formula[[2]])
+        forRes <- .formulaParser(formula)
+        yParam <- as.character(forRes[["yTerm"]])
+        xParam <- as.character(forRes[["xTerm"]])
+        
       }
       
-      
-      if(params=="SSC-A" && yParam == "SSC-A")
-        xParam<-"FSC-A"
-      else
-        xParam<-params
 
     }else
     {
