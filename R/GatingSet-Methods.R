@@ -461,7 +461,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies<-function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
 	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -683,7 +683,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' 
 #' @return 
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
-.transformRange<-function(G,sampleName, wsversion,frmEnv, timeRange = NULL){
+.transformRange <- function(G,sampleName, wsversion,frmEnv, timeRange = NULL){
 #  browser()
     
      cal<-.getTransformations(G@pointer, sampleName)
@@ -693,7 +693,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #	frmEnv<-dataenv$data$ncfs@frames
 	rawRange<-range(get(sampleName,frmEnv))
 	tempenv<-new.env()
-	assign("axis.labels",vector(mode="list",ncol(rawRange)),envir=tempenv);
+	assign("axis.labels",list(),envir=tempenv);
     
     cal_names <-trimWhiteSpace(names(cal))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
@@ -754,7 +754,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 					
 				}
 			})
-#	copyEnv(tempenv,dataenv);
 	
 #	browser()		
 	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))

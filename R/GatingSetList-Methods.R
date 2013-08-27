@@ -29,6 +29,7 @@ setMethod("rbind2",
         G@pointer <- pointer
         G@guid <- .uuid_gen()
         G@flag <- TRUE
+        G@axis <- unlist(lapply(x,slot,"axis",level = 1),recursive = FALSE)
         #combine R objects
         
         flowData(G) <- fs

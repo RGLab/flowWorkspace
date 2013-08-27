@@ -51,8 +51,8 @@ GT<-parseWorkspace(ws
 					,isNcdf=T
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
-                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
@@ -188,7 +188,7 @@ plotGate_labkey(GT,7,x="SSC-A" ,y="<G560-A>")
 dev.off()
 CairoX11()
 plotGate(GT[[1]],6,xbin=64)
-plotGate(G[[1]],2:4,xbins=128)
+plotGate(GT[[1]],2:4,xbins=128)
 
 
 nodelist<-getNodes(G[[curSample]])
@@ -202,7 +202,7 @@ getBoundaries(gh_template,nodelist[2])
 head(getPopStats(G))
 head(getPopStats(GT,flowJo=T))
 
-ncFlowSet(G)
+flowData(GT)
 #Rprof(NULL)	
 #summaryRprof()$by.total[1:20,]
 
@@ -240,17 +240,17 @@ dev.off()
 #############
 ##accessors
 
-length(G)
-getSamples(G)
+length(GT)
+getSamples(GT)
 
 
-gh<-G[[1]]
+gh<-GT[[1]]
 gh
 
 getSample(gh)
 nodelist<-getNodes(gh)
 nodelist
-getNodes(gh,tsort=T)
+getNodes(gh)
 getNodes(gh,isPath=T)
 getParent(gh,3)
 getParent(gh,nodelist[2])
@@ -267,55 +267,33 @@ getTotal(G[[1]],nodelist[2],flowJo=F)
 .getPopStat(G[[1]],2)
 getPopStats(G[[2]])[,2:3]
 
-##split into groups
-
-pData(G)<-data.frame(sample=getSamples(G))
-G_list<-flowWorkspace:::splitGatingSetByNgates(G)
-
-lapply(G_list,getPopStats,flowJo=T)
-getPopStats(G,flowJo=F)
-
 
 ###gates
-getGate(G[[2]],getNodes(G[[2]])[8])
-getGate(G1[[2]],getNodes(G1[[2]])[8])
+getGate(GT[[2]],getNodes(GT[[2]])[8])
 
-getIndices(G[[1]],nodelist[3])
-getDimensions(G[[1]],nodelist[2])
 
-getBoundaries(G[[2]],getNodes(G[[2]])[8])
-getBoundaries(G1[[2]],getNodes(G1[[2]])[8])
+getIndices(GT[[1]],nodelist[3])
 
-getData(G[[1]])
+getData(GT[[1]])
 
 ####comp and trans
-cal<-getTransformations(G[[1]])
-comp<-getCompensationMatrices(G[[1]])
-
-
-
-getAxisLabels(G[[1]])
-getAxisLabels(G1[[1]])
+getTransformations(GT[[1]])
+getCompensationMatrices(GT[[1]])
 
 
 ###############################
 # clone and subsetting and rbind
 ################################
-archive(GT,file="tmp.tar")
-GT<-unarchive(file="tmp.tar")
+
 G1<-clone(GT[1])
 G2<-clone(GT[2])
-G<-rbind2(G1,G2)
-G4<-clone(GT[4])
-gslist<-GatingSetList(list(G1,G2,G4))
+gslist<-GatingSetList(list(G1,G2))
 G<-rbind2(gslist)
-ncFlowSet(G)
+flowData(G)
 plotGate(G,7,lattice=T,xbin=64)
 G5<-clone(G)
-ncFlowSet(G5)
+flowData(G5)
 plotGate(G5,7,lattice=T,xbin=64)
-archive(G5,file="tmp1.tar")
-G5<-unarchive(file="tmp1.tar")
 #############################################
 #QUALIFIER
 ########################################
@@ -324,89 +302,3 @@ saveToDB(db,G)
 getQAStats(db,isFlowCore=F)
 
 
-############################################################################### 
-#R parser
-###############################################################################
-
-ws<-openWorkspace(macXML)
-time1<-Sys.time()
-#for(i in 2:3)
-
-G1<-parseWorkspace(ws,name=2,execute=T,requiregates=F
-					,isNcdf=T
-					,subset=1:100
-					,useInternal=F,dMode=0)
-print(Sys.time()-time1)
-d
-
-G1
-
-##generate file for c++ debugging
-nc1<-ncFlowSet(G1)
-nc1[[1]]
-#nc2<-clone.ncdfFlowSet(nc1,fileName="output/test.nc",isEmpty=FALSE)
-#nc2[[1]]
-write(file="../output/colnames.txt",colnames(nc1))
-
-length(G1)
-gh1<-G1[[2]]
-gh1
-getSample(gh1)
-getNodes(gh1)
-getParent(gh1,3)
-getParent(gh1,"96.Lymph")
-getChildren(gh1,"96.Lymph")
-
-head(getPopStats(gh1))
-getProp(gh1,"96.Lymph")
-getTotal(gh1,"96.Lymph")
-
-plot(gh1)
-
-pData(G1)<-data.frame(sample=getSamples(G1))
-splitGatingSetByNgates(G1)
-
-###gating
-getData(G1[[1]],5)
-
-getGate(G1[[2]],4)
-getGate(G[[1]],4)
-plotGate(G1[[1]],5)
-
-##############
-#verify stats
-#############
-all(sort(rownames(getPopStats(gh)))==sort(rownames(getPopStats(gh1))))
-all(getPopStats(gh)[sort(rownames(getPopStats(gh))),c("flowJo.count","parent.total")]==getPopStats(gh1)[sort(rownames(getPopStats(gh1))),c("flowJo.count","parent.total")])
-
-
-vv1<-scan("/home/wjiang2/rglab/workspace/logicle/out.txt")
-hist(ff(uv$v))
-plot(ff(uv$v))
-ff<-splinefun(y=compCal,x=0:4096,method="natural")
-
-biexp  <- biexponentialTransform("myTransform")
-vv2<-biexp(as.numeric(0:256))
-
-vv3<-exprs(GvHD[[1]])[,3]
-plot(vv3)
-
-(biexp(vv3))
-setwd("/home/wjiang2/rglab/workspace/flowWorkspace/")
-
-compCal<-scan("output/cpp/compCalTbl.txt")
-head(compCal)
-
-
-hist(vv)
-biexponentialTransform( a=.5, b=1, c=.5, d=1, f=0, w=0,
-		tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
-    
-pattern <- "\\+/TNFa\\+$"
-pops[matchNode(pattern
-                , pops
-                , fixed = F
-                , isTerminal = T
-                , fullString = T
-              )
-          ]
