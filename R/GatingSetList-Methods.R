@@ -148,7 +148,7 @@ setMethod("getData",c(obj="GatingSetList",y="missing"),function(obj,y,...){
       stop("node index 'y' is missing!")
     })
 #
-setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,...){
+setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,max=30,...){
 
       if(length(getSamples(obj))>max){
         stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
@@ -166,7 +166,7 @@ setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,..
       
       fs
     })
-setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30, ...){
+setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y,  ...){
 
       getData(obj,.getNodeInd(obj[[1]],y),...)
       
