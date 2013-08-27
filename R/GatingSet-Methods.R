@@ -949,7 +949,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	type<- match.arg(type)
     
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
-    x <- as(x, "GatingSet")
+    if(class(x) == "GatingHierarchy")  
+      x <- as(x, "GatingSet")
     gh <- x[[1]] 
     
 	if(is.list(y))
