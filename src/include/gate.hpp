@@ -170,7 +170,7 @@ protected:
 	bool isGained;
 private:
 	template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
+			void save(Archive &ar, const unsigned int version) const
 			{
 
 				ar & BOOST_SERIALIZATION_NVP(neg);
@@ -179,6 +179,20 @@ private:
 					ar & BOOST_SERIALIZATION_NVP(isGained);
 
 			}
+	template<class Archive>
+			void load(Archive &ar, const unsigned int version)
+			{
+
+				ar & BOOST_SERIALIZATION_NVP(neg);
+				ar & BOOST_SERIALIZATION_NVP(isTransformed);
+				if(version>0)
+					ar & BOOST_SERIALIZATION_NVP(isGained);
+				else{
+					isGained = false;
+				}
+
+			}
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	/*
 	 * exact string returned by std::type_info::name() is compiler-dependent

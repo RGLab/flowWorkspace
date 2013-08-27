@@ -56,12 +56,14 @@ struct OurVertexPropertyWriterR {
     void operator() (std::ostream &out, Vertex u) {
     	nodeProperties *curNode=g[u];
     	bool isBoolGate=false;
+    	bool hidden = false;
     	if(!u==0)
     	{
     		unsigned short gateType=curNode->getGate()->getType();
     		isBoolGate=(gateType==BOOLGATE);
+    		hidden=curNode->getHiddenFlag();
     	}
-    	out<<"[shape=record,label=\""<<curNode->getName()<<"\",isBool="<<isBoolGate<<"]";
+    	out<<"[shape=record,label=\""<<curNode->getName()<<"\",isBool="<<isBoolGate<<",hidden="<<hidden<<"]";
 
 
     }
@@ -177,7 +179,7 @@ public:
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
-	vector<string> getPopNames(unsigned short order,bool isPath);
+	vector<string> getPopNames(unsigned short order,bool isPath,bool showHidden);
 	VertexID getAncestor(VertexID u,unsigned short level);
 	EdgeID getInEdges(VertexID target);
 	VertexID getParent(VertexID);

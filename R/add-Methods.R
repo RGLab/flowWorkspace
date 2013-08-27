@@ -167,7 +167,7 @@ setMethod("add",
     
 #	browser()
 	##get node ID
-	nodes<-getNodes(gh)
+	
 	if(is.null(parent))
 		pid<-1
 	else
@@ -286,7 +286,8 @@ setMethod("Rm",
 			childrenNodeIds <- getChildren(envir,nid)
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion
-            childrenPaths <- getNodes(envir, isPath = TRUE)[childrenNodeIds]
+            childrenPaths <- getNodes(envir, showHidden = TRUE, isPath = TRUE)[childrenNodeIds]
+            
 #            #strip the first slash
 #            childrenPaths <- sapply(childrenPaths,function(thisPath)substr(thisPath,2,nchar(thisPath)),USE.NAMES=F)
 			lapply(childrenPaths,function(child)Rm(child,envir))

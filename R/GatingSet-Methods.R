@@ -808,8 +808,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' 
 #' @rdname plotGate-methods
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
-#			browser()
-			y<-2:length(getNodes(x[[1]]))
+
+			
+            y <- getNodes(x[[1]])
+            y <- setdiff(y,"root")
+            
 			plotGate(x,y,...)
 			
 		})
@@ -863,10 +866,11 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     curGates<-as(curGates,"filtersList")
     
     if(missing(stats)){
+      
       stats <- sapply(samples,function(thisSample){
-            lapply(y$popIds,function(y){
+            lapply(y$popIds,function(thisY){
                   curGh <- x[[thisSample]]
-                  getProp(curGh,getNodes(curGh,y),flowJo = F)
+                  getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],flowJo = F)
                 })
           },simplify = FALSE)  
     }    
@@ -876,14 +880,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     curGates<-getGate(x,y)
     
     if(suppressWarnings(any(is.na(curGates)))){
-      message("Can't plot. There is no gate defined for node ",getNodes(gh,y));
+      message("Can't plot. There is no gate defined for node ",getNodes(gh,,showHidden=TRUE)[y]);
       invisible();            
       return(NULL)
     }
     if(missing(stats)){
       stats <- sapply(samples,function(thisSample){
             curGh <- x[[thisSample]]
-            getProp(curGh,getNodes(curGh,y),flowJo = F)
+            getProp(curGh,getNodes(curGh,showHidden=TRUE)[y],flowJo = F)
           },simplify = FALSE) 
     }else
       stats = stats
@@ -956,7 +960,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	
     #set the title  
 	if(is.null(main)){
-		fjName<-getNodes(gh,pid,isPath=T)
+        fjName<-getNodes(gh,isPath=T,showHidden = TRUE)[pid]
 		main<-fjName
 	}
 	
@@ -1191,24 +1195,23 @@ setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y,tsort=
     })
 setMethod("getData",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE, ...){
       
-      this_node <- getNodes(obj[[1]])[y]
-      getData(obj,this_node, ...)
+      this_data <- getData(obj, ...)                        
+      if(y == 0){
+        this_data  
+      }else{
+        #subset by indices
+        indices<-lapply(obj,getIndices,y)
+        this_data <- Subset(this_data,indices)
+        
+        this_data	
+      }
       
     })
 
 #' @importMethodsFrom flowCore Subset
 setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE, ...){
 			
-            this_data <- getData(obj, ...)                        
-            if(y == "root"){
-              this_data  
-            }else{
-				#subset by indices
-				indices<-lapply(obj,getIndices,y)
-                this_data <- Subset(this_data,indices)
-               
-                this_data	
-			}
+      getData(obj,.getNodeInd(obj[[1]],y), ...)
 			
 		})
 
@@ -1340,6 +1343,9 @@ setMethod("setNode"
     ,function(x,y,value,...){
       setNode(x,.getNodeInd(x[[1]],y),value)
     })
+
+
+
 
 #' @description \code{[[} extract a \code{GatingHierarchy} object from a \code{GatingSet} or \code{GatingSetList}
 #' 

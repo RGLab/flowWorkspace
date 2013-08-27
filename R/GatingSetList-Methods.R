@@ -149,16 +149,11 @@ setMethod("getData",c(obj="GatingSetList",y="missing"),function(obj,y,...){
     })
 #
 setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,...){
-#      browser()
-      this_node <- getNodes(obj[[1]])[y]
-      getData(obj,this_node,...)
-    })
-setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30, ...){
-#      browser()
+
       if(length(getSamples(obj))>max){
         stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
       }
-    
+      
       res <- lapply(obj,function(gs){
             ncfs <- getData(gs,y, ...)
             as.flowSet(ncfs)
@@ -170,6 +165,11 @@ setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30
       }
       
       fs
+    })
+setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y, max=30, ...){
+
+      getData(obj,.getNodeInd(obj[[1]],y),...)
+      
     })
 
 setMethod("pData","GatingSetList",function(object){
@@ -195,13 +195,15 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
     })
 
 setMethod("getGate",signature(obj="GatingSetList",y="numeric"),function(obj,y,tsort=FALSE){
-      getGate(obj,getNodes(obj[[1]])[y])
-    })
-setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,tsort=FALSE){
       res <- lapply(obj,function(gs){
             getGate(gs,y)      
           }, level =1)
       unlist(res,recur=FALSE)
+    })
+setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,tsort=FALSE){
+      
+      getGate(obj,.getNodeInd(obj[[1]],y))
+      
       
     })
 

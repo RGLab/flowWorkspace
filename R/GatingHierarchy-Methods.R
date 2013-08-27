@@ -18,7 +18,7 @@ NULL
 
 #' @importMethodsFrom graph nodeData removeNode
 #' @importMethodsFrom Rgraphviz renderGraph
-.plotGatingTree<-function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE){
+.plotGatingTree<-function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
 #  browser()
   ##remove bool gates if necessary
   if(!boolean)
@@ -30,14 +30,37 @@ NULL
         g <- removeNode(names(nodes[i]), g)
     }
   }
+    #filter out hidden node
+    if(!showHidden)
+    {
+        nodes<-nodeData(g,attr="hidden")
+        for(i in 1:length(nodes))
+          {
+              if(as.logical(as.integer(nodes[[i]])))
+                  g <- removeNode(names(nodes[i]), g)
+            }
+      }
+  
   nAttrs <- list()
-  nAttrs$label<-unlist(nodeData(g,attr="label"))
+  
+  nAttrs$label <- unlist(nodeData(g,attr="label"))
+  nAttrs$fillcolor <- sapply(nodeData(g,attr="hidden")
+                                ,function(thisHidden)
+                              {
+                                  ifelse(as.logical(as.integer(thisHidden)),"white","gray")
+                                })
+    #somehow lty doesn't work in nodeAttrs
+      #  nAttrs$lty <- sapply(nodeData(g,attr="hidden")
+      #      ,function(thisHidden)
+      #      {
+      #        ifelse(as.logical(as.integer(thisHidden)),"dotted","solid")
+      #      })    
 #           browser()
   options("warn"=-1)
   lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
       ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
           ,node=list(fixedsize=FALSE
-              ,fillcolor="gray"
+#              ,fillcolor="gray"
               ,fontsize=fontsize
               ,shape="ellipse"
           )
@@ -211,7 +234,7 @@ setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
 #' getNodes-methods
 #' getNodes,GatingHierarchy-method
 #' @importFrom BiocGenerics duplicated
-setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,...){
+setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,showHidden = FALSE,...){
 
 			orderInd<-match(order,c("regular","tsort","bfs"))
 			if(length(orderInd)==0)
@@ -219,7 +242,7 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=
 			else
 				orderInd<-orderInd-1
 			
-			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath)
+			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath,showHidden)
 
 			#try to remove ID prefix from node name without causing name duplication
             if(!isPath){
@@ -239,21 +262,10 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=
 			
 			
 			if(!is.null(y))
-			{
-				if(is.character(y))
-					ind<-match(y,nodeNames)
-				else
-					ind<-y
-				if(is.na(ind))
-					stop("Node:", y," not found!")
-				
-				res<-nodeNames[ind]
-				if(is.na(res)||length(res)==0)
-					stop("Node:", y," not found!")
-				res
+			  stop("'y' argument is not supported!")
 
-			}else
-					nodeNames
+			
+			nodeNames
 		})
 
 
@@ -294,12 +306,12 @@ setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(ob
 #			browser()
 			ind<-.getNodeInd(obj,y)
 			pind<-getParent(obj,ind)
-			getNodes(obj)[pind]
+			getNodes(obj, showHidden = TRUE)[pind]
 		})
 setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE){
 			ind<-.getNodeInd(obj,y)
 			cind<-getChildren(obj,ind)
-			getNodes(obj)[cind]
+			getNodes(obj, showHidden = TRUE)[cind]
 })
 setMethod("getChildren",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
 #			browser()
@@ -334,14 +346,10 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 
 .getPopStat<-function(x,y){
 	stopifnot(!missing(y))
-	nodes<-getNodes(x)
+	
 	if(is.character(y))
-	{
-		y<-which(nodes%in%y)
-		
-
-	}
-#	browser()
+      stop("y has to be numeric!")
+    
 	stats<-.Call("R_getPopStats",x@pointer,getSample(x),as.integer(y)-1)
 	
 	pInd<-try(.Call("R_getParent", x@pointer, getSample(x), as.integer(y) -1),silent=T)
@@ -372,16 +380,15 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			
-#			stopifnot(!missing(y)&&(is.numeric(y)||is.integer(y)))
-			nodeNamesPath<-getNodes(x,isPath=T)
-			nodeNames<-getNodes(x)
-			nNodes<-length(nodeNames)
-
-			stats<-lapply(1:nNodes,function(ind){
-						
+        nodeNamesPath<-getNodes(x,isPath=T,...)
+       nodeNames<-getNodes(x,...)
+                           
+          
+       stats<-mapply(nodeNames,nodeNamesPath,FUN = function(thisName,thisPath){
+                       ind <- .getNodeInd(x,thisName)
+                
 						curStats<-.getPopStat(x,ind)
-#						browser()
-						curRes<-c(nodeNamesPath[ind]
+                        curRes<-c(thisPath
 									,curStats$flowCore["proportion"]
 									,curStats$flowJo["count"]
 									,curStats$flowCore["count"]
@@ -390,12 +397,9 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 									)
 						
 						curRes			
-						})
+                      },SIMPLIFY = FALSE)
 #			browser()
 			m<-do.call("rbind",stats)
-			
-			
-			###Fix for root node. Should be fixed in addDataToGatingHierarchy
 
 			rownames(m)<-NULL;
 			
@@ -408,8 +412,6 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 
 			m[1,c(2)]<-1;
-#			m[1,5]<-m[1,4]
-#			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","parent.total","node")
 			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","flowJo.freq","node")
 			rownames(m)<-m[,1]
 			m<-m[,2:6]
@@ -467,7 +469,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 			{
 
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
-				filterId<-getNodes(obj)[y]
+				filterId<-getNodes(obj, showHidden = TRUE)[y]
 				if(g$type==1)
 				{
 					
@@ -481,26 +483,21 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=filterId)
 				else if(g$type==3)
 				{
-					nodeNames<-getNodes(obj)
-					nodePaths<-getNodes(obj,isPath=T)
+					
 					refPaths<-unlist(lapply(g$ref,function(curPath){
 										paste(curPath,collapse="/")
 										
 									})
 								)
-					fullPaths<-paste("/",refPaths,sep="")
-					nodes<-nodeNames[match(fullPaths,nodePaths)]
-					names(nodes)<-refPaths
+					
                     #get rid of the first op
                     g$v2[1] <- "" 
                     boolExpr <- paste(g$v2, g$v,refPaths,sep="")
                     boolExpr <- paste(boolExpr,collapse="")
 #                   browser()
                     boolExpr <- as.symbol(boolExpr)
-#                    boolExpr <- deparse(boolExpr)
+
                     g <- eval(substitute(booleanFilter(xx),list(xx=boolExpr)))
-#					g$ref<-nodes
-#					attr(g,"class")<-"BooleanGate"	
 					g
 				}else
 					stop("not supported gate type",g$type)
@@ -520,7 +517,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
     ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
     ind <- ind + 1 # convert to R index
   }else{
-    allNodes <- getNodes(obj)
+    allNodes <- getNodes(obj,showHidden = TRUE,...)
     ind<-match(y,allNodes)#strict string match  
     if(is.na(ind)||length(ind)==0){
         stop("Node:", y," not found!")
@@ -627,22 +624,18 @@ setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y,
     })
 
 setMethod("getData",signature(obj="GatingHierarchy",y="numeric"),function(obj,y, ...){
-            
-            this_node <- getNodes(obj)[y]
-            getData(obj,this_node, ...)
-			
-		})
+        this_data <- getData(obj, ...)                        
+        if(y == 0){
+          return (this_data)  
+        }else{
+          this_indice <- getIndices(obj,y)
+          return (this_data[this_indice,])
+        }
+})
     
 setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
       
-      
-      this_data <- getData(obj, ...)                        
-      if(y == "root"){
-        return (this_data)  
-      }else{
-        this_indice <- getIndices(obj,y)
-        return (this_data[this_indice,])
-      }
+      getData(obj,.getNodeInd(obj,y), ...)
       
     })
 
@@ -824,9 +817,10 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,.
 			
 })
 setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
-#			browser()
-		y<-2:length(getNodes(x))
-		
+	
+        y <- getNodes(x)
+        y <- setdiff(y,"root")
+        
 		plotGate(x,y,...)
 		})
 #' @importFrom gridExtra grid.arrange   
@@ -1014,6 +1008,26 @@ setMethod("setNode"
       setNode(x,.getNodeInd(x,y),value)
     })
 
+#' hide/unhide a node
+#' 
+#' @param x \code{GatingHierarchy} object
+#' @param y \code{numeric} node index
+#' @param value \code{logical} whether to hide a node
+#' @examples 
+#' setNode(gh, 4, FALSE) # hide a node
+#' setNode(gh, 4, TRUE) # unhide a node
+#' @export 
+setMethod("setNode"
+    ,signature(x="GatingHierarchy",y="numeric",value="logical")
+    ,function(x,y,value,...){
+      hidden = !value
+      .Call("R_setNodeFlag",x@pointer,getSample(x),as.integer(y-1),hidden)
+    })
+setMethod("setNode"
+    ,signature(x="GatingHierarchy",y="character",value="logical")
+    ,function(x,y,value,...){
+      setNode(x,.getNodeInd(x,y),value)
+    })
 
 #' Get the sample name associated with a GatingHierarchy
 #' 

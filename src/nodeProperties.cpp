@@ -8,7 +8,8 @@
 #include <algorithm>
 nodeProperties::nodeProperties(){
 	thisGate=NULL;
-
+	hidden=false;
+	dMode=0;
 }
 
 /*
@@ -55,6 +56,12 @@ void nodeProperties::setName(const char * popName){
 		throw(domain_error("pop name contains '/' character!"));
 	}
 	thisName=popName;
+}
+void nodeProperties::setHiddenFlag(bool _value){
+	hidden=_value;
+}
+bool nodeProperties::getHiddenFlag(){
+	return (hidden);
 }
 
 void nodeProperties::setGate(gate *gate){

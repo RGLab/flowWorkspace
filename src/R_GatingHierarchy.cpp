@@ -45,7 +45,7 @@ END_RCPP
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath){
+RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath, SEXP _showHidden){
 BEGIN_RCPP
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
@@ -55,8 +55,9 @@ BEGIN_RCPP
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	unsigned short order=as<unsigned short>(_order);
 	bool isPath=as<bool>(_isPath);
+	bool showHidden=as<bool>(_showHidden);
 
-	return wrap(gh->getPopNames(order,isPath));
+	return wrap(gh->getPopNames(order,isPath,showHidden));
 END_RCPP
 }
 
@@ -622,4 +623,22 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_setNodeFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID, SEXP _hidden) {
+BEGIN_RCPP
+
+
+		GatingSet *	gs=getGsPtr(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		bool hidden=as<bool>(_hidden);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+
+		unsigned nodeID=as<unsigned>(_nodeID);
+
+		nodeProperties *node=gh->getNodeProperty(nodeID);
+		node->setHiddenFlag(hidden);
+
+
+END_RCPP
+}
 

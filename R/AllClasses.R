@@ -373,7 +373,7 @@ setValidity("GatingSetList", validGatingSetListObject)
 
 
 .flattenedGatingHiearchy<-function(gh){
-  this_nodes <- getNodes(gh,isPath=T)
+  this_nodes <- getNodes(gh,isPath=T, showHidden = TRUE)
   paste(this_nodes,collapse = "")
 }        
 #TODO:gating tree comparison needs to be improved        

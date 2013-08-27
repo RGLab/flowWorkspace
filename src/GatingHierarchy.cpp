@@ -792,15 +792,19 @@ VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
  * isPath flag indicates whether append the ancestor node names
  * the assumption is each node only has one parent
  */
-vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath){
+vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath,bool showHidden){
 
 	VertexID_vec vertices=getVertices(order);
 	vector<string> res;
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
+		nodeProperties * np = getNodeProperty(u);
 
-		string nodeName=getNodeProperty(u)->getName();
+		if(!showHidden&&np->getHiddenFlag())
+			continue;
+
+		string nodeName=np->getName();
 
 
 
