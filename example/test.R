@@ -297,8 +297,10 @@ plotGate(G5,7,lattice=T,xbin=64)
 #############################################
 #QUALIFIER
 ########################################
+library(QUALIFIER)
 db<-new.env()
 saveToDB(db,G)
 getQAStats(db,isFlowCore=F)
-
+dt <- getQAStats(GT[[1]],isChannel=T)
+dt[10:30,]
 
