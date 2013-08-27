@@ -659,6 +659,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             kw <- keyword(data)
             if(as.numeric(kw[["FCSversion"]])>=3){
               kw_gains <- kw[key_names]
+              
+              # For keywords where the gain is not set, the gain is NULL.
+              # We replace these instances with the default of 1.
+              kw_gains[sapply(kw_gains, is.null)] <- 1
+              
               gains <- as.numeric(kw_gains)                      
             }else{
               gains <- rep(1,length(paramIDs))
