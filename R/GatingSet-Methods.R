@@ -1392,7 +1392,7 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
             
             #copy the R structure          
             clone <- x
-            
+            clone@axis <- clone@axis[i] 
             #subsetting data
 			fs <- flowData(clone)[i]
             #deep copying flowData(but still pointing to the same cdf)
