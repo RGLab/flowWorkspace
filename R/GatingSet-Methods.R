@@ -1029,7 +1029,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param overlay either the gate indice list or event indices list
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
-.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stats , ...){
+.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stack = FALSE, stats , ...){
 
 	
 	type<- match.arg(type)
@@ -1139,7 +1139,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		{
             
           thisCall<-as.call(c(as.list(thisCall)
-                              ,fitGate=fitGate
+                               , fitGate = fitGate
+                               , stack = stack
                               )
                            )
           thisCall[[1]]<-quote(densityplot) 	
