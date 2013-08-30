@@ -1023,6 +1023,22 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   
   list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats)
 }
+
+.getOverlay <- function(x, overlay, params){
+  if(!is.null(overlay))
+  {
+    #gate indices
+    if(class(overlay)=="logical")
+      overlay<-Subset(getData(x),overlay)[,params]
+    else{
+      if(length(overlay)>1)
+        stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
+      overlay<-getData(x,overlay)[,params]
+    }
+
+  }
+  overlay
+}
 #' the actual plotGate engine
 #' 
 #' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
@@ -1105,17 +1121,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		#################################
 		# calcuate overlay frames
 		################################
-		if(!is.null(overlay))
-		{
-			#gate indices
-			if(class(overlay)=="numeric")
-			{
-				if(length(overlay)>1)
-					stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
-				overlay<-getData(x,overlay)[,params]
-			}else
-				overlay<-Subset(getData(x),overlay)[,params]
-		}
+        overlay <- .getOverlay(x, overlay, params)
 		
         
         if(is.null(ylab)){
