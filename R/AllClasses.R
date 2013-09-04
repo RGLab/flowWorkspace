@@ -114,9 +114,6 @@ setClass("flowJoWorkspace"
 #' rbind2,GatingSet,GatingSet-method
 #' GatingSet
 #' GatingSet,flowSet-method
-#' GatingSet,flowSet,ANY-method
-#' GatingSet,character,character-method
-#' GatingSet,GatingHierarchy,character-method
 #' show,GatingSet-method
 #' show,GatingHierarchy-method
 setClass("GatingSet"

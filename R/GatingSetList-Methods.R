@@ -210,12 +210,12 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,
 
 
 setMethod("plotGate",signature(x="GatingSetList",y="numeric"),function(x,y, ...){
-      selectMethod("plotGate",sig=c(x="GatingSet",y="numeric"))(x=x, y=y, ...)
+      selectMethod("plotGate",signature = c(x="GatingSet",y="numeric"))(x=x, y=y, ...)
       
     })
 
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
-      selectMethod("plotGate",sig=c(x="GatingSet",y="character"))(x=x, y=y, ...)
+      selectMethod("plotGate",signature = c(x="GatingSet",y="character"))(x=x, y=y, ...)
     })
 
 setMethod("getPopStats","GatingSetList",function(x,...){
@@ -223,7 +223,7 @@ setMethod("getPopStats","GatingSetList",function(x,...){
       do.call(cbind,res)
     })
 setMethod("length","GatingSetList",function(x){
-      length(getSamples(gslist));
+      length(getSamples(x));
     })
 #' @rdname save_gs
 #' @export
@@ -262,7 +262,7 @@ load_gslist<-function(path){
   path <- normalizePath(path,mustWork = TRUE)
   if(!file.exists(path))
     stop(path,"' not found!")
-  dirs<-list.dirs(path,full=TRUE, recursive = FALSE)
+  dirs<-list.dirs(path,full.names = TRUE, recursive = FALSE)
 #   browser()
   res <- lapply(dirs,function(this_dir){
 #        browser()

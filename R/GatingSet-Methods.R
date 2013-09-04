@@ -413,7 +413,7 @@ unarchive<-function(file,path=tempdir()){
 #' 
 #' @rdname GatingSet-methods
 #' @aliases
-#' GatingSet,GatingHierarchy,character-method
+#' GatingHierarchy,character-method
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE, dMode=1, ...){
 			
 			samples <- y
@@ -961,7 +961,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     curGates<-getGate(x,y)
     
     if(suppressWarnings(any(is.na(curGates)))){
-      message("Can't plot. There is no gate defined for node ",getNodes(gh,,showHidden=TRUE)[y]);
+      message("Can't plot. There is no gate defined for node ",getNodes(x[[1]],,showHidden=TRUE)[y]);
       invisible();            
       return(NULL)
     }

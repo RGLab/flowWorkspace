@@ -10,10 +10,6 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' @export
 setGeneric("summary",function(object,...)standardGeneric("summary"))
 
-
-#' @export
-setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))
-
 #' @export
 setGeneric("openWorkspace", function(file,...)standardGeneric("openWorkspace"))
 
@@ -29,8 +25,6 @@ setGeneric("getNodes",function(x,...)standardGeneric("getNodes"))
 #' @export
 setGeneric("setNode",function(x,y,value,...)standardGeneric("setNode"))
 
-#' @export
-setGeneric("addGate",function(obj,gate,parent,...)standardGeneric("addGate"))
 
 #' @export
 setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
