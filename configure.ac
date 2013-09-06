@@ -61,7 +61,7 @@ fi
 if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         AC_MSG_NOTICE([No directory was specified for --with-boost. Using bundled boost.])
 
-	BASEBOOSTNAME="trimmed_boost_1_52_0"
+	BASEBOOSTNAME="bst"
 	BOOSTTGZNAME=${BASEBOOSTNAME}.tar.gz
 	cd src
 	if test -d ./${BASEBOOSTNAME};

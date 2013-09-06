@@ -35,7 +35,7 @@ using namespace Rcpp;
 #include <boost/serialization/assume_abstract.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/version.hpp>
-
+#include <boost/serialization/split_member.hpp>
 
 
 /*

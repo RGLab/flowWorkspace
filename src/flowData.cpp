@@ -34,7 +34,7 @@ flowData::flowData(const double* mat,vector<string> _params,unsigned _nEvents,un
 flowData::flowData(NumericMatrix mat,unsigned _sampleID){
 
 	List dimnames=mat.attr("dimnames");
-	params=dimnames[1];
+	params=as<vector<string> >(dimnames[1]);
 	unsigned nChannls=params.size();
 	nEvents=mat.nrow();
 	unsigned nSize=nChannls*nEvents;

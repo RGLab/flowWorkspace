@@ -1,6 +1,14 @@
+#  GNUMakefile
+ 
+# Just a snippet to stop executing under other make(1) commands
+# that won't understand these lines
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
 boost_bundled=@boost_bundled@
 ifeq ($(boost_bundled),yes)
-	boost_basename=trimmed_boost_1_52_0
+	boost_basename=bst
 	bgl_cppflags=-I$(boost_basename)/
 	bgl_src=${wildcard ${boost_basename}/libs/serialization/src/*.cpp} 
 	bgl_objs=${bgl_src:.cpp=.o}
