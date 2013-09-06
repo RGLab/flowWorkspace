@@ -51,7 +51,7 @@ private:
 
 
 				ar.register_type(static_cast<biexpTrans *>(NULL));
-				ar.register_type(static_cast<logicleTrans *>(NULL));
+				ar.register_type(static_cast<flinTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
 				ar & BOOST_SERIALIZATION_NVP(globalBiExpTrans);
@@ -68,7 +68,7 @@ private:
 	template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
 				ar.register_type(static_cast<biexpTrans *>(NULL));
-				ar.register_type(static_cast<logicleTrans *>(NULL));
+				ar.register_type(static_cast<flinTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
 				if(version>0){

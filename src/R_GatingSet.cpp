@@ -32,6 +32,7 @@ BEGIN_RCPP
 		bool isParseGate=as<bool>(_isParseGate);
 		unsigned short sampNloc=as<unsigned short>(_sampNloc);
 		int xmlParserOption = as<int>(_xmlParserOption);
+
 		GatingSet * gs=new GatingSet(fileName,isParseGate,sampNloc,xmlParserOption,dMode);
 		gs->parseWorkspace(sampleIDs,isParseGate);
 		/*

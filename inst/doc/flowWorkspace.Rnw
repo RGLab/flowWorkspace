@@ -96,10 +96,6 @@ g<-getGate(gh,node)
 g
 @
 
-We can extract vertices of a gate:
-<<getBound>>=
-getBoundaries(gh,node)
-@
 
 We can get the population proportion (relative to its parent) for a single population:
 <<getProp>>=
@@ -117,17 +113,33 @@ print(plotPopCV(gh))
 @
 
 We can plot individual gates: note the scale of the transformed axes.
-
-<<plotGate,fig=TRUE,include=TRUE>>=
-plotGate(gh,nodelist[6],lwd=2,cex=2)
+Second argument can be either a numeric index 
+<<plotGate-numeric, eval = FALSE>>=
+plotGate(gh, 10)
 @
-
-\Robject{overlay} can be used to plot another cell population on top of the existing gates specified by \Robject{y}.
-<<plotGate-overlay,fig=TRUE>>=
-plotGate(gh,y=nodelist[6],overlay=7)
+or unique node name,
+<<plotGate-nodeName, eval = FALSE>>=
+plotGate(gh, "pDC")
+@
+or a full/parital gating path,  
+<<plotGate-path,fig=TRUE,include=TRUE>>=
+plotGate(gh, "APC/pDC")
 @
  
-\Robject{overlay} can be either a \Robject{numeric} scalar indicating the index of a gate/population within the \Robject{GatingHierarchy} or a \Robject{logical} vector that indicates the cell event indices representing a sub-cell population.
+hexbin can be enabled to speed up plotting.
+<<plotGate,fig=TRUE,include=TRUE>>=
+plotGate(gh, "pDC", xbin =32)
+@
+
+\Robject{overlay} can be used to plot another cell population 
+on top of the existing gates specified by \Robject{y}.
+<<plotGate-overlay,fig=TRUE>>=
+plotGate(gh,y = "pDC/IL-12+", xbin =32, overlay = "mDC/IL-12+")
+@
+ 
+\Robject{overlay} can be either a \Robject{numeric} or
+\Robject{character} scalar indicating the index or gating path of a gate/population within the
+\Robject{GatingHierarchy} or a \Robject{logical} vector that indicates the cell event indices representing a sub-cell population.
  
 If we have  metadata associated with the experiment, it can be attached to the \Robject{GatingSet}.
 <<annotate>>=
@@ -305,12 +317,12 @@ As we see,removing one node causes all its descendants to be removed as well.
 Oftentime, we need to save a GatingSet including the gated flow data,gates and populations to disk and reload it later on.
 It can be achieved by:
 <<archive,eval=FALSE>>=
-	archive(gs,file="gs.tar")
-	G1<-unarchive(file="gs.tar")
+	save_gs(gs,file = "~/gs")
+	G1 <- load_gs(file = "~/gs")
 @ 
 We also provide the \Robject{clone} method to make a full copy of an existing \Robject{GatingSet}:
 <<clone,eval=FALSE>>=
-	gs_cloned<-clone(gs)
+	gs_cloned <- clone(gs)
 @
 Note that the \Robject{GatingSet} contains environment slots and external pointer that point to the internal C data structure.
 So make sure to use these methods in order to save or make a copy of existing object.

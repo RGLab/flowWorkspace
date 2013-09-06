@@ -27,11 +27,26 @@ public:
 	string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
 	  polygonGate * getGate(wsPolyGateNode &);
-	  polygonGate * getGate(wsRectGateNode &);
+	  gate * getGate(wsRectGateNode &);
 	  polygonGate * getGate(wsEllipseGateNode &);
-	  rangegate * getGate(wsRangeGateNode &);
+	  rangeGate * getGate(wsRangeGateNode &);
 };
 
+class xFlowJoWorkspace:public winFlowJoWorkspace{
+	friend class boost::serialization::access;
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::base_object<winFlowJoWorkspace>(*this);
 
+				}
+public:
+	xFlowJoWorkspace(xmlDoc * _doc);
+	trans_global_vec getGlobalTrans(){trans_global_vec res;
+										return res;
+										};
+	trans_local getTransformation(wsRootNode,const compensation & comp,PARAM_VEC & transFlag,trans_global_vec *,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans);
+};
 
 #endif /* WINFLOWJOWORKSPACE_HPP_ */

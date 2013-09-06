@@ -1,16 +1,11 @@
-\name{length-methods}
-\docType{methods}
+\name{length}
+\alias{length}
 \alias{length-methods}
 \alias{length,GatingSet-method}
-\title{ Methods to get the length of a GatingSet }
+\alias{length,GatingSetList-method}
+\title{Methods to get the length of a GatingSet}
 \description{
-	Return the length of a \code{GatingSet} object (number of samples).
+  Return the length of a \code{GatingSet} or
+  \code{GatingSetList} object (number of samples).
 }
-\section{Methods}{
-\describe{
 
-\item{\code{signature(x = "GatingSet")}}{
-%%  ~~describe this method here~~
-}
-}}
-\keyword{methods}

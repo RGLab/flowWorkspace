@@ -14,9 +14,9 @@
 /*
 * init the bool values in constructors
 */
-rangegate::rangegate(){isTransformed=false;neg=false;}
-polygonGate::polygonGate(){isTransformed=false;neg=false;}
-boolGate::boolGate(){isTransformed=false;neg=false;}
+rangeGate::rangeGate(){isTransformed=false;neg=false;isGained=false;}
+polygonGate::polygonGate(){isTransformed=false;neg=false;isGained=false;}
+boolGate::boolGate(){isTransformed=false;neg=false;isGained=false;}
 
 
 /*
@@ -73,13 +73,13 @@ void inPolygon_c(double *data, int nrd,
 }//function
 
 /*
- * when the original gate vertices are at the edge of flowFrame range
+ * when the original gate vertices are at the threshold
  * it is likely that the gates were truncated in flowJo xml
  * currently what we can do is to extend it to the real data range to avoid losing
- * the data points that are below flowFrame range (-111 is the constant that is used in flowCore
+ * the data points that are below this theshold range
  * to cut data range)
  */
-void polygonGate::extend(flowData & fdata,unsigned short dMode){
+void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	string x=param.xName();
 	string y=param.yName();
 	valarray<double> xdata(fdata.subset(x));
@@ -93,13 +93,13 @@ void polygonGate::extend(flowData & fdata,unsigned short dMode){
 	double yMin=ydata.min();
 	for(unsigned i=0;i<v.size();i++)
 	{
-		if(v.at(i).x<=-111)
+		if(v.at(i).x<=extend_val)
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
 			v.at(i).x=xMin;
 		}
-		if(v.at(i).y<=-111)
+		if(v.at(i).y<=extend_val)
 		{
 			if(dMode>=POPULATION_LEVEL)
 				cout <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
@@ -109,7 +109,53 @@ void polygonGate::extend(flowData & fdata,unsigned short dMode){
 	}
 	param.setVertices(v);
 }
-void ellipseGate::extend(flowData & fdata,unsigned short dMode){
+
+void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
+
+	if(!isGained)
+		{
+			vector<coordinate> vertices=param.getVertices();
+			/*
+			 * get channel names to select respective transformation functions
+			 */
+			string channel_x=param.xName();
+			string channel_y=param.yName();
+
+
+
+			map<string,float>::iterator it=gains.find(channel_x);
+			if(it!=gains.end())
+			{
+				float this_gain = it->second;
+				if(dMode>=POPULATION_LEVEL)
+					cout<<"adjusting: "<<channel_x<<endl;;
+
+				for(unsigned i=0;i<vertices.size();i++)
+					vertices.at(i).x=vertices.at(i).x/this_gain;
+			}
+
+			it=gains.find(channel_y);
+			if(it!=gains.end())
+			{
+				float this_gain = it->second;
+				if(dMode>=POPULATION_LEVEL)
+					cout<<"adjusting: "<<channel_y<<endl;;
+
+				for(unsigned i=0;i<vertices.size();i++)
+					vertices.at(i).y=vertices.at(i).y/this_gain;
+			}
+
+
+			if(dMode>=POPULATION_LEVEL)
+				cout<<endl;
+			param.setVertices(vertices);
+			isGained=true;
+		}
+
+
+
+}
+void ellipseGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 
 	/*
 	 * get R_min
@@ -117,7 +163,7 @@ void ellipseGate::extend(flowData & fdata,unsigned short dMode){
 	vector<coordinate> v=param.getVertices();
 	for(unsigned i=0;i<v.size();i++)
 	{
-		if((v.at(i).x<=-111)|(v.at(i).y<=-111))
+		if((v.at(i).x<=extend_val)|(v.at(i).y<=extend_val))
 		{
 			throw(domain_error("try to extend the coordinates for ellipse gate!"));
 		}
@@ -126,7 +172,40 @@ void ellipseGate::extend(flowData & fdata,unsigned short dMode){
 
 }
 
+void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
+	if(!isGained)
+	{
+		/*
+		 * get channel names to select respective transformation functions
+		 */
+		string channel_x=param.xName();
+		string channel_y=param.yName();
 
+
+		map<string,float>::iterator it=gains.find(channel_x);
+		if(it!=gains.end())
+		{
+			float this_gain = it->second;
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"adjusting: "<<channel_x<<endl;;
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).x=antipodal_vertices.at(i).x/this_gain;
+		}
+		it=gains.find(channel_y);
+		if(it!=gains.end())
+		{
+			float this_gain = it->second;
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"adjusting: "<<channel_y<<endl;;
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).y=antipodal_vertices.at(i).y/this_gain;
+		}
+		if(dMode>=POPULATION_LEVEL)
+			cout<<endl;
+
+		isGained=true;
+	}
+}
 /*
  * interpolation has to be done on the transformed original 4 coordinates
  * otherwise, the interpolation results will be wrong
@@ -222,7 +301,7 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	param.setVertices(vertices);
 
 }
-void rangegate::extend(flowData & fdata,unsigned short dMode){
+void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	string pName=param.getName();
 	valarray<double> data_1d(fdata.subset(pName));
 
@@ -230,7 +309,7 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
 	 * get R_min
 	 */
 	double xMin=data_1d.min();
-	if(param.getMin()<=-111)
+	if(param.getMin()<=extend_val)
 	{
 		if(dMode>=POPULATION_LEVEL)
 			cout <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
@@ -238,6 +317,25 @@ void rangegate::extend(flowData & fdata,unsigned short dMode){
 	}
 
 
+}
+void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
+	if(!isGained)
+	{
+		vertices_valarray vert(getVertices());
+
+		map<string,float>::iterator it=gains.find(param.getName().c_str());
+		if(it!=gains.end())
+		{
+			float this_gain = it->second;
+
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"adjusting "<<param.getName()<<endl;
+
+			param.setMin(param.getMin()/this_gain);
+			param.setMax(param.getMax()/this_gain);
+		}
+		isGained=true;
+	}
 }
 
 /*
@@ -412,7 +510,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	}
 }
 
-void rangegate::transforming(trans_local & trans,unsigned short dMode){
+void rangeGate::transforming(trans_local & trans,unsigned short dMode){
 	if(!Transformed())
 	{
 		vertices_valarray vert(getVertices());
@@ -434,7 +532,7 @@ void rangegate::transforming(trans_local & trans,unsigned short dMode){
 
 }
 
-vector<bool> rangegate::gating(flowData & fdata){
+vector<bool> rangeGate::gating(flowData & fdata){
 
 	valarray<double> data_1d(fdata.subset(param.getName()));
 
@@ -458,7 +556,7 @@ vector<bool> rangegate::gating(flowData & fdata){
 
 }
 
-vector<bool> rectgate::gating(flowData & fdata){
+vector<bool> rectGate::gating(flowData & fdata){
 
 	vector<coordinate> vertices=param.getVertices();
 	unsigned nVertex=vertices.size();

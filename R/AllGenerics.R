@@ -1,123 +1,88 @@
-setGeneric("openWorkspace", function(file,...){
-	standardGeneric("openWorkspace");
-})
-setGeneric("closeWorkspace",function(workspace){
-	standardGeneric("closeWorkspace")
-})
-setGeneric("parseWorkspace",function(obj,...){
-	standardGeneric("parseWorkspace")
-})
-setGeneric("getNodes",function(x,...){
-	standardGeneric("getNodes");
-})
-setGeneric("flowWorkspace2flowCore",function(obj,...){
-	standardGeneric("flowWorkspace2flowCore");
-})
+#' @importClassesFrom methods ANY character data.frame environment list logical matrix missing numeric oldClass
+#' @importMethodsFrom methods coerce show
+NULL
 
-setGeneric("ellipsoidGate2FlowJoVertices",function(gate,...){
-	standardGeneric("ellipsoidGate2FlowJoVertices");
-})
-setGeneric("haveSameGatingHierarchy",function(object1,object2){
-	standardGeneric("haveSameGatingHierarchy");
-})
-setGeneric("addGate",function(obj,gate,parent,...){
-	standardGeneric("addGate");	
-})
+#' @export
+#' @docType methods
+#' @rdname GatingSet-methods
+setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
+
+#' @export
+setGeneric("summary",function(object,...)standardGeneric("summary"))
+
+#' @export
+setGeneric("openWorkspace", function(file,...)standardGeneric("openWorkspace"))
+
+#' @export
+setGeneric("closeWorkspace",function(workspace)standardGeneric("closeWorkspace"))
+
+#' @export
+setGeneric("parseWorkspace",function(obj,...)standardGeneric("parseWorkspace"))
+
+#' @export
+setGeneric("getNodes",function(x,...)standardGeneric("getNodes"))
+
+#' @export
+setGeneric("setNode",function(x,y,value,...)standardGeneric("setNode"))
 
 
-#to deprecated by "flowSet"
-setGeneric("getNcdf",function(obj){
-	standardGeneric("getNcdf")
-})
+#' @export
+setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
 
-#to  be  deprecated by "flowSet"
-setGeneric("ncFlowSet", function(x) standardGeneric("ncFlowSet"))
-#to  be  deprecated by "flowSet"
-setGeneric("ncFlowSet<-", function(x,value) standardGeneric("ncFlowSet<-"))
+#' @export
+setGeneric("flowData", function(x,...) standardGeneric("flowData"))
 
-setGeneric("flowSet")
-setGeneric("flowSet<-", function(x,value) standardGeneric("flowSet<-"))
+#' @export
+setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 
-setGeneric("getIndiceFile",function(obj){
-			standardGeneric("getIndiceFile")
-		})
+setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))
 
-setGeneric("execute",function(hierarchy,...){
-	standardGeneric("execute")
-})
-setGeneric("plotGate",function(x,y,...){
-	standardGeneric("plotGate")
-})
 
-setGeneric("getPopStats",function(x,...){
-	standardGeneric("getPopStats");
-})
-setGeneric("plotPopCV",function(x,...){
-	standardGeneric("plotPopCV");
-})
-setGeneric("getData",function(obj,y,...){
-	standardGeneric("getData")
-})
-setGeneric("getGate",function(obj,y,...){
-	standardGeneric("getGate");
-})
-setGeneric("getParent",function(obj,y,...){
-	standardGeneric("getParent")
-})
-setGeneric("getAxisLabels",function(obj,y,...){
-	standardGeneric("getAxisLabels")
-})
-setGeneric("getBoundaries",function(obj,y,...){
-	standardGeneric("getBoundaries")
-})
+#' @export
+#' @docType methods
+#' @rdname plotGate-methods
+setGeneric("plotGate",function(x,y,...)standardGeneric("plotGate"))
 
-setGeneric("getDimensions",function(obj,y,...){
-	standardGeneric("getDimensions");
-})
+#' @export
+setGeneric("getPopStats",function(x,...)standardGeneric("getPopStats"))
 
-setGeneric("getChildren",function(obj,y,...){
-	standardGeneric("getChildren");
-})
+#' @export
+setGeneric("plotPopCV",function(x,...)standardGeneric("plotPopCV"))
 
-setGeneric("copyGatingHierarchyFromTo",function(a,b,...){
-	standardGeneric("copyGatingHierarchyFromTo");
-})
+#' @export
+setGeneric("getGate",function(obj,y,...)standardGeneric("getGate"))
 
-setGeneric("writeIndice",function(obj,y,z,...){
-			standardGeneric("writeIndice");
-		})
+#' @export
+setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
 
-setGeneric("getProp",function(x,y,...){
-	standardGeneric("getProp");
-})
-setGeneric("getTotal",function(x,y,...){
-	standardGeneric("getTotal");
-})
+#' @export
+setGeneric("getParent",function(obj,y,...)standardGeneric("getParent"))
 
-setGeneric("getSamples",function(x,...){
-	standardGeneric("getSamples");
-})
+#' @export
+setGeneric("getChildren",function(obj,y,...)standardGeneric("getChildren"))
 
-setGeneric("getSample",function(x,...){
-			standardGeneric("getSample");
-		})
+#' @export
+setGeneric("getProp",function(x,y,...)standardGeneric("getProp"))
 
-setGeneric("getSampleGroups",function(x){
-	standardGeneric("getSampleGroups")
-})
-setGeneric("getCompensationMatrices",function(x){
-	standardGeneric("getCompensationMatrices")
-})
-setGeneric("getTransformations",function(x){
-	standardGeneric("getTransformations")
-})
+#' @export
+setGeneric("getTotal",function(x,y,...)standardGeneric("getTotal"))
 
-setGeneric("getKeywords",function(obj,y){
-	standardGeneric("getKeywords")
-})
-setGeneric("exportAsFlowJoXML", function(obj, ...){
-	standardGeneric("exportAsFlowJoXML")
-})
+#' @export
+setGeneric("getSamples",function(x,...)standardGeneric("getSamples"))
 
-setGeneric("setData",function(this,value)standardGeneric("setData"))
+#' @export
+setGeneric("getSample",function(x,...)standardGeneric("getSample"))
+
+#' @export
+setGeneric("getSampleGroups",function(x)standardGeneric("getSampleGroups"))
+
+#' @export
+setGeneric("getCompensationMatrices",function(x)standardGeneric("getCompensationMatrices"))
+
+#' @export
+setGeneric("getTransformations",function(x)standardGeneric("getTransformations"))
+
+#' @export
+setGeneric("getKeywords",function(obj,y)standardGeneric("getKeywords"))
+
 
