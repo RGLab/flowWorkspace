@@ -1,7 +1,6 @@
 \name{GatingHierarchy-class}
 \alias{GatingHierarchy-class}
-\alias{show}
-\alias{show,GatingHierarchy}
+\alias{show,GatingHierarchy-method}
 \title{Class GatingHierarchy}
 \description{
   GatingHierarchy is a class for representing the gating

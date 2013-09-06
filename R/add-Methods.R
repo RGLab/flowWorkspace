@@ -93,6 +93,7 @@ NULL
 #' add,GatingSet,filterList-method
 #' add,GatingSet,filter-method
 #' add,GatingHierarchy,quadGate-method
+#' add,GatingHierarchy,filter-method
 #' setGate
 #' setGate,GatingSet,ANY,list-method
 #' setGate,GatingSet,ANY,filterList-method

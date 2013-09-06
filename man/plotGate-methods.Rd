@@ -8,6 +8,8 @@
 \alias{plotGate,GatingSet,character-method}
 \alias{plotGate,GatingSet,missing-method}
 \alias{plotGate,GatingSet,numeric-method}
+\alias{plotGate,GatingSetList,character-method}
+\alias{plotGate,GatingSetList,numeric-method}
 \title{Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}}
 \arguments{
   \item{x}{\code{\linkS4class{GatingSet}} object}
@@ -19,45 +21,32 @@
   for generating plots in a multi-page pdf.  Nodes can be
   accessed with \code{\link{getNodes}}.}
 
-  \item{bool}{\code{logical} specifying whether to plot
-  boolean gates.}
-
-  \item{main}{\code{character}, The main title of the plot.
+  \item{...}{\itemize{ \item{bool}{\code{logical}
+  specifying whether to plot boolean gates.}
+  \item{main}{\code{character} The main title of the plot.
   Default is the sample name.}
-
   \item{arrange}{\code{logical} indicating whether to
   arrange different populations/nodes on the same page via
-  \code{grid.arrange} call.}
-
-  \item{merge}{\code{logical} indicating whether to draw
-  multiple gates on the same plot if these gates share the
-  same parent population and same x,y
-  dimensions/parameters;}
-
+  \code{grid.arrange} call.} \item{merge}{\code{logical}
+  indicating whether to draw multiple gates on the same
+  plot if these gates share the same parent population and
+  same x,y dimensions/parameters;}
   \item{lattice}{\code{logical} indicating whether to draw
   one node/gate on multiple samples on the same page
-  through lattice plot;}
-
-  \item{...}{}
-
-  \item{formula}{\code{formula} a formula passed to
-  \code{xyplot} function of \code{flowViz}, by default it
-  is NULL, which means the formula is generated according
-  to the x,y parameters associated with gate.}
-
-  \item{cond}{\code{character} the conditioning variable to
-  be passed to lattice plot.}
-
-  \item{overlay}{either a \code{numeric} scalar indicating
-  the index of a gate/populationwithin the
-  \code{GatingHierarchy} or a \code{logical} vector that
-  indicates the cell event indices representing a sub-cell
-  population. This cell population is going to be plotted
-  on top of the existing gates(defined by \code{y}
-  argument) as an overlay.}
-
+  through lattice plot;} \item{formula}{\code{formula} a
+  formula passed to \code{xyplot} function of
+  \code{flowViz}, by default it is NULL, which means the
+  formula is generated according to the x,y parameters
+  associated with gate.} \item{cond}{\code{character} the
+  conditioning variable to be passed to lattice plot.}
+  \item{overlay}{\code{numeric} scalar indicating the index
+  of a gate/populationwithin the \code{GatingHierarchy} or
+  a \code{logical} vector that indicates the cell event
+  indices representing a sub-cell population. This cell
+  population is going to be plotted on top of the existing
+  gates(defined by \code{y} argument) as an overlay.}
   \item{...}{The other additional arguments to be passed to
-  \link[flowViz]{xyplot}.}
+  \link[flowViz]{xyplot}.} }}
 }
 \value{
   a \code{trellis} object if \code{arrange} is

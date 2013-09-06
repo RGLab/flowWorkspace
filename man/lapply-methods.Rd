@@ -1,5 +1,7 @@
 \name{lapply}
 \alias{lapply}
+\alias{lapply,GatingSet-method}
+\alias{lapply,GatingSetList-method}
 \title{apply \code{FUN} to each sample (i.e. \code{GatingHierarchy})}
 \arguments{
   \item{X}{\code{GatingSet} or \code{GatingSetList} object}

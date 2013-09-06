@@ -56,6 +56,8 @@ setOldClass("XMLInternalDocument")
 #' @name flowJoWorkspace-class
 #' @rdname flowJoWorkspace-class
 #' @exportClass flowJoWorkspace
+#' @aliases 
+#' show,flowJoWorkspace-method
 setClass("flowJoWorkspace"
           ,representation(version="character"
                           , file="character"
@@ -109,13 +111,9 @@ setClass("flowJoWorkspace"
 #' @exportClass GatingSet
 #' @aliases 
 #' GatingSet-class
-#' [,GatingSet,ANY-method
-#' [[,GatingSet,ANY-method
 #' rbind2,GatingSet,GatingSet-method
-#' GatingSet
 #' GatingSet,flowSet-method
 #' show,GatingSet-method
-#' show,GatingHierarchy-method
 setClass("GatingSet"
           ,representation(pointer = "externalptr"
                           ,FCSPath = "character"
@@ -163,6 +161,8 @@ setClass("GatingSet"
 #' @name GatingHierarchy-class
 #' @rdname GatingHierarchy-class
 #' @exportClass GatingHierarchy
+#' @aliases 
+#' show,GatingHierarchy-method
 setClass("GatingHierarchy"
           , contains = "GatingSet"
 #          , representation(name = "character")
@@ -211,7 +211,7 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
       G<-new("GatingSet")
       G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
       G@guid <- .uuid_gen()
-      Object@flag <- TRUE
+      G@flag <- TRUE
           
       flowData(G) <- fs_clone
         
@@ -308,7 +308,6 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #' GatingSetList
 #' show,GatingSetList-method
 #' getSamples,GatingSetList-method
-#' lapply,GatingSetList-method
 #' rbind2,GatingSetList,missing-method
 #' [[,GatingSetList,numeric-method
 #' [[,GatingSetList,logical-method
@@ -316,14 +315,8 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #' [,GatingSetList,numeric-method
 #' [,GatingSetList,logical-method
 #' [,GatingSetList,character-method
-#' getData,GatingSetList,numeric-method
-#' getData,GatingSetList,logical-method
-#' getData,GatingSetList,character-method
-#' pData,GatingSetList-method
-#' pData<-,GatingSetList,data.frame-method
 #' getGate,GatingSetList,numeric-method
 #' getGate,GatingSetList,character-method
-#' plotGate,GatingSetList,numeric-method
 #' getQAStats,GatingSetList-method
 #' getPopStats,GatingSetList-method
 setClass("GatingSetList"
@@ -440,6 +433,8 @@ GatingSetList <- function(x,samples = NULL)
 #' @rdname booleanFilter-class
 #' @exportClass booleanFilter
 #' @importClassesFrom flowCore filter concreteFilter expressionFilter
+#' @aliases 
+#' show,booleanFilter-method
 setClass("booleanFilter"
 		,contains=c("expressionFilter")
 )
@@ -479,8 +474,6 @@ char2booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter") {
 }
 
 #' @rdname booleanFilter-class
-#' @aliases 
-#' show,booleanFilter-method
 #' @export 
 #' @importMethodsFrom flowCore identifier
 setMethod("show",signature("booleanFilter"),function(object){

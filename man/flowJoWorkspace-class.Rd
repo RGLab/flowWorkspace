@@ -1,5 +1,8 @@
 \name{flowJoWorkspace-class}
 \alias{flowJoWorkspace-class}
+\alias{show,flowJoWorkspace-method}
+\alias{summary}
+\alias{summary,flowJoWorkspace-method}
 \title{An R representation of a flowJo workspace.}
 \description{
   Objects can be created by calls of the form

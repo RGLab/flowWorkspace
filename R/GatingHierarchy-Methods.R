@@ -104,6 +104,8 @@ NULL
 #' @rdname plot-methods
 #' @aliases
 #' plot,GatingHierarchy,missing-method
+#' plot,GatingHierarchy,numeric-method
+#' plot,GatingHierarchy,character-method
 #' @export 
 #' @importFrom stats4 plot
 setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
@@ -166,9 +168,6 @@ setMethod("plot",c("GatingHierarchy","character"),function(x,y,...){
       
     })
 
-#' @rdname GatingHierarchy-class
-#' @aliases show,GatingHierarchy
-#' @export 
 setMethod("show","GatingHierarchy",function(object){
 			cat("Sample: ",getSample(object),"\n");
 			cat("GatingHierarchy with ",length(getNodes(object))," gates\n");
@@ -581,15 +580,15 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' Population statistics can be obtained using \code{getPop} and \code{getPopStats}. 
 #' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
 
-#' @param obj A \code{GatingHierarchy}, \code{GatingSet} object.
-#' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. If \code{obj} is a GatingHierarchy or graphNEL, \code{y} is the name of the node in \code{obj} for which you wish to extract the data or a numeric index into \code{getNodes(obj)}. If \code{obj} is a GatingSet, \code{y} is a numeric index into \code{getNodes(obj[[i]])}, where \code{i} is any GatingHierarchy in the GatingSet. The trees represented by the GatingHierarchies are ASSUMED to be the same. 
-#' 		If not specified, will return the complete flowFrame/flowSet at the root node.
-#' once the R paser is deprecated,it can be safely removed as well
+#' @param obj A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.
+#' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. 
+#'                             	If not specified, will return the complete flowFrame/flowSet at the root node.
 #' @param ... arguments passed to ncdfFlow::[[  
 #' j a \code{numeric} or \code{character} used as channel index
 #' @return  
-#' A \code{flowFrame} object if \code{obj} is a GatingHierarchy or graphNEL. A \code{flowSet} if a \code{GatingSet}.
-#' A \code{ncdfFlowSet} if the node name/index (\code{y}) is NULL and the flow data is stored as cdf. 
+#' A \code{flowFrame} object if \code{obj} is a GatingHierarchy. 
+#' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
+#' A \code{flowSet} if a \code{GatingSetList}. 
 #' @seealso
 #'   \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
 #' 
@@ -994,7 +993,10 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #'     getNodes(G[[1]],isPath=TRUE)#return the full path
 #'     setNode(G,"L","lymph")
 #'   }
-
+#' @aliases 
+#' setNode,GatingHierarchy,numeric,character-method
+#' setNode,GatingHierarchy,character,character-method
+#' @rdname setNode-methods
 setMethod("setNode"
         ,signature(x="GatingHierarchy",y="numeric",value="character")
         ,function(x,y,value,...){
@@ -1013,10 +1015,16 @@ setMethod("setNode"
 #' @param x \code{GatingHierarchy} object
 #' @param y \code{numeric} node index
 #' @param value \code{logical} whether to hide a node
-#' @examples 
-#' setNode(gh, 4, FALSE) # hide a node
-#' setNode(gh, 4, TRUE) # unhide a node
+#' @examples
+#' \dontrun{ 
+#'      setNode(gh, 4, FALSE) # hide a node
+#'      setNode(gh, 4, TRUE) # unhide a node
+#' }
 #' @export 
+#' @aliases 
+#' setNode,GatingHierarchy,numeric,logical-method
+#' setNode,GatingHierarchy,character,logical-method
+#' @rdname setNode-methods
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="numeric",value="logical")
     ,function(x,y,value,...){
@@ -1039,7 +1047,7 @@ setMethod("setNode"
 #' @return  A "character" vector of length 1. Either the sample name or the path to the FCS file.
 #' 
 #' @examples
-#'   dontrun{
+#'   \dontrun{
 #'     #G is  a GatingHierarhcy
 #'     getSample(G)
 #'   }

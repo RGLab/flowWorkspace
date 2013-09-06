@@ -1,5 +1,6 @@
 \name{add}
 \alias{add}
+\alias{add,GatingHierarchy,filter-method}
 \alias{add,GatingHierarchy,quadGate-method}
 \alias{add,GatingSet,filter-method}
 \alias{add,GatingSet,filterList-method}

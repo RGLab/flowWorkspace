@@ -61,6 +61,8 @@ setMethod("getSamples",
 #' 
 #' @rdname lapply-methods
 #' @export 
+#' @aliases 
+#' lapply,GatingSetList-method
 setMethod("lapply","GatingSetList",function(X,FUN, level = 2,...){
       if(level == 1)
         lapply(X@data,FUN,...)
@@ -145,10 +147,17 @@ setMethod("[",c(x="GatingSetList",i="character"),function(x,i,j,...){
       res
     })
 
+
 setMethod("getData",c(obj="GatingSetList",y="missing"),function(obj,y,...){
       stop("node index 'y' is missing!")
     })
-#
+
+#' @param  max \code{numeric} The maximum number of samples to be returned. It is used as a threshold to prevent huge memory consumption due to the coersion from ncdfFlowSet to flowSet 
+#' @aliases 
+#' getData,GatingSetList,missing-method
+#' getData,GatingSetList,numeric-method
+#' getData,GatingSetList,character-method
+#' @rdname getData-methods
 setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,max=30,...){
 
       if(length(getSamples(obj))>max){
@@ -173,6 +182,10 @@ setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y,  ...){
       
     })
 
+#' @aliases
+#' pData,GatingSetList-method
+#' pData<-,GatingSetList,data.frame-method
+#' @rdname pData-methods
 setMethod("pData","GatingSetList",function(object){
 
       res <- lapply(object,pData, level =1)
@@ -208,7 +221,10 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,
       
     })
 
-
+#' @aliases
+#' plotGate,GatingSetList,numeric-method
+#' plotGate,GatingSetList,character-method
+#' @rdname plotGate-methods
 setMethod("plotGate",signature(x="GatingSetList",y="numeric"),function(x,y, ...){
       selectMethod("plotGate",signature = c(x="GatingSet",y="numeric"))(x=x, y=y, ...)
       
@@ -222,6 +238,9 @@ setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats, level =1,...)
       do.call(cbind,res)
     })
+#' @aliases 
+#' length,GatingSetList-method
+#' @rdname length-methods
 setMethod("length","GatingSetList",function(x){
       length(getSamples(x));
     })

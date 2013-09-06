@@ -37,8 +37,6 @@ setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 
 setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))
 
-#' @export
-setGeneric("getDimensions",function(obj,y,...)standardGeneric("getDimensions"))
 
 #' @export
 #' @docType methods

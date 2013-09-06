@@ -53,7 +53,6 @@ setAs("list", "GatingSet", function(from, to ){
 	new(to, set=from)
 })
 
-
 setMethod("show",c("flowJoWorkspace"),function(object){
 	cat("FlowJo Workspace Version ",object@version,"\n");
 	cat("File location: ",object@path,"\n");
@@ -75,6 +74,10 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 })
 
 #setOldClass("summary")
+
+#' @rdname flowJoWorkspace-class
+#' @aliases 
+#' summary,flowJoWorkspace-method
 setMethod("summary",c("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
@@ -345,63 +348,6 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	
     !(is.null(rownames(comp))&identical(comp%*%comp,comp))
 }
-
-
-#' Get the boundaries of a gate or dimensions on which a gate is applied within a GatingHierarchy
-#' 
-#' Get the boundaries (vertices) of a flowJo gate on the transformed scale or the dimension names on which a gate in a \code{GatingHierarchy} is applied.
-#' @param obj A \code{GatingHierarchy}
-#' @param y A \code{character}, the name of the node / gate / population of interest .
-#' @param index \code{TRUE | FALSE} a logical indicating whether we should return the names of the dimensions (FALSE, default) or the indices of the dimensions (TRUE)
-#' @details Each node in a GatingHierarchy represents a population. That population is defined by a gate. \code{getBoundaries} will return the vertices of the gate. 
-#' @return 
-#'   \code{getBoundaries} returns a \code{matrix} with column names corresponding to channels / dimensions, and rows to \code{x,y} tuples of vertices for polygon gates in these dimensions. 
-#'   \code{getDimensions} returns a \code{character} vector of dimension names on which the gate is applied (when index=FALSE), or a \code{numeric} vector of the indices of the dimensions on which the gate is applied (when index=TRUE). 
-#' @seealso \code{\link{getGate}},\code{\link{getNodes}}
-#' @examples
-#' \dontrun{
-#'     file<-"myworkspace.xml"
-#'     ws<-openWorkspace(file)
-#'     G<-parseWorkspace(ws,execute=TRUE,path=".")
-#'     n<-getNodes(G[[1]],tsort=TRUE)[3] #get the third node in the first gating hierarchy (topological sort order)
-#'     getGate(G[[1]],n); #return the gate for that node.
-#'     #Fetch the dimensions for the fifth population in the hierarchy.
-#'     getDimensions(G,getNodes(G)[5],index=FALSE)	
-#'     getBoundaries(G,getNodes(G)[5])
-#'   }
-#' @aliases 
-#' getDimensions
-#' getDimensions-methods
-#' getDimensions,GatingHierarchy,character-method
-setMethod("getDimensions",signature(obj="GatingHierarchy",y="character"),function(obj,y,index=FALSE){
-	if(.isBooleanGate.graphNEL(obj,y)){
-		getDimensions(obj,getParent(obj,y),index=index);
-	}else{
-		if(!index){
-			if(length(getGate(obj,y)@parameters)==1){
-				c(getGate(obj,y)@parameters[[1]]@parameters);
-			}else{
-				c(getGate(obj,y)@parameters[[1]]@parameters,getGate(obj,y)@parameters[[2]]@parameters)
-			}
-		}else{
-				if(length(getGate(obj,y)@parameters)==1){
-				    if(.isCompensated(obj)){
-				        tmp<-parameters(getData(obj,y))@data$name
-				    }else{
-				        tmp<-gsub(">","",gsub("<","",parameters(getData(obj,y))@data$name))
-				    }
-					c(match(getGate(obj,y)@parameters[[1]]@parameters,tmp))	
-				}else{
-                    if(.isCompensated(obj)){
-				        tmp<-parameters(getData(obj,y))@data$name
-				    }else{
-				        tmp<-gsub(">","",gsub("<","",parameters(getData(obj,y))@data$name))
-				    }
-   c(match(getGate(obj,y)@parameters[[1]]@parameters,tmp),match(getGate(obj,y)@parameters[[2]]@parameters,tmp))
-				}
-			}
-	}
-})
 
 
 

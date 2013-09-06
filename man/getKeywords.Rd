@@ -31,7 +31,7 @@
   (\code{character}) for all other types of \code{obj}.
 }
 \examples{
-dontrun{
+\dontrun{
       #G is a GatingHierarchy
       getKeywords(G);
       #G is a GatingSet

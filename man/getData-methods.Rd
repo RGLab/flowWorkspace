@@ -7,33 +7,32 @@
 \alias{getData,GatingSet,character-method}
 \alias{getData,GatingSet,missing-method}
 \alias{getData,GatingSet,numeric-method}
+\alias{getData,GatingSetList,character-method}
+\alias{getData,GatingSetList,missing-method}
+\alias{getData,GatingSetList,numeric-method}
 \title{get gated flow data from a GatingHierarchy/GatingSet}
 \arguments{
-  \item{obj}{A \code{GatingHierarchy}, \code{GatingSet}
-  object.}
+  \item{obj}{A \code{GatingHierarchy}, \code{GatingSet} or
+  \code{GatingSetList} object.}
 
   \item{y}{\code{character} the node name or full(/partial)
-  gating path or \code{numeric} node index. If \code{obj}
-  is a GatingHierarchy or graphNEL, \code{y} is the name of
-  the node in \code{obj} for which you wish to extract the
-  data or a numeric index into \code{getNodes(obj)}. If
-  \code{obj} is a GatingSet, \code{y} is a numeric index
-  into \code{getNodes(obj[[i]])}, where \code{i} is any
-  GatingHierarchy in the GatingSet. The trees represented
-  by the GatingHierarchies are ASSUMED to be the same.  If
-  not specified, will return the complete flowFrame/flowSet
-  at the root node. once the R paser is deprecated,it can
-  be safely removed as well}
+  gating path or \code{numeric} node index.  If not
+  specified, will return the complete flowFrame/flowSet at
+  the root node.}
 
   \item{...}{arguments passed to ncdfFlow::[[ j a
   \code{numeric} or \code{character} used as channel index}
+
+  \item{max}{\code{numeric} The maximum number of samples
+  to be returned. It is used as a threshold to prevent huge
+  memory consumption due to the coersion from ncdfFlowSet
+  to flowSet}
 }
 \value{
   A \code{flowFrame} object if \code{obj} is a
-  GatingHierarchy or graphNEL. A \code{flowSet} if a
-  \code{GatingSet}. A \code{ncdfFlowSet} if the node
-  name/index (\code{y}) is NULL and the flow data is stored
-  as cdf.
+  GatingHierarchy. A \code{flowSet} or \code{ncdfFlowSet}
+  if a \code{GatingSet}. A \code{flowSet} if a
+  \code{GatingSetList}.
 }
 \description{
   get gated flow data from a GatingHierarchy/GatingSet

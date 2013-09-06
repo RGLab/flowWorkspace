@@ -1,6 +1,8 @@
 \name{plot}
 \alias{plot}
+\alias{plot,GatingHierarchy,character-method}
 \alias{plot,GatingHierarchy,missing-method}
+\alias{plot,GatingHierarchy,numeric-method}
 \title{plot a GatingHierarchy}
 \arguments{
   \item{x}{\code{GatingHierarchy} to be plotted}

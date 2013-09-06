@@ -23,16 +23,11 @@ isNcdf <- function(x){
 #' @param gslist A \code{GatingSetList}
 #' @param path A character scalar giving the path to save/load the GatingSet to/from.
 #' @param overwrite A logical scalar specifying whether to overwrite the existing folder.
-#' @param ... other arguments:
-#' 
-#' \itemize{
-#'  
-#'  \item{cdf}{ 
-#'              a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file. 
+#' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file. 
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
-#'              It is useful to "skip" archiving cdf file if raw data has not been changed.  
-#'             }
-#'  }
+#'              It is useful to "skip" archiving cdf file if raw data has not been changed.
+#' @param ... other arguments: not used.
+#' 
 #' 
 #' @return 
 #' \code{load_gs} returns a GatingSet object
@@ -291,6 +286,8 @@ load_gs<-function(path){
 #' archive/unarchive to/from a tar file
 #' 
 #' Defunct by save_gs/load_gs
+#' @param G a \code{GatingSet}
+#' @param file a \code{character} target/source archive file name
 #' @aliases archive unarchive
 #' @rdname archive
 #' @export 
@@ -313,7 +310,9 @@ archive<-function(G,file=tempfile()){
 	message("Done\nTo reload it, use 'unarchive' function\n")
 	
 }
+
 	
+#' @param path a \code{character} target folder that stores cdf file
 #' @export 
 #' @rdname archive
 unarchive<-function(file,path=tempdir()){
@@ -413,7 +412,7 @@ unarchive<-function(file,path=tempdir()){
 #' 
 #' @rdname GatingSet-methods
 #' @aliases
-#' GatingHierarchy,character-method
+#' GatingSet,GatingHierarchy,character-method
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE, dMode=1, ...){
 			
 			samples <- y
@@ -778,17 +777,19 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
 #'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
 #'          Nodes can be accessed with \code{\link{getNodes}}.
-#' @param bool \code{logical} specifying whether to plot boolean gates.
-
-#' @param main \code{character}, The main title of the plot. Default is the sample name.
-#' @param arrange \code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.
-#' @param merge \code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;
-#' @param lattice \code{logical} indicating whether to draw one node/gate on multiple samples on the same page through lattice plot;
 #' @param ...
-#' @param formula \code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.
-#' @param cond \code{character} the conditioning variable to be passed to lattice plot.
-#' @param overlay either a \code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay. 
-#' @param ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
+#' \itemize{
+#'  \item{bool}{\code{logical} specifying whether to plot boolean gates.}
+#'  \item{main}{\code{character} The main title of the plot. Default is the sample name.}
+#'  \item{arrange}{\code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.}
+#'  \item{merge}{\code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;} 
+#'  \item{lattice}{\code{logical} indicating whether to draw one node/gate on multiple samples on the same page through lattice plot;} 
+#'  \item{formula}{\code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
+#'  \item{cond}{\code{character} the conditioning variable to be passed to lattice plot.}
+#'  \item{overlay}{\code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
+#'  \item{...}{The other additional arguments to be passed to \link[flowViz]{xyplot}.}
+#' }
+#' 
 #' @return  a \code{trellis} object if \code{arrange} is \code{FALSE}, 
 #' @references \url{http://www.rglab.org/}
 #' @examples \dontrun{
@@ -1237,6 +1238,8 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 #'  
 #' @rdname lapply-methods
 #' @importFrom BiocGenerics lapply
+#' @aliases 
+#' lapply,GatingSet-method
 setMethod("lapply","GatingSet",function(X,FUN,...){
       sapply(getSamples(X),function(thisSample,...){
             gh <- X[[thisSample]]
@@ -1314,6 +1317,9 @@ setGeneric("ncFlowSet", function(x) standardGeneric("ncFlowSet"))
 #' Fetch the flowData object associated with a GatingSet .
 #' 
 #' Deprecated by \code{flowData} method
+#' @aliases 
+#' ncFlowSet,GatingSet-method
+#' @rdname ncFlowSet-methods
 #' @export
 setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
       .Defunct("flowData")
@@ -1328,6 +1334,9 @@ setGeneric("ncFlowSet<-", function(x,value) standardGeneric("ncFlowSet<-"))
 #' Deprecated by \code{flowData} method
 #' 
 #' @name ncFlowSet<-
+#' @aliases 
+#' ncFlowSet<-,GatingSet-method
+#' @rdname ncFlowSet-methods 
 #' @export
 setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
       .Defunct("flowData<-")
@@ -1335,7 +1344,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
 
 #' Fetch or replace the flowData object associated with a GatingSet .
 #' 
-#' Accessor method that sets or replaces the ncdfFlowSet object in a GatingSet or GatingHierarchy
+#' Accessor method that gets or replaces the flowset/ncdfFlowSet object in a GatingSet or GatingHierarchy
 #' 
 #' @param x A \code{GatingSet}
 #' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
@@ -1351,6 +1360,7 @@ setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
 #' flowData,GatingSet-method
 #' flowData<-,GatingSet-method
 #' @export 
+#' @rdname flowData-methods
 setMethod("flowData",signature("GatingSet"),function(x,...){
         x@data
     })
@@ -1361,14 +1371,27 @@ setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
       x
     })
 
-#' it doesn't use metadata slot of GatingSet, instead it directly access the pData of flow data
-#' @importFrom Biobase pData description exprs sampleNames
-#' @export 
+
+#' read/set pData of flow data associated with \code{GatingSet} or \code{GatingSetList}
+#' 
+#' Accessor method that gets or replaces the pData of the flowset/ncdfFlowSet object in a GatingSet or GatingSetList
+#'
+#' @param object \code{GatingSet} or \code{GatingSetList}
+#' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object
+#' 
+#' @return a \code{data.frame}
+#' 
+#' @importFrom Biobase pData description exprs sampleNames pData<-
+#' 
+#' @aliases 
+#' pData,GatingSet-method
+#' pData<-,GatingSet,data.frame-method
+#' @exportMethod pData
+#' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
 			pData(flowData(object))
 		})
-#' @importFrom Biobase pData<-
-#' @export   
+#' @exportMethod pData<-
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 			fs<-flowData(object)
 			rownames(value)<-value$name
@@ -1390,6 +1413,8 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 #'  
 #' @rdname GatingSet-class
 #' @export 
+#' @aliases 
+#' [,GatingSet,ANY-method
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #            browser()
             #convert non-character indices to character
@@ -1424,6 +1449,10 @@ setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y){
       lapply(obj,function(x)getGate(x,y))
     })
     
+#' @aliases 
+#' setNode,GatingSet,numeric,ANY-method
+#' setNode,GatingSet,character,ANY-method
+#' @rdname setNode-methods
 setMethod("setNode"
     ,signature(x="GatingSet",y="numeric",value="ANY")
     ,function(x,y,value,...){
@@ -1444,6 +1473,10 @@ setMethod("setNode"
 #' 
 #' @rdname GatingSet-class
 #' @export 
+#' @aliases 
+#' [[,GatingSet,numeric-method
+#' [[,GatingSet,logical-method
+#' [[,GatingSet,character-method
 setMethod("[[",c(x="GatingSet",i="numeric"),function(x,i,j,...){
       x[[getSamples(x)[i]]]
       
@@ -1461,9 +1494,12 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
 
 #' Methods to get the length of a GatingSet
 #' 
-#' Return the length of a \code{GatingSet} object (number of samples).
+#' Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
 #' 
-#' @aliases length-methods length,GatingSet-method
+#' @aliases 
+#' length-methods 
+#' length,GatingSet-method
+#' @rdname length-methods
 #' @export  
 setMethod("length","GatingSet",function(x){
       length(flowData(x));
@@ -1579,7 +1615,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #'   Retrieve a list of keywords from a \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy} for a particular sample. The sample is specified via \code{y}, either a numeric index into a \code{GatingSet}, or a sample name (\code{character}) for all other types of \code{obj}. 
 #' @return A list of keyword - value pairs. 
 #' @examples
-#'     dontrun{
+#'     \dontrun{
 #'       #G is a GatingHierarchy
 #'       getKeywords(G);
 #'       #G is a GatingSet

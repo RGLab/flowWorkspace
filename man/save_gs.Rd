@@ -24,16 +24,14 @@
   \item{overwrite}{A logical scalar specifying whether to
   overwrite the existing folder.}
 
-  \item{...}{other arguments:
-
-  \itemize{
-
-  \item{cdf}{ a character scalar. The valid options are
+  \item{cdf}{a character scalar. The valid options are
   :"copy","move","skip","symlink","link" specifying what to
   do with the cdf data file.  Sometime it is more efficient
   to move or create a link of the existing cdf file to the
   archived folder.  It is useful to "skip" archiving cdf
-  file if raw data has not been changed.  } }}
+  file if raw data has not been changed.}
+
+  \item{...}{other arguments: not used.}
 }
 \value{
   \code{load_gs} returns a GatingSet object

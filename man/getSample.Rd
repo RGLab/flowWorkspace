@@ -22,7 +22,7 @@
   file.
 }
 \examples{
-dontrun{
+\dontrun{
     #G is  a GatingHierarhcy
     getSample(G)
   }
