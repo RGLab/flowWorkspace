@@ -1,6 +1,6 @@
-#if [ -e src/trimmed_boost_1_52_0 ]; then
+#if [ -e src/bst ]; then
 #	echo "removing .o files"
-#	rm -f src/trimmed_boost_1_52_0/libs/serialization/src/*.o
+#	rm -f src/bst/libs/serialization/src/*.o
 #fi
 for f in ./config.*; do
 	rm -f $f
