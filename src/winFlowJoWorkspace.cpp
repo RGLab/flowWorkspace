@@ -11,16 +11,20 @@
 
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
 	cout<<"windows version of flowJo workspace recognized."<<endl;
-//	xpath_sample="/Workspace/SampleList/Sample/DataSet";
 	nodePath.group="/Workspace/Groups/GroupNode";// abs path
 	nodePath.sampleRef=".//SampleRef";//relative GroupNode
 	nodePath.sample="/Workspace/SampleList/Sample";//abs path
 	nodePath.sampleNode="./SampleNode";//relative to sample
 	nodePath.popNode="./*/Population";//relative to sampleNode
+	nodePath.gateDim="*[local-name()='dimension']";//relative to gateNode
+	nodePath.gateParam="*[local-name()='parameter']";//relative to dimNode
 	this->doc=doc;
 
 }
 
+xFlowJoWorkspace::xFlowJoWorkspace(xmlDoc * _doc):winFlowJoWorkspace(_doc){
+	nodePath.gateParam="*[local-name()='fcs-dimension']";
+}
 
 string winFlowJoWorkspace::xPathSample(string sampleID){
 			string xpath=nodePath.sample;
@@ -29,6 +33,111 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 			xpath.append("']/..");
 			return xpath;
 
+}
+trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans){
+
+	trans_local res;
+
+	/*
+	 * get transformations node
+	 */
+	xmlXPathObjectPtr transParentNodeRes=root.xpathInNode("../Transformations");
+	unsigned short nTransParentNodes=transParentNodeRes->nodesetval->nodeNr;
+	if(nTransParentNodes<=0)
+	{
+		cout<<"compensation not found!"<<endl;
+		xmlXPathFreeObject(transParentNodeRes);
+		return(res);
+	}else if(nTransParentNodes>1){
+		throw(domain_error("More than one 'Transformations' node found!"));
+	}
+
+	wsNode transParentNode(transParentNodeRes->nodesetval->nodeTab[0]);
+
+	/*
+	 * parse each individual transformation
+	 */
+	xmlXPathObjectPtr transRes=transParentNode.xpathInNode("child::*");
+
+	map<string,transformation *> curTp=res.getTransMap();
+
+	for(int j=0;j<transRes->nodesetval->nodeNr;j++)
+	{
+		wsNode transNode(transRes->nodesetval->nodeTab[j]);
+
+		//parse the parameter name
+		string pname;
+		xmlXPathObjectPtr paramRes=transNode.xpathInNode("*[local-name()='parameter']");
+		if(paramRes->nodesetval->nodeNr!=1)
+			pname="";
+		else{
+			wsNode paramNode(paramRes->nodesetval->nodeTab[0]);
+			pname=paramNode.getProperty("name");
+			}
+
+
+		xmlXPathFreeObject(paramRes);
+		/*
+		 * when channel name is not specified
+		 * try to parse it as the generic trans that is applied to channels
+		 * that do not have channel-specific trans defined in workspace
+		 * ,
+		 */
+		if(pname.empty())
+			pname="*";
+
+		string transType=(const char*)transNode.getNodePtr()->name;
+		if(transType.compare("biex")==0)
+		{
+
+			if(dMode>=GATING_SET_LEVEL)
+				cout<<"biex func:"<<pname<<endl;
+			biexpTrans *curTran=new biexpTrans();
+			curTran->setName("");
+			curTran->setChannel(pname);
+			curTran->pos=atof(transNode.getProperty("pos").c_str());
+			curTran->neg=atof(transNode.getProperty("neg").c_str());
+			curTran->widthBasis=atof(transNode.getProperty("width").c_str());
+			curTran->maxValue=atof(transNode.getProperty("maxRange").c_str());
+			unsigned short thisLen=atoi(transNode.getProperty("length").c_str());
+			if(thisLen!=256)
+				throw(domain_error("length is not 256 for biex transformation!"));
+			/*
+			 * do the lazy calibration table calculation and interpolation
+			 * when it gets saved in gh
+			 */
+			curTp[curTran->getChannel()]=curTran;
+		}else if(transType.compare("linear")==0){
+//			if(dMode>=GATING_SET_LEVEL)
+//				cout<<"flin func:"<<pname<<endl;
+//			double minRange=atof(transNode.getProperty("minRange").c_str());
+//			double maxRange=atof(transNode.getProperty("maxRange").c_str());
+//			flinTrans *curTran=new flinTrans(minRange,maxRange);
+//			curTran->setName("");
+//			curTran->setChannel(pname);
+//
+//			curTp[curTran->getChannel()]=curTran;
+			//do nothing for linear trans
+		}else if(transType.compare("log")==0){
+			if(dMode>=GATING_SET_LEVEL)
+				cout<<"flog func:"<<pname<<endl;
+			double offset=atof(transNode.getProperty("offset").c_str());
+			double decade=atof(transNode.getProperty("decades").c_str());
+			logTrans *curTran=new logTrans(offset,decade);
+			curTran->setName("");
+			curTran->setChannel(pname);
+
+			curTp[curTran->getChannel()]=curTran;
+		}
+		else
+			throw(domain_error("unknown tranformation type!"));
+
+	}
+	xmlXPathFreeObject(transRes);
+	xmlXPathFreeObject(transParentNodeRes);
+
+	res.setTransMap(curTp);
+	return res;
 }
 /*
  * choose the trans from global trans vector to attach to current sample
@@ -306,7 +415,12 @@ polygonGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	return NULL;
 }
 polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
-			ellipseGate * gate=new ellipseGate();
+	/*
+	 * not sure what is the criteria for using ellipseGate
+	 * since it is of the same format of polygonGate
+	 */
+	//	ellipseGate * gate=new ellipseGate();
+			polygonGate * gate=new polygonGate();
 			//get the negate flag
 			gate->setNegate(node.getProperty("eventsInside")=="0");
 			paramPoly p;
@@ -314,7 +428,8 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			vector<string> pn;
 
 			//TODO:get parameter name(make sure the the order of x,y are correct)
-			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']/*[local-name()='parameter']");
+			string polyGateDim=nodePath.gateDim+"/"+nodePath.gateParam;
+			xmlXPathObjectPtr resPara=node.xpathInNode(polyGateDim);
 			int nParam=resPara->nodesetval->nodeNr;
 			if(nParam!=2)
 			{
@@ -360,88 +475,107 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				xmlXPathFreeObject(resCoord);
 			}
 			xmlXPathFreeObject(resVert);
-			gate->setAntipodal(v);
+//			gate->setAntipodal(v);
 			p.setName(pn);
+			p.setVertices(v);
 			gate->setParam(p);
 			return gate;
 }
 
-polygonGate* winFlowJoWorkspace::getGate(wsRectGateNode & node){
-			polygonGate * g=new polygonGate();
-			//get the negate flag
-			g->setNegate(node.getProperty("eventsInside")=="0");
-
+gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
+			gate * thisGate;
 			//get parameter name
-			xmlXPathObjectPtr resPara=node.xpathInNode("*[local-name()='dimension']");
+			xmlXPathObjectPtr resPara=node.xpathInNode(nodePath.gateDim);
 			int nParam=resPara->nodesetval->nodeNr;
-			if(nParam!=2)
-			{
-//				cout<<"the dimension of the rectangle gate:"<<nParam<<" is invalid!"<<endl;
-				throw(domain_error("invalid  dimension of the rectangle gate!"));
-			}
-
-			vector<paramRange> r(2);
+			/*
+			 * parse the parameters
+			 */
+			vector<paramRange> r;
 			for(int i=0;i<nParam;i++)
 			{
 				wsNode curPNode(resPara->nodesetval->nodeTab[i]);
-
+				paramRange thisR;
 				//get coordinates from properties
 				/*
 				 * be aware that numeric_limits<double>::min() return the minimum positive value
 				 * instead of negative,so we have to use -max()
 				 */
 				string sMin=curPNode.getProperty("min");
-				r.at(i).setMin(sMin.empty()?-numeric_limits<double>::max():atof(sMin.c_str()));
+				thisR.setMin(sMin.empty()?-numeric_limits<double>::max():atof(sMin.c_str()));
 
 				string sMax=curPNode.getProperty("max");
-				r.at(i).setMax(sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str()));
+				thisR.setMax(sMax.empty()?numeric_limits<double>::max():atof(sMax.c_str()));
 
 				//get parameter name from the children node
-				xmlXPathObjectPtr resPName=curPNode.xpathInNode("*[local-name()='parameter']");
-				r.at(i).setName(wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name"));
+				xmlXPathObjectPtr resPName=curPNode.xpathInNode(nodePath.gateParam);
+				thisR.setName(wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name"));
 				xmlXPathFreeObject(resPName);
-
+				r.push_back(thisR);
 
 			}
-			/*
-			 * convert pRanges to polygon data structure
-			 */
-			paramPoly p;
-			vector<coordinate> v;
-			vector<string> pn;
-			pn.push_back(r.at(0).getName());//x
-			pn.push_back(r.at(1).getName());//y
+			if(nParam==1){
+				/*
+				 * parse as rangeGate
+				 */
+				rangeGate * g=new rangeGate();
+				//get the negate flag
+				g->setNegate(node.getProperty("eventsInside")=="0");
+				g->setParam(r.at(0));
+				thisGate=g;
+
+			}else if(nParam==2){
+				rectGate * g=new rectGate();
+				//get the negate flag
+				g->setNegate(node.getProperty("eventsInside")=="0");
+
+				/*
+				 * convert pRanges to polygon data structure
+				 */
+				paramPoly p;
+				vector<coordinate> v;
+				vector<string> pn;
+				pn.push_back(r.at(0).getName());//x
+				pn.push_back(r.at(1).getName());//y
 
 
-			coordinate lb,lt,rb,rt;//left bottom,left top,right top,right top
-			lb.x=r.at(0).getMin();
-			lb.y=r.at(1).getMin();
+				coordinate lb,lt,rb,rt;//left bottom,left top,right top,right top
+				lb.x=r.at(0).getMin();
+				lb.y=r.at(1).getMin();
 
-			lt.x=r.at(0).getMin();
-			lt.y=r.at(1).getMax();
+//				lt.x=r.at(0).getMin();
+//				lt.y=r.at(1).getMax();
 
-			rb.x=r.at(0).getMax();
-			rb.y=r.at(1).getMin();
+//				rb.x=r.at(0).getMax();
+//				rb.y=r.at(1).getMin();
 
-			rt.x=r.at(0).getMax();
-			rt.y=r.at(1).getMax();
+				rt.x=r.at(0).getMax();
+				rt.y=r.at(1).getMax();
 
-			/*
-			 * since rectangle gate in windows version defined differently from mac (simply as 4-point polygon)
-			 * so make sure the order of vertices is correct during the conversion to polygon here
-			 * lb->lt->rt->rb
-			 */
-			v.push_back(lb);
-			v.push_back(lt);
-			v.push_back(rt);
-			v.push_back(rb);
+				/*
+				 * since rectangle gate in windows version defined differently from mac (simply as 4-point polygon)
+				 * so make sure the order of vertices is correct during the conversion to polygon here
+				 * lb->lt->rt->rb
+				 */
+				v.push_back(lb);
+//				v.push_back(lt);
+				v.push_back(rt);
+//				v.push_back(rb);
+
+				p.setVertices(v);
+				p.setName(pn);
+				g->setParam(p);
+				thisGate=g;
+
+			}else if(nParam!=2)
+			{
+				throw(domain_error("invalid  dimension of the rectangle gate!"));
+			}
 
 
 			xmlXPathFreeObject(resPara);
-			p.setVertices(v);
-			p.setName(pn);
-			g->setParam(p);
-			return g;
+
+
+			return thisGate;
 }
 gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 

@@ -8,7 +8,8 @@
 #include <algorithm>
 nodeProperties::nodeProperties(){
 	thisGate=NULL;
-
+	hidden=false;
+	dMode=0;
 }
 
 /*
@@ -51,7 +52,16 @@ string nodeProperties::getName(){
 }
 
 void nodeProperties::setName(const char * popName){
+	if(string(popName).find('/') != std::string::npos){
+		throw(domain_error("pop name contains '/' character!"));
+	}
 	thisName=popName;
+}
+void nodeProperties::setHiddenFlag(bool _value){
+	hidden=_value;
+}
+bool nodeProperties::getHiddenFlag(){
+	return (hidden);
 }
 
 void nodeProperties::setGate(gate *gate){
@@ -65,21 +75,18 @@ vector<bool> nodeProperties::getIndices(){
 		}
 
 void nodeProperties::setIndices(unsigned _nEvent){
-
-		ROOTINDICES *ind=new ROOTINDICES(_nEvent);
-		indices.reset(ind);
+		indices.reset(new ROOTINDICES(_nEvent));
 }
 void nodeProperties::setIndices(vector<bool> _ind){
 	unsigned nEvents=count(_ind.begin(),_ind.end(),true);
 	unsigned nSizeInt=sizeof(unsigned)*nEvents;
 	unsigned nSizeBool=_ind.size()/8;
 
-	POPINDICES * ind;
 	if(nSizeInt<nSizeBool)
-		ind=new INTINDICES(_ind);
+		indices.reset(new INTINDICES(_ind));
 	else
-		ind=new BOOLINDICES(_ind);
-	indices.reset(ind);
+		indices.reset(new BOOLINDICES(_ind));
+
 }
 /*
  * potentially it is step can be done within the same loop in gating
@@ -110,8 +117,9 @@ nodeProperties * nodeProperties::clone(bool gateResult){
 		/*
 		 * copy gated results
 		 */
-		if(gateResult)
+		if(gateResult&&isGated())
 		{
+
 			res->setStats(fcStats,true);
 			res->setStats(fjStats,false);
 			res->indices.reset(indices->clone());

@@ -3638,7 +3638,7 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: No directory was specified for --with-boost. Using bundled boost." >&5
 $as_echo "$as_me: No directory was specified for --with-boost. Using bundled boost." >&6;}
 
-	BASEBOOSTNAME="trimmed_boost_1_52_0"
+	BASEBOOSTNAME="bst"
 	BOOSTTGZNAME=${BASEBOOSTNAME}.tar.gz
 	cd src
 	if test -d ./${BASEBOOSTNAME};

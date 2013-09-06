@@ -45,7 +45,7 @@ END_RCPP
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath){
+RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath, SEXP _showHidden){
 BEGIN_RCPP
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
@@ -55,10 +55,28 @@ BEGIN_RCPP
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	unsigned short order=as<unsigned short>(_order);
 	bool isPath=as<bool>(_isPath);
+	bool showHidden=as<bool>(_showHidden);
 
-	return wrap(gh->getPopNames(order,isPath));
+	return wrap(gh->getPopNames(order,isPath,showHidden));
 END_RCPP
 }
+
+/*
+ * query by path
+ */
+RcppExport SEXP R_getNodeID(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
+BEGIN_RCPP
+
+	GatingSet *	gs=getGsPtr(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	StringVec gatePath=as<StringVec>(_gatePath);
+	return wrap(gh->getNodeID(gatePath));
+
+
+END_RCPP
+}
+
 
 RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
 BEGIN_RCPP
@@ -174,8 +192,13 @@ BEGIN_RCPP
 			}
 			case CALTBL:
 			{
-				if(!curTrans->isInterpolated())
-					throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
+				if(!curTrans->computed()){
+					curTrans->computCalTbl();
+				}
+				if(!curTrans->isInterpolated()){
+					curTrans->interpolate();
+				}
+//					throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
 				Spline_Coefs obj=curTrans->getSplineCoefs();
 
 				res.push_back(List::create(Named("z",obj.coefs)
@@ -234,7 +257,7 @@ END_RCPP
  * non-cdf version
  */
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _nodeInd,SEXP _recompute){
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val){
 BEGIN_RCPP
 
 
@@ -242,6 +265,7 @@ BEGIN_RCPP
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
+
 	unsigned short nodeInd=as<unsigned short>(_nodeInd);
 	bool recompute=as<bool>(_recompute);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -253,8 +277,17 @@ BEGIN_RCPP
 	gh->loadData(fdata);
 	if(!recompute)
 	{
-		gh->extendGate();
-		gh->transforming(false);
+		float extend_val = as<float>(_extend_val);
+
+		map<string,float> gains;
+		NumericVector gainsVec= as<NumericVector>(_gains);
+		vector<string> chnlNames = gainsVec.names();
+		for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
+			gains[*it]=gainsVec[*it];
+		}
+		gh->extendGate(extend_val);
+		gh->adjustGate(gains);
+		gh->transforming();
 	}
 
 	gh->gating(nodeInd,recompute);
@@ -370,6 +403,145 @@ BEGIN_RCPP
 END_RCPP
 }
 
+/*
+ * convert R filter to specific gate class
+ * Note: up to caller to free the dynamically allocated gate object
+ */
+gate * newGate(List filter){
+
+	StringVec names=filter.names();
+
+	unsigned short gateType=as<unsigned short>(filter["type"]);
+
+	bool isNeg=as<bool>(filter["negated"]);
+	gate * g;
+
+	switch(gateType)
+	{
+		case RANGEGATE:
+		{
+			StringVec params=as<StringVec>(filter["params"]);
+			rangeGate * rg=new rangeGate();
+			rg->setNegate(isNeg);
+
+			DoubleVec p=as<DoubleVec>(filter["range"]);
+
+			paramRange pRange;
+			pRange.setName(params.at(0));
+			pRange.setMin(p.at(0));
+			pRange.setMax(p.at(1));
+
+			rg->setParam(pRange);
+
+			g=rg;
+
+			break;
+		}
+		case POLYGONGATE:
+		{
+			StringVec params=as<StringVec>(filter["params"]);
+			polygonGate * pg=new polygonGate();
+
+			pg->setNegate(isNeg);
+
+			paramPoly pp;
+			pp.setName(params);
+
+			vector<coordinate> v;
+			NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+			for(int i=0;i<boundaries.nrow();i++)
+			{
+				coordinate pCoord;
+				pCoord.x=boundaries(i,0);
+				pCoord.y=boundaries(i,1);
+				v.push_back(pCoord);
+
+			}
+			pp.setVertices(v);
+
+			pg->setParam(pp);
+
+			g=pg;
+
+			break;
+		}
+		case RECTGATE:
+		{
+			StringVec params=as<StringVec>(filter["params"]);
+			rectGate * rectg=new rectGate();
+
+			rectg->setNegate(isNeg);
+
+			paramPoly pp;
+			pp.setName(params);
+
+			vector<coordinate> v;
+			NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+			for(int i=0;i<boundaries.nrow();i++)
+			{
+				coordinate pCoord;
+				pCoord.x=boundaries(i,0);
+				pCoord.y=boundaries(i,1);
+				v.push_back(pCoord);
+
+			}
+			pp.setVertices(v);
+
+			rectg->setParam(pp);
+
+			g=rectg;
+			break;
+
+		}
+		case BOOLGATE:
+		{
+			boolGate * bg=new boolGate();
+
+			bg->setNegate(isNeg);
+			/*
+			 * get specification from R
+			 */
+			StringVec refs=as<StringVec>(filter["refs"]);
+			StringVec op=as<StringVec>(filter["op"]);
+			BoolVec isNot=as<BoolVec>(filter["isNot"]);
+
+			/*
+			 * convert to c class
+			 */
+			vector<BOOL_GATE_OP> res;
+			for(unsigned i=0;i<refs.size();i++)
+			{
+
+				BOOL_GATE_OP gOpObj;
+
+				boost::split(gOpObj.path,refs.at(i),boost::is_any_of("/"));
+				if(gOpObj.path.at(0).empty())
+					gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
+
+				gOpObj.isNot=isNot.at(i);
+				gOpObj.op=boost::iequals(op.at(i),"|")?'|':'&';
+
+				res.push_back(gOpObj);
+			}
+			bg->boolOpSpec=res;
+			g=bg;
+			break;
+
+		}
+		case LOGICALGATE:
+		{
+			//TODO:create and implement logical gate class
+			throw(domain_error("LOGICALGATE is not unsupported yet!"));
+			break;
+		}
+		default:
+			throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));
+
+	}
+	g->setTransformed(TRUE);
+	return g;
+
+}
 RcppExport SEXP R_addGate(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _parentID,SEXP _popName) {
 BEGIN_RCPP
 
@@ -380,142 +552,8 @@ BEGIN_RCPP
 
 		unsigned parentID=as<unsigned>(_parentID);
 		string popName=as<string>(_popName);
-
-		/*
-		 * convert R filter to specific gate class
-		 */
 		List filter=as<List>(_filter);
-
-		StringVec names=filter.names();
-
-		unsigned short gateType=as<unsigned short>(filter["type"]);
-
-		bool isNeg=as<bool>(filter["negated"]);
-		gate * g;
-
-		switch(gateType)
-		{
-			case RANGEGATE:
-			{
-				StringVec params=as<StringVec>(filter["params"]);
-				rangegate * rg=new rangegate();
-				rg->setNegate(isNeg);
-
-				DoubleVec p=as<DoubleVec>(filter["range"]);
-
-				paramRange pRange;
-				pRange.setName(params.at(0));
-				pRange.setMin(p.at(0));
-				pRange.setMax(p.at(1));
-
-				rg->setParam(pRange);
-
-				g=rg;
-
-				break;
-			}
-			case POLYGONGATE:
-			{
-				StringVec params=as<StringVec>(filter["params"]);
-				polygonGate * pg=new polygonGate();
-
-				pg->setNegate(isNeg);
-
-				paramPoly pp;
-				pp.setName(params);
-
-				vector<coordinate> v;
-				NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
-				for(int i=0;i<boundaries.nrow();i++)
-				{
-					coordinate pCoord;
-					pCoord.x=boundaries(i,0);
-					pCoord.y=boundaries(i,1);
-					v.push_back(pCoord);
-
-				}
-				pp.setVertices(v);
-
-				pg->setParam(pp);
-
-				g=pg;
-
-				break;
-			}
-			case RECTGATE:
-			{
-				StringVec params=as<StringVec>(filter["params"]);
-				rectgate * rectg=new rectgate();
-
-				rectg->setNegate(isNeg);
-
-				paramPoly pp;
-				pp.setName(params);
-
-				vector<coordinate> v;
-				NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
-				for(int i=0;i<boundaries.nrow();i++)
-				{
-					coordinate pCoord;
-					pCoord.x=boundaries(i,0);
-					pCoord.y=boundaries(i,1);
-					v.push_back(pCoord);
-
-				}
-				pp.setVertices(v);
-
-				rectg->setParam(pp);
-
-				g=rectg;
-				break;
-
-			}
-			case BOOLGATE:
-			{
-				boolGate * bg=new boolGate();
-
-				bg->setNegate(isNeg);
-				/*
-				 * get specification from R
-				 */
-				StringVec refs=as<StringVec>(filter["refs"]);
-				StringVec op=as<StringVec>(filter["op"]);
-				BoolVec isNot=as<BoolVec>(filter["isNot"]);
-
-				/*
-				 * convert to c class
-				 */
-				vector<BOOL_GATE_OP> res;
-				for(unsigned i=0;i<refs.size();i++)
-				{
-
-					BOOL_GATE_OP gOpObj;
-
-					boost::split(gOpObj.path,refs.at(i),boost::is_any_of("/"));
-					if(gOpObj.path.at(0).empty())
-						gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
-
-					gOpObj.isNot=isNot.at(i);
-					gOpObj.op=boost::iequals(op.at(i),"|")?'|':'&';
-
-					res.push_back(gOpObj);
-				}
-				bg->boolOpSpec=res;
-				g=bg;
-				break;
-
-			}
-			case LOGICALGATE:
-			{
-				//TODO:create and implement logical gate class
-				throw(domain_error("LOGICALGATE is not unsupported yet!"));
-				break;
-			}
-			default:
-				throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));
-
-		}
-
+		gate * g=newGate(filter);
 
 
 		VertexID nodeID=gh->addGate(g,parentID,popName);
@@ -524,6 +562,28 @@ BEGIN_RCPP
 		return wrap(nodeID);
 
 
+
+END_RCPP
+}
+
+RcppExport SEXP R_setGate(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID,SEXP _filter) {
+BEGIN_RCPP
+
+
+		GatingSet *	gs=getGsPtr(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+		unsigned nodeID=as<unsigned>(_nodeID);
+		List filter=as<List>(_filter);
+
+		gate * g=newGate(filter);
+
+		nodeProperties * node=gh->getNodeProperty(nodeID);
+		gate * old_g = node->getGate();
+		delete old_g;
+		old_g=NULL;
+		node->setGate(g);
 
 END_RCPP
 }
@@ -539,13 +599,44 @@ BEGIN_RCPP
 
 		unsigned nodeID=as<unsigned>(_nodeID);
 
-
-
 		gh->removeNode(nodeID);
 
+END_RCPP
+}
+
+RcppExport SEXP R_setNodeName(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID, SEXP _newNodeName) {
+BEGIN_RCPP
 
 
+		GatingSet *	gs=getGsPtr(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		string newNodeName=as<string>(_newNodeName);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
+
+		unsigned nodeID=as<unsigned>(_nodeID);
+
+		nodeProperties *node=gh->getNodeProperty(nodeID);
+		node->setName(newNodeName.c_str());
+
+
+END_RCPP
+}
+
+RcppExport SEXP R_setNodeFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID, SEXP _hidden) {
+BEGIN_RCPP
+
+
+		GatingSet *	gs=getGsPtr(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		bool hidden=as<bool>(_hidden);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+
+		unsigned nodeID=as<unsigned>(_nodeID);
+
+		nodeProperties *node=gh->getNodeProperty(nodeID);
+		node->setHiddenFlag(hidden);
 
 
 END_RCPP

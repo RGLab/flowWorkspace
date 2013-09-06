@@ -494,7 +494,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 
 
 
-rangegate* macFlowJoWorkspace::getGate(wsRangeGateNode & node){
+rangeGate* macFlowJoWorkspace::getGate(wsRangeGateNode & node){
 	/*
 	 * using the same routine of polygon gate to parse ellipse
 	 */
@@ -503,7 +503,7 @@ rangegate* macFlowJoWorkspace::getGate(wsRangeGateNode & node){
 	/*
 	 * convert to the rangeGate data structure after the preliminary parsing step
 	 */
-	rangegate *g=new rangegate();
+	rangeGate *g=new rangeGate();
 
 
 	vector<coordinate> v=g1->getParam().getVertices();
