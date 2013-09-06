@@ -1,40 +1,35 @@
 \name{booleanFilter-class}
-\docType{class}
-\alias{booleanFilter-class}
 \alias{booleanFilter}
+\alias{booleanFilter-class}
 \alias{char2booleanFilter}
+\alias{show}
 \alias{show,booleanFilter-method}
+\title{A class describing logical operation (& or |) of the reference populations}
+\usage{
+  booleanFilter(expr, ...,
+    filterId = "defaultBooleanFilter")
 
-\title{Class \code{"booleanFilter"}}
+  char2booleanFilter(expr, ...,
+    filterId = "defaultBooleanFilter")
+}
+\arguments{
+  \item{expr}{\code{expression} or \code{character}}
+
+  \item{...}{further arguments to the expression}
+
+  \item{filterId}{\code{character} identifier}
+}
 \description{
-A class describing logical operation (& or |) of the reference populations 
-}
-\section{Objects from the Class}{
-Objects can be created by the constructors:
-booleanFilter(expr, ..., filterId="defaultBooleanFilter")
-char2booleanFilter(expr, ..., filterId="defaultBooleanFilter") 
-expr is an expression or a character string.
-}
-\section{Description}{
-It inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
-}
+  \code{booleanFilter} class inherits class
+  \code{\link{expressionFilter}} and exists for the purpose
+  of methods dispatching.
 
-\section{Methods}{
-  \describe{  
-     \item{add}{\code{signature(wf = "GatingHierarchyInternal",action="booleanFilter")}:add a boolean gate to a GatingHierarchyInternal object. }
-    \item{show}{\code{signature(object = "booleanFilter")}: Print information about the booleanFilter. }
-	 }
-}
-\references{
-http://www.rglab.org/import-flowjo-workspaces-into-r-bioconductor/
-}
-\author{
-Mike jiang<wjiang2@fhcrc.org>
-}
+  \code{booleanFilter} is a constructor from an expression
 
+  \code{char2booleanFilter} is a constructor from a
+  character string
+}
 \seealso{
-\code{\link{add}}
-\code{\linkS4class{GatingHierarchy}}
+  \code{\link{add}} \code{\linkS4class{GatingHierarchy}}
 }
 
-\keyword{classes}

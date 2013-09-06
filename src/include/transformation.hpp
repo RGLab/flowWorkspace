@@ -11,6 +11,7 @@
 #define CALTBL 0
 #define LOG 1
 #define LIN 2
+#define FLIN 3
 //#define LOGICLE 1
 //#define BIEXP 2
 
@@ -174,46 +175,51 @@ public:
 };
 
 
-class logicleTrans:public transformation{
-
-	friend class boost::serialization::access;
-private:
-	int channelRange;
-	double pos, neg, widthBasis, maxValue;
-
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-
-					ar & BOOST_SERIALIZATION_NVP(channelRange);
-					ar & BOOST_SERIALIZATION_NVP(pos);
-					ar & BOOST_SERIALIZATION_NVP(neg);
-					ar & BOOST_SERIALIZATION_NVP(widthBasis);
-					ar & BOOST_SERIALIZATION_NVP(maxValue);
-				}
-
-
-public:
-	logicleTrans * clone(){return new logicleTrans(*this);};
-};
+//class logicleTrans:public transformation{
+//
+//	friend class boost::serialization::access;
+//private:
+//	int channelRange;
+//	double pos, neg, widthBasis, maxValue;
+//
+//	template<class Archive>
+//				void serialize(Archive &ar, const unsigned int version)
+//				{
+//					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+//
+//					ar & BOOST_SERIALIZATION_NVP(channelRange);
+//					ar & BOOST_SERIALIZATION_NVP(pos);
+//					ar & BOOST_SERIALIZATION_NVP(neg);
+//					ar & BOOST_SERIALIZATION_NVP(widthBasis);
+//					ar & BOOST_SERIALIZATION_NVP(maxValue);
+//				}
+//
+//
+//public:
+//	logicleTrans * clone(){return new logicleTrans(*this);};
+//};
 
 /*
  * TODO:right now set two flags to TRUE in the contructor to avoid doing cal table stuff,
  * we should consider redesign the classes so that logTrans does not share this extra feature from parent class
  */
 class logTrans:public transformation{
+	double offset;
+	double decade;
 	friend class boost::serialization::access;
 private:
 		template<class Archive>
 					void serialize(Archive &ar, const unsigned int version)
 					{
 						ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-
+						ar & BOOST_SERIALIZATION_NVP(offset);
+						ar & BOOST_SERIALIZATION_NVP(decade);
 					}
 
 public:
-	logTrans(){type=LOG;isGateOnly=false;isComputed=true;calTbl.setInterpolated(true);};
+	logTrans();
+	logTrans(double _offset,double _decade);
+	double flog(double x,double _max,double _min);
 	void transforming(valarray<double> & input);
 	logTrans * clone(){return new logTrans(*this);};
 };
@@ -229,11 +235,31 @@ friend class boost::serialization::access;
 						}
 
 public:
-	linTrans(){type=LIN;isGateOnly=true;isComputed=true;calTbl.setInterpolated(true);};
+	linTrans();
 	void transforming(valarray<double> & input);
 	linTrans * clone(){return new linTrans(*this);};
 };
 
+class flinTrans:public transformation{
+	double min;
+	double max;
+friend class boost::serialization::access;
+	private:
+			template<class Archive>
+						void serialize(Archive &ar, const unsigned int version)
+						{
+							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+							ar & BOOST_SERIALIZATION_NVP(min);
+							ar & BOOST_SERIALIZATION_NVP(max);
+						}
+
+public:
+	flinTrans();
+	flinTrans(double _minRange, double _maxRange);
+	double flin(double x);
+	void transforming(valarray<double> & input);
+	flinTrans * clone(){return new flinTrans(*this);};
+};
 
 
 #endif /* TRANSFORMATION_HPP_ */

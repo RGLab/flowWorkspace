@@ -167,15 +167,32 @@ class gate {
 protected:
 	bool neg;
 	bool isTransformed;
+	bool isGained;
 private:
 	template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
+			void save(Archive &ar, const unsigned int version) const
 			{
 
 				ar & BOOST_SERIALIZATION_NVP(neg);
 				ar & BOOST_SERIALIZATION_NVP(isTransformed);
+				if(version>0)
+					ar & BOOST_SERIALIZATION_NVP(isGained);
 
 			}
+	template<class Archive>
+			void load(Archive &ar, const unsigned int version)
+			{
+
+				ar & BOOST_SERIALIZATION_NVP(neg);
+				ar & BOOST_SERIALIZATION_NVP(isTransformed);
+				if(version>0)
+					ar & BOOST_SERIALIZATION_NVP(isGained);
+				else{
+					isGained = false;
+				}
+
+			}
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	/*
 	 * exact string returned by std::type_info::name() is compiler-dependent
@@ -184,7 +201,8 @@ public:
 	virtual unsigned short getType()=0;
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual vector<bool> gating(flowData &){throw(domain_error("undefined gating function!"));};
-	virtual void extend(flowData &,unsigned short){throw(domain_error("undefined extend function!"));};
+	virtual void extend(flowData &,float,unsigned short){throw(domain_error("undefined extend function!"));};
+	virtual void gain(map<string,float> &,unsigned short){throw(domain_error("undefined gain function!"));};
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
 	virtual void transforming(trans_local &,unsigned short dMode){throw(domain_error("undefined transforming function!"));};
@@ -196,8 +214,9 @@ public:
 	virtual bool Transformed(){return isTransformed;};
 	virtual void setTransformed(bool _isTransformed){isTransformed=_isTransformed;};
 };
+BOOST_CLASS_VERSION(gate,1)
 
-class rangegate:public gate {
+class rangeGate:public gate {
 	friend class boost::serialization::access;
 
 private:
@@ -210,16 +229,17 @@ private:
 
 			}
 public:
-	rangegate();
+	rangeGate();
 	unsigned short getType(){return RANGEGATE;}
 	vector<bool> gating(flowData &);
-	void extend(flowData &,unsigned short);
+	void extend(flowData &,float,unsigned short);
+	void gain(map<string,float> &,unsigned short);
 	void transforming(trans_local &,unsigned short dMode);
 	paramRange getParam(){return param;};
 	vector<string> getParamNames(){return param.getNameArray();};
 	void setParam(paramRange _param){param=_param;};
 	vertices_valarray getVertices(){return param.toValarray();};
-	rangegate * clone(){return new rangegate(*this);};
+	rangeGate * clone(){return new rangeGate(*this);};
 
 };
 
@@ -242,7 +262,8 @@ private:
 public:
 	polygonGate();
 	virtual unsigned short getType(){return POLYGONGATE;}
-	virtual void extend(flowData &,unsigned short);
+	virtual void extend(flowData &,float,unsigned short);
+	virtual void gain(map<string,float> &,unsigned short);
 	virtual vector<bool> gating(flowData &);
 	virtual void transforming(trans_local &,unsigned short dMode);
 	virtual vertices_valarray getVertices(){return param.toValarray();};
@@ -256,7 +277,7 @@ public:
  * it doesn't overload getType member function, which means it is exposed to R
  * as a regular polygonGate
  */
-class rectgate:public polygonGate {
+class rectGate:public polygonGate {
 	friend class boost::serialization::access;
 
 private:
@@ -289,7 +310,8 @@ public:
 	vector<coordinate> getAntipodal(){return antipodal_vertices;};
 	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
 	unsigned short getType(){return ELLIPSEGATE;}
-	void extend(flowData &,unsigned short);
+	void extend(flowData &,float,unsigned short);
+	void gain(map<string,float> &,unsigned short);
 	void toPolygon(unsigned);
 	void transforming(trans_local &,unsigned short dMode);
 	ellipseGate * clone(){return new ellipseGate(*this);};

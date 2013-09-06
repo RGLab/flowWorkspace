@@ -1,21 +1,20 @@
-\name{lapply-methods}
-\docType{methods}
-\alias{lapply-methods}
-\alias{lapply,ANY-method}
+\name{lapply}
+\alias{lapply}
 \alias{lapply,GatingSet-method}
-\title{ Methods for iterating over a gating set }
+\alias{lapply,GatingSetList-method}
+\title{apply \code{FUN} to each sample (i.e. \code{GatingHierarchy})}
+\arguments{
+  \item{X}{\code{GatingSet} or \code{GatingSetList} object}
+
+  \item{FUN}{\code{function} to apply}
+
+  \item{level}{\code{numeric}. When \code{X} is a
+  \code{GatingSetList}, \code{level} 2 (default value)
+  \code{FUN} is applied to each individual
+  \code{GatingHierarchy}. When it is set to 1, \code{FUN}
+  is applied to each \code{GatingSet}}
+}
 \description{
- ~~ Methods for function \code{lapply}  ~~
-}
-\section{Methods}{
-\describe{
-
-\item{\code{signature(X = "ANY")}}{
-%%  ~~describe this method here~~
+  sample names are used for names of the returned list
 }
 
-\item{\code{signature(X = "GatingSet")}}{
-%%  ~~describe this method here~~
-}
-}}
-\keyword{methods}
