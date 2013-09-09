@@ -49,9 +49,9 @@ isNcdf <- function(x){
 #' @rdname save_gs
 #' @export 
 #' @aliases save_gs load_gs save_gslist load_gslist
-save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
+save_gs<-function(G,path,overwrite = FALSE, cdf = c("copy","move","skip","symlink","link"), ...){
 #  browser()
-  cdf <- match.arg(cdf,c("copy","move","skip","symlink","link"))
+  cdf <- match.arg(cdf)
   guid <- G@guid
   if(length(guid) == 0){
     G@guid <- .uuid_gen()
