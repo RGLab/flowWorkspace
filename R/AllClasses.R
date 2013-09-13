@@ -31,7 +31,8 @@ setOldClass("XMLInternalDocument")
 #' An R representation of a flowJo workspace.
 #' 
 #' Objects can be created by calls of the form \code{new("flowJoWorkspace.xml", ...)}.
-#' 
+#'
+#' @section Slots: 
 #' \describe{
 #'   \item{\code{version}:}{Object of class \code{"character"}. The version of the XML workspace. }
 #'   \item{\code{file}:}{Object of class \code{"character"}. The file name. }
@@ -83,7 +84,8 @@ setClass("flowJoWorkspace"
 #' transform, compensate, and gate the associated data. Whether or not a GatingHierarchy has been applied to data is encoded in the \code{flag} slot. Some methods will warn the user, or may not function correctly if the GatingHierarchy has not been executed.
 #' This mechanism is in place, largely for the purpose of speed when working with larger workspaces. 
 #' It allows the use to load a workspace and subset desired samples before proceeding to load the data. 
-
+#' 
+#' @section Slots:
 #' 
 #' \describe{
 #'     \item{\code{FCSPath}:}{Object of class \code{"character"}. A path to the fcs files associated with this GatingSet } 
