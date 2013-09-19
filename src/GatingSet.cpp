@@ -444,7 +444,16 @@ vector<string> GatingSet::getSamples(void)
 		return res;
 		//	return(this->sampleList);
 };
+/* change the sample name by inserting a new entry and deleting the old one*/
+void GatingSet::setSample(string oldName, string newName)
+{
 
+		GatingHierarchy * gh = getGatingHierarchy(oldName);
+
+		ghs[newName] = gh;
+		ghs.erase(oldName);
+
+};
 /*
  * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
  */

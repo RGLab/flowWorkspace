@@ -88,6 +88,7 @@ private:
 public:
 	~GatingSet();
 	GatingSet(){ws=NULL;};
+	void setSample(string oldName, string newName);
 	GatingSet(string,bool,unsigned short,int,unsigned short _dMode=1);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
 	GatingSet(vector<string>,unsigned short _dMode=1);

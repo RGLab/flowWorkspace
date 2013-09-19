@@ -360,6 +360,29 @@ trimWhiteSpace<-function (x)
     sub("[ \t\n\r]*$", "", sub("^[ \t\n\r]*", "", x))
 }
 
+#' Get a list of samples from a flowJo workspace
+#' 
+#' Return  a data frame of samples contained in a flowJo workspace
+#' @param x A \code{flowJoWorkspace}
+#' 
+#' @details
+#' Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including their 
+#' \code{sampleID}, \code{name}, and \code{compID} (compensation matrix ID). 
+#' 
+#' @return 
+#' A \code{data.frame} with columns \code{sampleID}, \code{name}, and \code{compID} if \code{x} is a \code{flowJoWorkspace}.
+#' 
+#' @examples
+#'       \dontrun{
+#'         #ws is a flowJoWorkspace
+#'         getSamples(ws);
+#'       }
+#' @aliases
+#' getSamples
+#' getSamples-methods
+#' getSamples,GatingSet-method
+#' getSamples,flowJoWorkspace-method
+#' @export  
 setMethod("getSamples","flowJoWorkspace",function(x){
 	.getSamples(x@doc)
 })

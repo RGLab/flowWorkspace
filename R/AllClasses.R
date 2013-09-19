@@ -248,7 +248,7 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #'     #gslist2 is a GatingSetList that contains multiple GatingSets and they share the same gating and data structure
 #'     gslist2
 #'     class(gslist2)
-#'     getSamples(gslist2)
+#'     sampleNames(gslist2)
 #'     
 #'     #reference a GatingSet by numeric index
 #'     gslist2[[1]]
@@ -256,11 +256,11 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #'     gslist2[["30104.fcs"]]
 #'     
 #'     #loop through all GatingSets within GatingSetList
-#'     lapply(gslist2,getSamples)
+#'     lapply(gslist2,sampleNames)
 #'     
 #'     #subset a GatingSetList by [
-#'     getSamples(gslist2[c(4,1)])
-#'     getSamples(gslist2[c(1,4)])
+#'     sampleNames(gslist2[c(4,1)])
+#'     sampleNames(gslist2[c(1,4)])
 #'     gslist2[c("30104.fcs")]
 #'     
 #'     #get flow data from it
@@ -309,7 +309,8 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #' GatingSetList-class
 #' GatingSetList
 #' show,GatingSetList-method
-#' getSamples,GatingSetList-method
+#' getSamples,GatingSetList-method 
+#' sampleNames,GatingSetList-method
 #' rbind2,GatingSetList,missing-method
 #' [[,GatingSetList,numeric-method
 #' [[,GatingSetList,logical-method
@@ -331,7 +332,7 @@ validGatingSetListObject <- function(object){
   
   gs_list <- object@data
   #check overlapping samples
-  gs_samples <- unlist(lapply(gs_list, getSamples))
+  gs_samples <- unlist(lapply(gs_list, sampleNames))
   if(any(duplicated(gs_samples))){
     return ("There are overlapping samples across GatingSets!")
   }
@@ -404,7 +405,7 @@ setValidity("GatingSetList", validGatingSetListObject)
 #' validity check for samples slot        
 .isValidSamples<-function(samples,object){
   
-  return (setequal(unlist(lapply(object,getSamples)),samples))
+  return (setequal(unlist(lapply(object,sampleNames)),samples))
 }
 
 #' @description use \code{GatingSetList} constructor to create a GatingSetList from a list of GatingSet
@@ -419,7 +420,7 @@ GatingSetList <- function(x,samples = NULL)
   names(x)<-NULL#strip names from the list because rbind2 doesn't like it
   flowCore:::checkClass(x, "list")
   if(is.null(samples)){
-    samples <- unlist(lapply(x,getSamples))
+    samples <- unlist(lapply(x,sampleNames))
   }
   x <- new("GatingSetList", data = x, samples = samples)
   return(x)

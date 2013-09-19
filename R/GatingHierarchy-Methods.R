@@ -1056,7 +1056,7 @@ setMethod("setNode"
 #' getSample-method
 #' getSample,GatingHierarchy-method
 setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
-      thisSample <- getSamples(x)
+      thisSample <- sampleNames(x)
       
       if(isFullPath)
         thisSample <- file.path(x@FCSPath,thisSample)

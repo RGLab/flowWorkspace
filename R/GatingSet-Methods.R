@@ -936,7 +936,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @importClassesFrom flowCore filters filtersList
 #' @importFrom flowCore filters filtersList
 .preplot <- function(x, y, type, stats, formula, ...){
-  samples <- getSamples(x)
+  samples <- sampleNames(x)
 #  browser()
   if(is.list(y))
   {
@@ -1183,7 +1183,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 			clone <- x
 			#clone c structure
 			message("cloning tree structure...")
-			clone@pointer <- .Call("R_CloneGatingSet",x@pointer,getSamples(x))
+			clone@pointer <- .Call("R_CloneGatingSet",x@pointer,sampleNames(x))
             clone@guid <- .uuid_gen()
 
 			#deep copying flow Data
@@ -1241,7 +1241,7 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 #' @aliases 
 #' lapply,GatingSet-method
 setMethod("lapply","GatingSet",function(X,FUN,...){
-      sapply(getSamples(X),function(thisSample,...){
+      sapply(sampleNames(X),function(thisSample,...){
             gh <- X[[thisSample]]
             FUN(gh, ...)
           }, simplify = FALSE, ...)
@@ -1250,37 +1250,54 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
     })    
 
    
-#' Get a list of samples in a flowJo workspace or a GatingSet
+    
+setMethod("getSamples","GatingSet",function(x){
+      .Defunct("sampleNames")
+      sampleNames(x)
+    })
+#' Get/update sample names in a GatingSet
 #' 
-#' Return  a data frame of samples contained in a flowJo workspace or a GatingSet
-#' @param x A \code{flowJoWorkspace} or a \code{GatingSet}
-#' @param isFullPath \code{isFullPath} is a logical value indicating whether the full path of the sample file is returned.Default is FALSE.
+#' Return  a sample names contained in a GatingSet
 #' 
-#' @details
-#' Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including their 
-#' \code{sampleID}, \code{name}, and \code{compID} (compensation matrix ID). 
-#' If \code{x} is a \code{GatingSet}, returns a character vector of sample names.
+#' @param object  or a \code{GatingSet}
+#' @param value \code{character} new sample names
+#' 
+#' @details 
 #' The sample names comes from pdata of fs.
 #' 
 #' @return 
-#' A \code{data.frame} with columns \code{sampleID}, \code{name}, and \code{compID} if \code{x} is a \code{flowJoWorkspace}.
-#' A character vector of sample names if \code{x} is a \code{GatingSet}.
+#' A character vector of sample names
 #' 
 #' @examples
 #'       \dontrun{
 #'         #G is  a GatingSet
-#'         getSamples(G)
-#'         #f is a flowJoWorkspace
-#'         getSamples(f);
+#'         sampleNames(G)
 #'       }
 #' @aliases
-#' getSamples
-#' getSamples-methods
-#' getSamples,GatingSet-method
-#' getSamples,flowJoWorkspace-method
-#' @export    
-setMethod("getSamples","GatingSet",function(x){
-      sampleNames(flowData(x))
+#' sampleNames
+#' sampleNames,GatingSet-method
+#' sampleNames<-,GatingSet-method
+#' @export
+setMethod("sampleNames","GatingSet",function(object){
+      sampleNames(flowData(object))
+    })
+
+setReplaceMethod("sampleNames",
+    signature=signature(object="GatingSet"),
+    definition=function(object, value)
+    {
+      oldNames <- sampleNames(object)
+      #update c++ data structure
+      mapply(oldNames,object, FUN = function(oldName, newName){
+            .Call("R_setSample", object@pointer, oldName, newName) 
+      })
+  
+      #update data
+      fs <- flowData(object)
+      sampleNames(fs) <- value
+      flowData(object) <- fs
+      
+      object
     })
 
 # to speed up reading data from disk later on, 
@@ -1419,7 +1436,7 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #            browser()
             #convert non-character indices to character
             if(extends(class(i), "numeric")||class(i) == "logical"){
-              i <- getSamples(x)[i]
+              i <- sampleNames(x)[i]
             }
             
             #copy the R structure          
@@ -1478,14 +1495,14 @@ setMethod("setNode"
 #' [[,GatingSet,logical-method
 #' [[,GatingSet,character-method
 setMethod("[[",c(x="GatingSet",i="numeric"),function(x,i,j,...){
-      x[[getSamples(x)[i]]]
+      x[[sampleNames(x)[i]]]
       
     })
 
 
 setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
             
-      x[[getSamples(x)[i]]]
+      x[[sampleNames(x)[i]]]
       
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
@@ -1593,7 +1610,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #columns are populations
 #rows are samples
       cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
-      rownames(cv)<-getSamples(x);#Name the rows
+      rownames(cv)<-sampleNames(x);#Name the rows
 #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
@@ -1630,7 +1647,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #' getKeywords,GatingSet,numeric-method
 #' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
-      ind <- which(getSamples(obj)%in%y)
+      ind <- which(sampleNames(obj)%in%y)
       if(length(ind)>0){
         getKeywords(obj,ind);
       }else{
