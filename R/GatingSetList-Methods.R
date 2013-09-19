@@ -55,7 +55,7 @@ setMethod("getSamples","GatingSetList",function(x){
 
 setMethod("sampleNames", 
     signature = signature(object = "GatingSetList"),
-    function(x,...) {
+    function(object) {
       object@samples      
     })
 
