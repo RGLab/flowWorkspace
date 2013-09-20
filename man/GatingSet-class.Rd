@@ -48,7 +48,8 @@
   the purpose of speed when working with larger workspaces.
   It allows the use to load a workspace and subset desired
   samples before proceeding to load the data.
-
+}
+\section{Slots}{
   \describe{ \item{\code{FCSPath}:}{Object of class
   \code{"character"}. A path to the fcs files associated
   with this GatingSet } \item{\code{data}:}{Object of class
