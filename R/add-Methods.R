@@ -150,7 +150,7 @@ setMethod("add",
 			
 			message("replicating filter '",identifier(action),"' across samples!")
 			
-			actions<-sapply(getSamples(wf),function(x)return(action))
+			actions<-sapply(sampleNames(wf),function(x)return(action))
 			add(wf,actions,...)
 			
 		})
