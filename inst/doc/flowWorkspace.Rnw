@@ -191,7 +191,7 @@ B<-names(T[[1]])
 The list of samples in a workspace can be accessed by:
 
 <<getsamples>>=
-sampleNames(ws);
+getSamples(ws);
 @
 
 And the groups can be accessed by:
