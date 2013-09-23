@@ -1260,7 +1260,7 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
    
     
 setMethod("getSamples","GatingSet",function(x){
-      .Defunct("sampleNames")
+      stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
       sampleNames(x)
     })
 #' Get/update sample names in a GatingSet

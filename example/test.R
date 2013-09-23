@@ -1,7 +1,7 @@
 unloadNamespace("flowWorkspace")
 
 library(flowWorkspace)
-#library(XML)
+library(XML)
 #dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
 
 #lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
@@ -16,6 +16,8 @@ macXML<-"/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Anal
 
 macXML<-"/loc/no-backup/FlowWorkspaceTest/Lyoplate/Centralized B-cell.xml"
 macXML<-list.files(pattern="xml",path="~/rglab/workspace/flowWorkspace/data/Newell/XML workspaces",full=TRUE)[1]
+
+macXML<-"/loc/no-backup/ramey/Cytotrol/XML/CA_CytoTrol Treg.xml"
 
 #macXML<-"/loc/no-backup/HVTN054/Workspace/054-wkspace_tmp_tr.xml"
 #macXML<-"/loc/no-backup/HVTN054/FACSData/L02-060731-054-R1/L02-060731-054-R1.xml"
@@ -35,7 +37,7 @@ macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
 ############################################################################### 
 #cpp parser
 ###############################################################################
-ws<-openWorkspace(macXML[1],options=1)
+ws <- openWorkspace(macXML[1],options=1)
 
 ############################################################################### 
 ##parse as template and apply to new data			
@@ -43,20 +45,21 @@ ws<-openWorkspace(macXML[1],options=1)
 time1<-Sys.time()	
 #Rprof()
 GT<-parseWorkspace(ws
-                    ,name=4
+                    ,name=2
 #					,execute=F
 #					,includeGates=T
-                    ,subset=1:2
+                    ,subset= 1
 #					,subset=c("517614.fcs")
-					,isNcdf=T
+#					,isNcdf=T
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
 #                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
-                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
+                    ,path = "/loc/no-backup/ramey/Cytotrol/Treg FCS files/Treg BIIR/"
 					,dMode=4
                     ,extend_val=0
 #                    ,column.pattern=colP

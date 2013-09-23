@@ -50,7 +50,7 @@ setMethod("show",
 
 
 setMethod("getSamples","GatingSetList",function(x){
-      .Defunct("sampleNames")
+      stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
     })
 
 setMethod("sampleNames", 
