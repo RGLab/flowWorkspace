@@ -787,6 +787,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'  \item{formula}{\code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
 #'  \item{cond}{\code{character} the conditioning variable to be passed to lattice plot.}
 #'  \item{overlay}{\code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
+#'  \item{default.y}{\code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".} 
 #'  \item{...}{The other additional arguments to be passed to \link[flowViz]{xyplot}.}
 #' }
 #' 
@@ -935,12 +936,12 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
 #' @importClassesFrom flowCore filters filtersList
 #' @importFrom flowCore filters filtersList
-.preplot <- function(x, y, type, stats, formula, ...){
+.preplot <- function(x, y, type, stats, formula, default.y = "SSC-A"){
   samples <- sampleNames(x)
 #  browser()
   if(is.list(y))
   {
-#       browser()
+
     curGates<-sapply(samples,function(curSample){
           
           filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
@@ -989,17 +990,24 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       params<-rev(parameters(curGates[[1]]))
     
   }
-  if(type=="xyplot")
+  
+  if(type == "xyplot")
   {
-    if(length(params)==1)
+    if(length(params) == 1)
     {
+      chnls <- colnames(flowData(x))
       if(is.null(formula)){
-        yParam <- "SSC-A"
-
-        if(params=="SSC-A" && yParam == "SSC-A")
-          xParam<-"FSC-A"
-        else
-          xParam <- params
+        xParam <- params
+        y.candidates <- chnls[-match(xParam,chnls)]
+        
+        if(default.y%in%y.candidates)
+          yParam <- default.y
+        else{
+          if(!default.y %in% chnls)
+            #pick other channel for y axis
+            yParam <- y.candidates[1]
+            warning("Y axis is set to '", yParam, "' because '",default.y, "' is not found in flow data!\n To eliminate this warning, set type = 'densityplot' or change the default y channel through 'default.y' ")
+        }
         
       }else{
         forRes <- .formulaParser(formula)
@@ -1046,7 +1054,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param overlay either the gate indice list or event indices list
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
-.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stack = FALSE, stats , ...){
+.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stack = FALSE, stats , default.y = "SSC-A", ...){
 
 	
 	type<- match.arg(type)
@@ -1072,7 +1080,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	#################################
 	# setup axis labels and scales
 	################################
-    parseRes <- .preplot (x, y, type, stats, formula,...)
+    parseRes <- .preplot (x, y, type, stats, formula, default.y)
     
     curGates <- parseRes$gates
     xParam <- parseRes$xParam

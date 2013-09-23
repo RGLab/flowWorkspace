@@ -45,6 +45,8 @@
   indices representing a sub-cell population. This cell
   population is going to be plotted on top of the existing
   gates(defined by \code{y} argument) as an overlay.}
+  \item{default.y}{\code{character} specifiying y channel
+  for xyplot when plotting a 1d gate. Default is "SSC-A".}
   \item{...}{The other additional arguments to be passed to
   \link[flowViz]{xyplot}.} }}
 }
