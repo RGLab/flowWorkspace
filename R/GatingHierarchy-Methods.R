@@ -175,34 +175,52 @@ setMethod("show","GatingHierarchy",function(object){
 		})
 
     
-#' Retrieve keywords associated with an FCS sample
+#' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}
 #' 
-#' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet}
+#' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}
 #' 
 #' @details See \code{keyword} in Package `flowCore' 
 #' 
-#' @param object \code{GatingHierarchy} or \code{GatingSet}
-#' @param keyword \code{character}.
+#' @param object \code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}
+#' @param keyword \code{character} specifying keyword name. When \code{missing}, extract all keywords.
 #' 
 #' @seealso \code{\link[flowCore]{keyword-methods}}
 #' 
 #' @aliases 
 #' keyword 
 #' keyword,GatingHierarchy,character-method 
-#' keyword,GatingHierarchy,character
+#' keyword,GatingHierarchy,missing-method
 #' keyword,GatingSet,character-method
-#' keyword,GatingSet,character
-#' 
+#' keyword,GatingSet,missing-method
+#' keyword,GatingSetList,character-method
+#' keyword,GatingSetList,missing-method
+#' @examples 
+#'     \dontrun{
+#'       #get all the keywords from all samples
+#'       keyword(G)
+#'       #get all the keywords from one sample
+#'       keyword(G[[1]])
+#'       #get single keyword from all samples   
+#'       keyword(G, "FILENAME")
+#'       #get single keyword from one sample   
+#'       keyword(G[[1, "FILENAME") 
+#'     }
+
 #' @importFrom flowCore keyword
 #' @export 
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
-			
-			keyword(getData(object),keyword)
+          
+			keyword(object)[[keyword]]
 		})
 setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
+            stop("'getKeywords' is defunct. use 'keyword' instead! ")
+      
 			keyword(getData(obj))
 		})
-    
+setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing"){
+      
+      flowCore::keyword(getData(object))
+    })    
 
 #'  Get the names of all nodes in a gating hierarchy.
 #' 

@@ -77,7 +77,7 @@ setMethod("lapply","GatingSetList",function(X,FUN, level = 2,...){
         sapply(sampleNames(X),function(thisSample,...){
               gh <- X[[thisSample]]
               FUN(gh, ...)
-            }, simplify = TRUE, ...)
+            }, simplify = FALSE, ...)
       }
     })
 
@@ -244,6 +244,16 @@ setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats, level =1,...)
       do.call(cbind,res)
     })
+
+setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing"){
+      selectMethod("keyword",signature = c(x="GatingSet",y="missing"))(object, keyword)
+      
+    })
+
+setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
+      selectMethod("keyword",signature = c(x="GatingSet",y="character"))(object, keyword)
+    })
+
 #' @aliases 
 #' length,GatingSetList-method
 #' @rdname length-methods

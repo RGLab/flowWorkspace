@@ -38,6 +38,8 @@ macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
 #cpp parser
 ###############################################################################
 ws <- openWorkspace(macXML[1],options=1)
+getSamples(ws)
+getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 
 ############################################################################### 
 ##parse as template and apply to new data			
@@ -48,7 +50,7 @@ GT<-parseWorkspace(ws
                     ,name=2
 #					,execute=F
 #					,includeGates=T
-                    ,subset= 1
+                    ,subset= 1:2
 #					,subset=c("517614.fcs")
 #					,isNcdf=T
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
@@ -57,9 +59,9 @@ GT<-parseWorkspace(ws
 #                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
-                    ,path = "/loc/no-backup/ramey/Cytotrol/Treg FCS files/Treg BIIR/"
+#                    ,path = "/loc/no-backup/ramey/Cytotrol/Treg FCS files/Treg BIIR/"
 					,dMode=4
                     ,extend_val=0
 #                    ,column.pattern=colP
@@ -69,6 +71,21 @@ Sys.time()-time1
 Rprof(NULL)
 summaryRprof()
 getSamples(ws)
+getKeywords(GT,"CytoTrol_CytoTrol_1.fcs")
+getKeywords(GT[[1]])
+keyword(GT[[1]])
+keyword(GT[[1]],"FILENAME")
+
+
+klist <- keyword(GT)
+klist <- keyword(GT,"FILENAME")
+gslist <- GatingSetList(list(GT))
+klist <- keyword(gslist)
+keyword(gslist,"FILENAME")
+pData(gslist)
+gslist[1]
+getGate(gslist,2)
+
 gh <- GT[[1]]
 getNodes(gh)
 g <- getGate(GT[[1]],10)

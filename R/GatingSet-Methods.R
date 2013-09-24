@@ -1629,32 +1629,8 @@ setMethod("plotPopCV","GatingSet",function(x,...){
     })
 
 
-#' Get List of Keywords for a Flow Sample
-#' 
-#' Retrieve the list of keywords associated with a sample
-#' 
-#' @param obj A \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy}
-#' @param y can be omitted if \code{obj} is a \code{GatingHierarchy}. A \code{character}, or \code{numeric} if \code{obj} is a \code{GatingSet}. A \code{character} if \code{obj} is a \code{flowJoWorkspace}
-#' 
-#' @details
-#'   Retrieve a list of keywords from a \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy} for a particular sample. The sample is specified via \code{y}, either a numeric index into a \code{GatingSet}, or a sample name (\code{character}) for all other types of \code{obj}. 
-#' @return A list of keyword - value pairs. 
-#' @examples
-#'     \dontrun{
-#'       #G is a GatingHierarchy
-#'       getKeywords(G);
-#'       #G is a GatingSet
-#'       getKeywords(G[[1]])
-#'       getKeywords(G,1)
-#'     }
-#' @aliases 
-#' getKeywords
-#' getKeywords-methods
-#' getKeywords,GatingHierarchy,missing-method
-#' getKeywords,GatingSet,character-method
-#' getKeywords,GatingSet,numeric-method
-#' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
+      stop("'getKeywords' is defunct. use 'keyword' instead! ")
       ind <- which(sampleNames(obj)%in%y)
       if(length(ind)>0){
         getKeywords(obj,ind);
@@ -1663,12 +1639,18 @@ setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
       }
     })
 setMethod("getKeywords",c("GatingSet","numeric"),function(obj,y){
+      stop("'getKeywords' is defunct. use 'keyword' instead! ")
       if(length(obj) < y){
         stop("index out of range");
       }else{
         lapply(obj, getKeywords);
       }
     })
+setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing"){
+        lapply(object, flowCore::keyword)
+      
+    })
+
 setMethod("keyword",c("GatingSet","character"),function(object,keyword){
       tmp<-data.frame(unlist(lapply(object,function(x)keyword(x,keyword)),use.names=FALSE));
       tmp<-data.frame(matrix(tmp[[1]],ncol=length(keyword),byrow=T))

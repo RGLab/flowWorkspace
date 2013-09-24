@@ -258,7 +258,32 @@ l})
   }
 }
 
-
+#' Get Keywords
+#' 
+#' Retrieve keywords associated with a workspace
+#' 
+#' @param obj A \code{flowJoWorkspace}
+#' @param y c\code{character} specifying the sample names
+#' 
+#' @details
+#'   Retrieve a list of keywords from a \code{flowJoWorkspace}  
+#' @return A list of keyword - value pairs. 
+#' @examples
+#'   require(flowWorkspaceData)
+#'   d<-system.file("extdata",package="flowWorkspaceData")
+#'   wsfile<-list.files(d,pattern="manual.xml",full=TRUE)
+#'   ws <- openWorkspace(wsfile);
+#'   
+#'   getSamples(ws)
+#'   getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
+#' 
+#' @aliases 
+#' getKeywords
+#' getKeywords-methods
+#' getKeywords,GatingHierarchy,missing-method
+#' getKeywords,GatingSet,character-method
+#' getKeywords,GatingSet,numeric-method
+#' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
 	w <- which(xpathApply(obj@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value"))%in%y)
 	l<-xpathApply(obj@doc,paste("/Workspace/SampleList/Sample[",w,"]/Keywords/node()",sep=""),xmlAttrs)
