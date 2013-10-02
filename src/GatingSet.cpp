@@ -454,15 +454,7 @@ void GatingSet::setSample(string oldName, string newName)
 		ghs.erase(oldName);
 
 };
-/*
- * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++
- */
-void GatingSet::attachData(string fileName,vector<string> sampleNames,vector<string> params){
 
-	nc.fileName_set(fileName);
-	nc.params_set(params);
-	nc.sample_set(sampleNames);
-}
 
 void GatingSet::gating(){
 

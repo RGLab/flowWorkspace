@@ -15,7 +15,7 @@ ifeq ($(boost_bundled),yes)
 endif
 
 PKG_CPPFLAGS =-Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags}
-PKG_LIBS =${bgl_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags();cat(' ');ncdfFlow:::LdFlags(FALSE)"` @PKG_LIBS@ 
+PKG_LIBS =${bgl_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` @PKG_LIBS@ 
 
 USERDIR =	../inst/lib
 USERLIB	=	libflowWorkspace$(DYLIB_EXT)

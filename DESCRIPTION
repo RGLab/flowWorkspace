@@ -47,4 +47,4 @@ biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
     flowWorkspaceData
-LinkingTo: Rcpp,ncdfFlow
+LinkingTo: Rcpp
