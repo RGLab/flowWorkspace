@@ -291,6 +291,7 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=
 #' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
 #' @param obj A \code{GatingHierarchy}
 #' @param y a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.
+#' @param ... other arguments passed to \link{getNodes} methods
 #' @return 
 #'   \code{getParent} returns a \code{character} vector, the name of the parent population.
 #'   \code{getChildren} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
@@ -319,16 +320,16 @@ setMethod("getParent",signature(obj="GatingHierarchy",y="numeric"),function(obj,
 #			browser()
 			.Call("R_getParent",obj@pointer,getSample(obj),as.integer(y)-1)+1
 		})
-setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
 #			browser()
 			ind<-.getNodeInd(obj,y)
 			pind<-getParent(obj,ind)
-			getNodes(obj, showHidden = TRUE)[pind]
+			getNodes(obj, showHidden = TRUE, ...)[pind]
 		})
-setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE){
+setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE, ...){
 			ind<-.getNodeInd(obj,y)
 			cind<-getChildren(obj,ind)
-			getNodes(obj, showHidden = TRUE)[cind]
+			getNodes(obj, showHidden = TRUE, ...)[cind]
 })
 setMethod("getChildren",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
 #			browser()
