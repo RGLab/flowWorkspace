@@ -1055,7 +1055,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param overlay either the gate indice list or event indices list
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
-.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stack = FALSE, stats , default.y = "SSC-A", ...){
+.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stack = FALSE, stats , default.y = "SSC-A", scales , ...){
 
 	
 	type<- match.arg(type)
@@ -1111,12 +1111,15 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         formula<-paste(formula,cond,sep="|")
       formula<-as.formula(formula)
     }
-
+    #use default scales stored in gs if it is not given
+    if(missing(scales))
+      scales <- axisObject$scales
+    
     thisCall<-quote(plot(x=formula
                           ,data=parentData
                           ,filter=curGates
                           ,xlab=xlab
-                          ,scales=axisObject$scales
+                          ,scales=scales
                           ,main=main
                           ,...
                           )
