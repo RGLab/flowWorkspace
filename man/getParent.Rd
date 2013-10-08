@@ -14,6 +14,9 @@
   \item{y}{a \code{character/numeric} the name or
   full(/partial) gating path or node indices of the node /
   population.}
+
+  \item{...}{other arguments passed to \link{getNodes}
+  methods}
 }
 \value{
   \code{getParent} returns a \code{character} vector, the

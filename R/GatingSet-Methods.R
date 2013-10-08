@@ -787,7 +787,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'  \item{formula}{\code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
 #'  \item{cond}{\code{character} the conditioning variable to be passed to lattice plot.}
 #'  \item{overlay}{\code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
-#'  \item{default.y}{\code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".} 
+#'  \item{default.y}{\code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
+#'  \item{type}{\code{character} either "xyplot" or "densityplot". Default is "xyplot"}
 #'  \item{...}{The other additional arguments to be passed to \link[flowViz]{xyplot}.}
 #' }
 #' 
