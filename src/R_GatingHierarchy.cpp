@@ -257,7 +257,7 @@ END_RCPP
  * non-cdf version
  */
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val){
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val, SEXP _ignore_case){
 BEGIN_RCPP
 
 
@@ -268,11 +268,13 @@ BEGIN_RCPP
 
 	unsigned short nodeInd=as<unsigned short>(_nodeInd);
 	bool recompute=as<bool>(_recompute);
+	bool ignore_case=as<bool>(_ignore_case);
+
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
 	Rcpp::NumericMatrix orig(_mat);
 	unsigned sampleID=numeric_limits<unsigned>::max();//dummy sample index
-	flowData fdata(orig,sampleID);
+	flowData fdata(orig,sampleID,ignore_case);
 
 	gh->loadData(fdata);
 	if(!recompute)

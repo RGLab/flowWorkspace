@@ -457,10 +457,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 #' constructing gating set
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
+#' @param ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..) 
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE, ignore.case = FALSE, ...){
 	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -497,11 +498,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			
 			message("loading data: ",file);
 			if(isNcdf)
-				data<-read.FCS(file)[,colnames(fs)]
+				data <- read.FCS(file)[,colnames(fs)]
 			else
-				data<-fs[[sampleName]]
+				data <- fs[[sampleName]]
              
-            cnd<-colnames(data)
+            cnd <- colnames(data)
 #            browser()
             #alter colnames(replace "/" with "_") for flowJo X
             if(wsversion == "1.8"){
@@ -514,26 +515,34 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			#Compensating the data
 			##################################
 			comp <- .Call("R_getCompensation", G@pointer, sampleName)
-			cid<-comp$cid
+			cid <- comp$cid
 			if(cid=="")
 				cid=-2
 
 			if(cid!="-1" && cid!="-2"){
 				message("Compensating");
 				
-				marker<-comp$parameters
+				marker <- comp$parameters
 				
-				if(is.null(compensation))
-					compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
-				else
-					compobj<-compensation#TODO: to update compensation information in C part
+				if(is.null(compensation)){
+                  ## try to match marker from comp with flow data in case flowJo is not consistent with data
+                  markerInd <- sapply(marker, function(thisMarker)grep(thisMarker, cnd, ignore.case = ignore.case))
+                  matchedMarker <- cnd[markerInd]
+                  if(length(matchedMarker) != length(marker))
+                    stop("channels mismatched between compensation and flow data!")
+                  marker <- matchedMarker
+                  
+                  compobj <- compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+                }else
+					compobj <- compensation#TODO: to update compensation information in C part
 				#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
 				#I need to handle this case properly.
-				res<-try(compensate(data,compobj),silent=TRUE)
+    
+                res <- try(compensate(data,compobj),silent=TRUE)
 				if(inherits(res,"try-error")){
 					message("Data is probably stored already compensated");
 				}else{
-					data<-res
+					data <- res
 					rm(res);
 				}
 				
@@ -580,13 +589,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                 if(is.null(prefixColNames)&&prefix){
                   
                   if(is.null(cnd)){
-                    cnd<-as.vector(parameters(data)@data$name)
+                    cnd <- as.vector(parameters(data)@data$name)
                   }
                   prefixColNames <- cnd
                   
-                  wh<-match(parameters(compobj),prefixColNames)
+                  wh <- match(parameters(compobj), prefixColNames)
                   
-                  prefixColNames[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+                  prefixColNames[wh] <- paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
                   
                     
                 }
@@ -596,7 +605,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             ##################################
             message(paste("gating ..."))
             #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
-            mat<-data@exprs #using @ is faster than exprs()
+            mat <- data@exprs #using @ is faster than exprs()
             #get gains from keywords
             this_pd <- pData(parameters(data))
             paramIDs <- rownames(pData(parameters(data)))
@@ -615,8 +624,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               colnames(mat) <- prefixColNames  
             }
-            
-            .Call("R_gating",G@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
+            recompute <- FALSE
+            nodeInd <- 0
+            .Call("R_gating",G@pointer, mat, sampleName, gains, nodeInd, recompute, extend_val, ignore.case)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<- 
             #since colnames(fs) is not udpated yet.
@@ -1220,7 +1230,9 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 			if(is.character(y))
                 y <- .getNodeInd(x[[1]],y)
 				
-			
+            extend_val <- 0
+            ignore_case <- FALSE
+            gains <- NULL
 			lapply(x,function(gh){
 						
 						
@@ -1233,8 +1245,10 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 						data <- getData(gh)
 						mat <- exprs(data)
 						lapply(y,function(nodeID){
-									.Call("R_gating",gh@pointer,mat,sampleName,gains=NULL,nodeInd=as.integer(nodeID)-1,recompute=TRUE)			
-								})
+                             nodeInd <- as.integer(nodeID)-1
+                             recompute <- TRUE
+							.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case)			
+						})
 						
 						
 						
