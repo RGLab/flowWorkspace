@@ -842,7 +842,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 		plotGate(x,y,...)
 		})
 #' @importFrom gridExtra grid.arrange   
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE, arrange.main = getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data \n");
 				return();
@@ -857,7 +857,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 					})
 #			browser()
 			if(arrange)			
-				do.call(grid.arrange,c(plotObjs,main=main,gpar))
+				do.call(grid.arrange,c(plotObjs,main = arrange.main,gpar))
 			else
 				plotObjs
 			

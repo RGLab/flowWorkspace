@@ -782,7 +782,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
 #' When applied to a \code{GatingSet}, if lattice is TRUE,it plots one gate (multiple samples) per page , otherwise, one sample (with multiple gates) per page.   
 
-#' @param x \code{\linkS4class{GatingSet}} object
+#' @param x \code{\linkS4class{GatingSet}} or \code{\linkS4class{GatingHierarchy}}object
 #' @param y \code{character} the node name or full(/partial) gating path 
 #'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
 #'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
@@ -790,9 +790,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param ...
 #' \itemize{
 #'  \item{bool}{\code{logical} specifying whether to plot boolean gates.}
-#'  \item{main}{\code{character} The main title of the plot. Default is the sample name.}
+#'  \item{arrange.main}{\code{character} The title of the main page of the plot. Default is the sample name. Only valid when \code{x} is GatingHierarchy}
 #'  \item{arrange}{\code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.}
-#'  \item{merge}{\code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;} 
+#'  \item{merge}{\code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
+#'  \item{gpar}{\code{list} of grid parameters passed to \code{\link{grid.layout}};}
 #'  \item{lattice}{\code{logical} indicating whether to draw one node/gate on multiple samples on the same page through lattice plot;} 
 #'  \item{formula}{\code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
 #'  \item{cond}{\code{character} the conditioning variable to be passed to lattice plot.}
@@ -1081,10 +1082,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		pid<-getParent(gh,y)
 	
     #set the title  
-	if(is.null(main)){
-        fjName<-getNodes(gh,isPath=T,showHidden = TRUE)[pid]
-		main<-fjName
-	}
+    default_main <- list(label = getNodes(gh,isPath=T,showHidden = TRUE)[pid])
+    if(is.null(main)){
+      main <- default_main
+    }else
+    {
+      if(is.list(main))
+        main <- lattice:::updateList(default_main, main) #update default main if non-null main are specified
+    }
 	
 	    
 #    browser()
@@ -1109,8 +1114,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     
     axisObject<-.formatAxis(gh,parentFrame, xParam, yParam,...)
     
+#    browser()
+    default_xlab <- list(label = axisObject$xlab)
     if(is.null(xlab)){
-      xlab <- axisObject$xlab
+      xlab <- default_xlab
+    }else
+    {
+      if(is.list(xlab))
+        xlab <- lattice:::updateList(default_xlab, xlab) #update default lab if non-null lab are specified
     }
     
     #set the formula
@@ -1121,9 +1132,18 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         formula<-paste(formula,cond,sep="|")
       formula<-as.formula(formula)
     }
+    
     #use default scales stored in gs if it is not given
-    if(missing(scales))
+    if(missing(scales)){
       scales <- axisObject$scales
+    }else
+    {
+      if(!is.null(scales)){
+        scales <- lattice:::updateList(axisObject$scales, scales) #update default lab if non-null lab are specified 
+      }
+    }
+      
+    
     
     thisCall<-quote(plot(x=formula
                           ,data=parentData
@@ -1146,18 +1166,25 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		################################
         overlay <- .getOverlay(x, overlay, params)
 		
-        
+#        browser()
+        default_ylab <- list(label = axisObject$ylab)
         if(is.null(ylab)){
-          ylab <- axisObject$ylab
+          ylab <- default_ylab
+        }else
+        {
+          if(is.list(ylab))
+            ylab <- lattice:::updateList(default_ylab, ylab) #update default scales if non-null scales are specified
         }
+        
 		#################################
 		# the actual plotting
 		################################
 #        browser()
         thisCall <- as.call(c(as.list(thisCall)
-                            ,ylab=ylab
-                            ,smooth=smooth
-                            ,overlay=overlay
+                            ,list(ylab = ylab
+                                  ,smooth = smooth
+                                  ,overlay = overlay
+                                  )
                             )
                           )
         thisCall[[1]]<-quote(xyplot)                          
