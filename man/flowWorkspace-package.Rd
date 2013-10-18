@@ -13,7 +13,7 @@
 }
 \details{
   \tabular{ll}{ Package: \tab flowWorkspace\cr Type: \tab
-  Package\cr Version: \tab 3.7.30\cr Date: \tab
+  Package\cr Version: \tab 0.5.40\cr Date: \tab
   2011-03-04\cr License: \tab Artistic 2.0 \cr LazyLoad:
   \tab yes\cr Depends: \tab R (>= 2.16.0),Rcpp (>=
   0.9.9)\cr }

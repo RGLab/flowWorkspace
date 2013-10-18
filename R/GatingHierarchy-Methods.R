@@ -853,7 +853,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,boo
 			plotList<-.mergeGates(x,y,bool,merge)
 			plotObjs<-lapply(plotList,function(y){
 						#defaultCond is passed to flowViz::xyplot to disable lattice strip
-						return(.plotGate(x, y, defaultCond = NULL,...))
+						return(.plotGate(x, y, ...))
 					})
 #			browser()
 			if(arrange)			

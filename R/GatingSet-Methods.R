@@ -794,7 +794,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'  \item{arrange}{\code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.}
 #'  \item{merge}{\code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
 #'  \item{gpar}{\code{list} of grid parameters passed to \code{\link{grid.layout}};}
-#'  \item{lattice}{\code{logical} indicating whether to draw one node/gate on multiple samples on the same page through lattice plot;} 
+#'  \item{lattice}{\code{logical} deprecated;} 
 #'  \item{formula}{\code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
 #'  \item{cond}{\code{character} the conditioning variable to be passed to lattice plot.}
 #'  \item{overlay}{\code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
@@ -821,21 +821,24 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' 
 #' @rdname plotGate-methods
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
-
+        stop("y is missing!")
 			
-            y <- getNodes(x[[1]])
-            y <- setdiff(y,"root")
-            
-			plotGate(x,y,...)
+#            y <- getNodes(x[[1]])
+#            y <- setdiff(y,"root")
+#            
+#			plotGate(x,y,...)
 			
 		})
 
     
 setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
-			if(lattice)
-			{
+			
+#            
+#            if(lattice)
+#			{
 				plotList<-.mergeGates(x[[1]],y,bool,merge)
-				
+				if(length(plotList) > 1)
+                  stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
 				lapply(plotList,function(y){
 							
 							return(.plotGate(x,y,...))
@@ -843,11 +846,11 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 				
 				
 				
-			}else
-			{
-				for(i in 1:length(x))
-					plotGate(x[[i]],y,bool=bool,merge=merge,...)
-			}
+#			}else
+#			{
+#				for(i in 1:length(x))
+#					plotGate(x[[i]],y,bool=bool,merge=merge,...)
+#			}
 			
 		})
     
@@ -1064,16 +1067,28 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' 
 #' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
 #' @param overlay either the gate indice list or event indices list
+#' @param strip \code{character} specifies whether to show pop name in strip box 
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
-.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stack = FALSE, stats , default.y = "SSC-A", scales , ...){
+.plotGate <- function(x, y, formula=NULL, cond=NULL
+                      , smooth=FALSE ,type=c("xyplot","densityplot")
+                      , main = NULL
+                      , xlab = NULL 
+                      , ylab = NULL
+                      , fitGate=FALSE, overlay=NULL, stack = FALSE
+                      , stats , default.y = "SSC-A", scales
+                      , strip = FALSE
+                      , ...){
 
 	
 	type<- match.arg(type)
     
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
-    if(class(x) == "GatingHierarchy")  
+    is.gh <- class(x) == "GatingHierarchy"
+    if(is.gh){
       x <- as(x, "GatingSet")
+    }  
+      
     gh <- x[[1]] 
     
 	if(is.list(y))
@@ -1081,15 +1096,15 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	else
 		pid<-getParent(gh,y)
 	
-    #set the title  
-    default_main <- list(label = getNodes(gh,isPath=T,showHidden = TRUE)[pid])
-    if(is.null(main)){
-      main <- default_main
-    }else
-    {
-      if(is.list(main))
-        main <- lattice:::updateList(default_main, main) #update default main if non-null main are specified
-    }
+    #set default title    
+    popName <- getNodes(gh,isPath=T,showHidden = TRUE)[pid]
+    
+    default_main <- list(label = popName) 
+    if(is.gh && strip)
+        default_main <- list() 
+    #update default main if non-null main are specified
+    if(is.list(main))
+      main <- lattice:::updateList(default_main, main)     
 	
 	    
 #    browser()
@@ -1107,6 +1122,16 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         #get data 
     #subset on channels to speed up loading data from disk
     parentData <- getData(x,pid,j = params)
+    #rename sample name with popName in order to display it in strip
+    defaultCond <- "name"
+    if(is.gh){
+      if(strip){
+        sampleNames(parentData) <- popName
+        names(curGates) <- popName
+        names(stats) <- popName
+      }else
+        defaultCond <- NULL
+    }
     parentFrame <- parentData[[1]]      
     #set the smoothing option
     smooth <- as.logical(ifelse(nrow(parentFrame)<100,TRUE,smooth))
@@ -1184,6 +1209,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                             ,list(ylab = ylab
                                   ,smooth = smooth
                                   ,overlay = overlay
+                                  , defaultCond = defaultCond
                                   )
                             )
                           )
