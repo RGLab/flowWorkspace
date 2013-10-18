@@ -951,14 +951,25 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 
 #' @param x a gatingHierarchy
 #' @param data a flowFrame
-.formatAxis<-function(x,data,xParam,yParam,scales=list(),...){
+.formatAxis <- function(x, data, xParam, yParam
+                          , scales=list()
+                          , marker.only = FALSE
+                          , ...){
 	pd<-pData(parameters(data))
 #	browser()
-	xObj<-.getChannelMarker(pd,xParam)
-	yObj<-.getChannelMarker(pd,yParam)
+	xObj <- .getChannelMarker(pd,xParam)
+	yObj <- .getChannelMarker(pd,yParam)
 	
-	xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
-	ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
+    if(marker.only){
+      xlab <- as.character(ifelse(is.na(xObj[,"desc"]), xObj[,"name"], xObj[,"desc"]))
+      ylab <- as.character(ifelse(is.na(yObj[,"desc"]), yObj[,"name"], yObj[,"desc"]))         
+      
+    }else
+    {
+      xlab <- sub("NA","",paste(unlist(xObj),collapse=" "))
+      ylab <- sub("NA","",paste(unlist(yObj),collapse=" "))  
+    }
+	
 #			browser()
 	
 #		xParam.ind<-match(xParam,pd$name)

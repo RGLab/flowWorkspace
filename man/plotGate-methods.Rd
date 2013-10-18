@@ -50,8 +50,13 @@
   \item{default.y}{\code{character} specifiying y channel
   for xyplot when plotting a 1d gate. Default is "SSC-A".}
   \item{type}{\code{character} either "xyplot" or
-  "densityplot". Default is "xyplot"} \item{...}{The other
-  additional arguments to be passed to
+  "densityplot". Default is "xyplot"} \item{fitGate}{used
+  to disable behavior of plotting the gate region in 1d
+  densityplot} \item{strip}{\code{ligcal} specifies whether
+  to show pop name in strip box,only valid when x is
+  \code{GatingHierarchy}} \item{marker.only}{\code{ligcal}
+  specifies whether to show both channel and marker names }
+  \item{...}{The other additional arguments to be passed to
   \link[flowViz]{xyplot}.} }}
 }
 \value{

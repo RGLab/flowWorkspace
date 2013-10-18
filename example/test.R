@@ -1,5 +1,5 @@
 #modify functions within package namespace
-funcToinsert <- ".plotGate" 
+funcToinsert <- ".formatAxis" 
 funcSym <- as.symbol(funcToinsert)
 eval(substitute(environment(ff) <- getNamespace("flowWorkspace"), list(ff = funcSym)))
 assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")

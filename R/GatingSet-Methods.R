@@ -800,6 +800,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'  \item{overlay}{\code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
 #'  \item{default.y}{\code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
 #'  \item{type}{\code{character} either "xyplot" or "densityplot". Default is "xyplot"}
+#'  \item{fitGate}{used to disable behavior of plotting the gate region in 1d densityplot}
+#'  \item{strip}{\code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}} 
+#'  \item{marker.only}{\code{ligcal} specifies whether to show both channel and marker names }
 #'  \item{...}{The other additional arguments to be passed to \link[flowViz]{xyplot}.}
 #' }
 #' 
@@ -1067,7 +1070,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' 
 #' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
 #' @param overlay either the gate indice list or event indices list
-#' @param strip \code{character} specifies whether to show pop name in strip box 
+#' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy} 
+#' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
+#' @param ... other arguments passed to .formAxis 
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
 .plotGate <- function(x, y, formula=NULL, cond=NULL
@@ -1137,7 +1142,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     smooth <- as.logical(ifelse(nrow(parentFrame)<100,TRUE,smooth))
     
     
-    axisObject<-.formatAxis(gh,parentFrame, xParam, yParam,...)
+    axisObject <- .formatAxis(gh,parentFrame, xParam, yParam,...)
     
 #    browser()
     default_xlab <- list(label = axisObject$xlab)
