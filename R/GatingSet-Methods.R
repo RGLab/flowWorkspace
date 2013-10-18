@@ -1073,7 +1073,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param overlay either the gate indice list or event indices list
 #' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy} 
 #' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
-#' @param ... other arguments passed to .formAxis 
+#' @param ... other arguments passed to .formAxis and flowViz 
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
 .plotGate <- function(x, y, formula=NULL, cond=NULL
@@ -1081,7 +1081,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                       , main = NULL
                       , xlab = NULL 
                       , ylab = NULL
-                      , fitGate=FALSE, overlay=NULL, stack = FALSE
+                      , fitGate=FALSE, overlay=NULL, stack = FALSE, xbin = 32
                       , stats , default.y = "SSC-A", scales
                       , strip = TRUE
                       , ...){
@@ -1216,6 +1216,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                                   ,smooth = smooth
                                   ,overlay = overlay
                                   , defaultCond = defaultCond
+                                  , xbin = xbin
                                   )
                             )
                           )
