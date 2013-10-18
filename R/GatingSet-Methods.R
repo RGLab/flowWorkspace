@@ -793,6 +793,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'  \item{arrange.main}{\code{character} The title of the main page of the plot. Default is the sample name. Only valid when \code{x} is GatingHierarchy}
 #'  \item{arrange}{\code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.}
 #'  \item{merge}{\code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
+#' \item{par.settings}{\code{list} of graphical parameters passed to \code{\link{lattice}};}
 #'  \item{gpar}{\code{list} of grid parameters passed to \code{\link{grid.layout}};}
 #'  \item{lattice}{\code{logical} deprecated;} 
 #'  \item{formula}{\code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
@@ -1082,7 +1083,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                       , ylab = NULL
                       , fitGate=FALSE, overlay=NULL, stack = FALSE
                       , stats , default.y = "SSC-A", scales
-                      , strip = FALSE
+                      , strip = TRUE
                       , ...){
 
 	
@@ -1127,15 +1128,15 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         #get data 
     #subset on channels to speed up loading data from disk
     parentData <- getData(x,pid,j = params)
-    #rename sample name with popName in order to display it in strip
     defaultCond <- "name"
     if(is.gh){
       if(strip){
+        #rename sample name with popName in order to display it in strip
         sampleNames(parentData) <- popName
         names(curGates) <- popName
         names(stats) <- popName
       }else
-        defaultCond <- NULL
+        defaultCond <- NULL #hide strip
     }
     parentFrame <- parentData[[1]]      
     #set the smoothing option

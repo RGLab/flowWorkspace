@@ -842,18 +842,35 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 		plotGate(x,y,...)
 		})
 #' @importFrom gridExtra grid.arrange   
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE, arrange.main = getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
+setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE, arrange.main = getSample(x),arrange=TRUE,merge=TRUE, par.settings = list(), gpar = NULL,...){
 			if(!x@flag){
 				message("Can't plot until you gate the data \n");
 				return();
 			}
 			
 			
-#			browser()
+            theme.novpadding <-
+                list(layout.heights =
+                        list(top.padding = 0,
+                            main.key.padding = 0,
+                            key.axis.padding = 0,
+                            axis.xlab.padding = 0,
+                            xlab.key.padding = 0,
+                            key.sub.padding = 0,
+                            bottom.padding = 0),
+                    layout.widths =
+                        list(left.padding = 0,
+                            key.ylab.padding = 0,
+                            ylab.axis.padding = 0,
+                            axis.key.padding = 0,
+                            right.padding = 0))
+            
+            par.settings <- lattice:::updateList(theme.novpadding, par.settings)
+            
 			plotList<-.mergeGates(x,y,bool,merge)
 			plotObjs<-lapply(plotList,function(y){
 						#defaultCond is passed to flowViz::xyplot to disable lattice strip
-						return(.plotGate(x, y, ...))
+						return(.plotGate(x, y, par.settings = par.settings, ...))
 					})
 #			browser()
 			if(arrange)			

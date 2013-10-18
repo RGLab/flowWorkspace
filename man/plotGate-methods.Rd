@@ -32,7 +32,9 @@
   \code{grid.arrange} call.} \item{merge}{\code{logical}
   indicating whether to draw multiple gates on the same
   plot if these gates share the same parent population and
-  same x,y dimensions/parameters;} \item{gpar}{\code{list}
+  same x,y dimensions/parameters;}
+  \item{par.settings}{\code{list} of graphical parameters
+  passed to \code{\link{lattice}};} \item{gpar}{\code{list}
   of grid parameters passed to \code{\link{grid.layout}};}
   \item{lattice}{\code{logical} deprecated;}
   \item{formula}{\code{formula} a formula passed to
