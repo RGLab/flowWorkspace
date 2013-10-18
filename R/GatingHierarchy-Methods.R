@@ -219,7 +219,7 @@ setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
 		})
 setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing"){
       
-      flowCore::keyword(getData(object))
+      flowCore::keyword(getData(object, use.exprs = FALSE))
     })    
 
 #'  Get the names of all nodes in a gating hierarchy.
