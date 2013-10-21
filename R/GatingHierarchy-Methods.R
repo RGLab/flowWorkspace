@@ -603,7 +603,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. 
 #'                             	If not specified, will return the complete flowFrame/flowSet at the root node.
 #' @param ... arguments passed to ncdfFlow::[[  
-#' j a \code{numeric} or \code{character} used as channel index
+#' 
 #' @return  
 #' A \code{flowFrame} object if \code{obj} is a GatingHierarchy. 
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.

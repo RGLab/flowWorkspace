@@ -1620,8 +1620,10 @@ setMethod("show","GatingSet",function(object){
 #' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the flowJo counts, flowCore counts and frequencies.
 #' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
+#' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported. 
+#' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
 #' @param ... Additional arguments
-#' y \code{character} The name of the node. A list of nodes is accessible via \code{getNodes(x)}.
+#' 
 #' @details
 #' getPopStats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the flowJo and flowCore derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
 #' getProp returns the proportion of cells in the gate, relative to its parent.
