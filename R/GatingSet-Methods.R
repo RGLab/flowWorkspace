@@ -339,7 +339,7 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, ...){
+.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, ...){
 
 
 	message("calling c++ parser...")
@@ -390,12 +390,12 @@ unarchive<-function(file,path=tempdir()){
 		
 		
 		files<-file.path(dataPaths,samples)
-		
+        G@FCSPath <- dataPaths	
 	}else
 	{
 		files<-samples
 	}
-    G@FCSPath <- dataPaths
+    
     
 	G<-.addGatingHierarchies(G,files,execute,isNcdf,...)
 
@@ -476,8 +476,17 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		}else{
 			message("Creating flowSet...")
 			fs<-read.flowSet(files,...)
-		}
-	}
+		}   
+	}else{
+      #create dummy flowSet
+      frList <- sapply(basename(files), function(thisSample){
+                        mat <- matrix(data = numeric(0))
+                        colnames(mat) <- "FSC-A"
+                        fr <- suppressWarnings(flowFrame(exprs = mat))
+                        
+                      })
+      fs <- flowSet(frList)
+    }
 	
 	#global variable storing prefixed colnames
     tempenv<-new.env(parent = emptyenv())	
@@ -653,7 +662,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             tRg  <- range(mat[,tInd])
             axis.labels <- .transformRange(G,sampleName,wsversion,fs@frames,timeRange = tRg)
 
-		}
+		}else
+          axis.labels <- list()
         #set global variable
         tempenv$prefixColNames <- prefixColNames
         
@@ -676,10 +686,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		
 		#attach filename and colnames to internal stucture for gating
 #		browser()
-		flowData(G) <- fs
-		
-		
 	}
+    
+    flowData(G) <- fs
 	G
 }
 

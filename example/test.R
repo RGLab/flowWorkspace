@@ -1,8 +1,3 @@
-#modify functions within package namespace
-funcToinsert <- ".plotGate" 
-funcSym <- as.symbol(funcToinsert)
-eval(substitute(environment(ff) <- getNamespace("flowWorkspace"), list(ff = funcSym)))
-assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
 
 
 
@@ -47,6 +42,14 @@ ws <- openWorkspace(macXML[1],options=1)
 getSamples(ws)
 getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 
+
+#modify functions within package namespace
+funcToinsert <- ".addGatingHierarchies" 
+funcSym <- as.symbol(funcToinsert)
+eval(substitute(environment(ff) <- getNamespace("flowWorkspace"), list(ff = funcSym)))
+assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
+
+
 ############################################################################### 
 ##parse as template and apply to new data			
 ###############################################################################
@@ -54,7 +57,7 @@ time1<-Sys.time()
 #Rprof()
 GT<-parseWorkspace(ws
                     ,name=2
-#					,execute=F
+					,execute=F
 #					,includeGates=T
                     ,subset= 1:2
 #					,subset=c("517614.fcs")
