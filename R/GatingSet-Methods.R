@@ -1018,7 +1018,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       params<-rev(parameters(curGates[[1]]))
     
   }
-  
+#  browser()
   if(type == "xyplot")
   {
     if(length(params) == 1)
@@ -1027,14 +1027,16 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       if(is.null(formula)){
         xParam <- params
         y.candidates <- chnls[-match(xParam,chnls)]
-        
+
         if(default.y%in%y.candidates)
           yParam <- default.y
         else{
           if(!default.y %in% chnls)
+            stop("default.y '", default.y, "' is not valid channel name!Try to reset it")
             #pick other channel for y axis
+            y.candidates <- y.candidates[!grepl("[Tt]ime", y.candidates)]
             yParam <- y.candidates[1]
-            warning("Y axis is set to '", yParam, "' because '",default.y, "' is not found in flow data!\n To eliminate this warning, set type = 'densityplot' or change the default y channel through 'default.y' ")
+            warning("Y axis is set to '", yParam, "' because default.y '",default.y, "' can not be used as y axis!\n To eliminate this warning, set type = 'densityplot' or change the default y channel through 'default.y' ")
         }
         
       }else{
