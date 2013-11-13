@@ -337,7 +337,7 @@ setMethod("getChildren",signature(obj="GatingHierarchy",y="numeric"),function(ob
 			
 		})
 #
-setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo=TRUE){
+setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo = FALSE){
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 			
@@ -349,7 +349,7 @@ setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,fl
 				unname(stats$flowCore["proportion"])
 			
 		})
-setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo=TRUE){
+setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo = FALSE){
             ind<-.getNodeInd(x,y)
       
 			stats<-.getPopStat(x,ind)
