@@ -1135,7 +1135,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     yParam <- parseRes$yParam
     params <- c(yParam,xParam)
     stats <- parseRes$stats
-    
+#    browser()
         #get data 
     #subset on channels to speed up loading data from disk
     parentData <- getData(x,pid,j = params)
@@ -1206,13 +1206,16 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		#################################
 		# calcuate overlay frames
 		################################
-        overlay <- .getOverlay(x, overlay, params)
-        if(is.gh){
-          if(strip){
-            #rename sample name with popName in order to display it in strip
-            sampleNames(overlay) <- popName
-          }
+        if(!is.null(overlay)){
+          overlay <- .getOverlay(x, overlay, params)
+          if(is.gh){
+            if(strip){
+              #rename sample name with popName in order to display it in strip
+              sampleNames(overlay) <- popName
+            }
+          }  
         }
+        
 #        browser()
         default_ylab <- list(label = axisObject$ylab)
         if(is.null(ylab)){
