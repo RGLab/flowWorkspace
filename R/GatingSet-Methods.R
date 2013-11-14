@@ -966,7 +966,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @importFrom flowCore filters filtersList
 .preplot <- function(x, y, type, stats, formula, default.y = "SSC-A"){
   samples <- sampleNames(x)
-#  browser()
+
+  isBool <- FALSE
   if(is.list(y))
   {
 
@@ -1008,8 +1009,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   if(class(curGates[[1]])=="booleanFilter")
   {
     params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
-    overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
-    curGates<-NULL
+    overlay <- sapply(samples,function(curSample)getIndices(x[[curSample]],y), simplify = FALSE)
+    curGates <- NULL
+    isBool <- TRUE
   }else
   {
     if(class(curGates[[1]])=="filters")
@@ -1060,7 +1062,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   }
   
   
-  list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats)
+  list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats, isBool = isBool)
 }
 
 .getOverlay <- function(x, overlay, params){
@@ -1135,6 +1137,15 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     yParam <- parseRes$yParam
     params <- c(yParam,xParam)
     stats <- parseRes$stats
+    
+    if(parseRes$isBool){
+      if(is.null(overlay))
+        overlay <- y
+      else
+        warning(y, " is BooleanFilter. The 'overlay' argument is ignored!")
+    }
+      
+      
 #    browser()
         #get data 
     #subset on channels to speed up loading data from disk
@@ -1144,7 +1155,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       if(strip){
         #rename sample name with popName in order to display it in strip
         sampleNames(parentData) <- popName
-        names(curGates) <- popName
+        if(!is.null(curGates))
+          names(curGates) <- popName
         names(stats) <- popName
       }else
         defaultCond <- NULL #hide strip

@@ -44,7 +44,7 @@ getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 
 
 #modify functions within package namespace
-funcToinsert <- ".preplot" 
+funcToinsert <- ".plotGate" 
 funcSym <- as.symbol(funcToinsert)
 eval(substitute(environment(ff) <- getNamespace("flowWorkspace"), list(ff = funcSym)))
 assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
