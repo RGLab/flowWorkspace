@@ -8,10 +8,13 @@ NULL
   xmlEventParse <- getExportedValue("XML", "xmlEventParse")
   xmlEventParse(contents, .graph_handler(), asText = TRUE, saxVersion = 2)$asGraphNEL()
 }
+
 #' modify graph:::graph_handler by concatenate the multiple attr string into one
 #' to avoid partial node name display. Because XML::xmlEventParse somehow split
 #' the node name into arrays when there is numeric character reference (&#nnnn;)
-.graph_handler <- function () 
+#' 
+#' @importFrom graph graphNEL addEdge
+.graph_handler <- function()
 {
   
   
@@ -150,7 +153,7 @@ NULL
     if (length(edge_data_e)) {
       ed <- new("attrData", as.list(edge_defaults_e))
       edvals <- as.list(edge_data_e)
-      names(edvals) <- .makeEdgeKeys(ftmat[, 1], ftmat[, 
+      names(edvals) <- graph:::.makeEdgeKeys(ftmat[, 1], ftmat[, 
               2])
       ed@data <- edvals
       g@edgeData <- ed
