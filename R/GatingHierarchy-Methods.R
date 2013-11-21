@@ -1,6 +1,167 @@
 #' @include AllClasses.R
 NULL
 
+#' modify graph::fromGXL by using customized handler
+.fromGXL <- function (con) 
+{
+  contents <- paste(readLines(con), collapse = "")
+  xmlEventParse <- getExportedValue("XML", "xmlEventParse")
+  xmlEventParse(contents, .graph_handler(), asText = TRUE, saxVersion = 2)$asGraphNEL()
+}
+#' modify graph:::graph_handler by concatenate the multiple attr string into one
+#' to avoid partial node name display. Because XML::xmlEventParse somehow split
+#' the node name into arrays when there is numeric character reference (&#nnnn;)
+.graph_handler <- function () 
+{
+  
+  
+  all_nodes_e <- new.env(parent = emptyenv(), hash = TRUE)
+  node_data_e <- new.env(parent = emptyenv(), hash = TRUE)
+  node_defaults_e <- new.env(parent = emptyenv(), hash = TRUE)
+  edge_data_e <- new.env(parent = emptyenv(), hash = TRUE)
+  edge_defaults_e <- new.env(parent = emptyenv(), hash = TRUE)
+  from_e <- new.env(parent = emptyenv(), hash = TRUE)
+  to_e <- new.env(parent = emptyenv(), hash = TRUE)
+  nodeCount <- 0L
+  edgeCount <- 0L
+  graphID <- NULL
+  curNode <- NULL
+  curAttr <- NULL
+  inNode <- FALSE
+  inEdge <- FALSE
+  inAttr <- FALSE
+  inInt <- FALSE
+  inFloat <- FALSE
+  inBool <- FALSE
+  edgemode <- NULL
+  add_node <- function(theNode) {
+    if (!exists(theNode, all_nodes_e)) {
+      nodeCount <<- nodeCount + 1L
+      all_nodes_e[[theNode]] <- nodeCount
+    }
+  }
+  add_edge <- function(from, to) {
+    edgeCount <<- edgeCount + 1L
+    k <- as.character(edgeCount)
+    from_e[[k]] <- from
+    to_e[[k]] <- to
+  }
+  startElement <- function(x, atts, ...) {
+    if (x == "graph") {
+      if (!is.null(graphID)) 
+        stop("multiple graphs not supported")
+      graphID <<- atts["id"]
+      eMode <- atts["edgemode"]
+      if (!is.na(eMode)) {
+        if (eMode %in% c("undirected", "defaultundirected")) 
+          edgemode <<- "undirected"
+        else edgemode <<- "directed"
+      }
+      else {
+        edgemode <<- "directed"
+      }
+    }
+    else if (x == "node") {
+      inNode <<- TRUE
+      theNode <- as.character(atts["id"])
+      add_node(theNode)
+      curNode <<- theNode
+    }
+    else if (x == "attr") {
+      inAttr <<- TRUE
+      curAttr <<- atts["name"]
+    }
+    else if (x == "edge") {
+      inNode <<- FALSE
+      inEdge <<- TRUE
+      from <- as.character(atts["from"])
+      to <- as.character(atts["to"])
+      add_node(from)
+      add_node(to)
+      add_edge(from, to)
+    }
+    else if (x == "int") {
+      inInt <<- TRUE
+    }
+    else if (x == "float") {
+      inFloat <<- TRUE
+    }
+    else if (x == "bool") {
+      inBool <<- TRUE
+    }
+  }
+  text <- function(x, atts, ...) {
+    if (inAttr && nchar(x) > 0) {
+      if (inInt) 
+        x <- as.integer(x)
+      if (inFloat) 
+        x <- as.double(x)
+      if (inBool) {
+        if (identical(x, "true")) 
+          x <- TRUE
+        else if (identical(x, "false")) 
+          x <- FALSE
+        else stop("bad bool value: ", x)
+      }
+      if (inNode) {
+        node_defaults_e[[curAttr]] <- as.character(NA)
+        nattrs <- node_data_e[[curNode]]
+        if (!length(nattrs)) 
+          nattrs <- list()
+        #concatenate with old value before update it
+        nattrs[[curAttr]] <- paste(nattrs[[curAttr]], x, sep = "")
+        node_data_e[[curNode]] <- nattrs
+      }
+      else if (inEdge) {
+        edge_defaults_e[[curAttr]] <- as.character(NA)
+        k <- as.character(edgeCount)
+        eattrs <- edge_data_e[[k]]
+        if (!length(eattrs)) 
+          eattrs <- list()
+        eattrs[[curAttr]] <- x
+        edge_data_e[[k]] <- eattrs
+      }
+    }
+  }
+  endElement <- function(x, ...) {
+    if (x == "attr") 
+      inAttr <<- FALSE
+    else if (x == "node") 
+      inNode <<- FALSE
+    else if (x == "edge") 
+      inEdge <<- FALSE
+    else if (x == "int") 
+      inInt <<- FALSE
+    else if (x == "float") 
+      inFloat <<- FALSE
+    else if (x == "bool") 
+      inBool <<- FALSE
+  }
+  asGraphNEL <- function() {
+    ftmat <- cbind(from = unlist(as.list(from_e)), to = unlist(as.list(to_e)))
+    nn <- unlist(as.list(all_nodes_e))
+    nn <- names(nn)[order(nn)]
+    g <- graphNEL(nodes = nn, edgemode = edgemode)
+    if (length(node_defaults_e)) {
+      nd <- new("attrData", as.list(node_defaults_e))
+      nd@data <- as.list(node_data_e)
+      g@nodeData <- nd
+    }
+    if (length(edge_data_e)) {
+      ed <- new("attrData", as.list(edge_defaults_e))
+      edvals <- as.list(edge_data_e)
+      names(edvals) <- .makeEdgeKeys(ftmat[, 1], ftmat[, 
+              2])
+      ed@data <- edvals
+      g@edgeData <- ed
+    }
+    g <- addEdge(ftmat[, 1], ftmat[, 2], g)
+    validObject(g)
+    g
+  }
+  list(startElement = startElement, endElement = endElement, 
+      text = text, asGraphNEL = asGraphNEL)
+}
 #' @importClassesFrom graph graphNEL
 #' @importMethodsFrom graph fromGXL
 #return a graphNEL object that only contans the node Name and isBool flags    
@@ -10,8 +171,8 @@ NULL
   GXLFile<-tempfile(fileext=".gxl")
   system(paste("dot2gxl",DotFile, ">>",GXLFile))
   
-  sf<-file(GXLFile)
-  g<-fromGXL(sf)
+  sf <- file(GXLFile)
+  g <- .fromGXL(sf)
   close(sf)
   g
 }
