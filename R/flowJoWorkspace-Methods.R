@@ -34,7 +34,11 @@ NULL
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file,options = 0,...){
  	#message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	tmp<-tempfile(fileext=".xml")
-	file.copy(file,tmp)
+    if(!file.exists(file))
+      stop(file, " not found!")
+	if(!file.copy(file,tmp))
+      stop("Can't copy ", file, " to ", tmp)
+    
 	if(inherits(file,"character")){
 		x<-xmlTreeParse(tmp,useInternalNodes=TRUE,options = options, ...);
 	}else{
