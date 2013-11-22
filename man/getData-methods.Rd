@@ -20,8 +20,7 @@
   specified, will return the complete flowFrame/flowSet at
   the root node.}
 
-  \item{...}{arguments passed to ncdfFlow::[[ j a
-  \code{numeric} or \code{character} used as channel index}
+  \item{...}{arguments passed to ncdfFlow::[[}
 
   \item{max}{\code{numeric} The maximum number of samples
   to be returned. It is used as a threshold to prevent huge

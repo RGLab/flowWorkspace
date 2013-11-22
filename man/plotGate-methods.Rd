@@ -12,7 +12,8 @@
 \alias{plotGate,GatingSetList,numeric-method}
 \title{Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}}
 \arguments{
-  \item{x}{\code{\linkS4class{GatingSet}} object}
+  \item{x}{\code{\linkS4class{GatingSet}} or
+  \code{\linkS4class{GatingHierarchy}}object}
 
   \item{y}{\code{character} the node name or full(/partial)
   gating path or \code{numeric} representing the node index
@@ -23,28 +24,40 @@
 
   \item{...}{\itemize{ \item{bool}{\code{logical}
   specifying whether to plot boolean gates.}
-  \item{main}{\code{character} The main title of the plot.
-  Default is the sample name.}
+  \item{arrange.main}{\code{character} The title of the
+  main page of the plot. Default is the sample name. Only
+  valid when \code{x} is GatingHierarchy}
   \item{arrange}{\code{logical} indicating whether to
   arrange different populations/nodes on the same page via
   \code{grid.arrange} call.} \item{merge}{\code{logical}
   indicating whether to draw multiple gates on the same
   plot if these gates share the same parent population and
   same x,y dimensions/parameters;}
-  \item{lattice}{\code{logical} indicating whether to draw
-  one node/gate on multiple samples on the same page
-  through lattice plot;} \item{formula}{\code{formula} a
-  formula passed to \code{xyplot} function of
-  \code{flowViz}, by default it is NULL, which means the
-  formula is generated according to the x,y parameters
-  associated with gate.} \item{cond}{\code{character} the
-  conditioning variable to be passed to lattice plot.}
-  \item{overlay}{\code{numeric} scalar indicating the index
-  of a gate/populationwithin the \code{GatingHierarchy} or
-  a \code{logical} vector that indicates the cell event
-  indices representing a sub-cell population. This cell
-  population is going to be plotted on top of the existing
-  gates(defined by \code{y} argument) as an overlay.}
+  \item{par.settings}{\code{list} of graphical parameters
+  passed to \code{\link{lattice}};} \item{gpar}{\code{list}
+  of grid parameters passed to \code{\link{grid.layout}};}
+  \item{lattice}{\code{logical} deprecated;}
+  \item{formula}{\code{formula} a formula passed to
+  \code{xyplot} function of \code{flowViz}, by default it
+  is NULL, which means the formula is generated according
+  to the x,y parameters associated with gate.}
+  \item{cond}{\code{character} the conditioning variable to
+  be passed to lattice plot.} \item{overlay}{\code{numeric}
+  scalar indicating the index of a gate/populationwithin
+  the \code{GatingHierarchy} or a \code{logical} vector
+  that indicates the cell event indices representing a
+  sub-cell population. This cell population is going to be
+  plotted on top of the existing gates(defined by \code{y}
+  argument) as an overlay.}
+  \item{default.y}{\code{character} specifiying y channel
+  for xyplot when plotting a 1d gate. Default is "SSC-A".}
+  \item{type}{\code{character} either "xyplot" or
+  "densityplot". Default is "xyplot"} \item{fitGate}{used
+  to disable behavior of plotting the gate region in 1d
+  densityplot} \item{strip}{\code{ligcal} specifies whether
+  to show pop name in strip box,only valid when x is
+  \code{GatingHierarchy}} \item{marker.only}{\code{ligcal}
+  specifies whether to show both channel and marker names }
   \item{...}{The other additional arguments to be passed to
   \link[flowViz]{xyplot}.} }}
 }

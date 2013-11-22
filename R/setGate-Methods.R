@@ -27,7 +27,7 @@ setMethod("setGate",
     signature=c(obj="GatingSet",y="ANY", value = "filterList"),
     definition=function(obj, y, value,...)
     {
-      samples<-getSamples(obj)
+      samples<-sampleNames(obj)
       
       if(!setequal(names(value),samples))
         stop("names of filterList do not match with the sample names in the gating set!")           

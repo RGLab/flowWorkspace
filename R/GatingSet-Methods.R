@@ -49,9 +49,9 @@ isNcdf <- function(x){
 #' @rdname save_gs
 #' @export 
 #' @aliases save_gs load_gs save_gslist load_gslist
-save_gs<-function(G,path,overwrite = FALSE, cdf = "copy", ...){
+save_gs<-function(G,path,overwrite = FALSE, cdf = c("copy","move","skip","symlink","link"), ...){
 #  browser()
-  cdf <- match.arg(cdf,c("copy","move","skip","symlink","link"))
+  cdf <- match.arg(cdf)
   guid <- G@guid
   if(length(guid) == 0){
     G@guid <- .uuid_gen()
@@ -339,7 +339,7 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace<-function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, ...){
+.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, ...){
 
 
 	message("calling c++ parser...")
@@ -390,12 +390,12 @@ unarchive<-function(file,path=tempdir()){
 		
 		
 		files<-file.path(dataPaths,samples)
-		
+        G@FCSPath <- dataPaths	
 	}else
 	{
 		files<-samples
 	}
-    G@FCSPath <- dataPaths
+    
     
 	G<-.addGatingHierarchies(G,files,execute,isNcdf,...)
 
@@ -457,10 +457,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 #' constructing gating set
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
+#' @param ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..) 
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE,...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE, ignore.case = FALSE, ...){
 	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -475,8 +476,17 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		}else{
 			message("Creating flowSet...")
 			fs<-read.flowSet(files,...)
-		}
-	}
+		}   
+	}else{
+      #create dummy flowSet
+      frList <- sapply(basename(files), function(thisSample){
+                        mat <- matrix(data = numeric(0))
+                        colnames(mat) <- "FSC-A"
+                        fr <- suppressWarnings(flowFrame(exprs = mat))
+                        
+                      })
+      fs <- flowSet(frList)
+    }
 	
 	#global variable storing prefixed colnames
     tempenv<-new.env(parent = emptyenv())	
@@ -497,11 +507,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			
 			message("loading data: ",file);
 			if(isNcdf)
-				data<-read.FCS(file)[,colnames(fs)]
+				data <- read.FCS(file)[,colnames(fs)]
 			else
-				data<-fs[[sampleName]]
+				data <- fs[[sampleName]]
              
-            cnd<-colnames(data)
+            cnd <- colnames(data)
 #            browser()
             #alter colnames(replace "/" with "_") for flowJo X
             if(wsversion == "1.8"){
@@ -514,26 +524,34 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			#Compensating the data
 			##################################
 			comp <- .Call("R_getCompensation", G@pointer, sampleName)
-			cid<-comp$cid
+			cid <- comp$cid
 			if(cid=="")
 				cid=-2
 
 			if(cid!="-1" && cid!="-2"){
 				message("Compensating");
 				
-				marker<-comp$parameters
+				marker <- comp$parameters
 				
-				if(is.null(compensation))
-					compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
-				else
-					compobj<-compensation#TODO: to update compensation information in C part
+				if(is.null(compensation)){
+                  ## try to match marker from comp with flow data in case flowJo is not consistent with data
+                  markerInd <- sapply(marker, function(thisMarker)grep(thisMarker, cnd, ignore.case = ignore.case))
+                  matchedMarker <- cnd[markerInd]
+                  if(length(matchedMarker) != length(marker))
+                    stop("channels mismatched between compensation and flow data!")
+                  marker <- matchedMarker
+                  
+                  compobj <- compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+                }else
+					compobj <- compensation#TODO: to update compensation information in C part
 				#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
 				#I need to handle this case properly.
-				res<-try(compensate(data,compobj),silent=TRUE)
+    
+                res <- try(compensate(data,compobj),silent=TRUE)
 				if(inherits(res,"try-error")){
 					message("Data is probably stored already compensated");
 				}else{
-					data<-res
+					data <- res
 					rm(res);
 				}
 				
@@ -580,13 +598,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                 if(is.null(prefixColNames)&&prefix){
                   
                   if(is.null(cnd)){
-                    cnd<-as.vector(parameters(data)@data$name)
+                    cnd <- as.vector(parameters(data)@data$name)
                   }
                   prefixColNames <- cnd
                   
-                  wh<-match(parameters(compobj),prefixColNames)
+                  wh <- match(parameters(compobj), prefixColNames)
                   
-                  prefixColNames[wh]<-paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
+                  prefixColNames[wh] <- paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
                   
                     
                 }
@@ -596,7 +614,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             ##################################
             message(paste("gating ..."))
             #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
-            mat<-data@exprs #using @ is faster than exprs()
+            mat <- data@exprs #using @ is faster than exprs()
             #get gains from keywords
             this_pd <- pData(parameters(data))
             paramIDs <- rownames(pData(parameters(data)))
@@ -615,8 +633,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               colnames(mat) <- prefixColNames  
             }
-            
-            .Call("R_gating",G@pointer,mat,sampleName,gains,nodeInd=0,recompute=FALSE, extend_val = extend_val)
+            recompute <- FALSE
+            nodeInd <- 0
+            .Call("R_gating",G@pointer, mat, sampleName, gains, nodeInd, recompute, extend_val, ignore.case)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<- 
             #since colnames(fs) is not udpated yet.
@@ -643,7 +662,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             tRg  <- range(mat[,tInd])
             axis.labels <- .transformRange(G,sampleName,wsversion,fs@frames,timeRange = tRg)
 
-		}
+		}else
+          axis.labels <- list()
         #set global variable
         tempenv$prefixColNames <- prefixColNames
         
@@ -666,10 +686,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		
 		#attach filename and colnames to internal stucture for gating
 #		browser()
-		flowData(G) <- fs
-		
-		
 	}
+    
+    flowData(G) <- fs
 	G
 }
 
@@ -772,7 +791,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
 #' When applied to a \code{GatingSet}, if lattice is TRUE,it plots one gate (multiple samples) per page , otherwise, one sample (with multiple gates) per page.   
 
-#' @param x \code{\linkS4class{GatingSet}} object
+#' @param x \code{\linkS4class{GatingSet}} or \code{\linkS4class{GatingHierarchy}}object
 #' @param y \code{character} the node name or full(/partial) gating path 
 #'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
 #'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
@@ -780,13 +799,20 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param ...
 #' \itemize{
 #'  \item{bool}{\code{logical} specifying whether to plot boolean gates.}
-#'  \item{main}{\code{character} The main title of the plot. Default is the sample name.}
+#'  \item{arrange.main}{\code{character} The title of the main page of the plot. Default is the sample name. Only valid when \code{x} is GatingHierarchy}
 #'  \item{arrange}{\code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.}
-#'  \item{merge}{\code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;} 
-#'  \item{lattice}{\code{logical} indicating whether to draw one node/gate on multiple samples on the same page through lattice plot;} 
+#'  \item{merge}{\code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
+#' \item{par.settings}{\code{list} of graphical parameters passed to \code{\link{lattice}};}
+#'  \item{gpar}{\code{list} of grid parameters passed to \code{\link{grid.layout}};}
+#'  \item{lattice}{\code{logical} deprecated;} 
 #'  \item{formula}{\code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
 #'  \item{cond}{\code{character} the conditioning variable to be passed to lattice plot.}
 #'  \item{overlay}{\code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
+#'  \item{default.y}{\code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
+#'  \item{type}{\code{character} either "xyplot" or "densityplot". Default is "xyplot"}
+#'  \item{fitGate}{used to disable behavior of plotting the gate region in 1d densityplot}
+#'  \item{strip}{\code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}} 
+#'  \item{marker.only}{\code{ligcal} specifies whether to show both channel and marker names }
 #'  \item{...}{The other additional arguments to be passed to \link[flowViz]{xyplot}.}
 #' }
 #' 
@@ -808,21 +834,24 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' 
 #' @rdname plotGate-methods
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
-
+        stop("y is missing!")
 			
-            y <- getNodes(x[[1]])
-            y <- setdiff(y,"root")
-            
-			plotGate(x,y,...)
+#            y <- getNodes(x[[1]])
+#            y <- setdiff(y,"root")
+#            
+#			plotGate(x,y,...)
 			
 		})
 
     
 setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
-			if(lattice)
-			{
+			
+#            
+#            if(lattice)
+#			{
 				plotList<-.mergeGates(x[[1]],y,bool,merge)
-				
+				if(length(plotList) > 1)
+                  stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
 				lapply(plotList,function(y){
 							
 							return(.plotGate(x,y,...))
@@ -830,11 +859,11 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=T
 				
 				
 				
-			}else
-			{
-				for(i in 1:length(x))
-					plotGate(x[[i]],y,bool=bool,merge=merge,...)
-			}
+#			}else
+#			{
+#				for(i in 1:length(x))
+#					plotGate(x[[i]],y,bool=bool,merge=merge,...)
+#			}
 			
 		})
     
@@ -935,12 +964,13 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
 #' @importClassesFrom flowCore filters filtersList
 #' @importFrom flowCore filters filtersList
-.preplot <- function(x, y, type, stats, formula, ...){
-  samples <- getSamples(x)
-#  browser()
+.preplot <- function(x, y, type, stats, formula, default.y = "SSC-A"){
+  samples <- sampleNames(x)
+
+  isBool <- FALSE
   if(is.list(y))
   {
-#       browser()
+
     curGates<-sapply(samples,function(curSample){
           
           filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
@@ -979,8 +1009,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   if(class(curGates[[1]])=="booleanFilter")
   {
     params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
-    overlay<-sapply(samples,function(curSample)getIndices(x[[curSample]],y))
-    curGates<-NULL
+    overlay <- sapply(samples,function(curSample)getIndices(x[[curSample]],y), simplify = FALSE)
+    curGates <- NULL
+    isBool <- TRUE
   }else
   {
     if(class(curGates[[1]])=="filters")
@@ -989,17 +1020,26 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       params<-rev(parameters(curGates[[1]]))
     
   }
-  if(type=="xyplot")
+#  browser()
+  if(type == "xyplot")
   {
-    if(length(params)==1)
+    if(length(params) == 1)
     {
+      chnls <- colnames(flowData(x))
       if(is.null(formula)){
-        yParam <- "SSC-A"
+        xParam <- params
+        y.candidates <- chnls[-match(xParam,chnls)]
 
-        if(params=="SSC-A" && yParam == "SSC-A")
-          xParam<-"FSC-A"
-        else
-          xParam <- params
+        if(default.y%in%y.candidates)
+          yParam <- default.y
+        else{
+          if(!default.y %in% chnls)
+            stop("default.y '", default.y, "' is not valid channel name!Try to reset it")
+            #pick other channel for y axis
+            y.candidates <- y.candidates[!grepl("[Tt]ime", y.candidates)]
+            yParam <- y.candidates[1]
+            warning("Y axis is set to '", yParam, "' because default.y '",default.y, "' can not be used as y axis!\n To eliminate this warning, set type = 'densityplot' or change the default y channel through 'default.y' ")
+        }
         
       }else{
         forRes <- .formulaParser(formula)
@@ -1022,7 +1062,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   }
   
   
-  list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats)
+  list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats, isBool = isBool)
 }
 
 .getOverlay <- function(x, overlay, params){
@@ -1044,16 +1084,30 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' 
 #' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
 #' @param overlay either the gate indice list or event indices list
+#' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy} 
+#' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
+#' @param ... other arguments passed to .formAxis and flowViz 
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
-.plotGate <- function(x,y,formula=NULL,cond=NULL,main=NULL,smooth=FALSE,type=c("xyplot","densityplot"),xlab=NULL,ylab=NULL,fitGate=FALSE,overlay=NULL, stack = FALSE, stats , ...){
+.plotGate <- function(x, y, formula=NULL, cond=NULL
+                      , smooth=FALSE ,type=c("xyplot","densityplot")
+                      , main = NULL
+                      , xlab = NULL 
+                      , ylab = NULL
+                      , fitGate=FALSE, overlay=NULL, stack = FALSE, xbin = 32
+                      , stats , default.y = "SSC-A", scales
+                      , strip = TRUE
+                      , ...){
 
 	
 	type<- match.arg(type)
     
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
-    if(class(x) == "GatingHierarchy")  
+    is.gh <- class(x) == "GatingHierarchy"
+    if(is.gh){
       x <- as(x, "GatingSet")
+    }  
+      
     gh <- x[[1]] 
     
 	if(is.list(y))
@@ -1061,18 +1115,22 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 	else
 		pid<-getParent(gh,y)
 	
-    #set the title  
-	if(is.null(main)){
-        fjName<-getNodes(gh,isPath=T,showHidden = TRUE)[pid]
-		main<-fjName
-	}
+    #set default title    
+    popName <- getNodes(gh,isPath=T,showHidden = TRUE)[pid]
+    
+    default_main <- list(label = popName) 
+    if(is.gh && strip)
+        default_main <- list() 
+    #update default main if non-null main are specified
+    if(is.list(main))
+      main <- lattice:::updateList(default_main, main)     
 	
 	    
 #    browser()
 	#################################
 	# setup axis labels and scales
 	################################
-    parseRes <- .preplot (x, y, type, stats, formula,...)
+    parseRes <- .preplot (x, y, type, stats, formula, default.y)
     
     curGates <- parseRes$gates
     xParam <- parseRes$xParam
@@ -1080,18 +1138,44 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     params <- c(yParam,xParam)
     stats <- parseRes$stats
     
+    if(parseRes$isBool){
+      if(is.null(overlay))
+        overlay <- y
+      else
+        warning(y, " is BooleanFilter. The 'overlay' argument is ignored!")
+    }
+      
+      
+#    browser()
         #get data 
     #subset on channels to speed up loading data from disk
     parentData <- getData(x,pid,j = params)
+    defaultCond <- "name"
+    if(is.gh){
+      if(strip){
+        #rename sample name with popName in order to display it in strip
+        sampleNames(parentData) <- popName
+        if(!is.null(curGates))
+          names(curGates) <- popName
+        names(stats) <- popName
+      }else
+        defaultCond <- NULL #hide strip
+    }
     parentFrame <- parentData[[1]]      
     #set the smoothing option
     smooth <- as.logical(ifelse(nrow(parentFrame)<100,TRUE,smooth))
     
     
-    axisObject<-.formatAxis(gh,parentFrame, xParam, yParam,...)
+    axisObject <- .formatAxis(gh,parentFrame, xParam, yParam,...)
     
+#    browser()
+    default_xlab <- list(label = axisObject$xlab)
     if(is.null(xlab)){
-      xlab <- axisObject$xlab
+      xlab <- default_xlab
+    }else
+    {
+      if(is.list(xlab))
+        xlab <- lattice:::updateList(default_xlab, xlab) #update default lab if non-null lab are specified
     }
     
     #set the formula
@@ -1102,12 +1186,24 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         formula<-paste(formula,cond,sep="|")
       formula<-as.formula(formula)
     }
-
+    
+    #use default scales stored in gs if it is not given
+    if(missing(scales)){
+      scales <- axisObject$scales
+    }else
+    {
+      if(!is.null(scales)){
+        scales <- lattice:::updateList(axisObject$scales, scales) #update default lab if non-null lab are specified 
+      }
+    }
+      
+    
+    
     thisCall<-quote(plot(x=formula
                           ,data=parentData
                           ,filter=curGates
                           ,xlab=xlab
-                          ,scales=axisObject$scales
+                          ,scales=scales
                           ,main=main
                           ,...
                           )
@@ -1122,24 +1218,41 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		#################################
 		# calcuate overlay frames
 		################################
-        overlay <- .getOverlay(x, overlay, params)
-		
-        
-        if(is.null(ylab)){
-          ylab <- axisObject$ylab
+        if(!is.null(overlay)){
+          overlay <- .getOverlay(x, overlay, params)
+          if(is.gh){
+            if(strip){
+              #rename sample name with popName in order to display it in strip
+              sampleNames(overlay) <- popName
+            }
+          }  
         }
+        
+#        browser()
+        default_ylab <- list(label = axisObject$ylab)
+        if(is.null(ylab)){
+          ylab <- default_ylab
+        }else
+        {
+          if(is.list(ylab))
+            ylab <- lattice:::updateList(default_ylab, ylab) #update default scales if non-null scales are specified
+        }
+        
 		#################################
 		# the actual plotting
 		################################
 #        browser()
         thisCall <- as.call(c(as.list(thisCall)
-                            ,ylab=ylab
-                            ,smooth=smooth
-                            ,overlay=overlay
+                            ,list(ylab = ylab
+                                  ,smooth = smooth
+                                  ,overlay = overlay
+                                  , defaultCond = defaultCond
+                                  , xbin = xbin
+                                  )
                             )
                           )
         thisCall[[1]]<-quote(xyplot)                          
-		
+        
 	}else
 	{
 		if(length(params)==1)
@@ -1183,7 +1296,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 			clone <- x
 			#clone c structure
 			message("cloning tree structure...")
-			clone@pointer <- .Call("R_CloneGatingSet",x@pointer,getSamples(x))
+			clone@pointer <- .Call("R_CloneGatingSet",x@pointer,sampleNames(x))
             clone@guid <- .uuid_gen()
 
 			#deep copying flow Data
@@ -1208,7 +1321,9 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 			if(is.character(y))
                 y <- .getNodeInd(x[[1]],y)
 				
-			
+            extend_val <- 0
+            ignore_case <- FALSE
+            gains <- NULL
 			lapply(x,function(gh){
 						
 						
@@ -1221,8 +1336,10 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 						data <- getData(gh)
 						mat <- exprs(data)
 						lapply(y,function(nodeID){
-									.Call("R_gating",gh@pointer,mat,sampleName,gains=NULL,nodeInd=as.integer(nodeID)-1,recompute=TRUE)			
-								})
+                             nodeInd <- as.integer(nodeID)-1
+                             recompute <- TRUE
+							.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case)			
+						})
 						
 						
 						
@@ -1241,7 +1358,7 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 #' @aliases 
 #' lapply,GatingSet-method
 setMethod("lapply","GatingSet",function(X,FUN,...){
-      sapply(getSamples(X),function(thisSample,...){
+      sapply(sampleNames(X),function(thisSample,...){
             gh <- X[[thisSample]]
             FUN(gh, ...)
           }, simplify = FALSE, ...)
@@ -1250,37 +1367,54 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
     })    
 
    
-#' Get a list of samples in a flowJo workspace or a GatingSet
+    
+setMethod("getSamples","GatingSet",function(x){
+      stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
+      sampleNames(x)
+    })
+#' Get/update sample names in a GatingSet
 #' 
-#' Return  a data frame of samples contained in a flowJo workspace or a GatingSet
-#' @param x A \code{flowJoWorkspace} or a \code{GatingSet}
-#' @param isFullPath \code{isFullPath} is a logical value indicating whether the full path of the sample file is returned.Default is FALSE.
+#' Return  a sample names contained in a GatingSet
 #' 
-#' @details
-#' Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including their 
-#' \code{sampleID}, \code{name}, and \code{compID} (compensation matrix ID). 
-#' If \code{x} is a \code{GatingSet}, returns a character vector of sample names.
+#' @param object  or a \code{GatingSet}
+#' @param value \code{character} new sample names
+#' 
+#' @details 
 #' The sample names comes from pdata of fs.
 #' 
 #' @return 
-#' A \code{data.frame} with columns \code{sampleID}, \code{name}, and \code{compID} if \code{x} is a \code{flowJoWorkspace}.
-#' A character vector of sample names if \code{x} is a \code{GatingSet}.
+#' A character vector of sample names
 #' 
 #' @examples
 #'       \dontrun{
 #'         #G is  a GatingSet
-#'         getSamples(G)
-#'         #f is a flowJoWorkspace
-#'         getSamples(f);
+#'         sampleNames(G)
 #'       }
 #' @aliases
-#' getSamples
-#' getSamples-methods
-#' getSamples,GatingSet-method
-#' getSamples,flowJoWorkspace-method
-#' @export    
-setMethod("getSamples","GatingSet",function(x){
-      sampleNames(flowData(x))
+#' sampleNames
+#' sampleNames,GatingSet-method
+#' sampleNames<-,GatingSet-method
+#' @export
+setMethod("sampleNames","GatingSet",function(object){
+      sampleNames(flowData(object))
+    })
+
+setReplaceMethod("sampleNames",
+    signature=signature(object="GatingSet"),
+    definition=function(object, value)
+    {
+      oldNames <- sampleNames(object)
+      #update c++ data structure
+      mapply(oldNames,object, FUN = function(oldName, newName){
+            .Call("R_setSample", object@pointer, oldName, newName) 
+      })
+  
+      #update data
+      fs <- flowData(object)
+      sampleNames(fs) <- value
+      flowData(object) <- fs
+      
+      object
     })
 
 # to speed up reading data from disk later on, 
@@ -1419,7 +1553,7 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #            browser()
             #convert non-character indices to character
             if(extends(class(i), "numeric")||class(i) == "logical"){
-              i <- getSamples(x)[i]
+              i <- sampleNames(x)[i]
             }
             
             #copy the R structure          
@@ -1478,14 +1612,14 @@ setMethod("setNode"
 #' [[,GatingSet,logical-method
 #' [[,GatingSet,character-method
 setMethod("[[",c(x="GatingSet",i="numeric"),function(x,i,j,...){
-      x[[getSamples(x)[i]]]
+      x[[sampleNames(x)[i]]]
       
     })
 
 
 setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
             
-      x[[getSamples(x)[i]]]
+      x[[sampleNames(x)[i]]]
       
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
@@ -1517,8 +1651,10 @@ setMethod("show","GatingSet",function(object){
 #' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the flowJo counts, flowCore counts and frequencies.
 #' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
+#' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported. 
+#' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
 #' @param ... Additional arguments
-#' y \code{character} The name of the node. A list of nodes is accessible via \code{getNodes(x)}.
+#' 
 #' @details
 #' getPopStats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the flowJo and flowCore derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
 #' getProp returns the proportion of cells in the gate, relative to its parent.
@@ -1593,7 +1729,7 @@ setMethod("plotPopCV","GatingSet",function(x,...){
 #columns are populations
 #rows are samples
       cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
-      rownames(cv)<-getSamples(x);#Name the rows
+      rownames(cv)<-sampleNames(x);#Name the rows
 #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
@@ -1604,33 +1740,9 @@ setMethod("plotPopCV","GatingSet",function(x,...){
     })
 
 
-#' Get List of Keywords for a Flow Sample
-#' 
-#' Retrieve the list of keywords associated with a sample
-#' 
-#' @param obj A \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy}
-#' @param y can be omitted if \code{obj} is a \code{GatingHierarchy}. A \code{character}, or \code{numeric} if \code{obj} is a \code{GatingSet}. A \code{character} if \code{obj} is a \code{flowJoWorkspace}
-#' 
-#' @details
-#'   Retrieve a list of keywords from a \code{flowJoWorkspace}, \code{GatingSet}, or \code{GatingHierarchy} for a particular sample. The sample is specified via \code{y}, either a numeric index into a \code{GatingSet}, or a sample name (\code{character}) for all other types of \code{obj}. 
-#' @return A list of keyword - value pairs. 
-#' @examples
-#'     \dontrun{
-#'       #G is a GatingHierarchy
-#'       getKeywords(G);
-#'       #G is a GatingSet
-#'       getKeywords(G[[1]])
-#'       getKeywords(G,1)
-#'     }
-#' @aliases 
-#' getKeywords
-#' getKeywords-methods
-#' getKeywords,GatingHierarchy,missing-method
-#' getKeywords,GatingSet,character-method
-#' getKeywords,GatingSet,numeric-method
-#' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
-      ind <- which(getSamples(obj)%in%y)
+      stop("'getKeywords' is defunct. use 'keyword' instead! ")
+      ind <- which(sampleNames(obj)%in%y)
       if(length(ind)>0){
         getKeywords(obj,ind);
       }else{
@@ -1638,12 +1750,18 @@ setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
       }
     })
 setMethod("getKeywords",c("GatingSet","numeric"),function(obj,y){
+      stop("'getKeywords' is defunct. use 'keyword' instead! ")
       if(length(obj) < y){
         stop("index out of range");
       }else{
         lapply(obj, getKeywords);
       }
     })
+setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing"){
+        lapply(object, flowCore::keyword)
+      
+    })
+
 setMethod("keyword",c("GatingSet","character"),function(object,keyword){
       tmp<-data.frame(unlist(lapply(object,function(x)keyword(x,keyword)),use.names=FALSE));
       tmp<-data.frame(matrix(tmp[[1]],ncol=length(keyword),byrow=T))

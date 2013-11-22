@@ -1,4 +1,4 @@
-#include "include/ncdfFlow.hpp"
+#include "ncdfFlow.hpp"
 #include <stdexcept>
 #include <algorithm>
 ncdfFlow::ncdfFlow(string _fileName){

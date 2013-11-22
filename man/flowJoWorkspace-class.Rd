@@ -8,7 +8,7 @@
   Objects can be created by calls of the form
   \code{new("flowJoWorkspace.xml", ...)}.
 }
-\details{
+\section{Slots}{
   \describe{ \item{\code{version}:}{Object of class
   \code{"character"}. The version of the XML workspace. }
   \item{\code{file}:}{Object of class \code{"character"}.

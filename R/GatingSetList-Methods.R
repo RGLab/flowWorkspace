@@ -23,7 +23,7 @@ setMethod("rbind2",
         
         #combine tree structure
         ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
-        sampleList <- lapply(x, getSamples, level =1)
+        sampleList <- lapply(x, sampleNames, level =1)
         pointer <- .Call("R_combineGatingSet",ptrlist,sampleList,package="flowWorkspace")
         G <- new("GatingSet")
         G@pointer <- pointer
@@ -44,13 +44,19 @@ setMethod("show",
     signature = signature(object="GatingSetList"),
     definition = function(object) { 
       cat("A GatingSetList with", length(object@data),"GatingSet\n")
-      cat("containing", length(unique(getSamples(object))), " unique samples.") 
+      cat("containing", length(unique(sampleNames(object))), " unique samples.") 
       cat("\n")
     })
-setMethod("getSamples", 
-    signature = signature(x = "GatingSetList"),
-    function(x,...) {
-      x@samples      
+
+
+setMethod("getSamples","GatingSetList",function(x){
+      stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
+    })
+
+setMethod("sampleNames", 
+    signature = signature(object = "GatingSetList"),
+    function(object) {
+      object@samples      
     })
 
 
@@ -68,17 +74,17 @@ setMethod("lapply","GatingSetList",function(X,FUN, level = 2,...){
         lapply(X@data,FUN,...)
       else
       {
-        sapply(getSamples(X),function(thisSample,...){
+        sapply(sampleNames(X),function(thisSample,...){
               gh <- X[[thisSample]]
               FUN(gh, ...)
-            }, simplify = TRUE, ...)
+            }, simplify = FALSE, ...)
       }
     })
 
 setMethod("[[",c(x="GatingSetList",i="numeric"),function(x,i,j,...){
       #convert non-character indices to character
 #      browser()
-      this_samples <- getSamples(x)
+      this_samples <- sampleNames(x)
       nSamples <- length(this_samples)
       if(i > nSamples){
         stop(i, " is larger than the number of samples: ", nSamples)
@@ -90,7 +96,7 @@ setMethod("[[",c(x="GatingSetList",i="numeric"),function(x,i,j,...){
 setMethod("[[",c(x="GatingSetList",i="logical"),function(x,i,j,...){
       #convert non-character indices to character
       
-      x[[getSamples(x)[i]]]
+      x[[sampleNames(x)[i]]]
       
     })
 setMethod("[[",c(x="GatingSetList",i="character"),function(x,i,j,...){
@@ -98,7 +104,7 @@ setMethod("[[",c(x="GatingSetList",i="character"),function(x,i,j,...){
       gh <- NULL
       for(gs in x@data){
 #              browser()
-            this_samples <- getSamples(gs)
+            this_samples <- sampleNames(gs)
             ind <- match(i,this_samples)
             if(!is.na(ind)){
               gh <- gs[[ind]]
@@ -112,19 +118,19 @@ setMethod("[[",c(x="GatingSetList",i="character"),function(x,i,j,...){
     })
 setMethod("[",c(x="GatingSetList",i="numeric"),function(x,i,j,...){
 #      browser()
-      x[getSamples(x)[i]]
+      x[sampleNames(x)[i]]
       
     })
 
 setMethod("[",c(x="GatingSetList",i="logical"),function(x,i,j,...){
       
-      x[getSamples(x)[i]]
+      x[sampleNames(x)[i]]
    
     })
 
 setMethod("[",c(x="GatingSetList",i="character"),function(x,i,j,...){
 #      browser()
-      samples <- getSamples(x)
+      samples <- sampleNames(x)
       matchInd <- match(i,samples)
       noFound <- is.na(matchInd)
       if(any(noFound)){
@@ -132,7 +138,7 @@ setMethod("[",c(x="GatingSetList",i="character"),function(x,i,j,...){
       }
       res <- lapply(x,function(gs){
 #            browser()
-                  this_samples <- getSamples(gs)
+                  this_samples <- sampleNames(gs)
                   ind <- match(i,this_samples)
                   this_subset <- i[!is.na(ind)] 
                   if(length(this_subset)>0){
@@ -160,7 +166,7 @@ setMethod("getData",c(obj="GatingSetList",y="missing"),function(obj,y,...){
 #' @rdname getData-methods
 setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,max=30,...){
 
-      if(length(getSamples(obj))>max){
+      if(length(sampleNames(obj))>max){
         stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
       }
       
@@ -199,7 +205,7 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
         stop("The sample names in data.frame are not consistent with the GatingSetList!")
         
       res <- lapply(object,function(gs){
-                    this_pd <- subset(value,name%in%getSamples(gs))
+                    this_pd <- subset(value,name%in%sampleNames(gs))
                     pData(gs) <- this_pd
                     gs
                   }, level =1)
@@ -238,11 +244,21 @@ setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats, level =1,...)
       do.call(cbind,res)
     })
+
+setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing"){
+      selectMethod("keyword",signature = c(x="GatingSet",y="missing"))(object, keyword)
+      
+    })
+
+setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
+      selectMethod("keyword",signature = c(x="GatingSet",y="character"))(object, keyword)
+    })
+
 #' @aliases 
 #' length,GatingSetList-method
 #' @rdname length-methods
 setMethod("length","GatingSetList",function(x){
-      length(getSamples(x));
+      length(sampleNames(x));
     })
 #' @rdname save_gs
 #' @export

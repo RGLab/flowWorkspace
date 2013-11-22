@@ -82,7 +82,7 @@ fi
 
 
 
-#netcdf library is now bundled in ncdfFlow package so just compile and link against ncdfFlow
+
 PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS"
 PKG_LIBS="$XML2_LIBS $BOOST_LIBS"
 

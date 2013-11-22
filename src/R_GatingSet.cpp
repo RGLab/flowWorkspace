@@ -199,3 +199,16 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_setSample(SEXP _gsPtrs,SEXP _oldName, SEXP _newName) {
+BEGIN_RCPP
+
+		string oldName=as<string>(_oldName);
+		string newName=as<string>(_newName);
+
+		GatingSet *	gs=getGsPtr(_gsPtrs);
+
+		gs->setSample(oldName,newName);
+
+END_RCPP
+}
+

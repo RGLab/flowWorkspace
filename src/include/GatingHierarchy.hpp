@@ -12,7 +12,6 @@
 #include <vector>
 #include "populationTree.hpp"
 #include "flowJoWorkspace.hpp"
-#include "ncdfFlow.hpp"
 #include <libxml/xpath.h>
 #include <fstream>
 #include <algorithm>
@@ -90,13 +89,9 @@ private:
 	 	 	 	 	  */
 	flowData fdata;
 	populationTree tree;
-//	bool isGated;
+
 	bool isLoaded;
 
-//	ncdfFlow *nc;//a pointer to the global cdf data stored within gatingSet
-//	workspace * thisWs;
-
-//	trans_global_vec *gTrans;//pointer to the global trans stored in gs
 	PARAM_VEC transFlag;
 	trans_local trans;
 
@@ -186,7 +181,7 @@ public:
 	VertexID getDescendant(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties * getNodeProperty(VertexID);
-//	void setNcPtr(ncdfFlow *_nc){nc=_nc;}
+
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
 };

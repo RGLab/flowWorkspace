@@ -1,6 +1,170 @@
 #' @include AllClasses.R
 NULL
 
+#' modify graph::fromGXL by using customized handler
+.fromGXL <- function (con) 
+{
+  contents <- paste(readLines(con), collapse = "")
+  xmlEventParse <- getExportedValue("XML", "xmlEventParse")
+  xmlEventParse(contents, .graph_handler(), asText = TRUE, saxVersion = 2)$asGraphNEL()
+}
+
+#' modify graph:::graph_handler by concatenate the multiple attr string into one
+#' to avoid partial node name display. Because XML::xmlEventParse somehow split
+#' the node name into arrays when there is numeric character reference (&#nnnn;)
+#' 
+#' @importFrom graph graphNEL addEdge
+.graph_handler <- function()
+{
+  
+  
+  all_nodes_e <- new.env(parent = emptyenv(), hash = TRUE)
+  node_data_e <- new.env(parent = emptyenv(), hash = TRUE)
+  node_defaults_e <- new.env(parent = emptyenv(), hash = TRUE)
+  edge_data_e <- new.env(parent = emptyenv(), hash = TRUE)
+  edge_defaults_e <- new.env(parent = emptyenv(), hash = TRUE)
+  from_e <- new.env(parent = emptyenv(), hash = TRUE)
+  to_e <- new.env(parent = emptyenv(), hash = TRUE)
+  nodeCount <- 0L
+  edgeCount <- 0L
+  graphID <- NULL
+  curNode <- NULL
+  curAttr <- NULL
+  inNode <- FALSE
+  inEdge <- FALSE
+  inAttr <- FALSE
+  inInt <- FALSE
+  inFloat <- FALSE
+  inBool <- FALSE
+  edgemode <- NULL
+  add_node <- function(theNode) {
+    if (!exists(theNode, all_nodes_e)) {
+      nodeCount <<- nodeCount + 1L
+      all_nodes_e[[theNode]] <- nodeCount
+    }
+  }
+  add_edge <- function(from, to) {
+    edgeCount <<- edgeCount + 1L
+    k <- as.character(edgeCount)
+    from_e[[k]] <- from
+    to_e[[k]] <- to
+  }
+  startElement <- function(x, atts, ...) {
+    if (x == "graph") {
+      if (!is.null(graphID)) 
+        stop("multiple graphs not supported")
+      graphID <<- atts["id"]
+      eMode <- atts["edgemode"]
+      if (!is.na(eMode)) {
+        if (eMode %in% c("undirected", "defaultundirected")) 
+          edgemode <<- "undirected"
+        else edgemode <<- "directed"
+      }
+      else {
+        edgemode <<- "directed"
+      }
+    }
+    else if (x == "node") {
+      inNode <<- TRUE
+      theNode <- as.character(atts["id"])
+      add_node(theNode)
+      curNode <<- theNode
+    }
+    else if (x == "attr") {
+      inAttr <<- TRUE
+      curAttr <<- atts["name"]
+    }
+    else if (x == "edge") {
+      inNode <<- FALSE
+      inEdge <<- TRUE
+      from <- as.character(atts["from"])
+      to <- as.character(atts["to"])
+      add_node(from)
+      add_node(to)
+      add_edge(from, to)
+    }
+    else if (x == "int") {
+      inInt <<- TRUE
+    }
+    else if (x == "float") {
+      inFloat <<- TRUE
+    }
+    else if (x == "bool") {
+      inBool <<- TRUE
+    }
+  }
+  text <- function(x, atts, ...) {
+    if (inAttr && nchar(x) > 0) {
+      if (inInt) 
+        x <- as.integer(x)
+      if (inFloat) 
+        x <- as.double(x)
+      if (inBool) {
+        if (identical(x, "true")) 
+          x <- TRUE
+        else if (identical(x, "false")) 
+          x <- FALSE
+        else stop("bad bool value: ", x)
+      }
+      if (inNode) {
+        node_defaults_e[[curAttr]] <- as.character(NA)
+        nattrs <- node_data_e[[curNode]]
+        if (!length(nattrs)) 
+          nattrs <- list()
+        #concatenate with old value before update it
+        nattrs[[curAttr]] <- paste(nattrs[[curAttr]], x, sep = "")
+        node_data_e[[curNode]] <- nattrs
+      }
+      else if (inEdge) {
+        edge_defaults_e[[curAttr]] <- as.character(NA)
+        k <- as.character(edgeCount)
+        eattrs <- edge_data_e[[k]]
+        if (!length(eattrs)) 
+          eattrs <- list()
+        eattrs[[curAttr]] <- x
+        edge_data_e[[k]] <- eattrs
+      }
+    }
+  }
+  endElement <- function(x, ...) {
+    if (x == "attr") 
+      inAttr <<- FALSE
+    else if (x == "node") 
+      inNode <<- FALSE
+    else if (x == "edge") 
+      inEdge <<- FALSE
+    else if (x == "int") 
+      inInt <<- FALSE
+    else if (x == "float") 
+      inFloat <<- FALSE
+    else if (x == "bool") 
+      inBool <<- FALSE
+  }
+  asGraphNEL <- function() {
+    ftmat <- cbind(from = unlist(as.list(from_e)), to = unlist(as.list(to_e)))
+    nn <- unlist(as.list(all_nodes_e))
+    nn <- names(nn)[order(nn)]
+    g <- graphNEL(nodes = nn, edgemode = edgemode)
+    if (length(node_defaults_e)) {
+      nd <- new("attrData", as.list(node_defaults_e))
+      nd@data <- as.list(node_data_e)
+      g@nodeData <- nd
+    }
+    if (length(edge_data_e)) {
+      ed <- new("attrData", as.list(edge_defaults_e))
+      edvals <- as.list(edge_data_e)
+      names(edvals) <- graph:::.makeEdgeKeys(ftmat[, 1], ftmat[, 
+              2])
+      ed@data <- edvals
+      g@edgeData <- ed
+    }
+    g <- addEdge(ftmat[, 1], ftmat[, 2], g)
+    validObject(g)
+    g
+  }
+  list(startElement = startElement, endElement = endElement, 
+      text = text, asGraphNEL = asGraphNEL)
+}
 #' @importClassesFrom graph graphNEL
 #' @importMethodsFrom graph fromGXL
 #return a graphNEL object that only contans the node Name and isBool flags    
@@ -10,8 +174,8 @@ NULL
   GXLFile<-tempfile(fileext=".gxl")
   system(paste("dot2gxl",DotFile, ">>",GXLFile))
   
-  sf<-file(GXLFile)
-  g<-fromGXL(sf)
+  sf <- file(GXLFile)
+  g <- .fromGXL(sf)
   close(sf)
   g
 }
@@ -175,34 +339,52 @@ setMethod("show","GatingHierarchy",function(object){
 		})
 
     
-#' Retrieve keywords associated with an FCS sample
+#' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}
 #' 
-#' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet}
+#' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}
 #' 
 #' @details See \code{keyword} in Package `flowCore' 
 #' 
-#' @param object \code{GatingHierarchy} or \code{GatingSet}
-#' @param keyword \code{character}.
+#' @param object \code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}
+#' @param keyword \code{character} specifying keyword name. When \code{missing}, extract all keywords.
 #' 
 #' @seealso \code{\link[flowCore]{keyword-methods}}
 #' 
 #' @aliases 
 #' keyword 
 #' keyword,GatingHierarchy,character-method 
-#' keyword,GatingHierarchy,character
+#' keyword,GatingHierarchy,missing-method
 #' keyword,GatingSet,character-method
-#' keyword,GatingSet,character
-#' 
+#' keyword,GatingSet,missing-method
+#' keyword,GatingSetList,character-method
+#' keyword,GatingSetList,missing-method
+#' @examples 
+#'     \dontrun{
+#'       #get all the keywords from all samples
+#'       keyword(G)
+#'       #get all the keywords from one sample
+#'       keyword(G[[1]])
+#'       #get single keyword from all samples   
+#'       keyword(G, "FILENAME")
+#'       #get single keyword from one sample   
+#'       keyword(G[[1, "FILENAME") 
+#'     }
+
 #' @importFrom flowCore keyword
 #' @export 
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
-			
-			keyword(getData(object),keyword)
+          
+			keyword(object)[[keyword]]
 		})
 setMethod("getKeywords",c("GatingHierarchy","missing"),function(obj,y){
+            stop("'getKeywords' is defunct. use 'keyword' instead! ")
+      
 			keyword(getData(obj))
 		})
-    
+setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing"){
+      
+      flowCore::keyword(getData(object, use.exprs = FALSE))
+    })    
 
 #'  Get the names of all nodes in a gating hierarchy.
 #' 
@@ -273,6 +455,7 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=
 #' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
 #' @param obj A \code{GatingHierarchy}
 #' @param y a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.
+#' @param ... other arguments passed to \link{getNodes} methods
 #' @return 
 #'   \code{getParent} returns a \code{character} vector, the name of the parent population.
 #'   \code{getChildren} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
@@ -301,16 +484,16 @@ setMethod("getParent",signature(obj="GatingHierarchy",y="numeric"),function(obj,
 #			browser()
 			.Call("R_getParent",obj@pointer,getSample(obj),as.integer(y)-1)+1
 		})
-setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
 #			browser()
 			ind<-.getNodeInd(obj,y)
 			pind<-getParent(obj,ind)
-			getNodes(obj, showHidden = TRUE)[pind]
+			getNodes(obj, showHidden = TRUE, ...)[pind]
 		})
-setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE){
+setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE, ...){
 			ind<-.getNodeInd(obj,y)
 			cind<-getChildren(obj,ind)
-			getNodes(obj, showHidden = TRUE)[cind]
+			getNodes(obj, showHidden = TRUE, ...)[cind]
 })
 setMethod("getChildren",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
 #			browser()
@@ -318,7 +501,7 @@ setMethod("getChildren",signature(obj="GatingHierarchy",y="numeric"),function(ob
 			
 		})
 #
-setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo=TRUE){
+setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo = FALSE){
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 			
@@ -330,7 +513,7 @@ setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,fl
 				unname(stats$flowCore["proportion"])
 			
 		})
-setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo=TRUE){
+setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo = FALSE){
             ind<-.getNodeInd(x,y)
       
 			stats<-.getPopStat(x,ind)
@@ -584,7 +767,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. 
 #'                             	If not specified, will return the complete flowFrame/flowSet at the root node.
 #' @param ... arguments passed to ncdfFlow::[[  
-#' j a \code{numeric} or \code{character} used as channel index
+#' 
 #' @return  
 #' A \code{flowFrame} object if \code{obj} is a GatingHierarchy. 
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
@@ -823,22 +1006,52 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 		plotGate(x,y,...)
 		})
 #' @importFrom gridExtra grid.arrange   
-setMethod("plotGate",signature(x="GatingHierarchy",y="numeric"),function(x,y,bool=FALSE,main=getSample(x),arrange=TRUE,merge=TRUE, gpar = NULL,...){
+setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
+                    , function(x, y
+                                , bool=FALSE
+                                , arrange.main = getSample(x),arrange=TRUE,merge=TRUE
+                                , par.settings = list()
+                                , gpar = NULL
+                                , ...){
 			if(!x@flag){
 				message("Can't plot until you gate the data \n");
 				return();
 			}
 			
 			
-#			browser()
+            theme.novpadding <- list(layout.heights = list(top.padding = 0,
+                                                            main.key.padding = 0,
+                                                            key.axis.padding = 0,
+                                                            axis.xlab.padding = 0,
+                                                            xlab.key.padding = 0,
+                                                            key.sub.padding = 0,
+                                                            bottom.padding = 0)
+                                      , layout.widths = list(left.padding = 0,
+                                                              key.ylab.padding = 0,
+                                                              ylab.axis.padding = 0,
+                                                              axis.key.padding = 0,
+                                                              right.padding = 0)
+                                      , par.xlab.text = list(cex = 0.7, col = gray(0.3))
+                                      , par.ylab.text = list(cex = 0.7,  col = gray(0.3))
+                                      , par.main.text = list(cex = 0.8)
+                                      , axis.components = list(bottom = list(tck =0.5)
+                                                              , left = list(tck =0.5))
+                                      , axis.text = list(cex = 0.5)
+                                  )
+            
+                        
+            
+            
+            par.settings <- lattice:::updateList(theme.novpadding, par.settings)
+            
 			plotList<-.mergeGates(x,y,bool,merge)
 			plotObjs<-lapply(plotList,function(y){
 						#defaultCond is passed to flowViz::xyplot to disable lattice strip
-						return(.plotGate(x, y, defaultCond = NULL,...))
+						return(.plotGate(x, y, par.settings = par.settings, ...))
 					})
 #			browser()
 			if(arrange)			
-				do.call(grid.arrange,c(plotObjs,main=main,gpar))
+				do.call(grid.arrange,c(plotObjs,main = arrange.main,gpar))
 			else
 				plotObjs
 			
@@ -932,14 +1145,25 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 
 #' @param x a gatingHierarchy
 #' @param data a flowFrame
-.formatAxis<-function(x,data,xParam,yParam,scales=list(),...){
+.formatAxis <- function(x, data, xParam, yParam
+                          , scales=list()
+                          , marker.only = FALSE
+                          , ...){
 	pd<-pData(parameters(data))
 #	browser()
-	xObj<-.getChannelMarker(pd,xParam)
-	yObj<-.getChannelMarker(pd,yParam)
+	xObj <- .getChannelMarker(pd,xParam)
+	yObj <- .getChannelMarker(pd,yParam)
 	
-	xlab<-sub("NA","",paste(unlist(xObj),collapse=" "))
-	ylab<-sub("NA","",paste(unlist(yObj),collapse=" "))
+    if(marker.only){
+      xlab <- as.character(ifelse(is.na(xObj[,"desc"]), xObj[,"name"], xObj[,"desc"]))
+      ylab <- as.character(ifelse(is.na(yObj[,"desc"]), yObj[,"name"], yObj[,"desc"]))         
+      
+    }else
+    {
+      xlab <- sub("NA","",paste(unlist(xObj),collapse=" "))
+      ylab <- sub("NA","",paste(unlist(yObj),collapse=" "))  
+    }
+	
 #			browser()
 	
 #		xParam.ind<-match(xParam,pd$name)
@@ -1056,7 +1280,7 @@ setMethod("setNode"
 #' getSample-method
 #' getSample,GatingHierarchy-method
 setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
-      thisSample <- getSamples(x)
+      thisSample <- sampleNames(x)
       
       if(isFullPath)
         thisSample <- file.path(x@FCSPath,thisSample)
