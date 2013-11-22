@@ -13,6 +13,7 @@
 \alias{getQAStats,GatingSetList-method}
 \alias{getSamples,GatingSetList-method}
 \alias{rbind2,GatingSetList,missing-method}
+\alias{sampleNames,GatingSetList-method}
 \alias{show,GatingSetList-method}
 \title{Class \code{"GatingSetList"}}
 \usage{
@@ -51,7 +52,7 @@
     #gslist2 is a GatingSetList that contains multiple GatingSets and they share the same gating and data structure
     gslist2
     class(gslist2)
-    getSamples(gslist2)
+    sampleNames(gslist2)
 
     #reference a GatingSet by numeric index
     gslist2[[1]]
@@ -59,11 +60,11 @@
     gslist2[["30104.fcs"]]
 
     #loop through all GatingSets within GatingSetList
-    lapply(gslist2,getSamples)
+    lapply(gslist2,sampleNames)
 
     #subset a GatingSetList by [
-    getSamples(gslist2[c(4,1)])
-    getSamples(gslist2[c(1,4)])
+    sampleNames(gslist2[c(4,1)])
+    sampleNames(gslist2[c(1,4)])
     gslist2[c("30104.fcs")]
 
     #get flow data from it

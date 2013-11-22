@@ -5,38 +5,28 @@
 \alias{getKeywords,GatingHierarchy,missing-method}
 \alias{getKeywords,GatingSet,character-method}
 \alias{getKeywords,GatingSet,numeric-method}
-\title{Get List of Keywords for a Flow Sample}
+\title{Get Keywords}
 \arguments{
-  \item{obj}{A \code{flowJoWorkspace}, \code{GatingSet}, or
-  \code{GatingHierarchy}}
+  \item{obj}{A \code{flowJoWorkspace}}
 
-  \item{y}{can be omitted if \code{obj} is a
-  \code{GatingHierarchy}. A \code{character}, or
-  \code{numeric} if \code{obj} is a \code{GatingSet}. A
-  \code{character} if \code{obj} is a
-  \code{flowJoWorkspace}}
+  \item{y}{c\code{character} specifying the sample names}
 }
 \value{
   A list of keyword - value pairs.
 }
 \description{
-  Retrieve the list of keywords associated with a sample
+  Retrieve keywords associated with a workspace
 }
 \details{
-  Retrieve a list of keywords from a
-  \code{flowJoWorkspace}, \code{GatingSet}, or
-  \code{GatingHierarchy} for a particular sample. The
-  sample is specified via \code{y}, either a numeric index
-  into a \code{GatingSet}, or a sample name
-  (\code{character}) for all other types of \code{obj}.
+  Retrieve a list of keywords from a \code{flowJoWorkspace}
 }
 \examples{
-\dontrun{
-      #G is a GatingHierarchy
-      getKeywords(G);
-      #G is a GatingSet
-      getKeywords(G[[1]])
-      getKeywords(G,1)
-    }
+require(flowWorkspaceData)
+  d<-system.file("extdata",package="flowWorkspaceData")
+  wsfile<-list.files(d,pattern="manual.xml",full=TRUE)
+  ws <- openWorkspace(wsfile);
+
+  getSamples(ws)
+  getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 }
 

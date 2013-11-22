@@ -32,13 +32,12 @@ typedef map<string,GatingHierarchy*> gh_map;
 
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
-//	friend std::ostream & operator<<(std::ostream &os, const GatingSet &gs);
+
 	friend class boost::serialization::access;
 	biexpTrans globalBiExpTrans; //default bi-exponential transformation functions
 	linTrans globalLinTrans;
 	trans_global_vec gTrans;//parsed from xml workspace
 	gh_map ghs;
-	ncdfFlow nc;
 	unsigned short dMode;//debug level to control print out
 	workspace * ws;
 
@@ -88,6 +87,7 @@ private:
 public:
 	~GatingSet();
 	GatingSet(){ws=NULL;};
+	void setSample(string oldName, string newName);
 	GatingSet(string,bool,unsigned short,int,unsigned short _dMode=1);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
 	GatingSet(vector<string>,unsigned short _dMode=1);
@@ -97,15 +97,11 @@ public:
 	void parseWorkspace(unsigned short,bool);
 	void parseWorkspace(vector<string>,bool);
 	vector<string> getSamples(void);
-	void attachData(string,vector<string>,vector<string>);
-	ncdfFlow getNcObj(){return nc;}
-//	workspace const * getWorkspace(){return ws;}
 
 	GatingSet * clone_treeOnly(vector<string> samples);
 	GatingSet * clone_sstream(vector<string> samples);
 	GatingSet * clone_fstream(vector<string> samples);
 	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
-//	void add(gate * g,string parentName,string nodeName,unsigned short _dMode=1);
 };
 
 BOOST_CLASS_VERSION(GatingSet,1)

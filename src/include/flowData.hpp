@@ -36,10 +36,12 @@ using namespace Rcpp;
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/split_member.hpp>
-
+#include <boost/algorithm/string.hpp>
 
 /*
  * representing one FCS data
+ * currently used as a transient copy of flow data (passed from R)
+ * resource is released once the gating is done
  */
 class flowData{
 	friend std::ostream & operator<<(std::ostream &os, const flowData &fdata);
@@ -49,7 +51,7 @@ private:
 	unsigned sampleID;//it is only valid when access cdf version of flowdata, used as index for sample dimension
 	valarray<double> data;
 	unsigned nEvents;
-
+	bool ignore_case; //whether channel-searching is case sensitive
 	template<class Archive>
 		    void serialize(Archive &ar, const unsigned int version)
 		    {
@@ -63,8 +65,8 @@ private:
 public:
 	flowData & operator=(const flowData& source);//explicitly define the copy assignment since the default one is compiler-specific
 	flowData();
-	flowData(const double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID);
-	flowData(NumericMatrix mat,unsigned _sampleID);
+	flowData(const double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID, bool _ignore_case = false);
+	flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case=false);
 	slice getSlice(string channel);
 	void updateSlice(string channel,valarray<double> x);
 	valarray<double> subset(string channel);
