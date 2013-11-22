@@ -122,7 +122,7 @@ setMethod("add",
 		signature=c("GatingSet", "filterList"),
 		definition=function(wf, action, ...)
 		{
-			samples<-getSamples(wf)
+			samples<-sampleNames(wf)
 			
 			if(!setequal(names(action),samples))
 				stop("names of filterList do not match with the sample names in the gating set!")			
@@ -150,7 +150,7 @@ setMethod("add",
 			
 			message("replicating filter '",identifier(action),"' across samples!")
 			
-			actions<-sapply(getSamples(wf),function(x)return(action))
+			actions<-sapply(sampleNames(wf),function(x)return(action))
 			add(wf,actions,...)
 			
 		})

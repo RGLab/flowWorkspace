@@ -34,7 +34,11 @@ NULL
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file,options = 0,...){
  	#message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	tmp<-tempfile(fileext=".xml")
-	file.copy(file,tmp)
+    if(!file.exists(file))
+      stop(file, " not found!")
+	if(!file.copy(file,tmp))
+      stop("Can't copy ", file, " to ", tmp)
+    
 	if(inherits(file,"character")){
 		x<-xmlTreeParse(tmp,useInternalNodes=TRUE,options = options, ...);
 	}else{
@@ -99,6 +103,7 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #'      	\item sampNloc="keyword": a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
 #'      	\item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
 #'      	\item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
+#'          \item ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 #'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 #'      	}
 #' @details
@@ -258,7 +263,32 @@ l})
   }
 }
 
-
+#' Get Keywords
+#' 
+#' Retrieve keywords associated with a workspace
+#' 
+#' @param obj A \code{flowJoWorkspace}
+#' @param y c\code{character} specifying the sample names
+#' 
+#' @details
+#'   Retrieve a list of keywords from a \code{flowJoWorkspace}  
+#' @return A list of keyword - value pairs. 
+#' @examples
+#'   require(flowWorkspaceData)
+#'   d<-system.file("extdata",package="flowWorkspaceData")
+#'   wsfile<-list.files(d,pattern="manual.xml",full=TRUE)
+#'   ws <- openWorkspace(wsfile);
+#'   
+#'   getSamples(ws)
+#'   getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
+#' 
+#' @aliases 
+#' getKeywords
+#' getKeywords-methods
+#' getKeywords,GatingHierarchy,missing-method
+#' getKeywords,GatingSet,character-method
+#' getKeywords,GatingSet,numeric-method
+#' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
 	w <- which(xpathApply(obj@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value"))%in%y)
 	l<-xpathApply(obj@doc,paste("/Workspace/SampleList/Sample[",w,"]/Keywords/node()",sep=""),xmlAttrs)
@@ -360,6 +390,29 @@ trimWhiteSpace<-function (x)
     sub("[ \t\n\r]*$", "", sub("^[ \t\n\r]*", "", x))
 }
 
+#' Get a list of samples from a flowJo workspace
+#' 
+#' Return  a data frame of samples contained in a flowJo workspace
+#' @param x A \code{flowJoWorkspace}
+#' 
+#' @details
+#' Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including their 
+#' \code{sampleID}, \code{name}, and \code{compID} (compensation matrix ID). 
+#' 
+#' @return 
+#' A \code{data.frame} with columns \code{sampleID}, \code{name}, and \code{compID} if \code{x} is a \code{flowJoWorkspace}.
+#' 
+#' @examples
+#'       \dontrun{
+#'         #ws is a flowJoWorkspace
+#'         getSamples(ws);
+#'       }
+#' @aliases
+#' getSamples
+#' getSamples-methods
+#' getSamples,GatingSet-method
+#' getSamples,flowJoWorkspace-method
+#' @export  
 setMethod("getSamples","flowJoWorkspace",function(x){
 	.getSamples(x@doc)
 })

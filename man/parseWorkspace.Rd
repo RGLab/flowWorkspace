@@ -51,9 +51,12 @@
   customized compensation matrix to be used instead of the
   one specified in flowJo workspace.  \item options=0: a
   \code{integer} option passed to
-  \code{\link{xmlTreeParse}} \item ...: Additional
-  arguments to be passed to \link{read.ncdfFlowSet} or
-  \link{read.flowSet}.  }}
+  \code{\link{xmlTreeParse}} \item ignore.case a
+  \code{logical} flag indicates whether the
+  colnames(channel names) matching needs to be case
+  sensitive (e.g. compensation, gating..)  \item ...:
+  Additional arguments to be passed to
+  \link{read.ncdfFlowSet} or \link{read.flowSet}.  }}
 }
 \value{
   a \code{GatingSet}, which is a wrapper around a list of

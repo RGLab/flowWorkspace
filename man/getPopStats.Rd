@@ -14,9 +14,15 @@
 \arguments{
   \item{x}{A \code{GatingHierarchy} or \code{GatingSet}}
 
-  \item{...}{Additional arguments y \code{character} The
-  name of the node. A list of nodes is accessible via
-  \code{getNodes(x)}.}
+  \item{statistic}{\code{character} specifies the type of
+  population statistics to extract. Either "freq" or
+  "count" is currently supported.}
+
+  \item{flowJo}{\code{logical} indicating whether the
+  statistics come from FlowJo (if parsed from xml
+  workspace) or from flowCore.}
+
+  \item{...}{Additional arguments}
 }
 \value{
   getPopStats returns a \code{data.frame} with columns for
