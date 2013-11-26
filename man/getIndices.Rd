@@ -3,7 +3,7 @@
 \alias{getIndices-methods}
 \alias{getIndices,GatingHierarchy,character-method}
 \alias{getIndices,GatingHierarchy,numeric-method}
-\alias{getIndices,GatingSet,name}
+\alias{getIndices,GatingSet,name-method}
 \title{Get the membership indices for each event with respect to a particular gate in a GatingHierarchy}
 \arguments{
   \item{obj}{A \code{GatingHierarchy} representing a
@@ -54,7 +54,6 @@
     #Return the indices for population 5 (topological sort)
     getIndices(G,getNodes(G,tsort=TRUE)[5]);
 }
-getIndices(gs,quote(`4+/TNFa+|4+/IL2+`)) # (it may be faster than R version)
 }
 \seealso{
   \code{\link{getProp}}, \code{\link{getPopStats}}

@@ -737,7 +737,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 #' getIndices-methods
 #' getIndices,GatingHierarchy,character-method
 #' getIndices,GatingHierarchy,numeric-method
-#' getIndices,GatingSet,name
+#' getIndices,GatingSet,name-method
 #' @importFrom ncdfFlow getIndices
 #' @export 
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){

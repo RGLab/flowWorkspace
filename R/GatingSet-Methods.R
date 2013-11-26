@@ -1778,10 +1778,13 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' remove the bool gate
 #' the typical use case would be extracting any-cytokine-expressed cells
 #' @param y a quoted expression.
+#' @rdname getIndices
 #' @examples
 #" \dontrun{
-#' getIndices(gs,quote(`4+/TNFa+|4+/IL2+`)) # (it may be faster than R version)
-#' }
+#'   
+#'	getIndices(gs,quote(`4+/TNFa+|4+/IL2+`)) 
+#' 
+#'}
 #' @export 
 setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y, ...){
   
@@ -1811,6 +1814,9 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y, ...){
   }
   
 })
+#' Return the single-cell matrix of 1/0 dichotomized expression
+#' @param gh \code{GatingHierarchy} object
+#' @param y \code{character} node name
 #' @export 
 getIndiceMat<-function(gh,y){
   strExpr <- as.character(y)
