@@ -603,6 +603,9 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 #' @importFrom lattice barchart
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
       x<-getPopStats(x)
+      rn<-rownames(x)
+      x<-as.data.frame(x)
+      rownames(x)<-rn	
       cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));
       cv<-as.matrix(cv,nrow=length(cv))
       cv[is.nan(cv)]<-0
