@@ -835,12 +835,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @rdname plotGate-methods
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
         stop("y is missing!")
-			
-#            y <- getNodes(x[[1]])
-#            y <- setdiff(y,"root")
-#            
-#			plotGate(x,y,...)
-			
 		})
 
     
