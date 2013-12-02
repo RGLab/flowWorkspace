@@ -74,14 +74,14 @@ plot(gh)
 We can list the nodes (populations) in the gating hierarchy:
 
 <<getNodes>>=
-nodelist<-getNodes(gh)
+nodelist<-getNodes(gh, isPath = FALSE)
 nodelist
 @
 Note that the number preceding the period in the node names is just an identifier to help uniquely label populations in the gating hierarchy. It does not represent any information about population statistics.
 When the node name itself is already unique,such as "Live","B Cell" ,the prefix is ommitted by default. 
 We can force the prefix to be added to each node by setting \Robject{prefix} TRUE.
 <<getNodes-prefix>>=
-getNodes(gh,prefix=TRUE)
+getNodes(gh,prefix=TRUE, isPath = FALSE)
 @
 Alternativly, the the full path of the node can be displayed by setting \Robject{isPath} TRUE.
 <<getNodes-path>>=
