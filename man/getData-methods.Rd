@@ -1,4 +1,5 @@
 \name{getData}
+\alias{GatingSetList,name-method}
 \alias{getData}
 \alias{getData,GatingHierarchy,character-method}
 \alias{getData,GatingHierarchy,missing-method}
@@ -6,9 +7,11 @@
 \alias{getData,GatingSet,ANY-method}
 \alias{getData,GatingSet,character-method}
 \alias{getData,GatingSet,missing-method}
+\alias{getData,GatingSet,name-method}
 \alias{getData,GatingSet,numeric-method}
 \alias{getData,GatingSetList,character-method}
 \alias{getData,GatingSetList,missing-method}
+\alias{getData,GatingSetList,name-method}
 \alias{getData,GatingSetList,numeric-method}
 \title{get gated flow data from a GatingHierarchy/GatingSet}
 \arguments{
@@ -22,6 +25,11 @@
 
   \item{...}{arguments passed to ncdfFlow::[[}
 
+  \item{obj}{A \code{GatingSet} object .}
+
+  \item{y}{\code{name} boolean expression specifying the
+  boolean combination of different cell populations}
+
   \item{max}{\code{numeric} The maximum number of samples
   to be returned. It is used as a threshold to prevent huge
   memory consumption due to the coersion from ncdfFlowSet
@@ -32,9 +40,14 @@
   GatingHierarchy. A \code{flowSet} or \code{ncdfFlowSet}
   if a \code{GatingSet}. A \code{flowSet} if a
   \code{GatingSetList}.
+
+  A \code{list} of \code{numerci matrices}
 }
 \description{
   get gated flow data from a GatingHierarchy/GatingSet
+
+  Returns a flowSet containing the events defined at by
+  boolean expression \code{y}.
 }
 \details{
   Returns a flowFrame/flowSet containing the events in the
@@ -55,8 +68,20 @@
     #gh is a GatingHierarchy
     getData(gh)
 }
+\dontrun{
+  #G is a GatingSet
+	geData(G,3)
+	res <- getData(gs[1],quote(`4+/TNFa+|4+/IL2+`))
+	res[[1]]
+}
+}
+\author{
+  Mike Jiang \email{wjiang2@fhcrc.org}
 }
 \seealso{
+  \code{\link{getIndices}} \code{\link{getProp}}
+  \code{\link{getPopStats}}
+
   \code{\link{getIndices}} \code{\link{getProp}}
   \code{\link{getPopStats}}
 }
