@@ -1,7 +1,7 @@
 \name{getNodes}
 \alias{getNodes}
-\alias{getNodes-methods}
 \alias{getNodes,GatingHierarchy-method}
+\alias{getNodes-methods}
 \title{Get the names of all nodes in a gating hierarchy.}
 \arguments{
   \item{x}{A \code{GatingHierarchy}}

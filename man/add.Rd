@@ -1,4 +1,7 @@
 \name{add}
+\alias{Rm}
+\alias{Rm,character,GatingHierarchy,character-method}
+\alias{Rm,character,GatingSet,character-method}
 \alias{add}
 \alias{add,GatingHierarchy,filter-method}
 \alias{add,GatingHierarchy,quadGate-method}
@@ -7,9 +10,6 @@
 \alias{add,GatingSet,list-method}
 \alias{recompute}
 \alias{recompute,GatingSet-method}
-\alias{Rm}
-\alias{Rm,character,GatingHierarchy,character-method}
-\alias{Rm,character,GatingSet,character-method}
 \alias{setGate}
 \alias{setGate,GatingHierarchy,character,filter-method}
 \alias{setGate,GatingHierarchy,numeric,filter-method}

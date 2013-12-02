@@ -595,8 +595,9 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			m[1,c(2)]<-1;
 			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","flowJo.freq","node")
-			rownames(m)<-m[,1]
-			m<-m[,2:6]
+			rn<-m[,1]
+			m<-data.table(m[,2:6])
+      rownames(m)<-rn
 			m
 		})
 #' @importFrom lattice barchart

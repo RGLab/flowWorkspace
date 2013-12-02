@@ -1,8 +1,8 @@
 \name{getTransformations}
 \alias{getTransformations}
-\alias{getTransformations-methods}
-\alias{getTransformations,flowJoWorkspace-method}
 \alias{getTransformations,GatingHierarchy-method}
+\alias{getTransformations,flowJoWorkspace-method}
+\alias{getTransformations-methods}
 \title{Return a list of transformations or a transformation in a flowJo workspace/GatingHierarchy}
 \arguments{
   \item{x}{A \code{flowJoWorkspace} or

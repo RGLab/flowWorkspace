@@ -1,8 +1,8 @@
 \name{plotPopCV}
 \alias{plotPopCV}
-\alias{plotPopCV-methods}
 \alias{plotPopCV,GatingHierarchy-method}
 \alias{plotPopCV,GatingSet-method}
+\alias{plotPopCV-methods}
 \title{Plot the coefficient of variation between flowJo and flowCore population statistics for each population in a gating hierarchy.}
 \arguments{
   \item{x}{A \code{GatingHierarchy} from a

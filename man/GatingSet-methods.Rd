@@ -1,9 +1,9 @@
 \docType{methods}
 \name{GatingSet}
 \alias{GatingSet}
+\alias{GatingSet,GatingHierarchy,character-method}
 \alias{GatingSet,character,character-method}
 \alias{GatingSet,flowSet,ANY-method}
-\alias{GatingSet,GatingHierarchy,character-method}
 \title{constructors for GatingSet}
 \description{
   construct object from xml workspace file and a list of

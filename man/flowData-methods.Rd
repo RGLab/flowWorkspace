@@ -1,7 +1,7 @@
 \name{flowData}
 \alias{flowData}
-\alias{flowData-methods}
 \alias{flowData,GatingSet-method}
+\alias{flowData-methods}
 \alias{flowData<-}
 \alias{flowData<-,GatingSet-method}
 \title{Fetch or replace the flowData object associated with a GatingSet .}

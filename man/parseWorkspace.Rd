@@ -1,7 +1,7 @@
 \name{parseWorkspace}
 \alias{parseWorkspace}
-\alias{parseWorkspace-methods}
 \alias{parseWorkspace,flowJoWorkspace-method}
+\alias{parseWorkspace-methods}
 \title{Parse a flowJo Workspace}
 \arguments{
   \item{obj}{A \code{flowJoWorkspace} to be parsed.}

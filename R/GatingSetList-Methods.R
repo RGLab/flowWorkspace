@@ -242,7 +242,22 @@ setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ..
 
 setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats, level =1,...)
-      do.call(cbind,res)
+      res<-Reduce(function(x,y)
+        {
+          merge(x,y,all=TRUE)
+        },
+             lapply(res,function(x)
+               {
+                rn<-rownames(x);
+                x<-data.table(x);
+                x$key<-rn;
+                setkeyv(x,"key")
+                }))
+      rn<-res$key
+      res[,key:=NULL]
+      res<-as.matrix(res)
+      rownames(res)<-rn
+      res
     })
 
 setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing"){
