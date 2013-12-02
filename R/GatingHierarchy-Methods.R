@@ -406,8 +406,8 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G[[1]])#return node names
-#'     getNodes(G[[1]],isPath=TRUE)#return the full path
+#'     getNodes(G[[1], isPath = FALSE])#return node names
+#'     getNodes(G[[1]],isPath = TRUE)#return the full path
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases
@@ -415,7 +415,7 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' getNodes-methods
 #' getNodes,GatingHierarchy-method
 #' @importFrom BiocGenerics duplicated
-setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,showHidden = FALSE,...){
+setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath = TRUE, prefix=FALSE,showHidden = FALSE,...){
 
 			orderInd<-match(order,c("regular","tsort","bfs"))
 			if(length(orderInd)==0)
@@ -562,8 +562,8 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			
-        nodeNamesPath<-getNodes(x,isPath=T,...)
-       nodeNames<-getNodes(x,...)
+        nodeNamesPath<-getNodes(x,isPath = TRUE,...)
+       nodeNames<-getNodes(x, isPath = FALSE, ...)
                            
           
        stats<-mapply(nodeNames,nodeNamesPath,FUN = function(thisName,thisPath){
@@ -651,7 +651,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 			{
 
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
-				filterId<-getNodes(obj, showHidden = TRUE)[y]
+				filterId <- getNodes(obj, showHidden = TRUE, isPath = FALSE)[y]
 				if(g$type==1)
 				{
 					
@@ -699,7 +699,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
     ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
     ind <- ind + 1 # convert to R index
   }else{
-    allNodes <- getNodes(obj,showHidden = TRUE,...)
+    allNodes <- getNodes(obj, isPath = FALSE, showHidden = TRUE,...)
     ind<-match(y,allNodes)#strict string match  
     if(is.na(ind)||length(ind)==0){
         stop("Node:", y," not found!")
@@ -1217,7 +1217,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #'   \dontrun{
 #'     #G is a gating hierarchy
 #'     getNodes(G[[1]])#return node names
-#'     getNodes(G[[1]],isPath=TRUE)#return the full path
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases 
