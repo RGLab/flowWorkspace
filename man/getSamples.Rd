@@ -1,8 +1,8 @@
 \name{getSamples}
 \alias{getSamples}
-\alias{getSamples-methods}
-\alias{getSamples,flowJoWorkspace-method}
 \alias{getSamples,GatingSet-method}
+\alias{getSamples,flowJoWorkspace-method}
+\alias{getSamples-methods}
 \title{Get a list of samples from a flowJo workspace}
 \arguments{
   \item{x}{A \code{flowJoWorkspace}}

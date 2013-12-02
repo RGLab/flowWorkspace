@@ -1,14 +1,14 @@
 \name{getPopStats}
 \alias{getPopStats}
-\alias{getPopStats-methods}
 \alias{getPopStats,GatingHierarchy-method}
 \alias{getPopStats,GatingSet-method}
+\alias{getPopStats-methods}
 \alias{getProp}
-\alias{getProp-methods}
 \alias{getProp,GatingHierarchy,character-method}
+\alias{getProp-methods}
 \alias{getTotal}
-\alias{getTotal-methods}
 \alias{getTotal,GatingHierarchy,character-method}
+\alias{getTotal-methods}
 \title{Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
   or the population proportions or the total number of events of a node (population) in a GatingHierarchy}
 \arguments{

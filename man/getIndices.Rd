@@ -1,9 +1,9 @@
 \name{getIndices}
 \alias{getIndices}
-\alias{getIndices-methods}
 \alias{getIndices,GatingHierarchy,character-method}
 \alias{getIndices,GatingHierarchy,numeric-method}
 \alias{getIndices,GatingSet,name-method}
+\alias{getIndices-methods}
 \title{Get the membership indices for each event with respect to a particular gate in a GatingHierarchy}
 \arguments{
   \item{obj}{A \code{GatingHierarchy} representing a
@@ -53,6 +53,8 @@
     #G is a gating hierarchy
     #Return the indices for population 5 (topological sort)
     getIndices(G,getNodes(G,tsort=TRUE)[5]);
+    getIndices(gs,quote(`4+/TNFa+|4+/IL2+`))
+
 }
 }
 \seealso{

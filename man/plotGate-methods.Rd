@@ -1,7 +1,6 @@
 \docType{methods}
 \name{plotGate}
 \alias{plotGate}
-\alias{plotGate-methods}
 \alias{plotGate,GatingHierarchy,character-method}
 \alias{plotGate,GatingHierarchy,missing-method}
 \alias{plotGate,GatingHierarchy,numeric-method}
@@ -10,6 +9,7 @@
 \alias{plotGate,GatingSet,numeric-method}
 \alias{plotGate,GatingSetList,character-method}
 \alias{plotGate,GatingSetList,numeric-method}
+\alias{plotGate-methods}
 \title{Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}}
 \arguments{
   \item{x}{\code{\linkS4class{GatingSet}} or

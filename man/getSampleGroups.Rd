@@ -1,7 +1,7 @@
 \name{getSampleGroups}
 \alias{getSampleGroups}
-\alias{getSampleGroups-methods}
 \alias{getSampleGroups,flowJoWorkspace-method}
+\alias{getSampleGroups-methods}
 \title{Get a table of sample groups from a flowJo workspace}
 \arguments{
   \item{x}{A \code{flowJoWorkspace} object.}

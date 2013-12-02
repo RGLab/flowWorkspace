@@ -1685,6 +1685,7 @@ setMethod("show","GatingSet",function(object){
 #' getTotal
 #' getTotal-methods
 #' getTotal,GatingHierarchy,character-method
+#' @import data.table
 setMethod("getPopStats", "GatingSet",
     function(x, statistic = c("freq", "count"), flowJo = FALSE, ...) {
       
@@ -1699,12 +1700,25 @@ setMethod("getPopStats", "GatingSet",
       } else {
         statistic <- paste("flowCore", statistic, sep = ".")
       }
-      
-      
-      pop_stats <- do.call(cbind, lapply(x, function(y) {
-                getPopStats(y)[[statistic]]
-              }))
-      rownames(pop_stats) <- rownames(getPopStats(x[[1]]))
+      stats<-lapply(x,function(y){
+        d<-getPopStats(y)
+        d$key<-rownames(d)
+        setkeyv(d,"key")
+        d<-d[,list(key,get(statistic))]
+        setnames(d,c("key",sampleNames(y)))
+        setkeyv(d,"key")
+        d
+      })
+      pop_stats<-Reduce(function(x,y)merge(x,y,all=TRUE),stats)
+#       pop_stats <- do.call(cbind, lapply(x, function(y) {
+#                 getPopStats(y)[[statistic]]
+#               }))
+      rownames(pop_stats) <- pop_stats[,key]
+      setkey(pop_stats,NULL)
+      pop_stats$key<-NULL
+      rn<-rownames(pop_stats)
+      pop_stats<-as.matrix(pop_stats)
+      rownames(pop_stats)<-rn
       pop_stats
     })
 
