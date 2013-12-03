@@ -322,3 +322,33 @@ load_gslist<-function(path){
   GatingSetList(res, samples = samples)
   
 }
+
+#' Replace a single marker name with another
+#' Scan through a gating set list and rename all flowFrames with marker \code{match}
+#' to marker \code{replace}
+#'@return a \code{GatingSetList}
+.renameMarker<-function(g=NA,match=NA,replace=NA){
+  if(!inherits(g,"GatingSetList"))
+    stop("g must be a GatingSetList")
+  listofgs<-lapply(g@data,function(x,m=match,r=replace){
+    samps<-sampleNames(flowData(x))
+    fd<-flowData(x)
+    for(i in samps){
+      f <- fd@frames[[i]]
+      adf <- parameters(f)
+      pd <- pData(adf)
+      mtch <- as.matrix(pd["desc"])%in%m
+      if(any(mtch)){
+        pd[mtch,"desc"]<-r
+        pData(adf)<-pd
+        parameters(f)<-adf
+        fd@frames[[i]]<-f
+      }
+    }
+    flowData(x)<-fd
+    x
+  })
+  listofgs
+  g@data<-listofgs
+  g
+}
