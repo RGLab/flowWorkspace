@@ -59,7 +59,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 	 */
 	xmlXPathObjectPtr transRes=transParentNode.xpathInNode("child::*");
 
-	map<string,transformation *> curTp=res.getTransMap();
+	trans_map curTp=res.getTransMap();
 
 	for(int j=0;j<transRes->nodesetval->nodeNr;j++)
 	{
@@ -152,7 +152,7 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	 *  save trans back to trans_local for each channel
 	 */
 
-	map<string,transformation *> tp=res.getTransMap();
+	trans_map tp=res.getTransMap();
 	for(trans_global_vec::iterator it=gTrans->begin();it!=gTrans->end();it++)
 	{
 		vector<int> sampleVec=it->getSampleIDs();
@@ -270,7 +270,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 		/*
 		 * parse transformations for current compNode
 		 */
-		map<string,transformation *> curTp=curTg.getTransMap();
+		trans_map curTp=curTg.getTransMap();
 		path=".//*[local-name()='logicle']";//get logicle(actually it is biexp)
 		xmlXPathObjectPtr TransRes=compNode.xpathInNode(path);
 		for(int j=0;j<TransRes->nodesetval->nodeNr;j++)

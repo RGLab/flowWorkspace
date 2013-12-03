@@ -110,7 +110,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	/*
 	 * get the pointer to the result local trans map
 	 */
-	map<string,transformation *> trs=res.getTransMap();
+	trans_map trs=res.getTransMap();
 
 	string tGName;
 	trans_global_vec::iterator tgIt;
