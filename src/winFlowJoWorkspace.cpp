@@ -308,7 +308,12 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 				curTp[curTran->getChannel()]=curTran;
 			}
 			else
+			{
+				xmlXPathFreeObject(TransRes);
+				xmlXPathFreeObject(compNodeRes);
 				throw(domain_error("unknown tranformation type!"));
+			}
+
 
 		}
 		xmlXPathFreeObject(TransRes);
@@ -346,7 +351,11 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 
 	xmlXPathObjectPtr res=sampleNode.xpathInNode("*[local-name()='spilloverMatrix']");
 	if(res->nodesetval->nodeNr!=1)
+	{
+		xmlXPathFreeObject(res);
 		throw(domain_error("not valid compensation node!"));
+	}
+
 
 	wsNode node(res->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(res);
@@ -394,7 +403,12 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 			xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("*[local-name()='coefficient']");
 			unsigned nY=resY->nodesetval->nodeNr;
 			if(nX!=nY)
+			{
+				xmlXPathFreeObject(resX);
+				xmlXPathFreeObject(resY);
 				throw(domain_error("not the same x,y dimensions in spillover matrix!"));
+			}
+
 			for(unsigned j=0;j<nY;j++)
 			{
 				wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
@@ -459,6 +473,8 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				int nCoord=nodeSet->nodeNr;
 				if(nCoord!=2)
 				{
+					xmlXPathFreeObject(resVert);
+					xmlXPathFreeObject(resCoord);
 //					cout<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
 					throw(domain_error("invalid  number of coordinates!"));
 				}
@@ -568,6 +584,7 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 
 			}else if(nParam!=2)
 			{
+				xmlXPathFreeObject(resPara);
 				throw(domain_error("invalid  dimension of the rectangle gate!"));
 			}
 
