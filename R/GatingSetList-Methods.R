@@ -58,7 +58,7 @@ setReplaceMethod("pData",c("ncdfFlowList","data.frame"),function(object,value){
     })
 
 
-setMethod("recompute",c("GatingSet"),function(x, ...){
+setMethod("recompute",c("GatingSetList"),function(x, ...){
       selectMethod("recompute", signature = c("GatingSet"))(x, ...)
       
     })
