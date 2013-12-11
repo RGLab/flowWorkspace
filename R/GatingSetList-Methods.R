@@ -70,9 +70,13 @@ setMethod("recompute",c("GatingSetList"),function(x, ...){
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
       
       samples_orig <- obj@samples
-              
+      if(missing(y))y <- NULL              
       res <- lapply(obj,function(gs){
-            ncfs <- getData(gs,y, ...)
+            
+            if(is.null(y))
+              ncfs <- getData(gs, ...)
+            else
+              ncfs <- getData(gs,y, ...)
             ncfs
           }, level =1)
       nclist <- as(res, "ncdfFlowList")
