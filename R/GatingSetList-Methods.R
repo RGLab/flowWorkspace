@@ -1,6 +1,6 @@
 #' @include GatingSet-Methods.R
 NULL
-
+#' @importMethodsFrom ncdfFlow lapply rbind2 pData<-
 setMethod("rbind2",
     signature=signature("GatingSetList","missing"),
     definition=function(x,y="missing",...)
@@ -40,179 +40,50 @@ setMethod("rbind2",
       return(G);  
       
     })
-setMethod("show",
-    signature = signature(object="GatingSetList"),
-    definition = function(object) { 
-      cat("A GatingSetList with", length(object@data),"GatingSet\n")
-      cat("containing", length(unique(sampleNames(object))), " unique samples.") 
-      cat("\n")
-    })
+
 
 
 setMethod("getSamples","GatingSetList",function(x){
       stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
     })
 
-setMethod("sampleNames", 
-    signature = signature(object = "GatingSetList"),
-    function(object) {
-      object@samples      
-    })
-
-
-#' @param X \code{GatingSet} or \code{GatingSetList} object
-#' @param FUN \code{function} to apply
-#' @param level \code{numeric}. When \code{X} is a \code{GatingSetList}, \code{level} 2 (default value)
-#' \code{FUN} is applied to each individual \code{GatingHierarchy}. When it is set to 1, \code{FUN} is applied to each \code{GatingSet}  
-#' 
-#' @rdname lapply-methods
-#' @export 
-#' @aliases 
-#' lapply,GatingSetList-method
-setMethod("lapply","GatingSetList",function(X,FUN, level = 2,...){
-      if(level == 1)
-        lapply(X@data,FUN,...)
-      else
-      {
-        sapply(sampleNames(X),function(thisSample,...){
-              gh <- X[[thisSample]]
-              FUN(gh, ...)
-            }, simplify = FALSE, ...)
-      }
-    })
-
-setMethod("[[",c(x="GatingSetList",i="numeric"),function(x,i,j,...){
-      #convert non-character indices to character
-#      browser()
-      this_samples <- sampleNames(x)
-      nSamples <- length(this_samples)
-      if(i > nSamples){
-        stop(i, " is larger than the number of samples: ", nSamples)
-      }
-        x[[this_samples[i]]]
-      
-    })
-
-setMethod("[[",c(x="GatingSetList",i="logical"),function(x,i,j,...){
-      #convert non-character indices to character
-      
-      x[[sampleNames(x)[i]]]
-      
-    })
-setMethod("[[",c(x="GatingSetList",i="character"),function(x,i,j,...){
-      #convert non-character indices to character
-      gh <- NULL
-      for(gs in x@data){
-#              browser()
-            this_samples <- sampleNames(gs)
-            ind <- match(i,this_samples)
-            if(!is.na(ind)){
-              gh <- gs[[ind]]
-            }
-      }
-      if(is.null(gh)){
-        stop(i, " not found in GatingSetList!")
-      }else{
-        return (gh)
-      }
-    })
-setMethod("[",c(x="GatingSetList",i="numeric"),function(x,i,j,...){
-#      browser()
-      x[sampleNames(x)[i]]
-      
-    })
-
-setMethod("[",c(x="GatingSetList",i="logical"),function(x,i,j,...){
-      
-      x[sampleNames(x)[i]]
-   
-    })
 
 setMethod("[",c(x="GatingSetList",i="character"),function(x,i,j,...){
-#      browser()
-      samples <- sampleNames(x)
-      matchInd <- match(i,samples)
-      noFound <- is.na(matchInd)
-      if(any(noFound)){
-        stop(i(noFound), "not found in GatingSetList!")
-      }
-      res <- lapply(x,function(gs){
-#            browser()
-                  this_samples <- sampleNames(gs)
-                  ind <- match(i,this_samples)
-                  this_subset <- i[!is.na(ind)] 
-                  if(length(this_subset)>0){
-                    return (gs[this_subset])
-                  }else{
-                    NULL
-                  }
-                }, level =1)
-      res <- res[!unlist(lapply(res,is.null))]
-      res <- GatingSetList(res)
-      res@samples <- samples[matchInd]
-      res
+      object <- callNextMethod()
+      as(object, "GatingSetList")
+    })
+setReplaceMethod("pData",c("ncdfFlowList","data.frame"),function(object,value){
+      res <- callNextMethod()
+      as(res, "GatingSetList")
     })
 
 
-setMethod("getData",c(obj="GatingSetList",y="missing"),function(obj,y,...){
-      stop("node index 'y' is missing!")
-    })
-
-#' @param  max \code{numeric} The maximum number of samples to be returned. It is used as a threshold to prevent huge memory consumption due to the coersion from ncdfFlowSet to flowSet 
-#' @aliases 
-#' getData,GatingSetList,missing-method
-#' getData,GatingSetList,numeric-method
-#' getData,GatingSetList,character-method
-#' @rdname getData-methods
-setMethod("getData",signature(obj="GatingSetList",y="numeric"),function(obj,y,max=30,...){
-
-      if(length(sampleNames(obj))>max){
-        stop("You are trying to return a flowSet for more than ", max, " samples!Try to increase this limit by specifing 'max' option if you have enough memory.")
-      }
+setMethod("recompute",c("GatingSet"),function(x, ...){
+      selectMethod("recompute", signature = c("GatingSet"))(x, ...)
       
+    })
+
+
+#' @aliases 
+#' getData,GatingSetList,ANY-method
+#' @rdname getData-methods
+setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
+      
+      samples_orig <- obj@samples
+              
       res <- lapply(obj,function(gs){
             ncfs <- getData(gs,y, ...)
-            as.flowSet(ncfs)
+            ncfs
           }, level =1)
-      fs<-res[[1]]
-      if(length(res)>1){
-        for(i in 2:length(res))
-          fs<-rbind2(fs,res[[i]])
-      }
+      nclist <- as(res, "ncdfFlowList")
+      nclist@samples <- samples_orig
       
-      fs
-    })
-setMethod("getData",c(obj="GatingSetList",y="character"),function(obj, y,  ...){
-
-      getData(obj,.getNodeInd(obj[[1]],y),...)
-      
+      nclist
     })
 
-#' @aliases
-#' pData,GatingSetList-method
-#' pData<-,GatingSetList,data.frame-method
-#' @rdname pData-methods
-setMethod("pData","GatingSetList",function(object){
 
-      res <- lapply(object,pData, level =1)
-#            browser()
-      res <- do.call(rbind,res)
-      res[object@samples,,drop=FALSE]
-    })
 
-setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
-      if(!.isValidSamples(rownames(value),object))
-        stop("The sample names in data.frame are not consistent with the GatingSetList!")
-        
-      res <- lapply(object,function(gs){
-                    this_pd <- subset(value,name%in%sampleNames(gs))
-                    pData(gs) <- this_pd
-                    gs
-                  }, level =1)
-              
-      res <- GatingSetList(res)
-      res        
-    })
+
 
 setMethod("getGate",signature(obj="GatingSetList",y="numeric"),function(obj,y,tsort=FALSE){
       res <- lapply(obj,function(gs){
@@ -269,12 +140,7 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
       selectMethod("keyword",signature = c(x="GatingSet",y="character"))(object, keyword)
     })
 
-#' @aliases 
-#' length,GatingSetList-method
-#' @rdname length-methods
-setMethod("length","GatingSetList",function(x){
-      length(sampleNames(x));
-    })
+
 #' @rdname save_gs
 #' @export
 save_gslist<-function(gslist,path,...){

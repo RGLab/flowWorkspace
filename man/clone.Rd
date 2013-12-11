@@ -1,7 +1,7 @@
 \name{clone}
 \alias{clone}
-\alias{clone,GatingSet-method}
 \alias{clone-methods}
+\alias{clone,GatingSet-method}
 \title{clone a GatingSet}
 \arguments{
   \item{x}{A \code{GatingSet}}

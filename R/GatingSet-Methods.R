@@ -1351,6 +1351,7 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 #' @importFrom BiocGenerics lapply
 #' @aliases 
 #' lapply,GatingSet-method
+#' @export 
 setMethod("lapply","GatingSet",function(X,FUN,...){
       sapply(sampleNames(X),function(thisSample,...){
             gh <- X[[thisSample]]

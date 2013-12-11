@@ -1,8 +1,8 @@
 \name{getCompensationMatrices}
 \alias{getCompensationMatrices}
-\alias{getCompensationMatrices,GatingHierarchy-method}
-\alias{getCompensationMatrices,flowJoWorkspace-method}
 \alias{getCompensationMatrices-methods}
+\alias{getCompensationMatrices,flowJoWorkspace-method}
+\alias{getCompensationMatrices,GatingHierarchy-method}
 \title{Retrieve the compensation matrices from a flowJo Workspace or GatingHierarchy}
 \arguments{
   \item{x}{A \code{flowJoWorkspace} or

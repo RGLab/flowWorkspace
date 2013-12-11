@@ -322,11 +322,7 @@ setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
 #' getGate,GatingSetList,character-method
 #' getQAStats,GatingSetList-method
 #' getPopStats,GatingSetList-method
-setClass("GatingSetList"
-    ,representation=representation(
-        data = "list"
-        ,samples="character" #this determine the order of samples exposed to user
-    ))
+setClass("GatingSetList", contains = "ncdfFlowList")
 
 validGatingSetListObject <- function(object){
   
@@ -356,7 +352,7 @@ validGatingSetListObject <- function(object){
     return (paste("GatingSet 1 and",this_error_ind+1,":",res[this_error_ind]))
   }
   #check sample vector
-  if(!.isValidSamples(object@samples,gs_list)){
+  if(!ncdfFlow:::.isValidSamples(object@samples,gs_list)){
     return ("'samples' slot is not consisitent with sample names from GatingSets!")
   }          
   return (TRUE)
@@ -402,11 +398,6 @@ setValidity("GatingSetList", validGatingSetListObject)
   fs2 <- getData(gs2)
   .compareFlowData(fs1,fs2)
 }
-#' validity check for samples slot        
-.isValidSamples<-function(samples,object){
-  
-  return (setequal(unlist(lapply(object,sampleNames)),samples))
-}
 
 #' @description use \code{GatingSetList} constructor to create a GatingSetList from a list of GatingSet
 #' 
@@ -422,8 +413,9 @@ GatingSetList <- function(x,samples = NULL)
   if(is.null(samples)){
     samples <- unlist(lapply(x,sampleNames))
   }
-  x <- new("GatingSetList", data = x, samples = samples)
-  return(x)
+  x <- new("ncdfFlowList", data = x, samples = samples)
+  as(x, "GatingSetList")
+  
 }
 
 

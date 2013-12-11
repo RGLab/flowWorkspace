@@ -94,6 +94,7 @@ NULL
 #' add,GatingSet,filter-method
 #' add,GatingHierarchy,quadGate-method
 #' add,GatingHierarchy,filter-method
+#' add,GatingSetList,list-method
 #' setGate
 #' setGate,GatingSet,ANY,list-method
 #' setGate,GatingSet,ANY,filterList-method
@@ -102,8 +103,10 @@ NULL
 #' Rm
 #' Rm,character,GatingSet,character-method
 #' Rm,character,GatingHierarchy,character-method
+#' Rm,character,GatingSetList,character-method
 #' recompute
 #' recompute,GatingSet-method
+#' recompute,GatingSetList-method 
 #' @export 
 #' @importFrom flowCore add
 setMethod("add",
@@ -115,6 +118,16 @@ setMethod("add",
 			add(wf,flist,...)
 			
 		})
+setMethod("add",
+    signature=c(wf="GatingSetList", "list"),
+    definition=function(wf, action, ...)
+    {
+      
+      selectMethod("add",signature = c(wf="GatingSet", action="list"))(wf, action, ...)
+      
+    })    
+    
+        
     
 #' @importClassesFrom flowCore filterList ellipsoidGate intersectFilter polygonGate rectangleGate
 #' @importFrom flowCore filterList
@@ -273,6 +286,16 @@ setMethod("Rm",
 								Rm(symbol,gh,subSymbol,...)
 							}))
 		})
+setMethod("Rm",
+    signature=c(symbol="character",
+        envir="GatingSetList",
+        subSymbol="character"),
+    definition=function(symbol, envir, subSymbol, ...)
+    {
+      selectMethod("Rm"
+          ,signature = c(symbol="character", envir="GatingSet", subSymbol="list"))(symbol, envir, subSymbol, ...)
+    })
+    
 
 setMethod("Rm",
 		signature=c(symbol="character",

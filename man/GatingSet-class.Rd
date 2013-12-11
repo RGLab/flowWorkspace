@@ -1,12 +1,12 @@
 \name{GatingSet-class}
-\alias{GatingSet,flowSet-method}
-\alias{GatingSet-class}
 \alias{[}
 \alias{[,GatingSet,ANY-method}
 \alias{[[}
 \alias{[[,GatingSet,character-method}
 \alias{[[,GatingSet,logical-method}
 \alias{[[,GatingSet,numeric-method}
+\alias{GatingSet-class}
+\alias{GatingSet,flowSet-method}
 \alias{rbind2,GatingSet,GatingSet-method}
 \alias{show,GatingSet-method}
 \title{Class \code{"GatingSet"}}

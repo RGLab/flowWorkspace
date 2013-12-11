@@ -1,12 +1,12 @@
 \name{GatingSetList-class}
-\alias{GatingSetList}
-\alias{GatingSetList-class}
 \alias{[,GatingSetList,character-method}
 \alias{[,GatingSetList,logical-method}
 \alias{[,GatingSetList,numeric-method}
 \alias{[[,GatingSetList,character-method}
 \alias{[[,GatingSetList,logical-method}
 \alias{[[,GatingSetList,numeric-method}
+\alias{GatingSetList}
+\alias{GatingSetList-class}
 \alias{getGate,GatingSetList,character-method}
 \alias{getGate,GatingSetList,numeric-method}
 \alias{getPopStats,GatingSetList-method}

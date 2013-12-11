@@ -1,10 +1,10 @@
 \name{getKeywords}
 \alias{getKeywords}
+\alias{getKeywords-methods}
+\alias{getKeywords,flowJoWorkspace,character-method}
 \alias{getKeywords,GatingHierarchy,missing-method}
 \alias{getKeywords,GatingSet,character-method}
 \alias{getKeywords,GatingSet,numeric-method}
-\alias{getKeywords,flowJoWorkspace,character-method}
-\alias{getKeywords-methods}
 \title{Get Keywords}
 \arguments{
   \item{obj}{A \code{flowJoWorkspace}}

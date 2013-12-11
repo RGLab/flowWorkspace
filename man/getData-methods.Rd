@@ -9,10 +9,8 @@
 \alias{getData,GatingSet,missing-method}
 \alias{getData,GatingSet,name-method}
 \alias{getData,GatingSet,numeric-method}
-\alias{getData,GatingSetList,character-method}
-\alias{getData,GatingSetList,missing-method}
+\alias{getData,GatingSetList,ANY-method}
 \alias{getData,GatingSetList,name-method}
-\alias{getData,GatingSetList,numeric-method}
 \title{get gated flow data from a GatingHierarchy/GatingSet}
 \arguments{
   \item{obj}{A \code{GatingHierarchy}, \code{GatingSet} or
@@ -29,11 +27,6 @@
 
   \item{y}{\code{name} boolean expression specifying the
   boolean combination of different cell populations}
-
-  \item{max}{\code{numeric} The maximum number of samples
-  to be returned. It is used as a threshold to prevent huge
-  memory consumption due to the coersion from ncdfFlowSet
-  to flowSet}
 }
 \value{
   A \code{flowFrame} object if \code{obj} is a

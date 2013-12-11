@@ -1,10 +1,10 @@
 \name{openWorkspace}
 \alias{closeWorkspace}
-\alias{closeWorkspace,flowJoWorkspace-method}
 \alias{closeWorkspace-methods}
+\alias{closeWorkspace,flowJoWorkspace-method}
 \alias{openWorkspace}
-\alias{openWorkspace,character-method}
 \alias{openWorkspace-methods}
+\alias{openWorkspace,character-method}
 \title{Open/Close a flowJo workspace}
 \arguments{
   \item{file}{Full path to the XML flowJo workspace file.}

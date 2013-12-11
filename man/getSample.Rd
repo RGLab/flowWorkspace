@@ -1,7 +1,7 @@
 \name{getSample}
 \alias{getSample}
-\alias{getSample,GatingHierarchy-method}
 \alias{getSample-method}
+\alias{getSample,GatingHierarchy-method}
 \title{Get the sample name associated with a GatingHierarchy}
 \arguments{
   \item{x}{A \code{GatingHierarchy}}
