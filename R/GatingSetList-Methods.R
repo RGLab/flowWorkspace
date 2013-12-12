@@ -48,7 +48,7 @@ setMethod("getSamples","GatingSetList",function(x){
     })
 
 
-setMethod("[",c(x="GatingSetList",i="character"),function(x,i,j,...){
+setMethod("[",c(x="GatingSetList",i="ANY"),function(x,i,j,...){
       object <- callNextMethod()
       as(object, "GatingSetList")
     })
