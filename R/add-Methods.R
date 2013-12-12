@@ -155,7 +155,12 @@ setMethod("add",
 		nodeID
 			
 		})
-    
+setMethod("add",
+        signature=c("GatingSetList", "filterList"),
+        definition=function(wf, action, ...)
+        {
+          selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
+        })
 setMethod("add",
 		signature=c("GatingSet", "filter"),
 		definition=function(wf, action, ...)
@@ -167,6 +172,15 @@ setMethod("add",
 			add(wf,actions,...)
 			
 		})
+setMethod("add",
+    signature=c("GatingSetList", "filter"),
+    definition=function(wf, action, ...)
+    {
+      
+      selectMethod("add",signature = c(wf="GatingSet", action="filter"))(wf, action, ...)
+      
+    })
+
 .addGate<-function(gh,filterObject,parent=NULL, name=NULL,negated=FALSE){
 #  browser()
 	if(is.null(name))
