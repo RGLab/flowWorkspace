@@ -307,7 +307,7 @@ setMethod("Rm",
     definition=function(symbol, envir, subSymbol, ...)
     {
       selectMethod("Rm"
-          ,signature = c(symbol="character", envir="GatingSet", subSymbol="list"))(symbol, envir, subSymbol, ...)
+          ,signature = c(symbol="character", envir="GatingSet", subSymbol="character"))(symbol, envir, subSymbol, ...)
     })
     
 
