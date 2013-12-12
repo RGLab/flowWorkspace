@@ -758,9 +758,9 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 			
 		})
     
-#' get gated flow data from a GatingHierarchy/GatingSet
+#' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #' 
-#' get gated flow data from a GatingHierarchy/GatingSet 
+#' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList 
 #'
 #' @details 
 #' Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}. 
@@ -776,7 +776,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' @return  
 #' A \code{flowFrame} object if \code{obj} is a GatingHierarchy. 
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
-#' A \code{flowSet} if a \code{GatingSetList}. 
+#' A \code{ncdfFlowList} if a \code{GatingSetList}. 
 #' @seealso
 #'   \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
 #' 
@@ -799,6 +799,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' getData,GatingSet,character-method
 #' getData,GatingSet,name-method
 #' getData,GatingSetList,name-method
+#' getData,GatingSetList,ANY-method
 #' @rdname getData-methods
 #' @export 
 setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y, ...){

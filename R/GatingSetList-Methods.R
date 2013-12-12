@@ -47,12 +47,15 @@ setMethod("getSamples","GatingSetList",function(x){
       stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
     })
 
-
 setMethod("[",c(x="GatingSetList",i="ANY"),function(x,i,j,...){
       object <- callNextMethod()
       as(object, "GatingSetList")
     })
-setReplaceMethod("pData",c("ncdfFlowList","data.frame"),function(object,value){
+
+
+
+
+setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
       res <- callNextMethod()
       as(res, "GatingSetList")
     })
@@ -64,9 +67,6 @@ setMethod("recompute",c("GatingSetList"),function(x, ...){
     })
 
 
-#' @aliases 
-#' getData,GatingSetList,ANY-method
-#' @rdname getData-methods
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
       
       samples_orig <- obj@samples

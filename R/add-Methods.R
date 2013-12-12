@@ -92,9 +92,11 @@ NULL
 #' add,GatingSet,list-method
 #' add,GatingSet,filterList-method
 #' add,GatingSet,filter-method
+#' add,GatingSetList,list-method
+#' add,GatingSetList,filterList-method
+#' add,GatingSetList,filter-method
 #' add,GatingHierarchy,quadGate-method
 #' add,GatingHierarchy,filter-method
-#' add,GatingSetList,list-method
 #' setGate
 #' setGate,GatingSet,ANY,list-method
 #' setGate,GatingSet,ANY,filterList-method

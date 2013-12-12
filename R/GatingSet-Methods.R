@@ -1348,7 +1348,6 @@ setMethod("recompute",c("GatingSet"),function(x, y){
 #' sample names are used for names of the returned list
 #'  
 #' @rdname lapply-methods
-#' @importFrom BiocGenerics lapply
 #' @aliases 
 #' lapply,GatingSet-method
 #' @export 
@@ -1515,6 +1514,7 @@ setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
 #' @aliases 
 #' pData,GatingSet-method
 #' pData<-,GatingSet,data.frame-method
+#' pData<-,GatingSetList,data.frame-method
 #' @exportMethod pData
 #' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
@@ -1544,6 +1544,7 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 #' @export 
 #' @aliases 
 #' [,GatingSet,ANY-method
+#' [,GatingSetList,ANY-method
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #            browser()
             #convert non-character indices to character
@@ -1804,7 +1805,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' @param y a quoted expression.
 #' @rdname getIndices
 #' @examples
-#" \dontrun{
+#' \dontrun{
 #'   
 #'	getIndices(gs,quote(`4+/TNFa+|4+/IL2+`)) 
 #' 

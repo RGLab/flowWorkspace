@@ -54,7 +54,9 @@
     #Return the indices for population 5 (topological sort)
     getIndices(G,getNodes(G,tsort=TRUE)[5]);
 }
-getIndices(gs,quote(`4+/TNFa+|4+/IL2+`))
+\dontrun{
+
+	getIndices(gs,quote(`4+/TNFa+|4+/IL2+`))
 
 }
 }

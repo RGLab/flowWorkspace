@@ -11,7 +11,7 @@
 \alias{getData,GatingSet,numeric-method}
 \alias{getData,GatingSetList,ANY-method}
 \alias{getData,GatingSetList,name-method}
-\title{get gated flow data from a GatingHierarchy/GatingSet}
+\title{get gated flow data from a GatingHierarchy/GatingSet/GatingSetList}
 \arguments{
   \item{obj}{A \code{GatingHierarchy}, \code{GatingSet} or
   \code{GatingSetList} object.}
@@ -31,13 +31,14 @@
 \value{
   A \code{flowFrame} object if \code{obj} is a
   GatingHierarchy. A \code{flowSet} or \code{ncdfFlowSet}
-  if a \code{GatingSet}. A \code{flowSet} if a
+  if a \code{GatingSet}. A \code{ncdfFlowList} if a
   \code{GatingSetList}.
 
   A \code{list} of \code{numerci matrices}
 }
 \description{
-  get gated flow data from a GatingHierarchy/GatingSet
+  get gated flow data from a
+  GatingHierarchy/GatingSet/GatingSetList
 
   Returns a flowSet containing the events defined at by
   boolean expression \code{y}.
