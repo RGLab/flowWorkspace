@@ -1737,7 +1737,22 @@ setMethod("getPopStats", "GatingSet",
 setMethod("plotPopCV","GatingSet",function(x,...){
 #columns are populations
 #rows are samples
-      cv<-do.call(rbind,lapply(lapply(x,getPopStats),function(x)apply(x[,2:3],1,function(x){cv<-IQR(x)/median(x);ifelse(is.nan(cv),0,cv)})))
+      
+      statList <- lapply(x,function(gh){
+            thisStat <- getPopStats(gh)
+            rn <- rownames(thisStat)
+            thisStat <- as.data.frame(thisStat)
+            rownames(thisStat) <- rn
+            thisStat
+          })
+      cv<-do.call(rbind
+                  ,lapply(statList,function(x){
+                            apply(x[,2:3],1,function(x){
+                                  cv<-IQR(x)/median(x)
+                                  ifelse(is.nan(cv),0,cv)
+                                  })
+                            })
+                   )
       rownames(cv)<-sampleNames(x);#Name the rows
 #flatten, generate levels for samples.
       nr<-nrow(cv)

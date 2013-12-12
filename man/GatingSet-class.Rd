@@ -70,7 +70,9 @@ require(flowWorkspaceData)
   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
   ws <- openWorkspace(wsfile);
   G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
+  plotPopCV(G[[1]]);
   plotPopCV(G);
+  getPopStats(G[[2]])
 }
 \seealso{
   \code{\linkS4class{GatingHierarchy}}
