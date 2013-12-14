@@ -1,7 +1,6 @@
 \name{pData}
 \alias{pData}
 \alias{pData,GatingSet-method}
-\alias{pData,GatingSetList-method}
 \alias{pData<-,GatingSet,data.frame-method}
 \alias{pData<-,GatingSetList,data.frame-method}
 \title{read/set pData of flow data associated with \code{GatingSet} or \code{GatingSetList}}

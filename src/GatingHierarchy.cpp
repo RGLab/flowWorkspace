@@ -209,9 +209,9 @@ compensation GatingHierarchy::getCompensation(){
 
 void GatingHierarchy::printLocalTrans(){
 	cout<<endl<<"get trans from gating hierarchy"<<endl;
-	map<string,transformation* > trans=this->trans.getTransMap();
+	trans_map trans=this->trans.getTransMap();
 
-	for (map<string,transformation* >::iterator it=trans.begin();it!=trans.end();it++)
+	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		transformation * curTrans=it->second;
 

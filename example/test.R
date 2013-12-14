@@ -34,12 +34,14 @@ macXML<-"/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST/QA_template.xm
 #
 #winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
 macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
+macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples/20131206_Treg.wsp"
 #winXML<-file.path(path,winXML)
 ############################################################################### 
 #cpp parser
 ###############################################################################
 ws <- openWorkspace(macXML[1],options=1)
 getSamples(ws)
+getSampleGroups(ws)
 getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 
 
@@ -56,7 +58,7 @@ assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
 time1<-Sys.time()	
 #Rprof()
 GT<-parseWorkspace(ws
-                    ,name=2
+                    ,name=1
 					,execute=F
 #					,includeGates=T
                     ,subset= 1:2

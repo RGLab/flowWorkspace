@@ -110,7 +110,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	/*
 	 * get the pointer to the result local trans map
 	 */
-	map<string,transformation *> trs=res.getTransMap();
+	trans_map trs=res.getTransMap();
 
 	string tGName;
 	trans_global_vec::iterator tgIt;
@@ -453,7 +453,11 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		xmlXPathObjectPtr resMat=sampleNode.xpath(path);
 
 		if(resMat->nodesetval->nodeNr<=0)
+		{
+			xmlXPathFreeObject(resMat);
 			throw(domain_error("no CompensationMatrix found!"));
+		}
+
 		/*
 		 * look for the particular CompensationMatrix for current sampleNode by cid
 		 */
@@ -474,7 +478,12 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 			xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("ChannelValue");
 			unsigned nY=resY->nodesetval->nodeNr;
 			if(nX!=nY)
+			{
+				xmlXPathFreeObject(resX);
+				xmlXPathFreeObject(resY);
 				throw(domain_error("not the same x,y dimensions in spillover matrix!"));
+			}
+
 			for(unsigned j=0;j<nY;j++)
 			{
 				wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
@@ -743,7 +752,12 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 		wsBooleanGateNode bGNode(resGate->nodesetval->nodeTab[0]);
 		if(dMode>=GATE_LEVEL)
 			cout<<"parsing BooleanGate.."<<endl;
+		xmlXPathFreeObject(resGate);
 		return(getGate(bGNode));
+
+	}
+	else
+	{
 		xmlXPathFreeObject(resGate);
 	}
 
