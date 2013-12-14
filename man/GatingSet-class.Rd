@@ -1,6 +1,7 @@
 \name{GatingSet-class}
 \alias{[}
 \alias{[,GatingSet,ANY-method}
+\alias{[,GatingSetList,ANY-method}
 \alias{[[}
 \alias{[[,GatingSet,character-method}
 \alias{[[,GatingSet,logical-method}

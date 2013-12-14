@@ -20,7 +20,8 @@
 #include <vector>
 #include <stdexcept>
 #include "calibrationTable.hpp"
-
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/compare.hpp>
 using namespace std;
 
 struct coordinate
@@ -88,8 +89,17 @@ public:
 	virtual void setType(unsigned short _type){type=_type;};
 	virtual transformation * clone(){return new transformation(*this);};
 };
+/* case insensitive compare predicate*/
+struct ciLessBoost : std::binary_function<std::string, std::string, bool>
+{
+    bool operator() (const std::string & s1, const std::string & s2) const {
+        return lexicographical_compare(s1, s2, boost::is_iless());
+    }
+};
 
-typedef map<string,transformation *> trans_map;
+typedef map<string,transformation *, ciLessBoost> trans_map;/* we always do case-insensitive searching for transformation lookup
+due to some of channel name discrepancies occured in flowJo workspaces*/
+
 typedef struct {
 		string param;
 		bool log;

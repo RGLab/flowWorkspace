@@ -92,6 +92,9 @@ NULL
 #' add,GatingSet,list-method
 #' add,GatingSet,filterList-method
 #' add,GatingSet,filter-method
+#' add,GatingSetList,list-method
+#' add,GatingSetList,filterList-method
+#' add,GatingSetList,filter-method
 #' add,GatingHierarchy,quadGate-method
 #' add,GatingHierarchy,filter-method
 #' setGate
@@ -102,8 +105,10 @@ NULL
 #' Rm
 #' Rm,character,GatingSet,character-method
 #' Rm,character,GatingHierarchy,character-method
+#' Rm,character,GatingSetList,character-method
 #' recompute
 #' recompute,GatingSet-method
+#' recompute,GatingSetList-method 
 #' @export 
 #' @importFrom flowCore add
 setMethod("add",
@@ -115,6 +120,16 @@ setMethod("add",
 			add(wf,flist,...)
 			
 		})
+setMethod("add",
+    signature=c(wf="GatingSetList", "list"),
+    definition=function(wf, action, ...)
+    {
+      
+      selectMethod("add",signature = c(wf="GatingSet", action="list"))(wf, action, ...)
+      
+    })    
+    
+        
     
 #' @importClassesFrom flowCore filterList ellipsoidGate intersectFilter polygonGate rectangleGate
 #' @importFrom flowCore filterList
@@ -142,7 +157,12 @@ setMethod("add",
 		nodeID
 			
 		})
-    
+setMethod("add",
+        signature=c("GatingSetList", "filterList"),
+        definition=function(wf, action, ...)
+        {
+          selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
+        })
 setMethod("add",
 		signature=c("GatingSet", "filter"),
 		definition=function(wf, action, ...)
@@ -154,6 +174,15 @@ setMethod("add",
 			add(wf,actions,...)
 			
 		})
+setMethod("add",
+    signature=c("GatingSetList", "filter"),
+    definition=function(wf, action, ...)
+    {
+      
+      selectMethod("add",signature = c(wf="GatingSet", action="filter"))(wf, action, ...)
+      
+    })
+
 .addGate<-function(gh,filterObject,parent=NULL, name=NULL,negated=FALSE){
 #  browser()
 	if(is.null(name))
@@ -273,6 +302,16 @@ setMethod("Rm",
 								Rm(symbol,gh,subSymbol,...)
 							}))
 		})
+setMethod("Rm",
+    signature=c(symbol="character",
+        envir="GatingSetList",
+        subSymbol="character"),
+    definition=function(symbol, envir, subSymbol, ...)
+    {
+      selectMethod("Rm"
+          ,signature = c(symbol="character", envir="GatingSet", subSymbol="character"))(symbol, envir, subSymbol, ...)
+    })
+    
 
 setMethod("Rm",
 		signature=c(symbol="character",

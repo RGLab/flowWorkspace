@@ -3,6 +3,7 @@
 \alias{getIndices-methods}
 \alias{getIndices,GatingHierarchy,character-method}
 \alias{getIndices,GatingHierarchy,numeric-method}
+\alias{getIndices,GatingSet,name-method}
 \title{Get the membership indices for each event with respect to a particular gate in a GatingHierarchy}
 \arguments{
   \item{obj}{A \code{GatingHierarchy} representing a
@@ -11,6 +12,8 @@
   \item{y}{A \code{character} or \code{numeric} giving the
   name or full(/partial) gating path or index of the
   population / node of interest.}
+
+  \item{y}{a quoted expression.}
 }
 \value{
   A logical vector of length equal to the number of events
@@ -20,6 +23,11 @@
 \description{
   Returns a logical vector that describes whether each
   event in a sample is included or excluded by this gate.
+
+  It adds the boolean gates and does the gating on the fly,
+  and return the indices associated with that bool gate,
+  and remove the bool gate the typical use case would be
+  extracting any-cytokine-expressed cells
 }
 \details{
   Returns a logical vector that describes whether each
@@ -45,6 +53,11 @@
     #G is a gating hierarchy
     #Return the indices for population 5 (topological sort)
     getIndices(G,getNodes(G,tsort=TRUE)[5]);
+}
+\dontrun{
+
+	getIndices(gs,quote(`4+/TNFa+|4+/IL2+`))
+
 }
 }
 \seealso{
