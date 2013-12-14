@@ -3,7 +3,24 @@ Windows users
 
 You need libxml2 and boost c++ library to build flowWorkspace from source (using Rtools).
 
-Here is the instruction for the building boost on windows:
+To install libxml2:
+
+1. Download the pre-built binary from http://rglab.github.io/binaries/
+
+2. unzip it (e.g. to c:\libxml2)
+and you should see the directory structure like below in both i386 and x64 folder
+   |-include
+   |---libxml2
+   |-----libxml (all *.h are here)
+   |-lib (we should have static libary libxml2.a here)
+   
+3. set up the environment variable LIB_XML2 in order for flowWorkspace to find its library files and header files.  
+You can do this by going to the "Environment Variables" dialog box and then clicking the "New" button. 
+Enter "LIB_XML2" in the "Variable name" field, and /path/to/your/libxml2 (e.g. c:/libxml2) in the "Variable value" field. 
+Remember to use "/" instead of "\" as the directory delimiter.
+
+
+Here is the instruction for the building boost on windows from source:
 
 1. download boost 1.52 and unzip it (e.g. to c:\boost_1_52_0)
 
@@ -30,10 +47,7 @@ cd e:\boost\x64\include\
 mv boost_1_52\boost .
  
 
-Once boost is built, you also need to set up the environment variable LIB_BOOST in order for flowWorkspace
+Similarly, once boost is built, you also need to set up the environment variable LIB_BOOST in order for flowWorkspace
 to find the library files and header files. 
-You can do this by going to the "Environment Variables" dialog box and then clicking the "New" button. 
-Enter "LIB_BOOST" in the "Variable name" field, and /path/to/your/boost (e.g. E:/boost) in the "Variable value" field. 
-Remember to use "/" instead of "\" as the directory delimiter.
 
 You can download Rtools at http://www.murdoch-sutherland.com/Rtools/ which provides the resources for building R and R packages. You should add to the Path variable the paths to the various components of Rtools. Please read the "Windows Toolset" appendix at http://cran.r-project.org/doc/manuals/R-admin.html#The-Windows-toolset for more details.
