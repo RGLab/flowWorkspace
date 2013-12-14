@@ -5,11 +5,16 @@
 \alias{add,GatingSet,filter-method}
 \alias{add,GatingSet,filterList-method}
 \alias{add,GatingSet,list-method}
+\alias{add,GatingSetList,filter-method}
+\alias{add,GatingSetList,filterList-method}
+\alias{add,GatingSetList,list-method}
 \alias{recompute}
 \alias{recompute,GatingSet-method}
+\alias{recompute,GatingSetList-method}
 \alias{Rm}
 \alias{Rm,character,GatingHierarchy,character-method}
 \alias{Rm,character,GatingSet,character-method}
+\alias{Rm,character,GatingSetList,character-method}
 \alias{setGate}
 \alias{setGate,GatingHierarchy,character,filter-method}
 \alias{setGate,GatingHierarchy,numeric,filter-method}

@@ -406,8 +406,8 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G[[1]])#return node names
-#'     getNodes(G[[1]],isPath=TRUE)#return the full path
+#'     getNodes(G[[1], isPath = FALSE])#return node names
+#'     getNodes(G[[1]],isPath = TRUE)#return the full path
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases
@@ -415,7 +415,7 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' getNodes-methods
 #' getNodes,GatingHierarchy-method
 #' @importFrom BiocGenerics duplicated
-setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath=FALSE,prefix=FALSE,showHidden = FALSE,...){
+setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath = TRUE, prefix=FALSE,showHidden = FALSE,...){
 
 			orderInd<-match(order,c("regular","tsort","bfs"))
 			if(length(orderInd)==0)
@@ -562,8 +562,8 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			
-        nodeNamesPath<-getNodes(x,isPath=T,...)
-       nodeNames<-getNodes(x,...)
+        nodeNamesPath<-getNodes(x,isPath = TRUE,...)
+       nodeNames<-getNodes(x, isPath = FALSE, ...)
                            
           
        stats<-mapply(nodeNames,nodeNamesPath,FUN = function(thisName,thisPath){
@@ -595,14 +595,18 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			m[1,c(2)]<-1;
 			colnames(m)<-c("pop.name","flowCore.freq","flowJo.count","flowCore.count","flowJo.freq","node")
-			rownames(m)<-m[,1]
-			m<-m[,2:6]
+			rn<-m[,1]
+			m<-data.table(m[,2:6])
+      rownames(m)<-rn
 			m
 		})
 #' @importFrom lattice barchart
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
       x<-getPopStats(x)
-      cv<-apply(as.matrix(x[,2:3]),1,function(y)IQR(y)/median(y));
+      rn<-rownames(x)
+      x<-as.data.frame(x)
+      rownames(x)<-rn	
+      cv<-apply(as.matrix(x[,c("flowJo.count","flowCore.count")]),1,function(y)IQR(y)/median(y));
       cv<-as.matrix(cv,nrow=length(cv))
       cv[is.nan(cv)]<-0
       rownames(cv)<-basename(as.character(rownames(x)));
@@ -651,7 +655,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 			{
 
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
-				filterId<-getNodes(obj, showHidden = TRUE)[y]
+				filterId <- getNodes(obj, showHidden = TRUE, isPath = FALSE)[y]
 				if(g$type==1)
 				{
 					
@@ -699,7 +703,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
     ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
     ind <- ind + 1 # convert to R index
   }else{
-    allNodes <- getNodes(obj,showHidden = TRUE,...)
+    allNodes <- getNodes(obj, isPath = FALSE, showHidden = TRUE,...)
     ind<-match(y,allNodes)#strict string match  
     if(is.na(ind)||length(ind)==0){
         stop("Node:", y," not found!")
@@ -737,6 +741,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 #' getIndices-methods
 #' getIndices,GatingHierarchy,character-method
 #' getIndices,GatingHierarchy,numeric-method
+#' getIndices,GatingSet,name-method
 #' @importFrom ncdfFlow getIndices
 #' @export 
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
@@ -753,9 +758,9 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 			
 		})
     
-#' get gated flow data from a GatingHierarchy/GatingSet
+#' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #' 
-#' get gated flow data from a GatingHierarchy/GatingSet 
+#' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList 
 #'
 #' @details 
 #' Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}. 
@@ -771,7 +776,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' @return  
 #' A \code{flowFrame} object if \code{obj} is a GatingHierarchy. 
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
-#' A \code{flowSet} if a \code{GatingSetList}. 
+#' A \code{ncdfFlowList} if a \code{GatingSetList}. 
 #' @seealso
 #'   \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
 #' 
@@ -792,6 +797,9 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' getData,GatingSet,missing-method
 #' getData,GatingSet,numeric-method
 #' getData,GatingSet,character-method
+#' getData,GatingSet,name-method
+#' getData,GatingSetList,name-method
+#' getData,GatingSetList,ANY-method
 #' @rdname getData-methods
 #' @export 
 setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y, ...){
@@ -1214,7 +1222,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #'   \dontrun{
 #'     #G is a gating hierarchy
 #'     getNodes(G[[1]])#return node names
-#'     getNodes(G[[1]],isPath=TRUE)#return the full path
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases 

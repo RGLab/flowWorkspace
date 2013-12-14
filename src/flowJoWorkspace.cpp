@@ -73,8 +73,11 @@ string flowJoWorkspace::getSampleName(wsSampleNode & node){
 		case 1:
 		{
 			xmlXPathObjectPtr res=node.xpathInNode("Keywords/Keyword[@name='$FIL']");
-			if(res->nodesetval->nodeNr!=1)
+			if(res->nodesetval->nodeNr!=1){
+				xmlXPathFreeObject(res);
 				throw(domain_error("$FIL keyword not found!"));
+			}
+
 			wsNode kwNode(res->nodesetval->nodeTab[0]);
 			xmlXPathFreeObject(res);
 			filename=kwNode.getProperty("value");
@@ -241,8 +244,11 @@ nodeProperties* flowJoWorkspace::to_popNode(wsPopNode &node,bool isParseGate=fal
 
 void flowJoWorkspace::parseVersionList(){
 	wsNode root(this->doc->children);
-	wsNode curNode(root.xpath("/Workspace")->nodesetval->nodeTab[0]);
+	xmlXPathObjectPtr res = root.xpath("/Workspace");
+	wsNode curNode(res->nodesetval->nodeTab[0]);
+	xmlXPathFreeObject(res);
 	this->versionList=curNode.getProperty("versionList");
+
 }
 /*
  * get the minimum initial digit from the version list string

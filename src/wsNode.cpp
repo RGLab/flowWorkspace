@@ -12,6 +12,9 @@
 /*Oftentimes we need to do the xquery based on the context of the current node instead of doc
 * it is strange that I haven't found this commonly used API in libxml2
 * so have to write my own here
+*
+* Note: need to be cautious that  the result from xmlXPathEval call is not freed within  this API
+* it is up to user to call xmlXPathFreeObject to free it
 */
 xmlXPathObjectPtr wsNode::xpathInNode(string xpath)
 {
@@ -23,6 +26,8 @@ xmlXPathObjectPtr wsNode::xpathInNode(string xpath)
 }
 /*
  * query from root
+ * Note: need to be cautious that  the result from xmlXPathEval call is not freed within  this API
+ * it is up to user to call xmlXPathFreeObject to free it
  */
 xmlXPathObjectPtr wsNode::xpath(string xpath)
 {
