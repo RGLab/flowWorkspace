@@ -165,19 +165,52 @@ NULL
   list(startElement = startElement, endElement = endElement, 
       text = text, asGraphNEL = asGraphNEL)
 }
-#' @importClassesFrom graph graphNEL
-#' @importMethodsFrom graph fromGXL
+#' @importClassesFrom graph graphNEL 
+#' @importMethodsFrom Rgraphviz AgNode AgEdge nodeDataDefaults name nodeData
+#' @importMethodsFrom graph nodeDataDefaults<-  nodeData<- addEdge addNode
+#' @importFrom graph graphNEL
+#' @importFrom Rgraphviz agread
 #return a graphNEL object that only contans the node Name and isBool flags    
 .getGraph <- function(x){
-  DotFile<-tempfile(fileext=".dot")
+  DotFile <- tempfile(fileext=".dot")
   .Call("R_plotGh",x@pointer,getSample(x),DotFile,FALSE)
-  GXLFile<-tempfile(fileext=".gxl")
-  system(paste("dot2gxl",DotFile, ">>",GXLFile))
+#  browser()
+  #read dot from into Ragraph
+  g <- agread(DotFile)
+  #read all nodes and edges
+  nodes <- AgNode(g)
+  edges <- AgEdge(g)
+  #read default attrs
+  myNodeDataDefault <- nodeDataDefaults(g)
   
-  sf <- file(GXLFile)
-  g <- .fromGXL(sf)
-  close(sf)
-  g
+  #construct graph object based on these
+  myGraph <- graphNEL(edgemode = "directed")
+  
+  #add node attr default
+  for(i in 1:nrow(myNodeDataDefault))
+    nodeDataDefaults(myGraph, myNodeDataDefault[i,"attr name"]) <- myNodeDataDefault[i,"attr value"]  
+  nodeDataDefaults(myGraph, "name") <- ""
+
+  attrNames <- as.vector(myNodeDataDefault[, "attr name"])
+  #add nodes and its attr
+  for(node in nodes){
+    nodeID <- name(node)
+    newNodeID <- paste("N", nodeID, sep = "_")
+    myGraph <- addNode(newNodeID, myGraph)
+    for(attrName in attrNames)
+    nodeData(myGraph, newNodeID, attrName) <- as.vector(nodeData(g, nodeID,attrName))
+    
+    nodeData(myGraph, newNodeID, "name") <- nodeID
+  }
+  #add edges
+  for(edge in edges){
+#    browser()
+    to <- paste("N", head(edge), sep = "_")
+    from <- paste("N", tail(edge), sep = "_")
+    myGraph <- addEdge(from, to, myGraph)
+  }
+  
+  myGraph
 }
 
 #' @importMethodsFrom graph nodeData removeNode
