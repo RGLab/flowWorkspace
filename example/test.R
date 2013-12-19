@@ -3,14 +3,9 @@
 
 library(flowWorkspace)
 library(XML)
-#dyn.load("~/R/r-devel/Rbuild/library/flowWorkspace/libs/flowWorkspace.so")
+library(devtools)
+load_all("~/rglab/workspace/flowWorkspace/")
 
-#lapply(list.files("~/rglab/workspace/flowWorkspace/R",full=T,pattern="*.R$"),source)
-#source("~/rglab/workspace/flowWorkspace/R/AllGenerics.R")
-#source("~/rglab/workspace/flowWorkspace/R/AllClasses.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingHierarchyInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/GatingSetInternal-Methods.R")
-#source("~/rglab/workspace/flowWorkspace/R/bitVector.R")
 macXML<-"~/rglab/workspace/flowWorkspace/data/RV144/Batch 1264 RV144.xml"
 macXML<-"~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/flowJo/NHLBI.xml"
 macXML<-"/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK.xml"
