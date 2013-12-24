@@ -71,7 +71,7 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	StringVec gatePath=as<StringVec>(_gatePath);
-	return wrap(gh->getNodeID(gatePath));
+	return wrap((NODEID)gh->getNodeID(gatePath));
 
 
 END_RCPP
@@ -88,7 +88,7 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	return wrap(gh->getParent(u));
+	return wrap((NODEID)gh->getParent(u));
 END_RCPP
 }
 
@@ -102,7 +102,11 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	return wrap(gh->getChildren(u));
+	VertexID_vec childrenID = gh->getChildren(u);
+	vector<NODEID> res;
+	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++)
+		res.push_back(*it);
+	return wrap(res);
 END_RCPP
 }
 
@@ -561,7 +565,7 @@ BEGIN_RCPP
 		VertexID nodeID=gh->addGate(g,parentID,popName);
 
 
-		return wrap(nodeID);
+		return wrap((NODEID)nodeID);
 
 
 
