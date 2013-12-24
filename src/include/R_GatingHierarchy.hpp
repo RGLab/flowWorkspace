@@ -8,15 +8,15 @@
 #ifndef R_GATINGHIERARCHY_HPP_
 #define R_GATINGHIERARCHY_HPP_
 
-//#include <Rinternals.h>
-//#include <Rdefines.h>
-//#include <Rmath.h>
-//#include "GatingSet.hpp"
-
 #include <Rcpp.h>
-//#include <cmath>
 #include "GatingHierarchy.hpp"
 using namespace Rcpp;
+
+/*
+ * because __SIZE_TYPE__ is long long unsigned int by gcc on win64 (mingw64)
+ * we cast it to unsigned int before pass it to Rcpp::wrap to avoid error
+ */
+typedef unsigned int NODEID;
 
 RcppExport SEXP R_getSample(SEXP _ghPtr);
 
