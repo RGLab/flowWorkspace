@@ -132,7 +132,7 @@ END_RCPP
 /*
  * save/load GatingSet
  */
-RcppExport SEXP R_saveGatingSet(SEXP _gsPtr,SEXP _fileName) {
+RcppExport SEXP R_saveGatingSet(SEXP _gsPtr,SEXP _fileName, SEXP _typeID) {
 BEGIN_RCPP
 
 
@@ -140,20 +140,22 @@ BEGIN_RCPP
 		GatingSet *	gs=getGsPtr(_gsPtr);
 
 		string fileName=as<string>(_fileName);
-		save_gs(*gs,fileName);
+		unsigned short format =as<unsigned short>(_typeID);
+		save_gs(*gs,fileName, format);
 
 
 END_RCPP
 }
 
 
-RcppExport SEXP R_loadGatingSet(SEXP _fileName) {
+RcppExport SEXP R_loadGatingSet(SEXP _fileName, SEXP _typeID) {
 BEGIN_RCPP
 
 
 		GatingSet * gs=new GatingSet();
 		string fileName=as<string>(_fileName);
-		restore_gs(*gs,fileName);
+		unsigned short format =as<unsigned short>(_typeID);
+		restore_gs(*gs,fileName, format);
 
 		return XPtr<GatingSet>(gs);
 

@@ -15,22 +15,80 @@
 using namespace std;
 
 
-void save_gs(const GatingSet &gs,string filename){
+void save_gs(const GatingSet &gs,string filename, unsigned short format){
 	    // make an archive
 	    std::ofstream ofs(filename.c_str(),std::ios::out|std::ios::trunc|std::ios::binary);
-//	    boost::archive::text_oarchive oa(ofs);
-	    boost::archive::binary_oarchive oa(ofs);
-//	    boost::archive::xml_oarchive oa(ofs);
-	    oa << BOOST_SERIALIZATION_NVP(gs);
+
+	    switch(format)
+	    {
+	    case ARCHIVE_TYPE_BINARY:
+	    	{
+	    		boost::archive::binary_oarchive oa(ofs);
+	    		oa << BOOST_SERIALIZATION_NVP(gs);
+	    	}
+
+	    	break;
+	    case ARCHIVE_TYPE_TEXT:
+			{
+				boost::archive::text_oarchive oa1(ofs);
+				oa1 << BOOST_SERIALIZATION_NVP(gs);
+			}
+
+	    	break;
+	    case ARCHIVE_TYPE_XML:
+	    	{
+	    		boost::archive::xml_oarchive oa2(ofs);
+				oa2 << BOOST_SERIALIZATION_NVP(gs);
+	    	}
+
+		    break;
+		default:
+			throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
+		    break;
+
+	    }
+
+
+
+
 
 	}
-void restore_gs(GatingSet &s, string filename)
+void restore_gs(GatingSet &s, string filename, unsigned short format)
 {
     // open the archive
     std::ifstream ifs(filename.c_str());
-    boost::archive::binary_iarchive ia(ifs);
 
-    ia >> BOOST_SERIALIZATION_NVP(s);
+    switch(format)
+	{
+	case ARCHIVE_TYPE_BINARY:
+		{
+			boost::archive::binary_iarchive ia(ifs);
+			ia >> BOOST_SERIALIZATION_NVP(s);
+		}
+
+		break;
+	case ARCHIVE_TYPE_TEXT:
+		{
+			boost::archive::text_iarchive ia1(ifs);
+			ia1 >> BOOST_SERIALIZATION_NVP(s);
+		}
+
+		break;
+	case ARCHIVE_TYPE_XML:
+		{
+			boost::archive::xml_iarchive ia2(ifs);
+			ia2 >> BOOST_SERIALIZATION_NVP(s);
+		}
+
+		break;
+	default:
+		throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
+		break;
+
+	}
+
+
+
 }
 
 
@@ -127,76 +185,76 @@ GatingSet* GatingSet::clone_treeOnly(vector<string> samples){
 /*
  * memory buffer version
  */
-GatingSet* GatingSet::clone_sstream(vector<string> samples){
-
-
-	stringstream ss (stringstream::in | stringstream::out | stringstream::binary);
-
-	{
-		boost::archive::binary_oarchive oa(ss);
-		oa << *this;
-	}
-
-
-	GatingSet * newGS=new GatingSet();
-
-	{
-		boost::archive::binary_iarchive ia(ss);
-		ia >> *newGS;
-	}
-
-
-
-	//remove unused samples
-	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
-			GatingHierarchy * ghPtr=it.second;
-			string sampleName=it.first;
-			/*
-			 * if the sampleName not in the clone sample list ,remove it from the tree map
-			 */
-			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
-			if(fit==samples.end())
-			{
-				delete ghPtr;
-				newGS->ghs.erase(sampleName);
-			}
-
-
-		}
-
-	return newGS;
-}
-/*
- * disk version because stringstream has size limit
- */
-GatingSet* GatingSet::clone_fstream(vector<string> samples){
-
-
-	save_gs(*this,"tmp");
-
-	GatingSet * newGS=new GatingSet();
-
-	restore_gs(*newGS,"tmp");
-
-	//remove unused samples
-	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
-			GatingHierarchy * ghPtr=it.second;
-			string sampleName=it.first;
-			/*
-			 * if the sampleName not in the clone sample list ,remove it from the tree map
-			 */
-			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
-			if(fit==samples.end())
-			{
-				delete ghPtr;
-				newGS->ghs.erase(sampleName);
-			}
-
-
-		}
-
-	return newGS;
-}
+//GatingSet* GatingSet::clone_sstream(vector<string> samples){
+//
+//
+//	stringstream ss (stringstream::in | stringstream::out | stringstream::binary);
+//
+//	{
+//		boost::archive::binary_oarchive oa(ss);
+//		oa << *this;
+//	}
+//
+//
+//	GatingSet * newGS=new GatingSet();
+//
+//	{
+//		boost::archive::binary_iarchive ia(ss);
+//		ia >> *newGS;
+//	}
+//
+//
+//
+//	//remove unused samples
+//	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
+//			GatingHierarchy * ghPtr=it.second;
+//			string sampleName=it.first;
+//			/*
+//			 * if the sampleName not in the clone sample list ,remove it from the tree map
+//			 */
+//			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
+//			if(fit==samples.end())
+//			{
+//				delete ghPtr;
+//				newGS->ghs.erase(sampleName);
+//			}
+//
+//
+//		}
+//
+//	return newGS;
+//}
+///*
+// * disk version because stringstream has size limit
+// */
+//GatingSet* GatingSet::clone_fstream(vector<string> samples){
+//
+//
+//	save_gs(*this,"tmp");
+//
+//	GatingSet * newGS=new GatingSet();
+//
+//	restore_gs(*newGS,"tmp");
+//
+//	//remove unused samples
+//	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
+//			GatingHierarchy * ghPtr=it.second;
+//			string sampleName=it.first;
+//			/*
+//			 * if the sampleName not in the clone sample list ,remove it from the tree map
+//			 */
+//			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
+//			if(fit==samples.end())
+//			{
+//				delete ghPtr;
+//				newGS->ghs.erase(sampleName);
+//			}
+//
+//
+//		}
+//
+//	return newGS;
+//}
 //void GatingSet::add(gate * g,string parentName,string nodeName,unsigned short _dMode){
 //
 //	BOOST_FOREACH(gh_map::value_type & it,ghs){
