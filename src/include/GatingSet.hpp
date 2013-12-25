@@ -20,6 +20,11 @@
 
 
 using namespace std;
+
+#define ARCHIVE_TYPE_BINARY 0
+#define ARCHIVE_TYPE_TEXT 1
+#define ARCHIVE_TYPE_XML 2
+
 /*
  * have to use pointer GatingHierarchy * here,
  * because GatingHierarchy's destructor is responsible for clearing dynamically allocated memory
@@ -99,14 +104,14 @@ public:
 	vector<string> getSamples(void);
 
 	GatingSet * clone_treeOnly(vector<string> samples);
-	GatingSet * clone_sstream(vector<string> samples);
-	GatingSet * clone_fstream(vector<string> samples);
+//	GatingSet * clone_sstream(vector<string> samples);
+//	GatingSet * clone_fstream(vector<string> samples);
 	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
 };
 
 BOOST_CLASS_VERSION(GatingSet,1)
 
-void save_gs(const GatingSet &gs,string filename);
-void restore_gs(GatingSet &s, string filename);
+void save_gs(const GatingSet &gs,string filename, unsigned short format);
+void restore_gs(GatingSet &s, string filename, unsigned short format);
 
 #endif /* GATINGSET_HPP_ */

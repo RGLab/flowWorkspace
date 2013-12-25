@@ -7,7 +7,7 @@
 \usage{
   save_gs(G, path, overwrite = FALSE,
     cdf = c("copy", "move", "skip", "symlink", "link"),
-    ...)
+    type = c("binary", "text", "xml"), ...)
 
   load_gs(path)
 
@@ -32,6 +32,12 @@
   to move or create a link of the existing cdf file to the
   archived folder.  It is useful to "skip" archiving cdf
   file if raw data has not been changed.}
+
+  \item{type}{a character scalar. The valid options are
+  :"binary","text","xml" specifying format to store tree
+  structure.  default is "binary", which is smaller and
+  faster but machine-dependent. use "text" or "xml" for
+  cross-platform data interchange.}
 
   \item{...}{other arguments: not used.}
 }
