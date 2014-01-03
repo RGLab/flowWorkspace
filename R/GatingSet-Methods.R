@@ -27,7 +27,8 @@ isNcdf <- function(x){
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
 #' @param type a character scalar. The valid options are :"binary","text","xml" specifying format to store tree structure.
-#'                                  default is "binary", which is smaller and faster but machine-dependent. use "text" or "xml" for cross-platform data interchange.  
+#'                                  default is "binary", which is smaller and faster but machine-dependent.
+#'                                  use "text" or "xml" for cross-platform data interchange (experimental at this stage, may or maynot work).  
 #' @param ... other arguments: not used.
 #' 
 #' 

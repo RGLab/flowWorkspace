@@ -8,7 +8,7 @@
 #include <string>
 //#include <netcdfcpp.h>
 #include <netcdf.h>
-#include "flowData.hpp"
+#include "../include/flowData.hpp"
 using namespace std;
 
 class ncdfFlow{

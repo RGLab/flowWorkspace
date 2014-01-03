@@ -17,7 +17,12 @@ using namespace std;
 
 void save_gs(const GatingSet &gs,string filename, unsigned short format){
 	    // make an archive
-	    std::ofstream ofs(filename.c_str(),std::ios::out|std::ios::trunc|std::ios::binary);
+		std::_Ios_Openmode mode = std::ios::out|std::ios::trunc;
+		if(format == ARCHIVE_TYPE_BINARY)
+			mode = mode | std::ios::binary;
+
+
+	    std::ofstream ofs(filename.c_str(), mode);
 
 	    switch(format)
 	    {
@@ -55,8 +60,12 @@ void save_gs(const GatingSet &gs,string filename, unsigned short format){
 	}
 void restore_gs(GatingSet &s, string filename, unsigned short format)
 {
+
     // open the archive
-    std::ifstream ifs(filename.c_str());
+	std::_Ios_Openmode mode = std::ios::in;
+	if(format == ARCHIVE_TYPE_BINARY)
+		mode = mode | std::ios::binary;
+    std::ifstream ifs(filename.c_str(), mode);
 
     switch(format)
 	{
