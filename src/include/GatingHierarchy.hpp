@@ -53,16 +53,16 @@ struct OurVertexPropertyWriterR {
 
     template <class Vertex>
     void operator() (std::ostream &out, Vertex u) {
-    	nodeProperties *curNode=g[u];
+    	nodeProperties &curNode=g[u];
     	bool isBoolGate=false;
     	bool hidden = false;
     	if(!u==0)
     	{
-    		unsigned short gateType=curNode->getGate()->getType();
+    		unsigned short gateType=curNode.getGate()->getType();
     		isBoolGate=(gateType==BOOLGATE);
-    		hidden=curNode->getHiddenFlag();
+    		hidden=curNode.getHiddenFlag();
     	}
-    	out<<"[shape=record,label=\""<<curNode->getName()<<"\",isBool="<<isBoolGate<<",hidden="<<hidden<<"]";
+    	out<<"[shape=record,label=\""<<curNode.getName()<<"\",isBool="<<isBoolGate<<",hidden="<<hidden<<"]";
 
 
     }
@@ -143,13 +143,13 @@ public:
 	void addChild(VertexID parent,VertexID child);
 	VertexID addGate(gate* g,VertexID parentID,string popName);
 	void removeNode(VertexID nodeID);
-	void addPopulation(VertexID parentID,workspace * ws,wsNode * parentNode,bool isGating);
-	VertexID addRoot(nodeProperties* rootNode);
+	void addPopulation(VertexID parentID,workspace & ws,wsNode * parentNode,bool isGating);
+	VertexID addRoot(wsRootNode, workspace & ws);
 	VertexID addRoot();
 	GatingHierarchy();
-	~GatingHierarchy();
+//	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
 
 
 	flowData getData(VertexID nodeID);//from memory
@@ -180,7 +180,7 @@ public:
 	VertexID getParent(VertexID);
 	VertexID getDescendant(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
-	nodeProperties * getNodeProperty(VertexID);
+	nodeProperties & getNodeProperty(VertexID);
 
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();

@@ -31,8 +31,8 @@ public:
 	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode);
      wsRootNode getRoot(wsSampleNode sampleNode);
      wsPopNodeSet getSubPop(wsNode * node);
-     nodeProperties * to_popNode(wsRootNode &);
-     nodeProperties * to_popNode(wsPopNode &,bool isParseGate);
+     void to_popNode(wsRootNode &, nodeProperties & np);
+     void to_popNode(wsPopNode &, nodeProperties & np,bool isParseGate);
      string getSampleName(wsSampleNode &);
      void parseVersionList();
      unsigned short getVersionMin();

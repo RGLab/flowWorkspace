@@ -199,47 +199,47 @@ PARAM_VEC flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 /*
  *Note: nodeProperties is dynamically allocated and up to caller to free it
  */
-nodeProperties* flowJoWorkspace::to_popNode(wsRootNode & node){
+void flowJoWorkspace::to_popNode(wsRootNode & node, nodeProperties & np){
 
-	nodeProperties * pNode=new nodeProperties;
+
 
 	/*
 	 * in order to make the pop names comparable accross samples
 	 * force the root node name as "root" (it was stored as fcs filenames in some fj ws)
 	 */
-//	pNode->setName(node.getProperty("name").c_str());
-	pNode->setName("root");
+
+	np.setName("root");
 
 	POPSTATS fjStats;
 	fjStats["count"]=atoi(node.getProperty("count").c_str());
-	pNode->setStats(fjStats,false);
-	pNode->dMode=dMode;
-	return pNode;
+	np.setStats(fjStats,false);
+	np.dMode=dMode;
+
 }
 
-nodeProperties* flowJoWorkspace::to_popNode(wsPopNode &node,bool isParseGate=false){
+void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isParseGate=false){
 
 
-	nodeProperties * pNode=new nodeProperties;
+
 	//add pop name
-	pNode->setName(node.getProperty("name").c_str());
+	np.setName(node.getProperty("name").c_str());
 
 	if(dMode>=POPULATION_LEVEL)
-			cout<<"parse the population Node:"<<pNode->getName()<<endl;
+			cout<<"parse the population Node:"<<np.getName()<<endl;
 	//add pop counts
 	POPSTATS fjStats;
 	fjStats["count"]=atoi(node.getProperty("count").c_str());
-	pNode->setStats(fjStats,false);
+	np.setStats(fjStats,false);
 
 	try
 	{
-		if(isParseGate)pNode->setGate(getGate(node));
+		if(isParseGate)np.setGate(getGate(node));
 	}
 	catch (int e) {
-		cout<<"extracting gate failed:"<<pNode->getName()<<endl;
+		cout<<"extracting gate failed:"<<np.getName()<<endl;
 	}
-	pNode->dMode=dMode;
-	return pNode;
+	np.dMode=dMode;
+
 }
 
 void flowJoWorkspace::parseVersionList(){
