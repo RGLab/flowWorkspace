@@ -120,10 +120,10 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
 	int u=as<int>(_i);
-	nodeProperties *node=gh->getNodeProperty(u);
+	nodeProperties &node=gh->getNodeProperty(u);
 
-	return List::create(Named("FlowCore",node->getStats(true))
-						,Named("FlowJo",node->getStats(false))
+	return List::create(Named("FlowCore",node.getStats(true))
+						,Named("FlowJo",node.getStats(false))
 						);
 
 END_RCPP
@@ -333,7 +333,7 @@ BEGIN_RCPP
 		throw(domain_error("not valid vertexID!"));
 	if(u==0)
 		throw(domain_error("no gate associated with root node."));
-	gate *g=gh->getNodeProperty(u)->getGate();
+	gate *g=gh->getNodeProperty(u).getGate();
 	unsigned short gType=g->getType();
 	if(gType==ELLIPSEGATE)
 		gType=POLYGONGATE;
@@ -404,7 +404,7 @@ BEGIN_RCPP
 	if(u<0)throw(domain_error("not valid vertexID!"));
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	return wrap(gh->getNodeProperty(u)->getIndices());
+	return wrap(gh->getNodeProperty(u).getIndices());
 
 END_RCPP
 }
@@ -585,11 +585,11 @@ BEGIN_RCPP
 
 		gate * g=newGate(filter);
 
-		nodeProperties * node=gh->getNodeProperty(nodeID);
-		gate * old_g = node->getGate();
+		nodeProperties & node=gh->getNodeProperty(nodeID);
+		gate * old_g = node.getGate();
 		delete old_g;
 		old_g=NULL;
-		node->setGate(g);
+		node.setGate(g);
 
 END_RCPP
 }
@@ -622,8 +622,8 @@ BEGIN_RCPP
 
 		unsigned nodeID=as<unsigned>(_nodeID);
 
-		nodeProperties *node=gh->getNodeProperty(nodeID);
-		node->setName(newNodeName.c_str());
+		nodeProperties &node=gh->getNodeProperty(nodeID);
+		node.setName(newNodeName.c_str());
 
 
 END_RCPP
@@ -641,8 +641,8 @@ BEGIN_RCPP
 
 		unsigned nodeID=as<unsigned>(_nodeID);
 
-		nodeProperties *node=gh->getNodeProperty(nodeID);
-		node->setHiddenFlag(hidden);
+		nodeProperties &node=gh->getNodeProperty(nodeID);
+		node.setHiddenFlag(hidden);
 
 
 END_RCPP

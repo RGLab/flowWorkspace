@@ -15,13 +15,17 @@
 #define ROOTNODE 0
 
 
-
+/*since we don't use pointer here
+ * and has customized copy and assignment constructor defined for nodeProperties class
+ * the entire graph adjacency_list is copiable now
+ * thus eliminate the need for customized clone member functions
+ */
 typedef boost::adjacency_list<  // adjacency_list is a template depending on :
     boost::vecS,               //  The container used for egdes : here, std::list.
     boost::vecS,                //  The container used for vertices: here, std::vector.
     boost::bidirectionalS,           //  directed or undirected edges ?.
-    nodeProperties,                     //  The type that describes a Vertex.
-    boost::no_property                        //  The type that describes an Edge
+    nodeProperties,
+    boost::no_property
 > populationTree;
 typedef populationTree::vertex_descriptor VertexID;
 typedef populationTree::vertex_iterator VertexIt;

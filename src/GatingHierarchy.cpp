@@ -908,13 +908,7 @@ nodeProperties & GatingHierarchy::getNodeProperty(VertexID u){
 
 	}
 }
-//void GatingHierarchy::reset(){
-//	isGated=false;
-//	isLoaded=false;
-//	nc=NULL;
-//	thisWs=NULL;
-//	fdata.data.resize(0);
-//}
+
 /*
  *TODO:to deal with trans copying (especially how to sync with gTrans)
   up to caller to free the memory
@@ -925,32 +919,17 @@ GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_v
 
 
 	res->trans.setTransMap(_trans);
-//	res->gTrans=_gTrans;
+
 	res->comp=comp;
 
-	/*
-	 * copy bgl tree and update property bundle pointer for each node
-	 * TODO:explore deep copying facility of bgl library,especially for node property bundle as the pointer
-	 */
 	res->tree=tree;
-	VertexID_vec vertices=res->getVertices(0);
-	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-	{
-		/*
-		 * update the pointer for nodeProperties
-		 */
-		VertexID u=*it;
-		res->tree[u]=res->getNodeProperty(u).clone();//only copy gate definition without copying gating results
-	}
-
 
 	return res;
 }
 /*
  * TODO:this overloading function is a temporary solution:
  * difference from the above one is:
- * 1.does not copy trans
- * 2.copy stats and indices as well for each node
+ * does not copy trans
  */
 GatingHierarchy * GatingHierarchy::clone(){
 
@@ -958,21 +937,7 @@ GatingHierarchy * GatingHierarchy::clone(){
 
 	res->comp=comp;
 
-	/*
-	 * copy bgl tree and update property bundle pointer for each node
-	 * TODO:explore deep copying facility of bgl library,especially for node property bundle as the pointer
-	 */
 	res->tree=tree;
-	VertexID_vec vertices=res->getVertices(0);
-	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-	{
-		/*
-		 * update the pointer for nodeProperties
-		 */
-		VertexID u=*it;
-		res->tree[u]=res->getNodeProperty(u).clone(true);//copy gates results as well
-	}
-
 
 	return res;
 }

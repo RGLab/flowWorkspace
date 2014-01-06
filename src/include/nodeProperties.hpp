@@ -129,7 +129,7 @@ public:
 	void setIndices(unsigned _nEvent);
 	void setGate(gate *gate);
 	void computeStats();
-	nodeProperties  clone(bool gateResult=false);
+
 
 };
 BOOST_CLASS_VERSION(nodeProperties,2)

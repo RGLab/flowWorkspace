@@ -132,23 +132,4 @@ unsigned nodeProperties::getCounts(){
 
 }
 
-nodeProperties nodeProperties::clone(bool gateResult){
 
-		nodeProperties res=*this;
-
-		/*
-		 * copying gate if applicable
-		 */
-
-		if(thisGate!=NULL)
-			res.setGate(thisGate->clone());
-
-		/*
-		 * copy gated results
-		 */
-		if(gateResult&&isGated())
-		{
-			res.indices.reset(indices->clone());
-		}
-		return res;
-	}
