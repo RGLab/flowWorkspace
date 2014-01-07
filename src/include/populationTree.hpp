@@ -14,6 +14,22 @@
 
 #define ROOTNODE 0
 
+struct Edge{
+        template<class Archive>
+                                void serialize(Archive &ar, const unsigned int version)
+                                {
+
+
+                                }
+    // nothing, probably. Or a weight, a distance, a direction, ...
+};
+typedef boost::adjacency_list<  // adjacency_list is a template depending on :
+    boost::vecS,               //  The container used for egdes : here, std::list.
+    boost::vecS,                //  The container used for vertices: here, std::vector.
+    boost::bidirectionalS,           //  directed or undirected edges ?.
+    nodeProperties *,
+    Edge
+> populationTreeOld;
 
 /*since we don't use pointer here
  * and has customized copy and assignment constructor defined for nodeProperties class
