@@ -1441,7 +1441,7 @@ setReplaceMethod("sampleNames",
     {
       oldNames <- sampleNames(object)
       #update c++ data structure
-      mapply(oldNames,object, FUN = function(oldName, newName){
+      mapply(oldNames,value, FUN = function(oldName, newName){
             .Call("R_setSample", object@pointer, oldName, newName) 
       })
   
