@@ -449,12 +449,11 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' getNodes,GatingHierarchy-method
 #' @importFrom BiocGenerics duplicated
 setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath = TRUE, prefix=FALSE,showHidden = FALSE,...){
-
-			orderInd<-match(order,c("regular","tsort","bfs"))
-			if(length(orderInd)==0)
-				orderInd<-0
-			else
-				orderInd<-orderInd-1
+            order <- match.arg(order,c("regular","tsort","bfs"))
+			
+            orderInd <- match(order,c("regular","tsort","bfs"))
+			
+            orderInd <- orderInd-1
 			
 			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath,showHidden)
 
