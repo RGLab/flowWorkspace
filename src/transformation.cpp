@@ -43,44 +43,28 @@ trans_map trans_local::cloneTransMap(){
  */
 
 
-
-transformation::transformation(){
-	/*
+/*
 	 * if it is pure transformation object,then assume calibration is directly read from ws
 	 * so there is no need to compute calibration
 	 */
-	isComputed=true;
-	isGateOnly=false;
-	type=CALTBL;
 
-}
-
-logTrans::logTrans(){
-	type=LOG;
-//	isGateOnly=false;//already init by base contructor
-//	isComputed=true;
+transformation::transformation():isComputed(true),isGateOnly(false),type(CALTBL){}
+transformation::transformation(bool _isGate, unsigned short _type):isComputed(true),isGateOnly(_isGate),type(_type){}
+logTrans::logTrans():transformation(false,LOG),offset(0),decade(1){
 	calTbl.setInterpolated(true);
 }
-logTrans::logTrans(double _offset,double _decade){
-	logTrans();
-	offset=_offset;
-	decade=_decade;
+logTrans::logTrans(double _offset,double _decade):transformation(false,LOG),offset(_offset),decade(_decade){
+	calTbl.setInterpolated(true);
 }
 
-linTrans::linTrans(){
-	type=LIN;
-	isGateOnly=true;
+linTrans::linTrans():transformation(true,LIN){
 	calTbl.setInterpolated(true);
 }
-flinTrans::flinTrans(){
-	type=FLIN;
-	isGateOnly=false;
+flinTrans::flinTrans():transformation(false,FLIN),min(0),max(0){
 	calTbl.setInterpolated(true);
 }
-flinTrans::flinTrans(double _minRange, double _maxRange){
-	flinTrans();
-	min=_minRange;
-	max=_maxRange;
+flinTrans::flinTrans(double _minRange, double _maxRange):transformation(false,FLIN),min(_minRange),max(_maxRange){
+	calTbl.setInterpolated(true);
 }
 /*
  *
@@ -303,10 +287,4 @@ void biexpTrans::computCalTbl(){
 	delete[] negative;
 
 }
-/*
- * calTrans
- */
-//calTrans * calTrans::clone(){
-//
-//	return new calTrans(*this);
-//}
+
