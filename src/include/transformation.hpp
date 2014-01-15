@@ -22,6 +22,7 @@
 #include "calibrationTable.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/compare.hpp>
+#include <boost/regex.hpp>
 using namespace std;
 
 struct coordinate
