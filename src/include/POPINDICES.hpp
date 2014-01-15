@@ -32,6 +32,7 @@ private:
 
 public:
 	POPINDICES(){nEvents=0;};
+	virtual ~POPINDICES(){};
 	virtual vector<bool> getIndices()=0;
 	virtual unsigned getCount()=0;
 	unsigned getTotal(){return nEvents;}

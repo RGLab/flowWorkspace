@@ -510,7 +510,7 @@ vector<string> GatingSet::getSamples(void)
 		}
 		return res;
 		//	return(this->sampleList);
-};
+}
 /* change the sample name by inserting a new entry and deleting the old one*/
 void GatingSet::setSample(string oldName, string newName)
 {
@@ -520,7 +520,7 @@ void GatingSet::setSample(string oldName, string newName)
 		ghs[newName] = gh;
 		ghs.erase(oldName);
 
-};
+}
 
 
 void GatingSet::gating(){

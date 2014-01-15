@@ -48,8 +48,8 @@ trans_map trans_local::cloneTransMap(){
 	 * so there is no need to compute calibration
 	 */
 
-transformation::transformation():isComputed(true),isGateOnly(false),type(CALTBL){}
-transformation::transformation(bool _isGate, unsigned short _type):isComputed(true),isGateOnly(_isGate),type(_type){}
+transformation::transformation():isGateOnly(false),type(CALTBL),isComputed(true){}
+transformation::transformation(bool _isGate, unsigned short _type):isGateOnly(_isGate),type(_type),isComputed(true){}
 logTrans::logTrans():transformation(false,LOG),offset(0),decade(1){
 	calTbl.setInterpolated(true);
 }

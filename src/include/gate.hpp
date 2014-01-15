@@ -198,6 +198,7 @@ public:
 	 * exact string returned by std::type_info::name() is compiler-dependent
 	 * so we can't rely on RTTI
 	 */
+	virtual ~gate(){};
 	virtual unsigned short getType()=0;
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual vector<bool> gating(flowData &){throw(domain_error("undefined gating function!"));};

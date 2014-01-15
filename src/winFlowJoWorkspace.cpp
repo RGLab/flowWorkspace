@@ -499,7 +499,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 }
 
 gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
-			gate * thisGate;
+			gate * thisGate = NULL;
 			//get parameter name
 			xmlXPathObjectPtr resPara=node.xpathInNode(nodePath.gateDim);
 			int nParam=resPara->nodesetval->nodeNr;
