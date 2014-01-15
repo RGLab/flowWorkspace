@@ -17,7 +17,7 @@ using namespace std;
 
 void save_gs(const GatingSet &gs,string filename, unsigned short format){
 	    // make an archive
-		std::_Ios_Openmode mode = std::ios::out|std::ios::trunc;
+		std::ios::openmode mode = std::ios::out|std::ios::trunc;
 		if(format == ARCHIVE_TYPE_BINARY)
 			mode = mode | std::ios::binary;
 
@@ -62,7 +62,7 @@ void restore_gs(GatingSet &s, string filename, unsigned short format)
 {
 
     // open the archive
-	std::_Ios_Openmode mode = std::ios::in;
+	std::ios::openmode mode = std::ios::in;
 	if(format == ARCHIVE_TYPE_BINARY)
 		mode = mode | std::ios::binary;
     std::ifstream ifs(filename.c_str(), mode);
