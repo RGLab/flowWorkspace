@@ -466,6 +466,7 @@ void GatingHierarchy::calgate(VertexID u)
 		 */
 
 		g->transforming(trans,dMode);
+//		cout<<g->getType()<<typeid(*g).name()<<endl;
 		curIndices=g->gating(fdata);
 	}
 

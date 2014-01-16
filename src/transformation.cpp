@@ -68,8 +68,10 @@ flinTrans::flinTrans(double _minRange, double _maxRange):transformation(false,FL
 }
 /*
  *
+ *now we switch back to zero imputation instead of min value since
+ *when convert to R version of transformation function, the data is
+ *no available anymore, thus no way to specify this minvalue
  *
- * (e.g. replace the negative value with the minimum positive value instead of zero
  */
 double logTrans::flog(double x,double T,double _min) {
 
@@ -86,7 +88,7 @@ void logTrans::transforming(valarray<double> & input){
 
 
 		double thisMax=262144;//input.max();
-		double thisMin=input.min();
+		double thisMin=0;//input.min();
 
 		for(unsigned i=0;i<input.size();i++){
 			input[i]=flog(input[i],thisMax,thisMin);

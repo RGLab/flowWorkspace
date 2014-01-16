@@ -180,8 +180,11 @@ BEGIN_RCPP
 
 			case LOG:
 			{
-
-				res.push_back(List::create(Named("type","log"))
+				logTrans * thisTrans = dynamic_cast<logTrans *>(curTrans);
+				res.push_back(List::create(Named("type","log")
+											,Named("decade",thisTrans->decade)
+											,Named("offset",thisTrans->offset)
+											)
 								,transName
 								);
 				break;
@@ -335,7 +338,7 @@ BEGIN_RCPP
 		throw(domain_error("no gate associated with root node."));
 	gate *g=gh->getNodeProperty(u).getGate();
 	unsigned short gType=g->getType();
-	if(gType==ELLIPSEGATE)
+	if(gType==ELLIPSEGATE||gType==RECTGATE)
 		gType=POLYGONGATE;
 	switch(gType)
 	{
