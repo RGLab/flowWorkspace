@@ -74,8 +74,8 @@ flinTrans::flinTrans(double _minRange, double _maxRange):transformation(false,FL
 double logTrans::flog(double x,double T,double _min) {
 
 	double M=decade;
-//	return x>0?(log10(x/T)/M+offset):_min;
-	return x>0?(log10((x+offset)/T)/M):_min;
+	return x>0?(log10(x/T)/M+offset):_min;
+//	return x>0?(log10((x+offset)/T)/M):_min;
 
 }
 /*
@@ -85,7 +85,7 @@ double logTrans::flog(double x,double T,double _min) {
 void logTrans::transforming(valarray<double> & input){
 
 
-		double thisMax=input.max();
+		double thisMax=262144;//input.max();
 		double thisMin=input.min();
 
 		for(unsigned i=0;i<input.size();i++){

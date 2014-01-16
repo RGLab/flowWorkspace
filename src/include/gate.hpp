@@ -290,6 +290,7 @@ private:
 			}
 public:
 	vector<bool> gating(flowData &);
+	unsigned short getType(){return RECTGATE;}
 };
 /*
  * TODO: doing the gating without interpolating it into polygon
