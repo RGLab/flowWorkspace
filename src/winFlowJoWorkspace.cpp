@@ -499,7 +499,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 }
 
 gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
-			gate * thisGate;
+			gate * thisGate = NULL;
 			//get parameter name
 			xmlXPathObjectPtr resPara=node.xpathInNode(nodePath.gateDim);
 			int nParam=resPara->nodesetval->nodeNr;
@@ -534,6 +534,8 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 				 * parse as rangeGate
 				 */
 				rangeGate * g=new rangeGate();
+				if(dMode>=GATE_LEVEL)
+					cout<<"constructing rangeGate.."<<endl;
 				//get the negate flag
 				g->setNegate(node.getProperty("eventsInside")=="0");
 				g->setParam(r.at(0));
@@ -541,6 +543,8 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 
 			}else if(nParam==2){
 				rectGate * g=new rectGate();
+				if(dMode>=GATE_LEVEL)
+					cout<<"constructing rectGate.."<<endl;
 				//get the negate flag
 				g->setNegate(node.getProperty("eventsInside")=="0");
 

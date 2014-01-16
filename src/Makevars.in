@@ -12,17 +12,19 @@ ifeq ($(boost_bundled),yes)
 	bgl_cppflags=-I$(boost_basename)/
 	bgl_src=${wildcard ${boost_basename}/libs/serialization/src/*.cpp} 
 	bgl_objs=${bgl_src:.cpp=.o}
+	bregex_src=${wildcard ${boost_basename}/libs/regex/src/*.cpp}
+	bregex_objs=${bregex_src:.cpp=.o}
 endif
 
 PKG_CPPFLAGS =-Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags}
-PKG_LIBS =${bgl_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` @PKG_LIBS@ 
+PKG_LIBS =${bgl_objs} ${bregex_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` @PKG_LIBS@ 
 
 USERDIR =	../inst/lib
 USERLIB	=	libflowWorkspace$(DYLIB_EXT)
 
 all: 	$(SHLIB) userLibrary
 
-$(SHLIB): $(OBJECTS) $(bgl_objs)
+$(SHLIB): $(OBJECTS) $(bgl_objs) ${bregex_objs}
 
 userLibrary: 	$(USERLIB)
 		-@if test ! -e $(USERDIR)$(R_ARCH); then mkdir -p $(USERDIR)$(R_ARCH); fi
@@ -33,12 +35,12 @@ userLibrary: 	$(USERLIB)
 #make sure to insert the full path of lib since mac has problem to find it at run time
 $(USERLIB):$(SHLIB)
 	cp $(SHLIB) $(USERLIB) 
-#note that $ALL_LIBS contains $(bgl_objs) already
+#note that $ALL_LIBS contains $(bgl_objs) ${bregex_objs} already
 		@if test -e "/usr/bin/install_name_tool"; then /usr/bin/install_name_tool -id $(R_PACKAGE_DIR)/lib$(R_ARCH)/$(USERLIB) $(USERLIB); fi
 
 
 .PHONY: 	all clean userLibrary
 
 clean:
-		rm -f $(OBJECTS) $(bgl_objs) $(SHLIB) $(USERLIB)
+		rm -f $(OBJECTS) $(bgl_objs) ${bregex_objs} $(SHLIB) $(USERLIB)
  

@@ -22,11 +22,12 @@ typedef map<string,float> POPSTATS;
  * can't be reference either, because this member should belong to nodeProperties
  * and destroyed by nodeProperties's destructor ,reference member means refer to the object
  * outside, So it is not possible to instantiate it since we may not need to parse gate if only
- * stats from flowJo are needed
+ * stats from flowJo are needed.
+ * Also reference member's life cycle is different from its host object, which could be problematic.
  *
  */
 class nodeProperties{
-//	friend std::ostream & operator<<(std::ostream &os, const nodeProperties &gh);
+
 	friend class boost::serialization::access;
 private:
 	string thisName;
@@ -108,7 +109,8 @@ private:
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	nodeProperties();
-
+	nodeProperties(const nodeProperties& np);
+	nodeProperties & operator=(nodeProperties np);
 	~nodeProperties();
 
 
@@ -127,7 +129,7 @@ public:
 	void setIndices(unsigned _nEvent);
 	void setGate(gate *gate);
 	void computeStats();
-	nodeProperties * clone(bool gateResult=false);
+
 
 };
 BOOST_CLASS_VERSION(nodeProperties,2)

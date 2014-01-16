@@ -10,7 +10,7 @@
 #include <algorithm>
 
 
-flowData::flowData(){ignore_case = false;nEvents =0;};
+flowData::flowData(){ignore_case = false;nEvents =0;}
 flowData & flowData::operator=(const flowData& source){
 	params=source.params;
 	ignore_case=source.ignore_case;

@@ -17,7 +17,12 @@ using namespace std;
 
 void save_gs(const GatingSet &gs,string filename, unsigned short format){
 	    // make an archive
-	    std::ofstream ofs(filename.c_str(),std::ios::out|std::ios::trunc|std::ios::binary);
+		std::ios::openmode mode = std::ios::out|std::ios::trunc;
+		if(format == ARCHIVE_TYPE_BINARY)
+			mode = mode | std::ios::binary;
+
+
+	    std::ofstream ofs(filename.c_str(), mode);
 
 	    switch(format)
 	    {
@@ -55,8 +60,12 @@ void save_gs(const GatingSet &gs,string filename, unsigned short format){
 	}
 void restore_gs(GatingSet &s, string filename, unsigned short format)
 {
+
     // open the archive
-    std::ifstream ifs(filename.c_str());
+	std::ios::openmode mode = std::ios::in;
+	if(format == ARCHIVE_TYPE_BINARY)
+		mode = mode | std::ios::binary;
+    std::ifstream ifs(filename.c_str(), mode);
 
     switch(format)
 	{
@@ -93,11 +102,11 @@ void restore_gs(GatingSet &s, string filename, unsigned short format)
 
 
 template <class T>
-wsSampleNode getSample(T ws,string sampleID){
+wsSampleNode getSample(T & ws,string sampleID){
 
-		string xpath=ws->xPathSample(sampleID);
+		string xpath=ws.xPathSample(sampleID);
 
-		wsNode docRoot(xmlDocGetRootElement(ws->doc));
+		wsNode docRoot(xmlDocGetRootElement(ws.doc));
 
 		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
 		if(res->nodesetval->nodeNr>1)
@@ -118,10 +127,10 @@ wsSampleNode getSample(T ws,string sampleID){
  * thus should not be deleted separately (otherwise it causes some segfault particulary on mac)
  */
 void GatingSet::freeWorkspace(){
-	if(ws!=NULL)
+	if(wsPtr!=NULL)
 	{
-		delete ws;
-		ws = NULL;
+		delete wsPtr;
+		wsPtr = NULL;
 	}
 
 }
@@ -270,10 +279,10 @@ GatingSet* GatingSet::clone_treeOnly(vector<string> samples){
 void GatingSet::add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode){
 
 	/*
-	 * ws is not needed here since all the info comes from gh_template instead of ws
+	 * wsPtr is not needed here since all the info comes from gh_template instead of wsPtr
 	 * but we need to initialize it to NULL to avoid the illegal deletion of the Nil pointer in the gatingset destructor
 	 */
-//	ws=NULL;
+//	wsPtr=NULL;
 
 	dMode=_dMode;
 	/*
@@ -318,10 +327,10 @@ void GatingSet::add(GatingSet & gs,vector<string> sampleNames,unsigned short _dM
 GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,unsigned short _dMode){
 
 	/*
-	 * ws is not needed here since all the info comes from gh_template instead of ws
+	 * wsPtr is not needed here since all the info comes from gh_template instead of ws
 	 * but we need to initialize it to NULL to avoid the illegal deletion of the Nil pointer in the gatingset destructor
 	 */
-	ws=NULL;
+	wsPtr=NULL;
 
 	dMode=_dMode;
 	/*
@@ -361,7 +370,7 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
 
 
-	ws=NULL;
+	wsPtr=NULL;
 	dMode=_dMode;
 
 	vector<string>::iterator it;
@@ -388,7 +397,7 @@ GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
 //read xml file and create the appropriate flowJoWorkspace object
 GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,int xmlParserOption,unsigned short _dMode)
 {
-		ws=NULL;
+		wsPtr=NULL;
 		LIBXML_TEST_VERSION
 
 		/*parse the file and get the DOM */
@@ -412,24 +421,24 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 		 xmlChar * wsVersion=xmlGetProp(cur,(const xmlChar*)"version");
 
 		 if (xmlStrEqual(wsVersion,(const xmlChar *)"1.61")||xmlStrEqual(wsVersion,(const xmlChar *)"1.6"))
-			 ws=new winFlowJoWorkspace(doc);
+			 wsPtr=new winFlowJoWorkspace(doc);
 		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"2.0"))
-			 ws=new macFlowJoWorkspace(doc);
+			 wsPtr=new macFlowJoWorkspace(doc);
 		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"1.8"))
-			 ws=new xFlowJoWorkspace(doc);
+			 wsPtr=new xFlowJoWorkspace(doc);
 		 else
 		 {
 			 xmlFree(wsVersion);
 			 throw(invalid_argument("We currently only support flowJo version 1.61 and 2.0"));
 		 }
 		 xmlFree(wsVersion);
-		 ws->dMode=_dMode;
-		 ws->nodePath.sampNloc=sampNloc;
+		 wsPtr->dMode=_dMode;
+		 wsPtr->nodePath.sampNloc=sampNloc;
 		 dMode=_dMode;
 		 if(dMode>=GATING_SET_LEVEL)
 			 cout<<"internal gating set created from "<<sFileName<<endl;
 
-		 ws->parseVersionList();
+		 wsPtr->parseVersionList();
 		 /*
 		  * parsing global calibration tables
 		  */
@@ -438,14 +447,14 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 		 {
 			 if(dMode>=GATING_SET_LEVEL)
 				 cout<<"... start parsing global transformations... "<<endl;
-			 gTrans=ws->getGlobalTrans();
+			 gTrans=wsPtr->getGlobalTrans();
 		 }
 }
 
 void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)
 {
 	//first get all the sample IDs for given groupID
-	vector<string> sampleID=ws->getSampleID(groupID);
+	vector<string> sampleID=wsPtr->getSampleID(groupID);
 	parseWorkspace(sampleID,isParseGate);
 
 }
@@ -458,11 +467,11 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
-		wsSampleNode curSampleNode=getSample(ws,*it);
+		wsSampleNode curSampleNode=getSample(*wsPtr,*it);
 
-		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,ws,isParseGate,&gTrans,&globalBiExpTrans,&globalLinTrans,dMode);
+		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,*wsPtr,isParseGate,&gTrans,&globalBiExpTrans,&globalLinTrans,dMode);
 
-		string sampleName=ws->getSampleName(curSampleNode);
+		string sampleName=wsPtr->getSampleName(curSampleNode);
 
 //		curGh->setSample(sampleName);
 		ghs[sampleName]=curGh;//add to the map
@@ -501,7 +510,7 @@ vector<string> GatingSet::getSamples(void)
 		}
 		return res;
 		//	return(this->sampleList);
-};
+}
 /* change the sample name by inserting a new entry and deleting the old one*/
 void GatingSet::setSample(string oldName, string newName)
 {
@@ -511,7 +520,7 @@ void GatingSet::setSample(string oldName, string newName)
 		ghs[newName] = gh;
 		ghs.erase(oldName);
 
-};
+}
 
 
 void GatingSet::gating(){

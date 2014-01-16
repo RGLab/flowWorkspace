@@ -22,6 +22,7 @@
 #include "calibrationTable.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/compare.hpp>
+#include <boost/regex.hpp>
 using namespace std;
 
 struct coordinate
@@ -51,7 +52,7 @@ class transformation{
 protected:
 	calibrationTable calTbl;
 	bool isGateOnly;
-	unsigned short type;
+	unsigned short type;//could have been avoided if it is not required by R API getTransformation that needs to extract concrete transformation
 	string name;
 	string channel;
 	bool isComputed;//this flag allow lazy computCalTbl/interpolation
@@ -70,6 +71,8 @@ private:
 				}
 public:
 	transformation();
+	transformation(bool _isGate,unsigned short _type);
+
 	virtual void transforming(valarray<double> & input);
 	virtual void computCalTbl(){};//dummy routine that does nothing
 	virtual Spline_Coefs getSplineCoefs(){return calTbl.getSplineCoefs();};
@@ -214,8 +217,7 @@ public:
  * we should consider redesign the classes so that logTrans does not share this extra feature from parent class
  */
 class logTrans:public transformation{
-	double offset;
-	double decade;
+
 	friend class boost::serialization::access;
 private:
 		template<class Archive>
@@ -225,7 +227,9 @@ private:
 						ar & BOOST_SERIALIZATION_NVP(offset);
 						ar & BOOST_SERIALIZATION_NVP(decade);
 					}
-
+public:
+		double offset;
+		double decade;
 public:
 	logTrans();
 	logTrans(double _offset,double _decade);

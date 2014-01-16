@@ -19,7 +19,7 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/breadth_first_search.hpp>
-
+#include <boost/graph/copy.hpp>
 #define REGULAR 0
 #define TSORT 1
 #define BFS 2
@@ -53,16 +53,16 @@ struct OurVertexPropertyWriterR {
 
     template <class Vertex>
     void operator() (std::ostream &out, Vertex u) {
-    	nodeProperties *curNode=g[u];
+    	nodeProperties &curNode=g[u];
     	bool isBoolGate=false;
     	bool hidden = false;
     	if(!u==0)
     	{
-    		unsigned short gateType=curNode->getGate()->getType();
+    		unsigned short gateType=curNode.getGate()->getType();
     		isBoolGate=(gateType==BOOLGATE);
-    		hidden=curNode->getHiddenFlag();
+    		hidden=curNode.getHiddenFlag();
     	}
-    	out<<"[shape=record,label=\""<<curNode->getName()<<"\",isBool="<<isBoolGate<<",hidden="<<hidden<<"]";
+    	out<<"[shape=record,label=\""<<curNode.getName()<<"\",isBool="<<isBoolGate<<",hidden="<<hidden<<"]";
 
 
     }
@@ -94,14 +94,64 @@ private:
 
 	PARAM_VEC transFlag;
 	trans_local trans;
-
 	template<class Archive>
-		    void serialize(Archive &ar, const unsigned int version)
-		    {
+				    void save(Archive &ar, const unsigned int version) const
+				    {
+						ar & BOOST_SERIALIZATION_NVP(comp);
+						ar & BOOST_SERIALIZATION_NVP(fdata);
+						ar & BOOST_SERIALIZATION_NVP(tree);
+
+				        ar & BOOST_SERIALIZATION_NVP(isLoaded);
+
+				        ar.register_type(static_cast<biexpTrans *>(NULL));
+						ar.register_type(static_cast<flinTrans *>(NULL));
+						ar.register_type(static_cast<logTrans *>(NULL));
+						ar.register_type(static_cast<linTrans *>(NULL));
+
+				        ar & BOOST_SERIALIZATION_NVP(transFlag);
+
+
+				        ar & BOOST_SERIALIZATION_NVP(trans);
+				        ar & BOOST_SERIALIZATION_NVP(dMode);
+				    }
+	template<class Archive>
+			void load(Archive &ar, const unsigned int version)
+			{
 
 				ar & BOOST_SERIALIZATION_NVP(comp);
 				ar & BOOST_SERIALIZATION_NVP(fdata);
-				ar & BOOST_SERIALIZATION_NVP(tree);
+				if(version < 2){
+					//load the old structure
+					populationTreeOld treeOld;
+					ar & BOOST_SERIALIZATION_NVP(treeOld);
+					//copy the graph structure without property
+					tree=populationTree(num_vertices(treeOld));//copy vertex
+					//copy edges
+					typedef boost::graph_traits<populationTreeOld>::edge_iterator myEdgeIt;
+					myEdgeIt first, last;
+
+					for (tie(first, last) = edges(treeOld);first != last; ++first)
+					{
+						EdgeID e = *first;
+						VertexID s=source(e,treeOld);
+						VertexID t=target(e,treeOld);
+						boost::add_edge(s,t,tree);
+					}
+
+
+					//copy properties manually
+					boost::graph_traits<populationTree>::vertex_iterator v_start, v_end;
+
+					for (tie(v_start, v_end) = vertices(treeOld);
+							v_start != v_end; ++v_start)
+					{
+						VertexID thisV = *v_start;
+						tree[thisV] = *(treeOld[thisV]);
+					}
+				}
+				else
+					ar & BOOST_SERIALIZATION_NVP(tree);
+
 				if(version==0){
 					bool isGated=false;
 					ar & BOOST_SERIALIZATION_NVP(isGated);
@@ -109,10 +159,6 @@ private:
 
 
 		        ar & BOOST_SERIALIZATION_NVP(isLoaded);
-//		        ar & nc;
-
-//		        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
-//		        ar & thisWs;
 
 		        ar.register_type(static_cast<biexpTrans *>(NULL));
 				ar.register_type(static_cast<flinTrans *>(NULL));
@@ -122,7 +168,7 @@ private:
 					trans_global_vec *gTrans;
 					ar & BOOST_SERIALIZATION_NVP(gTrans);
 				}
-//		        ar & BOOST_SERIALIZATION_NVP(gTrans);
+
 
 		        ar & BOOST_SERIALIZATION_NVP(transFlag);
 
@@ -130,6 +176,8 @@ private:
 		        ar & BOOST_SERIALIZATION_NVP(trans);
 		        ar & BOOST_SERIALIZATION_NVP(dMode);
 		    }
+BOOST_SERIALIZATION_SPLIT_MEMBER()
+
 public:
 
 	unsigned short dMode;//debug mode passed from GatingSet
@@ -143,13 +191,13 @@ public:
 	void addChild(VertexID parent,VertexID child);
 	VertexID addGate(gate* g,VertexID parentID,string popName);
 	void removeNode(VertexID nodeID);
-	void addPopulation(VertexID parentID,workspace * ws,wsNode * parentNode,bool isGating);
-	VertexID addRoot(nodeProperties* rootNode);
+	void addPopulation(VertexID parentID,workspace & ws,wsNode * parentNode,bool isGating);
+	VertexID addRoot(wsRootNode, workspace & ws);
 	VertexID addRoot();
 	GatingHierarchy();
-	~GatingHierarchy();
+//	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
 
 
 	flowData getData(VertexID nodeID);//from memory
@@ -180,12 +228,12 @@ public:
 	VertexID getParent(VertexID);
 	VertexID getDescendant(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
-	nodeProperties * getNodeProperty(VertexID);
+	nodeProperties & getNodeProperty(VertexID);
 
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
 };
-BOOST_CLASS_VERSION(GatingHierarchy,1)
+BOOST_CLASS_VERSION(GatingHierarchy,2)
 
 
 #endif /* GATINGHIERARCHY_HPP_ */

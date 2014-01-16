@@ -6,19 +6,22 @@
 #ifndef NCDFFLOW_HPP_
 #define NCDFFLOW_HPP_
 #include <string>
-//#include <netcdfcpp.h>
+#include "hdf5.h"
+#include <R.h>
+#include <stdlib.h>
+#define DATASETNAME "/exprsMat"
 #include <netcdf.h>
-#include "flowData.hpp"
+#include "../include/flowData.hpp"
 using namespace std;
 
 class ncdfFlow{
 	friend std::ostream & operator<<(std::ostream &os, const ncdfFlow &nc);
 	friend class boost::serialization::access;
-private:
+protected:
 	string fileName;
 	vector<string> sampleNames;
 	vector<string> params;
-
+private:
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
@@ -41,4 +44,10 @@ public:
 	void writeflowData(flowData & fdata);
 };
 
+class hdfFlow:public ncdfFlow{
+public:
+	flowData readflowData(string sampleName);
+	flowData readflowData(unsigned int sampleID);
+//	void writeflowData(flowData & fdata);
+};
 #endif /* NCDFFLOW_HPP_ */

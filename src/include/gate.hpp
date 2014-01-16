@@ -196,8 +196,12 @@ private:
 public:
 	/*
 	 * exact string returned by std::type_info::name() is compiler-dependent
-	 * so we can't rely on RTTI
+	 * so we can't rely on RTTI. instead we return the gate type by API
+	 * However it is against the motivation for nodeProperty to use base gate pointer
+	 * the very reason of this gate abstraction was to make gatingheirarhcy being agnostic
+	 * about the gate type. The reason we are doing it is a compromise to the needs of R API getGate
 	 */
+	virtual ~gate(){};
 	virtual unsigned short getType()=0;
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual vector<bool> gating(flowData &){throw(domain_error("undefined gating function!"));};
@@ -270,7 +274,7 @@ public:
 	void setParam(paramPoly _param){param=_param;};
 	virtual paramPoly getParam(){return param;};
 	virtual vector<string> getParamNames(){return param.getNameArray();};
-	polygonGate * clone(){return new polygonGate(*this);};
+	virtual polygonGate * clone(){return new polygonGate(*this);};
 };
 /*
  * rectgate is a special polygon requires simpler gating routine
@@ -289,6 +293,8 @@ private:
 			}
 public:
 	vector<bool> gating(flowData &);
+	unsigned short getType(){return RECTGATE;}
+	rectGate * clone(){return new rectGate(*this);};
 };
 /*
  * TODO: doing the gating without interpolating it into polygon
