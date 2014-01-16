@@ -111,7 +111,7 @@ private:
 	 		    }
 public:
 	 workspace(){doc=NULL;};
-	 ~workspace();
+	 virtual ~workspace();
 	 virtual string xPathSample(string sampleID)=0;
 	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode)=0;
 	 virtual trans_local getTransformation(wsRootNode,const compensation &,PARAM_VEC &,trans_global_vec *,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans)=0;
@@ -122,8 +122,8 @@ public:
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
-	 virtual nodeProperties * to_popNode(wsRootNode &)=0;
-	 virtual nodeProperties * to_popNode(wsPopNode &,bool isGating)=0;
+	 virtual void to_popNode(wsRootNode &, nodeProperties &)=0;
+	 virtual void to_popNode(wsPopNode &,nodeProperties &,bool isGating)=0;
 	 valarray<double> toArray(string sCalTable);
 	 virtual void parseVersionList(){};
 

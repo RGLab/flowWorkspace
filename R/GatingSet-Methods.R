@@ -27,7 +27,8 @@ isNcdf <- function(x){
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
 #' @param type a character scalar. The valid options are :"binary","text","xml" specifying format to store tree structure.
-#'                                  default is "binary", which is smaller and faster but machine-dependent. use "text" or "xml" for cross-platform data interchange.  
+#'                                  default is "binary", which is smaller and faster but machine-dependent.
+#'                                  use "text" or "xml" for cross-platform data interchange (experimental at this stage, may or maynot work).  
 #' @param ... other arguments: not used.
 #' 
 #' 
@@ -658,6 +659,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             kw <- keyword(data)
             if(as.numeric(kw[["FCSversion"]])>=3){
               kw_gains <- kw[key_names]
+              
+              # For keywords where the gain is not set, the gain is NULL.
+              # We replace these instances with the default of 1.
+              kw_gains[sapply(kw_gains, is.null)] <- 1
+              
               gains <- as.numeric(kw_gains)                      
             }else{
               gains <- rep(1,length(paramIDs))
@@ -1435,7 +1441,7 @@ setReplaceMethod("sampleNames",
     {
       oldNames <- sampleNames(object)
       #update c++ data structure
-      mapply(oldNames,object, FUN = function(oldName, newName){
+      mapply(oldNames,value, FUN = function(oldName, newName){
             .Call("R_setSample", object@pointer, oldName, newName) 
       })
   

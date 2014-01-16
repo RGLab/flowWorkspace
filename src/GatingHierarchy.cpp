@@ -10,45 +10,14 @@
 
 
 
-/*need to be careful that gate within each node of the GatingHierarchy is
- * dynamically allocated,even it GatingHierarchy gets copied before destroyed
- * these gates are already gone since the gate objects were already freed by
- * this destructor
- */
 
 
-GatingHierarchy::~GatingHierarchy()
-{
-	//for each node
-
-//	cout<<"entring the destructor of GatingHierarchy"<<endl;
-
-	VertexID_vec vertices=getVertices(0);
-	if(dMode>=GATING_HIERARCHY_LEVEL)
-		cout<<"free the node properties from tree"<<endl;
-	for (VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-	{
-		nodeProperties * np=tree[*it];
-		if(np==NULL)
-			throw(domain_error("empty node properties!"));
-		if(dMode>=POPULATION_LEVEL)
-			cout<<"free "<<np->getName()<<endl;
-		delete np;//free the property bundle
-		np = NULL;
-//			cout<<"free the indices"<<endl;
-	}
-
-}
 
 //default constructor without argument
 GatingHierarchy::GatingHierarchy()
 {
 	dMode=1;
 	isLoaded=false;
-//	isGated=false;
-//	thisWs=NULL;
-//	nc=NULL;
-//	gTrans=NULL;
 }
 
 
@@ -56,52 +25,44 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace * ws,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short _dMode)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short _dMode)
 {
-//	data=NULL;
+
 	dMode=_dMode;
 	isLoaded=false;
-//	isGated=false;
-//	thisWs=ws;
-//	nc=_nc;
-//	gTrans=_gTrans;
-//	cout<<"get root node"<<endl;
 
-	wsRootNode root=ws->getRoot(curSampleNode);
+	wsRootNode root=ws.getRoot(curSampleNode);
 	if(isParseGate)
 	{
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing compensation..."<<endl;
-		comp=ws->getCompensation(curSampleNode);
+		comp=ws.getCompensation(curSampleNode);
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing trans flags..."<<endl;
-		transFlag=ws->getTransFlag(curSampleNode);
+		transFlag=ws.getTransFlag(curSampleNode);
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"parsing transformation..."<<endl;
-		trans=ws->getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans);
+		trans=ws.getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans);
 	}
 	if(dMode>=POPULATION_LEVEL)
 		cout<<endl<<"parsing populations..."<<endl;
-	VertexID pVerID=addRoot(ws->to_popNode(root));
+	VertexID pVerID=addRoot(root,ws);
 	addPopulation(pVerID,ws,&root,isParseGate);
-//	if(isParseGate)
-//		gating();
 
 }
 /*
  * add root node first before recursively add the other nodes
  * since root node does not have gates as the others do
  */
-VertexID GatingHierarchy::addRoot(nodeProperties* rootNode)
+VertexID GatingHierarchy::addRoot(wsRootNode root, workspace & ws)
 {
 	// Create  vertices in that graph
 	VertexID u = boost::add_vertex(tree);
-
-	tree[u]=rootNode;
-
+	nodeProperties& rootNode=tree[u];
+	ws.to_popNode(root,rootNode);
 
 	return(u);
 }
@@ -110,12 +71,12 @@ VertexID GatingHierarchy::addRoot(nodeProperties* rootNode)
  */
 VertexID GatingHierarchy::addRoot(){
 
-	nodeProperties * rootNode=new nodeProperties;
-	rootNode->setName("root");
+
 	// Create  vertices in that graph
 	VertexID u = boost::add_vertex(tree);
+	nodeProperties & rootNode=tree[u];
+	rootNode.setName("root");
 
-	tree[u]=rootNode;
 
 
 	return(u);
@@ -127,11 +88,11 @@ VertexID GatingHierarchy::addRoot(){
  * we still can add it as it is because gating path is stored as population names instead of actual VertexID.
  * Thus we will deal with the the boolean gate in the actual gating process
  */
-void GatingHierarchy::addPopulation(VertexID parentID,workspace * ws,wsNode * parentNode,bool isParseGate)
+void GatingHierarchy::addPopulation(VertexID parentID,workspace & ws,wsNode * parentNode,bool isParseGate)
 {
 
 
-	wsPopNodeSet children =ws->getSubPop(parentNode);
+	wsPopNodeSet children =ws.getSubPop(parentNode);
 	wsPopNodeSet::iterator it;
 		for(it=children.begin();it!=children.end();it++)
 		{
@@ -139,11 +100,13 @@ void GatingHierarchy::addPopulation(VertexID parentID,workspace * ws,wsNode * pa
 			VertexID curChildID = boost::add_vertex(tree);
 			wsPopNode curChildNode=(*it);
 			//convert to the node format that GatingHierarchy understands
-			nodeProperties *curChild=ws->to_popNode(curChildNode,isParseGate);
-			if(dMode>=POPULATION_LEVEL)
-				cout<<"node created:"<<curChild->getName()<<endl;
+			nodeProperties &curChild=tree[curChildID];
 			//attach the populationNode to the boost node as property
-			tree[curChildID]=curChild;
+			ws.to_popNode(curChildNode,curChild,isParseGate);
+			if(dMode>=POPULATION_LEVEL)
+				cout<<"node created:"<<curChild.getName()<<endl;
+
+
 			//add relation between current node and parent node
 			boost::add_edge(parentID,curChildID,tree);
 			//update the node map for the easy query by pop name
@@ -167,33 +130,25 @@ VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 	VertexID curChildID = boost::add_vertex(tree);
 
 
-	nodeProperties *curChild=new nodeProperties();
-	curChild->setName(popName.c_str());
-	curChild->setGate(g);
+	nodeProperties &curChild = tree[curChildID];
+	curChild.setName(popName.c_str());
+	curChild.setGate(g);
 	if(dMode>=POPULATION_LEVEL)
-		cout<<"node created:"<<curChild->getName()<<endl;
+		cout<<"node created:"<<curChild.getName()<<endl;
 	//attach the populationNode to the boost node as property
-	tree[curChildID]=curChild;
+
 	//add relation between current node and parent node
 	boost::add_edge(parentID,curChildID,tree);
 	return curChildID;
 
 }
 /*
- * remove the node and associated population properities including indices and gates
+ * remove the node along with associated population properities including indices and gates
  */
 void GatingHierarchy::removeNode(VertexID nodeID)
 {
 
 	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
-
-
-	nodeProperties *curNode=getNodeProperty(nodeID);
-
-	if(dMode>=POPULATION_LEVEL)
-		cout<<"removing node:"<<curNode->getName()<<endl;
-	delete curNode;
-
 	//remove edge associated with this node
 	EdgeID e=getInEdges(nodeID);
 	/*removing vertex cause the rearrange node index
@@ -387,14 +342,14 @@ void GatingHierarchy::extendGate(float extend_val){
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
 			VertexID u=*it;
-			nodeProperties * node=getNodeProperty(u);
+			nodeProperties & node=getNodeProperty(u);
 			if(u!=0)
 			{
-				gate *g=node->getGate();
+				gate *g=node.getGate();
 				if(g==NULL)
 					throw(domain_error("no gate available for this node"));
 				if(dMode>=POPULATION_LEVEL)
-					cout <<node->getName()<<endl;
+					cout <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
 					g->extend(fdata,extend_val,dMode);
 			}
@@ -414,14 +369,14 @@ void GatingHierarchy::adjustGate(map<string,float> &gains){
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
 			VertexID u=*it;
-			nodeProperties * node=getNodeProperty(u);
+			nodeProperties & node=getNodeProperty(u);
 			if(u!=0)
 			{
-				gate *g=node->getGate();
+				gate *g=node.getGate();
 				if(g==NULL)
 					throw(domain_error("no gate available for this node"));
 				if(dMode>=POPULATION_LEVEL)
-					cout <<node->getName()<<endl;
+					cout <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
 					g->gain(gains,dMode);
 			}
@@ -440,18 +395,18 @@ void GatingHierarchy::gating(VertexID u,bool recompute)
 //			throw(domain_error("data is not loaded yet!"));
 
 
-	nodeProperties * node=getNodeProperty(u);
+	nodeProperties & node=getNodeProperty(u);
 	if(u==0)
 	{
-		node->setIndices(fdata.getEventsCount());
-		node->computeStats();
+		node.setIndices(fdata.getEventsCount());
+		node.computeStats();
 	}else
 	{
 		/*
 		 * check if current population is already gated (by boolGate)
 		 *
 		 */
-		if(recompute||!node->isGated())
+		if(recompute||!node.isGated())
 			calgate(u);
 	}
 
@@ -469,7 +424,7 @@ void GatingHierarchy::gating(VertexID u,bool recompute)
 }
 void GatingHierarchy::calgate(VertexID u)
 {
-	nodeProperties * node=getNodeProperty(u);
+	nodeProperties & node=getNodeProperty(u);
 
 	/*
 	 * check if parent population is already gated
@@ -478,20 +433,20 @@ void GatingHierarchy::calgate(VertexID u)
 
 	VertexID pid=getParent(u);
 
-	nodeProperties *parentNode =getNodeProperty(pid);
-	if(!parentNode->isGated())
+	nodeProperties & parentNode =getNodeProperty(pid);
+	if(!parentNode.isGated())
 	{
 		if(dMode>=POPULATION_LEVEL)
-			cout <<"go to the ungated parent node:"<<parentNode->getName()<<endl;
+			cout <<"go to the ungated parent node:"<<parentNode.getName()<<endl;
 		calgate(pid);
 	}
 
 
 
 	if(dMode>=POPULATION_LEVEL)
-		cout <<"gating on:"<<node->getName()<<endl;
+		cout <<"gating on:"<<node.getName()<<endl;
 
-	gate *g=node->getGate();
+	gate *g=node.getGate();
 
 	if(g==NULL)
 		throw(domain_error("no gate available for this node"));
@@ -511,22 +466,23 @@ void GatingHierarchy::calgate(VertexID u)
 		 */
 
 		g->transforming(trans,dMode);
+//		cout<<g->getType()<<typeid(*g).name()<<endl;
 		curIndices=g->gating(fdata);
 	}
 
 	//combine with parent indices
-	transform (curIndices.begin(), curIndices.end(), parentNode->getIndices().begin(), curIndices.begin(),logical_and<bool>());
+	transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
 //	for(unsigned i=0;i<curIndices.size();i++)
 //		curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
-	node->setIndices(curIndices);
-	node->computeStats();
+	node.setIndices(curIndices);
+	node.computeStats();
 }
 
 
 vector<bool> GatingHierarchy::boolGating(VertexID u){
 
-	nodeProperties * node=getNodeProperty(u);
-	gate * g=node->getGate();
+	nodeProperties & node=getNodeProperty(u);
+	gate * g=node.getGate();
 
 	//init the indices
 //	unsigned nEvents=fdata.getEventsCount();
@@ -564,15 +520,15 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 
 
 
-		nodeProperties * curPop=getNodeProperty(nodeID);
-		if(!curPop->isGated())
+		nodeProperties & curPop=getNodeProperty(nodeID);
+		if(!curPop.isGated())
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout <<"go to the ungated reference node:"<<curPop->getName()<<endl;
+				cout <<"go to the ungated reference node:"<<curPop.getName()<<endl;
 			calgate(nodeID);
 		}
 
-		vector<bool> curPopInd=curPop->getIndices();
+		vector<bool> curPopInd=curPop.getIndices();
 		if(it->isNot)
 			curPopInd.flip();
 
@@ -726,7 +682,7 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string name){
 	for(it=nodesTomatch.begin();it!=nodesTomatch.end();it++)
 	{
 		u=*it;
-		if(getNodeProperty(u)->getName().compare(name)==0)
+		if(getNodeProperty(u).getName().compare(name)==0)
 			break;
 	}
 	if(it==nodesTomatch.end())
@@ -799,12 +755,12 @@ vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath,boo
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
-		nodeProperties * np = getNodeProperty(u);
+		nodeProperties & np = getNodeProperty(u);
 
-		if(!showHidden&&np->getHiddenFlag())
+		if(!showHidden&&np.getHiddenFlag())
 			continue;
 
-		string nodeName=np->getName();
+		string nodeName=np.getName();
 
 
 
@@ -818,7 +774,7 @@ vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath,boo
 				nodeName="/"+nodeName;
 				u=getParent(u);
 					if(u>0)//don't append the root node
-						nodeName=getNodeProperty(u)->getName()+nodeName;
+						nodeName=getNodeProperty(u).getName()+nodeName;
 
 
 			}
@@ -921,7 +877,7 @@ VertexID GatingHierarchy::getChildren(VertexID source,string childName){
 	for(it=children.begin();it!=children.end();it++)
 	{
 		curNodeID=*it;
-		if(getNodeProperty(curNodeID)->getName().compare(childName)==0)
+		if(getNodeProperty(curNodeID).getName().compare(childName)==0)
 			break;
 	}
 	if(it==children.end())
@@ -936,11 +892,13 @@ VertexID GatingHierarchy::getChildren(VertexID source,string childName){
 
 }
 /*
- * returning the reference of the vertex bundle
+ *
  * make sure to use this API always since since it is safe way to access tree nodes due to the validity check
  *
+ *since the vertex bundle should always exist as long as the  tree and node exist, thus it is safe
+ * to return the reference of it
  */
-nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
+nodeProperties & GatingHierarchy::getNodeProperty(VertexID u){
 
 
 	if(u>=0&&u<=boost::num_vertices(tree)-1)
@@ -951,13 +909,7 @@ nodeProperties * GatingHierarchy::getNodeProperty(VertexID u){
 
 	}
 }
-//void GatingHierarchy::reset(){
-//	isGated=false;
-//	isLoaded=false;
-//	nc=NULL;
-//	thisWs=NULL;
-//	fdata.data.resize(0);
-//}
+
 /*
  *TODO:to deal with trans copying (especially how to sync with gTrans)
   up to caller to free the memory
@@ -968,35 +920,17 @@ GatingHierarchy * GatingHierarchy::clone(const trans_map & _trans,trans_global_v
 
 
 	res->trans.setTransMap(_trans);
-//	res->gTrans=_gTrans;
+
 	res->comp=comp;
 
-	/*
-	 * copy bgl tree and update property bundle pointer for each node
-	 * TODO:explore deep copying facility of bgl library,especially for node property bundle as the pointer
-	 */
 	res->tree=tree;
-	VertexID_vec vertices=res->getVertices(0);
-	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-	{
-		/*
-		 * update the pointer for nodeProperties
-		 */
-		VertexID u=*it;
-		nodeProperties * node=res->getNodeProperty(u);
-		node=node->clone();//only copy gate definition without copying gating results
-		//update the tree node
-		res->tree[u]=node;
-	}
-
 
 	return res;
 }
 /*
  * TODO:this overloading function is a temporary solution:
  * difference from the above one is:
- * 1.does not copy trans
- * 2.copy stats and indices as well for each node
+ * does not copy trans
  */
 GatingHierarchy * GatingHierarchy::clone(){
 
@@ -1004,24 +938,7 @@ GatingHierarchy * GatingHierarchy::clone(){
 
 	res->comp=comp;
 
-	/*
-	 * copy bgl tree and update property bundle pointer for each node
-	 * TODO:explore deep copying facility of bgl library,especially for node property bundle as the pointer
-	 */
 	res->tree=tree;
-	VertexID_vec vertices=res->getVertices(0);
-	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
-	{
-		/*
-		 * update the pointer for nodeProperties
-		 */
-		VertexID u=*it;
-		nodeProperties * node=res->getNodeProperty(u);
-		node=node->clone(true);//copy gates results as well
-		//update the tree node
-		res->tree[u]=node;
-	}
-
 
 	return res;
 }

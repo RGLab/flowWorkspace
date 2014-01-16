@@ -12,6 +12,35 @@ nodeProperties::nodeProperties(){
 	dMode=0;
 }
 
+/* since nodeProperties contains noncopyable scope_ptr member
+ * , customized copy and assignment constructor is required
+ *
+ */
+nodeProperties::nodeProperties(const nodeProperties& np){
+	thisName=np.thisName;
+
+	thisGate=np.thisGate==NULL?NULL:np.thisGate->clone();
+	if(np.indices.get()!=NULL)
+		indices.reset(np.indices->clone());
+	fjStats=np.fjStats;
+	fcStats=np.fcStats;
+	hidden=np.hidden;
+	dMode=np.dMode;
+
+}
+nodeProperties & nodeProperties::operator=(nodeProperties np){
+	std::swap(thisName, np.thisName);
+	std::swap(thisGate, np.thisGate);
+	if(np.indices.get()!=NULL)
+		indices.reset(np.indices->clone());
+	std::swap(fjStats, np.fjStats);
+	std::swap(fcStats, np.fcStats);
+	std::swap(hidden, np.hidden);
+	std::swap(dMode, np.dMode);
+	return *this;
+
+}
+
 /*
  * gate is dynamically created,so they are freed here in destroy method
  */
@@ -103,27 +132,4 @@ unsigned nodeProperties::getCounts(){
 
 }
 
-nodeProperties * nodeProperties::clone(bool gateResult){
-		nodeProperties * res=new nodeProperties();
-		//copy pop name
-		res->setName(thisName.c_str());
-		/*
-		 * copying gate if applicable
-		 */
 
-		if(thisGate!=NULL)
-			res->setGate(thisGate->clone());
-
-		/*
-		 * copy gated results
-		 */
-		if(gateResult&&isGated())
-		{
-
-			res->setStats(fcStats,true);
-			res->setStats(fjStats,false);
-			res->indices.reset(indices->clone());
-		}
-
-		return res;
-	}

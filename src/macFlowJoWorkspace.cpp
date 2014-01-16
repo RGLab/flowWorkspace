@@ -266,12 +266,18 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			int version=getVersionMin();
 			if(version<9)
 			{
+
 				if(it->highValue==4096)
 				{
 					if(dMode>=GATING_HIERARCHY_LEVEL)
 						cout<<"apply the linear transformation for gates only:"<<curChnl<<endl;
-
-					curTran=_globalLinTrans;
+					/*
+					 * some flowJo workspace somehow have highvalue inappropriately set to 4096
+					 * to FSC/SSC-like channels, so here we explicitly skip them
+					 */
+					boost::regex ex("[FS]SC-[AWH]");
+					if(!boost::regex_match(transChName,ex))
+						curTran=_globalLinTrans;
 				}
 			}
 		}

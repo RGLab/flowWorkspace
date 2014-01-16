@@ -43,55 +43,41 @@ trans_map trans_local::cloneTransMap(){
  */
 
 
-
-transformation::transformation(){
-	/*
+/*
 	 * if it is pure transformation object,then assume calibration is directly read from ws
 	 * so there is no need to compute calibration
 	 */
-	isComputed=true;
-	isGateOnly=false;
-	type=CALTBL;
 
-}
-
-logTrans::logTrans(){
-	type=LOG;
-//	isGateOnly=false;//already init by base contructor
-//	isComputed=true;
+transformation::transformation():isGateOnly(false),type(CALTBL),isComputed(true){}
+transformation::transformation(bool _isGate, unsigned short _type):isGateOnly(_isGate),type(_type),isComputed(true){}
+logTrans::logTrans():transformation(false,LOG),offset(0),decade(1){
 	calTbl.setInterpolated(true);
 }
-logTrans::logTrans(double _offset,double _decade){
-	logTrans();
-	offset=_offset;
-	decade=_decade;
+logTrans::logTrans(double _offset,double _decade):transformation(false,LOG),offset(_offset),decade(_decade){
+	calTbl.setInterpolated(true);
 }
 
-linTrans::linTrans(){
-	type=LIN;
-	isGateOnly=true;
+linTrans::linTrans():transformation(true,LIN){
 	calTbl.setInterpolated(true);
 }
-flinTrans::flinTrans(){
-	type=FLIN;
-	isGateOnly=false;
+flinTrans::flinTrans():transformation(false,FLIN),min(0),max(0){
 	calTbl.setInterpolated(true);
 }
-flinTrans::flinTrans(double _minRange, double _maxRange){
-	flinTrans();
-	min=_minRange;
-	max=_maxRange;
+flinTrans::flinTrans(double _minRange, double _maxRange):transformation(false,FLIN),min(_minRange),max(_maxRange){
+	calTbl.setInterpolated(true);
 }
 /*
  *
+ *now we switch back to zero imputation instead of min value since
+ *when convert to R version of transformation function, the data is
+ *no available anymore, thus no way to specify this minvalue
  *
- * (e.g. replace the negative value with the minimum positive value instead of zero
  */
 double logTrans::flog(double x,double T,double _min) {
 
 	double M=decade;
-//	return x>0?(log10(x/T)/M+offset):_min;
-	return x>0?(log10((x+offset)/T)/M):_min;
+	return x>0?(log10(x/T)/M+offset):_min;
+//	return x>0?(log10((x+offset)/T)/M):_min;
 
 }
 /*
@@ -101,8 +87,8 @@ double logTrans::flog(double x,double T,double _min) {
 void logTrans::transforming(valarray<double> & input){
 
 
-		double thisMax=input.max();
-		double thisMin=input.min();
+		double thisMax=262144;//input.max();
+		double thisMin=0;//input.min();
 
 		for(unsigned i=0;i<input.size();i++){
 			input[i]=flog(input[i],thisMax,thisMin);
@@ -303,10 +289,4 @@ void biexpTrans::computCalTbl(){
 	delete[] negative;
 
 }
-/*
- * calTrans
- */
-//calTrans * calTrans::clone(){
-//
-//	return new calTrans(*this);
-//}
+
