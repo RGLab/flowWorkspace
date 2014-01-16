@@ -16,7 +16,7 @@ calibrationTable::calibrationTable(string _caltype,int _spline_method){
 		caltype=_caltype;
 		spline_method=_spline_method;
 		flag=false;
-};
+}
 /*
  * since valarray is optimized to be machine-specific data stucture and has undefined behavior for
  * object copying, we explicitly define the copy operator here

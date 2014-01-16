@@ -44,7 +44,7 @@ class GatingSet{
 	trans_global_vec gTrans;//parsed from xml workspace
 	gh_map ghs;
 	unsigned short dMode;//debug level to control print out
-	workspace * ws;
+	workspace * wsPtr;
 
 private:
 	template<class Archive>
@@ -91,7 +91,7 @@ private:
 	void freeWorkspace();//this is private because it is not supposed to be called anywhere other than destructor
 public:
 	~GatingSet();
-	GatingSet(){ws=NULL;};
+	GatingSet(){wsPtr=NULL;};
 	void setSample(string oldName, string newName);
 	GatingSet(string,bool,unsigned short,int,unsigned short _dMode=1);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
