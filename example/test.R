@@ -53,8 +53,8 @@ assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
 time1<-Sys.time()	
 #Rprof()
 GT<-parseWorkspace(ws
-                    ,name=1
-					,execute=F
+                    ,name=2
+					,execute=T
 #					,includeGates=T
                     ,subset= 1:2
 #					,subset=c("517614.fcs")
@@ -103,7 +103,7 @@ getGate(GT[[1]],"Excl")@boundaries
 recompute(GT,"Excl/4+")
 recompute(GT,"4+")
 
-getPopStats(GT[[1]])[1:20,c(2:3)]
+getPopStats(GT[[1]])[1:20,c(2:3), with = F]
 str(getGate(GT[[1]],2))
 getData(GT)[[1]]
 flowData(GT)[[1]]
