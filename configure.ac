@@ -76,7 +76,7 @@ if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
 else
         AC_MSG_NOTICE([Using external boost '${BOOST_DIR}'])
         BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
-        BOOST_LIBS="-L${BOOST_DIR}/lib -L${BOOST_DIR}/lib64 -lboost_serialization"
+        BOOST_LIBS="-L${BOOST_DIR}/lib -L${BOOST_DIR}/lib64 -lboost_serialization -llibboost_regex"
         boost_bundled=no
 fi
 
