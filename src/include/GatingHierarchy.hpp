@@ -19,7 +19,6 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/breadth_first_search.hpp>
-#include <boost/graph/copy.hpp>
 #define REGULAR 0
 #define TSORT 1
 #define BFS 2
