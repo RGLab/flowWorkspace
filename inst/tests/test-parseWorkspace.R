@@ -1,5 +1,7 @@
 context("Workspace Functions")
 
+wsfile <- list.files(dataDir, pattern="manual.xml",full=TRUE)
+
 ws <- openWorkspace(wsfile);
 
 test_that("can load xml workspace",
