@@ -455,7 +455,7 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' getNodes-methods
 #' getNodes,GatingHierarchy-method
 #' @importFrom BiocGenerics duplicated
-#' @importFrom plyr ddply
+#' @importFrom plyr ddply .
 setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE, ...){
       
             prefix <- match.arg(prefix)
