@@ -1122,6 +1122,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param overlay either the gate indice list or event indices list
 #' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy} 
 #' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
+#' @param path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method
 #' @param ... other arguments passed to .formAxis and flowViz 
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
@@ -1133,6 +1134,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                       , fitGate=FALSE, overlay=NULL, stack = FALSE, xbin = 32
                       , stats , default.y = "SSC-A", scales
                       , strip = TRUE
+                      , path = "full"
                       , ...){
 
 	
@@ -1152,7 +1154,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		pid<-getParent(gh,y)
 	
     #set default title    
-    popName <- getNodes(gh,isPath=T,showHidden = TRUE)[pid]
+    popName <- getNodes(gh, path = path, showHidden = TRUE)[pid]
     
     default_main <- list(label = popName) 
     if(is.gh && strip)
@@ -1863,7 +1865,7 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y, ...){
       id <- add(obj,bf)
     )
     
-    allNodes <- getNodes(gh,isPath=TRUE, showHidden = TRUE)
+    allNodes <- getNodes(gh, showHidden = TRUE)
     this_node <- allNodes[id]
     
     

@@ -426,8 +426,10 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @param y A \code{character} the name or full(/partial) gating path of the population node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
 #' @param order \code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
 #'     "regular" is default.
-#' @param isPath A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
-#' @param prefix A \code{logical} scalar to tell the method whether to add internal node index as the prefix to the node name
+#' @param isPath (Deprecated by 'path') A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
+#' @param path A \code{character} or \code{numeric} scalar. when \code{numeric}, it specifies the fixed length of gating path (length 1 displays terminal name).
+#'              When \code{character}, it can be either 'full' (full path, which is default) or 'auto' (display the shortest unique gating path from the bottom of gating tree).
+#' @param prefix A \code{logical} scalar to tell the method whether to add internal node index as the prefix to the node name (only valid when 'path' is set to 1) 
 #' @param ... Additional arguments.
 #' 
 #' @details 
@@ -439,8 +441,12 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G[[1], isPath = FALSE])#return node names
-#'     getNodes(G[[1]],isPath = TRUE)#return the full path
+#'     getNodes(G[[1], path = 1])#return node names (without prefix)
+#'     getNodes(G[[1], path = 1, prefix = "all"])#return node names with unqiue ID
+#'     getNodes(G[[1], path = 1, prefix = "auto"])#prepend unqiue ID as needed 
+#'     getNodes(G[[1]],path = "full")#return the full path
+#'     getNodes(G[[1]],path = 2)#return the path as length of two 
+#'     getNodes(G[[1]],path = "auto)#automatically determine the length of path 
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases
@@ -448,30 +454,122 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' getNodes-methods
 #' getNodes,GatingHierarchy-method
 #' @importFrom BiocGenerics duplicated
-setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath = TRUE, prefix=FALSE,showHidden = FALSE,...){
+setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE, ...){
+      
+            prefix <- match.arg(prefix)
+            thisCall <- match.call()
+            args <- names(thisCall)
+            #take care the legacy argument 
+            if("isPath"%in%args){
+              warning("'isPath' is deprecated by 'path'.")
+              isPath <- list(...)$isPath
+              
+              if(isPath){
+                path <- "full"
+                prefix <- "none"
+              }else{
+                path <- 1
+                prefix <- "auto"
+              }
+              
+              if("path"%in%args)
+                warning("'path' argument is set to '", path, "' automatically!")               
+              if("prefix"%in%args)
+                warning("'prefix' is set to '", prefix, "' automatically!")
+              
+            }else{
+              if(path == 1)
+                isPath <- FALSE #passed to c API
+              else
+                isPath <- TRUE #passed to c API
+               
+              
+            }
+              
             order <- match.arg(order,c("regular","tsort","bfs"))
 			
             orderInd <- match(order,c("regular","tsort","bfs"))
 			
             orderInd <- orderInd-1
 			
-			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath,showHidden)
+			nodeNames <- .Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath,showHidden)
 
-			#try to remove ID prefix from node name without causing name duplication
-            if(!isPath){
-              if(!prefix)
-              {
-                dotPos<-regexpr("\\.",nodeNames)
-                #get unique IDs for each node
-                NodeIDs<-as.integer(substr(nodeNames,0,dotPos-1))
-                #strip IDs from nodeNames
-                nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
-                #add ID only when there is conflicts in nodeNames
-                toAppendIDs<-duplicated(nodeNames)
-                nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")  
-              }  
-            }
 			
+            if(is.numeric(path)){
+              if(path == 1){
+                if(prefix != "all"){
+                  dotPos <- regexpr("\\.",nodeNames)
+                  #get unique IDs for each node
+                  NodeIDs <- as.integer(substr(nodeNames,0,dotPos-1))
+                  #strip IDs from nodeNames 
+                  nodeNames <- substr(nodeNames,dotPos+1,nchar(nodeNames))
+                   
+                  #add ID back when prefix == auto for those ambiguous nodeNames
+                  if(prefix == "auto"){
+                    toAppendIDs<-duplicated(nodeNames)
+                    nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")  
+                  }
+                }
+                    
+              }else{
+                
+                #truncate the path 
+                nodeNames <- sapply(nodeNames, function(nodeName){
+                                      
+                                      if(nodeName == "root")
+                                        nodeName
+                                      else{
+                                        nodes <- strsplit(nodeName, split = "/")[[1]][-1]
+                                        nNodes <- min(length(nodes), path)
+                                        nodes <- rev(rev(nodes)[1:nNodes])
+ 
+                                        paste(nodes, collapse = "/")  
+                                      }
+                                            
+                                    }, USE.NAMES = FALSE)
+              }              
+                
+            }else if(path == "auto"){
+              
+              nodePath <- nodeNames
+              nodeNames <- basename(nodePath)
+              names(nodeNames) <- nodePath #init the mapping (nodePath vs final output)
+              
+#              browser()
+              #pick duplicated node names to prepend their ancesters until their paths are unambiguous 
+              dup <- unique(nodeNames[duplicated(nodeNames)])
+              toModify <- nodeNames%in%dup
+              toModifyNode <- nodeNames[toModify]
+              toModifyID <- nodePath[toModify]
+                            
+              toModifyRes <- ddply(data.frame(toModifyID, toModifyNode), .(toModifyNode), function(x){
+#                    browser()
+                    thisRes <- x
+                    thisNames <- as.vector(thisRes[,"toModifyNode"])
+                    while(anyDuplicated(thisNames) > 0){
+                      #try to paste parent node
+                      thisRes <- ddply(thisRes, .(toModifyID), function(thisRow){
+#                                        browser()
+                                        thisID <- as.vector(thisRow[,"toModifyID"])
+                                        ppath <- getParent(gh, thisID)
+                                        pn <- basename(ppath)
+                                        #paste parent
+                                        thisRow[,"toModifyNode"] <- paste(pn, thisRow[, "toModifyNode"], sep = "/")
+                                        #update the current id to parent ID 
+                                        thisRow[, "toModifyID"] <- ppath
+                                        thisRow
+                                      })
+                      thisNames <- as.vector(thisRes[,"toModifyNode"])                                                        
+                    }
+                    thisRes[, "toModifyID"] <- x[, "toModifyID"] 
+                    thisRes                      
+                  })
+              #update the nodeNames with modified names
+              nodeNames[as.vector(toModifyRes[,"toModifyID"])] <- as.vector(toModifyRes[,"toModifyNode"])
+              nodeNames <- as.vector(nodeNames)
+                    
+            }else if(path != "full" )
+			  stop("Invalid 'path' argument. The valid input is 'full' or 'auto' or a numeric value.")
 			
 			
 			if(!is.null(y))
@@ -594,8 +692,8 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			
-        nodeNamesPath<-getNodes(x,isPath = TRUE,...)
-       nodeNames<-getNodes(x, isPath = FALSE, ...)
+        nodeNamesPath<-getNodes(x,...)
+       nodeNames<-getNodes(x, path = 1, prefix = "auto", ...)
                            
           
        stats<-mapply(nodeNames,nodeNamesPath,FUN = function(thisName,thisPath){
@@ -687,7 +785,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 			{
 
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
-				filterId <- getNodes(obj, showHidden = TRUE, isPath = FALSE)[y]
+				filterId <- getNodes(obj, showHidden = TRUE, path = 1, prefix = "auto")[y]
 				if(g$type==1)
 				{
 					
@@ -735,7 +833,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
     ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
     ind <- ind + 1 # convert to R index
   }else{
-    allNodes <- getNodes(obj, isPath = FALSE, showHidden = TRUE,...)
+    allNodes <- getNodes(obj, path = 1, prefix = "auto", showHidden = TRUE,...)
     ind<-match(y,allNodes)#strict string match  
     if(is.na(ind)||length(ind)==0){
         stop("Node:", y," not found!")
