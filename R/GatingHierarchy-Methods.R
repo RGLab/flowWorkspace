@@ -429,7 +429,8 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @param isPath (Deprecated by 'path') A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
 #' @param path A \code{character} or \code{numeric} scalar. when \code{numeric}, it specifies the fixed length of gating path (length 1 displays terminal name).
 #'              When \code{character}, it can be either 'full' (full path, which is default) or 'auto' (display the shortest unique gating path from the bottom of gating tree).
-#' @param prefix A \code{logical} scalar to tell the method whether to add internal node index as the prefix to the node name (only valid when 'path' is set to 1) 
+#' @param prefix A \code{character} scalar to tell the method whether to add internal node index as the prefix to the node name (only valid when 'path' is set to 1).
+#'                                      the valid values are "auto", "none", "all".  
 #' @param ... Additional arguments.
 #' 
 #' @details 
