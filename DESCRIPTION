@@ -32,6 +32,7 @@ Imports:
     Cairo,
     tools,hexbin,gridExtra,Rgraphviz
     ,data.table
+    ,plyr
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
