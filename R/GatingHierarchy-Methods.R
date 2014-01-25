@@ -544,16 +544,16 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path =
               toModifyNode <- nodeNames[toModify]
               toModifyID <- nodePath[toModify]
                             
-              toModifyRes <- ddply(data.frame(toModifyID, toModifyNode), .(toModifyNode), function(x){
+              toModifyRes <- ddply(data.frame(toModifyID, toModifyNode), .(toModifyNode), function(thisDF){
 #                    browser()
-                    thisRes <- x
+                    thisRes <- thisDF
                     thisNames <- as.vector(thisRes[,"toModifyNode"])
                     while(anyDuplicated(thisNames) > 0){
                       #try to paste parent node
                       thisRes <- ddply(thisRes, .(toModifyID), function(thisRow){
 #                                        browser()
                                         thisID <- as.vector(thisRow[,"toModifyID"])
-                                        ppath <- getParent(gh, thisID)
+                                        ppath <- getParent(x, thisID)
                                         pn <- basename(ppath)
                                         #paste parent
                                         thisRow[,"toModifyNode"] <- paste(pn, thisRow[, "toModifyNode"], sep = "/")
@@ -563,7 +563,7 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path =
                                       })
                       thisNames <- as.vector(thisRes[,"toModifyNode"])                                                        
                     }
-                    thisRes[, "toModifyID"] <- x[, "toModifyID"] 
+                    thisRes[, "toModifyID"] <- thisDF[, "toModifyID"] 
                     thisRes                      
                   })
               #update the nodeNames with modified names
