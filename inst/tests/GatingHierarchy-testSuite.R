@@ -1,19 +1,5 @@
 context("GatingHierarchy Accessors")
 
-gh <- NULL
-
-#resultDir <- "/home/wjiang2/rglab/workspace/flowWorkspace/inst/tests/expect_result"
-
-test_that("load GatingSet from archive",
-{
-  gs <- load_gs(list.files(dataDir, pattern="gs_manual",full=TRUE))
-  gh <<- gs[[1]]
-  expect_that(gh, is_a("GatingHierarchy"))
-})
-
-
-
-
 test_that("getData ",{
       
       fr <- getData(gh)

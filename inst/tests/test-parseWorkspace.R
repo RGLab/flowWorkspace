@@ -1,22 +1,30 @@
-context("Workspace Functions")
+context("parseWorkspace")
 
 wsfile <- list.files(dataDir, pattern="manual.xml",full=TRUE)
 
 ws <- openWorkspace(wsfile);
-
 test_that("can load xml workspace",
 {
-expect_that(ws, is_a("flowJoWorkspace"))
+  
+  expect_that(ws, is_a("flowJoWorkspace"))
 })
 
 
-G<-try(parseWorkspace(ws,execute=TRUE,path=dataDir,name=1));
+gs <- NULL
+
 test_that("Can parse workspace",{
-	expect_that(G,is_a("GatingSet"));
-	expect_that(G[[1]],is_a("GatingHierarchy"));
+    gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE));
+	expect_that(gs, is_a("GatingSet"));
+	
 })
 
-#test_that("Population proportions are valid",{
-#	expect_that(all(sapply(getPopStats(G[[1]])[,1],function(x)!is.nan(x))),is_true())
-#})
-#
+source("GatingSet-testSuite.R", local = TRUE)
+#browser()
+gh <- NULL
+test_that("extract GatingHierarchy from GatingSet",{
+      gh <<- gs[[1]] 
+      expect_that(gh, is_a("GatingHierarchy"));  
+    })
+
+source("GatingHierarchy-testSuite.R", local = TRUE)
+
