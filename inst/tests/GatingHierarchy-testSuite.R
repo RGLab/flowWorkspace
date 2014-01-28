@@ -72,7 +72,7 @@ test_that("getIndiceMat for COMPASS",{
       
       thisRes <- getIndiceMat(gh, "CD8/38- DR+|CD8/CCR7- 45RA+")
       expect_result <- readRDS(file.path(resultDir, "getIndiceMat_gh.rds"))
-      expect_identical(thisRes,expect_result)
+      expect_equal(thisRes,expect_result)
       
       
     })

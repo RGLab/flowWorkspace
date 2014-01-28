@@ -71,7 +71,7 @@ test_that("clone & rbind2",{
       #check data consistency
       fs1 <- getData(gs)
       fs2 <- getData(gs_clone)
-      expect_identical(fs1[[1]], fs2[[1]])
+      expect_equal(fs1[[1]], fs2[[1]], tol = 1e-05)
       
       orig_sn <- sampleNames(gs)
       clone_sn <- sampleNames(gs_clone)
@@ -232,14 +232,14 @@ test_that("keyword",{
       
       thisRes <- keyword(gs, "$P1N")
       
-      expect_identical(thisRes, data.frame(`$P1N` = c("FSC-A", "FSC-A"), check.names = FALSE))
+      expect_equal(thisRes, data.frame(`$P1N` = c("FSC-A", "FSC-A"), check.names = FALSE))
     })
 
 test_that("getIndices for COMPASS",{
       
       thisRes <- getIndices(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`)) 
       expect_result <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
-      expect_identical(thisRes,expect_result)
+      expect_equal(thisRes,expect_result)
       
     })
 
@@ -249,7 +249,7 @@ test_that("getIndices for COMPASS",{
 #      thisRes <- getData(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`) , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
 #      expect_result <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
 ##browser()
-#      expect_identical(thisRes,expect_result)
+#      expect_equal(thisRes,expect_result, tol = 1e-05)
 #      
 #    })
 
