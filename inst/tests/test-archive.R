@@ -13,9 +13,35 @@ source("GatingSet-testSuite.R", local = TRUE)
 
 gh <- NULL
 test_that("extract GatingHierarchy from GatingSet",{
-    gh <<- gs[[1]] 
-    expect_that(gh, is_a("GatingHierarchy"));  
+    gh <<- gs[[1]]
+    gh2 <- gs[["CytoTrol_CytoTrol_1.fcs"]]
+    expect_is(gh, "GatingHierarchy")
+    expect_false(identical(gh2@guid, gh@guid))
+    expect_true(identical(gh@pointer, gh2@pointer))
+    expect_equal(gh@data, gh2@data)
+    expect_equal(gh@axis, gh2@axis)
+    expect_equal(gh@flag, gh2@flag)
+    
 })
+
+
+source("GatingHierarchy-testSuite.R", local = TRUE)
+
+
+
+test_that("Construct new GatingSet based on the existing gating hierarchy",
+    {
+      gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE)
+      expect_that(gs, is_a("GatingSet"))
+    })
+
+source("GatingSet-testSuite.R", local = TRUE)
+
+gh <- NULL
+test_that("extract GatingHierarchy from GatingSet",{
+      gh <<- gs[[1]] 
+      expect_that(gh, is_a("GatingHierarchy"));  
+    })
 
 
 source("GatingHierarchy-testSuite.R", local = TRUE)

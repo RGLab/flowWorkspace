@@ -19,12 +19,12 @@ test_that("Can parse workspace",{
 })
 
 source("GatingSet-testSuite.R", local = TRUE)
-#browser()
+
 gh <- NULL
 test_that("extract GatingHierarchy from GatingSet",{
       gh <<- gs[[1]] 
       expect_that(gh, is_a("GatingHierarchy"));  
     })
 
-source("GatingHierarchy-testSuite.R", local = TRUE)
 
+source("GatingHierarchy-testSuite.R", local = TRUE)

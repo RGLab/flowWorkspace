@@ -33,6 +33,7 @@ Imports:
     tools,hexbin,gridExtra,Rgraphviz
     ,data.table
     ,plyr
+    ,latticeExtra
 Collate:
     'AllGenerics.R'
     'AllClasses.R'

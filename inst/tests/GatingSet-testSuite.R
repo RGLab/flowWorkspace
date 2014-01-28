@@ -6,7 +6,14 @@ test_that("isNcdf ",{
 	expect_equal(isNcdf(gs), TRUE);
     
 })
-
+test_that("length ",{
+      expect_equal(length(gs), 1)
+      
+    })
+test_that("show ",{
+      expect_output(show(gs), "A GatingSet with 1 samples")
+      
+    })
 test_that("getData ",{
       
       ncfs <- getData(gs)
@@ -123,8 +130,126 @@ test_that("[ subsetting",{
       expect_is(gs_sub, "GatingSet");
       #c data structure does not change     
       expect_true(identical(gs@pointer,gs_sub@pointer));
-      
+      expect_false(identical(gs_sub@guid, gs@guid))
       expect_equal(length(gs_sub), 1)
     })
 
+test_that("preporcess the gating tree to prepare for the plotGate",{
+      
+      f1 <- `FSC-A` ~ `SSC-A` | PTID + VISITNO + STIM
+      
+      stats <- 0.99
+      xParam <- "<B710-A>"
+      names(xParam) <- "<B710-A>"
+      yParam <- "<R780-A>"
+      names(yParam) <- "<R780-A>"
+      expect_value <- list(gates = getGate(gs, "CD4")
+                            , xParam = xParam
+                            , yParam = yParam
+                            , stats = stats
+                            , isBool = FALSE
+                          )
+                        
+      myValue <- flowWorkspace:::.preplot(gs, 5, "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
+      expect_equal(myValue, expect_value)
+      
+      samples <- sampleNames(gs)
+      
+      #miss stats argument
+      expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], getNodes(gs[[sn]])[5]), simplify = FALSE)
+      myValue <- flowWorkspace:::.preplot(x = gs, y = 5, type = "xyplot", formula = f1, default.y = "SSC-A")
+      expect_equal(myValue, expect_value)
+
+      #y is a list
+      expect_value[["stats"]] <- sapply(samples,function(thisSample){
+                                          lapply(7:8,function(thisY){
+                                                curGh <- gs[[thisSample]]
+                                                getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],flowJo = F)
+                                              })
+                                        },simplify = FALSE)
+      curGates<-sapply(samples,function(curSample){
+            
+            filters(lapply(7:8,function(y)getGate(gs[[curSample]],y)))
+          },simplify=F)
+      xParam <- "<R660-A>"
+      names(xParam) <- "<R660-A>"
+      yParam <- "<V545-A>"
+      names(yParam) <- "<V545-A>"
+      expect_value[["gates"]] <- as(curGates,"filtersList")
+      expect_value[["xParam"]] <- xParam
+      expect_value[["yParam"]] <- yParam
+      
+      myValue <- flowWorkspace:::.preplot(x = gs, y = list(popIds=7:8), type = "xyplot", formula = f1, default.y = "SSC-A")
+
+      expect_identical(myValue, expect_value)
+      
+
+    })
+    
+test_that("setNode",{
+    
+    nodeName <- getNodes(gs[[1]])[3]
+    setNode(gs, "singlets", "S")
+    lapply(gs, function(gh){
+          expect_equal(getNodes(gh)[3], "/not debris/S")
+        }) 
+    setNode(gs, "S", "singlets")
+    invisible()
+    
+    
+  })
+
+test_that("getPopStats",{
+  
+      thisRes <- getPopStats(gs)
+      expect_is(thisRes, "matrix")
+      
+      expect_result <- fread(file.path(resultDir, "getPopStats_gs.csv"))
+      expect_equal(rownames(thisRes),expect_result[["V1"]])#check rownames
+      
+      expect_equal(as.data.table(thisRes), expect_result[,-1, with = F])
+      
+})
+
+test_that("compute CV from gs",{
+      
+      thisRes <- flowWorkspace:::.computeCV(gs)
+      expect_is(thisRes, "matrix")
+      
+      expect_result <- fread(file.path(resultDir, "cv_gs.csv"))
+      expect_equal(rownames(thisRes),expect_result[["V1"]])#check rownames
+      
+      expect_equal(as.data.table(thisRes), expect_result[,-1, with = F])
+      
+    })
+
+test_that("keyword",{
+      
+      thisRes <- keyword(gs)
+      expect_is(thisRes, "list")
+      expect_result <- readRDS(file.path(resultDir, "kw_gs.rds"))
+      expect_equal(thisRes,expect_result)
+      
+      thisRes <- keyword(gs, "$P1N")
+      
+      expect_identical(thisRes, data.frame(`$P1N` = c("FSC-A", "FSC-A"), check.names = FALSE))
+    })
+
+test_that("getIndices for COMPASS",{
+      
+      thisRes <- getIndices(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`)) 
+      expect_result <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
+      expect_identical(thisRes,expect_result)
+      
+    })
+
+#TODO: gs created from gh template somehow yields differernt results.
+#test_that("getData for COMPASS",{
+#      
+#      thisRes <- getData(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`) , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
+#      expect_result <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
+##browser()
+#      expect_identical(thisRes,expect_result)
+#      
+#    })
 

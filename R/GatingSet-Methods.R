@@ -1762,6 +1762,31 @@ setMethod("getPopStats", "GatingSet",
       pop_stats
     })
 
+#' calculate the coefficient of variation
+.computeCV <- function(x){
+
+  #columns are populations
+  #rows are samples
+  
+  statList <- lapply(x,function(gh){
+        thisStat <- getPopStats(gh)
+        rn <- rownames(thisStat)
+        thisStat <- as.data.frame(thisStat)
+        rownames(thisStat) <- rn
+        thisStat
+      })
+  cv<-do.call(rbind
+      ,lapply(statList,function(x){
+            apply(x[,2:3],1,function(x){
+                  cv<-IQR(x)/median(x)
+                  ifelse(is.nan(cv),0,cv)
+                })
+          })
+  )
+  rownames(cv)<-sampleNames(x);#Name the rows
+  cv
+  
+}
 #' Plot the coefficient of variation between flowJo and flowCore population statistics for each population in a gating hierarchy.
 #' 
 #' This function plots the coefficient of variation calculated between the flowJo population statistics and the flowCore population statistics for each population in a gating hierarchy extracted from a flowJoWorkspace. 
@@ -1779,33 +1804,17 @@ setMethod("getPopStats", "GatingSet",
 #'   }
 #' @aliases plotPopCV plotPopCV-methods plotPopCV,GatingHierarchy-method plotPopCV,GatingSet-method
 #' @rdname plotPopCV-methods
+#' @importFrom latticeExtra ggplot2like
 setMethod("plotPopCV","GatingSet",function(x,...){
-#columns are populations
-#rows are samples
-      
-      statList <- lapply(x,function(gh){
-            thisStat <- getPopStats(gh)
-            rn <- rownames(thisStat)
-            thisStat <- as.data.frame(thisStat)
-            rownames(thisStat) <- rn
-            thisStat
-          })
-      cv<-do.call(rbind
-                  ,lapply(statList,function(x){
-                            apply(x[,2:3],1,function(x){
-                                  cv<-IQR(x)/median(x)
-                                  ifelse(is.nan(cv),0,cv)
-                                  })
-                            })
-                   )
-      rownames(cv)<-sampleNames(x);#Name the rows
-#flatten, generate levels for samples.
+      cv <- .computeCV(x)
+      #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
       populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
       samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
       cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-      return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...))));
+      
+      return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...)), par.settings = ggplot2like));
     })
 
 

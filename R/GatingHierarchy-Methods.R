@@ -742,7 +742,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
       cv<-as.matrix(cv,nrow=length(cv))
       cv[is.nan(cv)]<-0
       rownames(cv)<-basename(as.character(rownames(x)));
-      return(barchart(cv,xlab="Coefficient of Variation",...));
+      return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
     })
 
 
