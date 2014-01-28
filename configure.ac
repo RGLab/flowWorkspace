@@ -86,7 +86,7 @@ fi
 
 
 PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS"
-if test ${COMPILER} = "clang"; then
+if test "${COMPILER}" = "clang"; then
   PKG_CPPFLAGS+="-ftemplate-depth=900"
 fi
 
