@@ -228,6 +228,17 @@ test_that("keyword",{
       thisRes <- keyword(gs)
       expect_is(thisRes, "list")
       expect_result <- readRDS(file.path(resultDir, "kw_gs.rds"))
+      #eliminate the local path difference
+      expect_result <- lapply(expect_result, function(thisResult){
+            thisResult[["FILENAME"]] <- basename(thisResult[["FILENAME"]])
+            thisResult
+          })
+      thisRes <- lapply(thisRes, function(thisResult){
+            thisResult[["FILENAME"]] <- basename(thisResult[["FILENAME"]])
+            thisResult
+          })
+       
+      
       expect_equal(thisRes,expect_result)
       
       thisRes <- keyword(gs, "$P1N")
