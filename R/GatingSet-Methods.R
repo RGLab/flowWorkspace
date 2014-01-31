@@ -1962,14 +1962,17 @@ getIndiceMat<-function(gh,y){
     
     res
   }, USE.NAMES=FALSE)
-  #  browser()   
+    
   pop_matched <- is_matched[is_matched]
-  if(length(pop_matched)!=length(popNames)){
-    stop("No markers in flow data matches ", "Populations:", paste(popNames[!popNames%in%names(pop_matched)],collapse="; "))
+  matched_names <- names(pop_matched)
+  sub_match_ind <- match(popNames, matched_names)
+  no_match <- is.na(sub_match_ind)
+  if(any(no_match)){
+    stop("No markers in flow data matches ", "Populations:", paste(popNames[no_match],collapse="; "))
     
   }
   
-  cbind(pop=names(is_matched[is_matched]),this_pd[is_matched,c("name","desc")])
+  cbind(pop=matched_names[sub_match_ind],this_pd[is_matched,c("name","desc")][sub_match_ind,])
   
   
   
@@ -1999,6 +2002,7 @@ setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_l
   
   
   lapply(obj,function(gh){
+        
     #get pop vs channel mapping
     pop_chnl<- .getPopChnlMapping(gh,y,pop_marker_list)
     this_chnls <- as.character(pop_chnl[,"name"])

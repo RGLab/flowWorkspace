@@ -518,9 +518,14 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 			nodeID=getNodeID(nodePath);//search ID by path
 		}
 
-
-
 		nodeProperties & curPop=getNodeProperty(nodeID);
+		//prevent self-referencing
+		if(nodeID == u){
+			string strErr = "The boolean gate is referencing to itself: ";
+			strErr.append(curPop.getName());
+			throw(domain_error(strErr));
+		}
+
 		if(!curPop.isGated())
 		{
 			if(dMode>=POPULATION_LEVEL)

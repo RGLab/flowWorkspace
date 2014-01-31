@@ -373,11 +373,13 @@ test_that("getIndiceMat for COMPASS",{
 
 test_that("getPopChnlMapping for COMPASS",{
       
-      thisRes <- try(flowWorkspace:::.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+", list()), silent = TRUE)
+      #no mapping provided
+      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+", list()), silent = TRUE)
       expect_is(thisRes, "try-error")
       expect_output(thisRes[[1]], "No markers in flow data matches Populations")
       
-      thisRes <- try(flowWorkspace:::.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+      #correct mapping provided
+      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
                                         , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")
                                         )
                      )
@@ -395,5 +397,52 @@ test_that("getPopChnlMapping for COMPASS",{
       expect_identical(thisRes,expectRes)
       
       
+      #incorrect mapping
+      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+                                        , list("CD8/38- DR+" = "CD38", "CD8/CCR7- 45RA+" = "CCR7 PE")
+                                        )
+                     , silent = TRUE)
+      expect_is(thisRes, "try-error")
+      expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                     
+      
+      #correct mappping with extra items
+      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+                                      , list("CD8/38- DR+" = "CD38 APC"
+                                            , "CD8/CCR7- 45RA+" = "CCR7 PE"
+                                            , "CD3+" = "CD3 V450"
+                                            )
+                                       )
+                      )
+      expect_is(thisRes, "data.frame")
+      for(i in 1:ncol(thisRes))
+        thisRes[,i] <- as.factor(thisRes[, i])
+      expect_identical(thisRes,expectRes)                     
+      
+
+      #mapping with incorrect extra item
+      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+                                    , list("CD8/38- DR+" = "CD38 APC"
+                                        , "CD8/CCR7- 45RA+" = "CCR7 PE"
+                                        , "CD3+" = "450"
+                                    )
+                                  )
+                              )
+      expect_is(thisRes, "data.frame")
+      for(i in 1:ncol(thisRes))
+        thisRes[,i] <- as.factor(thisRes[, i])
+      expect_identical(thisRes,expectRes)
+      
+      #incorrect mappping with extra items
+      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+                                      , list("CD8/38- DR+" = "CD38"
+                                          , "CD8/CCR7- 45RA+" = "CCR7 PE"
+                                          , "CD3+" = "CD3 V450"
+                                      )
+                                  )
+                              ,silent = TRUE)
+        expect_is(thisRes, "try-error")
+        expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                          
+      
     })
+
 
