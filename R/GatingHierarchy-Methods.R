@@ -1171,6 +1171,7 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 #' 
 #' @param frm \code{flowFrame} object
 #' @param name \code{character} the keyword to match
+#' @param ... other arguments: not used.
 #' @export 
 getChannelMarker <- function(frm, name, ...) {
   pd <- pData(parameters(frm))

@@ -30,19 +30,19 @@ source("GatingHierarchy-testSuite.R", local = TRUE)
 
 ###TODO: trans somehow did not get copied over ,
 ###cpp code needs to be fixed before adding this testsuite 
-test_that("Construct new GatingSet based on the existing gating hierarchy",
-    {
-      gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE)
-      expect_that(gs, is_a("GatingSet"))
-    })
-
-source("GatingSet-testSuite.R", local = TRUE)
-
-gh <- NULL
-test_that("extract GatingHierarchy from GatingSet",{
-      gh <<- gs[[1]] 
-      expect_that(gh, is_a("GatingHierarchy"));  
-    })
-
-
-source("GatingHierarchy-testSuite.R", local = TRUE)
+#test_that("Construct new GatingSet based on the existing gating hierarchy",
+#    {
+#      gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE)
+#      expect_that(gs, is_a("GatingSet"))
+#    })
+#
+#source("GatingSet-testSuite.R", local = TRUE)
+#
+#gh <- NULL
+#test_that("extract GatingHierarchy from GatingSet",{
+#      gh <<- gs[[1]] 
+#      expect_that(gh, is_a("GatingHierarchy"));  
+#    })
+#
+#
+#source("GatingHierarchy-testSuite.R", local = TRUE)

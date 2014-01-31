@@ -8,6 +8,8 @@
   \item{frm}{\code{flowFrame} object}
 
   \item{name}{\code{character} the keyword to match}
+
+  \item{...}{other arguments: not used.}
 }
 \value{
   an one-row \code{data.frame} that contains "name"(i.e.
