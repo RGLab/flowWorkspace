@@ -487,6 +487,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             Object@guid <- .uuid_gen()
             Object@FCSPath <- dataPaths
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
+            #if the gating template is already gated, it needs to be recompute explicitly 
+            #in order to update the counts
+            #otherwise, the counts should already have been updated during the copying
+            #and not need to do this step
+            if(x@flag)
+              recompute(Object)  
             message("done!")
 			return(Object)
 		})

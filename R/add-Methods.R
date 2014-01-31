@@ -230,8 +230,8 @@ setMethod("add",
 			
 			#convert to four recgates			
 			params<-parameters(action)
-			pd<-pData(parameters(getData(wf)))
-			desc<-sapply(params,function(x)flowWorkspace:::.getChannelMarker(pd,x)$des)
+			fr <- getData(wf, use.exprs = FALSE)
+			desc<-sapply(params,function(x)getChannelMarker(fr,x)$des)
 			
 			v <- action@boundary[params[1]]
 			h <- action@boundary[params[2]]

@@ -1,7 +1,8 @@
 #' @include AllClasses.R
 NULL
 
-#' modify graph::fromGXL by using customized handler
+#' modify graph::fromGXL by using customized handler 
+#' (deprecated by using Rgraphviz::agread)
 .fromGXL <- function (con) 
 {
   contents <- paste(readLines(con), collapse = "")
@@ -13,6 +14,8 @@ NULL
 #' to avoid partial node name display. Because XML::xmlEventParse somehow split
 #' the node name into arrays when there is numeric character reference (&#nnnn;)
 #' 
+#' (deprecated by using Rgraphviz::agread)
+#'  
 #' @importFrom graph graphNEL addEdge
 .graph_handler <- function()
 {
@@ -214,9 +217,8 @@ NULL
 }
 
 #' @importMethodsFrom graph nodeData removeNode
-#' @importMethodsFrom Rgraphviz renderGraph
-.plotGatingTree<-function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
-#  browser()
+.layoutGraph <- function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
+
   ##remove bool gates if necessary
   if(!boolean)
   {
@@ -253,18 +255,27 @@ NULL
       #        ifelse(as.logical(as.integer(thisHidden)),"dotted","solid")
       #      })    
 #           browser()
+
+    Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
+                              ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
+                                  ,node=list(fixedsize=FALSE
+                        #              ,fillcolor="gray"
+                                      ,fontsize=fontsize
+                                      ,shape="ellipse"
+                                  )
+                              )
+                          )
+  }
+  
+#' @importMethodsFrom Rgraphviz renderGraph
+.plotGatingTree<-function(g, ...){
+  
   options("warn"=-1)
-  lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
-      ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
-          ,node=list(fixedsize=FALSE
-#              ,fillcolor="gray"
-              ,fontsize=fontsize
-              ,shape="ellipse"
-          )
-      )
-  )
+  
+  lay <- .layoutGraph(g,...)
+  
   renderGraph(lay)
-  #plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
+  
   options("warn"=0)
 }
 
@@ -312,6 +323,7 @@ setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
       .plotGatingTree(g,...)
       
     })
+
 .getAllDescendants <- function(gh,startNode,nodelist){
   
   children_nodes <- getChildren(gh,startNode)
@@ -732,16 +744,22 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
       rownames(m)<-rn
 			m
 		})
+    
+.computeCV_gh <- function(gh){
+  
+    x<-getPopStats(gh)
+    rn<-rownames(x)
+    x<-as.data.frame(x)
+    rownames(x)<-rn	
+    cv<-apply(as.matrix(x[,c("flowJo.count","flowCore.count")]),1,function(y)IQR(y)/median(y));
+    cv<-as.matrix(cv,nrow=length(cv))
+    cv[is.nan(cv)]<-0
+    rownames(cv)<-basename(as.character(rownames(x)))
+    cv
+}        
 #' @importFrom lattice barchart
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
-      x<-getPopStats(x)
-      rn<-rownames(x)
-      x<-as.data.frame(x)
-      rownames(x)<-rn	
-      cv<-apply(as.matrix(x[,c("flowJo.count","flowCore.count")]),1,function(y)IQR(y)/median(y));
-      cv<-as.matrix(cv,nrow=length(cv))
-      cv[is.nan(cv)]<-0
-      rownames(cv)<-basename(as.character(rownames(x)));
+      cv <- .computeCV_gh(x)
       return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
     })
 
@@ -833,7 +851,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
     this_path <- this_path[!isEmpty]
     
     ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
-    ind <- ind + 1 # convert to R index
+    ind + 1 # convert to R index
   }else{
     allNodes <- getNodes(obj, path = 1, prefix = "auto", showHidden = TRUE,...)
     ind<-match(y,allNodes)#strict string match  
@@ -899,6 +917,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' Subset membership can be obtained using \code{getIndices}. 
 #' Population statistics can be obtained using \code{getPop} and \code{getPopStats}. 
 #' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
+#' To update the data, use \code{flowData} method.
 
 #' @param obj A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.
 #' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. 
@@ -910,7 +929,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
 #' A \code{ncdfFlowList} if a \code{GatingSetList}. 
 #' @seealso
-#'   \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
+#'   \code{\link{flowData}} \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
 #' 
 #' @examples
 #'   \dontrun{
@@ -1107,35 +1126,74 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 			compobj
 			
 })
-#TODO:try to merge it with the getChannelMarker in openCyto
-.getChannelMarker<-function(pd,name=NULL)
-{
-	#try stain name
-	
-#	browser()
-	if(is.null(name))
-		return(NULL)
-	ind<-which(toupper(pd$name)%in%toupper(name))
-	
-	
-	
-	
-	if(length(ind)==0)
-	{
-		#try marker name
-		ind<-which(unlist(lapply(pd$des,function(x){
-									#split by white space and then match each individual string
-									any(unlist(lapply(strsplit(x," "),function(y)toupper(y)%in%toupper(name))))
-								})
-				)
-		)
-		if(length(ind)==0)
-			stop("can't find ",name)
-		if(length(ind)>1)
-			stop("multiple markers matched: ",name)
-	}
-	
-	pd[ind,c("name","desc")]
+
+#' fussy match of marker/channel names
+#' @param pd pData of parameters of flowFrame
+#' @param name \code{character} the string to match
+#' @param fix whether to do regexpr match
+#' @param parital whether to do the complete word match or parital match
+
+.flowParamMatch <- function(pd, name, fix = FALSE, partial = FALSE) {
+  
+  # try to compelete word match by following with a space or the end of string
+  if (partial) 
+    pname <- name 
+  else 
+    pname <- paste0(name, "([ ]|$)")
+  
+  if (fix) {
+    ind <- which(toupper(pd$name) %in% toupper(name))
+  } else {
+    ind <- which(grepl(pname, pd$name, ignore.case = T))
+  }
+  
+  if (length(ind) == 0) {
+    # try marker name
+    ind <- which(unlist(lapply(pd$des, function(x) {
+                  # split by white space and then match each individual string
+                  if (fix) {
+                    any(unlist(lapply(strsplit(x, " "), function(y) toupper(y) %in% toupper(name))))
+                  } else {
+                    grepl(pattern = pname, x, ignore.case = T)
+                  }
+                })))
+  }
+  ind
+}
+#' get channel and marker information from a \code{flowFrame} that matches to the given keyword 
+#' 
+#' This function tries best to guess the flow parameter based on the keyword supplied by \code{name}
+#' It first does a complete word match(case insensitive) between \code{name} and flow channels and markers.
+#' If there are duplcated matches, throw the error. If no matches, it will try the partial match.
+#'   
+#' @return 
+#' an one-row \code{data.frame} that contains "name"(i.e. channel) and "desc"(i.e. stained marker) columns.
+#' 
+#' @param frm \code{flowFrame} object
+#' @param name \code{character} the keyword to match
+#' @export 
+getChannelMarker <- function(frm, name, ...) {
+  pd <- pData(parameters(frm))
+  # try complete match first
+  ind <- .flowParamMatch(pd, name, ...)
+  
+  if (length(ind) > 1) {
+    stop("multiple markers matched: ", name)
+  }
+  
+  if (length(ind) == 0) {
+    # if no match then give a second try to patial match
+    ind <- .flowParamMatch(pd, name, partial = TRUE, ...)
+    if (length(ind) == 0) 
+      stop("can't find ", name) else if (length(ind) > 1) 
+      stop("multiple markers matched: ", name) else warning(name, " is partially matched with ", pd[ind, c("name", "desc")])
+  }
+  
+  pd <- pd[ind, c("name", "desc")]
+  pd[, "name"] <- as.vector(pd[, "name"])
+  pd[, "desc"] <- as.vector(pd[, "desc"])
+  pd
+  
 }
 
 
@@ -1297,10 +1355,10 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
                           , scales=list()
                           , marker.only = FALSE
                           , ...){
-	pd<-pData(parameters(data))
+#	pd<-pData(parameters(data))
 #	browser()
-	xObj <- .getChannelMarker(pd,xParam)
-	yObj <- .getChannelMarker(pd,yParam)
+	xObj <- getChannelMarker(data,xParam)
+	yObj <- getChannelMarker(data,yParam)
 	
     if(marker.only){
       xlab <- as.character(ifelse(is.na(xObj[,"desc"]), xObj[,"name"], xObj[,"desc"]))

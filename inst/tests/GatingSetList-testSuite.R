@@ -201,10 +201,10 @@
 #      thisRes <- getPopStats(gs)
 #      expect_is(thisRes, "matrix")
 #      
-#      expect_result <- fread(file.path(resultDir, "getPopStats_gs.csv"))
-#      expect_equal(rownames(thisRes),expect_result[["V1"]])#check rownames
+#      expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
+#      expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames
 #      
-#      expect_equal(as.data.table(thisRes), expect_result[,-1, with = F])
+#      expect_equal(as.data.table(thisRes), expectRes[,-1, with = F])
 #      
 #})
 #
@@ -213,10 +213,10 @@
 #      thisRes <- .computeCV(gs)
 #      expect_is(thisRes, "matrix")
 #      
-#      expect_result <- fread(file.path(resultDir, "cv_gs.csv"))
-#      expect_equal(rownames(thisRes),expect_result[["V1"]])#check rownames
+#      expectRes <- fread(file.path(resultDir, "cv_gs.csv"))
+#      expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames
 #      
-#      expect_equal(as.data.table(thisRes), expect_result[,-1, with = F])
+#      expect_equal(as.data.table(thisRes), expectRes[,-1, with = F])
 #      
 #    })
 #
@@ -224,8 +224,8 @@
 #      
 #      thisRes <- keyword(gs)
 #      expect_is(thisRes, "list")
-#      expect_result <- readRDS(file.path(resultDir, "kw_gs.rds"))
-#      expect_equal(thisRes,expect_result)
+#      expectRes <- readRDS(file.path(resultDir, "kw_gs.rds"))
+#      expect_equal(thisRes,expectRes)
 #      
 #      thisRes <- keyword(gs, "$P1N")
 #      
@@ -235,16 +235,16 @@
 #test_that("getIndices for COMPASS",{
 #      
 #      thisRes <- getIndices(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`)) 
-#      expect_result <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
-#      expect_identical(thisRes,expect_result)
+#      expectRes <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
+#      expect_identical(thisRes,expectRes)
 #      
 #    })
 #
 #test_that("getData for COMPASS",{
 #      
 #      thisRes <- getData(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`) , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
-#      expect_result <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
-#      expect_identical(thisRes,expect_result)
+#      expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
+#      expect_identical(thisRes,expectRes)
 #      
 #    })
 #
