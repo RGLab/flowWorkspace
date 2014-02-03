@@ -134,6 +134,13 @@ test_that("[ subsetting",{
       expect_equal(length(gs_sub), 1)
     })
 
+test_that("getGate for gs",{
+      
+      thisRes <- getGate(gs, "CD3+")
+      expectRes <- readRDS(file.path(resultDir, "getGate_gs.rds"))
+      expect_equal(thisRes, expectRes)
+    })
+
 test_that("preporcess the gating tree to prepare for the plotGate",{
       
       f1 <- `FSC-A` ~ `SSC-A` | PTID + VISITNO + STIM
@@ -184,6 +191,46 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_identical(myValue, expect_value)
       
 
+    })
+
+    
+test_that("getOverlay",{
+      
+      nodeInd <- "CD8/38- DR+"
+      samples <- sampleNames(gs)
+      chnls <- c("SSC-A", "FSC-A")
+      #by one gate index
+      thisRes <- .getOverlay(gs, overlay = nodeInd, params = chnls)
+      expect_is(thisRes, "ncdfFlowSet")
+      expect_equal(sampleNames(thisRes), samples)
+      expect_equal(colnames(thisRes), chnls)
+      expect_equal(nrow(thisRes[[1]]), 1319)
+      
+      #by one event indice
+      eInd <- getIndices(gs[[1]], nodeInd)
+      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
+      expect_is(thisRes2, "flowSet")
+      expect_equal(sampleNames(thisRes), samples)
+      expect_equivalent(as.vector(fsApply(thisRes,nrow)), c(1319, 1319))
+      
+      #by a list of event indices
+      eInd <- lapply(gs, getIndices, y = thisNode)
+      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
+      expect_is(thisRes, "list")
+      expect_equal(names(thisRes), samples)
+      expect_equivalent(sapply(thisRes,class), c("flowFrame", "flowFrame"))
+      expect_equivalent(sapply(thisRes,nrow), c(1319, 1319))
+      
+      #by a list of gate/event indices
+      nodeInd <- list("CD8/38- DR+", "CD8/38- DR-")
+      expect_error(.getOverlay(gs, overlay = nodeInd, params = chnls), "names of overlay list does not agree with sampleNames in GatingSet")
+      names(nodeInd) <- samples
+      thisRes <- .getOverlay(gs, overlay = nodeInd, params = chnls)
+      expect_is(thisRes, "list")
+      expect_equal(names(thisRes), samples)
+      expect_equivalent(sapply(thisRes,class), c("flowFrame", "flowFrame"))
+      expect_equivalent(sapply(thisRes,nrow), c(1319, 7493))
+      
     })
     
 test_that("setNode",{
@@ -253,6 +300,7 @@ test_that("getIndices for COMPASS",{
       expect_equal(thisRes,expectRes)
       
     })
+#TODO:write test cases for save_gs /load_gs 
 
 #TODO: gs created from gh template somehow yields differernt results.
 #test_that("getData for COMPASS",{

@@ -1107,9 +1107,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats, isBool = isBool)
 }
 
-.getOverlay <- function(x, overlay, params){
-  if(!is.null(overlay))
-  {
+#' @param x a \code{GatingSet}
+#' @param overlay a list of gate indices or event indices (named by sampleNames(x))
+#' @param ... other arguments
+#'      params channel names for subsetting the result
+#' @return either a list of flowFrame for a flowSet/ncdfFlowSet or NULL
+.getOverlay <- function(x, overlay, ...){
+  
+  myfunc <- function(x, overlay, params){
     #gate indices
     if(class(overlay)=="logical")
       overlay<-Subset(getData(x),overlay)[,params]
@@ -1118,6 +1123,24 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
       overlay<-getData(x,overlay)[,params]
     }
+    overlay
+  }
+  
+  
+  if(!is.null(overlay))
+  {
+
+    if(is.list(overlay)){
+      #if overlay is a list, then extract overlay from each element
+      samples <- sampleNames(x)
+      if(isTRUE(all.equal(names(overlay), samples))){
+        overlay <-  sapply(samples, function(sn)myfunc(x[[sn]], overlay[[sn]], ...))        
+      }else
+        stop("names of overlay list does not agree with sampleNames in GatingSet!")
+    }else{
+      overlay <-  myfunc(x, overlay, ...)
+    }
+    
 
   }
   overlay

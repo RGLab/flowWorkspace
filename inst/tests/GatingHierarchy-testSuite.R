@@ -145,41 +145,49 @@ test_that("sampleNames",{
       
     })
 
-test_that("getNodes",{
+test_that("getNodes & setNode",{
+
+      expectRes <- readRDS(file.path(resultDir, "getNodes_gh.rds"))
 
       #full path
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_full_path.txt"), what = character(), sep = "\n", quiet = TRUE)
-      expect_equal(getNodes(gh), expect_nodes)
-      expect_equal(getNodes(gh, path = "full"), expect_nodes)
+      expect_equal(getNodes(gh), expectRes[["full_path"]])
+      expect_equal(getNodes(gh, path = "full"), expectRes[["full_path"]])
       
       #terminal node
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_terminal_prefix_all.txt"), what = character(), sep = "\n", quiet = TRUE) 
-      expect_equal(getNodes(gh, path = 1, prefix = "all"), expect_nodes)
-      
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_terminal_prefix_auto.txt"), what = character(), sep = "\n", quiet = TRUE) 
-      expect_equal(getNodes(gh, path = 1, prefix = "auto"), expect_nodes)
+      expect_equal(getNodes(gh, path = 1, prefix = "all"), expectRes[["terminal_prefix_all"]])
+      expect_equal(getNodes(gh, path = 1, prefix = "auto"), expectRes[["terminal_prefix_auto"]])
             
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_terminal.txt"), what = character(), sep = "\n", quiet = TRUE)
-      expect_equal(getNodes(gh, path = 1), expect_nodes)
-      expect_equal(getNodes(gh, path = 1, prefix = "none"), expect_nodes)
+      expect_equal(getNodes(gh, path = 1), expectRes[["terminal"]])
+      expect_equal(getNodes(gh, path = 1, prefix = "none"), expectRes[["terminal"]])
       
       #fixed partial path
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_path_two.txt"), what = character(), sep = "\n", quiet = TRUE)      
-      expect_equal(getNodes(gh, path = 2), expect_nodes)
-      
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_path_three.txt"), what = character(), sep = "\n", quiet = TRUE)      
-      expect_equal(getNodes(gh, path = 3), expect_nodes)
+      expect_equal(getNodes(gh, path = 2), expectRes[["path_two"]])
+      expect_equal(getNodes(gh, path = 3), expectRes[["path_three"]])
       
       #auto partial path
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_path_auto.txt"), what = character(), sep = "\n", quiet = TRUE)      
-      expect_equal(getNodes(gh, path = "auto"), expect_nodes)
+      expect_equal(getNodes(gh, path = "auto"), expectRes[["path_auto"]])
       
       #full path (bfs)
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_full_path_bfs.txt"), what = character(), sep = "\n", quiet = TRUE)
-      expect_equal(getNodes(gh, order = "bfs"), expect_nodes)
-      expect_nodes <- scan(file = file.path(resultDir,"nodes_full_path_tsort.txt"), what = character(), sep = "\n", quiet = TRUE)
-      expect_equal(getNodes(gh, order = "tsort"), expect_nodes)
+      expect_equal(getNodes(gh, order = "bfs"), expectRes[["full_path_bfs"]])
+      expect_equal(getNodes(gh, order = "tsort"), expectRes[["full_path_tsort"]])
       
+      #change node name
+      invisible(setNode(gh, "singlets", "S"))
+      expect_equal(getNodes(gh), gsub("singlets", "S", expectRes[["full_path"]]))
+      invisible(setNode(gh, 3, "singlets"))
+      expect_equal(getNodes(gh), expectRes[["full_path"]])
+      
+      #hide node(terminal)
+      invisible(setNode(gh, "DNT", FALSE))
+      expect_equal(getNodes(gh), expectRes[["full_path"]][-23])
+      invisible(setNode(gh, "DNT", TRUE))
+      expect_equal(getNodes(gh), expectRes[["full_path"]])
+      
+      #hide node(non-terminal)
+      invisible(setNode(gh, "singlets", FALSE))
+      expect_equal(getNodes(gh), expectRes[["full_path"]][-3])
+      invisible(setNode(gh, "singlets", TRUE))
+      expect_equal(getNodes(gh), expectRes[["full_path"]])
     })
 
 test_that(".getGraph",{
@@ -360,6 +368,75 @@ test_that("getGate",{
       ##TODO: test rangeGate (no R API to add it, have to parse it from xml )
       
     })
+
+test_that(".mergeGates",{
+      
+      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE)
+      expectRes <- list(`6` = list(popIds = 6:9
+                                , parentId = 5)
+                          )
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- .mergeGates(gh, i = 5:9, bool = FALSE, merge = TRUE)
+      expectRes <- c(`5` = 5, expectRes) 
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- .mergeGates(gh, i = 6:12, bool = FALSE, merge = TRUE)
+      expectRes <- list(`6` = list(popIds = 6:9
+                                  , parentId = 5)
+                        ,`10` = list(popIds = 10:12
+                              , parentId = 5)
+                          )
+      
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = FALSE)
+      expectRes <- list(`6` = 6, `7` = 7, `8` = 8, `9` = 9)
+      expect_equal(thisRes, expectRes)
+      
+    })
+
+test_that("pretty10exp",{
+      
+      thisRes <- pretty10exp(c(1, 10, 100, 1000), drop.1 = TRUE)
+      expectRes <- expression(10^0, 10^1, 10^2, 10^3)
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- pretty10exp(c(1, 10, 100, 1000), drop.1 = FALSE)
+      expectRes <- expression(1 %*% 10^0, 1 %*% 10^1, 1 %*% 10^2, 1 %*% 10^3)
+      expect_equal(thisRes, expectRes)      
+    })
+
+test_that("formatAxis",{
+      
+      parent <- getData(gh, use.exprs = FALSE)
+      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "FSC-A")
+      expectRes <- list(scales = list(), xlab = "SSC-A ", ylab = "FSC-A ")
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>")
+      expectRes <- list(scales = list(y = list(at = c(227.00,  948.81, 1893.44, 2808.63, 3717.62)
+                                                , labels = expression(0, 10^2, 10^3, 10^4, 10^5)
+                                              )
+                                      )
+                        , xlab = "SSC-A ", ylab = "<V450-A> CD3 V450")
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>", marker.only = TRUE)
+      expectRes[["xlab"]] <- "SSC-A"
+      expectRes[["ylab"]] <- "CD3 V450"
+      expect_equal(thisRes, expectRes)
+            
+    })
+
+test_that("getSample",{
+      
+  expect_equal(getSample(gh), "CytoTrol_CytoTrol_1.fcs")
+  expect_true(grepl("flowWorkspaceData/extdata/CytoTrol_CytoTrol_1.fcs", getSample(gh, isFullPath = TRUE)))
+
+})
+
+
 
 
 test_that("getIndiceMat for COMPASS",{
