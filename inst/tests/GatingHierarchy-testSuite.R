@@ -432,7 +432,8 @@ test_that("formatAxis",{
 test_that("getSample",{
       
   expect_equal(getSample(gh), "CytoTrol_CytoTrol_1.fcs")
-  expect_true(grepl("flowWorkspaceData/extdata/CytoTrol_CytoTrol_1.fcs", getSample(gh, isFullPath = TRUE)))
+  
+  expect_true(grepl("/CytoTrol_CytoTrol_1.fcs", getSample(gh, isFullPath = TRUE)))
 
 })
 

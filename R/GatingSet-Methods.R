@@ -376,17 +376,19 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, ...){
+.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, wsType,...){
 
 
 	message("calling c++ parser...")
 #	browser()
+    
 	time1<-Sys.time()
 	G <- GatingSet(x = xmlFileName
                   , y = sampleIDs
                   , includeGates = includeGates
                   , sampNloc=sampNloc
                   , xmlParserOption = xmlParserOption
+                  , wsType = wsType
                   , dMode=dMode
                   )
 
@@ -434,7 +436,7 @@ unarchive<-function(file,path=tempdir()){
 	}
     
     
-	G<-.addGatingHierarchies(G,files,execute,isNcdf,...)
+	G<-.addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, ...)
 
 
 	message("done!")
@@ -504,7 +506,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE, ignore.case = FALSE, ...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, prefix = TRUE, ignore.case = FALSE, ...){
 	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -557,7 +559,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             cnd <- colnames(data)
 #            browser()
             #alter colnames(replace "/" with "_") for flowJo X
-            if(wsversion == "1.8"){
+            if(wsType == "vX"){
                 colnames(data) <- gsub("/","_",cnd)
                 cnd<-colnames(data)
             
@@ -689,7 +691,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             #since colnames(fs) is not udpated yet.
             if(!is.null(prefixColNames)){
               #restore the orig colnames(replace "_" with "/") for flowJo X
-              if(wsversion == "1.8"){
+              if(wsType == "vX"){
                 cnd <- gsub("_","/",cnd)
                 colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX 
               }
@@ -708,7 +710,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             #so we need update this range info by transforming it
             tInd <- grepl("[Tt]ime",cnd)
             tRg  <- range(mat[,tInd])
-            axis.labels <- .transformRange(G,sampleName,wsversion,fs@frames,timeRange = tRg)
+            axis.labels <- .transformRange(G,sampleName,wsType,fs@frames,timeRange = tRg)
 
 		}else
           axis.labels <- list()
@@ -743,13 +745,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 #' transform the range slot and construct axis label and pos for the plotting
 #' @param gh \code{GatingHierarchy}
-#' @param wsversion \code{character} flowJo workspace version
+#' @param wsType \code{character} flowJo workspace type
 #' @param frmEnv \code{environment} point to the \code{frames} slot of the original \code{flowSet}
 #' @param timeRange \code{numeric} vector specifying the range for 'time' channel
 #' 
 #' @return 
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
-.transformRange <- function(G,sampleName, wsversion,frmEnv, timeRange = NULL){
+.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL){
 #  browser()
     
      cal<-.getTransformations(G@pointer, sampleName)
@@ -765,7 +767,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
               
 				#added gsub
-              if(wsversion == "1.8"){
+              if(wsType == "vX"){
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
                 j <- match(names(rawRange)[i],cal_names)
                 isMatched <- !is.na(j) 

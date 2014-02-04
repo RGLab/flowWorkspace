@@ -65,7 +65,7 @@ test_that("sampleNames",{
 
 test_that("clone & rbind2",{
       
-      gs_clone <- clone(gs)
+      capture.output(gs_clone <- clone(gs))
       expect_is(gs_clone, "GatingSet");
       
       #check data consistency
@@ -209,12 +209,12 @@ test_that("getOverlay",{
       #by one event indice
       eInd <- getIndices(gs[[1]], nodeInd)
       thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
-      expect_is(thisRes2, "flowSet")
+      expect_is(thisRes, "flowSet")
       expect_equal(sampleNames(thisRes), samples)
       expect_equivalent(as.vector(fsApply(thisRes,nrow)), c(1319, 1319))
       
       #by a list of event indices
-      eInd <- lapply(gs, getIndices, y = thisNode)
+      eInd <- lapply(gs, getIndices, y = nodeInd)
       thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), samples)

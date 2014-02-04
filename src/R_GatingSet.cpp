@@ -24,16 +24,18 @@ GatingSet * getGsPtr(SEXP _gsPtr){
 /*
  * constructing GatingSet from xml file
  */
-RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _isParseGate,SEXP _sampNloc,SEXP _xmlParserOption,SEXP _dMode) {
+RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _isParseGate,SEXP _sampNloc,SEXP _xmlParserOption, SEXP _wsType, SEXP _dMode) {
 BEGIN_RCPP
 		string fileName=as<string>(_fileName);
 		unsigned short dMode=as<unsigned short>(_dMode);
+		unsigned short wsType=as<unsigned short>(_wsType);
+
 		StringVec sampleIDs=as<StringVec>(_sampleIDs);
 		bool isParseGate=as<bool>(_isParseGate);
 		unsigned short sampNloc=as<unsigned short>(_sampNloc);
 		int xmlParserOption = as<int>(_xmlParserOption);
 
-		GatingSet * gs=new GatingSet(fileName,isParseGate,sampNloc,xmlParserOption,dMode);
+		GatingSet * gs=new GatingSet(fileName,isParseGate,sampNloc,xmlParserOption, wsType, dMode);
 		gs->parseWorkspace(sampleIDs,isParseGate);
 		/*
 		 * using default finalizer to delete gs,which is triggered by gc() when

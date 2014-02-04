@@ -395,7 +395,7 @@ GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
 
 
 //read xml file and create the appropriate flowJoWorkspace object
-GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,int xmlParserOption,unsigned short _dMode)
+GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,int xmlParserOption,unsigned short wsType,unsigned short _dMode)
 {
 		wsPtr=NULL;
 		LIBXML_TEST_VERSION
@@ -417,21 +417,22 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 				throw(invalid_argument("document of the wrong type, root node != 'Workspace'"));
 			}
 
-		//get version info
-		 xmlChar * wsVersion=xmlGetProp(cur,(const xmlChar*)"version");
 
-		 if (xmlStrEqual(wsVersion,(const xmlChar *)"1.61")||xmlStrEqual(wsVersion,(const xmlChar *)"1.6"))
-			 wsPtr=new winFlowJoWorkspace(doc);
-		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"2.0"))
-			 wsPtr=new macFlowJoWorkspace(doc);
-		 else if (xmlStrEqual(wsVersion,(const xmlChar *)"1.8"))
-			 wsPtr=new xFlowJoWorkspace(doc);
-		 else
-		 {
-			 xmlFree(wsVersion);
-			 throw(invalid_argument("We currently only support flowJo version 1.61 and 2.0"));
+		 switch(wsType){
+		 	 case WS_WIN:
+		 		 wsPtr=new winFlowJoWorkspace(doc);
+		 		 break;
+		 	 case WS_MAC:
+		 		 wsPtr=new macFlowJoWorkspace(doc);
+		 		 break;
+		 	 case WS_VX:
+				 wsPtr=new xFlowJoWorkspace(doc);
+				 break;
+		 	 default:
+		 		throw(invalid_argument("unsupported workspace Type!"));
 		 }
-		 xmlFree(wsVersion);
+
+
 		 wsPtr->dMode=_dMode;
 		 wsPtr->nodePath.sampNloc=sampNloc;
 		 dMode=_dMode;

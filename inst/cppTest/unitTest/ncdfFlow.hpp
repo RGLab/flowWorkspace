@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #define DATASETNAME "/exprsMat"
 #include <netcdf.h>
-#include "../include/flowData.hpp"
+#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/flowData.hpp"
 using namespace std;
 
 class ncdfFlow{

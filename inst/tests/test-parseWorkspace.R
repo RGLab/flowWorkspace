@@ -13,7 +13,7 @@ test_that("can load xml workspace",
 
 gs <- NULL
 test_that("Can parse workspace",{
-    gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE));
+    suppressWarnings(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE)))
 	expect_that(gs, is_a("GatingSet"));
 	
 })
