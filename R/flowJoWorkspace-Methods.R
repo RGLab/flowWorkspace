@@ -64,7 +64,9 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 	if(object@.cache$flag){
 		cat("Workspace is open.","\n");
 		cat("\nGroups in Workspace\n");
-		tbl<-table(Name=getSampleGroups(object)$groupName,GroupID=getSampleGroups(object)$groupID)
+        
+        sg <- getSampleGroups(object)
+		tbl<-table(Name=sg$groupName,GroupID=sg$groupID)
 		print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
 	}else{	
 		cat("Workspace is closed.","\n")
@@ -449,15 +451,17 @@ setMethod("getSamples","flowJoWorkspace",function(x){
 #' getSampleGroups-methods
 #' getSampleGroups,flowJoWorkspace-method
 setMethod("getSampleGroups","flowJoWorkspace",function(x){
-#			browser()
-			win <-.getWorkspaceType(x@version) == "mac"
+	
+			win <-.getWorkspaceType(x@version) %in% c("win", "vX")
 			.getSampleGroups(x@doc,win)
 		})
 
 ###add support for win version
 .getSampleGroups<-function(x,win=FALSE){
+  
 	if(!win){
 		do.call(rbind,xpathApply(x,"/Workspace/Groups/GroupNode",function(x){
+  
 							gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
 							sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
 												as.numeric(xmlGetAttr(x,"sampleID"))
@@ -465,7 +469,11 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 							if(is.null(sid)){
 								sid<-NA;
 							}
-							groups<-na.omit(data.frame(groupName=gid[[1]],groupID=as.numeric(gid[2]),sampleID=as.numeric(sid)));
+							groups<-na.omit(data.frame(groupName=gid[[1]]
+                                                      ,groupID=as.numeric(gid[2])
+                                                      ,sampleID=as.numeric(sid)
+                                                      )
+                                            );
 						}))
 	}else{
 		#Note that groupID is from order of groupNode instead of from xml attribute 
