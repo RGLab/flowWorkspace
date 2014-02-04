@@ -36,8 +36,9 @@
   \item{type}{a character scalar. The valid options are
   :"binary","text","xml" specifying format to store tree
   structure.  default is "binary", which is smaller and
-  faster but machine-dependent. use "text" or "xml" for
-  cross-platform data interchange.}
+  faster but machine-dependent.  use "text" or "xml" for
+  cross-platform data interchange (experimental at this
+  stage, may or maynot work).}
 
   \item{...}{other arguments: not used.}
 }

@@ -243,6 +243,7 @@ void parser_test(testCase & myTest){
 	unsigned format = myTest.archiveFormat;
 	bool isParseGate = myTest.isParseGate;
 	bool isSaveArchive = myTest.isSaveArchive;
+	unsigned short wsType = myTest.wsType;
 		boost::scoped_ptr<GatingSet> gs;
 		if(isLoadArchive)
 		{
@@ -250,7 +251,7 @@ void parser_test(testCase & myTest){
 			restore_gs(*gs,myTest.archive, format);
 		}
 		else
-			gs.reset(new GatingSet(myTest.filename,isParseGate,myTest.sampNloc,1,dMode));
+			gs.reset(new GatingSet(myTest.filename,isParseGate,myTest.sampNloc,1,wsType,dMode));
 
 		if(!isLoadArchive)
 		{

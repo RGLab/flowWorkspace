@@ -86,6 +86,22 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 	show(object,...);
 })
 
+#' match version string to the support list
+#' 
+#' @param wsversion version string to match
+#' 
+#' @return the macthed workspace type
+.getWorkspaceType <- function(wsversion){
+  curSupport <- unlist(flowWorkspace.par.get("flowJo_versions"))
+  ver_ind <- match(wsversion, curSupport)
+  if(is.na(ver_ind))
+    stop("Unsupported version: ", wsversion)
+  else{
+    wsType <- names(curSupport[ver_ind])  
+  }
+  gsub("[0-9]", "", wsType)
+}
+
 #' Parse a flowJo Workspace
 #' 
 #' Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{recompute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
@@ -141,14 +157,19 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	x<-obj@doc;
 	
 	wsversion<-xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]];
+     
+    
+    wsType <- .getWorkspaceType(wsversion)
+    message(wsType, " workspace recognized.")
 #	browser()
-	if(!wsversion=="2.0"){
-		#Windows version code
-		s<-.getSamples(x,win=TRUE);
-		g<-.getSampleGroups(x,win=TRUE);
+	if(wsType == "mac"){
+      s<-.getSamples(x);
+      g<-.getSampleGroups(x);
 	}else{
-		s<-.getSamples(x);
-		g<-.getSampleGroups(x);
+      #Windows version code
+      s<-.getSamples(x,win=TRUE);
+      g<-.getSampleGroups(x,win=TRUE);
+		
 	}
 #	browser()
 	sg<-merge(s,g,by="sampleID");
@@ -156,13 +177,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	if(requiregates){
 		sg<-sg[sg$pop.counts>0,]
 	}
-	if(wsversion=="2.0"){
-		##samples may have no compID if they are only log-transformed, for example.
-		##Keep samples with compID = NA and set it to -2
-		#If the compID = NA, check the Sample Parameter attributes for the transformation information.
-		message("Version recognised. Continuing..")
-	}
-	
+		
 	sg$groupName<-factor(sg$groupName)
 	groups<-levels(sg$groupName)
 	if(is.null(name)){
@@ -188,16 +203,14 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
           sg<-cbind(sg,filename=sapply(sg$sampleID,function(x).getKeywordsBySampleID(obj,x,"$FIL")))
           sg<-subset(sg,filename%in%subset)
 	}
-	if(wsversion=="2.0"){
+	if(wsType == "mac"){
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
 			})
-	}else if(substr(wsversion,1,3)%in%c("1.6","1.8")){
+	}else{
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
 			xpathApply(x,paste("/Workspace/SampleList/Sample/DataSet[@sampleID='",i,"']",sep=""))[[1]]
 			})
-	}else{
-		stop("Workspace Version not Supported");
 	}
 #	browser()
 	# Allow import of a subset of samples
@@ -221,7 +234,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
                     ,includeGates=includeGates
                     ,path=path
                     ,xmlParserOption = obj@options
-                    ,wsversion=wsversion
+                    ,wsType=wsType
                     ,...)
 		
 })
@@ -437,7 +450,7 @@ setMethod("getSamples","flowJoWorkspace",function(x){
 #' getSampleGroups,flowJoWorkspace-method
 setMethod("getSampleGroups","flowJoWorkspace",function(x){
 #			browser()
-			win<-!x@version=="2.0"
+			win <-.getWorkspaceType(x@version) == "mac"
 			.getSampleGroups(x@doc,win)
 		})
 

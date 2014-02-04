@@ -376,17 +376,19 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, ...){
+.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, wsType,...){
 
 
 	message("calling c++ parser...")
 #	browser()
+    
 	time1<-Sys.time()
 	G <- GatingSet(x = xmlFileName
                   , y = sampleIDs
                   , includeGates = includeGates
                   , sampNloc=sampNloc
                   , xmlParserOption = xmlParserOption
+                  , wsType = wsType
                   , dMode=dMode
                   )
 
@@ -434,7 +436,7 @@ unarchive<-function(file,path=tempdir()){
 	}
     
     
-	G<-.addGatingHierarchies(G,files,execute,isNcdf,...)
+	G<-.addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, ...)
 
 
 	message("done!")
@@ -487,6 +489,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             Object@guid <- .uuid_gen()
             Object@FCSPath <- dataPaths
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
+            #if the gating template is already gated, it needs to be recompute explicitly 
+            #in order to update the counts
+            #otherwise, the counts should already have been updated during the copying
+            #and not need to do this step
+            if(x@flag)
+              recompute(Object)  
             message("done!")
 			return(Object)
 		})
@@ -498,7 +506,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsversion = -1,extend_val = 0, prefix = TRUE, ignore.case = FALSE, ...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, prefix = TRUE, ignore.case = FALSE, ...){
 	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -551,7 +559,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             cnd <- colnames(data)
 #            browser()
             #alter colnames(replace "/" with "_") for flowJo X
-            if(wsversion == "1.8"){
+            if(wsType == "vX"){
                 colnames(data) <- gsub("/","_",cnd)
                 cnd<-colnames(data)
             
@@ -683,7 +691,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             #since colnames(fs) is not udpated yet.
             if(!is.null(prefixColNames)){
               #restore the orig colnames(replace "_" with "/") for flowJo X
-              if(wsversion == "1.8"){
+              if(wsType == "vX"){
                 cnd <- gsub("_","/",cnd)
                 colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX 
               }
@@ -702,7 +710,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             #so we need update this range info by transforming it
             tInd <- grepl("[Tt]ime",cnd)
             tRg  <- range(mat[,tInd])
-            axis.labels <- .transformRange(G,sampleName,wsversion,fs@frames,timeRange = tRg)
+            axis.labels <- .transformRange(G,sampleName,wsType,fs@frames,timeRange = tRg)
 
 		}else
           axis.labels <- list()
@@ -737,13 +745,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 #' transform the range slot and construct axis label and pos for the plotting
 #' @param gh \code{GatingHierarchy}
-#' @param wsversion \code{character} flowJo workspace version
+#' @param wsType \code{character} flowJo workspace type
 #' @param frmEnv \code{environment} point to the \code{frames} slot of the original \code{flowSet}
 #' @param timeRange \code{numeric} vector specifying the range for 'time' channel
 #' 
 #' @return 
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
-.transformRange <- function(G,sampleName, wsversion,frmEnv, timeRange = NULL){
+.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL){
 #  browser()
     
      cal<-.getTransformations(G@pointer, sampleName)
@@ -759,7 +767,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
               
 				#added gsub
-              if(wsversion == "1.8"){
+              if(wsType == "vX"){
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
                 j <- match(names(rawRange)[i],cal_names)
                 isMatched <- !is.na(j) 
@@ -1101,9 +1109,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats, isBool = isBool)
 }
 
-.getOverlay <- function(x, overlay, params){
-  if(!is.null(overlay))
-  {
+#' @param x a \code{GatingSet}
+#' @param overlay a list of gate indices or event indices (named by sampleNames(x))
+#' @param ... other arguments
+#'      params channel names for subsetting the result
+#' @return either a list of flowFrame for a flowSet/ncdfFlowSet or NULL
+.getOverlay <- function(x, overlay, ...){
+  
+  myfunc <- function(x, overlay, params){
     #gate indices
     if(class(overlay)=="logical")
       overlay<-Subset(getData(x),overlay)[,params]
@@ -1112,6 +1125,24 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
         stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
       overlay<-getData(x,overlay)[,params]
     }
+    overlay
+  }
+  
+  
+  if(!is.null(overlay))
+  {
+
+    if(is.list(overlay)){
+      #if overlay is a list, then extract overlay from each element
+      samples <- sampleNames(x)
+      if(isTRUE(all.equal(names(overlay), samples))){
+        overlay <-  sapply(samples, function(sn)myfunc(x[[sn]], overlay[[sn]], ...))        
+      }else
+        stop("names of overlay list does not agree with sampleNames in GatingSet!")
+    }else{
+      overlay <-  myfunc(x, overlay, ...)
+    }
+    
 
   }
   overlay
@@ -1122,6 +1153,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param overlay either the gate indice list or event indices list
 #' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy} 
 #' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
+#' @param path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method
 #' @param ... other arguments passed to .formAxis and flowViz 
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
@@ -1133,6 +1165,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                       , fitGate=FALSE, overlay=NULL, stack = FALSE, xbin = 32
                       , stats , default.y = "SSC-A", scales
                       , strip = TRUE
+                      , path = "full"
                       , ...){
 
 	
@@ -1152,7 +1185,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 		pid<-getParent(gh,y)
 	
     #set default title    
-    popName <- getNodes(gh,isPath=T,showHidden = TRUE)[pid]
+    popName <- getNodes(gh, path = path, showHidden = TRUE)[pid]
     
     default_main <- list(label = popName) 
     if(is.gh && strip)
@@ -1760,6 +1793,31 @@ setMethod("getPopStats", "GatingSet",
       pop_stats
     })
 
+#' calculate the coefficient of variation
+.computeCV <- function(x){
+
+  #columns are populations
+  #rows are samples
+  
+  statList <- lapply(x,function(gh){
+        thisStat <- getPopStats(gh)
+        rn <- rownames(thisStat)
+        thisStat <- as.data.frame(thisStat)
+        rownames(thisStat) <- rn
+        thisStat
+      })
+  cv<-do.call(rbind
+      ,lapply(statList,function(x){
+            apply(x[,2:3],1,function(x){
+                  cv<-IQR(x)/median(x)
+                  ifelse(is.nan(cv),0,cv)
+                })
+          })
+  )
+  rownames(cv)<-sampleNames(x);#Name the rows
+  cv
+  
+}
 #' Plot the coefficient of variation between flowJo and flowCore population statistics for each population in a gating hierarchy.
 #' 
 #' This function plots the coefficient of variation calculated between the flowJo population statistics and the flowCore population statistics for each population in a gating hierarchy extracted from a flowJoWorkspace. 
@@ -1777,33 +1835,17 @@ setMethod("getPopStats", "GatingSet",
 #'   }
 #' @aliases plotPopCV plotPopCV-methods plotPopCV,GatingHierarchy-method plotPopCV,GatingSet-method
 #' @rdname plotPopCV-methods
+#' @importFrom latticeExtra ggplot2like
 setMethod("plotPopCV","GatingSet",function(x,...){
-#columns are populations
-#rows are samples
-      
-      statList <- lapply(x,function(gh){
-            thisStat <- getPopStats(gh)
-            rn <- rownames(thisStat)
-            thisStat <- as.data.frame(thisStat)
-            rownames(thisStat) <- rn
-            thisStat
-          })
-      cv<-do.call(rbind
-                  ,lapply(statList,function(x){
-                            apply(x[,2:3],1,function(x){
-                                  cv<-IQR(x)/median(x)
-                                  ifelse(is.nan(cv),0,cv)
-                                  })
-                            })
-                   )
-      rownames(cv)<-sampleNames(x);#Name the rows
-#flatten, generate levels for samples.
+      cv <- .computeCV(x)
+      #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
       populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
       samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
       cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-      return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...))));
+      
+      return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...)), par.settings = ggplot2like));
     })
 
 
@@ -1863,7 +1905,7 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y, ...){
       id <- add(obj,bf)
     )
     
-    allNodes <- getNodes(gh,isPath=TRUE, showHidden = TRUE)
+    allNodes <- getNodes(gh, showHidden = TRUE)
     this_node <- allNodes[id]
     
     
@@ -1945,14 +1987,17 @@ getIndiceMat<-function(gh,y){
     
     res
   }, USE.NAMES=FALSE)
-  #  browser()   
+    
   pop_matched <- is_matched[is_matched]
-  if(length(pop_matched)!=length(popNames)){
-    stop("No markers in flow data matches ", "Populations:", paste(popNames[!popNames%in%names(pop_matched)],collapse="; "))
+  matched_names <- names(pop_matched)
+  sub_match_ind <- match(popNames, matched_names)
+  no_match <- is.na(sub_match_ind)
+  if(any(no_match)){
+    stop("No markers in flow data matches ", "Populations:", paste(popNames[no_match],collapse="; "))
     
   }
   
-  cbind(pop=names(is_matched[is_matched]),this_pd[is_matched,c("name","desc")])
+  cbind(pop=matched_names[sub_match_ind],this_pd[is_matched,c("name","desc")][sub_match_ind,])
   
   
   
@@ -1982,6 +2027,7 @@ setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_l
   
   
   lapply(obj,function(gh){
+        
     #get pop vs channel mapping
     pop_chnl<- .getPopChnlMapping(gh,y,pop_marker_list)
     this_chnls <- as.character(pop_chnl[,"name"])

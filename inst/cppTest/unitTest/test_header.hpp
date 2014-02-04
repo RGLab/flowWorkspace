@@ -13,17 +13,18 @@
 #include <fstream>
 #include <string>
 
-#include "../include/flowJoWorkspace.hpp"
-#include "../include/GatingSet.hpp"
-#include "../include/GatingHierarchy.hpp"
-#include "../include/R_GatingSet.hpp"
-#include "../include/transformation.hpp"
-#include "../include/spline.hpp"
+#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/flowJoWorkspace.hpp"
+#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/GatingSet.hpp"
+#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/GatingHierarchy.hpp"
+#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/R_GatingSet.hpp"
+#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/transformation.hpp"
+#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/spline.hpp"
 #include "ncdfFlow.hpp"
 using namespace std;
 
 struct testCase{
 	string filename; //xml file name
+	unsigned short wsType; //workspace type
 	string colfile; // text file that records the compensated channel names
 	string ncfile; // raw data stored in hdf format
 	map<string,string> samples; // fcs file name vs sampleID
