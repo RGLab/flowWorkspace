@@ -1,0 +1,41 @@
+\name{getFJWSubsetIndices}
+\alias{getFJWSubsetIndices}
+\title{Fetch the indices for a subset of samples in a flowJo workspace, based on a keyword value pair}
+\usage{
+  getFJWSubsetIndices(ws, key = NULL, value = NULL, group,
+    requiregates = TRUE)
+}
+\arguments{
+  \item{ws}{\code{flowJoWorkspace} object}
+
+  \item{key}{\code{character} The name of the keyword.}
+
+  \item{value}{\code{character} The value of the keyword.}
+
+  \item{group}{\code{numeric} The group of samples to
+  subset.}
+
+  \item{requiregates}{\code{TRUE} or \code{FALSE},
+  specifying whether we include only samples that have
+  gates attached or whether we include any sample in the
+  workspace.}
+}
+\value{
+  A numeric vector of indices.
+}
+\description{
+  This function will calculate the indices of a subset of
+  samples in a flowJoWorkspace, based on a keyword/value
+  filter. It is applied to a specific group of samples in
+  the workspace. The output is meant to be passed to the
+  subset= argument of parseWorkspace.
+}
+\details{
+  Returns an index vector into the samples in a flowJo
+  workspace for use with parseWorkspace(subset=), based on
+  a keyword/value filter in a specific group of samples.
+}
+\seealso{
+  \code{\link{parseWorkspace}}
+}
+

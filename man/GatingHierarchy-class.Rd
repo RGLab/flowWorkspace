@@ -1,0 +1,42 @@
+\name{GatingHierarchy-class}
+\alias{GatingHierarchy-class}
+\alias{show,GatingHierarchy-method}
+\title{Class GatingHierarchy}
+\description{
+  GatingHierarchy is a class for representing the gating
+  hierarchy,which can be either imported from a flowJo
+  workspace or constructed in R.
+}
+\details{
+  There is a one-to-one correspondence between
+  GatingHierarchy objects and FCS files in the flowJo
+  workspace. Each sample (FCS file) is associated with it's
+  own GatingHierarchy. It is also more space efficient by
+  storing gating results as logical/bit vector instead of
+  copying the raw data.
+
+  Given a GatingHierarchy, one can extract the data
+  associated with any subpopulation, extract gates, plot
+  gates, and extract population proportions. This
+  facilitates the comparison of manual gating methods with
+  automated gating algorithms.
+}
+\examples{
+require(flowWorkspaceData)
+	d<-system.file("extdata",package="flowWorkspaceData")
+	wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
+	ws <- openWorkspace(wsfile);
+	G<-try(parseWorkspace(ws,path=d,name=1));
+ gh <- G[[1]]
+	getPopStats(gh);
+	plotPopCV(gh)
+ nodes <- getNodes(gh)
+ thisNode <- nodes[4]
+	plotGate(gh,thisNode);
+	getGate(gh,thisNode);
+	getData(gh,thisNode)
+}
+\seealso{
+  \code{\linkS4class{GatingSet}}
+}
+
