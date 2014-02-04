@@ -1,7 +1,8 @@
 #' @include AllClasses.R
 NULL
 
-#' modify graph::fromGXL by using customized handler
+#' modify graph::fromGXL by using customized handler 
+#' (deprecated by using Rgraphviz::agread)
 .fromGXL <- function (con) 
 {
   contents <- paste(readLines(con), collapse = "")
@@ -13,6 +14,8 @@ NULL
 #' to avoid partial node name display. Because XML::xmlEventParse somehow split
 #' the node name into arrays when there is numeric character reference (&#nnnn;)
 #' 
+#' (deprecated by using Rgraphviz::agread)
+#'  
 #' @importFrom graph graphNEL addEdge
 .graph_handler <- function()
 {
@@ -214,9 +217,8 @@ NULL
 }
 
 #' @importMethodsFrom graph nodeData removeNode
-#' @importMethodsFrom Rgraphviz renderGraph
-.plotGatingTree<-function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
-#  browser()
+.layoutGraph <- function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
+
   ##remove bool gates if necessary
   if(!boolean)
   {
@@ -253,18 +255,27 @@ NULL
       #        ifelse(as.logical(as.integer(thisHidden)),"dotted","solid")
       #      })    
 #           browser()
+
+    Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
+                              ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
+                                  ,node=list(fixedsize=FALSE
+                        #              ,fillcolor="gray"
+                                      ,fontsize=fontsize
+                                      ,shape="ellipse"
+                                  )
+                              )
+                          )
+  }
+  
+#' @importMethodsFrom Rgraphviz renderGraph
+.plotGatingTree<-function(g, ...){
+  
   options("warn"=-1)
-  lay<-Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
-      ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
-          ,node=list(fixedsize=FALSE
-#              ,fillcolor="gray"
-              ,fontsize=fontsize
-              ,shape="ellipse"
-          )
-      )
-  )
+  
+  lay <- .layoutGraph(g,...)
+  
   renderGraph(lay)
-  #plot(sub,nodeAttrs=natr,attrs=list(node=list(fixedsize=fixedsize,labelfontsize=labelfontsize,fontsize=fontsize,width=width,height=height,shape="rectangle")),y=layout,...);
+  
   options("warn"=0)
 }
 
@@ -312,6 +323,7 @@ setMethod("plot",c("GatingHierarchy","missing"),function(x,y,...){
       .plotGatingTree(g,...)
       
     })
+
 .getAllDescendants <- function(gh,startNode,nodelist){
   
   children_nodes <- getChildren(gh,startNode)
@@ -426,8 +438,11 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @param y A \code{character} the name or full(/partial) gating path of the population node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
 #' @param order \code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
 #'     "regular" is default.
-#' @param isPath A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
-#' @param prefix A \code{logical} scalar to tell the method whether to add internal node index as the prefix to the node name
+#' @param isPath (Deprecated by 'path') A \code{logical} scalar to tell the method whether to return the full gating path or just terminal node name
+#' @param path A \code{character} or \code{numeric} scalar. when \code{numeric}, it specifies the fixed length of gating path (length 1 displays terminal name).
+#'              When \code{character}, it can be either 'full' (full path, which is default) or 'auto' (display the shortest unique gating path from the bottom of gating tree).
+#' @param prefix A \code{character} scalar to tell the method whether to add internal node index as the prefix to the node name (only valid when 'path' is set to 1).
+#'                                      the valid values are "auto", "none", "all".  
 #' @param ... Additional arguments.
 #' 
 #' @details 
@@ -439,8 +454,12 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G[[1], isPath = FALSE])#return node names
-#'     getNodes(G[[1]],isPath = TRUE)#return the full path
+#'     getNodes(G[[1], path = 1])#return node names (without prefix)
+#'     getNodes(G[[1], path = 1, prefix = "all"])#return node names with unqiue ID
+#'     getNodes(G[[1], path = 1, prefix = "auto"])#prepend unqiue ID as needed 
+#'     getNodes(G[[1]],path = "full")#return the full path
+#'     getNodes(G[[1]],path = 2)#return the path as length of two 
+#'     getNodes(G[[1]],path = "auto)#automatically determine the length of path 
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases
@@ -448,30 +467,123 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' getNodes-methods
 #' getNodes,GatingHierarchy-method
 #' @importFrom BiocGenerics duplicated
-setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular",isPath = TRUE, prefix=FALSE,showHidden = FALSE,...){
+#' @importFrom plyr ddply .
+setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE, ...){
+      
+            prefix <- match.arg(prefix)
+            thisCall <- match.call()
+            args <- names(thisCall)
+            #take care the legacy argument 
+            if("isPath"%in%args){
+              warning("'isPath' is deprecated by 'path'.")
+              isPath <- list(...)$isPath
+              
+              if(isPath){
+                path <- "full"
+                prefix <- "none"
+              }else{
+                path <- 1
+                prefix <- "auto"
+              }
+              
+              if("path"%in%args)
+                warning("'path' argument is set to '", path, "' automatically!")               
+              if("prefix"%in%args)
+                warning("'prefix' is set to '", prefix, "' automatically!")
+              
+            }else{
+              if(path == 1)
+                isPath <- FALSE #passed to c API
+              else
+                isPath <- TRUE #passed to c API
+               
+              
+            }
+              
             order <- match.arg(order,c("regular","tsort","bfs"))
 			
             orderInd <- match(order,c("regular","tsort","bfs"))
 			
             orderInd <- orderInd-1
 			
-			nodeNames<-.Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath,showHidden)
+			nodeNames <- .Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath,showHidden)
 
-			#try to remove ID prefix from node name without causing name duplication
-            if(!isPath){
-              if(!prefix)
-              {
-                dotPos<-regexpr("\\.",nodeNames)
-                #get unique IDs for each node
-                NodeIDs<-as.integer(substr(nodeNames,0,dotPos-1))
-                #strip IDs from nodeNames
-                nodeNames<-substr(nodeNames,dotPos+1,nchar(nodeNames))
-                #add ID only when there is conflicts in nodeNames
-                toAppendIDs<-duplicated(nodeNames)
-                nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")  
-              }  
-            }
 			
+            if(is.numeric(path)){
+              if(path == 1){
+                if(prefix != "all"){
+                  dotPos <- regexpr("\\.",nodeNames)
+                  #get unique IDs for each node
+                  NodeIDs <- as.integer(substr(nodeNames,0,dotPos-1))
+                  #strip IDs from nodeNames 
+                  nodeNames <- substr(nodeNames,dotPos+1,nchar(nodeNames))
+                   
+                  #add ID back when prefix == auto for those ambiguous nodeNames
+                  if(prefix == "auto"){
+                    toAppendIDs<-duplicated(nodeNames)
+                    nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")  
+                  }
+                }
+                    
+              }else{
+                
+                #truncate the path 
+                nodeNames <- sapply(nodeNames, function(nodeName){
+                                      
+                                      if(nodeName == "root")
+                                        nodeName
+                                      else{
+                                        nodes <- strsplit(nodeName, split = "/")[[1]][-1]
+                                        nNodes <- min(length(nodes), path)
+                                        nodes <- rev(rev(nodes)[1:nNodes])
+ 
+                                        paste(nodes, collapse = "/")  
+                                      }
+                                            
+                                    }, USE.NAMES = FALSE)
+              }              
+                
+            }else if(path == "auto"){
+              
+              nodePath <- nodeNames
+              nodeNames <- basename(nodePath)
+              names(nodeNames) <- nodePath #init the mapping (nodePath vs final output)
+              
+#              browser()
+              #pick duplicated node names to prepend their ancesters until their paths are unambiguous 
+              dup <- unique(nodeNames[duplicated(nodeNames)])
+              toModify <- nodeNames%in%dup
+              toModifyNode <- nodeNames[toModify]
+              toModifyID <- nodePath[toModify]
+                            
+              toModifyRes <- ddply(data.frame(toModifyID, toModifyNode), .(toModifyNode), function(thisDF){
+#                    browser()
+                    thisRes <- thisDF
+                    thisNames <- as.vector(thisRes[,"toModifyNode"])
+                    while(anyDuplicated(thisNames) > 0){
+                      #try to paste parent node
+                      thisRes <- ddply(thisRes, .(toModifyID), function(thisRow){
+#                                        browser()
+                                        thisID <- as.vector(thisRow[,"toModifyID"])
+                                        ppath <- getParent(x, thisID)
+                                        pn <- basename(ppath)
+                                        #paste parent
+                                        thisRow[,"toModifyNode"] <- paste(pn, thisRow[, "toModifyNode"], sep = "/")
+                                        #update the current id to parent ID 
+                                        thisRow[, "toModifyID"] <- ppath
+                                        thisRow
+                                      })
+                      thisNames <- as.vector(thisRes[,"toModifyNode"])                                                        
+                    }
+                    thisRes[, "toModifyID"] <- thisDF[, "toModifyID"] 
+                    thisRes                      
+                  })
+              #update the nodeNames with modified names
+              nodeNames[as.vector(toModifyRes[,"toModifyID"])] <- as.vector(toModifyRes[,"toModifyNode"])
+              nodeNames <- as.vector(nodeNames)
+                    
+            }else if(path != "full" )
+			  stop("Invalid 'path' argument. The valid input is 'full' or 'auto' or a numeric value.")
 			
 			
 			if(!is.null(y))
@@ -594,8 +706,8 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 setMethod("getPopStats","GatingHierarchy",function(x,...){
 
 			
-        nodeNamesPath<-getNodes(x,isPath = TRUE,...)
-       nodeNames<-getNodes(x, isPath = FALSE, ...)
+        nodeNamesPath<-getNodes(x,...)
+       nodeNames<-getNodes(x, path = 1, prefix = "auto", ...)
                            
           
        stats<-mapply(nodeNames,nodeNamesPath,FUN = function(thisName,thisPath){
@@ -632,17 +744,23 @@ setMethod("getPopStats","GatingHierarchy",function(x,...){
       rownames(m)<-rn
 			m
 		})
+    
+.computeCV_gh <- function(gh){
+  
+    x<-getPopStats(gh)
+    rn<-rownames(x)
+    x<-as.data.frame(x)
+    rownames(x)<-rn	
+    cv<-apply(as.matrix(x[,c("flowJo.count","flowCore.count")]),1,function(y)IQR(y)/median(y));
+    cv<-as.matrix(cv,nrow=length(cv))
+    cv[is.nan(cv)]<-0
+    rownames(cv)<-basename(as.character(rownames(x)))
+    cv
+}        
 #' @importFrom lattice barchart
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
-      x<-getPopStats(x)
-      rn<-rownames(x)
-      x<-as.data.frame(x)
-      rownames(x)<-rn	
-      cv<-apply(as.matrix(x[,c("flowJo.count","flowCore.count")]),1,function(y)IQR(y)/median(y));
-      cv<-as.matrix(cv,nrow=length(cv))
-      cv[is.nan(cv)]<-0
-      rownames(cv)<-basename(as.character(rownames(x)));
-      return(barchart(cv,xlab="Coefficient of Variation",...));
+      cv <- .computeCV_gh(x)
+      return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
     })
 
 
@@ -687,7 +805,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 			{
 
 				g<-.Call("R_getGate",obj@pointer,getSample(obj),vertexID)
-				filterId <- getNodes(obj, showHidden = TRUE, isPath = FALSE)[y]
+				filterId <- getNodes(obj, showHidden = TRUE, path = 1, prefix = "auto")[y]
 				if(g$type==1)
 				{
 					
@@ -733,9 +851,9 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
     this_path <- this_path[!isEmpty]
     
     ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
-    ind <- ind + 1 # convert to R index
+    ind + 1 # convert to R index
   }else{
-    allNodes <- getNodes(obj, isPath = FALSE, showHidden = TRUE,...)
+    allNodes <- getNodes(obj, path = 1, prefix = "auto", showHidden = TRUE,...)
     ind<-match(y,allNodes)#strict string match  
     if(is.na(ind)||length(ind)==0){
         stop("Node:", y," not found!")
@@ -799,6 +917,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' Subset membership can be obtained using \code{getIndices}. 
 #' Population statistics can be obtained using \code{getPop} and \code{getPopStats}. 
 #' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
+#' To update the data, use \code{flowData} method.
 
 #' @param obj A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.
 #' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index. 
@@ -810,7 +929,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
 #' A \code{ncdfFlowList} if a \code{GatingSetList}. 
 #' @seealso
-#'   \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
+#'   \code{\link{flowData}} \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
 #' 
 #' @examples
 #'   \dontrun{
@@ -1007,35 +1126,75 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 			compobj
 			
 })
-#TODO:try to merge it with the getChannelMarker in openCyto
-.getChannelMarker<-function(pd,name=NULL)
-{
-	#try stain name
-	
-#	browser()
-	if(is.null(name))
-		return(NULL)
-	ind<-which(toupper(pd$name)%in%toupper(name))
-	
-	
-	
-	
-	if(length(ind)==0)
-	{
-		#try marker name
-		ind<-which(unlist(lapply(pd$des,function(x){
-									#split by white space and then match each individual string
-									any(unlist(lapply(strsplit(x," "),function(y)toupper(y)%in%toupper(name))))
-								})
-				)
-		)
-		if(length(ind)==0)
-			stop("can't find ",name)
-		if(length(ind)>1)
-			stop("multiple markers matched: ",name)
-	}
-	
-	pd[ind,c("name","desc")]
+
+#' fussy match of marker/channel names
+#' @param pd pData of parameters of flowFrame
+#' @param name \code{character} the string to match
+#' @param fix whether to do regexpr match
+#' @param parital whether to do the complete word match or parital match
+
+.flowParamMatch <- function(pd, name, fix = FALSE, partial = FALSE) {
+  
+  # try to compelete word match by following with a space or the end of string
+  if (partial) 
+    pname <- name 
+  else 
+    pname <- paste0(name, "([ ]|$)")
+  
+  if (fix) {
+    ind <- which(toupper(pd$name) %in% toupper(name))
+  } else {
+    ind <- which(grepl(pname, pd$name, ignore.case = T))
+  }
+  
+  if (length(ind) == 0) {
+    # try marker name
+    ind <- which(unlist(lapply(pd$des, function(x) {
+                  # split by white space and then match each individual string
+                  if (fix) {
+                    any(unlist(lapply(strsplit(x, " "), function(y) toupper(y) %in% toupper(name))))
+                  } else {
+                    grepl(pattern = pname, x, ignore.case = T)
+                  }
+                })))
+  }
+  ind
+}
+#' get channel and marker information from a \code{flowFrame} that matches to the given keyword 
+#' 
+#' This function tries best to guess the flow parameter based on the keyword supplied by \code{name}
+#' It first does a complete word match(case insensitive) between \code{name} and flow channels and markers.
+#' If there are duplcated matches, throw the error. If no matches, it will try the partial match.
+#'   
+#' @return 
+#' an one-row \code{data.frame} that contains "name"(i.e. channel) and "desc"(i.e. stained marker) columns.
+#' 
+#' @param frm \code{flowFrame} object
+#' @param name \code{character} the keyword to match
+#' @param ... other arguments: not used.
+#' @export 
+getChannelMarker <- function(frm, name, ...) {
+  pd <- pData(parameters(frm))
+  # try complete match first
+  ind <- .flowParamMatch(pd, name, ...)
+  
+  if (length(ind) > 1) {
+    stop("multiple markers matched: ", name)
+  }
+  
+  if (length(ind) == 0) {
+    # if no match then give a second try to patial match
+    ind <- .flowParamMatch(pd, name, partial = TRUE, ...)
+    if (length(ind) == 0) 
+      stop("can't find ", name) else if (length(ind) > 1) 
+      stop("multiple markers matched: ", name) else warning(name, " is partially matched with ", pd[ind, c("name", "desc")])
+  }
+  
+  pd <- pd[ind, c("name", "desc")]
+  pd[, "name"] <- as.vector(pd[, "name"])
+  pd[, "desc"] <- as.vector(pd[, "desc"])
+  pd
+  
 }
 
 
@@ -1197,10 +1356,10 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
                           , scales=list()
                           , marker.only = FALSE
                           , ...){
-	pd<-pData(parameters(data))
+#	pd<-pData(parameters(data))
 #	browser()
-	xObj <- .getChannelMarker(pd,xParam)
-	yObj <- .getChannelMarker(pd,yParam)
+	xObj <- getChannelMarker(data,xParam)
+	yObj <- getChannelMarker(data,yParam)
 	
     if(marker.only){
       xlab <- as.character(ifelse(is.na(xObj[,"desc"]), xObj[,"name"], xObj[,"desc"]))

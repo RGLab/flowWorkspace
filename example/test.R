@@ -27,7 +27,8 @@ macXML<-"/loc/no-backup/remote_fred_hvtn/HVTN080/XML files/080 Batch 1057 M.xml"
 #macXML<-c(macXML,"/loc/no-backup/mike/ITN029ST/QA_MFI_RBC_bounary_eventsV3.xml")
 macXML<-"/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST/QA_template.xml"
 #
-#winXML<-c("Blomberg/data/Exp2_Tcell.wsp")
+macXML<-c("/home/wjiang2/rglab/workspace/flowWorkspace/data/PBMC/Blomberg/Exp2_Tcell.wsp")
+
 macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/Lesson_8_vX.wsp"
 macXML<-"/home/wjiang2/rglab/workspace/flowWorkspace/fjWsExamples/20131206_Treg.wsp"
 #winXML<-file.path(path,winXML)
@@ -53,21 +54,22 @@ assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
 time1<-Sys.time()	
 #Rprof()
 GT<-parseWorkspace(ws
-                    ,name=2
+                    ,name=1
 					,execute=T
 #					,includeGates=T
-                    ,subset= 1:2
+#                    ,subset= 1:2
 #					,subset=c("517614.fcs")
 #					,isNcdf=T
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
-#                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
-                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+#                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 #                    ,path = "/loc/no-backup/ramey/Cytotrol/Treg FCS files/Treg BIIR/"
+#                      , path = "/home/wjiang2/rglab/workspace/flowWorkspace/data/PBMC/Blomberg/data/"
 					,dMode=4
                     ,extend_val=0
 #                    ,column.pattern=colP

@@ -230,8 +230,8 @@ setMethod("add",
 			
 			#convert to four recgates			
 			params<-parameters(action)
-			pd<-pData(parameters(getData(wf)))
-			desc<-sapply(params,function(x)flowWorkspace:::.getChannelMarker(pd,x)$des)
+			fr <- getData(wf, use.exprs = FALSE)
+			desc<-sapply(params,function(x)getChannelMarker(fr,x)$des)
 			
 			v <- action@boundary[params[1]]
 			h <- action@boundary[params[2]]
@@ -326,10 +326,8 @@ setMethod("Rm",
 			childrenNodeIds <- getChildren(envir,nid)
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion
-            childrenPaths <- getNodes(envir, showHidden = TRUE, isPath = TRUE)[childrenNodeIds]
+            childrenPaths <- getNodes(envir, showHidden = TRUE)[childrenNodeIds]
             
-#            #strip the first slash
-#            childrenPaths <- sapply(childrenPaths,function(thisPath)substr(thisPath,2,nchar(thisPath)),USE.NAMES=F)
 			lapply(childrenPaths,function(child)Rm(child,envir))
 			
             

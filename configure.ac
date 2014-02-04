@@ -31,6 +31,8 @@ AC_PROG_CC
 AC_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 
+# Check the compiler configured with R
+COMPILER=`R CMD config CC`
 
 #xml2 lib
 AC_MSG_NOTICE([setting xml2 flags...])
@@ -84,6 +86,10 @@ fi
 
 
 PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS"
+if test "${COMPILER}" = "clang"; then
+  PKG_CPPFLAGS+="-ftemplate-depth=900"
+fi
+
 PKG_LIBS="$XML2_LIBS $BOOST_LIBS"
 
 # Checks for library functions.

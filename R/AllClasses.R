@@ -178,7 +178,7 @@ setClass("GatingHierarchy"
 #' @rdname GatingSet-methods
 #' @aliases 
 #' GatingSet,character,character-method
-setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE,dMode=1,sampNloc="keyword",xmlParserOption, ...){
+setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE,dMode=1,sampNloc="keyword",xmlParserOption, wsType, ...){
       
       xmlFileName<-x
       sampleIDs<-y
@@ -188,10 +188,14 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
         sampNloc<-0
       stopifnot(!missing(xmlFileName))
       
+      wsType <- match(wsType, c("win", "mac", "vX"))
+      if(is.na(wsType))
+        stop("unrecognized workspace type: ", wsType)
+      
       if(!file.exists(xmlFileName))
         stop(xmlFileName," not found!")
       Object<-new("GatingSet")
-      Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(xmlParserOption), as.integer(dMode))
+      Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType), as.integer(dMode))
       Object@guid <- .uuid_gen()
       Object@flag <- FALSE
 
@@ -362,7 +366,7 @@ setValidity("GatingSetList", validGatingSetListObject)
 
 
 .flattenedGatingHiearchy<-function(gh){
-  this_nodes <- getNodes(gh,isPath=T, showHidden = TRUE)
+  this_nodes <- getNodes(gh, showHidden = TRUE)
   paste(this_nodes,collapse = "")
 }        
 #TODO:gating tree comparison needs to be improved        

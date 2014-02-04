@@ -51,7 +51,8 @@
   \code{getPopStats}. When calling \code{getData} on a
   GatingSet,the trees representing the GatingHierarchy for
   each sample in the GaingSet are presumed to have the same
-  structure.
+  structure. To update the data, use \code{flowData}
+  method.
 }
 \examples{
 \dontrun{
@@ -73,8 +74,8 @@
   Mike Jiang \email{wjiang2@fhcrc.org}
 }
 \seealso{
-  \code{\link{getIndices}} \code{\link{getProp}}
-  \code{\link{getPopStats}}
+  \code{\link{flowData}} \code{\link{getIndices}}
+  \code{\link{getProp}} \code{\link{getPopStats}}
 
   \code{\link{getIndices}} \code{\link{getProp}}
   \code{\link{getPopStats}}

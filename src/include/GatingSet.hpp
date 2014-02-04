@@ -25,6 +25,9 @@ using namespace std;
 #define ARCHIVE_TYPE_TEXT 1
 #define ARCHIVE_TYPE_XML 2
 
+#define WS_WIN 1
+#define WS_MAC 2
+#define WS_VX 3
 /*
  * have to use pointer GatingHierarchy * here,
  * because GatingHierarchy's destructor is responsible for clearing dynamically allocated memory
@@ -93,7 +96,7 @@ public:
 	~GatingSet();
 	GatingSet(){wsPtr=NULL;};
 	void setSample(string oldName, string newName);
-	GatingSet(string,bool,unsigned short,int,unsigned short _dMode=1);
+	GatingSet(string,bool,unsigned short,int,unsigned short wsType,unsigned short _dMode=1);
 	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
 	GatingSet(vector<string>,unsigned short _dMode=1);
 	GatingHierarchy * getGatingHierarchy(string );
