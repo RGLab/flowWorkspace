@@ -1,0 +1,39 @@
+\name{flowWorkspace.par.set}
+\alias{flowWorkspace.par.get}
+\alias{flowWorkspace.par.set}
+\title{flowWorkspace.par.set sets a set of parameters in the flowWorkspace package namespace.}
+\usage{
+  flowWorkspace.par.set(name, value)
+
+  flowWorkspace.par.get(name = NULL)
+}
+\arguments{
+  \item{value}{A named list of values to set for category
+  name or a list of such lists if name is missing.}
+
+  \item{name}{The name of a parameter category to get or
+  set.}
+}
+\description{
+  flowWorkspace.par.set sets a set of parameters in the
+  flowWorkspace package namespace.
+
+  flowWorkspace.par.get gets a set of parameters in the
+  flowWorkspace package namespace.
+}
+\details{
+  It is currently used to add/remove the support for a
+  specific flowJo versions (parsed from xml node
+  '/Workspace/version' in flowJo workspace)
+}
+\examples{
+#get the flowJo versions currently supported
+ old <- flowWorkspace.par.get("flowJo_versions")
+
+ #add the new version
+ old[["win"]] <- c(old[["win"]], "1.7")
+ flowWorkspace.par.set("flowJo_versions", old)
+
+ flowWorkspace.par.get("flowJo_versions")
+}
+
