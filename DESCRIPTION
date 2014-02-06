@@ -2,8 +2,8 @@ Package: flowWorkspace
 Type: Package
 Title: Import flowJo Workspaces into BioConductor and replicate flowJo gating
     with flowCore
-Version: 3.9.49
-Date: 2011-06-10
+Version: 3.9.50
+Date: 2011-06-12
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
 Description: This package is designed to facilitate comparison of automated
@@ -34,6 +34,7 @@ Imports:
     ,data.table
     ,plyr
     ,latticeExtra
+    ,Rcpp
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
@@ -46,7 +47,7 @@ Collate:
     'setGate-Methods.R'
     'zzz.R'
 Depends:
-    R (>= 2.16.0),Rcpp (>= 0.9.9),flowCore (>= 1.25.9),flowViz (>= 1.25.8),ncdfFlow(>= 2.9.18),gridExtra
+    R (>= 2.16.0),flowCore (>= 1.25.9),flowViz (>= 1.25.8),ncdfFlow(>= 2.9.18),gridExtra
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
