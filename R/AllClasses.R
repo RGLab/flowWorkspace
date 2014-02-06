@@ -9,6 +9,7 @@ NULL
 #' flowWorkspace-package
 #' flowWorkspace
 #' @docType package
+#' @importFrom Rcpp evalCpp
 #' @title Import and replicate flowJo workspaces and gating schemes using flowCore.
 #' @description Import flowJo workspaces into R. Generate the flowJo gating hierarchy and gates using flowCore functionality. Transform and compensate data in accordance with flowJo settings. Plot gates, gating hierarchies,  population statistics, and compare flowJo vs flowCore population summaries.
 #' @details
