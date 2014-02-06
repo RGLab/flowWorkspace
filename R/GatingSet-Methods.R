@@ -1385,39 +1385,65 @@ setMethod("clone",c("GatingSet"),function(x,...){
 #' @exportMethod recompute
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 setMethod("recompute",c("GatingSet"),function(x, y){
-			if(missing(y))
-				y<-1
-			if(is.character(y))
-                y <- .getNodeInd(x[[1]],y)
-				
-            extend_val <- 0
-            ignore_case <- FALSE
-            gains <- NULL
-			lapply(x,function(gh){
-						
-						
-						sampleName<-getSample(gh)
-						
-						message(paste("gating",sampleName,"..."))
-#					browser()
-#					time1<-Sys.time()
-						
-						data <- getData(gh)
-						mat <- exprs(data)
-						lapply(y,function(nodeID){
-                             nodeInd <- as.integer(nodeID)-1
-                             recompute <- TRUE
-							.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case)			
-						})
-						
-						
-						
-					})
-			message("done!")
-			invisible()
+			.recompute(x,y)
 						
 		})
-
+.recompute <- function(x,y){
+  if(missing(y))
+    y<-1
+  if(is.character(y))
+    y <- .getNodeInd(x[[1]],y)
+  
+  extend_val <- 0
+  ignore_case <- FALSE
+  gains <- NULL
+  lapply(x,function(gh){
+        
+        
+        sampleName<-getSample(gh)
+        
+        message(paste("gating",sampleName,"..."))
+#					browser()
+#					time1<-Sys.time()
+#						browser()
+        
+        isAllBoolGate <- all(sapply(y,flowWorkspace:::.isBoolGate, x = gh))
+        if(isAllBoolGate){
+          isloadData <- all(sapply(y, function(i){
+                    
+                    pid <- getParent(gh, i)
+                    isParentGated <- isGated(gh, pid)
+                    bf <- getGate(gh, i)
+                    refNodes <- filterObject(bf)$refs
+                    isRefGated <- all(sapply(refNodes, isGated, obj = gh))
+                    !(isParentGated&&isRefGated)
+                  }))
+          
+          
+        }else
+          isloadData <- TRUE
+        
+        if(isloadData){
+          data <- getData(gh)
+          mat <- exprs(data)
+        }else{
+          mat <- matrix(nrow = 0, ncol = 1, dimnames = list(NULL, "dummy"))
+        }                                                                  
+        
+        
+        lapply(y,function(nodeID){
+              nodeInd <- as.integer(nodeID)-1
+              recompute <- TRUE
+#              browser()
+              .Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case)			
+            })
+        
+        
+        
+      })
+  message("done!")
+  invisible()
+}
 #' apply \code{FUN} to each sample (i.e. \code{GatingHierarchy})
 #' 
 #' sample names are used for names of the returned list
