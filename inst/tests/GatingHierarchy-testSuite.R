@@ -234,6 +234,11 @@ test_that("show ",{
 test_that("keyword",{
       thisRes <- keyword(gh)
       expectRes <- readRDS(file.path(resultDir, "kw_gh.rds"))
+      kw_fn <- "flowWorkspaceData/extdata/CytoTrol_CytoTrol_1.fcs"
+      expect_output(thisRes$FILENAME, kw_fn)
+      expect_output(expectRes$FILENAME, kw_fn)
+      expectRes$FILENAME <- NULL
+      thisRes$FILENAME <- NULL
       expect_equal(thisRes, expectRes)
       
       expect_equal(keyword(gh, 'P11DISPLAY'), "LOG")
