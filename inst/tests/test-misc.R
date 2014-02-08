@@ -48,3 +48,31 @@ test_that("formula parser for plotGate (xyplot)",{
                       
     })
 
+test_that("mkformula",{
+      
+      expect_equal(mkformula(c("FSC-A", "SSC-A")),`FSC-A` ~ `SSC-A`)  
+      
+      expect_equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)
+      
+      expect_equal(mkformula(c(x = "SSC-A", y = "FSC-A")),`FSC-A` ~ `SSC-A`)
+      
+      expect_equal(mkformula(c(y = "SSC-A", x = "FSC-A")), `SSC-A` ~ `FSC-A`)
+      
+      expect_warning(mkformula(c(x = "SSC-A", x = "FSC-A")), "invalid axis names:")
+      
+      expect_equal(suppressWarnings(mkformula(c(x = "SSC-A", x = "FSC-A"))), `SSC-A` ~ `FSC-A`)
+      
+      expect_equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)
+      
+      expect_equal(mkformula(c("SSC-A", "FSC-A"), isChar = TRUE),"`SSC-A`~`FSC-A`")
+      
+      
+      
+      f1 <- `FSC-A` ~ `SSC-A` | PTID
+      cond <- f1[[3]][[3]]
+      expect_equal(.parseCond(cond), c("PTID"))
+      
+      f1 <- `FSC-A` ~ `SSC-A` | PTID * VISITNO
+      cond <- f1[[3]][[3]]
+      expect_equal(.parseCond(cond), c("PTID", "VISITNO"))
+    })
