@@ -376,12 +376,34 @@ test_that("getGate",{
 
 test_that(".mergeGates",{
       
-      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE)
+      #with customized x,y (incorrect prj)
+      projections <- list("3" = c("FSC-H", "FSC-A")
+                        , "4" = c("CD3", "FSC-A")
+                        , "5" = c("CD4", "CD3")
+                        , "6" = c("SSC-A", "<V545-A>")
+                    )      
+      expect_error(.mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE, projections = projections), "Given projection")
+
+      #swapped x,y (we don't really allow to change the dimensions for 2D gate yet, only the order can be changed)
+      projections <- list("3" = c("FSC-H", "FSC-A")
+                        , "4" = c("CD3", "FSC-A")
+                        , "5" = c("CD4", "CD3")
+                        , "6" = c("<R660-A>", "<V545-A>")
+                    )      
+      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE, projections = projections)
       expectRes <- list(`6` = list(popIds = 6:9
-                                , parentId = 5)
-                          )
+                                  , parentId = 5)
+                          )      
       expect_equal(thisRes, expectRes)
       
+      
+      #merge 4 quadrants
+      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE)
+      
+      expect_equal(thisRes, expectRes)
+      
+            
+      # 4 quadrants + 1 pop
       thisRes <- .mergeGates(gh, i = 5:9, bool = FALSE, merge = TRUE)
       expectRes <- c(`5` = 5, expectRes) 
       expect_equal(thisRes, expectRes)
@@ -395,9 +417,14 @@ test_that(".mergeGates",{
       
       expect_equal(thisRes, expectRes)
       
+      #4 quadrants without merge
       thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = FALSE)
       expectRes <- list(`6` = 6, `7` = 7, `8` = 8, `9` = 9)
       expect_equal(thisRes, expectRes)
+      
+      
+      
+      
       
     })
 
