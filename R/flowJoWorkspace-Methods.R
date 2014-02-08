@@ -250,12 +250,29 @@ getFileNames<-function(ws){
 		unlist(xpathApply(ws@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value")),use.names=FALSE);
 	}
 }
-
-mkformula<-function(dims2,isChar=FALSE){
-	if(length(dims2)==1){
-		form<-paste(c("",sapply((dims2), function(x) paste("`",x, "`", sep = ""))), collapse = "~")
+#' make a formula from a character vector
+#' 
+#' construct a valid formula to be used by flowViz::xyplot 
+#' 
+#' @param dims a \code{character} vector that contains y , x axis, if it is unnamed, then treated as the order of c(y,x)
+#' @param isChar \code{logical} flag indicating whehter to return a formula or a pasted string
+#' @return when \code{isChar} is TRUE, return a character, otherwise coerce it as a \code{formula}
+#' @examples 
+#' all.equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)#unamed vecotr
+#' all.equal(mkformula(c(x = "SSC-A", y = "FSC-A")),`FSC-A` ~ `SSC-A`)#named vector
+mkformula<-function(dims,isChar=FALSE){
+	if(length(dims)==1){
+		form<-paste(c("",sapply((dims), function(x) paste("`",x, "`", sep = ""))), collapse = "~")
 	}else{
-		form<-paste(sapply((dims2),function(x)paste("`",x,"`",sep="")),collapse="~")
+      
+        dnames <- names(dims)
+        if(!is.null(dnames)){
+          if(isTRUE(all.equal(sort(dnames), c("x", "y"))))
+            dims <-  dims[rev(order(names(dims)))]
+          else
+            warning("invalid axis names: ", paste(dnames, collapse = ","), "(expect 'x' or 'y')")
+        }
+		form <- paste(sapply((dims),function(x)paste("`",x,"`",sep="")),collapse="~")
 	}
 	if(!isChar)
 		form<-as.formula(form)	
