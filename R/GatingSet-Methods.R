@@ -1064,7 +1064,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       params<-rev(parameters(curGates[[1]]))
     
   }
-#  browser()
+  
   if(type == "xyplot")
   {
     if(length(params) == 1)
@@ -1095,8 +1095,15 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 
     }else
     {
-      yParam=params[1]
-      xParam=params[2]
+      if(is.null(formula)){
+        yParam=params[1]
+        xParam=params[2]  
+      }else{
+        forRes <- .formulaParser(formula)
+        yParam <- as.character(forRes[["yTerm"]])
+        xParam <- as.character(forRes[["xTerm"]])
+      }
+      
       
     }
     
@@ -1106,7 +1113,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   }
   
   
-  list(gates = curGates, xParam = xParam, yParam = yParam, stats = stats, isBool = isBool)
+  list(gates = curGates, xParam = as.vector(xParam), yParam = as.vector(yParam), stats = stats, isBool = isBool)
 }
 
 #' @param x a \code{GatingSet}

@@ -143,28 +143,34 @@ test_that("getGate for gs",{
 
 test_that("preporcess the gating tree to prepare for the plotGate",{
       
-      f1 <- `FSC-A` ~ `SSC-A` | PTID + VISITNO + STIM
-      
+      #no formula
       stats <- 0.99
       xParam <- "<B710-A>"
-      names(xParam) <- "<B710-A>"
       yParam <- "<R780-A>"
-      names(yParam) <- "<R780-A>"
       expect_value <- list(gates = getGate(gs, "CD4")
                             , xParam = xParam
                             , yParam = yParam
                             , stats = stats
                             , isBool = FALSE
-                          )
-                        
-      myValue <- flowWorkspace:::.preplot(gs, 5, "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
+                        )
+      
+      myValue <- .preplot(gs, 5, "xyplot", stats = stats, formula = NULL, default.y = "SSC-A")
+      expect_equal(myValue, expect_value)
+      
+            
+      #with formula override the gate x,y
+      f1 <- `FSC-A` ~ `SSC-A` | PTID + VISITNO + STIM
+      
+      expect_value["xParam"] <- "SSC-A" 
+      expect_value["yParam"] <- "FSC-A"
+      myValue <- .preplot(gs, 5, "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
       
       samples <- sampleNames(gs)
       
       #miss stats argument
       expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], getNodes(gs[[sn]])[5]), simplify = FALSE)
-      myValue <- flowWorkspace:::.preplot(x = gs, y = 5, type = "xyplot", formula = f1, default.y = "SSC-A")
+      myValue <- .preplot(x = gs, y = 5, type = "xyplot", formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
 
       #y is a list
@@ -179,14 +185,12 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
             filters(lapply(7:8,function(y)getGate(gs[[curSample]],y)))
           },simplify=F)
       xParam <- "<R660-A>"
-      names(xParam) <- "<R660-A>"
       yParam <- "<V545-A>"
-      names(yParam) <- "<V545-A>"
       expect_value[["gates"]] <- as(curGates,"filtersList")
       expect_value[["xParam"]] <- xParam
       expect_value[["yParam"]] <- yParam
       
-      myValue <- flowWorkspace:::.preplot(x = gs, y = list(popIds=7:8), type = "xyplot", formula = f1, default.y = "SSC-A")
+      myValue <- .preplot(x = gs, y = list(popIds=7:8), type = "xyplot", formula = NULL, default.y = "SSC-A")
 
       expect_identical(myValue, expect_value)
       

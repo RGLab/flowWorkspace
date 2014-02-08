@@ -1149,7 +1149,7 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
   
   if (length(ind) == 0) {
     # try marker name
-    ind <- which(unlist(lapply(pd$des, function(x) {
+    ind <- which(unlist(lapply(pd$desc, function(x) {
                   # split by white space and then match each individual string
                   if (fix) {
                     any(unlist(lapply(strsplit(x, " "), function(y) toupper(y) %in% toupper(name))))
@@ -1219,6 +1219,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                                 , arrange.main = getSample(x),arrange=TRUE,merge=TRUE
                                 , par.settings = list()
                                 , gpar = NULL
+                                , projections = list()
                                 , ...){
 			if(!x@flag){
 				message("Can't plot until you gate the data \n");
@@ -1251,10 +1252,36 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
             
             par.settings <- lattice:::updateList(theme.novpadding, par.settings)
             
-			plotList<-.mergeGates(x,y,bool,merge)
+            #convert popname to id
+      
+            prjNodeInds <- try(sapply(names(projections),.getNodeInd, obj = gh), silent = TRUE)
+            if(class(prjNodeInds) == "try-error")
+              stop("Invalid 'projections': ", geterrmessage())
+            
+            names(projections) <- prjNodeInds
+            #match given axis to channel names
+            fr <- getData(gh, use.exprs = FALSE)
+            projections <- lapply(projections, function(thisPrj){
+                                  sapply(thisPrj, function(thisAxis)getChannelMarker(fr, thisAxis)[["name"]])      
+                                })
+            
+            
+			plotList<-.mergeGates(x,y,bool,merge, projections = projections)
 			plotObjs<-lapply(plotList,function(y){
+                        
+                        if(is.list(y)){
+                          myPrj <- projections[[as.character(y[["popIds"]][1])]]
+                        }else{
+                          myPrj <- projections[[as.character(y)]]
+                        }
+                        if(is.null(myPrj)){
+                          formula <- NULL
+                        }else{
+                          formula <- mkformula(myPrj)
+                        }
+                        
 						#defaultCond is passed to flowViz::xyplot to disable lattice strip
-						return(.plotGate(x, y, par.settings = par.settings, ...))
+						return(.plotGate(x, y, par.settings = par.settings, formula = formula, ...))
 					})
 #			browser()
 			if(arrange)			
@@ -1263,7 +1290,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 				plotObjs
 			
 })
-.mergeGates<-function(gh,i,bool,merge){
+.mergeGates<-function(gh,i,bool,merge, projections = list()){
 	##filter out boolean gates when bool==FALSE
 #	browser()
 	if(!bool)
@@ -1280,19 +1307,34 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 	names(plotList)<-plotList
 	if(length(plotList)==0)
 		stop("not gates to plot")
+      
+    
 	if(merge)
 	{
 		#check if they have same parents and parameters
-		keylist<-sapply(plotList,function(y){
+		keylist <- sapply(plotList,function(y){
 					
 					if(!.isBoolGate(gh,y))
 					{
 						curGate<-getGate(gh,y)
-						#							browser()
+                        thisParam <- parameters(curGate) 													
 						if(extends(class(curGate),"filter"))
 						{
 							pid<-getParent(gh,y)
-							params<-paste(sort(unname(parameters(curGate))),collapse="")
+                            myPrj <- projections[[as.character(y)]]
+                            if(is.null(myPrj)){
+                              myPrj <- thisParam
+                            }else{
+                              if(!all(is.element(thisParam, myPrj)))
+                                stop("Given projection ("
+                                        , paste(myPrj,collapse = ",")
+                                        , ") is not consistent with the gate '"
+                                        , y 
+                                        ,"' dimension ("
+                                        , paste(thisParam,collapse = ",")
+                                    , ")")
+                            }
+							params<-paste(sort(unname(myPrj)),collapse="")
 							
 							paste(pid,params,sep="|")
 						}else
