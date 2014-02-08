@@ -42,7 +42,7 @@ getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 
 
 #modify functions within package namespace
-funcToinsert <- ".plotGate" 
+funcToinsert <- ".mergeGates" 
 funcSym <- as.symbol(funcToinsert)
 eval(substitute(environment(ff) <- getNamespace("flowWorkspace"), list(ff = funcSym)))
 assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
@@ -332,3 +332,24 @@ getQAStats(db,isFlowCore=F)
 dt <- getQAStats(GT[[1]],isChannel=T)
 dt[10:30,]
 
+#########
+##customized projections
+#########
+funcToinsert <- ".mergeGates" 
+funcSym <- as.symbol(funcToinsert)
+eval(substitute(environment(ff) <- getNamespace("flowWorkspace"), list(ff = funcSym)))
+assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
+
+x11()
+path <- "/home/wjiang2/rglab/workspace/openCyto"
+gs <- load_gs(file.path(path,"misc/gs_ICS"))
+gh <- gs[[1]]
+projections <- list("cd3" = c(x = "cd3", y = "AViD")
+                    , "cd4" = c(x = "cd8", y = "cd4")
+                    , "cd4/IL2" = c(x = "IL2", y = "IFNg")
+                    , "cd4/IFNg" = c(x = "IL2", y = "IFNg")
+                )   
+getNodes(gh)
+plotGate(gh, c(6,9,10,11), path = "auto")                    
+plotGate(gh, c(6,9,10,11), path = "auto", projections = projections, gpar = c(nrow = 2))
+filters(c(getGate(gh,10), getGate(gh, 11)))
