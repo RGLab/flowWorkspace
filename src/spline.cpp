@@ -17,7 +17,7 @@
  */
 void natural_spline_C(int n, double *x, double *y, double *b, double *c, double *d)
 {
-//	cout<<"entering natural_spline_C"<<endl;
+//	COUT<<"entering natural_spline_C"<<endl;
     int nm1, i;
     double t;
 
@@ -38,7 +38,7 @@ void natural_spline_C(int n, double *x, double *y, double *b, double *c, double 
 
     nm1 = n - 1;
 
-//	cout<<"Set up the tridiagonal system"<<endl;
+//	COUT<<"Set up the tridiagonal system"<<endl;
 
     /* Set up the tridiagonal system */
     /* b = diagonal, d = offdiagonal, c = right hand side */
@@ -52,7 +52,7 @@ void natural_spline_C(int n, double *x, double *y, double *b, double *c, double 
 	c[i] = c[i+1] - c[i];
     }
 
-//	cout<<"Gaussian elimination"<<endl;
+//	COUT<<"Gaussian elimination"<<endl;
 
     /* Gaussian elimination */
 
@@ -73,7 +73,7 @@ void natural_spline_C(int n, double *x, double *y, double *b, double *c, double 
     c[1] = c[n] = 0.0;
 
     /* Get cubic coefficients */
-//	cout<<"Get cubic coefficients"<<endl;
+//	COUT<<"Get cubic coefficients"<<endl;
 
     b[1] = (y[2] - y[1])/d[1] - d[i] * c[2];
     c[1] = 0.0;
@@ -205,13 +205,13 @@ void natural_spline(valarray<double>x, valarray<double> y, valarray<double>& b,v
     c[0] = 0.0;
     d[0] = c[1]/d[0];
     b[n-1] = (y[n-1] - y[nm1])/d[nm1] + d[nm1] * c[nm1];
-//    cout<<"loop to Get cubic coefficients"<<endl;
+//    COUT<<"loop to Get cubic coefficients"<<endl;
     for(i=1 ; i<n-1 ; i++) {
 	b[i] = (y[i+1]-y[i])/d[i] - d[i]*(c[i+1]+2.0*c[i]);
 	d[i] = (c[i+1]-c[i])/d[i];
 	c[i] = 3.0*c[i];
     }
-//    cout<<"end loop"<<endl;
+//    COUT<<"end loop"<<endl;
     c[n-1] = 0.0;
     d[n-1] = 0.0;
 
@@ -223,7 +223,7 @@ void spline_eval(int method, valarray<double> u, valarray<double> & v,
 /* Evaluate  v[l] := spline(u[l], ...),	    l = 1,..,nu, i.e. 0:(nu-1)
  * Nodes x[i], coef (y[i]; b[i],c[i],d[i]); i = 1,..,n , i.e. 0:(*n-1)
  */
-//	cout<<"entering spline_eval"<<endl;
+//	COUT<<"entering spline_eval"<<endl;
 
 	int n=x.size();
 	int nu=u.size();

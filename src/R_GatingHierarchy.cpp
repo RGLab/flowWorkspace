@@ -387,7 +387,7 @@ BEGIN_RCPP
 			}
 		default:
 		{
-//			cout<<g->getType()<<endl;
+//			COUT<<g->getType()<<endl;
 			throw(domain_error("unknown gate thrown by R_getGate!"));
 		}
 

@@ -46,12 +46,12 @@ nodeProperties & nodeProperties::operator=(nodeProperties np){
  */
 nodeProperties::~nodeProperties(){
 
-//	cout<<"entring the destructor of nodeProperties"<<endl;
+//	COUT<<"entring the destructor of nodeProperties"<<endl;
 
 	if(thisGate!=NULL)
 	{
 		if(dMode>=GATE_LEVEL)
-			cout<<"free gate:"<<this->thisName<<endl;
+			COUT<<"free gate:"<<this->thisName<<endl;
 		delete thisGate;
 	}
 }

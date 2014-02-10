@@ -96,13 +96,13 @@ void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 		if(v.at(i).x<=extend_val)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
+				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
 			v.at(i).x=xMin;
 		}
 		if(v.at(i).y<=extend_val)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
+				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
 			v.at(i).y=yMin;
 
 		}
@@ -128,7 +128,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			{
 				float this_gain = it->second;
 				if(dMode>=POPULATION_LEVEL)
-					cout<<"adjusting: "<<channel_x<<endl;;
+					COUT<<"adjusting: "<<channel_x<<endl;;
 
 				for(unsigned i=0;i<vertices.size();i++)
 					vertices.at(i).x=vertices.at(i).x/this_gain;
@@ -139,7 +139,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			{
 				float this_gain = it->second;
 				if(dMode>=POPULATION_LEVEL)
-					cout<<"adjusting: "<<channel_y<<endl;;
+					COUT<<"adjusting: "<<channel_y<<endl;;
 
 				for(unsigned i=0;i<vertices.size();i++)
 					vertices.at(i).y=vertices.at(i).y/this_gain;
@@ -147,7 +147,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 
 
 			if(dMode>=POPULATION_LEVEL)
-				cout<<endl;
+				COUT<<endl;
 			param.setVertices(vertices);
 			isGained=true;
 		}
@@ -187,7 +187,7 @@ void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
 		{
 			float this_gain = it->second;
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"adjusting: "<<channel_x<<endl;;
+				COUT<<"adjusting: "<<channel_x<<endl;;
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).x=antipodal_vertices.at(i).x/this_gain;
 		}
@@ -196,12 +196,12 @@ void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
 		{
 			float this_gain = it->second;
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"adjusting: "<<channel_y<<endl;;
+				COUT<<"adjusting: "<<channel_y<<endl;;
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).y=antipodal_vertices.at(i).y/this_gain;
 		}
 		if(dMode>=POPULATION_LEVEL)
-			cout<<endl;
+			COUT<<endl;
 
 		isGained=true;
 	}
@@ -312,7 +312,7 @@ void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	if(param.getMin()<=extend_val)
 	{
 		if(dMode>=POPULATION_LEVEL)
-			cout <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
+			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
 		param.setMin(xMin);
 	}
 
@@ -329,7 +329,7 @@ void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
 			float this_gain = it->second;
 
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"adjusting "<<param.getName()<<endl;
+				COUT<<"adjusting "<<param.getName()<<endl;
 
 			param.setMin(param.getMin()/this_gain);
 			param.setMax(param.getMax()/this_gain);
@@ -442,7 +442,7 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 		if(trans_x!=NULL)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"transforming: "<<channel_x<<endl;;
+				COUT<<"transforming: "<<channel_x<<endl;;
 
 			trans_x->transforming(vert.x);
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
@@ -451,14 +451,14 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 		if(trans_y!=NULL)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"transforming: "<<channel_y<<endl;;
+				COUT<<"transforming: "<<channel_y<<endl;;
 
 			trans_y->transforming(vert.y);
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).y=vert.y[i];
 		}
 		if(dMode>=POPULATION_LEVEL)
-			cout<<endl;
+			COUT<<endl;
 
 		isTransformed=true;
 	}
@@ -486,7 +486,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		if(trans_x!=NULL)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"transforming: "<<channel_x<<endl;;
+				COUT<<"transforming: "<<channel_x<<endl;;
 	//		valarray<double> output_x(trans_x->transforming(vert.x));
 			trans_x->transforming(vert.x);
 			for(unsigned i=0;i<vertices.size();i++)
@@ -496,7 +496,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		if(trans_y!=NULL)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"transforming: "<<channel_y<<endl;;
+				COUT<<"transforming: "<<channel_y<<endl;;
 	//		valarray<double> output_y(trans_y->transforming(vert.y));
 			trans_y->transforming(vert.y);
 			for(unsigned i=0;i<vertices.size();i++)
@@ -504,7 +504,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 				vertices.at(i).y=vert.y[i];
 		}
 		if(dMode>=POPULATION_LEVEL)
-			cout<<endl;
+			COUT<<endl;
 		param.setVertices(vertices);
 		isTransformed=true;
 	}
@@ -519,7 +519,7 @@ void rangeGate::transforming(trans_local & trans,unsigned short dMode){
 		if(curTrans!=NULL)
 		{
 			if(dMode>=POPULATION_LEVEL)
-				cout<<"transforming "<<param.getName()<<endl;
+				COUT<<"transforming "<<param.getName()<<endl;
 	//		valarray<double> output(curTrans->transforming(vert.x));
 	//		param.min=output[0];
 	//		param.max=output[1];
