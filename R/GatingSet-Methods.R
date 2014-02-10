@@ -1384,11 +1384,20 @@ setMethod("clone",c("GatingSet"),function(x,...){
         
 #' @exportMethod recompute
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
-setMethod("recompute",c("GatingSet"),function(x, y){
-			.recompute(x,y)
+setMethod("recompute",c("GatingSet"),function(x, y, ...){
+			.recompute(x,y, ...)
 						
 		})
-.recompute <- function(x,y){
+#' @param x \code{GatingSet}
+#' @param y \code{character} or \code{numeric} node index
+#' @param alwaysLoadData \code{logical} specifies whether to load the flow raw data for gating
+#'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
+#'                  Default 'FALSE' will check the parent node and reference to determine whether to load the data
+#'                  but this check may not be sufficient since  the further upstream ancester nodes may not be gated yet
+#'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
+#'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
+#'                  , yet may at the cost of unnecessary data IO     
+.recompute <- function(x,y, alwaysLoadData = FALSE){
   if(missing(y))
     y<-1
   if(is.character(y))
@@ -1403,25 +1412,35 @@ setMethod("recompute",c("GatingSet"),function(x, y){
         sampleName<-getSample(gh)
         
         message(paste("gating",sampleName,"..."))
-#					browser()
-#					time1<-Sys.time()
-#						browser()
         
-        isAllBoolGate <- all(sapply(y,flowWorkspace:::.isBoolGate, x = gh))
-        if(isAllBoolGate){
-          isloadData <- all(sapply(y, function(i){
-                    
-                    pid <- getParent(gh, i)
-                    isParentGated <- isGated(gh, pid)
-                    bf <- getGate(gh, i)
-                    refNodes <- filterObject(bf)$refs
-                    isRefGated <- all(sapply(refNodes, isGated, obj = gh))
-                    !(isParentGated&&isRefGated)
-                  }))
-          
-          
-        }else
+        
+        # Ideally, we want to track back to all ancesters and references to check if they are already gated
+        # in order to determine whether the raw data is needed
+        # but for the sake of speed, we only check the parent and reference node 
+        # of the boolGate at the moment
+        # if the further upstream ancester nodes are not gated yet, which will fail the gating 
+        # since we are passing the empty dummy data, we will simply throw the error and prompt user
+        # to recompute these upstream gates explicitly   
+        if(alwaysLoadData)
           isloadData <- TRUE
+        else{
+          isAllBoolGate <- all(sapply(y,flowWorkspace:::.isBoolGate, x = gh))
+          if(isAllBoolGate){
+            isloadData <- all(sapply(y, function(i){
+                      
+                      pid <- getParent(gh, i)
+                      isParentGated <- isGated(gh, pid)
+                      bf <- getGate(gh, i)
+                      refNodes <- filterObject(bf)$refs
+                      isRefGated <- all(sapply(refNodes, isGated, obj = gh))
+                      !(isParentGated&&isRefGated)
+                    }))
+            
+            
+          }else
+            isloadData <- TRUE  
+        }
+        
         
         if(isloadData){
           data <- getData(gh)
