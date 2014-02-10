@@ -908,6 +908,21 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="numeric"),function(obj
 			
 		})
     
+setGeneric("isGated",function(obj, y, ...)standardGeneric("isGated"))    
+setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+      
+#			browser()
+      isGated(obj,.getNodeInd(obj,y))
+      
+    })
+
+setMethod("isGated",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
+      
+      
+      .Call("R_getGateFlag",obj@pointer,getSample(obj),as.integer(y-1))
+      
+    })    
+        
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #' 
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList 
