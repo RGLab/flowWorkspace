@@ -1260,7 +1260,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
             
             names(projections) <- prjNodeInds
             #match given axis to channel names
-            fr <- getData(gh, use.exprs = FALSE)
+            fr <- getData(x, use.exprs = FALSE)
             projections <- lapply(projections, function(thisPrj){
                                   sapply(thisPrj, function(thisAxis)getChannelMarker(fr, thisAxis)[["name"]])      
                                 })
