@@ -21,7 +21,7 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 		if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
 			xmlXPathFreeObject(result);
 			xmlXPathFreeContext(context);
-//	                cout<<"No Groups"<<endl;;
+//	                COUT<<"No Groups"<<endl;;
 	         throw(domain_error("No Groups infomation!"));
 		}
 
@@ -111,11 +111,11 @@ string flowJoWorkspace::getSampleName(wsSampleNode & node){
 //xquery the "SampleNode" within "sample" context
 wsRootNode flowJoWorkspace::getRoot(wsSampleNode sample)
 {
-//	cout<<"parsing root node"<<endl;
+//	COUT<<"parsing root node"<<endl;
 	xmlXPathObjectPtr res=sample.xpathInNode(nodePath.sampleNode);
 	wsRootNode node(res->nodesetval->nodeTab[0]);
 	xmlXPathFreeObject(res);
-//	cout<<nodePath.sampleNode<<endl;
+//	COUT<<nodePath.sampleNode<<endl;
 	return node;
 }
 
@@ -191,7 +191,7 @@ PARAM_VEC flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 		curParam.range=4096;//not sure how to get this value from win workspaces
 
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<pName<<":"<<curFlag<<endl;
+			COUT<<pName<<":"<<curFlag<<endl;
 		res.push_back(curParam);
 	}
 	return res;
@@ -225,7 +225,7 @@ void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isPars
 	np.setName(node.getProperty("name").c_str());
 
 	if(dMode>=POPULATION_LEVEL)
-			cout<<"parse the population Node:"<<np.getName()<<endl;
+			COUT<<"parse the population Node:"<<np.getName()<<endl;
 	//add pop counts
 	POPSTATS fjStats;
 	fjStats["count"]=atoi(node.getProperty("count").c_str());
@@ -236,7 +236,7 @@ void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isPars
 		if(isParseGate)np.setGate(getGate(node));
 	}
 	catch (int e) {
-		cout<<"extracting gate failed:"<<np.getName()<<endl;
+		COUT<<"extracting gate failed:"<<np.getName()<<endl;
 	}
 	np.dMode=dMode;
 

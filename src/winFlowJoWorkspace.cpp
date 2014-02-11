@@ -10,7 +10,7 @@
 
 
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
-	cout<<"windows version of flowJo workspace recognized."<<endl;
+	COUT<<"windows version of flowJo workspace recognized."<<endl;
 	nodePath.group="/Workspace/Groups/GroupNode";// abs path
 	nodePath.sampleRef=".//SampleRef";//relative GroupNode
 	nodePath.sample="/Workspace/SampleList/Sample";//abs path
@@ -45,7 +45,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 	unsigned short nTransParentNodes=transParentNodeRes->nodesetval->nodeNr;
 	if(nTransParentNodes<=0)
 	{
-		cout<<"compensation not found!"<<endl;
+		COUT<<"compensation not found!"<<endl;
 		xmlXPathFreeObject(transParentNodeRes);
 		return(res);
 	}else if(nTransParentNodes>1){
@@ -91,7 +91,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 		{
 
 			if(dMode>=GATING_SET_LEVEL)
-				cout<<"biex func:"<<pname<<endl;
+				COUT<<"biex func:"<<pname<<endl;
 			biexpTrans *curTran=new biexpTrans();
 			curTran->setName("");
 			curTran->setChannel(pname);
@@ -109,7 +109,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 			curTp[curTran->getChannel()]=curTran;
 		}else if(transType.compare("linear")==0){
 //			if(dMode>=GATING_SET_LEVEL)
-//				cout<<"flin func:"<<pname<<endl;
+//				COUT<<"flin func:"<<pname<<endl;
 //			double minRange=atof(transNode.getProperty("minRange").c_str());
 //			double maxRange=atof(transNode.getProperty("maxRange").c_str());
 //			flinTrans *curTran=new flinTrans(minRange,maxRange);
@@ -120,7 +120,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 			//do nothing for linear trans
 		}else if(transType.compare("log")==0){
 			if(dMode>=GATING_SET_LEVEL)
-				cout<<"flog func:"<<pname<<endl;
+				COUT<<"flog func:"<<pname<<endl;
 			double offset=atof(transNode.getProperty("offset").c_str());
 			double decade=atof(transNode.getProperty("decades").c_str());
 			logTrans *curTran=new logTrans(offset,decade);
@@ -181,7 +181,7 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 					tp[curCmpChName]=curTrans;
 
-					cout<<curCmpChName<<":"<<curTrans->getName()<<" "<<curTrans->getChannel()<<endl;
+					COUT<<curCmpChName<<":"<<curTrans->getName()<<" "<<curTrans->getChannel()<<endl;
 
 					/*
 					 * calculate calibration table from the function
@@ -189,14 +189,14 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					if(!curTrans->computed())
 					{
 						if(dMode>=GATING_SET_LEVEL)
-							cout<<"computing calibration table..."<<endl;
+							COUT<<"computing calibration table..."<<endl;
 						curTrans->computCalTbl();
 					}
 
 					if(!curTrans->isInterpolated())
 					{
 						if(dMode>=GATING_SET_LEVEL)
-							cout<<"spline interpolating..."<<endl;
+							COUT<<"spline interpolating..."<<endl;
 						curTrans->interpolate();
 					}
 
@@ -237,7 +237,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 	xmlXPathObjectPtr CompEdres = xmlXPathEval((xmlChar *)path.c_str(), context);
 	if(xmlXPathNodeSetIsEmpty(CompEdres->nodesetval))
 	{
-		cout<<"no CompensationEditor found!"<<endl;
+		COUT<<"no CompensationEditor found!"<<endl;
 		xmlXPathFreeObject(CompEdres);
 		xmlXPathFreeContext(context);
 		return(res);
@@ -253,7 +253,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 	unsigned short nCompNodes=compNodeRes->nodesetval->nodeNr;
 	if(nCompNodes<=0)
 	{
-		cout<<"compensation not found!"<<endl;
+		COUT<<"compensation not found!"<<endl;
 		xmlXPathFreeObject(compNodeRes);
 		return(res);
 	}
@@ -266,7 +266,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 		curTg.setGroupName(compName);
 
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<"group:"<<compName<<endl;
+			COUT<<"group:"<<compName<<endl;
 		/*
 		 * parse transformations for current compNode
 		 */
@@ -292,7 +292,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 			{
 
 				if(dMode>=GATING_SET_LEVEL)
-					cout<<"logicle func:"<<pname<<endl;
+					COUT<<"logicle func:"<<pname<<endl;
 				biexpTrans *curTran=new biexpTrans();
 				curTran->setName(compName);
 
@@ -393,7 +393,7 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		 * instead,should look for sampleNode to match sampleID
 		 */
 //		string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
-////			cout<<path<<endl;
+////			COUT<<path<<endl;
 //		xmlXPathObjectPtr resX=node.xpath(path);
 		unsigned nX=resX->nodesetval->nodeNr;
 		for(unsigned i=0;i<nX;i++)
@@ -447,7 +447,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			int nParam=resPara->nodesetval->nodeNr;
 			if(nParam!=2)
 			{
-//				cout<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
+//				COUT<<"the dimension of the polygon gate:"<<nParam<<" is invalid!"<<endl;
 				throw(domain_error("invalid dimension of the polygon gate!"));
 			}
 			for(int i=0;i<nParam;i++)
@@ -475,7 +475,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				{
 					xmlXPathFreeObject(resVert);
 					xmlXPathFreeObject(resCoord);
-//					cout<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
+//					COUT<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
 					throw(domain_error("invalid  number of coordinates!"));
 				}
 				//get the coordinates values from the property of respective node
@@ -535,7 +535,7 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 				 */
 				rangeGate * g=new rangeGate();
 				if(dMode>=GATE_LEVEL)
-					cout<<"constructing rangeGate.."<<endl;
+					COUT<<"constructing rangeGate.."<<endl;
 				//get the negate flag
 				g->setNegate(node.getProperty("eventsInside")=="0");
 				g->setParam(r.at(0));
@@ -544,7 +544,7 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 			}else if(nParam==2){
 				rectGate * g=new rectGate();
 				if(dMode>=GATE_LEVEL)
-					cout<<"constructing rectGate.."<<endl;
+					COUT<<"constructing rectGate.."<<endl;
 				//get the negate flag
 				g->setNegate(node.getProperty("eventsInside")=="0");
 
@@ -609,7 +609,7 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	{
 		wsPolyGateNode pGNode(gNode.getNodePtr());
 		if(dMode>=GATE_LEVEL)
-			cout<<"parsing PolygonGate.."<<endl;
+			COUT<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
 
 	}
@@ -617,12 +617,12 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	{
 		wsRectGateNode rGNode(gNode.getNodePtr());
 		if(dMode>=GATE_LEVEL)
-			cout<<"parsing RectangleGate.."<<endl;
+			COUT<<"parsing RectangleGate.."<<endl;
 		return(getGate(rGNode));
 	}
 	else
 	{
-//		cout<<"gate type: "<<gateType<<" is not supported!"<<endl;
+//		COUT<<"gate type: "<<gateType<<" is not supported!"<<endl;
 		throw(domain_error("invalid  gate type!"));
 	}
 
