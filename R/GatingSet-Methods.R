@@ -1461,7 +1461,14 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
               nodeInd <- as.integer(nodeID)-1
               recompute <- TRUE
 #              browser()
-              .Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case)			
+              res <- try(.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case), silent = TRUE)
+              if(class(res) == "try-error"){
+                if(!isloadData&&grepl("not found in flowData", res))
+                  stop("Found ungated upstream population. Set 'alwaysLoadData = TRUE' for 'recompute' method, and try again!")
+                else
+                  stop(res)
+              }
+                
             })
         
         
