@@ -42,7 +42,7 @@ getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 
 
 #modify functions within package namespace
-funcToinsert <- ".mergeGates" 
+funcToinsert <- ".recompute" 
 funcSym <- as.symbol(funcToinsert)
 eval(substitute(environment(ff) <- getNamespace("flowWorkspace"), list(ff = funcSym)))
 assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
@@ -52,9 +52,9 @@ assignInNamespace(funcToinsert, eval(funcSym), ns = "flowWorkspace")
 ##parse as template and apply to new data			
 ###############################################################################
 time1<-Sys.time()	
-#Rprof()
+si#Rprof()
 GT<-parseWorkspace(ws
-                    ,name=1
+                    ,name=2
 					,execute=T
 #					,includeGates=T
 #                    ,subset= 1:2
@@ -62,15 +62,15 @@ GT<-parseWorkspace(ws
 #					,isNcdf=T
 #                      ,path = "/shared/silo_researcher/Gottardo_R/gfinak_working/Phenotyping/FACS Analysis/001-Y-Pheno-JK/"
 #                    ,path="/home/wjiang2/rglab/workspace/flowWorkspace/data/vX/"
-                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
+#                    ,path="/loc/no-backup/remote_fred_hvtn/HVTN080/FACS Data/1057-M-080/"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/RV144/1264-L-RV144"
 #                    ,path="~/rglab/workspace/flowWorkspace/data/Newell"
 #                      ,path="/shared/silo_researcher/Gottardo_R/mike_working/ITN029ST"
-#                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
+                    ,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Bcell/"
 #					,path="~/rglab/workspace/flowWorkspace/data/Cytotrol/NHLBI/Tcell/"
 #                    ,path = "/loc/no-backup/ramey/Cytotrol/Treg FCS files/Treg BIIR/"
 #                      , path = "/home/wjiang2/rglab/workspace/flowWorkspace/data/PBMC/Blomberg/data/"
-					,dMode=4
+					,dMode=0
                     ,extend_val=0
 #                    ,column.pattern=colP
 #                     ,prefix=F
@@ -83,7 +83,8 @@ getKeywords(GT,"CytoTrol_CytoTrol_1.fcs")
 getKeywords(GT[[1]])
 keyword(GT[[1]])
 keyword(GT[[1]],"FILENAME")
-
+x11()
+plotGate(GT[[1]], 3:5, projection = list("singlets"= c(x="FSC-H", y = "FSC-A")))
 
 klist <- keyword(GT)
 klist <- keyword(GT,"FILENAME")
