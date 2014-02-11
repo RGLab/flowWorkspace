@@ -1269,7 +1269,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
             
             #convert popname to id
       
-            prjNodeInds <- try(sapply(names(projections),.getNodeInd, obj = gh), silent = TRUE)
+            prjNodeInds <- try(sapply(names(projections),.getNodeInd, obj = x), silent = TRUE)
             if(class(prjNodeInds) == "try-error")
               stop("Invalid 'projections': ", geterrmessage())
             
