@@ -111,7 +111,7 @@ wsSampleNode getSample(T & ws,string sampleID){
 		xmlXPathObjectPtr res=docRoot.xpathInNode(xpath);
 		if(res->nodesetval->nodeNr>1)
 		{
-//			cout<<sampleID<<" is not unique within this group!"<<endl;
+//			COUT<<sampleID<<" is not unique within this group!"<<endl;
 			xmlXPathFreeObject(res);
 			throw(domain_error("non-unique sampleID within the group!"));
 		}
@@ -137,7 +137,7 @@ void GatingSet::freeWorkspace(){
 GatingSet::~GatingSet()
 {
 	if(dMode>=GATING_SET_LEVEL)
-		cout<<endl<<"start to free GatingSet..."<<endl;
+		COUT<<endl<<"start to free GatingSet..."<<endl;
 
 	freeWorkspace();
 
@@ -145,7 +145,7 @@ GatingSet::~GatingSet()
 		GatingHierarchy * ghPtr=it.second;
 		string sampleName=it.first;
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<endl<<"start to free GatingHierarchy:"<<sampleName<<endl;
+			COUT<<endl<<"start to free GatingHierarchy:"<<sampleName<<endl;
 
 		delete ghPtr;
 
@@ -155,14 +155,14 @@ GatingSet::~GatingSet()
 	{
 		trans_map curTrans=it->getTransMap();
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<endl<<"start to free transformatioin group:"<<it->getGroupName()<<endl;
+			COUT<<endl<<"start to free transformatioin group:"<<it->getGroupName()<<endl;
 		for(trans_map::iterator it1=curTrans.begin();it1!=curTrans.end();it1++)
 		{
 			transformation * curTran=it1->second;
 			if(curTran!=NULL)
 			{
 				if(dMode>=GATING_SET_LEVEL)
-						cout<<"free transformatioin:"<<curTran->getChannel()<<endl;
+						COUT<<"free transformatioin:"<<curTran->getChannel()<<endl;
 
 				delete curTran;
 				curTran = NULL;
@@ -290,7 +290,7 @@ void GatingSet::add(GatingSet & gs,vector<string> sampleNames,unsigned short _dM
 	 * involve deep copying of transformation pointers
 	 */
 //	if(dMode>=GATING_SET_LEVEL)
-//		cout<<"copying transformation from gh_template..."<<endl;
+//		COUT<<"copying transformation from gh_template..."<<endl;
 //	trans_global newTransGroup;
 
 //	trans_map newTmap=gh_template->getLocalTrans().cloneTransMap();
@@ -305,7 +305,7 @@ void GatingSet::add(GatingSet & gs,vector<string> sampleNames,unsigned short _dM
 	{
 		string curSampleName=*it;
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<endl<<"... copying GatingHierarchy: "<<curSampleName<<"... "<<endl;
+			COUT<<endl<<"... copying GatingHierarchy: "<<curSampleName<<"... "<<endl;
 
 
 		GatingHierarchy *toCopy=gs.getGatingHierarchy(curSampleName);
@@ -338,7 +338,7 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 	 * involve deep copying of transformation pointers
 	 */
 	if(dMode>=GATING_SET_LEVEL)
-		cout<<"copying transformation from gh_template..."<<endl;
+		COUT<<"copying transformation from gh_template..."<<endl;
 	trans_global newTransGroup;
 //	gh_template->printLocalTrans();
 	trans_map newTmap=gh_template->getLocalTrans().cloneTransMap();
@@ -353,7 +353,7 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 	{
 		string curSampleName=*it;
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<endl<<"... start cloning GatingHierarchy for: "<<curSampleName<<"... "<<endl;
+			COUT<<endl<<"... start cloning GatingHierarchy for: "<<curSampleName<<"... "<<endl;
 
 
 		GatingHierarchy *curGh=gh_template->clone(newTmap,&gTrans);
@@ -363,7 +363,7 @@ GatingSet::GatingSet(GatingHierarchy * gh_template,vector<string> sampleNames,un
 		ghs[curSampleName]=curGh;//add to the map
 
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"Gating hierarchy cloned: "<<curSampleName<<endl;
+			COUT<<"Gating hierarchy cloned: "<<curSampleName<<endl;
 	}
 }
 
@@ -378,7 +378,7 @@ GatingSet::GatingSet(vector<string> sampleNames,unsigned short _dMode){
 	{
 		string curSampleName=*it;
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<endl<<"... start adding GatingHierarchy for: "<<curSampleName<<"... "<<endl;
+			COUT<<endl<<"... start adding GatingHierarchy for: "<<curSampleName<<"... "<<endl;
 
 
 		GatingHierarchy *curGh=new GatingHierarchy();
@@ -437,7 +437,7 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 		 wsPtr->nodePath.sampNloc=sampNloc;
 		 dMode=_dMode;
 		 if(dMode>=GATING_SET_LEVEL)
-			 cout<<"internal gating set created from "<<sFileName<<endl;
+			 COUT<<"internal gating set created from "<<sFileName<<endl;
 
 		 wsPtr->parseVersionList();
 		 /*
@@ -447,7 +447,7 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 		 if(isParseGate)
 		 {
 			 if(dMode>=GATING_SET_LEVEL)
-				 cout<<"... start parsing global transformations... "<<endl;
+				 COUT<<"... start parsing global transformations... "<<endl;
 			 gTrans=wsPtr->getGlobalTrans();
 		 }
 }
@@ -467,7 +467,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 	for(it=sampleIDs.begin();it!=sampleIDs.end();it++)
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
+			COUT<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
 		wsSampleNode curSampleNode=getSample(*wsPtr,*it);
 
 		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,*wsPtr,isParseGate,&gTrans,&globalBiExpTrans,&globalLinTrans,dMode);
@@ -480,7 +480,7 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
 
 //		sampleList.push_back(sampleName);
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"Gating hierarchy created: "<<sampleName<<endl;
+			COUT<<"Gating hierarchy created: "<<sampleName<<endl;
 	}
 
 }

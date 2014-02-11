@@ -5,9 +5,20 @@
  *      Author: wjiang2
  */
 
-#ifndef SPLINE_HPP_
-#define SPLINE_HPP_
 
+#ifndef SPLINE_HPP_
+#include <Rcpp.h>
+using namespace Rcpp;
+
+#define SPLINE_HPP_
+#ifdef ROUT
+#define COUT Rcout
+#endif
+
+
+#ifndef ROUT
+#define COUT cout
+#endif
 
 #include <math.h>
 #include <stdexcept>

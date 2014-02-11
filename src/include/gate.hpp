@@ -86,12 +86,12 @@ public:
 		return res;
 	}
 	void print(){
-		cout<<"x:";
+		COUT<<"x:";
 		for(unsigned i=0;i<x.size();i++)
-				cout<<x[i]<<",";
-//		cout<<"x:";
+				COUT<<x[i]<<",";
+//		COUT<<"x:";
 //		for(unsigned i=0;i<x.size();i++)
-//				cout<<x[i]<<",";
+//				COUT<<x[i]<<",";
 
 	}
 };
