@@ -15,7 +15,7 @@
  */
 
 macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
-	cout<<"mac version of flowJo workspace recognized."<<endl;
+	COUT<<"mac version of flowJo workspace recognized."<<endl;
 
 	nodePath.group="/Workspace/Groups/GroupNode";
 	nodePath.sampleRef=".//SampleRef";
@@ -39,7 +39,7 @@ trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name)
 	trans_global_vec::iterator it;
 	for(it=tGVec.begin();it!=tGVec.end();it++)
 	{
-//		cout<<it->groupName<<it->trans.size()<<endl;
+//		COUT<<it->groupName<<it->trans.size()<<endl;
 		if(it->getGroupName().find(name)!=string::npos)
 			break;
 	}
@@ -85,7 +85,7 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 
 
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<curParam.param<<":"<<curParam.log<<":"<<curParam.range<<endl;
+			COUT<<curParam.param<<":"<<curParam.log<<":"<<curParam.range<<endl;
 		res.push_back(curParam);
 	}
 	xmlXPathFreeObject(parRes);
@@ -133,13 +133,13 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	if(isTransGropuFound)//no matched trans group
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"flowJo transformation group matched:"<<tGName<<endl;
+			COUT<<"flowJo transformation group matched:"<<tGName<<endl;
 
 	}
 	else
 	{
 		if(dMode>=GATING_HIERARCHY_LEVEL)
-			cout<<"no flowJo transformation group matched:"<<tGName<<endl;
+			COUT<<"no flowJo transformation group matched:"<<tGName<<endl;
 	}
 
 	for(PARAM_VEC::iterator it=transFlag.begin();it!=transFlag.end();it++)
@@ -176,7 +176,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 */
 					curTran=resIt->second;
 					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
+						COUT<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
 				}
 				else
 				{
@@ -187,7 +187,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					if(it->range<=4096)
 					{
 						if(dMode>=GATING_HIERARCHY_LEVEL)
-							cout<<"apply the biexpTrans transformation:"<<curChnl<<endl;
+							COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
 						/*
 						 * use bioexp trans instead of logTrans
@@ -214,7 +214,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				if(it->range<=4096)
 				{
 					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<"apply the biexpTrans transformation:"<<curChnl<<endl;
+						COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
 					curTran=_globalBiExpTrans;
 
@@ -244,7 +244,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 						 */
 						curTran=resIt->second;
 						if(dMode>=GATING_HIERARCHY_LEVEL)
-							cout<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
+							COUT<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
 					}
 					else
 					{
@@ -270,7 +270,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				if(it->highValue==4096)
 				{
 					if(dMode>=GATING_HIERARCHY_LEVEL)
-						cout<<"apply the linear transformation for gates only:"<<curChnl<<endl;
+						COUT<<"apply the linear transformation for gates only:"<<curChnl<<endl;
 					/*
 					 * some flowJo workspace somehow have highvalue inappropriately set to 4096
 					 * to FSC/SSC-like channels, so here we explicitly skip them
@@ -288,7 +288,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			 */
 			trs[transChName]=curTran;
 			if(dMode>=GATING_HIERARCHY_LEVEL)
-				cout<<"adding "<<curTran->getName()<<":"<<transChName<<endl;
+				COUT<<"adding "<<curTran->getName()<<":"<<transChName<<endl;
 			/*
 			 * calculate and interpolate the cal table if applicable
 			 */
@@ -297,7 +297,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			if(!curTran->isInterpolated())
 			{
 				if(dMode>=GATING_HIERARCHY_LEVEL)
-					cout<<"spline interpolating..."<<curTran->getName()<<endl;
+					COUT<<"spline interpolating..."<<curTran->getName()<<endl;
 				curTran->interpolate();
 
 			}
@@ -321,7 +321,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 	xmlXPathObjectPtr result = xmlXPathEval((xmlChar *)path.c_str(), context);
 	if(xmlXPathNodeSetIsEmpty(result->nodesetval))
 	{
-		cout<<"no calibration Tables found!"<<endl;
+		COUT<<"no calibration Tables found!"<<endl;
 		return(tgVec);
 	}
 	/*
@@ -339,7 +339,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 			throw(domain_error("empty name for calibration table"));
 
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<"parsing calibrationTable:"<<tname<<endl;
+			COUT<<"parsing calibrationTable:"<<tname<<endl;
 		/*
 		 * parse the string from tname to extract channel name
 		 */
@@ -393,7 +393,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		if(tRes==tgVec.end())//if not exsit yet, then push back the new instance
 		{
 			if(dMode>=GATING_SET_LEVEL)
-				cout<<"creating new transformation group:"<<transGroupName<<endl;
+				COUT<<"creating new transformation group:"<<transGroupName<<endl;
 			trans_global newTg;
 			newTg.setGroupName(transGroupName);
 			tgVec.push_back(newTg);
@@ -757,7 +757,7 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	{
 		wsBooleanGateNode bGNode(resGate->nodesetval->nodeTab[0]);
 		if(dMode>=GATE_LEVEL)
-			cout<<"parsing BooleanGate.."<<endl;
+			COUT<<"parsing BooleanGate.."<<endl;
 		xmlXPathFreeObject(resGate);
 		return(getGate(bGNode));
 
@@ -788,21 +788,21 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	{
 		wsPolyGateNode pGNode(node.getNodePtr());
 		if(dMode>=GATE_LEVEL)
-			cout<<"parsing PolygonGate.."<<endl;
+			COUT<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"PolyRect"))//parse rect as polygon gate
 	{
 		wsPolyGateNode pGNode(node.getNodePtr());
 		if(dMode>=GATE_LEVEL)
-			cout<<"parsing RectangleGate.."<<endl;
+			COUT<<"parsing RectangleGate.."<<endl;
 		return(getGate(pGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"Ellipse"))
 	{
 		wsEllipseGateNode eGNode(node.getNodePtr());
 		if(dMode>=GATE_LEVEL)
-			cout<<"parsing EllipseGate.."<<endl;
+			COUT<<"parsing EllipseGate.."<<endl;
 		return(getGate(eGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"Range"))
@@ -810,12 +810,12 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 		wsRangeGateNode rnGNode(node.getNodePtr());
 
 		if(dMode>=GATE_LEVEL)
-			cout<<"parsing RangeGate.."<<endl;
+			COUT<<"parsing RangeGate.."<<endl;
 		return(getGate(rnGNode));
 	}
 	else
 	{
-//		cout<<"gate type: "<<gateType<<" is not supported!"<<endl;
+//		COUT<<"gate type: "<<gateType<<" is not supported!"<<endl;
 		throw(domain_error("invalid  gate type!"));
 	}
 	return NULL;

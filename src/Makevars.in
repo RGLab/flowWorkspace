@@ -16,7 +16,7 @@ ifeq ($(boost_bundled),yes)
 	bregex_objs=${bregex_src:.cpp=.o}
 endif
 
-PKG_CPPFLAGS =-Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags}
+PKG_CPPFLAGS =-DROUT -Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags}
 PKG_LIBS =${bgl_objs} ${bregex_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` @PKG_LIBS@ 
 
 USERDIR =	../inst/lib

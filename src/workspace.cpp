@@ -13,7 +13,7 @@
 #include <sstream>
 workspace::~workspace(){
 
-//	cout<<"entring the destructor of workspace"<<endl;
+//	COUT<<"entring the destructor of workspace"<<endl;
 
 	 /*free the document */
 	if(doc!=NULL)
@@ -27,7 +27,7 @@ workspace::~workspace(){
 		 */
 		xmlCleanupParser();
 		if(dMode>=GATING_SET_LEVEL)
-			cout<<"xml freed!"<<endl;
+			COUT<<"xml freed!"<<endl;
 	}
 }
 
@@ -44,7 +44,7 @@ valarray<double> workspace::toArray(string sCalTable){
 	for(unsigned i=0;i<stringVec.size();i++)
 	{
 		res[i]=atof(stringVec.at(i).c_str());
-//		cout<<res[i]<<",";
+//		COUT<<res[i]<<",";
 	}
 	return res;
 }
