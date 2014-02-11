@@ -75,7 +75,7 @@ private:
 						void load(Archive & ar, const unsigned int version) {
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
 								if(version>0){
-//									cout<<"unpacking bits"<<endl;
+//									COUT<<"unpacking bits"<<endl;
 									unsigned nBits=nEvents;
 									unsigned nBytes=ceil(float(nBits)/8);
 									vector<unsigned char> x_bytes(nBytes,0);
@@ -94,7 +94,7 @@ private:
 								}
 								else
 								{
-//									cout<<"old version."<<endl;
+//									COUT<<"old version."<<endl;
 									ar & BOOST_SERIALIZATION_NVP(x);
 								}
 

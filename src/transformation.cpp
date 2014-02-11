@@ -30,7 +30,7 @@ trans_map trans_local::cloneTransMap(){
 		transformation * curTran=it->second;
 		if(curTran!=NULL)
 		{
-			cout<<"cloning transformatioin:"<<curTran->getChannel()<<endl;
+			COUT<<"cloning transformatioin:"<<curTran->getChannel()<<endl;
 			res[it->first]=curTran->clone();
 		}
 	}
@@ -122,14 +122,14 @@ void transformation::transforming(valarray<double> & input){
 			if(!computed())
 			{
 
-				cout<<"computing calibration table..."<<endl;
+				COUT<<"computing calibration table..."<<endl;
 				computCalTbl();
 			}
 
 			if(!isInterpolated())
 			{
 
-				cout<<"spline interpolating..."<<endl;
+				COUT<<"spline interpolating..."<<endl;
 				interpolate();
 			}
 		}
