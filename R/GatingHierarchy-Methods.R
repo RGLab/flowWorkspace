@@ -10,6 +10,15 @@ NULL
   xmlEventParse(contents, .graph_handler(), asText = TRUE, saxVersion = 2)$asGraphNEL()
 }
 
+#This legacy routine is currently not used
+#Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
+.isCompensated<-function(x){
+  flowCore:::checkClass(x,"GatingHierarchy")
+  comp<-getCompensationMatrices(x)@spillover
+  
+  !(is.null(rownames(comp))&identical(comp%*%comp,comp))
+}
+
 #' modify graph:::graph_handler by concatenate the multiple attr string into one
 #' to avoid partial node name display. Because XML::xmlEventParse somehow split
 #' the node name into arrays when there is numeric character reference (&#nnnn;)
