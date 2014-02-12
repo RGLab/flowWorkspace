@@ -96,7 +96,9 @@ gslist[1]
 getGate(gslist,2)
 
 gh <- GT[[1]]
-getNodes(gh)
+#library(microbenchmark)
+#microbenchmark(.Call("C_R_getNodeID", gh@pointer, "CytoTrol_CytoTrol_1.fcs","singlets"), times = 1e4)
+#microbenchmark(.Call("R_getNodeID", gh@pointer, "CytoTrol_CytoTrol_1.fcs","singlets", package = "flowWorkspace"), times = 1e5)
 g <- getGate(GT[[1]],10)
 add(GT,g,parent="4+",name="test")
 plotGate(GT[[1]],"4+",bool=T)
