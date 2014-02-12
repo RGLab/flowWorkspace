@@ -76,3 +76,13 @@ test_that("mkformula",{
       cond <- f1[[3]][[3]]
       expect_equal(.parseCond(cond), c("PTID", "VISITNO"))
     })
+
+test_that("trimWhiteSpace",
+    {
+      expect_equal(trimWhiteSpace(" a b "), "a b")
+      expect_equal(trimWhiteSpace(" a b \n"), "a b")
+      expect_equal(trimWhiteSpace(" a b \r\n"), "a b")
+      expect_equal(trimWhiteSpace(" a b \t\r\n"), "a b")
+      expect_equal(trimWhiteSpace("\t a \r b \t\r\n"), "a \r b")
+    })
+
