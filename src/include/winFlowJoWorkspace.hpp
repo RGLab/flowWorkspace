@@ -28,7 +28,7 @@ public:
 	  gate * getGate(wsPopNode &);
 	  polygonGate * getGate(wsPolyGateNode &, string vertexPath = "*[local-name()='vertex']");
 	  gate * getGate(wsRectGateNode &);
-	  ellipseGate * getGate(wsEllipseGateNode &);
+	  ellipsoidGate * getGate(wsEllipseGateNode &);
 	  rangeGate * getGate(wsRangeGateNode &);
 };
 

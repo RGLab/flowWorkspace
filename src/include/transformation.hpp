@@ -238,21 +238,45 @@ public:
 	logTrans * clone(){return new logTrans(*this);};
 };
 
+
 class linTrans:public transformation{
 friend class boost::serialization::access;
 	private:
 			template<class Archive>
-						void serialize(Archive &ar, const unsigned int version)
+						void save(Archive &ar, const unsigned int version) const
+
 						{
 							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+							if(version>=2){
 
+								ar & BOOST_SERIALIZATION_NVP(scale_factor);
+							}else
+							{
+								float _scale_factor = 64;
+								ar & BOOST_SERIALIZATION_NVP(_scale_factor);
+							}
 						}
+			template<class Archive>
+						void load(Archive &ar, const unsigned int version)
+						{
+							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+							if(version>=2){
+								ar & BOOST_SERIALIZATION_NVP(scale_factor);
+							}
+							else
+							{
+								scale_factor = 64;
+							}
+						}
+	float scale_factor;
 
 public:
 	linTrans();
+	linTrans(float _scale_factor);
 	void transforming(valarray<double> & input);
 	linTrans * clone(){return new linTrans(*this);};
 };
+BOOST_CLASS_VERSION(linTrans,2)
 
 class flinTrans:public transformation{
 	double min;

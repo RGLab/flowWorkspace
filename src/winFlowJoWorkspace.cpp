@@ -424,7 +424,12 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	return comp;
 }
 
-ellipseGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
+/*
+ * ellipsoidGate is a specialized ellipGate that will do a special scaling
+ * to the gate coordinates due to the historical storage of gate points in 256 * 256 scale
+ * in windows version of flowJo
+ */
+ellipsoidGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	/*
 	 * using the same routine of polygon gate to parse 4 ellipse coordinates
 	 */
@@ -438,7 +443,7 @@ ellipseGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipseGate * g=new ellipseGate();
+	ellipsoidGate * g=new ellipsoidGate();
 	pPoly.setName(pg->getParam().getNameArray());
 	g->setParam(pPoly);
 	g->setAntipodal(v);
@@ -447,6 +452,7 @@ ellipseGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	return(g);
 
 }
+
 /*
  * The only difference of parsing between polygon and ellipsoid
  * resides in vertexPath, default is "*[local-name()='vertex']", which is for polygon
