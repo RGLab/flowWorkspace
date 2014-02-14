@@ -22,7 +22,7 @@
   for generating plots in a multi-page pdf.  Nodes can be
   accessed with \code{\link{getNodes}}.}
 
-  \item{...}{\itemize{ \item{bool}{\code{logical}
+  \item{...}{\describe{ \item{bool}{\code{logical}
   specifying whether to plot boolean gates.}
   \item{arrange.main}{\code{character} The title of the
   main page of the plot. Default is the sample name. Only
