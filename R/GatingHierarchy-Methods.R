@@ -1236,7 +1236,17 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
         
 		plotGate(x,y,...)
 		})
-#' @importFrom gridExtra grid.arrange   
+#' @examples \dontrun{
+#' projections <- list("cd3" = c(x = "cd3", y = "AViD")
+#'                     , "cd4" = c(x = "cd8", y = "cd4")
+#'                     , "cd4/IL2" = c(x = "IL2", y = "IFNg")
+#'                     , "cd4/IFNg" = c(x = "IL2", y = "IFNg")
+#'                 )   
+#' plotGate(gh, c("cd3", "cd4", "cd4/IL2", "cd4/IFNg"), path = "auto", projections = projections, gpar = c(nrow = 2))
+#' 
+#' }    
+#' @importFrom gridExtra grid.arrange
+#' @rdname plotGate-methods   
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                     , function(x, y
                                 , bool=FALSE
