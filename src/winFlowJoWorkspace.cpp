@@ -424,16 +424,46 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	return comp;
 }
 
-polygonGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
-	throw(domain_error("ellipse gate is not supported yet"));
-	return NULL;
+/*
+ * ellipsoidGate is a specialized ellipGate that will do a special scaling
+ * to the gate coordinates due to the historical storage of gate points in 256 * 256 scale
+ * in windows version of flowJo
+ */
+ellipsoidGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
+	/*
+	 * using the same routine of polygon gate to parse 4 ellipse coordinates
+	 */
+	wsPolyGateNode pGNode(node.getNodePtr());
+	polygonGate * pg=getGate(pGNode, "*[local-name()='edge']/*[local-name()='vertex']");
+	vector<coordinate> v=pg->getParam().getVertices();
+	paramPoly pPoly;
+
+	/*
+	 * copy four coordinates
+	 */
+	if(v.size()!=4)
+		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
+	ellipsoidGate * g=new ellipsoidGate();
+	pPoly.setName(pg->getParam().getNameArray());
+	g->setParam(pPoly);
+	g->setAntipodal(v);
+	delete pg;
+
+	return(g);
+
 }
-polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
+
+/*
+ * The only difference of parsing between polygon and ellipsoid
+ * resides in vertexPath, default is "*[local-name()='vertex']", which is for polygon
+ * "*[local-name()='edge']/*[local-name()='vertex']" is for ellipsoidGate
+ */
+polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node, string vertexPath){
 	/*
 	 * not sure what is the criteria for using ellipseGate
 	 * since it is of the same format of polygonGate
 	 */
-	//	ellipseGate * gate=new ellipseGate();
+
 			polygonGate * gate=new polygonGate();
 			//get the negate flag
 			gate->setNegate(node.getProperty("eventsInside")=="0");
@@ -459,7 +489,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 			xmlXPathFreeObject(resPara);
 
 			//get vertices
-			xmlXPathObjectPtr resVert=node.xpathInNode("*[local-name()='vertex']");
+			xmlXPathObjectPtr resVert=node.xpathInNode(vertexPath);
 			for(int i=0;i<resVert->nodesetval->nodeNr;i++)
 			{
 				wsNode curVNode(resVert->nodesetval->nodeTab[i]);
@@ -475,14 +505,11 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				{
 					xmlXPathFreeObject(resVert);
 					xmlXPathFreeObject(resCoord);
-//					COUT<<"the number of coordinates:"<<nCoord<<" is invalid!"<<endl;
+
 					throw(domain_error("invalid  number of coordinates!"));
 				}
 				//get the coordinates values from the property of respective node
 				coordinate pCoord;
-	//			wsNode xcord(nodeSet->nodeTab[0]);
-	//			string sXcord=xcord.getProperty("value");
-	//			pCoord.first=atof(sXcord.c_str());
 				pCoord.x=atof(wsNode(nodeSet->nodeTab[0]).getProperty("value").c_str());
 				pCoord.y=atof(wsNode(nodeSet->nodeTab[1]).getProperty("value").c_str());
 				//and push to the vertices vector of the gate object
@@ -491,7 +518,7 @@ polygonGate* winFlowJoWorkspace::getGate(wsPolyGateNode & node){
 				xmlXPathFreeObject(resCoord);
 			}
 			xmlXPathFreeObject(resVert);
-//			gate->setAntipodal(v);
+
 			p.setName(pn);
 			p.setVertices(v);
 			gate->setParam(p);
@@ -619,6 +646,13 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 		if(dMode>=GATE_LEVEL)
 			COUT<<"parsing RectangleGate.."<<endl;
 		return(getGate(rGNode));
+	}
+	else if(xmlStrEqual(gateType,(const xmlChar *)"EllipsoidGate"))
+	{
+		wsEllipseGateNode eGNode(gNode.getNodePtr());
+		if(dMode>=GATE_LEVEL)
+			COUT<<"parsing EllipsoidGate.."<<endl;
+		return(getGate(eGNode));
 	}
 	else
 	{

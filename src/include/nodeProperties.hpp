@@ -49,6 +49,9 @@ private:
 					ar.register_type(static_cast<boolGate *>(NULL));
 					ar.register_type(static_cast<rangeGate *>(NULL));
 					ar.register_type(static_cast<rectGate *>(NULL));
+//					if(version>=3)
+						ar.register_type(static_cast<ellipsoidGate *>(NULL));
+
 					ar & BOOST_SERIALIZATION_NVP(thisGate);
 
 					ar.register_type(static_cast<BOOLINDICES *>(NULL));
@@ -72,6 +75,8 @@ private:
 						ar & BOOST_SERIALIZATION_NVP(hidden);
 					}
 
+
+
 			    }
 	template<class Archive>
 			void load(Archive &ar, const unsigned int version)
@@ -84,6 +89,8 @@ private:
 				ar.register_type(static_cast<boolGate *>(NULL));
 				ar.register_type(static_cast<rangeGate *>(NULL));
 				ar.register_type(static_cast<rectGate *>(NULL));
+				if(version>=3)
+					ar.register_type(static_cast<ellipsoidGate *>(NULL));
 				ar & BOOST_SERIALIZATION_NVP(thisGate);
 
 				ar.register_type(static_cast<BOOLINDICES *>(NULL));
@@ -132,6 +139,6 @@ public:
 
 
 };
-BOOST_CLASS_VERSION(nodeProperties,2)
+BOOST_CLASS_VERSION(nodeProperties,3)
 
 #endif /* NODEPROPERTIES_HPP_ */

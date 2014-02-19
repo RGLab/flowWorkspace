@@ -26,9 +26,9 @@ public:
 	trans_local getTransformation(wsRootNode,const compensation & comp,PARAM_VEC & transFlag,trans_global_vec *,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans);
 	string xPathSample(string sampleID);
 	  gate * getGate(wsPopNode &);
-	  polygonGate * getGate(wsPolyGateNode &);
+	  polygonGate * getGate(wsPolyGateNode &, string vertexPath = "*[local-name()='vertex']");
 	  gate * getGate(wsRectGateNode &);
-	  polygonGate * getGate(wsEllipseGateNode &);
+	  ellipsoidGate * getGate(wsEllipseGateNode &);
 	  rangeGate * getGate(wsRangeGateNode &);
 };
 

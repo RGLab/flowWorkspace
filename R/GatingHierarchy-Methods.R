@@ -10,6 +10,15 @@ NULL
   xmlEventParse(contents, .graph_handler(), asText = TRUE, saxVersion = 2)$asGraphNEL()
 }
 
+#This legacy routine is currently not used
+#Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
+.isCompensated<-function(x){
+  flowCore:::checkClass(x,"GatingHierarchy")
+  comp<-getCompensationMatrices(x)@spillover
+  
+  !(is.null(rownames(comp))&identical(comp%*%comp,comp))
+}
+
 #' modify graph:::graph_handler by concatenate the multiple attr string into one
 #' to avoid partial node name display. Because XML::xmlEventParse somehow split
 #' the node name into arrays when there is numeric character reference (&#nnnn;)
@@ -1227,7 +1236,17 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
         
 		plotGate(x,y,...)
 		})
-#' @importFrom gridExtra grid.arrange   
+#' @examples \dontrun{
+#' projections <- list("cd3" = c(x = "cd3", y = "AViD")
+#'                     , "cd4" = c(x = "cd8", y = "cd4")
+#'                     , "cd4/IL2" = c(x = "IL2", y = "IFNg")
+#'                     , "cd4/IFNg" = c(x = "IL2", y = "IFNg")
+#'                 )   
+#' plotGate(gh, c("cd3", "cd4", "cd4/IL2", "cd4/IFNg"), path = "auto", projections = projections, gpar = c(nrow = 2))
+#' 
+#' }    
+#' @importFrom gridExtra grid.arrange
+#' @rdname plotGate-methods   
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                     , function(x, y
                                 , bool=FALSE

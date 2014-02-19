@@ -1,5 +1,10 @@
 context("GatingHierarchy Accessors")
 
+test_that(".isCompensated",
+    {
+      expect_true(.isCompensated(gh))
+    })
+
 test_that("getNodeInd ",{
       
       expect_error(.getNodeInd(gh, 2), "Node:2 not found!")
