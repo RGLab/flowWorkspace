@@ -40,7 +40,8 @@ unsigned short myTestPolymorphism(){
 struct globalFixture{
 	globalFixture(){
 		cout << "Enter tolerance (e.g. 0.08):" << endl;
-		cin >> gTol;
+//		cin >> gTol;
+		gTol = 0.08;
 	};
 	~globalFixture(){};
 
@@ -75,6 +76,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.colfile="../output/HIPC_trial/colnames.txt";
 	myTest.archive="../output/HIPC_trial/gs.dat";
 
+//	myTest.isLoadArhive = true;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -92,6 +94,7 @@ BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 	myTest.colfile="../output/Blomberg/colnames.txt";
 	myTest.archive="../output/Blomberg/gs.dat";
 
+//	myTest.isLoadArhive = true;
 
 	parser_test(myTest);
 
@@ -200,6 +203,28 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+BOOST_AUTO_TEST_CASE(bioaster)
+{
+	myTest.filename="../data/bioaster_ellipsoidGate/Manip du 29-11-2013/Matrice 1.wsp";
+	myTest.wsType = WS_VX;
+	myTest.samples["8"]="PANEL 1_Matrice 1.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/bioaster/nc_comp.nc";
+	myTest.colfile="../output/bioaster/colnames.txt";
+	myTest.archive="../output/bioaster/gs/gs.dat";
+
+//	myTest.isSaveArchive = true;
+//	myTest.isLoadArhive = true;
+
+//	myTest.dMode = GATE_LEVEL;
+
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
+
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";
