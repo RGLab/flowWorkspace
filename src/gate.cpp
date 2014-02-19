@@ -463,6 +463,78 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 		isTransformed=true;
 	}
 }
+/*
+ * ellipsoidGate does not follow the regular transforming process
+ * for historical reason, it is defined in 256 * 256 scale, and we don't know
+ * how to translate it to the transformed scale yet, thus simply throw exception
+ * for the EllipsoidGate defined on the non-linear data channel
+ * for linear channels, we will do the same rescaling here.
+ */
+void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
+
+	if(!Transformed())
+	{
+		/*
+		 * get channel names to select respective transformation functions
+		 */
+		string channel_x=param.xName();
+		string channel_y=param.yName();
+
+		//get vertices in valarray format
+		vertices_valarray vert(antipodal_vertices);
+
+
+		transformation * trans_x=trans.getTran(channel_x);
+		transformation * trans_y=trans.getTran(channel_y);
+
+
+		/*
+		 * we don't know the exact scaling rules for ellipsoidGate of non-linear space yet
+		 * so simply throws error for now
+		 */
+		string err="Don't know how to scale the ellipsoidGate on the non-linear data space: ";
+		if(trans_x==NULL)
+		{
+			//do the special scaling first for linear ellipsoidGate
+			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
+			if(dMode>=POPULATION_LEVEL)
+				COUT<<"scaling: "<<channel_x<<endl;;
+
+			scale_f.transforming(vert.x);
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).x=vert.x[i];
+		}
+		else
+		{
+			err.append(channel_x);
+			throw(domain_error(err));
+		}
+
+		if(trans_y==NULL)
+		{
+			//do the special scaling first for linear ellipsoidGate
+			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
+			if(dMode>=POPULATION_LEVEL)
+				COUT<<"scaling: "<<channel_y<<endl;;
+
+			scale_f.transforming(vert.y);
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).y=vert.y[i];
+		}
+		else
+		{
+			err.append(channel_y);
+			throw(domain_error(err));
+		}
+
+		if(dMode>=POPULATION_LEVEL)
+			COUT<<endl;
+
+		isTransformed=true;
+	}
+
+}
+
 void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	if(!Transformed())
 	{

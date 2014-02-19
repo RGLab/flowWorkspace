@@ -58,8 +58,12 @@ logTrans::logTrans(double _offset,double _decade):transformation(false,LOG),offs
 }
 
 linTrans::linTrans():transformation(true,LIN){
-	calTbl.setInterpolated(true);
+        calTbl.setInterpolated(true);
 }
+
+scaleTrans::scaleTrans():linTrans(),scale_factor(1024){}
+scaleTrans::scaleTrans(float _scale_factor):linTrans(),scale_factor(_scale_factor){}
+
 flinTrans::flinTrans():transformation(false,FLIN),min(0),max(0){
 	calTbl.setInterpolated(true);
 }
@@ -105,7 +109,12 @@ double flinTrans::flin(double x){
 }
 void linTrans::transforming(valarray<double> & input){
 
-		input*=64;
+                input*=64;
+}
+
+void scaleTrans::transforming(valarray<double> & input){
+
+		input*=scale_factor;
 }
 
 void flinTrans::transforming(valarray<double> & input){
@@ -141,6 +150,7 @@ void transformation::transforming(valarray<double> & input){
 void transformation::setCalTbl(calibrationTable _tbl){
 	calTbl=_tbl;
 }
+
 transformation * trans_local::getTran(string channel){
 	transformation * res;
 	if(channel.compare("Time")==0||channel.compare("time")==0)
@@ -155,7 +165,6 @@ transformation * trans_local::getTran(string channel){
 
 	return res;
 }
-
 
 biexpTrans::biexpTrans(){
 	channelRange=4096;
