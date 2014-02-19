@@ -238,21 +238,45 @@ public:
 	logTrans * clone(){return new logTrans(*this);};
 };
 
+
 class linTrans:public transformation{
 friend class boost::serialization::access;
-	private:
-			template<class Archive>
-						void serialize(Archive &ar, const unsigned int version)
-						{
-							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+        private:
+                        template<class Archive>
+                                                void serialize(Archive &ar, const unsigned int version)
+                                                {
+                                                        ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
 
-						}
+                                                }
 
 public:
-	linTrans();
-	void transforming(valarray<double> & input);
-	linTrans * clone(){return new linTrans(*this);};
+        linTrans();
+        void transforming(valarray<double> & input);
+        linTrans * clone(){return new linTrans(*this);};
 };
+
+/*
+ * This class is dedicated to scale the EllipsoidGate
+ */
+class scaleTrans:public linTrans{
+friend class boost::serialization::access;
+	private:
+				template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+						ar & boost::serialization::make_nvp("linTrans",boost::serialization::base_object<transformation>(*this));
+						ar & BOOST_SERIALIZATION_NVP(scale_factor);
+				}
+
+	float scale_factor;
+
+public:
+	scaleTrans();
+	scaleTrans(float _scale_factor);
+	void transforming(valarray<double> & input);
+	scaleTrans * clone(){return new scaleTrans(*this);};
+};
+
 
 class flinTrans:public transformation{
 	double min;

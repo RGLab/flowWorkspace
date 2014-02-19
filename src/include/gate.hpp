@@ -160,6 +160,13 @@ public:
 /*
  * TODO:possibly implement getCentroid,getMajorAxis,getMinorAxis for all gate types
  */
+/*
+ * Important:
+ *
+ * now that nodePorperties class has customized copy constructor that uses clone member function
+ * form gate class. Thus it is necessary to define clone function for each derived gate class
+ * in order to avoid the dispatching to parent method and thus degraded to the parent gate object
+ */
 class gate {
 //	friend std::ostream & operator<<(std::ostream &os, const gate &gh);
 	friend class boost::serialization::access;
@@ -301,9 +308,11 @@ public:
  */
 class ellipseGate:public polygonGate {
 	friend class boost::serialization::access;
-private:
+protected:
 	//four antipodal points of ellipse
-	vector<coordinate> antipodal_vertices;
+		vector<coordinate> antipodal_vertices;
+private:
+
 	template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
@@ -319,10 +328,30 @@ public:
 	void extend(flowData &,float,unsigned short);
 	void gain(map<string,float> &,unsigned short);
 	void toPolygon(unsigned);
-	void transforming(trans_local &,unsigned short dMode);
+	virtual void transforming(trans_local &,unsigned short dMode);
 	ellipseGate * clone(){return new ellipseGate(*this);};
 
 };
+
+/*
+ * the purpose of having this class is to do the special scaling to the gate coordinates
+ * due to the historical FlowJo's implementation (win/vX) of the ellipsoid gate that the foci, distance, and edge points are expressed in 256 x 256 display coordinates
+ * to scale back to data space , for linear channel, the scaling factor is max_val/256
+ * for non-linear channel, we are not sure yet
+ */
+class ellipsoidGate:public ellipseGate {
+	friend class boost::serialization::access;
+private:
+	template<class Archive>
+	void serialize(Archive &ar, const unsigned int version)
+			{
+				ar & boost::serialization::make_nvp("ellipseGate",boost::serialization::base_object<ellipseGate>(*this));
+			}
+public:
+	void transforming(trans_local &,unsigned short dMode);
+	ellipsoidGate * clone(){return new ellipsoidGate(*this);};
+};
+
 /*
  * instead of defining the gating function here in boolGate
  * we put the gating logic in GatingHierarchy gating function

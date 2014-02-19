@@ -297,9 +297,8 @@ void parser_test(testCase & myTest){
 		{
 			flowData res=nc.readflowData(curSample);
 			gh->loadData(res);//
-//			trans_local trans=gs->getTransformation(curSample);
-//			gh->gating(10,trans,true);
-			gh->gating(10,true);
+			gh->transforming();
+			gh->gating(0,true);
 			gh->unloadData();;
 		}
 

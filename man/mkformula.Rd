@@ -1,0 +1,26 @@
+\name{mkformula}
+\alias{mkformula}
+\title{make a formula from a character vector}
+\usage{
+  mkformula(dims, isChar = FALSE)
+}
+\arguments{
+  \item{dims}{a \code{character} vector that contains y , x
+  axis, if it is unnamed, then treated as the order of
+  c(y,x)}
+
+  \item{isChar}{\code{logical} flag indicating whehter to
+  return a formula or a pasted string}
+}
+\value{
+  when \code{isChar} is TRUE, return a character, otherwise
+  coerce it as a \code{formula}
+}
+\description{
+  construct a valid formula to be used by flowViz::xyplot
+}
+\examples{
+all.equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)#unamed vecotr
+all.equal(mkformula(c(x = "SSC-A", y = "FSC-A")),`FSC-A` ~ `SSC-A`)#named vector
+}
+

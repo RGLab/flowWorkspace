@@ -61,6 +61,7 @@ private:
 				ar.register_type(static_cast<flinTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
+				ar.register_type(static_cast<scaleTrans *>(NULL));
 				ar & BOOST_SERIALIZATION_NVP(globalBiExpTrans);
 				ar & BOOST_SERIALIZATION_NVP(globalLinTrans);
 				ar & BOOST_SERIALIZATION_NVP(gTrans);
@@ -78,6 +79,8 @@ private:
 				ar.register_type(static_cast<flinTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
+				if(version>1)
+					ar.register_type(static_cast<scaleTrans *>(NULL));
 				if(version>0){
 					ar & BOOST_SERIALIZATION_NVP(globalBiExpTrans);
 					ar & BOOST_SERIALIZATION_NVP(globalLinTrans);
@@ -112,7 +115,7 @@ public:
 	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
 };
 
-BOOST_CLASS_VERSION(GatingSet,1)
+BOOST_CLASS_VERSION(GatingSet,2)
 
 void save_gs(const GatingSet &gs,string filename, unsigned short format);
 void restore_gs(GatingSet &s, string filename, unsigned short format);
