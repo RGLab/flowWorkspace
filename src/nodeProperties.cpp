@@ -12,7 +12,7 @@ nodeProperties::nodeProperties(){
 	dMode=0;
 }
 
-/* since nodeProperties contains noncopyable scope_ptr member
+/* since nodeProperties contains non-copyable scope_ptr member
  * , customized copy and assignment constructor is required
  *
  */

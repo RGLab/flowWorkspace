@@ -57,12 +57,12 @@ logTrans::logTrans(double _offset,double _decade):transformation(false,LOG),offs
 	calTbl.setInterpolated(true);
 }
 
-linTrans::linTrans():transformation(true,LIN),scale_factor(1024){
-	calTbl.setInterpolated(true);
+linTrans::linTrans():transformation(true,LIN){
+        calTbl.setInterpolated(true);
 }
-linTrans::linTrans(float _scale_factor):transformation(true,LIN),scale_factor(_scale_factor){
-	calTbl.setInterpolated(true);
-}
+
+scaleTrans::scaleTrans():linTrans(),scale_factor(1024){}
+scaleTrans::scaleTrans(float _scale_factor):linTrans(),scale_factor(_scale_factor){}
 
 flinTrans::flinTrans():transformation(false,FLIN),min(0),max(0){
 	calTbl.setInterpolated(true);
@@ -108,6 +108,11 @@ double flinTrans::flin(double x){
 	return (x+A)/(T+A);
 }
 void linTrans::transforming(valarray<double> & input){
+
+                input*=64;
+}
+
+void scaleTrans::transforming(valarray<double> & input){
 
 		input*=scale_factor;
 }

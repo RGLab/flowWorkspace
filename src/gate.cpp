@@ -472,65 +472,66 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
  */
 void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 
-
-	/*
-	 * get channel names to select respective transformation functions
-	 */
-	string channel_x=param.xName();
-	string channel_y=param.yName();
-
-	//get vertices in valarray format
-	vertices_valarray vert(antipodal_vertices);
-
-
-	transformation * trans_x=trans.getTran(channel_x);
-	transformation * trans_y=trans.getTran(channel_y);
-
-
-	/*
-	 * we don't know the exact scaling rules for ellipsoidGate of non-linear space yet
-	 * so simply throws error for now
-	 */
-	string err="Don't know how to scale the ellipsoidGate on the non-linear data space: ";
-	if(trans_x==NULL)
+	if(!Transformed())
 	{
-		//do the special scaling first for linear ellipsoidGate
-		linTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
+		/*
+		 * get channel names to select respective transformation functions
+		 */
+		string channel_x=param.xName();
+		string channel_y=param.yName();
+
+		//get vertices in valarray format
+		vertices_valarray vert(antipodal_vertices);
+
+
+		transformation * trans_x=trans.getTran(channel_x);
+		transformation * trans_y=trans.getTran(channel_y);
+
+
+		/*
+		 * we don't know the exact scaling rules for ellipsoidGate of non-linear space yet
+		 * so simply throws error for now
+		 */
+		string err="Don't know how to scale the ellipsoidGate on the non-linear data space: ";
+		if(trans_x==NULL)
+		{
+			//do the special scaling first for linear ellipsoidGate
+			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
+			if(dMode>=POPULATION_LEVEL)
+				COUT<<"scaling: "<<channel_x<<endl;;
+
+			scale_f.transforming(vert.x);
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).x=vert.x[i];
+		}
+		else
+		{
+			err.append(channel_x);
+			throw(domain_error(err));
+		}
+
+		if(trans_y==NULL)
+		{
+			//do the special scaling first for linear ellipsoidGate
+			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
+			if(dMode>=POPULATION_LEVEL)
+				COUT<<"scaling: "<<channel_y<<endl;;
+
+			scale_f.transforming(vert.y);
+			for(unsigned i=0;i<antipodal_vertices.size();i++)
+				antipodal_vertices.at(i).y=vert.y[i];
+		}
+		else
+		{
+			err.append(channel_y);
+			throw(domain_error(err));
+		}
+
 		if(dMode>=POPULATION_LEVEL)
-			COUT<<"scaling: "<<channel_x<<endl;;
+			COUT<<endl;
 
-		scale_f.transforming(vert.x);
-		for(unsigned i=0;i<antipodal_vertices.size();i++)
-			antipodal_vertices.at(i).x=vert.x[i];
+		isTransformed=true;
 	}
-	else
-	{
-		err.append(channel_x);
-		throw(domain_error(err));
-	}
-
-	if(trans_y==NULL)
-	{
-		//do the special scaling first for linear ellipsoidGate
-		linTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
-		if(dMode>=POPULATION_LEVEL)
-			COUT<<"scaling: "<<channel_y<<endl;;
-
-		scale_f.transforming(vert.y);
-		for(unsigned i=0;i<antipodal_vertices.size();i++)
-			antipodal_vertices.at(i).y=vert.y[i];
-	}
-	else
-	{
-		err.append(channel_y);
-		throw(domain_error(err));
-	}
-
-	if(dMode>=POPULATION_LEVEL)
-		COUT<<endl;
-
-	isTransformed=true;
-
 
 }
 

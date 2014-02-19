@@ -40,7 +40,8 @@ unsigned short myTestPolymorphism(){
 struct globalFixture{
 	globalFixture(){
 		cout << "Enter tolerance (e.g. 0.08):" << endl;
-		cin >> gTol;
+//		cin >> gTol;
+		gTol = 0.08;
 	};
 	~globalFixture(){};
 
@@ -75,6 +76,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.colfile="../output/HIPC_trial/colnames.txt";
 	myTest.archive="../output/HIPC_trial/gs.dat";
 
+//	myTest.isLoadArhive = true;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -92,6 +94,7 @@ BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 	myTest.colfile="../output/Blomberg/colnames.txt";
 	myTest.archive="../output/Blomberg/gs.dat";
 
+//	myTest.isLoadArhive = true;
 
 	parser_test(myTest);
 
@@ -210,7 +213,10 @@ BOOST_AUTO_TEST_CASE(bioaster)
 	myTest.colfile="../output/bioaster/colnames.txt";
 	myTest.archive="../output/bioaster/gs/gs.dat";
 
-	myTest.dMode = GATE_LEVEL;
+//	myTest.isSaveArchive = true;
+//	myTest.isLoadArhive = true;
+
+//	myTest.dMode = GATE_LEVEL;
 
 	parser_test(myTest);
 

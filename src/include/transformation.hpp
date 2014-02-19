@@ -241,42 +241,42 @@ public:
 
 class linTrans:public transformation{
 friend class boost::serialization::access;
+        private:
+                        template<class Archive>
+                                                void serialize(Archive &ar, const unsigned int version)
+                                                {
+                                                        ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+
+                                                }
+
+public:
+        linTrans();
+        void transforming(valarray<double> & input);
+        linTrans * clone(){return new linTrans(*this);};
+};
+
+/*
+ * This class is dedicated to scale the EllipsoidGate
+ */
+class scaleTrans:public linTrans{
+friend class boost::serialization::access;
 	private:
-			template<class Archive>
-						void save(Archive &ar, const unsigned int version) const
+				template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+						ar & boost::serialization::make_nvp("linTrans",boost::serialization::base_object<transformation>(*this));
+						ar & BOOST_SERIALIZATION_NVP(scale_factor);
+				}
 
-						{
-							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-							if(version>=2){
-
-								ar & BOOST_SERIALIZATION_NVP(scale_factor);
-							}else
-							{
-								float _scale_factor = 64;
-								ar & BOOST_SERIALIZATION_NVP(_scale_factor);
-							}
-						}
-			template<class Archive>
-						void load(Archive &ar, const unsigned int version)
-						{
-							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-							if(version>=2){
-								ar & BOOST_SERIALIZATION_NVP(scale_factor);
-							}
-							else
-							{
-								scale_factor = 64;
-							}
-						}
 	float scale_factor;
 
 public:
-	linTrans();
-	linTrans(float _scale_factor);
+	scaleTrans();
+	scaleTrans(float _scale_factor);
 	void transforming(valarray<double> & input);
-	linTrans * clone(){return new linTrans(*this);};
+	scaleTrans * clone(){return new scaleTrans(*this);};
 };
-BOOST_CLASS_VERSION(linTrans,2)
+
 
 class flinTrans:public transformation{
 	double min;
