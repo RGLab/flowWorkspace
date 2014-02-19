@@ -50,12 +50,12 @@ setMethod("openWorkspace",signature=signature(file="character"),definition= func
 	return(x);
 })
 
-setAs("list", "GatingSet", function(from, to ){
-	if(!all(unlist(lapply(from,function(y)class(y)=="GatingHierarchy"),use.names=FALSE))){
-		stop("Can't coerce this list to class GatingSet");
-	}
-	new(to, set=from)
-})
+#setAs("list", "GatingSet", function(from, to ){
+#	if(!all(unlist(lapply(from,function(y)class(y)=="GatingHierarchy"),use.names=FALSE))){
+#		stop("Can't coerce this list to class GatingSet");
+#	}
+#	new(to, set=from)
+#})
 
 setMethod("show",c("flowJoWorkspace"),function(object){
 	cat("FlowJo Workspace Version ",object@version,"\n");
@@ -260,6 +260,7 @@ getFileNames<-function(ws){
 #' @examples 
 #' all.equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)#unamed vecotr
 #' all.equal(mkformula(c(x = "SSC-A", y = "FSC-A")),`FSC-A` ~ `SSC-A`)#named vector
+#' @export 
 mkformula<-function(dims,isChar=FALSE){
 	if(length(dims)==1){
 		form<-paste(c("",sapply((dims), function(x) paste("`",x, "`", sep = ""))), collapse = "~")
@@ -279,11 +280,11 @@ mkformula<-function(dims,isChar=FALSE){
 	return(form)
 }
 
-setAs("GatingSet","list",function(from){l<-vector("list",length(from));
-for (i in seq_along(l)){
-l[[i]]<-from[[i]]
-}
-l})
+#setAs("GatingSet","list",function(from){l<-vector("list",length(from));
+#for (i in seq_along(l)){
+#l[[i]]<-from[[i]]
+#}
+#l})
 
 
 .getKeywordsBySampleID <- function(obj,sid,kw=NULL){
@@ -401,18 +402,6 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	l<-lapply(l,function(x)x[["value"]])
 	return(l)
 }
-
-
-#Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
-.isCompensated<-function(x){
-    flowCore:::checkClass(x,"GatingHierarchy")
-	comp<-getCompensationMatrices(x)@spillover
-	
-    !(is.null(rownames(comp))&identical(comp%*%comp,comp))
-}
-
-
-
 
 
 
@@ -545,11 +534,6 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 		options("warn"=lastwarn);
 		s
 }
-.trimWhiteSpace<-function (x) 
-{
-	###Taken from the limma package.
-    sub("[ \t\n\r]*$", "", sub("^[ \t\n\r]*", "", x))
-}
 
 setMethod("getCompensationMatrices","flowJoWorkspace",function(x){
 	.getCompensationMatrices(x@doc);
@@ -557,7 +541,7 @@ setMethod("getCompensationMatrices","flowJoWorkspace",function(x){
 ## choose the correct transformation based on the compensation ID. If it's -2, we check the Parameters section for the sample.
 setMethod("getTransformations","flowJoWorkspace",function(x){
 	nms<-.getCalibrationTableNames(x@doc)
-	u<-as.list(unique(unlist(lapply(sapply(nms,function(y)strsplit(y,"<")),function(y).trimWhiteSpace(y[1])),use.names=FALSE)))
+	u<-as.list(unique(unlist(lapply(sapply(nms,function(y)strsplit(y,"<")),function(y)trimWhiteSpace(y[1])),use.names=FALSE)))
 	T<-lapply(u,function(y).getCalibrationTableSearch(x@doc,y))
 	names(T)<-u
 	return(T)
@@ -597,6 +581,7 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	}
 	tbl;
 }
+#legacy code (not used)
 .getCalibrationTableByIndex<-function(x,ind){
 	top<-xmlRoot(x)
 		tbl<-xpathApply(top,paste("/Workspace/CalibrationTables/Table[",ind,"]",sep=""),xmlValue)
@@ -605,6 +590,7 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 		tbl<-splinefun(t(matrix(as.double(tbl),2))[,2:1],method="natural")
 	tbl;
 }
+#legacy code (not used)
 .getCalibrationTableByIndex_inverse<-function(x,ind){
 	top<-xmlRoot(x)
 		tbl<-xpathApply(top,paste("/Workspace/CalibrationTables/Table[",ind,"]",sep=""),xmlValue)
@@ -614,6 +600,7 @@ setMethod("getTransformations","flowJoWorkspace",function(x){
 	tbl;
 }
 
+#legacy code (not used)
 #Function that returns the dimension specific transformation (from transformed space to raw intensity space)
 #meant to be used for writing out gates to XML for flowJo to read.
 .getCalibrationTable_inverse<-function(x,name){

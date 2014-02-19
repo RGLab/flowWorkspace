@@ -9,6 +9,7 @@ test_that("can load xml workspace",
   expect_that(ws, is_a("flowJoWorkspace"))
 })
 
+source("flowJoWorkspace-testSuite.R", local = TRUE)
 
 
 gs <- NULL
@@ -37,5 +38,12 @@ test_that("getTransformations ",{
 source("GatingHierarchy-testSuite.R", local = TRUE)
 source("GatingSet-testSuite.R", local = TRUE)
 
+
+
+test_that("closeWorkspace",
+    {
+      closeWorkspace(ws)
+      expect_output(ws, fjRes[["ws_show_close"]][-2])
+    })
 
 
