@@ -462,7 +462,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 			.getSampleGroups(x@doc,win)
 		})
 
-###add support for win version
+#' @importFrom stats na.omit
 .getSampleGroups<-function(x,win=FALSE){
   
 	if(!win){
@@ -475,6 +475,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 							if(is.null(sid)){
 								sid<-NA;
 							}
+#                            browser()
 							groups<-na.omit(data.frame(groupName=gid[[1]]
                                                       ,groupID=as.numeric(gid[2])
                                                       ,sampleID=as.numeric(sid)
@@ -502,13 +503,6 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 }
 
 
-##This function should return all the calibration vectors associated with a single prefix name.
-.getCalibrationTableSearch<-function(doc,term){
-	nms<-.getCalibrationTableNames(doc)[grep(term,.getCalibrationTableNames(doc))]
- 	trange<-sapply(nms,function(i).getCalibrationTable(doc,i))
-	names(trange)<-nms;
-	trange;
-}
 
 .getSamples<-function(x,win=FALSE){
 	lastwarn<-options("warn")[[1]]
@@ -535,85 +529,10 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 		s
 }
 
-setMethod("getCompensationMatrices","flowJoWorkspace",function(x){
-	.getCompensationMatrices(x@doc);
-})
-## choose the correct transformation based on the compensation ID. If it's -2, we check the Parameters section for the sample.
-setMethod("getTransformations","flowJoWorkspace",function(x){
-	nms<-.getCalibrationTableNames(x@doc)
-	u<-as.list(unique(unlist(lapply(sapply(nms,function(y)strsplit(y,"<")),function(y)trimWhiteSpace(y[1])),use.names=FALSE)))
-	T<-lapply(u,function(y).getCalibrationTableSearch(x@doc,y))
-	names(T)<-u
-	return(T)
-})
 
-.getCompensationMatrices<-function(z){
-	top<-xmlRoot(z);
-	matrices<-xpathApply(top,"/Workspace/CompensationMatrices/CompensationMatrix",function(x)xmlAttrs(x)[["name"]]);
-	cmats<-lapply(matrices,function(mat){
-	cmat<-as.numeric(unlist(xpathApply(top,paste("/Workspace/CompensationMatrices/CompensationMatrix[@name='",mat,"']/Channel/ChannelValue",sep=""),xmlGetAttr,"value"),use.names=FALSE))
-	d<-sqrt(length(cmat));
-	cmat<-matrix(cmat,d,byrow=TRUE)
-	colnames(cmat)<-matrix((unlist(xpathApply(top,paste("/Workspace/CompensationMatrices/CompensationMatrix[@name='",mat,"']/Channel/ChannelValue",sep=""),xmlGetAttr,"name"),use.names=FALSE)),byrow=TRUE,d)[1,]
-	rownames(cmat)<-matrix((unlist(xpathApply(top,paste("/Workspace/CompensationMatrices/CompensationMatrix[@name='",mat,"']/Channel/ChannelValue",sep=""),xmlGetAttr,"name"),use.names=FALSE)),byrow=TRUE,d)[1,]
-	cmat;
-	})
-	names(cmats)<-matrices;
-	cmats;
-}
 
-.getCalibrationTableNames<-function(x){
-	top<-xmlRoot(x)
-	tblnames<-xpathApply(top,"/Workspace/CalibrationTables/node()",function(x)xmlGetAttr(x,"name"))
-	unlist(tblnames,use.names=FALSE);
-}
 
-#' @importFrom stats na.omit sd splinefun
-.getCalibrationTable<-function(x,name){
-	top<-xmlRoot(x)
-	if(inherits(name,"character")&length(name)==1){
-		tbl<-xpathApply(top,paste("/Workspace/CalibrationTables/Table[@name='",name,"']",sep=""),xmlValue)
-		tbl<-strsplit(gsub("\n","",tbl[[1]]),",")[[1]]
-		#tbl<-ecdf(t(matrix(as.numeric(tbl),2))[,2])
-		tbl<-splinefun(t(matrix(as.double(tbl),2))[,2:1],method="natural")
-	}else{
-		stop("Invalid name argument");
-	}
-	tbl;
-}
-#legacy code (not used)
-.getCalibrationTableByIndex<-function(x,ind){
-	top<-xmlRoot(x)
-		tbl<-xpathApply(top,paste("/Workspace/CalibrationTables/Table[",ind,"]",sep=""),xmlValue)
-		tbl<-strsplit(gsub("\n","",tbl[[1]]),",")[[1]]
-		#tbl<-ecdf(t(matrix(as.numeric(tbl),2))[,2])
-		tbl<-splinefun(t(matrix(as.double(tbl),2))[,2:1],method="natural")
-	tbl;
-}
-#legacy code (not used)
-.getCalibrationTableByIndex_inverse<-function(x,ind){
-	top<-xmlRoot(x)
-		tbl<-xpathApply(top,paste("/Workspace/CalibrationTables/Table[",ind,"]",sep=""),xmlValue)
-		tbl<-strsplit(gsub("\n","",tbl[[1]]),",")[[1]]
-		#tbl<-ecdf(t(matrix(as.numeric(tbl),2))[,2])
-		tbl<-splinefun(t(matrix(as.double(tbl),2))[,1:2],method="natural")
-	tbl;
-}
 
-#legacy code (not used)
-#Function that returns the dimension specific transformation (from transformed space to raw intensity space)
-#meant to be used for writing out gates to XML for flowJo to read.
-.getCalibrationTable_inverse<-function(x,name){
-	top<-xmlRoot(x)
-	if(inherits(name,"character")&length(name)==1){
-		tbl<-xpathApply(top,paste("/Workspace/CalibrationTables/Table[@name='",name,"']",sep=""),xmlValue)
-		tbl<-strsplit(gsub("\n","",tbl[[1]]),",")[[1]]
-		#tbl<-ecdf(t(matrix(as.numeric(tbl),2))[,2])
-		tbl<-splinefun(t(matrix(as.double(tbl),2))[,1:2],method="natural")
-	}else{
-		stop("Invalid name argument");
-	}
-	tbl;
-}
 
-	
+
+
