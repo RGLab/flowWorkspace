@@ -9,12 +9,7 @@ test_that("show workspace",
 
 test_that("summary workspace",
     {
-      expect_output(summary(ws), fjRes[["ws_show"]])
-    })
-
-test_that("summary workspace",
-    {
-      expect_output(summary(ws), fjRes[["ws_show"]])
+      expect_output(summary(ws), fjRes[["ws_show"]][-2])
     })
 
 test_that("getWorkspaceType",
