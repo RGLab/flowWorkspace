@@ -189,7 +189,7 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
         sampNloc<-0
       stopifnot(!missing(xmlFileName))
       
-      wsType <- match(wsType, c("win", "mac", "vX"))
+      wsType <- match(wsType, c("win", "macII", "vX", "macIII"))
       if(is.na(wsType))
         stop("unrecognized workspace type: ", wsType)
       
