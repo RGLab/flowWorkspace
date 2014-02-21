@@ -19,10 +19,9 @@ test_that("summary workspace",
 
 test_that("getWorkspaceType",
     {
-      version_support <- flowWorkspace.par.get("flowJo_versions")
       
-      expect_equal(.getWorkspaceType("2.0"), "mac")
-#      expect_equal(.getWorkspaceType("3.0"), "mac")
+      expect_equal(.getWorkspaceType("2.0"), "macII")
+      expect_equal(.getWorkspaceType("3.0"), "macIII")
       
       expect_equal(.getWorkspaceType("1.6"), "win")
       expect_equal(.getWorkspaceType("1.61"), "win")
@@ -39,29 +38,28 @@ test_that("getWorkspaceType",
 
 test_that("getFileNames workspace",
     {
+      expect_equal(.getFileNames(ws@doc, wsType = "macII"), fjRes[["getFn_ws"]])
       expect_equal(getFileNames(ws), fjRes[["getFn_ws"]])
+      
     })
 
 test_that("getKeywordsBySampleID workspace",
     {
-      expect_equal(.getKeywordsBySampleID(ws, sid = 1), fjRes[["getkwByID_ws"]])
-      expect_equal(.getKeywordsBySampleID(ws, sid = 1, kw = "P8DISPLAY"), c(value = "LOG"))
+      expect_equal(.getKeywordsBySampleID(ws, sid = 1, samplePath = "/Workspace/SampleList/Sample"), fjRes[["getkwByID_ws"]])
+      expect_equal(.getKeywordsBySampleID(ws, sid = 1, kw = "P8DISPLAY", samplePath = "/Workspace/SampleList/Sample"), c(value = "LOG"))
     })
 
 test_that("getKeywords workspace",
     {
       expect_equal(getKeywords(ws, "CytoTrol_CytoTrol_1.fcs"), fjRes[["getkw_ws"]])
+      expect_equal(.getKeywords(ws@doc, "CytoTrol_CytoTrol_1.fcs", samplePath = "/Workspace/SampleList/Sample"), fjRes[["getkw_ws"]])
     })
 
 test_that(".getKeyword workspace",
     {
-      expect_equal(.getKeyword(ws, "$FIL"), fjRes[[".getkw_ws"]])
+      expect_equal(.getKeyword(ws, "$FIL", samplePath = "/Workspace/SampleList/Sample"), fjRes[[".getkw_ws"]])
     })
 
-test_that(".getKeywords workspace",
-    {
-      expect_equal(.getKeywords(ws@doc, "CytoTrol_CytoTrol_1.fcs"), fjRes[[".getkws_ws"]])
-    })
 
 test_that("getFJWSubsetIndices workspace",
     {
@@ -79,12 +77,12 @@ test_that("getFJWSubsetIndices workspace",
 
 test_that(".getSamples workspace",
     {
-      expect_equal(.getSamples(ws@doc), fjRes[[".getSamples"]])
+      expect_equal(.getSamples(ws@doc, wsType = "macII"), fjRes[[".getSamples"]])
       expect_equal(getSamples(ws), fjRes[[".getSamples"]])
     })
 
 test_that(".getSampleGroups workspace",
     {
-      expect_equal(.getSampleGroups(ws@doc), fjRes[[".getSampleGroups"]])
+      expect_equal(.getSampleGroups(ws@doc, wsType = "macII"), fjRes[[".getSampleGroups"]])
       expect_equal(getSampleGroups(ws), fjRes[[".getSampleGroups"]])
     })

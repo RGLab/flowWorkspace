@@ -154,26 +154,20 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	stop("isNcdf must be FALSE since you don't have netcdf installed");
 	}
 	
-	filenames<-flowWorkspace:::getFileNames(obj);
 	
 	x<-obj@doc;
 	
 	wsversion<-xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]];
-     
     
     wsType <- .getWorkspaceType(wsversion)
-    message(wsType, " workspace recognized.")
+    wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
+    message(gsub("I","",wsType), " workspace recognized.")
 #	browser()
-	if(wsType == "mac"){
-      s<-.getSamples(x);
-      g<-.getSampleGroups(x);
-	}else{
-      #Windows version code
-      s<-.getSamples(x,win=TRUE);
-      g<-.getSampleGroups(x,win=TRUE);
-		
-	}
-#	browser()
+    filenames <- .getFileNames(x, wsType);
+      
+    s <- .getSamples(x, wsType);
+    g <- .getSampleGroups(x, wsType);
+	
 	sg<-merge(s,g,by="sampleID");
 	#requiregates - exclude samples where there are no gates? if(requiregates==TRUE)
 	if(requiregates){
@@ -200,18 +194,18 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	if(is.character(subset)){
 	#subset s sg by file name
           #pull the file names from the keywords
-          filenames<-.getKeyword(obj,"$FIL")
+          filenames<-.getKeyword(obj,"$FIL", wsNodePath[["sample"]])
           #need to match filename to sampleID
-          sg<-cbind(sg,filename=sapply(sg$sampleID,function(x).getKeywordsBySampleID(obj,x,"$FIL")))
+          sg<-cbind(sg,filename=sapply(sg$sampleID,function(x).getKeywordsBySampleID(obj,x,"$FIL", wsNodePath[["sample"]])))
           sg<-subset(sg,filename%in%subset)
 	}
-	if(wsType == "mac"){
+	if(grepl("mac",wsType)){
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
-			xpathApply(x,paste("/Workspace/SampleList/Sample[@sampleID='",i,"']",sep=""))[[1]]
+			xpathApply(x,paste(wsNodePath[["sample"]], "[@sampleID='",i,"']",sep=""))[[1]]
 			})
 	}else{
 		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
-			xpathApply(x,paste("/Workspace/SampleList/Sample/DataSet[@sampleID='",i,"']",sep=""))[[1]]
+			xpathApply(x,paste(wsNodePath[["sample"]], "/DataSet[@sampleID='",i,"']",sep=""))[[1]]
 			})
 	}
 #	browser()
@@ -242,13 +236,24 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 })
 
 
+getFileNames <- function(ws){
+  if(class(ws)!="flowJoWorkspace"){
+    stop("ws should be a flowJoWorkspace")
+  }else{
+    x <- ws@doc
+    wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+    wsType <- .getWorkspaceType(wsversion)
+    .getFileNames(x, wsType)
+  }
+}
+.getFileNames <- function(x, wsType){
+  wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
+  unlist(xpathApply(x, file.path(wsNodePath[["sample"]], "Keywords/Keyword[@name='$FIL']")
+                    , function(x)xmlGetAttr(x,"value")
+                    )
+        ,use.names=FALSE
+        )
 
-getFileNames<-function(ws){
-	if(class(ws)!="flowJoWorkspace"){
-		stop("ws should be a flowJoWorkspace")
-	}else{
-		unlist(xpathApply(ws@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value")),use.names=FALSE);
-	}
 }
 #' make a formula from a character vector
 #' 
@@ -287,8 +292,8 @@ mkformula<-function(dims,isChar=FALSE){
 #l})
 
 
-.getKeywordsBySampleID <- function(obj,sid,kw=NULL){
-  kws<-xpathApply(obj@doc,sprintf("/Workspace/SampleList/Sample[@sampleID='%s']/Keywords/Keyword",sid),xmlAttrs)
+.getKeywordsBySampleID <- function(obj,sid,kw=NULL, samplePath = "/Workspace/SampleList/Sample"){
+  kws<-xpathApply(obj@doc,sprintf(paste0(samplePath,"[@sampleID='%s']/Keywords/Keyword"),sid),xmlAttrs)
   if(!is.null(kw)){
     unlist(lapply(kws,function(x)x["value"][x["name"]%in%kw]))
   }else{
@@ -323,16 +328,28 @@ mkformula<-function(dims,isChar=FALSE){
 #' getKeywords,GatingSet,numeric-method
 #' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
-	w <- which(xpathApply(obj@doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value"))%in%y)
-	l<-xpathApply(obj@doc,paste("/Workspace/SampleList/Sample[",w,"]/Keywords/node()",sep=""),xmlAttrs)
-	names(l)<-lapply(l,function(x)x[["name"]])
-	l<-lapply(l,function(x)x[["value"]])
-	return(l);
+      x <- ws@doc
+      wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+      wsType <- .getWorkspaceType(wsversion)
+      wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
+      .getKeywords(obj@doc,y, wsNodePath[["sample"]])
 })
+.getKeywords<-function(doc,y, samplePath = "/Workspace/SampleList/Sample"){
+  w<-which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
+  if(length(w)==0){
+    warning("Sample ",y," not found in Keywords");
+    ##Use the DataSet tag to locate the sample
+    w<-which(xpathApply(doc, file.path(samplePath,"DataSet") ,function(x)xmlGetAttr(x,"uri"))%in%y)
+  }
+  l<-xpathApply(doc,paste(samplePath,"[",w,"]/Keywords/node()",sep=""),xmlAttrs)
+  names(l)<-lapply(l,function(x)x[["name"]])
+  l<-lapply(l,function(x)x[["value"]])
+  return(l)
+}
 
-.getKeyword<-function(ws,x){
+.getKeyword <- function(ws,x, samplePath = "/Workspace/SampleList/Sample"){
 	if(inherits(ws,"flowJoWorkspace")&class(x)=="character"){
-		 unlist(xpathApply(ws@doc,paste("/Workspace/SampleList/Sample/Keywords/Keyword[@name='",x,"']",sep=""),function(x)xmlGetAttr(x,"value")),use.names=FALSE)
+		 unlist(xpathApply(ws@doc,paste(file.path(samplePath, "Keywords/Keyword[@name='"), x, "']",sep=""),function(x)xmlGetAttr(x,"value")),use.names=FALSE)
 	}else{
 		stop("No such keyword")
 	}
@@ -368,12 +385,17 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	if(!class(ws)=="flowJoWorkspace"){
 		stop("ws must be a flowJoWorkspace object")
 	}
-	s<-getSamples(ws);
+    x <- ws@doc
+    wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+    wsType <- .getWorkspaceType(wsversion)
+    wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
+    
+	s<- .getSamples(x, wsType);
 	#TODO Use the actual value of key to name the column
 	if(!is.null(key)){
-	s$key<-flowWorkspace:::.getKeyword(ws,key)
+	s$key <- .getKeyword(ws,key, wsNodePath[["sample"]])
 	}
-	g<-getSampleGroups(ws)
+	g<- .getSampleGroups(x, wsType)
 	sg<-merge(s,g,by="sampleID")
 	if(requiregates){
 	sg<-sg[sg$pop.counts>0,]
@@ -390,18 +412,6 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 	return(sg)
 }
 
-.getKeywords<-function(doc,y){
-	w<-which(xpathApply(doc,"/Workspace/SampleList/Sample/Keywords/Keyword[@name='$FIL']",function(x)xmlGetAttr(x,"value"))%in%y)
-	if(length(w)==0){
-		warning("Sample ",y," not found in Keywords");
-		##Use the DataSet tag to locate the sample
-		w<-which(xpathApply(doc,"/Workspace/SampleList/Sample/DataSet",function(x)xmlGetAttr(x,"uri"))%in%y)
-	}
-	l<-xpathApply(doc,paste("/Workspace/SampleList/Sample[",w,"]/Keywords/node()",sep=""),xmlAttrs)
-	names(l)<-lapply(l,function(x)x[["name"]])
-	l<-lapply(l,function(x)x[["value"]])
-	return(l)
-}
 
 
 
@@ -435,7 +445,10 @@ trimWhiteSpace<-function (x)
 #' getSamples,flowJoWorkspace-method
 #' @export  
 setMethod("getSamples","flowJoWorkspace",function(x){
-	.getSamples(x@doc)
+      x <- x@doc
+      wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+      wsType <- .getWorkspaceType(wsversion)
+      .getSamples(x, wsType = wsType)
 })
 
 #' Get a table of sample groups from a flowJo workspace
@@ -457,25 +470,30 @@ setMethod("getSamples","flowJoWorkspace",function(x){
 #' getSampleGroups-methods
 #' getSampleGroups,flowJoWorkspace-method
 setMethod("getSampleGroups","flowJoWorkspace",function(x){
-	
-			win <-.getWorkspaceType(x@version) %in% c("win", "vX")
-			.getSampleGroups(x@doc,win)
+            x <- x@doc
+            wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+            wsType <- .getWorkspaceType(wsversion)
+			.getSampleGroups(x, wsType = wsType)
 		})
 
 #' @importFrom stats na.omit
-.getSampleGroups<-function(x,win=FALSE){
+.getSampleGroups<-function(x, wsType){
   
-	if(!win){
-		do.call(rbind,xpathApply(x,"/Workspace/Groups/GroupNode",function(x){
+  wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
   
-							gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
-							sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
+	if(grepl("mac", wsType)){
+		do.call(rbind,xpathApply(x, wsNodePath[["group"]],function(x){
+  
+							gid <- c(xmlGetAttr(x, wsNodePath[["attrName"]])
+                                  ,xmlGetAttr(x,"groupID")
+                                  )
+							sid <- do.call(c,xpathApply(x, wsNodePath[["sampleRef"]],function(x){
 												as.numeric(xmlGetAttr(x,"sampleID"))
 											}))
 							if(is.null(sid)){
 								sid<-NA;
 							}
-#                            browser()
+
 							groups<-na.omit(data.frame(groupName=gid[[1]]
                                                       ,groupID=as.numeric(gid[2])
                                                       ,sampleID=as.numeric(sid)
@@ -484,19 +502,25 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 						}))
 	}else{
 		#Note that groupID is from order of groupNode instead of from xml attribute 
-		counter<-1
-		do.call(rbind,xpathApply(x,"/Workspace/Groups/GroupNode",function(x){
-#							browser()
-							gid<-c(xmlGetAttr(x,"name"),xmlGetAttr(x,"groupID"));
-							sid<-do.call(c,xpathApply(x,".//SampleRef",function(x){
+		counter <- 1
+		do.call(rbind,xpathApply(x, wsNodePath[["group"]],function(x){
+
+							gid <- c(xmlGetAttr(x, wsNodePath[["attrName"]])
+                                  , xmlGetAttr(x,"groupID")
+                                  )
+							sid <- do.call(c,xpathApply(x, wsNodePath[["sampleRef"]],function(x){
 												as.numeric(xmlGetAttr(x,"sampleID",default=NA))
 											}))
 							if(is.null(sid)){
 								sid<-NA;
 							}
-#			browser()
-							groups<-na.omit(data.frame(groupName=gid[[1]],groupID=counter,sampleID=as.numeric(sid)));
-							counter<-counter+1
+
+							groups<-na.omit(data.frame(groupName=gid[[1]]
+                                                      ,groupID=counter
+                                                      ,sampleID=as.numeric(sid)
+                                                      )
+                                              )
+							counter <- counter+1
 							groups
 						}))
 	}
@@ -504,18 +528,29 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 
 
 
-.getSamples<-function(x,win=FALSE){
+.getSamples<-function(x, wsType){
+    
+    wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
+    
 	lastwarn<-options("warn")[[1]]
 	options("warn"=-1)
-	top<-xmlRoot(x)
-	s<-do.call(rbind,xpathApply(top,"/Workspace/SampleList/Sample/SampleNode",function(x){
-		attrs<-xmlAttrs(x);
-	data.frame(tryCatch(as.numeric(attrs[["sampleID"]]),error=function(x)NA),tryCatch(attrs[["name"]],error=function(x)NA),tryCatch(as.numeric(attrs[["count"]]),error=function(x)NA))
-		}))
-#	browser()
-	pop.counts<-as.numeric(unlist(lapply(xpathApply(top,"/Workspace/SampleList/Sample"),function(x)xpathApply(x,"count(descendant::Population)")),use.names=FALSE))
-		if(!win){
-			cid<-as.numeric(paste(xpathApply(top,"/Workspace/SampleList/Sample",function(x)xmlGetAttr(x,"compensationID"))))
+	top <- xmlRoot(x)
+	s <- do.call(rbind,xpathApply(top, file.path(wsNodePath[["sample"]],wsNodePath[["sampleNode"]]),function(x){
+        		    attrs <- xmlAttrs(x);
+        	        data.frame(tryCatch(as.numeric(attrs[["sampleID"]]), error=function(x)NA)
+                                ,tryCatch(attrs[[wsNodePath[["attrName"]]]], error=function(x)NA)
+                                 ,tryCatch(as.numeric(attrs[["count"]]), error=function(x)NA)
+                                )
+		    }))
+	
+	pop.counts <- as.numeric(unlist(lapply(xpathApply(top,wsNodePath[["sample"]])
+                                            ,function(x)xpathApply(x,"count(descendant::Population)")
+                                          )
+                                      ,use.names=FALSE
+                                      )
+                                )
+		if(grepl("mac", wsType)){
+			cid<-as.numeric(paste(xpathApply(top, wsNodePath[["sample"]], function(x)xmlGetAttr(x,"compensationID"))))
 			s<-data.frame(s,cid,pop.counts)
 			colnames(s)<-c("sampleID","name","count","compID","pop.counts");
 		}else{

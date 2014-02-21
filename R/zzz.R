@@ -5,10 +5,52 @@ flowWorkspace.state[["par"]] <- list()
 #' workspace version is parsed from xml node '/Workspace/version' in flowJo workspace
 #' and matched with this list to dispatch to the one of the three workspace parsers 
 flowWorkspace.par.init <- function(){
-  flowWorkspace.state[["par"]][["flowJo_versions"]] <- list(win = c("1.61", "1.6")
-      ,mac = c("2.0")
-      ,vX = c("1.8", "20.0")
-  )
+  
+  fj_ver <- list(win = c("1.61", "1.6")
+                , macII = c("2.0")
+                , macIII = c("3.0")
+                , vX = c("1.8", "20.0")
+                )
+                          
+   mac_II_path <- list(group = "/Workspace/Groups/GroupNode"# abs path
+                    , sampleRef = ".//SampleRef"#relative GroupNode
+                    , sample = "/Workspace/SampleList/Sample"#abs path
+                    , sampleNode = "./SampleNode"#relative to sample
+                    , popNode = "./Population"#relative to sampleNode
+                    , attrName = "name"
+                    , compMatName = "name"
+                    , compMatChName = "name"
+                    , compMatVal = "value"
+                    )
+                    
+  #mac version 3.0 (flowJo version 9.7.2-9.7.4)
+  mac_III_path <- mac_II_path
+  mac_III_path[["sample"]] <- sub("SampleList", "Samples", mac_III_path[["sample"]]) 
+  mac_III_path[["attrName"]] <- "nodeName"
+  mac_III_path[["compMatName"]] <- "matrixName"
+  mac_III_path[["compMatChName"]] <- "fluorName"
+  mac_III_path[["compMatVal"]] <- "spillValue"
+  
+  ####windows version
+  #inherit most paths from mac                                      
+  win_path <- mac_II_path
+  win_path[["popNode"]] <- "./*/Population"
+  win_path[["gateDim"]] <- "*[local-name()='dimension']"#relative to gateNode
+  win_path[["gateParam"]] <- "*[local-name()='parameter']"#relative to dimNode
+  
+  ####version X
+  #inherit most paths from win
+  vX_path <- win_path
+  vX_path[["gateParam"]] <- "*[local-name()='fcs-dimension']";                                        
+  
+  flowWorkspace.state[["par"]] <- list(flowJo_versions = fj_ver 
+                                      , nodePath = list(win = win_path
+                                                        , macII = mac_II_path
+                                                        , macIII = mac_III_path
+                                                        , vX = vX_path
+                                                        )
+                                      )
+  
 }
 
 ## call the init function
