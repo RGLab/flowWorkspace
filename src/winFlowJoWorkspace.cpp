@@ -9,16 +9,13 @@
 
 
 
-winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc){
+winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc):flowJoWorkspace(doc){
 	COUT<<"windows version of flowJo workspace recognized."<<endl;
-	nodePath.group="/Workspace/Groups/GroupNode";// abs path
-	nodePath.sampleRef=".//SampleRef";//relative GroupNode
-	nodePath.sample="/Workspace/SampleList/Sample";//abs path
-	nodePath.sampleNode="./SampleNode";//relative to sample
+
 	nodePath.popNode="./*/Population";//relative to sampleNode
 	nodePath.gateDim="*[local-name()='dimension']";//relative to gateNode
 	nodePath.gateParam="*[local-name()='parameter']";//relative to dimNode
-	this->doc=doc;
+
 
 }
 

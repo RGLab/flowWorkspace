@@ -428,6 +428,9 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 		 	 case WS_VX:
 				 wsPtr=new xFlowJoWorkspace(doc);
 				 break;
+		 	case WS_MAC_3:
+				 wsPtr=new macFlowJoWorkspace_3(doc);
+				 break;
 		 	 default:
 		 		throw(invalid_argument("unsupported workspace Type!"));
 		 }
