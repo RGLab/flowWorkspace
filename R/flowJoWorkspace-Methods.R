@@ -326,7 +326,7 @@ mkformula<-function(dims,isChar=FALSE){
 #' getKeywords,GatingSet,numeric-method
 #' getKeywords,flowJoWorkspace,character-method
 setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
-      x <- ws@doc
+      x <- obj@doc
       wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
       wsType <- .getWorkspaceType(wsversion)
       wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
