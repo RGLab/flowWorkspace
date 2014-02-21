@@ -8,6 +8,21 @@
 
 
 
+flowJoWorkspace::flowJoWorkspace(xmlDoc * doc){
+
+	nodePath.group="/Workspace/Groups/GroupNode";// abs path
+	nodePath.sampleRef=".//SampleRef";//relative GroupNode
+	nodePath.sample="/Workspace/SampleList/Sample";//abs path
+	nodePath.sampleNode="./SampleNode";//relative to sample
+
+	nodePath.attrName = "name";
+	nodePath.compMatName = "name";
+	nodePath.compMatChName = "name";
+	nodePath.compMatVal = "value";
+
+	this->doc=doc;
+
+}
 
 /*get a vector of sampleID by the given groupID
  * keep the returned results in char * format in case the non-numeric sampleID is stored
@@ -89,7 +104,7 @@ string flowJoWorkspace::getSampleName(wsSampleNode & node){
 			wsNode sampleNode(res->nodesetval->nodeTab[0]);
 			xmlXPathFreeObject(res);
 
-			filename=sampleNode.getProperty("name");//get property name from sampleNode
+			filename=sampleNode.getProperty(nodePath.attrName);//get property name from sampleNode
 			break;
 		}
 
@@ -222,7 +237,7 @@ void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isPars
 
 
 	//add pop name
-	np.setName(node.getProperty("name").c_str());
+	np.setName(node.getProperty(nodePath.attrName).c_str());
 
 	if(dMode>=POPULATION_LEVEL)
 			COUT<<"parse the population Node:"<<np.getName()<<endl;

@@ -26,7 +26,7 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(versionList);
 		    }
 public:
-
+	 flowJoWorkspace(xmlDoc *);
 	 vector <string> getSampleID(unsigned short);
 	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode);
      wsRootNode getRoot(wsSampleNode sampleNode);

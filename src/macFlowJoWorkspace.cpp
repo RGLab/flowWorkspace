@@ -14,18 +14,23 @@
  *
  */
 
-macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc){
+macFlowJoWorkspace::macFlowJoWorkspace(xmlDoc * doc):flowJoWorkspace(doc){
 	COUT<<"mac version of flowJo workspace recognized."<<endl;
 
-	nodePath.group="/Workspace/Groups/GroupNode";
-	nodePath.sampleRef=".//SampleRef";
-	nodePath.sample="/Workspace/SampleList/Sample";
-	nodePath.sampleNode="./SampleNode";
 	nodePath.popNode="./Population";
-	this->doc=doc;
 
 }
 
+macFlowJoWorkspace_3::macFlowJoWorkspace_3(xmlDoc * doc):macFlowJoWorkspace(doc){
+
+	nodePath.sample="/Workspace/Samples/Sample";
+
+	nodePath.attrName = "nodeName";
+	nodePath.compMatName = "matrixName";
+	nodePath.compMatChName = "fluorName";
+	nodePath.compMatVal = "spillValue";
+
+}
 string macFlowJoWorkspace::xPathSample(string sampleID){
 			string xpath=nodePath.sample;
 			xpath.append("[@sampleID='");
@@ -473,7 +478,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 		xmlXPathFreeObject(resMat);
 		comp.prefix=curMatNode.getProperty("prefix");
 		comp.suffix=curMatNode.getProperty("suffix");
-		comp.name=curMatNode.getProperty("name");
+		comp.name=curMatNode.getProperty(nodePath.compMatName);
 
 		xmlXPathObjectPtr resX=curMatNode.xpathInNode("Channel");
 		unsigned nX=resX->nodesetval->nodeNr;
@@ -493,7 +498,7 @@ compensation macFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 			for(unsigned j=0;j<nY;j++)
 			{
 				wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
-				string sValue=curMarkerNode_Y.getProperty("value");
+				string sValue=curMarkerNode_Y.getProperty(nodePath.compMatVal);
 				comp.spillOver.push_back(atof(sValue.c_str()));
 			}
 			xmlXPathFreeObject(resY);
