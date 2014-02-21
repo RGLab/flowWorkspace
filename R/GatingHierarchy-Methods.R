@@ -1013,11 +1013,11 @@ getAxisLabels <- function(obj,...){
               obj@axis[[1]]
 		}
 
-#' Return a list of transformations or a transformation in a flowJo workspace/GatingHierarchy
+#' Return a list of transformations or a transformation in a GatingHierarchy
 #'
-#' Return a list of all the transformations or a transformation in a flowJo workspace/GatingHierarchy
+#' Return a list of all the transformations or a transformation in a GatingHierarchy
 #' 
-#' @param x A \code{flowJoWorkspace} or \code{GatingHierarchy} object
+#' @param x A \code{GatingHierarchy} object
 #' 
 #' @details
 #' Returns a list of the transformations or a transformation in the flowJo workspace. The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples in the \code{flowJoWorkspace}. Each element of \code{L} is itself a \code{list} of length \code{M}, where \code{M} is the number of parameters that were transformed for a sample or group of samples in a \code{flowJoWorkspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis, using two different sets of transformations, then L will be of length 2, and each element of L will be of length 5. The elements of \code{L} represent channel- or parameter-specific transformation functions that map from raw intensity values to channel-space used by flowJo.
@@ -1027,13 +1027,12 @@ getAxisLabels <- function(obj,...){
 #' lists of functions, with each element of the list representing a transformation applied to a specific channel/parameter of a sample. 
 #' @examples
 #' \dontrun{
-#' 	#Assume f is a flowJoWorkspace
-#' 	getTransformations(f);
+#' 	#Assume gh is a GatingHierarchy
+#' 	getTransformations(gh);
 #' }
 #' @aliases
 #' getTransformations
 #' getTransformations-methods
-#' getTransformations,flowJoWorkspace-method
 #' getTransformations,GatingHierarchy-method
 setMethod("getTransformations","GatingHierarchy",function(x){
 #			browser()
@@ -1098,26 +1097,21 @@ setMethod("getTransformations","GatingHierarchy",function(x){
   }
     
 
-#'  Retrieve the compensation matrices from a flowJo Workspace or GatingHierarchy
+#'  Retrieve the compensation matrices from a GatingHierarchy
 #' 
-#'  Retrieve the compensation matrices from a flowJo workspace or GatingHierarchy.
-#' @param x A \code{flowJoWorkspace} or \code{GatingHierarchy} object.
-#' @details Return all the compensation matrices in a flowJoWorkspace object or a compensation matrix in a GatingHierarchy.
+#'  Retrieve the compensation matrices from a GatingHierarchy.
+#' @param x A \code{GatingHierarchy} object.
+#' @details Return all the compensation matrices in a GatingHierarchy.
 #' @return 
-#'   A list of \code{matrix} representing the spillover matrices in the \code{flowJoWorkspace}
-#'   or a spillover matrix in \code{GatingHierarchy}
-#' @seealso \code{\link{openWorkspace}}
+#'   A list of \code{matrix} representing the spillover matrix in \code{GatingHierarchy}
 #' @examples
 #'   \dontrun{
-#'     #ws is a flowJoWorkspace
-#'   file<-"myworkspace.xml"
-#'   ws<-openWorkspace(file)
-#'   getCompensationMatrices(ws);
+#' 	#Assume gh is a GatingHierarchy
+#'   getCompensationMatrices(gh);
 #' }
 #' @aliases 
 #' getCompensationMatrices
 #' getCompensationMatrices-methods
-#' getCompensationMatrices,flowJoWorkspace-method
 #' getCompensationMatrices,GatingHierarchy-method
 setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 			comp<-.Call("R_getCompensation",x@pointer,getSample(x))

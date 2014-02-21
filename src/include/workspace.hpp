@@ -75,6 +75,11 @@ struct xpath{
 	string popNode;
 	string gateDim;
 	string gateParam;
+
+	string attrName;
+	string compMatName;
+	string compMatChName;
+	string compMatVal;
 	unsigned short sampNloc;//get FCS filename(or sampleName) from either $FIL keyword or name attribute of sampleNode
 	template<class Archive>
 		void serialize(Archive &ar, const unsigned int version)
@@ -87,6 +92,11 @@ struct xpath{
 			ar & BOOST_SERIALIZATION_NVP(sampleNode);
 			ar & BOOST_SERIALIZATION_NVP(popNode);
 			ar & BOOST_SERIALIZATION_NVP(sampNloc);
+
+			ar & BOOST_SERIALIZATION_NVP(attrName);
+			ar & BOOST_SERIALIZATION_NVP(compMatName);
+			ar & BOOST_SERIALIZATION_NVP(compMatChName);
+			ar & BOOST_SERIALIZATION_NVP(compMatVal);
 		}
 };
 
