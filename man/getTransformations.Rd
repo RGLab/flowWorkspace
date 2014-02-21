@@ -1,12 +1,10 @@
 \name{getTransformations}
 \alias{getTransformations}
 \alias{getTransformations-methods}
-\alias{getTransformations,flowJoWorkspace-method}
 \alias{getTransformations,GatingHierarchy-method}
-\title{Return a list of transformations or a transformation in a flowJo workspace/GatingHierarchy}
+\title{Return a list of transformations or a transformation in a GatingHierarchy}
 \arguments{
-  \item{x}{A \code{flowJoWorkspace} or
-  \code{GatingHierarchy} object}
+  \item{x}{A \code{GatingHierarchy} object}
 }
 \value{
   lists of functions, with each element of the list
@@ -15,7 +13,7 @@
 }
 \description{
   Return a list of all the transformations or a
-  transformation in a flowJo workspace/GatingHierarchy
+  transformation in a GatingHierarchy
 }
 \details{
   Returns a list of the transformations or a transformation
@@ -37,8 +35,8 @@
 }
 \examples{
 \dontrun{
-	#Assume f is a flowJoWorkspace
-	getTransformations(f);
+	#Assume gh is a GatingHierarchy
+	getTransformations(gh);
 }
 }
 
