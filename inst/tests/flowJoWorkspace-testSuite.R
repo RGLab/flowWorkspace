@@ -9,17 +9,12 @@ test_that("show workspace",
 
 test_that("summary workspace",
     {
-      expect_output(summary(ws), fjRes[["ws_show"]])
-    })
-
-test_that("summary workspace",
-    {
-      expect_output(summary(ws), fjRes[["ws_show"]])
+      expect_output(summary(ws), fjRes[["ws_show"]][-2])
     })
 
 test_that("getWorkspaceType",
     {
-      version_support <- flowWorkspace.par.get("flowJo_versions")
+      
       
       expect_equal(.getWorkspaceType("2.0"), "mac")
 #      expect_equal(.getWorkspaceType("3.0"), "mac")
