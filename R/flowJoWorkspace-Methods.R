@@ -161,8 +161,6 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
     
     wsType <- .getWorkspaceType(wsversion)
     wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
-    message(gsub("I","",wsType), " workspace recognized.")
-#	browser()
     filenames <- .getFileNames(x, wsType);
       
     s <- .getSamples(x, wsType);
