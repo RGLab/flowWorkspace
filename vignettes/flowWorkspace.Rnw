@@ -171,24 +171,26 @@ The indices returned are relative to the parent population (member of parent AND
 If we wish to do compensation or transformation manually, we can retrieve all the compensation matrices from the workspace:
 
 <<getCMAT>>=
-C<-getCompensationMatrices(ws);
+C<-getCompensationMatrices(gh);
 C
 @
 
 Or we can retrieve transformations:
 
 <<getTrans,results=verbatim>>=
-T<-getTransformations(ws)
+T<-getTransformations(gh)
 names(T)
-names(T[[1]])
-T[[1]][[1]]
+T[[1]]
 @
 
 <<tnames,echo=F,results=hide>>=
 A<-names(T)
 B<-names(T[[1]])
 @
-\Rfunction{getTransformations} returns a list, each element of which corresponds to a transformation applied to a group of samples. The transformation is presented as a list of functions to be applied to different dimensions of the data. Above, the transformation is applied to all samples of the group and for each sample in the group, the appropriate dimension is transformed using a channel--specific function from the list.
+\Rfunction{getTransformations} returns a list of functions to be
+applied to different dimensions of the data. 
+Above, the transformation is applied to this sample, the appropriate dimension
+is transformed using a channel--specific function from the list.
 
 The list of samples in a workspace can be accessed by:
 
