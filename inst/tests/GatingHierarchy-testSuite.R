@@ -232,7 +232,7 @@ test_that(".getAllDescendants",{
     })
 
 test_that("show ",{
-      expect_output(show(gh), "Sample:  CytoTrol_CytoTrol_1.fcs GatingHierarchy with  24  gates")
+      expect_output(show(gh), "Sample:  CytoTrol_CytoTrol_1.fcs \nGatingHierarchy with  24  gates\n")
       
     })
 
