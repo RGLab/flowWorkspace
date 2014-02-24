@@ -4,12 +4,12 @@ fjRes <- readRDS(file.path(resultDir, "flowJoWorkspace_expect.rds"))
 
 test_that("show workspace",
     {
-      expect_output(ws, fjRes[["ws_show"]][-2])
-    })
-
-test_that("summary workspace",
-    {
-      expect_output(summary(ws), fjRes[["ws_show"]][-2])
+      thisRes <- paste(capture.output(show(ws))[-2], collapse = "")
+      expectRes <- paste(fjRes[["ws_show"]][-2], collapse = "")
+      expect_output(thisRes, expectRes)
+      
+      expectRes <- paste(capture.output(summary(ws)[-2]), collapse = "")
+      expect_output(expectRes, expectRes)
     })
 
 test_that("getWorkspaceType",
