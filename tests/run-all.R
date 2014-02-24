@@ -1,6 +1,7 @@
 library(testthat)
 library(flowWorkspace)
 library(data.table)
+library(utils)
 
 dataDir <- system.file("extdata",package="flowWorkspaceData")
 resultDir <- system.file("tests/expect_result",package="flowWorkspace")
