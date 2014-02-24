@@ -43,7 +43,10 @@ source("GatingSet-testSuite.R", local = TRUE)
 test_that("closeWorkspace",
     {
       closeWorkspace(ws)
-      expect_output(ws, fjRes[["ws_show_close"]][-2])
+      thisRes <- paste(capture.output(show(ws))[-2], collapse = "")
+      expectRes <- paste(fjRes[["ws_show_close"]][-2], collapse = "")
+      expect_output(thisRes, expectRes)
+      
     })
 
 
