@@ -1426,8 +1426,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
                           , scales=list()
                           , marker.only = FALSE
                           , ...){
-#	pd<-pData(parameters(data))
-#	browser()
 	xObj <- getChannelMarker(data,xParam)
 	yObj <- getChannelMarker(data,yParam)
 	
@@ -1441,10 +1439,6 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
       ylab <- sub("NA","",paste(unlist(yObj),collapse=" "))  
     }
 	
-#			browser()
-	
-#		xParam.ind<-match(xParam,pd$name)
-#		yParam.ind<-match(yParam,pd$name)
         if(is.null(xParam)){
           x.labels <- NULL
         }else{
@@ -1458,24 +1452,20 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
         }
 		
 		#init the scales and x,y lim
-		
-		xlim=range(data)[,xParam]
-		ylim=range(data)[,yParam]
-		
 		#update axis when applicable
 		if(!is.null(x.labels))
 		{
 			x.labels$label<-pretty10exp(as.numeric(x.labels$label),drop.1=TRUE)
 			xscales<-list(x=list(at=x.labels$at,labels=x.labels$label))
 			scales<-lattice:::updateList(xscales,scales)
-			xlim=range(x.labels$at)
+			
 		}
 		if(!is.null(y.labels))
 		{	
 			y.labels$label<-pretty10exp(as.numeric(y.labels$label),drop.1=TRUE)
 			yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
 			scales<-lattice:::updateList(scales,yscales)
-			ylim=range(y.labels$at)
+			
 		}
 		
 	
