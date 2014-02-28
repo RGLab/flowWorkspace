@@ -915,24 +915,15 @@ setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
     
 setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
 			
-#            
-#            if(lattice)
-#			{
 				plotList<-.mergeGates(x[[1]],y,bool,merge)
 				if(length(plotList) > 1)
                   stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
-				lapply(plotList,function(y){
-							
+#				lapply(plotList,function(y){
+							y <- plotList[[1]]
 							return(.plotGate(x,y,...))
-						})
+#						})
 				
 				
-				
-#			}else
-#			{
-#				for(i in 1:length(x))
-#					plotGate(x[[i]],y,bool=bool,merge=merge,...)
-#			}
 			
 		})
     
