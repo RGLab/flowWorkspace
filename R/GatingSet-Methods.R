@@ -832,7 +832,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
     tempenv$axis.labels
 }
-
     
 #' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
 #' 
