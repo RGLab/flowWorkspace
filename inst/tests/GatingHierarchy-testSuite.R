@@ -195,6 +195,20 @@ test_that("getNodes & setNode",{
       expect_equal(getNodes(gh), expectRes[["full_path"]])
     })
 
+test_that("setGate", {
+      
+      gate_cd4 <- getGate(gh, "CD4")
+      gate_cd8 <- getGate(gh, "CD8")
+      invisible(setGate(gh, "CD4", gate_cd8))
+      expect_equal(getGate(gh, "CD4")@boundaries, gate_cd8@boundaries)
+      suppressMessages(recompute(gh, "CD4"))
+      expect_equal(getTotal(gh, "CD4"), getTotal(gh, "CD8"))
+      
+      #restore the gate
+      invisible(setGate(gh, "CD4", gate_cd4))
+      suppressMessages(recompute(gh, "CD4"))
+    })    
+
 test_that(".getGraph",{
       
       #extract graph from gh
