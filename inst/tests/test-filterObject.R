@@ -25,7 +25,7 @@ test_that("filterObject from polygonGate", {
       
       sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
       colnames(sqrcut) <- c("FSC-H","SSC-H")
-      pg <- polygonGate(filterId="nonDebris", boundaries= sqrcut)
+      pg <- polygonGate(filterId="nonDebris", .gate = sqrcut)
       
       
       expectRes <- list(type = 1L
@@ -66,7 +66,7 @@ test_that("filterObject from booleanFilter", {
 
       #extra & symbol
       bf <- booleanFilter(IL2||TNFa&!IFNg , filterId = "myBoolFilter")
-      expect_error(filterObject(bf), "double operatoer")
+      expect_error(filterObject(bf), "double operater")
       
       
     })
