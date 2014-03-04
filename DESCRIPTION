@@ -35,6 +35,7 @@ Imports:
     ,plyr
     ,latticeExtra
     ,Rcpp
+    ,RSVGTipsDevice
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
