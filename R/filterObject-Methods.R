@@ -38,12 +38,17 @@ setMethod("filterObject",signature=c("polygonGate"),function(x,...){
     })
 
 setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
-      expr<-x@deparse
-      pattern<-"&|\\|"
+      expr <- x@deparse
+      
+      pattern <- "&&|\\|\\|"
+      if(grepl(pattern=pattern,expr))
+        stop("double operater ('&&' or '||') found in the expression of booleanFilter!")
+      
+      pattern <- "&|\\|"
       #get the position of logical operators
-      op_ind<-unlist(gregexpr(pattern=pattern,expr))
+      op_ind <- unlist(gregexpr(pattern=pattern,expr))
       #extract these operators
-      op<-flowWorkspace:::trimWhiteSpace(substring(expr,op_ind,op_ind))
+      op <- flowWorkspace:::trimWhiteSpace(substring(expr,op_ind,op_ind))
       ##append & for the first node element(as C parser convention requires)
       if(length(op)==1){
         if(nchar(op)==0){
@@ -56,16 +61,17 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
       }
 
       #split into node elements by operators
-      refs<-unlist(strsplit(expr,split=pattern)) 
-      refs<-trimWhiteSpace(refs)
-      #extract is not operator
-      isNot <- as.logical(regexpr("!",refs)+1) 
-      #strip is not operator from node elements
-      refs <- gsub("!","",refs)
+      refs <- unlist(strsplit(expr,split=pattern)) 
+      refs <- trimWhiteSpace(refs)
+      #extract the leading ! operator from each ref
+      isNot <- as.logical(regexpr("!",refs) + 1) 
+      #strip ! symbol from node elements
+      refs <- sub("!","",refs)
       
-      nNodes<-length(refs)
-      if(length(isNot)!=nNodes)
-        stop("the number of ! operators are inconsistent with nodes!")
+      #check if there is still illegal ! symbol left
+      nNodes <- length(refs)
+      if(any(grepl("!", refs)))
+        stop("extra '!' symbol found in the reference node names of boolean fitler!")
       if(length(op)!=nNodes)
         stop("the number of logical operators are inconsistent with nodes!")
       list(type=as.integer(3)
