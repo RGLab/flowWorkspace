@@ -9,7 +9,11 @@ test_that("load GatingSet from archive",
   expect_that(gs, is_a("GatingSet"))
 })
 
+source("GatingSetList-testSuite.R", local = TRUE)
+
 source("GatingSet-testSuite.R", local = TRUE)
+
+
 
 gh <- NULL
 test_that("extract GatingHierarchy from GatingSet",{

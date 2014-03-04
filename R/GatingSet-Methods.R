@@ -832,7 +832,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
     tempenv$axis.labels
 }
-
     
 #' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
 #' 
@@ -879,6 +878,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'  
 #'  \item{marker.only}{ \code{ligcal} specifies whether to show both channel and marker names }
 #' 
+#'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale 
+#'                                            either by instrument measurement range or the actual data range. 
+#'                     or \code{numeric} which specifies customized range.}
+#' 
 #'  \item{...}{
 #' 
 #'          path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method (used to control how the gating/node path is displayed)
@@ -911,24 +914,15 @@ setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
     
 setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
 			
-#            
-#            if(lattice)
-#			{
 				plotList<-.mergeGates(x[[1]],y,bool,merge)
 				if(length(plotList) > 1)
                   stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
-				lapply(plotList,function(y){
-							
+#				lapply(plotList,function(y){
+							y <- plotList[[1]]
 							return(.plotGate(x,y,...))
-						})
+#						})
 				
 				
-				
-#			}else
-#			{
-#				for(i in 1:length(x))
-#					plotGate(x[[i]],y,bool=bool,merge=merge,...)
-#			}
 			
 		})
     
