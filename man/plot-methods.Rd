@@ -1,15 +1,27 @@
 \name{plot}
 \alias{plot}
-\alias{plot,GatingHierarchy,character-method}
-\alias{plot,GatingHierarchy,missing-method}
-\alias{plot,GatingHierarchy,numeric-method}
-\title{plot a GatingHierarchy}
+\alias{plot,GatingSet,character-method}
+\alias{plot,GatingSet,missing-method}
+\alias{plot,GatingSet,numeric-method}
+\title{plot a gating tree}
 \arguments{
-  \item{x}{\code{GatingHierarchy} to be plotted}
+  \item{x}{\code{GatingHierarchy} or \code{GatingSet}. If
+  \code{GatingSet}, the first sample will be used to
+  extract gating tree.}
 
   \item{y}{\code{missing}.}
 
-  \item{...}{other arguments: \itemize{ \item{layout}: See
+  \item{...}{other arguments: \itemize{ \item{dir}:
+  \code{character} Default is NULL, which render the gating
+  tree in regular R plot device.  Otherwise it specifies a
+  folder where the gating tree is output to a svg image
+  with some interactivity (e.g. when click on each node,
+  the actual gates will be displayed) This interactivity
+  currently only works when the svg is rendered within a
+  HTML webpage (e.g. generated as knitr report)
+  \item{svg.par}: a \code{list} of parameters passed to
+  \code{devSVGTips} \item{png.par}: a \code{list} of
+  parameters passed to \code{png} \item{layout}: See
   \code{\link[Rgraphviz]{layoutGraph}} in package Rgraphviz
   \item{width}: See \code{\link[Rgraphviz]{layoutGraph}} in
   package Rgraphviz \item{height}: See
@@ -31,8 +43,24 @@
 }
 \examples{
 \dontrun{
-	#G is a GatingHierarchy
-	plot(G);
+ #gs is a GatingSet
+ plot(gs) # the same as plot(gs[[1]])
+ #plot a substree rooted from 'CD4'
+ plot(gs, "CD4")
+
+ # output as svg format with onclick event of each node displaying the gate(saved as png files) within pop-up window
+ plot(gs[[1]], dir = "myFolder")
+
+ # customize the size of svg and png files
+ plot(gh, dir = "myFolder", svg.par =list(width = 7, height = 7), png.par = list(width = 200, height = 200)
+
+ #each node link to multiple gates across samples
+ #here is the example code showing how to embed
+ #the svg output within knitr quick report
+
+ #+ eval=T, results = "asis", message = F
+ svgFile <- plot(gs, dir = './svg', svg.par =list(width = 7, height = 7), png.par = list(width = 400, height = 400 ))
+ cat("<embed src=", svgFile, " type='image/svg+xml' />", sep = "")
 }
 }
 

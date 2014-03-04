@@ -356,8 +356,9 @@ validGatingSetListObject <- function(object){
     this_error_ind <- which(is_error)[1]
     return (paste("GatingSet 1 and",this_error_ind+1,":",res[this_error_ind]))
   }
+  
   #check sample vector
-  if(!ncdfFlow:::.isValidSamples(object@samples,gs_list)){
+  if(!ncdfFlow:::.isValidSamples(object@samples,object)){
     return ("'samples' slot is not consisitent with sample names from GatingSets!")
   }          
   return (TRUE)
@@ -419,8 +420,10 @@ GatingSetList <- function(x,samples = NULL)
     samples <- unlist(lapply(x,sampleNames))
   }
   x <- new("ncdfFlowList", data = x, samples = samples)
-  as(x, "GatingSetList")
-  
+
+  x<- as(x, "GatingSetList")
+  if(validObject(x))
+    x
 }
 
 
