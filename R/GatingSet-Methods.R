@@ -832,7 +832,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
     tempenv$axis.labels
 }
-
     
 #' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
 #' 
@@ -879,6 +878,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'  
 #'  \item{marker.only}{ \code{ligcal} specifies whether to show both channel and marker names }
 #' 
+#'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale 
+#'                                            either by instrument measurement range or the actual data range. 
+#'                     or \code{numeric} which specifies customized range.}
+#' 
 #'  \item{...}{
 #' 
 #'          path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method (used to control how the gating/node path is displayed)
@@ -911,24 +914,15 @@ setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
     
 setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
 			
-#            
-#            if(lattice)
-#			{
 				plotList<-.mergeGates(x[[1]],y,bool,merge)
 				if(length(plotList) > 1)
                   stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
-				lapply(plotList,function(y){
-							
+#				lapply(plotList,function(y){
+							y <- plotList[[1]]
 							return(.plotGate(x,y,...))
-						})
+#						})
 				
 				
-				
-#			}else
-#			{
-#				for(i in 1:length(x))
-#					plotGate(x[[i]],y,bool=bool,merge=merge,...)
-#			}
 			
 		})
     
@@ -1175,6 +1169,25 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
   }
   overlay
 }
+
+#' return the range of one channel of flowSet
+#' 
+#' @param fs \code{flowSet} or \code{ncdfFlowSet}
+#' @param channel \code{character} channel name
+#' @return a numerical range
+.getRange <- function(fs, channel) {
+  
+  thisMin <- .Machine$double.xmax
+  thisMax <- .Machine$double.xmin
+  for (i in sampleNames(fs)) {
+    e <- exprs(fs[[i, channel]])
+    thisRange <- range(e)
+    thisMin <- min(thisMin,thisRange[1])
+    thisMax <- max(thisMax,thisRange[2])
+  }
+  
+  return(c(thisMin, thisMax))
+}
 #' the actual plotGate engine
 #' 
 #' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
@@ -1182,6 +1195,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy} 
 #' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
 #' @param path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method
+#' @param xlim, ylim \code{character} can be either "instrument" or "data" which determines the x, y axis scale either by instrument measurement range or the actual data range. 
+#'          or \code{numeric} which specifies customized range.
 #' @param ... other arguments passed to .formAxis and flowViz 
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
@@ -1194,6 +1209,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                       , stats , default.y = "SSC-A", scales
                       , strip = TRUE
                       , path = "full"
+                      , xlim = "instrument"
+                      , ylim = "instrument"
                       , ...){
 
 	
@@ -1265,6 +1282,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     
     axisObject <- .formatAxis(gh,parentFrame, xParam, yParam,...)
     
+    
 #    browser()
     default_xlab <- list(label = axisObject$xlab)
     if(is.null(xlab)){
@@ -1296,19 +1314,54 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       
     
     
+    
     thisCall<-quote(plot(x=formula
                           ,data=parentData
                           ,filter=curGates
                           ,xlab=xlab
-                          ,scales=scales
                           ,main=main
                           ,...
                           )
                       )
-#    browser()                      
+#                      browser()
+    #try to customize the x, y limits if requested
+    if(!is.numeric(xlim))
+    {
+      xlim <- match.arg(xlim, c("instrument", "data"))
+      if(xlim == "data")
+      {
+        xlim <- .getRange(parentData, xParam)
+      }
+    }
+      # instrument range is calculated within xyplot::prepanel.xyplot.flowset
+      # so there is no need to do it here
+    if(is.numeric(xlim)){
+      scales$x <- NULL
+      thisCall <- as.call(c(as.list(thisCall),list(xlim = xlim)))
+    }
+      
+    
+    
+    if(!is.numeric(ylim))
+    {
+      ylim <- match.arg(ylim, c("instrument", "data"))
+      if(ylim == "data")
+      {
+        ylim <- .getRange(parentData, yParam)
+      }
+    }
+    if(is.numeric(ylim)){
+      scales$y <- NULL
+      thisCall <- as.call(c(as.list(thisCall),list(ylim = ylim)))
+    }
+
+    
     if(!is.null(stats)){
       thisCall <- as.call(c(as.list(thisCall),list(stats = stats)))
-    }                      
+    }
+    
+    thisCall <- as.call(c(as.list(thisCall),list(scales = scales)))
+    
 	if(type=="xyplot")
 	{
 		
