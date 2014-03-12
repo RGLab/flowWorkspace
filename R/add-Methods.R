@@ -91,12 +91,17 @@ NULL
 #' add
 #' add,GatingSet,list-method
 #' add,GatingSet,filterList-method
+#' add,GatingSet,filtersList-method
 #' add,GatingSet,filter-method
+#' add,GatingSet,filters-method
 #' add,GatingSetList,list-method
 #' add,GatingSetList,filterList-method
 #' add,GatingSetList,filter-method
+#' add,GatingSetList,filtersList-method
+#' add,GatingSetList,filters-method
 #' add,GatingHierarchy,quadGate-method
 #' add,GatingHierarchy,filter-method
+#' add,GatingHierarchy,filters-method
 #' setGate
 #' setGate,GatingSet,ANY,list-method
 #' setGate,GatingSet,ANY,filterList-method
@@ -115,11 +120,18 @@ setMethod("add",
 		signature=c(wf="GatingSet", "list"),
 		definition=function(wf, action, ...)
 		{
-			
-			flist<-filterList(action)
+
+            if(all(sapply(action, function(i)extends(class(i), "filter"))))
+			  flist <- filterList(action)
+            else if(all(sapply(action, function(i)extends(class(i), "filters"))))
+              flist <- filtersList(action)
+            else
+              stop ("the list doesn't constain valid filter or filters objects!")
+            
 			add(wf,flist,...)
 			
 		})
+    
 setMethod("add",
     signature=c(wf="GatingSetList", "list"),
     definition=function(wf, action, ...)
@@ -129,10 +141,16 @@ setMethod("add",
       
     })    
     
-        
+setMethod("add",
+    signature=c("GatingSet", "filtersList"),
+    definition=function(wf, action, ...)
+    {
+      selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
+      
+    })
     
-#' @importClassesFrom flowCore filterList ellipsoidGate intersectFilter polygonGate rectangleGate
-#' @importFrom flowCore filterList
+#' @importClassesFrom flowCore filterList filtersList ellipsoidGate intersectFilter polygonGate rectangleGate filters
+#' @importFrom flowCore filterList filtersList filters
 setMethod("add",
 		signature=c("GatingSet", "filterList"),
 		definition=function(wf, action, ...)
@@ -140,7 +158,7 @@ setMethod("add",
 			samples<-sampleNames(wf)
 			
 			if(!setequal(names(action),samples))
-				stop("names of filterList do not match with the sample names in the gating set!")			
+				stop("names of gate list do not match with the sample names in the gating set!")			
 			
 			nodeIDs<-lapply(samples,function(sample){
 								curFilter<-action[[sample]]
@@ -157,12 +175,21 @@ setMethod("add",
 		nodeID
 			
 		})
+    
 setMethod("add",
         signature=c("GatingSetList", "filterList"),
         definition=function(wf, action, ...)
         {
           selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
         })
+    
+setMethod("add",
+    signature=c("GatingSetList", "filtersList"),
+    definition=function(wf, action, ...)
+    {
+      selectMethod("add",signature = c(wf="GatingSet", action="filtersList"))(wf, action, ...)
+    })
+
 setMethod("add",
 		signature=c("GatingSet", "filter"),
 		definition=function(wf, action, ...)
@@ -174,12 +201,33 @@ setMethod("add",
 			add(wf,actions,...)
 			
 		})
+    
+setMethod("add",
+    signature=c("GatingSet", "filters"),
+    definition=function(wf, action, ...)
+    {
+      
+      message("replicating filters '",identifier(action),"' across samples!")
+      
+      actions <- sapply(sampleNames(wf),function(x)return(action))
+      add(wf,actions,...)
+      
+    })    
+
 setMethod("add",
     signature=c("GatingSetList", "filter"),
     definition=function(wf, action, ...)
     {
       
       selectMethod("add",signature = c(wf="GatingSet", action="filter"))(wf, action, ...)
+      
+    })
+setMethod("add",
+    signature=c("GatingSetList", "filters"),
+    definition=function(wf, action, ...)
+    {
+      
+      selectMethod("add",signature = c(wf="GatingSet", action="filters"))(wf, action, ...)
       
     })
 
@@ -222,10 +270,29 @@ setMethod("add",
 			.addGate(wf,filterObject(action),...)
 		})
 
+setMethod("add",
+    signature=c("GatingHierarchy", "filters"),
+    definition=function(wf, action, names = NULL, ... )
+    {
+      if(!is.null(names))
+      {
+        if(any(duplicated(names)))
+          stop("population names given by 'name` argument are not unqiue")
+        if(length(names)!=length(action))
+          stop("number of population names (given by 'name' argument) does not agree with the number of filter objects in 'filters'!")
+        
+        unlist(mapply(action, names, FUN = function(thisFilter, thisName){
+                  add(wf,thisFilter, name = thisName, ...)
+                })
+        )
+      }else
+        unlist(lapply(action, function(thisFilter)add(wf, thisFilter,...)))
+      
+    })
 
 setMethod("add",
 		signature=c("GatingHierarchy", "quadGate"),
-		definition=function(wf, action,names=NULL,... )
+		definition=function(wf, action, names = NULL, ... )
 		{
 			
 			#convert to four recgates			
