@@ -160,17 +160,25 @@ setMethod("add",
 			if(!setequal(names(action),samples))
 				stop("names of gate list do not match with the sample names in the gating set!")			
 			
-			nodeIDs<-lapply(samples,function(sample){
-								curFilter<-action[[sample]]
-								gh<-wf[[sample]]
+			nodeIDs <- lapply(samples,function(sample){
+								curFilter <- action[[sample]]
+								gh <- wf[[sample]]
 #								browser()
-								add(wf=gh,action=curFilter,...)
+								add(wf = gh, action = curFilter, ...)
 							})
 					
-			nodeID<-nodeIDs[[1]]
-		
-		if(!all(sapply(nodeIDs[-1],function(x)identical(x,nodeID))))
-			stop("nodeID are not identical across samples!")
+			nodeID <- nodeIDs[[1]]
+#		browser()
+		if(!all(sapply(nodeIDs[-1],function(x)isTRUE(all.equal(x, nodeID, check.attributes = FALSE))))){
+          #restore the gatingset by removing added nodes
+          mapply(samples, nodeIDs, FUN = function(sample, nodeID){
+                gh <- wf[[sample]]
+                nodes <- getNodes(gh)[nodeID]
+                lapply(nodes, Rm, envir = gh)
+              })
+          stop("nodeID are not identical across samples!")
+        }
+			
 		
 		nodeID
 			
@@ -379,7 +387,9 @@ setMethod("Rm",
           ,signature = c(symbol="character", envir="GatingSet", subSymbol="character"))(symbol, envir, subSymbol, ...)
     })
     
-
+# can't use numerical index to do the Rm because 
+# numerical index will change once nodes are removed
+# thus Rm by node name is safer
 setMethod("Rm",
 		signature=c(symbol="character",
 				envir="GatingHierarchy",
@@ -388,8 +398,8 @@ setMethod("Rm",
 		{
 #			browser()
             
-            nid<-.getNodeInd(envir,symbol)
-			##remove all children nodes as well
+            nid <- .getNodeInd(envir,symbol)
+            ##remove all children nodes as well
 			childrenNodeIds <- getChildren(envir,nid)
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion

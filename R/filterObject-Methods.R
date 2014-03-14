@@ -17,7 +17,7 @@ setMethod("filterObject",signature=c("rectangleGate"),function(x,...){
         
       }else
       {
-        #convert to polygon gate
+        #convert to rectGate gate
         mat<-rbind(x@min,x@max)
         filterObject<-list(type=as.integer(5)
             ,params=params
