@@ -406,14 +406,7 @@ void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
 vector<bool> polygonGate::gating(flowData & fdata){
 
 
-	/*
-	 * must interpolate for ellipse gate
-	 */
-	if(getType()==ELLIPSEGATE)
-	{
-		ellipseGate * ep=dynamic_cast<ellipseGate *>(this);
-		ep->toPolygon(100);
-	}
+
 
 	vector<coordinate> vertices=param.getVertices();
 	unsigned nVertex=vertices.size();
@@ -477,6 +470,10 @@ vector<bool> polygonGate::gating(flowData & fdata){
 		ind.flip();
 	return ind;
 }
+/*
+ * we moved the interpolation to polygonGate form gating method to here because
+ * gating may not be called when only gates to be extracted
+ */
 void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 	if(!Transformed())
 	{
@@ -516,6 +513,12 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 		}
 		if(dMode>=POPULATION_LEVEL)
 			COUT<<endl;
+
+		/*
+		 * must interpolate for ellipse gate
+		 */
+
+		toPolygon(100);
 
 		isTransformed=true;
 	}
