@@ -229,7 +229,7 @@ END_RCPP
 }
 
 /*
- * compute gates without doing the actual gating
+ * compute gates(i.e. extending, adjust, transfroming) without doing the actual gating
  * mainly used for extacting gates from workspace only
  */
 RcppExport SEXP R_computeGates(SEXP _gsPtr,SEXP _sampleName,SEXP _gains, SEXP _extend_val, SEXP _extend_to){
