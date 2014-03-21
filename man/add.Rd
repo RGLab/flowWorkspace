@@ -1,12 +1,17 @@
 \name{add}
 \alias{add}
 \alias{add,GatingHierarchy,filter-method}
+\alias{add,GatingHierarchy,filters-method}
 \alias{add,GatingHierarchy,quadGate-method}
 \alias{add,GatingSet,filter-method}
 \alias{add,GatingSet,filterList-method}
+\alias{add,GatingSet,filters-method}
+\alias{add,GatingSet,filtersList-method}
 \alias{add,GatingSet,list-method}
 \alias{add,GatingSetList,filter-method}
 \alias{add,GatingSetList,filterList-method}
+\alias{add,GatingSetList,filters-method}
+\alias{add,GatingSetList,filtersList-method}
 \alias{add,GatingSetList,list-method}
 \alias{recompute}
 \alias{recompute,GatingSet-method}

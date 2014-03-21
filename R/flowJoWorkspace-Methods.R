@@ -229,6 +229,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
                     ,path=path
                     ,xmlParserOption = obj@options
                     ,wsType=wsType
+                    ,ws = obj
                     ,...)
 		
 })
