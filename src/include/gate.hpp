@@ -213,6 +213,7 @@ public:
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual vector<bool> gating(flowData &){throw(domain_error("undefined gating function!"));};
 	virtual void extend(flowData &,float,unsigned short){throw(domain_error("undefined extend function!"));};
+	virtual void extend(float,float,unsigned short){throw(domain_error("undefined extend function!"));};
 	virtual void gain(map<string,float> &,unsigned short){throw(domain_error("undefined gain function!"));};
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
@@ -244,6 +245,7 @@ public:
 	unsigned short getType(){return RANGEGATE;}
 	vector<bool> gating(flowData &);
 	void extend(flowData &,float,unsigned short);
+	void extend(float,float,unsigned short);
 	void gain(map<string,float> &,unsigned short);
 	void transforming(trans_local &,unsigned short dMode);
 	paramRange getParam(){return param;};
@@ -274,6 +276,7 @@ public:
 	polygonGate();
 	virtual unsigned short getType(){return POLYGONGATE;}
 	virtual void extend(flowData &,float,unsigned short);
+	void extend(float,float,unsigned short);
 	virtual void gain(map<string,float> &,unsigned short);
 	virtual vector<bool> gating(flowData &);
 	virtual void transforming(trans_local &,unsigned short dMode);
@@ -326,6 +329,7 @@ public:
 	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
 	unsigned short getType(){return ELLIPSEGATE;}
 	void extend(flowData &,float,unsigned short);
+	void extend(float,float,unsigned short);
 	void gain(map<string,float> &,unsigned short);
 	void toPolygon(unsigned);
 	virtual void transforming(trans_local &,unsigned short dMode);

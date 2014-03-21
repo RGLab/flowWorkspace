@@ -355,7 +355,33 @@ void GatingHierarchy::extendGate(float extend_val){
 			}
 		}
 }
+/*
+ * the version without the need of loading data
+ * by supplying the extend_to value
+ */
+void GatingHierarchy::extendGate(float extend_val, float extend_to){
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+			COUT <<endl<<"start extending Gates for:"<<fdata.getSampleID()<<endl;
 
+
+		VertexID_vec vertices=getVertices(0);
+
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			VertexID u=*it;
+			nodeProperties & node=getNodeProperty(u);
+			if(u!=0)
+			{
+				gate *g=node.getGate();
+				if(g==NULL)
+					throw(domain_error("no gate available for this node"));
+				if(dMode>=POPULATION_LEVEL)
+					COUT <<node.getName()<<endl;
+				if(g->getType()!=BOOLGATE)
+					g->extend(extend_val,extend_to,dMode);
+			}
+		}
+}
 /*
  * adjust gates by gains
  */
@@ -383,6 +409,32 @@ void GatingHierarchy::adjustGate(map<string,float> &gains){
 		}
 }
 
+/*
+ * transform gates
+ */
+void GatingHierarchy::transformGate(){
+	if(dMode>=GATING_HIERARCHY_LEVEL)
+			COUT <<endl<<"start transform Gates for:"<<fdata.getSampleID()<<endl;
+
+
+		VertexID_vec vertices=getVertices(0);
+
+		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+		{
+			VertexID u=*it;
+			nodeProperties & node=getNodeProperty(u);
+			if(u!=0)
+			{
+				gate *g=node.getGate();
+				if(g==NULL)
+					throw(domain_error("no gate available for this node"));
+				if(dMode>=POPULATION_LEVEL)
+					COUT <<node.getName()<<endl;
+				if(g->getType()!=BOOLGATE)
+					g->transforming(trans,dMode);
+			}
+		}
+}
 /*
  * traverse the tree to gate each pops
  * assuming data have already been compensated and transformed
@@ -461,11 +513,7 @@ void GatingHierarchy::calgate(VertexID u)
 	}
 	else
 	{
-		/*
-		 * transform gates if applicable
-		 */
 
-		g->transforming(trans,dMode);
 //		COUT<<g->getType()<<typeid(*g).name()<<endl;
 		curIndices=g->gating(fdata);
 	}
