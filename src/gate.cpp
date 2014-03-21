@@ -110,6 +110,34 @@ void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	param.setVertices(v);
 }
 
+void polygonGate::extend(float extend_val, float extend_to, unsigned short dMode){
+	string x=param.xName();
+	string y=param.yName();
+
+	vector<coordinate> v=param.getVertices();
+	/*
+	 * get R_min
+	 */
+	double xMin=extend_to;
+	double yMin=extend_to;
+	for(unsigned i=0;i<v.size();i++)
+	{
+		if(v.at(i).x<=extend_val)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
+			v.at(i).x=xMin;
+		}
+		if(v.at(i).y<=extend_val)
+		{
+			if(dMode>=POPULATION_LEVEL)
+				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
+			v.at(i).y=yMin;
+
+		}
+	}
+	param.setVertices(v);
+}
 void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 
 	if(!isGained)
@@ -171,7 +199,22 @@ void ellipseGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	}
 
 }
+void ellipseGate::extend(float extend_val, float extend_to,unsigned short dMode){
 
+	/*
+	 * get R_min
+	 */
+	vector<coordinate> v=param.getVertices();
+	for(unsigned i=0;i<v.size();i++)
+	{
+		if((v.at(i).x<=extend_val)|(v.at(i).y<=extend_val))
+		{
+			throw(domain_error("try to extend the coordinates for ellipse gate!"));
+		}
+
+	}
+
+}
 void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
 	if(!isGained)
 	{
@@ -309,6 +352,20 @@ void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	 * get R_min
 	 */
 	double xMin=data_1d.min();
+	if(param.getMin()<=extend_val)
+	{
+		if(dMode>=POPULATION_LEVEL)
+			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
+		param.setMin(xMin);
+	}
+
+
+}
+void rangeGate::extend(float extend_val, float extend_to,unsigned short dMode){
+	string pName=param.getName();
+
+
+	double xMin= extend_to;
 	if(param.getMin()<=extend_val)
 	{
 		if(dMode>=POPULATION_LEVEL)

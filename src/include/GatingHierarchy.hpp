@@ -215,6 +215,9 @@ public:
 	void calgate(VertexID);
 	vector<bool> boolGating(VertexID);
 	void extendGate(float);
+	void extendGate(float,float);
+
+	void transformGate();
 	void adjustGate(map<string,float> & gains);
 	void drawGraph(string out);
 	VertexID getChildren(VertexID source,string childName);
