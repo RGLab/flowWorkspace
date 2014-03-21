@@ -124,6 +124,7 @@ test_that(".isBoolGate ",{
       invisible(Rm("myBoolFilter", gh))
     })
 
+
 test_that("getData ",{
       
       fr <- getData(gh)
