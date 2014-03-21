@@ -227,42 +227,32 @@ BEGIN_RCPP
 
 END_RCPP
 }
+
 /*
- * cdf version
- * Deprecated: we don't want to keep a separate view of ncdfFlowSet in c++ due to the
- * data consistency concerns
- * even though it increases the communication overhead from R to C by using R_gating method
+ * compute gates(i.e. extending, adjust, transfroming) without doing the actual gating
+ * mainly used for extacting gates from workspace only
  */
-//RcppExport SEXP R_gating_cdf(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeInd,SEXP _recompute){
-//BEGIN_RCPP
-//
-//
-//
-//	XPtr<GatingSet>gs(_gsPtr);
-//
-//	string sampleName=as<string>(_sampleName);
-//	unsigned short nodeInd=as<unsigned short>(_nodeInd);
-//	bool recompute=as<bool>(_recompute);
-//
-//	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-//	gh->loadData(sampleName);
-//	/*
-//	 * assume the data has been transformed when recompute==true
-//	 */
-//	if(!recompute)
-//	{
-//		gh->extendGate();
-//		gh->transforming(true);
-//	}
-//
-//	gh->gating(nodeInd,recompute);
-//	gh->unloadData();
-//
-//END_RCPP
-//}
-/*
- * non-cdf version
- */
+RcppExport SEXP R_computeGates(SEXP _gsPtr,SEXP _sampleName,SEXP _gains, SEXP _extend_val, SEXP _extend_to){
+BEGIN_RCPP
+
+	GatingSet *	gs=getGsPtr(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	float extend_val = as<float>(_extend_val);
+	float extend_to = as<float>(_extend_to);
+	map<string,float> gains;
+	NumericVector gainsVec= as<NumericVector>(_gains);
+	vector<string> chnlNames = gainsVec.names();
+	for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
+		gains[*it]=gainsVec[*it];
+	}
+	gh->extendGate(extend_val, extend_to);
+	gh->adjustGate(gains);
+	gh->transformGate();
+
+END_RCPP
+}
+
 
 RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val, SEXP _ignore_case){
 BEGIN_RCPP
@@ -296,6 +286,7 @@ BEGIN_RCPP
 		}
 		gh->extendGate(extend_val);
 		gh->adjustGate(gains);
+		gh->transformGate();
 		gh->transforming();
 	}
 

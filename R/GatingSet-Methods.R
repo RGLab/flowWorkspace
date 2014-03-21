@@ -376,7 +376,7 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, wsType,...){
+.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, wsType, ...){
 
 
 	message("calling c++ parser...")
@@ -434,8 +434,6 @@ unarchive<-function(file,path=tempdir()){
 	{
 		files<-samples
 	}
-    
-    
 	G<-.addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, ...)
 
 
@@ -502,11 +500,14 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 #' constructing gating set
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
-#' @param ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..) 
+#' @param ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
+#' @param extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value. 
+#' @param extend_to \code{numeric} the value that gate coordinates are extended to. Default is -200. Usually this value will be automatically detected according to the real data range.
+#'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.      
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, prefix = TRUE, ignore.case = FALSE, ...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -200, prefix = TRUE, ignore.case = FALSE, ws = NULL, ...){
 	
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -545,9 +546,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         
 		sampleName<-basename(file)
         
-		
-		#gating (including loading data,compensating,transforming and the actual gating)
-		if(execute)
+        # get comp
+        comp <- .Call("R_getCompensation", G@pointer, sampleName)
+        cid <- comp$cid
+        
+		# get kw from ws
+        kw <- getKeywords(ws, sampleName)
+        
+      
+        ##################################
+        #Compensating the data
+        ##################################
+        if(execute)
 		{
 			
 			message("loading data: ",file);
@@ -565,11 +575,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             
             }
               
-			##################################
-			#Compensating the data
-			##################################
-			comp <- .Call("R_getCompensation", G@pointer, sampleName)
-			cid <- comp$cid
+			
+			
 			if(cid=="")
 				cid=-2
 
@@ -636,31 +643,46 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 				}
 				
 			}
-			if(cid!="-2")
-			{
+       }else{
+         
+       key_names <- unique(names(kw[grep("P[0-9]{1,}N", names(kw))]))
+       cnd <- as.vector(unlist(kw[key_names]))   
+       }
+           
+       ##################################
+       #alter the colnames
+       ##################################
+  		if(cid!="-2")
+  		{
 #				browser()
-				#get prefix if it is not set yet
-                if(is.null(prefixColNames)&&prefix){
-                  
-                  if(is.null(cnd)){
-                    cnd <- as.vector(parameters(data)@data$name)
-                  }
-                  prefixColNames <- cnd
-                  
-                  wh <- match(parameters(compobj), prefixColNames)
-                  
-                  prefixColNames[wh] <- paste(comp$prefix,parameters(compobj),comp$suffix,sep="")
-                  
-                    
-                }
+            #get prefix if it is not set yet
+            if(is.null(prefixColNames)&&prefix){
+              
+              if(is.null(cnd)){
+                cnd <- as.vector(parameters(data)@data$name)
               }
-            ##################################
-            #transforming and gating
-            ##################################
+              prefixColNames <- cnd
+              
+              wh <- match(comp$parameters, prefixColNames)
+              
+              prefixColNames[wh] <- paste(comp$prefix,comp$parameters,comp$suffix,sep="")
+              
+                
+            }
+          }
+          ##################################
+          #transforming and gating
+          ##################################                
+          if(execute)
+          {    
+            
             message(paste("gating ..."))
             #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
             mat <- data@exprs #using @ is faster than exprs()
             #get gains from keywords
+            # for now we still parse it from data
+            # once confirmed that workspace is a reliable source for this info
+            # we can parse it from ws as well
             this_pd <- pData(parameters(data))
             paramIDs <- rownames(pData(parameters(data)))
             key_names <- paste(paramIDs,"G",sep="")
@@ -712,8 +734,34 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             tRg  <- range(mat[,tInd])
             axis.labels <- .transformRange(G,sampleName,wsType,fs@frames,timeRange = tRg)
 
-		}else
+		}else{
+          #extract gains from keyword of ws
+          #currently it is only used for extracting gates without gating
+          #In future we want to use it for gating as well 
+          #once we have confirmed that ws is a reliable source of keyword
+#          browser()
+          
+          #get gains from keywords
+          kw_gains <- grep("P[0-9]{1,}G", names(kw))
+          key_names <- unique(names(kw[kw_gains]))
+#          if(as.numeric(kw[["FCSversion"]])>=3){
+            kw_gains <- kw[key_names]
+            
+            # For keywords where the gain is not set, the gain is NULL.
+            # We replace these instances with the default of 1.
+            kw_gains[sapply(kw_gains, is.null)] <- 1
+            
+            gains <- as.numeric(kw_gains)                      
+#          }else{
+#            gains <- rep(1,length(key_names))
+#          }
+          
+          names(gains) <- prefixColNames
+          #transform and adjust the gates without gating
+          .Call("R_computeGates",G@pointer, sampleName, gains, extend_val, extend_to)
           axis.labels <- list()
+        }
+          
         #set global variable
         tempenv$prefixColNames <- prefixColNames
         
