@@ -549,9 +549,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         # get comp
         comp <- .Call("R_getCompensation", G@pointer, sampleName)
         cid <- comp$cid
+#        browser()
         
-		# get kw from ws
-        kw <- getKeywords(ws, sampleName)
+        # get kw from ws
+        if(!is.null(ws))
+		  kw <- getKeywords(ws, sampleName)
         
       
         ##################################
