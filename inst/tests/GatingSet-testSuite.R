@@ -304,6 +304,43 @@ test_that("getIndices for COMPASS",{
       expect_equal(thisRes,expectRes)
       
     })
+
+test_that("add", {
+      filterslist1 <- lapply(gs, function(gh){
+            cd4_gate  <- getGate(gh, "CD4")
+            cd4_gate@filterId <- "CD4_test"
+            cd8_gate  <- getGate(gh, "CD8")
+            cd8_gate@filterId <- "CD8_test"
+            filters(list(cd4_gate,cd8_gate))
+          })
+      
+      #add without name
+      Ids <- add(gs, filterslist1)
+      expect_equal(Ids, c(25,26))
+      cd4_gate  <- getGate(gs, "CD4")
+      cd4_gate <- lapply(cd4_gate, function(g){
+            g@filterId <- "CD4_test"
+            g
+          })
+      expect_equal(getGate(gs, "CD4_test"), cd4_gate) 
+      Rm("CD4_test", gs)
+      Rm("CD8_test", gs)
+      
+      #customize names
+      expect_error(add(gs, filterslist1, names = c("CD4_demo")), "number of population names ")
+      expect_error(add(gs, filterslist1, names = c("CD4_demo", "CD4_demo")), "not unqiue")
+      
+      Ids <- add(gs, filterslist1, names = c("CD4_demo", "CD8_demo"))
+      expect_equal(Ids, c(25,26))
+      cd4_gate  <- getGate(gs, "CD4")
+      cd4_gate <- lapply(cd4_gate, function(g){
+            g@filterId <- "CD4_demo"
+            g
+          })
+      expect_equal(getGate(gs, "CD4_demo"), cd4_gate) 
+      Rm("CD4_demo", gs)
+      Rm("CD8_demo", gs)
+    })
 #TODO:write test cases for save_gs /load_gs 
 
 #TODO: gs created from gh template somehow yields differernt results.
