@@ -2130,12 +2130,9 @@ getIndiceMat <- function(gh,y){
 #  as.data.table(indice_list)
 }
 #' create mapping between pops and channels
-.getPopChnlMapping <- function(this_pd, y, pop_marker_list){
+.getPopChnlMapping <- function(this_pd, popNames, pop_marker_list){
   #  browser()
   this_pd[, "desc"] <- as.vector(this_pd[, "desc"])
-  #get pop names
-  strExpr <- as.character(y)
-  popNames <- strsplit(strExpr,split="\\|")[[1]]
   
   #parse the markers of interest from pop names
   markers_selected <- sapply(popNames,function(this_pop){
@@ -2194,40 +2191,93 @@ getIndiceMat <- function(gh,y){
   
 }
 
-#' Return the flowSet associated with a GatingSet by boolean expression
+
+setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_list = list(),...){
+      .Deprecated("getSingleCellExpression")
+      fs <- getData(obj)
+      
+      strExpr <- as.character(y)
+      popNames <- strsplit(strExpr,split="\\|")[[1]]
+      
+      sapply(sampleNames(obj),function(this_sample){
+# browser()
+            message(this_sample)
+            
+            fr <- fs[[this_sample, use.exprs = FALSE]]
+            this_pd <- pData(parameters(fr))
+            #get pop vs channel mapping
+            pop_chnl <- .getPopChnlMapping(this_pd, popNames, pop_marker_list)
+            this_chnls <- as.character(pop_chnl[,"name"])
+            this_pops <- as.character(pop_chnl[,"pop"])
+            
+            #get mask mat
+            this_mat <- .getIndiceMat(obj, this_sample, this_pops)
+# browser()
+            
+            this_ind <- .rowSums(this_mat, nrow(this_mat), ncol(this_mat))
+            this_ind <- this_ind > 0
+            if(!any(this_ind)){
+              NULL
+            }else{
+              
+              this_mat <- this_mat[this_ind, , drop = FALSE]
+              #subset data by channels selected
+# browser()
+              this_data <- fs[[this_sample, this_chnls]]
+              this_subset <- exprs(this_data)
+# this_subset <- as.data.table(this_subset)
+              this_subset <- this_subset[this_ind,]
+              #masking the data
+              this_subset <- this_subset * this_mat
+              colnames(this_subset) <- pop_chnl[,"desc"]
+              this_subset
+# setnames(this_subset, this_chnls, as.vector(pop_chnl[,"desc"]))
+# as.data.frame(this_subset)
+              
+            }
+          }, simplify = FALSE) 
+    })
+#' Return the cell events data that express in any of the single populations defined in \code{y}
 #' 
-#' Returns a flowSet containing the events defined at by boolean expression \code{y}.
-#' @param obj A \code{GatingSet} object .
-#' @param y \code{name} boolean expression specifying the boolean combination of different cell populations
+#' Returns a list of matrix containing the events that expressed in any one of the populations efined in \code{y}
+#' @param x A \code{GatingSet} or \code{GatingSetList} object .
+#' @param nodes \code{character} vector specifying different cell populations
+#' @param map mapping node names (as specified in the gating hierarchy of the gating set) to channel 
+#'                         names (as specified in either the \code{desc} or \code{name} 
+#'                          columns of the parameters of the associated \code{flowFrame}s 
+#'                          in the \code{GatingSet}).
 #' @return A \code{list} of \code{numerci matrices}
-#' @rdname getData-methods
-#' @aliases GatingSetList,name-method
+#' @aliases 
+#' getData,GatingSetList,name-method
+#' getData,GatingSet,name-method
+#' getSingleCellExpression,GatingSetList,character-method
+#' getSingleCellExpression,GatingSet,character-method
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
 #' @seealso \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
 #' @examples \dontrun{
 #'   #G is a GatingSet
 #' 	geData(G,3)
-#' 	res <- getData(gs[1],quote(`4+/TNFa+|4+/IL2+`))
+#' 	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+"))
 #' 	res[[1]]
+#' 	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+") , list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
 #' }
 #' @export
-
-setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_list = list(),...){
-
-  fs <- getData(obj)
-  sapply(sampleNames(obj),function(this_sample){
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map, ...){
+  
+  fs <- getData(x)
+  sapply(sampleNames(x),function(this_sample){
 #      browser()
       message(this_sample)
       
       fr <- fs[[this_sample, use.exprs = FALSE]] 
       this_pd <- pData(parameters(fr))  
       #get pop vs channel mapping
-      pop_chnl <- .getPopChnlMapping(this_pd,y,pop_marker_list)
+      pop_chnl <- .getPopChnlMapping(this_pd, nodes, map)
       this_chnls <- as.character(pop_chnl[,"name"])
       this_pops <-  as.character(pop_chnl[,"pop"])
       
       #get mask mat
-      this_mat <- .getIndiceMat(obj, this_sample, this_pops)
+      this_mat <- .getIndiceMat(x, this_sample, this_pops)
 #      browser()
      
       this_ind <- .rowSums(this_mat, nrow(this_mat), ncol(this_mat))
@@ -2252,46 +2302,5 @@ setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_l
           
       }
   }, simplify = FALSE)     
-})
-
-setMethod("getData",signature=c("GatingSetList","name"),function(obj, y, pop_marker_list = list(), ...){
-  
-  #      browser()
-  sapply(sampleNames(obj),function(this_sample){
-    message(this_sample)
-    gh <- obj[[this_sample]]
-    
-    pop_chnl<- .getPopChnlMapping(gh,y,pop_marker_list)
-    this_pops <-  as.character(pop_chnl[,"pop"])
-    this_chnls <- as.character(pop_chnl[,"name"])
-    
-    
-    #get mask mat
-    #      browser()
-    
-    this_mat <- getIndiceMat(gh,y)[,this_pops, drop=FALSE]
-    #get indices of bool gates 
-    this_ind <- this_mat[,1]
-    for(i in 2:ncol(this_mat)){
-      
-      this_ind <- this_ind |this_mat[,i]
-      
-    }
-    if(sum(this_ind)==0){
-      NULL
-    }else{
-      this_mat <- this_mat[this_ind,,drop = FALSE]
-      #subset data by channels selected
-      
-      this_data <- getData(gh)
-      this_subset <- exprs(this_data)[this_ind,this_chnls, drop=FALSE] 
-      #masking the data
-      this_subset <- this_subset *  this_mat
-      colnames(this_subset) <- pop_chnl[,"desc"]
-      this_subset  
-    }
-    
-  },simplify = FALSE)  
-  
 })
 

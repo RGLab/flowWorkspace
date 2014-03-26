@@ -87,5 +87,13 @@ test_that("keyword", {
       
     })
 
+test_that("getSingleCellExpression for COMPASS",{
+      
+      thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
+      expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
+      expect_equivalent(thisRes,expectRes)
+      
+    })
+
 #TODO:write test cases for save_gslist /load_gslist 
 
