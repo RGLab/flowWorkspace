@@ -1,10 +1,13 @@
 \name{getNodes}
 \alias{getNodes}
 \alias{getNodes-methods}
-\alias{getNodes,GatingHierarchy-method}
-\title{Get the names of all nodes in a gating hierarchy.}
+\alias{getNodes,GatingSet-method}
+\title{Get the names of all nodes from a gating hierarchy.}
 \arguments{
-  \item{x}{A \code{GatingHierarchy}}
+  \item{x}{A \code{GatingSet} Assuming the gating hierarchy
+  are identical within the \code{GatingSet}, the Gating
+  tree of the first sample is used to query the node
+  information.}
 
   \item{y}{A \code{character} the name or full(/partial)
   gating path of the population node of interest.  Or, a
@@ -39,7 +42,7 @@
 }
 \description{
   \code{getNodes} returns a character vector of names of
-  the nodes (populations) in the \code{GatingHierarchy}.
+  the nodes (populations) in the \code{GatingSet}.
 }
 \details{
   integer indices of nodes are based on regular order,so
@@ -49,12 +52,12 @@
 \examples{
 \dontrun{
     #G is a gating hierarchy
-    getNodes(G[[1], path = 1])#return node names (without prefix)
-    getNodes(G[[1], path = 1, prefix = "all"])#return node names with unqiue ID
-    getNodes(G[[1], path = 1, prefix = "auto"])#prepend unqiue ID as needed
-    getNodes(G[[1]],path = "full")#return the full path
-    getNodes(G[[1]],path = 2)#return the path as length of two
-    getNodes(G[[1]],path = "auto)#automatically determine the length of path
+    getNodes(G, path = 1])#return node names (without prefix)
+    getNodes(G, path = 1, prefix = "all"])#return node names with unqiue ID
+    getNodes(G, path = 1, prefix = "auto"])#prepend unqiue ID as needed
+    getNodes(G,path = "full")#return the full path
+    getNodes(G,path = 2)#return the path as length of two
+    getNodes(G,path = "auto)#automatically determine the length of path
     setNode(G,"L","lymph")
   }
 }

@@ -724,10 +724,10 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
       flowCore::keyword(getData(object, use.exprs = FALSE))
     })    
 
-#'  Get the names of all nodes in a gating hierarchy.
+#'  Get the names of all nodes from a gating hierarchy.
 #' 
-#'   \code{getNodes} returns a character vector of names of the nodes (populations) in the \code{GatingHierarchy}.
-#' @param x A \code{GatingHierarchy}
+#'   \code{getNodes} returns a character vector of names of the nodes (populations) in the \code{GatingSet}.
+#' @param x A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.  
 #' @param y A \code{character} the name or full(/partial) gating path of the population node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
 #' @param order \code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
 #'     "regular" is default.
@@ -747,21 +747,21 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G[[1], path = 1])#return node names (without prefix)
-#'     getNodes(G[[1], path = 1, prefix = "all"])#return node names with unqiue ID
-#'     getNodes(G[[1], path = 1, prefix = "auto"])#prepend unqiue ID as needed 
-#'     getNodes(G[[1]],path = "full")#return the full path
-#'     getNodes(G[[1]],path = 2)#return the path as length of two 
-#'     getNodes(G[[1]],path = "auto)#automatically determine the length of path 
+#'     getNodes(G, path = 1])#return node names (without prefix)
+#'     getNodes(G, path = 1, prefix = "all"])#return node names with unqiue ID
+#'     getNodes(G, path = 1, prefix = "auto"])#prepend unqiue ID as needed 
+#'     getNodes(G,path = "full")#return the full path
+#'     getNodes(G,path = 2)#return the path as length of two 
+#'     getNodes(G,path = "auto)#automatically determine the length of path 
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases
 #' getNodes
 #' getNodes-methods
-#' getNodes,GatingHierarchy-method
+#' getNodes,GatingSet-method 
 #' @importFrom BiocGenerics duplicated
 #' @importFrom plyr ddply .
-setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE, ...){
+setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE, ...){
       
             prefix <- match.arg(prefix)
             thisCall <- match.call()
@@ -799,7 +799,7 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path =
 			
             orderInd <- orderInd-1
 			
-			nodeNames <- .Call("R_getNodes",x@pointer,getSample(x),as.integer(orderInd),isPath,showHidden)
+			nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),isPath,showHidden)
 
 			
             if(is.numeric(path)){
@@ -916,25 +916,25 @@ setMethod("getNodes","GatingHierarchy",function(x,y=NULL,order="regular", path =
 #' getChildren-methods
 #' getChildren,GatingHierarchy,character-method
 #' getChildren,GatingHierarchy,numeric-method
-setMethod("getParent",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
+setMethod("getParent",signature(obj="GatingSet",y="numeric"),function(obj,y){
 			#make sure the index conversion is done properly between C and R convention
 #			browser()
-			.Call("R_getParent",obj@pointer,getSample(obj),as.integer(y)-1)+1
+			.Call("R_getParent",obj@pointer,sampleNames(obj)[1],as.integer(y)-1)+1
 		})
-setMethod("getParent",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
+setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, ...){
 #			browser()
 			ind<-.getNodeInd(obj,y)
 			pind<-getParent(obj,ind)
 			getNodes(obj, showHidden = TRUE, ...)[pind]
 		})
-setMethod("getChildren",signature(obj="GatingHierarchy",y="character"),function(obj,y,tsort=FALSE, ...){
+setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE, ...){
 			ind<-.getNodeInd(obj,y)
 			cind<-getChildren(obj,ind)
 			getNodes(obj, showHidden = TRUE, ...)[cind]
 })
-setMethod("getChildren",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
+setMethod("getChildren",signature(obj="GatingSet",y="numeric"),function(obj,y){
 #			browser()
-			.Call("R_getChildren",obj@pointer,getSample(obj),as.integer(y)-1)+1
+			.Call("R_getChildren",obj@pointer,sampleNames(obj),as.integer(y)-1)+1
 			
 		})
 #
@@ -1134,7 +1134,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 			}
 		})
         
-.getNodeInd<-function(obj,y, ...){
+.getNodeInd <- function(obj,y, ...){
 #  browser()
   if(grepl("/",y)){
     
@@ -1143,7 +1143,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
     isEmpty <- sapply(this_path,function(this_char)nchar(this_char)==0)
     this_path <- this_path[!isEmpty]
     
-    ind <- .Call("R_getNodeID",obj@pointer,getSample(obj),this_path)
+    ind <- .Call("R_getNodeID",obj@pointer,sampleNames(obj)[1],this_path)
     ind + 1 # convert to R index
   }else{
     allNodes <- getNodes(obj, path = 1, prefix = "auto", showHidden = TRUE,...)

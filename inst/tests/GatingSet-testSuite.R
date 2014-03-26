@@ -347,7 +347,7 @@ test_that("getData for COMPASS",{
       
       thisRes <- getData(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`) , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
       expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
-      expect_equal(thisRes,expectRes, tol = 1e-05)
+      expect_equivalent(thisRes,expectRes)
       
     })
 

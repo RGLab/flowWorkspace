@@ -2110,19 +2110,29 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y, ...){
 #' @param gh \code{GatingHierarchy} object
 #' @param y \code{character} node name
 #' @export 
-getIndiceMat<-function(gh,y){
+getIndiceMat <- function(gh,y){
   strExpr <- as.character(y)
   nodes <- strsplit(strExpr,split="\\|")[[1]]
-  #  browser()
-  #extract logical indices for each cytokine gate
-  indice_list <- sapply(nodes,function(this_node)getIndices(gh,this_node),simplify = FALSE)
-  #construct the indice matrix
-  do.call(cbind,indice_list)
+  .getIndiceMat(gh, sampleNames(gh), nodes)  
+  
 }
 
+.getIndiceMat <- function(gs, thisSample, nodes){
+  #extract logical indices for each cytokine gate
+  indice_list <- sapply(nodes,function(this_node).Call("R_getIndices"
+            , gs@pointer
+            , thisSample
+            , as.integer(.getNodeInd(gs,this_node) - 1))
+      ,simplify = FALSE)
+  
+  #construct the indice matrix
+  do.call(cbind, indice_list)
+#  as.data.table(indice_list)
+}
 #' create mapping between pops and channels
-.getPopChnlMapping<-function(gh, y, pop_marker_list){
+.getPopChnlMapping <- function(this_pd, y, pop_marker_list){
   #  browser()
+  this_pd[, "desc"] <- as.vector(this_pd[, "desc"])
   #get pop names
   strExpr <- as.character(y)
   popNames <- strsplit(strExpr,split="\\|")[[1]]
@@ -2136,10 +2146,8 @@ getIndiceMat<-function(gh,y){
   },USE.NAMES=FALSE)
   
   #match to the pdata of flow frame
-  fr <- getData(gh, use.exprs = FALSE)
-  this_pd <- pData(parameters(fr))
   all_markers <- this_pd[,"desc"]
-  all_markers <- as.character(all_markers)
+#  all_markers <- as.character(all_markers)
   all_markers[is.na(all_markers)] <- "NA"
   is_matched <- sapply(all_markers,function(this_marker){
     
@@ -2205,39 +2213,47 @@ getIndiceMat<-function(gh,y){
 #' @export
 
 setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_list = list(),...){
-  #get ind of bool gate
-  bool_inds <- getIndices(obj,y,...)
-  
-  
-  lapply(obj,function(gh){
-        
-    #get pop vs channel mapping
-    pop_chnl<- .getPopChnlMapping(gh,y,pop_marker_list)
-    this_chnls <- as.character(pop_chnl[,"name"])
-    this_pops <-  as.character(pop_chnl[,"pop"])
-    
-    #get mask mat
-    this_sample <- getSample(gh)
-    message(this_sample)
-    
-    this_ind <-  bool_inds[[this_sample]]
-    
-    if(sum(this_ind)==0){
-      NULL
-    }else{
+
+  fs <- getData(obj)
+  sapply(sampleNames(obj),function(this_sample){
+#      browser()
+      message(this_sample)
       
-      this_mat <- getIndiceMat(gh,y)[this_ind,this_pops, drop=FALSE]
-      #subset data by channels selected
+      fr <- fs[[this_sample, use.exprs = FALSE]] 
+      this_pd <- pData(parameters(fr))  
+      #get pop vs channel mapping
+      pop_chnl <- .getPopChnlMapping(this_pd,y,pop_marker_list)
+      this_chnls <- as.character(pop_chnl[,"name"])
+      this_pops <-  as.character(pop_chnl[,"pop"])
       
-      this_data <- getData(gh)
-      this_subset <- exprs(this_data)[this_ind,this_chnls, drop=FALSE] 
-      #masking the data
-      this_subset <- this_subset *  this_mat
-      colnames(this_subset) <- pop_chnl[,"desc"]
-      this_subset
-    }
-  })     
+      #get mask mat
+      this_mat <- .getIndiceMat(obj, this_sample, this_pops)
+#      browser()
+     
+      this_ind <- .rowSums(this_mat, nrow(this_mat), ncol(this_mat))
+      this_ind <- this_ind > 0
+      if(!any(this_ind)){
+        NULL
+      }else{
+         
+        this_mat <- this_mat[this_ind, , drop = FALSE]
+        #subset data by channels selected
+#        browser()
+        this_data <- fs[[this_sample, this_chnls]]
+        this_subset <- exprs(this_data)
+#        this_subset <- as.data.table(this_subset)
+        this_subset <- this_subset[this_ind,] 
+        #masking the data
+        this_subset <- this_subset *  this_mat
+        colnames(this_subset) <- pop_chnl[,"desc"]
+        this_subset
+#        setnames(this_subset, this_chnls, as.vector(pop_chnl[,"desc"]))
+#        as.data.frame(this_subset)
+          
+      }
+  }, simplify = FALSE)     
 })
+
 setMethod("getData",signature=c("GatingSetList","name"),function(obj, y, pop_marker_list = list(), ...){
   
   #      browser()
