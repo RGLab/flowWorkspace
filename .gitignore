@@ -1,0 +1,14 @@
+.Rproj.user
+
+src/*.o
+src/*.so
+src/bst
+tools
+inst/lib
+
+.Rhistory
+config.log
+config.status
+flowWorkspace.Rproj
+src/Makevars
+
