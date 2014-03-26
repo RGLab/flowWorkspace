@@ -2265,42 +2265,26 @@ setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_l
 setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map, ...){
   
   fs <- getData(x)
-  sapply(sampleNames(x),function(this_sample){
+  sapply(sampleNames(x),function(sample){
 #      browser()
-      message(this_sample)
+      message(sample)
       
-      fr <- fs[[this_sample, use.exprs = FALSE]] 
+      fr <- fs[[sample, use.exprs = FALSE]] 
       this_pd <- pData(parameters(fr))  
       #get pop vs channel mapping
       pop_chnl <- .getPopChnlMapping(this_pd, nodes, map)
-      this_chnls <- as.character(pop_chnl[,"name"])
-      this_pops <-  as.character(pop_chnl[,"pop"])
-      
-      #get mask mat
-      this_mat <- .getIndiceMat(x, this_sample, this_pops)
-#      browser()
-     
-      this_ind <- .rowSums(this_mat, nrow(this_mat), ncol(this_mat))
-      this_ind <- this_ind > 0
-      if(!any(this_ind)){
-        NULL
-      }else{
-         
-        this_mat <- this_mat[this_ind, , drop = FALSE]
-        #subset data by channels selected
-#        browser()
-        this_data <- fs[[this_sample, this_chnls]]
-        this_subset <- exprs(this_data)
-#        this_subset <- as.data.table(this_subset)
-        this_subset <- this_subset[this_ind,] 
-        #masking the data
-        this_subset <- this_subset *  this_mat
-        colnames(this_subset) <- pop_chnl[,"desc"]
-        this_subset
-#        setnames(this_subset, this_chnls, as.vector(pop_chnl[,"desc"]))
-#        as.data.frame(this_subset)
+      chnls <- as.character(pop_chnl[,"name"])
+      pops <-  as.character(pop_chnl[,"pop"])
+      markers <- as.character(pop_chnl[,"desc"])
+
+      nodeIds <- sapply(pops,.getNodeInd, obj = x)
+      nodeIds <- as.integer(nodeIds) - 1
+      data <- fs[[sample, chnls]]
+      data <- exprs(data)
+      data <- .Call("R_getSingleCellExpression", x@pointer, sample, nodeIds, data, markers)
+      data
           
-      }
+
   }, simplify = FALSE)     
 })
 
