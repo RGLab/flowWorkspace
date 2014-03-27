@@ -671,6 +671,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               
                 
             }
+          }else{
+            prefixColNames <- cnd
           }
           ##################################
           #transforming and gating
@@ -745,8 +747,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           
           #get gains from keywords
           kw_gains <- grep("P[0-9]{1,}G", names(kw))
-          key_names <- unique(names(kw[kw_gains]))
-#          if(as.numeric(kw[["FCSversion"]])>=3){
+          
+          if(length(kw_gains) > 0){
+            key_names <- unique(names(kw[kw_gains]))
             kw_gains <- kw[key_names]
             
             # For keywords where the gain is not set, the gain is NULL.
@@ -754,9 +757,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             kw_gains[sapply(kw_gains, is.null)] <- 1
             
             gains <- as.numeric(kw_gains)                      
-#          }else{
-#            gains <- rep(1,length(key_names))
-#          }
+          }else{
+            gains <- rep(1,length(cnd))
+          }
           
           names(gains) <- prefixColNames
           #transform and adjust the gates without gating

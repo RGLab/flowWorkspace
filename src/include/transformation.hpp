@@ -12,6 +12,7 @@
 #define LOG 1
 #define LIN 2
 #define FLIN 3
+#define FASINH 4
 //#define LOGICLE 1
 //#define BIEXP 2
 
@@ -187,6 +188,32 @@ public:
 
 };
 
+class fasinhTrans:public transformation{
+	friend class boost::serialization::access;
+public:
+	double length, maxRange;//unused at this moment
+	double T, A, M;
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+
+					ar & BOOST_SERIALIZATION_NVP(maxRange);
+					ar & BOOST_SERIALIZATION_NVP(length);
+					ar & BOOST_SERIALIZATION_NVP(T);
+					ar & BOOST_SERIALIZATION_NVP(A);
+					ar & BOOST_SERIALIZATION_NVP(M);
+				}
+
+public:
+	fasinhTrans();
+	fasinhTrans(double , double , double , double , double );
+	void transforming(valarray<double> & input);
+	fasinhTrans * clone(){return new fasinhTrans(*this);};
+
+
+};
 
 //class logicleTrans:public transformation{
 //

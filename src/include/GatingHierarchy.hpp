@@ -106,6 +106,7 @@ private:
 						ar.register_type(static_cast<flinTrans *>(NULL));
 						ar.register_type(static_cast<logTrans *>(NULL));
 						ar.register_type(static_cast<linTrans *>(NULL));
+						ar.register_type(static_cast<fasinhTrans *>(NULL));
 
 				        ar & BOOST_SERIALIZATION_NVP(transFlag);
 
@@ -163,6 +164,8 @@ private:
 				ar.register_type(static_cast<flinTrans *>(NULL));
 				ar.register_type(static_cast<logTrans *>(NULL));
 				ar.register_type(static_cast<linTrans *>(NULL));
+				ar.register_type(static_cast<fasinhTrans *>(NULL));
+
 				if(version==0){
 					trans_global_vec *gTrans;
 					ar & BOOST_SERIALIZATION_NVP(gTrans);
