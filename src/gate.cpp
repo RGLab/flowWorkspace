@@ -590,6 +590,8 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 		if(dMode>=POPULATION_LEVEL)
 			COUT<<endl;
 
+		toPolygon(100);
+
 		isTransformed=true;
 	}
 
