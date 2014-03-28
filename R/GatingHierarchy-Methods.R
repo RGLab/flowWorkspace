@@ -1267,10 +1267,9 @@ setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y,
       }
       
       fs <- flowData(obj)
-
-      fs[getSample(obj)][[1,...]]
+      fs[[1,...]]
       
-    })
+})
 
 setMethod("getData",signature(obj="GatingHierarchy",y="numeric"),function(obj,y, ...){
         this_data <- getData(obj, ...)                        
