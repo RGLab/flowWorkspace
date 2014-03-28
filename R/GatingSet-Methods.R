@@ -558,19 +558,22 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         if(execute)
 		{
 
+            cnd <- colnames(fs)
 			message("loading data: ",file);
 			if(isNcdf)
-				data <- read.FCS(file)[,colnames(fs)]
+				data <- read.FCS(file)[, cnd]
 			else
 				data <- fs[[sampleName]]
 
-            cnd <- colnames(data)
-#            browser()
             #alter colnames(replace "/" with "_") for flowJo X
             if(wsType == "vX"){
-                colnames(data) <- gsub("/","_",cnd)
-                cnd<-colnames(data)
-
+                new_cnd <- gsub("/","_",cnd)
+                if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+                  cnd <- new_cnd
+                  colnames(data) <- cnd
+                  
+                }
+                   
             }
 
 
@@ -712,7 +715,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
             #update colnames in order for the gating to find right dims
             if(!is.null(prefixColNames)){
-              colnames(mat) <- prefixColNames
+              dimnames(mat) <- list(NULL, prefixColNames)
             }
             recompute <- FALSE
             nodeInd <- 0
@@ -724,13 +727,17 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               #restore the orig colnames(replace "_" with "/") for flowJo X
               if(wsType == "vX"){
-                cnd <- gsub("_","/",cnd)
-                colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX
+                old_cnd <- gsub("_","/",cnd)
+                if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+                  cnd <- old_cnd
+                  colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX  
+                }
+                
               }
-              colnames(mat) <- cnd
+              dimnames(mat) <- list(NULL, cnd)
             }
 
-            data@exprs<-mat #circumvent the validity check of exprs<- to speed up
+            data@exprs <- mat #circumvent the validity check of exprs<- to speed up
             if(isNcdf){
               fs[[sampleName]] <- data
 
