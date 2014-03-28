@@ -612,7 +612,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			else if(cid=="-1")
 			{
 				##Acquisition defined compensation.
-				nm<-comp$comment
+				nm <- comp$comment
 				
 				if(grepl("Acquisition-defined",nm)){
 					###Code to compensate the sample using the acquisition defined compensation matrices.
@@ -620,15 +620,15 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 					#browser()
 					if(is.null(compensation))
 					{
-						compobj<-compensation(spillover(data)$SPILL)
+						compobj <- compensation(spillover(data)$SPILL)
 						
 					}else
 					{
-						compobj<-compensation
+						compobj <- compensation
 						
 					}
 					
-					res<-try(compensate(data,compobj),silent=TRUE)
+					res <- try(compensate(data,compobj),silent=TRUE)
 					if(inherits(res,"try-error")){
 						message("Data is probably stored already compensated");
 					}else{
@@ -664,10 +664,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                 cnd <- as.vector(parameters(data)@data$name)
               }
               prefixColNames <- cnd
+              comp_param <- parameters(compobj)
+              wh <- match(comp_param, prefixColNames)
               
-              wh <- match(comp$parameters, prefixColNames)
-              
-              prefixColNames[wh] <- paste(comp$prefix,comp$parameters,comp$suffix,sep="")
+              prefixColNames[wh] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
               
                 
             }
@@ -711,6 +711,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             }
             recompute <- FALSE
             nodeInd <- 0
+            
             .Call("R_gating",G@pointer, mat, sampleName, gains, nodeInd, recompute, extend_val, ignore.case)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<- 
