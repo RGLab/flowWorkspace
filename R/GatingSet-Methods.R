@@ -551,11 +551,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         cid <- comp$cid
 #        browser()
         
-        # get kw from ws
-        if(!is.null(ws))
-		  kw <- getKeywords(ws, sampleName)
-        
-      
         ##################################
         #Compensating the data
         ##################################
@@ -646,9 +641,14 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 				
 			}
        }else{
+         # get kw from ws (We are not sure yet if this R API will always 
+         # return keywords from workspace successfully, thus it is currently
+         # only used when execute = FALSE
+         if(!is.null(ws))
+           kw <- getKeywords(ws, sampleName)
          
-       key_names <- unique(names(kw[grep("P[0-9]{1,}N", names(kw))]))
-       cnd <- as.vector(unlist(kw[key_names]))   
+         key_names <- unique(names(kw[grep("P[0-9]{1,}N", names(kw))]))
+         cnd <- as.vector(unlist(kw[key_names]))   
        }
            
        ##################################

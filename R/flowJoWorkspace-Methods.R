@@ -333,14 +333,19 @@ setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
       wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
       .getKeywords(obj@doc,y, wsNodePath[["sample"]])
 })
-.getKeywords<-function(doc,y, samplePath = "/Workspace/SampleList/Sample"){
-  w<-which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
+
+.getKeywords <- function(doc,y, samplePath = "/Workspace/SampleList/Sample"){
+  #match sample name to the keywords  
+  w <- which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
   if(length(w)==0){
-    warning("Sample ",y," not found in Keywords");
+    warning("Sample ",y," not found in Keywords of workspace");
     ##Use the DataSet tag to locate the sample
-    w<-which(xpathApply(doc, file.path(samplePath,"DataSet") ,function(x)xmlGetAttr(x,"uri"))%in%y)
+    w <- which(xpathApply(doc, file.path(samplePath,"DataSet") ,function(x)xmlGetAttr(x,"uri"))%in%y)
+    #last resort to match to the SampleNode name attribute
+    if(length(w)==0)
+      w <- which(xpathApply(doc, file.path(samplePath,"SampleNode") ,function(x)xmlGetAttr(x,"name"))%in%y)
   }
-  l<-xpathApply(doc,paste(samplePath,"[",w,"]/Keywords/node()",sep=""),xmlAttrs)
+  l <- xpathApply(doc,paste(samplePath,"[",w,"]/Keywords/node()",sep=""),xmlAttrs)
   names(l)<-lapply(l,function(x)x[["name"]])
   l<-lapply(l,function(x)x[["value"]])
   return(l)
