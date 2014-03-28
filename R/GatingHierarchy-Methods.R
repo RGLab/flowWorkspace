@@ -910,12 +910,12 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 #' @aliases
 #' getParent
 #' getParent-methods
-#' getParent,GatingHierarchy,character-method
-#' getParent,GatingHierarchy,numeric-method
+#' getParent,GatingSet,character-method
+#' getParent,GatingSet,numeric-method
 #' getChildren
 #' getChildren-methods
-#' getChildren,GatingHierarchy,character-method
-#' getChildren,GatingHierarchy,numeric-method
+#' getChildren,GatingSet,character-method
+#' getChildren,GatingSet,numeric-method
 setMethod("getParent",signature(obj="GatingSet",y="numeric"),function(obj,y){
 			#make sure the index conversion is done properly between C and R convention
 #			browser()
@@ -1256,8 +1256,6 @@ setMethod("isGated",signature(obj="GatingHierarchy",y="numeric"),function(obj,y)
 #' getData,GatingSet,missing-method
 #' getData,GatingSet,numeric-method
 #' getData,GatingSet,character-method
-#' getData,GatingSet,name-method
-#' getData,GatingSetList,name-method
 #' getData,GatingSetList,ANY-method
 #' @rdname getData-methods
 #' @export 
