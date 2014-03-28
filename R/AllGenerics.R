@@ -85,4 +85,5 @@ setGeneric("getTransformations",function(x)standardGeneric("getTransformations")
 #' @export
 setGeneric("getKeywords",function(obj,y)standardGeneric("getKeywords"))
 
-
+#' @export
+setGeneric("getSingleCellExpression",function(x, nodes,...)standardGeneric("getSingleCellExpression"))

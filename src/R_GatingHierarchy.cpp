@@ -658,3 +658,52 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_getSingleCellExpression(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeIDs, SEXP _data, SEXP _markers) {
+BEGIN_RCPP
+
+	//get indices from each node
+	GatingSet *	gs=getGsPtr(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+	VertexID_vec nodeIDs = as<VertexID_vec>(_nodeIDs);
+	unsigned nNodes = nodeIDs.size();
+	vector<BoolVec> indexList(nNodes);
+	for(unsigned i =0; i < nNodes; i++){
+		VertexID u = nodeIDs.at(i);
+		indexList.at(i)=gh->getNodeProperty(u).getIndices();
+	}
+
+
+	// or operation among these indices
+	NumericMatrix data = as<NumericMatrix>(_data);
+	int n = data.nrow();
+	int k = data.ncol();
+	if(k != nNodes)
+			stop("the number of nodes is different from the columns of the input data matrix !");
+	BoolVec ind = indexList.at(0);
+	for(vector<BoolVec>::iterator it = indexList.begin() + 1; it!=indexList.end(); it++)
+		transform (ind.begin(), ind.end(), it->begin(), ind.begin(),logical_or<bool>());
+
+	// grab and mask those rows
+	int lgl_n = count(ind.begin(),ind.end(),true);
+	NumericMatrix output(lgl_n, k);
+	int counter = 0;
+	for (int i=0; i < n; ++i) {
+	if (ind.at(i)) {
+	  for (int j=0; j < k; ++j) {
+		if (indexList.at(j).at(i)) output(counter, j) = data(i, j);
+	  }
+	  ++counter;
+	}
+	}
+
+
+	CharacterVector markers = as<CharacterVector>(_markers);
+	Rcpp::List dimnms =  Rcpp::List::create(CharacterVector::create(),markers);
+
+	output.attr("dimnames") = dimnms;
+
+	return output;
+END_RCPP
+}

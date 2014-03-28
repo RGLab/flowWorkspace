@@ -9,3 +9,5 @@ test_package("flowWorkspace")
 
 #test_file("/home/wjiang2/rglab/workspace/flowWorkspace/inst/tests/test-archive.R")
 #test_file("/home/wjiang2/rglab/workspace/flowWorkspace/inst/tests/test-parseWorkspace.R")
+
+#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/examples/InternalTestSuite.R")
