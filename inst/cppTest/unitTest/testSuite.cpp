@@ -51,7 +51,7 @@ struct parseWorkspaceFixture{
 	parseWorkspaceFixture(){
 		myTest.tolerance = gTol;
 		myTest.isParseGate = true;
-		myTest.dMode = 0;
+		myTest.loglevel = 0;
 		myTest.xmlParserOption = 1;
 		myTest.isTemplate = false;
 		myTest.isLoadArhive = false;
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.colfile="../output/HIPC_trial/colnames.txt";
 	myTest.archive="../output/HIPC_trial/gs.dat";
 
-//	myTest.isLoadArhive = true;
+	myTest.isLoadArhive = true;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(bioaster)
 //	myTest.isSaveArchive = true;
 //	myTest.isLoadArhive = true;
 
-//	myTest.dMode = GATE_LEVEL;
+//	myTest.loglevel = GATE_LEVEL;
 
 	parser_test(myTest);
 

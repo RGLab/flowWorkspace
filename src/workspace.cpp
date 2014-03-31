@@ -26,7 +26,7 @@ workspace::~workspace(){
 		 *have been allocated by the parser.
 		 */
 		xmlCleanupParser();
-		if(dMode>=GATING_SET_LEVEL)
+		if(g_loglevel>=GATING_SET_LEVEL)
 			COUT<<"xml freed!"<<endl;
 	}
 }

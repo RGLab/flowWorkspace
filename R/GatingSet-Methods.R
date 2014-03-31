@@ -450,7 +450,7 @@ unarchive<-function(file,path=tempdir()){
 #' @rdname GatingSet-methods
 #' @aliases
 #' GatingSet,GatingHierarchy,character-method
-setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE, dMode=1, ...){
+setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE, dMode = 0, ...){
 
 			samples <- y
 			dataPaths <- vector("character")

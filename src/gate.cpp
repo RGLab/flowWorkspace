@@ -79,7 +79,7 @@ void inPolygon_c(double *data, int nrd,
  * the data points that are below this theshold range
  * to cut data range)
  */
-void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
+void polygonGate::extend(flowData & fdata,float extend_val){
 	string x=param.xName();
 	string y=param.yName();
 	valarray<double> xdata(fdata.subset(x));
@@ -95,13 +95,13 @@ void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	{
 		if(v.at(i).x<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
 			v.at(i).x=xMin;
 		}
 		if(v.at(i).y<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
 			v.at(i).y=yMin;
 
@@ -110,7 +110,7 @@ void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	param.setVertices(v);
 }
 
-void polygonGate::extend(float extend_val, float extend_to, unsigned short dMode){
+void polygonGate::extend(float extend_val, float extend_to){
 	string x=param.xName();
 	string y=param.yName();
 
@@ -124,13 +124,13 @@ void polygonGate::extend(float extend_val, float extend_to, unsigned short dMode
 	{
 		if(v.at(i).x<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
 			v.at(i).x=xMin;
 		}
 		if(v.at(i).y<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
 			v.at(i).y=yMin;
 
@@ -138,7 +138,7 @@ void polygonGate::extend(float extend_val, float extend_to, unsigned short dMode
 	}
 	param.setVertices(v);
 }
-void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
+void polygonGate::gain(map<string,float> & gains){
 
 	if(!isGained)
 		{
@@ -155,7 +155,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			if(it!=gains.end())
 			{
 				float this_gain = it->second;
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT<<"adjusting: "<<channel_x<<endl;;
 
 				for(unsigned i=0;i<vertices.size();i++)
@@ -166,7 +166,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			if(it!=gains.end())
 			{
 				float this_gain = it->second;
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT<<"adjusting: "<<channel_y<<endl;;
 
 				for(unsigned i=0;i<vertices.size();i++)
@@ -174,7 +174,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			}
 
 
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<endl;
 			param.setVertices(vertices);
 			isGained=true;
@@ -183,7 +183,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 
 
 }
-void ellipseGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
+void ellipseGate::extend(flowData & fdata,float extend_val){
 
 	/*
 	 * get R_min
@@ -199,7 +199,7 @@ void ellipseGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	}
 
 }
-void ellipseGate::extend(float extend_val, float extend_to,unsigned short dMode){
+void ellipseGate::extend(float extend_val, float extend_to){
 
 	/*
 	 * get R_min
@@ -215,7 +215,7 @@ void ellipseGate::extend(float extend_val, float extend_to,unsigned short dMode)
 	}
 
 }
-void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
+void ellipseGate::gain(map<string,float> & gains){
 	if(!isGained)
 	{
 		/*
@@ -229,7 +229,7 @@ void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
 		if(it!=gains.end())
 		{
 			float this_gain = it->second;
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"adjusting: "<<channel_x<<endl;;
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).x=antipodal_vertices.at(i).x/this_gain;
@@ -238,12 +238,12 @@ void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
 		if(it!=gains.end())
 		{
 			float this_gain = it->second;
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"adjusting: "<<channel_y<<endl;;
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).y=antipodal_vertices.at(i).y/this_gain;
 		}
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
 		isGained=true;
@@ -344,7 +344,7 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	param.setVertices(vertices);
 
 }
-void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
+void rangeGate::extend(flowData & fdata,float extend_val){
 	string pName=param.getName();
 	valarray<double> data_1d(fdata.subset(pName));
 
@@ -354,28 +354,28 @@ void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	double xMin=data_1d.min();
 	if(param.getMin()<=extend_val)
 	{
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
 		param.setMin(xMin);
 	}
 
 
 }
-void rangeGate::extend(float extend_val, float extend_to,unsigned short dMode){
+void rangeGate::extend(float extend_val, float extend_to){
 	string pName=param.getName();
 
 
 	double xMin= extend_to;
 	if(param.getMin()<=extend_val)
 	{
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
 		param.setMin(xMin);
 	}
 
 
 }
-void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
+void rangeGate::gain(map<string,float> & gains){
 	if(!isGained)
 	{
 		vertices_valarray vert(getVertices());
@@ -385,7 +385,7 @@ void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
 		{
 			float this_gain = it->second;
 
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"adjusting "<<param.getName()<<endl;
 
 			param.setMin(param.getMin()/this_gain);
@@ -401,8 +401,6 @@ void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
  *  indices are allocated within gating function, so it is up to caller to free it
  *  and now it is freed in destructor of its owner "nodeProperties" object
  */
-
-
 vector<bool> polygonGate::gating(flowData & fdata){
 
 
@@ -474,7 +472,7 @@ vector<bool> polygonGate::gating(flowData & fdata){
  * we moved the interpolation to polygonGate form gating method to here because
  * gating may not be called when only gates to be extracted
  */
-void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
+void ellipseGate::transforming(trans_local & trans){
 	if(!Transformed())
 	{
 		/*
@@ -495,7 +493,7 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 
 		if(trans_x!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_x<<endl;;
 
 			trans_x->transforming(vert.x);
@@ -504,14 +502,14 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 		}
 		if(trans_y!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_y<<endl;;
 
 			trans_y->transforming(vert.y);
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).y=vert.y[i];
 		}
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
 		/*
@@ -530,7 +528,7 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
  * for the EllipsoidGate defined on the non-linear data channel
  * for linear channels, we will do the same rescaling here.
  */
-void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
+void ellipsoidGate::transforming(trans_local & trans){
 
 	if(!Transformed())
 	{
@@ -557,7 +555,7 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 		{
 			//do the special scaling first for linear ellipsoidGate
 			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"scaling: "<<channel_x<<endl;;
 
 			scale_f.transforming(vert.x);
@@ -574,7 +572,7 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 		{
 			//do the special scaling first for linear ellipsoidGate
 			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"scaling: "<<channel_y<<endl;;
 
 			scale_f.transforming(vert.y);
@@ -587,7 +585,7 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 			throw(domain_error(err));
 		}
 
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
 		toPolygon(100);
@@ -597,7 +595,7 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 
 }
 
-void polygonGate::transforming(trans_local & trans,unsigned short dMode){
+void polygonGate::transforming(trans_local & trans){
 	if(!Transformed())
 	{
 		vector<coordinate> vertices=param.getVertices();
@@ -619,7 +617,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 
 		if(trans_x!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_x<<endl;;
 	//		valarray<double> output_x(trans_x->transforming(vert.x));
 			trans_x->transforming(vert.x);
@@ -629,7 +627,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		}
 		if(trans_y!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_y<<endl;;
 	//		valarray<double> output_y(trans_y->transforming(vert.y));
 			trans_y->transforming(vert.y);
@@ -637,14 +635,14 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	//			vertices.at(i).y=output_y[i];
 				vertices.at(i).y=vert.y[i];
 		}
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 		param.setVertices(vertices);
 		isTransformed=true;
 	}
 }
 
-void rangeGate::transforming(trans_local & trans,unsigned short dMode){
+void rangeGate::transforming(trans_local & trans){
 	if(!Transformed())
 	{
 		vertices_valarray vert(getVertices());
@@ -652,7 +650,7 @@ void rangeGate::transforming(trans_local & trans,unsigned short dMode){
 		transformation * curTrans=trans.getTran(param.getName());
 		if(curTrans!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming "<<param.getName()<<endl;
 	//		valarray<double> output(curTrans->transforming(vert.x));
 	//		param.min=output[0];

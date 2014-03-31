@@ -112,7 +112,7 @@ private:
 
 
 				        ar & BOOST_SERIALIZATION_NVP(trans);
-				        ar & BOOST_SERIALIZATION_NVP(dMode);
+
 				    }
 	template<class Archive>
 			void load(Archive &ar, const unsigned int version)
@@ -176,18 +176,15 @@ private:
 
 
 		        ar & BOOST_SERIALIZATION_NVP(trans);
-		        ar & BOOST_SERIALIZATION_NVP(dMode);
+
+		        if(version<3){
+		        	unsigned short dMode;
+		        	ar & BOOST_SERIALIZATION_NVP(dMode);
+		        }
 		    }
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 public:
-
-	unsigned short dMode;//debug mode passed from GatingSet
-
-
-	/*remove the gate from */
-//	void removeGate(unsigned short popId);
-//	void removeGate(string popName);
 
 	/*append the gate to the tree*/
 	void addChild(VertexID parent,VertexID child);
@@ -199,7 +196,7 @@ public:
 	GatingHierarchy();
 //	~GatingHierarchy();
 
-	GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short dMode);
+	GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans);
 
 
 	flowData getData(VertexID nodeID);//from memory
@@ -238,7 +235,7 @@ public:
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
 };
-BOOST_CLASS_VERSION(GatingHierarchy,2)
+BOOST_CLASS_VERSION(GatingHierarchy,3)
 
 
 #endif /* GATINGHIERARCHY_HPP_ */

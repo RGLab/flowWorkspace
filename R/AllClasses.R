@@ -179,7 +179,7 @@ setClass("GatingHierarchy"
 #' @rdname GatingSet-methods
 #' @aliases 
 #' GatingSet,character,character-method
-setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE,dMode=1,sampNloc="keyword",xmlParserOption, wsType, ...){
+setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE,dMode=0,sampNloc="keyword",xmlParserOption, wsType, ...){
       
       xmlFileName<-x
       sampleIDs<-y
