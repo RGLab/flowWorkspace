@@ -30,7 +30,8 @@ trans_map trans_local::cloneTransMap(){
 		transformation * curTran=it->second;
 		if(curTran!=NULL)
 		{
-			COUT<<"cloning transformatioin:"<<curTran->getChannel()<<endl;
+			if(g_loglevel>=POPULATION_LEVEL)
+				COUT<<"cloning transformatioin:"<<curTran->getChannel()<<endl;
 			res[it->first]=curTran->clone();
 		}
 	}
@@ -173,15 +174,15 @@ void transformation::transforming(valarray<double> & input){
 			 */
 			if(!computed())
 			{
-
-				COUT<<"computing calibration table..."<<endl;
+				if(g_loglevel>=POPULATION_LEVEL)
+					COUT<<"computing calibration table..."<<endl;
 				computCalTbl();
 			}
 
 			if(!isInterpolated())
 			{
-
-				COUT<<"spline interpolating..."<<endl;
+				if(g_loglevel>=POPULATION_LEVEL)
+					COUT<<"spline interpolating..."<<endl;
 				interpolate();
 			}
 		}

@@ -501,12 +501,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
 #' @param ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 #' @param extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
-#' @param extend_to \code{numeric} the value that gate coordinates are extended to. Default is -200. Usually this value will be automatically detected according to the real data range.
+#' @param extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -200, prefix = TRUE, ignore.case = FALSE, ws = NULL, ...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, ...){
 
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -548,7 +548,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         # get comp
         comp <- .Call("R_getCompensation", G@pointer, sampleName)
         cid <- comp$cid
-#        browser()
         
 
         ##################################
@@ -651,8 +650,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
          # only used when execute = FALSE
          if(!is.null(ws))
            kw <- getKeywords(ws, sampleName)
-         
-         key_names <- unique(names(kw[grep("P[0-9]{1,}N", names(kw))]))
+         #use $PnB to determine the number of parameters since {N,R,S) could be
+         #redundant in some workspaces
+         key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
+         key_names <- gsub("B", "N", key_names, fixed = TRUE)
          cnd <- as.vector(unlist(kw[key_names]))   
 
        }
@@ -662,7 +663,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
        ##################################
   		if(cid!="-2")
   		{
-#				browser()
+
             #get prefix if it is not set yet
             if(is.null(prefixColNames)&&prefix){
 
@@ -670,7 +671,11 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                 cnd <- as.vector(parameters(data)@data$name)
               }
               prefixColNames <- cnd
-              comp_param <- parameters(compobj)
+              if(execute)
+                comp_param <- parameters(compobj)
+              else
+                comp_param <- comp$parameters
+              				
               wh <- match(comp_param, prefixColNames)
               
               prefixColNames[wh] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
@@ -678,9 +683,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                 
 
             }
-          }else{
-            prefixColNames <- cnd
-          }
+        }else{
+          prefixColNames <- cnd
+        }
           ##################################
           #transforming and gating
           ##################################
