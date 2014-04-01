@@ -90,9 +90,6 @@ private:
 					unsigned short dMode;
 					ar & BOOST_SERIALIZATION_NVP(dMode);
 				}
-				else
-					g_loglevel = 0;
-
 
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()

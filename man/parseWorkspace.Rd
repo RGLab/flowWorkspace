@@ -35,9 +35,6 @@
   imported, or just the data with compensation and
   transformation?}
 
-  \item{dMode}{An \code{integer} scalar specifying the
-  level of print-out that is used for the debug purpose.}
-
   \item{path}{The path to the fcs files that are to be
   imported. The code will search recursively, so you can
   point it to a location above the files. This argument is

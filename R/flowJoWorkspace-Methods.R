@@ -114,7 +114,6 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #' @param subset \code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.
 #' @param requiregates \code{logical} Should samples that have no gates be included?
 #' @param includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
-#' @param dMode An \code{integer} scalar specifying the level of print-out that is used for the debug purpose.
 #' @param path The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.
 #' @param ...
 #'      \itemize{
@@ -146,7 +145,7 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #' parseWorkspace,flowJoWorkspace-method
 #' 
 #' @importFrom utils menu
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path=obj@path,...){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE, path=obj@path,...){
 	
 	
 			
@@ -223,7 +222,6 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
                     ,sampleIDs
                     ,execute=execute
-                    ,dMode=dMode
                     ,isNcdf=isNcdf
                     ,includeGates=includeGates
                     ,path=path

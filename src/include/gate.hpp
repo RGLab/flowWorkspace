@@ -33,10 +33,7 @@ typedef struct{
 	} BOOL_GATE_OP;
 
 
-#define GATING_SET_LEVEL 1
-#define GATING_HIERARCHY_LEVEL 2
-#define POPULATION_LEVEL 3
-#define GATE_LEVEL 4
+
 
 #define POLYGONGATE 1
 #define RANGEGATE 2

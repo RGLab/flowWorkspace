@@ -376,7 +376,7 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,dMode,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, wsType, ...){
+.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, wsType, ...){
 
 
 	message("calling c++ parser...")
@@ -389,7 +389,6 @@ unarchive<-function(file,path=tempdir()){
                   , sampNloc=sampNloc
                   , xmlParserOption = xmlParserOption
                   , wsType = wsType
-                  , dMode=dMode
                   )
 
 	message("c++ parsing done!")
@@ -450,7 +449,7 @@ unarchive<-function(file,path=tempdir()){
 #' @rdname GatingSet-methods
 #' @aliases
 #' GatingSet,GatingHierarchy,character-method
-setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE, dMode = 0, ...){
+setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE,  ...){
 
 			samples <- y
 			dataPaths <- vector("character")
@@ -483,7 +482,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			files<-file.path(dataPaths,samples)
 			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
-			Object@pointer <- .Call("R_NewGatingSet",x@pointer,getSample(x),samples,as.integer(dMode))
+			Object@pointer <- .Call("R_NewGatingSet",x@pointer,getSample(x),samples)
             Object@guid <- .uuid_gen()
             Object@FCSPath <- dataPaths
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
@@ -1871,7 +1870,36 @@ setMethod("setNode"
       setNode(x,.getNodeInd(x[[1]],y),value)
     })
 
+#' get/set the log level 
+#' 
+#' It is helpful sometime to get more detailed print out for the purpose of trouble shooting
+#' 
+#' @return a character that represents the internal log level
+#' @rdname loglevel
+#' @export 
+getLoglevel <- function(){
+  level <- .Call("R_getLogLevel")
+  c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")[level + 1]
+}
 
+
+#' @param level a \code{character} that represents the log level
+#'                              , can be value of c("none", "GatingSet", "GatingHierarchy", "Population", "gate")
+#'                                 default is "none" , which does not print any information from C parser.
+#'
+#' @examples 
+#' getLoglevel()
+#' setLoglevel("Population")
+#' getLoglevel()
+#'  
+#' @rdname loglevel
+#' @export 
+setLoglevel <- function(level = "none"){
+  valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
+  level <- match.arg(level, valid_levels)
+  .Call("R_setLogLevel", as.integer(match(level, valid_levels) - 1))
+  level
+}
 
 
 #' @description \code{[[} extract a \code{GatingHierarchy} object from a \code{GatingSet} or \code{GatingSetList}
