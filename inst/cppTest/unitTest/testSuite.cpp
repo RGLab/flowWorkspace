@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.ncfile="../output/HIPC_trial/nc_comp.nc";
 	myTest.colfile="../output/HIPC_trial/colnames.txt";
 	myTest.archive="../output/HIPC_trial/gs.dat";
-
+//	g_loglevel = GATE_LEVEL;
 //	myTest.isLoadArhive = true;
 	parser_test(myTest);
 

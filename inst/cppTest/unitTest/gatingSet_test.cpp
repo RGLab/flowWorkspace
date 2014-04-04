@@ -234,7 +234,7 @@ void clone_test(testCase myTest){
 }
 
 void parser_test(testCase & myTest){
-	g_loglevel = 0;
+
 	bool isTemplate = myTest.isTemplate;
 	bool isLoadArchive = myTest.isLoadArhive;
 	unsigned format = myTest.archiveFormat;

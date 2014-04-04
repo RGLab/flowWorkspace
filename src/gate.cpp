@@ -395,8 +395,56 @@ void rangeGate::gain(map<string,float> & gains){
 	}
 }
 
+
 /*
- * TODO:try within method from boost/geometries forboost.polygon
+ *  boost/geometries version some how does not
+ *  perform better since some how convex_hull has to be
+ *  used to correct the polygon constructor
+ *
+ */
+//vector<bool> polygonGate::gating_bg(flowData & fdata){
+//
+//
+//	vector<coordinate> vertices=param.getVertices();
+//	unsigned nVertex=vertices.size();
+//
+//	string x=param.xName();
+//	string y=param.yName();
+//	valarray<double> xdata(fdata.subset(x));
+//	valarray<double> ydata(fdata.subset(y));
+//
+//	unsigned nEvents=xdata.size();
+//	//init the indices
+//	vector<bool> ind(nEvents);
+//
+//	typedef boost::geometry::model::d2::point_xy<double> point_type;
+//	typedef boost::geometry::model::polygon<point_type, true, true> polygon_type;
+//
+//	//construct boost polygon
+//	polygon_type poly;
+//	for(unsigned i = 0; i < nVertex; i++){
+//		point_type this_point(vertices.at(i).x, vertices.at(i).y);
+//		poly.outer().push_back(this_point);
+//	}
+//	polygon_type hull;
+//
+//	boost::geometry::convex_hull(poly, hull);
+//
+//
+//
+//	for(unsigned i = 0; i < nEvents; i++){
+//		point_type p(xdata[i], ydata[i]);
+//		ind[i] = boost::geometry::within(p, hull);
+//	}
+//
+//
+//	if(isNegate())
+//		ind.flip();
+//	return ind;
+//}
+
+/*
+ *
  *  reimplement c++ version of inPolygon_c
  *  indices are allocated within gating function, so it is up to caller to free it
  *  and now it is freed in destructor of its owner "nodeProperties" object
