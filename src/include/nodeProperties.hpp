@@ -93,7 +93,7 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(indices);
 				ar & BOOST_SERIALIZATION_NVP(fjStats);
 				ar & BOOST_SERIALIZATION_NVP(fcStats);
-				if(version>1 && version< 4)
+				if(version>=1 && version< 4)
 				{
 					unsigned short dMode;
 					ar & BOOST_SERIALIZATION_NVP(dMode);
