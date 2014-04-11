@@ -6,6 +6,9 @@ gs <- NULL
 test_that("load GatingSet from archive",
 {
   gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))
+  #update the gating results
+  # since the gating results stored in achive was not accurate due to the ellipse gates
+  recompute(gs)
   expect_that(gs, is_a("GatingSet"))
 })
 

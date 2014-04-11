@@ -464,10 +464,9 @@ ellipsoidGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipsoidGate * g=new ellipsoidGate();
+	ellipsoidGate * g=new ellipsoidGate(v);
 	pPoly.setName(pg->getParam().getNameArray());
 	g->setParam(pPoly);
-	g->setAntipodal(v);
 	delete pg;
 
 	return(g);

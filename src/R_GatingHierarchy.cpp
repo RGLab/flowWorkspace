@@ -329,10 +329,28 @@ BEGIN_RCPP
 		throw(domain_error("no gate associated with root node."));
 	gate *g=gh->getNodeProperty(u).getGate();
 	unsigned short gType=g->getType();
-	if(gType==ELLIPSEGATE||gType==RECTGATE)
+	if(gType==RECTGATE)
 		gType=POLYGONGATE;
 	switch(gType)
 	{
+		case ELLIPSEGATE:
+				{
+					ellipseGate * thisG = dynamic_cast<ellipseGate*>(g);
+					coordinate mu=thisG->getMu();
+					vector<coordinate> cov = thisG->getCovarianceMat();
+					NumericMatrix covMat(2,2);
+					for(unsigned i =0; i < 2; i++){
+						covMat(i,0) = cov.at(i).x;
+						covMat(i,1) = cov.at(i).y;
+					}
+
+					 List ret=List::create(Named("parameters",thisG->getParamNames())
+							 	 	 	 	 ,Named("mu", NumericVector::create(mu.x, mu.y))
+							 	 	 	 	 ,Named("cov", covMat)
+							 	 	 	 	 ,Named("type",ELLIPSEGATE)
+							 	 	 	 	 );
+					return ret;
+				}
 		case POLYGONGATE:
 			{
 				vertices_vector vert=g->getVertices().toVector();
@@ -543,6 +561,40 @@ gate * newGate(List filter){
 			g=bg;
 			break;
 
+		}
+		case ELLIPSEGATE:
+		{
+
+
+
+			//parse the mean
+			DoubleVec mean=as<DoubleVec>(filter["mu"]);
+			coordinate mu(mean.at(0), mean.at(1));
+
+			//parse cov mat
+			vector<coordinate> cov;
+			NumericMatrix covMat=as<NumericMatrix>(filter["cov"]);
+			for(int i=0;i<covMat.nrow();i++)
+			{
+				coordinate p;
+				p.x=covMat(i,0);
+				p.y=covMat(i,1);
+				cov.push_back(p);
+
+			}
+
+			ellipseGate * eg = new ellipseGate(mu, cov);
+			eg->setNegate(isNeg);
+
+			// parse the parameter names
+			StringVec params=as<StringVec>(filter["params"]);
+			paramPoly pp;
+			pp.setName(params);
+			eg->setParam(pp);
+
+			g=eg;
+
+			break;
 		}
 		case LOGICALGATE:
 		{

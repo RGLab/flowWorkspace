@@ -317,8 +317,8 @@ class ellipseGate:public polygonGate {
 	friend class boost::serialization::access;
 protected:
 	vector<coordinate> antipodal_vertices; //four antipodal points of ellipse (to be deprecated)
-	vector<coordinate> cov;//covariance matrix
 	coordinate mu;// center point
+	vector<coordinate> cov;//covariance matrix
 private:
 
 	template<class Archive>
@@ -338,16 +338,20 @@ private:
 					ar & BOOST_SERIALIZATION_NVP(cov);
 					ar & BOOST_SERIALIZATION_NVP(mu);
 				}else{
-//					computeCov();
+					computeCov();
 				}
 
 			}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 public:
+	ellipseGate(){};
+	ellipseGate(coordinate _mu, vector<coordinate> _cov);
+	ellipseGate(vector<coordinate> _antipodal);
 	vector<bool> gating(flowData &);
-	vector<coordinate> getAntipodal(){return antipodal_vertices;};
-	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
+	vector<coordinate> getCovarianceMat(){return cov;};
+	coordinate getMu(){return mu;};
+//	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
 	void computeCov();
 	unsigned short getType(){return ELLIPSEGATE;}
 	void extend(flowData &,float);
@@ -373,6 +377,8 @@ private:
 				ar & boost::serialization::make_nvp("ellipseGate",boost::serialization::base_object<ellipseGate>(*this));
 			}
 public:
+	ellipsoidGate(){};
+	ellipsoidGate(vector<coordinate> _antipodal);
 	void transforming(trans_local &);
 	ellipsoidGate * clone(){return new ellipsoidGate(*this);};
 };

@@ -183,6 +183,18 @@ void polygonGate::gain(map<string,float> & gains){
 
 
 }
+
+ellipseGate::ellipseGate(coordinate _mu, vector<coordinate> _cov):mu(_mu),cov(_cov){
+	isTransformed = true;
+	isGained = true;
+	neg = false;
+}
+ellipseGate::ellipseGate(vector<coordinate> _antipodal):antipodal_vertices(_antipodal){
+	isTransformed = false;
+	isGained = false;
+	neg = false;
+}
+
 void ellipseGate::extend(flowData & fdata,float extend_val){
 
 	/*
@@ -598,6 +610,8 @@ void ellipseGate::transforming(trans_local & trans){
 		isTransformed=true;
 	}
 }
+ellipsoidGate::ellipsoidGate(vector<coordinate> _antipodal):ellipseGate(_antipodal)
+{}
 /*
  * ellipsoidGate does not follow the regular transforming process
  * for historical reason, it is defined in 256 * 256 scale, and we don't know

@@ -567,10 +567,10 @@ ellipseGate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipseGate * g=new ellipseGate();
+	ellipseGate * g=new ellipseGate(v);
 	pPoly.setName(pg->getParam().getNameArray());
 	g->setParam(pPoly);
-	g->setAntipodal(v);
+
 	delete pg;
 
 	return(g);

@@ -59,7 +59,7 @@ test_that("getData", {
       
       thisRes <- getData(gslist, "CD8")
       expect_is(thisRes, "ncdfFlowList")
-      expect_equal(nrow(thisRes[[1]]),  14623)
+      expect_equal(nrow(thisRes[[1]]),  14570)
       
     })
 
@@ -68,7 +68,7 @@ test_that("getGate", {
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), sampleNames(gslist))
       
-      expect_true(all(sapply(thisRes, class) == "polygonGate"))
+      expect_true(all(sapply(thisRes, class) == "ellipsoidGate"))
       
     })
 

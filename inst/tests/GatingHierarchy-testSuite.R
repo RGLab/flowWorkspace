@@ -134,9 +134,9 @@ test_that("getData ",{
       expect_equal(nrow(fr), 119531)
       
       fr <- getData(gh, "CD8")
-      expect_equal(nrow(fr), 14623)
+      expect_equal(nrow(fr), 14570)
       fr <- getData(gh, 14)
-      expect_equal(nrow(fr), 14623)
+      expect_equal(nrow(fr), 14570)
       
       fr <- getData(gh, use.exprs = FALSE)
       expect_equal(nrow(fr), 0)
@@ -201,7 +201,7 @@ test_that("setGate", {
       gate_cd4 <- getGate(gh, "CD4")
       gate_cd8 <- getGate(gh, "CD8")
       invisible(setGate(gh, "CD4", gate_cd8))
-      expect_equal(getGate(gh, "CD4")@boundaries, gate_cd8@boundaries)
+      expect_equal(getGate(gh, "CD4")@cov, gate_cd8@cov)
       suppressMessages(recompute(gh, "CD4"))
       expect_equal(getTotal(gh, "CD4"), getTotal(gh, "CD8"))
       

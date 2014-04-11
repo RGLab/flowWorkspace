@@ -1128,7 +1128,11 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="numeric"),function(obj,y,
 
                     g <- eval(substitute(booleanFilter(xx),list(xx=boolExpr)))
 					g
-				}else
+				}else if (g$type == 4){
+                    cov.mat <- g$cov
+                    dimnames(cov.mat) <- list(g$parameters, g$parameters)
+                    ellipsoidGate(.gate = cov.mat, mean = g$mu, filterId = filterId) 
+                }else
 					stop("not supported gate type",g$type)
 
 			}
