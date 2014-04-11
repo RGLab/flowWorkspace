@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(Cytotrol_NHLBI)
 	myTest.ncfile="../output/NHLBI/nc1_comp.nc";
 	myTest.colfile="../output/NHLBI/colnames.txt";
 	myTest.archive="../output/NHLBI/gs/file41e925ffb2f5.dat";
-
+//	g_loglevel = GATE_LEVEL;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 }
 BOOST_AUTO_TEST_CASE(bioaster)
 {
-	myTest.filename="../data/bioaster_ellipsoidGate/Manip du 29-11-2013/Matrice 1.wsp";
+	myTest.filename="../data/bioaster_ellipsoidGate/Matrice 1.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["8"]="PANEL 1_Matrice 1.fcs";
 	myTest.sampNloc=1;

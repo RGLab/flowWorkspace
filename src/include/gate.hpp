@@ -307,36 +307,57 @@ public:
 	rectGate * clone(){return new rectGate(*this);};
 };
 /*
- * TODO: doing the gating without interpolating it into polygon
+ * ellipseGate no longer needs to
+ * inherit polygon since we are now doing the gating
+ * without interpolating it into polygon
+ * For the legacy archive, we preserve this class definition
+ * TODO: the inheritance is to be removed in future
  */
 class ellipseGate:public polygonGate {
 	friend class boost::serialization::access;
 protected:
-	//four antipodal points of ellipse
-		vector<coordinate> antipodal_vertices;
+	vector<coordinate> antipodal_vertices; //four antipodal points of ellipse (to be deprecated)
+	vector<coordinate> cov;//covariance matrix
+	coordinate mu;// center point
 private:
 
 	template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
+			void save(Archive &ar, const unsigned int version) const
 			{
 				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
 				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
+				ar & BOOST_SERIALIZATION_NVP(cov);
+				ar & BOOST_SERIALIZATION_NVP(mu);
+			}
+	template<class Archive>
+			void load(Archive &ar, const unsigned int version)
+			{
+				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
+				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
+				if(version>=1){
+					ar & BOOST_SERIALIZATION_NVP(cov);
+					ar & BOOST_SERIALIZATION_NVP(mu);
+				}else{
+//					computeCov();
+				}
 
 			}
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 public:
+	vector<bool> gating(flowData &);
 	vector<coordinate> getAntipodal(){return antipodal_vertices;};
 	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
+	void computeCov();
 	unsigned short getType(){return ELLIPSEGATE;}
 	void extend(flowData &,float);
 	void extend(float,float);
 	void gain(map<string,float> &);
-	void toPolygon(unsigned);
 	virtual void transforming(trans_local &);
 	ellipseGate * clone(){return new ellipseGate(*this);};
 
 };
-
+BOOST_CLASS_VERSION(ellipseGate,1)
 /*
  * the purpose of having this class is to do the special scaling to the gate coordinates
  * due to the historical FlowJo's implementation (win/vX) of the ellipsoid gate that the foci, distance, and edge points are expressed in 256 x 256 display coordinates

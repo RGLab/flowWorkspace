@@ -249,27 +249,20 @@ void ellipseGate::gain(map<string,float> & gains){
 		isGained=true;
 	}
 }
+
 /*
- * interpolation has to be done on the transformed original 4 coordinates
- * otherwise, the interpolation results will be wrong
+ * covert antipodal points to covariance matrix and mean
  */
-void ellipseGate::toPolygon(unsigned nVertices){
+void ellipseGate::computeCov(){
 
-
-
-
-	/*
-	 * using 4 vertices to fit polygon points
-	 */
 	vector<coordinate> v=antipodal_vertices;
-	vector<coordinate> vertices=param.getVertices();
-	vertices.clear();//reset the vertices
+	unsigned short nSize = v.size();
+	if (nSize != 4)
+		throw(domain_error("invalid number of antipodal points"));
 
-	unsigned nSize=v.size();
 	/*
-	 * scaling and centering the points
+	 * get center
 	 */
-	coordinate mu;
 	mu.x=0;
 	mu.y=0;
 	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
@@ -280,70 +273,111 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	mu.x=mu.x/nSize;
 	mu.y=mu.y/nSize;
 
-	coordinate sd;
-	sd.x=0;
-	sd.y=0;
+	//center the antipods
 	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
 	{
-		sd.x+=pow((it->x-mu.x),2);
-		sd.y+=pow((it->y-mu.y),2);
-	}
-	sd.x=sqrt(sd.x/nSize);
-	sd.y=sqrt(sd.y/nSize);
-
-	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
-	{
-		it->x=(it->x-mu.x)/sd.x;
-		it->y=(it->y-mu.y)/sd.y;
+		it->x = it->x - mu.x;
+		it->y = it->y - mu.y;
 	}
 
 	/*
-	 * find the right positions of four antipodals
+	 * find the four positions of four antipodals
 	 */
-	coordinate R=*max_element(v.begin(),v.end(),compare_x);
-	coordinate L=*min_element(v.begin(),v.end(),compare_x);
 
-	coordinate T=*max_element(v.begin(),v.end(),compare_y);
-	coordinate B=*min_element(v.begin(),v.end(),compare_y);
+	//far right point
+	vector<coordinate>::iterator R_it=max_element(v.begin(),v.end(),compare_x);
+	coordinate R = *R_it;
 
-	/*
-	 * calculate the a,b length
-	 */
-	coordinate E;
-	E.x=hypot(L.x-R.x,L.y-R.y)/2;
-	E.y=hypot(T.x-B.x,T.y-B.y)/2;
+	//far left point
+	vector<coordinate>::iterator L_it=min_element(v.begin(),v.end(),compare_x);
+	coordinate L = *L_it;
 
-	/*
-	 * calculate the rotation angle
-	 */
-	double phi=tan((R.y-L.y)/(R.x-L.x));
-	double CY=(B.y+T.y)/2;
-	double CX=(R.x+L.x)/2;
+	// calculate the a length
+	double a = hypot(L.x-R.x,L.y-R.y)/2;
 
-	double delta=2*PI/nVertices;
-	/*
-	 * fit the polygon points
-	 */
-	for(unsigned short i=0;i<nVertices;i++)
-	{
-		double S=i*delta;
-		coordinate p;
-		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
-		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
-
-
-		/*
-		 * scale back
-		 */
-		p.x=p.x*sd.x+mu.x;
-		p.y=p.y*sd.y+mu.y;
-
-		vertices.push_back(p);
+	//use the rest of two points for computing b
+	vector<coordinate> Q;
+	for(vector<coordinate>::iterator it = v.begin();it!= v.end();it++){
+		if(it != R_it && it != L_it)
+			Q.push_back(*it);
 	}
+	coordinate V1 = Q.at(0);
+	coordinate V2 = Q.at(1);
+	double b = hypot(V1.x-V2.x,V1.y-V2.y)/2;
 
-	param.setVertices(vertices);
+	double a2 = a * a ;
+	double b2 = b * b ;
 
+
+	//normailize R and V1 first
+	double L_norm = hypot(L.x, L.y);
+	double x1 = L.x/L_norm;
+	double y1 = L.y/L_norm;
+
+	double V1_norm = hypot(V1.x, V1.y);
+	double x2 = V1.x/V1_norm;
+	double y2 = V1.y/V1_norm;
+
+	coordinate p1;
+	p1.x = x1 * x1 * a2 + x2 * x2 * b2;
+	p1.y = x1 * y1 * a2 + x2 * y2 * b2;
+
+	coordinate p2;
+	p2.x = p1.y;
+	p2.y = y1 * y1 * a2 + y2 * y2 * b2;
+
+
+
+	cov.push_back(p1);
+	cov.push_back(p2);
 }
+
+/*
+ * translated from flowCore::%in% method for ellipsoidGate
+ */
+vector<bool> ellipseGate::gating(flowData & fdata){
+
+
+	// get data
+
+	valarray<double> xdata(fdata.subset(param.xName()));
+	valarray<double> ydata(fdata.subset(param.yName()));
+
+	//center the data
+	xdata = xdata - mu.x;
+	ydata = ydata - mu.y;
+
+	//inverse the cov matrix
+	/*
+	 * 	| a,b |
+		| c,d | --> | aa, bb |
+					| cc, dd |
+	 */
+	double a , b, c, d;
+	a = cov.at(0).x;
+	b = cov.at(0).y;
+	c = cov.at(1).x;
+	d = cov.at(1).y;
+
+	double det = a* d - b* c;
+	double aa, bb, cc, dd;
+	aa = d/det;
+	bb = -b/det;
+	cc = -c/det;
+	dd = a/det;
+
+	// if inside of the ellipse
+	unsigned nEvents=xdata.size();
+	vector<bool> res (nEvents);
+	for(unsigned i =0;i<nEvents;i++){
+		double x = xdata[i];
+		double y = ydata[i];
+		res[i] = (x * x * aa + x* y * cc + x* y * bb + y * y * dd) <= 1;
+	}
+
+	return res;
+}
+
 void rangeGate::extend(flowData & fdata,float extend_val){
 	string pName=param.getName();
 	valarray<double> data_1d(fdata.subset(pName));
@@ -560,12 +594,7 @@ void ellipseGate::transforming(trans_local & trans){
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
-		/*
-		 * must interpolate for ellipse gate
-		 */
-
-		toPolygon(100);
-
+		computeCov();
 		isTransformed=true;
 	}
 }
@@ -636,8 +665,7 @@ void ellipsoidGate::transforming(trans_local & trans){
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
-		toPolygon(100);
-
+		computeCov();
 		isTransformed=true;
 	}
 
