@@ -319,6 +319,7 @@ protected:
 	vector<coordinate> antipodal_vertices; //four antipodal points of ellipse (to be deprecated)
 	coordinate mu;// center point
 	vector<coordinate> cov;//covariance matrix
+	double dist; //size of ellipse
 private:
 
 	template<class Archive>
@@ -328,6 +329,7 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
 				ar & BOOST_SERIALIZATION_NVP(cov);
 				ar & BOOST_SERIALIZATION_NVP(mu);
+				ar & BOOST_SERIALIZATION_NVP(dist);
 			}
 	template<class Archive>
 			void load(Archive &ar, const unsigned int version)
@@ -337,6 +339,7 @@ private:
 				if(version>=1){
 					ar & BOOST_SERIALIZATION_NVP(cov);
 					ar & BOOST_SERIALIZATION_NVP(mu);
+					ar & BOOST_SERIALIZATION_NVP(dist);
 				}else{
 					computeCov();
 				}
@@ -346,11 +349,12 @@ private:
 
 public:
 	ellipseGate(){};
-	ellipseGate(coordinate _mu, vector<coordinate> _cov);
+	ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist);
 	ellipseGate(vector<coordinate> _antipodal);
 	vector<bool> gating(flowData &);
 	vector<coordinate> getCovarianceMat(){return cov;};
 	coordinate getMu(){return mu;};
+	double getDist(){return dist;};
 //	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
 	void computeCov();
 	unsigned short getType(){return ELLIPSEGATE;}

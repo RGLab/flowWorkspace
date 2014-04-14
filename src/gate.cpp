@@ -184,12 +184,12 @@ void polygonGate::gain(map<string,float> & gains){
 
 }
 
-ellipseGate::ellipseGate(coordinate _mu, vector<coordinate> _cov):mu(_mu),cov(_cov){
+ellipseGate::ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist):mu(_mu),cov(_cov), dist(_dist){
 	isTransformed = true;
 	isGained = true;
 	neg = false;
 }
-ellipseGate::ellipseGate(vector<coordinate> _antipodal):antipodal_vertices(_antipodal){
+ellipseGate::ellipseGate(vector<coordinate> _antipodal):antipodal_vertices(_antipodal),dist(1){
 	isTransformed = false;
 	isGained = false;
 	neg = false;
@@ -384,7 +384,7 @@ vector<bool> ellipseGate::gating(flowData & fdata){
 	for(unsigned i =0;i<nEvents;i++){
 		double x = xdata[i];
 		double y = ydata[i];
-		res[i] = (x * x * aa + x* y * cc + x* y * bb + y * y * dd) <= 1;
+		res[i] = (x * x * aa + x* y * cc + x* y * bb + y * y * dd) <= dist;
 	}
 
 	return res;

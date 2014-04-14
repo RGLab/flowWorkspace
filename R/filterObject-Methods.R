@@ -88,5 +88,6 @@ setMethod("filterObject",signature=c("ellipsoidGate"),function(x,...){
           , params = params
           , mu = x@mean
           , cov = x@cov
+          , dist = x@distance
           ,filterId=x@filterId)  
     })

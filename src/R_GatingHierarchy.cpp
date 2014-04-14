@@ -337,6 +337,7 @@ BEGIN_RCPP
 				{
 					ellipseGate * thisG = dynamic_cast<ellipseGate*>(g);
 					coordinate mu=thisG->getMu();
+					double dist=thisG->getDist();
 					vector<coordinate> cov = thisG->getCovarianceMat();
 					NumericMatrix covMat(2,2);
 					for(unsigned i =0; i < 2; i++){
@@ -347,6 +348,7 @@ BEGIN_RCPP
 					 List ret=List::create(Named("parameters",thisG->getParamNames())
 							 	 	 	 	 ,Named("mu", NumericVector::create(mu.x, mu.y))
 							 	 	 	 	 ,Named("cov", covMat)
+							 	 	 	 	 ,Named("dist", dist)
 							 	 	 	 	 ,Named("type",ELLIPSEGATE)
 							 	 	 	 	 );
 					return ret;
@@ -570,6 +572,7 @@ gate * newGate(List filter){
 			//parse the mean
 			DoubleVec mean=as<DoubleVec>(filter["mu"]);
 			coordinate mu(mean.at(0), mean.at(1));
+			double dist = as<double>(filter["dist"]);
 
 			//parse cov mat
 			vector<coordinate> cov;
@@ -583,7 +586,7 @@ gate * newGate(List filter){
 
 			}
 
-			ellipseGate * eg = new ellipseGate(mu, cov);
+			ellipseGate * eg = new ellipseGate(mu, cov,dist);
 			eg->setNegate(isNeg);
 
 			// parse the parameter names
