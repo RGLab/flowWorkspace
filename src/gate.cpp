@@ -384,7 +384,7 @@ vector<bool> ellipseGate::gating(flowData & fdata){
 	for(unsigned i =0;i<nEvents;i++){
 		double x = xdata[i];
 		double y = ydata[i];
-		res[i] = (x * x * aa + x* y * cc + x* y * bb + y * y * dd) <= dist;
+		res[i] = (x * x * aa + x* y * cc + x* y * bb + y * y * dd) <= pow(dist, 2);
 	}
 
 	return res;
