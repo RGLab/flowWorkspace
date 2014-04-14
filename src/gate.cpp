@@ -273,7 +273,7 @@ void ellipseGate::computeCov(){
 		throw(domain_error("invalid number of antipodal points"));
 
 	/*
-	 * get center
+	 * get center and set mu
 	 */
 	mu.x=0;
 	mu.y=0;
@@ -339,9 +339,12 @@ void ellipseGate::computeCov(){
 	p2.y = y1 * y1 * a2 + y2 * y2 * b2;
 
 
-
+	//set cov
 	cov.push_back(p1);
 	cov.push_back(p2);
+
+	//set distance (in this calculation should always be 1)
+	dist = 1;
 }
 
 /*

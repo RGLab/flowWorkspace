@@ -348,7 +348,7 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 public:
-	ellipseGate(){};
+	ellipseGate(){dist = 1;};
 	ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist);
 	ellipseGate(vector<coordinate> _antipodal);
 	vector<bool> gating(flowData &);
