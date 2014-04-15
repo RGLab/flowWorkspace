@@ -179,7 +179,7 @@ setClass("GatingHierarchy"
 #' @rdname GatingSet-methods
 #' @aliases 
 #' GatingSet,character,character-method
-setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE,dMode=1,sampNloc="keyword",xmlParserOption, wsType, ...){
+setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE, sampNloc="keyword",xmlParserOption, wsType, ...){
       
       xmlFileName<-x
       sampleIDs<-y
@@ -196,7 +196,7 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
       if(!file.exists(xmlFileName))
         stop(xmlFileName," not found!")
       Object<-new("GatingSet")
-      Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType), as.integer(dMode))
+      Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType))
       Object@guid <- .uuid_gen()
       Object@flag <- FALSE
 
@@ -211,12 +211,12 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
 #' @rdname GatingSet-methods
 #' @aliases 
 #' GatingSet,flowSet,ANY-method 
-setMethod("GatingSet",c("flowSet"),function(x,dMode=0,...){
+setMethod("GatingSet",c("flowSet"),function(x, ...){
       
       fs_clone<-flowCore:::copyFlowSet(x)
       samples<-sampleNames(fs_clone)
       G<-new("GatingSet")
-      G@pointer<-.Call("R_NewGatingSet_rootOnly",samples,dMode=as.integer(dMode))
+      G@pointer<-.Call("R_NewGatingSet_rootOnly",samples)
       G@guid <- .uuid_gen()
       G@flag <- TRUE
           

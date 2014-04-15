@@ -24,10 +24,10 @@ GatingSet * getGsPtr(SEXP _gsPtr){
 /*
  * constructing GatingSet from xml file
  */
-RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _isParseGate,SEXP _sampNloc,SEXP _xmlParserOption, SEXP _wsType, SEXP _dMode) {
+RcppExport SEXP R_parseWorkspace(SEXP _fileName,SEXP _sampleIDs,SEXP _isParseGate,SEXP _sampNloc,SEXP _xmlParserOption, SEXP _wsType) {
 BEGIN_RCPP
 		string fileName=as<string>(_fileName);
-		unsigned short dMode=as<unsigned short>(_dMode);
+
 		unsigned short wsType=as<unsigned short>(_wsType);
 
 		StringVec sampleIDs=as<StringVec>(_sampleIDs);
@@ -35,7 +35,7 @@ BEGIN_RCPP
 		unsigned short sampNloc=as<unsigned short>(_sampNloc);
 		int xmlParserOption = as<int>(_xmlParserOption);
 
-		GatingSet * gs=new GatingSet(fileName,isParseGate,sampNloc,xmlParserOption, wsType, dMode);
+		GatingSet * gs=new GatingSet(fileName,isParseGate,sampNloc,xmlParserOption, wsType);
 		gs->parseWorkspace(sampleIDs,isParseGate);
 		/*
 		 * using default finalizer to delete gs,which is triggered by gc() when
@@ -79,7 +79,7 @@ END_RCPP
 /*
  * constructing GatingSet from existing gating hierarchy and new data
  */
-RcppExport SEXP R_NewGatingSet(SEXP _gsPtr,SEXP _sampleName,SEXP _newSampleNames,SEXP _dMode) {
+RcppExport SEXP R_NewGatingSet(SEXP _gsPtr,SEXP _sampleName,SEXP _newSampleNames) {
 BEGIN_RCPP
 
 		/*
@@ -93,13 +93,11 @@ BEGIN_RCPP
 		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-		unsigned short dMode=as<unsigned short>(_dMode);
-
 		/*
 		 * used gh as the template to clone multiple ghs in the new gs
 		 */
 		StringVec newSampleNames=as<StringVec>(_newSampleNames);
-		GatingSet * newGS=new GatingSet(gh,newSampleNames,dMode);
+		GatingSet * newGS=new GatingSet(gh,newSampleNames);
 
 		/*
 		 * using default finalizer to delete gs,which is triggered by gc() when
@@ -114,17 +112,13 @@ END_RCPP
 /*
  * constructing GatingSet with only root node for each sample
  */
-RcppExport SEXP R_NewGatingSet_rootOnly(SEXP _sampleNames,SEXP _dMode) {
+RcppExport SEXP R_NewGatingSet_rootOnly(SEXP _sampleNames) {
 BEGIN_RCPP
 
 
 		StringVec sampleNames=as<StringVec>(_sampleNames);
 
-
-		unsigned short dMode=as<unsigned short>(_dMode);
-
-
-		GatingSet * newGS=new GatingSet(sampleNames,dMode);
+		GatingSet * newGS=new GatingSet(sampleNames);
 
 		return XPtr<GatingSet>(newGS);
 
@@ -212,6 +206,22 @@ BEGIN_RCPP
 		GatingSet *	gs=getGsPtr(_gsPtrs);
 
 		gs->setSample(oldName,newName);
+
+END_RCPP
+}
+
+RcppExport SEXP R_getLogLevel() {
+BEGIN_RCPP
+
+		return(wrap(g_loglevel));
+
+END_RCPP
+}
+
+RcppExport SEXP R_setLogLevel(SEXP _loglevel) {
+BEGIN_RCPP
+
+		g_loglevel = as<unsigned short>(_loglevel);
 
 END_RCPP
 }

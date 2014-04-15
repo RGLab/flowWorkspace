@@ -1,12 +1,12 @@
 \name{getParent}
 \alias{getChildren}
 \alias{getChildren-methods}
-\alias{getChildren,GatingHierarchy,character-method}
-\alias{getChildren,GatingHierarchy,numeric-method}
+\alias{getChildren,GatingSet,character-method}
+\alias{getChildren,GatingSet,numeric-method}
 \alias{getParent}
 \alias{getParent-methods}
-\alias{getParent,GatingHierarchy,character-method}
-\alias{getParent,GatingHierarchy,numeric-method}
+\alias{getParent,GatingSet,character-method}
+\alias{getParent,GatingSet,numeric-method}
 \title{Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy}
 \arguments{
   \item{obj}{A \code{GatingHierarchy}}

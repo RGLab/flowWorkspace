@@ -114,7 +114,6 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #' @param subset \code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.
 #' @param requiregates \code{logical} Should samples that have no gates be included?
 #' @param includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
-#' @param dMode An \code{integer} scalar specifying the level of print-out that is used for the debug purpose.
 #' @param path The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.
 #' @param ...
 #'      \itemize{
@@ -122,6 +121,10 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #'      	\item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
 #'      	\item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
 #'          \item ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
+#'          \item extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
+#'          \item extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
+#'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
+
 #'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 #'      	}
 #' @details
@@ -146,7 +149,7 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #' parseWorkspace,flowJoWorkspace-method
 #' 
 #' @importFrom utils menu
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE,dMode = 0,path=obj@path,...){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE, path=obj@path,...){
 	
 	
 			
@@ -223,7 +226,6 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
                     ,sampleIDs
                     ,execute=execute
-                    ,dMode=dMode
                     ,isNcdf=isNcdf
                     ,includeGates=includeGates
                     ,path=path
@@ -333,14 +335,19 @@ setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
       wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
       .getKeywords(obj@doc,y, wsNodePath[["sample"]])
 })
-.getKeywords<-function(doc,y, samplePath = "/Workspace/SampleList/Sample"){
-  w<-which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
+
+.getKeywords <- function(doc,y, samplePath = "/Workspace/SampleList/Sample"){
+  #match sample name to the keywords  
+  w <- which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
   if(length(w)==0){
-    warning("Sample ",y," not found in Keywords");
+    warning("Sample ",y," not found in Keywords of workspace");
     ##Use the DataSet tag to locate the sample
-    w<-which(xpathApply(doc, file.path(samplePath,"DataSet") ,function(x)xmlGetAttr(x,"uri"))%in%y)
+    w <- which(xpathApply(doc, file.path(samplePath,"DataSet") ,function(x)xmlGetAttr(x,"uri"))%in%y)
+    #last resort to match to the SampleNode name attribute
+    if(length(w)==0)
+      w <- which(xpathApply(doc, file.path(samplePath,"SampleNode") ,function(x)xmlGetAttr(x,"name"))%in%y)
   }
-  l<-xpathApply(doc,paste(samplePath,"[",w,"]/Keywords/node()",sep=""),xmlAttrs)
+  l <- xpathApply(doc,paste(samplePath,"[",w,"]/Keywords/node()",sep=""),xmlAttrs)
   names(l)<-lapply(l,function(x)x[["name"]])
   l<-lapply(l,function(x)x[["value"]])
   return(l)

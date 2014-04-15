@@ -33,7 +33,6 @@ struct testCase{
 	vector<bool> isEqual; // the bool vector records the counts discrepancy (using cv) between flowJo and flowCore
 	float tolerance; // the threshold for cv value
 	bool isParseGate; //whether to parse gate from xml
-	unsigned short dMode;//debug output level
 	int xmlParserOption;//xml parser option passed down to libxml2
 	bool isTemplate;// whether test the template copying feature
 	bool isLoadArhive;// whether to load archived gs
