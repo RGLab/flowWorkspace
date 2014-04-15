@@ -79,7 +79,7 @@ void inPolygon_c(double *data, int nrd,
  * the data points that are below this theshold range
  * to cut data range)
  */
-void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
+void polygonGate::extend(flowData & fdata,float extend_val){
 	string x=param.xName();
 	string y=param.yName();
 	valarray<double> xdata(fdata.subset(x));
@@ -95,13 +95,13 @@ void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	{
 		if(v.at(i).x<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
 			v.at(i).x=xMin;
 		}
 		if(v.at(i).y<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
 			v.at(i).y=yMin;
 
@@ -110,7 +110,7 @@ void polygonGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	param.setVertices(v);
 }
 
-void polygonGate::extend(float extend_val, float extend_to, unsigned short dMode){
+void polygonGate::extend(float extend_val, float extend_to){
 	string x=param.xName();
 	string y=param.yName();
 
@@ -124,13 +124,13 @@ void polygonGate::extend(float extend_val, float extend_to, unsigned short dMode
 	{
 		if(v.at(i).x<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
 			v.at(i).x=xMin;
 		}
 		if(v.at(i).y<=extend_val)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
 			v.at(i).y=yMin;
 
@@ -138,7 +138,7 @@ void polygonGate::extend(float extend_val, float extend_to, unsigned short dMode
 	}
 	param.setVertices(v);
 }
-void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
+void polygonGate::gain(map<string,float> & gains){
 
 	if(!isGained)
 		{
@@ -155,7 +155,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			if(it!=gains.end())
 			{
 				float this_gain = it->second;
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT<<"adjusting: "<<channel_x<<endl;;
 
 				for(unsigned i=0;i<vertices.size();i++)
@@ -166,7 +166,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			if(it!=gains.end())
 			{
 				float this_gain = it->second;
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT<<"adjusting: "<<channel_y<<endl;;
 
 				for(unsigned i=0;i<vertices.size();i++)
@@ -174,7 +174,7 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 			}
 
 
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<endl;
 			param.setVertices(vertices);
 			isGained=true;
@@ -183,7 +183,19 @@ void polygonGate::gain(map<string,float> & gains,unsigned short dMode){
 
 
 }
-void ellipseGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
+
+ellipseGate::ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist):mu(_mu),cov(_cov), dist(_dist){
+	isTransformed = true;
+	isGained = true;
+	neg = false;
+}
+ellipseGate::ellipseGate(vector<coordinate> _antipodal):antipodal_vertices(_antipodal),dist(1){
+	isTransformed = false;
+	isGained = false;
+	neg = false;
+}
+
+void ellipseGate::extend(flowData & fdata,float extend_val){
 
 	/*
 	 * get R_min
@@ -199,7 +211,7 @@ void ellipseGate::extend(flowData & fdata,float extend_val,unsigned short dMode)
 	}
 
 }
-void ellipseGate::extend(float extend_val, float extend_to,unsigned short dMode){
+void ellipseGate::extend(float extend_val, float extend_to){
 
 	/*
 	 * get R_min
@@ -215,7 +227,7 @@ void ellipseGate::extend(float extend_val, float extend_to,unsigned short dMode)
 	}
 
 }
-void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
+void ellipseGate::gain(map<string,float> & gains){
 	if(!isGained)
 	{
 		/*
@@ -229,7 +241,7 @@ void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
 		if(it!=gains.end())
 		{
 			float this_gain = it->second;
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"adjusting: "<<channel_x<<endl;;
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).x=antipodal_vertices.at(i).x/this_gain;
@@ -238,38 +250,31 @@ void ellipseGate::gain(map<string,float> & gains,unsigned short dMode){
 		if(it!=gains.end())
 		{
 			float this_gain = it->second;
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"adjusting: "<<channel_y<<endl;;
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).y=antipodal_vertices.at(i).y/this_gain;
 		}
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
 		isGained=true;
 	}
 }
+
 /*
- * interpolation has to be done on the transformed original 4 coordinates
- * otherwise, the interpolation results will be wrong
+ * covert antipodal points to covariance matrix and mean
  */
-void ellipseGate::toPolygon(unsigned nVertices){
+void ellipseGate::computeCov(){
 
-
-
-
-	/*
-	 * using 4 vertices to fit polygon points
-	 */
 	vector<coordinate> v=antipodal_vertices;
-	vector<coordinate> vertices=param.getVertices();
-	vertices.clear();//reset the vertices
+	unsigned short nSize = v.size();
+	if (nSize != 4)
+		throw(domain_error("invalid number of antipodal points"));
 
-	unsigned nSize=v.size();
 	/*
-	 * scaling and centering the points
+	 * get center and set mu
 	 */
-	coordinate mu;
 	mu.x=0;
 	mu.y=0;
 	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
@@ -280,71 +285,115 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	mu.x=mu.x/nSize;
 	mu.y=mu.y/nSize;
 
-	coordinate sd;
-	sd.x=0;
-	sd.y=0;
+	//center the antipods
 	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
 	{
-		sd.x+=pow((it->x-mu.x),2);
-		sd.y+=pow((it->y-mu.y),2);
-	}
-	sd.x=sqrt(sd.x/nSize);
-	sd.y=sqrt(sd.y/nSize);
-
-	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
-	{
-		it->x=(it->x-mu.x)/sd.x;
-		it->y=(it->y-mu.y)/sd.y;
+		it->x = it->x - mu.x;
+		it->y = it->y - mu.y;
 	}
 
 	/*
-	 * find the right positions of four antipodals
+	 * find the four positions of four antipodals
 	 */
-	coordinate R=*max_element(v.begin(),v.end(),compare_x);
-	coordinate L=*min_element(v.begin(),v.end(),compare_x);
 
-	coordinate T=*max_element(v.begin(),v.end(),compare_y);
-	coordinate B=*min_element(v.begin(),v.end(),compare_y);
+	//far right point
+	vector<coordinate>::iterator R_it=max_element(v.begin(),v.end(),compare_x);
+	coordinate R = *R_it;
 
-	/*
-	 * calculate the a,b length
-	 */
-	coordinate E;
-	E.x=hypot(L.x-R.x,L.y-R.y)/2;
-	E.y=hypot(T.x-B.x,T.y-B.y)/2;
+	//far left point
+	vector<coordinate>::iterator L_it=min_element(v.begin(),v.end(),compare_x);
+	coordinate L = *L_it;
 
-	/*
-	 * calculate the rotation angle
-	 */
-	double phi=tan((R.y-L.y)/(R.x-L.x));
-	double CY=(B.y+T.y)/2;
-	double CX=(R.x+L.x)/2;
+	// calculate the a length
+	double a = hypot(L.x-R.x,L.y-R.y)/2;
 
-	double delta=2*PI/nVertices;
-	/*
-	 * fit the polygon points
-	 */
-	for(unsigned short i=0;i<nVertices;i++)
-	{
-		double S=i*delta;
-		coordinate p;
-		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
-		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
-
-
-		/*
-		 * scale back
-		 */
-		p.x=p.x*sd.x+mu.x;
-		p.y=p.y*sd.y+mu.y;
-
-		vertices.push_back(p);
+	//use the rest of two points for computing b
+	vector<coordinate> Q;
+	for(vector<coordinate>::iterator it = v.begin();it!= v.end();it++){
+		if(it != R_it && it != L_it)
+			Q.push_back(*it);
 	}
+	coordinate V1 = Q.at(0);
+	coordinate V2 = Q.at(1);
+	double b = hypot(V1.x-V2.x,V1.y-V2.y)/2;
 
-	param.setVertices(vertices);
+	double a2 = a * a ;
+	double b2 = b * b ;
 
+
+	//normailize R and V1 first
+	double L_norm = hypot(L.x, L.y);
+	double x1 = L.x/L_norm;
+	double y1 = L.y/L_norm;
+
+	double V1_norm = hypot(V1.x, V1.y);
+	double x2 = V1.x/V1_norm;
+	double y2 = V1.y/V1_norm;
+
+	coordinate p1;
+	p1.x = x1 * x1 * a2 + x2 * x2 * b2;
+	p1.y = x1 * y1 * a2 + x2 * y2 * b2;
+
+	coordinate p2;
+	p2.x = p1.y;
+	p2.y = y1 * y1 * a2 + y2 * y2 * b2;
+
+
+	//set cov
+	cov.push_back(p1);
+	cov.push_back(p2);
+
+	//set distance (in this calculation should always be 1)
+	dist = 1;
 }
-void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
+
+/*
+ * translated from flowCore::%in% method for ellipsoidGate
+ */
+vector<bool> ellipseGate::gating(flowData & fdata){
+
+
+	// get data
+
+	valarray<double> xdata(fdata.subset(param.xName()));
+	valarray<double> ydata(fdata.subset(param.yName()));
+
+	//center the data
+	xdata = xdata - mu.x;
+	ydata = ydata - mu.y;
+
+	//inverse the cov matrix
+	/*
+	 * 	| a,b |
+		| c,d | --> | aa, bb |
+					| cc, dd |
+	 */
+	double a , b, c, d;
+	a = cov.at(0).x;
+	b = cov.at(0).y;
+	c = cov.at(1).x;
+	d = cov.at(1).y;
+
+	double det = a* d - b* c;
+	double aa, bb, cc, dd;
+	aa = d/det;
+	bb = -b/det;
+	cc = -c/det;
+	dd = a/det;
+
+	// if inside of the ellipse
+	unsigned nEvents=xdata.size();
+	vector<bool> res (nEvents);
+	for(unsigned i =0;i<nEvents;i++){
+		double x = xdata[i];
+		double y = ydata[i];
+		res[i] = (x * x * aa + x* y * cc + x* y * bb + y * y * dd) <= pow(dist, 2);
+	}
+
+	return res;
+}
+
+void rangeGate::extend(flowData & fdata,float extend_val){
 	string pName=param.getName();
 	valarray<double> data_1d(fdata.subset(pName));
 
@@ -354,28 +403,28 @@ void rangeGate::extend(flowData & fdata,float extend_val,unsigned short dMode){
 	double xMin=data_1d.min();
 	if(param.getMin()<=extend_val)
 	{
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
 		param.setMin(xMin);
 	}
 
 
 }
-void rangeGate::extend(float extend_val, float extend_to,unsigned short dMode){
+void rangeGate::extend(float extend_val, float extend_to){
 	string pName=param.getName();
 
 
 	double xMin= extend_to;
 	if(param.getMin()<=extend_val)
 	{
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
 		param.setMin(xMin);
 	}
 
 
 }
-void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
+void rangeGate::gain(map<string,float> & gains){
 	if(!isGained)
 	{
 		vertices_valarray vert(getVertices());
@@ -385,7 +434,7 @@ void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
 		{
 			float this_gain = it->second;
 
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"adjusting "<<param.getName()<<endl;
 
 			param.setMin(param.getMin()/this_gain);
@@ -395,14 +444,60 @@ void rangeGate::gain(map<string,float> & gains,unsigned short dMode){
 	}
 }
 
+
 /*
- * TODO:try within method from boost/geometries forboost.polygon
+ *  boost/geometries version some how does not
+ *  perform better since some how convex_hull has to be
+ *  used to correct the polygon constructor
+ *
+ */
+//vector<bool> polygonGate::gating_bg(flowData & fdata){
+//
+//
+//	vector<coordinate> vertices=param.getVertices();
+//	unsigned nVertex=vertices.size();
+//
+//	string x=param.xName();
+//	string y=param.yName();
+//	valarray<double> xdata(fdata.subset(x));
+//	valarray<double> ydata(fdata.subset(y));
+//
+//	unsigned nEvents=xdata.size();
+//	//init the indices
+//	vector<bool> ind(nEvents);
+//
+//	typedef boost::geometry::model::d2::point_xy<double> point_type;
+//	typedef boost::geometry::model::polygon<point_type, true, true> polygon_type;
+//
+//	//construct boost polygon
+//	polygon_type poly;
+//	for(unsigned i = 0; i < nVertex; i++){
+//		point_type this_point(vertices.at(i).x, vertices.at(i).y);
+//		poly.outer().push_back(this_point);
+//	}
+//	polygon_type hull;
+//
+//	boost::geometry::convex_hull(poly, hull);
+//
+//
+//
+//	for(unsigned i = 0; i < nEvents; i++){
+//		point_type p(xdata[i], ydata[i]);
+//		ind[i] = boost::geometry::within(p, hull);
+//	}
+//
+//
+//	if(isNegate())
+//		ind.flip();
+//	return ind;
+//}
+
+/*
+ *
  *  reimplement c++ version of inPolygon_c
  *  indices are allocated within gating function, so it is up to caller to free it
  *  and now it is freed in destructor of its owner "nodeProperties" object
  */
-
-
 vector<bool> polygonGate::gating(flowData & fdata){
 
 
@@ -474,7 +569,7 @@ vector<bool> polygonGate::gating(flowData & fdata){
  * we moved the interpolation to polygonGate form gating method to here because
  * gating may not be called when only gates to be extracted
  */
-void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
+void ellipseGate::transforming(trans_local & trans){
 	if(!Transformed())
 	{
 		/*
@@ -495,7 +590,7 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 
 		if(trans_x!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_x<<endl;;
 
 			trans_x->transforming(vert.x);
@@ -504,25 +599,22 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
 		}
 		if(trans_y!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_y<<endl;;
 
 			trans_y->transforming(vert.y);
 			for(unsigned i=0;i<antipodal_vertices.size();i++)
 				antipodal_vertices.at(i).y=vert.y[i];
 		}
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
-		/*
-		 * must interpolate for ellipse gate
-		 */
-
-		toPolygon(100);
-
+		computeCov();
 		isTransformed=true;
 	}
 }
+ellipsoidGate::ellipsoidGate(vector<coordinate> _antipodal):ellipseGate(_antipodal)
+{}
 /*
  * ellipsoidGate does not follow the regular transforming process
  * for historical reason, it is defined in 256 * 256 scale, and we don't know
@@ -530,7 +622,7 @@ void ellipseGate::transforming(trans_local & trans,unsigned short dMode){
  * for the EllipsoidGate defined on the non-linear data channel
  * for linear channels, we will do the same rescaling here.
  */
-void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
+void ellipsoidGate::transforming(trans_local & trans){
 
 	if(!Transformed())
 	{
@@ -557,7 +649,7 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 		{
 			//do the special scaling first for linear ellipsoidGate
 			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"scaling: "<<channel_x<<endl;;
 
 			scale_f.transforming(vert.x);
@@ -574,7 +666,7 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 		{
 			//do the special scaling first for linear ellipsoidGate
 			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"scaling: "<<channel_y<<endl;;
 
 			scale_f.transforming(vert.y);
@@ -587,15 +679,16 @@ void ellipsoidGate::transforming(trans_local & trans,unsigned short dMode){
 			throw(domain_error(err));
 		}
 
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
+		computeCov();
 		isTransformed=true;
 	}
 
 }
 
-void polygonGate::transforming(trans_local & trans,unsigned short dMode){
+void polygonGate::transforming(trans_local & trans){
 	if(!Transformed())
 	{
 		vector<coordinate> vertices=param.getVertices();
@@ -617,7 +710,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 
 		if(trans_x!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_x<<endl;;
 	//		valarray<double> output_x(trans_x->transforming(vert.x));
 			trans_x->transforming(vert.x);
@@ -627,7 +720,7 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 		}
 		if(trans_y!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_y<<endl;;
 	//		valarray<double> output_y(trans_y->transforming(vert.y));
 			trans_y->transforming(vert.y);
@@ -635,14 +728,14 @@ void polygonGate::transforming(trans_local & trans,unsigned short dMode){
 	//			vertices.at(i).y=output_y[i];
 				vertices.at(i).y=vert.y[i];
 		}
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 		param.setVertices(vertices);
 		isTransformed=true;
 	}
 }
 
-void rangeGate::transforming(trans_local & trans,unsigned short dMode){
+void rangeGate::transforming(trans_local & trans){
 	if(!Transformed())
 	{
 		vertices_valarray vert(getVertices());
@@ -650,7 +743,7 @@ void rangeGate::transforming(trans_local & trans,unsigned short dMode){
 		transformation * curTrans=trans.getTran(param.getName());
 		if(curTrans!=NULL)
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming "<<param.getName()<<endl;
 	//		valarray<double> output(curTrans->transforming(vert.x));
 	//		param.min=output[0];

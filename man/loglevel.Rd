@@ -1,0 +1,29 @@
+\name{getLoglevel}
+\alias{getLoglevel}
+\alias{setLoglevel}
+\title{get/set the log level}
+\usage{
+  getLoglevel()
+
+  setLoglevel(level = "none")
+}
+\arguments{
+  \item{level}{a \code{character} that represents the log
+  level , can be value of c("none", "GatingSet",
+  "GatingHierarchy", "Population", "gate") default is
+  "none" , which does not print any information from C
+  parser.}
+}
+\value{
+  a character that represents the internal log level
+}
+\description{
+  It is helpful sometime to get more detailed print out for
+  the purpose of trouble shooting
+}
+\examples{
+getLoglevel()
+setLoglevel("Population")
+getLoglevel()
+}
+

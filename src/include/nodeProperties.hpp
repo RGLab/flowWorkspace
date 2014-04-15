@@ -35,8 +35,8 @@ private:
 	boost::scoped_ptr<POPINDICES> indices;
 	POPSTATS fjStats,fcStats;
 	bool hidden;
-public:
-	unsigned short dMode;
+
+
 private:
 	template<class Archive>
 			    void save(Archive &ar, const unsigned int version) const
@@ -60,13 +60,7 @@ private:
 					ar & BOOST_SERIALIZATION_NVP(indices);
 			        ar & BOOST_SERIALIZATION_NVP(fjStats);
 			        ar & BOOST_SERIALIZATION_NVP(fcStats);
-			        if(version<1){
-			        	unsigned short _dMode=0;
-			        	ar & BOOST_SERIALIZATION_NVP(_dMode);
-			        }else
-			        {
-			        	ar & BOOST_SERIALIZATION_NVP(dMode);
-			        }
+
 			        if(version<2){
 						bool _hidden=false;
 						ar & BOOST_SERIALIZATION_NVP(_hidden);
@@ -99,12 +93,12 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(indices);
 				ar & BOOST_SERIALIZATION_NVP(fjStats);
 				ar & BOOST_SERIALIZATION_NVP(fcStats);
-				if(version<1){
-					dMode=0;
-				}else
+				if(version>=1 && version< 4)
 				{
+					unsigned short dMode;
 					ar & BOOST_SERIALIZATION_NVP(dMode);
 				}
+
 				if(version<2){
 					hidden=false;
 				}else
@@ -139,6 +133,6 @@ public:
 
 
 };
-BOOST_CLASS_VERSION(nodeProperties,3)
+BOOST_CLASS_VERSION(nodeProperties,4)
 
 #endif /* NODEPROPERTIES_HPP_ */

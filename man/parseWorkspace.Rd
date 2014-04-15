@@ -35,9 +35,6 @@
   imported, or just the data with compensation and
   transformation?}
 
-  \item{dMode}{An \code{integer} scalar specifying the
-  level of print-out that is used for the debug purpose.}
-
   \item{path}{The path to the fcs files that are to be
   imported. The code will search recursively, so you can
   point it to a location above the files. This argument is
@@ -54,7 +51,16 @@
   \code{\link{xmlTreeParse}} \item ignore.case a
   \code{logical} flag indicates whether the
   colnames(channel names) matching needs to be case
-  sensitive (e.g. compensation, gating..)  \item ...:
+  sensitive (e.g. compensation, gating..)  \item extend_val
+  \code{numeric} the threshold that determine wether the
+  gates need to be extended. default is 0. It is triggered
+  when gate coordinates are below this value.  \item
+  extend_to \code{numeric} the value that gate coordinates
+  are extended to. Default is -4000. Usually this value
+  will be automatically detected according to the real data
+  range.  But when the gates needs to be extended without
+  loading the raw data (i.e. \code{execute} is set to
+  FALSE), then this hard-coded value is used.  \item ...:
   Additional arguments to be passed to
   \link{read.ncdfFlowSet} or \link{read.flowSet}.  }}
 }

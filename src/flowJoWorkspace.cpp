@@ -205,7 +205,7 @@ PARAM_VEC flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 		curParam.log=curFlag.compare("LOG")==0;
 		curParam.range=4096;//not sure how to get this value from win workspaces
 
-		if(dMode>=GATING_SET_LEVEL)
+		if(g_loglevel>=GATING_SET_LEVEL)
 			COUT<<pName<<":"<<curFlag<<endl;
 		res.push_back(curParam);
 	}
@@ -228,7 +228,7 @@ void flowJoWorkspace::to_popNode(wsRootNode & node, nodeProperties & np){
 	POPSTATS fjStats;
 	fjStats["count"]=atoi(node.getProperty("count").c_str());
 	np.setStats(fjStats,false);
-	np.dMode=dMode;
+
 
 }
 
@@ -239,7 +239,7 @@ void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isPars
 	//add pop name
 	np.setName(node.getProperty(nodePath.attrName).c_str());
 
-	if(dMode>=POPULATION_LEVEL)
+	if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<"parse the population Node:"<<np.getName()<<endl;
 	//add pop counts
 	POPSTATS fjStats;
@@ -253,7 +253,7 @@ void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isPars
 	catch (int e) {
 		COUT<<"extracting gate failed:"<<np.getName()<<endl;
 	}
-	np.dMode=dMode;
+
 
 }
 

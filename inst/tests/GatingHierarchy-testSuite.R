@@ -134,9 +134,9 @@ test_that("getData ",{
       expect_equal(nrow(fr), 119531)
       
       fr <- getData(gh, "CD8")
-      expect_equal(nrow(fr), 14623)
+      expect_equal(nrow(fr), 14570)
       fr <- getData(gh, 14)
-      expect_equal(nrow(fr), 14623)
+      expect_equal(nrow(fr), 14570)
       
       fr <- getData(gh, use.exprs = FALSE)
       expect_equal(nrow(fr), 0)
@@ -201,7 +201,7 @@ test_that("setGate", {
       gate_cd4 <- getGate(gh, "CD4")
       gate_cd8 <- getGate(gh, "CD8")
       invisible(setGate(gh, "CD4", gate_cd8))
-      expect_equal(getGate(gh, "CD4")@boundaries, gate_cd8@boundaries)
+      expect_equal(getGate(gh, "CD4")@cov, gate_cd8@cov)
       suppressMessages(recompute(gh, "CD4"))
       expect_equal(getTotal(gh, "CD4"), getTotal(gh, "CD8"))
       
@@ -506,13 +506,16 @@ test_that("getIndiceMat for COMPASS",{
 
 test_that("getPopChnlMapping for COMPASS",{
       
+      fr <- getData(gh, use.exprs = FALSE) 
+      this_pd <- pData(parameters(fr))
+      
       #no mapping provided
-      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+", list()), silent = TRUE)
+      thisRes <- try(.getPopChnlMapping(this_pd, c("CD8/38- DR+","CD8/CCR7- 45RA+"), list()), silent = TRUE)
       expect_is(thisRes, "try-error")
       expect_output(thisRes[[1]], "No markers in flow data matches Populations")
       
       #correct mapping provided
-      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
                                         , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")
                                         )
                      )
@@ -531,7 +534,7 @@ test_that("getPopChnlMapping for COMPASS",{
       
       
       #incorrect mapping
-      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
                                         , list("CD8/38- DR+" = "CD38", "CD8/CCR7- 45RA+" = "CCR7 PE")
                                         )
                      , silent = TRUE)
@@ -539,7 +542,7 @@ test_that("getPopChnlMapping for COMPASS",{
       expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                     
       
       #correct mappping with extra items
-      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
                                       , list("CD8/38- DR+" = "CD38 APC"
                                             , "CD8/CCR7- 45RA+" = "CCR7 PE"
                                             , "CD3+" = "CD3 V450"
@@ -553,7 +556,7 @@ test_that("getPopChnlMapping for COMPASS",{
       
 
       #mapping with incorrect extra item
-      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
                                     , list("CD8/38- DR+" = "CD38 APC"
                                         , "CD8/CCR7- 45RA+" = "CCR7 PE"
                                         , "CD3+" = "450"
@@ -566,7 +569,7 @@ test_that("getPopChnlMapping for COMPASS",{
       expect_identical(thisRes,expectRes)
       
       #incorrect mappping with extra items
-      thisRes <- try(.getPopChnlMapping(gh, "CD8/38- DR+|CD8/CCR7- 45RA+"
+      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
                                       , list("CD8/38- DR+" = "CD38"
                                           , "CD8/CCR7- 45RA+" = "CCR7 PE"
                                           , "CD3+" = "CD3 V450"

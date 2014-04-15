@@ -47,7 +47,6 @@ class GatingSet{
 	linTrans globalLinTrans;
 	trans_global_vec gTrans;//parsed from xml workspace
 	gh_map ghs;
-	unsigned short dMode;//debug level to control print out
 	workspace * wsPtr;
 
 private:
@@ -66,13 +65,9 @@ private:
 				ar & BOOST_SERIALIZATION_NVP(globalBiExpTrans);
 				ar & BOOST_SERIALIZATION_NVP(globalLinTrans);
 				ar & BOOST_SERIALIZATION_NVP(gTrans);
-	//			ar & nc;
+
 				ar & BOOST_SERIALIZATION_NVP(ghs);
 
-				ar & BOOST_SERIALIZATION_NVP(dMode);
-
-	//	        ar.register_type(static_cast<flowJoWorkspace *>(NULL));
-	//			ar & ws;
 	    }
 	template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
@@ -90,7 +85,11 @@ private:
 
 				ar & BOOST_SERIALIZATION_NVP(gTrans);
 				ar & BOOST_SERIALIZATION_NVP(ghs);
-				ar & BOOST_SERIALIZATION_NVP(dMode);
+				if(version<3)
+				{
+					unsigned short dMode;
+					ar & BOOST_SERIALIZATION_NVP(dMode);
+				}
 
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
@@ -100,9 +99,9 @@ public:
 	~GatingSet();
 	GatingSet(){wsPtr=NULL;};
 	void setSample(string oldName, string newName);
-	GatingSet(string,bool,unsigned short,int,unsigned short wsType,unsigned short _dMode=1);
-	GatingSet(GatingHierarchy *,vector<string>,unsigned short _dMode=1);
-	GatingSet(vector<string>,unsigned short _dMode=1);
+	GatingSet(string,bool,unsigned short,int,unsigned short wsType);
+	GatingSet(GatingHierarchy *,vector<string>);
+	GatingSet(vector<string>);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
 	void gating();
@@ -111,12 +110,10 @@ public:
 	vector<string> getSamples(void);
 
 	GatingSet * clone_treeOnly(vector<string> samples);
-//	GatingSet * clone_sstream(vector<string> samples);
-//	GatingSet * clone_fstream(vector<string> samples);
-	void add(GatingSet & gs,vector<string> sampleNames,unsigned short _dMode=1);
+	void add(GatingSet & gs,vector<string> sampleNames);
 };
 
-BOOST_CLASS_VERSION(GatingSet,2)
+BOOST_CLASS_VERSION(GatingSet,3)
 
 void save_gs(const GatingSet &gs,string filename, unsigned short format);
 void restore_gs(GatingSet &s, string filename, unsigned short format);

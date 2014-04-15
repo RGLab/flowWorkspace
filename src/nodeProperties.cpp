@@ -9,7 +9,7 @@
 nodeProperties::nodeProperties(){
 	thisGate=NULL;
 	hidden=false;
-	dMode=0;
+
 }
 
 /* since nodeProperties contains non-copyable scope_ptr member
@@ -25,7 +25,7 @@ nodeProperties::nodeProperties(const nodeProperties& np){
 	fjStats=np.fjStats;
 	fcStats=np.fcStats;
 	hidden=np.hidden;
-	dMode=np.dMode;
+
 
 }
 nodeProperties & nodeProperties::operator=(nodeProperties np){
@@ -36,7 +36,7 @@ nodeProperties & nodeProperties::operator=(nodeProperties np){
 	std::swap(fjStats, np.fjStats);
 	std::swap(fcStats, np.fcStats);
 	std::swap(hidden, np.hidden);
-	std::swap(dMode, np.dMode);
+
 	return *this;
 
 }
@@ -50,7 +50,7 @@ nodeProperties::~nodeProperties(){
 
 	if(thisGate!=NULL)
 	{
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"free gate:"<<this->thisName<<endl;
 		delete thisGate;
 	}

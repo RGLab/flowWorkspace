@@ -13,6 +13,9 @@
 #include <vector>
 #include "flowData.hpp"
 #include "transformation.hpp"
+//#include <boost/geometry.hpp>
+//#include <boost/geometry/geometries/point_xy.hpp>
+//#include <boost/geometry/geometries/polygon.hpp>
 
 
 using namespace std;
@@ -33,10 +36,7 @@ typedef struct{
 	} BOOL_GATE_OP;
 
 
-#define GATING_SET_LEVEL 1
-#define GATING_HIERARCHY_LEVEL 2
-#define POPULATION_LEVEL 3
-#define GATE_LEVEL 4
+
 
 #define POLYGONGATE 1
 #define RANGEGATE 2
@@ -212,12 +212,12 @@ public:
 	virtual unsigned short getType()=0;
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
 	virtual vector<bool> gating(flowData &){throw(domain_error("undefined gating function!"));};
-	virtual void extend(flowData &,float,unsigned short){throw(domain_error("undefined extend function!"));};
-	virtual void extend(float,float,unsigned short){throw(domain_error("undefined extend function!"));};
-	virtual void gain(map<string,float> &,unsigned short){throw(domain_error("undefined gain function!"));};
+	virtual void extend(flowData &,float){throw(domain_error("undefined extend function!"));};
+	virtual void extend(float,float){throw(domain_error("undefined extend function!"));};
+	virtual void gain(map<string,float> &){throw(domain_error("undefined gain function!"));};
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
-	virtual void transforming(trans_local &,unsigned short dMode){throw(domain_error("undefined transforming function!"));};
+	virtual void transforming(trans_local &){throw(domain_error("undefined transforming function!"));};
 //	virtual gate * create()=0;
 	virtual gate * clone()=0;
 
@@ -244,10 +244,10 @@ public:
 	rangeGate();
 	unsigned short getType(){return RANGEGATE;}
 	vector<bool> gating(flowData &);
-	void extend(flowData &,float,unsigned short);
-	void extend(float,float,unsigned short);
-	void gain(map<string,float> &,unsigned short);
-	void transforming(trans_local &,unsigned short dMode);
+	void extend(flowData &,float);
+	void extend(float,float);
+	void gain(map<string,float> &);
+	void transforming(trans_local &);
 	paramRange getParam(){return param;};
 	vector<string> getParamNames(){return param.getNameArray();};
 	void setParam(paramRange _param){param=_param;};
@@ -275,11 +275,11 @@ private:
 public:
 	polygonGate();
 	virtual unsigned short getType(){return POLYGONGATE;}
-	virtual void extend(flowData &,float,unsigned short);
-	void extend(float,float,unsigned short);
-	virtual void gain(map<string,float> &,unsigned short);
+	virtual void extend(flowData &,float);
+	void extend(float,float);
+	virtual void gain(map<string,float> &);
 	virtual vector<bool> gating(flowData &);
-	virtual void transforming(trans_local &,unsigned short dMode);
+	virtual void transforming(trans_local &);
 	virtual vertices_valarray getVertices(){return param.toValarray();};
 	void setParam(paramPoly _param){param=_param;};
 	virtual paramPoly getParam(){return param;};
@@ -307,36 +307,65 @@ public:
 	rectGate * clone(){return new rectGate(*this);};
 };
 /*
- * TODO: doing the gating without interpolating it into polygon
+ * ellipseGate no longer needs to
+ * inherit polygon since we are now doing the gating
+ * without interpolating it into polygon
+ * For the legacy archive, we preserve this class definition
+ * TODO: the inheritance is to be removed in future
  */
 class ellipseGate:public polygonGate {
 	friend class boost::serialization::access;
 protected:
-	//four antipodal points of ellipse
-		vector<coordinate> antipodal_vertices;
+	vector<coordinate> antipodal_vertices; //four antipodal points of ellipse (to be deprecated)
+	coordinate mu;// center point
+	vector<coordinate> cov;//covariance matrix
+	double dist; //size of ellipse
 private:
 
 	template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
+			void save(Archive &ar, const unsigned int version) const
 			{
 				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
 				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
+				ar & BOOST_SERIALIZATION_NVP(cov);
+				ar & BOOST_SERIALIZATION_NVP(mu);
+				ar & BOOST_SERIALIZATION_NVP(dist);
+			}
+	template<class Archive>
+			void load(Archive &ar, const unsigned int version)
+			{
+				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
+				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
+				if(version>=1){
+					ar & BOOST_SERIALIZATION_NVP(cov);
+					ar & BOOST_SERIALIZATION_NVP(mu);
+					ar & BOOST_SERIALIZATION_NVP(dist);
+				}else{
+					computeCov();
+				}
 
 			}
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 public:
-	vector<coordinate> getAntipodal(){return antipodal_vertices;};
-	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
+	ellipseGate(){dist = 1;};
+	ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist);
+	ellipseGate(vector<coordinate> _antipodal);
+	vector<bool> gating(flowData &);
+	vector<coordinate> getCovarianceMat(){return cov;};
+	coordinate getMu(){return mu;};
+	double getDist(){return dist;};
+//	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
+	void computeCov();
 	unsigned short getType(){return ELLIPSEGATE;}
-	void extend(flowData &,float,unsigned short);
-	void extend(float,float,unsigned short);
-	void gain(map<string,float> &,unsigned short);
-	void toPolygon(unsigned);
-	virtual void transforming(trans_local &,unsigned short dMode);
+	void extend(flowData &,float);
+	void extend(float,float);
+	void gain(map<string,float> &);
+	virtual void transforming(trans_local &);
 	ellipseGate * clone(){return new ellipseGate(*this);};
 
 };
-
+BOOST_CLASS_VERSION(ellipseGate,1)
 /*
  * the purpose of having this class is to do the special scaling to the gate coordinates
  * due to the historical FlowJo's implementation (win/vX) of the ellipsoid gate that the foci, distance, and edge points are expressed in 256 x 256 display coordinates
@@ -352,7 +381,9 @@ private:
 				ar & boost::serialization::make_nvp("ellipseGate",boost::serialization::base_object<ellipseGate>(*this));
 			}
 public:
-	void transforming(trans_local &,unsigned short dMode);
+	ellipsoidGate(){};
+	ellipsoidGate(vector<coordinate> _antipodal);
+	void transforming(trans_local &);
 	ellipsoidGate * clone(){return new ellipsoidGate(*this);};
 };
 

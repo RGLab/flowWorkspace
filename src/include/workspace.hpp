@@ -110,15 +110,28 @@ public:
 //protected:
 
 	 xmlDoc * doc;
-	 unsigned short dMode;//debug mode passed from gatingset class
+
 private:
 	 template<class Archive>
-	 		    void serialize(Archive &ar, const unsigned int version)
+	 		    void save(Archive &ar, const unsigned int version) const
 	 		    {
 	 				ar & BOOST_SERIALIZATION_NVP(nodePath);
 	 				ar & BOOST_SERIALIZATION_NVP(doc);
-	 				ar & BOOST_SERIALIZATION_NVP(dMode);
+
 	 		    }
+	 template<class Archive>
+	 	 		    void load(Archive &ar, const unsigned int version)
+	 	 		    {
+	 	 				ar & BOOST_SERIALIZATION_NVP(nodePath);
+	 	 				ar & BOOST_SERIALIZATION_NVP(doc);
+	 	 				if(version<2){
+	 	 					unsigned short dMode;
+	 	 					ar & BOOST_SERIALIZATION_NVP(dMode);
+	 	 				}
+
+	 	 		    }
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
+
 public:
 	 workspace(){doc=NULL;};
 	 virtual ~workspace();
@@ -139,7 +152,7 @@ public:
 
 
 };
-
+BOOST_CLASS_VERSION(workspace,2)
 
 #endif /* WORKSPACE_HPP_ */
 

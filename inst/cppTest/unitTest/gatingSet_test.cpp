@@ -234,7 +234,7 @@ void clone_test(testCase myTest){
 }
 
 void parser_test(testCase & myTest){
-	unsigned short dMode = myTest.dMode;
+
 	bool isTemplate = myTest.isTemplate;
 	bool isLoadArchive = myTest.isLoadArhive;
 	unsigned format = myTest.archiveFormat;
@@ -248,7 +248,7 @@ void parser_test(testCase & myTest){
 			restore_gs(*gs,myTest.archive, format);
 		}
 		else
-			gs.reset(new GatingSet(myTest.filename,isParseGate,myTest.sampNloc,1,wsType,dMode));
+			gs.reset(new GatingSet(myTest.filename,isParseGate,myTest.sampNloc,1,wsType));
 
 		if(!isLoadArchive)
 		{
@@ -323,7 +323,7 @@ void parser_test(testCase & myTest){
 
 }
 
-//void gs_parse(testCase myTest,unsigned short dMode,bool isTemplate,bool isLoadArchive){
+//void gs_parse(testCase myTest,bool isTemplate,bool isLoadArchive){
 //
 //		bool isParseGate = true;
 //		GatingSet *gs;
@@ -334,7 +334,7 @@ void parser_test(testCase & myTest){
 //			restore_gs(*gs,myTest.archive, ARCHIVE_TYPE_BINARY);
 //		}
 //		else
-//			gs=new GatingSet(myTest.filename,isParseGate,myTest.sampNloc,dMode);
+//			gs=new GatingSet(myTest.filename,isParseGate,myTest.sampNloc);
 //
 //		/*
 //		 * test cloning function
@@ -404,7 +404,7 @@ void parser_test(testCase & myTest){
 //			 * clone the previous parsed gating hierarchy:gh
 //			 */
 //	//		gh->printLocalTrans();
-//			GatingSet * newGS=new GatingSet(gh,newSamples,dMode);
+//			GatingSet * newGS=new GatingSet(gh,newSamples);
 //			hdfFlow nc = gs_attachCDF(*newGS,myTest);
 //
 //			/*

@@ -22,10 +22,10 @@ test_that("getData ",{
       ncfs <- getData(gs, 0)
       expect_equal(nrow(ncfs[[1]]), 119531)
       
-      ncfs <- getData(gs, "CD8")
-      expect_equal(nrow(ncfs[[1]]), 14623)
-      ncfs <- getData(gs, 14)
-      expect_equal(nrow(ncfs[[1]]), 14623)
+      ncfs <- getData(gs, "singlets")
+      expect_equal(nrow(ncfs[[1]]), 87022)
+      ncfs <- getData(gs, 3)
+      expect_equal(nrow(ncfs[[1]]), 87022)
       expect_is(gs[[1]], "GatingHierarchy");
       
       
@@ -137,7 +137,11 @@ test_that("[ subsetting",{
 test_that("getGate for gs",{
       
       thisRes <- getGate(gs, "CD3+")
-      expectRes <- readRDS(file.path(resultDir, "getGate_gs.rds"))
+      expectRes <- readRDS(file.path(resultDir, "getGate_gs_ellipse.rds"))
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- getGate(gs, "singlets")
+      expectRes <- readRDS(file.path(resultDir, "getGate_gs_polygon.rds"))
       expect_equal(thisRes, expectRes)
     })
 
@@ -208,14 +212,14 @@ test_that("getOverlay",{
       expect_is(thisRes, "ncdfFlowSet")
       expect_equal(sampleNames(thisRes), samples)
       expect_equal(colnames(thisRes), chnls)
-      expect_equal(nrow(thisRes[[1]]), 1319)
+      expect_equivalent(nrow(thisRes[[1]]), 1309)
       
       #by one event indice
       eInd <- getIndices(gs[[1]], nodeInd)
       thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
       expect_is(thisRes, "flowSet")
       expect_equal(sampleNames(thisRes), samples)
-      expect_equivalent(as.vector(fsApply(thisRes,nrow)), c(1319, 1319))
+      expect_equivalent(as.vector(fsApply(thisRes,nrow)), c(1309, 1309))
       
       #by a list of event indices
       eInd <- lapply(gs, getIndices, y = nodeInd)
@@ -223,7 +227,7 @@ test_that("getOverlay",{
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), samples)
       expect_equivalent(sapply(thisRes,class), c("flowFrame", "flowFrame"))
-      expect_equivalent(sapply(thisRes,nrow), c(1319, 1319))
+      expect_equivalent(sapply(thisRes,nrow), c(1309, 1309))
       
       #by a list of gate/event indices
       nodeInd <- list("CD8/38- DR+", "CD8/38- DR-")
@@ -233,7 +237,7 @@ test_that("getOverlay",{
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), samples)
       expect_equivalent(sapply(thisRes,class), c("flowFrame", "flowFrame"))
-      expect_equivalent(sapply(thisRes,nrow), c(1319, 7493))
+      expect_equivalent(as.vector(sapply(thisRes,nrow)), c(1309, 7473))
       
     })
     
@@ -343,13 +347,11 @@ test_that("add", {
     })
 #TODO:write test cases for save_gs /load_gs 
 
-#TODO: gs created from gh template somehow yields differernt results.
-#test_that("getData for COMPASS",{
-#      
-#      thisRes <- getData(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`) , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
-#      expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
-##browser()
-#      expect_equal(thisRes,expectRes, tol = 1e-05)
-#      
-#    })
+test_that("getSingleCellExpression for COMPASS",{
+      
+      thisRes <- getSingleCellExpression(gs, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
+      expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
+      expect_equivalent(thisRes,expectRes)
+      
+    })
 
