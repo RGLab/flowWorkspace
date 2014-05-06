@@ -22,6 +22,11 @@
 #define REGULAR 0
 #define TSORT 1
 #define BFS 2
+/*
+ * because __SIZE_TYPE__ is long long unsigned int by gcc on win64 (mingw64)
+ * we cast it to unsigned int before pass it to Rcpp::wrap to avoid error
+ */
+typedef unsigned int NODEID;
 
 using namespace std;
 typedef map<string,VertexID> VertexID_map;
@@ -29,6 +34,7 @@ typedef vector<VertexID> VertexID_vec;
 typedef vector<string> StringVec;
 typedef vector<double> DoubleVec;
 typedef vector<bool> BoolVec;
+typedef vector<NODEID> NODEID_vec;
 
 
 //struct OurVertexPropertyWriter {

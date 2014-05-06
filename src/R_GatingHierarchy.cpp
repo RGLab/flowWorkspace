@@ -721,7 +721,7 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-	VertexID_vec nodeIDs = as<VertexID_vec>(_nodeIDs);
+	NODEID_vec nodeIDs = as<NODEID_vec>(_nodeIDs);
 	unsigned nNodes = nodeIDs.size();
 	vector<BoolVec> indexList(nNodes);
 	for(unsigned i =0; i < nNodes; i++){
@@ -732,8 +732,8 @@ BEGIN_RCPP
 
 	// or operation among these indices
 	NumericMatrix data = as<NumericMatrix>(_data);
-	int n = data.nrow();
-	int k = data.ncol();
+	unsigned n = data.nrow();
+	unsigned k = data.ncol();
 	if(k != nNodes)
 			stop("the number of nodes is different from the columns of the input data matrix !");
 	BoolVec ind = indexList.at(0);
