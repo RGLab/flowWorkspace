@@ -222,3 +222,58 @@ load_gslist<-function(path){
   g@data<-listofgs
   g
 }
+
+setMethod("getData",signature=c("GatingSetList","name"),function(obj, y, pop_marker_list = list(), ...){
+      .Deprecated("getSingleCellExpression")
+      
+      strExpr <- as.character(y)
+      popNames <- strsplit(strExpr,split="\\|")[[1]]
+      
+      sapply(sampleNames(obj),function(this_sample){
+            message(this_sample)
+            gh <- obj[[this_sample]]
+            
+            fr <- getData(gh, use.exprs = FALSE)
+            this_pd <- pData(parameters(fr))
+            
+            
+            pop_chnl<- .getPopChnlMapping(this_pd, popNames, pop_marker_list)
+            this_pops <- as.character(pop_chnl[,"pop"])
+            this_chnls <- as.character(pop_chnl[,"name"])
+            
+            
+            #get mask mat
+            # browser()
+            
+            this_mat <- getIndiceMat(gh,y)[,this_pops, drop=FALSE]
+            #get indices of bool gates
+            this_ind <- this_mat[,1]
+            for(i in 2:ncol(this_mat)){
+              
+              this_ind <- this_ind |this_mat[,i]
+              
+            }
+            if(sum(this_ind)==0){
+              NULL
+            }else{
+              this_mat <- this_mat[this_ind,,drop = FALSE]
+              #subset data by channels selected
+              
+              this_data <- getData(gh)
+              this_subset <- exprs(this_data)[this_ind,this_chnls, drop=FALSE]
+              #masking the data
+              this_subset <- this_subset * this_mat
+              colnames(this_subset) <- pop_chnl[,"desc"]
+              this_subset
+            }
+            
+          },simplify = FALSE) 
+    })
+
+setMethod("getSingleCellExpression",signature=c("GatingSetList","character"),function(x, nodes, ...){
+      
+      res <- lapply(x, function(gs)getSingleCellExpression(gs, nodes, ...), level = 1)
+      unlist(res, recursive = FALSE)
+      
+    })
+

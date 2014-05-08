@@ -16,7 +16,7 @@
 //default constructor without argument
 GatingHierarchy::GatingHierarchy()
 {
-	dMode=1;
+
 	isLoaded=false;
 }
 
@@ -25,29 +25,29 @@ GatingHierarchy::GatingHierarchy()
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans,unsigned short _dMode)
+GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans)
 {
 
-	dMode=_dMode;
+
 	isLoaded=false;
 
 	wsRootNode root=ws.getRoot(curSampleNode);
 	if(isParseGate)
 	{
 
-		if(dMode>=GATING_HIERARCHY_LEVEL)
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<endl<<"parsing compensation..."<<endl;
 		comp=ws.getCompensation(curSampleNode);
 
-		if(dMode>=GATING_HIERARCHY_LEVEL)
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<endl<<"parsing trans flags..."<<endl;
 		transFlag=ws.getTransFlag(curSampleNode);
 
-		if(dMode>=GATING_HIERARCHY_LEVEL)
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<endl<<"parsing transformation..."<<endl;
 		trans=ws.getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans);
 	}
-	if(dMode>=POPULATION_LEVEL)
+	if(g_loglevel>=POPULATION_LEVEL)
 		COUT<<endl<<"parsing populations..."<<endl;
 	VertexID pVerID=addRoot(root,ws);
 	addPopulation(pVerID,ws,&root,isParseGate);
@@ -103,7 +103,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,workspace & ws,wsNode * pa
 			nodeProperties &curChild=tree[curChildID];
 			//attach the populationNode to the boost node as property
 			ws.to_popNode(curChildNode,curChild,isParseGate);
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"node created:"<<curChild.getName()<<endl;
 
 
@@ -133,7 +133,7 @@ VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 	nodeProperties &curChild = tree[curChildID];
 	curChild.setName(popName.c_str());
 	curChild.setGate(g);
-	if(dMode>=POPULATION_LEVEL)
+	if(g_loglevel>=POPULATION_LEVEL)
 		COUT<<"node created:"<<curChild.getName()<<endl;
 	//attach the populationNode to the boost node as property
 
@@ -230,7 +230,7 @@ flowData GatingHierarchy::getData(VertexID nodeID)
 //
 //	if(!isLoaded)
 //	{
-//		if(dMode>=GATING_HIERARCHY_LEVEL)
+//		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 //					COUT <<"loading data from cdf.."<<endl;
 //		fdata=getData(sampleName,0);
 //		isLoaded=true;
@@ -247,7 +247,7 @@ void GatingHierarchy::loadData(const flowData & _fdata)
 
 	if(!isLoaded)
 	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					COUT <<"loading data from memory.."<<endl;
 		fdata=_fdata;
 		isLoaded=true;
@@ -262,7 +262,7 @@ void GatingHierarchy::unloadData()
 
 	if(isLoaded)
 	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					COUT <<"unloading raw data.."<<endl;
 //		delete fdata.data;
 		fdata.clear();
@@ -277,7 +277,7 @@ void GatingHierarchy::unloadData()
  */
 void GatingHierarchy::transforming()
 {
-	if(dMode>=GATING_HIERARCHY_LEVEL)
+	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 		COUT <<"start transforming data :"<<fdata.getSampleID()<<endl;
 	if(!isLoaded)
 		throw(domain_error("data is not loaded yet!"));
@@ -302,7 +302,7 @@ void GatingHierarchy::transforming()
 				continue;
 
 			valarray<double> x(this->fdata.subset(curChannel));
-			if(dMode>=GATING_HIERARCHY_LEVEL)
+			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 				COUT<<"transforming "<<curChannel<<" with func:"<<curTrans->getChannel()<<endl;
 
 			curTrans->transforming(x);
@@ -322,7 +322,7 @@ void GatingHierarchy::transforming()
 	 */
 //	if(updateCDF)
 //	{
-//		if(dMode>=GATING_HIERARCHY_LEVEL)
+//		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 //			COUT<<"saving transformed data to CDF..."<<endl;
 //		nc->writeflowData(fdata);
 //	}
@@ -331,7 +331,7 @@ void GatingHierarchy::transforming()
  * extend gates if necessary
  */
 void GatingHierarchy::extendGate(float extend_val){
-	if(dMode>=GATING_HIERARCHY_LEVEL)
+	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT <<endl<<"start extending Gates for:"<<fdata.getSampleID()<<endl;
 
 		if(!isLoaded)
@@ -348,10 +348,10 @@ void GatingHierarchy::extendGate(float extend_val){
 				gate *g=node.getGate();
 				if(g==NULL)
 					throw(domain_error("no gate available for this node"));
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
-					g->extend(fdata,extend_val,dMode);
+					g->extend(fdata,extend_val);
 			}
 		}
 }
@@ -360,7 +360,7 @@ void GatingHierarchy::extendGate(float extend_val){
  * by supplying the extend_to value
  */
 void GatingHierarchy::extendGate(float extend_val, float extend_to){
-	if(dMode>=GATING_HIERARCHY_LEVEL)
+	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT <<endl<<"start extending Gates for:"<<fdata.getSampleID()<<endl;
 
 
@@ -375,10 +375,10 @@ void GatingHierarchy::extendGate(float extend_val, float extend_to){
 				gate *g=node.getGate();
 				if(g==NULL)
 					throw(domain_error("no gate available for this node"));
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
-					g->extend(extend_val,extend_to,dMode);
+					g->extend(extend_val,extend_to);
 			}
 		}
 }
@@ -386,7 +386,7 @@ void GatingHierarchy::extendGate(float extend_val, float extend_to){
  * adjust gates by gains
  */
 void GatingHierarchy::adjustGate(map<string,float> &gains){
-	if(dMode>=GATING_HIERARCHY_LEVEL)
+	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT <<endl<<"start rescale Gates by gains for:"<<fdata.getSampleID()<<endl;
 
 
@@ -401,10 +401,10 @@ void GatingHierarchy::adjustGate(map<string,float> &gains){
 				gate *g=node.getGate();
 				if(g==NULL)
 					throw(domain_error("no gate available for this node"));
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
-					g->gain(gains,dMode);
+					g->gain(gains);
 			}
 		}
 }
@@ -413,7 +413,7 @@ void GatingHierarchy::adjustGate(map<string,float> &gains){
  * transform gates
  */
 void GatingHierarchy::transformGate(){
-	if(dMode>=GATING_HIERARCHY_LEVEL)
+	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT <<endl<<"start transform Gates for:"<<fdata.getSampleID()<<endl;
 
 
@@ -428,10 +428,10 @@ void GatingHierarchy::transformGate(){
 				gate *g=node.getGate();
 				if(g==NULL)
 					throw(domain_error("no gate available for this node"));
-				if(dMode>=POPULATION_LEVEL)
+				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
-					g->transforming(trans,dMode);
+					g->transforming(trans);
 			}
 		}
 }
@@ -488,14 +488,14 @@ void GatingHierarchy::calgate(VertexID u)
 	nodeProperties & parentNode =getNodeProperty(pid);
 	if(!parentNode.isGated())
 	{
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"go to the ungated parent node:"<<parentNode.getName()<<endl;
 		calgate(pid);
 	}
 
 
 
-	if(dMode>=POPULATION_LEVEL)
+	if(g_loglevel>=POPULATION_LEVEL)
 		COUT <<"gating on:"<<node.getName()<<endl;
 
 	gate *g=node.getGate();
@@ -576,7 +576,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 
 		if(!curPop.isGated())
 		{
-			if(dMode>=POPULATION_LEVEL)
+			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"go to the ungated reference node:"<<curPop.getName()<<endl;
 			calgate(nodeID);
 		}
@@ -740,7 +740,7 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string name){
 	}
 	if(it==nodesTomatch.end())
 	{
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<name<<" not found under the node: "<<boost::lexical_cast<string>(u)<<". returning the root instead."<<endl;;
 		u=0;
 	}
@@ -778,7 +778,7 @@ VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
 
 	if(u==0)
 	{
-		if(dMode>=POPULATION_LEVEL)
+		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<"searching from the root."<<endl;
 		u=getDescendant(u,popName);
 	}

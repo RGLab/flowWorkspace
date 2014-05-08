@@ -87,7 +87,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 		if(transType.compare("biex")==0)
 		{
 
-			if(dMode>=GATING_SET_LEVEL)
+			if(g_loglevel>=GATING_SET_LEVEL)
 				COUT<<"biex func:"<<pname<<endl;
 			biexpTrans *curTran=new biexpTrans();
 			curTran->setName("");
@@ -105,7 +105,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 			 */
 			curTp[curTran->getChannel()]=curTran;
 		}else if(transType.compare("linear")==0){
-//			if(dMode>=GATING_SET_LEVEL)
+//			if(g_loglevel>=GATING_SET_LEVEL)
 //				COUT<<"flin func:"<<pname<<endl;
 //			double minRange=atof(transNode.getProperty("minRange").c_str());
 //			double maxRange=atof(transNode.getProperty("maxRange").c_str());
@@ -116,11 +116,24 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 //			curTp[curTran->getChannel()]=curTran;
 			//do nothing for linear trans
 		}else if(transType.compare("log")==0){
-			if(dMode>=GATING_SET_LEVEL)
+			if(g_loglevel>=GATING_SET_LEVEL)
 				COUT<<"flog func:"<<pname<<endl;
 			double offset=atof(transNode.getProperty("offset").c_str());
 			double decade=atof(transNode.getProperty("decades").c_str());
 			logTrans *curTran=new logTrans(offset,decade);
+			curTran->setName("");
+			curTran->setChannel(pname);
+
+			curTp[curTran->getChannel()]=curTran;
+		}else if(transType.compare("fasinh")==0){
+			if(g_loglevel>=GATING_SET_LEVEL)
+				COUT<<"fasinh func:"<<pname<<endl;
+			double length=atof(transNode.getProperty("length").c_str());
+			double maxRange=atof(transNode.getProperty("maxRange").c_str());
+			double M=atof(transNode.getProperty("M").c_str());
+			double T=atof(transNode.getProperty("T").c_str());
+			double A=atof(transNode.getProperty("A").c_str());
+			fasinhTrans *curTran=new fasinhTrans(maxRange,length, T,A,M);
 			curTran->setName("");
 			curTran->setChannel(pname);
 
@@ -185,14 +198,14 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 */
 					if(!curTrans->computed())
 					{
-						if(dMode>=GATING_SET_LEVEL)
+						if(g_loglevel>=GATING_SET_LEVEL)
 							COUT<<"computing calibration table..."<<endl;
 						curTrans->computCalTbl();
 					}
 
 					if(!curTrans->isInterpolated())
 					{
-						if(dMode>=GATING_SET_LEVEL)
+						if(g_loglevel>=GATING_SET_LEVEL)
 							COUT<<"spline interpolating..."<<endl;
 						curTrans->interpolate();
 					}
@@ -262,7 +275,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 		trans_global curTg;
 		curTg.setGroupName(compName);
 
-		if(dMode>=GATING_SET_LEVEL)
+		if(g_loglevel>=GATING_SET_LEVEL)
 			COUT<<"group:"<<compName<<endl;
 		/*
 		 * parse transformations for current compNode
@@ -288,7 +301,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 			if(transType.compare("logicle")==0)
 			{
 
-				if(dMode>=GATING_SET_LEVEL)
+				if(g_loglevel>=GATING_SET_LEVEL)
 					COUT<<"logicle func:"<<pname<<endl;
 				biexpTrans *curTran=new biexpTrans();
 				curTran->setName(compName);
@@ -347,77 +360,88 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 	compensation comp;
 
 	xmlXPathObjectPtr res=sampleNode.xpathInNode("*[local-name()='spilloverMatrix']");
-	if(res->nodesetval->nodeNr!=1)
+	if(res->nodesetval->nodeNr > 1)
 	{
 		xmlXPathFreeObject(res);
 		throw(domain_error("not valid compensation node!"));
 	}
-
-
-	wsNode node(res->nodesetval->nodeTab[0]);
-	xmlXPathFreeObject(res);
-
-	comp.cid=node.getProperty("id");
-	comp.prefix=node.getProperty("prefix");
-	/*
-	 * -1:Acquisition-defined,to be computed from data
-	 * -2:None
-	 * empty:data is compensated already,spillover matrix can be read from keyword node or empty
-	 * other:the spillover matrix is stored at special compensation node,
-	 * 			and this cid serves as id to index that node. in pc version, we observe it is also stored at curent
-	 * 			sampleNode,to keep the parsing consistent,we still look for it from the special compensation node within the context of xml root
-	 */
-	if(comp.cid.compare("-1")==0)
+	else if(res->nodesetval->nodeNr == 0)
 	{
-		comp.comment="Acquisition-defined";
-		comp.prefix="Comp-";
-	}
-	else if(comp.cid.compare("-2")==0)
+		 //no comp defined
+
+		comp.cid="-2";
+		comp.prefix="";
+		comp.suffix="";
 		comp.comment="none";
-	else if(comp.cid.empty())
-		throw(domain_error("empty cid not supported yet!"));
+		comp.name="none";
+	}
 	else
 	{
-		/*
-		 * directly look for comp from spilloverMatrix node under sampleNode
-		 */
-		string path="*[local-name()='spillover']";
-		xmlXPathObjectPtr resX=node.xpathInNode(path);
 
+		wsNode node(res->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(res);
+
+		comp.cid=node.getProperty("id");
+		comp.prefix=node.getProperty("prefix");
 		/*
-		 * deprecated:look for comp from global comp node.
-		 * currently this is done by matching cid,yet it has been proved to be wrong,
-		 * instead,should look for sampleNode to match sampleID
+		 * -1:Acquisition-defined,to be computed from data
+		 * -2:None
+		 * empty:data is compensated already,spillover matrix can be read from keyword node or empty
+		 * other:the spillover matrix is stored at special compensation node,
+		 * 			and this cid serves as id to index that node. in pc version, we observe it is also stored at curent
+		 * 			sampleNode,to keep the parsing consistent,we still look for it from the special compensation node within the context of xml root
 		 */
-//		string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
-////			COUT<<path<<endl;
-//		xmlXPathObjectPtr resX=node.xpath(path);
-		unsigned nX=resX->nodesetval->nodeNr;
-		for(unsigned i=0;i<nX;i++)
+		if(comp.cid.compare("-1")==0)
 		{
-			wsNode curMarkerNode_X(resX->nodesetval->nodeTab[i]);
-			comp.marker.push_back(curMarkerNode_X.getProperty("parameter"));
-			xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("*[local-name()='coefficient']");
-			unsigned nY=resY->nodesetval->nodeNr;
-			if(nX!=nY)
-			{
-				xmlXPathFreeObject(resX);
-				xmlXPathFreeObject(resY);
-				throw(domain_error("not the same x,y dimensions in spillover matrix!"));
-			}
-
-			for(unsigned j=0;j<nY;j++)
-			{
-				wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
-				string sValue=curMarkerNode_Y.getProperty("value");
-				comp.spillOver.push_back(atof(sValue.c_str()));
-			}
-			xmlXPathFreeObject(resY);
+			comp.comment="Acquisition-defined";
+			comp.prefix="Comp-";
 		}
-		xmlXPathFreeObject(resX);
+		else if(comp.cid.compare("-2")==0)
+			comp.comment="none";
+		else if(comp.cid.empty())
+			throw(domain_error("empty cid not supported yet!"));
+		else
+		{
+			/*
+			 * directly look for comp from spilloverMatrix node under sampleNode
+			 */
+			string path="*[local-name()='spillover']";
+			xmlXPathObjectPtr resX=node.xpathInNode(path);
 
+			/*
+			 * deprecated:look for comp from global comp node.
+			 * currently this is done by matching cid,yet it has been proved to be wrong,
+			 * instead,should look for sampleNode to match sampleID
+			 */
+	//		string path="/Workspace/CompensationEditor/Compensation[@name='"+comp.cid+"']/*[local-name()='spilloverMatrix']/*[local-name()='spillover']";
+	////			COUT<<path<<endl;
+	//		xmlXPathObjectPtr resX=node.xpath(path);
+			unsigned nX=resX->nodesetval->nodeNr;
+			for(unsigned i=0;i<nX;i++)
+			{
+				wsNode curMarkerNode_X(resX->nodesetval->nodeTab[i]);
+				comp.marker.push_back(curMarkerNode_X.getProperty("parameter"));
+				xmlXPathObjectPtr resY=curMarkerNode_X.xpathInNode("*[local-name()='coefficient']");
+				unsigned nY=resY->nodesetval->nodeNr;
+				if(nX!=nY)
+				{
+					xmlXPathFreeObject(resX);
+					xmlXPathFreeObject(resY);
+					throw(domain_error("not the same x,y dimensions in spillover matrix!"));
+				}
+
+				for(unsigned j=0;j<nY;j++)
+				{
+					wsNode curMarkerNode_Y(resY->nodesetval->nodeTab[j]);
+					string sValue=curMarkerNode_Y.getProperty("value");
+					comp.spillOver.push_back(atof(sValue.c_str()));
+				}
+				xmlXPathFreeObject(resY);
+			}
+			xmlXPathFreeObject(resX);
+
+		}
 	}
-
 	return comp;
 }
 
@@ -440,10 +464,9 @@ ellipsoidGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipsoidGate * g=new ellipsoidGate();
+	ellipsoidGate * g=new ellipsoidGate(v);
 	pPoly.setName(pg->getParam().getNameArray());
 	g->setParam(pPoly);
-	g->setAntipodal(v);
 	delete pg;
 
 	return(g);
@@ -558,7 +581,7 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 				 * parse as rangeGate
 				 */
 				rangeGate * g=new rangeGate();
-				if(dMode>=GATE_LEVEL)
+				if(g_loglevel>=GATE_LEVEL)
 					COUT<<"constructing rangeGate.."<<endl;
 				//get the negate flag
 				g->setNegate(node.getProperty("eventsInside")=="0");
@@ -567,7 +590,7 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 
 			}else if(nParam==2){
 				rectGate * g=new rectGate();
-				if(dMode>=GATE_LEVEL)
+				if(g_loglevel>=GATE_LEVEL)
 					COUT<<"constructing rectGate.."<<endl;
 				//get the negate flag
 				g->setNegate(node.getProperty("eventsInside")=="0");
@@ -632,7 +655,7 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	if(xmlStrEqual(gateType,(const xmlChar *)"PolygonGate"))
 	{
 		wsPolyGateNode pGNode(gNode.getNodePtr());
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
 
@@ -640,14 +663,14 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 	else if(xmlStrEqual(gateType,(const xmlChar *)"RectangleGate"))
 	{
 		wsRectGateNode rGNode(gNode.getNodePtr());
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing RectangleGate.."<<endl;
 		return(getGate(rGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"EllipsoidGate"))
 	{
 		wsEllipseGateNode eGNode(gNode.getNodePtr());
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing EllipsoidGate.."<<endl;
 		return(getGate(eGNode));
 	}

@@ -59,7 +59,7 @@ test_that("getData", {
       
       thisRes <- getData(gslist, "CD8")
       expect_is(thisRes, "ncdfFlowList")
-      expect_equal(nrow(thisRes[[1]]),  14623)
+      expect_equal(nrow(thisRes[[1]]),  14570)
       
     })
 
@@ -68,7 +68,7 @@ test_that("getGate", {
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), sampleNames(gslist))
       
-      expect_true(all(sapply(thisRes, class) == "polygonGate"))
+      expect_true(all(sapply(thisRes, class) == "ellipsoidGate"))
       
     })
 
@@ -84,6 +84,14 @@ test_that("keyword", {
       thisRes <- keyword(gslist)
       
       expect_equal(thisRes[[1]], keyword(gs)[[1]])
+      
+    })
+
+test_that("getSingleCellExpression for COMPASS",{
+      
+      thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
+      expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
+      expect_equivalent(thisRes,expectRes)
       
     })
 

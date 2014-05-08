@@ -329,10 +329,30 @@ BEGIN_RCPP
 		throw(domain_error("no gate associated with root node."));
 	gate *g=gh->getNodeProperty(u).getGate();
 	unsigned short gType=g->getType();
-	if(gType==ELLIPSEGATE||gType==RECTGATE)
+	if(gType==RECTGATE)
 		gType=POLYGONGATE;
 	switch(gType)
 	{
+		case ELLIPSEGATE:
+				{
+					ellipseGate * thisG = dynamic_cast<ellipseGate*>(g);
+					coordinate mu=thisG->getMu();
+					double dist=thisG->getDist();
+					vector<coordinate> cov = thisG->getCovarianceMat();
+					NumericMatrix covMat(2,2);
+					for(unsigned i =0; i < 2; i++){
+						covMat(i,0) = cov.at(i).x;
+						covMat(i,1) = cov.at(i).y;
+					}
+
+					 List ret=List::create(Named("parameters",thisG->getParamNames())
+							 	 	 	 	 ,Named("mu", NumericVector::create(mu.x, mu.y))
+							 	 	 	 	 ,Named("cov", covMat)
+							 	 	 	 	 ,Named("dist", dist)
+							 	 	 	 	 ,Named("type",ELLIPSEGATE)
+							 	 	 	 	 );
+					return ret;
+				}
 		case POLYGONGATE:
 			{
 				vertices_vector vert=g->getVertices().toVector();
@@ -544,6 +564,41 @@ gate * newGate(List filter){
 			break;
 
 		}
+		case ELLIPSEGATE:
+		{
+
+
+
+			//parse the mean
+			DoubleVec mean=as<DoubleVec>(filter["mu"]);
+			coordinate mu(mean.at(0), mean.at(1));
+			double dist = as<double>(filter["dist"]);
+
+			//parse cov mat
+			vector<coordinate> cov;
+			NumericMatrix covMat=as<NumericMatrix>(filter["cov"]);
+			for(int i=0;i<covMat.nrow();i++)
+			{
+				coordinate p;
+				p.x=covMat(i,0);
+				p.y=covMat(i,1);
+				cov.push_back(p);
+
+			}
+
+			ellipseGate * eg = new ellipseGate(mu, cov,dist);
+			eg->setNegate(isNeg);
+
+			// parse the parameter names
+			StringVec params=as<StringVec>(filter["params"]);
+			paramPoly pp;
+			pp.setName(params);
+			eg->setParam(pp);
+
+			g=eg;
+
+			break;
+		}
 		case LOGICALGATE:
 		{
 			//TODO:create and implement logical gate class
@@ -658,3 +713,52 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_getSingleCellExpression(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeIDs, SEXP _data, SEXP _markers) {
+BEGIN_RCPP
+
+	//get indices from each node
+	GatingSet *	gs=getGsPtr(_gsPtr);
+	string sampleName=as<string>(_sampleName);
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+	NODEID_vec nodeIDs = as<NODEID_vec>(_nodeIDs);
+	unsigned nNodes = nodeIDs.size();
+	vector<BoolVec> indexList(nNodes);
+	for(unsigned i =0; i < nNodes; i++){
+		VertexID u = nodeIDs.at(i);
+		indexList.at(i)=gh->getNodeProperty(u).getIndices();
+	}
+
+
+	// or operation among these indices
+	NumericMatrix data = as<NumericMatrix>(_data);
+	unsigned n = data.nrow();
+	unsigned k = data.ncol();
+	if(k != nNodes)
+			stop("the number of nodes is different from the columns of the input data matrix !");
+	BoolVec ind = indexList.at(0);
+	for(vector<BoolVec>::iterator it = indexList.begin() + 1; it!=indexList.end(); it++)
+		transform (ind.begin(), ind.end(), it->begin(), ind.begin(),logical_or<bool>());
+
+	// grab and mask those rows
+	int lgl_n = count(ind.begin(),ind.end(),true);
+	NumericMatrix output(lgl_n, k);
+	int counter = 0;
+	for (int i=0; i < n; ++i) {
+	if (ind.at(i)) {
+	  for (int j=0; j < k; ++j) {
+		if (indexList.at(j).at(i)) output(counter, j) = data(i, j);
+	  }
+	  ++counter;
+	}
+	}
+
+
+	CharacterVector markers = as<CharacterVector>(_markers);
+	Rcpp::List dimnms =  Rcpp::List::create(CharacterVector::create(),markers);
+
+	output.attr("dimnames") = dimnms;
+
+	return output;
+END_RCPP
+}

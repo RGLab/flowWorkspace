@@ -30,7 +30,8 @@ trans_map trans_local::cloneTransMap(){
 		transformation * curTran=it->second;
 		if(curTran!=NULL)
 		{
-			COUT<<"cloning transformatioin:"<<curTran->getChannel()<<endl;
+			if(g_loglevel>=POPULATION_LEVEL)
+				COUT<<"cloning transformatioin:"<<curTran->getChannel()<<endl;
 			res[it->first]=curTran->clone();
 		}
 	}
@@ -53,7 +54,16 @@ transformation::transformation(bool _isGate, unsigned short _type):isGateOnly(_i
 logTrans::logTrans():transformation(false,LOG),offset(0),decade(1){
 	calTbl.setInterpolated(true);
 }
+
 logTrans::logTrans(double _offset,double _decade):transformation(false,LOG),offset(_offset),decade(_decade){
+	calTbl.setInterpolated(true);
+}
+
+fasinhTrans::fasinhTrans():transformation(false,FASINH),length(256),maxRange(262144), T(262144),A(0),M(4.5){
+	calTbl.setInterpolated(true);
+}
+
+fasinhTrans::fasinhTrans(double _length, double _maxRange, double _T, double _A, double _M):transformation(false, FASINH),length(_length),maxRange(_maxRange), T(_T),A(_A),M(_M){
 	calTbl.setInterpolated(true);
 }
 
@@ -87,6 +97,40 @@ double logTrans::flog(double x,double T,double _min) {
 /*
  * these transforming functions change the input data
  */
+
+
+/*
+ * implementation copied from flowCore
+ */
+void fasinhTrans::transforming(valarray<double> & input){
+
+
+	for(unsigned i=0;i<input.size();i++){
+		input[i] = ( asinh(input[i] * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10));
+	}
+//		double myB = (M + A) * log(10);
+//		double myC = A * log(10);
+//		double myA = T / sinh(myB - myC);
+//		input = input / myA;
+//
+//		// This formula for the arcsinh loses significance when x is negative
+//		//Therefore we take advantage of the fact that sinh is an odd function
+//		input = abs(input);
+//
+//		input = log(input + sqrt(input * input + 1));
+//		result = rep(NA, times=length(asinhx))
+//		result[negative] = (myC - asinhx[negative]) / myB
+//		result[!negative] = (asinhx[!negative] + myC) / myB
+//		result
+
+
+
+
+
+
+
+
+}
 
 void logTrans::transforming(valarray<double> & input){
 
@@ -130,15 +174,15 @@ void transformation::transforming(valarray<double> & input){
 			 */
 			if(!computed())
 			{
-
-				COUT<<"computing calibration table..."<<endl;
+				if(g_loglevel>=POPULATION_LEVEL)
+					COUT<<"computing calibration table..."<<endl;
 				computCalTbl();
 			}
 
 			if(!isInterpolated())
 			{
-
-				COUT<<"spline interpolating..."<<endl;
+				if(g_loglevel>=POPULATION_LEVEL)
+					COUT<<"spline interpolating..."<<endl;
 				interpolate();
 			}
 		}

@@ -13,6 +13,7 @@ source("flowJoWorkspace-testSuite.R", local = TRUE)
 
 
 gs <- NULL
+
 test_that("Can parse workspace",{
     suppressWarnings(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE)))
 	expect_that(gs, is_a("GatingSet"));
@@ -24,6 +25,27 @@ gh <- NULL
 test_that("extract GatingHierarchy from GatingSet",{
       gh <<- gs[[1]]
       expect_that(gh, is_a("GatingHierarchy"));  
+    })
+
+
+test_that("parse without gating",{
+      
+      suppressWarnings(gs1 <- try(parseWorkspace(ws, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", execute = FALSE)))
+      expect_that(gs1, is_a("GatingSet"));
+      gh1 <- gs1[[1]]
+      
+      thisStats <- getPopStats(gh1)[, c(2,4,5), with = FALSE]
+      expectStats <- getPopStats(gh)[, c(2,4,5), with = FALSE]
+      expect_equal(thisStats, expectStats)
+      
+      #exclude the gates that require extension since the extend_to are different 
+      # based on whether data is loaded
+      nodes <- getNodes(gh)[ -c(6:13, 15:22)]
+      thisGates <- sapply(nodes, getGate, obj = gh1)
+      expectGates <- sapply(nodes, getGate, obj = gh)
+      expect_equal(thisGates, expectGates)
+      
+      
     })
 
 # make sure this test is invoked before GatingSet-testSuite since the trans is gonna be lost

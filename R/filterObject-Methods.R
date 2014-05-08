@@ -81,3 +81,13 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
           ,filterId=x@filterId)  
     })
 
+setMethod("filterObject",signature=c("ellipsoidGate"),function(x,...){
+      params<-parameters(x)
+      
+      list(type=as.integer(4)
+          , params = params
+          , mu = x@mean
+          , cov = x@cov
+          , dist = x@distance
+          ,filterId=x@filterId)  
+    })

@@ -18,7 +18,7 @@
 //#include <cmath>
 #include "GatingSet.hpp"
 using namespace Rcpp;
-RcppExport SEXP R_openWorkspace(SEXP _fileName,SEXP _dMode);
+RcppExport SEXP R_openWorkspace(SEXP _fileName);
 
 //RcppExport SEXP R_parseWorkspace(SEXP _gsPtr,SEXP _groupID);
 

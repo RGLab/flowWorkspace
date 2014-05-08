@@ -89,7 +89,7 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 		curParam.calibrationIndex=atoi(parNode.getProperty("calibrationIndex").c_str());
 
 
-		if(dMode>=GATING_SET_LEVEL)
+		if(g_loglevel>=GATING_SET_LEVEL)
 			COUT<<curParam.param<<":"<<curParam.log<<":"<<curParam.range<<endl;
 		res.push_back(curParam);
 	}
@@ -137,13 +137,13 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	bool isTransGropuFound=(tgIt!=gTrans->end());
 	if(isTransGropuFound)//no matched trans group
 	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<"flowJo transformation group matched:"<<tGName<<endl;
 
 	}
 	else
 	{
-		if(dMode>=GATING_HIERARCHY_LEVEL)
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<"no flowJo transformation group matched:"<<tGName<<endl;
 	}
 
@@ -180,7 +180,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 * found the appropriate trans for this particular channel
 					 */
 					curTran=resIt->second;
-					if(dMode>=GATING_HIERARCHY_LEVEL)
+					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						COUT<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
 				}
 				else
@@ -191,7 +191,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 */
 					if(it->range<=4096)
 					{
-						if(dMode>=GATING_HIERARCHY_LEVEL)
+						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 							COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
 						/*
@@ -218,7 +218,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				 */
 				if(it->range<=4096)
 				{
-					if(dMode>=GATING_HIERARCHY_LEVEL)
+					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
 					curTran=_globalBiExpTrans;
@@ -248,7 +248,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 						 * found the appropriate trans for this particular channel
 						 */
 						curTran=resIt->second;
-						if(dMode>=GATING_HIERARCHY_LEVEL)
+						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 							COUT<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
 					}
 					else
@@ -274,7 +274,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 
 				if(it->highValue==4096)
 				{
-					if(dMode>=GATING_HIERARCHY_LEVEL)
+					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						COUT<<"apply the linear transformation for gates only:"<<curChnl<<endl;
 					/*
 					 * some flowJo workspace somehow have highvalue inappropriately set to 4096
@@ -292,7 +292,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 			 * assign matched global trans to the local map
 			 */
 			trs[transChName]=curTran;
-			if(dMode>=GATING_HIERARCHY_LEVEL)
+			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 				COUT<<"adding "<<curTran->getName()<<":"<<transChName<<endl;
 			/*
 			 * calculate and interpolate the cal table if applicable
@@ -301,7 +301,7 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				curTran->computCalTbl();
 			if(!curTran->isInterpolated())
 			{
-				if(dMode>=GATING_HIERARCHY_LEVEL)
+				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					COUT<<"spline interpolating..."<<curTran->getName()<<endl;
 				curTran->interpolate();
 
@@ -343,7 +343,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		if(tname.empty())
 			throw(domain_error("empty name for calibration table"));
 
-		if(dMode>=GATING_SET_LEVEL)
+		if(g_loglevel>=GATING_SET_LEVEL)
 			COUT<<"parsing calibrationTable:"<<tname<<endl;
 		/*
 		 * parse the string from tname to extract channel name
@@ -397,7 +397,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 
 		if(tRes==tgVec.end())//if not exsit yet, then push back the new instance
 		{
-			if(dMode>=GATING_SET_LEVEL)
+			if(g_loglevel>=GATING_SET_LEVEL)
 				COUT<<"creating new transformation group:"<<transGroupName<<endl;
 			trans_global newTg;
 			newTg.setGroupName(transGroupName);
@@ -567,10 +567,10 @@ ellipseGate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipseGate * g=new ellipseGate();
+	ellipseGate * g=new ellipseGate(v);
 	pPoly.setName(pg->getParam().getNameArray());
 	g->setParam(pPoly);
-	g->setAntipodal(v);
+
 	delete pg;
 
 	return(g);
@@ -761,7 +761,7 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	if(resGate->nodesetval->nodeNr==1)
 	{
 		wsBooleanGateNode bGNode(resGate->nodesetval->nodeTab[0]);
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing BooleanGate.."<<endl;
 		xmlXPathFreeObject(resGate);
 		return(getGate(bGNode));
@@ -792,21 +792,21 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	if(xmlStrEqual(gateType,(const xmlChar *)"Polygon"))
 	{
 		wsPolyGateNode pGNode(node.getNodePtr());
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing PolygonGate.."<<endl;
 		return(getGate(pGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"PolyRect"))//parse rect as polygon gate
 	{
 		wsPolyGateNode pGNode(node.getNodePtr());
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing RectangleGate.."<<endl;
 		return(getGate(pGNode));
 	}
 	else if(xmlStrEqual(gateType,(const xmlChar *)"Ellipse"))
 	{
 		wsEllipseGateNode eGNode(node.getNodePtr());
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing EllipseGate.."<<endl;
 		return(getGate(eGNode));
 	}
@@ -814,7 +814,7 @@ gate* macFlowJoWorkspace::getGate(wsPopNode & node){
 	{
 		wsRangeGateNode rnGNode(node.getNodePtr());
 
-		if(dMode>=GATE_LEVEL)
+		if(g_loglevel>=GATE_LEVEL)
 			COUT<<"parsing RangeGate.."<<endl;
 		return(getGate(rnGNode));
 	}
