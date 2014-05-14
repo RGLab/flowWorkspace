@@ -22,7 +22,8 @@
   statistics come from FlowJo (if parsed from xml
   workspace) or from flowCore.}
 
-  \item{...}{Additional arguments}
+  \item{...}{Additional arguments passed to
+  \link{getNodes}}
 }
 \value{
   getPopStats returns a \code{data.frame} with columns for

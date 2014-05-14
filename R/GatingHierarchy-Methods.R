@@ -996,10 +996,10 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 					,count=as.numeric(stats$FlowJo["count"]))
 		)
 }
-setMethod("getPopStats","GatingHierarchy",function(x,...){
+setMethod("getPopStats","GatingHierarchy",function(x, path = "full", prefix = "none", ...){
 
 
-        nodeNamesPath<-getNodes(x,...)
+        nodeNamesPath<-getNodes(x, path = path, prefix = prefix, ...)
        nodeNames<-getNodes(x, path = 1, prefix = "auto", ...)
 
 
