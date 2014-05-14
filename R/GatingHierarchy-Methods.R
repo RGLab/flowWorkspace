@@ -985,12 +985,12 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 
 #	browser()
 	list(flowCore=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
-										,1
+										,0
 										,stats$FlowCore["count"]/pstats$FlowCore["count"]
 										))
 					,count=as.numeric(stats$FlowCore["count"]))
 		,flowJo=c(proportion=as.numeric(ifelse(pstats$FlowJo["count"]==0
-										,1
+										,0
 										,stats$FlowJo["count"]/pstats$FlowJo["count"]
 										))
 					,count=as.numeric(stats$FlowJo["count"]))
