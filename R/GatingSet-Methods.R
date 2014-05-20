@@ -1194,6 +1194,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     }
 
   }else{
+    if(length(params) > 1)
+      stop("Can't plot 2d gate on densityplot!")
     xParam <- params
     yParam <- NULL
   }
