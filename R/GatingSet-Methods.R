@@ -1194,6 +1194,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     }
 
   }else{
+    if(length(params) > 1)
+      stop("Can't plot 2d gate on densityplot!")
     xParam <- params
     yParam <- NULL
   }
@@ -1957,7 +1959,7 @@ setMethod("show","GatingSet",function(object){
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported.
 #' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
-#' @param ... Additional arguments
+#' @param ... Additional arguments passed to \link{getNodes}
 #'
 #' @details
 #' getPopStats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the flowJo and flowCore derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
@@ -2005,7 +2007,7 @@ setMethod("getPopStats", "GatingSet",
         statistic <- paste("flowCore", statistic, sep = ".")
       }
       stats<-lapply(x,function(y){
-        d<-getPopStats(y)
+        d<-getPopStats(y, ...)
         d$key<-rownames(d)
         setkeyv(d,"key")
         d<-d[,list(key,get(statistic))]
