@@ -1223,6 +1223,20 @@ setMethod("isGated",signature(obj="GatingHierarchy",y="numeric"),function(obj,y)
 
     })
 
+setGeneric("isNegated",function(obj, y, ...)standardGeneric("isNegated"))
+setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+      
+#			browser()
+      isNegated(obj,.getNodeInd(obj,y))
+      
+    })
+
+setMethod("isNegated",signature(obj="GatingHierarchy",y="numeric"),function(obj,y){
+      
+      
+      .Call("R_getNegateFlag",obj@pointer,getSample(obj),as.integer(y-1))
+      
+    })
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #'
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
