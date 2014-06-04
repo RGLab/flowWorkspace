@@ -439,6 +439,21 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP R_getNegateFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+BEGIN_RCPP
+
+
+	GatingSet *	gs=getGsPtr(_gsPtr);
+
+	string sampleName=as<string>(_sampleName);
+	int u=as<int>(_i);
+	if(u<0)throw(domain_error("not valid vertexID!"));
+
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	return wrap(gh->getNodeProperty(u).getGate()->isNegate());
+
+END_RCPP
+}
 /*
  * convert R filter to specific gate class
  * Note: up to caller to free the dynamically allocated gate object
