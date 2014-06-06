@@ -70,7 +70,10 @@ setMethod("recompute",c("GatingSetList"),function(x, ...){
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
       
       samples_orig <- obj@samples
-      if(missing(y))y <- NULL              
+      if(missing(y))
+        y <- NULL
+      else if(!is.character(y))
+        stop(" 'numeric` indexing is no longer safe . Please use node name instead!")        
       res <- lapply(obj,function(gs){
             
             if(is.null(y))
@@ -90,15 +93,15 @@ setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
 
 
 setMethod("getGate",signature(obj="GatingSetList",y="numeric"),function(obj,y,tsort=FALSE){
+      stop(" 'numeric` indexing is no longer safe. Please use node name instead!")
+    })
+
+setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,tsort=FALSE){
+      
       res <- lapply(obj,function(gs){
             getGate(gs,y)      
           }, level =1)
       unlist(res,recur=FALSE)
-    })
-setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,tsort=FALSE){
-      
-      getGate(obj,.getNodeInd(obj[[1]],y))
-      
       
     })
 
@@ -107,7 +110,7 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,
 #' plotGate,GatingSetList,character-method
 #' @rdname plotGate-methods
 setMethod("plotGate",signature(x="GatingSetList",y="numeric"),function(x,y, ...){
-      selectMethod("plotGate",signature = c(x="GatingSet",y="numeric"))(x=x, y=y, ...)
+      stop(" 'numeric` indexing is no longer safe for GatingSetList. Please use node name instead!")
       
     })
 

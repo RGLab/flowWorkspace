@@ -19,12 +19,10 @@ test_that("getData ",{
       ncfs <- getData(gs)
       expect_is(ncfs, "ncdfFlowSet");
       expect_equal(nrow(ncfs[[1]]), 119531)
-      ncfs <- getData(gs, 0)
+      ncfs <- getData(gs, "root")
       expect_equal(nrow(ncfs[[1]]), 119531)
       
       ncfs <- getData(gs, "singlets")
-      expect_equal(nrow(ncfs[[1]]), 87022)
-      ncfs <- getData(gs, 3)
       expect_equal(nrow(ncfs[[1]]), 87022)
       expect_is(gs[[1]], "GatingHierarchy");
       
@@ -158,7 +156,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
                             , isBool = FALSE
                         )
       
-      myValue <- .preplot(gs, 5, "xyplot", stats = stats, formula = NULL, default.y = "SSC-A")
+      myValue <- .preplot(gs, "CD4", "xyplot", stats = stats, formula = NULL, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
       
             
@@ -167,14 +165,14 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       
       expect_value["xParam"] <- "SSC-A" 
       expect_value["yParam"] <- "FSC-A"
-      myValue <- .preplot(gs, 5, "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
+      myValue <- .preplot(gs, "CD4", "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
       
       samples <- sampleNames(gs)
       
       #miss stats argument
       expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], getNodes(gs[[sn]])[5]), simplify = FALSE)
-      myValue <- .preplot(x = gs, y = 5, type = "xyplot", formula = f1, default.y = "SSC-A")
+      myValue <- .preplot(x = gs, y = "CD4", type = "xyplot", formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
 
       #y is a list
@@ -194,7 +192,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_value[["xParam"]] <- xParam
       expect_value[["yParam"]] <- yParam
       
-      myValue <- .preplot(x = gs, y = list(popIds=7:8), type = "xyplot", formula = NULL, default.y = "SSC-A")
+      myValue <- .preplot(x = gs, y = list(popIds=getNodes(gs)[7:8]), type = "xyplot", formula = NULL, default.y = "SSC-A")
 
       expect_identical(myValue, expect_value)
       
@@ -256,7 +254,7 @@ test_that("setNode",{
 
 test_that("getPopStats",{
   
-      thisRes <- getPopStats(gs)
+      thisRes <- getPopStats(gs, path = "full")
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
@@ -268,7 +266,7 @@ test_that("getPopStats",{
 
 test_that("compute CV from gs",{
       
-      thisRes <- flowWorkspace:::.computeCV(gs)
+      thisRes <- .computeCV(gs)
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "cv_gs.csv"))

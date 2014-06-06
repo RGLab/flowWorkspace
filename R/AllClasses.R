@@ -366,14 +366,26 @@ validGatingSetListObject <- function(object){
 
 setValidity("GatingSetList", validGatingSetListObject)     
 
-
-.flattenedGatingHiearchy<-function(gh){
-  this_nodes <- getNodes(gh, showHidden = TRUE)
-  paste(this_nodes,collapse = "")
+.getNodes_removeHidden <- function(gh){
+  complete <- getNodes(gh, showHidden = TRUE)
+  sub <- getNodes(gh, showHidden = FALSE)
+  hiddenInd <- which(!complete%in%sub)
+  #remove hidden node from paths
+  for(i in hiddenInd){
+    thisHidden <- complete[i]
+    hiddenPopName <- basename(thisHidden)
+    parent <- getParent(gh, thisHidden)
+    sub <- gsub(thisHidden, parent, sub)
+  }
+  sub
 }        
-#TODO:gating tree comparison needs to be improved        
+#TODO:gating tree comparison needs to be improved 
+# can't use RBGL::isomorphism since it will not take care of the hidden nodes
 .compareGatingHierarchy<-function(gh1,gh2){
-  if(identical(.flattenedGatingHiearchy(gh1),.flattenedGatingHiearchy(gh2))){
+  tree1 <- .getNodes_removeHidden(gh1)
+  tree2 <- .getNodes_removeHidden(gh2)
+  
+  if(setequal(tree1, tree2)){
     return (TRUE)
   }else{
     return (paste("gating structure doesn't match:",getSample(gh1),getSample(gh2)))

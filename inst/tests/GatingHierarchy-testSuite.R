@@ -351,7 +351,7 @@ test_that("getTotal",{
 test_that("getPopStats",{
       
       
-      thisRes <- getPopStats(gh)
+      thisRes <- getPopStats(gh, path = "full")
       expect_is(thisRes, "data.table")
      
       expectRes <- fread(file.path(resultDir, "getPopStats_gh.csv"))
@@ -398,56 +398,53 @@ test_that("getGate",{
     })
 
 test_that(".mergeGates",{
-      
+      nodes <- getNodes(gh, path = "auto")
       #with customized x,y (incorrect prj)
-      projections <- list("3" = c("FSC-H", "FSC-A")
-                        , "4" = c("CD3", "FSC-A")
-                        , "5" = c("CD4", "CD3")
-                        , "6" = c("SSC-A", "<V545-A>")
-                    )      
-      expect_error(.mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE, projections = projections), "Given projection")
+      projections <- list("singlets" = c("FSC-H", "FSC-A")
+                        , "CD3+" = c("CD3", "FSC-A")
+                        , "CD4" = c("CD4", "CD3")
+                        , "CD4/38- DR-" = c("SSC-A", "<V545-A>")
+                    )
+                          
+      expect_error(.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
+                  , "Given projection")
 
       #swapped x,y (we don't really allow to change the dimensions for 2D gate yet, only the order can be changed)
-      projections <- list("3" = c("FSC-H", "FSC-A")
-                        , "4" = c("CD3", "FSC-A")
-                        , "5" = c("CD4", "CD3")
-                        , "6" = c("<R660-A>", "<V545-A>")
-                    )      
-      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE, projections = projections)
-      expectRes <- list(`6` = list(popIds = 6:9
-                                  , parentId = 5)
+      projections[["CD4/38- DR-"]] <- c("<R660-A>", "<V545-A>")                     
+      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
+      expectRes <- list(`CD4/38- DR-` = list(popIds = nodes[6:9]
+                                  , parentId = nodes[5])
                           )      
       expect_equal(thisRes, expectRes)
       
       
       #merge 4 quadrants
-      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = TRUE)
+      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE)
       
       expect_equal(thisRes, expectRes)
       
             
       # 4 quadrants + 1 pop
-      thisRes <- .mergeGates(gh, i = 5:9, bool = FALSE, merge = TRUE)
-      expectRes <- c(`5` = 5, expectRes) 
+      thisRes <- .mergeGates(gh, i = nodes[5:9], bool = FALSE, merge = TRUE)
+      expectRes <- c(`CD4` = "CD4", expectRes) 
       expect_equal(thisRes, expectRes)
       
-      thisRes <- .mergeGates(gh, i = 6:12, bool = FALSE, merge = TRUE)
-      expectRes <- list(`6` = list(popIds = 6:9
-                                  , parentId = 5)
-                        ,`10` = list(popIds = 10:12
-                              , parentId = 5)
+      thisRes <- .mergeGates(gh, i = nodes[6:12], bool = FALSE, merge = TRUE)
+      expectRes <- list(`CD4/38- DR-` = list(popIds = nodes[6:9]
+                                  , parentId = "CD4")
+                        ,`CD4/CCR7- 45RA+` = list(popIds = nodes[10:12]
+                              , parentId = "CD4")
                           )
       
       expect_equal(thisRes, expectRes)
       
       #4 quadrants without merge
-      thisRes <- .mergeGates(gh, i = 6:9, bool = FALSE, merge = FALSE)
-      expectRes <- list(`6` = 6, `7` = 7, `8` = 8, `9` = 9)
+      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = FALSE)
+      expectRes <- list(`CD4/38- DR+` = "CD4/38- DR+"
+                        , `CD4/38+ DR+` = "CD4/38+ DR+"
+                        , `CD4/38+ DR-` = "CD4/38+ DR-"
+                        , `CD4/38- DR-` = "CD4/38- DR-")
       expect_equal(thisRes, expectRes)
-      
-      
-      
-      
       
     })
 

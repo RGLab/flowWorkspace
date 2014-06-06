@@ -997,7 +997,7 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 					,count=as.numeric(stats$FlowJo["count"]))
 		)
 }
-setMethod("getPopStats","GatingHierarchy",function(x, path = "full", prefix = "none", ...){
+setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", prefix = "none", ...){
 
 
         nodeNamesPath<-getNodes(x, path = path, prefix = prefix, ...)
@@ -1521,10 +1521,7 @@ getChannelMarker <- function(frm, name, ...) {
 
 #TODO: to inverse transform the range in order to display the raw scale
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
-
-      ind <- sapply(y, function(i).getNodeInd(x, i))
-			plotGate(x,ind,...)
-
+      .plotGate.gh(x,y, ...)
 })
 setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
 
@@ -1545,13 +1542,17 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 #' @importFrom gridExtra grid.arrange
 #' @rdname plotGate-methods
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
-                    , function(x, y
-                                , bool=FALSE
-                                , arrange.main = getSample(x),arrange=TRUE,merge=TRUE
-                                , par.settings = list()
-                                , gpar = NULL
-                                , projections = list()
-                                , ...){
+                    , function(x, y, ...
+                                ){
+      plotGate(x, getNodes(x, path = "auto")[y], ...)                                
+                    })
+.plotGate.gh <- function(x, y, bool=FALSE
+                            , arrange.main = getSample(x),arrange=TRUE,merge=TRUE
+                            , par.settings = list()
+                            , gpar = NULL
+                            , projections = list()
+                            , ...){
+                               
 			if(!x@flag){
 				message("Can't plot until you gate the data \n");
 				return();
@@ -1620,7 +1621,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 			else
 				plotObjs
 
-})
+}
 .mergeGates<-function(gh,i,bool,merge, projections = list()){
 	##filter out boolean gates when bool==FALSE
 #	browser()
@@ -1651,7 +1652,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                         thisParam <- parameters(curGate)
 						if(extends(class(curGate),"filter"))
 						{
-							pid<-getParent(gh,y)
+							pid<-getParent(gh,y, path = "auto")
                             myPrj <- projections[[as.character(y)]]
                             if(is.null(myPrj)){
                               myPrj <- thisParam
@@ -1683,25 +1684,25 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 		boolNodes<-sapply(keylist,function(key)key==-2)
 		keylist<-keylist[!boolNodes]
 
-		#			browser()
-		keylistFeq<-table(keylist)
-		toMergeKeyList<-names(keylistFeq[keylistFeq>=2])
+					
+		keylistFeq <- table(keylist)
+		toMergeKeyList <- names(keylistFeq[keylistFeq>=2])
 		# construct the a special list object to replace/del the one that needs to be merged
 		for(curKey in toMergeKeyList)
 		{
-			#				browser()
-			toMerge<-as.numeric(names(keylist[keylist==curKey]))
-			toReplace<-sort(toMerge)[1]#replace the first merged child node with the merge list
-			toRemove<-toMerge[!(toMerge==toReplace)]#remove other children
+							
+			toMerge <- names(keylist[keylist==curKey])
+			toReplace <- sort(toMerge)[1]#replace the first merged child node with the merge list
+			toRemove <- toMerge[!(toMerge==toReplace)]#remove other children
 
-			toReplaceInd<-match(toReplace,poplist)
-			toRemoveInd<-match(toRemove,poplist)
+			toReplaceInd <- match(toReplace,poplist)
+			toRemoveInd <- match(toRemove,poplist)
 			#								browser()
 
-			curPid<-as.numeric(strsplit(curKey, split="|", fixed=TRUE)[[1]][1])#extract pid
-			plotList[[toReplaceInd]]<-list(popIds=toMerge,parentId=curPid)
-			plotList[toRemoveInd]<-NULL
-			poplist[toRemoveInd]<-NULL#make sure syn y as well vector since it is used to index plotList
+			curPid <- strsplit(curKey, split="|", fixed=TRUE)[[1]][1]#extract pid
+			plotList[[toReplaceInd]] <- list(popIds=toMerge,parentId=curPid)
+			plotList[toRemoveInd] <- NULL
+			poplist[toRemoveInd] <- NULL#make sure syn y as well vector since it is used to index plotList
 		}
 
 	}
