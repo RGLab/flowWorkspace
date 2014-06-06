@@ -1521,10 +1521,7 @@ getChannelMarker <- function(frm, name, ...) {
 
 #TODO: to inverse transform the range in order to display the raw scale
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
-
-      ind <- sapply(y, function(i).getNodeInd(x, i))
-			plotGate(x,ind,...)
-
+      .plotGate.gh(x,y, ...)
 })
 setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
 
@@ -1545,13 +1542,17 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 #' @importFrom gridExtra grid.arrange
 #' @rdname plotGate-methods
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
-                    , function(x, y
-                                , bool=FALSE
-                                , arrange.main = getSample(x),arrange=TRUE,merge=TRUE
-                                , par.settings = list()
-                                , gpar = NULL
-                                , projections = list()
-                                , ...){
+                    , function(x, y, ...
+                                ){
+      plotGate(x, getNodes(x, path = "auto")[y], ...)                                
+                    })
+.plotGate.gh <- function(x, y, bool=FALSE
+                            , arrange.main = getSample(x),arrange=TRUE,merge=TRUE
+                            , par.settings = list()
+                            , gpar = NULL
+                            , projections = list()
+                            , ...){
+                               
 			if(!x@flag){
 				message("Can't plot until you gate the data \n");
 				return();
@@ -1620,7 +1621,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 			else
 				plotObjs
 
-})
+}
 .mergeGates<-function(gh,i,bool,merge, projections = list()){
 	##filter out boolean gates when bool==FALSE
 #	browser()
