@@ -406,12 +406,12 @@ test_that(".mergeGates",{
                         , "CD4/38- DR-" = c("SSC-A", "<V545-A>")
                     )
                           
-      expect_error(flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
+      expect_error(.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
                   , "Given projection")
 
       #swapped x,y (we don't really allow to change the dimensions for 2D gate yet, only the order can be changed)
       projections[["CD4/38- DR-"]] <- c("<R660-A>", "<V545-A>")                     
-      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
+      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
       expectRes <- list(`CD4/38- DR-` = list(popIds = nodes[6:9]
                                   , parentId = nodes[5])
                           )      
@@ -419,17 +419,17 @@ test_that(".mergeGates",{
       
       
       #merge 4 quadrants
-      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE)
+      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE)
       
       expect_equal(thisRes, expectRes)
       
             
       # 4 quadrants + 1 pop
-      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[5:9], bool = FALSE, merge = TRUE)
+      thisRes <- .mergeGates(gh, i = nodes[5:9], bool = FALSE, merge = TRUE)
       expectRes <- c(`CD4` = "CD4", expectRes) 
       expect_equal(thisRes, expectRes)
       
-      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:12], bool = FALSE, merge = TRUE)
+      thisRes <- .mergeGates(gh, i = nodes[6:12], bool = FALSE, merge = TRUE)
       expectRes <- list(`CD4/38- DR-` = list(popIds = nodes[6:9]
                                   , parentId = "CD4")
                         ,`CD4/CCR7- 45RA+` = list(popIds = nodes[10:12]
@@ -439,7 +439,7 @@ test_that(".mergeGates",{
       expect_equal(thisRes, expectRes)
       
       #4 quadrants without merge
-      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = FALSE)
+      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = FALSE)
       expectRes <- list(`CD4/38- DR+` = "CD4/38- DR+"
                         , `CD4/38+ DR+` = "CD4/38+ DR+"
                         , `CD4/38+ DR-` = "CD4/38+ DR-"
