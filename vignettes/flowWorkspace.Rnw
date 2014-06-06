@@ -304,7 +304,7 @@ Note that smoothing may be applied automatically if there are not enough events 
 Sometime it is more useful to compare gates across samples using lattice plot by applying \Robject{plotGate}
 to a \Robject{GatingSet}:
 <<plotGate-gs,fig=TRUE>>=
-plotGate(gs,nodeID)
+plotGate(gs,getNodes(gs)[nodeID])
 @
 
 The gating hierarchy is plotted by:
