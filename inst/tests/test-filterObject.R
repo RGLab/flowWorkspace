@@ -35,7 +35,7 @@ test_that("filterObject from polygonGate", {
                         ) 
           
           
-      expect_equal(flowWorkspace:::filterObject(pg), expectRes)
+      expect_equal(filterObject(pg), expectRes)
       
     })
 
