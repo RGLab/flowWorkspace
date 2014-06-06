@@ -983,24 +983,25 @@ setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
 		})
 
 
-setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
+setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,...){
 
-				plotList<-.mergeGates(x[[1]],y,bool,merge)
-				if(length(plotList) > 1)
-                  stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
-#				lapply(plotList,function(y){
-							y <- plotList[[1]]
-							return(.plotGate(x,y,...))
-#						})
-
+      stop(" 'numeric` indexing is no longer safe. Please use node name instead!")
 
 
 		})
 
-setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
+setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
 
-      ind <- sapply(y, function(i).getNodeInd(x[[1]],i))
-      plotGate(x,ind,...)
+      
+      plotList <- .mergeGates(x[[1]],y,bool,merge)
+      if(length(plotList) > 1)
+        stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
+#				lapply(plotList,function(y){
+      y <- plotList[[1]]
+      return(.plotGate(x,y,...))
+#						})
+      
+      
     })
 
 ##recursively parsing conditional variables
@@ -1088,7 +1089,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #' preporcess the gating tree to prepare for the plotGate
 #'
 #' @param x a \code{GatingSet}
-#' @param y gate index
+#' @param y node name
 #' @param type \code{character} either 'xyplot' or 'densityplot'
 #' @param stats \code{numeric} proportions of cell population. If \code{missing} then extract it from \code{gatingHiearchy}
 #' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
@@ -1112,7 +1113,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       stats <- sapply(samples,function(thisSample){
             lapply(y$popIds,function(thisY){
                   curGh <- x[[thisSample]]
-                  getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],flowJo = F)
+                  getProp(curGh, thisY, flowJo = F)
                 })
           },simplify = FALSE)
     }
@@ -1129,7 +1130,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     if(missing(stats)){
       stats <- sapply(samples,function(thisSample){
             curGh <- x[[thisSample]]
-            getProp(curGh,getNodes(curGh,showHidden=TRUE)[y],flowJo = F)
+            getProp(curGh, y,flowJo = F)
           },simplify = FALSE)
     }else
       stats = stats
@@ -1281,7 +1282,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
                       , fitGate=FALSE, overlay=NULL, stack = FALSE, xbin = 32
                       , stats , default.y = "SSC-A", scales
                       , strip = TRUE
-                      , path = "full"
+                      , path = "auto"
                       , xlim = "instrument"
                       , ylim = "instrument"
                       , ...){
@@ -1298,12 +1299,12 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
     gh <- x[[1]]
 
 	if(is.list(y))
-		pid<-y$parentId
+      popName<-y$parentId
 	else
-		pid<-getParent(gh,y)
+      popName<-getParent(gh, y, path = path)
 
     #set default title
-    popName <- getNodes(gh, path = path, showHidden = TRUE)[pid]
+#    popName <- getNodes(gh, path = path, showHidden = TRUE)[pid]
 
     default_main <- list(label = popName)
     if(is.gh && strip)
@@ -1313,7 +1314,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
       main <- lattice:::updateList(default_main, main)
 
 
-#    browser()
+    
 	#################################
 	# setup axis labels and scales
 	################################
@@ -1336,7 +1337,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,...){
 #    browser()
         #get data
     #subset on channels to speed up loading data from disk
-    parentData <- getData(x,pid,j = params)
+    parentData <- getData(x, popName, j = params)
     defaultCond <- "name"
     if(is.gh){
       if(strip){
@@ -1553,9 +1554,10 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
 #'                  , yet may at the cost of unnecessary data IO
 .recompute <- function(x,y, alwaysLoadData = FALSE){
   if(missing(y))
-    y<-1
-  if(is.character(y))
-    y <- .getNodeInd(x[[1]],y)
+    y <- "root"
+  if(!is.character(y))
+    stop(" 'numeric` indexing is no longer safe. Please use node name instead!")
+    
 
   extend_val <- 0
   ignore_case <- FALSE
@@ -1578,7 +1580,7 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
         if(alwaysLoadData)
           isloadData <- TRUE
         else{
-          isAllBoolGate <- all(sapply(y,flowWorkspace:::.isBoolGate, x = gh))
+          isAllBoolGate <- all(sapply(y,.isBoolGate, x = gh))
           if(isAllBoolGate){
             isloadData <- all(sapply(y, function(i){
 
@@ -1604,7 +1606,8 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
         }
 
 
-        lapply(y,function(nodeID){
+        lapply(y,function(i){
+              nodeID <- .getNodeInd(gh, i)
               nodeInd <- as.integer(nodeID)-1
               recompute <- TRUE
 #              browser()
@@ -1699,6 +1702,11 @@ setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y,tsort=
 
     })
 setMethod("getData",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE, ...){
+      stop(" 'numeric` indexing is no longer safe . Please use node name instead!")
+    })
+
+#' @importMethodsFrom flowCore Subset
+setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE, ...){
 
       this_data <- getData(obj, ...)
       if(y == 0){
@@ -1707,49 +1715,13 @@ setMethod("getData",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=
         #subset by indices
         indices<-lapply(obj,getIndices,y)
         this_data <- Subset(this_data,indices)
-
+        
         this_data
       }
-
-    })
-
-#' @importMethodsFrom flowCore Subset
-setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE, ...){
-
-      getData(obj,.getNodeInd(obj[[1]],y), ...)
+      
 
 		})
 
-
-#' @export
-setGeneric("ncFlowSet", function(x) standardGeneric("ncFlowSet"))
-#' Fetch the flowData object associated with a GatingSet .
-#'
-#' Deprecated by \code{flowData} method
-#' @aliases
-#' ncFlowSet,GatingSet-method
-#' @rdname ncFlowSet-methods
-#' @export
-setMethod("ncFlowSet",signature(x="GatingSet"),function(x){
-      .Defunct("flowData")
-
-    })
-
-#' @export
-setGeneric("ncFlowSet<-", function(x,value) standardGeneric("ncFlowSet<-"))
-
-#' replace the flowData object associated with a GatingSet .
-#'
-#' Deprecated by \code{flowData} method
-#'
-#' @name ncFlowSet<-
-#' @aliases
-#' ncFlowSet<-,GatingSet-method
-#' @rdname ncFlowSet-methods
-#' @export
-setReplaceMethod("ncFlowSet",signature(x="GatingSet"),function(x,value){
-      .Defunct("flowData<-")
-    })
 
 #' Fetch or replace the flowData object associated with a GatingSet .
 #'
@@ -1857,7 +1829,7 @@ setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
 			lapply(obj,function(x)getGate(x,y))
 		})
 setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y){
-      lapply(obj,function(x)getGate(x,y))
+      stop(" 'numeric` indexing is no longer safe . Please use node name instead!")
     })
 
 #' @aliases
@@ -1867,14 +1839,15 @@ setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y){
 setMethod("setNode"
     ,signature(x="GatingSet",y="numeric",value="ANY")
     ,function(x,y,value,...){
-      lapply(x,function(gh){
-            setNode(gh,y,value,...)
-          })
+      stop(" 'numeric` indexing is no longer safe . Please use node name instead!")
+      
     })
 setMethod("setNode"
     ,signature(x="GatingSet",y="character",value="ANY")
     ,function(x,y,value,...){
-      setNode(x,.getNodeInd(x[[1]],y),value)
+      lapply(x,function(gh){
+            setNode(gh,y,value,...)
+          })
     })
 
 #' get/set the log level 
@@ -2029,13 +2002,13 @@ setMethod("getPopStats", "GatingSet",
     })
 
 #' calculate the coefficient of variation
-.computeCV <- function(x){
+.computeCV <- function(x, path = "full"){
 
   #columns are populations
   #rows are samples
 
   statList <- lapply(x,function(gh){
-        thisStat <- getPopStats(gh)
+        thisStat <- getPopStats(gh, path = path)
         rn <- rownames(thisStat)
         thisStat <- as.data.frame(thisStat)
         rownames(thisStat) <- rn
@@ -2084,23 +2057,6 @@ setMethod("plotPopCV","GatingSet",function(x,...){
     })
 
 
-setMethod("getKeywords",c("GatingSet","character"),function(obj,y){
-      stop("'getKeywords' is defunct. use 'keyword' instead! ")
-      ind <- which(sampleNames(obj)%in%y)
-      if(length(ind)>0){
-        getKeywords(obj,ind);
-      }else{
-        stop(paste("Sample ",y," not in GatingSet",sep=""));
-      }
-    })
-setMethod("getKeywords",c("GatingSet","numeric"),function(obj,y){
-      stop("'getKeywords' is defunct. use 'keyword' instead! ")
-      if(length(obj) < y){
-        stop("index out of range");
-      }else{
-        lapply(obj, getKeywords);
-      }
-    })
 setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing"){
         lapply(object, flowCore::keyword)
 
@@ -2144,7 +2100,7 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y, ...){
     this_node <- allNodes[id]
 
 
-    res <-try(recompute(obj,id),silent=T)
+    res <-try(recompute(obj,this_node),silent=T)
   })
 
 
