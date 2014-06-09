@@ -412,7 +412,7 @@ test_that(".mergeGates",{
       #swapped x,y (we don't really allow to change the dimensions for 2D gate yet, only the order can be changed)
       projections[["CD4/38- DR-"]] <- c("<R660-A>", "<V545-A>")                     
       thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
-      expectRes <- list(`CD4/38- DR-` = list(popIds = nodes[6:9]
+      expectRes <- list(`CD4/38- DR+` = list(popIds = nodes[6:9]
                                   , parentId = nodes[5])
                           )      
       expect_equal(thisRes, expectRes)
@@ -430,7 +430,7 @@ test_that(".mergeGates",{
       expect_equal(thisRes, expectRes)
       
       thisRes <- .mergeGates(gh, i = nodes[6:12], bool = FALSE, merge = TRUE)
-      expectRes <- list(`CD4/38- DR-` = list(popIds = nodes[6:9]
+      expectRes <- list(`CD4/38- DR+` = list(popIds = nodes[6:9]
                                   , parentId = "CD4")
                         ,`CD4/CCR7- 45RA+` = list(popIds = nodes[10:12]
                               , parentId = "CD4")

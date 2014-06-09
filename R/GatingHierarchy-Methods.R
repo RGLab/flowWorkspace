@@ -1692,7 +1692,9 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 		{
 							
 			toMerge <- names(keylist[keylist==curKey])
-			toReplace <- sort(toMerge)[1]#replace the first merged child node with the merge list
+            #replace the first merged child node with the merge list
+            #we don't want to sort the character here since it is locale-dependent
+			toReplace <- toMerge[1]
 			toRemove <- toMerge[!(toMerge==toReplace)]#remove other children
 
 			toReplaceInd <- match(toReplace,poplist)
