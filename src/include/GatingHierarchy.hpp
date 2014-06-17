@@ -226,7 +226,7 @@ public:
 	void transformGate();
 	void adjustGate(map<string,float> & gains);
 	void drawGraph(string out);
-	VertexID getChildren(VertexID source,string childName);
+	int getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order

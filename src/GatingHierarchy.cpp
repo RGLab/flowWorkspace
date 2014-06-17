@@ -127,19 +127,25 @@ VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 
 	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
 
-	VertexID curChildID = boost::add_vertex(tree);
+	//validity check
+	int res = getChildren(parentID, popName);
+	if( res >0 ){
+		popName.append(" already exists!");
+		throw(domain_error(popName));
+	}else{
+		VertexID curChildID = boost::add_vertex(tree);
 
+		nodeProperties &curChild = tree[curChildID];
+		curChild.setName(popName.c_str());
+		curChild.setGate(g);
+		if(g_loglevel>=POPULATION_LEVEL)
+			COUT<<"node created:"<<curChild.getName()<<endl;
+		//attach the populationNode to the boost node as property
 
-	nodeProperties &curChild = tree[curChildID];
-	curChild.setName(popName.c_str());
-	curChild.setGate(g);
-	if(g_loglevel>=POPULATION_LEVEL)
-		COUT<<"node created:"<<curChild.getName()<<endl;
-	//attach the populationNode to the boost node as property
-
-	//add relation between current node and parent node
-	boost::add_edge(parentID,curChildID,tree);
-	return curChildID;
+		//add relation between current node and parent node
+		boost::add_edge(parentID,curChildID,tree);
+		return curChildID;
+	}
 
 }
 /*
@@ -720,8 +726,16 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 		/*
 		 * search the children node of nodeID
 		 */
-		nodeID=getChildren(nodeID,nodeNameFromPath);
+		int res = getChildren(nodeID,nodeNameFromPath);
 
+		if(res < 0)
+		{
+			string err="Node not found:";
+			err.append(nodeNameFromPath);
+			throw(domain_error(err));
+		}else{
+			nodeID = res;
+		}
 	}
 	return nodeID;
 
@@ -919,12 +933,16 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 	}
 	return(res);
 }
-/*
- * retrieve single child node by parent id and child name
- */
-VertexID GatingHierarchy::getChildren(VertexID source,string childName){
 
-	VertexID curNodeID;
+/**
+ * retrieve single child node by parent id and child name.
+ * @param source id of the source node
+ * @param childName the child node name
+ * @return the child node id if succeeds; otherwise return -1.
+ */
+int GatingHierarchy::getChildren(VertexID source,string childName){
+
+	int curNodeID;
 	VertexID_vec children=getChildren(source);
 	VertexID_vec::iterator it;
 	for(it=children.begin();it!=children.end();it++)
@@ -934,11 +952,7 @@ VertexID GatingHierarchy::getChildren(VertexID source,string childName){
 			break;
 	}
 	if(it==children.end())
-	{
-		string err="Node not found:";
-		err.append(childName);
-		throw(domain_error(err));
-	}
+		curNodeID = -1;
 
 
 	return(curNodeID);
