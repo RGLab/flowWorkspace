@@ -1971,7 +1971,7 @@ setMethod("getPopStats", "GatingSet",
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
-
+    
       # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
       # are returned.
       if (flowJo) {
@@ -1979,19 +1979,18 @@ setMethod("getPopStats", "GatingSet",
       } else {
         statistic <- paste("flowCore", statistic, sep = ".")
       }
-      stats<-lapply(x,function(y){
-        d<-getPopStats(y, ...)
-        d$key<-rownames(d)
-        setkeyv(d,"key")
-        d<-d[,list(key,get(statistic))]
-        setnames(d,c("key",sampleNames(y)))
-        setkeyv(d,"key")
-        d
+      
+      stats <- lapply(x,function(y){
+              d<-getPopStats(y, ...)
+              d$key<-rownames(d)
+              setkeyv(d,"key")
+              d<-d[,list(key,get(statistic))]
+              setnames(d,c("key",sampleNames(y)))
+              setkeyv(d,"key")
+              d
       })
-      pop_stats<-Reduce(function(x,y)merge(x,y,all=TRUE),stats)
-#       pop_stats <- do.call(cbind, lapply(x, function(y) {
-#                 getPopStats(y)[[statistic]]
-#               }))
+      pop_stats <- Reduce(function(x,y)merge(x,y,all=TRUE),stats)
+      
       rownames(pop_stats) <- pop_stats[,key]
       setkey(pop_stats,NULL)
       pop_stats$key<-NULL
@@ -2002,27 +2001,28 @@ setMethod("getPopStats", "GatingSet",
     })
 
 #' calculate the coefficient of variation
-.computeCV <- function(x, path = "full"){
+.computeCV <- function(x, ...){
 
   #columns are populations
   #rows are samples
 
   statList <- lapply(x,function(gh){
-        thisStat <- getPopStats(gh, path = path)
-        rn <- rownames(thisStat)
-        thisStat <- as.data.frame(thisStat)
-        rownames(thisStat) <- rn
+        thisStat <- getPopStats(gh, ...)
         thisStat
       })
-  cv<-do.call(rbind
-      ,lapply(statList,function(x){
-            apply(x[,2:3],1,function(x){
-                  cv<-IQR(x)/median(x)
-                  ifelse(is.nan(cv),0,cv)
-                })
-          })
-  )
-  rownames(cv)<-sampleNames(x);#Name the rows
+  
+  cv <- do.call(rbind
+              ,lapply(statList,function(x){
+                    
+                    res <- apply(x[,list(flowJo.count,flowCore.count)],1,function(x){
+                          cv <- IQR(x)/median(x)
+                          ifelse(is.nan(cv),0,cv)
+                        })
+                    names(res) <- rownames(x)
+                    res
+                  })
+             )
+               
   cv
 
 }
@@ -2032,6 +2032,7 @@ setMethod("getPopStats", "GatingSet",
 #' @param x A \code{GatingHierarchy} from a \code{flowJoWorkspace}, or a \code{GatingSet}.
 #' @param m \code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.
 #' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.
+#' @param scales \code{list} see \link{barchart}
 #' @param \dots Additional arguments to the \code{barplot} methods.
 #' @details The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.
 #' @return Nothing is returned.
@@ -2044,16 +2045,16 @@ setMethod("getPopStats", "GatingSet",
 #' @aliases plotPopCV plotPopCV-methods plotPopCV,GatingHierarchy-method plotPopCV,GatingSet-method
 #' @rdname plotPopCV-methods
 #' @importFrom latticeExtra ggplot2like
-setMethod("plotPopCV","GatingSet",function(x,...){
-      cv <- .computeCV(x)
+setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)), ...){
+      cv <- .computeCV(x, path = "auto")
       #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
-      populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
+      populations<-gl(nc,nr,labels=as.character(colnames(cv)))
       samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
       cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
 
-      return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...)), par.settings = ggplot2like));
+      return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
     })
 
 

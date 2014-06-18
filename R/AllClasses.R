@@ -173,6 +173,11 @@ setClass("GatingHierarchy"
         )
 
 
+#' @export
+#' @docType methods
+#' @rdname GatingSet-methods
+setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
+        
 #' constructors for GatingSet
 #' 
 #' construct object from xml workspace file and a list of sampleIDs

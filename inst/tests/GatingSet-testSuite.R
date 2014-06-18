@@ -182,9 +182,9 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
                                                 getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],flowJo = F)
                                               })
                                         },simplify = FALSE)
-      curGates<-sapply(samples,function(curSample){
+      curGates <- sapply(samples,function(curSample){
             
-            filters(lapply(7:8,function(y)getGate(gs[[curSample]],y)))
+            filters(lapply(getNodes(gs)[7:8],function(y)getGate(gs[[curSample]],y)))
           },simplify=F)
       xParam <- "<R660-A>"
       yParam <- "<V545-A>"
@@ -272,7 +272,7 @@ test_that("compute CV from gs",{
       expectRes <- fread(file.path(resultDir, "cv_gs.csv"))
       expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames
       
-      expect_equal(as.data.table(thisRes), expectRes[,-1, with = F])
+      expect_equivalent(as.data.table(thisRes), expectRes[,-1, with = F])
       
     })
 

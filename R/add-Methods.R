@@ -396,19 +396,12 @@ setMethod("Rm",
 				subSymbol="character"),
 		definition=function(symbol, envir, subSymbol, ...)
 		{
-#			browser()
-            
-            nid <- .getNodeInd(envir,symbol)
             ##remove all children nodes as well
-			childrenNodeIds <- getChildren(envir,nid)
+			childrenNodes <- getChildren(envir,symbol)
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion
-            childrenPaths <- getNodes(envir, showHidden = TRUE)[childrenNodeIds]
-            
-			lapply(childrenPaths,function(child)Rm(child,envir))
-			
-            
-            
+			lapply(childrenNodes,function(child)Rm(child,envir))
+            nid <- .getNodeInd(envir,symbol)
 			.Call("R_removeNode",envir@pointer,getSample(envir),nid-1)
 		})
 
