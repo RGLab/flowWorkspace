@@ -229,12 +229,13 @@ public:
 	int getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getNodeID(VertexID u,string popName);
+	VertexID getRefNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
 	vector<string> getPopNames(unsigned short order,bool isPath,bool showHidden);
 	VertexID getAncestor(VertexID u,unsigned short level);
 	EdgeID getInEdges(VertexID target);
 	VertexID getParent(VertexID);
-	VertexID getDescendant(VertexID u,string name);
+	VertexID_vec getDescendants(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties & getNodeProperty(VertexID);
 

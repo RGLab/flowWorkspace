@@ -564,7 +564,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 		if(nodePath.size()==1)
 		{
 			//search ID by nearest ancestor
-			nodeID=getNodeID(u,nodePath.at(0));
+			nodeID=getRefNodeID(u,nodePath.at(0));
 		}
 		else
 		{
@@ -705,10 +705,12 @@ VertexID_vec GatingHierarchy::getVertices(unsigned short order){
 
 }
 
-/*
- * retrieve the VertexID by the gating path(could be subpath)
+/**
+ * retrieve the VertexID by the gating path
  * this serves as a parser to convert generic gating path into internal node ID
- *
+ * and it doesn't allow ambiguity (throw the exception when multiple nodes match)
+ * @param gatePath full(or partial) gating path
+ * @return node id
  */
 VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 
@@ -741,8 +743,14 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 
 }
 
-VertexID GatingHierarchy::getDescendant(VertexID u,string name){
-	VertexID_vec nodesTomatch;
+/**
+ * search for all the nodes that matches the pop name given the ancestor node id
+ * @param u the ancestor node id to search from
+ * @param name the node name to search for
+ * @return the vector of node id that match
+ */
+VertexID_vec GatingHierarchy::getDescendants(VertexID u,string name){
+	VertexID_vec nodesTomatch, res;
 	custom_bfs_visitor vis(nodesTomatch);
 	boost::breadth_first_search(tree, u, boost::visitor(vis));
 	VertexID_vec::iterator it;
@@ -750,29 +758,32 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string name){
 	{
 		u=*it;
 		if(getNodeProperty(u).getName().compare(name)==0)
-			break;
+			res.push_back(u);
 	}
-	if(it==nodesTomatch.end())
-	{
-		if(g_loglevel>=POPULATION_LEVEL)
-			COUT<<name<<" not found under the node: "<<boost::lexical_cast<string>(u)<<". returning the root instead."<<endl;;
-		u=0;
-	}
-	return u;
+//	if(it==nodesTomatch.end())
+//	{
+//		if(g_loglevel>=POPULATION_LEVEL)
+//			COUT<<name<<" not found under the node: "<<boost::lexical_cast<string>(u)<<". returning the root instead."<<endl;;
+//		u=0;
+//	}
+	return res;
 }
 
-/*
- * retrieve VertexID that matches population name
+/**
+  * Searching for reference node for bool gating when the node name and current bool node are given
+  * instead of nodePath.
+  * It currently select the first(nearest) one when multiple nodes matches
+  * @param u the current bool node
+ * @param popName the reference node name
+ * @return reference node id
  */
-VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
-
-
+VertexID GatingHierarchy::getRefNodeID(VertexID u,string popName){
 
 	/*
-	 * get the ancestor of 2 level above
+	 * go one level above
 	 */
 	if(u!=0)
-		u=getAncestor(u,1);	/*
+		u = getAncestor(u,1);	/*
 							 *  this is the hack for now. it may break when the reference node is under the ancestor of N>=3 level above
 							 *  other than root.
 							 *  it would be more robust to have a nearest ancestor searching,but it is unclear
@@ -783,30 +794,77 @@ VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
 	/*
 	 * top-down searching from that ancestor
 	 */
-	u=getDescendant(u,popName);
+	VertexID_vec res1 = getDescendants(u,popName);
 
 	/*
-	 * if not found, try traverse the entire tree (top-down searching from the root)
-	 * and assuming there is only on node will be matched to popName in the tree
+	 * if first round of match fails, try the second time by
+	 * traversing the entire tree (top-down searching from the root)
+	 *
 	 */
+	if(res1.size()==0)
+	{
+		if(u > 0){
+			if(g_loglevel>=POPULATION_LEVEL)
+				COUT<<"searching from the root."<<endl;
+			VertexID_vec res2 = getDescendants(0, popName);
+			/*
+			 * still not found, then report the error
+			 */
+			if(res2.size() == 0)
+			{
+				string err="Node not found:";
+				err.append(popName);
+				throw(domain_error(err));
+			}else{
+				// pick the first match
+				return res2.at(0);
+			}
+		}else{
+			string err="Node not found:";
+			err.append(popName);
+			throw(domain_error(err));
+		}
 
-	if(u==0)
-	{
-		if(g_loglevel>=POPULATION_LEVEL)
-			COUT<<"searching from the root."<<endl;
-		u=getDescendant(u,popName);
+
+	}else{
+		// pick the first match
+		return res1.at(0);
 	}
-	/*
-	 * still not found, then report the error
-	 */
-	if(u==0)
-	{
-		string err="Node not found:";
-		err.append(popName);
-		throw(domain_error(err));
-	}
+
 
 	return u;
+
+}
+
+
+/**
+ * retrieve VertexID that matches population name given an ancestor node
+ * It is used to search for the first node in the gating path (full or partial).
+ * This is different from getRefNodeID in the way that pop name must be uniquely identifiable in the tree.
+ * @param u the ancestor node id
+ * @param popName the population name to match
+ * @return node ID
+ */
+VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
+
+
+	/*
+	 * top-down searching from that ancestor
+	 */
+	VertexID_vec res = getDescendants(u,popName);
+	unsigned nMatches = res.size();
+
+	switch (nMatches){
+	case 0:
+			popName.append(" not found within the gating tree!");
+			throw(domain_error(popName));
+	case 1:
+			return (res.at(0));
+
+	default:
+			popName.append(" is ambiguous within the gating tree!");
+			throw(domain_error(popName));
+	}
 
 }
 

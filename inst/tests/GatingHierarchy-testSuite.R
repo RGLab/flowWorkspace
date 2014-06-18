@@ -17,7 +17,7 @@ test_that("getNodeInd ",{
       
       expect_equal(.getNodeInd(gh, "CD3+"), 4)
       
-      expect_equal(.getNodeInd(gh, "38- DR+"), 6)
+      expect_error(.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree")
       
       expect_equal(.getNodeInd(gh, "/not debris/singlets/CD3+/CD4/38- DR+"), 6)
       
@@ -25,6 +25,9 @@ test_that("getNodeInd ",{
       
       expect_equal(.getNodeInd(gh, "/not debris/singlets/CD3+/CD8/38- DR+"), 15)
       
+      expect_equal(.getNodeInd(gh, "CD8/38- DR+"), 15)
+      
+      expect_error(.getNodeInd(gh, "/38- DR+"), "is ambiguous within the gating tree")
     })
 
 
