@@ -1,6 +1,9 @@
 #' @include GatingSet-Methods.R
 NULL
+
 #' @importMethodsFrom ncdfFlow lapply rbind2 pData<-
+#' @rdname GatingSetList-class 
+#' @export 
 setMethod("rbind2",
     signature=signature("GatingSetList","missing"),
     definition=function(x,y="missing",...)
@@ -43,30 +46,34 @@ setMethod("rbind2",
 
 
 
-setMethod("getSamples","GatingSetList",function(x){
-      stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
-    })
-
+#' @rdname GatingSet-class 
+#' @export
 setMethod("[",c(x="GatingSetList",i="ANY"),function(x,i,j,...){
       object <- callNextMethod()
       as(object, "GatingSetList")
     })
 
 
-
-
+#' @name pData
+#' @rdname pData-methods
+#' @usage \S4method{pData}{GatingSetList,data.frame}(object) <- value
+#' @aliases 
+#' pData<-,GatingSetList,data.frame-method
+#' @export
 setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
       res <- callNextMethod()
       as(res, "GatingSetList")
     })
 
-
+#' @rdname recompute
+#' @export
 setMethod("recompute",c("GatingSetList"),function(x, ...){
       selectMethod("recompute", signature = c("GatingSet"))(x, ...)
       
     })
 
-
+#' @rdname getData-methods
+#' @export
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
       
       samples_orig <- obj@samples
@@ -91,12 +98,9 @@ setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
 
 
 
-
-setMethod("getGate",signature(obj="GatingSetList",y="numeric"),function(obj,y,tsort=FALSE){
-      stop(" 'numeric` indexing is no longer safe. Please use node name instead!")
-    })
-
-setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,tsort=FALSE){
+#' @rdname getGate
+#' @export
+setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y){
       
       res <- lapply(obj,function(gs){
             getGate(gs,y)      
@@ -105,19 +109,13 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y,
       
     })
 
-#' @aliases
-#' plotGate,GatingSetList,numeric-method
-#' plotGate,GatingSetList,character-method
+#' @export 
 #' @rdname plotGate-methods
-setMethod("plotGate",signature(x="GatingSetList",y="numeric"),function(x,y, ...){
-      stop(" 'numeric` indexing is no longer safe for GatingSetList. Please use node name instead!")
-      
-    })
-
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
       selectMethod("plotGate",signature = c(x="GatingSet",y="character"))(x=x, y=y, ...)
     })
-
+#' @rdname getPopStats
+#' @export
 setMethod("getPopStats","GatingSetList",function(x,...){
       res <- lapply(x,getPopStats, level =1,...)
       res<-Reduce(function(x,y)
@@ -137,12 +135,14 @@ setMethod("getPopStats","GatingSetList",function(x,...){
       rownames(res)<-rn
       res
     })
-
+#' @rdname keyword
+#' @export
 setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing"){
       selectMethod("keyword",signature = c(x="GatingSet",y="missing"))(object, keyword)
       
     })
-
+#' @rdname keyword
+#' @export
 setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
       selectMethod("keyword",signature = c(x="GatingSet",y="character"))(object, keyword)
     })
@@ -225,54 +225,9 @@ load_gslist<-function(path){
   g@data<-listofgs
   g
 }
-
-setMethod("getData",signature=c("GatingSetList","name"),function(obj, y, pop_marker_list = list(), ...){
-      .Deprecated("getSingleCellExpression")
-      
-      strExpr <- as.character(y)
-      popNames <- strsplit(strExpr,split="\\|")[[1]]
-      
-      sapply(sampleNames(obj),function(this_sample){
-            message(this_sample)
-            gh <- obj[[this_sample]]
-            
-            fr <- getData(gh, use.exprs = FALSE)
-            this_pd <- pData(parameters(fr))
-            
-            
-            pop_chnl<- .getPopChnlMapping(this_pd, popNames, pop_marker_list)
-            this_pops <- as.character(pop_chnl[,"pop"])
-            this_chnls <- as.character(pop_chnl[,"name"])
-            
-            
-            #get mask mat
-            # browser()
-            
-            this_mat <- getIndiceMat(gh,y)[,this_pops, drop=FALSE]
-            #get indices of bool gates
-            this_ind <- this_mat[,1]
-            for(i in 2:ncol(this_mat)){
-              
-              this_ind <- this_ind |this_mat[,i]
-              
-            }
-            if(sum(this_ind)==0){
-              NULL
-            }else{
-              this_mat <- this_mat[this_ind,,drop = FALSE]
-              #subset data by channels selected
-              
-              this_data <- getData(gh)
-              this_subset <- exprs(this_data)[this_ind,this_chnls, drop=FALSE]
-              #masking the data
-              this_subset <- this_subset * this_mat
-              colnames(this_subset) <- pop_chnl[,"desc"]
-              this_subset
-            }
-            
-          },simplify = FALSE) 
-    })
-
+#' @rdname getSingleCellExpression
+#' @param ... other arguments
+#' @export
 setMethod("getSingleCellExpression",signature=c("GatingSetList","character"),function(x, nodes, ...){
       
       res <- lapply(x, function(gs)getSingleCellExpression(gs, nodes, ...), level = 1)

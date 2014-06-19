@@ -92,6 +92,7 @@ setClass("flowJoWorkspace"
 #'     \item{\code{FCSPath}:}{Object of class \code{"character"}. A path to the fcs files associated with this GatingSet } 
 #'     \item{\code{data}:}{Object of class \code{"flowSet"}. flow data associated with this GatingSet }
 #'     \item{\code{flag}:}{Object of class \code{"logical"}. A flag indicating whether the gates, transformations, and compensation matrices have been applied to data, or simply imported.}
+#'     \item{\code{axis}:}{Object of class \code{"list"}. stores the axis information used for plotGate.}
 #'     \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}
 #'     \item{\code{guid}:}{Object of class \code{"character"}. the unique identifier for GatingSet object.}
 #'   }
@@ -114,9 +115,6 @@ setClass("flowJoWorkspace"
 #' @exportClass GatingSet
 #' @aliases 
 #' GatingSet-class
-#' rbind2,GatingSet,GatingSet-method
-#' GatingSet,flowSet-method
-#' show,GatingSet-method
 setClass("GatingSet"
           ,representation(pointer = "externalptr"
                           ,FCSPath = "character"
@@ -173,18 +171,24 @@ setClass("GatingHierarchy"
         )
 
 
-#' @export
-#' @docType methods
-#' @rdname GatingSet-methods
+
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
         
-#' constructors for GatingSet
+#' constructors for GatingSet 
 #' 
-#' construct object from xml workspace file and a list of sampleIDs
+#' construct object from xml workspace file and a list of sampleIDs (not intended to be called by user.)
+#' 
+#' @param x \code{character} or \code{flowSet} or \code{GatingHierarchy}
+#' @param y \code{character} or\code{missing}
+#' @param includeGates \code{logical} whether to parse the gates or just simply extract the flowJo stats
+#' @param sampNloc \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".
+#' @param xmlParserOption \code{integer} option passed to \code{\link{xmlTreeParse}} 
+#' @param wsType \code{character} workspace type, can be value of "win", "macII", "vX", "macIII".
+#'  
 #' @rdname GatingSet-methods
-#' @aliases 
-#' GatingSet,character,character-method
-setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE, sampNloc="keyword",xmlParserOption, wsType, ...){
+#' @aliases GatingSet
+#' @export 
+setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE, sampNloc="keyword",xmlParserOption, wsType){
       
       xmlFileName<-x
       sampleIDs<-y
@@ -214,9 +218,13 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
 #' construct a gatingset with empty trees (just root node)
 #' 
 #' @rdname GatingSet-methods
-#' @aliases 
-#' GatingSet,flowSet,ANY-method 
-setMethod("GatingSet",c("flowSet"),function(x, ...){
+#' @export 
+#' @examples 
+#' \dontrun{
+#' #fdata could be a flowSet or ncdfFlowSet
+#' gs <- GatingSet(fdata)
+#' }
+setMethod("GatingSet",c("flowSet"),function(x){
       
       fs_clone<-flowCore:::copyFlowSet(x)
       samples<-sampleNames(fs_clone)
@@ -318,20 +326,6 @@ setMethod("GatingSet",c("flowSet"),function(x, ...){
 #' @aliases 
 #' GatingSetList-class
 #' GatingSetList
-#' show,GatingSetList-method
-#' getSamples,GatingSetList-method 
-#' sampleNames,GatingSetList-method
-#' rbind2,GatingSetList,missing-method
-#' [[,GatingSetList,numeric-method
-#' [[,GatingSetList,logical-method
-#' [[,GatingSetList,character-method
-#' [,GatingSetList,numeric-method
-#' [,GatingSetList,logical-method
-#' [,GatingSetList,character-method
-#' getGate,GatingSetList,numeric-method
-#' getGate,GatingSetList,character-method
-#' getQAStats,GatingSetList-method
-#' getPopStats,GatingSetList-method
 setClass("GatingSetList", contains = "ncdfFlowList")
 
 validGatingSetListObject <- function(object){

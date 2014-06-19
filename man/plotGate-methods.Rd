@@ -9,7 +9,6 @@
 \alias{plotGate,GatingSet,missing-method}
 \alias{plotGate,GatingSet,numeric-method}
 \alias{plotGate,GatingSetList,character-method}
-\alias{plotGate,GatingSetList,numeric-method}
 \alias{plotGate-methods}
 \title{Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}}
 \usage{
@@ -19,7 +18,7 @@ plotGate(x, y, ...)
 
 \S4method{plotGate}{GatingSet,missing}(x, y, ...)
 
-\S4method{plotGate}{GatingSetList,numeric}(x, y, ...)
+\S4method{plotGate}{GatingSetList,character}(x, y, ...)
 }
 \arguments{
 \item{x}{\code{\linkS4class{GatingSet}} or \code{\linkS4class{GatingHierarchy}}object}

@@ -12,8 +12,6 @@ NULL
 #' \code{recompute} method does the actual gating after the gate is added,i.e. calculating the event indices according to the gate definition.   
 #' @param wf A \code{GatingHierrarchy} or \code{GatingSet}
 #' @param envir A \code{GatingHierrarchy} or \code{GatingSet}
-#' @param x A \code{GatingSet}
-#' @param y a node index within a \code{GatingSet}. It is the root node if unspecified
 #' @param action A \code{filter} or a list of \code{filter}s to be added to the  \code{GatingHierarchy} or \code{GatingSet}.
 #' @param names  a \code{character} vector of length four,which specifies the population names resulted by adding a \code{quadGate}.
 #' The order of the names is clock-wise starting from the top left quadrant population.
@@ -86,35 +84,11 @@ NULL
 #'     Rm('rectangle', gs)
 #'     getNodes(gs[[1]])
 #'  }
-#' 
-#' @aliases 
-#' add
-#' add,GatingSet,list-method
-#' add,GatingSet,filterList-method
-#' add,GatingSet,filtersList-method
-#' add,GatingSet,filter-method
-#' add,GatingSet,filters-method
-#' add,GatingSetList,list-method
-#' add,GatingSetList,filterList-method
-#' add,GatingSetList,filter-method
-#' add,GatingSetList,filtersList-method
-#' add,GatingSetList,filters-method
-#' add,GatingHierarchy,quadGate-method
-#' add,GatingHierarchy,filter-method
-#' add,GatingHierarchy,filters-method
-#' setGate
-#' setGate,GatingSet,ANY,list-method
-#' setGate,GatingSet,ANY,filterList-method
-#' setGate,GatingHierarchy,numeric,filter-method
-#' setGate,GatingHierarchy,character,filter-method
-#' Rm
-#' Rm,character,GatingSet,character-method
-#' Rm,character,GatingHierarchy,character-method
-#' Rm,character,GatingSetList,character-method
-#' recompute
-#' recompute,GatingSet-method
-#' recompute,GatingSetList-method 
 #' @export 
+#' @rdname add
+#' @aliases
+#' add
+#' Rm
 #' @importFrom flowCore add
 setMethod("add",
 		signature=c(wf="GatingSet", "list"),
@@ -131,7 +105,9 @@ setMethod("add",
 			add(wf,flist,...)
 			
 		})
-    
+
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c(wf="GatingSetList", "list"),
     definition=function(wf, action, ...)
@@ -140,7 +116,8 @@ setMethod("add",
       selectMethod("add",signature = c(wf="GatingSet", action="list"))(wf, action, ...)
       
     })    
-    
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSet", "filtersList"),
     definition=function(wf, action, ...)
@@ -151,6 +128,8 @@ setMethod("add",
     
 #' @importClassesFrom flowCore filterList filtersList ellipsoidGate intersectFilter polygonGate rectangleGate filters
 #' @importFrom flowCore filterList filtersList filters
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingSet", "filterList"),
 		definition=function(wf, action, ...)
@@ -184,6 +163,8 @@ setMethod("add",
 			
 		})
     
+#' @export 
+#' @rdname add
 setMethod("add",
         signature=c("GatingSetList", "filterList"),
         definition=function(wf, action, ...)
@@ -191,13 +172,16 @@ setMethod("add",
           selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
         })
     
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSetList", "filtersList"),
     definition=function(wf, action, ...)
     {
       selectMethod("add",signature = c(wf="GatingSet", action="filtersList"))(wf, action, ...)
     })
-
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingSet", "filter"),
 		definition=function(wf, action, ...)
@@ -209,7 +193,8 @@ setMethod("add",
 			add(wf,actions,...)
 			
 		})
-    
+#' @export 
+#' @rdname add    
 setMethod("add",
     signature=c("GatingSet", "filters"),
     definition=function(wf, action, ...)
@@ -221,7 +206,8 @@ setMethod("add",
       add(wf,actions,...)
       
     })    
-
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSetList", "filter"),
     definition=function(wf, action, ...)
@@ -230,6 +216,8 @@ setMethod("add",
       selectMethod("add",signature = c(wf="GatingSet", action="filter"))(wf, action, ...)
       
     })
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSetList", "filters"),
     definition=function(wf, action, ...)
@@ -269,7 +257,8 @@ setMethod("add",
 	nodeID+1
 }
 
-
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingHierarchy", "filter"),
 		definition=function(wf, action,... )
@@ -277,7 +266,8 @@ setMethod("add",
 			
 			.addGate(wf,filterObject(action),...)
 		})
-
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingHierarchy", "filters"),
     definition=function(wf, action, names = NULL, ... )
@@ -297,7 +287,8 @@ setMethod("add",
         unlist(lapply(action, function(thisFilter)add(wf, thisFilter,...)))
       
     })
-
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingHierarchy", "quadGate"),
 		definition=function(wf, action, names = NULL, ... )
@@ -366,6 +357,8 @@ setMethod("add",
 #		})
 
 #' @importFrom flowCore Rm
+#' @export 
+#' @rdname add
 setMethod("Rm",
 		signature=c(symbol="character",
 				envir="GatingSet",
@@ -377,6 +370,8 @@ setMethod("Rm",
 								Rm(symbol,gh,subSymbol,...)
 							}))
 		})
+#' @export 
+#' @rdname add    
 setMethod("Rm",
     signature=c(symbol="character",
         envir="GatingSetList",
@@ -387,9 +382,9 @@ setMethod("Rm",
           ,signature = c(symbol="character", envir="GatingSet", subSymbol="character"))(symbol, envir, subSymbol, ...)
     })
     
-# can't use numerical index to do the Rm because 
-# numerical index will change once nodes are removed
-# thus Rm by node name is safer
+
+#' @export 
+#' @rdname add
 setMethod("Rm",
 		signature=c(symbol="character",
 				envir="GatingHierarchy",

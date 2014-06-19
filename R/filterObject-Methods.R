@@ -1,9 +1,19 @@
 #' @include GatingSet-Methods.R
 NULL
 
-# convert flowCore filter to a list (filterObject) 
-# that can be understood by c++ code
-setMethod("filterObject",signature=c("rectangleGate"),function(x,...){
+#' convert flowCore filter to a list 
+#'  
+#' It convert the flowCore gate to a list whose structure can be understood by 
+#' underlying c++ data structure.
+#' 
+#' @param x \code{filter} a flowCore gate. Currently supported gates are:
+#'                          "rectangleGate", "polygonGate","ellipsoidGate" and "booleanFilter"
+#' @return a \code{list}
+#' @aliases 
+#' filterObject
+#' @rdname filterObject
+#' @export 
+setMethod("filterObject",signature=c("rectangleGate"),function(x){
       params<-parameters(x)
       
       if(length(params)==1)
@@ -27,8 +37,9 @@ setMethod("filterObject",signature=c("rectangleGate"),function(x,...){
       filterObject
     })
 
-
-setMethod("filterObject",signature=c("polygonGate"),function(x,...){
+#' @rdname filterObject
+#' @export
+setMethod("filterObject",signature=c("polygonGate"),function(x){
       params<-parameters(x)
       
       list(type=as.integer(1)
@@ -37,7 +48,9 @@ setMethod("filterObject",signature=c("polygonGate"),function(x,...){
           ,filterId=x@filterId)  
     })
 
-setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
+#' @rdname filterObject
+#' @export
+setMethod("filterObject",signature=c("booleanFilter"),function(x){
       expr <- x@deparse
       
       pattern <- "&&|\\|\\|"
@@ -80,8 +93,10 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x,...){
           ,op=op
           ,filterId=x@filterId)  
     })
-
-setMethod("filterObject",signature=c("ellipsoidGate"),function(x,...){
+    
+#' @rdname filterObject
+#' @export
+setMethod("filterObject",signature=c("ellipsoidGate"),function(x){
       params<-parameters(x)
       
       list(type=as.integer(4)

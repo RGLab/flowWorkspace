@@ -7,14 +7,11 @@
 \S4method{lapply}{GatingSet}(X, FUN, ...)
 }
 \arguments{
-\item{X}{
-    A list-like or vector-like object.
-  }
+\item{X}{\code{GatingSet}}
 
-\item{FUN}{
-    See \code{?base::\link[base]{lapply}} for a description of
-    these arguments.
-  }
+\item{FUN}{\code{function} to be applied to each sample in 'GatingSet'}
+
+\item{...}{other arguments to be passed to 'FUN'}
 }
 \description{
 sample names are used for names of the returned list

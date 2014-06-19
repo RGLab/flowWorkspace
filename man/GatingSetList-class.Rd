@@ -3,28 +3,22 @@
 \name{GatingSetList-class}
 \alias{GatingSetList}
 \alias{GatingSetList-class}
-\alias{[,GatingSetList,character-method}
-\alias{[,GatingSetList,logical-method}
-\alias{[,GatingSetList,numeric-method}
-\alias{[[,GatingSetList,character-method}
-\alias{[[,GatingSetList,logical-method}
-\alias{[[,GatingSetList,numeric-method}
-\alias{getGate,GatingSetList,character-method}
-\alias{getGate,GatingSetList,numeric-method}
-\alias{getPopStats,GatingSetList-method}
-\alias{getQAStats,GatingSetList-method}
-\alias{getSamples,GatingSetList-method}
 \alias{rbind2,GatingSetList,missing-method}
-\alias{sampleNames,GatingSetList-method}
-\alias{show,GatingSetList-method}
 \title{Class \code{"GatingSetList"}}
 \usage{
 GatingSetList(x, samples = NULL)
+
+\S4method{rbind2}{GatingSetList,missing}(x, y = "missing", ...)
 }
 \arguments{
 \item{x}{a \code{list} of \code{GatingSet}}
 
 \item{samples}{\code{character} vector specifying the sample names. if NULL, the sample names are extracted from GatingSets}
+
+\item{y}{any \R object, typically similar to \code{x}, or missing
+    completely.}
+
+\item{...}{optional arguments for methods.}
 }
 \description{
 A list of of \code{GatingSet} objects. This class exists for method dispatching.
