@@ -226,7 +226,8 @@ NULL
   myGraph
 }
 
-#' @importMethodsFrom graph nodeData removeNode edges inEdges edgeData edgeData<- edgeDataDefaults<-
+#' @importMethodsFrom graph nodeData removeNode edges inEdges edgeData edgeData<- edgeDataDefaults<- 
+#' @importFrom graph edgeRenderInfo<- nodeRenderInfo<-
 .layoutGraph <- function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
 
   edgeDataDefaults(g, "virtual") <- FALSE
@@ -274,33 +275,41 @@ NULL
                               {
                                   ifelse(as.logical(as.integer(thisHidden)),"white","gray")
                                 })
-  eStyles <- sapply(edgeData(g, attr = "virtual"),function(i)ifelse(i,"dotted","solid"))
+  nAttrs$lty <- sapply(nodeData(g,attr="hidden")
+                          ,function(thisHidden)
+                          {
+                            ifelse(as.logical(as.integer(thisHidden)),"dotted","solid")
+                          })
+  nodeRenderInfo(g) <- nAttrs   
+  
+  eData <- edgeData(g, attr = "virtual")
+  e.colnames <- names(eData)
+  e.colnames <- gsub("\\|", "~", e.colnames)
+  names(eData) <- e.colnames
+  eStyles <- sapply(eData,function(i)ifelse(i,"dotted","solid"))
 #  browser()
-  eColors <- sapply(edgeData(g, attr = "virtual"),function(i)ifelse(i,"red","blue"))
-  eAttrs <- list(color = eColors
-#                , lty = eStyles
+#  eColors <- sapply(eData,function(i)ifelse(i,"red","blue"))
+  
+  eAttrs <- list(lty = eStyles
+#                , color = eColors
                 )                       
-#browser()                            
-    #somehow lty doesn't work in nodeAttrs
-      #  nAttrs$lty <- sapply(nodeData(g,attr="hidden")
-      #      ,function(thisHidden)
-      #      {
-      #        ifelse(as.logical(as.integer(thisHidden)),"dotted","solid")
-      #      })
-#           browser()
-
-    Rgraphviz::layoutGraph(g,layoutType=layout
+#  browser()       
+  edgeRenderInfo(g) <- eAttrs
+  #nodeAttrs and edgeAttrs arguments don't fully work as expected
+  #(e.g. lty won't get passed into render info)
+  #so we have to also use the renderInfo slot directly for set some parameters
+  Rgraphviz::layoutGraph(g,layoutType=layout
                               ,nodeAttrs = nAttrs
                               , edgeAttrs = eAttrs
-                              ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
-                                  ,node=list(fixedsize=FALSE
-                        #              ,fillcolor="gray"
-                                      ,fontsize=fontsize
-                                      ,shape="ellipse"
-                                  )
-                              )
-                          )
-  }
+                            ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
+                                        ,node=list(fixedsize=FALSE
+                              #              ,fillcolor="gray"
+                                            ,fontsize=fontsize
+                                            ,shape="ellipse"
+                                        )
+                            )
+                        )
+}
 
 #' based on Rgrapvhiz:::renderNodes. plot each gate as png file and add them as svg URL to each node of gating three
 .renderNodes.svgAnno <- function(g)
