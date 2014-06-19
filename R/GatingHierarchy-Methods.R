@@ -226,9 +226,10 @@ NULL
   myGraph
 }
 
-#' @importMethodsFrom graph nodeData removeNode
+#' @importMethodsFrom graph nodeData removeNode edges inEdges edgeData edgeData<- edgeDataDefaults<-
 .layoutGraph <- function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
 
+  edgeDataDefaults(g, "virtual") <- FALSE
   ##remove bool gates if necessary
   if(!boolean)
   {
@@ -245,11 +246,26 @@ NULL
         nodes<-nodeData(g,attr="hidden")
         for(i in 1:length(nodes))
           {
-              if(as.logical(as.integer(nodes[[i]])))
-                  g <- removeNode(names(nodes[i]), g)
+              if(as.logical(as.integer(nodes[[i]]))){
+                
+                nodeID <- names(nodes[i])
+                parentID <- inEdges(nodeID, g)[[1]]
+                childrenIDs <- edges(g)[[nodeID]]
+                #add edges between its parent and children
+                #if it is non-leaf node
+                if(length(childrenIDs) > 0){
+                  for(childID in childrenIDs)
+                      g <- addEdge(parentID, childID, g)
+                      edgeData(g, parentID, childID, "virtual") <- TRUE 
+                }
+                
+                g <- removeNode(nodeID, g)
+              }
+                
             }
       }
 
+      
   nAttrs <- list()
 
   nAttrs$label <- unlist(nodeData(g,attr="label"))
@@ -258,6 +274,13 @@ NULL
                               {
                                   ifelse(as.logical(as.integer(thisHidden)),"white","gray")
                                 })
+  eStyles <- sapply(edgeData(g, attr = "virtual"),function(i)ifelse(i,"dotted","solid"))
+#  browser()
+  eColors <- sapply(edgeData(g, attr = "virtual"),function(i)ifelse(i,"red","blue"))
+  eAttrs <- list(color = eColors
+#                , lty = eStyles
+                )                       
+#browser()                            
     #somehow lty doesn't work in nodeAttrs
       #  nAttrs$lty <- sapply(nodeData(g,attr="hidden")
       #      ,function(thisHidden)
@@ -266,7 +289,9 @@ NULL
       #      })
 #           browser()
 
-    Rgraphviz::layoutGraph(g,layoutType=layout,nodeAttrs=nAttrs
+    Rgraphviz::layoutGraph(g,layoutType=layout
+                              ,nodeAttrs = nAttrs
+                              , edgeAttrs = eAttrs
                               ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
                                   ,node=list(fixedsize=FALSE
                         #              ,fillcolor="gray"
