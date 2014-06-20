@@ -1576,7 +1576,7 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
 #'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
 #'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
 #'                  , yet may at the cost of unnecessary data IO
-.recompute <- function(x,y, alwaysLoadData = FALSE){
+.recompute <- function(x,y, alwaysLoadData = FALSE, verbose = FALSE){
   if(missing(y))
     y <- "root"
   if(!is.character(y))
@@ -1590,8 +1590,10 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
 
 
         sampleName<-getSample(gh)
-
-        message(paste("gating",sampleName,"..."))
+        if(verbose)
+          message(paste("gating",sampleName,"..."))
+        else
+          message(".", appendLF = FALSE)
 
 
         # Ideally, we want to track back to all ancesters and references to check if they are already gated
