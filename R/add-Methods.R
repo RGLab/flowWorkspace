@@ -95,12 +95,17 @@ setMethod("add",
 		definition=function(wf, action, ...)
 		{
 
-            if(all(sapply(action, function(i)extends(class(i), "filter"))))
+            if(all(sapply(action, function(i)extends(class(i), "filterResult")))){
+              #dispatch right away to avoid the overhead 
+              #since filterResult is expensive to be passed around
+              id <- selectMethod("add", signature = c("GatingSet", "filterList"))(wf, action, ...)
+              return(id)
+            }else if(all(sapply(action, function(i)extends(class(i), "filter"))))
 			  flist <- filterList(action)
             else if(all(sapply(action, function(i)extends(class(i), "filters"))))
               flist <- filtersList(action)
             else
-              stop ("the list doesn't constain valid filter or filters objects!")
+              stop ("the gate list doesn't constain valid 'filter', 'filters' or 'filterResult' objects!")
             
 			add(wf,flist,...)
 			
@@ -128,11 +133,12 @@ setMethod("add",
     
 #' @importClassesFrom flowCore filterList filtersList ellipsoidGate intersectFilter polygonGate rectangleGate filters
 #' @importFrom flowCore filterList filtersList filters
+#' @param validityCheck \code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.
 #' @export 
 #' @rdname add
 setMethod("add",
 		signature=c("GatingSet", "filterList"),
-		definition=function(wf, action, ...)
+		definition=function(wf, action, validityCheck = TRUE,...)
 		{
 			samples<-sampleNames(wf)
 			
@@ -147,18 +153,19 @@ setMethod("add",
 							})
 					
 			nodeID <- nodeIDs[[1]]
-#		browser()
-		if(!all(sapply(nodeIDs[-1],function(x)isTRUE(all.equal(x, nodeID, check.attributes = FALSE))))){
-          #restore the gatingset by removing added nodes
-          mapply(samples, nodeIDs, FUN = function(sample, nodeID){
-                gh <- wf[[sample]]
-                nodes <- getNodes(gh)[nodeID]
-                lapply(nodes, Rm, envir = gh)
-              })
-          stop("nodeID are not identical across samples!")
+            
+        if(validityCheck){
+          if(!all(sapply(nodeIDs[-1],function(x)isTRUE(all.equal(x, nodeID, check.attributes = FALSE))))){
+            #restore the gatingset by removing added nodes
+            mapply(samples, nodeIDs, FUN = function(sample, nodeID){
+                  gh <- wf[[sample]]
+                  nodes <- getNodes(gh)[nodeID]
+                  lapply(nodes, Rm, envir = gh)
+                })
+            stop("nodeID are not identical across samples!")
+          }
+          
         }
-			
-		
 		nodeID
 			
 		})
@@ -226,8 +233,9 @@ setMethod("add",
       selectMethod("add",signature = c(wf="GatingSet", action="filters"))(wf, action, ...)
       
     })
-
-.addGate<-function(gh,filterObject,parent=NULL, name=NULL,negated=FALSE){
+#' @param indices \code{logical} vector used to pass the node indices directly without the need for recomputing
+#' @param recompute \code{logical} whether to recompute the event indices. It is ignored when indices is provided.
+.addGate<-function(gh, filterObject, parent = "root", name=NULL, negated=FALSE, indices = NULL, recompute = TRUE){
 #  browser()
 	if(is.null(name))
 		name<-filterObject$filterId
@@ -239,21 +247,32 @@ setMethod("add",
     warning(old_name, " is replaced with ", name)
   }
     
-#	browser()
-	##get node ID
+	pid <- .getNodeInd(gh,parent)
 	
-	if(is.null(parent))
-		pid<-1
-	else
-	{
-		if(is.numeric(parent))
-			pid<-parent
-		else
-			pid<-.getNodeInd(gh,parent)
-	}
 	filterObject$negated<-negated
 #	browser()	
-	nodeID<-.Call("R_addGate",gh@pointer,getSample(gh),filterObject,as.integer(pid-1),name)
+    sn <- sampleNames(gh)
+    pid <- as.integer(pid-1)
+    ptr <- gh@pointer
+	nodeID <- .Call("R_addGate", ptr, sn, filterObject, pid, name)
+    if(is.null(indices)){
+      if(recompute){
+        extend_val <- 0
+        ignore_case <- FALSE
+        gains <- NULL
+        #this always load the raw data
+        #which may not be optimal for bool gate
+        #thus recompute is turn off by default
+        #and only used for non-bool filter
+        data <- getData(gh)
+        mat <- exprs(data)
+        .Call("R_gating", ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case)
+      }
+    }else{
+
+      .Call("R_setIndices", ptr, sn, nodeID, indices)
+      
+    }    
 	nodeID+1
 }
 
@@ -266,6 +285,16 @@ setMethod("add",
 			
 			.addGate(wf,filterObject(action),...)
 		})
+#' @export 
+#' @rdname add
+setMethod("add",
+    signature=c("GatingHierarchy", "logicalFilterResult"),
+    definition=function(wf, action,... )
+    {
+      g <- filterDetails(action)[[1]][["filter"]]
+      ind <- action@subSet
+      .addGate(wf,filterObject(g), indices = ind, ...)
+    })    
 #' @export 
 #' @rdname add
 setMethod("add",
