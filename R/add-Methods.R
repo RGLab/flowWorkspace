@@ -233,9 +233,11 @@ setMethod("add",
       selectMethod("add",signature = c(wf="GatingSet", action="filters"))(wf, action, ...)
       
     })
-#' @param indices \code{logical} vector used to pass the node indices directly without the need for recomputing
-#' @param recompute \code{logical} whether to recompute the event indices. It is ignored when indices is provided.
-.addGate<-function(gh, filterObject, parent = "root", name=NULL, negated=FALSE, indices = NULL, recompute = TRUE){
+
+#' @param recompute \code{logical} whether to recompute the event indices right after gate is added. 
+#'                                  Oftentimes it is more efficient to let user to determining how and when the flow data is loaded
+#'                                  Thus default it FALSE.                      
+.addGate<-function(gh, filterObject, parent = "root", name=NULL, negated=FALSE, recompute = FALSE){
 #  browser()
 	if(is.null(name))
 		name<-filterObject$filterId
@@ -255,24 +257,18 @@ setMethod("add",
     pid <- as.integer(pid-1)
     ptr <- gh@pointer
 	nodeID <- .Call("R_addGate", ptr, sn, filterObject, pid, name)
-    if(is.null(indices)){
-      if(recompute){
-        extend_val <- 0
-        ignore_case <- FALSE
-        gains <- NULL
-        #this always load the raw data
-        #which may not be optimal for bool gate
-        #thus recompute is turn off by default
-        #and only used for non-bool filter
-        data <- getData(gh)
-        mat <- exprs(data)
-        .Call("R_gating", ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case)
-      }
-    }else{
 
-      .Call("R_setIndices", ptr, sn, nodeID, indices)
-      
-    }    
+    if(recompute){
+      extend_val <- 0
+      ignore_case <- FALSE
+      gains <- NULL
+      #this always load the raw data
+      #which may not be optimal for bool gate
+      data <- getData(gh)
+      mat <- exprs(data)
+      .Call("R_gating", ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case)
+    }
+        
 	nodeID+1
 }
 
@@ -285,16 +281,7 @@ setMethod("add",
 			
 			.addGate(wf,filterObject(action),...)
 		})
-#' @export 
-#' @rdname add
-setMethod("add",
-    signature=c("GatingHierarchy", "logicalFilterResult"),
-    definition=function(wf, action,... )
-    {
-      g <- filterDetails(action)[[1]][["filter"]]
-      ind <- action@subSet
-      .addGate(wf,filterObject(g), indices = ind, ...)
-    })    
+    
 #' @export 
 #' @rdname add
 setMethod("add",
