@@ -474,6 +474,38 @@ BEGIN_RCPP
 
 END_RCPP
 }
+
+
+vector<BOOL_GATE_OP> boolFilter_R_to_C(List filter){
+
+
+			/*
+			 * get specification from R
+			 */
+			StringVec refs=as<StringVec>(filter["refs"]);
+			StringVec op=as<StringVec>(filter["op"]);
+			BoolVec isNot=as<BoolVec>(filter["isNot"]);
+
+			/*
+			 * convert to c class
+			 */
+			vector<BOOL_GATE_OP> res;
+			for(unsigned i=0;i<refs.size();i++)
+			{
+
+				BOOL_GATE_OP gOpObj;
+
+				boost::split(gOpObj.path,refs.at(i),boost::is_any_of("/"));
+				if(gOpObj.path.at(0).empty())
+					gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
+
+				gOpObj.isNot=isNot.at(i);
+				gOpObj.op=boost::iequals(op.at(i),"|")?'|':'&';
+
+				res.push_back(gOpObj);
+			}
+			return (res);
+}
 /*
  * convert R filter to specific gate class
  * Note: up to caller to free the dynamically allocated gate object
@@ -569,32 +601,7 @@ gate * newGate(List filter){
 			boolGate * bg=new boolGate();
 
 			bg->setNegate(isNeg);
-			/*
-			 * get specification from R
-			 */
-			StringVec refs=as<StringVec>(filter["refs"]);
-			StringVec op=as<StringVec>(filter["op"]);
-			BoolVec isNot=as<BoolVec>(filter["isNot"]);
-
-			/*
-			 * convert to c class
-			 */
-			vector<BOOL_GATE_OP> res;
-			for(unsigned i=0;i<refs.size();i++)
-			{
-
-				BOOL_GATE_OP gOpObj;
-
-				boost::split(gOpObj.path,refs.at(i),boost::is_any_of("/"));
-				if(gOpObj.path.at(0).empty())
-					gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
-
-				gOpObj.isNot=isNot.at(i);
-				gOpObj.op=boost::iequals(op.at(i),"|")?'|':'&';
-
-				res.push_back(gOpObj);
-			}
-			bg->boolOpSpec=res;
+			bg->boolOpSpec = boolFilter_R_to_C(filter);
 			g=bg;
 			break;
 
@@ -648,6 +655,7 @@ gate * newGate(List filter){
 	return g;
 
 }
+
 RcppExport SEXP R_addGate(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _parentID,SEXP _popName) {
 BEGIN_RCPP
 
@@ -671,6 +679,34 @@ BEGIN_RCPP
 
 END_RCPP
 }
+/**
+ * mainly used for openCyto rectRef gate which first being added as a rectangle gate
+ * and then gated as boolean filter
+ */
+RcppExport SEXP R_boolGating(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _nodeID) {
+BEGIN_RCPP
+
+
+		GatingSet *	gs=getGsPtr(_gsPtr);
+		string sampleName=as<string>(_sampleName);
+		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+
+		unsigned nodeID=as<unsigned>(_nodeID);
+
+		List filter=as<List>(_filter);
+
+		nodeProperties & node=gh->getNodeProperty(nodeID);
+		//parse boolean expression from R data structure into c++
+		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
+		//perform bool gating
+		vector<bool> curIndices= gh->boolGating(boolOp);
+		//save the indices
+		node.setIndices(curIndices);
+		node.computeStats();
+
+END_RCPP
+}
+
 
 RcppExport SEXP R_setGate(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID,SEXP _filter) {
 BEGIN_RCPP

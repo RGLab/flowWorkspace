@@ -220,6 +220,7 @@ public:
 	void gating(VertexID,bool recompute=false);
 	void calgate(VertexID);
 	vector<bool> boolGating(VertexID);
+	vector<bool> boolGating(vector<BOOL_GATE_OP> boolOpSpec);
 	void extendGate(float);
 	void extendGate(float,float);
 

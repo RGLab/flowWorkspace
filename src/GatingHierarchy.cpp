@@ -620,6 +620,76 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 	return ind;
 
 }
+/**
+ * external boolOpSpec can be provided .
+ * It is mainly used by openCyto rectRef gate
+ *
+ * @param u
+ * @param boolOpSpec
+ * @return
+ */
+vector<bool> GatingHierarchy::boolGating(vector<BOOL_GATE_OP> boolOpSpec){
+
+	vector<bool> ind;
+	/*
+	 * combine the indices of reference populations
+	 */
+
+
+	for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+	{
+		/*
+		 * find id of reference node
+		 */
+		VertexID nodeID;
+		/*
+		 * assume the reference node has already added during the parsing stage
+		 */
+		vector<string> nodePath=it->path;
+
+		nodeID=getNodeID(nodePath);//search ID by path
+
+
+		nodeProperties & curPop=getNodeProperty(nodeID);
+
+		if(!curPop.isGated())
+		{
+			if(g_loglevel>=POPULATION_LEVEL)
+				COUT <<"go to the ungated reference node:"<<curPop.getName()<<endl;
+			calgate(nodeID);
+		}
+
+		vector<bool> curPopInd=curPop.getIndices();
+		if(it->isNot)
+			curPopInd.flip();
+
+		/*
+		 * for the first reference node
+		 * assign the indices directly without logical operation
+		 */
+		if(it==boolOpSpec.begin())
+			ind=curPopInd;
+		else
+		{
+			switch(it->op)
+			{
+				case '&':
+					transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_and<bool>());
+					break;
+				case '|':
+					transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_or<bool>());
+					break;
+				default:
+					throw(domain_error("not supported operator!"));
+			}
+		}
+
+	}
+
+	return ind;
+
+}
+
 
 /*
  * current output the graph in dot format
