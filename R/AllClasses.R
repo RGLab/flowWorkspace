@@ -357,7 +357,7 @@ validGatingSetListObject <- function(object){
   }
   
   #check sample vector
-  if(!ncdfFlow:::.isValidSamples(object@samples,object)){
+  if(!ncdfFlow:::.isValidSamples(names(object@samples),object)){
     return ("'samples' slot is not consisitent with sample names from GatingSets!")
   }          
   return (TRUE)
@@ -419,7 +419,8 @@ setValidity("GatingSetList", validGatingSetListObject)
 #' @description use \code{GatingSetList} constructor to create a GatingSetList from a list of GatingSet
 #' 
 #' @param x a \code{list} of \code{GatingSet}
-#' @param samples \code{character} vector specifying the sample names. if NULL, the sample names are extracted from GatingSets
+#' @param samples \code{character} vector specifying the sample names.
+#'                 if NULL, the sample names are extracted from GatingSets
 #'
 #' @rdname GatingSetList-class 
 #' @export 
@@ -427,11 +428,16 @@ GatingSetList <- function(x,samples = NULL)
 {
   names(x)<-NULL#strip names from the list because rbind2 doesn't like it
   flowCore:::checkClass(x, "list")
+  
   if(is.null(samples)){
-    samples <- unlist(lapply(x,sampleNames))
+    x <- as(x, "ncdfFlowList")
+  }else{
+    #reconstruct indexing
+    sampleIndex <- ncdfFlow:::.indexingSample(x)
+    thisInd <- match(samples, names(sampleIndex))
+    x <- new("ncdfFlowList", data = x, samples = sampleIndex[thisInd])  
   }
-  x <- new("ncdfFlowList", data = x, samples = samples)
-
+  
   x<- as(x, "GatingSetList")
   if(validObject(x))
     x

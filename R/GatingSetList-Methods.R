@@ -15,7 +15,7 @@ setMethod("rbind2",
         #combine flowset/ncdfFlowSet
         fsList <- lapply(x, getData, level =1)
         if(isNcdfList[[1]])
-          fs<-rbind2(as(fsList,"ncdfFlowList"),...)
+          fs<-rbind2(ncdfFlowList(fsList), ...)
         else
         {
           ##using original flowCore::rbind2 for flowSet
@@ -89,10 +89,8 @@ setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
               ncfs <- getData(gs,y, ...)
             ncfs
           }, level =1)
-      nclist <- as(res, "ncdfFlowList")
-      nclist@samples <- samples_orig
+      ncdfFlowList(res, samples_orig)
       
-      nclist
     })
 
 
@@ -172,7 +170,7 @@ save_gslist<-function(gslist,path,...){
       }, level =1)
 #  browser()
   #save sample vector
-  saveRDS(gslist@samples,file=file.path(path,"samples.rds"))
+  saveRDS(names(gslist@samples),file=file.path(path,"samples.rds"))
   message("Done\nTo reload it, use 'load_gslist' function\n")
   
   
