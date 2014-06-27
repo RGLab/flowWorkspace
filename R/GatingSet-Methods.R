@@ -1926,9 +1926,10 @@ setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
 
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
-      x <- as(x, "GatingHierarchy")
-      x@name <- i
-      x
+      as(x[i], "GatingHierarchy")
+#      x <- as(x, "GatingHierarchy")
+#      x@name <- i
+#      x
     })
 
 #' Methods to get the length of a GatingSet

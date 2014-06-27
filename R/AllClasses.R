@@ -166,8 +166,8 @@ setClass("GatingSet"
 #' show,GatingHierarchy-method
 setClass("GatingHierarchy"
           , contains = "GatingSet"
-          , representation(name = "character")
-          , prototype(name = "")
+#          , representation(name = "character")
+#          , prototype(name = "")
         )
 
 
