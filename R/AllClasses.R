@@ -432,10 +432,8 @@ GatingSetList <- function(x,samples = NULL)
   if(is.null(samples)){
     x <- as(x, "ncdfFlowList")
   }else{
-    #reconstruct indexing
-    sampleIndex <- ncdfFlow:::.indexingSample(x)
-    thisInd <- match(samples, names(sampleIndex))
-    x <- new("ncdfFlowList", data = x, samples = sampleIndex[thisInd])  
+    x <- ncdfFlowList(x, samples)
+      
   }
   
   x<- as(x, "GatingSetList")
