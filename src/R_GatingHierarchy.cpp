@@ -70,15 +70,13 @@ BEGIN_RCPP
 	GatingSet *	gs=getGsPtr(_gsPtr);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	StringVec gatePath=as<StringVec>(_gatePath);
+	string gatePath=as<string>(_gatePath);
 	return wrap((NODEID)gh->getNodeID(gatePath));
 
 
 END_RCPP
 }
-
-
-RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
 BEGIN_RCPP
 
 
@@ -87,12 +85,13 @@ BEGIN_RCPP
 
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-	int u=as<int>(_i);
+	string gatePath=as<string>(_gatePath);
+	NODEID u = gh->getNodeID(gatePath);
 	return wrap((NODEID)gh->getParent(u));
 END_RCPP
 }
 
-RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
 BEGIN_RCPP
 
 
@@ -101,7 +100,8 @@ BEGIN_RCPP
 
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	int u=as<int>(_i);
+	string gatePath=as<string>(_gatePath);
+	NODEID u = gh->getNodeID(gatePath);
 	VertexID_vec childrenID = gh->getChildren(u);
 	vector<NODEID> res;
 	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++)
@@ -110,7 +110,7 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_getPopStats(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+RcppExport SEXP R_getPopStats(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
 BEGIN_RCPP
 
 
@@ -119,7 +119,8 @@ BEGIN_RCPP
 
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-	int u=as<int>(_i);
+	string gatePath=as<string>(_gatePath);
+	NODEID u = gh->getNodeID(gatePath);
 	nodeProperties &node=gh->getNodeProperty(u);
 
 	return List::create(Named("FlowCore",node.getStats(true))
@@ -312,7 +313,7 @@ END_RCPP
 }
 
 
-RcppExport SEXP R_getGate(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+RcppExport SEXP R_getGate(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
 BEGIN_RCPP
 
 
@@ -320,14 +321,16 @@ BEGIN_RCPP
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
-	int u=as<int>(_i);
-
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	string gatePath=as<string>(_gatePath);
+	NODEID u = gh->getNodeID(gatePath);
 	if(u<0)
 		throw(domain_error("not valid vertexID!"));
 	if(u==0)
 		throw(domain_error("no gate associated with root node."));
-	gate *g=gh->getNodeProperty(u).getGate();
+	nodeProperties & node = gh->getNodeProperty(u);
+	gate *g = node.getGate();
+	string nodeName = node.getName();
 	unsigned short gType=g->getType();
 	if(gType==RECTGATE)
 		gType=POLYGONGATE;
@@ -350,6 +353,7 @@ BEGIN_RCPP
 							 	 	 	 	 ,Named("cov", covMat)
 							 	 	 	 	 ,Named("dist", dist)
 							 	 	 	 	 ,Named("type",ELLIPSEGATE)
+							 	 	 	 	 , Named("filterId", nodeName)
 							 	 	 	 	 );
 					return ret;
 				}
@@ -360,6 +364,7 @@ BEGIN_RCPP
 				 List ret=List::create(Named("parameters",g->getParamNames())
 						 	 	 	 	 ,Named("x",vert.x),Named("y",vert.y)
 						 	 	 	 	 ,Named("type",POLYGONGATE)
+						 	 	 	 	 , Named("filterId", nodeName)
 						 	 	 	 	 );
 				return ret;
 			}
@@ -371,6 +376,7 @@ BEGIN_RCPP
 				List ret=List::create(Named("parameters",g->getParamNames())
 									 ,Named("range",vert.x)
 									 ,Named("type",RANGEGATE)
+									 , Named("filterId", nodeName)
 									 );
 				return ret;
 			}
@@ -392,6 +398,7 @@ BEGIN_RCPP
 									 ,Named("v2",v2)
 									 ,Named("ref",ref)
 									 ,Named("type",BOOLGATE)
+									 , Named("filterId", nodeName)
 									 );
 			  return ret;
 
@@ -407,17 +414,19 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_getIndices(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+RcppExport SEXP R_getIndices(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
 BEGIN_RCPP
 
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
-	int u=as<int>(_i);
-	if(u<0)throw(domain_error("not valid vertexID!"));
+
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	string gatePath=as<string>(_gatePath);
+	NODEID u = gh->getNodeID(gatePath);
+	if(u<0)throw(domain_error("not valid vertexID!"));
 	return wrap(gh->getNodeProperty(u).getIndices());
 
 END_RCPP
@@ -443,33 +452,33 @@ END_RCPP
 }
 
 
-RcppExport SEXP R_getGateFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+RcppExport SEXP R_getGateFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
 BEGIN_RCPP
 
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
-	int u=as<int>(_i);
-	if(u<0)throw(domain_error("not valid vertexID!"));
-
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	string gatePath=as<string>(_gatePath);
+	NODEID u = gh->getNodeID(gatePath);
+	if(u<0)throw(domain_error("not valid vertexID!"));
 	return wrap(gh->getNodeProperty(u).isGated());
 
 END_RCPP
 }
 
-RcppExport SEXP R_getNegateFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _i){
+RcppExport SEXP R_getNegateFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
 BEGIN_RCPP
 
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
-	int u=as<int>(_i);
-	if(u<0)throw(domain_error("not valid vertexID!"));
-
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	string gatePath=as<string>(_gatePath);
+	NODEID u = gh->getNodeID(gatePath);
+	if(u<0)throw(domain_error("not valid vertexID!"));
 	return wrap(gh->getNodeProperty(u).getGate()->isNegate());
 
 END_RCPP
@@ -656,7 +665,7 @@ gate * newGate(List filter){
 
 }
 
-RcppExport SEXP R_addGate(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _parentID,SEXP _popName) {
+RcppExport SEXP R_addGate(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _gatePath,SEXP _popName) {
 BEGIN_RCPP
 
 
@@ -664,13 +673,14 @@ BEGIN_RCPP
 		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-		unsigned parentID=as<unsigned>(_parentID);
+		string gatePath=as<string>(_gatePath);
+		NODEID u = gh->getNodeID(gatePath);
 		string popName=as<string>(_popName);
 		List filter=as<List>(_filter);
 		gate * g=newGate(filter);
 
 
-		VertexID nodeID=gh->addGate(g,parentID,popName);
+		VertexID nodeID=gh->addGate(g,u,popName);
 
 
 		return wrap((NODEID)nodeID);
@@ -708,7 +718,7 @@ END_RCPP
 }
 
 
-RcppExport SEXP R_setGate(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID,SEXP _filter) {
+RcppExport SEXP R_setGate(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath,SEXP _filter) {
 BEGIN_RCPP
 
 
@@ -716,12 +726,14 @@ BEGIN_RCPP
 		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-		unsigned nodeID=as<unsigned>(_nodeID);
+		string gatePath=as<string>(_gatePath);
+		NODEID u = gh->getNodeID(gatePath);
+
 		List filter=as<List>(_filter);
 
 		gate * g=newGate(filter);
 
-		nodeProperties & node=gh->getNodeProperty(nodeID);
+		nodeProperties & node=gh->getNodeProperty(u);
 		gate * old_g = node.getGate();
 		delete old_g;
 		old_g=NULL;
@@ -730,7 +742,7 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_removeNode(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID) {
+RcppExport SEXP R_removeNode(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath) {
 BEGIN_RCPP
 
 
@@ -739,14 +751,15 @@ BEGIN_RCPP
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
 
-		unsigned nodeID=as<unsigned>(_nodeID);
+		string gatePath=as<string>(_gatePath);
+		NODEID u = gh->getNodeID(gatePath);
 
-		gh->removeNode(nodeID);
+		gh->removeNode(u);
 
 END_RCPP
 }
 
-RcppExport SEXP R_setNodeName(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID, SEXP _newNodeName) {
+RcppExport SEXP R_setNodeName(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath, SEXP _newNodeName) {
 BEGIN_RCPP
 
 
@@ -756,16 +769,17 @@ BEGIN_RCPP
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
 
-		unsigned nodeID=as<unsigned>(_nodeID);
+		string gatePath=as<string>(_gatePath);
+		NODEID u = gh->getNodeID(gatePath);
 
-		nodeProperties &node=gh->getNodeProperty(nodeID);
+		nodeProperties &node=gh->getNodeProperty(u);
 		node.setName(newNodeName.c_str());
 
 
 END_RCPP
 }
 
-RcppExport SEXP R_setNodeFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeID, SEXP _hidden) {
+RcppExport SEXP R_setNodeFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath, SEXP _hidden) {
 BEGIN_RCPP
 
 
@@ -775,9 +789,10 @@ BEGIN_RCPP
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
 
-		unsigned nodeID=as<unsigned>(_nodeID);
+		string gatePath=as<string>(_gatePath);
+		NODEID u = gh->getNodeID(gatePath);
 
-		nodeProperties &node=gh->getNodeProperty(nodeID);
+		nodeProperties &node=gh->getNodeProperty(u);
 		node.setHiddenFlag(hidden);
 
 

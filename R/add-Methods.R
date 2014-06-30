@@ -237,10 +237,10 @@ setMethod("add",
 #' @param recompute \code{logical} whether to recompute the event indices right after gate is added. 
 #'                                  Oftentimes it is more efficient to let user to determining how and when the flow data is loaded
 #'                                  Thus default it FALSE.                      
-.addGate<-function(gh, filterObject, parent = "root", name=NULL, negated=FALSE, recompute = FALSE){
-#  browser()
+.addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE, recompute = FALSE){
+  
 	if(is.null(name))
-		name<-filterObject$filterId
+		name <- filterObject$filterId
     #replace the slash with colon 
     #since forward slash is reserved for gating path
   if(grepl("/",name)){
@@ -249,14 +249,14 @@ setMethod("add",
     warning(old_name, " is replaced with ", name)
   }
     
-	pid <- .getNodeInd(gh,parent)
 	
-	filterObject$negated<-negated
+	
+	filterObject$negated <- negated
 #	browser()	
     sn <- sampleNames(gh)
-    pid <- as.integer(pid-1)
+    
     ptr <- gh@pointer
-	nodeID <- .Call("R_addGate", ptr, sn, filterObject, pid, name)
+	nodeID <- .Call("R_addGate", ptr, sn, filterObject, parent, name)
 
     if(recompute){
       extend_val <- 0
@@ -412,7 +412,7 @@ setMethod("Rm",
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion
 			lapply(childrenNodes,function(child)Rm(child,envir))
-            nid <- .getNodeInd(envir,symbol)
-			.Call("R_removeNode",envir@pointer,sampleNames(envir),nid-1)
+            
+			.Call("R_removeNode",envir@pointer,sampleNames(envir), symbol)
 		})
 

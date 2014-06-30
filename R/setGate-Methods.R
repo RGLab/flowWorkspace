@@ -30,10 +30,10 @@ NULL
 setMethod("setGate"
     ,signature(obj="GatingHierarchy",y="character",value="filter")
     ,function(obj,y,value, negated = FALSE,...){
-      y <- .getNodeInd(obj,y)
+      
       this_fobj <- filterObject(value)
       this_fobj$negated<-negated
-      .Call("R_setGate",obj@pointer,sampleNames(obj),as.integer(y-1),this_fobj)
+      .Call("R_setGate",obj@pointer,sampleNames(obj), y, this_fobj)
       
     })
 #' @rdname setGate

@@ -229,6 +229,7 @@ public:
 	void drawGraph(string out);
 	int getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
+	VertexID getNodeID(string gatePath);
 	VertexID getNodeID(VertexID u,string popName);
 	VertexID getRefNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order

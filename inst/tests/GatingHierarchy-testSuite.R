@@ -8,7 +8,7 @@ test_that(".isCompensated",
 test_that("getNodeInd ",{
       
       #invalid numeric indexing
-      expect_error(.getNodeInd(gh, 2), "must be object of class 'character'")
+      expect_error(.getNodeInd(gh, 2), "expecting a string")
       
       #invalid node name
       expect_error(.getNodeInd(gh, "singlet"), "singlet not found")
@@ -311,7 +311,7 @@ test_that("getChildren",{
 
 test_that(".getPopStat",{
       
-      expect_error(.getPopStat(gh, 3), "'y' must be object of class 'character'")
+      expect_error(.getPopStat(gh, 3), "Error : expecting a string")
       
       expect_error(.getPopStat(gh, "singlet"), "not found")
       

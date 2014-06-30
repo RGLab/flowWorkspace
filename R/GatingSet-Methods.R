@@ -1555,9 +1555,8 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' It is usually used immediately after \link{add} or \link{setGate} calls. 
 #'  
 #' @param x \code{GatingSet}
-#' @param y \code{character} node name or node path
 #' @param ... other arguments
-#' 
+#'          y \code{character} node name or node path 
 #'          alwaysLoadData \code{logical} 
 #'                  specifies whether to load the flow raw data for gating
 #'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
@@ -1569,8 +1568,8 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' @aliases recompute
 #' @rdname recompute
 #' @export
-setMethod("recompute",c("GatingSet"),function(x, y, ...){
-			.recompute(x,y, ...)
+setMethod("recompute",c("GatingSet"),function(x, ...){
+			.recompute(x, ...)
 
 		})
 #' @param x \code{GatingSet}
@@ -1582,13 +1581,11 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
 #'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
 #'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
 #'                  , yet may at the cost of unnecessary data IO
-.recompute <- function(x,y, alwaysLoadData = FALSE, verbose = FALSE){
-  if(missing(y))
-    y <- "root"
-  if(!is.character(y))
-    stop(" 'numeric` indexing is no longer safe. Please use node name instead!")
-    
-
+.recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE){
+  
+  if(y == "root")
+    alwaysLoadData <- TRUE #skip the checking to save time when start from root
+  
   extend_val <- 0
   ignore_case <- FALSE
   gains <- NULL
@@ -2169,7 +2166,7 @@ getIndiceMat <- function(gh,y){
   indice_list <- sapply(nodes,function(this_node).Call("R_getIndices"
             , gs@pointer
             , thisSample
-            , as.integer(.getNodeInd(gs,this_node) - 1))
+            , this_node)
       ,simplify = FALSE)
   
   #construct the indice matrix

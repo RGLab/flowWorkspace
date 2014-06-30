@@ -776,10 +776,32 @@ VertexID_vec GatingHierarchy::getVertices(unsigned short order){
 }
 
 /**
+ *  Unary predicate for checking whether a string is empty
+ * @param path
+ * @return
+ */
+bool isEmpty(string path){
+	return(path.empty());
+
+}
+/**
+ * retrieve the VertexID by the gating path
+ * @param gatePath single string containing full(or partial) gating path
+ * @return
+ */
+VertexID GatingHierarchy::getNodeID(string gatePath){
+	StringVec res;
+	boost::split(res,gatePath,boost::is_any_of("/"));
+	//remove the empty string
+	res.erase(remove_if(res.begin(),res.end(), isEmpty), res.end());
+	return (getNodeID(res));
+
+}
+/**
  * retrieve the VertexID by the gating path
  * this serves as a parser to convert generic gating path into internal node ID
  * and it doesn't allow ambiguity (throw the exception when multiple nodes match)
- * @param gatePath full(or partial) gating path
+ * @param gatePath a string vector of full(or partial) gating path
  * @return node id
  */
 VertexID GatingHierarchy::getNodeID(vector<string> gatePath){

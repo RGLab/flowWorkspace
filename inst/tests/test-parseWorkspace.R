@@ -41,8 +41,8 @@ test_that("parse without gating",{
       #exclude the gates that require extension since the extend_to are different 
       # based on whether data is loaded
       nodes <- getNodes(gh)[ -c(6:13, 15:22)]
-      thisGates <- sapply(nodes, getGate, obj = gh1)
-      expectGates <- sapply(nodes, getGate, obj = gh)
+      thisGates <- sapply(nodes[-1], getGate, obj = gh1)
+      expectGates <- sapply(nodes[-1], getGate, obj = gh)
       expect_equal(thisGates, expectGates)
       
       

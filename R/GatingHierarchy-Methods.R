@@ -928,9 +928,7 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 #' @rdname getParent
 #' @export 
 setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, ...){
-#			browser()
-			ind <- .getNodeInd(obj,y)
-            pind <- .Call("R_getParent",obj@pointer,sampleNames(obj)[1],as.integer(ind)-1)
+            pind <- .Call("R_getParent",obj@pointer,sampleNames(obj)[1], y)
             pind <- pind +1
 			getNodes(obj, showHidden = TRUE, ...)[pind]
 		})
@@ -938,8 +936,8 @@ setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, .
 #' @export
 #' @aliases getChildren   
 setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y, ...){
-			ind <- .getNodeInd(obj,y)
-            cind <- .Call("R_getChildren",obj@pointer,sampleNames(obj),as.integer(ind)-1)
+			
+            cind <- .Call("R_getChildren",obj@pointer,sampleNames(obj), y)
             cind <- cind + 1
 			getNodes(obj, showHidden = TRUE, ...)[cind]
 })
@@ -975,18 +973,19 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 .getPopStat<-function(x,y){
 	stopifnot(!missing(y))
 
-    y <- .getNodeInd(x, y)
-	stats<-.Call("R_getPopStats",x@pointer,sampleNames(x),as.integer(y)-1)
+    
+	stats<-.Call("R_getPopStats",x@pointer,sampleNames(x), y)
 
-	pInd<-try(.Call("R_getParent", x@pointer, sampleNames(x), as.integer(y) -1),silent=T)
+    
+	parent<-try(getParent(x, y),silent=T)
 
 
-	if(class(pInd)=="try-error")#if parent exist
+	if(class(parent)=="try-error")#if parent exist
 		pstats<-stats
 	else
 	{
-		pInd<-pInd+1 #convert c convention to R
-		pstats<-.Call("R_getPopStats",x@pointer,sampleNames(x),as.integer(pInd)-1)
+		
+		pstats<-.Call("R_getPopStats",x@pointer,sampleNames(x), parent)
 	}
 
 
@@ -1071,15 +1070,9 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
 #' @export
 setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
-            y <- .getNodeInd(obj,y)
-            vertexID <- y-1
-			if(vertexID<=0)
-				return (NA)
-			else
-			{
 
-				g<-.Call("R_getGate",obj@pointer,sampleNames(obj),vertexID)
-				filterId <- getNodes(obj, showHidden = TRUE, path = 1, prefix = "auto")[y]
+				g<-.Call("R_getGate",obj@pointer,sampleNames(obj), y)
+				filterId <- g$filterId
 				if(g$type==1)
 				{
 
@@ -1116,18 +1109,12 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
                 }else
 					stop("not supported gate type",g$type)
 
-			}
+			
 		})
         
 .getNodeInd <- function(obj,y, ...){
     
-    flowCore:::checkClass(y, "character")
-    this_path <- strsplit(split="/", y, fixed=TRUE)[[1]]
-    #remove empty string
-    isEmpty <- sapply(this_path,function(this_char)nchar(this_char)==0)
-    this_path <- this_path[!isEmpty]
-    
-    ind <- .Call("R_getNodeID",obj@pointer,sampleNames(obj)[1],this_path)
+    ind <- .Call("R_getNodeID",obj@pointer,sampleNames(obj)[1], y)
 
     ind + 1 # convert to R index
 
@@ -1162,9 +1149,8 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #' @rdname getIndices
 #' @export
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-
-            ind <- .getNodeInd(obj,y)
-            .Call("R_getIndices",obj@pointer,sampleNames(obj),as.integer(ind-1))
+            
+            .Call("R_getIndices",obj@pointer,sampleNames(obj), y)
 
 		})
 
@@ -1173,16 +1159,16 @@ setGeneric("isGated",function(obj, y, ...)standardGeneric("isGated"))
 setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 
 #			browser()
-      ind <- .getNodeInd(obj,y)
-      .Call("R_getGateFlag",obj@pointer,sampleNames(obj),as.integer(ind-1))
+      
+      .Call("R_getGateFlag",obj@pointer,sampleNames(obj), y)
 
     })
 
 
 setGeneric("isNegated",function(obj, y, ...)standardGeneric("isNegated"))
 setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-      ind <- .getNodeInd(obj,y)
-      .Call("R_getNegateFlag",obj@pointer,sampleNames(obj),as.integer(ind-1))
+      
+      .Call("R_getNegateFlag",obj@pointer,sampleNames(obj), y)
       
       
     })
@@ -1734,8 +1720,8 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="character")
     ,function(x,y,value){
-      y <- .getNodeInd(x,y)
-      .Call("R_setNodeName",x@pointer,sampleNames(x),as.integer(y-1),value)
+      
+      .Call("R_setNodeName",x@pointer,sampleNames(x), y,value)
     })
 
 #' hide/unhide a node
@@ -1752,9 +1738,9 @@ setMethod("setNode"
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="logical")
     ,function(x,y,value){
-      y <- .getNodeInd(x,y)
+      
       hidden = !value
-      .Call("R_setNodeFlag",x@pointer,sampleNames(x),as.integer(y-1),hidden)
+      .Call("R_setNodeFlag",x@pointer,sampleNames(x), y, hidden)
     })
 
 #' @rdname sampleNames
