@@ -387,7 +387,7 @@ setValidity("GatingSetList", validGatingSetListObject)
   if(setequal(tree1, tree2)){
     return (TRUE)
   }else{
-    return (paste("gating structure doesn't match:",getSample(gh1),getSample(gh2)))
+    return (paste("gating structure doesn't match:",sampleNames(gh1),sampleNames(gh2)))
   }
 }
 .compareFlowData<-function(fs1,fs2){

@@ -33,7 +33,7 @@ setMethod("setGate"
       y <- .getNodeInd(obj,y)
       this_fobj <- filterObject(value)
       this_fobj$negated<-negated
-      .Call("R_setGate",obj@pointer,getSample(obj),as.integer(y-1),this_fobj)
+      .Call("R_setGate",obj@pointer,sampleNames(obj),as.integer(y-1),this_fobj)
       
     })
 #' @rdname setGate

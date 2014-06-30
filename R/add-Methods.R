@@ -362,7 +362,7 @@ setMethod("add",
 #			if(missing(name))
 #				stop("population name is required!")
 #			if(length(action)!=nrow(getData(wf)))
-#				stop("the length of logical vector is different from events number in: ",getSample(wf))
+#				stop("the length of logical vector is different from events number in: ",sampleNames(wf))
 #			
 #			
 #			filterObject<-list(type=as.integer(6)
@@ -413,6 +413,6 @@ setMethod("Rm",
             #will change during deletion
 			lapply(childrenNodes,function(child)Rm(child,envir))
             nid <- .getNodeInd(envir,symbol)
-			.Call("R_removeNode",envir@pointer,getSample(envir),nid-1)
+			.Call("R_removeNode",envir@pointer,sampleNames(envir),nid-1)
 		})
 

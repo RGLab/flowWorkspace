@@ -484,7 +484,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			files<-file.path(dataPaths,samples)
 			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
-			Object@pointer <- .Call("R_NewGatingSet",x@pointer,getSample(x),samples)
+			Object@pointer <- .Call("R_NewGatingSet",x@pointer,sampleNames(x),samples)
             Object@guid <- .uuid_gen()
             Object@FCSPath <- dataPaths
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
@@ -1595,7 +1595,7 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
   lapply(x,function(gh){
 
 
-        sampleName<-getSample(gh)
+        sampleName<-sampleNames(gh)
         if(verbose)
           message(paste("gating",sampleName,"..."))
         else
