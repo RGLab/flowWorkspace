@@ -1228,7 +1228,7 @@ setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y,
       }
 
       fs <- flowData(obj)
-      fs[[1,...]]
+      fs[[sampleNames(obj),...]]
       
 })
 
@@ -1253,7 +1253,7 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
 
 
 getAxisLabels <- function(obj,...){
-              obj@axis[[1]]
+              obj@axis[[sampleNames(obj)]]
 		}
 
 #' Return a list of transformations or a transformation in a GatingHierarchy
@@ -1755,6 +1755,12 @@ setMethod("setNode"
       y <- .getNodeInd(x,y)
       hidden = !value
       .Call("R_setNodeFlag",x@pointer,getSample(x),as.integer(y-1),hidden)
+    })
+
+#' @rdname sampleNames
+#' @export
+setMethod("sampleNames","GatingHierarchy",function(object){
+      object@name
     })
 
 #' Get the sample name associated with a GatingHierarchy

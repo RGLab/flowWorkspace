@@ -1295,7 +1295,13 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
     is.gh <- class(x) == "GatingHierarchy"
     if(is.gh){
-      x <- as(x, "GatingSet")
+      x <- new("GatingSet", pointer = x@pointer 
+                          , FCSPath = x@FCSPath
+                          , data = x@data
+                          , flag = x@flag
+                          , axis = x@axis
+                          , guid = x@guid
+                          )[x@name]       
     }
 
     gh <- x[[1]]
@@ -1926,10 +1932,16 @@ setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
 
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
-      as(x[i], "GatingHierarchy")
-#      x <- as(x, "GatingHierarchy")
-#      x@name <- i
-#      x
+#      as(x[i], "GatingHierarchy")
+      #new takes less time than as method
+      new("GatingHierarchy", pointer = x@pointer 
+                            , FCSPath = x@FCSPath
+                            , data = x@data
+                            , flag = x@flag
+                            , axis = x@axis
+                            , guid = x@guid
+                            , name = i)                             
+      
     })
 
 #' Methods to get the length of a GatingSet
