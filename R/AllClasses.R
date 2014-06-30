@@ -430,7 +430,7 @@ GatingSetList <- function(x,samples = NULL)
   flowCore:::checkClass(x, "list")
   
   if(is.null(samples)){
-    x <- as(x, "ncdfFlowList")
+    x <- ncdfFlowList(x)
   }else{
     x <- ncdfFlowList(x, samples)
       
