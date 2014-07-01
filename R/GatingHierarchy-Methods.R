@@ -1510,12 +1510,11 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
             par.settings <- lattice:::updateList(theme.novpadding, par.settings)
 
             #convert popname to id
+#            prjNodeInds <- try(sapply(names(projections),.getNodeInd, obj = x), silent = TRUE)
+#            if(class(prjNodeInds) == "try-error")
+#              stop("Invalid 'projections': ", geterrmessage())
 
-            prjNodeInds <- try(sapply(names(projections),.getNodeInd, obj = x), silent = TRUE)
-            if(class(prjNodeInds) == "try-error")
-              stop("Invalid 'projections': ", geterrmessage())
-
-            names(projections) <- prjNodeInds
+#            names(projections) <- prjNodeInds
             #match given axis to channel names
             fr <- getData(x, use.exprs = FALSE)
             projections <- lapply(projections, function(thisPrj){

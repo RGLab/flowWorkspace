@@ -1353,7 +1353,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
         sampleNames(parentData) <- popName
         if(!is.null(curGates))
           names(curGates) <- popName
-        names(stats) <- popName
+        if(!is.null(stats))
+          names(stats) <- popName
       }else
         defaultCond <- NULL #hide strip
     }
