@@ -1156,7 +1156,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
   {
     if(length(params) == 1)
     {
-      chnls <- colnames(flowData(x))
+      chnls <- colnames(getData(x))
       if(is.null(formula)){
         xParam <- params
         y.candidates <- chnls[-match(xParam,chnls)]
