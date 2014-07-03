@@ -220,21 +220,24 @@ public:
 	void gating(VertexID,bool recompute=false);
 	void calgate(VertexID);
 	vector<bool> boolGating(VertexID);
+	vector<bool> boolGating(vector<BOOL_GATE_OP> boolOpSpec);
 	void extendGate(float);
 	void extendGate(float,float);
 
 	void transformGate();
 	void adjustGate(map<string,float> & gains);
 	void drawGraph(string out);
-	VertexID getChildren(VertexID source,string childName);
+	int getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
+	VertexID getNodeID(string gatePath);
 	VertexID getNodeID(VertexID u,string popName);
+	VertexID getRefNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
 	vector<string> getPopNames(unsigned short order,bool isPath,bool showHidden);
 	VertexID getAncestor(VertexID u,unsigned short level);
 	EdgeID getInEdges(VertexID target);
 	VertexID getParent(VertexID);
-	VertexID getDescendant(VertexID u,string name);
+	VertexID_vec getDescendants(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties & getNodeProperty(VertexID);
 

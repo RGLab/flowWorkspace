@@ -12,8 +12,6 @@ NULL
 #' \code{recompute} method does the actual gating after the gate is added,i.e. calculating the event indices according to the gate definition.   
 #' @param wf A \code{GatingHierrarchy} or \code{GatingSet}
 #' @param envir A \code{GatingHierrarchy} or \code{GatingSet}
-#' @param x A \code{GatingSet}
-#' @param y a node index within a \code{GatingSet}. It is the root node if unspecified
 #' @param action A \code{filter} or a list of \code{filter}s to be added to the  \code{GatingHierarchy} or \code{GatingSet}.
 #' @param names  a \code{character} vector of length four,which specifies the population names resulted by adding a \code{quadGate}.
 #' The order of the names is clock-wise starting from the top left quadrant population.
@@ -86,52 +84,35 @@ NULL
 #'     Rm('rectangle', gs)
 #'     getNodes(gs[[1]])
 #'  }
-#' 
-#' @aliases 
-#' add
-#' add,GatingSet,list-method
-#' add,GatingSet,filterList-method
-#' add,GatingSet,filtersList-method
-#' add,GatingSet,filter-method
-#' add,GatingSet,filters-method
-#' add,GatingSetList,list-method
-#' add,GatingSetList,filterList-method
-#' add,GatingSetList,filter-method
-#' add,GatingSetList,filtersList-method
-#' add,GatingSetList,filters-method
-#' add,GatingHierarchy,quadGate-method
-#' add,GatingHierarchy,filter-method
-#' add,GatingHierarchy,filters-method
-#' setGate
-#' setGate,GatingSet,ANY,list-method
-#' setGate,GatingSet,ANY,filterList-method
-#' setGate,GatingHierarchy,numeric,filter-method
-#' setGate,GatingHierarchy,character,filter-method
-#' Rm
-#' Rm,character,GatingSet,character-method
-#' Rm,character,GatingHierarchy,character-method
-#' Rm,character,GatingSetList,character-method
-#' recompute
-#' recompute,GatingSet-method
-#' recompute,GatingSetList-method 
 #' @export 
+#' @rdname add
+#' @aliases
+#' add
+#' Rm
 #' @importFrom flowCore add
 setMethod("add",
 		signature=c(wf="GatingSet", "list"),
 		definition=function(wf, action, ...)
 		{
 
-            if(all(sapply(action, function(i)extends(class(i), "filter"))))
+            if(all(sapply(action, function(i)extends(class(i), "filterResult")))){
+              #dispatch right away to avoid the overhead 
+              #since filterResult is expensive to be passed around
+              id <- selectMethod("add", signature = c("GatingSet", "filterList"))(wf, action, ...)
+              return(id)
+            }else if(all(sapply(action, function(i)extends(class(i), "filter"))))
 			  flist <- filterList(action)
             else if(all(sapply(action, function(i)extends(class(i), "filters"))))
               flist <- filtersList(action)
             else
-              stop ("the list doesn't constain valid filter or filters objects!")
+              stop ("the gate list doesn't constain valid 'filter', 'filters' or 'filterResult' objects!")
             
 			add(wf,flist,...)
 			
 		})
-    
+
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c(wf="GatingSetList", "list"),
     definition=function(wf, action, ...)
@@ -140,7 +121,8 @@ setMethod("add",
       selectMethod("add",signature = c(wf="GatingSet", action="list"))(wf, action, ...)
       
     })    
-    
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSet", "filtersList"),
     definition=function(wf, action, ...)
@@ -151,9 +133,12 @@ setMethod("add",
     
 #' @importClassesFrom flowCore filterList filtersList ellipsoidGate intersectFilter polygonGate rectangleGate filters
 #' @importFrom flowCore filterList filtersList filters
+#' @param validityCheck \code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingSet", "filterList"),
-		definition=function(wf, action, ...)
+		definition=function(wf, action, validityCheck = TRUE,...)
 		{
 			samples<-sampleNames(wf)
 			
@@ -168,22 +153,25 @@ setMethod("add",
 							})
 					
 			nodeID <- nodeIDs[[1]]
-#		browser()
-		if(!all(sapply(nodeIDs[-1],function(x)isTRUE(all.equal(x, nodeID, check.attributes = FALSE))))){
-          #restore the gatingset by removing added nodes
-          mapply(samples, nodeIDs, FUN = function(sample, nodeID){
-                gh <- wf[[sample]]
-                nodes <- getNodes(gh)[nodeID]
-                lapply(nodes, Rm, envir = gh)
-              })
-          stop("nodeID are not identical across samples!")
+            
+        if(validityCheck){
+          if(!all(sapply(nodeIDs[-1],function(x)isTRUE(all.equal(x, nodeID, check.attributes = FALSE))))){
+            #restore the gatingset by removing added nodes
+            mapply(samples, nodeIDs, FUN = function(sample, nodeID){
+                  gh <- wf[[sample]]
+                  nodes <- getNodes(gh)[nodeID]
+                  lapply(nodes, Rm, envir = gh)
+                })
+            stop("nodeID are not identical across samples!")
+          }
+          
         }
-			
-		
 		nodeID
 			
 		})
     
+#' @export 
+#' @rdname add
 setMethod("add",
         signature=c("GatingSetList", "filterList"),
         definition=function(wf, action, ...)
@@ -191,13 +179,16 @@ setMethod("add",
           selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
         })
     
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSetList", "filtersList"),
     definition=function(wf, action, ...)
     {
       selectMethod("add",signature = c(wf="GatingSet", action="filtersList"))(wf, action, ...)
     })
-
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingSet", "filter"),
 		definition=function(wf, action, ...)
@@ -209,7 +200,8 @@ setMethod("add",
 			add(wf,actions,...)
 			
 		})
-    
+#' @export 
+#' @rdname add    
 setMethod("add",
     signature=c("GatingSet", "filters"),
     definition=function(wf, action, ...)
@@ -221,7 +213,8 @@ setMethod("add",
       add(wf,actions,...)
       
     })    
-
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSetList", "filter"),
     definition=function(wf, action, ...)
@@ -230,6 +223,8 @@ setMethod("add",
       selectMethod("add",signature = c(wf="GatingSet", action="filter"))(wf, action, ...)
       
     })
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingSetList", "filters"),
     definition=function(wf, action, ...)
@@ -239,10 +234,13 @@ setMethod("add",
       
     })
 
-.addGate<-function(gh,filterObject,parent=NULL, name=NULL,negated=FALSE){
-#  browser()
+#' @param recompute \code{logical} whether to recompute the event indices right after gate is added. 
+#'                                  Oftentimes it is more efficient to let user to determining how and when the flow data is loaded
+#'                                  Thus default it FALSE.                      
+.addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE, recompute = FALSE){
+  
 	if(is.null(name))
-		name<-filterObject$filterId
+		name <- filterObject$filterId
     #replace the slash with colon 
     #since forward slash is reserved for gating path
   if(grepl("/",name)){
@@ -251,25 +249,31 @@ setMethod("add",
     warning(old_name, " is replaced with ", name)
   }
     
-#	browser()
-	##get node ID
 	
-	if(is.null(parent))
-		pid<-1
-	else
-	{
-		if(is.numeric(parent))
-			pid<-parent
-		else
-			pid<-.getNodeInd(gh,parent)
-	}
-	filterObject$negated<-negated
+	
+	filterObject$negated <- negated
 #	browser()	
-	nodeID<-.Call("R_addGate",gh@pointer,getSample(gh),filterObject,as.integer(pid-1),name)
+    sn <- sampleNames(gh)
+    
+    ptr <- gh@pointer
+	nodeID <- .Call("R_addGate", ptr, sn, filterObject, parent, name)
+
+    if(recompute){
+      extend_val <- 0
+      ignore_case <- FALSE
+      gains <- NULL
+      #this always load the raw data
+      #which may not be optimal for bool gate
+      data <- getData(gh)
+      mat <- exprs(data)
+      .Call("R_gating", ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case)
+    }
+        
 	nodeID+1
 }
 
-
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingHierarchy", "filter"),
 		definition=function(wf, action,... )
@@ -277,7 +281,9 @@ setMethod("add",
 			
 			.addGate(wf,filterObject(action),...)
 		})
-
+    
+#' @export 
+#' @rdname add
 setMethod("add",
     signature=c("GatingHierarchy", "filters"),
     definition=function(wf, action, names = NULL, ... )
@@ -297,7 +303,8 @@ setMethod("add",
         unlist(lapply(action, function(thisFilter)add(wf, thisFilter,...)))
       
     })
-
+#' @export 
+#' @rdname add
 setMethod("add",
 		signature=c("GatingHierarchy", "quadGate"),
 		definition=function(wf, action, names = NULL, ... )
@@ -355,7 +362,7 @@ setMethod("add",
 #			if(missing(name))
 #				stop("population name is required!")
 #			if(length(action)!=nrow(getData(wf)))
-#				stop("the length of logical vector is different from events number in: ",getSample(wf))
+#				stop("the length of logical vector is different from events number in: ",sampleNames(wf))
 #			
 #			
 #			filterObject<-list(type=as.integer(6)
@@ -366,6 +373,8 @@ setMethod("add",
 #		})
 
 #' @importFrom flowCore Rm
+#' @export 
+#' @rdname add
 setMethod("Rm",
 		signature=c(symbol="character",
 				envir="GatingSet",
@@ -377,6 +386,8 @@ setMethod("Rm",
 								Rm(symbol,gh,subSymbol,...)
 							}))
 		})
+#' @export 
+#' @rdname add    
 setMethod("Rm",
     signature=c(symbol="character",
         envir="GatingSetList",
@@ -387,28 +398,21 @@ setMethod("Rm",
           ,signature = c(symbol="character", envir="GatingSet", subSymbol="character"))(symbol, envir, subSymbol, ...)
     })
     
-# can't use numerical index to do the Rm because 
-# numerical index will change once nodes are removed
-# thus Rm by node name is safer
+
+#' @export 
+#' @rdname add
 setMethod("Rm",
 		signature=c(symbol="character",
 				envir="GatingHierarchy",
 				subSymbol="character"),
 		definition=function(symbol, envir, subSymbol, ...)
 		{
-#			browser()
-            
-            nid <- .getNodeInd(envir,symbol)
             ##remove all children nodes as well
-			childrenNodeIds <- getChildren(envir,nid)
+			childrenNodes <- getChildren(envir,symbol)
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion
-            childrenPaths <- getNodes(envir, showHidden = TRUE)[childrenNodeIds]
+			lapply(childrenNodes,function(child)Rm(child,envir))
             
-			lapply(childrenPaths,function(child)Rm(child,envir))
-			
-            
-            
-			.Call("R_removeNode",envir@pointer,getSample(envir),nid-1)
+			.Call("R_removeNode",envir@pointer,sampleNames(envir), symbol)
 		})
 

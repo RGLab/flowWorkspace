@@ -34,15 +34,15 @@ test_that("parse without gating",{
       expect_that(gs1, is_a("GatingSet"));
       gh1 <- gs1[[1]]
       
-      thisStats <- getPopStats(gh1)[, c(2,4,5), with = FALSE]
-      expectStats <- getPopStats(gh)[, c(2,4,5), with = FALSE]
+      thisStats <- getPopStats(gh1)[, list(flowJo.freq,flowJo.count, node)]
+      expectStats <- getPopStats(gh)[, list(flowJo.freq,flowJo.count, node)]
       expect_equal(thisStats, expectStats)
       
       #exclude the gates that require extension since the extend_to are different 
       # based on whether data is loaded
       nodes <- getNodes(gh)[ -c(6:13, 15:22)]
-      thisGates <- sapply(nodes, getGate, obj = gh1)
-      expectGates <- sapply(nodes, getGate, obj = gh)
+      thisGates <- sapply(nodes[-1], getGate, obj = gh1)
+      expectGates <- sapply(nodes[-1], getGate, obj = gh)
       expect_equal(thisGates, expectGates)
       
       

@@ -24,13 +24,9 @@ NULL
 #' 
 #' @importFrom XML xmlTreeParse xmlAttrs xmlGetAttr xmlTreeParse xmlRoot xmlValue xpathApply
 #' 
-#' @aliases
-#' openWorkspace
-#' openWorkspace-methods
-#' openWorkspace,character-method
-#' closeWorkspace
-#' closeWorkspace-methods
-#' closeWorkspace,flowJoWorkspace-method
+#' @aliases openWorkspace
+#' @rdname openWorkspace
+#' @export 
 setMethod("openWorkspace",signature=signature(file="character"),definition= function(file,options = 0,...){
  	#message("We do not fully support all features found in a flowJo workspace, nor do we fully support all flowJo workspaces at this time.")
 	tmp<-tempfile(fileext=".xml")
@@ -74,6 +70,9 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 })
 
 #' @importFrom XML free
+#' @rdname openWorkspace
+#' @export
+#' @aliases closeWorkspace
 setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 	free(workspace@doc);
 	workspace@.cache$flag<-FALSE;
@@ -143,13 +142,11 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #' 	#G1 is a GatingSet.
 #' }
 #'
-#' @aliases
-#' parseWorkspace
-#' parseWorkspace-methods
-#' parseWorkspace,flowJoWorkspace-method
-#' 
+#' @aliases parseWorkspace
+#' @rdname parseWorkspace
+#' @export 
 #' @importFrom utils menu
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,nslaves=4,requiregates=TRUE,includeGates=TRUE, path=obj@path,...){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,requiregates=TRUE,includeGates=TRUE, path=obj@path,...){
 	
 	
 			
@@ -321,13 +318,9 @@ mkformula<-function(dims,isChar=FALSE){
 #'   getSamples(ws)
 #'   getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
 #' 
-#' @aliases 
-#' getKeywords
-#' getKeywords-methods
-#' getKeywords,GatingHierarchy,missing-method
-#' getKeywords,GatingSet,character-method
-#' getKeywords,GatingSet,numeric-method
-#' getKeywords,flowJoWorkspace,character-method
+#' @aliases getKeywords
+#' @rdname getKeywords
+#' @export 
 setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
       x <- obj@doc
       wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
@@ -444,11 +437,8 @@ trimWhiteSpace<-function (x)
 #'         #ws is a flowJoWorkspace
 #'         getSamples(ws);
 #'       }
-#' @aliases
-#' getSamples
-#' getSamples-methods
-#' getSamples,GatingSet-method
-#' getSamples,flowJoWorkspace-method
+#' @aliases getSamples
+#' @rdname getSamples
 #' @export  
 setMethod("getSamples","flowJoWorkspace",function(x){
       x <- x@doc
@@ -471,10 +461,9 @@ setMethod("getSamples","flowJoWorkspace",function(x){
 #'     #ws is a flowJoWorkspace
 #'     getSampleGroups(ws);
 #'   }
-#' @aliases 
-#' getSampleGroups
-#' getSampleGroups-methods
-#' getSampleGroups,flowJoWorkspace-method
+#' @aliases getSampleGroups
+#' @rdname getSampleGroups
+#' @export 
 setMethod("getSampleGroups","flowJoWorkspace",function(x){
             x <- x@doc
             wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
