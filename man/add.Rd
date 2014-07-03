@@ -27,7 +27,7 @@
 
 \S4method{add}{GatingSet,filtersList}(wf, action, ...)
 
-\S4method{add}{GatingSet,filterList}(wf, action, ...)
+\S4method{add}{GatingSet,filterList}(wf, action, validityCheck = TRUE, ...)
 
 \S4method{add}{GatingSetList,filterList}(wf, action, ...)
 
@@ -76,6 +76,8 @@ The order of the names is clock-wise starting from the top left quadrant populat
 \item{symbol}{A \code{character} identifies the population node in a \code{GatingHierrarchy} or \code{GatingSet} to remove}
 
 \item{subSymbol}{Not used.}
+
+\item{validityCheck}{\code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.}
 }
 \value{
 \code{GatingSet} method returns a \code{GatingSet} object with just root node.

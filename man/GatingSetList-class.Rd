@@ -13,7 +13,8 @@ GatingSetList(x, samples = NULL)
 \arguments{
 \item{x}{a \code{list} of \code{GatingSet}}
 
-\item{samples}{\code{character} vector specifying the sample names. if NULL, the sample names are extracted from GatingSets}
+\item{samples}{\code{character} vector specifying the sample names.
+                if NULL, the sample names are extracted from GatingSets}
 
 \item{y}{any \R object, typically similar to \code{x}, or missing
     completely.}

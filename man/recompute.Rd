@@ -6,25 +6,23 @@
 \alias{recompute,GatingSetList-method}
 \title{Compute the cell events by the gates stored within the gating tree}
 \usage{
-\S4method{recompute}{GatingSet}(x, y, ...)
+\S4method{recompute}{GatingSet}(x, ...)
 
 \S4method{recompute}{GatingSetList}(x, ...)
 }
 \arguments{
 \item{x}{\code{GatingSet}}
 
-\item{y}{\code{character} node name or node path}
-
 \item{...}{other arguments
-
-         alwaysLoadData \code{logical}
-                 specifies whether to load the flow raw data for gating
-                 for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
-                 Default 'FALSE' will check the parent node and reference to determine whether to load the data
-                 but this check may not be sufficient since  the further upstream ancestor nodes may not be gated yet
-                 In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
-                 When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
-                 , yet may at the cost of unnecessary data IO}
+y \code{character} node name or node path
+alwaysLoadData \code{logical}
+        specifies whether to load the flow raw data for gating
+        for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
+        Default 'FALSE' will check the parent node and reference to determine whether to load the data
+        but this check may not be sufficient since  the further upstream ancestor nodes may not be gated yet
+        In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
+        When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
+        , yet may at the cost of unnecessary data IO}
 }
 \description{
 Compute each cell event to see if it falls into the gate stored within the gating tree
