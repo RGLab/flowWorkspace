@@ -3,11 +3,6 @@
 NULL
 
 #' @export
-#' @docType methods
-#' @rdname GatingSet-methods
-setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
-
-#' @export
 setGeneric("summary",function(object,...)standardGeneric("summary"))
 
 #' @export
