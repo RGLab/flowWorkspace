@@ -7,23 +7,32 @@ test_that(".isCompensated",
 
 test_that("getNodeInd ",{
       
-      expect_error(.getNodeInd(gh, 2), "Node:2 not found!")
+      #invalid numeric indexing
+      expect_error(.getNodeInd(gh, 2), "expecting a string")
       
-      expect_error(.getNodeInd(gh, "singlet"), "Node:singlet not found!")
+      #invalid node name
+      expect_error(.getNodeInd(gh, "singlet"), "singlet not found")
       
+      #valid unique node name
       expect_equal(.getNodeInd(gh, "singlets"), 3)
       
       expect_equal(.getNodeInd(gh, "root"), 1)
       
       expect_equal(.getNodeInd(gh, "CD3+"), 4)
       
-      expect_equal(.getNodeInd(gh, "38- DR+"), 6)
-      
+      #full path indexing
       expect_equal(.getNodeInd(gh, "/not debris/singlets/CD3+/CD4/38- DR+"), 6)
-      
-      expect_equal(.getNodeInd(gh, "CD4/38- DR+"), 6)
-      
       expect_equal(.getNodeInd(gh, "/not debris/singlets/CD3+/CD8/38- DR+"), 15)
+      
+      #partial path 
+      expect_equal(.getNodeInd(gh, "CD4/38- DR+"), 6)
+      expect_equal(.getNodeInd(gh, "CD8/38- DR+"), 15)
+      
+      #non-unqiue partial path
+      expect_error(.getNodeInd(gh, "/38- DR+"), "is ambiguous within the gating tree")
+      
+      #non-unique node name indexing
+      expect_error(.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree")
       
     })
 
@@ -130,12 +139,8 @@ test_that("getData ",{
       fr <- getData(gh)
       expect_is(fr, "flowFrame");
       expect_equal(nrow(fr), 119531)
-      fr <- getData(gh, 0)
-      expect_equal(nrow(fr), 119531)
       
       fr <- getData(gh, "CD8")
-      expect_equal(nrow(fr), 14570)
-      fr <- getData(gh, 14)
       expect_equal(nrow(fr), 14570)
       
       fr <- getData(gh, use.exprs = FALSE)
@@ -180,7 +185,7 @@ test_that("getNodes & setNode",{
       #change node name
       invisible(setNode(gh, "singlets", "S"))
       expect_equal(getNodes(gh), gsub("singlets", "S", expectRes[["full_path"]]))
-      invisible(setNode(gh, 3, "singlets"))
+      invisible(setNode(gh, "S", "singlets"))
       expect_equal(getNodes(gh), expectRes[["full_path"]])
       
       #hide node(terminal)
@@ -276,9 +281,7 @@ test_that("getParent",{
       
       expect_equal(getParent(gh, "not debris/singlets"), "/not debris")
       
-      expect_equal(getParent(gh, 3), 2)
-      
-      expect_error(getParent(gh, "singlet"), "Node:singlet not found!")
+      expect_error(getParent(gh, "singlet"), "singlet not found")
       
       expect_error(getParent(gh, "root"), "0 :parent not found!")
       
@@ -291,11 +294,12 @@ test_that("getChildren",{
       
       expect_equal(getChildren(gh, "singlets"), "/not debris/singlets/CD3+")
       
-      expect_equal(getChildren(gh, 3), 4)
       
-      expect_error(getChildren(gh, "singlet"), "Node:singlet not found!")
+      expect_error(getChildren(gh, "singlet"), "singlet not found")
       
-      expect_equal(getChildren(gh, "38- DR+"), character(0))
+      expect_error(getChildren(gh, "38- DR+"), "ambiguous")
+      
+      expect_equal(getChildren(gh, "CD4/38- DR+"), character(0))
       
       expect_equal(getChildren(gh, "CD3+"), c("/not debris/singlets/CD3+/CD4"
                                               , "/not debris/singlets/CD3+/CD8"
@@ -307,18 +311,18 @@ test_that("getChildren",{
 
 test_that(".getPopStat",{
       
-      expect_error(.getPopStat(gh, "singlets"), "y has to be numeric!")
+      expect_error(.getPopStat(gh, 3), "Error : expecting a string")
       
-      expect_error(.getPopStat(gh, 30), "invalid vertexID")
+      expect_error(.getPopStat(gh, "singlet"), "not found")
       
-      expect_equal(.getPopStat(gh, 3), list(flowCore = c(proportion = 9.487789e-01, count = 8.702200e+04)
+      expect_equal(.getPopStat(gh, "singlets"), list(flowCore = c(proportion = 9.487789e-01, count = 8.702200e+04)
                                             , flowJo = c(proportion = 9.488988e-01, count = 8.703300e+04)
                                             )
                       , tol = 1e-7 )
       
       
       
-      expect_equal(.getPopStat(gh, 1), list(flowCore = c(proportion = 1, count = 119531)
+      expect_equal(.getPopStat(gh, "root"), list(flowCore = c(proportion = 1, count = 119531)
                                             , flowJo = c(proportion = 1, count = 119531)
                                         )
                                 )
@@ -333,7 +337,7 @@ test_that("getProp",{
       
       expect_equal(getProp(gh, "singlets", flowJo = TRUE), 0.9488988, tol = 1e-7)
       
-      expect_error(getProp(gh, "singlet"), "Node:singlet not found!")
+      expect_error(getProp(gh, "singlet"), "singlet not found")
     })      
 
 test_that("getTotal",{
@@ -344,7 +348,7 @@ test_that("getTotal",{
       
       expect_equal(getTotal(gh, "singlets", flowJo = TRUE), 87033)
       
-      expect_error(getTotal(gh, "singlet"), "Node:singlet not found!")
+      expect_error(getTotal(gh, "singlet"), "singlet not found")
     })      
 
 
@@ -355,8 +359,10 @@ test_that("getPopStats",{
       expect_is(thisRes, "data.table")
      
       expectRes <- fread(file.path(resultDir, "getPopStats_gh.csv"))
-      expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames 
-      expect_equal(thisRes[,1:5, with = F], expectRes[,2:6, with = F]) 
+      expectRes[, node := V1]
+      expectRes[, V1 := NULL]
+      expect_equal(rownames(thisRes),expectRes[["node"]])#check rownames 
+      expect_equal(thisRes[, 1:4, with = F], expectRes[, colnames(thisRes)[1:4], with = F]) 
     })
 
 test_that("compute CV from gh",{
@@ -365,6 +371,7 @@ test_that("compute CV from gh",{
       expect_is(thisRes, "matrix")
       
       expectRes <- readRDS(file.path(resultDir, "cv_gh.rds"))
+      rownames(thisRes) <- basename(rownames(thisRes))
       expect_equal(thisRes, expectRes)
       
     })

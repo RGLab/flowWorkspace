@@ -446,9 +446,11 @@ unarchive<-function(file,path=tempdir()){
 #'
 #' construct object from existing gating hierarchy(gating template) and flow data
 #'
+#' @param path \code{character} specifies the path to the flow data (FCS files)
+#' @param isNcdf \code{logical} whether to use ncdfFlowSet or flowSet as the underlying flow data storage
+#' @param ... other arguments. see \link{parseWorkspace}
 #' @rdname GatingSet-methods
-#' @aliases
-#' GatingSet,GatingHierarchy,character-method
+#' @export 
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE,  ...){
 
 			samples <- y
@@ -482,7 +484,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			files<-file.path(dataPaths,samples)
 			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
-			Object@pointer <- .Call("R_NewGatingSet",x@pointer,getSample(x),samples)
+			Object@pointer <- .Call("R_NewGatingSet",x@pointer,sampleNames(x),samples)
             Object@guid <- .uuid_gen()
             Object@FCSPath <- dataPaths
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
@@ -1293,7 +1295,13 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
     is.gh <- class(x) == "GatingHierarchy"
     if(is.gh){
-      x <- as(x, "GatingSet")
+      x <- new("GatingSet", pointer = x@pointer 
+                          , FCSPath = x@FCSPath
+                          , data = x@data
+                          , flag = x@flag
+                          , axis = x@axis
+                          , guid = x@guid
+                          )[x@name]       
     }
 
     gh <- x[[1]]
@@ -1345,7 +1353,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
         sampleNames(parentData) <- popName
         if(!is.null(curGates))
           names(curGates) <- popName
-        names(stats) <- popName
+        if(!is.null(stats))
+          names(stats) <- popName
       }else
         defaultCond <- NULL #hide strip
     }
@@ -1537,14 +1546,35 @@ setMethod("clone",c("GatingSet"),function(x,...){
 			clone
 		})
 
-#' @exportMethod recompute
+
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
-setMethod("recompute",c("GatingSet"),function(x, y, ...){
-			.recompute(x,y, ...)
+#' Compute the cell events by the gates stored within the gating tree
+#' 
+#' Compute each cell event to see if it falls into the gate stored within the gating tree
+#' and store the result as cell count.
+#' 
+#' It is usually used immediately after \link{add} or \link{setGate} calls. 
+#'  
+#' @param x \code{GatingSet}
+#' @param ... other arguments
+#'          y \code{character} node name or node path 
+#'          alwaysLoadData \code{logical} 
+#'                  specifies whether to load the flow raw data for gating
+#'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
+#'                  Default 'FALSE' will check the parent node and reference to determine whether to load the data
+#'                  but this check may not be sufficient since  the further upstream ancestor nodes may not be gated yet
+#'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
+#'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
+#'                  , yet may at the cost of unnecessary data IO
+#' @aliases recompute
+#' @rdname recompute
+#' @export
+setMethod("recompute",c("GatingSet"),function(x, ...){
+			.recompute(x, ...)
 
 		})
 #' @param x \code{GatingSet}
-#' @param y \code{character} or \code{numeric} node index
+#' @param y \code{character} 
 #' @param alwaysLoadData \code{logical} specifies whether to load the flow raw data for gating
 #'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
 #'                  Default 'FALSE' will check the parent node and reference to determine whether to load the data
@@ -1552,22 +1582,22 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
 #'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
 #'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
 #'                  , yet may at the cost of unnecessary data IO
-.recompute <- function(x,y, alwaysLoadData = FALSE){
-  if(missing(y))
-    y <- "root"
-  if(!is.character(y))
-    stop(" 'numeric` indexing is no longer safe. Please use node name instead!")
-    
-
+.recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE){
+  
+  if(y == "root")
+    alwaysLoadData <- TRUE #skip the checking to save time when start from root
+  
   extend_val <- 0
   ignore_case <- FALSE
   gains <- NULL
   lapply(x,function(gh){
 
 
-        sampleName<-getSample(gh)
-
-        message(paste("gating",sampleName,"..."))
+        sampleName<-sampleNames(gh)
+        if(verbose)
+          message(paste("gating",sampleName,"..."))
+        else
+          message(".", appendLF = FALSE)
 
 
         # Ideally, we want to track back to all ancesters and references to check if they are already gated
@@ -1631,6 +1661,10 @@ setMethod("recompute",c("GatingSet"),function(x, y, ...){
 #'
 #' sample names are used for names of the returned list
 #'
+#' @param X \code{GatingSet}
+#' @param FUN \code{function} to be applied to each sample in 'GatingSet'
+#' @param ... other arguments to be passed to 'FUN'
+#' 
 #' @rdname lapply-methods
 #' @aliases
 #' lapply,GatingSet-method
@@ -1646,16 +1680,11 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 
 
 
-setMethod("getSamples","GatingSet",function(x){
-      stop("'getSamples' is defunct.\nUse 'sampleNames' instead.")
-      sampleNames(x)
-    })
 #' Get/update sample names in a GatingSet
 #'
 #' Return  a sample names contained in a GatingSet
 #'
 #' @param object  or a \code{GatingSet}
-#' @param value \code{character} new sample names
 #'
 #' @details
 #' The sample names comes from pdata of fs.
@@ -1668,15 +1697,20 @@ setMethod("getSamples","GatingSet",function(x){
 #'         #G is  a GatingSet
 #'         sampleNames(G)
 #'       }
-#' @aliases
-#' sampleNames
-#' sampleNames,GatingSet-method
-#' sampleNames<-,GatingSet-method
+#' @aliases sampleNames
+#' @rdname sampleNames
 #' @export
 setMethod("sampleNames","GatingSet",function(object){
       sampleNames(flowData(object))
     })
-
+#' @name sampleNames
+#' @param value \code{character} new sample names
+#' @usage \S4method{sampleNames}{GatingSet}(object) <- value
+#' @aliases 
+#' sampleNames<-
+#' sampleNames<-,GatingSet-method
+#' @rdname sampleNames
+#' @export
 setReplaceMethod("sampleNames",
     signature=signature(object="GatingSet"),
     definition=function(object, value)
@@ -1697,16 +1731,16 @@ setReplaceMethod("sampleNames",
 
 # to speed up reading data from disk later on,
 # we can optionally pass j to ncdfFlow::[ to subset on channel
-setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y,tsort=FALSE, ...){
+#' @rdname getData-methods
+#' @export
+setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y, ...){
       flowData(obj)[,...]
 
     })
-setMethod("getData",signature(obj="GatingSet",y="numeric"),function(obj,y,tsort=FALSE, ...){
-      stop(" 'numeric` indexing is no longer safe . Please use node name instead!")
-    })
-
+#' @rdname getData-methods
+#' @export
 #' @importMethodsFrom flowCore Subset
-setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsort=FALSE, ...){
+setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...){
 
       this_data <- getData(obj, ...)
       if(y == 0){
@@ -1728,24 +1762,25 @@ setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y,tsor
 #' Accessor method that gets or replaces the flowset/ncdfFlowSet object in a GatingSet or GatingHierarchy
 #'
 #' @param x A \code{GatingSet}
-#' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
 #'
 #' @details Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.
 #'
 #' @return the object with the new flowSet in place.
 #'
-#' @aliases
-#' flowData<-
-#' flowData
-#' flowData-methods
-#' flowData,GatingSet-method
-#' flowData<-,GatingSet-method
+#' @aliases flowData
+#' @rdname flowData
 #' @export
-#' @rdname flowData-methods
-setMethod("flowData",signature("GatingSet"),function(x,...){
+setMethod("flowData",signature("GatingSet"),function(x){
         x@data
     })
-
+#' @name flowData
+#' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
+#' @usage \S4method{flowData}{GatingSet}(x) <- value
+#' @aliases 
+#' flowData<-
+#' flowData<-,GatingSet-method
+#' @rdname flowData
+#' @export
 setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
 
       x@data <- value
@@ -1758,22 +1793,25 @@ setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
 #' Accessor method that gets or replaces the pData of the flowset/ncdfFlowSet object in a GatingSet or GatingSetList
 #'
 #' @param object \code{GatingSet} or \code{GatingSetList}
-#' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object
 #'
 #' @return a \code{data.frame}
 #'
 #' @importFrom Biobase pData description exprs sampleNames pData<-
 #'
-#' @aliases
-#' pData,GatingSet-method
-#' pData<-,GatingSet,data.frame-method
-#' pData<-,GatingSetList,data.frame-method
-#' @exportMethod pData
+#' @aliases pData
+#' @export
 #' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
 			pData(flowData(object))
 		})
-#' @exportMethod pData<-
+#' @name pData
+#' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object    
+#' @usage \S4method{pData}{GatingSet,data.frame}(object) <- value
+#' @aliases 
+#' pData<-
+#' pData<-,GatingSet,data.frame-method
+#' @export
+#' @rdname pData-methods
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 			fs<-flowData(object)
 			rownames(value)<-value$name
@@ -1824,29 +1862,19 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 		})
 
 
-
+#' @rdname getGate
+#' @export 
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
 			lapply(obj,function(x)getGate(x,y))
 		})
-setMethod("getGate",signature(obj="GatingSet",y="numeric"),function(obj,y){
-      stop(" 'numeric` indexing is no longer safe . Please use node name instead!")
-    })
-
-#' @aliases
-#' setNode,GatingSet,numeric,ANY-method
-#' setNode,GatingSet,character,ANY-method
+    
 #' @rdname setNode-methods
-setMethod("setNode"
-    ,signature(x="GatingSet",y="numeric",value="ANY")
-    ,function(x,y,value,...){
-      stop(" 'numeric` indexing is no longer safe . Please use node name instead!")
-      
-    })
+#' @export 
 setMethod("setNode"
     ,signature(x="GatingSet",y="character",value="ANY")
-    ,function(x,y,value,...){
+    ,function(x,y,value){
       lapply(x,function(gh){
-            setNode(gh,y,value,...)
+            setNode(gh,y,value)
           })
     })
 
@@ -1902,22 +1930,33 @@ setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
 
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
-      as(x[i], "GatingHierarchy");
+#      as(x[i], "GatingHierarchy")
+      #new takes less time than as method
+      new("GatingHierarchy", pointer = x@pointer 
+                            , FCSPath = x@FCSPath
+                            , data = x@data
+                            , flag = x@flag
+                            , axis = x@axis
+                            , guid = x@guid
+                            , name = i)                             
+      
     })
 
 #' Methods to get the length of a GatingSet
 #'
 #' Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
 #'
-#' @aliases
-#' length-methods
-#' length,GatingSet-method
-#' @rdname length-methods
+#' @param x \code{GatingSet}
+#' @param object \code{object} 
+#' @aliases length
+#' @rdname length
 #' @export
 setMethod("length","GatingSet",function(x){
       length(flowData(x));
     })
 
+#' @rdname length
+#' @export 
 setMethod("show","GatingSet",function(object){
       cat("A GatingSet with",length(object), "samples\n")
     })
@@ -1932,6 +1971,8 @@ setMethod("show","GatingSet",function(object){
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported.
 #' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
+#' @param prefix \code{character} see \link{getNodes}
+#' @param path \code{character} see \link{getNodes}
 #' @param ... Additional arguments passed to \link{getNodes}
 #'
 #' @details
@@ -1953,17 +1994,9 @@ setMethod("show","GatingSet",function(object){
 #'         getTotal(G,getNodes(G,tsort=T)[5])
 #'
 #'         }
-#' @aliases
-#' getPopStats
-#' getPopStats-methods
-#' getPopStats,GatingHierarchy-method
-#' getPopStats,GatingSet-method
-#' getProp
-#' getProp-methods
-#' getProp,GatingHierarchy,character-method
-#' getTotal
-#' getTotal-methods
-#' getTotal,GatingHierarchy,character-method
+#' @aliases getPopStats
+#' @rdname getPopStats
+#' @export 
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
     function(x, statistic = c("freq", "count"), flowJo = FALSE, ...) {
@@ -1971,7 +2004,7 @@ setMethod("getPopStats", "GatingSet",
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
-
+    
       # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
       # are returned.
       if (flowJo) {
@@ -1979,19 +2012,18 @@ setMethod("getPopStats", "GatingSet",
       } else {
         statistic <- paste("flowCore", statistic, sep = ".")
       }
-      stats<-lapply(x,function(y){
-        d<-getPopStats(y, ...)
-        d$key<-rownames(d)
-        setkeyv(d,"key")
-        d<-d[,list(key,get(statistic))]
-        setnames(d,c("key",sampleNames(y)))
-        setkeyv(d,"key")
-        d
+      
+      stats <- lapply(x,function(y){
+              d<-getPopStats(y, ...)
+              d$key<-rownames(d)
+              setkeyv(d,"key")
+              d<-d[,list(key,get(statistic))]
+              setnames(d,c("key",sampleNames(y)))
+              setkeyv(d,"key")
+              d
       })
-      pop_stats<-Reduce(function(x,y)merge(x,y,all=TRUE),stats)
-#       pop_stats <- do.call(cbind, lapply(x, function(y) {
-#                 getPopStats(y)[[statistic]]
-#               }))
+      pop_stats <- Reduce(function(x,y)merge(x,y,all=TRUE),stats)
+      
       rownames(pop_stats) <- pop_stats[,key]
       setkey(pop_stats,NULL)
       pop_stats$key<-NULL
@@ -2002,36 +2034,38 @@ setMethod("getPopStats", "GatingSet",
     })
 
 #' calculate the coefficient of variation
-.computeCV <- function(x, path = "full"){
+.computeCV <- function(x, ...){
 
   #columns are populations
   #rows are samples
 
   statList <- lapply(x,function(gh){
-        thisStat <- getPopStats(gh, path = path)
-        rn <- rownames(thisStat)
-        thisStat <- as.data.frame(thisStat)
-        rownames(thisStat) <- rn
+        thisStat <- getPopStats(gh, ...)
         thisStat
       })
-  cv<-do.call(rbind
-      ,lapply(statList,function(x){
-            apply(x[,2:3],1,function(x){
-                  cv<-IQR(x)/median(x)
-                  ifelse(is.nan(cv),0,cv)
-                })
-          })
-  )
-  rownames(cv)<-sampleNames(x);#Name the rows
+  
+  cv <- do.call(rbind
+              ,lapply(statList,function(x){
+                    
+                    res <- apply(x[,list(flowJo.count,flowCore.count)],1,function(x){
+                          cv <- IQR(x)/median(x)
+                          ifelse(is.nan(cv),0,cv)
+                        })
+                    names(res) <- rownames(x)
+                    res
+                  })
+             )
+               
   cv
 
 }
 #' Plot the coefficient of variation between flowJo and flowCore population statistics for each population in a gating hierarchy.
 #'
 #' This function plots the coefficient of variation calculated between the flowJo population statistics and the flowCore population statistics for each population in a gating hierarchy extracted from a flowJoWorkspace.
-#' @param x A \code{GatingHierarchy} from a \code{flowJoWorkspace}, or a \code{GatingSet}.
+#' @param x A \code{GatingHierarchy} from or a \code{GatingSet}.
 #' @param m \code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.
 #' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.
+#' @param scales \code{list} see \link{barchart}
 #' @param \dots Additional arguments to the \code{barplot} methods.
 #' @details The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.
 #' @return Nothing is returned.
@@ -2041,27 +2075,30 @@ setMethod("getPopStats", "GatingSet",
 #'     #G is a GatingHierarchy
 #'     plotPopCV(G,4,4);
 #'   }
-#' @aliases plotPopCV plotPopCV-methods plotPopCV,GatingHierarchy-method plotPopCV,GatingSet-method
-#' @rdname plotPopCV-methods
+#' @aliases plotPopCV
+#' @export
+#' @rdname plotPopCV
 #' @importFrom latticeExtra ggplot2like
-setMethod("plotPopCV","GatingSet",function(x,...){
-      cv <- .computeCV(x)
+setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)), ...){
+      cv <- .computeCV(x, path = "auto")
       #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
-      populations<-gl(nc,nr,labels=basename(as.character(colnames(cv))))
+      populations<-gl(nc,nr,labels=as.character(colnames(cv)))
       samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
       cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
 
-      return(barchart(cv~populations|samples,cv,...,scale=list(x=list(...)), par.settings = ggplot2like));
+      return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
     })
 
-
+#' @rdname keyword
+#' @export
 setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing"){
         lapply(object, flowCore::keyword)
 
     })
-
+#' @rdname keyword
+#' @export
 setMethod("keyword",c("GatingSet","character"),function(object,keyword){
       tmp<-data.frame(unlist(lapply(object,function(x)keyword(x,keyword)),use.names=FALSE));
       tmp<-data.frame(matrix(tmp[[1]],ncol=length(keyword),byrow=T))
@@ -2074,11 +2111,10 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' routine to return the indices by specify boolean combination of reference nodes:
 #'
 #' It adds the boolean gates and does the gating on the fly, and
-#' return the indices associated with that bool gate, and
-#' remove the bool gate
+#' return the indices associated with that bool gate, and remove the bool gate
 #' the typical use case would be extracting any-cytokine-expressed cells
+#' 
 #' @param y a quoted expression.
-#' @rdname getIndices
 #' @examples
 #' \dontrun{
 #'
@@ -2086,7 +2122,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #'
 #'}
 #' @export
-setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y, ...){
+setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y){
 
   bf <- eval(substitute(booleanFilter(v),list(v=y)))
   gh <- obj[[1]]
@@ -2131,7 +2167,7 @@ getIndiceMat <- function(gh,y){
   indice_list <- sapply(nodes,function(this_node).Call("R_getIndices"
             , gs@pointer
             , thisSample
-            , as.integer(.getNodeInd(gs,this_node) - 1))
+            , this_node)
       ,simplify = FALSE)
   
   #construct the indice matrix
@@ -2201,55 +2237,10 @@ getIndiceMat <- function(gh,y){
 
 }
 
-
-setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_list = list(),...){
-      .Deprecated("getSingleCellExpression")
-      fs <- getData(obj)
-      
-      strExpr <- as.character(y)
-      popNames <- strsplit(strExpr,split="\\|")[[1]]
-      
-      sapply(sampleNames(obj),function(this_sample){
-# browser()
-            message(this_sample)
-            
-            fr <- fs[[this_sample, use.exprs = FALSE]]
-            this_pd <- pData(parameters(fr))
-            #get pop vs channel mapping
-            pop_chnl <- .getPopChnlMapping(this_pd, popNames, pop_marker_list)
-            this_chnls <- as.character(pop_chnl[,"name"])
-            this_pops <- as.character(pop_chnl[,"pop"])
-            
-            #get mask mat
-            this_mat <- .getIndiceMat(obj, this_sample, this_pops)
-# browser()
-            
-            this_ind <- .rowSums(this_mat, nrow(this_mat), ncol(this_mat))
-            this_ind <- this_ind > 0
-            if(!any(this_ind)){
-              NULL
-            }else{
-              
-              this_mat <- this_mat[this_ind, , drop = FALSE]
-              #subset data by channels selected
-# browser()
-              this_data <- fs[[this_sample, this_chnls]]
-              this_subset <- exprs(this_data)
-# this_subset <- as.data.table(this_subset)
-              this_subset <- this_subset[this_ind,]
-              #masking the data
-              this_subset <- this_subset * this_mat
-              colnames(this_subset) <- pop_chnl[,"desc"]
-              this_subset
-# setnames(this_subset, this_chnls, as.vector(pop_chnl[,"desc"]))
-# as.data.frame(this_subset)
-              
-            }
-          }, simplify = FALSE) 
-    })
 #' Return the cell events data that express in any of the single populations defined in \code{y}
 #' 
 #' Returns a list of matrix containing the events that expressed in any one of the populations efined in \code{y}
+#' 
 #' @param x A \code{GatingSet} or \code{GatingSetList} object .
 #' @param nodes \code{character} vector specifying different cell populations
 #' @param map mapping node names (as specified in the gating hierarchy of the gating set) to channel 
@@ -2257,13 +2248,9 @@ setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_l
 #'                          columns of the parameters of the associated \code{flowFrame}s 
 #'                          in the \code{GatingSet}).
 #' @return A \code{list} of \code{numerci matrices}
-#' @aliases 
-#' getData,GatingSetList,name-method
-#' getData,GatingSet,name-method
-#' getSingleCellExpression,GatingSetList,character-method
-#' getSingleCellExpression,GatingSet,character-method
+#' @aliases getSingleCellExpression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
-#' @seealso \code{\link{getIndices}} \code{\link{getProp}} \code{\link{getPopStats}}
+#' @seealso \code{\link{getIndices}}  \code{\link{getPopStats}}
 #' @examples \dontrun{
 #'   #G is a GatingSet
 #' 	geData(G,3)
@@ -2271,8 +2258,9 @@ setMethod("getData",signature=c("GatingSet","name"),function(obj, y,pop_marker_l
 #' 	res[[1]]
 #' 	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+") , list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
 #' }
+#' @rdname getSingleCellExpression
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map, ...){
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map){
   
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
@@ -2307,8 +2295,15 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
 #' @param gs \code{GatingSet} to work with
 #' @param gate \code{filter} a dummy gate to be inserted, its 'filterId' will be used as the population name
 #' @param parent \code{character} full path of parent node where the new dummy gate to be added to
-#' @param chidlren \code{character} full path of chidlren nodes that the new dummy gate to be parent of
+#' @param children \code{character} full path of chidlren nodes that the new dummy gate to be parent of
 #' @return  a new \code{GatingSet} object with the new gate added but share the same flow data with the input 'GatingSet'
+#' @examples 
+#' \dontrun{
+#' #construct a dummy singlet gate 
+#'  dummyGate <- rectangleGate("FSC-A" = c(-Inf, Inf), "FSC-H" = c(-Inf, Inf), filterId = "singlets")
+#' #insert it between the 'not debris" node and "lymph" node
+#'  gs_clone <- insertGate(gs, dummyGate, "not debris", "lymph") 
+#' }
 insertGate <- function(gs, gate, parent, children){
   dummyNode <- gate@filterId
   nodes <- getNodes(gs)
