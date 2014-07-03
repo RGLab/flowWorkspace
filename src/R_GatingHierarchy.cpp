@@ -710,6 +710,9 @@ BEGIN_RCPP
 		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
 		//perform bool gating
 		vector<bool> curIndices= gh->boolGating(boolOp);
+		//combine with parent indices
+		nodeProperties & parentNode=gh->getNodeProperty(gh->getParent(nodeID));
+		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
 		//save the indices
 		node.setIndices(curIndices);
 		node.computeStats();

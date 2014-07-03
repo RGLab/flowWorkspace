@@ -531,7 +531,13 @@ void GatingHierarchy::calgate(VertexID u)
 	node.setIndices(curIndices);
 	node.computeStats();
 }
-
+/**
+ * bool gating operates on the indices of reference nodes
+ * because they are global, thus needs to be combined with parent indices
+ * in cases of negated gate (i.e. !A & !B)
+ * @param u
+ * @return
+ */
 
 vector<bool> GatingHierarchy::boolGating(VertexID u){
 
@@ -623,6 +629,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 /**
  * external boolOpSpec can be provided .
  * It is mainly used by openCyto rectRef gate
+ * (needs to be combined with parent indices)
  *
  * @param u
  * @param boolOpSpec
