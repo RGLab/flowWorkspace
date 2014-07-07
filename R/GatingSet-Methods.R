@@ -2066,6 +2066,7 @@ setMethod("getPopStats", "GatingSet",
 #' @param m \code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.
 #' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.
 #' @param scales \code{list} see \link{barchart}
+#' @param path \code{character} see \link{getNodes}
 #' @param \dots Additional arguments to the \code{barplot} methods.
 #' @details The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.
 #' @return Nothing is returned.
@@ -2079,8 +2080,8 @@ setMethod("getPopStats", "GatingSet",
 #' @export
 #' @rdname plotPopCV
 #' @importFrom latticeExtra ggplot2like
-setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)), ...){
-      cv <- .computeCV(x, path = "auto")
+setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)), path = "auto",...){
+      cv <- .computeCV(x, path = path)
       #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
