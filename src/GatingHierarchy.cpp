@@ -805,7 +805,7 @@ VertexID GatingHierarchy::getNodeID(string gatePath){
 
 }
 /**
- * retrieve the VertexID by the gating path
+ * retrieve the VertexID by the gating path.(bottom-up searching)
  * this serves as a parser to convert generic gating path into internal node ID
  * and it doesn't allow ambiguity (throw the exception when multiple nodes match)
  * @param gatePath a string vector of full(or partial) gating path
@@ -813,32 +813,75 @@ VertexID GatingHierarchy::getNodeID(string gatePath){
  */
 VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 
-	/*
-	 * search for the start node in the path
-	 */
-	string start=gatePath.at(0);
-	VertexID nodeID=getNodeID(0,start);
-	/*
-	 * then trace down from the start node until the end
-	 */
-	for(vector<string>::iterator it=gatePath.begin()+1;it!=gatePath.end();it++)
-	{
-		string nodeNameFromPath=*it;
-		/*
-		 * search the children node of nodeID
-		 */
-		int res = getChildren(nodeID,nodeNameFromPath);
 
-		if(res < 0)
+	/*
+	 * search for the leaf node
+	 */
+	string leaf=gatePath.at(gatePath.size()-1);
+	VertexID_vec nodeIDs=getDescendants(0,leaf);
+
+
+	/*
+	 * try each route from matched leaf nodes to see if there is unique match
+	 */
+	VertexID_vec::iterator it_leaf,it_matched;
+	it_matched = nodeIDs.end();
+
+	for(it_leaf = nodeIDs.begin(); it_leaf != nodeIDs.end(); it_leaf++)
+	{
+		/*
+		 * bottom up matching to the given gating path
+		 *
+		 */
+		VertexID curNodeID = *it_leaf; // start from the parent of the leaf node
+
+		vector<string>::reverse_iterator it;
+		for(it = gatePath.rbegin()+1;it!=gatePath.rend();it++)
 		{
-			string err="Node not found:";
-			err.append(nodeNameFromPath);
-			throw(domain_error(err));
-		}else{
-			nodeID = res;
+			//get current parent from node path
+			string nodeName = *it;
+
+			/*
+			 * retrieve the actual parent node from the tree
+			 */
+			VertexID parentID = getParent(curNodeID);
+			string parent = getNodeProperty(parentID).getName();
+			//compare it to the parent node from the path
+			if(parent.compare(nodeName) != 0)
+			{
+				break; //not matched then exit current route
+			}else{
+				//move up to the next ancestor and continue the matching process
+				curNodeID = parentID;
+			}
 		}
+		//when it succeeds to the end of path
+		if(it == gatePath.rend()){
+			if(it_matched == nodeIDs.end())//record the matched index if it has not been matched before
+				it_matched = it_leaf;
+			else//throw the error if it is matched second time
+			{
+				string errMsg;
+				for(unsigned i = 0; i < gatePath.size()-1; i ++)
+					errMsg.append(gatePath.at(i) + "/");
+				errMsg.append(gatePath.at(gatePath.size()-1));
+				throw(domain_error(errMsg + " is ambiguous within the gating tree!"));
+			}
+
+		}
+
 	}
-	return nodeID;
+
+	if(it_matched == nodeIDs.end()){
+		string errMsg;
+		for(unsigned i = 0; i < gatePath.size()-1; i ++)
+			errMsg.append(gatePath.at(i) + "/");
+		errMsg.append(gatePath.at(gatePath.size()-1));
+		throw(domain_error(errMsg + " not found!" ));
+	}
+
+	else
+		return *it_matched;
 
 }
 
@@ -869,7 +912,7 @@ VertexID_vec GatingHierarchy::getDescendants(VertexID u,string name){
 }
 
 /**
-  * Searching for reference node for bool gating when the node name and current bool node are given
+  * top-down Searching for reference node for bool gating when the refnode name and current bool node id are given
   * instead of nodePath.
   * It currently select the first(nearest) one when multiple nodes matches
   * @param u the current bool node
@@ -944,7 +987,7 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,string popName){
  * @param popName the population name to match
  * @return node ID
  */
-VertexID GatingHierarchy::getNodeID(VertexID u,string popName){
+VertexID GatingHierarchy::getDescendant(VertexID u,string popName){
 
 
 	/*

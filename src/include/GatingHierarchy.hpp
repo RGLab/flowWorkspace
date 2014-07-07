@@ -230,7 +230,7 @@ public:
 	int getChildren(VertexID source,string childName);
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getNodeID(string gatePath);
-	VertexID getNodeID(VertexID u,string popName);
+	VertexID getDescendant(VertexID u,string popName);
 	VertexID getRefNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
 	vector<string> getPopNames(unsigned short order,bool isPath,bool showHidden);

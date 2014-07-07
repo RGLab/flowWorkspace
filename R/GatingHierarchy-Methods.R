@@ -1041,8 +1041,8 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", prefix = "n
 #' @importFrom lattice barchart
 #' @export
 #' @rdname plotPopCV
-setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2,...){
-      cv <- .computeCV_gh(x)
+setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2, path = "auto", ...){
+      cv <- .computeCV_gh(x, path = path)
       return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
     })
 
