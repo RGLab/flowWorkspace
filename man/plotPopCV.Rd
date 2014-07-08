@@ -6,9 +6,10 @@
 \alias{plotPopCV,GatingSet-method}
 \title{Plot the coefficient of variation between flowJo and flowCore population statistics for each population in a gating hierarchy.}
 \usage{
-\S4method{plotPopCV}{GatingHierarchy}(x, m = 2, n = 2, ...)
+\S4method{plotPopCV}{GatingHierarchy}(x, m = 2, n = 2, path = "auto", ...)
 
-\S4method{plotPopCV}{GatingSet}(x, scales = list(x = list(rot = 90)), ...)
+\S4method{plotPopCV}{GatingSet}(x, scales = list(x = list(rot = 90)),
+  path = "auto", ...)
 }
 \arguments{
 \item{x}{A \code{GatingHierarchy} from or a \code{GatingSet}.}
@@ -18,6 +19,8 @@
 \item{n}{\code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.}
 
 \item{scales}{\code{list} see \link{barchart}}
+
+\item{path}{\code{character} see \link{getNodes}}
 
 \item{\dots}{Additional arguments to the \code{barplot} methods.}
 }
