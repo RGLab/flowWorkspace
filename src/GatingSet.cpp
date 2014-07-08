@@ -515,14 +515,20 @@ vector<string> GatingSet::getSamples(void)
 		return res;
 		//	return(this->sampleList);
 }
-/* change the sample name by inserting a new entry and deleting the old one*/
+
+/**
+ *  change the sample name by inserting a new entry and deleting the old one
+ *  do nothing when the newName is the same as the old (because the current logic will lose
+ *  it by erase it)
+ *  */
 void GatingSet::setSample(string oldName, string newName)
 {
+		if(oldName.compare(newName) != 0){
+			GatingHierarchy * gh = getGatingHierarchy(oldName);
+			ghs[newName] = gh;
+			ghs.erase(oldName);
+		}
 
-		GatingHierarchy * gh = getGatingHierarchy(oldName);
-
-		ghs[newName] = gh;
-		ghs.erase(oldName);
 
 }
 
