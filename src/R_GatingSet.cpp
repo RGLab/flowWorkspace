@@ -197,6 +197,9 @@ BEGIN_RCPP
 END_RCPP
 }
 
+/**
+ * change sample name
+ */
 RcppExport SEXP R_setSample(SEXP _gsPtrs,SEXP _oldName, SEXP _newName) {
 BEGIN_RCPP
 

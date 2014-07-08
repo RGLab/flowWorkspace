@@ -45,21 +45,6 @@ test_that("flowData ",{
       expect_is(flowData(gs), "ncdfFlowSet");
     })
 
-test_that("sampleNames",{
-      
-      sn <- sampleNames(gs)
-      expect_equal(sn, "CytoTrol_CytoTrol_1.fcs")
-      
-      #update name
-      sampleNames(gs) <- "newSample"
-      new_sn <- sampleNames(gs)
-      expect_equal(new_sn, "newSample")
-      #check if sample name is also updated in cpp data structure
-      name_stored_in_cpp <- .Call("R_getSamples", gs@pointer)
-      expect_equal(new_sn, name_stored_in_cpp)
-      #restore the original name
-      sampleNames(gs) <- sn
-    })
 
 test_that("clone & rbind2",{
       
@@ -88,6 +73,21 @@ test_that("clone & rbind2",{
       new_samples <- sampleNames(gs) 
       expect_identical(new_samples, c(orig_sn, clone_sn))
       
+    })
+test_that("sampleNames",{
+      
+      sn <- sampleNames(gs)
+      expect_equal(sn, c("CytoTrol_CytoTrol_1.fcs", "CytoTrol_CytoTrol_2.fcs"))
+      
+      #update name
+      sampleNames(gs)[1] <- "newSample"
+      new_sn <- sampleNames(gs)
+      expect_equal(new_sn, c("newSample", "CytoTrol_CytoTrol_2.fcs"))
+      #check if sample name is also updated in cpp data structure
+      name_stored_in_cpp <- .Call("R_getSamples", gs@pointer)
+      expect_equal(new_sn, rev(name_stored_in_cpp))
+      #restore the original name
+      sampleNames(gs) <- sn
     })
 
 
