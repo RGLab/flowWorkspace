@@ -7,7 +7,7 @@
 \usage{
 \S4method{parseWorkspace}{flowJoWorkspace}(obj, name = NULL, execute = TRUE,
   isNcdf = FALSE, subset = NULL, requiregates = TRUE,
-  includeGates = TRUE, path = obj@path, ...)
+  includeGates = TRUE, path = obj@path, sampNloc = "keyword", ...)
 }
 \arguments{
 \item{obj}{A \code{flowJoWorkspace} to be parsed.}
@@ -26,8 +26,9 @@
 
 \item{path}{The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.}
 
+\item{sampNloc}{a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".}
+
 \item{...}{\itemize{
-\item sampNloc="keyword": a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".
 \item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.
 \item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
 \item ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
