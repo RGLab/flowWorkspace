@@ -114,9 +114,9 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #' @param requiregates \code{logical} Should samples that have no gates be included?
 #' @param includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
 #' @param path The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.
+#' @param sampNloc a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
 #' @param ...
 #'      \itemize{
-#'      	\item sampNloc="keyword": a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
 #'      	\item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
 #'      	\item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
 #'          \item ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
@@ -146,9 +146,9 @@ setMethod("summary",c("flowJoWorkspace"),function(object,...){
 #' @rdname parseWorkspace
 #' @export 
 #' @importFrom utils menu
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,requiregates=TRUE,includeGates=TRUE, path=obj@path,...){
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,requiregates=TRUE,includeGates=TRUE, path=obj@path, sampNloc="keyword", ...){
 	
-	
+    sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))	
 			
 	if(isNcdf&!TRUE){
 	stop("isNcdf must be FALSE since you don't have netcdf installed");
@@ -163,7 +163,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
     wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
     filenames <- .getFileNames(x, wsType);
       
-    s <- .getSamples(x, wsType);
+    s <- .getSamples(x, wsType, sampNloc = sampNloc);
     g <- .getSampleGroups(x, wsType);
 	
 	sg<-merge(s,g,by="sampleID");
@@ -229,6 +229,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
                     ,xmlParserOption = obj@options
                     ,wsType=wsType
                     ,ws = obj
+                    , sampNloc = sampNloc
                     ,...)
 		
 })
@@ -424,7 +425,7 @@ trimWhiteSpace<-function (x)
 #' 
 #' Return  a data frame of samples contained in a flowJo workspace
 #' @param x A \code{flowJoWorkspace}
-#' 
+#' @param sampNloc \code{character} either "keyword" or "sampleNode". see \link{parseWorkspace}
 #' @details
 #' Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including their 
 #' \code{sampleID}, \code{name}, and \code{compID} (compensation matrix ID). 
@@ -440,11 +441,12 @@ trimWhiteSpace<-function (x)
 #' @aliases getSamples
 #' @rdname getSamples
 #' @export  
-setMethod("getSamples","flowJoWorkspace",function(x){
+setMethod("getSamples","flowJoWorkspace",function(x, sampNloc="keyword"){
+      sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))
       x <- x@doc
       wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
       wsType <- .getWorkspaceType(wsversion)
-      .getSamples(x, wsType = wsType)
+      .getSamples(x, wsType = wsType, sampNloc = sampNloc)
 })
 
 #' Get a table of sample groups from a flowJo workspace
@@ -523,13 +525,14 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
 
 
 
-.getSamples<-function(x, wsType){
+.getSamples<-function(x, wsType, sampNloc="keyword"){
     
     wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
-    
 	lastwarn<-options("warn")[[1]]
 	options("warn"=-1)
 	top <- xmlRoot(x)
+    
+    
 	s <- do.call(rbind,xpathApply(top, file.path(wsNodePath[["sample"]],wsNodePath[["sampleNode"]]),function(x){
         		    attrs <- xmlAttrs(x);
         	        data.frame(tryCatch(as.numeric(attrs[["sampleID"]]), error=function(x)NA)
@@ -537,26 +540,34 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
                                  ,tryCatch(as.numeric(attrs[["count"]]), error=function(x)NA)
                                 )
 		    }))
-	
+    
 	pop.counts <- as.numeric(unlist(lapply(xpathApply(top,wsNodePath[["sample"]])
                                             ,function(x)xpathApply(x,"count(descendant::Population)")
                                           )
                                       ,use.names=FALSE
                                       )
                                 )
-		if(grepl("mac", wsType)){
-			cid<-as.numeric(paste(xpathApply(top, wsNodePath[["sample"]], function(x)xmlGetAttr(x,"compensationID"))))
-			s<-data.frame(s,cid,pop.counts)
-			colnames(s)<-c("sampleID","name","count","compID","pop.counts");
-		}else{
-			##Code for flowJo windows 1.6 xml
-			#No compensation ID for windows. Use name
-			s<-data.frame(s,pop.counts)
-			colnames(s)<-c("sampleID","name","count","pop.counts");
-		}
-		s[,2]<-as.character(s[,2])
-		options("warn"=lastwarn);
-		s
+	if(grepl("mac", wsType)){
+		cid<-as.numeric(paste(xpathApply(top, wsNodePath[["sample"]], function(x)xmlGetAttr(x,"compensationID"))))
+		s<-data.frame(s,cid,pop.counts)
+		colnames(s)<-c("sampleID","name","count","compID","pop.counts");
+	}else{
+		##Code for flowJo windows 1.6 xml
+		#No compensation ID for windows. Use name
+		s<-data.frame(s,pop.counts)
+		colnames(s)<-c("sampleID","name","count","pop.counts");
+	}
+	s[,2]<-as.character(s[,2])
+    #update sample name when it is supposed to be fetched from keyword
+    if(sampNloc == "keyword"){
+      sn <- xpathApply(top, file.path(wsNodePath[["sample"]], "Keywords/Keyword[@name='$FIL']"), function(x){
+            xmlAttrs(x)[["value"]]
+          })
+      s[, "name"] <- unlist(sn)   
+    }
+    
+	options("warn"=lastwarn);
+	s
 }
 
 

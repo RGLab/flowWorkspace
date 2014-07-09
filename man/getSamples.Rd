@@ -5,10 +5,12 @@
 \alias{getSamples,flowJoWorkspace-method}
 \title{Get a list of samples from a flowJo workspace}
 \usage{
-\S4method{getSamples}{flowJoWorkspace}(x)
+\S4method{getSamples}{flowJoWorkspace}(x, sampNloc = "keyword")
 }
 \arguments{
 \item{x}{A \code{flowJoWorkspace}}
+
+\item{sampNloc}{\code{character} either "keyword" or "sampleNode". see \link{parseWorkspace}}
 }
 \value{
 A \code{data.frame} with columns \code{sampleID}, \code{name}, and \code{compID} if \code{x} is a \code{flowJoWorkspace}.
