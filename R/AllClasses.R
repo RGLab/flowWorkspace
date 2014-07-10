@@ -390,11 +390,11 @@ setValidity("GatingSetList", validGatingSetListObject)
     return (paste("gating structure doesn't match:",sampleNames(gh1),sampleNames(gh2)))
   }
 }
-.compareFlowData<-function(fs1,fs2){
+.compareFlowData <- function(fs1,fs2){
   #it is strange that colnames doesn't dispatch properly without namespace prefix
   col1 <- flowCore::colnames(fs1)
   col2 <- flowCore::colnames(fs2)
-  if(!identical(col1,col2)){
+  if(!setequal(col1,col2)){
     msg <- paste("colnames of flowSets don't match!")
     return (msg)
   }
@@ -437,8 +437,19 @@ GatingSetList <- function(x,samples = NULL)
   }
   
   x<- as(x, "GatingSetList")
-  if(validObject(x))
+  
+  if(validObject(x)){
+    gslist <- x@data
+    #' make sure the column names of flow data are in the same order
+    cols <- flowCore::colnames(getData(gslist[[1]]))
+    gslist <- lapply(gslist, function(gs){
+          flowData(gs) <- flowData(gs)[,cols]
+          gs
+        })
+    x@data <- gslist
     x
+  }
+    
 }
 
 
