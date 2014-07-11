@@ -2176,8 +2176,17 @@ getIndiceMat <- function(gh,y){
 #  as.data.table(indice_list)
 }
 #' create mapping between pops and channels
+#' 
+#' The goal is to match the marker provided by user up to the flowFrame
+#' to return the accurate channel info for indexing the flow data 
+#' because user might give the short form of either  'name' or 'desc' of flowFrame based on swap argument.
+#' 
+#' @param this_pd \code{data.frame} extraced from flowFrame object to provide the channel and marker info
+#' @param popNames \code{character} node names in gating tree
+#' @param popo_marker_list \code{list} contains the node-to-marker provided by user 
+#' 
 .getPopChnlMapping <- function(this_pd, popNames, pop_marker_list, swap = FALSE){
-  #  browser()
+    
   datSrc <- ifelse(swap, "name", "desc")
   this_pd[, datSrc] <- as.vector(this_pd[, datSrc])
   
@@ -2192,28 +2201,41 @@ getIndiceMat <- function(gh,y){
 
   #match to the pdata of flow frame
   all_markers <- this_pd[,datSrc]
-#  all_markers <- as.character(all_markers)
+
   all_markers[is.na(all_markers)] <- "NA"
   is_matched <- sapply(all_markers,function(this_marker){
-
+    
     ##using the marker name provided by arguments by default
-    is_manual_provided <- grep(this_marker,pop_marker_list)
-    if(length(is_manual_provided)>0){
-      if(length(is_manual_provided) > 1)
+    if(is.null(pop_marker_list))
+      matchCount <- 0
+    else{
+      this_matched <- sapply(pop_marker_list, function(i)grepl(pattern = i, x = this_marker, fixed=TRUE))
+      
+      matchCount <- length(which(this_matched))  
+    }
+    
+
+    if(matchCount > 0){
+      if(matchCount > 1)
       {
         #more than one matched, then do the exact match
-        is_manual_provided <- match(this_marker, pop_marker_list)
-        if(length(is_manual_provided) > 1)
+            this_matched <- sapply(pop_marker_list, function(i)match(i, this_marker))
+            this_matched <- !is.na(this_matched)
+            matchCount <- length(which(this_matched))
+        if(matchCount > 1)
           stop(this_marker, " is matched with more than one populations")
       }
 
       res <- TRUE
-      names(res) <- names(pop_marker_list)[is_manual_provided]
+      names(res) <- names(pop_marker_list)[this_matched]
     }else{
-      this_matched <- grep(pattern = this_marker, x=markers_selected, fixed=TRUE)
-      if(length(this_matched)>1){
+      #if not given by user, then try to match the name extracted from pop name
+      this_matched <- sapply(markers_selected, function(i)grepl(pattern = i, x = this_marker, fixed=TRUE))
+#      browser()
+      matchCount <- length(which(this_matched))
+      if(matchCount > 1){
         stop("multiple populations mached to:", this_marker)
-      }else if(length(this_matched)==0){
+      }else if(matchCount == 0){
         res <- FALSE
       }else{
         res <- TRUE
@@ -2264,7 +2286,7 @@ getIndiceMat <- function(gh,y){
 #' }
 #' @rdname getSingleCellExpression
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map, swap = FALSE){
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map = NULL, swap = FALSE){
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
@@ -2284,6 +2306,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       nodeIds <- as.integer(nodeIds) - 1
       data <- fs[[sample, chnls]]
       data <- exprs(data)
+#      browser()
       data <- .Call("R_getSingleCellExpression", x@pointer, sample, nodeIds, data, markers)
       data
           
