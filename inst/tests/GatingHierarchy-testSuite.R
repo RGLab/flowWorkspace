@@ -514,7 +514,7 @@ test_that("getPopChnlMapping for COMPASS",{
       this_pd <- pData(parameters(fr))
       
       #no mapping provided
-      thisRes <- try(.getPopChnlMapping(this_pd, c("CD8/38- DR+","CD8/CCR7- 45RA+"), list()), silent = TRUE)
+      thisRes <- try(.getPopChnlMapping(this_pd, c("CD8/38- DR+","CD8/CCR7- 45RA+"), NULL), silent = TRUE)
       expect_is(thisRes, "try-error")
       expect_output(thisRes[[1]], "No markers in flow data matches Populations")
       
@@ -542,8 +542,11 @@ test_that("getPopChnlMapping for COMPASS",{
                                         , list("CD8/38- DR+" = "CD38", "CD8/CCR7- 45RA+" = "CCR7 PE")
                                         )
                      , silent = TRUE)
-      expect_is(thisRes, "try-error")
-      expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                     
+       for(i in 1:ncol(thisRes))
+         thisRes[,i] <- as.factor(thisRes[, i])                 
+       expect_equivalent(thisRes,expectRes)                 
+#      expect_is(thisRes, "try-error")
+#      expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                     
       
       #correct mappping with extra items
       thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
@@ -580,8 +583,11 @@ test_that("getPopChnlMapping for COMPASS",{
                                       )
                                   )
                               ,silent = TRUE)
-        expect_is(thisRes, "try-error")
-        expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                          
+        for(i in 1:ncol(thisRes))
+          thisRes[,i] <- as.factor(thisRes[, i])
+        expect_identical(thisRes,expectRes)                          
+#        expect_is(thisRes, "try-error")
+#        expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                          
       
     })
 
