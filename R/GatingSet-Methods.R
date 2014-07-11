@@ -2255,7 +2255,7 @@ getIndiceMat <- function(gh,y){
 
   }
 
-  cbind(pop=matched_names[sub_match_ind],this_pd[is_matched,c("name", "desc")][sub_match_ind,])
+  cbind(pop=as.character(matched_names[sub_match_ind]),this_pd[is_matched,c("name", "desc")][sub_match_ind,])
 
 
 
