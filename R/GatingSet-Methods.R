@@ -2176,9 +2176,10 @@ getIndiceMat <- function(gh,y){
 #  as.data.table(indice_list)
 }
 #' create mapping between pops and channels
-.getPopChnlMapping <- function(this_pd, popNames, pop_marker_list){
+.getPopChnlMapping <- function(this_pd, popNames, pop_marker_list, swap = FALSE){
   #  browser()
-  this_pd[, "desc"] <- as.vector(this_pd[, "desc"])
+  datSrc <- ifelse(swap, "name", "desc")
+  this_pd[, datSrc] <- as.vector(this_pd[, datSrc])
   
 
   #parse the markers of interest from pop names
@@ -2190,7 +2191,7 @@ getIndiceMat <- function(gh,y){
   },USE.NAMES=FALSE)
 
   #match to the pdata of flow frame
-  all_markers <- this_pd[,"desc"]
+  all_markers <- this_pd[,datSrc]
 #  all_markers <- as.character(all_markers)
   all_markers[is.na(all_markers)] <- "NA"
   is_matched <- sapply(all_markers,function(this_marker){
@@ -2232,7 +2233,7 @@ getIndiceMat <- function(gh,y){
 
   }
 
-  cbind(pop=matched_names[sub_match_ind],this_pd[is_matched,c("name","desc")][sub_match_ind,])
+  cbind(pop=matched_names[sub_match_ind],this_pd[is_matched,c("name", "desc")][sub_match_ind,])
 
 
 
@@ -2248,6 +2249,8 @@ getIndiceMat <- function(gh,y){
 #'                         names (as specified in either the \code{desc} or \code{name} 
 #'                          columns of the parameters of the associated \code{flowFrame}s 
 #'                          in the \code{GatingSet}).
+#' @param swap \code{logical} indicates whether channels and markers of flow data are swapped.
+#'  
 #' @return A \code{list} of \code{numerci matrices}
 #' @aliases getSingleCellExpression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
@@ -2261,8 +2264,8 @@ getIndiceMat <- function(gh,y){
 #' }
 #' @rdname getSingleCellExpression
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map){
-  
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map, swap = FALSE){
+  datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
 #      browser()
@@ -2271,10 +2274,11 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       fr <- fs[[sample, use.exprs = FALSE]] 
       this_pd <- pData(parameters(fr))  
       #get pop vs channel mapping
-      pop_chnl <- .getPopChnlMapping(this_pd, nodes, map)
+      pop_chnl <- .getPopChnlMapping(this_pd, nodes, map, swap = swap)
       chnls <- as.character(pop_chnl[,"name"])
       pops <-  as.character(pop_chnl[,"pop"])
-      markers <- as.character(pop_chnl[,"desc"])
+      
+      markers <- as.character(pop_chnl[, datSrc])
 
       nodeIds <- sapply(pops,.getNodeInd, obj = x)
       nodeIds <- as.integer(nodeIds) - 1
