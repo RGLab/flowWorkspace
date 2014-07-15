@@ -2272,7 +2272,7 @@ getIndiceMat <- function(gh,y){
 #'                          columns of the parameters of the associated \code{flowFrame}s 
 #'                          in the \code{GatingSet}).
 #' @param swap \code{logical} indicates whether channels and markers of flow data are swapped.
-#'  
+#' @param threshold \code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.
 #' @return A \code{list} of \code{numerci matrices}
 #' @aliases getSingleCellExpression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
@@ -2286,7 +2286,7 @@ getIndiceMat <- function(gh,y){
 #' }
 #' @rdname getSingleCellExpression
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map = NULL, swap = FALSE){
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, map = NULL, swap = FALSE, threshold = TRUE){
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
@@ -2307,7 +2307,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       data <- fs[[sample, chnls]]
       data <- exprs(data)
 #      browser()
-      data <- .Call("R_getSingleCellExpression", x@pointer, sample, nodeIds, data, markers)
+      data <- .Call("R_getSingleCellExpression", x@pointer, sample, nodeIds, data, markers, threshold)
       data
           
 
