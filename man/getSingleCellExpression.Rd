@@ -6,8 +6,8 @@
 \alias{getSingleCellExpression,GatingSetList,character-method}
 \title{Return the cell events data that express in any of the single populations defined in \code{y}}
 \usage{
-\S4method{getSingleCellExpression}{GatingSet,character}(x, nodes, map,
-  swap = FALSE)
+\S4method{getSingleCellExpression}{GatingSet,character}(x, nodes, map = NULL,
+  swap = FALSE, threshold = TRUE)
 
 \S4method{getSingleCellExpression}{GatingSetList,character}(x, nodes, ...)
 }
@@ -22,6 +22,8 @@ names (as specified in either the \code{desc} or \code{name}
  in the \code{GatingSet}).}
 
 \item{swap}{\code{logical} indicates whether channels and markers of flow data are swapped.}
+
+\item{threshold}{\code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.}
 
 \item{...}{other arguments}
 }
