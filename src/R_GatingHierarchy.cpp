@@ -826,7 +826,7 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_getSingleCellExpression(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeIDs, SEXP _data, SEXP _markers) {
+RcppExport SEXP R_getSingleCellExpression(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeIDs, SEXP _data, SEXP _markers, SEXP _threshold) {
 BEGIN_RCPP
 
 	//get indices from each node
@@ -834,6 +834,7 @@ BEGIN_RCPP
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
+	bool threshold = as<bool>(_threshold);
 	NODEID_vec nodeIDs = as<NODEID_vec>(_nodeIDs);
 	unsigned nNodes = nodeIDs.size();
 	vector<BoolVec> indexList(nNodes);
@@ -860,7 +861,15 @@ BEGIN_RCPP
 	for (int i=0; i < n; ++i) {
 	if (ind.at(i)) {
 	  for (int j=0; j < k; ++j) {
-		if (indexList.at(j).at(i)) output(counter, j) = data(i, j);
+		  if(threshold){//if threshold is true, then only record the intensity that is above the gate threshold
+			  if (indexList.at(j).at(i))
+				  output(counter, j) = data(i, j);
+		  }
+		  else
+		  {
+			  output(counter, j) = data(i, j);
+		  }
+
 	  }
 	  ++counter;
 	}
