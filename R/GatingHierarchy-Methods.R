@@ -1772,3 +1772,10 @@ setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
       thisSample
       
     })
+
+#' @export
+#' @rdname pData-methods
+setMethod("pData","GatingHierarchy",function(object){
+      pData(flowData(object))[sampleNames(object),]
+    })
+
