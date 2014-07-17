@@ -859,37 +859,37 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
               nodeNames <- basename(nodePath)
               names(nodeNames) <- nodePath #init the mapping (nodePath vs final output)
 
-#              browser()
-              #pick duplicated node names to prepend their ancesters until their paths are unambiguous
+              #select duplicated node names to prepend their ancestors until their paths are unique
               dup <- unique(nodeNames[duplicated(nodeNames)])
-              toModify <- nodeNames%in%dup
-              toModifyNode <- nodeNames[toModify]
-              toModifyID <- nodePath[toModify]
+              dup <- nodeNames%in%dup
+              toModify <- data.frame(path =  nodePath[dup], name = nodeNames[dup], parent = nodePath[dup])
 
-              toModifyRes <- ddply(data.frame(toModifyID, toModifyNode), .(toModifyNode), function(thisDF){
-#                    browser()
+              toModifyRes <- ddply(toModify, .(name), function(thisDF){
+                    
                     thisRes <- thisDF
-                    thisNames <- as.vector(thisRes[,"toModifyNode"])
+                    thisNames <- as.vector(thisRes[,"name"])
                     while(anyDuplicated(thisNames) > 0){
-                      #try to paste parent node
-                      thisRes <- ddply(thisRes, .(toModifyID), function(thisRow){
-#                                        browser()
-                                        thisID <- as.vector(thisRow[,"toModifyID"])
-                                        ppath <- getParent(x, thisID)
+                      #try to paste parent for each node
+                      thisRes <- ddply(thisRes, .(path), function(thisRow){
+                                        #get parent of the current node
+                                        thisNode <- as.vector(thisRow[,"parent"])
+                                        ppath <- getParent(x, thisNode)
                                         pn <- basename(ppath)
-                                        #paste parent
-                                        thisRow[,"toModifyNode"] <- paste(pn, thisRow[, "toModifyNode"], sep = "/")
-                                        #update the current id to parent ID
-                                        thisRow[, "toModifyID"] <- ppath
+                                        #paste parent name
+                                        thisRow[,"name"] <- paste(pn, thisRow[, "name"], sep = "/")
+                                        #update parent path
+                                        #which is used to further trace back to upper nodes
+                                        thisRow[, "parent"] <- ppath
                                         thisRow
                                       })
-                      thisNames <- as.vector(thisRes[,"toModifyNode"])
+                      thisNames <- as.vector(thisRes[,"name"])
                     }
-                    thisRes[, "toModifyID"] <- thisDF[, "toModifyID"]
+                    
                     thisRes
                   })
+              
               #update the nodeNames with modified names
-              nodeNames[as.vector(toModifyRes[,"toModifyID"])] <- as.vector(toModifyRes[,"toModifyNode"])
+              nodeNames[as.vector(toModifyRes[,"path"])] <- as.vector(toModifyRes[,"name"])
               nodeNames <- as.vector(nodeNames)
 
             }else if(path != "full" )
