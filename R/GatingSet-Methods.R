@@ -246,9 +246,9 @@ load_gs<-function(path){
       nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
     #   browser()
       if(length(dat.file)==0)
-        stop(".dat file missing in ",file)
+        stop(".dat file missing in ",output)
       if(length(dat.file)>1)
-        stop("multiple .dat files found in ",file)
+        stop("multiple .dat files found in ",output)
       fileext <- file_ext(dat.file)
       typeID <- switch(fileext
                       , "dat" = 0
@@ -257,9 +257,9 @@ load_gs<-function(path){
                       , 0
                       )
       if(length(rds.file)==0)
-        stop(".rds file missing in ",file)
+        stop(".rds file missing in ",output)
       if(length(rds.file)>1)
-        stop("multiple .rds files found in ",file)
+        stop("multiple .rds files found in ",output)
 
       message("loading R object...")
       gs <- readRDS(rds.file)
@@ -298,7 +298,7 @@ load_gs<-function(path){
         gs <- new("GatingSet", flag = TRUE, FCSPath = thisPath, guid = thisGuid, axis = axis, data = fs)
       }
 
-#      browser()
+      
       guid <- try(slot(gs,"guid"),silent=T)
       if(class(guid)=="try-error"){
         #generate the guid for the legacy archive
@@ -312,7 +312,7 @@ load_gs<-function(path){
       if(isNcdf(gs))
       {
         if(length(nc.file)==0)
-          stop(".nc file missing in ",file)
+          stop(".nc file missing in ",output)
         flowData(gs)@file <- nc.file
 
       }
