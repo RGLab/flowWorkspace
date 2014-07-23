@@ -12,7 +12,7 @@
 \arguments{
 \item{x}{A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.}
 
-\item{y}{A \code{character} the name or full(/partial) gating path of the population node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.}
+\item{y}{A \code{character} not used.}
 
 \item{order}{\code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
 "regular" is default.}
