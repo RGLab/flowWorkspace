@@ -747,7 +747,7 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' 
 #'  \code{getNodes} returns a character vector of names of the nodes (populations) in the \code{GatingSet}.
 #' @param x A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.  
-#' @param y A \code{character} the name or full(/partial) gating path of the population node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy}.
+#' @param y A \code{character} not used.
 #' @param order \code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
 #'     "regular" is default.
 #' @param path A \code{character} or \code{numeric} scalar. when \code{numeric}, it specifies the fixed length of gating path (length 1 displays terminal name).
