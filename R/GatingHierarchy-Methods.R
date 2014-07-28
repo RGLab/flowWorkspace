@@ -909,6 +909,7 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 #' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
 #' @param obj A \code{GatingHierarchy}
 #' @param y a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.
+#' @param showHidden \code{logical} whether to include the hidden children nodes.
 #' @param ... other arguments passed to \link{getNodes} methods
 #' @return
 #'   \code{getParent} returns a \code{character} vector, the name of the parent population.
@@ -935,9 +936,9 @@ setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, .
 #' @rdname getParent
 #' @export
 #' @aliases getChildren   
-setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y, ...){
+setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y, showHidden = TRUE, ...){
 			
-            cind <- .Call("R_getChildren",obj@pointer,sampleNames(obj), y)
+            cind <- .Call("R_getChildren",obj@pointer,sampleNames(obj), y, showHidden)
             cind <- cind + 1
 			getNodes(obj, showHidden = TRUE, ...)[cind]
 })

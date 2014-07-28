@@ -9,12 +9,14 @@
 \usage{
 \S4method{getParent}{GatingSet,character}(obj, y, ...)
 
-\S4method{getChildren}{GatingSet,character}(obj, y, ...)
+\S4method{getChildren}{GatingSet,character}(obj, y, showHidden = TRUE, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy}}
 
 \item{y}{a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.}
+
+\item{showHidden}{\code{logical} whether to include the hidden children nodes.}
 
 \item{...}{other arguments passed to \link{getNodes} methods}
 }
