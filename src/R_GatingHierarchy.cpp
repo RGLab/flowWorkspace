@@ -91,21 +91,26 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
+RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath, SEXP _showHidden){
 BEGIN_RCPP
 
 
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
-
+	bool showHidden = as<bool>(_showHidden);
 	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
 	VertexID_vec childrenID = gh->getChildren(u);
 	vector<NODEID> res;
-	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++)
-		res.push_back(*it);
+	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++){
+		NODEID thisNodeID = *it;
+		bool isHidden = gh->getNodeProperty(thisNodeID).getHiddenFlag();
+		if(showHidden||(!isHidden))
+			res.push_back(thisNodeID);
+	}
+
 	return wrap(res);
 END_RCPP
 }
