@@ -1360,7 +1360,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     }
     parentFrame <- parentData[[1]]
     #set the smoothing option
-    smooth <- as.logical(ifelse(nrow(parentFrame)<100,TRUE,smooth))
+#    smooth <- as.logical(ifelse(nrow(parentFrame)<100,TRUE,smooth))
 
 
     axisObject <- .formatAxis(gh,parentFrame, xParam, yParam,...)
