@@ -1861,7 +1861,17 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 			return(clone);
 		})
 
-
+#' subset the GatingSet/GatingSetList based on 'pData'
+#' 
+#' @param x \code{GatingSet} or \code{GatingSetList}
+#' @param ... other arguments passed to \link{ncdfFlowSet:subset}
+#' @return a code{GatingSet} or \code{GatingSetList} object
+#' @rdname subset
+#' @export 
+subset.GatingSet <- function (x, ...) 
+{
+  ncdfFlow:::subset.ncdfFlowSet(x, ...)
+}
 #' @rdname getGate
 #' @export 
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
