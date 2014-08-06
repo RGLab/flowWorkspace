@@ -3,12 +3,14 @@
 \alias{subset.GatingSet}
 \title{subset the GatingSet/GatingSetList based on 'pData'}
 \usage{
-\method{subset}{GatingSet}(x, ...)
+\method{subset}{GatingSet}(x, subset, ...)
 }
 \arguments{
 \item{x}{\code{GatingSet} or \code{GatingSetList}}
 
-\item{...}{other arguments passed to \link{ncdfFlowSet:subset}}
+\item{subset}{logical expression(within the context of pData) indicating samples to keep. see \code{\link[base:subset]{subset}}}
+
+\item{...}{other arguments. (not used)}
 }
 \value{
 a code{GatingSet} or \code{GatingSetList} object

@@ -1864,13 +1864,25 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #' subset the GatingSet/GatingSetList based on 'pData'
 #' 
 #' @param x \code{GatingSet} or \code{GatingSetList}
-#' @param ... other arguments passed to \link{ncdfFlowSet:subset}
+#' @param subset logical expression(within the context of pData) indicating samples to keep. see \code{\link[base:subset]{subset}}
+#' @param ... other arguments. (not used)
 #' @return a code{GatingSet} or \code{GatingSetList} object
 #' @rdname subset
 #' @export 
-subset.GatingSet <- function (x, ...) 
+subset.GatingSet <- function (x, subset, ...) 
 {
-  ncdfFlow:::subset.ncdfFlowSet(x, ...)
+  pd <- pData(x)
+  r <- if (missing(subset)) 
+        rep_len(TRUE, nrow(x))
+      else {
+        e <- substitute(subset)
+        r <- eval(e, pd, parent.frame())
+        if (!is.logical(r)) 
+          stop("'subset' must be logical")
+        r & !is.na(r)
+      }
+  
+  x[as.character(pd[r, "name"])]
 }
 #' @rdname getGate
 #' @export 
