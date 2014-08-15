@@ -45,7 +45,7 @@ END_RCPP
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath, SEXP _showHidden){
+RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _fullPath, SEXP _showHidden){
 BEGIN_RCPP
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
@@ -54,10 +54,10 @@ BEGIN_RCPP
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	unsigned short order=as<unsigned short>(_order);
-	bool isPath=as<bool>(_isPath);
+	bool fullPath=as<bool>(_fullPath);
 	bool showHidden=as<bool>(_showHidden);
 
-	return wrap(gh->getPopNames(order,isPath,showHidden));
+	return wrap(gh->getPopPaths(order,fullPath,showHidden));
 END_RCPP
 }
 

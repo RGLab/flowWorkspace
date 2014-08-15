@@ -1010,12 +1010,16 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string popName){
 
 }
 
-/*
- * retrieve population names based on getVertices method
- * isPath flag indicates whether append the ancestor node names
- * the assumption is each node only has one parent
+/**
+ * retrieve population paths
+  * the assumption is each node only has one parent
+ *
+ * @param order passed to getVertices function
+ * @param fullPath flag indicates whether to return full path or partial path
+ * @param showHidden wether to include the hidden nodes
+ * @return
  */
-vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath,bool showHidden){
+vector<string> GatingHierarchy::getPopPaths(unsigned short order,bool fullPath,bool showHidden){
 
 	VertexID_vec vertices=getVertices(order);
 	vector<string> res;
@@ -1028,31 +1032,34 @@ vector<string> GatingHierarchy::getPopNames(unsigned short order,bool isPath,boo
 			continue;
 
 		string nodeName=np.getName();
-
-
-
 		/*
 		 * append ancestors on its way of tracing back to the root node
 		 */
-		if(isPath)
-		{
-			while(u!=0)//if u==0, it is a root vertex
-			{
-				nodeName="/"+nodeName;
-				u=getParent(u);
-					if(u>0)//don't append the root node
-						nodeName=getNodeProperty(u).getName()+nodeName;
 
+		while(u > 0)
+		{
+			//when full path is false, check if the current partial path is uniquely identifiable
+			if(!fullPath)
+			{
+				try{
+					getNodeID(nodeName);
+					break;//quit the path growing if not no error (i.e. it is unique)
+				}
+				catch(const domain_error & e){
+					// otherwise do nothing but continue to grow the path
+				}
 
 			}
 
+			nodeName="/"+nodeName;
+			u=getParent(u);
+				if(u>0)//don't append the root node
+					nodeName=getNodeProperty(u).getName()+nodeName;
 
-		}else
-		{
-			string prefix=boost::lexical_cast<string>(u);
 
-			nodeName=prefix+"."+nodeName;
+
 		}
+
 
 		res.push_back(nodeName);
 

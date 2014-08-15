@@ -233,7 +233,7 @@ public:
 	VertexID getDescendant(VertexID u,string popName);
 	VertexID getRefNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
-	vector<string> getPopNames(unsigned short order,bool isPath,bool showHidden);
+	vector<string> getPopPaths(unsigned short order,bool fullPath,bool showHidden);
 	VertexID getAncestor(VertexID u,unsigned short level);
 	EdgeID getInEdges(VertexID target);
 	VertexID getParent(VertexID);

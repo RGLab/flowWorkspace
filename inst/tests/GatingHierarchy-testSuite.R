@@ -164,12 +164,8 @@ test_that("getNodes & setNode",{
       expect_equal(getNodes(gh), expectRes[["full_path"]])
       expect_equal(getNodes(gh, path = "full"), expectRes[["full_path"]])
       
-      #terminal node
-      expect_equal(getNodes(gh, path = 1, prefix = "all"), expectRes[["terminal_prefix_all"]])
-      expect_equal(getNodes(gh, path = 1, prefix = "auto"), expectRes[["terminal_prefix_auto"]])
             
       expect_equal(getNodes(gh, path = 1), expectRes[["terminal"]])
-      expect_equal(getNodes(gh, path = 1, prefix = "none"), expectRes[["terminal"]])
       
       #fixed partial path
       expect_equal(getNodes(gh, path = 2), expectRes[["path_two"]])

@@ -1993,7 +1993,6 @@ setMethod("show","GatingSet",function(object){
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported.
 #' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
-#' @param prefix \code{character} see \link{getNodes}
 #' @param path \code{character} see \link{getNodes}
 #' @param ... Additional arguments passed to \link{getNodes}
 #'

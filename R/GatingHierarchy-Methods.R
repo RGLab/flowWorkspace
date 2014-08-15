@@ -752,8 +752,6 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #'     "regular" is default.
 #' @param path A \code{character} or \code{numeric} scalar. when \code{numeric}, it specifies the fixed length of gating path (length 1 displays terminal name).
 #'              When \code{character}, it can be either 'full' (full path, which is default) or 'auto' (display the shortest unique gating path from the bottom of gating tree).
-#' @param prefix A \code{character} scalar to tell the method whether to add internal node index as the prefix to the node name (only valid when 'path' is set to 1).
-#'                                      the valid values are "auto", "none", "all".
 #' @param showHidden \code{logical} whether to include the hidden nodes
 #' @param ... Additional arguments.
 #'
@@ -767,8 +765,6 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #'   \dontrun{
 #'     #G is a gating hierarchy
 #'     getNodes(G, path = 1])#return node names (without prefix)
-#'     getNodes(G, path = 1, prefix = "all"])#return node names with unqiue ID
-#'     getNodes(G, path = 1, prefix = "auto"])#prepend unqiue ID as needed 
 #'     getNodes(G,path = "full")#return the full path
 #'     getNodes(G,path = 2)#return the path as length of two 
 #'     getNodes(G,path = "auto)#automatically determine the length of path 
@@ -779,62 +775,17 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @export 
 #' @importFrom BiocGenerics duplicated
 #' @importFrom plyr ddply . ldply
-setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE, ...){
-            prefix <- match.arg(prefix)
-            thisCall <- match.call()
-            args <- names(thisCall)
-            #take care the legacy argument
-            if("isPath"%in%args){
-              warning("'isPath' is deprecated by 'path'.")
-              isPath <- list(...)$isPath
-
-              if(isPath){
-                path <- "full"
-                prefix <- "none"
-              }else{
-                path <- 1
-                prefix <- "auto"
-              }
-
-              if("path"%in%args)
-                warning("'path' argument is set to '", path, "' automatically!")
-              if("prefix"%in%args)
-                warning("'prefix' is set to '", prefix, "' automatically!")
-
-            }else{
-              if(path == 1)
-                isPath <- FALSE #passed to c API
-              else
-                isPath <- TRUE #passed to c API
-
-
-            }
+setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
 
             order <- match.arg(order,c("regular","tsort","bfs"))
-
             orderInd <- match(order,c("regular","tsort","bfs"))
-
-            orderInd <- orderInd-1
-			nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),isPath,showHidden)
-
-
+            orderInd <- orderInd - 1
 
             if(is.numeric(path)){
+              nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              
               if(path == 1){
-                if(prefix != "all"){
-                  dotPos <- regexpr("\\.",nodeNames)
-                  #get unique IDs for each node
-                  NodeIDs <- as.integer(substr(nodeNames,0,dotPos-1))
-                  #strip IDs from nodeNames
-                  nodeNames <- substr(nodeNames,dotPos+1,nchar(nodeNames))
-
-                  #add ID back when prefix == auto for those ambiguous nodeNames
-                  if(prefix == "auto"){
-                    toAppendIDs<-duplicated(nodeNames)
-                    nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")
-                  }
-                }
-
+                nodeNames <- basename(nodeNames)
               }else{
 
                 #truncate the path
@@ -854,45 +805,11 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
               }
 
             }else if(path == "auto"){
-
-              nodePath <- nodeNames
-              nodeNames <- basename(nodePath)
-              names(nodeNames) <- nodePath #init the mapping (nodePath vs final output)
-
-              #select duplicated node names to prepend their ancestors until their paths are unique
-              dup <- unique(nodeNames[duplicated(nodeNames)])
-              dup <- nodeNames%in%dup
-              toModify <- data.frame(path =  nodePath[dup], name = nodeNames[dup], parent = nodePath[dup])
-
-              toModifyRes <- ddply(toModify, .(name), function(thisDF){
-                    
-                    thisRes <- thisDF
-                    thisNames <- as.vector(thisRes[,"name"])
-                    while(anyDuplicated(thisNames) > 0){
-                      #try to paste parent for each node
-                      thisRes <- ddply(thisRes, .(path), function(thisRow){
-                                        #get parent of the current node
-                                        thisNode <- as.vector(thisRow[,"parent"])
-                                        ppath <- getParent(x, thisNode)
-                                        pn <- basename(ppath)
-                                        #paste parent name
-                                        thisRow[,"name"] <- paste(pn, thisRow[, "name"], sep = "/")
-                                        #update parent path
-                                        #which is used to further trace back to upper nodes
-                                        thisRow[, "parent"] <- ppath
-                                        thisRow
-                                      })
-                      thisNames <- as.vector(thisRes[,"name"])
-                    }
-                    
-                    thisRes
-                  })
+                nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
               
-              #update the nodeNames with modified names
-              nodeNames[as.vector(toModifyRes[,"path"])] <- as.vector(toModifyRes[,"name"])
-              nodeNames <- as.vector(nodeNames)
-
-            }else if(path != "full" )
+            }else if(path == "full"){
+              nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+            }else
 			  stop("Invalid 'path' argument. The valid input is 'full' or 'auto' or a numeric value.")
 
 
@@ -1005,10 +922,10 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 }
 #' @rdname getPopStats
 #' @export
-setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", prefix = "none", ...){
+setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 
 
-        nodePath <- getNodes(x, path = path, prefix = prefix, ...)
+        nodePath <- getNodes(x, path = path, ...)
         
         stats <- ldply(nodePath, function(thisPath){
     					curStats <- .getPopStat(x,thisPath)
