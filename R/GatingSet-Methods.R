@@ -1994,6 +1994,8 @@ setMethod("show","GatingSet",function(object){
 #' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported.
 #' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
 #' @param path \code{character} see \link{getNodes}
+#' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format  
+#' @param subpopulations \code{character} vector to specify a subset of populations to return. (only valid when format is "long")  
 #' @param ... Additional arguments passed to \link{getNodes}
 #'
 #' @details
@@ -2008,51 +2010,97 @@ setMethod("show","GatingSet",function(object){
 #' @seealso \code{\link{getNodes}}
 #' @examples
 #'         \dontrun{
-#'         #If gh is a GatingHierarchy
+#'         #gh is a GatingHierarchy
 #'         getPopStats(gh);
 #'         #proportion for the fifth population
-#'         getProp(G,getNodes(gh)[5])
-#'         getTotal(G,getNodes(G,tsort=T)[5])
-#'
+#'         getProp(gh,getNodes(gh)[5])
+#'         getTotal(gh,getNodes(gh,tsort=T)[5])
+#'         
+#'         #gs is a GatingSet
+#'         getPopStats(gs)
+#'         #optionally output in long format as a data.table
+#'         getPopStats(gs, format = "long", path = "auto")
+#'         #only get stats for a subset of populations 
+#'         getPopStats(gs, format = "long", subpopulations = getNodes(gs)[4:6])
 #'         }
 #' @aliases getPopStats
 #' @rdname getPopStats
 #' @export 
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), flowJo = FALSE, ...) {
+    function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("wide", "long"), ...) {
 
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
-    
-      # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
-      # are returned.
-      if (flowJo) {
-        statistic <- paste("flowJo", statistic, sep = ".")
-      } else {
-        statistic <- paste("flowCore", statistic, sep = ".")
-      }
+      format <- match.arg(format)
       
-      stats <- lapply(x,function(y){
-              d<-getPopStats(y, ...)
-              d$key<-rownames(d)
-              setkeyv(d,"key")
-              d<-d[,list(key,get(statistic))]
-              setnames(d,c("key",sampleNames(y)))
-              setkeyv(d,"key")
-              d
-      })
-      pop_stats <- Reduce(function(x,y)merge(x,y,all=TRUE),stats)
+      if(format == "long"){
+        allNodes <- getNodes(gs, showHidden = TRUE, ...)
+        
+        if(is.null(subpopulations))
+          subpopulations <- getNodes(gs, ...)[-1]
+        pop_stats <- lapply(sampleNames(gs), function(sn){
+              pointer <- gs@pointer
+              lapply(subpopulations, function(pop){
+#                            browser()
+                    
+                    #get count of this pop
+                    stats <- .Call("R_getPopStats", pointer, sn, pop)
+                    count <- ifelse(flowJo, stats$FlowJo["count"], stats$FlowCore["count"])
+                    
+                    # get parent node
+                    pind <- .Call("R_getParent", pointer,sn, pop)
+                    pind <- pind +1
+                    parent <- allNodes[pind]
+                    
+                    #get parent count
+                    stats <- .Call("R_getPopStats", pointer, sn, parent)
+                    parentCount <- ifelse(flowJo, stats$FlowJo["count"], stats$FlowCore["count"])
+                    
+                    data.table(Filename = sn
+                        , Population = pop
+                        , Parent = parent
+                        , Count = count
+                        , ParentCount = parentCount
+                    )
+                  })
+            }
+        
+        )
+        
+        pop_stats <- rbindlist(unlist(pop_stats, recur = F))
+      }else{
+        
       
-      rownames(pop_stats) <- pop_stats[,key]
-      setkey(pop_stats,NULL)
-      pop_stats$key<-NULL
-      rn<-rownames(pop_stats)
-      pop_stats<-as.matrix(pop_stats)
-      rownames(pop_stats)<-rn
-      pop_stats
-    })
+        # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
+        # are returned.
+        if (flowJo) {
+          statistic <- paste("flowJo", statistic, sep = ".")
+        } else {
+          statistic <- paste("flowCore", statistic, sep = ".")
+        }
+        
+        stats <- lapply(x,function(y){
+                d<-getPopStats(y, ...)
+                d$key<-rownames(d)
+                setkeyv(d,"key")
+                d<-d[,list(key,get(statistic))]
+                setnames(d,c("key",sampleNames(y)))
+                setkeyv(d,"key")
+                d
+        })
+        pop_stats <- Reduce(function(x,y)merge(x,y,all=TRUE),stats)
+        
+        rownames(pop_stats) <- pop_stats[,key]
+        setkey(pop_stats,NULL)
+        pop_stats$key<-NULL
+        rn<-rownames(pop_stats)
+        pop_stats<-as.matrix(pop_stats)
+        rownames(pop_stats)<-rn
+        pop_stats
+    }
+})
 
 #' calculate the coefficient of variation
 .computeCV <- function(x, ...){
