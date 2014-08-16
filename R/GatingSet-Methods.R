@@ -1991,7 +1991,7 @@ setMethod("show","GatingSet",function(object){
 #' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the flowJo counts, flowCore counts and frequencies.
 #' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
-#' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported.
+#' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
 #' @param path \code{character} see \link{getNodes}
 #' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format  
@@ -2028,48 +2028,27 @@ setMethod("show","GatingSet",function(object){
 #' @export 
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("wide", "long"), ...) {
+    function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("wide", "long"), path = "auto", ...) {
 
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
       format <- match.arg(format)
-      
+      path <- match.arg(path, c("full", "auto"))
+       
       if(format == "long"){
-        allNodes <- getNodes(gs, showHidden = TRUE, ...)
         
         if(is.null(subpopulations))
-          subpopulations <- getNodes(gs, ...)[-1]
-        pop_stats <- lapply(sampleNames(gs), function(sn){
-              pointer <- gs@pointer
-              lapply(subpopulations, function(pop){
-#                            browser()
-                    
-                    #get count of this pop
-                    stats <- .Call("R_getPopStats", pointer, sn, pop)
-                    count <- ifelse(flowJo, stats$FlowJo["count"], stats$FlowCore["count"])
-                    
-                    # get parent node
-                    pind <- .Call("R_getParent", pointer,sn, pop)
-                    pind <- pind +1
-                    parent <- allNodes[pind]
-                    
-                    #get parent count
-                    stats <- .Call("R_getPopStats", pointer, sn, parent)
-                    parentCount <- ifelse(flowJo, stats$FlowJo["count"], stats$FlowCore["count"])
-                    
-                    data.table(Filename = sn
-                        , Population = pop
-                        , Parent = parent
-                        , Count = count
-                        , ParentCount = parentCount
-                    )
-                  })
-            }
+          subpopulations <- getNodes(x, path = path, ...)[-1]
         
-        )
+        pop_stats <- getPopCounts(x@pointer, sampleNames(x), subpopulations, flowJo, path == "full")
+        pop_stats <- data.table(name = pop_stats[["name"]]
+                              , Population = pop_stats[["Population"]]
+                              , Parent = pop_stats[["Parent"]]
+                              , Count = pop_stats[["Count"]]
+                              , ParentCount = pop_stats[["ParentCount"]]
+                            )
         
-        pop_stats <- rbindlist(unlist(pop_stats, recur = F))
       }else{
         
       
@@ -2082,7 +2061,7 @@ setMethod("getPopStats", "GatingSet",
         }
         
         stats <- lapply(x,function(y){
-                d<-getPopStats(y, ...)
+                d<-getPopStats(y, path = path,...)
                 d$key<-rownames(d)
                 setkeyv(d,"key")
                 d<-d[,list(key,get(statistic))]

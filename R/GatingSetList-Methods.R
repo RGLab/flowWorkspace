@@ -117,9 +117,10 @@ setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ..
 setMethod("getPopStats","GatingSetList",function(x, format = c("wide", "long"), ...){
       
       format <- match.arg(format)
-      res <- lapply(x,getPopStats, level =1, new = new,...)
+      res <- lapply(x,getPopStats, level =1, format = format,...)
       
       if(format == "long"){
+#        browser()
         res <- rbindlist(res)
       }else{
         

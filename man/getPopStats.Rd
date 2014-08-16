@@ -16,26 +16,28 @@
 
 \S4method{getTotal}{GatingHierarchy,character}(x, y, flowJo = FALSE)
 
-\S4method{getPopStats}{GatingHierarchy}(x, path = "auto", prefix = "none",
-  ...)
+\S4method{getPopStats}{GatingHierarchy}(x, path = "auto", ...)
 
 \S4method{getPopStats}{GatingSet}(x, statistic = c("freq", "count"),
-  flowJo = FALSE, ...)
+  flowJo = FALSE, subpopulations = NULL, format = c("wide", "long"),
+  path = "auto", ...)
 
-\S4method{getPopStats}{GatingSetList}(x, ...)
+\S4method{getPopStats}{GatingSetList}(x, format = c("wide", "long"), ...)
 }
 \arguments{
 \item{y}{\code{character} node name or path}
 
 \item{x}{A \code{GatingHierarchy} or \code{GatingSet}}
 
-\item{statistic}{\code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported.}
+\item{statistic}{\code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.}
 
 \item{flowJo}{\code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.}
 
-\item{prefix}{\code{character} see \link{getNodes}}
-
 \item{path}{\code{character} see \link{getNodes}}
+
+\item{format}{\code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format}
+
+\item{subpopulations}{\code{character} vector to specify a subset of populations to return. (only valid when format is "long")}
 
 \item{...}{Additional arguments passed to \link{getNodes}}
 }
@@ -56,12 +58,18 @@ getTotal returns the total number of events included in this gate. The contents 
 }
 \examples{
 \dontrun{
-        #If gh is a GatingHierarchy
+        #gh is a GatingHierarchy
         getPopStats(gh);
         #proportion for the fifth population
-        getProp(G,getNodes(gh)[5])
-        getTotal(G,getNodes(G,tsort=T)[5])
+        getProp(gh,getNodes(gh)[5])
+        getTotal(gh,getNodes(gh,tsort=T)[5])
 
+        #gs is a GatingSet
+        getPopStats(gs)
+        #optionally output in long format as a data.table
+        getPopStats(gs, format = "long", path = "auto")
+        #only get stats for a subset of populations
+        getPopStats(gs, format = "long", subpopulations = getNodes(gs)[4:6])
         }
 }
 \seealso{

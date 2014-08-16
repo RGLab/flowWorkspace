@@ -262,6 +262,25 @@ test_that("getPopStats",{
       
       expect_equal(as.data.table(thisRes), expectRes[,-1, with = F])
       
+      #use auto path
+      stats_wide <- getPopStats(gs, format = "wide", path = "auto")
+      stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
+      stats_wide <- as.data.frame(stats_wide)
+      #get long format
+      stats_long <- getPopStats(gs, format = "long")
+      
+      #convert it to wide to do the comparsion
+      stats_long[, value := Count/ParentCount]
+      stats_long <- dcast.data.table(stats_long[, list(Population,name, value)],  Population~name)
+      rn <- stats_long[, Population]
+      stats_long[, Population := NULL]
+      stats_long <- as.data.frame(stats_long)
+      rownames(stats_long) <- rn
+      stats_long <- stats_long[rownames(stats_wide), colnames(stats_wide)]
+      
+      expect_equal(stats_long, stats_wide)
+      
+      
 })
 
 test_that("compute CV from gs",{
