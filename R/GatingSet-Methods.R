@@ -1748,8 +1748,10 @@ setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...
       }else{
         #subset by indices
         indices<-lapply(obj,getIndices,y)
-        this_data <- Subset(this_data,indices)
-        
+        if(class(this_data) == "ncdfFlowSet")
+          this_data <- Subset(this_data,indices, validityCheck = FALSE)
+        else
+          this_data <- Subset(this_data,indices)
         this_data
       }
       
@@ -1848,11 +1850,6 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
             clone@axis <- clone@axis[i]
             #subsetting data
 			fs <- flowData(clone)[i]
-            #deep copying flowData(but still pointing to the same cdf)
-#            if(isNcdf(clone))
-#              fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
-#            else
-#              fs<-flowCore:::copyFlowSet(fs)
 
 
             #update the data for clone
