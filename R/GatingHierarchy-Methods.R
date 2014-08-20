@@ -1240,7 +1240,45 @@ setMethod("getTransformations","GatingHierarchy",function(x){
           return (f)
         })
   }
+#' return a biexponentioal transformation function that is compatible with flowJo
+#' 
+#' @param channelRange \code{numeric} the maximum value of transformed data
+#' @param maxValue \code{numeric} the maximum value of input data
+#' @param pos \code{numeric} the full width of the transformed display in asymptotic decades
+#' @param neg \code{numeric} Additional negative range to be included in the display in asymptotic decades
+#' @param widthBasis \code{numeric} unkown.
+#' @export 
+flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10){
+  coef <- getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis)
+  f<-function (x, deriv = 0)
+  {
+    deriv <- as.integer(deriv)
+    if (deriv < 0 || deriv > 3)
+      stop("'deriv' must be between 0 and 3")
+    if (deriv > 0) {
+      z0 <- double(z$n)
+      z[c("y", "b", "c")] <- switch(deriv, list(y = z$b, b = 2 *
+                  z$c, c = 3 * z$d), list(y = 2 * z$c, b = 6 * z$d,
+              c = z0), list(y = 6 * z$d, b = z0, c = z0))
+      z[["d"]] <- z0
+    }
+    
+    res <- stats::: .splinefun(x,z)
+    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L]))
+      res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
+    res
+  }
+  #update the parameters of the function
+  z<-coef$z
+  z$n<-length(z$x)
+  z$method<-coef$method
+  assign("z",z,environment(f))
+  
+  attr(f,"type")<-coef$type
 
+
+  return (f)
+}
 
 #'  Retrieve the compensation matrices from a GatingHierarchy
 #'

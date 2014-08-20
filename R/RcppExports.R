@@ -5,3 +5,7 @@ getPopCounts <- function(gsPtr, sampleNames, subpopulation, flowJo, isFullPath) 
     .Call('flowWorkspace_getPopCounts', PACKAGE = 'flowWorkspace', gsPtr, sampleNames, subpopulation, flowJo, isFullPath)
 }
 
+getSplineCoefs <- function(channelRange, maxValue, pos, neg, widthBasis) {
+    .Call('flowWorkspace_getSplineCoefs', PACKAGE = 'flowWorkspace', channelRange, maxValue, pos, neg, widthBasis)
+}
+
