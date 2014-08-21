@@ -951,6 +951,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'
 #'  \item{marker.only}{ \code{ligcal} specifies whether to show both channel and marker names }
 #'
+#'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale}
 #'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
 #'                                            either by instrument measurement range or the actual data range.
 #'                     or \code{numeric} which specifies customized range.}

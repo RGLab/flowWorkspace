@@ -462,27 +462,6 @@ test_that("pretty10exp",{
       expect_equal(thisRes, expectRes)      
     })
 
-test_that("formatAxis",{
-      
-      parent <- getData(gh, use.exprs = FALSE)
-      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "FSC-A")
-      expectRes <- list(scales = list(), xlab = "SSC-A ", ylab = "FSC-A ")
-      expect_equal(thisRes, expectRes)
-      
-      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>")
-      expectRes <- list(scales = list(y = list(at = c(227.00,  948.81, 1893.44, 2808.63, 3717.62)
-                                                , labels = expression(0, 10^2, 10^3, 10^4, 10^5)
-                                              )
-                                      )
-                        , xlab = "SSC-A ", ylab = "<V450-A> CD3 V450")
-      expect_equal(thisRes, expectRes)
-      
-      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>", marker.only = TRUE)
-      expectRes[["xlab"]] <- "SSC-A"
-      expectRes[["ylab"]] <- "CD3 V450"
-      expect_equal(thisRes, expectRes)
-            
-    })
 
 test_that("getSample",{
       

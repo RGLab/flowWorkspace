@@ -1155,11 +1155,48 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
 	return (class(getGate(x,y))=="booleanFilter")
 }
 
-
+#' Determine tick mark locations and labels for a given channel axis
+#' 
+#' @param gh \code{GatingHiearchy}
+#' @param channel \code{character} channel name
+#' 
+#' @return when there is transformation function associated with the given channel, it returns a list of that contains positions and labels to draw on the axis
+#'  other wise returns NULL 
+#' @examples 
+#' \dontrun{
+#'  prettyAxis(gh, "<B710-A>")
+#' }
+#' @export 
+prettyAxis <- function(gh, channel){
+      
+        trans <- getTransformations(gh, channel)
+        if(is.null(trans)){
+            NULL
+         }else{
+            inverseTrans <- getTransformations(gh, channel, inverse = TRUE)
+            
+            fr <- getData(gh, use.exprs = FALSE)
+            r <- as.vector(range(fr)[,channel])#range
+            rw <- inverseTrans(r)
+            ######################################
+            #create equal spaced locations at raw scale
+            ######################################
+            base10raw <- unlist(lapply(2:6,function(e)10^e))
+            base10raw <- c(0,base10raw)
+            raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
+            pos <- signif(trans(raw))
+            #format it
+            label <- pretty10exp(as.numeric(raw),drop.1=TRUE)
+            
+            list(label = label, at = pos)
+          }
+      
+        }
+#to be deprecated        
 getAxisLabels <- function(obj,...){
-              obj@axis[[sampleNames(obj)]]
-		}
-
+  obj@axis[[sampleNames(obj)]]
+}
+        
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
@@ -1168,6 +1205,7 @@ getAxisLabels <- function(obj,...){
 #' @param ... other arguments
 #' 
 #'         inverse \code{logical} whether to return the inverse transformation function.
+#'         channel \code{character} channel name
 #' @details
 #' Returns a list of the transformations or a transformation in the flowJo workspace. The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples in the \code{flowJoWorkspace}. Each element of \code{L} is itself a \code{list} of length \code{M}, where \code{M} is the number of parameters that were transformed for a sample or group of samples in a \code{flowJoWorkspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis, using two different sets of transformations, then L will be of length 2, and each element of L will be of length 5. The elements of \code{L} represent channel- or parameter-specific transformation functions that map from raw intensity values to channel-space used by flowJo.
 #' this method currently is used convert transformation funtion from c++ to R
@@ -1177,7 +1215,9 @@ getAxisLabels <- function(obj,...){
 #' @examples
 #' \dontrun{
 #' 	#Assume gh is a GatingHierarchy
-#' 	getTransformations(gh);
+#' 	getTransformations(gh); # return a list transformation functions
+#'  getTransformations(gh, inverse = TRUE); # return a list inverse transformation functions 
+#'  getTransformations(gh, channel = "<B710-A") # only return the transfromation associated with given channel
 #' }
 #' @aliases getTransformations
 #' @rdname getTransformations
@@ -1185,9 +1225,10 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 #			browser()
       .getTransformations(x@pointer,sampleNames(x), ...)
 		})
-.getTransformations <- function(pointer,sampleName, ...){
-    trans<-.Call("R_getTransformations",pointer,sampleName)
-    lapply(trans,function(curTrans){
+    
+.getTransformations <- function(pointer,sampleName, channel = NULL, ...){
+    trans <- .Call("R_getTransformations",pointer,sampleName)
+    transList <- lapply(trans,function(curTrans){
 #						browser()
           if(curTrans$type=="log")
           {
@@ -1214,6 +1255,27 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 
           return (f)
         })
+    
+    #try to match to given channel
+    if(!is.null(channel)){
+      trans_names <- names(transList)
+      #do strict match first
+      j <- grep(paste0("^", channel, "$"), trans_names)
+      if(length(j) == 0){
+        #do fuzzy match if no matches
+        j <- grep(channel, trans_names)
+      }
+      
+      if(length(j) > 1){
+          stop("multiple tranformation functions matched to: ", channel)
+      }else if(length(j) == 0){
+        return(NULL)
+      }else{
+        transList[[j]]
+      }
+    }else
+      transList
+    
   }
   
 #' wrap the calibration table into transformation function using stats:::splinefun
@@ -1608,6 +1670,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 .formatAxis <- function(x, data, xParam, yParam
                           , scales=list()
                           , marker.only = FALSE
+                          , raw.scale = TRUE
                           , ...){
 	xObj <- getChannelMarker(data,xParam)
 	yObj <- getChannelMarker(data,yParam)
@@ -1622,30 +1685,30 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
       ylab <- sub("NA","",paste(unlist(yObj),collapse=" "))
     }
 
-        if(is.null(xParam)){
+        if(is.null(xParam)||!raw.scale){
           x.labels <- NULL
         }else{
-          x.labels<-getAxisLabels(x)[[xParam]]
+          x.labels <- prettyAxis(x, xParam)
         }
 
-        if(is.null(yParam)){
+        if(is.null(yParam)||!raw.scale){
           y.labels <- NULL
         }else{
-		  y.labels<-getAxisLabels(x)[[yParam]]
+		  y.labels <- prettyAxis(x, yParam)
         }
 
 		#init the scales and x,y lim
 		#update axis when applicable
 		if(!is.null(x.labels))
 		{
-			x.labels$label<-pretty10exp(as.numeric(x.labels$label),drop.1=TRUE)
+			
 			xscales<-list(x=list(at=x.labels$at,labels=x.labels$label))
 			scales<-lattice:::updateList(xscales,scales)
 
 		}
 		if(!is.null(y.labels))
 		{
-			y.labels$label<-pretty10exp(as.numeric(y.labels$label),drop.1=TRUE)
+			
 			yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
 			scales<-lattice:::updateList(scales,yscales)
 
