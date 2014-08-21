@@ -586,5 +586,4 @@ test_that("getPopChnlMapping for COMPASS",{
 #        expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                          
       
     })
-
-
+    
