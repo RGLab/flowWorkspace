@@ -211,15 +211,47 @@ BEGIN_RCPP
 				if(!curTrans->isInterpolated()){
 					curTrans->interpolate();
 				}
-//					throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
+
 				Spline_Coefs obj=curTrans->getSplineCoefs();
 
 				res.push_back(List::create(Named("z",obj.coefs)
 											,Named("method",obj.method)
-											,Named("type",obj.type)
+											,Named("type", "caltbl")
 											)
 								,transName
 								);
+				break;
+			}
+			case BIEXP:
+			{
+				biexpTrans * thisTrans = dynamic_cast<biexpTrans *>(curTrans);
+				/*
+				 * do all the CALTBL operation
+				 */
+				if(!curTrans->computed()){
+					curTrans->computCalTbl();
+				}
+				if(!curTrans->isInterpolated()){
+					curTrans->interpolate();
+				}
+
+				Spline_Coefs obj=curTrans->getSplineCoefs();
+
+				/*
+				 * in addition, output the 5 arguments
+				 */
+				res.push_back(List::create(Named("z",obj.coefs)
+											,Named("method",obj.method)
+											,Named("type","biexp")
+											, Named("channelRange", thisTrans->channelRange)
+											, Named("maxValue", thisTrans->maxValue)
+											, Named("neg", thisTrans->neg)
+											, Named("pos", thisTrans->pos)
+											, Named("widthBasis", thisTrans->widthBasis)
+											)
+								,transName
+								);
+
 				break;
 			}
 			default:

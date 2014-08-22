@@ -243,6 +243,7 @@ public:
 
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
+	void addTransMap(trans_map tm);
 };
 BOOST_CLASS_VERSION(GatingHierarchy,3)
 

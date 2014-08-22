@@ -210,14 +210,9 @@ transformation * trans_local::getTran(string channel){
 	return res;
 }
 
-biexpTrans::biexpTrans(){
-	channelRange=4096;
-	maxValue=262144;
-	pos=4.5;
-	neg=0;
-	widthBasis=-10;
-	isComputed=false;
-
+biexpTrans::biexpTrans():transformation(false, BIEXP),channelRange(4096),maxValue(262144), pos(4.5), neg(0), widthBasis(-10){
+	setComputeFlag(false);
+	calTbl.setInterpolated(false);
 }
 /*
  * directly translated from java routine from tree star

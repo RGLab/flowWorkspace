@@ -242,3 +242,11 @@ setMethod("getSingleCellExpression",signature=c("GatingSetList","character"),fun
       
     })
 
+#' @rdname transform
+setMethod("transform",
+    signature = signature(`_data` = "GatingSetList"),
+    definition = function(`_data`, ...)
+    {
+      res <- lapply(`_data`, function(gs)transform(gs, ...), level = 1)
+      GatingSetList(res)
+    })

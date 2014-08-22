@@ -2039,7 +2039,7 @@ setMethod("getPopStats", "GatingSet",
         if(is.null(subpopulations))
           subpopulations <- getNodes(x, path = path, ...)[-1]
         
-        pop_stats <- getPopCounts(x@pointer, sampleNames(x), subpopulations, flowJo, path == "full")
+        pop_stats <- .getPopCounts(x@pointer, sampleNames(x), subpopulations, flowJo, path == "full")
         pop_stats <- data.table(name = pop_stats[["name"]]
                               , Population = pop_stats[["Population"]]
                               , Parent = pop_stats[["Parent"]]
@@ -2421,4 +2421,47 @@ insertGate <- function(gs, gate, parent, children){
   recompute(clone)
   clone
 }
+
+#' tranform the flow data asssociated with the GatingSet
+#' 
+#' The transformation functions are saved in the GatingSet and can be retrieved by \link{getTransformations}.
+#' Currently only flowJo-type biexponential transformation(either returned by \link{getTransformations} or constructed by \link{flowJoTrans})
+#' is supported. 
+#' 
+#' @param _data \code{GatingSet} or \code{GatingSetList}
+#' @param ... expect a \code{transformList} object
+#' 
+#' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
+#' @examples
+#' \dontrun{
+#' #construct biexponential transformation function
+#' biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+#' #make a transformList object
+#' transFuns <- transformList(chnls, biexpTrans)
+#' #add it to GatingSet
+#' gs_trans <- transform(gs, transFuns)
+
+#' }   
+#' @export
+#' @rdname transform 
+#' @importMethodsFrom ncdfFlow transform
+setMethod("transform",
+    signature = signature(`_data` = "GatingSet"),
+    definition = function(`_data`, ...)
+    {
+      dots <- list(...)
+      if(length(dots) == 0)
+        stop("expect the second argument as a 'transformList' object!")
+      transList <- dots[[1]]
+      gs <- `_data`
+      if(class(transList) != "transformList")
+        stop("expect the second argument as a 'transformList' object!")
+      flowWorkspace:::.addTrans(gs@pointer, transList)  
+      message("transforming the flow data...")
+      fs <- getData(gs)
+     
+      suppressMessages(fs_trans <- transform(fs, transList))
+      flowData(gs) <- fs_trans
+      gs
+    })
 

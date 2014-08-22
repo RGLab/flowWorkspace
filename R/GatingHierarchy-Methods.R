@@ -1169,29 +1169,41 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
 #' @export 
 prettyAxis <- function(gh, channel){
       
-        trans <- getTransformations(gh, channel)
-        if(is.null(trans)){
-            NULL
-         }else{
-            inverseTrans <- getTransformations(gh, channel, inverse = TRUE)
-            
-            fr <- getData(gh, use.exprs = FALSE)
-            r <- as.vector(range(fr)[,channel])#range
-            rw <- inverseTrans(r)
-            ######################################
-            #create equal spaced locations at raw scale
-            ######################################
-            base10raw <- unlist(lapply(2:6,function(e)10^e))
-            base10raw <- c(0,base10raw)
-            raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
-            pos <- signif(trans(raw))
-            #format it
-            label <- pretty10exp(as.numeric(raw),drop.1=TRUE)
-            
-            list(label = label, at = pos)
-          }
-      
+        
+        
+        res <- getAxisLabels(gh)[[channel]] #this call is to be deprecated once we figure out how to preserve trans when cloning GatingSet
+        if(is.null(res)){
+          #try to grab trans and do inverse trans for axis label on the fly
+            trans <- getTransformations(gh, channel)
+            if(is.null(trans)){
+              res <- NULL
+            }else{
+              inverseTrans <- getTransformations(gh, channel, inverse = TRUE)
+              
+              fr <- getData(gh, use.exprs = FALSE)
+              r <- as.vector(range(fr)[,channel])#range
+              rw <- inverseTrans(r)
+              ######################################
+              #create equal spaced locations at raw scale
+              ######################################
+              base10raw <- unlist(lapply(2:6,function(e)10^e))
+              base10raw <- c(0,base10raw)
+              raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
+              pos <- signif(trans(raw))
+              #format it
+              label <- pretty10exp(as.numeric(raw),drop.1=TRUE)
+              
+              res <- list(label = label, at = pos)
+            }
+          
+        }else{
+          #use the stored axis label if exists
+          res$label <- pretty10exp(as.numeric(res$label),drop.1=TRUE)
         }
+        
+        res
+}
+        
 #to be deprecated        
 getAxisLabels <- function(obj,...){
   obj@axis[[sampleNames(obj)]]
@@ -1250,7 +1262,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
             attr(f,"type")<-"gateOnly"
 
 
-          }else
+          }else if(curTrans$type %in% c("caltbl" , "biexp"))
              f <- .flowJoTrans(curTrans, ...)
 
           return (f)
@@ -1314,7 +1326,15 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
   z$method<-coef$method
   assign("z",z,environment(f))
   
-  attr(f,"type")<-coef$type
+  type <- coef$type 
+  attr(f,"type") <- type 
+  if(type == "biexp")
+      attr(f,"parameters") <- list(channelRange = coef$channelRange
+                                  , maxValue = coef$maxValue
+                                  , neg = coef$neg
+                                  , pos = coef$pos
+                                  , widthBasis = coef$widthBasis
+                                )
   
   
   return (f)
@@ -1334,7 +1354,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 #' @export 
 flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
   
-  coef <- getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis)
+  coef <- .getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis)
   .flowJoTrans(coef, inverse = inverse)
   
 }
