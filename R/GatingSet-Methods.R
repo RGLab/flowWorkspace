@@ -2337,7 +2337,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
 #      browser()
-      message(sample)
+      message(".", appendLF = FALSE)
       
       fr <- fs[[sample, use.exprs = FALSE]] 
       this_pd <- pData(parameters(fr))  

@@ -1002,7 +1002,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 						polygonGate(.gate=mat,filterId=filterId)
 				}else if(g$type==2)
 					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=filterId)
-				else if(g$type==3)
+				else if(g$type %in% c(3,6))
 				{
 
 					refPaths<-unlist(lapply(g$ref,function(curPath){
@@ -1015,10 +1015,10 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
                     g$v2[1] <- ""
                     boolExpr <- paste(g$v2, g$v,refPaths,sep="")
                     boolExpr <- paste(boolExpr,collapse="")
-#                   browser()
+                    if(nchar(boolExpr) > 0)
                     boolExpr <- as.symbol(boolExpr)
 
-                    g <- eval(substitute(booleanFilter(xx),list(xx=boolExpr)))
+                    g <- eval(substitute(booleanFilter(xx, filterId=filterId),list(xx=boolExpr)))
 					g
 				}else if (g$type == 4){
                     cov.mat <- g$cov

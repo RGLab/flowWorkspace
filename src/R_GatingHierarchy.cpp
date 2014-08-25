@@ -440,6 +440,29 @@ BEGIN_RCPP
 			  return ret;
 
 			}
+		case LOGICALGATE:
+		{
+			boolGate * bg=dynamic_cast<boolGate*>(g);
+		  vector<BOOL_GATE_OP> boolOpSpec=bg->getBoolSpec();
+		  vector<string> v;
+		  vector<char>v2;
+		  vector<vector<string> >ref;
+		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+		  {
+			  v.push_back(it->isNot?"!":"");
+			  v2.push_back(it->op);
+			  ref.push_back(it->path);
+		  }
+
+		  List ret=List::create(Named("v",v)
+								 ,Named("v2",v2)
+								 ,Named("ref",ref)
+								 ,Named("type",LOGICALGATE)
+								 , Named("filterId", nodeName)
+								 );
+		  return ret;
+
+		}
 		default:
 		{
 //			COUT<<g->getType()<<endl;
@@ -652,6 +675,13 @@ gate * newGate(List filter){
 			break;
 
 		}
+		case LOGICALGATE:
+		{
+			logicalGate * lg = new logicalGate();
+			lg->setNegate(isNeg);
+			g = lg;
+			break;
+		}
 		case ELLIPSEGATE:
 		{
 
@@ -685,12 +715,6 @@ gate * newGate(List filter){
 
 			g=eg;
 
-			break;
-		}
-		case LOGICALGATE:
-		{
-			//TODO:create and implement logical gate class
-			throw(domain_error("LOGICALGATE is not unsupported yet!"));
 			break;
 		}
 		default:

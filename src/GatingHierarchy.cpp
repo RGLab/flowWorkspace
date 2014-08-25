@@ -513,21 +513,20 @@ void GatingHierarchy::calgate(VertexID u)
 	 * calculate the indices for the current node
 	 */
 	vector<bool> curIndices;
-	if(g->getType()==BOOLGATE)
+	switch(g->getType())
 	{
+	case BOOLGATE:
 		curIndices=boolGating(u);
-	}
-	else
-	{
-
-//		COUT<<g->getType()<<typeid(*g).name()<<endl;
+		break;
+	case LOGICALGATE://skip any gating operation since the indice is already set once the gate is added
+		node.computeStats();
+		return;
+	default:
 		curIndices=g->gating(fdata);
 	}
 
 	//combine with parent indices
 	transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
-//	for(unsigned i=0;i<curIndices.size();i++)
-//		curIndices.at(i)=curIndices.at(i)&parentNode->indices.at(i);
 	node.setIndices(curIndices);
 	node.computeStats();
 }
