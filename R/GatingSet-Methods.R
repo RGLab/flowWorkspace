@@ -1220,9 +1220,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     if(class(overlay)=="logical")
       overlay<-Subset(getData(x),overlay)[,params]
     else{
-      if(length(overlay)>1)
-        stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
-      overlay<-getData(x,overlay)[,params]
+#      if(length(overlay)>1)
+#        stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
+      overlay <- sapply(overlay, function(thisOverlay)getData(x,thisOverlay)[,params])
     }
     overlay
   }
@@ -1339,7 +1339,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       if(is.null(overlay))
         overlay <- y
       else
-        warning(y, " is BooleanFilter. The 'overlay' argument is ignored!")
+        overlay <- c(overlay, y)
+#        warning(y, " is BooleanFilter. The 'overlay' argument is ignored!")
     }
 
 
@@ -1456,11 +1457,15 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
           overlay <- .getOverlay(x, overlay, params)
           if(is.gh){
             if(strip){
+#              browser()
               #rename sample name with popName in order to display it in strip
-              sampleNames(overlay) <- popName
-            }
+            overlay <- sapply(overlay, function(thisOverlay){
+                            sampleNames(thisOverlay) <- popName
+                            thisOverlay
+                      })
           }
         }
+      }
 
 #        browser()
         default_ylab <- list(label = axisObject$ylab)
