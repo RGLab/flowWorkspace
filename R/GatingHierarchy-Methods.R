@@ -443,6 +443,7 @@ NULL
 
   dir <- parent.frame(3)$dir
   gs <- parent.frame(4)$x
+  allNodes <- getNodes(gs, showHidden = TRUE)
   png.par <- parent.frame(3)$png.par
   for(i in 1:length(label)){
     #get pop info
@@ -462,8 +463,8 @@ NULL
       #since the device list is circular and dev.cur() will point to dev.next()
       #which really should be dev.prev()
       preDev <- dev.prev()
-
-      curPlotObj <- try(plotGate(gs, thisPopId,  arrange = FALSE), silent = TRUE)
+  
+      curPlotObj <- try(plotGate(gs, allNodes[thisPopId],  arrange = FALSE), silent = TRUE)
       # catch error to ensure the device is closed before error is thrown
       if(class(curPlotObj) == "try-error"){
 
@@ -655,7 +656,7 @@ setMethod("plot",c("GatingSet","missing"),function(x,y,...){
   children_nodes <- getChildren(gh,startNode)
   if(length(children_nodes)>0){
     for(this_parent in children_nodes){
-      nodelist$v <- c(nodelist$v, this_parent)
+      nodelist$v <- c(nodelist$v, .getNodeInd(gh, this_parent))
       .getAllDescendants (gh,this_parent,nodelist)
     }
   }
@@ -666,8 +667,9 @@ setMethod("plot",c("GatingSet","missing"),function(x,y,...){
 #' @export
 #' @importMethodsFrom graph subGraph
 setMethod("plot",c("GatingSet","character"),function(x,y,...){
+      node <- y
       y <- .getNodeInd(x[[1]],y)
-
+      
       # get graphNEL object
       gh <- x[[1]]
       g <- .getGraph(gh)
@@ -676,7 +678,7 @@ setMethod("plot",c("GatingSet","character"),function(x,y,...){
       if(length(y)==1){#use it as the root
         nodelist <- new.env(parent=emptyenv())
         nodelist$v <-integer()
-        .getAllDescendants (gh,y,nodelist)
+        .getAllDescendants (gh,node,nodelist)
 
 
 
