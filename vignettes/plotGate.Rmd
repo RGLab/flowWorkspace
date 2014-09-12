@@ -42,7 +42,7 @@ new.theme <- lattice:::updateList(old.theme, list(axis.text = list(cex = 1)
 
 flowWorkspace.par.set(name="theme.novpadding", new.theme)
 flowWorkspace.par.set("plotGate", list(arrange = FALSE))
-
+library(knitr)
 opts_chunk$set(fig.show = 'hold', fig.width = 3, fig.height = 3, results = 'hide', message = FALSE)
 
 ```
