@@ -60,13 +60,19 @@ plot(gs, "CD4")
 ## plotGate
 ### Change resolution
   **xbin** The argument passed to hexbin ,which is the number of bins partitioning the range of xbnds. It is set as 0 by default,which plots all the events without binning.
+  
+  **sample.ratio** the ratio of sub-sampling of events to speed up plotting.
 ```{r}
 # default xbin = 32      
-plotGate(gs[[1]], "CD4/38+ DR+") 
+plotGate(gs[[1]], "CD4/38+ DR+", main = "default (xbin = 32)") 
 # increase the resolution
-plotGate(gs[[1]], "CD4/38+ DR+", xbin = 128)      
+plotGate(gs[[1]], "CD4/38+ DR+", xbin = 128, main = "xbin = 128") 
 # have the highest resolution by disabling hexbin 
-plotGate(gs[[1]], "CD4/38+ DR+", xbin = 0)
+plotGate(gs[[1]], "CD4/38+ DR+", xbin = 0, main = "xbin = 0 (no binning)") 
+# speed up plotting by sub-sampling the data points
+# most of them it is subsampled data is sufficient to represent the 
+# population distribution
+plotGate(gs[[1]], "CD4/38+ DR+", sample.ratio = 0.4, main = "sample.ratio = 0.4") 
 ```
 
 ### Change strip text
@@ -75,10 +81,10 @@ plotGate(gs[[1]], "CD4/38+ DR+", xbin = 0)
   **path** A character or numeric scalar passed to getNodes method (used to control how the gating/node path is displayed)
 ```{r}
 # hide the strip
-plotGate(gs[[1]], "CD4/38+ DR+", strip = FALSE)      
+plotGate(gs[[1]], "CD4/38+ DR+", strip = FALSE, main = "strip = FALSE")       
 # change the gating path length in strip 
-plotGate(gs[[1]], "CD4/38+ DR+", path = "full")
-plotGate(gs[[1]], "CD4/38+ DR+", path = 2)
+plotGate(gs[[1]], "CD4/38+ DR+", path = "full", main = "path = 'full'")
+plotGate(gs[[1]], "CD4/38+ DR+", path = 2, main = "path = 2")
 ```
 ### Change statistics
   **stats** is a logical scalar indicating whether to display statistics. Default is FALSE.    
@@ -90,7 +96,7 @@ plotGate(gs[[1]], "CD4/38+ DR+", path = 2)
   **digits** is an integer indicating the number of significant digits to be used when displaying the percentage of population statistics,Default is 2. see more details from format 
 ```{r}
 # hide the pop stats
-plotGate(gs[[1]], "CD4/38+ DR+", stats = FALSE)
+plotGate(gs[[1]], "CD4/38+ DR+", stats = FALSE, main = "stats = FALSE")
 # adjust the location, size, background of the stats
 plotGate(gs[[1]], "CD4/38+ DR+"
                 , pos = c(0.6, 0.9)
@@ -110,13 +116,13 @@ plotGate(gs[[1]], "CD4/38+ DR+"
   **xlim, ylim** can be either "instrument" or "data" which determines the x, y axis scale either by instrument measurement range or the actual data range. or numeric which specifies customized range.
 ```{r}
 # show the tranformed scale instead of raw scale
-plotGate(gs[[1]], "CD4/38+ DR+", raw.scale = FALSE)
+plotGate(gs[[1]], "CD4/38+ DR+", raw.scale = FALSE, main = "raw.scale = FALSE")
 # use the actual data range instead of instrument range
-plotGate(gs[[1]], "CD4/38+ DR+", xlim = "data", ylim = "data")       
+plotGate(gs[[1]], "CD4/38+ DR+", xlim = "data", ylim = "data", main = "xlim = 'data'")       
 # zooming by manually set xlim and ylim
-plotGate(gs[[1]], "CD4/38+ DR+", xlim = c(1000, 4000), ylim = c(1000, 4000))       
+plotGate(gs[[1]], "CD4/38+ DR+", xlim = c(1000, 4000), ylim = c(1000, 4000), main = "xlim = c(1000, 4000)")       
 # hide the channel names and only show the marker names in x,y labs
-plotGate(gs[[1]], "CD4/38+ DR+", marker.only = TRUE)
+plotGate(gs[[1]], "CD4/38+ DR+", marker.only = TRUE, main = "marker.only = TRUE")      
 ```
 ### Change the lattice graphic settings of plots
   **par.settings** list of graphical parameters passed to lattice;
@@ -155,11 +161,16 @@ plotGate(gs[[1]], "CD4/CCR7- 45RA+"
 plotGate(gs[[1]], "CD4/CCR7- 45RA+"
               , overlay = c("CD4/CCR7+ 45RA+", "CD4/CCR7+ 45RA-")
               , par.settings = list(overlay.symbol = list(cex = 0.05, bg.alpha = 0.1))
-              , overlay.symbol = list(`CCR7+ 45RA+` = list(fill = "red") #this overwrite the par.settings
+         )
+# customize the symbol and legend
+plotGate(gs[[1]], "CD4/CCR7- 45RA+"
+              , overlay = c("CD4/CCR7+ 45RA+", "CD4/CCR7+ 45RA-")
+              , par.settings = list(overlay.symbol = list(cex = 0.05, bg.alpha = 0.1))
+              , overlay.symbol = list(`CCR7+ 45RA+` = list(fill = "black") #this overwrite the par.settings
                                       , `CD4/CCR7+ 45RA-` = list(fill = "darkgreen")
                                       )
               , key = list(text = list(c("CCR7+ 45RA+", "CCR7+ 45RA-")) # add legend
-                          , points = list(col = c("red", "darkgreen"), pch = 19, cex = 0.5)
+                          , points = list(col = c("black", "darkgreen"), pch = 19, cex = 0.5)
                           , columns = 2
                            )
          )

@@ -226,24 +226,24 @@ test_that(".getGraph",{
 
 test_that(".getAllDescendants",{
       nodelist <- new.env(parent=emptyenv())
-      
+      allNodes <- getNodes(gh, showHidden = TRUE)
       nodelist$v <-integer()
       .getAllDescendants(gh, "CD3+", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd3_gh.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(allNodes[thisRes], expectRes)
       
       nodelist$v <-integer()
       .getAllDescendants(gh, "CD4", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd4_gh.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(allNodes[thisRes], expectRes)
       
       nodelist$v <-integer()
       .getAllDescendants(gh, "CD8", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd8_gh.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(allNodes[thisRes], expectRes)
       
     })
 

@@ -35,6 +35,7 @@ Imports:
     ,plyr
     ,latticeExtra
     ,Rcpp
+    ,RColorBrewer
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
@@ -48,7 +49,7 @@ Collate:
     'RcppExports.R'
     'zzz.R'
 Depends:
-    R (>= 2.16.0),flowCore,flowViz,ncdfFlow(>= 2.11.34),gridExtra
+    R (>= 2.16.0),flowCore,flowViz(>= 1.29.27),ncdfFlow(>= 2.11.34),gridExtra
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat

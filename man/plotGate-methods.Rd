@@ -48,7 +48,10 @@ Nodes can be accessed with \code{\link{getNodes}}.}
 
  \item{cond}{ \code{character} the conditioning variable to be passed to lattice plot.}
 
- \item{overlay}{ \code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
+ \item{overlay}{Node names. These populations are plotted on top of the existing gates(defined by \code{y} argument) as the overlaid dots.}
+ \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population.
+                        If not given, we automatically assign the colors.}
+ \item{key}{Lattice legend paraemter for overlay symbols.}
 
  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
 

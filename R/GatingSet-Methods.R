@@ -939,7 +939,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'
 #'  \item{cond}{ \code{character} the conditioning variable to be passed to lattice plot.}
 #'
-#'  \item{overlay}{ \code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
+#'  \item{overlay}{Node names. These populations are plotted on top of the existing gates(defined by \code{y} argument) as the overlaid dots.}
+#'  \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population. 
+#'                         If not given, we automatically assign the colors.}
+#'  \item{key}{Lattice legend paraemter for overlay symbols.}
 #'
 #'  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
 #'
@@ -1214,7 +1217,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #'      params channel names for subsetting the result
 #' @return either a list of flowFrame for a flowSet/ncdfFlowSet or NULL
 .getOverlay <- function(x, overlay, ...){
-
+  .Defunct(msg = "getOverlay is defunct!")
   myfunc <- function(x, overlay, params){
     #gate indices
     if(class(overlay)=="logical")
@@ -1277,12 +1280,18 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #' @param ... other arguments passed to .formAxis and flowViz
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
+#' @importFrom RColorBrewer brewer.pal
 .plotGate <- function(x, y, formula=NULL, cond=NULL
                       , smooth=FALSE ,type=c("xyplot","densityplot")
                       , main = NULL
                       , xlab = NULL
                       , ylab = NULL
-                      , fitGate=FALSE, overlay=NULL, stack = FALSE, xbin = 32
+                      , fitGate=FALSE
+                      , overlay = NULL
+                      , overlay.symbol = NULL
+                      , key = NULL
+                      , stack = FALSE
+                      , xbin = 32
                       , stats , default.y = "SSC-A", scales
                       , strip = TRUE
                       , path = "auto"
@@ -1340,9 +1349,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
         overlay <- y
       else
         overlay <- c(overlay, y)
-#        warning(y, " is BooleanFilter. The 'overlay' argument is ignored!")
     }
-
+  
 
 #    browser()
         #get data
@@ -1454,7 +1462,28 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 		# calcuate overlay frames
 		################################
         if(!is.null(overlay)){
-          overlay <- .getOverlay(x, overlay, params)
+          if(is.null(overlay.symbol)){
+#            browser()
+            # set symbol color automatically if not given
+            nOverlay <- length(overlay)
+            overlay.fill <- brewer.pal(9,"Set1")[1:nOverlay]
+            names(overlay.fill) <- overlay
+            overlay.symbol <- sapply(overlay.fill, function(col)list(fill = col), simplify = FALSE)
+          }
+          #set legend automatically if it is not given
+          if(is.null(key)){
+            
+             key = list(text = list(names(overlay.symbol), cex = 0.6)
+                                , points = list(col = sapply(overlay.symbol, "[[", "fill") 
+                                                , pch = 19
+                                                , cex = 0.5) 
+                          , columns = length(overlay.symbol)
+                          , between = 0.3
+                          , space = "bottom"
+                          , padding.text = 5)
+          }
+          overlay <- sapply(overlay, function(thisOverlay)getData(x,thisOverlay)[,params])
+          
           if(is.gh){
             if(strip){
 #              browser()
@@ -1463,6 +1492,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                             sampleNames(thisOverlay) <- popName
                             thisOverlay
                       })
+           names(overlay.symbol) <- names(overlay)       
           }
         }
       }
@@ -1485,6 +1515,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                             ,list(ylab = ylab
                                   ,smooth = smooth
                                   ,overlay = overlay
+                                  ,overlay.symbol = overlay.symbol
+                                  , key = key
                                   , defaultCond = defaultCond
                                   , xbin = xbin
                                   )
