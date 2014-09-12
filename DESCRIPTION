@@ -56,3 +56,4 @@ Suggests:
     ,flowWorkspaceData
     ,RSVGTipsDevice
 LinkingTo: Rcpp
+VignetteBuilder: knitr
