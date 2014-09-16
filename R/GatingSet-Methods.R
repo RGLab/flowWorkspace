@@ -2373,7 +2373,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
-#      browser()
+      
       message(".", appendLF = FALSE)
       
       fr <- fs[[sample, use.exprs = FALSE]] 
@@ -2384,12 +2384,15 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       pops <-  as.character(pop_chnl[,"pop"])
       
       markers <- as.character(pop_chnl[, datSrc])
-
-      nodeIds <- sapply(pops,.getNodeInd, obj = x)
+    
+      nodeIds <- sapply(pops, function(pop){
+            ind <- .Call("R_getNodeID",x@pointer,sample, pop)
+            ind + 1 # convert to R index
+          })
       nodeIds <- as.integer(nodeIds) - 1
       data <- fs[[sample, chnls]]
       data <- exprs(data)
-#      browser()
+      
       data <- .Call("R_getSingleCellExpression", x@pointer, sample, nodeIds, data, markers, threshold)
       data
           
