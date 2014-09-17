@@ -114,23 +114,32 @@ setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ..
     })
 #' @rdname getPopStats
 #' @export
-setMethod("getPopStats","GatingSetList",function(x,...){
-      res <- lapply(x,getPopStats, level =1,...)
-      res<-Reduce(function(x,y)
-        {
-          merge(x,y,all=TRUE)
-        },
-             lapply(res,function(x)
-               {
-                rn<-rownames(x);
-                x<-data.table(x);
-                x$key<-rn;
-                setkeyv(x,"key")
-                }))
-      rn<-res$key
-      res[,key:=NULL]
-      res<-as.matrix(res)
-      rownames(res)<-rn
+setMethod("getPopStats","GatingSetList",function(x, format = c("wide", "long"), ...){
+      
+      format <- match.arg(format)
+      res <- lapply(x,getPopStats, level =1, format = format,...)
+      
+      if(format == "long"){
+#        browser()
+        res <- rbindlist(res)
+      }else{
+        
+        res<-Reduce(function(x,y)
+          {
+            merge(x,y,all=TRUE)
+          },
+               lapply(res,function(x)
+                 {
+                  rn<-rownames(x);
+                  x<-data.table(x);
+                  x$key<-rn;
+                  setkeyv(x,"key")
+                  }))
+        rn<-res$key
+        res[,key:=NULL]
+        res<-as.matrix(res)
+        rownames(res)<-rn
+      }
       res
     })
 #' @rdname keyword
@@ -233,3 +242,11 @@ setMethod("getSingleCellExpression",signature=c("GatingSetList","character"),fun
       
     })
 
+#' @rdname transform
+setMethod("transform",
+    signature = signature(`_data` = "GatingSetList"),
+    definition = function(`_data`, ...)
+    {
+      res <- lapply(`_data`, function(gs)transform(gs, ...), level = 1)
+      GatingSetList(res)
+    })

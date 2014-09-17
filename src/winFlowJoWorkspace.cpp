@@ -20,6 +20,7 @@ winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc):flowJoWorkspace(doc){
 }
 
 xFlowJoWorkspace::xFlowJoWorkspace(xmlDoc * _doc):winFlowJoWorkspace(_doc){
+	COUT<<"version X"<<endl;
 	nodePath.gateParam="*[local-name()='fcs-dimension']";
 }
 
@@ -140,7 +141,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 			curTp[curTran->getChannel()]=curTran;
 		}
 		else
-			throw(domain_error("unknown tranformation type!"));
+			throw(domain_error(pname + ": unknown tranformation type!"+ transType));
 
 	}
 	xmlXPathFreeObject(transRes);
@@ -321,7 +322,7 @@ trans_global_vec winFlowJoWorkspace::getGlobalTrans(){
 			{
 				xmlXPathFreeObject(TransRes);
 				xmlXPathFreeObject(compNodeRes);
-				throw(domain_error("unknown tranformation type!"));
+				throw(domain_error("unknown tranformation type!" + transType));
 			}
 
 

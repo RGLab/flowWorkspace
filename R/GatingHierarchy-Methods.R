@@ -443,6 +443,7 @@ NULL
 
   dir <- parent.frame(3)$dir
   gs <- parent.frame(4)$x
+  allNodes <- getNodes(gs, showHidden = TRUE)
   png.par <- parent.frame(3)$png.par
   for(i in 1:length(label)){
     #get pop info
@@ -462,8 +463,8 @@ NULL
       #since the device list is circular and dev.cur() will point to dev.next()
       #which really should be dev.prev()
       preDev <- dev.prev()
-
-      curPlotObj <- try(plotGate(gs, thisPopId,  arrange = FALSE), silent = TRUE)
+  
+      curPlotObj <- try(plotGate(gs, allNodes[thisPopId],  arrange = FALSE), silent = TRUE)
       # catch error to ensure the device is closed before error is thrown
       if(class(curPlotObj) == "try-error"){
 
@@ -655,7 +656,7 @@ setMethod("plot",c("GatingSet","missing"),function(x,y,...){
   children_nodes <- getChildren(gh,startNode)
   if(length(children_nodes)>0){
     for(this_parent in children_nodes){
-      nodelist$v <- c(nodelist$v, this_parent)
+      nodelist$v <- c(nodelist$v, .getNodeInd(gh, this_parent))
       .getAllDescendants (gh,this_parent,nodelist)
     }
   }
@@ -666,8 +667,9 @@ setMethod("plot",c("GatingSet","missing"),function(x,y,...){
 #' @export
 #' @importMethodsFrom graph subGraph
 setMethod("plot",c("GatingSet","character"),function(x,y,...){
+      node <- y
       y <- .getNodeInd(x[[1]],y)
-
+      
       # get graphNEL object
       gh <- x[[1]]
       g <- .getGraph(gh)
@@ -676,7 +678,7 @@ setMethod("plot",c("GatingSet","character"),function(x,y,...){
       if(length(y)==1){#use it as the root
         nodelist <- new.env(parent=emptyenv())
         nodelist$v <-integer()
-        .getAllDescendants (gh,y,nodelist)
+        .getAllDescendants (gh,node,nodelist)
 
 
 
@@ -752,8 +754,6 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #'     "regular" is default.
 #' @param path A \code{character} or \code{numeric} scalar. when \code{numeric}, it specifies the fixed length of gating path (length 1 displays terminal name).
 #'              When \code{character}, it can be either 'full' (full path, which is default) or 'auto' (display the shortest unique gating path from the bottom of gating tree).
-#' @param prefix A \code{character} scalar to tell the method whether to add internal node index as the prefix to the node name (only valid when 'path' is set to 1).
-#'                                      the valid values are "auto", "none", "all".
 #' @param showHidden \code{logical} whether to include the hidden nodes
 #' @param ... Additional arguments.
 #'
@@ -767,8 +767,6 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #'   \dontrun{
 #'     #G is a gating hierarchy
 #'     getNodes(G, path = 1])#return node names (without prefix)
-#'     getNodes(G, path = 1, prefix = "all"])#return node names with unqiue ID
-#'     getNodes(G, path = 1, prefix = "auto"])#prepend unqiue ID as needed 
 #'     getNodes(G,path = "full")#return the full path
 #'     getNodes(G,path = 2)#return the path as length of two 
 #'     getNodes(G,path = "auto)#automatically determine the length of path 
@@ -779,62 +777,17 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @export 
 #' @importFrom BiocGenerics duplicated
 #' @importFrom plyr ddply . ldply
-setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE, ...){
-            prefix <- match.arg(prefix)
-            thisCall <- match.call()
-            args <- names(thisCall)
-            #take care the legacy argument
-            if("isPath"%in%args){
-              warning("'isPath' is deprecated by 'path'.")
-              isPath <- list(...)$isPath
-
-              if(isPath){
-                path <- "full"
-                prefix <- "none"
-              }else{
-                path <- 1
-                prefix <- "auto"
-              }
-
-              if("path"%in%args)
-                warning("'path' argument is set to '", path, "' automatically!")
-              if("prefix"%in%args)
-                warning("'prefix' is set to '", prefix, "' automatically!")
-
-            }else{
-              if(path == 1)
-                isPath <- FALSE #passed to c API
-              else
-                isPath <- TRUE #passed to c API
-
-
-            }
+setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
 
             order <- match.arg(order,c("regular","tsort","bfs"))
-
             orderInd <- match(order,c("regular","tsort","bfs"))
-
-            orderInd <- orderInd-1
-			nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),isPath,showHidden)
-
-
+            orderInd <- orderInd - 1
 
             if(is.numeric(path)){
+              nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              
               if(path == 1){
-                if(prefix != "all"){
-                  dotPos <- regexpr("\\.",nodeNames)
-                  #get unique IDs for each node
-                  NodeIDs <- as.integer(substr(nodeNames,0,dotPos-1))
-                  #strip IDs from nodeNames
-                  nodeNames <- substr(nodeNames,dotPos+1,nchar(nodeNames))
-
-                  #add ID back when prefix == auto for those ambiguous nodeNames
-                  if(prefix == "auto"){
-                    toAppendIDs<-duplicated(nodeNames)
-                    nodeNames[toAppendIDs]<-paste(NodeIDs[toAppendIDs],nodeNames[toAppendIDs],sep=".")
-                  }
-                }
-
+                nodeNames <- basename(nodeNames)
               }else{
 
                 #truncate the path
@@ -854,45 +807,11 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
               }
 
             }else if(path == "auto"){
-
-              nodePath <- nodeNames
-              nodeNames <- basename(nodePath)
-              names(nodeNames) <- nodePath #init the mapping (nodePath vs final output)
-
-              #select duplicated node names to prepend their ancestors until their paths are unique
-              dup <- unique(nodeNames[duplicated(nodeNames)])
-              dup <- nodeNames%in%dup
-              toModify <- data.frame(path =  nodePath[dup], name = nodeNames[dup], parent = nodePath[dup])
-
-              toModifyRes <- ddply(toModify, .(name), function(thisDF){
-                    
-                    thisRes <- thisDF
-                    thisNames <- as.vector(thisRes[,"name"])
-                    while(anyDuplicated(thisNames) > 0){
-                      #try to paste parent for each node
-                      thisRes <- ddply(thisRes, .(path), function(thisRow){
-                                        #get parent of the current node
-                                        thisNode <- as.vector(thisRow[,"parent"])
-                                        ppath <- getParent(x, thisNode)
-                                        pn <- basename(ppath)
-                                        #paste parent name
-                                        thisRow[,"name"] <- paste(pn, thisRow[, "name"], sep = "/")
-                                        #update parent path
-                                        #which is used to further trace back to upper nodes
-                                        thisRow[, "parent"] <- ppath
-                                        thisRow
-                                      })
-                      thisNames <- as.vector(thisRes[,"name"])
-                    }
-                    
-                    thisRes
-                  })
+                nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
               
-              #update the nodeNames with modified names
-              nodeNames[as.vector(toModifyRes[,"path"])] <- as.vector(toModifyRes[,"name"])
-              nodeNames <- as.vector(nodeNames)
-
-            }else if(path != "full" )
+            }else if(path == "full"){
+              nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+            }else
 			  stop("Invalid 'path' argument. The valid input is 'full' or 'auto' or a numeric value.")
 
 
@@ -1005,10 +924,10 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 }
 #' @rdname getPopStats
 #' @export
-setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", prefix = "none", ...){
+setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 
 
-        nodePath <- getNodes(x, path = path, prefix = prefix, ...)
+        nodePath <- getNodes(x, path = path, ...)
         
         stats <- ldply(nodePath, function(thisPath){
     					curStats <- .getPopStat(x,thisPath)
@@ -1085,7 +1004,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 						polygonGate(.gate=mat,filterId=filterId)
 				}else if(g$type==2)
 					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=filterId)
-				else if(g$type==3)
+				else if(g$type %in% c(3,6))
 				{
 
 					refPaths<-unlist(lapply(g$ref,function(curPath){
@@ -1098,10 +1017,10 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
                     g$v2[1] <- ""
                     boolExpr <- paste(g$v2, g$v,refPaths,sep="")
                     boolExpr <- paste(boolExpr,collapse="")
-#                   browser()
+                    if(nchar(boolExpr) > 0)
                     boolExpr <- as.symbol(boolExpr)
 
-                    g <- eval(substitute(booleanFilter(xx),list(xx=boolExpr)))
+                    g <- eval(substitute(booleanFilter(xx, filterId=filterId),list(xx=boolExpr)))
 					g
 				}else if (g$type == 4){
                     cov.mat <- g$cov
@@ -1238,17 +1157,69 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
 	return (class(getGate(x,y))=="booleanFilter")
 }
 
-
+#' Determine tick mark locations and labels for a given channel axis
+#' 
+#' @param gh \code{GatingHiearchy}
+#' @param channel \code{character} channel name
+#' 
+#' @return when there is transformation function associated with the given channel, it returns a list of that contains positions and labels to draw on the axis
+#'  other wise returns NULL 
+#' @examples 
+#' \dontrun{
+#'  prettyAxis(gh, "<B710-A>")
+#' }
+#' @export 
+prettyAxis <- function(gh, channel){
+      
+        
+        
+        res <- getAxisLabels(gh)[[channel]] #this call is to be deprecated once we figure out how to preserve trans when cloning GatingSet
+        if(is.null(res)){
+          #try to grab trans and do inverse trans for axis label on the fly
+            trans <- getTransformations(gh, channel)
+            if(is.null(trans)){
+              res <- NULL
+            }else{
+              inverseTrans <- getTransformations(gh, channel, inverse = TRUE)
+              
+              fr <- getData(gh, use.exprs = FALSE)
+              r <- as.vector(range(fr)[,channel])#range
+              rw <- inverseTrans(r)
+              ######################################
+              #create equal spaced locations at raw scale
+              ######################################
+              base10raw <- unlist(lapply(2:6,function(e)10^e))
+              base10raw <- c(0,base10raw)
+              raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
+              pos <- signif(trans(raw))
+              #format it
+              label <- pretty10exp(as.numeric(raw),drop.1=TRUE)
+              
+              res <- list(label = label, at = pos)
+            }
+          
+        }else{
+          #use the stored axis label if exists
+          res$label <- pretty10exp(as.numeric(res$label),drop.1=TRUE)
+        }
+        
+        res
+}
+        
+#to be deprecated        
 getAxisLabels <- function(obj,...){
-              obj@axis[[sampleNames(obj)]]
-		}
-
+  obj@axis[[sampleNames(obj)]]
+}
+        
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
 #'
 #' @param x A \code{GatingHierarchy} object
-#'
+#' @param ... other arguments
+#' 
+#'         inverse \code{logical} whether to return the inverse transformation function.
+#'         channel \code{character} channel name
 #' @details
 #' Returns a list of the transformations or a transformation in the flowJo workspace. The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples in the \code{flowJoWorkspace}. Each element of \code{L} is itself a \code{list} of length \code{M}, where \code{M} is the number of parameters that were transformed for a sample or group of samples in a \code{flowJoWorkspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis, using two different sets of transformations, then L will be of length 2, and each element of L will be of length 5. The elements of \code{L} represent channel- or parameter-specific transformation functions that map from raw intensity values to channel-space used by flowJo.
 #' this method currently is used convert transformation funtion from c++ to R
@@ -1258,17 +1229,20 @@ getAxisLabels <- function(obj,...){
 #' @examples
 #' \dontrun{
 #' 	#Assume gh is a GatingHierarchy
-#' 	getTransformations(gh);
+#' 	getTransformations(gh); # return a list transformation functions
+#'  getTransformations(gh, inverse = TRUE); # return a list inverse transformation functions 
+#'  getTransformations(gh, channel = "<B710-A") # only return the transfromation associated with given channel
 #' }
 #' @aliases getTransformations
 #' @rdname getTransformations
-setMethod("getTransformations","GatingHierarchy",function(x){
+setMethod("getTransformations","GatingHierarchy",function(x, ...){
 #			browser()
-      .getTransformations(x@pointer,sampleNames(x))
+      .getTransformations(x@pointer,sampleNames(x), ...)
 		})
-.getTransformations <- function(pointer,sampleName){
-    trans<-.Call("R_getTransformations",pointer,sampleName)
-    lapply(trans,function(curTrans){
+    
+.getTransformations <- function(pointer,sampleName, channel = NULL, ...){
+    trans <- .Call("R_getTransformations",pointer,sampleName)
+    transList <- lapply(trans,function(curTrans){
 #						browser()
           if(curTrans$type=="log")
           {
@@ -1290,40 +1264,102 @@ setMethod("getTransformations","GatingHierarchy",function(x){
             attr(f,"type")<-"gateOnly"
 
 
-          }else
-          {
-            #define the dummy spline function(simplied version of the one from stats package)
-            f<-function (x, deriv = 0)
-            {
-              deriv <- as.integer(deriv)
-              if (deriv < 0 || deriv > 3)
-                stop("'deriv' must be between 0 and 3")
-              if (deriv > 0) {
-                z0 <- double(z$n)
-                z[c("y", "b", "c")] <- switch(deriv, list(y = z$b, b = 2 *
-                            z$c, c = 3 * z$d), list(y = 2 * z$c, b = 6 * z$d,
-                        c = z0), list(y = 6 * z$d, b = z0, c = z0))
-                z[["d"]] <- z0
-              }
-
-              res <- stats::: .splinefun(x,z)
-              if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L]))
-                res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
-              res
-            }
-            #update the parameters of the function
-            z<-curTrans$z
-            z$n<-length(z$x)
-            z$method<-curTrans$method
-            assign("z",z,environment(f))
-
-            attr(f,"type")<-curTrans$type
-          }
+          }else if(curTrans$type %in% c("caltbl" , "biexp"))
+             f <- .flowJoTrans(curTrans, ...)
 
           return (f)
         })
+    
+    #try to match to given channel
+    if(!is.null(channel)){
+      trans_names <- names(transList)
+      #do strict match first
+      j <- grep(paste0("^", channel, "$"), trans_names)
+      if(length(j) == 0){
+        #do fuzzy match if no matches
+        j <- grep(channel, trans_names)
+      }
+      
+      if(length(j) > 1){
+          stop("multiple tranformation functions matched to: ", channel)
+      }else if(length(j) == 0){
+        return(NULL)
+      }else{
+        transList[[j]]
+      }
+    }else
+      transList
+    
   }
-
+  
+#' wrap the calibration table into transformation function using stats:::splinefun
+#' 
+#' @param coef the coefficients returned by the calibration table from flowJo
+.flowJoTrans <- function(coef, inverse = FALSE){
+  if(inverse){
+    #swap x y vector
+    x <- coef$z$x 
+    coef$z$x <- coef$z$y
+    coef$z$y <- x
+    
+  }
+  #define the dummy spline function(simplied version of the one from stats package)
+  f <- function (x, deriv = 0)
+  {
+    deriv <- as.integer(deriv)
+    if (deriv < 0 || deriv > 3)
+      stop("'deriv' must be between 0 and 3")
+    if (deriv > 0) {
+      z0 <- double(z$n)
+      z[c("y", "b", "c")] <- switch(deriv, list(y = z$b, b = 2 *
+                  z$c, c = 3 * z$d), list(y = 2 * z$c, b = 6 * z$d,
+              c = z0), list(y = 6 * z$d, b = z0, c = z0))
+      z[["d"]] <- z0
+    }
+    
+    res <- stats::: .splinefun(x,z)
+    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L]))
+      res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
+    res
+  }
+  #update the parameters of the function
+  z<-coef$z
+  z$n<-length(z$x)
+  z$method<-coef$method
+  assign("z",z,environment(f))
+  
+  type <- coef$type 
+  attr(f,"type") <- type 
+  if(type == "biexp")
+      attr(f,"parameters") <- list(channelRange = coef$channelRange
+                                  , maxValue = coef$maxValue
+                                  , neg = coef$neg
+                                  , pos = coef$pos
+                                  , widthBasis = coef$widthBasis
+                                )
+  
+  
+  return (f)
+  
+}  
+#' construct the flowJo-type biexponentioal transformation function
+#' 
+#' Normally it was parsed from flowJo xml workspace. This function provides the alternate 
+#' way to construct the flowJo version of logicle transformation function within R.
+#' 
+#' @param channelRange \code{numeric} the maximum value of transformed data
+#' @param maxValue \code{numeric} the maximum value of input data
+#' @param pos \code{numeric} the full width of the transformed display in asymptotic decades
+#' @param neg \code{numeric} Additional negative range to be included in the display in asymptotic decades
+#' @param widthBasis \code{numeric} unkown.
+#' @param inverse \code{logical} whether to return the inverse transformation function. 
+#' @export 
+flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
+  
+  coef <- .getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis)
+  .flowJoTrans(coef, inverse = inverse)
+  
+}
 
 #'  Retrieve the compensation matrices from a GatingHierarchy
 #'
@@ -1484,31 +1520,8 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 				return();
 			}
 
-
-            theme.novpadding <- list(layout.heights = list(top.padding = 0,
-                                                            main.key.padding = 0,
-                                                            key.axis.padding = 0,
-                                                            axis.xlab.padding = 0,
-                                                            xlab.key.padding = 0,
-                                                            key.sub.padding = 0,
-                                                            bottom.padding = 0)
-                                      , layout.widths = list(left.padding = 0,
-                                                              key.ylab.padding = 0,
-                                                              ylab.axis.padding = 0,
-                                                              axis.key.padding = 0,
-                                                              right.padding = 0)
-                                      , par.xlab.text = list(cex = 0.7, col = gray(0.3))
-                                      , par.ylab.text = list(cex = 0.7,  col = gray(0.3))
-                                      , par.main.text = list(cex = 0.8)
-                                      , axis.components = list(bottom = list(tck =0.5)
-                                                              , left = list(tck =0.5))
-                                      , axis.text = list(cex = 0.5)
-                                  )
-
-
-
-
-            par.settings <- lattice:::updateList(theme.novpadding, par.settings)
+			
+            par.settings <- lattice:::updateList(flowWorkspace.par.get("theme.novpadding"), par.settings)
 
             #convert popname to id
 #            prjNodeInds <- try(sapply(names(projections),.getNodeInd, obj = x), silent = TRUE)
@@ -1541,7 +1554,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 						return(.plotGate(x, y, par.settings = par.settings, formula = formula, ...))
 					})
 #			browser()
-			if(arrange)
+			if(flowWorkspace.par.get("plotGate")[["arrange"]]&&arrange)
 				do.call(grid.arrange,c(plotObjs,main = arrange.main,gpar))
 			else
 				plotObjs
@@ -1656,6 +1669,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 .formatAxis <- function(x, data, xParam, yParam
                           , scales=list()
                           , marker.only = FALSE
+                          , raw.scale = TRUE
                           , ...){
 	xObj <- getChannelMarker(data,xParam)
 	yObj <- getChannelMarker(data,yParam)
@@ -1670,30 +1684,30 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
       ylab <- sub("NA","",paste(unlist(yObj),collapse=" "))
     }
 
-        if(is.null(xParam)){
+        if(is.null(xParam)||!raw.scale){
           x.labels <- NULL
         }else{
-          x.labels<-getAxisLabels(x)[[xParam]]
+          x.labels <- prettyAxis(x, xParam)
         }
 
-        if(is.null(yParam)){
+        if(is.null(yParam)||!raw.scale){
           y.labels <- NULL
         }else{
-		  y.labels<-getAxisLabels(x)[[yParam]]
+		  y.labels <- prettyAxis(x, yParam)
         }
 
 		#init the scales and x,y lim
 		#update axis when applicable
 		if(!is.null(x.labels))
 		{
-			x.labels$label<-pretty10exp(as.numeric(x.labels$label),drop.1=TRUE)
+			
 			xscales<-list(x=list(at=x.labels$at,labels=x.labels$label))
 			scales<-lattice:::updateList(xscales,scales)
 
 		}
 		if(!is.null(y.labels))
 		{
-			y.labels$label<-pretty10exp(as.numeric(y.labels$label),drop.1=TRUE)
+			
 			yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
 			scales<-lattice:::updateList(scales,yscales)
 

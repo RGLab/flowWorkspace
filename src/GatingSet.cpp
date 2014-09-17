@@ -539,3 +539,24 @@ void GatingSet::gating(){
 //void GatingSet::cloneGatingHierarchy(){
 //
 //}
+
+/**
+ * It is used by R API to add global transformation object during the auto gating.
+ * @param tName transformation name (usually channel name)
+ * @param tm trans_map
+ */
+void GatingSet::addTransMap(string gName,trans_map tm){
+	/*
+	 * assumption is there is either none transformation group exists before adding
+	 */
+	if(gTrans.size() == 0){
+
+		trans_global thisTransGroup = trans_global();
+		thisTransGroup.setGroupName(gName);
+		thisTransGroup.setTransMap(tm);
+		gTrans.push_back(thisTransGroup);
+	}
+	else
+		throw(domain_error("transformation group already exists!Can't add the second one."));
+
+}

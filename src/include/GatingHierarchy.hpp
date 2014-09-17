@@ -233,7 +233,7 @@ public:
 	VertexID getDescendant(VertexID u,string popName);
 	VertexID getRefNodeID(VertexID u,string popName);
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
-	vector<string> getPopNames(unsigned short order,bool isPath,bool showHidden);
+	vector<string> getPopPaths(unsigned short order,bool fullPath,bool showHidden);
 	VertexID getAncestor(VertexID u,unsigned short level);
 	EdgeID getInEdges(VertexID target);
 	VertexID getParent(VertexID);
@@ -243,6 +243,7 @@ public:
 
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
+	void addTransMap(trans_map tm);
 };
 BOOST_CLASS_VERSION(GatingHierarchy,3)
 

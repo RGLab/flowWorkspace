@@ -118,6 +118,8 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	trans_map trs=res.getTransMap();
 
 	string tGName;
+
+	trans_global_vec::iterator genericTgIt = findTransGroup(*gTrans, "Generic");
 	trans_global_vec::iterator tgIt;
 	if(cid.compare("-2")==0)
 		tgIt=gTrans->end();//does not do the trans group name match at all
@@ -150,8 +152,11 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 	for(PARAM_VEC::iterator it=transFlag.begin();it!=transFlag.end();it++)
 	{
 		string curChnl=it->param;
+		unsigned calInd = it->calibrationIndex;
+		string sCalInd = boost::lexical_cast<string>(calInd);
 		string transChName;
 		transformation * curTran=0;
+
 		if(it->log)
 		{
 			transChName=comp.prefix+curChnl+comp.suffix;//append prefix
@@ -167,13 +172,6 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				 * try to search by channel name within the source map
 				 */
 				trans_map::iterator resIt=trans.find(transChName);
-				/*
-				 * if no channel name matched,continue to try "*"
-				 */
-				if(resIt==trans.end())
-					resIt=trans.find("*");
-
-
 				if(resIt!=trans.end())
 				{
 					/*
@@ -191,15 +189,27 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 */
 					if(it->range<=4096)
 					{
-						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-							COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
-
 						/*
-						 * use bioexp trans instead of logTrans
-						 * since log doesn't handle the negative value well
+						 * if no channel name matched, try 'Generic' group with calibrationIndex
 						 */
-						curTran=_globalBiExpTrans;
+						if(calInd > 0)
+						{
+							curTran = genericTgIt->getTran(sCalInd);
+							if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+								COUT<<"apply transformation by calibrationIndex "<<sCalInd<<": "<<curChnl<<endl;
+						}
+						else
+						{
 
+							if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+								COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
+
+							/*
+							 * use bioexp trans instead of logTrans
+							 * since log doesn't handle the negative value well
+							 */
+							curTran=_globalBiExpTrans;
+						}
 					}
 
 					else
@@ -218,10 +228,25 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				 */
 				if(it->range<=4096)
 				{
-					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-						COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
+					/*
+					 * use calibrationIndex to fetch trans from Generic tg group
+					 * when comp is not defined
+					 */
 
-					curTran=_globalBiExpTrans;
+					if(comp.cid == "-2" && calInd > 0)
+					{
+						curTran = genericTgIt->getTran(sCalInd);
+						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+							COUT<<"apply transformation by calibrationIndex "<<sCalInd<<": "<<curChnl<<endl;
+					}
+					else
+					{
+						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+							COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
+
+						curTran=_globalBiExpTrans;
+					}
+
 
 				}
 				else
@@ -229,34 +254,40 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					/*
 					 * for those has range>4096,try to generic cal tables from flowJo
 					 */
-					if(!gTrans->empty())
-						trans=gTrans->at(0).getTransMap();
-					/*
-					 * try to search by channel name within the source map
-					 */
-					trans_map::iterator resIt=trans.find(transChName);
-
-					/*
-					 * if no channel name matched,continue to try "*"
-					 */
-					if(resIt==trans.end())
-						resIt=trans.find("*");
-
-					if(resIt!=trans.end())
-					{
-						/*
-						 * found the appropriate trans for this particular channel
-						 */
-						curTran=resIt->second;
-						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-							COUT<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
-					}
-					else
-					{
+//					if(!gTrans->empty())
+//						trans=gTrans->at(0).getTransMap();
+//					/*
+//					 * try to search by channel name within the source map
+//					 */
+//					trans_map::iterator resIt=trans.find(transChName);
+//
+//					/*
+//					 * if no channel name matched,continue to try "Generic" group
+//					 */
+//					if(resIt==trans.end())
+//					{
+//					if(calInd > 0)
+//					{
+//						curTran = genericTgIt->getTran(sCalInd);
+//						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+//							COUT<<"apply transformation by calibrationIndex "<<sCalInd<<": "<<curChnl<<endl;
+//					}
+//
+//					if(resIt!=trans.end())
+//					{
+//						/*
+//						 * found the appropriate trans for this particular channel
+//						 */
+//						curTran=resIt->second;
+//						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+//							COUT<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
+//					}
+//					else
+//					{
 						string err="no valid global trans found for:";
 						err.append(curChnl);
 						throw(domain_error(err));
-					}
+//					}
 
 				}
 
@@ -357,8 +388,9 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 			/*
 			 * generic cal table (non-channel-specific)
 			 */
-			curTran->setName(tname);
-			curTran->setChannel("*");
+			curTran->setName("Generic");
+			//record the index of this caltbl instead
+			curTran->setChannel(boost::lexical_cast<std::string>(i+1));
 			transGroupName="Generic";
 		}
 		else

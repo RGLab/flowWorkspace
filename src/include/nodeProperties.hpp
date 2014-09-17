@@ -49,6 +49,7 @@ private:
 					ar.register_type(static_cast<boolGate *>(NULL));
 					ar.register_type(static_cast<rangeGate *>(NULL));
 					ar.register_type(static_cast<rectGate *>(NULL));
+					ar.register_type(static_cast<logicalGate *>(NULL));
 //					if(version>=3)
 						ar.register_type(static_cast<ellipsoidGate *>(NULL));
 
@@ -83,8 +84,12 @@ private:
 				ar.register_type(static_cast<boolGate *>(NULL));
 				ar.register_type(static_cast<rangeGate *>(NULL));
 				ar.register_type(static_cast<rectGate *>(NULL));
+
 				if(version>=3)
 					ar.register_type(static_cast<ellipsoidGate *>(NULL));
+
+				if(version>=5)
+					ar.register_type(static_cast<logicalGate *>(NULL));
 				ar & BOOST_SERIALIZATION_NVP(thisGate);
 
 				ar.register_type(static_cast<BOOLINDICES *>(NULL));
@@ -133,6 +138,6 @@ public:
 
 
 };
-BOOST_CLASS_VERSION(nodeProperties,4)
+BOOST_CLASS_VERSION(nodeProperties,5)
 
 #endif /* NODEPROPERTIES_HPP_ */

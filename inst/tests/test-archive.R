@@ -12,6 +12,79 @@ test_that("load GatingSet from archive",
   expect_that(gs, is_a("GatingSet"))
 })
 
+## it is placed here because trans may get cleared later on by cloning process
+test_that("getTransformations",{    
+      
+      
+      
+      flowDataPath <- system.file("extdata", package = "flowWorkspaceData")
+      fcsFiles <- list.files(pattern = "CytoTrol", flowDataPath, full = TRUE)
+      fr  <- read.FCS(fcsFiles[[1]])
+      
+      chnl <- "V450-A"
+      raw <- exprs(fr)[,chnl]
+      gh <- gs[[1]]
+      
+      #test getTransformations
+      
+      # only return the transfromation associated with given channel
+      tran <- getTransformations(gh, channel = "<B710-A>")
+      expect_is(tran, "function")
+      
+      expect_error(tran <- getTransformations(gh, channel = "<"), "multiple tranformation")
+      
+      tran <- getTransformations(gh, channel = "<B710-AA>")
+      expect_null(tran)
+      
+      trans <- getTransformations(gh)
+      expect_is(trans, "list")
+      
+      trans <- trans[[1]]
+      inverseTrans <- getTransformations(gh, inverse = TRUE)[[1]]
+      
+      transformed <- trans(raw)
+      raw1 <- inverseTrans(transformed)
+      all.equal(raw, raw1, tolerance = 2e-3)
+      
+      #test flowJoTrans
+      trans <- flowJoTrans()
+      inverseTrans <- flowJoTrans(inverse = TRUE)
+      
+      transformed <- trans(raw)
+      raw1 <- inverseTrans(transformed)
+      all.equal(raw, raw1, tolerance = 2e-3)
+      
+      
+    })
+
+test_that("formatAxis",{
+      gh <- gs[[1]]
+      parent <- getData(gh, use.exprs = FALSE)
+      thisRes <- flowWorkspace:::.formatAxis(gh, parent, xParam = "SSC-A", yParam = "FSC-A")
+      expectRes <- list(scales = list(), xlab = "SSC-A ", ylab = "FSC-A ")
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- flowWorkspace:::.formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>")
+      expectRes <- list(scales = list(y = list(at = c(227.00,  948.81, 1893.44, 2808.63, 3717.62)
+                  , labels = expression(0, 10^2, 10^3, 10^4, 10^5)
+              )
+          )
+          , xlab = "SSC-A ", ylab = "<V450-A> CD3 V450")
+      expect_equal(thisRes, expectRes)
+      
+      thisRes <- flowWorkspace:::.formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>", marker.only = TRUE)
+      expectRes[["xlab"]] <- "SSC-A"
+      expectRes[["ylab"]] <- "CD3 V450"
+      expect_equal(thisRes, expectRes)
+      
+      #DISABLE RAW SCALE
+      thisRes <- flowWorkspace:::.formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>", raw.scale = FALSE)
+      expectRes <- list(scales = list(), xlab = "SSC-A ", ylab = "<V450-A> CD3 V450")
+      expect_equal(thisRes, expectRes)      
+      
+    })
+
+
 source("GatingSetList-testSuite.R", local = TRUE)
 
 source("GatingSet-testSuite.R", local = TRUE)
@@ -33,6 +106,7 @@ test_that("extract GatingHierarchy from GatingSet",{
 
 
 source("GatingHierarchy-testSuite.R", local = TRUE)
+
 
 
 test_that("Construct new GatingSet based on the existing gating hierarchy",

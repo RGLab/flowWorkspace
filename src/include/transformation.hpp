@@ -14,7 +14,7 @@
 #define FLIN 3
 #define FASINH 4
 //#define LOGICLE 1
-//#define BIEXP 2
+#define BIEXP 5
 
 #include <map>
 #include <string>
@@ -174,6 +174,8 @@ private:
 				void serialize(Archive &ar, const unsigned int version)
 				{
 					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+
+					setType(BIEXP);//force it to be BIEXP because this value in the old archive was CALTBL
 
 					ar & BOOST_SERIALIZATION_NVP(channelRange);
 					ar & BOOST_SERIALIZATION_NVP(pos);
