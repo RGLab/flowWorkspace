@@ -30,7 +30,7 @@ using namespace std;
 struct Spline_Coefs{
 	map<string,vector<double> > coefs;
 	int method;
-	string type;
+	string type;//to be deprecated
 };
 
 class calibrationTable{

@@ -939,7 +939,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'
 #'  \item{cond}{ \code{character} the conditioning variable to be passed to lattice plot.}
 #'
-#'  \item{overlay}{ \code{numeric} scalar indicating the index of a gate/populationwithin the \code{GatingHierarchy} or a \code{logical} vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by \code{y} argument) as an overlay.}
+#'  \item{overlay}{Node names. These populations are plotted on top of the existing gates(defined by \code{y} argument) as the overlaid dots.}
+#'  \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population. 
+#'                         If not given, we automatically assign the colors.}
+#'  \item{key}{Lattice legend paraemter for overlay symbols.}
 #'
 #'  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
 #'
@@ -951,6 +954,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'
 #'  \item{marker.only}{ \code{ligcal} specifies whether to show both channel and marker names }
 #'
+#'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale}
 #'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
 #'                                            either by instrument measurement range or the actual data range.
 #'                     or \code{numeric} which specifies customized range.}
@@ -1213,15 +1217,15 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #'      params channel names for subsetting the result
 #' @return either a list of flowFrame for a flowSet/ncdfFlowSet or NULL
 .getOverlay <- function(x, overlay, ...){
-
+  .Defunct(msg = "getOverlay is defunct!")
   myfunc <- function(x, overlay, params){
     #gate indices
     if(class(overlay)=="logical")
       overlay<-Subset(getData(x),overlay)[,params]
     else{
-      if(length(overlay)>1)
-        stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
-      overlay<-getData(x,overlay)[,params]
+#      if(length(overlay)>1)
+#        stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
+      overlay <- sapply(overlay, function(thisOverlay)getData(x,thisOverlay)[,params])
     }
     overlay
   }
@@ -1276,12 +1280,18 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #' @param ... other arguments passed to .formAxis and flowViz
 #' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
+#' @importFrom RColorBrewer brewer.pal
 .plotGate <- function(x, y, formula=NULL, cond=NULL
                       , smooth=FALSE ,type=c("xyplot","densityplot")
                       , main = NULL
                       , xlab = NULL
                       , ylab = NULL
-                      , fitGate=FALSE, overlay=NULL, stack = FALSE, xbin = 32
+                      , fitGate=FALSE
+                      , overlay = NULL
+                      , overlay.symbol = NULL
+                      , key = NULL
+                      , stack = FALSE
+                      , xbin = 32
                       , stats , default.y = "SSC-A", scales
                       , strip = TRUE
                       , path = "auto"
@@ -1338,9 +1348,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       if(is.null(overlay))
         overlay <- y
       else
-        warning(y, " is BooleanFilter. The 'overlay' argument is ignored!")
+        overlay <- c(overlay, y)
     }
-
+  
 
 #    browser()
         #get data
@@ -1452,14 +1462,40 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 		# calcuate overlay frames
 		################################
         if(!is.null(overlay)){
-          overlay <- .getOverlay(x, overlay, params)
+          if(is.null(overlay.symbol)){
+#            browser()
+            # set symbol color automatically if not given
+            nOverlay <- length(overlay)
+            overlay.fill <- brewer.pal(9,"Set1")[1:nOverlay]
+            names(overlay.fill) <- overlay
+            overlay.symbol <- sapply(overlay.fill, function(col)list(fill = col), simplify = FALSE)
+          }
+          #set legend automatically if it is not given
+          if(is.null(key)){
+            
+             key = list(text = list(names(overlay.symbol), cex = 0.6)
+                                , points = list(col = sapply(overlay.symbol, "[[", "fill") 
+                                                , pch = 19
+                                                , cex = 0.5) 
+                          , columns = length(overlay.symbol)
+                          , between = 0.3
+                          , space = "bottom"
+                          , padding.text = 5)
+          }
+          overlay <- sapply(overlay, function(thisOverlay)getData(x,thisOverlay)[,params])
+          
           if(is.gh){
             if(strip){
+#              browser()
               #rename sample name with popName in order to display it in strip
-              sampleNames(overlay) <- popName
-            }
+            overlay <- sapply(overlay, function(thisOverlay){
+                            sampleNames(thisOverlay) <- popName
+                            thisOverlay
+                      })
+           names(overlay.symbol) <- names(overlay)       
           }
         }
+      }
 
 #        browser()
         default_ylab <- list(label = axisObject$ylab)
@@ -1479,6 +1515,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                             ,list(ylab = ylab
                                   ,smooth = smooth
                                   ,overlay = overlay
+                                  ,overlay.symbol = overlay.symbol
+                                  , key = key
                                   , defaultCond = defaultCond
                                   , xbin = xbin
                                   )
@@ -1748,8 +1786,10 @@ setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...
       }else{
         #subset by indices
         indices<-lapply(obj,getIndices,y)
-        this_data <- Subset(this_data,indices)
-        
+        if(class(this_data) == "ncdfFlowSet")
+          this_data <- Subset(this_data,indices, validityCheck = FALSE)
+        else
+          this_data <- Subset(this_data,indices)
         this_data
       }
       
@@ -1848,11 +1888,6 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
             clone@axis <- clone@axis[i]
             #subsetting data
 			fs <- flowData(clone)[i]
-            #deep copying flowData(but still pointing to the same cdf)
-#            if(isNcdf(clone))
-#              fs<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=FALSE)
-#            else
-#              fs<-flowCore:::copyFlowSet(fs)
 
 
             #update the data for clone
@@ -1861,7 +1896,29 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 			return(clone);
 		})
 
-
+#' subset the GatingSet/GatingSetList based on 'pData'
+#' 
+#' @param x \code{GatingSet} or \code{GatingSetList}
+#' @param subset logical expression(within the context of pData) indicating samples to keep. see \code{\link[base:subset]{subset}}
+#' @param ... other arguments. (not used)
+#' @return a code{GatingSet} or \code{GatingSetList} object
+#' @rdname subset
+#' @export 
+subset.GatingSet <- function (x, subset, ...) 
+{
+  pd <- pData(x)
+  r <- if (missing(subset)) 
+        rep_len(TRUE, nrow(x))
+      else {
+        e <- substitute(subset)
+        r <- eval(e, pd, parent.frame())
+        if (!is.logical(r)) 
+          stop("'subset' must be logical")
+        r & !is.na(r)
+      }
+  
+  x[as.character(pd[r, "name"])]
+}
 #' @rdname getGate
 #' @export 
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
@@ -1969,10 +2026,11 @@ setMethod("show","GatingSet",function(object){
 #' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the flowJo counts, flowCore counts and frequencies.
 #' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
-#' @param statistic \code{character} specifies the type of population statistics to extract. Either "freq" or "count" is currently supported.
+#' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
-#' @param prefix \code{character} see \link{getNodes}
 #' @param path \code{character} see \link{getNodes}
+#' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format  
+#' @param subpopulations \code{character} vector to specify a subset of populations to return. (only valid when format is "long")  
 #' @param ... Additional arguments passed to \link{getNodes}
 #'
 #' @details
@@ -1987,51 +2045,76 @@ setMethod("show","GatingSet",function(object){
 #' @seealso \code{\link{getNodes}}
 #' @examples
 #'         \dontrun{
-#'         #If gh is a GatingHierarchy
+#'         #gh is a GatingHierarchy
 #'         getPopStats(gh);
 #'         #proportion for the fifth population
-#'         getProp(G,getNodes(gh)[5])
-#'         getTotal(G,getNodes(G,tsort=T)[5])
-#'
+#'         getProp(gh,getNodes(gh)[5])
+#'         getTotal(gh,getNodes(gh,tsort=T)[5])
+#'         
+#'         #gs is a GatingSet
+#'         getPopStats(gs)
+#'         #optionally output in long format as a data.table
+#'         getPopStats(gs, format = "long", path = "auto")
+#'         #only get stats for a subset of populations 
+#'         getPopStats(gs, format = "long", subpopulations = getNodes(gs)[4:6])
 #'         }
 #' @aliases getPopStats
 #' @rdname getPopStats
 #' @export 
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), flowJo = FALSE, ...) {
+    function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("wide", "long"), path = "auto", ...) {
 
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
-    
-      # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
-      # are returned.
-      if (flowJo) {
-        statistic <- paste("flowJo", statistic, sep = ".")
-      } else {
-        statistic <- paste("flowCore", statistic, sep = ".")
-      }
+      format <- match.arg(format)
+      path <- match.arg(path, c("full", "auto"))
+       
+      if(format == "long"){
+        
+        if(is.null(subpopulations))
+          subpopulations <- getNodes(x, path = path, ...)[-1]
+        
+        pop_stats <- .getPopCounts(x@pointer, sampleNames(x), subpopulations, flowJo, path == "full")
+        pop_stats <- data.table(name = pop_stats[["name"]]
+                              , Population = pop_stats[["Population"]]
+                              , Parent = pop_stats[["Parent"]]
+                              , Count = pop_stats[["Count"]]
+                              , ParentCount = pop_stats[["ParentCount"]]
+                            )
+        
+      }else{
+        
       
-      stats <- lapply(x,function(y){
-              d<-getPopStats(y, ...)
-              d$key<-rownames(d)
-              setkeyv(d,"key")
-              d<-d[,list(key,get(statistic))]
-              setnames(d,c("key",sampleNames(y)))
-              setkeyv(d,"key")
-              d
-      })
-      pop_stats <- Reduce(function(x,y)merge(x,y,all=TRUE),stats)
-      
-      rownames(pop_stats) <- pop_stats[,key]
-      setkey(pop_stats,NULL)
-      pop_stats$key<-NULL
-      rn<-rownames(pop_stats)
-      pop_stats<-as.matrix(pop_stats)
-      rownames(pop_stats)<-rn
-      pop_stats
-    })
+        # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
+        # are returned.
+        if (flowJo) {
+          statistic <- paste("flowJo", statistic, sep = ".")
+        } else {
+          statistic <- paste("flowCore", statistic, sep = ".")
+        }
+        
+        stats <- lapply(x,function(y){
+                d<-getPopStats(y, path = path,...)
+                d$key<-rownames(d)
+                setkeyv(d,"key")
+                d<-d[,list(key,get(statistic))]
+                setnames(d,c("key",sampleNames(y)))
+                setkeyv(d,"key")
+                d
+        })
+        pop_stats <- Reduce(function(x,y)merge(x,y,all=TRUE),stats)
+        
+        rownames(pop_stats) <- pop_stats[,key]
+        setkey(pop_stats,NULL)
+        pop_stats$key<-NULL
+        rn<-rownames(pop_stats)
+        pop_stats<-as.matrix(pop_stats)
+        rownames(pop_stats)<-rn
+        pop_stats
+    }
+})
 
 #' calculate the coefficient of variation
 .computeCV <- function(x, ...){
@@ -2290,8 +2373,8 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
-#      browser()
-      message(sample)
+      
+      message(".", appendLF = FALSE)
       
       fr <- fs[[sample, use.exprs = FALSE]] 
       this_pd <- pData(parameters(fr))  
@@ -2301,12 +2384,15 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       pops <-  as.character(pop_chnl[,"pop"])
       
       markers <- as.character(pop_chnl[, datSrc])
-
-      nodeIds <- sapply(pops,.getNodeInd, obj = x)
+    
+      nodeIds <- sapply(pops, function(pop){
+            ind <- .Call("R_getNodeID",x@pointer,sample, pop)
+            ind + 1 # convert to R index
+          })
       nodeIds <- as.integer(nodeIds) - 1
       data <- fs[[sample, chnls]]
       data <- exprs(data)
-#      browser()
+      
       data <- .Call("R_getSingleCellExpression", x@pointer, sample, nodeIds, data, markers, threshold)
       data
           
@@ -2375,4 +2461,47 @@ insertGate <- function(gs, gate, parent, children){
   recompute(clone)
   clone
 }
+
+#' tranform the flow data asssociated with the GatingSet
+#' 
+#' The transformation functions are saved in the GatingSet and can be retrieved by \link{getTransformations}.
+#' Currently only flowJo-type biexponential transformation(either returned by \link{getTransformations} or constructed by \link{flowJoTrans})
+#' is supported. 
+#' 
+#' @param _data \code{GatingSet} or \code{GatingSetList}
+#' @param ... expect a \code{transformList} object
+#' 
+#' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
+#' @examples
+#' \dontrun{
+#' #construct biexponential transformation function
+#' biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+#' #make a transformList object
+#' transFuns <- transformList(chnls, biexpTrans)
+#' #add it to GatingSet
+#' gs_trans <- transform(gs, transFuns)
+
+#' }   
+#' @export
+#' @rdname transform 
+#' @importMethodsFrom ncdfFlow transform
+setMethod("transform",
+    signature = signature(`_data` = "GatingSet"),
+    definition = function(`_data`, ...)
+    {
+      dots <- list(...)
+      if(length(dots) == 0)
+        stop("expect the second argument as a 'transformList' object!")
+      transList <- dots[[1]]
+      gs <- `_data`
+      if(class(transList) != "transformList")
+        stop("expect the second argument as a 'transformList' object!")
+      flowWorkspace:::.addTrans(gs@pointer, transList)  
+      message("transforming the flow data...")
+      fs <- getData(gs)
+     
+      suppressMessages(fs_trans <- transform(fs, transList))
+      flowData(gs) <- fs_trans
+      gs
+    })
 

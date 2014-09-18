@@ -111,6 +111,7 @@ public:
 
 	GatingSet * clone_treeOnly(vector<string> samples);
 	void add(GatingSet & gs,vector<string> sampleNames);
+	void addTransMap(string gName,trans_map tm);
 };
 
 BOOST_CLASS_VERSION(GatingSet,3)

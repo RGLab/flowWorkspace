@@ -87,10 +87,10 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 * getPopNames with full path
 		 */
 		cout<<endl<<"node list with/without full path:"<<endl;
-		vector<string> popNames=gh->getPopNames(REGULAR,true,true);
+		vector<string> popNames=gh->getPopPaths(REGULAR,true,true);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
-		popNames=gh->getPopNames(REGULAR,false,true);
+		popNames=gh->getPopPaths(REGULAR,false,true);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
 
@@ -283,6 +283,8 @@ void parser_test(testCase & myTest){
 		hdfFlow nc = gs_attachCDF(*gs,myTest);
 
 		gh=gs->getGatingHierarchy(curSample);
+
+		gh_accessor_test(gh);
 
 		if(!isLoadArchive)
 			gs_gating(*gs,curSample,nc);

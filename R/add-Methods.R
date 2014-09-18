@@ -416,3 +416,5 @@ setMethod("Rm",
 			.Call("R_removeNode",envir@pointer,sampleNames(envir), symbol)
 		})
 
+
+    
