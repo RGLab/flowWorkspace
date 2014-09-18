@@ -280,6 +280,16 @@ NULL
                           {
                             ifelse(as.logical(as.integer(thisHidden)),"dotted","solid")
                           })
+  nAttrs$col <- sapply(nodeData(g,attr="isBool")
+      ,function(thisBool)
+      {
+        ifelse(as.logical(as.integer(thisBool)),"blue","black")
+      })
+  nAttrs$textCol <- sapply(nodeData(g,attr="isBool")
+      ,function(thisBool)
+      {
+        ifelse(as.logical(as.integer(thisBool)),"blue","black")
+      })
   nodeRenderInfo(g) <- nAttrs   
   
   eData <- edgeData(g, attr = "virtual")
