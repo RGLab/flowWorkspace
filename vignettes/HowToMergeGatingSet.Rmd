@@ -142,7 +142,7 @@ length(gs_groups)
 
 This divides all the `GatingSet`s into different groups, each group shares the same tree structure. Here we have `4` groups, 
 ## Check if the discrepancy can be resolved by dropping leaf nodes
-```{r}
+```{r error=TRUE}
 flowWorkspace:::.checkRedundantNodes(gs_groups)
 ```
 
