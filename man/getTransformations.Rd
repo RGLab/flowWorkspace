@@ -5,10 +5,15 @@
 \alias{getTransformations,GatingHierarchy-method}
 \title{Return a list of transformations or a transformation in a GatingHierarchy}
 \usage{
-\S4method{getTransformations}{GatingHierarchy}(x)
+\S4method{getTransformations}{GatingHierarchy}(x, ...)
 }
 \arguments{
 \item{x}{A \code{GatingHierarchy} object}
+
+\item{...}{other arguments
+
+        inverse \code{logical} whether to return the inverse transformation function.
+        channel \code{character} channel name}
 }
 \value{
 lists of functions, with each element of the list representing a transformation applied to a specific channel/parameter of a sample.
@@ -24,7 +29,9 @@ mainly for transforming range info
 \examples{
 \dontrun{
 	#Assume gh is a GatingHierarchy
-	getTransformations(gh);
+	getTransformations(gh); # return a list transformation functions
+ getTransformations(gh, inverse = TRUE); # return a list inverse transformation functions
+ getTransformations(gh, channel = "<B710-A") # only return the transfromation associated with given channel
 }
 }
 

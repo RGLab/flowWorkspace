@@ -6,8 +6,7 @@
 \title{Get the names of all nodes from a gating hierarchy.}
 \usage{
 \S4method{getNodes}{GatingSet}(x, y = NULL, order = "regular",
-  path = "full", prefix = c("none", "all", "auto"), showHidden = FALSE,
-  ...)
+  path = "full", showHidden = FALSE, ...)
 }
 \arguments{
 \item{x}{A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.}
@@ -19,9 +18,6 @@
 
 \item{path}{A \code{character} or \code{numeric} scalar. when \code{numeric}, it specifies the fixed length of gating path (length 1 displays terminal name).
 When \code{character}, it can be either 'full' (full path, which is default) or 'auto' (display the shortest unique gating path from the bottom of gating tree).}
-
-\item{prefix}{A \code{character} scalar to tell the method whether to add internal node index as the prefix to the node name (only valid when 'path' is set to 1).
-the valid values are "auto", "none", "all".}
 
 \item{showHidden}{\code{logical} whether to include the hidden nodes}
 
@@ -41,8 +37,6 @@ to use default order which is regular.
 \dontrun{
     #G is a gating hierarchy
     getNodes(G, path = 1])#return node names (without prefix)
-    getNodes(G, path = 1, prefix = "all"])#return node names with unqiue ID
-    getNodes(G, path = 1, prefix = "auto"])#prepend unqiue ID as needed
     getNodes(G,path = "full")#return the full path
     getNodes(G,path = 2)#return the path as length of two
     getNodes(G,path = "auto)#automatically determine the length of path

@@ -164,12 +164,8 @@ test_that("getNodes & setNode",{
       expect_equal(getNodes(gh), expectRes[["full_path"]])
       expect_equal(getNodes(gh, path = "full"), expectRes[["full_path"]])
       
-      #terminal node
-      expect_equal(getNodes(gh, path = 1, prefix = "all"), expectRes[["terminal_prefix_all"]])
-      expect_equal(getNodes(gh, path = 1, prefix = "auto"), expectRes[["terminal_prefix_auto"]])
             
       expect_equal(getNodes(gh, path = 1), expectRes[["terminal"]])
-      expect_equal(getNodes(gh, path = 1, prefix = "none"), expectRes[["terminal"]])
       
       #fixed partial path
       expect_equal(getNodes(gh, path = 2), expectRes[["path_two"]])
@@ -230,24 +226,24 @@ test_that(".getGraph",{
 
 test_that(".getAllDescendants",{
       nodelist <- new.env(parent=emptyenv())
-      
+      allNodes <- getNodes(gh, showHidden = TRUE)
       nodelist$v <-integer()
       .getAllDescendants(gh, "CD3+", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd3_gh.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(allNodes[thisRes], expectRes)
       
       nodelist$v <-integer()
       .getAllDescendants(gh, "CD4", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd4_gh.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(allNodes[thisRes], expectRes)
       
       nodelist$v <-integer()
       .getAllDescendants(gh, "CD8", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd8_gh.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(allNodes[thisRes], expectRes)
       
     })
 
@@ -466,27 +462,6 @@ test_that("pretty10exp",{
       expect_equal(thisRes, expectRes)      
     })
 
-test_that("formatAxis",{
-      
-      parent <- getData(gh, use.exprs = FALSE)
-      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "FSC-A")
-      expectRes <- list(scales = list(), xlab = "SSC-A ", ylab = "FSC-A ")
-      expect_equal(thisRes, expectRes)
-      
-      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>")
-      expectRes <- list(scales = list(y = list(at = c(227.00,  948.81, 1893.44, 2808.63, 3717.62)
-                                                , labels = expression(0, 10^2, 10^3, 10^4, 10^5)
-                                              )
-                                      )
-                        , xlab = "SSC-A ", ylab = "<V450-A> CD3 V450")
-      expect_equal(thisRes, expectRes)
-      
-      thisRes <- .formatAxis(gh, parent, xParam = "SSC-A", yParam = "<V450-A>", marker.only = TRUE)
-      expectRes[["xlab"]] <- "SSC-A"
-      expectRes[["ylab"]] <- "CD3 V450"
-      expect_equal(thisRes, expectRes)
-            
-    })
 
 test_that("getSample",{
       
@@ -590,5 +565,4 @@ test_that("getPopChnlMapping for COMPASS",{
 #        expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                          
       
     })
-
-
+    

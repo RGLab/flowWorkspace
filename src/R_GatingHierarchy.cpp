@@ -45,7 +45,7 @@ END_RCPP
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _isPath, SEXP _showHidden){
+RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _fullPath, SEXP _showHidden){
 BEGIN_RCPP
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
@@ -54,10 +54,10 @@ BEGIN_RCPP
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	unsigned short order=as<unsigned short>(_order);
-	bool isPath=as<bool>(_isPath);
+	bool fullPath=as<bool>(_fullPath);
 	bool showHidden=as<bool>(_showHidden);
 
-	return wrap(gh->getPopNames(order,isPath,showHidden));
+	return wrap(gh->getPopPaths(order,fullPath,showHidden));
 END_RCPP
 }
 
@@ -211,15 +211,47 @@ BEGIN_RCPP
 				if(!curTrans->isInterpolated()){
 					curTrans->interpolate();
 				}
-//					throw(domain_error("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first));
+
 				Spline_Coefs obj=curTrans->getSplineCoefs();
 
 				res.push_back(List::create(Named("z",obj.coefs)
 											,Named("method",obj.method)
-											,Named("type",obj.type)
+											,Named("type", "caltbl")
 											)
 								,transName
 								);
+				break;
+			}
+			case BIEXP:
+			{
+				biexpTrans * thisTrans = dynamic_cast<biexpTrans *>(curTrans);
+				/*
+				 * do all the CALTBL operation
+				 */
+				if(!curTrans->computed()){
+					curTrans->computCalTbl();
+				}
+				if(!curTrans->isInterpolated()){
+					curTrans->interpolate();
+				}
+
+				Spline_Coefs obj=curTrans->getSplineCoefs();
+
+				/*
+				 * in addition, output the 5 arguments
+				 */
+				res.push_back(List::create(Named("z",obj.coefs)
+											,Named("method",obj.method)
+											,Named("type","biexp")
+											, Named("channelRange", thisTrans->channelRange)
+											, Named("maxValue", thisTrans->maxValue)
+											, Named("neg", thisTrans->neg)
+											, Named("pos", thisTrans->pos)
+											, Named("widthBasis", thisTrans->widthBasis)
+											)
+								,transName
+								);
+
 				break;
 			}
 			default:
@@ -408,6 +440,29 @@ BEGIN_RCPP
 			  return ret;
 
 			}
+		case LOGICALGATE:
+		{
+			boolGate * bg=dynamic_cast<boolGate*>(g);
+		  vector<BOOL_GATE_OP> boolOpSpec=bg->getBoolSpec();
+		  vector<string> v;
+		  vector<char>v2;
+		  vector<vector<string> >ref;
+		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+		  {
+			  v.push_back(it->isNot?"!":"");
+			  v2.push_back(it->op);
+			  ref.push_back(it->path);
+		  }
+
+		  List ret=List::create(Named("v",v)
+								 ,Named("v2",v2)
+								 ,Named("ref",ref)
+								 ,Named("type",LOGICALGATE)
+								 , Named("filterId", nodeName)
+								 );
+		  return ret;
+
+		}
 		default:
 		{
 //			COUT<<g->getType()<<endl;
@@ -620,6 +675,13 @@ gate * newGate(List filter){
 			break;
 
 		}
+		case LOGICALGATE:
+		{
+			logicalGate * lg = new logicalGate();
+			lg->setNegate(isNeg);
+			g = lg;
+			break;
+		}
 		case ELLIPSEGATE:
 		{
 
@@ -653,12 +715,6 @@ gate * newGate(List filter){
 
 			g=eg;
 
-			break;
-		}
-		case LOGICALGATE:
-		{
-			//TODO:create and implement logical gate class
-			throw(domain_error("LOGICALGATE is not unsupported yet!"));
 			break;
 		}
 		default:

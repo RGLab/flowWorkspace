@@ -49,7 +49,27 @@ flowWorkspace.par.init <- function(){
                                                         , macIII = mac_III_path
                                                         , vX = vX_path
                                                         )
-                                      )
+                                      , theme.novpadding = list(layout.heights = list(top.padding = 0,
+                                                                                       main.key.padding = 0,
+                                                                                       key.axis.padding = 0,
+                                                                                       axis.xlab.padding = 0,
+                                                                                       xlab.key.padding = 0,
+                                                                                       key.sub.padding = 0,
+                                                                                       bottom.padding = 0)
+                                                                 , layout.widths = list(left.padding = 0,
+                                                                                        key.ylab.padding = 0,
+                                                                                        ylab.axis.padding = 0,
+                                                                                        axis.key.padding = 0,
+                                                                                        right.padding = 0)
+                                                                 , par.xlab.text = list(cex = 0.7, col = gray(0.3))
+                                                                 , par.ylab.text = list(cex = 0.7,  col = gray(0.3))
+                                                                 , par.main.text = list(cex = 0.8)
+                                                                 , axis.components = list(bottom = list(tck =0.5)
+                                                                                          , left = list(tck =0.5))
+                                                                 , axis.text = list(cex = 0.5)
+                                                                )
+                                      , plotGate = list(arrange = TRUE)
+                                    )
   
 }
 

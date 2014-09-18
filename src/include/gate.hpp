@@ -415,6 +415,24 @@ public:
 	unsigned short getType(){return BOOLGATE;}
 	boolGate * clone(){return new boolGate(*this);};
 };
+/**
+ * This is a dummby bool gate which is simply a side-effect of adding a node with logical indices yet
+ * without proper gating object to deal with.
+ *
+ * Currently the framework does not support adding a population node without associating with the gate.
+ * Therefore this class is a quick and dirty way of storing the gating results from clustering-based gating algorithm.
+ * Eventually we may want to extend it to store extra information.
+ */
+class logicalGate:public boolGate {
+	friend class boost::serialization::access;
+private:
+	template<class Archive>
+				void serialize(Archive &ar, const unsigned int version)
+				{
+					ar & boost::serialization::make_nvp("boolGate",boost::serialization::base_object<boolGate>(*this));
 
-
+				}
+	unsigned short getType(){return LOGICALGATE;}
+	logicalGate * clone(){return new logicalGate(*this);};
+};
 #endif /* GATE_HPP_ */
