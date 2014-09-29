@@ -1467,6 +1467,9 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 #' @param ... other arguments: not used.
 #' @export
 getChannelMarker <- function(frm, name, ...) {
+  #escape ( since we see that often times in Cytof data
+  
+  name <- gsub(")", "\\)", gsub("(", "\\(", name, fixed = TRUE), fixed = TRUE)
   pd <- pData(parameters(frm))
   # try complete match first
   ind <- .flowParamMatch(pd, name, ...)
