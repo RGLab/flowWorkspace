@@ -183,7 +183,7 @@ BEGIN_RCPP
 
 		GatingSet * newGS=new GatingSet();
 
-		for(unsigned i=0;i<gsList.size();i++)
+		for(int i=0;i<gsList.size();i++)
 		{
 			GatingSet *	gs=getGsPtr((SEXP)gsList[i]);
 			StringVec samples=as<StringVec>(sampleList[i]);

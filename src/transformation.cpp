@@ -210,7 +210,7 @@ transformation * trans_local::getTran(string channel){
 	return res;
 }
 
-biexpTrans::biexpTrans():transformation(false, BIEXP),channelRange(4096),maxValue(262144), pos(4.5), neg(0), widthBasis(-10){
+biexpTrans::biexpTrans():transformation(false, BIEXP),channelRange(4096), pos(4.5), neg(0), widthBasis(-10),maxValue(262144){
 	setComputeFlag(false);
 	calTbl.setInterpolated(false);
 }
