@@ -1083,7 +1083,7 @@ EdgeID GatingHierarchy::getInEdges(VertexID target){
 	string err;
 	err.append(boost::lexical_cast<string>(target));
 
-	if(target>=0&&target<=boost::num_vertices(tree)-1)
+	if(target<=boost::num_vertices(tree)-1)
 	{
 
 		boost::graph_traits<populationTree>::in_edge_iterator in_i, in_end;
@@ -1118,7 +1118,7 @@ VertexID GatingHierarchy::getParent(VertexID target){
 VertexID_vec GatingHierarchy::getChildren(VertexID source){
 
 	VertexID_vec res;
-	if(source>=0&&source<=boost::num_vertices(tree)-1)
+	if(source<=boost::num_vertices(tree)-1)
 	{
 
 		EdgeID e;
@@ -1174,11 +1174,11 @@ int GatingHierarchy::getChildren(VertexID source,string childName){
 nodeProperties & GatingHierarchy::getNodeProperty(VertexID u){
 
 
-	if(u>=0&&u<=boost::num_vertices(tree)-1)
+	if(u<=boost::num_vertices(tree)-1)
 		return(tree[u]);
 	else
 	{
-		throw(out_of_range("returning empty node due to the invalid vertexID:"+u));
+		throw(out_of_range("returning empty node due to the invalid vertexID:" + boost::lexical_cast<std::string>(u)));
 
 	}
 }

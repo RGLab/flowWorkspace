@@ -455,6 +455,11 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 		 }
 }
 
+/**
+ * doesn't seem to be used anymore
+ * @param groupID
+ * @param isParseGate
+ */
 void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)
 {
 	//first get all the sample IDs for given groupID
