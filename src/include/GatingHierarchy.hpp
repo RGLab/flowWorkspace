@@ -61,7 +61,7 @@ struct OurVertexPropertyWriterR {
     	nodeProperties &curNode=g[u];
     	bool isBoolGate=false;
     	bool hidden = false;
-    	if(!u==0)
+    	if(u!=0)
     	{
     		unsigned short gateType=curNode.getGate()->getType();
     		isBoolGate=(gateType==BOOLGATE);

@@ -895,9 +895,9 @@ BEGIN_RCPP
 	int lgl_n = count(ind.begin(),ind.end(),true);
 	NumericMatrix output(lgl_n, k);
 	int counter = 0;
-	for (int i=0; i < n; ++i) {
+	for (unsigned i=0; i < n; ++i) {
 	if (ind.at(i)) {
-	  for (int j=0; j < k; ++j) {
+	  for (unsigned j=0; j < k; ++j) {
 		  if(threshold){//if threshold is true, then only record the intensity that is above the gate threshold
 			  if (indexList.at(j).at(i))
 				  output(counter, j) = data(i, j);

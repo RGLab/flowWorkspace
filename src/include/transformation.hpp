@@ -74,7 +74,7 @@ private:
 public:
 	transformation();
 	transformation(bool _isGate,unsigned short _type);
-
+	virtual ~transformation(){};
 	virtual void transforming(valarray<double> & input);
 	virtual void computCalTbl(){};//dummy routine that does nothing
 	virtual Spline_Coefs getSplineCoefs(){return calTbl.getSplineCoefs();};
