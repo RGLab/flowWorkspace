@@ -27,6 +27,8 @@ flowJoWorkspace::flowJoWorkspace(xmlDoc * doc){
 /*get a vector of sampleID by the given groupID
  * keep the returned results in char * format in case the non-numeric sampleID is stored
  * make sure to free the memory of xmlChar * outside of the call
+ *
+ * used by GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)
  */
 vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 {
@@ -40,7 +42,7 @@ vector<string> flowJoWorkspace::getSampleID(unsigned short groupID)
 	         throw(domain_error("No Groups infomation!"));
 		}
 
-		if(groupID<0||groupID>=result->nodesetval->nodeNr)
+		if(groupID== 0||groupID>=result->nodesetval->nodeNr)
 		{
 			xmlXPathFreeObject(result);
 			xmlXPathFreeContext(context);
