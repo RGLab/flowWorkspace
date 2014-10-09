@@ -78,13 +78,13 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 	workspace@.cache$flag<-FALSE;
 })
 
-#setOldClass("summary")
 
+#' @param object \code{flowJoWorkspace}
 #' @rdname flowJoWorkspace-class
 #' @aliases 
 #' summary,flowJoWorkspace-method
-setMethod("summary",c("flowJoWorkspace"),function(object,...){
-	show(object,...);
+setMethod("summary",c("flowJoWorkspace"),function(object){
+	show(object);
 })
 
 #' match version string to the support list

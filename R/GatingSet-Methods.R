@@ -2198,6 +2198,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' return the indices associated with that bool gate, and remove the bool gate
 #' the typical use case would be extracting any-cytokine-expressed cells
 #' 
+#' @param obj \code{GatingSet}
 #' @param y a quoted expression.
 #' @examples
 #' \dontrun{

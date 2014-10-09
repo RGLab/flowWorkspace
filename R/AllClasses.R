@@ -502,6 +502,7 @@ char2booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter") {
       deparse = expr)
 }
 
+#' @param object \code{booleanFilter}
 #' @rdname booleanFilter-class
 #' @export 
 #' @importMethodsFrom flowCore identifier
