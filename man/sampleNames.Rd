@@ -5,6 +5,7 @@
 \alias{sampleNames,GatingHierarchy-method}
 \alias{sampleNames,GatingSet-method}
 \alias{sampleNames<-}
+\alias{sampleNames<-,GatingSet,ANY-method}
 \alias{sampleNames<-,GatingSet-method}
 \title{Get/update sample names in a GatingSet}
 \usage{

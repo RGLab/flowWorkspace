@@ -61,7 +61,6 @@ Nodes can be accessed with \code{\link{getNodes}}.}
 
  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
 
- \item{marker.only}{ \code{ligcal} specifies whether to show both channel and marker names }
 
  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale}
  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale

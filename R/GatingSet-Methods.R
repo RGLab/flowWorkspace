@@ -952,7 +952,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'
 #'  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
 #'
-#'  \item{marker.only}{ \code{ligcal} specifies whether to show both channel and marker names }
 #'
 #'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale}
 #'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
@@ -1284,8 +1283,6 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 .plotGate <- function(x, y, formula=NULL, cond=NULL
                       , smooth=FALSE ,type=c("xyplot","densityplot")
                       , main = NULL
-                      , xlab = NULL
-                      , ylab = NULL
                       , fitGate=FALSE
                       , overlay = NULL
                       , overlay.symbol = NULL
@@ -1375,17 +1372,6 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
     axisObject <- .formatAxis(gh,parentFrame, xParam, yParam,...)
 
-
-#    browser()
-    default_xlab <- list(label = axisObject$xlab)
-    if(is.null(xlab)){
-      xlab <- default_xlab
-    }else
-    {
-      if(is.list(xlab))
-        xlab <- lattice:::updateList(default_xlab, xlab) #update default lab if non-null lab are specified
-    }
-
     #set the formula
     if(is.null(formula))
     {
@@ -1411,7 +1397,6 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     thisCall<-quote(plot(x=formula
                           ,data=parentData
                           ,filter=curGates
-                          ,xlab=xlab
                           ,main=main
                           ,...
                           )
@@ -1497,23 +1482,13 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
         }
       }
 
-#        browser()
-        default_ylab <- list(label = axisObject$ylab)
-        if(is.null(ylab)){
-          ylab <- default_ylab
-        }else
-        {
-          if(is.list(ylab))
-            ylab <- lattice:::updateList(default_ylab, ylab) #update default scales if non-null scales are specified
-        }
 
 		#################################
 		# the actual plotting
 		################################
 #        browser()
         thisCall <- as.call(c(as.list(thisCall)
-                            ,list(ylab = ylab
-                                  ,smooth = smooth
+                            ,list(smooth = smooth
                                   ,overlay = overlay
                                   ,overlay.symbol = overlay.symbol
                                   , key = key
@@ -1747,6 +1722,7 @@ setMethod("sampleNames","GatingSet",function(object){
 #' @aliases 
 #' sampleNames<-
 #' sampleNames<-,GatingSet-method
+#' sampleNames<-,GatingSet,ANY-method
 #' @rdname sampleNames
 #' @export
 setReplaceMethod("sampleNames",

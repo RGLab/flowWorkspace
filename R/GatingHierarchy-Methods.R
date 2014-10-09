@@ -1610,21 +1610,9 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #' @param data a flowFrame
 .formatAxis <- function(x, data, xParam, yParam
                           , scales=list()
-                          , marker.only = FALSE
                           , raw.scale = TRUE
                           , ...){
-	xObj <- getChannelMarker(data,xParam)
-	yObj <- getChannelMarker(data,yParam)
-
-    if(marker.only){
-      xlab <- as.character(ifelse(is.na(xObj[,"desc"]), xObj[,"name"], xObj[,"desc"]))
-      ylab <- as.character(ifelse(is.na(yObj[,"desc"]), yObj[,"name"], yObj[,"desc"]))
-
-    }else
-    {
-      xlab <- sub("NA","",paste(unlist(xObj),collapse=" "))
-      ylab <- sub("NA","",paste(unlist(yObj),collapse=" "))
-    }
+	
 
         if(is.null(xParam)||!raw.scale){
           x.labels <- NULL
@@ -1657,7 +1645,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 
 
 
-	list(scales=scales,xlab=xlab,ylab=ylab)
+	list(scales=scales)
 }
 
 #'  Update the name of one node in a gating hierarchy/GatingSet.
