@@ -1,6 +1,8 @@
 #' @include GatingSet-Methods.R
 NULL
 
+#' @param y \code{missing} not used.
+#' @param ... other arguments passed to \code{rbind2} method for \code{ncdfFlowList}
 #' @importMethodsFrom ncdfFlow lapply rbind2 pData<-
 #' @rdname GatingSetList-class 
 #' @export 
