@@ -205,7 +205,7 @@ test_that("v 9.6.3 - mac 2.0 (ignore highValue for FSC/SSC)",{
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+      expect_equal(thisCounts, expectCounts, tol = 8e-05)
       
     })
 
