@@ -201,7 +201,7 @@ void natural_spline(valarray<double>x, valarray<double> y, valarray<double>& b,v
 
     /* Get cubic coefficients */
 
-    b[0] = (y[1] - y[0])/d[0] - d[i-1] * c[1];
+    b[0] = (y[1] - y[0])/d[0] - d[0] * c[1];
     c[0] = 0.0;
     d[0] = c[1]/d[0];
     b[n-1] = (y[n-1] - y[nm1])/d[nm1] + d[nm1] * c[nm1];
