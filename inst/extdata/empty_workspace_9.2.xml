@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE Workspace>
+<Workspace version="2.0" flowJoVersion="9.2" dateSaved="Monday, February 28, 2011" timeSaved="1:57:13 PM" versionList="; 9.2" curGroup="All Samples" isTemplate="0" SciBookRect="44,435,294,865" SciBookPaneSize="162">
+ <Preferences DT_UseCustomTransform="1" DT_TransformCompByDefault="1" DT_TransformAllPararameters="0" DT_32BitLogScaleTopEnd="0" DT_32BitFirstChannel="3" DT_32BitTopDecadeOffset="0" DT_32BitAreaDecades="5" DT_32BitOtherDecades="4" DT_32BitCustomDecades="4.5" DT_32BitCustomExtra="0" DT_32BitCustomWidth="-10" DT_32BitFPUseCustom="1" DT_32BitFPExtra="0" DT_32BitFPDecades="4.5" DT_32BitConvertFSToLog="0" DT_32BitConvertSSToLog="0" DT_32BitConvertFlToLog="1" DT_32BitConvertAllNonScToLog="0" DT_IgnoreFileScaling="0" DT_DXPScalingFactor="1024" DT_IgnoreCXPFCS3="0">
+  <DT_32BitKeepAsLinear>
+   <StringArray />
+  </DT_32BitKeepAsLinear>
+ </Preferences>
+ <Keywords />
+ <StainChannelList>
+  <StringArray />
+ </StainChannelList>
+ <Columns groupListHeight="98" sampleListHeight="151">
+  <Column name="Name" width="177" tabPosition="57" justification="Left" type="Name" />
+  <Column name="Statistic" width="50" tabPosition="234" justification="Left" type="Statistic" />
+  <Column name="#Cells" width="50" tabPosition="284" justification="Left" type="Count" />
+ </Columns>
+ <Groups nextGroupID="1" sortOrder="ByName">
+  <GroupNode groupID="0" hasTwistDown="0" Selected="1" name="All Samples" owningGroup="All Samples">
+   <Group groupID="0" TextStyle="Bold" foreground="Black">
+    <SampleRefs />
+   </Group>
+  </GroupNode>
+ </Groups>
+ <SampleList nextSampleID="0" />
+ <CompensationMatrices HideUnusedMatrices="0" />
+ <AutoCompensationScripts />
+ <LayoutEditor>
+  <WindowPosition y="44" x="435" width="471" height="308" open="0" />
+ </LayoutEditor>
+ <TableEditor>
+  <WindowPosition y="44" x="435" width="526" height="227" open="0" />
+ </TableEditor>
+ <SciBook />
+</Workspace>
+

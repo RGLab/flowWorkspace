@@ -1,0 +1,57 @@
+Windows users
+=============
+
+You need libxml2 and boost c++ library to build flowWorkspace from source (using Rtools).
+
+To install libxml2:
+
+1. Download the pre-built binary from http://rglab.github.io/binaries/
+
+2. unzip it (e.g. to c:\libxml2)
+and you should see the directory structure like below in both i386 and x64 folder
+   |-include
+   |---libxml2
+   |-----libxml (all *.h are here)
+   |-lib (we should have static libary libxml2.a here)
+   
+3. set up the environment variable LIB_XML2 in order for flowWorkspace to find its library files and header files.  
+You can do this by:
+ * right click "Computer" and select "Properties"
+ * click "Advanced system settings" and select "Advanced" tab
+ * click the "Environment Variables"  button and bring up the dialog box
+ * click the "New" button and enter "LIB_XML2" in the "Variable name" field, and /path/to/your/libxml2 (e.g. c:/libxml2) in the "Variable value" field. 
+  Remember to use "/" instead of "\" as the directory delimiter.
+
+
+Here is the instruction for the building boost on windows from source:
+
+1. download boost 1.52 from http://www.boost.org/users/history/version_1_52_0.html and unzip it (e.g. to c:\boost_1_52_0)
+
+2. build bjam from source
+cd c:\boost_1_52_0\tools\build\v2\engine
+build.bat mingw
+
+3. copy bjam to the root dir of boost (i.e. c:\boost_1_52_0)
+cp bin.ntx86\bjam.exe ..\..\..\..
+cd ..\..\..\..
+
+4. build library from source using bjam (here we only need to build serialization as static library)
+for 64bit library:
+bjam.exe --prefix=E:\boost\x64 toolset=gcc address-model=64 variant=release link=static install --with-serialization
+
+for 32bit library:
+bjam.exe --prefix=E:\boost\i386 toolset=gcc address-model=32 variant=release link=static install --with-serialization
+
+5. re-organize the header folders  
+cd e:\boost\i386\include\
+mv boost_1_52\boost .
+
+cd e:\boost\x64\include\
+mv boost_1_52\boost .
+ 
+Alternatively, pre-built boost binary can be downloaded from http://rglab.github.io/binaries/ 
+
+Similarly, once boost is built, you also need to set up the environment variable LIB_BOOST in order for flowWorkspace
+to find the library files and header files. 
+
+You can download Rtools at http://www.murdoch-sutherland.com/Rtools/ which provides the resources for building R and R packages. You should add to the Path variable the paths to the various components of Rtools. Please read the "Windows Toolset" appendix at http://cran.r-project.org/doc/manuals/R-admin.html#The-Windows-toolset for more details.

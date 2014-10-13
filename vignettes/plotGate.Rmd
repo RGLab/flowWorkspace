@@ -1,0 +1,274 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{How to plot gated data}
+-->
+
+How to plot gated data
+========================================================
+
+Usage
+------------------------------------------------------
+```{r eval=FALSE}
+plotGate(x, y, ...)
+```
+
+Arguments
+------------------------------------------------------
+**x**  
+GatingSet or GatingHierarchy object
+
+**y**	
+character the node name (in the form of full or partial gating path) or numeric representing the node index in the GatingHierarchy. or missing which will plot all gates. 
+
+**...** other arguments	
+
+```{r echo=FALSE, message=FALSE, results='hide'}
+library(flowWorkspace)
+flowDataPath <- system.file("extdata", package = "flowWorkspaceData")
+gs <- load_gs(file.path(flowDataPath,"gs_manual"))
+# change the CD3 gate as 1d gate
+g <- rectangleGate(`<V450-A>` = c(2000, Inf), filterId = "CD3+")
+g <- sapply(sampleNames(gs), function(sn)g)
+setGate(gs, "CD3+", g)
+recompute(gs, "CD3+")
+
+#preset lattice option
+old.theme <- flowWorkspace.par.get("theme.novpadding")
+new.theme <- lattice:::updateList(old.theme, list(axis.text = list(cex = 1)
+                                                  , par.xlab.text = list(cex = 1)
+                                                  , par.ylab.text = list(cex = 1)
+                                                  )
+                                  )
+
+flowWorkspace.par.set(name="theme.novpadding", new.theme)
+flowWorkspace.par.set("plotGate", list(arrange = FALSE))
+library(knitr)
+opts_chunk$set(fig.show = 'hold', fig.width = 3, fig.height = 3, results = 'hide', message = FALSE)
+
+```
+
+Examples
+------------------------------------------------------
+## plot gating tree
+```{r fig.width = 4}
+# plot the entire gating tree
+plot(gs)
+# plot a sub-tree
+plot(gs, "CD3+")
+plot(gs, "CD4")
+```
+## plotGate
+### Change resolution
+  **xbin** The argument passed to hexbin ,which is the number of bins partitioning the range of xbnds. It is set as 0 by default,which plots all the events without binning.
+  
+  **sample.ratio** the ratio of sub-sampling of events to speed up plotting.
+```{r}
+# default xbin = 32      
+plotGate(gs[[1]], "CD4/38+ DR+", main = "default (xbin = 32)") 
+# increase the resolution
+plotGate(gs[[1]], "CD4/38+ DR+", xbin = 128, main = "xbin = 128") 
+# have the highest resolution by disabling hexbin 
+plotGate(gs[[1]], "CD4/38+ DR+", xbin = 0, main = "xbin = 0 (no binning)") 
+# speed up plotting by sub-sampling the data points
+# most of them it is subsampled data is sufficient to represent the 
+# population distribution
+plotGate(gs[[1]], "CD4/38+ DR+", sample.ratio = 0.4, main = "sample.ratio = 0.4") 
+```
+
+### Change strip text
+  **strip** specifies whether to show pop name in strip box,only valid when x is GatingHierarchy
+  
+  **path** A character or numeric scalar passed to getNodes method (used to control how the gating/node path is displayed)
+```{r}
+# hide the strip
+plotGate(gs[[1]], "CD4/38+ DR+", strip = FALSE, main = "strip = FALSE")       
+# change the gating path length in strip 
+plotGate(gs[[1]], "CD4/38+ DR+", path = "full", main = "path = 'full'")
+plotGate(gs[[1]], "CD4/38+ DR+", path = 2, main = "path = 2")
+```
+### Change statistics
+  **stats** is a logical scalar indicating whether to display statistics. Default is FALSE.    
+  
+  **pos** is the numeric scalar (range within c(0,1)) or vector(length of 2,first is for x-axis,second for y-axis) to control the position of the statistics label. It is set as 0.5,which is the center. 
+  
+  **abs** is a logical scalar indicating whether the pos is relative to the gate boundary or the entire xy-axis(absolute position). By default it is set as FALSE,which indicates the position is relative to gate.
+  
+  **digits** is an integer indicating the number of significant digits to be used when displaying the percentage of population statistics,Default is 2. see more details from format 
+```{r}
+# hide the pop stats
+plotGate(gs[[1]], "CD4/38+ DR+", stats = FALSE, main = "stats = FALSE")
+# adjust the location, size, background of the stats
+plotGate(gs[[1]], "CD4/38+ DR+"
+                , pos = c(0.6, 0.9)
+                , digits = 4
+                , par.settings = list(gate.text = list(background = list(fill = "yellow") #stats background
+                                                        , cex = 2 #stats font size
+                                                        
+                                                      )
+                                      )
+         )
+```
+### Change the scale and label text of x,y axis
+  **marker.only** specifies whether to show both channel and marker names
+  
+  **raw.scale** whether to show the axis in raw(untransformed) scale
+ 
+  **xlim, ylim** can be either "instrument" or "data" which determines the x, y axis scale either by instrument measurement range or the actual data range. or numeric which specifies customized range.
+```{r}
+# show the tranformed scale instead of raw scale
+plotGate(gs[[1]], "CD4/38+ DR+", raw.scale = FALSE, main = "raw.scale = FALSE")
+# use the actual data range instead of instrument range
+plotGate(gs[[1]], "CD4/38+ DR+", xlim = "data", ylim = "data", main = "xlim = 'data'")       
+# zooming by manually set xlim and ylim
+plotGate(gs[[1]], "CD4/38+ DR+", xlim = c(1000, 4000), ylim = c(1000, 4000), main = "xlim = c(1000, 4000)")       
+# hide the channel names and only show the marker names in x,y labs
+plotGate(gs[[1]], "CD4/38+ DR+", marker.only = TRUE, main = "marker.only = TRUE")      
+```
+### Change the lattice graphic settings of plots
+  **par.settings** list of graphical parameters passed to lattice;
+```{r}
+# change the gate color and width
+plotGate(gs[[1]], "CD4/38+ DR+"
+                , par.settings = list(gate = list(col = "black"
+                                                  , lwd = 3
+                                                  , lty = "dotted")
+                                      )
+         )
+# change the panel background and axis label size
+plotGate(gs[[1]], "CD4/38+ DR+"
+                , par.settings = list(panel.background = list(col = "white")
+                                    , par.xlab.text = list(cex = 1.5)
+                                    , par.ylab.text = list(cex = 1.5)
+                                    , axis.text = list(cex = 1.5)
+                                      ) 
+         )
+```
+### Overlay the popluations
+  **overlay** indicating the index of a gate/populationwithin the GatingHierarchy or a logical vector that indicates the cell event indices representing a sub-cell population. This cell population is going to be plotted on top of the existing gates(defined by y argument) as an overlay.
+```{r fig.width = 5, fig.height= 5}      
+# display one population as an overlay on top of another population      
+plotGate(gs[[1]], "CD4/CCR7- 45RA+", overlay = "CD4/38+ DR+")
+#adjust the overlay symbol
+plotGate(gs[[1]], "CD4/CCR7- 45RA+"
+              , overlay = "CD4/38+ DR+"
+              , par.settings = list(overlay.symbol = list(cex = 0.1
+                                                          , fill = "black" 
+                                                          , bg.alpha = 0.1 #dim the background density
+                                                          )
+                                    )
+         )
+#add multiple overlays
+plotGate(gs[[1]], "CD4/CCR7- 45RA+"
+              , overlay = c("CD4/CCR7+ 45RA+", "CD4/CCR7+ 45RA-")
+              , par.settings = list(overlay.symbol = list(cex = 0.05, bg.alpha = 0.1))
+         )
+# customize the symbol and legend
+plotGate(gs[[1]], "CD4/CCR7- 45RA+"
+              , overlay = c("CD4/CCR7+ 45RA+", "CD4/CCR7+ 45RA-")
+              , par.settings = list(overlay.symbol = list(cex = 0.05, bg.alpha = 0.1))
+              , overlay.symbol = list(`CCR7+ 45RA+` = list(fill = "black") #this overwrite the par.settings
+                                      , `CD4/CCR7+ 45RA-` = list(fill = "darkgreen")
+                                      )
+              , key = list(text = list(c("CCR7+ 45RA+", "CCR7+ 45RA-")) # add legend
+                          , points = list(col = c("black", "darkgreen"), pch = 19, cex = 0.5)
+                          , columns = 2
+                           )
+         )
+```
+
+### plot multiple populations
+```{r echo=FALSE}
+flowWorkspace.par.set("plotGate", list(arrange = TRUE))
+```
+  **merge** logical indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;
+  
+  **arrange.main** The title of the main page of the plot. Default is the sample name. Only valid when x is GatingHierarchy
+  
+  **gpar** list of grid parameters passed to grid.layout;
+  
+  **arrange** logical indicating whether to arrange different populations/nodes on the same page via grid.arrange call.
+  
+  **projections** list of character vectors used to customize x,y axis. By default, the x,y axis are determined by the respective gate parameters. The elements of the list are named by the population name or path (see y). Each element is a pair of named character specifying the channel name(or marker name) for x, y axis. Short form of channel or marker names (e.g. "APC" or "CD3") can be used as long as they can be uniquely matched to the dimentions of flow data. For example, `projections = list("lymph" = c(x = "SSC-A", y = "FSC-A"), "CD3" = c(x = "CD3", y = "SSC-A"))`
+```{r}      
+# plot multiple populations (gates are merged into same panel if they share the same parent and projections)      
+plotGate(gs[[1]], c("CD4", "CD8"))      
+# flip the projection
+plotGate(gs[[1]], c("CD4", "CD8"), projections = list("CD4" = c(x = "CD8", y = "CD4")))      
+# dot not merge the gates
+plotGate(gs[[1]], c("CD4", "CD8"), merge = FALSE) 
+# use gpar to change layout 
+# use arrange.main to change the default title
+plotGate(gs[[1]], c("CD4", "CD8"), merge = FALSE, gpar = list(nrow = 1), arrange.main = "CD4 vs CD8")      
+```
+```{r eval =FALSE}
+# or return populations as individual trellis objects
+#and arrange them manually
+latticeObjs <- plotGate(gs[[1]], c("CD4", "CD8"), merge = FALSE, arrange = FALSE)      
+do.call(grid.arrange, c(latticeObjs, nrow = 1, main = "Tcell subsets"))
+```
+
+```{r echo=FALSE}
+# clone 4 samples to prepare lattice plot
+gslist <- lapply(1:4, function(i){
+              gs_clone <- clone(gs)
+              sampleNames(gs_clone) <- paste0(i, ".fcs")
+              
+              gs_clone
+              })
+gs <- GatingSetList(gslist)
+# create study variables
+pData(gs)$Stim <- c("Vaccined", "Placebo", "Vaccined", "Placebo")
+pData(gs)$PTID <- c("P001", "P001", "P002", "P002")
+
+set.seed(1)
+# add noise to CD3 pop of P002
+for(i in c(1,2)){
+  cd3_ind <- getIndices(gs[[i]], "CD3+")
+  nTcell <- length(which(cd3_ind))
+  toNoiseInd <- which(cd3_ind)[sort(sample.int(nTcell, 0.8 * nTcell))]
+  cd3_sub_sig <- exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<V450-A>"] 
+  noise <- cd3_sub_sig - 1000 * pnorm(1:length(toNoiseInd))
+  exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<V450-A>"] <- noise
+  recompute(gs[[i]], "CD3+")
+}
+
+# decrease active Tcells signals from Placebo groups
+for(i in c(2,4)){
+  act_ind <- getIndices(gs[[i]], "CD4/38+ DR+")
+  nActTcell <- length(which(act_ind))
+  toNoiseInd <- which(act_ind)[sort(sample.int(nActTcell, 0.5 * nActTcell))]
+  sub_sig <- exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<R660-A>"] 
+  noise <- sub_sig - 3000 * pnorm(1:length(toNoiseInd))
+  exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<R660-A>"] <- noise
+  recompute(gs[[i]], "CD4/38+ DR+")
+}
+```
+### Facetting on study variables
+  **cond** the conditioning variable to be passed to lattice plot.
+```{r fig.width = 5, fig.height= 5}     
+# condition on `Stim` and `PTID`
+plotGate(gs, "CD4/38+ DR+", cond = "Stim+PTID")
+# to put the second condition variable to the y axis
+latticeExtra::useOuterStrips(plotGate(gs, "CD4/38+ DR+", cond = "Stim+PTID"))
+```
+
+### Plot 1-d gate
+  **type** either `xyplot` or `densityplot`. Default is `xyplot`
+  **default.y** specifiying y channel for xyplot when plotting a 1d gate. Default is `SSC-A`.
+  **fitGate** used to disable behavior of plotting the gate region in 1d densityplot
+  **stack** whether to stack all samples (vetically) in one panel
+```{r fig.width = 3, fig.height= 3}
+plotGate(gs[c(1,3)], "CD3+") 
+# change the default y axis
+plotGate(gs[c(1,3)], "CD3+", default.y = "<B710-A>") 
+# change the plot type
+plotGate(gs[c(1,3)], "CD3+", type = "densityplot") 
+# fit the 1d gate onto 1d density 
+plotGate(gs[c(1,3)], "CD3+", type = "densityplot", fitGate = TRUE) 
+# stack them together
+plotGate(gs[c(1,3)], "CD3+", type = "densityplot", stack = TRUE) 
+```
+### Plot all the gates
+```{r, fig.width= 12, fig.height=6}
+plotGate(gs[[3]], gpar = list(nrow = 2))
+```
