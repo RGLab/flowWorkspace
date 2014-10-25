@@ -12,90 +12,164 @@
 #include <libxml/parser.h>
 #include <iostream>
 #include <exception>
+#include "pb/GatingSet.pb.h"
 using namespace std;
 
+/**
+ * convert GatingSet to pb object
+ * @param gs
+ * @return
+ */
+void gsToPb(GatingSet & gs, pb::GatingSet & pb_gs) {
+	// Verify that the version of the library that we linked against is
+	  // compatible with the version of the headers we compiled against.
+	  GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-void save_gs(const GatingSet &gs,string filename, unsigned short format){
-	    // make an archive
-		std::ios::openmode mode = std::ios::out|std::ios::trunc;
-		if(format == ARCHIVE_TYPE_BINARY)
-			mode = mode | std::ios::binary;
+	  StringVec samples = gs.getSamples();
+
+	  for(StringVec::iterator it = samples.begin(); it != samples.end(); it++){
+		string sn = *it;
+		GatingHierarchy * gh =  gs.getGatingHierarchy(sn);
+		/*
+		 * add a new gh_pair
+		 */
+		pb::ghPair * gh_pair = pb_gs.add_ghs();
+		// add a new pb_gh
+		pb::GatingHierarchy * pb_gh = gh_pair->mutable_value();
+		gh_pair->set_key(sn);
+		/*
+		 * set content of pb_gh
+		 */
+		pb::populationTree * ptree = pb_gh->mutable_tree();
+		/*
+		 * set content of tree
+		 */
+		VertexID_vec verIDs = gh->getVertices();
+		for(VertexID_vec::iterator it = verIDs.begin(); it != verIDs.end(); it++){
+			VertexID thisVert = *it;
+			pb::treeNodes * node = ptree->add_node();
+			gh->getNodeProperty(thisVert);
+			node->set_parent(thisVert);
+			/*
+			 * set content of node
+			 */
+			pb::nodeProperties * pb_node = node->mutable_node();
+
+		}
+
+	  }
 
 
-	    std::ofstream ofs(filename.c_str(), mode);
+}
 
-	    switch(format)
-	    {
-	    case ARCHIVE_TYPE_BINARY:
-	    	{
-	    		boost::archive::binary_oarchive oa(ofs);
-	    		oa << BOOST_SERIALIZATION_NVP(gs);
-	    	}
+void save_gs(const GatingSet &gs,string filename, unsigned short format, bool archiveType){
 
-	    	break;
-	    case ARCHIVE_TYPE_TEXT:
+	    if(archiveType == BS){
+	    	// make an archive
+			std::ios::openmode mode = std::ios::out|std::ios::trunc;
+			if(format == ARCHIVE_TYPE_BINARY)
+				mode = mode | std::ios::binary;
+
+
+			std::ofstream ofs(filename.c_str(), mode);
+
+
+			switch(format)
 			{
-				boost::archive::text_oarchive oa1(ofs);
-				oa1 << BOOST_SERIALIZATION_NVP(gs);
+			case ARCHIVE_TYPE_BINARY:
+				{
+					boost::archive::binary_oarchive oa(ofs);
+					oa << BOOST_SERIALIZATION_NVP(gs);
+				}
+
+				break;
+			case ARCHIVE_TYPE_TEXT:
+				{
+					boost::archive::text_oarchive oa1(ofs);
+					oa1 << BOOST_SERIALIZATION_NVP(gs);
+				}
+
+				break;
+			case ARCHIVE_TYPE_XML:
+				{
+					boost::archive::xml_oarchive oa2(ofs);
+					oa2 << BOOST_SERIALIZATION_NVP(gs);
+				}
+
+				break;
+			default:
+				throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
+				break;
+
 			}
 
-	    	break;
-	    case ARCHIVE_TYPE_XML:
-	    	{
-	    		boost::archive::xml_oarchive oa2(ofs);
-				oa2 << BOOST_SERIALIZATION_NVP(gs);
-	    	}
+	    }
+	    else// protocol buffer
+	    {
+	    	flowWorkspace::GatingSet pbGS;
+			fstream output(filename, ios::out | ios::trunc | ios::binary);
+			if (!pbGS.SerializeToOstream(&output))
+				throw(domain_error("Failed to write GatingSet."));
 
-		    break;
-		default:
-			throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
-		    break;
+			gsToPb(gs, pbGS);
 
+			// Optional:  Delete all global objects allocated by libprotobuf.
+			google::protobuf::ShutdownProtobufLibrary();
 	    }
 
 
 
-
-
 	}
-void restore_gs(GatingSet &s, string filename, unsigned short format)
+void restore_gs(GatingSet &s, string filename, unsigned short format, bool archiveType)
 {
 
-    // open the archive
-	std::ios::openmode mode = std::ios::in;
-	if(format == ARCHIVE_TYPE_BINARY)
-		mode = mode | std::ios::binary;
-    std::ifstream ifs(filename.c_str(), mode);
 
-    switch(format)
-	{
-	case ARCHIVE_TYPE_BINARY:
+	if(archiveType == BS){
+		// open the archive
+		std::ios::openmode mode = std::ios::in;
+		if(format == ARCHIVE_TYPE_BINARY)
+			mode = mode | std::ios::binary;
+		std::ifstream ifs(filename.c_str(), mode);
+
+		switch(format)
 		{
-			boost::archive::binary_iarchive ia(ifs);
-			ia >> BOOST_SERIALIZATION_NVP(s);
+		case ARCHIVE_TYPE_BINARY:
+			{
+				boost::archive::binary_iarchive ia(ifs);
+				ia >> BOOST_SERIALIZATION_NVP(s);
+			}
+
+			break;
+		case ARCHIVE_TYPE_TEXT:
+			{
+				boost::archive::text_iarchive ia1(ifs);
+				ia1 >> BOOST_SERIALIZATION_NVP(s);
+			}
+
+			break;
+		case ARCHIVE_TYPE_XML:
+			{
+				boost::archive::xml_iarchive ia2(ifs);
+				ia2 >> BOOST_SERIALIZATION_NVP(s);
+			}
+
+			break;
+		default:
+			throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
+			break;
+
 		}
-
-		break;
-	case ARCHIVE_TYPE_TEXT:
-		{
-			boost::archive::text_iarchive ia1(ifs);
-			ia1 >> BOOST_SERIALIZATION_NVP(s);
-		}
-
-		break;
-	case ARCHIVE_TYPE_XML:
-		{
-			boost::archive::xml_iarchive ia2(ifs);
-			ia2 >> BOOST_SERIALIZATION_NVP(s);
-		}
-
-		break;
-	default:
-		throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
-		break;
-
 	}
-
+	else
+	{
+		fstream input(filename, ios::in | ios::binary);
+		flowWorkspace::GatingSet pbGS;
+		if (!input) {
+			throw(invalid_argument("File not found.." ));
+		} else if (!pbGS.ParseFromIstream(&input)) {
+			throw(domain_error("Failed to parse GatingSet."));
+		}
+	}
 
 
 }

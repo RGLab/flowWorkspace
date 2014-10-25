@@ -1,0 +1,61 @@
+package pb;
+enum ind_type {
+		BOOL = 0;
+		INT = 1;
+	}
+
+message gate{
+	required bool neg =1;
+	required bool isTransformed =2;
+	required bool isGained = 3;
+}
+
+message POPSTATS{
+	required string key = 1;
+	required float value = 2;
+}
+
+message POPINDICES{
+	required fixed32 nEvents = 1;
+	required ind_type indtype = 2;
+	repeated fixed32 iInd = 3;
+	repeated bool bInd = 4;
+}
+
+message nodeProperties{
+	required string thisName = 1;
+	repeated POPSTATS fjStats = 2;
+	repeated POPSTATS fcStats = 3;
+	required bool hidden = 4;
+	required POPINDICES indices = 5;
+	required gate thisGate = 6;
+
+}
+
+message treeNodes {
+	required nodeProperties node = 1;
+	required fixed32 parent = 2;
+}
+
+message populationTree{
+	repeated treeNodes node = 1;
+
+}
+
+message GatingHierarchy {
+	required populationTree tree = 2;
+
+//	PARAM_VEC transFlag;
+//	trans_local trans;
+}
+
+message ghPair{
+	required GatingHierarchy value = 1;
+	required string key = 2;
+}
+
+message GatingSet {
+  repeated ghPair ghs = 1;
+}
+
+

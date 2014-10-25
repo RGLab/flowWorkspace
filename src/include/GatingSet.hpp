@@ -24,6 +24,8 @@ using namespace std;
 #define ARCHIVE_TYPE_BINARY 0
 #define ARCHIVE_TYPE_TEXT 1
 #define ARCHIVE_TYPE_XML 2
+#define PB true
+#define BS false
 
 #define WS_WIN 1
 #define WS_MAC 2

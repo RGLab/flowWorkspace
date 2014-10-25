@@ -76,6 +76,8 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.archive="../output/HIPC_trial/gs.dat";
 //	g_loglevel = GATE_LEVEL;
 //	myTest.isLoadArhive = true;
+	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);

@@ -240,6 +240,7 @@ void parser_test(testCase & myTest){
 	unsigned format = myTest.archiveFormat;
 	bool isParseGate = myTest.isParseGate;
 	bool isSaveArchive = myTest.isSaveArchive;
+	bool archiveType = myTest.archiveType;
 	unsigned short wsType = myTest.wsType;
 		boost::scoped_ptr<GatingSet> gs;
 		if(isLoadArchive)
@@ -317,7 +318,7 @@ void parser_test(testCase & myTest){
 //		oa << BOOST_SERIALIZATION_NVP(boost::serialization::make_array(&thisInd[0],thisInd.size()));
 
 		if((!isLoadArchive)&&isSaveArchive){
-			save_gs(*gs,myTest.archive,myTest.archiveFormat);
+			save_gs(*gs,myTest.archive,myTest.archiveFormat, archiveType);
 		}
 
 

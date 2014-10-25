@@ -22,6 +22,7 @@
 #include "ncdfFlow.hpp"
 using namespace std;
 
+
 struct testCase{
 	string filename; //xml file name
 	unsigned short wsType; //workspace type
@@ -38,6 +39,7 @@ struct testCase{
 	bool isLoadArhive;// whether to load archived gs
 	bool isSaveArchive;
 	unsigned archiveFormat;
+	bool archiveType;// boost or google
 
 } ;
 hdfFlow gs_attachCDF(GatingSet & gs,testCase myTest);
