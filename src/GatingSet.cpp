@@ -12,7 +12,7 @@
 #include <libxml/parser.h>
 #include <iostream>
 #include <exception>
-#include "pb/GatingSet.pb.h"
+
 using namespace std;
 
 
@@ -90,7 +90,7 @@ void GatingSet::serialize_pb(string filename){
 			convertToPb(gs_pb);
 
 
-			fstream output(filename, ios::out | ios::trunc | ios::binary);
+			ofstream output(filename.c_str(), ios::out | ios::trunc | ios::binary);
 			if (!gs_pb.SerializeToOstream(&output))
 				throw(domain_error("Failed to write GatingSet."));
 			// Optional:  Delete all global objects allocated by libprotobuf.
@@ -102,7 +102,7 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 
 
 	if(isPB){
-		fstream input(filename, ios::in | ios::binary);
+		ifstream input(filename.c_str(), ios::in | ios::binary);
 		pb::GatingSet pbGS;
 		if (!input) {
 			throw(invalid_argument("File not found.." ));
@@ -111,10 +111,10 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 		}
 
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
-		for(unsigned i = 0; i < pbGS.ghs_size(); i++){
+		for(int i = 0; i < pbGS.ghs_size(); i++){
 			pb::ghPair ghp = pbGS.ghs(i);
 			pb::GatingHierarchy gh_pb = ghp.gh();
-			ghs[ghp.samplename()] = GatingHierarchy(gh_pb);
+			ghs[ghp.samplename()] = new GatingHierarchy(gh_pb);
 		}
 	}
 	else

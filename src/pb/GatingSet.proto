@@ -28,14 +28,14 @@ message nodeProperties{
 	repeated POPSTATS fjStats = 2;
 	repeated POPSTATS fcStats = 3;
 	required bool hidden = 4;
-	required POPINDICES indices = 5;
-	required gate thisGate = 6;
+	optional POPINDICES indices = 5;
+	optional gate thisGate = 6;
 
 }
 
 message treeNodes {
 	required nodeProperties node = 1;
-	required fixed32 parent = 2;
+	optional fixed32 parent = 2;
 }
 
 message populationTree{

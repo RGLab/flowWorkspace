@@ -7,7 +7,7 @@
 #define NCDFFLOW_HPP_
 #include <string>
 #include "hdf5.h"
-#include <R.h>
+//#include <R.h>
 #include <stdlib.h>
 #define DATASETNAME "/exprsMat"
 #include <netcdf.h>

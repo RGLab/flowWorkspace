@@ -22,16 +22,18 @@ GatingHierarchy::GatingHierarchy()
 
 GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh):isLoaded(false){
 	pb::populationTree tree_pb =  pb_gh.tree();
-	for(unsigned i = 0; i < tree_pb.node_size(); i++){
+	for(int i = 0; i < tree_pb.node_size(); i++){
 		pb::treeNodes node_pb = tree_pb.node(i);
-		VertexID parentID = node_pb.parent();
-
 		pb::nodeProperties np_pb = node_pb.node();
 
 		VertexID curChildID = boost::add_vertex(tree);
-		boost::add_edge(parentID,curChildID,tree);
-
 		tree[curChildID] = nodeProperties(np_pb);
+
+		if(node_pb.has_parent()){
+			VertexID parentID = node_pb.parent();
+			boost::add_edge(parentID,curChildID,tree);
+		}
+
 	}
 }
 
@@ -1244,12 +1246,15 @@ void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
 	VertexID_vec verIDs = getVertices();
 	for(VertexID_vec::iterator it = verIDs.begin(); it != verIDs.end(); it++){
 		VertexID thisVert = *it;
-		nodeProperties *np = getNodeProperty(thisVert);
+		nodeProperties & np = getNodeProperty(thisVert);
 
 		pb::treeNodes * node = ptree->add_node();
-		node->set_parent(thisVert);
 		pb::nodeProperties * pb_node = node->mutable_node();
-		np->convertToPb(*pb_node);
+		np.convertToPb(*pb_node);
+		if(thisVert > 0){
+			node->set_parent(getParent(thisVert));
+		}
+
 
 	}
 

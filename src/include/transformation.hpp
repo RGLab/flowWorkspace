@@ -26,6 +26,7 @@
 #include <boost/regex.hpp>
 #include <boost/foreach.hpp>
 #include "global.hpp"
+#include "../pb/GatingSet.pb.h"
 using namespace std;
 
 struct coordinate

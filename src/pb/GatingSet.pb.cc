@@ -277,10 +277,10 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "\030\003 \003(\007\022\014\n\004bInd\030\004 \003(\010\"\255\001\n\016nodeProperties\022"
     "\020\n\010thisName\030\001 \002(\t\022\035\n\007fjStats\030\002 \003(\0132\014.pb."
     "POPSTATS\022\035\n\007fcStats\030\003 \003(\0132\014.pb.POPSTATS\022"
-    "\016\n\006hidden\030\004 \002(\010\022\037\n\007indices\030\005 \002(\0132\016.pb.PO"
-    "PINDICES\022\032\n\010thisGate\030\006 \002(\0132\010.pb.gate\"=\n\t"
+    "\016\n\006hidden\030\004 \002(\010\022\037\n\007indices\030\005 \001(\0132\016.pb.PO"
+    "PINDICES\022\032\n\010thisGate\030\006 \001(\0132\010.pb.gate\"=\n\t"
     "treeNodes\022 \n\004node\030\001 \002(\0132\022.pb.nodePropert"
-    "ies\022\016\n\006parent\030\002 \002(\007\"-\n\016populationTree\022\033\n"
+    "ies\022\016\n\006parent\030\002 \001(\007\"-\n\016populationTree\022\033\n"
     "\004node\030\001 \003(\0132\r.pb.treeNodes\"3\n\017GatingHier"
     "archy\022 \n\004tree\030\002 \002(\0132\022.pb.populationTree\""
     "=\n\006ghPair\022\037\n\002gh\030\001 \002(\0132\023.pb.GatingHierarc"
@@ -1450,7 +1450,7 @@ bool nodeProperties::MergePartialFromCodedStream(
         break;
       }
 
-      // required .pb.POPINDICES indices = 5;
+      // optional .pb.POPINDICES indices = 5;
       case 5: {
         if (tag == 42) {
          parse_indices:
@@ -1463,7 +1463,7 @@ bool nodeProperties::MergePartialFromCodedStream(
         break;
       }
 
-      // required .pb.gate thisGate = 6;
+      // optional .pb.gate thisGate = 6;
       case 6: {
         if (tag == 50) {
          parse_thisGate:
@@ -1528,13 +1528,13 @@ void nodeProperties::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->hidden(), output);
   }
 
-  // required .pb.POPINDICES indices = 5;
+  // optional .pb.POPINDICES indices = 5;
   if (has_indices()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       5, this->indices(), output);
   }
 
-  // required .pb.gate thisGate = 6;
+  // optional .pb.gate thisGate = 6;
   if (has_thisgate()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       6, this->thisgate(), output);
@@ -1580,14 +1580,14 @@ void nodeProperties::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->hidden(), target);
   }
 
-  // required .pb.POPINDICES indices = 5;
+  // optional .pb.POPINDICES indices = 5;
   if (has_indices()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         5, this->indices(), target);
   }
 
-  // required .pb.gate thisGate = 6;
+  // optional .pb.gate thisGate = 6;
   if (has_thisgate()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -1618,14 +1618,14 @@ int nodeProperties::ByteSize() const {
       total_size += 1 + 1;
     }
 
-    // required .pb.POPINDICES indices = 5;
+    // optional .pb.POPINDICES indices = 5;
     if (has_indices()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->indices());
     }
 
-    // required .pb.gate thisGate = 6;
+    // optional .pb.gate thisGate = 6;
     if (has_thisgate()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -1706,7 +1706,7 @@ void nodeProperties::CopyFrom(const nodeProperties& from) {
 }
 
 bool nodeProperties::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000039) != 0x00000039) return false;
+  if ((_has_bits_[0] & 0x00000009) != 0x00000009) return false;
 
   if (!::google::protobuf::internal::AllAreInitialized(this->fjstats())) return false;
   if (!::google::protobuf::internal::AllAreInitialized(this->fcstats())) return false;
@@ -1838,7 +1838,7 @@ bool treeNodes::MergePartialFromCodedStream(
         break;
       }
 
-      // required fixed32 parent = 2;
+      // optional fixed32 parent = 2;
       case 2: {
         if (tag == 21) {
          parse_parent:
@@ -1884,7 +1884,7 @@ void treeNodes::SerializeWithCachedSizes(
       1, this->node(), output);
   }
 
-  // required fixed32 parent = 2;
+  // optional fixed32 parent = 2;
   if (has_parent()) {
     ::google::protobuf::internal::WireFormatLite::WriteFixed32(2, this->parent(), output);
   }
@@ -1906,7 +1906,7 @@ void treeNodes::SerializeWithCachedSizes(
         1, this->node(), target);
   }
 
-  // required fixed32 parent = 2;
+  // optional fixed32 parent = 2;
   if (has_parent()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFixed32ToArray(2, this->parent(), target);
   }
@@ -1930,7 +1930,7 @@ int treeNodes::ByteSize() const {
           this->node());
     }
 
-    // required fixed32 parent = 2;
+    // optional fixed32 parent = 2;
     if (has_parent()) {
       total_size += 1 + 4;
     }
@@ -1985,7 +1985,7 @@ void treeNodes::CopyFrom(const treeNodes& from) {
 }
 
 bool treeNodes::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   if (has_node()) {
     if (!this->node().IsInitialized()) return false;

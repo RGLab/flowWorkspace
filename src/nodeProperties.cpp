@@ -8,33 +8,42 @@
 #include <algorithm>
 nodeProperties::nodeProperties():thisGate(NULL),hidden(false){}
 
+/**
+ * convert pb object to internal structure
+ * @param np_pb
+ */
 nodeProperties::nodeProperties(pb::nodeProperties & np_pb):thisGate(NULL),hidden(false){
 	thisName = np_pb.thisname();
 	hidden = np_pb.hidden();
-	for(unsigned i = 0; i < np_pb.fcstats_size(); i++){
+	for(int i = 0; i < np_pb.fcstats_size(); i++){
 	   pb::POPSTATS	stat_pb = np_pb.fcstats(i);
 	   fcStats[stat_pb.stattype()] = stat_pb.statval();
 	}
-	for(unsigned i = 0; i < np_pb.fjstats_size(); i++){
+	for(int i = 0; i < np_pb.fjstats_size(); i++){
 	   pb::POPSTATS	stat_pb = np_pb.fjstats(i);
 	   fjStats[stat_pb.stattype()] = stat_pb.statval();
 	}
-	pb::POPINDICES ind_pb = np_pb.indices();
-	switch(ind_pb.indtype()){
-	case pb::BOOL:
-		indices.reset(new BOOLINDICES(ind_pb));
-		break;
-	case pb::INT:
-		indices.reset(new INTINDICES(ind_pb));
-		break;
-	case pb::ROOT:
-		indices.reset(new ROOTINDICES(ind_pb));
-		break;
+	if(np_pb.has_indices()){
+		pb::POPINDICES ind_pb = np_pb.indices();
+		switch(ind_pb.indtype()){
+		case pb::BOOL:
+			indices.reset(new BOOLINDICES(ind_pb));
+			break;
+		case pb::INT:
+			indices.reset(new INTINDICES(ind_pb));
+			break;
+		case pb::ROOT:
+			indices.reset(new ROOTINDICES(ind_pb));
+			break;
+		}
 	}
+
 	/*
 	 * parse gate
 	 */
+	if(np_pb.has_thisgate()){
 
+	}
 }
 /* since nodeProperties contains non-copyable scope_ptr member
  * , customized copy and assignment constructor is required
@@ -173,8 +182,11 @@ void nodeProperties::convertToPb(pb::nodeProperties & np_pb){
 		fc->set_statval(it.second);
 	}
 	//cp event index
-	pb::POPINDICES * ind_pb = np_pb.mutable_indices();
-	indices->convertToPb(*ind_pb);
+	if(indices!=NULL){
+		pb::POPINDICES * ind_pb = np_pb.mutable_indices();
+		indices->convertToPb(*ind_pb);
+	}
+
 	//cp gate
 //	pb::gate * gate_pb = np_pb.mutable_thisgate();
 //	thisGate->convertToPb(*gate_pb);

@@ -70,11 +70,18 @@ POPINDICES * BOOLINDICES::clone(){
 }
 void BOOLINDICES::convertToPb(pb::POPINDICES & ind_pb){
 	ind_pb.set_indtype(pb::BOOL);
-	BOOST_FOREACH(vector<bool>::value_type & it, x){
-		ind_pb.add_bind(it);
+	for(unsigned i = 0; i < x.size(); i++){
+		ind_pb.add_bind(x.at(i));
 	}
 	ind_pb.set_nevents(nEvents);
 }
+BOOLINDICES::BOOLINDICES(pb::POPINDICES & ind_pb){
+	nEvents = ind_pb.nevents();
+	x = vector<bool>(nEvents);
+	for(int i = 0; i < ind_pb.bind_size(); i++)
+		x.at(i) = ind_pb.bind(i);
+}
+
 POPINDICES * INTINDICES::clone(){
 
 	INTINDICES * res=new INTINDICES(*this);
@@ -88,6 +95,14 @@ void INTINDICES::convertToPb(pb::POPINDICES & ind_pb){
 	ind_pb.set_nevents(nEvents);
 }
 
+INTINDICES::INTINDICES(pb::POPINDICES & ind_pb){
+	nEvents = ind_pb.nevents();
+	unsigned nSize = ind_pb.iind_size();
+	x = vector<unsigned>(nEvents);
+	for(unsigned i = 0; i < nSize; i++)
+		x.at(i) = ind_pb.iind(i);
+}
+
 POPINDICES * ROOTINDICES::clone(){
 
 	ROOTINDICES * res=new ROOTINDICES(*this);
@@ -96,4 +111,7 @@ POPINDICES * ROOTINDICES::clone(){
 void ROOTINDICES::convertToPb(pb::POPINDICES & ind_pb){
 	ind_pb.set_indtype(pb::ROOT);
 	ind_pb.set_nevents(nEvents);
+}
+ROOTINDICES::ROOTINDICES(pb::POPINDICES & ind_pb){
+	nEvents = ind_pb.nevents();
 }

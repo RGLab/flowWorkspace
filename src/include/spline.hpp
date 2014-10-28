@@ -7,11 +7,13 @@
 
 
 #ifndef SPLINE_HPP_
-#include <Rcpp.h>
-using namespace Rcpp;
 
 #define SPLINE_HPP_
 #ifdef ROUT
+
+#include <Rcpp.h>
+using namespace Rcpp;
+
 #define COUT Rcout
 #endif
 

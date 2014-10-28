@@ -470,7 +470,7 @@ class nodeProperties : public ::google::protobuf::Message {
   inline bool hidden() const;
   inline void set_hidden(bool value);
 
-  // required .pb.POPINDICES indices = 5;
+  // optional .pb.POPINDICES indices = 5;
   inline bool has_indices() const;
   inline void clear_indices();
   static const int kIndicesFieldNumber = 5;
@@ -479,7 +479,7 @@ class nodeProperties : public ::google::protobuf::Message {
   inline ::pb::POPINDICES* release_indices();
   inline void set_allocated_indices(::pb::POPINDICES* indices);
 
-  // required .pb.gate thisGate = 6;
+  // optional .pb.gate thisGate = 6;
   inline bool has_thisgate() const;
   inline void clear_thisgate();
   static const int kThisGateFieldNumber = 6;
@@ -580,7 +580,7 @@ class treeNodes : public ::google::protobuf::Message {
   inline ::pb::nodeProperties* release_node();
   inline void set_allocated_node(::pb::nodeProperties* node);
 
-  // required fixed32 parent = 2;
+  // optional fixed32 parent = 2;
   inline bool has_parent() const;
   inline void clear_parent();
   static const int kParentFieldNumber = 2;
@@ -1408,7 +1408,7 @@ inline void nodeProperties::set_hidden(bool value) {
   // @@protoc_insertion_point(field_set:pb.nodeProperties.hidden)
 }
 
-// required .pb.POPINDICES indices = 5;
+// optional .pb.POPINDICES indices = 5;
 inline bool nodeProperties::has_indices() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
@@ -1449,7 +1449,7 @@ inline void nodeProperties::set_allocated_indices(::pb::POPINDICES* indices) {
   // @@protoc_insertion_point(field_set_allocated:pb.nodeProperties.indices)
 }
 
-// required .pb.gate thisGate = 6;
+// optional .pb.gate thisGate = 6;
 inline bool nodeProperties::has_thisgate() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
@@ -1535,7 +1535,7 @@ inline void treeNodes::set_allocated_node(::pb::nodeProperties* node) {
   // @@protoc_insertion_point(field_set_allocated:pb.treeNodes.node)
 }
 
-// required fixed32 parent = 2;
+// optional fixed32 parent = 2;
 inline bool treeNodes::has_parent() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }

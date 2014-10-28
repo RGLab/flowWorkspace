@@ -31,13 +31,15 @@ private:
 
 
 public:
-	POPINDICES(){nEvents=0;};
+	POPINDICES():nEvents(0){};
+	POPINDICES(unsigned _nEvents):nEvents(_nEvents){};
 	virtual ~POPINDICES(){};
 	virtual vector<bool> getIndices()=0;
 	virtual unsigned getCount()=0;
 	unsigned getTotal(){return nEvents;}
 	virtual POPINDICES * clone()=0;
 	virtual void convertToPb(pb::POPINDICES & ind_pb) = 0;
+
 };
 
 /*
@@ -102,13 +104,14 @@ private:
 
 	  BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
-	BOOLINDICES(){nEvents=0;};
+	BOOLINDICES():POPINDICES(){};
 	BOOLINDICES(vector <bool> _ind);
 	vector<bool> getIndices();
 	unsigned getCount();
 
 	POPINDICES * clone();
 	void convertToPb(pb::POPINDICES & ind_pb);
+	BOOLINDICES(pb::POPINDICES & ind_pb);
 
 };
 BOOST_CLASS_VERSION(BOOLINDICES,1)
@@ -129,8 +132,9 @@ private:
 
 
 public:
-	INTINDICES(){nEvents=0;};
+	INTINDICES():POPINDICES(){};
 	INTINDICES(vector <bool> _ind);
+	INTINDICES(pb::POPINDICES & ind_pb);
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();
@@ -152,8 +156,9 @@ private:
 
 
 public:
-	ROOTINDICES(){nEvents=0;};
-	ROOTINDICES(unsigned _nEvents){nEvents=_nEvents;};
+	ROOTINDICES():POPINDICES(){};
+	ROOTINDICES(unsigned _nEvents):POPINDICES(_nEvents){};
+	ROOTINDICES(pb::POPINDICES & ind_pb);
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();
