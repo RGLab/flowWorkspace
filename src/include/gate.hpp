@@ -218,9 +218,9 @@ public:
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
 	virtual void transforming(trans_local &){throw(domain_error("undefined transforming function!"));};
-//	virtual gate * create()=0;
-	virtual gate * clone()=0;
 
+	virtual gate * clone()=0;
+//	virtual void convertToPb(pb::gate & gate_pb) = 0;
 	virtual bool isNegate(){return neg;};
 	virtual void setNegate(bool _neg){neg=_neg;};
 	virtual bool Transformed(){return isTransformed;};

@@ -24,6 +24,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/compare.hpp>
 #include <boost/regex.hpp>
+#include <boost/foreach.hpp>
 #include "global.hpp"
 using namespace std;
 

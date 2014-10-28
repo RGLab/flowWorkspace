@@ -2,6 +2,7 @@ package pb;
 enum ind_type {
 		BOOL = 0;
 		INT = 1;
+		ROOT = 2 ;
 	}
 
 message gate{
@@ -11,8 +12,8 @@ message gate{
 }
 
 message POPSTATS{
-	required string key = 1;
-	required float value = 2;
+	required string statType = 1;
+	required float statVal = 2;
 }
 
 message POPINDICES{
@@ -50,8 +51,8 @@ message GatingHierarchy {
 }
 
 message ghPair{
-	required GatingHierarchy value = 1;
-	required string key = 2;
+	required GatingHierarchy gh = 1;
+	required string sampleName = 2;
 }
 
 message GatingSet {

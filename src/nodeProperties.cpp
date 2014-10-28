@@ -6,12 +6,36 @@
  */
 #include "include/nodeProperties.hpp"
 #include <algorithm>
-nodeProperties::nodeProperties(){
-	thisGate=NULL;
-	hidden=false;
+nodeProperties::nodeProperties():thisGate(NULL),hidden(false){}
+
+nodeProperties::nodeProperties(pb::nodeProperties & np_pb):thisGate(NULL),hidden(false){
+	thisName = np_pb.thisname();
+	hidden = np_pb.hidden();
+	for(unsigned i = 0; i < np_pb.fcstats_size(); i++){
+	   pb::POPSTATS	stat_pb = np_pb.fcstats(i);
+	   fcStats[stat_pb.stattype()] = stat_pb.statval();
+	}
+	for(unsigned i = 0; i < np_pb.fjstats_size(); i++){
+	   pb::POPSTATS	stat_pb = np_pb.fjstats(i);
+	   fjStats[stat_pb.stattype()] = stat_pb.statval();
+	}
+	pb::POPINDICES ind_pb = np_pb.indices();
+	switch(ind_pb.indtype()){
+	case pb::BOOL:
+		indices.reset(new BOOLINDICES(ind_pb));
+		break;
+	case pb::INT:
+		indices.reset(new INTINDICES(ind_pb));
+		break;
+	case pb::ROOT:
+		indices.reset(new ROOTINDICES(ind_pb));
+		break;
+	}
+	/*
+	 * parse gate
+	 */
 
 }
-
 /* since nodeProperties contains non-copyable scope_ptr member
  * , customized copy and assignment constructor is required
  *
@@ -132,4 +156,26 @@ unsigned nodeProperties::getCounts(){
 
 }
 
+void nodeProperties::convertToPb(pb::nodeProperties & np_pb){
 
+	np_pb.set_thisname(thisName);
+	np_pb.set_hidden(hidden);
+	//copy fj stats
+	BOOST_FOREACH(POPSTATS::value_type & it, fjStats){
+		pb::POPSTATS *fj = np_pb.add_fjstats();
+		fj->set_stattype(it.first);
+		fj->set_statval(it.second);
+	}
+	//copy fc stats
+	BOOST_FOREACH(POPSTATS::value_type & it, fcStats){
+		pb::POPSTATS *fc = np_pb.add_fcstats();
+		fc->set_stattype(it.first);
+		fc->set_statval(it.second);
+	}
+	//cp event index
+	pb::POPINDICES * ind_pb = np_pb.mutable_indices();
+	indices->convertToPb(*ind_pb);
+	//cp gate
+//	pb::gate * gate_pb = np_pb.mutable_thisgate();
+//	thisGate->convertToPb(*gate_pb);
+}

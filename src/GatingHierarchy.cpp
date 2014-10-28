@@ -20,7 +20,20 @@ GatingHierarchy::GatingHierarchy()
 	isLoaded=false;
 }
 
+GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh):isLoaded(false){
+	pb::populationTree tree_pb =  pb_gh.tree();
+	for(unsigned i = 0; i < tree_pb.node_size(); i++){
+		pb::treeNodes node_pb = tree_pb.node(i);
+		VertexID parentID = node_pb.parent();
 
+		pb::nodeProperties np_pb = node_pb.node();
+
+		VertexID curChildID = boost::add_vertex(tree);
+		boost::add_edge(parentID,curChildID,tree);
+
+		tree[curChildID] = nodeProperties(np_pb);
+	}
+}
 
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
@@ -125,7 +138,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,workspace & ws,wsNode * pa
 VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 {
 
-	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
+
 
 	//validity check
 	int res = getChildren(parentID, popName);
@@ -154,7 +167,7 @@ VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 void GatingHierarchy::removeNode(VertexID nodeID)
 {
 
-	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
+
 	//remove edge associated with this node
 	EdgeID e=getInEdges(nodeID);
 	/*removing vertex cause the rearrange node index
@@ -1221,5 +1234,23 @@ GatingHierarchy * GatingHierarchy::clone(){
  */
 void GatingHierarchy::addTransMap(trans_map tm){
 	trans.setTransMap(tm);
+
+}
+void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
+	pb::populationTree * ptree = gh_pb.mutable_tree();
+	/*
+	 * cp tree
+	 */
+	VertexID_vec verIDs = getVertices();
+	for(VertexID_vec::iterator it = verIDs.begin(); it != verIDs.end(); it++){
+		VertexID thisVert = *it;
+		nodeProperties *np = getNodeProperty(thisVert);
+
+		pb::treeNodes * node = ptree->add_node();
+		node->set_parent(thisVert);
+		pb::nodeProperties * pb_node = node->mutable_node();
+		np->convertToPb(*pb_node);
+
+	}
 
 }

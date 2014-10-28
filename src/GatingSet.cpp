@@ -15,56 +15,35 @@
 #include "pb/GatingSet.pb.h"
 using namespace std;
 
-/**
- * convert GatingSet to pb object
- * @param gs
- * @return
- */
-void gsToPb(GatingSet & gs, pb::GatingSet & pb_gs) {
+
+void GatingSet::convertToPb(pb::GatingSet & pb_gs){
 	// Verify that the version of the library that we linked against is
 	  // compatible with the version of the headers we compiled against.
 	  GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-	  StringVec samples = gs.getSamples();
+	  BOOST_FOREACH(gh_map::value_type & it,ghs){
 
-	  for(StringVec::iterator it = samples.begin(); it != samples.end(); it++){
-		string sn = *it;
-		GatingHierarchy * gh =  gs.getGatingHierarchy(sn);
+		string sn = it.first;
+		GatingHierarchy * gh =  it.second;
 		/*
 		 * add a new gh_pair
 		 */
 		pb::ghPair * gh_pair = pb_gs.add_ghs();
-		// add a new pb_gh
-		pb::GatingHierarchy * pb_gh = gh_pair->mutable_value();
-		gh_pair->set_key(sn);
-		/*
-		 * set content of pb_gh
-		 */
-		pb::populationTree * ptree = pb_gh->mutable_tree();
-		/*
-		 * set content of tree
-		 */
-		VertexID_vec verIDs = gh->getVertices();
-		for(VertexID_vec::iterator it = verIDs.begin(); it != verIDs.end(); it++){
-			VertexID thisVert = *it;
-			pb::treeNodes * node = ptree->add_node();
-			gh->getNodeProperty(thisVert);
-			node->set_parent(thisVert);
-			/*
-			 * set content of node
-			 */
-			pb::nodeProperties * pb_node = node->mutable_node();
-
-		}
-
+		gh_pair->set_samplename(sn);
+		pb::GatingHierarchy * pb_gh = gh_pair->mutable_gh();
+		gh->convertToPb(*pb_gh);
 	  }
 
 
 }
+/**
+ * serialization by boost serialization library
+ * @param filename
+ * @param format archive format, can be text,xml or binary
+ */
+void GatingSet::serialize_bs(string filename, unsigned short format){
 
-void save_gs(const GatingSet &gs,string filename, unsigned short format, bool archiveType){
 
-	    if(archiveType == BS){
 	    	// make an archive
 			std::ios::openmode mode = std::ios::out|std::ios::trunc;
 			if(format == ARCHIVE_TYPE_BINARY)
@@ -79,21 +58,21 @@ void save_gs(const GatingSet &gs,string filename, unsigned short format, bool ar
 			case ARCHIVE_TYPE_BINARY:
 				{
 					boost::archive::binary_oarchive oa(ofs);
-					oa << BOOST_SERIALIZATION_NVP(gs);
+					oa << BOOST_SERIALIZATION_NVP(*this);
 				}
 
 				break;
 			case ARCHIVE_TYPE_TEXT:
 				{
 					boost::archive::text_oarchive oa1(ofs);
-					oa1 << BOOST_SERIALIZATION_NVP(gs);
+					oa1 << BOOST_SERIALIZATION_NVP(*this);
 				}
 
 				break;
 			case ARCHIVE_TYPE_XML:
 				{
 					boost::archive::xml_oarchive oa2(ofs);
-					oa2 << BOOST_SERIALIZATION_NVP(gs);
+					oa2 << BOOST_SERIALIZATION_NVP(*this);
 				}
 
 				break;
@@ -103,28 +82,43 @@ void save_gs(const GatingSet &gs,string filename, unsigned short format, bool ar
 
 			}
 
-	    }
-	    else// protocol buffer
-	    {
-	    	flowWorkspace::GatingSet pbGS;
-			fstream output(filename, ios::out | ios::trunc | ios::binary);
-			if (!pbGS.SerializeToOstream(&output))
-				throw(domain_error("Failed to write GatingSet."));
-
-			gsToPb(gs, pbGS);
-
-			// Optional:  Delete all global objects allocated by libprotobuf.
-			google::protobuf::ShutdownProtobufLibrary();
-	    }
-
-
 
 	}
-void restore_gs(GatingSet &s, string filename, unsigned short format, bool archiveType)
+void GatingSet::serialize_pb(string filename){
+
+	       	pb::GatingSet gs_pb;
+			convertToPb(gs_pb);
+
+
+			fstream output(filename, ios::out | ios::trunc | ios::binary);
+			if (!gs_pb.SerializeToOstream(&output))
+				throw(domain_error("Failed to write GatingSet."));
+			// Optional:  Delete all global objects allocated by libprotobuf.
+			google::protobuf::ShutdownProtobufLibrary();
+}
+
+GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NULL)
 {
 
 
-	if(archiveType == BS){
+	if(isPB){
+		fstream input(filename, ios::in | ios::binary);
+		pb::GatingSet pbGS;
+		if (!input) {
+			throw(invalid_argument("File not found.." ));
+		} else if (!pbGS.ParseFromIstream(&input)) {
+			throw(domain_error("Failed to parse GatingSet."));
+		}
+
+		GOOGLE_PROTOBUF_VERIFY_VERSION;
+		for(unsigned i = 0; i < pbGS.ghs_size(); i++){
+			pb::ghPair ghp = pbGS.ghs(i);
+			pb::GatingHierarchy gh_pb = ghp.gh();
+			ghs[ghp.samplename()] = GatingHierarchy(gh_pb);
+		}
+	}
+	else
+	{
 		// open the archive
 		std::ios::openmode mode = std::ios::in;
 		if(format == ARCHIVE_TYPE_BINARY)
@@ -136,21 +130,21 @@ void restore_gs(GatingSet &s, string filename, unsigned short format, bool archi
 		case ARCHIVE_TYPE_BINARY:
 			{
 				boost::archive::binary_iarchive ia(ifs);
-				ia >> BOOST_SERIALIZATION_NVP(s);
+				ia >> BOOST_SERIALIZATION_NVP(*this);
 			}
 
 			break;
 		case ARCHIVE_TYPE_TEXT:
 			{
 				boost::archive::text_iarchive ia1(ifs);
-				ia1 >> BOOST_SERIALIZATION_NVP(s);
+				ia1 >> BOOST_SERIALIZATION_NVP(*this);
 			}
 
 			break;
 		case ARCHIVE_TYPE_XML:
 			{
 				boost::archive::xml_iarchive ia2(ifs);
-				ia2 >> BOOST_SERIALIZATION_NVP(s);
+				ia2 >> BOOST_SERIALIZATION_NVP(*this);
 			}
 
 			break;
@@ -158,16 +152,6 @@ void restore_gs(GatingSet &s, string filename, unsigned short format, bool archi
 			throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
 			break;
 
-		}
-	}
-	else
-	{
-		fstream input(filename, ios::in | ios::binary);
-		flowWorkspace::GatingSet pbGS;
-		if (!input) {
-			throw(invalid_argument("File not found.." ));
-		} else if (!pbGS.ParseFromIstream(&input)) {
-			throw(domain_error("Failed to parse GatingSet."));
 		}
 	}
 

@@ -9,6 +9,7 @@
 #define NODEPROPERTIES_HPP_
 
 #include "POPINDICES.hpp"
+
 using namespace std;
 
 
@@ -115,6 +116,7 @@ private:
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	nodeProperties();
+	nodeProperties(pb::nodeProperties & np_pb);
 	nodeProperties(const nodeProperties& np);
 	nodeProperties & operator=(nodeProperties np);
 	~nodeProperties();
@@ -135,7 +137,7 @@ public:
 	void setIndices(unsigned _nEvent);
 	void setGate(gate *gate);
 	void computeStats();
-
+	void convertToPb(pb::nodeProperties & np_pb);
 
 };
 BOOST_CLASS_VERSION(nodeProperties,5)

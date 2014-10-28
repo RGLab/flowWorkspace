@@ -68,14 +68,32 @@ POPINDICES * BOOLINDICES::clone(){
 	BOOLINDICES * res=new BOOLINDICES(*this);
 	return res;
 }
-
+void BOOLINDICES::convertToPb(pb::POPINDICES & ind_pb){
+	ind_pb.set_indtype(pb::BOOL);
+	BOOST_FOREACH(vector<bool>::value_type & it, x){
+		ind_pb.add_bind(it);
+	}
+	ind_pb.set_nevents(nEvents);
+}
 POPINDICES * INTINDICES::clone(){
 
 	INTINDICES * res=new INTINDICES(*this);
 	return res;
 }
+void INTINDICES::convertToPb(pb::POPINDICES & ind_pb){
+	ind_pb.set_indtype(pb::INT);
+	BOOST_FOREACH(vector<unsigned>::value_type & it, x){
+		ind_pb.add_iind(it);
+	}
+	ind_pb.set_nevents(nEvents);
+}
+
 POPINDICES * ROOTINDICES::clone(){
 
 	ROOTINDICES * res=new ROOTINDICES(*this);
 	return res;
+}
+void ROOTINDICES::convertToPb(pb::POPINDICES & ind_pb){
+	ind_pb.set_indtype(pb::ROOT);
+	ind_pb.set_nevents(nEvents);
 }

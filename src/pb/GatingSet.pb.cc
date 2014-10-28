@@ -77,8 +77,8 @@ void protobuf_AssignDesc_GatingSet_2eproto() {
       sizeof(gate));
   POPSTATS_descriptor_ = file->message_type(1);
   static const int POPSTATS_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(POPSTATS, key_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(POPSTATS, value_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(POPSTATS, stattype_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(POPSTATS, statval_),
   };
   POPSTATS_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -177,8 +177,8 @@ void protobuf_AssignDesc_GatingSet_2eproto() {
       sizeof(GatingHierarchy));
   ghPair_descriptor_ = file->message_type(7);
   static const int ghPair_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, value_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, key_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, gh_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, samplename_),
   };
   ghPair_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -271,21 +271,22 @@ void protobuf_AddDesc_GatingSet_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\017GatingSet.proto\022\002pb\"<\n\004gate\022\013\n\003neg\030\001 \002"
     "(\010\022\025\n\risTransformed\030\002 \002(\010\022\020\n\010isGained\030\003 "
-    "\002(\010\"&\n\010POPSTATS\022\013\n\003key\030\001 \002(\t\022\r\n\005value\030\002 "
-    "\002(\002\"X\n\nPOPINDICES\022\017\n\007nEvents\030\001 \002(\007\022\035\n\007in"
-    "dtype\030\002 \002(\0162\014.pb.ind_type\022\014\n\004iInd\030\003 \003(\007\022"
-    "\014\n\004bInd\030\004 \003(\010\"\255\001\n\016nodeProperties\022\020\n\010this"
-    "Name\030\001 \002(\t\022\035\n\007fjStats\030\002 \003(\0132\014.pb.POPSTAT"
-    "S\022\035\n\007fcStats\030\003 \003(\0132\014.pb.POPSTATS\022\016\n\006hidd"
-    "en\030\004 \002(\010\022\037\n\007indices\030\005 \002(\0132\016.pb.POPINDICE"
-    "S\022\032\n\010thisGate\030\006 \002(\0132\010.pb.gate\"=\n\ttreeNod"
-    "es\022 \n\004node\030\001 \002(\0132\022.pb.nodeProperties\022\016\n\006"
-    "parent\030\002 \002(\007\"-\n\016populationTree\022\033\n\004node\030\001"
-    " \003(\0132\r.pb.treeNodes\"3\n\017GatingHierarchy\022 "
-    "\n\004tree\030\002 \002(\0132\022.pb.populationTree\"9\n\006ghPa"
-    "ir\022\"\n\005value\030\001 \002(\0132\023.pb.GatingHierarchy\022\013"
-    "\n\003key\030\002 \002(\t\"$\n\tGatingSet\022\027\n\003ghs\030\001 \003(\0132\n."
-    "pb.ghPair*\035\n\010ind_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001", 680);
+    "\002(\010\"-\n\010POPSTATS\022\020\n\010statType\030\001 \002(\t\022\017\n\007sta"
+    "tVal\030\002 \002(\002\"X\n\nPOPINDICES\022\017\n\007nEvents\030\001 \002("
+    "\007\022\035\n\007indtype\030\002 \002(\0162\014.pb.ind_type\022\014\n\004iInd"
+    "\030\003 \003(\007\022\014\n\004bInd\030\004 \003(\010\"\255\001\n\016nodeProperties\022"
+    "\020\n\010thisName\030\001 \002(\t\022\035\n\007fjStats\030\002 \003(\0132\014.pb."
+    "POPSTATS\022\035\n\007fcStats\030\003 \003(\0132\014.pb.POPSTATS\022"
+    "\016\n\006hidden\030\004 \002(\010\022\037\n\007indices\030\005 \002(\0132\016.pb.PO"
+    "PINDICES\022\032\n\010thisGate\030\006 \002(\0132\010.pb.gate\"=\n\t"
+    "treeNodes\022 \n\004node\030\001 \002(\0132\022.pb.nodePropert"
+    "ies\022\016\n\006parent\030\002 \002(\007\"-\n\016populationTree\022\033\n"
+    "\004node\030\001 \003(\0132\r.pb.treeNodes\"3\n\017GatingHier"
+    "archy\022 \n\004tree\030\002 \002(\0132\022.pb.populationTree\""
+    "=\n\006ghPair\022\037\n\002gh\030\001 \002(\0132\023.pb.GatingHierarc"
+    "hy\022\022\n\nsampleName\030\002 \002(\t\"$\n\tGatingSet\022\027\n\003g"
+    "hs\030\001 \003(\0132\n.pb.ghPair*\'\n\010ind_type\022\010\n\004BOOL"
+    "\020\000\022\007\n\003INT\020\001\022\010\n\004ROOT\020\002", 701);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GatingSet.proto", &protobuf_RegisterTypes);
   gate::default_instance_ = new gate();
@@ -323,6 +324,7 @@ bool ind_type_IsValid(int value) {
   switch(value) {
     case 0:
     case 1:
+    case 2:
       return true;
     default:
       return false;
@@ -640,8 +642,8 @@ void gate::Swap(gate* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int POPSTATS::kKeyFieldNumber;
-const int POPSTATS::kValueFieldNumber;
+const int POPSTATS::kStatTypeFieldNumber;
+const int POPSTATS::kStatValFieldNumber;
 #endif  // !_MSC_VER
 
 POPSTATS::POPSTATS()
@@ -663,8 +665,8 @@ POPSTATS::POPSTATS(const POPSTATS& from)
 void POPSTATS::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
-  key_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  value_ = 0;
+  stattype_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  statval_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -674,8 +676,8 @@ POPSTATS::~POPSTATS() {
 }
 
 void POPSTATS::SharedDtor() {
-  if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    delete key_;
+  if (stattype_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete stattype_;
   }
   if (this != default_instance_) {
   }
@@ -704,12 +706,12 @@ POPSTATS* POPSTATS::New() const {
 
 void POPSTATS::Clear() {
   if (_has_bits_[0 / 32] & 3) {
-    if (has_key()) {
-      if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-        key_->clear();
+    if (has_stattype()) {
+      if (stattype_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        stattype_->clear();
       }
     }
-    value_ = 0;
+    statval_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -725,30 +727,30 @@ bool POPSTATS::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required string key = 1;
+      // required string statType = 1;
       case 1: {
         if (tag == 10) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_key()));
+                input, this->mutable_stattype()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-            this->key().data(), this->key().length(),
+            this->stattype().data(), this->stattype().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
-            "key");
+            "stattype");
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(21)) goto parse_value;
+        if (input->ExpectTag(21)) goto parse_statVal;
         break;
       }
 
-      // required float value = 2;
+      // required float statVal = 2;
       case 2: {
         if (tag == 21) {
-         parse_value:
+         parse_statVal:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &value_)));
-          set_has_value();
+                 input, &statval_)));
+          set_has_statval();
         } else {
           goto handle_unusual;
         }
@@ -781,19 +783,19 @@ failure:
 void POPSTATS::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.POPSTATS)
-  // required string key = 1;
-  if (has_key()) {
+  // required string statType = 1;
+  if (has_stattype()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->key().data(), this->key().length(),
+      this->stattype().data(), this->stattype().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "key");
+      "stattype");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->key(), output);
+      1, this->stattype(), output);
   }
 
-  // required float value = 2;
-  if (has_value()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->value(), output);
+  // required float statVal = 2;
+  if (has_statval()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->statval(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -806,20 +808,20 @@ void POPSTATS::SerializeWithCachedSizes(
 ::google::protobuf::uint8* POPSTATS::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.POPSTATS)
-  // required string key = 1;
-  if (has_key()) {
+  // required string statType = 1;
+  if (has_stattype()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->key().data(), this->key().length(),
+      this->stattype().data(), this->stattype().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "key");
+      "stattype");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->key(), target);
+        1, this->stattype(), target);
   }
 
-  // required float value = 2;
-  if (has_value()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->value(), target);
+  // required float statVal = 2;
+  if (has_statval()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->statval(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -834,15 +836,15 @@ int POPSTATS::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required string key = 1;
-    if (has_key()) {
+    // required string statType = 1;
+    if (has_stattype()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->key());
+          this->stattype());
     }
 
-    // required float value = 2;
-    if (has_value()) {
+    // required float statVal = 2;
+    if (has_statval()) {
       total_size += 1 + 4;
     }
 
@@ -873,11 +875,11 @@ void POPSTATS::MergeFrom(const ::google::protobuf::Message& from) {
 void POPSTATS::MergeFrom(const POPSTATS& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_key()) {
-      set_key(from.key());
+    if (from.has_stattype()) {
+      set_stattype(from.stattype());
     }
-    if (from.has_value()) {
-      set_value(from.value());
+    if (from.has_statval()) {
+      set_statval(from.statval());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -903,8 +905,8 @@ bool POPSTATS::IsInitialized() const {
 
 void POPSTATS::Swap(POPSTATS* other) {
   if (other != this) {
-    std::swap(key_, other->key_);
-    std::swap(value_, other->value_);
+    std::swap(stattype_, other->stattype_);
+    std::swap(statval_, other->statval_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -2464,8 +2466,8 @@ void GatingHierarchy::Swap(GatingHierarchy* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int ghPair::kValueFieldNumber;
-const int ghPair::kKeyFieldNumber;
+const int ghPair::kGhFieldNumber;
+const int ghPair::kSampleNameFieldNumber;
 #endif  // !_MSC_VER
 
 ghPair::ghPair()
@@ -2475,7 +2477,7 @@ ghPair::ghPair()
 }
 
 void ghPair::InitAsDefaultInstance() {
-  value_ = const_cast< ::pb::GatingHierarchy*>(&::pb::GatingHierarchy::default_instance());
+  gh_ = const_cast< ::pb::GatingHierarchy*>(&::pb::GatingHierarchy::default_instance());
 }
 
 ghPair::ghPair(const ghPair& from)
@@ -2488,8 +2490,8 @@ ghPair::ghPair(const ghPair& from)
 void ghPair::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
-  value_ = NULL;
-  key_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  gh_ = NULL;
+  samplename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2499,11 +2501,11 @@ ghPair::~ghPair() {
 }
 
 void ghPair::SharedDtor() {
-  if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    delete key_;
+  if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete samplename_;
   }
   if (this != default_instance_) {
-    delete value_;
+    delete gh_;
   }
 }
 
@@ -2530,12 +2532,12 @@ ghPair* ghPair::New() const {
 
 void ghPair::Clear() {
   if (_has_bits_[0 / 32] & 3) {
-    if (has_value()) {
-      if (value_ != NULL) value_->::pb::GatingHierarchy::Clear();
+    if (has_gh()) {
+      if (gh_ != NULL) gh_->::pb::GatingHierarchy::Clear();
     }
-    if (has_key()) {
-      if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-        key_->clear();
+    if (has_samplename()) {
+      if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        samplename_->clear();
       }
     }
   }
@@ -2553,28 +2555,28 @@ bool ghPair::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required .pb.GatingHierarchy value = 1;
+      // required .pb.GatingHierarchy gh = 1;
       case 1: {
         if (tag == 10) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_value()));
+               input, mutable_gh()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(18)) goto parse_key;
+        if (input->ExpectTag(18)) goto parse_sampleName;
         break;
       }
 
-      // required string key = 2;
+      // required string sampleName = 2;
       case 2: {
         if (tag == 18) {
-         parse_key:
+         parse_sampleName:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_key()));
+                input, this->mutable_samplename()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-            this->key().data(), this->key().length(),
+            this->samplename().data(), this->samplename().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
-            "key");
+            "samplename");
         } else {
           goto handle_unusual;
         }
@@ -2607,20 +2609,20 @@ failure:
 void ghPair::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.ghPair)
-  // required .pb.GatingHierarchy value = 1;
-  if (has_value()) {
+  // required .pb.GatingHierarchy gh = 1;
+  if (has_gh()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->value(), output);
+      1, this->gh(), output);
   }
 
-  // required string key = 2;
-  if (has_key()) {
+  // required string sampleName = 2;
+  if (has_samplename()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->key().data(), this->key().length(),
+      this->samplename().data(), this->samplename().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "key");
+      "samplename");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->key(), output);
+      2, this->samplename(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -2633,22 +2635,22 @@ void ghPair::SerializeWithCachedSizes(
 ::google::protobuf::uint8* ghPair::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.ghPair)
-  // required .pb.GatingHierarchy value = 1;
-  if (has_value()) {
+  // required .pb.GatingHierarchy gh = 1;
+  if (has_gh()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->value(), target);
+        1, this->gh(), target);
   }
 
-  // required string key = 2;
-  if (has_key()) {
+  // required string sampleName = 2;
+  if (has_samplename()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->key().data(), this->key().length(),
+      this->samplename().data(), this->samplename().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "key");
+      "samplename");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->key(), target);
+        2, this->samplename(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -2663,18 +2665,18 @@ int ghPair::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required .pb.GatingHierarchy value = 1;
-    if (has_value()) {
+    // required .pb.GatingHierarchy gh = 1;
+    if (has_gh()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->value());
+          this->gh());
     }
 
-    // required string key = 2;
-    if (has_key()) {
+    // required string sampleName = 2;
+    if (has_samplename()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->key());
+          this->samplename());
     }
 
   }
@@ -2704,11 +2706,11 @@ void ghPair::MergeFrom(const ::google::protobuf::Message& from) {
 void ghPair::MergeFrom(const ghPair& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_value()) {
-      mutable_value()->::pb::GatingHierarchy::MergeFrom(from.value());
+    if (from.has_gh()) {
+      mutable_gh()->::pb::GatingHierarchy::MergeFrom(from.gh());
     }
-    if (from.has_key()) {
-      set_key(from.key());
+    if (from.has_samplename()) {
+      set_samplename(from.samplename());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -2729,16 +2731,16 @@ void ghPair::CopyFrom(const ghPair& from) {
 bool ghPair::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
-  if (has_value()) {
-    if (!this->value().IsInitialized()) return false;
+  if (has_gh()) {
+    if (!this->gh().IsInitialized()) return false;
   }
   return true;
 }
 
 void ghPair::Swap(ghPair* other) {
   if (other != this) {
-    std::swap(value_, other->value_);
-    std::swap(key_, other->key_);
+    std::swap(gh_, other->gh_);
+    std::swap(samplename_, other->samplename_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

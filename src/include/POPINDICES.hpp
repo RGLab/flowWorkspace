@@ -37,7 +37,7 @@ public:
 	virtual unsigned getCount()=0;
 	unsigned getTotal(){return nEvents;}
 	virtual POPINDICES * clone()=0;
-
+	virtual void convertToPb(pb::POPINDICES & ind_pb) = 0;
 };
 
 /*
@@ -108,6 +108,7 @@ public:
 	unsigned getCount();
 
 	POPINDICES * clone();
+	void convertToPb(pb::POPINDICES & ind_pb);
 
 };
 BOOST_CLASS_VERSION(BOOLINDICES,1)
@@ -133,6 +134,7 @@ public:
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();
+	void convertToPb(pb::POPINDICES & ind_pb);
 };
 
 /*
@@ -155,7 +157,7 @@ public:
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();
-
+	void convertToPb(pb::POPINDICES & ind_pb);
 };
 
 

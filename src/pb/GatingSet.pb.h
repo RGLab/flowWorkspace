@@ -46,11 +46,12 @@ class GatingSet;
 
 enum ind_type {
   BOOL = 0,
-  INT = 1
+  INT = 1,
+  ROOT = 2
 };
 bool ind_type_IsValid(int value);
 const ind_type ind_type_MIN = BOOL;
-const ind_type ind_type_MAX = INT;
+const ind_type ind_type_MAX = ROOT;
 const int ind_type_ARRAYSIZE = ind_type_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* ind_type_descriptor();
@@ -217,38 +218,38 @@ class POPSTATS : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required string key = 1;
-  inline bool has_key() const;
-  inline void clear_key();
-  static const int kKeyFieldNumber = 1;
-  inline const ::std::string& key() const;
-  inline void set_key(const ::std::string& value);
-  inline void set_key(const char* value);
-  inline void set_key(const char* value, size_t size);
-  inline ::std::string* mutable_key();
-  inline ::std::string* release_key();
-  inline void set_allocated_key(::std::string* key);
+  // required string statType = 1;
+  inline bool has_stattype() const;
+  inline void clear_stattype();
+  static const int kStatTypeFieldNumber = 1;
+  inline const ::std::string& stattype() const;
+  inline void set_stattype(const ::std::string& value);
+  inline void set_stattype(const char* value);
+  inline void set_stattype(const char* value, size_t size);
+  inline ::std::string* mutable_stattype();
+  inline ::std::string* release_stattype();
+  inline void set_allocated_stattype(::std::string* stattype);
 
-  // required float value = 2;
-  inline bool has_value() const;
-  inline void clear_value();
-  static const int kValueFieldNumber = 2;
-  inline float value() const;
-  inline void set_value(float value);
+  // required float statVal = 2;
+  inline bool has_statval() const;
+  inline void clear_statval();
+  static const int kStatValFieldNumber = 2;
+  inline float statval() const;
+  inline void set_statval(float value);
 
   // @@protoc_insertion_point(class_scope:pb.POPSTATS)
  private:
-  inline void set_has_key();
-  inline void clear_has_key();
-  inline void set_has_value();
-  inline void clear_has_value();
+  inline void set_has_stattype();
+  inline void clear_has_stattype();
+  inline void set_has_statval();
+  inline void clear_has_statval();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::std::string* key_;
-  float value_;
+  ::std::string* stattype_;
+  float statval_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -824,40 +825,40 @@ class ghPair : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required .pb.GatingHierarchy value = 1;
-  inline bool has_value() const;
-  inline void clear_value();
-  static const int kValueFieldNumber = 1;
-  inline const ::pb::GatingHierarchy& value() const;
-  inline ::pb::GatingHierarchy* mutable_value();
-  inline ::pb::GatingHierarchy* release_value();
-  inline void set_allocated_value(::pb::GatingHierarchy* value);
+  // required .pb.GatingHierarchy gh = 1;
+  inline bool has_gh() const;
+  inline void clear_gh();
+  static const int kGhFieldNumber = 1;
+  inline const ::pb::GatingHierarchy& gh() const;
+  inline ::pb::GatingHierarchy* mutable_gh();
+  inline ::pb::GatingHierarchy* release_gh();
+  inline void set_allocated_gh(::pb::GatingHierarchy* gh);
 
-  // required string key = 2;
-  inline bool has_key() const;
-  inline void clear_key();
-  static const int kKeyFieldNumber = 2;
-  inline const ::std::string& key() const;
-  inline void set_key(const ::std::string& value);
-  inline void set_key(const char* value);
-  inline void set_key(const char* value, size_t size);
-  inline ::std::string* mutable_key();
-  inline ::std::string* release_key();
-  inline void set_allocated_key(::std::string* key);
+  // required string sampleName = 2;
+  inline bool has_samplename() const;
+  inline void clear_samplename();
+  static const int kSampleNameFieldNumber = 2;
+  inline const ::std::string& samplename() const;
+  inline void set_samplename(const ::std::string& value);
+  inline void set_samplename(const char* value);
+  inline void set_samplename(const char* value, size_t size);
+  inline ::std::string* mutable_samplename();
+  inline ::std::string* release_samplename();
+  inline void set_allocated_samplename(::std::string* samplename);
 
   // @@protoc_insertion_point(class_scope:pb.ghPair)
  private:
-  inline void set_has_value();
-  inline void clear_has_value();
-  inline void set_has_key();
-  inline void clear_has_key();
+  inline void set_has_gh();
+  inline void clear_has_gh();
+  inline void set_has_samplename();
+  inline void clear_has_samplename();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::pb::GatingHierarchy* value_;
-  ::std::string* key_;
+  ::pb::GatingHierarchy* gh_;
+  ::std::string* samplename_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -1030,104 +1031,104 @@ inline void gate::set_isgained(bool value) {
 
 // POPSTATS
 
-// required string key = 1;
-inline bool POPSTATS::has_key() const {
+// required string statType = 1;
+inline bool POPSTATS::has_stattype() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void POPSTATS::set_has_key() {
+inline void POPSTATS::set_has_stattype() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void POPSTATS::clear_has_key() {
+inline void POPSTATS::clear_has_stattype() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void POPSTATS::clear_key() {
-  if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_->clear();
+inline void POPSTATS::clear_stattype() {
+  if (stattype_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    stattype_->clear();
   }
-  clear_has_key();
+  clear_has_stattype();
 }
-inline const ::std::string& POPSTATS::key() const {
-  // @@protoc_insertion_point(field_get:pb.POPSTATS.key)
-  return *key_;
+inline const ::std::string& POPSTATS::stattype() const {
+  // @@protoc_insertion_point(field_get:pb.POPSTATS.statType)
+  return *stattype_;
 }
-inline void POPSTATS::set_key(const ::std::string& value) {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline void POPSTATS::set_stattype(const ::std::string& value) {
+  set_has_stattype();
+  if (stattype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    stattype_ = new ::std::string;
   }
-  key_->assign(value);
-  // @@protoc_insertion_point(field_set:pb.POPSTATS.key)
+  stattype_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.POPSTATS.statType)
 }
-inline void POPSTATS::set_key(const char* value) {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline void POPSTATS::set_stattype(const char* value) {
+  set_has_stattype();
+  if (stattype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    stattype_ = new ::std::string;
   }
-  key_->assign(value);
-  // @@protoc_insertion_point(field_set_char:pb.POPSTATS.key)
+  stattype_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.POPSTATS.statType)
 }
-inline void POPSTATS::set_key(const char* value, size_t size) {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline void POPSTATS::set_stattype(const char* value, size_t size) {
+  set_has_stattype();
+  if (stattype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    stattype_ = new ::std::string;
   }
-  key_->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:pb.POPSTATS.key)
+  stattype_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.POPSTATS.statType)
 }
-inline ::std::string* POPSTATS::mutable_key() {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline ::std::string* POPSTATS::mutable_stattype() {
+  set_has_stattype();
+  if (stattype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    stattype_ = new ::std::string;
   }
-  // @@protoc_insertion_point(field_mutable:pb.POPSTATS.key)
-  return key_;
+  // @@protoc_insertion_point(field_mutable:pb.POPSTATS.statType)
+  return stattype_;
 }
-inline ::std::string* POPSTATS::release_key() {
-  clear_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+inline ::std::string* POPSTATS::release_stattype() {
+  clear_has_stattype();
+  if (stattype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     return NULL;
   } else {
-    ::std::string* temp = key_;
-    key_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    ::std::string* temp = stattype_;
+    stattype_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     return temp;
   }
 }
-inline void POPSTATS::set_allocated_key(::std::string* key) {
-  if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    delete key_;
+inline void POPSTATS::set_allocated_stattype(::std::string* stattype) {
+  if (stattype_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete stattype_;
   }
-  if (key) {
-    set_has_key();
-    key_ = key;
+  if (stattype) {
+    set_has_stattype();
+    stattype_ = stattype;
   } else {
-    clear_has_key();
-    key_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_stattype();
+    stattype_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_set_allocated:pb.POPSTATS.key)
+  // @@protoc_insertion_point(field_set_allocated:pb.POPSTATS.statType)
 }
 
-// required float value = 2;
-inline bool POPSTATS::has_value() const {
+// required float statVal = 2;
+inline bool POPSTATS::has_statval() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void POPSTATS::set_has_value() {
+inline void POPSTATS::set_has_statval() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void POPSTATS::clear_has_value() {
+inline void POPSTATS::clear_has_statval() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void POPSTATS::clear_value() {
-  value_ = 0;
-  clear_has_value();
+inline void POPSTATS::clear_statval() {
+  statval_ = 0;
+  clear_has_statval();
 }
-inline float POPSTATS::value() const {
-  // @@protoc_insertion_point(field_get:pb.POPSTATS.value)
-  return value_;
+inline float POPSTATS::statval() const {
+  // @@protoc_insertion_point(field_get:pb.POPSTATS.statVal)
+  return statval_;
 }
-inline void POPSTATS::set_value(float value) {
-  set_has_value();
-  value_ = value;
-  // @@protoc_insertion_point(field_set:pb.POPSTATS.value)
+inline void POPSTATS::set_statval(float value) {
+  set_has_statval();
+  statval_ = value;
+  // @@protoc_insertion_point(field_set:pb.POPSTATS.statVal)
 }
 
 // -------------------------------------------------------------------
@@ -1641,121 +1642,121 @@ inline void GatingHierarchy::set_allocated_tree(::pb::populationTree* tree) {
 
 // ghPair
 
-// required .pb.GatingHierarchy value = 1;
-inline bool ghPair::has_value() const {
+// required .pb.GatingHierarchy gh = 1;
+inline bool ghPair::has_gh() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void ghPair::set_has_value() {
+inline void ghPair::set_has_gh() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void ghPair::clear_has_value() {
+inline void ghPair::clear_has_gh() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void ghPair::clear_value() {
-  if (value_ != NULL) value_->::pb::GatingHierarchy::Clear();
-  clear_has_value();
+inline void ghPair::clear_gh() {
+  if (gh_ != NULL) gh_->::pb::GatingHierarchy::Clear();
+  clear_has_gh();
 }
-inline const ::pb::GatingHierarchy& ghPair::value() const {
-  // @@protoc_insertion_point(field_get:pb.ghPair.value)
-  return value_ != NULL ? *value_ : *default_instance_->value_;
+inline const ::pb::GatingHierarchy& ghPair::gh() const {
+  // @@protoc_insertion_point(field_get:pb.ghPair.gh)
+  return gh_ != NULL ? *gh_ : *default_instance_->gh_;
 }
-inline ::pb::GatingHierarchy* ghPair::mutable_value() {
-  set_has_value();
-  if (value_ == NULL) value_ = new ::pb::GatingHierarchy;
-  // @@protoc_insertion_point(field_mutable:pb.ghPair.value)
-  return value_;
+inline ::pb::GatingHierarchy* ghPair::mutable_gh() {
+  set_has_gh();
+  if (gh_ == NULL) gh_ = new ::pb::GatingHierarchy;
+  // @@protoc_insertion_point(field_mutable:pb.ghPair.gh)
+  return gh_;
 }
-inline ::pb::GatingHierarchy* ghPair::release_value() {
-  clear_has_value();
-  ::pb::GatingHierarchy* temp = value_;
-  value_ = NULL;
+inline ::pb::GatingHierarchy* ghPair::release_gh() {
+  clear_has_gh();
+  ::pb::GatingHierarchy* temp = gh_;
+  gh_ = NULL;
   return temp;
 }
-inline void ghPair::set_allocated_value(::pb::GatingHierarchy* value) {
-  delete value_;
-  value_ = value;
-  if (value) {
-    set_has_value();
+inline void ghPair::set_allocated_gh(::pb::GatingHierarchy* gh) {
+  delete gh_;
+  gh_ = gh;
+  if (gh) {
+    set_has_gh();
   } else {
-    clear_has_value();
+    clear_has_gh();
   }
-  // @@protoc_insertion_point(field_set_allocated:pb.ghPair.value)
+  // @@protoc_insertion_point(field_set_allocated:pb.ghPair.gh)
 }
 
-// required string key = 2;
-inline bool ghPair::has_key() const {
+// required string sampleName = 2;
+inline bool ghPair::has_samplename() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void ghPair::set_has_key() {
+inline void ghPair::set_has_samplename() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void ghPair::clear_has_key() {
+inline void ghPair::clear_has_samplename() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void ghPair::clear_key() {
-  if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_->clear();
+inline void ghPair::clear_samplename() {
+  if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    samplename_->clear();
   }
-  clear_has_key();
+  clear_has_samplename();
 }
-inline const ::std::string& ghPair::key() const {
-  // @@protoc_insertion_point(field_get:pb.ghPair.key)
-  return *key_;
+inline const ::std::string& ghPair::samplename() const {
+  // @@protoc_insertion_point(field_get:pb.ghPair.sampleName)
+  return *samplename_;
 }
-inline void ghPair::set_key(const ::std::string& value) {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline void ghPair::set_samplename(const ::std::string& value) {
+  set_has_samplename();
+  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    samplename_ = new ::std::string;
   }
-  key_->assign(value);
-  // @@protoc_insertion_point(field_set:pb.ghPair.key)
+  samplename_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.ghPair.sampleName)
 }
-inline void ghPair::set_key(const char* value) {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline void ghPair::set_samplename(const char* value) {
+  set_has_samplename();
+  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    samplename_ = new ::std::string;
   }
-  key_->assign(value);
-  // @@protoc_insertion_point(field_set_char:pb.ghPair.key)
+  samplename_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.ghPair.sampleName)
 }
-inline void ghPair::set_key(const char* value, size_t size) {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline void ghPair::set_samplename(const char* value, size_t size) {
+  set_has_samplename();
+  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    samplename_ = new ::std::string;
   }
-  key_->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:pb.ghPair.key)
+  samplename_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.ghPair.sampleName)
 }
-inline ::std::string* ghPair::mutable_key() {
-  set_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    key_ = new ::std::string;
+inline ::std::string* ghPair::mutable_samplename() {
+  set_has_samplename();
+  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    samplename_ = new ::std::string;
   }
-  // @@protoc_insertion_point(field_mutable:pb.ghPair.key)
-  return key_;
+  // @@protoc_insertion_point(field_mutable:pb.ghPair.sampleName)
+  return samplename_;
 }
-inline ::std::string* ghPair::release_key() {
-  clear_has_key();
-  if (key_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+inline ::std::string* ghPair::release_samplename() {
+  clear_has_samplename();
+  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     return NULL;
   } else {
-    ::std::string* temp = key_;
-    key_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    ::std::string* temp = samplename_;
+    samplename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     return temp;
   }
 }
-inline void ghPair::set_allocated_key(::std::string* key) {
-  if (key_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    delete key_;
+inline void ghPair::set_allocated_samplename(::std::string* samplename) {
+  if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete samplename_;
   }
-  if (key) {
-    set_has_key();
-    key_ = key;
+  if (samplename) {
+    set_has_samplename();
+    samplename_ = samplename;
   } else {
-    clear_has_key();
-    key_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_samplename();
+    samplename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_set_allocated:pb.ghPair.key)
+  // @@protoc_insertion_point(field_set_allocated:pb.ghPair.sampleName)
 }
 
 // -------------------------------------------------------------------
