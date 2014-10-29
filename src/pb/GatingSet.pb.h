@@ -34,6 +34,14 @@ void  protobuf_AddDesc_GatingSet_2eproto();
 void protobuf_AssignDesc_GatingSet_2eproto();
 void protobuf_ShutdownFile_GatingSet_2eproto();
 
+class paramRange;
+class rangeGate;
+class paramPoly;
+class polygonGate;
+class coordinate;
+class ellipseGate;
+class BOOL_GATE_OP;
+class boolGate;
 class gate;
 class POPSTATS;
 class POPINDICES;
@@ -44,6 +52,30 @@ class GatingHierarchy;
 class ghPair;
 class GatingSet;
 
+enum GATE_TYPE {
+  POLYGON_GATE = 1,
+  RANGE_GATE = 2,
+  BOOL_GATE = 3,
+  ELLIPSE_GATE = 4,
+  RECT_GATE = 5,
+  LOGICAL_GATE = 6,
+  ELLIPSOID_GATE = 7
+};
+bool GATE_TYPE_IsValid(int value);
+const GATE_TYPE GATE_TYPE_MIN = POLYGON_GATE;
+const GATE_TYPE GATE_TYPE_MAX = ELLIPSOID_GATE;
+const int GATE_TYPE_ARRAYSIZE = GATE_TYPE_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* GATE_TYPE_descriptor();
+inline const ::std::string& GATE_TYPE_Name(GATE_TYPE value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    GATE_TYPE_descriptor(), value);
+}
+inline bool GATE_TYPE_Parse(
+    const ::std::string& name, GATE_TYPE* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<GATE_TYPE>(
+    GATE_TYPE_descriptor(), name, value);
+}
 enum ind_type {
   BOOL = 0,
   INT = 1,
@@ -65,6 +97,765 @@ inline bool ind_type_Parse(
     ind_type_descriptor(), name, value);
 }
 // ===================================================================
+
+class paramRange : public ::google::protobuf::Message {
+ public:
+  paramRange();
+  virtual ~paramRange();
+
+  paramRange(const paramRange& from);
+
+  inline paramRange& operator=(const paramRange& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const paramRange& default_instance();
+
+  void Swap(paramRange* other);
+
+  // implements Message ----------------------------------------------
+
+  paramRange* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const paramRange& from);
+  void MergeFrom(const paramRange& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string name = 1;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 1;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  inline void set_allocated_name(::std::string* name);
+
+  // required double min = 2;
+  inline bool has_min() const;
+  inline void clear_min();
+  static const int kMinFieldNumber = 2;
+  inline double min() const;
+  inline void set_min(double value);
+
+  // required double max = 3;
+  inline bool has_max() const;
+  inline void clear_max();
+  static const int kMaxFieldNumber = 3;
+  inline double max() const;
+  inline void set_max(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.paramRange)
+ private:
+  inline void set_has_name();
+  inline void clear_has_name();
+  inline void set_has_min();
+  inline void clear_has_min();
+  inline void set_has_max();
+  inline void clear_has_max();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* name_;
+  double min_;
+  double max_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static paramRange* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class rangeGate : public ::google::protobuf::Message {
+ public:
+  rangeGate();
+  virtual ~rangeGate();
+
+  rangeGate(const rangeGate& from);
+
+  inline rangeGate& operator=(const rangeGate& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const rangeGate& default_instance();
+
+  void Swap(rangeGate* other);
+
+  // implements Message ----------------------------------------------
+
+  rangeGate* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const rangeGate& from);
+  void MergeFrom(const rangeGate& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .pb.paramRange param = 1;
+  inline bool has_param() const;
+  inline void clear_param();
+  static const int kParamFieldNumber = 1;
+  inline const ::pb::paramRange& param() const;
+  inline ::pb::paramRange* mutable_param();
+  inline ::pb::paramRange* release_param();
+  inline void set_allocated_param(::pb::paramRange* param);
+
+  // @@protoc_insertion_point(class_scope:pb.rangeGate)
+ private:
+  inline void set_has_param();
+  inline void clear_has_param();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::pb::paramRange* param_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static rangeGate* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class paramPoly : public ::google::protobuf::Message {
+ public:
+  paramPoly();
+  virtual ~paramPoly();
+
+  paramPoly(const paramPoly& from);
+
+  inline paramPoly& operator=(const paramPoly& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const paramPoly& default_instance();
+
+  void Swap(paramPoly* other);
+
+  // implements Message ----------------------------------------------
+
+  paramPoly* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const paramPoly& from);
+  void MergeFrom(const paramPoly& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated string params = 1;
+  inline int params_size() const;
+  inline void clear_params();
+  static const int kParamsFieldNumber = 1;
+  inline const ::std::string& params(int index) const;
+  inline ::std::string* mutable_params(int index);
+  inline void set_params(int index, const ::std::string& value);
+  inline void set_params(int index, const char* value);
+  inline void set_params(int index, const char* value, size_t size);
+  inline ::std::string* add_params();
+  inline void add_params(const ::std::string& value);
+  inline void add_params(const char* value);
+  inline void add_params(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& params() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_params();
+
+  // repeated .pb.coordinate vertices = 2;
+  inline int vertices_size() const;
+  inline void clear_vertices();
+  static const int kVerticesFieldNumber = 2;
+  inline const ::pb::coordinate& vertices(int index) const;
+  inline ::pb::coordinate* mutable_vertices(int index);
+  inline ::pb::coordinate* add_vertices();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::coordinate >&
+      vertices() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::coordinate >*
+      mutable_vertices();
+
+  // @@protoc_insertion_point(class_scope:pb.paramPoly)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> params_;
+  ::google::protobuf::RepeatedPtrField< ::pb::coordinate > vertices_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static paramPoly* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class polygonGate : public ::google::protobuf::Message {
+ public:
+  polygonGate();
+  virtual ~polygonGate();
+
+  polygonGate(const polygonGate& from);
+
+  inline polygonGate& operator=(const polygonGate& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const polygonGate& default_instance();
+
+  void Swap(polygonGate* other);
+
+  // implements Message ----------------------------------------------
+
+  polygonGate* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const polygonGate& from);
+  void MergeFrom(const polygonGate& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .pb.paramPoly param = 1;
+  inline bool has_param() const;
+  inline void clear_param();
+  static const int kParamFieldNumber = 1;
+  inline const ::pb::paramPoly& param() const;
+  inline ::pb::paramPoly* mutable_param();
+  inline ::pb::paramPoly* release_param();
+  inline void set_allocated_param(::pb::paramPoly* param);
+
+  // @@protoc_insertion_point(class_scope:pb.polygonGate)
+ private:
+  inline void set_has_param();
+  inline void clear_has_param();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::pb::paramPoly* param_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static polygonGate* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class coordinate : public ::google::protobuf::Message {
+ public:
+  coordinate();
+  virtual ~coordinate();
+
+  coordinate(const coordinate& from);
+
+  inline coordinate& operator=(const coordinate& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const coordinate& default_instance();
+
+  void Swap(coordinate* other);
+
+  // implements Message ----------------------------------------------
+
+  coordinate* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const coordinate& from);
+  void MergeFrom(const coordinate& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required double x = 1;
+  inline bool has_x() const;
+  inline void clear_x();
+  static const int kXFieldNumber = 1;
+  inline double x() const;
+  inline void set_x(double value);
+
+  // required double y = 2;
+  inline bool has_y() const;
+  inline void clear_y();
+  static const int kYFieldNumber = 2;
+  inline double y() const;
+  inline void set_y(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.coordinate)
+ private:
+  inline void set_has_x();
+  inline void clear_has_x();
+  inline void set_has_y();
+  inline void clear_has_y();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  double x_;
+  double y_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static coordinate* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ellipseGate : public ::google::protobuf::Message {
+ public:
+  ellipseGate();
+  virtual ~ellipseGate();
+
+  ellipseGate(const ellipseGate& from);
+
+  inline ellipseGate& operator=(const ellipseGate& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ellipseGate& default_instance();
+
+  void Swap(ellipseGate* other);
+
+  // implements Message ----------------------------------------------
+
+  ellipseGate* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ellipseGate& from);
+  void MergeFrom(const ellipseGate& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .pb.coordinate mu = 1;
+  inline bool has_mu() const;
+  inline void clear_mu();
+  static const int kMuFieldNumber = 1;
+  inline const ::pb::coordinate& mu() const;
+  inline ::pb::coordinate* mutable_mu();
+  inline ::pb::coordinate* release_mu();
+  inline void set_allocated_mu(::pb::coordinate* mu);
+
+  // repeated .pb.coordinate cov = 2;
+  inline int cov_size() const;
+  inline void clear_cov();
+  static const int kCovFieldNumber = 2;
+  inline const ::pb::coordinate& cov(int index) const;
+  inline ::pb::coordinate* mutable_cov(int index);
+  inline ::pb::coordinate* add_cov();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::coordinate >&
+      cov() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::coordinate >*
+      mutable_cov();
+
+  // repeated .pb.coordinate antipodal_vertices = 3;
+  inline int antipodal_vertices_size() const;
+  inline void clear_antipodal_vertices();
+  static const int kAntipodalVerticesFieldNumber = 3;
+  inline const ::pb::coordinate& antipodal_vertices(int index) const;
+  inline ::pb::coordinate* mutable_antipodal_vertices(int index);
+  inline ::pb::coordinate* add_antipodal_vertices();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::coordinate >&
+      antipodal_vertices() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::coordinate >*
+      mutable_antipodal_vertices();
+
+  // optional double dist = 4;
+  inline bool has_dist() const;
+  inline void clear_dist();
+  static const int kDistFieldNumber = 4;
+  inline double dist() const;
+  inline void set_dist(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.ellipseGate)
+ private:
+  inline void set_has_mu();
+  inline void clear_has_mu();
+  inline void set_has_dist();
+  inline void clear_has_dist();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::pb::coordinate* mu_;
+  ::google::protobuf::RepeatedPtrField< ::pb::coordinate > cov_;
+  ::google::protobuf::RepeatedPtrField< ::pb::coordinate > antipodal_vertices_;
+  double dist_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static ellipseGate* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class BOOL_GATE_OP : public ::google::protobuf::Message {
+ public:
+  BOOL_GATE_OP();
+  virtual ~BOOL_GATE_OP();
+
+  BOOL_GATE_OP(const BOOL_GATE_OP& from);
+
+  inline BOOL_GATE_OP& operator=(const BOOL_GATE_OP& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BOOL_GATE_OP& default_instance();
+
+  void Swap(BOOL_GATE_OP* other);
+
+  // implements Message ----------------------------------------------
+
+  BOOL_GATE_OP* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BOOL_GATE_OP& from);
+  void MergeFrom(const BOOL_GATE_OP& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated string path = 1;
+  inline int path_size() const;
+  inline void clear_path();
+  static const int kPathFieldNumber = 1;
+  inline const ::std::string& path(int index) const;
+  inline ::std::string* mutable_path(int index);
+  inline void set_path(int index, const ::std::string& value);
+  inline void set_path(int index, const char* value);
+  inline void set_path(int index, const char* value, size_t size);
+  inline ::std::string* add_path();
+  inline void add_path(const ::std::string& value);
+  inline void add_path(const char* value);
+  inline void add_path(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& path() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_path();
+
+  // required uint32 op = 2;
+  inline bool has_op() const;
+  inline void clear_op();
+  static const int kOpFieldNumber = 2;
+  inline ::google::protobuf::uint32 op() const;
+  inline void set_op(::google::protobuf::uint32 value);
+
+  // required bool isNot = 3;
+  inline bool has_isnot() const;
+  inline void clear_isnot();
+  static const int kIsNotFieldNumber = 3;
+  inline bool isnot() const;
+  inline void set_isnot(bool value);
+
+  // @@protoc_insertion_point(class_scope:pb.BOOL_GATE_OP)
+ private:
+  inline void set_has_op();
+  inline void clear_has_op();
+  inline void set_has_isnot();
+  inline void clear_has_isnot();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> path_;
+  ::google::protobuf::uint32 op_;
+  bool isnot_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static BOOL_GATE_OP* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class boolGate : public ::google::protobuf::Message {
+ public:
+  boolGate();
+  virtual ~boolGate();
+
+  boolGate(const boolGate& from);
+
+  inline boolGate& operator=(const boolGate& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const boolGate& default_instance();
+
+  void Swap(boolGate* other);
+
+  // implements Message ----------------------------------------------
+
+  boolGate* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const boolGate& from);
+  void MergeFrom(const boolGate& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .pb.BOOL_GATE_OP boolOpSpec = 1;
+  inline int boolopspec_size() const;
+  inline void clear_boolopspec();
+  static const int kBoolOpSpecFieldNumber = 1;
+  inline const ::pb::BOOL_GATE_OP& boolopspec(int index) const;
+  inline ::pb::BOOL_GATE_OP* mutable_boolopspec(int index);
+  inline ::pb::BOOL_GATE_OP* add_boolopspec();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::BOOL_GATE_OP >&
+      boolopspec() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::BOOL_GATE_OP >*
+      mutable_boolopspec();
+
+  // @@protoc_insertion_point(class_scope:pb.boolGate)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::pb::BOOL_GATE_OP > boolopspec_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static boolGate* default_instance_;
+};
+// -------------------------------------------------------------------
 
 class gate : public ::google::protobuf::Message {
  public:
@@ -140,6 +931,49 @@ class gate : public ::google::protobuf::Message {
   inline bool isgained() const;
   inline void set_isgained(bool value);
 
+  // required .pb.GATE_TYPE type = 4;
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 4;
+  inline ::pb::GATE_TYPE type() const;
+  inline void set_type(::pb::GATE_TYPE value);
+
+  // optional .pb.rangeGate rg = 5;
+  inline bool has_rg() const;
+  inline void clear_rg();
+  static const int kRgFieldNumber = 5;
+  inline const ::pb::rangeGate& rg() const;
+  inline ::pb::rangeGate* mutable_rg();
+  inline ::pb::rangeGate* release_rg();
+  inline void set_allocated_rg(::pb::rangeGate* rg);
+
+  // optional .pb.polygonGate pg = 6;
+  inline bool has_pg() const;
+  inline void clear_pg();
+  static const int kPgFieldNumber = 6;
+  inline const ::pb::polygonGate& pg() const;
+  inline ::pb::polygonGate* mutable_pg();
+  inline ::pb::polygonGate* release_pg();
+  inline void set_allocated_pg(::pb::polygonGate* pg);
+
+  // optional .pb.ellipseGate eg = 7;
+  inline bool has_eg() const;
+  inline void clear_eg();
+  static const int kEgFieldNumber = 7;
+  inline const ::pb::ellipseGate& eg() const;
+  inline ::pb::ellipseGate* mutable_eg();
+  inline ::pb::ellipseGate* release_eg();
+  inline void set_allocated_eg(::pb::ellipseGate* eg);
+
+  // optional .pb.boolGate bg = 8;
+  inline bool has_bg() const;
+  inline void clear_bg();
+  static const int kBgFieldNumber = 8;
+  inline const ::pb::boolGate& bg() const;
+  inline ::pb::boolGate* mutable_bg();
+  inline ::pb::boolGate* release_bg();
+  inline void set_allocated_bg(::pb::boolGate* bg);
+
   // @@protoc_insertion_point(class_scope:pb.gate)
  private:
   inline void set_has_neg();
@@ -148,6 +982,16 @@ class gate : public ::google::protobuf::Message {
   inline void clear_has_istransformed();
   inline void set_has_isgained();
   inline void clear_has_isgained();
+  inline void set_has_type();
+  inline void clear_has_type();
+  inline void set_has_rg();
+  inline void clear_has_rg();
+  inline void set_has_pg();
+  inline void clear_has_pg();
+  inline void set_has_eg();
+  inline void clear_has_eg();
+  inline void set_has_bg();
+  inline void clear_has_bg();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -156,6 +1000,11 @@ class gate : public ::google::protobuf::Message {
   bool neg_;
   bool istransformed_;
   bool isgained_;
+  int type_;
+  ::pb::rangeGate* rg_;
+  ::pb::polygonGate* pg_;
+  ::pb::ellipseGate* eg_;
+  ::pb::boolGate* bg_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -953,6 +1802,633 @@ class GatingSet : public ::google::protobuf::Message {
 
 // ===================================================================
 
+// paramRange
+
+// required string name = 1;
+inline bool paramRange::has_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void paramRange::set_has_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void paramRange::clear_has_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void paramRange::clear_name() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& paramRange::name() const {
+  // @@protoc_insertion_point(field_get:pb.paramRange.name)
+  return *name_;
+}
+inline void paramRange::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.paramRange.name)
+}
+inline void paramRange::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.paramRange.name)
+}
+inline void paramRange::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.paramRange.name)
+}
+inline ::std::string* paramRange::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.paramRange.name)
+  return name_;
+}
+inline ::std::string* paramRange::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void paramRange::set_allocated_name(::std::string* name) {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
+  if (name) {
+    set_has_name();
+    name_ = name;
+  } else {
+    clear_has_name();
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.paramRange.name)
+}
+
+// required double min = 2;
+inline bool paramRange::has_min() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void paramRange::set_has_min() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void paramRange::clear_has_min() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void paramRange::clear_min() {
+  min_ = 0;
+  clear_has_min();
+}
+inline double paramRange::min() const {
+  // @@protoc_insertion_point(field_get:pb.paramRange.min)
+  return min_;
+}
+inline void paramRange::set_min(double value) {
+  set_has_min();
+  min_ = value;
+  // @@protoc_insertion_point(field_set:pb.paramRange.min)
+}
+
+// required double max = 3;
+inline bool paramRange::has_max() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void paramRange::set_has_max() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void paramRange::clear_has_max() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void paramRange::clear_max() {
+  max_ = 0;
+  clear_has_max();
+}
+inline double paramRange::max() const {
+  // @@protoc_insertion_point(field_get:pb.paramRange.max)
+  return max_;
+}
+inline void paramRange::set_max(double value) {
+  set_has_max();
+  max_ = value;
+  // @@protoc_insertion_point(field_set:pb.paramRange.max)
+}
+
+// -------------------------------------------------------------------
+
+// rangeGate
+
+// required .pb.paramRange param = 1;
+inline bool rangeGate::has_param() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void rangeGate::set_has_param() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void rangeGate::clear_has_param() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void rangeGate::clear_param() {
+  if (param_ != NULL) param_->::pb::paramRange::Clear();
+  clear_has_param();
+}
+inline const ::pb::paramRange& rangeGate::param() const {
+  // @@protoc_insertion_point(field_get:pb.rangeGate.param)
+  return param_ != NULL ? *param_ : *default_instance_->param_;
+}
+inline ::pb::paramRange* rangeGate::mutable_param() {
+  set_has_param();
+  if (param_ == NULL) param_ = new ::pb::paramRange;
+  // @@protoc_insertion_point(field_mutable:pb.rangeGate.param)
+  return param_;
+}
+inline ::pb::paramRange* rangeGate::release_param() {
+  clear_has_param();
+  ::pb::paramRange* temp = param_;
+  param_ = NULL;
+  return temp;
+}
+inline void rangeGate::set_allocated_param(::pb::paramRange* param) {
+  delete param_;
+  param_ = param;
+  if (param) {
+    set_has_param();
+  } else {
+    clear_has_param();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.rangeGate.param)
+}
+
+// -------------------------------------------------------------------
+
+// paramPoly
+
+// repeated string params = 1;
+inline int paramPoly::params_size() const {
+  return params_.size();
+}
+inline void paramPoly::clear_params() {
+  params_.Clear();
+}
+inline const ::std::string& paramPoly::params(int index) const {
+  // @@protoc_insertion_point(field_get:pb.paramPoly.params)
+  return params_.Get(index);
+}
+inline ::std::string* paramPoly::mutable_params(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.paramPoly.params)
+  return params_.Mutable(index);
+}
+inline void paramPoly::set_params(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:pb.paramPoly.params)
+  params_.Mutable(index)->assign(value);
+}
+inline void paramPoly::set_params(int index, const char* value) {
+  params_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.paramPoly.params)
+}
+inline void paramPoly::set_params(int index, const char* value, size_t size) {
+  params_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.paramPoly.params)
+}
+inline ::std::string* paramPoly::add_params() {
+  return params_.Add();
+}
+inline void paramPoly::add_params(const ::std::string& value) {
+  params_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:pb.paramPoly.params)
+}
+inline void paramPoly::add_params(const char* value) {
+  params_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:pb.paramPoly.params)
+}
+inline void paramPoly::add_params(const char* value, size_t size) {
+  params_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:pb.paramPoly.params)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+paramPoly::params() const {
+  // @@protoc_insertion_point(field_list:pb.paramPoly.params)
+  return params_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+paramPoly::mutable_params() {
+  // @@protoc_insertion_point(field_mutable_list:pb.paramPoly.params)
+  return &params_;
+}
+
+// repeated .pb.coordinate vertices = 2;
+inline int paramPoly::vertices_size() const {
+  return vertices_.size();
+}
+inline void paramPoly::clear_vertices() {
+  vertices_.Clear();
+}
+inline const ::pb::coordinate& paramPoly::vertices(int index) const {
+  // @@protoc_insertion_point(field_get:pb.paramPoly.vertices)
+  return vertices_.Get(index);
+}
+inline ::pb::coordinate* paramPoly::mutable_vertices(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.paramPoly.vertices)
+  return vertices_.Mutable(index);
+}
+inline ::pb::coordinate* paramPoly::add_vertices() {
+  // @@protoc_insertion_point(field_add:pb.paramPoly.vertices)
+  return vertices_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::coordinate >&
+paramPoly::vertices() const {
+  // @@protoc_insertion_point(field_list:pb.paramPoly.vertices)
+  return vertices_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::coordinate >*
+paramPoly::mutable_vertices() {
+  // @@protoc_insertion_point(field_mutable_list:pb.paramPoly.vertices)
+  return &vertices_;
+}
+
+// -------------------------------------------------------------------
+
+// polygonGate
+
+// required .pb.paramPoly param = 1;
+inline bool polygonGate::has_param() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void polygonGate::set_has_param() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void polygonGate::clear_has_param() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void polygonGate::clear_param() {
+  if (param_ != NULL) param_->::pb::paramPoly::Clear();
+  clear_has_param();
+}
+inline const ::pb::paramPoly& polygonGate::param() const {
+  // @@protoc_insertion_point(field_get:pb.polygonGate.param)
+  return param_ != NULL ? *param_ : *default_instance_->param_;
+}
+inline ::pb::paramPoly* polygonGate::mutable_param() {
+  set_has_param();
+  if (param_ == NULL) param_ = new ::pb::paramPoly;
+  // @@protoc_insertion_point(field_mutable:pb.polygonGate.param)
+  return param_;
+}
+inline ::pb::paramPoly* polygonGate::release_param() {
+  clear_has_param();
+  ::pb::paramPoly* temp = param_;
+  param_ = NULL;
+  return temp;
+}
+inline void polygonGate::set_allocated_param(::pb::paramPoly* param) {
+  delete param_;
+  param_ = param;
+  if (param) {
+    set_has_param();
+  } else {
+    clear_has_param();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.polygonGate.param)
+}
+
+// -------------------------------------------------------------------
+
+// coordinate
+
+// required double x = 1;
+inline bool coordinate::has_x() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void coordinate::set_has_x() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void coordinate::clear_has_x() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void coordinate::clear_x() {
+  x_ = 0;
+  clear_has_x();
+}
+inline double coordinate::x() const {
+  // @@protoc_insertion_point(field_get:pb.coordinate.x)
+  return x_;
+}
+inline void coordinate::set_x(double value) {
+  set_has_x();
+  x_ = value;
+  // @@protoc_insertion_point(field_set:pb.coordinate.x)
+}
+
+// required double y = 2;
+inline bool coordinate::has_y() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void coordinate::set_has_y() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void coordinate::clear_has_y() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void coordinate::clear_y() {
+  y_ = 0;
+  clear_has_y();
+}
+inline double coordinate::y() const {
+  // @@protoc_insertion_point(field_get:pb.coordinate.y)
+  return y_;
+}
+inline void coordinate::set_y(double value) {
+  set_has_y();
+  y_ = value;
+  // @@protoc_insertion_point(field_set:pb.coordinate.y)
+}
+
+// -------------------------------------------------------------------
+
+// ellipseGate
+
+// required .pb.coordinate mu = 1;
+inline bool ellipseGate::has_mu() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ellipseGate::set_has_mu() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ellipseGate::clear_has_mu() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ellipseGate::clear_mu() {
+  if (mu_ != NULL) mu_->::pb::coordinate::Clear();
+  clear_has_mu();
+}
+inline const ::pb::coordinate& ellipseGate::mu() const {
+  // @@protoc_insertion_point(field_get:pb.ellipseGate.mu)
+  return mu_ != NULL ? *mu_ : *default_instance_->mu_;
+}
+inline ::pb::coordinate* ellipseGate::mutable_mu() {
+  set_has_mu();
+  if (mu_ == NULL) mu_ = new ::pb::coordinate;
+  // @@protoc_insertion_point(field_mutable:pb.ellipseGate.mu)
+  return mu_;
+}
+inline ::pb::coordinate* ellipseGate::release_mu() {
+  clear_has_mu();
+  ::pb::coordinate* temp = mu_;
+  mu_ = NULL;
+  return temp;
+}
+inline void ellipseGate::set_allocated_mu(::pb::coordinate* mu) {
+  delete mu_;
+  mu_ = mu;
+  if (mu) {
+    set_has_mu();
+  } else {
+    clear_has_mu();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.ellipseGate.mu)
+}
+
+// repeated .pb.coordinate cov = 2;
+inline int ellipseGate::cov_size() const {
+  return cov_.size();
+}
+inline void ellipseGate::clear_cov() {
+  cov_.Clear();
+}
+inline const ::pb::coordinate& ellipseGate::cov(int index) const {
+  // @@protoc_insertion_point(field_get:pb.ellipseGate.cov)
+  return cov_.Get(index);
+}
+inline ::pb::coordinate* ellipseGate::mutable_cov(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.ellipseGate.cov)
+  return cov_.Mutable(index);
+}
+inline ::pb::coordinate* ellipseGate::add_cov() {
+  // @@protoc_insertion_point(field_add:pb.ellipseGate.cov)
+  return cov_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::coordinate >&
+ellipseGate::cov() const {
+  // @@protoc_insertion_point(field_list:pb.ellipseGate.cov)
+  return cov_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::coordinate >*
+ellipseGate::mutable_cov() {
+  // @@protoc_insertion_point(field_mutable_list:pb.ellipseGate.cov)
+  return &cov_;
+}
+
+// repeated .pb.coordinate antipodal_vertices = 3;
+inline int ellipseGate::antipodal_vertices_size() const {
+  return antipodal_vertices_.size();
+}
+inline void ellipseGate::clear_antipodal_vertices() {
+  antipodal_vertices_.Clear();
+}
+inline const ::pb::coordinate& ellipseGate::antipodal_vertices(int index) const {
+  // @@protoc_insertion_point(field_get:pb.ellipseGate.antipodal_vertices)
+  return antipodal_vertices_.Get(index);
+}
+inline ::pb::coordinate* ellipseGate::mutable_antipodal_vertices(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.ellipseGate.antipodal_vertices)
+  return antipodal_vertices_.Mutable(index);
+}
+inline ::pb::coordinate* ellipseGate::add_antipodal_vertices() {
+  // @@protoc_insertion_point(field_add:pb.ellipseGate.antipodal_vertices)
+  return antipodal_vertices_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::coordinate >&
+ellipseGate::antipodal_vertices() const {
+  // @@protoc_insertion_point(field_list:pb.ellipseGate.antipodal_vertices)
+  return antipodal_vertices_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::coordinate >*
+ellipseGate::mutable_antipodal_vertices() {
+  // @@protoc_insertion_point(field_mutable_list:pb.ellipseGate.antipodal_vertices)
+  return &antipodal_vertices_;
+}
+
+// optional double dist = 4;
+inline bool ellipseGate::has_dist() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ellipseGate::set_has_dist() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ellipseGate::clear_has_dist() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ellipseGate::clear_dist() {
+  dist_ = 0;
+  clear_has_dist();
+}
+inline double ellipseGate::dist() const {
+  // @@protoc_insertion_point(field_get:pb.ellipseGate.dist)
+  return dist_;
+}
+inline void ellipseGate::set_dist(double value) {
+  set_has_dist();
+  dist_ = value;
+  // @@protoc_insertion_point(field_set:pb.ellipseGate.dist)
+}
+
+// -------------------------------------------------------------------
+
+// BOOL_GATE_OP
+
+// repeated string path = 1;
+inline int BOOL_GATE_OP::path_size() const {
+  return path_.size();
+}
+inline void BOOL_GATE_OP::clear_path() {
+  path_.Clear();
+}
+inline const ::std::string& BOOL_GATE_OP::path(int index) const {
+  // @@protoc_insertion_point(field_get:pb.BOOL_GATE_OP.path)
+  return path_.Get(index);
+}
+inline ::std::string* BOOL_GATE_OP::mutable_path(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.BOOL_GATE_OP.path)
+  return path_.Mutable(index);
+}
+inline void BOOL_GATE_OP::set_path(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:pb.BOOL_GATE_OP.path)
+  path_.Mutable(index)->assign(value);
+}
+inline void BOOL_GATE_OP::set_path(int index, const char* value) {
+  path_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.BOOL_GATE_OP.path)
+}
+inline void BOOL_GATE_OP::set_path(int index, const char* value, size_t size) {
+  path_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.BOOL_GATE_OP.path)
+}
+inline ::std::string* BOOL_GATE_OP::add_path() {
+  return path_.Add();
+}
+inline void BOOL_GATE_OP::add_path(const ::std::string& value) {
+  path_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:pb.BOOL_GATE_OP.path)
+}
+inline void BOOL_GATE_OP::add_path(const char* value) {
+  path_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:pb.BOOL_GATE_OP.path)
+}
+inline void BOOL_GATE_OP::add_path(const char* value, size_t size) {
+  path_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:pb.BOOL_GATE_OP.path)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+BOOL_GATE_OP::path() const {
+  // @@protoc_insertion_point(field_list:pb.BOOL_GATE_OP.path)
+  return path_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+BOOL_GATE_OP::mutable_path() {
+  // @@protoc_insertion_point(field_mutable_list:pb.BOOL_GATE_OP.path)
+  return &path_;
+}
+
+// required uint32 op = 2;
+inline bool BOOL_GATE_OP::has_op() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void BOOL_GATE_OP::set_has_op() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void BOOL_GATE_OP::clear_has_op() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void BOOL_GATE_OP::clear_op() {
+  op_ = 0u;
+  clear_has_op();
+}
+inline ::google::protobuf::uint32 BOOL_GATE_OP::op() const {
+  // @@protoc_insertion_point(field_get:pb.BOOL_GATE_OP.op)
+  return op_;
+}
+inline void BOOL_GATE_OP::set_op(::google::protobuf::uint32 value) {
+  set_has_op();
+  op_ = value;
+  // @@protoc_insertion_point(field_set:pb.BOOL_GATE_OP.op)
+}
+
+// required bool isNot = 3;
+inline bool BOOL_GATE_OP::has_isnot() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void BOOL_GATE_OP::set_has_isnot() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void BOOL_GATE_OP::clear_has_isnot() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void BOOL_GATE_OP::clear_isnot() {
+  isnot_ = false;
+  clear_has_isnot();
+}
+inline bool BOOL_GATE_OP::isnot() const {
+  // @@protoc_insertion_point(field_get:pb.BOOL_GATE_OP.isNot)
+  return isnot_;
+}
+inline void BOOL_GATE_OP::set_isnot(bool value) {
+  set_has_isnot();
+  isnot_ = value;
+  // @@protoc_insertion_point(field_set:pb.BOOL_GATE_OP.isNot)
+}
+
+// -------------------------------------------------------------------
+
+// boolGate
+
+// repeated .pb.BOOL_GATE_OP boolOpSpec = 1;
+inline int boolGate::boolopspec_size() const {
+  return boolopspec_.size();
+}
+inline void boolGate::clear_boolopspec() {
+  boolopspec_.Clear();
+}
+inline const ::pb::BOOL_GATE_OP& boolGate::boolopspec(int index) const {
+  // @@protoc_insertion_point(field_get:pb.boolGate.boolOpSpec)
+  return boolopspec_.Get(index);
+}
+inline ::pb::BOOL_GATE_OP* boolGate::mutable_boolopspec(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.boolGate.boolOpSpec)
+  return boolopspec_.Mutable(index);
+}
+inline ::pb::BOOL_GATE_OP* boolGate::add_boolopspec() {
+  // @@protoc_insertion_point(field_add:pb.boolGate.boolOpSpec)
+  return boolopspec_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::BOOL_GATE_OP >&
+boolGate::boolopspec() const {
+  // @@protoc_insertion_point(field_list:pb.boolGate.boolOpSpec)
+  return boolopspec_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::BOOL_GATE_OP >*
+boolGate::mutable_boolopspec() {
+  // @@protoc_insertion_point(field_mutable_list:pb.boolGate.boolOpSpec)
+  return &boolopspec_;
+}
+
+// -------------------------------------------------------------------
+
 // gate
 
 // required bool neg = 1;
@@ -1025,6 +2501,195 @@ inline void gate::set_isgained(bool value) {
   set_has_isgained();
   isgained_ = value;
   // @@protoc_insertion_point(field_set:pb.gate.isGained)
+}
+
+// required .pb.GATE_TYPE type = 4;
+inline bool gate::has_type() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void gate::set_has_type() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void gate::clear_has_type() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void gate::clear_type() {
+  type_ = 1;
+  clear_has_type();
+}
+inline ::pb::GATE_TYPE gate::type() const {
+  // @@protoc_insertion_point(field_get:pb.gate.type)
+  return static_cast< ::pb::GATE_TYPE >(type_);
+}
+inline void gate::set_type(::pb::GATE_TYPE value) {
+  assert(::pb::GATE_TYPE_IsValid(value));
+  set_has_type();
+  type_ = value;
+  // @@protoc_insertion_point(field_set:pb.gate.type)
+}
+
+// optional .pb.rangeGate rg = 5;
+inline bool gate::has_rg() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void gate::set_has_rg() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void gate::clear_has_rg() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void gate::clear_rg() {
+  if (rg_ != NULL) rg_->::pb::rangeGate::Clear();
+  clear_has_rg();
+}
+inline const ::pb::rangeGate& gate::rg() const {
+  // @@protoc_insertion_point(field_get:pb.gate.rg)
+  return rg_ != NULL ? *rg_ : *default_instance_->rg_;
+}
+inline ::pb::rangeGate* gate::mutable_rg() {
+  set_has_rg();
+  if (rg_ == NULL) rg_ = new ::pb::rangeGate;
+  // @@protoc_insertion_point(field_mutable:pb.gate.rg)
+  return rg_;
+}
+inline ::pb::rangeGate* gate::release_rg() {
+  clear_has_rg();
+  ::pb::rangeGate* temp = rg_;
+  rg_ = NULL;
+  return temp;
+}
+inline void gate::set_allocated_rg(::pb::rangeGate* rg) {
+  delete rg_;
+  rg_ = rg;
+  if (rg) {
+    set_has_rg();
+  } else {
+    clear_has_rg();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.gate.rg)
+}
+
+// optional .pb.polygonGate pg = 6;
+inline bool gate::has_pg() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void gate::set_has_pg() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void gate::clear_has_pg() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void gate::clear_pg() {
+  if (pg_ != NULL) pg_->::pb::polygonGate::Clear();
+  clear_has_pg();
+}
+inline const ::pb::polygonGate& gate::pg() const {
+  // @@protoc_insertion_point(field_get:pb.gate.pg)
+  return pg_ != NULL ? *pg_ : *default_instance_->pg_;
+}
+inline ::pb::polygonGate* gate::mutable_pg() {
+  set_has_pg();
+  if (pg_ == NULL) pg_ = new ::pb::polygonGate;
+  // @@protoc_insertion_point(field_mutable:pb.gate.pg)
+  return pg_;
+}
+inline ::pb::polygonGate* gate::release_pg() {
+  clear_has_pg();
+  ::pb::polygonGate* temp = pg_;
+  pg_ = NULL;
+  return temp;
+}
+inline void gate::set_allocated_pg(::pb::polygonGate* pg) {
+  delete pg_;
+  pg_ = pg;
+  if (pg) {
+    set_has_pg();
+  } else {
+    clear_has_pg();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.gate.pg)
+}
+
+// optional .pb.ellipseGate eg = 7;
+inline bool gate::has_eg() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void gate::set_has_eg() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void gate::clear_has_eg() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void gate::clear_eg() {
+  if (eg_ != NULL) eg_->::pb::ellipseGate::Clear();
+  clear_has_eg();
+}
+inline const ::pb::ellipseGate& gate::eg() const {
+  // @@protoc_insertion_point(field_get:pb.gate.eg)
+  return eg_ != NULL ? *eg_ : *default_instance_->eg_;
+}
+inline ::pb::ellipseGate* gate::mutable_eg() {
+  set_has_eg();
+  if (eg_ == NULL) eg_ = new ::pb::ellipseGate;
+  // @@protoc_insertion_point(field_mutable:pb.gate.eg)
+  return eg_;
+}
+inline ::pb::ellipseGate* gate::release_eg() {
+  clear_has_eg();
+  ::pb::ellipseGate* temp = eg_;
+  eg_ = NULL;
+  return temp;
+}
+inline void gate::set_allocated_eg(::pb::ellipseGate* eg) {
+  delete eg_;
+  eg_ = eg;
+  if (eg) {
+    set_has_eg();
+  } else {
+    clear_has_eg();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.gate.eg)
+}
+
+// optional .pb.boolGate bg = 8;
+inline bool gate::has_bg() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void gate::set_has_bg() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void gate::clear_has_bg() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void gate::clear_bg() {
+  if (bg_ != NULL) bg_->::pb::boolGate::Clear();
+  clear_has_bg();
+}
+inline const ::pb::boolGate& gate::bg() const {
+  // @@protoc_insertion_point(field_get:pb.gate.bg)
+  return bg_ != NULL ? *bg_ : *default_instance_->bg_;
+}
+inline ::pb::boolGate* gate::mutable_bg() {
+  set_has_bg();
+  if (bg_ == NULL) bg_ = new ::pb::boolGate;
+  // @@protoc_insertion_point(field_mutable:pb.gate.bg)
+  return bg_;
+}
+inline ::pb::boolGate* gate::release_bg() {
+  clear_has_bg();
+  ::pb::boolGate* temp = bg_;
+  bg_ = NULL;
+  return temp;
+}
+inline void gate::set_allocated_bg(::pb::boolGate* bg) {
+  delete bg_;
+  bg_ = bg;
+  if (bg) {
+    set_has_bg();
+  } else {
+    clear_has_bg();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.gate.bg)
 }
 
 // -------------------------------------------------------------------
@@ -1802,6 +3467,11 @@ GatingSet::mutable_ghs() {
 namespace google {
 namespace protobuf {
 
+template <> struct is_proto_enum< ::pb::GATE_TYPE> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::pb::GATE_TYPE>() {
+  return ::pb::GATE_TYPE_descriptor();
+}
 template <> struct is_proto_enum< ::pb::ind_type> : ::google::protobuf::internal::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::pb::ind_type>() {

@@ -42,6 +42,31 @@ nodeProperties::nodeProperties(pb::nodeProperties & np_pb):thisGate(NULL),hidden
 	 * parse gate
 	 */
 	if(np_pb.has_thisgate()){
+		pb::gate gate_pb = np_pb.thisgate();
+		switch(gate_pb.type())
+		{
+		case pb::RANGE_GATE:
+			thisGate = new rangeGate(gate_pb);
+			break;
+		case pb::BOOL_GATE:
+			thisGate = new boolGate(gate_pb);
+			break;
+		case pb::POLYGON_GATE:
+			thisGate = new polygonGate(gate_pb);
+			break;
+		case pb::RECT_GATE:
+			thisGate = new rectGate(gate_pb);
+			break;
+		case pb::ELLIPSE_GATE:
+			thisGate = new ellipseGate(gate_pb);
+			break;
+		case pb::ELLIPSOID_GATE:
+			thisGate = new ellipsoidGate(gate_pb);
+			break;
+		case pb::LOGICAL_GATE:
+			thisGate = new logicalGate(gate_pb);
+			break;
+		}
 
 	}
 }
@@ -188,6 +213,9 @@ void nodeProperties::convertToPb(pb::nodeProperties & np_pb){
 	}
 
 	//cp gate
-//	pb::gate * gate_pb = np_pb.mutable_thisgate();
-//	thisGate->convertToPb(*gate_pb);
+	if(thisGate!=NULL){
+		pb::gate * gate_pb = np_pb.mutable_thisgate();
+		thisGate->convertToPb(*gate_pb);
+	}
+
 }

@@ -43,6 +43,11 @@ struct coordinate
 						}
 	coordinate(double _x,double _y){x=_x;y=_y;};
 	coordinate(){};
+	void convertToPb(pb::coordinate & coor_pb){
+		coor_pb.set_x(x);
+		coor_pb.set_y(y);
+	};
+	coordinate(pb::coordinate & coor_pb):x(coor_pb.x()),y(coor_pb.y()){};
 };
 bool compare_x(coordinate i, coordinate j);
 bool compare_y(coordinate i, coordinate j);

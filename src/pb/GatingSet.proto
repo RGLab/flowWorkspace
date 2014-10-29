@@ -1,20 +1,75 @@
 package pb;
+message paramRange{
+	required string name = 1;
+	required double min = 2;
+	required double max = 3;
+}
+message rangeGate{
+	required paramRange param = 1;
+}
+message paramPoly{
+	repeated string params = 1;//params.at(0) is x, params.at(1) is y axis
+	repeated coordinate vertices = 2;
+}
+message polygonGate{
+	required paramPoly param = 1;
+}
+message coordinate{
+	required double x = 1;
+	required double y = 2;
+
+}
+message ellipseGate{
+	required coordinate mu = 1;// center point
+ 	repeated coordinate cov = 2;//covariance matrix
+ 	repeated coordinate antipodal_vertices = 3;
+ 	optional double dist = 4;
+}
+message BOOL_GATE_OP{
+	repeated string path = 1;
+	required uint32 op = 2;
+	required bool isNot =3;
+}
+
+message boolGate{
+	repeated BOOL_GATE_OP boolOpSpec = 1;//the gatePaths with the their logical operators
+}
+enum GATE_TYPE{
+	 POLYGON_GATE = 1;
+	 RANGE_GATE = 2;
+	 BOOL_GATE = 3;
+	 ELLIPSE_GATE = 4;
+	 RECT_GATE = 5;
+	 LOGICAL_GATE = 6;
+	 ELLIPSOID_GATE = 7;
+
+	}
+message gate{
+	required bool neg =1;
+	required bool isTransformed =2;
+	required bool isGained = 3;
+	required GATE_TYPE type = 4;
+
+	optional rangeGate rg = 5;
+	optional polygonGate pg = 6;
+	optional ellipseGate eg = 7;
+	optional boolGate bg = 8;
+
+
+
+}
+
+
+message POPSTATS{
+	required string statType = 1;
+	required float statVal = 2;
+}
 enum ind_type {
 		BOOL = 0;
 		INT = 1;
 		ROOT = 2 ;
 	}
 
-message gate{
-	required bool neg =1;
-	required bool isTransformed =2;
-	required bool isGained = 3;
-}
-
-message POPSTATS{
-	required string statType = 1;
-	required float statVal = 2;
-}
 
 message POPINDICES{
 	required fixed32 nEvents = 1;
