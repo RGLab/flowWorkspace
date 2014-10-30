@@ -44,12 +44,24 @@ class BOOL_GATE_OP;
 class boolGate;
 class gate;
 class POPSTATS;
+class calibrationTable;
+class biexpTrans;
+class fasinhTrans;
+class scaleTrans;
+class flinTrans;
+class logTrans;
+class transformation;
+class trans_pair;
+class trans_local;
 class POPINDICES;
 class nodeProperties;
 class treeNodes;
 class populationTree;
+class COMP;
+class PARAM;
 class GatingHierarchy;
 class ghPair;
+class TRANS_TBL;
 class GatingSet;
 
 enum GATE_TYPE {
@@ -95,6 +107,29 @@ inline bool ind_type_Parse(
     const ::std::string& name, ind_type* value) {
   return ::google::protobuf::internal::ParseNamedEnum<ind_type>(
     ind_type_descriptor(), name, value);
+}
+enum TRANS_TYPE {
+  PB_BIEXP = 0,
+  PB_FASIGNH = 1,
+  PB_LOG = 2,
+  PB_LIN = 3,
+  PB_SCALE = 4,
+  PB_FLIN = 5
+};
+bool TRANS_TYPE_IsValid(int value);
+const TRANS_TYPE TRANS_TYPE_MIN = PB_BIEXP;
+const TRANS_TYPE TRANS_TYPE_MAX = PB_FLIN;
+const int TRANS_TYPE_ARRAYSIZE = TRANS_TYPE_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* TRANS_TYPE_descriptor();
+inline const ::std::string& TRANS_TYPE_Name(TRANS_TYPE value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    TRANS_TYPE_descriptor(), value);
+}
+inline bool TRANS_TYPE_Parse(
+    const ::std::string& name, TRANS_TYPE* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<TRANS_TYPE>(
+    TRANS_TYPE_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -1108,6 +1143,1085 @@ class POPSTATS : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class calibrationTable : public ::google::protobuf::Message {
+ public:
+  calibrationTable();
+  virtual ~calibrationTable();
+
+  calibrationTable(const calibrationTable& from);
+
+  inline calibrationTable& operator=(const calibrationTable& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const calibrationTable& default_instance();
+
+  void Swap(calibrationTable* other);
+
+  // implements Message ----------------------------------------------
+
+  calibrationTable* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const calibrationTable& from);
+  void MergeFrom(const calibrationTable& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated double x = 1;
+  inline int x_size() const;
+  inline void clear_x();
+  static const int kXFieldNumber = 1;
+  inline double x(int index) const;
+  inline void set_x(int index, double value);
+  inline void add_x(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      x() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_x();
+
+  // repeated double y = 2;
+  inline int y_size() const;
+  inline void clear_y();
+  static const int kYFieldNumber = 2;
+  inline double y(int index) const;
+  inline void set_y(int index, double value);
+  inline void add_y(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      y() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_y();
+
+  // repeated double b = 3;
+  inline int b_size() const;
+  inline void clear_b();
+  static const int kBFieldNumber = 3;
+  inline double b(int index) const;
+  inline void set_b(int index, double value);
+  inline void add_b(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      b() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_b();
+
+  // repeated double c = 4;
+  inline int c_size() const;
+  inline void clear_c();
+  static const int kCFieldNumber = 4;
+  inline double c(int index) const;
+  inline void set_c(int index, double value);
+  inline void add_c(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      c() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_c();
+
+  // repeated double d = 5;
+  inline int d_size() const;
+  inline void clear_d();
+  static const int kDFieldNumber = 5;
+  inline double d(int index) const;
+  inline void set_d(int index, double value);
+  inline void add_d(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      d() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_d();
+
+  // optional uint32 spline_method = 6;
+  inline bool has_spline_method() const;
+  inline void clear_spline_method();
+  static const int kSplineMethodFieldNumber = 6;
+  inline ::google::protobuf::uint32 spline_method() const;
+  inline void set_spline_method(::google::protobuf::uint32 value);
+
+  // optional string caltype = 7;
+  inline bool has_caltype() const;
+  inline void clear_caltype();
+  static const int kCaltypeFieldNumber = 7;
+  inline const ::std::string& caltype() const;
+  inline void set_caltype(const ::std::string& value);
+  inline void set_caltype(const char* value);
+  inline void set_caltype(const char* value, size_t size);
+  inline ::std::string* mutable_caltype();
+  inline ::std::string* release_caltype();
+  inline void set_allocated_caltype(::std::string* caltype);
+
+  // optional bool flag = 8;
+  inline bool has_flag() const;
+  inline void clear_flag();
+  static const int kFlagFieldNumber = 8;
+  inline bool flag() const;
+  inline void set_flag(bool value);
+
+  // @@protoc_insertion_point(class_scope:pb.calibrationTable)
+ private:
+  inline void set_has_spline_method();
+  inline void clear_has_spline_method();
+  inline void set_has_caltype();
+  inline void clear_has_caltype();
+  inline void set_has_flag();
+  inline void clear_has_flag();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedField< double > x_;
+  ::google::protobuf::RepeatedField< double > y_;
+  ::google::protobuf::RepeatedField< double > b_;
+  ::google::protobuf::RepeatedField< double > c_;
+  ::google::protobuf::RepeatedField< double > d_;
+  ::std::string* caltype_;
+  ::google::protobuf::uint32 spline_method_;
+  bool flag_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static calibrationTable* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class biexpTrans : public ::google::protobuf::Message {
+ public:
+  biexpTrans();
+  virtual ~biexpTrans();
+
+  biexpTrans(const biexpTrans& from);
+
+  inline biexpTrans& operator=(const biexpTrans& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const biexpTrans& default_instance();
+
+  void Swap(biexpTrans* other);
+
+  // implements Message ----------------------------------------------
+
+  biexpTrans* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const biexpTrans& from);
+  void MergeFrom(const biexpTrans& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional uint32 channelRange = 1;
+  inline bool has_channelrange() const;
+  inline void clear_channelrange();
+  static const int kChannelRangeFieldNumber = 1;
+  inline ::google::protobuf::uint32 channelrange() const;
+  inline void set_channelrange(::google::protobuf::uint32 value);
+
+  // optional double pos = 2;
+  inline bool has_pos() const;
+  inline void clear_pos();
+  static const int kPosFieldNumber = 2;
+  inline double pos() const;
+  inline void set_pos(double value);
+
+  // optional double neg = 3;
+  inline bool has_neg() const;
+  inline void clear_neg();
+  static const int kNegFieldNumber = 3;
+  inline double neg() const;
+  inline void set_neg(double value);
+
+  // optional double widthBasis = 4;
+  inline bool has_widthbasis() const;
+  inline void clear_widthbasis();
+  static const int kWidthBasisFieldNumber = 4;
+  inline double widthbasis() const;
+  inline void set_widthbasis(double value);
+
+  // optional double maxValue = 5;
+  inline bool has_maxvalue() const;
+  inline void clear_maxvalue();
+  static const int kMaxValueFieldNumber = 5;
+  inline double maxvalue() const;
+  inline void set_maxvalue(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.biexpTrans)
+ private:
+  inline void set_has_channelrange();
+  inline void clear_has_channelrange();
+  inline void set_has_pos();
+  inline void clear_has_pos();
+  inline void set_has_neg();
+  inline void clear_has_neg();
+  inline void set_has_widthbasis();
+  inline void clear_has_widthbasis();
+  inline void set_has_maxvalue();
+  inline void clear_has_maxvalue();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  double pos_;
+  double neg_;
+  double widthbasis_;
+  double maxvalue_;
+  ::google::protobuf::uint32 channelrange_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static biexpTrans* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class fasinhTrans : public ::google::protobuf::Message {
+ public:
+  fasinhTrans();
+  virtual ~fasinhTrans();
+
+  fasinhTrans(const fasinhTrans& from);
+
+  inline fasinhTrans& operator=(const fasinhTrans& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const fasinhTrans& default_instance();
+
+  void Swap(fasinhTrans* other);
+
+  // implements Message ----------------------------------------------
+
+  fasinhTrans* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const fasinhTrans& from);
+  void MergeFrom(const fasinhTrans& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional double length = 1;
+  inline bool has_length() const;
+  inline void clear_length();
+  static const int kLengthFieldNumber = 1;
+  inline double length() const;
+  inline void set_length(double value);
+
+  // optional double maxRange = 2;
+  inline bool has_maxrange() const;
+  inline void clear_maxrange();
+  static const int kMaxRangeFieldNumber = 2;
+  inline double maxrange() const;
+  inline void set_maxrange(double value);
+
+  // optional double T = 3;
+  inline bool has_t() const;
+  inline void clear_t();
+  static const int kTFieldNumber = 3;
+  inline double t() const;
+  inline void set_t(double value);
+
+  // optional double A = 4;
+  inline bool has_a() const;
+  inline void clear_a();
+  static const int kAFieldNumber = 4;
+  inline double a() const;
+  inline void set_a(double value);
+
+  // optional double M = 5;
+  inline bool has_m() const;
+  inline void clear_m();
+  static const int kMFieldNumber = 5;
+  inline double m() const;
+  inline void set_m(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.fasinhTrans)
+ private:
+  inline void set_has_length();
+  inline void clear_has_length();
+  inline void set_has_maxrange();
+  inline void clear_has_maxrange();
+  inline void set_has_t();
+  inline void clear_has_t();
+  inline void set_has_a();
+  inline void clear_has_a();
+  inline void set_has_m();
+  inline void clear_has_m();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  double length_;
+  double maxrange_;
+  double t_;
+  double a_;
+  double m_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static fasinhTrans* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class scaleTrans : public ::google::protobuf::Message {
+ public:
+  scaleTrans();
+  virtual ~scaleTrans();
+
+  scaleTrans(const scaleTrans& from);
+
+  inline scaleTrans& operator=(const scaleTrans& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const scaleTrans& default_instance();
+
+  void Swap(scaleTrans* other);
+
+  // implements Message ----------------------------------------------
+
+  scaleTrans* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const scaleTrans& from);
+  void MergeFrom(const scaleTrans& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional float scale_factor = 1;
+  inline bool has_scale_factor() const;
+  inline void clear_scale_factor();
+  static const int kScaleFactorFieldNumber = 1;
+  inline float scale_factor() const;
+  inline void set_scale_factor(float value);
+
+  // @@protoc_insertion_point(class_scope:pb.scaleTrans)
+ private:
+  inline void set_has_scale_factor();
+  inline void clear_has_scale_factor();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  float scale_factor_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static scaleTrans* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class flinTrans : public ::google::protobuf::Message {
+ public:
+  flinTrans();
+  virtual ~flinTrans();
+
+  flinTrans(const flinTrans& from);
+
+  inline flinTrans& operator=(const flinTrans& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const flinTrans& default_instance();
+
+  void Swap(flinTrans* other);
+
+  // implements Message ----------------------------------------------
+
+  flinTrans* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const flinTrans& from);
+  void MergeFrom(const flinTrans& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional double min = 1;
+  inline bool has_min() const;
+  inline void clear_min();
+  static const int kMinFieldNumber = 1;
+  inline double min() const;
+  inline void set_min(double value);
+
+  // optional double max = 2;
+  inline bool has_max() const;
+  inline void clear_max();
+  static const int kMaxFieldNumber = 2;
+  inline double max() const;
+  inline void set_max(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.flinTrans)
+ private:
+  inline void set_has_min();
+  inline void clear_has_min();
+  inline void set_has_max();
+  inline void clear_has_max();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  double min_;
+  double max_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static flinTrans* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class logTrans : public ::google::protobuf::Message {
+ public:
+  logTrans();
+  virtual ~logTrans();
+
+  logTrans(const logTrans& from);
+
+  inline logTrans& operator=(const logTrans& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const logTrans& default_instance();
+
+  void Swap(logTrans* other);
+
+  // implements Message ----------------------------------------------
+
+  logTrans* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const logTrans& from);
+  void MergeFrom(const logTrans& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional double offset = 1;
+  inline bool has_offset() const;
+  inline void clear_offset();
+  static const int kOffsetFieldNumber = 1;
+  inline double offset() const;
+  inline void set_offset(double value);
+
+  // optional double decade = 2;
+  inline bool has_decade() const;
+  inline void clear_decade();
+  static const int kDecadeFieldNumber = 2;
+  inline double decade() const;
+  inline void set_decade(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.logTrans)
+ private:
+  inline void set_has_offset();
+  inline void clear_has_offset();
+  inline void set_has_decade();
+  inline void clear_has_decade();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  double offset_;
+  double decade_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static logTrans* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class transformation : public ::google::protobuf::Message {
+ public:
+  transformation();
+  virtual ~transformation();
+
+  transformation(const transformation& from);
+
+  inline transformation& operator=(const transformation& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const transformation& default_instance();
+
+  void Swap(transformation* other);
+
+  // implements Message ----------------------------------------------
+
+  transformation* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const transformation& from);
+  void MergeFrom(const transformation& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional .pb.calibrationTable calTbl = 1;
+  inline bool has_caltbl() const;
+  inline void clear_caltbl();
+  static const int kCalTblFieldNumber = 1;
+  inline const ::pb::calibrationTable& caltbl() const;
+  inline ::pb::calibrationTable* mutable_caltbl();
+  inline ::pb::calibrationTable* release_caltbl();
+  inline void set_allocated_caltbl(::pb::calibrationTable* caltbl);
+
+  // optional bool isGateOnly = 2;
+  inline bool has_isgateonly() const;
+  inline void clear_isgateonly();
+  static const int kIsGateOnlyFieldNumber = 2;
+  inline bool isgateonly() const;
+  inline void set_isgateonly(bool value);
+
+  // optional string name = 4;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 4;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  inline void set_allocated_name(::std::string* name);
+
+  // optional string channel = 5;
+  inline bool has_channel() const;
+  inline void clear_channel();
+  static const int kChannelFieldNumber = 5;
+  inline const ::std::string& channel() const;
+  inline void set_channel(const ::std::string& value);
+  inline void set_channel(const char* value);
+  inline void set_channel(const char* value, size_t size);
+  inline ::std::string* mutable_channel();
+  inline ::std::string* release_channel();
+  inline void set_allocated_channel(::std::string* channel);
+
+  // optional bool isComputed = 6;
+  inline bool has_iscomputed() const;
+  inline void clear_iscomputed();
+  static const int kIsComputedFieldNumber = 6;
+  inline bool iscomputed() const;
+  inline void set_iscomputed(bool value);
+
+  // optional uint32 type = 12;
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 12;
+  inline ::google::protobuf::uint32 type() const;
+  inline void set_type(::google::protobuf::uint32 value);
+
+  // optional .pb.TRANS_TYPE trans_type = 3;
+  inline bool has_trans_type() const;
+  inline void clear_trans_type();
+  static const int kTransTypeFieldNumber = 3;
+  inline ::pb::TRANS_TYPE trans_type() const;
+  inline void set_trans_type(::pb::TRANS_TYPE value);
+
+  // optional .pb.biexpTrans bt = 7;
+  inline bool has_bt() const;
+  inline void clear_bt();
+  static const int kBtFieldNumber = 7;
+  inline const ::pb::biexpTrans& bt() const;
+  inline ::pb::biexpTrans* mutable_bt();
+  inline ::pb::biexpTrans* release_bt();
+  inline void set_allocated_bt(::pb::biexpTrans* bt);
+
+  // optional .pb.logTrans lt = 8;
+  inline bool has_lt() const;
+  inline void clear_lt();
+  static const int kLtFieldNumber = 8;
+  inline const ::pb::logTrans& lt() const;
+  inline ::pb::logTrans* mutable_lt();
+  inline ::pb::logTrans* release_lt();
+  inline void set_allocated_lt(::pb::logTrans* lt);
+
+  // optional .pb.flinTrans flt = 9;
+  inline bool has_flt() const;
+  inline void clear_flt();
+  static const int kFltFieldNumber = 9;
+  inline const ::pb::flinTrans& flt() const;
+  inline ::pb::flinTrans* mutable_flt();
+  inline ::pb::flinTrans* release_flt();
+  inline void set_allocated_flt(::pb::flinTrans* flt);
+
+  // optional .pb.scaleTrans st = 10;
+  inline bool has_st() const;
+  inline void clear_st();
+  static const int kStFieldNumber = 10;
+  inline const ::pb::scaleTrans& st() const;
+  inline ::pb::scaleTrans* mutable_st();
+  inline ::pb::scaleTrans* release_st();
+  inline void set_allocated_st(::pb::scaleTrans* st);
+
+  // optional .pb.fasinhTrans ft = 11;
+  inline bool has_ft() const;
+  inline void clear_ft();
+  static const int kFtFieldNumber = 11;
+  inline const ::pb::fasinhTrans& ft() const;
+  inline ::pb::fasinhTrans* mutable_ft();
+  inline ::pb::fasinhTrans* release_ft();
+  inline void set_allocated_ft(::pb::fasinhTrans* ft);
+
+  // @@protoc_insertion_point(class_scope:pb.transformation)
+ private:
+  inline void set_has_caltbl();
+  inline void clear_has_caltbl();
+  inline void set_has_isgateonly();
+  inline void clear_has_isgateonly();
+  inline void set_has_name();
+  inline void clear_has_name();
+  inline void set_has_channel();
+  inline void clear_has_channel();
+  inline void set_has_iscomputed();
+  inline void clear_has_iscomputed();
+  inline void set_has_type();
+  inline void clear_has_type();
+  inline void set_has_trans_type();
+  inline void clear_has_trans_type();
+  inline void set_has_bt();
+  inline void clear_has_bt();
+  inline void set_has_lt();
+  inline void clear_has_lt();
+  inline void set_has_flt();
+  inline void clear_has_flt();
+  inline void set_has_st();
+  inline void clear_has_st();
+  inline void set_has_ft();
+  inline void clear_has_ft();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::pb::calibrationTable* caltbl_;
+  ::std::string* name_;
+  ::std::string* channel_;
+  bool isgateonly_;
+  bool iscomputed_;
+  ::google::protobuf::uint32 type_;
+  ::pb::biexpTrans* bt_;
+  ::pb::logTrans* lt_;
+  ::pb::flinTrans* flt_;
+  ::pb::scaleTrans* st_;
+  ::pb::fasinhTrans* ft_;
+  int trans_type_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static transformation* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class trans_pair : public ::google::protobuf::Message {
+ public:
+  trans_pair();
+  virtual ~trans_pair();
+
+  trans_pair(const trans_pair& from);
+
+  inline trans_pair& operator=(const trans_pair& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const trans_pair& default_instance();
+
+  void Swap(trans_pair* other);
+
+  // implements Message ----------------------------------------------
+
+  trans_pair* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const trans_pair& from);
+  void MergeFrom(const trans_pair& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string name = 1;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 1;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  inline void set_allocated_name(::std::string* name);
+
+  // required uint64 trans_address = 2;
+  inline bool has_trans_address() const;
+  inline void clear_trans_address();
+  static const int kTransAddressFieldNumber = 2;
+  inline ::google::protobuf::uint64 trans_address() const;
+  inline void set_trans_address(::google::protobuf::uint64 value);
+
+  // @@protoc_insertion_point(class_scope:pb.trans_pair)
+ private:
+  inline void set_has_name();
+  inline void clear_has_name();
+  inline void set_has_trans_address();
+  inline void clear_has_trans_address();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* name_;
+  ::google::protobuf::uint64 trans_address_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static trans_pair* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class trans_local : public ::google::protobuf::Message {
+ public:
+  trans_local();
+  virtual ~trans_local();
+
+  trans_local(const trans_local& from);
+
+  inline trans_local& operator=(const trans_local& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const trans_local& default_instance();
+
+  void Swap(trans_local* other);
+
+  // implements Message ----------------------------------------------
+
+  trans_local* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const trans_local& from);
+  void MergeFrom(const trans_local& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .pb.trans_pair tp = 1;
+  inline int tp_size() const;
+  inline void clear_tp();
+  static const int kTpFieldNumber = 1;
+  inline const ::pb::trans_pair& tp(int index) const;
+  inline ::pb::trans_pair* mutable_tp(int index);
+  inline ::pb::trans_pair* add_tp();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::trans_pair >&
+      tp() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::trans_pair >*
+      mutable_tp();
+
+  // optional string groupName = 2;
+  inline bool has_groupname() const;
+  inline void clear_groupname();
+  static const int kGroupNameFieldNumber = 2;
+  inline const ::std::string& groupname() const;
+  inline void set_groupname(const ::std::string& value);
+  inline void set_groupname(const char* value);
+  inline void set_groupname(const char* value, size_t size);
+  inline ::std::string* mutable_groupname();
+  inline ::std::string* release_groupname();
+  inline void set_allocated_groupname(::std::string* groupname);
+
+  // repeated uint32 sampleIDs = 3;
+  inline int sampleids_size() const;
+  inline void clear_sampleids();
+  static const int kSampleIDsFieldNumber = 3;
+  inline ::google::protobuf::uint32 sampleids(int index) const;
+  inline void set_sampleids(int index, ::google::protobuf::uint32 value);
+  inline void add_sampleids(::google::protobuf::uint32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      sampleids() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_sampleids();
+
+  // @@protoc_insertion_point(class_scope:pb.trans_local)
+ private:
+  inline void set_has_groupname();
+  inline void clear_has_groupname();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::pb::trans_pair > tp_;
+  ::std::string* groupname_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > sampleids_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static trans_local* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class POPINDICES : public ::google::protobuf::Message {
  public:
   POPINDICES();
@@ -1540,6 +2654,304 @@ class populationTree : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class COMP : public ::google::protobuf::Message {
+ public:
+  COMP();
+  virtual ~COMP();
+
+  COMP(const COMP& from);
+
+  inline COMP& operator=(const COMP& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const COMP& default_instance();
+
+  void Swap(COMP* other);
+
+  // implements Message ----------------------------------------------
+
+  COMP* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const COMP& from);
+  void MergeFrom(const COMP& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string cid = 1;
+  inline bool has_cid() const;
+  inline void clear_cid();
+  static const int kCidFieldNumber = 1;
+  inline const ::std::string& cid() const;
+  inline void set_cid(const ::std::string& value);
+  inline void set_cid(const char* value);
+  inline void set_cid(const char* value, size_t size);
+  inline ::std::string* mutable_cid();
+  inline ::std::string* release_cid();
+  inline void set_allocated_cid(::std::string* cid);
+
+  // optional string prefix = 2;
+  inline bool has_prefix() const;
+  inline void clear_prefix();
+  static const int kPrefixFieldNumber = 2;
+  inline const ::std::string& prefix() const;
+  inline void set_prefix(const ::std::string& value);
+  inline void set_prefix(const char* value);
+  inline void set_prefix(const char* value, size_t size);
+  inline ::std::string* mutable_prefix();
+  inline ::std::string* release_prefix();
+  inline void set_allocated_prefix(::std::string* prefix);
+
+  // optional string suffix = 3;
+  inline bool has_suffix() const;
+  inline void clear_suffix();
+  static const int kSuffixFieldNumber = 3;
+  inline const ::std::string& suffix() const;
+  inline void set_suffix(const ::std::string& value);
+  inline void set_suffix(const char* value);
+  inline void set_suffix(const char* value, size_t size);
+  inline ::std::string* mutable_suffix();
+  inline ::std::string* release_suffix();
+  inline void set_allocated_suffix(::std::string* suffix);
+
+  // optional string name = 4;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 4;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  inline void set_allocated_name(::std::string* name);
+
+  // optional string comment = 5;
+  inline bool has_comment() const;
+  inline void clear_comment();
+  static const int kCommentFieldNumber = 5;
+  inline const ::std::string& comment() const;
+  inline void set_comment(const ::std::string& value);
+  inline void set_comment(const char* value);
+  inline void set_comment(const char* value, size_t size);
+  inline ::std::string* mutable_comment();
+  inline ::std::string* release_comment();
+  inline void set_allocated_comment(::std::string* comment);
+
+  // repeated string marker = 6;
+  inline int marker_size() const;
+  inline void clear_marker();
+  static const int kMarkerFieldNumber = 6;
+  inline const ::std::string& marker(int index) const;
+  inline ::std::string* mutable_marker(int index);
+  inline void set_marker(int index, const ::std::string& value);
+  inline void set_marker(int index, const char* value);
+  inline void set_marker(int index, const char* value, size_t size);
+  inline ::std::string* add_marker();
+  inline void add_marker(const ::std::string& value);
+  inline void add_marker(const char* value);
+  inline void add_marker(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& marker() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_marker();
+
+  // repeated double spillOver = 7;
+  inline int spillover_size() const;
+  inline void clear_spillover();
+  static const int kSpillOverFieldNumber = 7;
+  inline double spillover(int index) const;
+  inline void set_spillover(int index, double value);
+  inline void add_spillover(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      spillover() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_spillover();
+
+  // @@protoc_insertion_point(class_scope:pb.COMP)
+ private:
+  inline void set_has_cid();
+  inline void clear_has_cid();
+  inline void set_has_prefix();
+  inline void clear_has_prefix();
+  inline void set_has_suffix();
+  inline void clear_has_suffix();
+  inline void set_has_name();
+  inline void clear_has_name();
+  inline void set_has_comment();
+  inline void clear_has_comment();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* cid_;
+  ::std::string* prefix_;
+  ::std::string* suffix_;
+  ::std::string* name_;
+  ::std::string* comment_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> marker_;
+  ::google::protobuf::RepeatedField< double > spillover_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static COMP* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class PARAM : public ::google::protobuf::Message {
+ public:
+  PARAM();
+  virtual ~PARAM();
+
+  PARAM(const PARAM& from);
+
+  inline PARAM& operator=(const PARAM& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PARAM& default_instance();
+
+  void Swap(PARAM* other);
+
+  // implements Message ----------------------------------------------
+
+  PARAM* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PARAM& from);
+  void MergeFrom(const PARAM& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string param = 1;
+  inline bool has_param() const;
+  inline void clear_param();
+  static const int kParamFieldNumber = 1;
+  inline const ::std::string& param() const;
+  inline void set_param(const ::std::string& value);
+  inline void set_param(const char* value);
+  inline void set_param(const char* value, size_t size);
+  inline ::std::string* mutable_param();
+  inline ::std::string* release_param();
+  inline void set_allocated_param(::std::string* param);
+
+  // optional bool log = 2;
+  inline bool has_log() const;
+  inline void clear_log();
+  static const int kLogFieldNumber = 2;
+  inline bool log() const;
+  inline void set_log(bool value);
+
+  // optional uint32 range = 3;
+  inline bool has_range() const;
+  inline void clear_range();
+  static const int kRangeFieldNumber = 3;
+  inline ::google::protobuf::uint32 range() const;
+  inline void set_range(::google::protobuf::uint32 value);
+
+  // optional uint32 highValue = 4;
+  inline bool has_highvalue() const;
+  inline void clear_highvalue();
+  static const int kHighValueFieldNumber = 4;
+  inline ::google::protobuf::uint32 highvalue() const;
+  inline void set_highvalue(::google::protobuf::uint32 value);
+
+  // optional uint32 calibrationIndex = 5;
+  inline bool has_calibrationindex() const;
+  inline void clear_calibrationindex();
+  static const int kCalibrationIndexFieldNumber = 5;
+  inline ::google::protobuf::uint32 calibrationindex() const;
+  inline void set_calibrationindex(::google::protobuf::uint32 value);
+
+  // @@protoc_insertion_point(class_scope:pb.PARAM)
+ private:
+  inline void set_has_param();
+  inline void clear_has_param();
+  inline void set_has_log();
+  inline void clear_has_log();
+  inline void set_has_range();
+  inline void clear_has_range();
+  inline void set_has_highvalue();
+  inline void clear_has_highvalue();
+  inline void set_has_calibrationindex();
+  inline void clear_has_calibrationindex();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* param_;
+  bool log_;
+  ::google::protobuf::uint32 range_;
+  ::google::protobuf::uint32 highvalue_;
+  ::google::protobuf::uint32 calibrationindex_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static PARAM* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class GatingHierarchy : public ::google::protobuf::Message {
  public:
   GatingHierarchy();
@@ -1602,16 +3014,63 @@ class GatingHierarchy : public ::google::protobuf::Message {
   inline ::pb::populationTree* release_tree();
   inline void set_allocated_tree(::pb::populationTree* tree);
 
+  // optional .pb.COMP comp = 1;
+  inline bool has_comp() const;
+  inline void clear_comp();
+  static const int kCompFieldNumber = 1;
+  inline const ::pb::COMP& comp() const;
+  inline ::pb::COMP* mutable_comp();
+  inline ::pb::COMP* release_comp();
+  inline void set_allocated_comp(::pb::COMP* comp);
+
+  // optional bool isLoaded = 3;
+  inline bool has_isloaded() const;
+  inline void clear_isloaded();
+  static const int kIsLoadedFieldNumber = 3;
+  inline bool isloaded() const;
+  inline void set_isloaded(bool value);
+
+  // repeated .pb.PARAM transFlag = 4;
+  inline int transflag_size() const;
+  inline void clear_transflag();
+  static const int kTransFlagFieldNumber = 4;
+  inline const ::pb::PARAM& transflag(int index) const;
+  inline ::pb::PARAM* mutable_transflag(int index);
+  inline ::pb::PARAM* add_transflag();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::PARAM >&
+      transflag() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::PARAM >*
+      mutable_transflag();
+
+  // optional .pb.trans_local trans = 5;
+  inline bool has_trans() const;
+  inline void clear_trans();
+  static const int kTransFieldNumber = 5;
+  inline const ::pb::trans_local& trans() const;
+  inline ::pb::trans_local* mutable_trans();
+  inline ::pb::trans_local* release_trans();
+  inline void set_allocated_trans(::pb::trans_local* trans);
+
   // @@protoc_insertion_point(class_scope:pb.GatingHierarchy)
  private:
   inline void set_has_tree();
   inline void clear_has_tree();
+  inline void set_has_comp();
+  inline void clear_has_comp();
+  inline void set_has_isloaded();
+  inline void clear_has_isloaded();
+  inline void set_has_trans();
+  inline void clear_has_trans();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::pb::populationTree* tree_;
+  ::pb::COMP* comp_;
+  ::google::protobuf::RepeatedPtrField< ::pb::PARAM > transflag_;
+  ::pb::trans_local* trans_;
+  bool isloaded_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -1717,6 +3176,97 @@ class ghPair : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class TRANS_TBL : public ::google::protobuf::Message {
+ public:
+  TRANS_TBL();
+  virtual ~TRANS_TBL();
+
+  TRANS_TBL(const TRANS_TBL& from);
+
+  inline TRANS_TBL& operator=(const TRANS_TBL& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TRANS_TBL& default_instance();
+
+  void Swap(TRANS_TBL* other);
+
+  // implements Message ----------------------------------------------
+
+  TRANS_TBL* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TRANS_TBL& from);
+  void MergeFrom(const TRANS_TBL& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required uint64 trans_address = 1;
+  inline bool has_trans_address() const;
+  inline void clear_trans_address();
+  static const int kTransAddressFieldNumber = 1;
+  inline ::google::protobuf::uint64 trans_address() const;
+  inline void set_trans_address(::google::protobuf::uint64 value);
+
+  // required .pb.transformation trans = 2;
+  inline bool has_trans() const;
+  inline void clear_trans();
+  static const int kTransFieldNumber = 2;
+  inline const ::pb::transformation& trans() const;
+  inline ::pb::transformation* mutable_trans();
+  inline ::pb::transformation* release_trans();
+  inline void set_allocated_trans(::pb::transformation* trans);
+
+  // @@protoc_insertion_point(class_scope:pb.TRANS_TBL)
+ private:
+  inline void set_has_trans_address();
+  inline void clear_has_trans_address();
+  inline void set_has_trans();
+  inline void clear_has_trans();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::uint64 trans_address_;
+  ::pb::transformation* trans_;
+  friend void  protobuf_AddDesc_GatingSet_2eproto();
+  friend void protobuf_AssignDesc_GatingSet_2eproto();
+  friend void protobuf_ShutdownFile_GatingSet_2eproto();
+
+  void InitAsDefaultInstance();
+  static TRANS_TBL* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class GatingSet : public ::google::protobuf::Message {
  public:
   GatingSet();
@@ -1770,6 +3320,18 @@ class GatingSet : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
+  // repeated .pb.TRANS_TBL trans_tbl = 2;
+  inline int trans_tbl_size() const;
+  inline void clear_trans_tbl();
+  static const int kTransTblFieldNumber = 2;
+  inline const ::pb::TRANS_TBL& trans_tbl(int index) const;
+  inline ::pb::TRANS_TBL* mutable_trans_tbl(int index);
+  inline ::pb::TRANS_TBL* add_trans_tbl();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL >&
+      trans_tbl() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL >*
+      mutable_trans_tbl();
+
   // repeated .pb.ghPair ghs = 1;
   inline int ghs_size() const;
   inline void clear_ghs();
@@ -1782,14 +3344,52 @@ class GatingSet : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::pb::ghPair >*
       mutable_ghs();
 
+  // optional .pb.biexpTrans globalBiExpTrans = 3;
+  inline bool has_globalbiexptrans() const;
+  inline void clear_globalbiexptrans();
+  static const int kGlobalBiExpTransFieldNumber = 3;
+  inline const ::pb::biexpTrans& globalbiexptrans() const;
+  inline ::pb::biexpTrans* mutable_globalbiexptrans();
+  inline ::pb::biexpTrans* release_globalbiexptrans();
+  inline void set_allocated_globalbiexptrans(::pb::biexpTrans* globalbiexptrans);
+
+  // optional .pb.transformation globalLinTrans = 4;
+  inline bool has_globallintrans() const;
+  inline void clear_globallintrans();
+  static const int kGlobalLinTransFieldNumber = 4;
+  inline const ::pb::transformation& globallintrans() const;
+  inline ::pb::transformation* mutable_globallintrans();
+  inline ::pb::transformation* release_globallintrans();
+  inline void set_allocated_globallintrans(::pb::transformation* globallintrans);
+
+  // repeated .pb.trans_local gTrans = 5;
+  inline int gtrans_size() const;
+  inline void clear_gtrans();
+  static const int kGTransFieldNumber = 5;
+  inline const ::pb::trans_local& gtrans(int index) const;
+  inline ::pb::trans_local* mutable_gtrans(int index);
+  inline ::pb::trans_local* add_gtrans();
+  inline const ::google::protobuf::RepeatedPtrField< ::pb::trans_local >&
+      gtrans() const;
+  inline ::google::protobuf::RepeatedPtrField< ::pb::trans_local >*
+      mutable_gtrans();
+
   // @@protoc_insertion_point(class_scope:pb.GatingSet)
  private:
+  inline void set_has_globalbiexptrans();
+  inline void clear_has_globalbiexptrans();
+  inline void set_has_globallintrans();
+  inline void clear_has_globallintrans();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL > trans_tbl_;
   ::google::protobuf::RepeatedPtrField< ::pb::ghPair > ghs_;
+  ::pb::biexpTrans* globalbiexptrans_;
+  ::pb::transformation* globallintrans_;
+  ::google::protobuf::RepeatedPtrField< ::pb::trans_local > gtrans_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -2798,6 +4398,1407 @@ inline void POPSTATS::set_statval(float value) {
 
 // -------------------------------------------------------------------
 
+// calibrationTable
+
+// repeated double x = 1;
+inline int calibrationTable::x_size() const {
+  return x_.size();
+}
+inline void calibrationTable::clear_x() {
+  x_.Clear();
+}
+inline double calibrationTable::x(int index) const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.x)
+  return x_.Get(index);
+}
+inline void calibrationTable::set_x(int index, double value) {
+  x_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.x)
+}
+inline void calibrationTable::add_x(double value) {
+  x_.Add(value);
+  // @@protoc_insertion_point(field_add:pb.calibrationTable.x)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+calibrationTable::x() const {
+  // @@protoc_insertion_point(field_list:pb.calibrationTable.x)
+  return x_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+calibrationTable::mutable_x() {
+  // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.x)
+  return &x_;
+}
+
+// repeated double y = 2;
+inline int calibrationTable::y_size() const {
+  return y_.size();
+}
+inline void calibrationTable::clear_y() {
+  y_.Clear();
+}
+inline double calibrationTable::y(int index) const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.y)
+  return y_.Get(index);
+}
+inline void calibrationTable::set_y(int index, double value) {
+  y_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.y)
+}
+inline void calibrationTable::add_y(double value) {
+  y_.Add(value);
+  // @@protoc_insertion_point(field_add:pb.calibrationTable.y)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+calibrationTable::y() const {
+  // @@protoc_insertion_point(field_list:pb.calibrationTable.y)
+  return y_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+calibrationTable::mutable_y() {
+  // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.y)
+  return &y_;
+}
+
+// repeated double b = 3;
+inline int calibrationTable::b_size() const {
+  return b_.size();
+}
+inline void calibrationTable::clear_b() {
+  b_.Clear();
+}
+inline double calibrationTable::b(int index) const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.b)
+  return b_.Get(index);
+}
+inline void calibrationTable::set_b(int index, double value) {
+  b_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.b)
+}
+inline void calibrationTable::add_b(double value) {
+  b_.Add(value);
+  // @@protoc_insertion_point(field_add:pb.calibrationTable.b)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+calibrationTable::b() const {
+  // @@protoc_insertion_point(field_list:pb.calibrationTable.b)
+  return b_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+calibrationTable::mutable_b() {
+  // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.b)
+  return &b_;
+}
+
+// repeated double c = 4;
+inline int calibrationTable::c_size() const {
+  return c_.size();
+}
+inline void calibrationTable::clear_c() {
+  c_.Clear();
+}
+inline double calibrationTable::c(int index) const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.c)
+  return c_.Get(index);
+}
+inline void calibrationTable::set_c(int index, double value) {
+  c_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.c)
+}
+inline void calibrationTable::add_c(double value) {
+  c_.Add(value);
+  // @@protoc_insertion_point(field_add:pb.calibrationTable.c)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+calibrationTable::c() const {
+  // @@protoc_insertion_point(field_list:pb.calibrationTable.c)
+  return c_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+calibrationTable::mutable_c() {
+  // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.c)
+  return &c_;
+}
+
+// repeated double d = 5;
+inline int calibrationTable::d_size() const {
+  return d_.size();
+}
+inline void calibrationTable::clear_d() {
+  d_.Clear();
+}
+inline double calibrationTable::d(int index) const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.d)
+  return d_.Get(index);
+}
+inline void calibrationTable::set_d(int index, double value) {
+  d_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.d)
+}
+inline void calibrationTable::add_d(double value) {
+  d_.Add(value);
+  // @@protoc_insertion_point(field_add:pb.calibrationTable.d)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+calibrationTable::d() const {
+  // @@protoc_insertion_point(field_list:pb.calibrationTable.d)
+  return d_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+calibrationTable::mutable_d() {
+  // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.d)
+  return &d_;
+}
+
+// optional uint32 spline_method = 6;
+inline bool calibrationTable::has_spline_method() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void calibrationTable::set_has_spline_method() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void calibrationTable::clear_has_spline_method() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void calibrationTable::clear_spline_method() {
+  spline_method_ = 0u;
+  clear_has_spline_method();
+}
+inline ::google::protobuf::uint32 calibrationTable::spline_method() const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.spline_method)
+  return spline_method_;
+}
+inline void calibrationTable::set_spline_method(::google::protobuf::uint32 value) {
+  set_has_spline_method();
+  spline_method_ = value;
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.spline_method)
+}
+
+// optional string caltype = 7;
+inline bool calibrationTable::has_caltype() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void calibrationTable::set_has_caltype() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void calibrationTable::clear_has_caltype() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void calibrationTable::clear_caltype() {
+  if (caltype_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    caltype_->clear();
+  }
+  clear_has_caltype();
+}
+inline const ::std::string& calibrationTable::caltype() const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.caltype)
+  return *caltype_;
+}
+inline void calibrationTable::set_caltype(const ::std::string& value) {
+  set_has_caltype();
+  if (caltype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    caltype_ = new ::std::string;
+  }
+  caltype_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.caltype)
+}
+inline void calibrationTable::set_caltype(const char* value) {
+  set_has_caltype();
+  if (caltype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    caltype_ = new ::std::string;
+  }
+  caltype_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.calibrationTable.caltype)
+}
+inline void calibrationTable::set_caltype(const char* value, size_t size) {
+  set_has_caltype();
+  if (caltype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    caltype_ = new ::std::string;
+  }
+  caltype_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.calibrationTable.caltype)
+}
+inline ::std::string* calibrationTable::mutable_caltype() {
+  set_has_caltype();
+  if (caltype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    caltype_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.calibrationTable.caltype)
+  return caltype_;
+}
+inline ::std::string* calibrationTable::release_caltype() {
+  clear_has_caltype();
+  if (caltype_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = caltype_;
+    caltype_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void calibrationTable::set_allocated_caltype(::std::string* caltype) {
+  if (caltype_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete caltype_;
+  }
+  if (caltype) {
+    set_has_caltype();
+    caltype_ = caltype;
+  } else {
+    clear_has_caltype();
+    caltype_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.calibrationTable.caltype)
+}
+
+// optional bool flag = 8;
+inline bool calibrationTable::has_flag() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void calibrationTable::set_has_flag() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void calibrationTable::clear_has_flag() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void calibrationTable::clear_flag() {
+  flag_ = false;
+  clear_has_flag();
+}
+inline bool calibrationTable::flag() const {
+  // @@protoc_insertion_point(field_get:pb.calibrationTable.flag)
+  return flag_;
+}
+inline void calibrationTable::set_flag(bool value) {
+  set_has_flag();
+  flag_ = value;
+  // @@protoc_insertion_point(field_set:pb.calibrationTable.flag)
+}
+
+// -------------------------------------------------------------------
+
+// biexpTrans
+
+// optional uint32 channelRange = 1;
+inline bool biexpTrans::has_channelrange() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void biexpTrans::set_has_channelrange() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void biexpTrans::clear_has_channelrange() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void biexpTrans::clear_channelrange() {
+  channelrange_ = 0u;
+  clear_has_channelrange();
+}
+inline ::google::protobuf::uint32 biexpTrans::channelrange() const {
+  // @@protoc_insertion_point(field_get:pb.biexpTrans.channelRange)
+  return channelrange_;
+}
+inline void biexpTrans::set_channelrange(::google::protobuf::uint32 value) {
+  set_has_channelrange();
+  channelrange_ = value;
+  // @@protoc_insertion_point(field_set:pb.biexpTrans.channelRange)
+}
+
+// optional double pos = 2;
+inline bool biexpTrans::has_pos() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void biexpTrans::set_has_pos() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void biexpTrans::clear_has_pos() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void biexpTrans::clear_pos() {
+  pos_ = 0;
+  clear_has_pos();
+}
+inline double biexpTrans::pos() const {
+  // @@protoc_insertion_point(field_get:pb.biexpTrans.pos)
+  return pos_;
+}
+inline void biexpTrans::set_pos(double value) {
+  set_has_pos();
+  pos_ = value;
+  // @@protoc_insertion_point(field_set:pb.biexpTrans.pos)
+}
+
+// optional double neg = 3;
+inline bool biexpTrans::has_neg() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void biexpTrans::set_has_neg() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void biexpTrans::clear_has_neg() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void biexpTrans::clear_neg() {
+  neg_ = 0;
+  clear_has_neg();
+}
+inline double biexpTrans::neg() const {
+  // @@protoc_insertion_point(field_get:pb.biexpTrans.neg)
+  return neg_;
+}
+inline void biexpTrans::set_neg(double value) {
+  set_has_neg();
+  neg_ = value;
+  // @@protoc_insertion_point(field_set:pb.biexpTrans.neg)
+}
+
+// optional double widthBasis = 4;
+inline bool biexpTrans::has_widthbasis() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void biexpTrans::set_has_widthbasis() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void biexpTrans::clear_has_widthbasis() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void biexpTrans::clear_widthbasis() {
+  widthbasis_ = 0;
+  clear_has_widthbasis();
+}
+inline double biexpTrans::widthbasis() const {
+  // @@protoc_insertion_point(field_get:pb.biexpTrans.widthBasis)
+  return widthbasis_;
+}
+inline void biexpTrans::set_widthbasis(double value) {
+  set_has_widthbasis();
+  widthbasis_ = value;
+  // @@protoc_insertion_point(field_set:pb.biexpTrans.widthBasis)
+}
+
+// optional double maxValue = 5;
+inline bool biexpTrans::has_maxvalue() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void biexpTrans::set_has_maxvalue() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void biexpTrans::clear_has_maxvalue() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void biexpTrans::clear_maxvalue() {
+  maxvalue_ = 0;
+  clear_has_maxvalue();
+}
+inline double biexpTrans::maxvalue() const {
+  // @@protoc_insertion_point(field_get:pb.biexpTrans.maxValue)
+  return maxvalue_;
+}
+inline void biexpTrans::set_maxvalue(double value) {
+  set_has_maxvalue();
+  maxvalue_ = value;
+  // @@protoc_insertion_point(field_set:pb.biexpTrans.maxValue)
+}
+
+// -------------------------------------------------------------------
+
+// fasinhTrans
+
+// optional double length = 1;
+inline bool fasinhTrans::has_length() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void fasinhTrans::set_has_length() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void fasinhTrans::clear_has_length() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void fasinhTrans::clear_length() {
+  length_ = 0;
+  clear_has_length();
+}
+inline double fasinhTrans::length() const {
+  // @@protoc_insertion_point(field_get:pb.fasinhTrans.length)
+  return length_;
+}
+inline void fasinhTrans::set_length(double value) {
+  set_has_length();
+  length_ = value;
+  // @@protoc_insertion_point(field_set:pb.fasinhTrans.length)
+}
+
+// optional double maxRange = 2;
+inline bool fasinhTrans::has_maxrange() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void fasinhTrans::set_has_maxrange() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void fasinhTrans::clear_has_maxrange() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void fasinhTrans::clear_maxrange() {
+  maxrange_ = 0;
+  clear_has_maxrange();
+}
+inline double fasinhTrans::maxrange() const {
+  // @@protoc_insertion_point(field_get:pb.fasinhTrans.maxRange)
+  return maxrange_;
+}
+inline void fasinhTrans::set_maxrange(double value) {
+  set_has_maxrange();
+  maxrange_ = value;
+  // @@protoc_insertion_point(field_set:pb.fasinhTrans.maxRange)
+}
+
+// optional double T = 3;
+inline bool fasinhTrans::has_t() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void fasinhTrans::set_has_t() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void fasinhTrans::clear_has_t() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void fasinhTrans::clear_t() {
+  t_ = 0;
+  clear_has_t();
+}
+inline double fasinhTrans::t() const {
+  // @@protoc_insertion_point(field_get:pb.fasinhTrans.T)
+  return t_;
+}
+inline void fasinhTrans::set_t(double value) {
+  set_has_t();
+  t_ = value;
+  // @@protoc_insertion_point(field_set:pb.fasinhTrans.T)
+}
+
+// optional double A = 4;
+inline bool fasinhTrans::has_a() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void fasinhTrans::set_has_a() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void fasinhTrans::clear_has_a() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void fasinhTrans::clear_a() {
+  a_ = 0;
+  clear_has_a();
+}
+inline double fasinhTrans::a() const {
+  // @@protoc_insertion_point(field_get:pb.fasinhTrans.A)
+  return a_;
+}
+inline void fasinhTrans::set_a(double value) {
+  set_has_a();
+  a_ = value;
+  // @@protoc_insertion_point(field_set:pb.fasinhTrans.A)
+}
+
+// optional double M = 5;
+inline bool fasinhTrans::has_m() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void fasinhTrans::set_has_m() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void fasinhTrans::clear_has_m() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void fasinhTrans::clear_m() {
+  m_ = 0;
+  clear_has_m();
+}
+inline double fasinhTrans::m() const {
+  // @@protoc_insertion_point(field_get:pb.fasinhTrans.M)
+  return m_;
+}
+inline void fasinhTrans::set_m(double value) {
+  set_has_m();
+  m_ = value;
+  // @@protoc_insertion_point(field_set:pb.fasinhTrans.M)
+}
+
+// -------------------------------------------------------------------
+
+// scaleTrans
+
+// optional float scale_factor = 1;
+inline bool scaleTrans::has_scale_factor() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void scaleTrans::set_has_scale_factor() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void scaleTrans::clear_has_scale_factor() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void scaleTrans::clear_scale_factor() {
+  scale_factor_ = 0;
+  clear_has_scale_factor();
+}
+inline float scaleTrans::scale_factor() const {
+  // @@protoc_insertion_point(field_get:pb.scaleTrans.scale_factor)
+  return scale_factor_;
+}
+inline void scaleTrans::set_scale_factor(float value) {
+  set_has_scale_factor();
+  scale_factor_ = value;
+  // @@protoc_insertion_point(field_set:pb.scaleTrans.scale_factor)
+}
+
+// -------------------------------------------------------------------
+
+// flinTrans
+
+// optional double min = 1;
+inline bool flinTrans::has_min() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void flinTrans::set_has_min() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void flinTrans::clear_has_min() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void flinTrans::clear_min() {
+  min_ = 0;
+  clear_has_min();
+}
+inline double flinTrans::min() const {
+  // @@protoc_insertion_point(field_get:pb.flinTrans.min)
+  return min_;
+}
+inline void flinTrans::set_min(double value) {
+  set_has_min();
+  min_ = value;
+  // @@protoc_insertion_point(field_set:pb.flinTrans.min)
+}
+
+// optional double max = 2;
+inline bool flinTrans::has_max() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void flinTrans::set_has_max() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void flinTrans::clear_has_max() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void flinTrans::clear_max() {
+  max_ = 0;
+  clear_has_max();
+}
+inline double flinTrans::max() const {
+  // @@protoc_insertion_point(field_get:pb.flinTrans.max)
+  return max_;
+}
+inline void flinTrans::set_max(double value) {
+  set_has_max();
+  max_ = value;
+  // @@protoc_insertion_point(field_set:pb.flinTrans.max)
+}
+
+// -------------------------------------------------------------------
+
+// logTrans
+
+// optional double offset = 1;
+inline bool logTrans::has_offset() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void logTrans::set_has_offset() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void logTrans::clear_has_offset() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void logTrans::clear_offset() {
+  offset_ = 0;
+  clear_has_offset();
+}
+inline double logTrans::offset() const {
+  // @@protoc_insertion_point(field_get:pb.logTrans.offset)
+  return offset_;
+}
+inline void logTrans::set_offset(double value) {
+  set_has_offset();
+  offset_ = value;
+  // @@protoc_insertion_point(field_set:pb.logTrans.offset)
+}
+
+// optional double decade = 2;
+inline bool logTrans::has_decade() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void logTrans::set_has_decade() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void logTrans::clear_has_decade() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void logTrans::clear_decade() {
+  decade_ = 0;
+  clear_has_decade();
+}
+inline double logTrans::decade() const {
+  // @@protoc_insertion_point(field_get:pb.logTrans.decade)
+  return decade_;
+}
+inline void logTrans::set_decade(double value) {
+  set_has_decade();
+  decade_ = value;
+  // @@protoc_insertion_point(field_set:pb.logTrans.decade)
+}
+
+// -------------------------------------------------------------------
+
+// transformation
+
+// optional .pb.calibrationTable calTbl = 1;
+inline bool transformation::has_caltbl() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void transformation::set_has_caltbl() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void transformation::clear_has_caltbl() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void transformation::clear_caltbl() {
+  if (caltbl_ != NULL) caltbl_->::pb::calibrationTable::Clear();
+  clear_has_caltbl();
+}
+inline const ::pb::calibrationTable& transformation::caltbl() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.calTbl)
+  return caltbl_ != NULL ? *caltbl_ : *default_instance_->caltbl_;
+}
+inline ::pb::calibrationTable* transformation::mutable_caltbl() {
+  set_has_caltbl();
+  if (caltbl_ == NULL) caltbl_ = new ::pb::calibrationTable;
+  // @@protoc_insertion_point(field_mutable:pb.transformation.calTbl)
+  return caltbl_;
+}
+inline ::pb::calibrationTable* transformation::release_caltbl() {
+  clear_has_caltbl();
+  ::pb::calibrationTable* temp = caltbl_;
+  caltbl_ = NULL;
+  return temp;
+}
+inline void transformation::set_allocated_caltbl(::pb::calibrationTable* caltbl) {
+  delete caltbl_;
+  caltbl_ = caltbl;
+  if (caltbl) {
+    set_has_caltbl();
+  } else {
+    clear_has_caltbl();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.calTbl)
+}
+
+// optional bool isGateOnly = 2;
+inline bool transformation::has_isgateonly() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void transformation::set_has_isgateonly() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void transformation::clear_has_isgateonly() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void transformation::clear_isgateonly() {
+  isgateonly_ = false;
+  clear_has_isgateonly();
+}
+inline bool transformation::isgateonly() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.isGateOnly)
+  return isgateonly_;
+}
+inline void transformation::set_isgateonly(bool value) {
+  set_has_isgateonly();
+  isgateonly_ = value;
+  // @@protoc_insertion_point(field_set:pb.transformation.isGateOnly)
+}
+
+// optional string name = 4;
+inline bool transformation::has_name() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void transformation::set_has_name() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void transformation::clear_has_name() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void transformation::clear_name() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& transformation::name() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.name)
+  return *name_;
+}
+inline void transformation::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.transformation.name)
+}
+inline void transformation::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.transformation.name)
+}
+inline void transformation::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.transformation.name)
+}
+inline ::std::string* transformation::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.transformation.name)
+  return name_;
+}
+inline ::std::string* transformation::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void transformation::set_allocated_name(::std::string* name) {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
+  if (name) {
+    set_has_name();
+    name_ = name;
+  } else {
+    clear_has_name();
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.name)
+}
+
+// optional string channel = 5;
+inline bool transformation::has_channel() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void transformation::set_has_channel() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void transformation::clear_has_channel() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void transformation::clear_channel() {
+  if (channel_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    channel_->clear();
+  }
+  clear_has_channel();
+}
+inline const ::std::string& transformation::channel() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.channel)
+  return *channel_;
+}
+inline void transformation::set_channel(const ::std::string& value) {
+  set_has_channel();
+  if (channel_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    channel_ = new ::std::string;
+  }
+  channel_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.transformation.channel)
+}
+inline void transformation::set_channel(const char* value) {
+  set_has_channel();
+  if (channel_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    channel_ = new ::std::string;
+  }
+  channel_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.transformation.channel)
+}
+inline void transformation::set_channel(const char* value, size_t size) {
+  set_has_channel();
+  if (channel_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    channel_ = new ::std::string;
+  }
+  channel_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.transformation.channel)
+}
+inline ::std::string* transformation::mutable_channel() {
+  set_has_channel();
+  if (channel_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    channel_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.transformation.channel)
+  return channel_;
+}
+inline ::std::string* transformation::release_channel() {
+  clear_has_channel();
+  if (channel_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = channel_;
+    channel_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void transformation::set_allocated_channel(::std::string* channel) {
+  if (channel_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete channel_;
+  }
+  if (channel) {
+    set_has_channel();
+    channel_ = channel;
+  } else {
+    clear_has_channel();
+    channel_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.channel)
+}
+
+// optional bool isComputed = 6;
+inline bool transformation::has_iscomputed() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void transformation::set_has_iscomputed() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void transformation::clear_has_iscomputed() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void transformation::clear_iscomputed() {
+  iscomputed_ = false;
+  clear_has_iscomputed();
+}
+inline bool transformation::iscomputed() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.isComputed)
+  return iscomputed_;
+}
+inline void transformation::set_iscomputed(bool value) {
+  set_has_iscomputed();
+  iscomputed_ = value;
+  // @@protoc_insertion_point(field_set:pb.transformation.isComputed)
+}
+
+// optional uint32 type = 12;
+inline bool transformation::has_type() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void transformation::set_has_type() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void transformation::clear_has_type() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void transformation::clear_type() {
+  type_ = 0u;
+  clear_has_type();
+}
+inline ::google::protobuf::uint32 transformation::type() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.type)
+  return type_;
+}
+inline void transformation::set_type(::google::protobuf::uint32 value) {
+  set_has_type();
+  type_ = value;
+  // @@protoc_insertion_point(field_set:pb.transformation.type)
+}
+
+// optional .pb.TRANS_TYPE trans_type = 3;
+inline bool transformation::has_trans_type() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void transformation::set_has_trans_type() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void transformation::clear_has_trans_type() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void transformation::clear_trans_type() {
+  trans_type_ = 0;
+  clear_has_trans_type();
+}
+inline ::pb::TRANS_TYPE transformation::trans_type() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.trans_type)
+  return static_cast< ::pb::TRANS_TYPE >(trans_type_);
+}
+inline void transformation::set_trans_type(::pb::TRANS_TYPE value) {
+  assert(::pb::TRANS_TYPE_IsValid(value));
+  set_has_trans_type();
+  trans_type_ = value;
+  // @@protoc_insertion_point(field_set:pb.transformation.trans_type)
+}
+
+// optional .pb.biexpTrans bt = 7;
+inline bool transformation::has_bt() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void transformation::set_has_bt() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void transformation::clear_has_bt() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void transformation::clear_bt() {
+  if (bt_ != NULL) bt_->::pb::biexpTrans::Clear();
+  clear_has_bt();
+}
+inline const ::pb::biexpTrans& transformation::bt() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.bt)
+  return bt_ != NULL ? *bt_ : *default_instance_->bt_;
+}
+inline ::pb::biexpTrans* transformation::mutable_bt() {
+  set_has_bt();
+  if (bt_ == NULL) bt_ = new ::pb::biexpTrans;
+  // @@protoc_insertion_point(field_mutable:pb.transformation.bt)
+  return bt_;
+}
+inline ::pb::biexpTrans* transformation::release_bt() {
+  clear_has_bt();
+  ::pb::biexpTrans* temp = bt_;
+  bt_ = NULL;
+  return temp;
+}
+inline void transformation::set_allocated_bt(::pb::biexpTrans* bt) {
+  delete bt_;
+  bt_ = bt;
+  if (bt) {
+    set_has_bt();
+  } else {
+    clear_has_bt();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.bt)
+}
+
+// optional .pb.logTrans lt = 8;
+inline bool transformation::has_lt() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void transformation::set_has_lt() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void transformation::clear_has_lt() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void transformation::clear_lt() {
+  if (lt_ != NULL) lt_->::pb::logTrans::Clear();
+  clear_has_lt();
+}
+inline const ::pb::logTrans& transformation::lt() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.lt)
+  return lt_ != NULL ? *lt_ : *default_instance_->lt_;
+}
+inline ::pb::logTrans* transformation::mutable_lt() {
+  set_has_lt();
+  if (lt_ == NULL) lt_ = new ::pb::logTrans;
+  // @@protoc_insertion_point(field_mutable:pb.transformation.lt)
+  return lt_;
+}
+inline ::pb::logTrans* transformation::release_lt() {
+  clear_has_lt();
+  ::pb::logTrans* temp = lt_;
+  lt_ = NULL;
+  return temp;
+}
+inline void transformation::set_allocated_lt(::pb::logTrans* lt) {
+  delete lt_;
+  lt_ = lt;
+  if (lt) {
+    set_has_lt();
+  } else {
+    clear_has_lt();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.lt)
+}
+
+// optional .pb.flinTrans flt = 9;
+inline bool transformation::has_flt() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void transformation::set_has_flt() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void transformation::clear_has_flt() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void transformation::clear_flt() {
+  if (flt_ != NULL) flt_->::pb::flinTrans::Clear();
+  clear_has_flt();
+}
+inline const ::pb::flinTrans& transformation::flt() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.flt)
+  return flt_ != NULL ? *flt_ : *default_instance_->flt_;
+}
+inline ::pb::flinTrans* transformation::mutable_flt() {
+  set_has_flt();
+  if (flt_ == NULL) flt_ = new ::pb::flinTrans;
+  // @@protoc_insertion_point(field_mutable:pb.transformation.flt)
+  return flt_;
+}
+inline ::pb::flinTrans* transformation::release_flt() {
+  clear_has_flt();
+  ::pb::flinTrans* temp = flt_;
+  flt_ = NULL;
+  return temp;
+}
+inline void transformation::set_allocated_flt(::pb::flinTrans* flt) {
+  delete flt_;
+  flt_ = flt;
+  if (flt) {
+    set_has_flt();
+  } else {
+    clear_has_flt();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.flt)
+}
+
+// optional .pb.scaleTrans st = 10;
+inline bool transformation::has_st() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void transformation::set_has_st() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void transformation::clear_has_st() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void transformation::clear_st() {
+  if (st_ != NULL) st_->::pb::scaleTrans::Clear();
+  clear_has_st();
+}
+inline const ::pb::scaleTrans& transformation::st() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.st)
+  return st_ != NULL ? *st_ : *default_instance_->st_;
+}
+inline ::pb::scaleTrans* transformation::mutable_st() {
+  set_has_st();
+  if (st_ == NULL) st_ = new ::pb::scaleTrans;
+  // @@protoc_insertion_point(field_mutable:pb.transformation.st)
+  return st_;
+}
+inline ::pb::scaleTrans* transformation::release_st() {
+  clear_has_st();
+  ::pb::scaleTrans* temp = st_;
+  st_ = NULL;
+  return temp;
+}
+inline void transformation::set_allocated_st(::pb::scaleTrans* st) {
+  delete st_;
+  st_ = st;
+  if (st) {
+    set_has_st();
+  } else {
+    clear_has_st();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.st)
+}
+
+// optional .pb.fasinhTrans ft = 11;
+inline bool transformation::has_ft() const {
+  return (_has_bits_[0] & 0x00000800u) != 0;
+}
+inline void transformation::set_has_ft() {
+  _has_bits_[0] |= 0x00000800u;
+}
+inline void transformation::clear_has_ft() {
+  _has_bits_[0] &= ~0x00000800u;
+}
+inline void transformation::clear_ft() {
+  if (ft_ != NULL) ft_->::pb::fasinhTrans::Clear();
+  clear_has_ft();
+}
+inline const ::pb::fasinhTrans& transformation::ft() const {
+  // @@protoc_insertion_point(field_get:pb.transformation.ft)
+  return ft_ != NULL ? *ft_ : *default_instance_->ft_;
+}
+inline ::pb::fasinhTrans* transformation::mutable_ft() {
+  set_has_ft();
+  if (ft_ == NULL) ft_ = new ::pb::fasinhTrans;
+  // @@protoc_insertion_point(field_mutable:pb.transformation.ft)
+  return ft_;
+}
+inline ::pb::fasinhTrans* transformation::release_ft() {
+  clear_has_ft();
+  ::pb::fasinhTrans* temp = ft_;
+  ft_ = NULL;
+  return temp;
+}
+inline void transformation::set_allocated_ft(::pb::fasinhTrans* ft) {
+  delete ft_;
+  ft_ = ft;
+  if (ft) {
+    set_has_ft();
+  } else {
+    clear_has_ft();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.transformation.ft)
+}
+
+// -------------------------------------------------------------------
+
+// trans_pair
+
+// required string name = 1;
+inline bool trans_pair::has_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void trans_pair::set_has_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void trans_pair::clear_has_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void trans_pair::clear_name() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& trans_pair::name() const {
+  // @@protoc_insertion_point(field_get:pb.trans_pair.name)
+  return *name_;
+}
+inline void trans_pair::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.trans_pair.name)
+}
+inline void trans_pair::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.trans_pair.name)
+}
+inline void trans_pair::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.trans_pair.name)
+}
+inline ::std::string* trans_pair::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.trans_pair.name)
+  return name_;
+}
+inline ::std::string* trans_pair::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void trans_pair::set_allocated_name(::std::string* name) {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
+  if (name) {
+    set_has_name();
+    name_ = name;
+  } else {
+    clear_has_name();
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.trans_pair.name)
+}
+
+// required uint64 trans_address = 2;
+inline bool trans_pair::has_trans_address() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void trans_pair::set_has_trans_address() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void trans_pair::clear_has_trans_address() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void trans_pair::clear_trans_address() {
+  trans_address_ = GOOGLE_ULONGLONG(0);
+  clear_has_trans_address();
+}
+inline ::google::protobuf::uint64 trans_pair::trans_address() const {
+  // @@protoc_insertion_point(field_get:pb.trans_pair.trans_address)
+  return trans_address_;
+}
+inline void trans_pair::set_trans_address(::google::protobuf::uint64 value) {
+  set_has_trans_address();
+  trans_address_ = value;
+  // @@protoc_insertion_point(field_set:pb.trans_pair.trans_address)
+}
+
+// -------------------------------------------------------------------
+
+// trans_local
+
+// repeated .pb.trans_pair tp = 1;
+inline int trans_local::tp_size() const {
+  return tp_.size();
+}
+inline void trans_local::clear_tp() {
+  tp_.Clear();
+}
+inline const ::pb::trans_pair& trans_local::tp(int index) const {
+  // @@protoc_insertion_point(field_get:pb.trans_local.tp)
+  return tp_.Get(index);
+}
+inline ::pb::trans_pair* trans_local::mutable_tp(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.trans_local.tp)
+  return tp_.Mutable(index);
+}
+inline ::pb::trans_pair* trans_local::add_tp() {
+  // @@protoc_insertion_point(field_add:pb.trans_local.tp)
+  return tp_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::trans_pair >&
+trans_local::tp() const {
+  // @@protoc_insertion_point(field_list:pb.trans_local.tp)
+  return tp_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::trans_pair >*
+trans_local::mutable_tp() {
+  // @@protoc_insertion_point(field_mutable_list:pb.trans_local.tp)
+  return &tp_;
+}
+
+// optional string groupName = 2;
+inline bool trans_local::has_groupname() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void trans_local::set_has_groupname() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void trans_local::clear_has_groupname() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void trans_local::clear_groupname() {
+  if (groupname_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    groupname_->clear();
+  }
+  clear_has_groupname();
+}
+inline const ::std::string& trans_local::groupname() const {
+  // @@protoc_insertion_point(field_get:pb.trans_local.groupName)
+  return *groupname_;
+}
+inline void trans_local::set_groupname(const ::std::string& value) {
+  set_has_groupname();
+  if (groupname_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    groupname_ = new ::std::string;
+  }
+  groupname_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.trans_local.groupName)
+}
+inline void trans_local::set_groupname(const char* value) {
+  set_has_groupname();
+  if (groupname_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    groupname_ = new ::std::string;
+  }
+  groupname_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.trans_local.groupName)
+}
+inline void trans_local::set_groupname(const char* value, size_t size) {
+  set_has_groupname();
+  if (groupname_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    groupname_ = new ::std::string;
+  }
+  groupname_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.trans_local.groupName)
+}
+inline ::std::string* trans_local::mutable_groupname() {
+  set_has_groupname();
+  if (groupname_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    groupname_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.trans_local.groupName)
+  return groupname_;
+}
+inline ::std::string* trans_local::release_groupname() {
+  clear_has_groupname();
+  if (groupname_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = groupname_;
+    groupname_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void trans_local::set_allocated_groupname(::std::string* groupname) {
+  if (groupname_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete groupname_;
+  }
+  if (groupname) {
+    set_has_groupname();
+    groupname_ = groupname;
+  } else {
+    clear_has_groupname();
+    groupname_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.trans_local.groupName)
+}
+
+// repeated uint32 sampleIDs = 3;
+inline int trans_local::sampleids_size() const {
+  return sampleids_.size();
+}
+inline void trans_local::clear_sampleids() {
+  sampleids_.Clear();
+}
+inline ::google::protobuf::uint32 trans_local::sampleids(int index) const {
+  // @@protoc_insertion_point(field_get:pb.trans_local.sampleIDs)
+  return sampleids_.Get(index);
+}
+inline void trans_local::set_sampleids(int index, ::google::protobuf::uint32 value) {
+  sampleids_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb.trans_local.sampleIDs)
+}
+inline void trans_local::add_sampleids(::google::protobuf::uint32 value) {
+  sampleids_.Add(value);
+  // @@protoc_insertion_point(field_add:pb.trans_local.sampleIDs)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+trans_local::sampleids() const {
+  // @@protoc_insertion_point(field_list:pb.trans_local.sampleIDs)
+  return sampleids_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+trans_local::mutable_sampleids() {
+  // @@protoc_insertion_point(field_mutable_list:pb.trans_local.sampleIDs)
+  return &sampleids_;
+}
+
+// -------------------------------------------------------------------
+
 // POPINDICES
 
 // required fixed32 nEvents = 1;
@@ -3260,6 +6261,650 @@ populationTree::mutable_node() {
 
 // -------------------------------------------------------------------
 
+// COMP
+
+// optional string cid = 1;
+inline bool COMP::has_cid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void COMP::set_has_cid() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void COMP::clear_has_cid() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void COMP::clear_cid() {
+  if (cid_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    cid_->clear();
+  }
+  clear_has_cid();
+}
+inline const ::std::string& COMP::cid() const {
+  // @@protoc_insertion_point(field_get:pb.COMP.cid)
+  return *cid_;
+}
+inline void COMP::set_cid(const ::std::string& value) {
+  set_has_cid();
+  if (cid_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    cid_ = new ::std::string;
+  }
+  cid_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.COMP.cid)
+}
+inline void COMP::set_cid(const char* value) {
+  set_has_cid();
+  if (cid_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    cid_ = new ::std::string;
+  }
+  cid_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.COMP.cid)
+}
+inline void COMP::set_cid(const char* value, size_t size) {
+  set_has_cid();
+  if (cid_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    cid_ = new ::std::string;
+  }
+  cid_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.COMP.cid)
+}
+inline ::std::string* COMP::mutable_cid() {
+  set_has_cid();
+  if (cid_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    cid_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.COMP.cid)
+  return cid_;
+}
+inline ::std::string* COMP::release_cid() {
+  clear_has_cid();
+  if (cid_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = cid_;
+    cid_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void COMP::set_allocated_cid(::std::string* cid) {
+  if (cid_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete cid_;
+  }
+  if (cid) {
+    set_has_cid();
+    cid_ = cid;
+  } else {
+    clear_has_cid();
+    cid_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.COMP.cid)
+}
+
+// optional string prefix = 2;
+inline bool COMP::has_prefix() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void COMP::set_has_prefix() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void COMP::clear_has_prefix() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void COMP::clear_prefix() {
+  if (prefix_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    prefix_->clear();
+  }
+  clear_has_prefix();
+}
+inline const ::std::string& COMP::prefix() const {
+  // @@protoc_insertion_point(field_get:pb.COMP.prefix)
+  return *prefix_;
+}
+inline void COMP::set_prefix(const ::std::string& value) {
+  set_has_prefix();
+  if (prefix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    prefix_ = new ::std::string;
+  }
+  prefix_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.COMP.prefix)
+}
+inline void COMP::set_prefix(const char* value) {
+  set_has_prefix();
+  if (prefix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    prefix_ = new ::std::string;
+  }
+  prefix_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.COMP.prefix)
+}
+inline void COMP::set_prefix(const char* value, size_t size) {
+  set_has_prefix();
+  if (prefix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    prefix_ = new ::std::string;
+  }
+  prefix_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.COMP.prefix)
+}
+inline ::std::string* COMP::mutable_prefix() {
+  set_has_prefix();
+  if (prefix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    prefix_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.COMP.prefix)
+  return prefix_;
+}
+inline ::std::string* COMP::release_prefix() {
+  clear_has_prefix();
+  if (prefix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = prefix_;
+    prefix_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void COMP::set_allocated_prefix(::std::string* prefix) {
+  if (prefix_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete prefix_;
+  }
+  if (prefix) {
+    set_has_prefix();
+    prefix_ = prefix;
+  } else {
+    clear_has_prefix();
+    prefix_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.COMP.prefix)
+}
+
+// optional string suffix = 3;
+inline bool COMP::has_suffix() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void COMP::set_has_suffix() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void COMP::clear_has_suffix() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void COMP::clear_suffix() {
+  if (suffix_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    suffix_->clear();
+  }
+  clear_has_suffix();
+}
+inline const ::std::string& COMP::suffix() const {
+  // @@protoc_insertion_point(field_get:pb.COMP.suffix)
+  return *suffix_;
+}
+inline void COMP::set_suffix(const ::std::string& value) {
+  set_has_suffix();
+  if (suffix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    suffix_ = new ::std::string;
+  }
+  suffix_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.COMP.suffix)
+}
+inline void COMP::set_suffix(const char* value) {
+  set_has_suffix();
+  if (suffix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    suffix_ = new ::std::string;
+  }
+  suffix_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.COMP.suffix)
+}
+inline void COMP::set_suffix(const char* value, size_t size) {
+  set_has_suffix();
+  if (suffix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    suffix_ = new ::std::string;
+  }
+  suffix_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.COMP.suffix)
+}
+inline ::std::string* COMP::mutable_suffix() {
+  set_has_suffix();
+  if (suffix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    suffix_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.COMP.suffix)
+  return suffix_;
+}
+inline ::std::string* COMP::release_suffix() {
+  clear_has_suffix();
+  if (suffix_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = suffix_;
+    suffix_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void COMP::set_allocated_suffix(::std::string* suffix) {
+  if (suffix_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete suffix_;
+  }
+  if (suffix) {
+    set_has_suffix();
+    suffix_ = suffix;
+  } else {
+    clear_has_suffix();
+    suffix_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.COMP.suffix)
+}
+
+// optional string name = 4;
+inline bool COMP::has_name() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void COMP::set_has_name() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void COMP::clear_has_name() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void COMP::clear_name() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& COMP::name() const {
+  // @@protoc_insertion_point(field_get:pb.COMP.name)
+  return *name_;
+}
+inline void COMP::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.COMP.name)
+}
+inline void COMP::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.COMP.name)
+}
+inline void COMP::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.COMP.name)
+}
+inline ::std::string* COMP::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.COMP.name)
+  return name_;
+}
+inline ::std::string* COMP::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void COMP::set_allocated_name(::std::string* name) {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
+  if (name) {
+    set_has_name();
+    name_ = name;
+  } else {
+    clear_has_name();
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.COMP.name)
+}
+
+// optional string comment = 5;
+inline bool COMP::has_comment() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void COMP::set_has_comment() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void COMP::clear_has_comment() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void COMP::clear_comment() {
+  if (comment_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    comment_->clear();
+  }
+  clear_has_comment();
+}
+inline const ::std::string& COMP::comment() const {
+  // @@protoc_insertion_point(field_get:pb.COMP.comment)
+  return *comment_;
+}
+inline void COMP::set_comment(const ::std::string& value) {
+  set_has_comment();
+  if (comment_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    comment_ = new ::std::string;
+  }
+  comment_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.COMP.comment)
+}
+inline void COMP::set_comment(const char* value) {
+  set_has_comment();
+  if (comment_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    comment_ = new ::std::string;
+  }
+  comment_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.COMP.comment)
+}
+inline void COMP::set_comment(const char* value, size_t size) {
+  set_has_comment();
+  if (comment_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    comment_ = new ::std::string;
+  }
+  comment_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.COMP.comment)
+}
+inline ::std::string* COMP::mutable_comment() {
+  set_has_comment();
+  if (comment_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    comment_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.COMP.comment)
+  return comment_;
+}
+inline ::std::string* COMP::release_comment() {
+  clear_has_comment();
+  if (comment_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = comment_;
+    comment_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void COMP::set_allocated_comment(::std::string* comment) {
+  if (comment_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete comment_;
+  }
+  if (comment) {
+    set_has_comment();
+    comment_ = comment;
+  } else {
+    clear_has_comment();
+    comment_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.COMP.comment)
+}
+
+// repeated string marker = 6;
+inline int COMP::marker_size() const {
+  return marker_.size();
+}
+inline void COMP::clear_marker() {
+  marker_.Clear();
+}
+inline const ::std::string& COMP::marker(int index) const {
+  // @@protoc_insertion_point(field_get:pb.COMP.marker)
+  return marker_.Get(index);
+}
+inline ::std::string* COMP::mutable_marker(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.COMP.marker)
+  return marker_.Mutable(index);
+}
+inline void COMP::set_marker(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:pb.COMP.marker)
+  marker_.Mutable(index)->assign(value);
+}
+inline void COMP::set_marker(int index, const char* value) {
+  marker_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.COMP.marker)
+}
+inline void COMP::set_marker(int index, const char* value, size_t size) {
+  marker_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.COMP.marker)
+}
+inline ::std::string* COMP::add_marker() {
+  return marker_.Add();
+}
+inline void COMP::add_marker(const ::std::string& value) {
+  marker_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:pb.COMP.marker)
+}
+inline void COMP::add_marker(const char* value) {
+  marker_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:pb.COMP.marker)
+}
+inline void COMP::add_marker(const char* value, size_t size) {
+  marker_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:pb.COMP.marker)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+COMP::marker() const {
+  // @@protoc_insertion_point(field_list:pb.COMP.marker)
+  return marker_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+COMP::mutable_marker() {
+  // @@protoc_insertion_point(field_mutable_list:pb.COMP.marker)
+  return &marker_;
+}
+
+// repeated double spillOver = 7;
+inline int COMP::spillover_size() const {
+  return spillover_.size();
+}
+inline void COMP::clear_spillover() {
+  spillover_.Clear();
+}
+inline double COMP::spillover(int index) const {
+  // @@protoc_insertion_point(field_get:pb.COMP.spillOver)
+  return spillover_.Get(index);
+}
+inline void COMP::set_spillover(int index, double value) {
+  spillover_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb.COMP.spillOver)
+}
+inline void COMP::add_spillover(double value) {
+  spillover_.Add(value);
+  // @@protoc_insertion_point(field_add:pb.COMP.spillOver)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+COMP::spillover() const {
+  // @@protoc_insertion_point(field_list:pb.COMP.spillOver)
+  return spillover_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+COMP::mutable_spillover() {
+  // @@protoc_insertion_point(field_mutable_list:pb.COMP.spillOver)
+  return &spillover_;
+}
+
+// -------------------------------------------------------------------
+
+// PARAM
+
+// optional string param = 1;
+inline bool PARAM::has_param() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void PARAM::set_has_param() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void PARAM::clear_has_param() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void PARAM::clear_param() {
+  if (param_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    param_->clear();
+  }
+  clear_has_param();
+}
+inline const ::std::string& PARAM::param() const {
+  // @@protoc_insertion_point(field_get:pb.PARAM.param)
+  return *param_;
+}
+inline void PARAM::set_param(const ::std::string& value) {
+  set_has_param();
+  if (param_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    param_ = new ::std::string;
+  }
+  param_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.PARAM.param)
+}
+inline void PARAM::set_param(const char* value) {
+  set_has_param();
+  if (param_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    param_ = new ::std::string;
+  }
+  param_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.PARAM.param)
+}
+inline void PARAM::set_param(const char* value, size_t size) {
+  set_has_param();
+  if (param_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    param_ = new ::std::string;
+  }
+  param_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.PARAM.param)
+}
+inline ::std::string* PARAM::mutable_param() {
+  set_has_param();
+  if (param_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    param_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.PARAM.param)
+  return param_;
+}
+inline ::std::string* PARAM::release_param() {
+  clear_has_param();
+  if (param_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = param_;
+    param_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void PARAM::set_allocated_param(::std::string* param) {
+  if (param_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete param_;
+  }
+  if (param) {
+    set_has_param();
+    param_ = param;
+  } else {
+    clear_has_param();
+    param_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.PARAM.param)
+}
+
+// optional bool log = 2;
+inline bool PARAM::has_log() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void PARAM::set_has_log() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void PARAM::clear_has_log() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void PARAM::clear_log() {
+  log_ = false;
+  clear_has_log();
+}
+inline bool PARAM::log() const {
+  // @@protoc_insertion_point(field_get:pb.PARAM.log)
+  return log_;
+}
+inline void PARAM::set_log(bool value) {
+  set_has_log();
+  log_ = value;
+  // @@protoc_insertion_point(field_set:pb.PARAM.log)
+}
+
+// optional uint32 range = 3;
+inline bool PARAM::has_range() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void PARAM::set_has_range() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void PARAM::clear_has_range() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void PARAM::clear_range() {
+  range_ = 0u;
+  clear_has_range();
+}
+inline ::google::protobuf::uint32 PARAM::range() const {
+  // @@protoc_insertion_point(field_get:pb.PARAM.range)
+  return range_;
+}
+inline void PARAM::set_range(::google::protobuf::uint32 value) {
+  set_has_range();
+  range_ = value;
+  // @@protoc_insertion_point(field_set:pb.PARAM.range)
+}
+
+// optional uint32 highValue = 4;
+inline bool PARAM::has_highvalue() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void PARAM::set_has_highvalue() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void PARAM::clear_has_highvalue() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void PARAM::clear_highvalue() {
+  highvalue_ = 0u;
+  clear_has_highvalue();
+}
+inline ::google::protobuf::uint32 PARAM::highvalue() const {
+  // @@protoc_insertion_point(field_get:pb.PARAM.highValue)
+  return highvalue_;
+}
+inline void PARAM::set_highvalue(::google::protobuf::uint32 value) {
+  set_has_highvalue();
+  highvalue_ = value;
+  // @@protoc_insertion_point(field_set:pb.PARAM.highValue)
+}
+
+// optional uint32 calibrationIndex = 5;
+inline bool PARAM::has_calibrationindex() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void PARAM::set_has_calibrationindex() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void PARAM::clear_has_calibrationindex() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void PARAM::clear_calibrationindex() {
+  calibrationindex_ = 0u;
+  clear_has_calibrationindex();
+}
+inline ::google::protobuf::uint32 PARAM::calibrationindex() const {
+  // @@protoc_insertion_point(field_get:pb.PARAM.calibrationIndex)
+  return calibrationindex_;
+}
+inline void PARAM::set_calibrationindex(::google::protobuf::uint32 value) {
+  set_has_calibrationindex();
+  calibrationindex_ = value;
+  // @@protoc_insertion_point(field_set:pb.PARAM.calibrationIndex)
+}
+
+// -------------------------------------------------------------------
+
 // GatingHierarchy
 
 // required .pb.populationTree tree = 2;
@@ -3301,6 +6946,142 @@ inline void GatingHierarchy::set_allocated_tree(::pb::populationTree* tree) {
     clear_has_tree();
   }
   // @@protoc_insertion_point(field_set_allocated:pb.GatingHierarchy.tree)
+}
+
+// optional .pb.COMP comp = 1;
+inline bool GatingHierarchy::has_comp() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void GatingHierarchy::set_has_comp() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void GatingHierarchy::clear_has_comp() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void GatingHierarchy::clear_comp() {
+  if (comp_ != NULL) comp_->::pb::COMP::Clear();
+  clear_has_comp();
+}
+inline const ::pb::COMP& GatingHierarchy::comp() const {
+  // @@protoc_insertion_point(field_get:pb.GatingHierarchy.comp)
+  return comp_ != NULL ? *comp_ : *default_instance_->comp_;
+}
+inline ::pb::COMP* GatingHierarchy::mutable_comp() {
+  set_has_comp();
+  if (comp_ == NULL) comp_ = new ::pb::COMP;
+  // @@protoc_insertion_point(field_mutable:pb.GatingHierarchy.comp)
+  return comp_;
+}
+inline ::pb::COMP* GatingHierarchy::release_comp() {
+  clear_has_comp();
+  ::pb::COMP* temp = comp_;
+  comp_ = NULL;
+  return temp;
+}
+inline void GatingHierarchy::set_allocated_comp(::pb::COMP* comp) {
+  delete comp_;
+  comp_ = comp;
+  if (comp) {
+    set_has_comp();
+  } else {
+    clear_has_comp();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.GatingHierarchy.comp)
+}
+
+// optional bool isLoaded = 3;
+inline bool GatingHierarchy::has_isloaded() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void GatingHierarchy::set_has_isloaded() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void GatingHierarchy::clear_has_isloaded() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void GatingHierarchy::clear_isloaded() {
+  isloaded_ = false;
+  clear_has_isloaded();
+}
+inline bool GatingHierarchy::isloaded() const {
+  // @@protoc_insertion_point(field_get:pb.GatingHierarchy.isLoaded)
+  return isloaded_;
+}
+inline void GatingHierarchy::set_isloaded(bool value) {
+  set_has_isloaded();
+  isloaded_ = value;
+  // @@protoc_insertion_point(field_set:pb.GatingHierarchy.isLoaded)
+}
+
+// repeated .pb.PARAM transFlag = 4;
+inline int GatingHierarchy::transflag_size() const {
+  return transflag_.size();
+}
+inline void GatingHierarchy::clear_transflag() {
+  transflag_.Clear();
+}
+inline const ::pb::PARAM& GatingHierarchy::transflag(int index) const {
+  // @@protoc_insertion_point(field_get:pb.GatingHierarchy.transFlag)
+  return transflag_.Get(index);
+}
+inline ::pb::PARAM* GatingHierarchy::mutable_transflag(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.GatingHierarchy.transFlag)
+  return transflag_.Mutable(index);
+}
+inline ::pb::PARAM* GatingHierarchy::add_transflag() {
+  // @@protoc_insertion_point(field_add:pb.GatingHierarchy.transFlag)
+  return transflag_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::PARAM >&
+GatingHierarchy::transflag() const {
+  // @@protoc_insertion_point(field_list:pb.GatingHierarchy.transFlag)
+  return transflag_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::PARAM >*
+GatingHierarchy::mutable_transflag() {
+  // @@protoc_insertion_point(field_mutable_list:pb.GatingHierarchy.transFlag)
+  return &transflag_;
+}
+
+// optional .pb.trans_local trans = 5;
+inline bool GatingHierarchy::has_trans() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void GatingHierarchy::set_has_trans() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void GatingHierarchy::clear_has_trans() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void GatingHierarchy::clear_trans() {
+  if (trans_ != NULL) trans_->::pb::trans_local::Clear();
+  clear_has_trans();
+}
+inline const ::pb::trans_local& GatingHierarchy::trans() const {
+  // @@protoc_insertion_point(field_get:pb.GatingHierarchy.trans)
+  return trans_ != NULL ? *trans_ : *default_instance_->trans_;
+}
+inline ::pb::trans_local* GatingHierarchy::mutable_trans() {
+  set_has_trans();
+  if (trans_ == NULL) trans_ = new ::pb::trans_local;
+  // @@protoc_insertion_point(field_mutable:pb.GatingHierarchy.trans)
+  return trans_;
+}
+inline ::pb::trans_local* GatingHierarchy::release_trans() {
+  clear_has_trans();
+  ::pb::trans_local* temp = trans_;
+  trans_ = NULL;
+  return temp;
+}
+inline void GatingHierarchy::set_allocated_trans(::pb::trans_local* trans) {
+  delete trans_;
+  trans_ = trans;
+  if (trans) {
+    set_has_trans();
+  } else {
+    clear_has_trans();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.GatingHierarchy.trans)
 }
 
 // -------------------------------------------------------------------
@@ -3426,7 +7207,106 @@ inline void ghPair::set_allocated_samplename(::std::string* samplename) {
 
 // -------------------------------------------------------------------
 
+// TRANS_TBL
+
+// required uint64 trans_address = 1;
+inline bool TRANS_TBL::has_trans_address() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void TRANS_TBL::set_has_trans_address() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void TRANS_TBL::clear_has_trans_address() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void TRANS_TBL::clear_trans_address() {
+  trans_address_ = GOOGLE_ULONGLONG(0);
+  clear_has_trans_address();
+}
+inline ::google::protobuf::uint64 TRANS_TBL::trans_address() const {
+  // @@protoc_insertion_point(field_get:pb.TRANS_TBL.trans_address)
+  return trans_address_;
+}
+inline void TRANS_TBL::set_trans_address(::google::protobuf::uint64 value) {
+  set_has_trans_address();
+  trans_address_ = value;
+  // @@protoc_insertion_point(field_set:pb.TRANS_TBL.trans_address)
+}
+
+// required .pb.transformation trans = 2;
+inline bool TRANS_TBL::has_trans() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void TRANS_TBL::set_has_trans() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void TRANS_TBL::clear_has_trans() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void TRANS_TBL::clear_trans() {
+  if (trans_ != NULL) trans_->::pb::transformation::Clear();
+  clear_has_trans();
+}
+inline const ::pb::transformation& TRANS_TBL::trans() const {
+  // @@protoc_insertion_point(field_get:pb.TRANS_TBL.trans)
+  return trans_ != NULL ? *trans_ : *default_instance_->trans_;
+}
+inline ::pb::transformation* TRANS_TBL::mutable_trans() {
+  set_has_trans();
+  if (trans_ == NULL) trans_ = new ::pb::transformation;
+  // @@protoc_insertion_point(field_mutable:pb.TRANS_TBL.trans)
+  return trans_;
+}
+inline ::pb::transformation* TRANS_TBL::release_trans() {
+  clear_has_trans();
+  ::pb::transformation* temp = trans_;
+  trans_ = NULL;
+  return temp;
+}
+inline void TRANS_TBL::set_allocated_trans(::pb::transformation* trans) {
+  delete trans_;
+  trans_ = trans;
+  if (trans) {
+    set_has_trans();
+  } else {
+    clear_has_trans();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.TRANS_TBL.trans)
+}
+
+// -------------------------------------------------------------------
+
 // GatingSet
+
+// repeated .pb.TRANS_TBL trans_tbl = 2;
+inline int GatingSet::trans_tbl_size() const {
+  return trans_tbl_.size();
+}
+inline void GatingSet::clear_trans_tbl() {
+  trans_tbl_.Clear();
+}
+inline const ::pb::TRANS_TBL& GatingSet::trans_tbl(int index) const {
+  // @@protoc_insertion_point(field_get:pb.GatingSet.trans_tbl)
+  return trans_tbl_.Get(index);
+}
+inline ::pb::TRANS_TBL* GatingSet::mutable_trans_tbl(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.GatingSet.trans_tbl)
+  return trans_tbl_.Mutable(index);
+}
+inline ::pb::TRANS_TBL* GatingSet::add_trans_tbl() {
+  // @@protoc_insertion_point(field_add:pb.GatingSet.trans_tbl)
+  return trans_tbl_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL >&
+GatingSet::trans_tbl() const {
+  // @@protoc_insertion_point(field_list:pb.GatingSet.trans_tbl)
+  return trans_tbl_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL >*
+GatingSet::mutable_trans_tbl() {
+  // @@protoc_insertion_point(field_mutable_list:pb.GatingSet.trans_tbl)
+  return &trans_tbl_;
+}
 
 // repeated .pb.ghPair ghs = 1;
 inline int GatingSet::ghs_size() const {
@@ -3458,6 +7338,118 @@ GatingSet::mutable_ghs() {
   return &ghs_;
 }
 
+// optional .pb.biexpTrans globalBiExpTrans = 3;
+inline bool GatingSet::has_globalbiexptrans() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void GatingSet::set_has_globalbiexptrans() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void GatingSet::clear_has_globalbiexptrans() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void GatingSet::clear_globalbiexptrans() {
+  if (globalbiexptrans_ != NULL) globalbiexptrans_->::pb::biexpTrans::Clear();
+  clear_has_globalbiexptrans();
+}
+inline const ::pb::biexpTrans& GatingSet::globalbiexptrans() const {
+  // @@protoc_insertion_point(field_get:pb.GatingSet.globalBiExpTrans)
+  return globalbiexptrans_ != NULL ? *globalbiexptrans_ : *default_instance_->globalbiexptrans_;
+}
+inline ::pb::biexpTrans* GatingSet::mutable_globalbiexptrans() {
+  set_has_globalbiexptrans();
+  if (globalbiexptrans_ == NULL) globalbiexptrans_ = new ::pb::biexpTrans;
+  // @@protoc_insertion_point(field_mutable:pb.GatingSet.globalBiExpTrans)
+  return globalbiexptrans_;
+}
+inline ::pb::biexpTrans* GatingSet::release_globalbiexptrans() {
+  clear_has_globalbiexptrans();
+  ::pb::biexpTrans* temp = globalbiexptrans_;
+  globalbiexptrans_ = NULL;
+  return temp;
+}
+inline void GatingSet::set_allocated_globalbiexptrans(::pb::biexpTrans* globalbiexptrans) {
+  delete globalbiexptrans_;
+  globalbiexptrans_ = globalbiexptrans;
+  if (globalbiexptrans) {
+    set_has_globalbiexptrans();
+  } else {
+    clear_has_globalbiexptrans();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.GatingSet.globalBiExpTrans)
+}
+
+// optional .pb.transformation globalLinTrans = 4;
+inline bool GatingSet::has_globallintrans() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void GatingSet::set_has_globallintrans() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void GatingSet::clear_has_globallintrans() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void GatingSet::clear_globallintrans() {
+  if (globallintrans_ != NULL) globallintrans_->::pb::transformation::Clear();
+  clear_has_globallintrans();
+}
+inline const ::pb::transformation& GatingSet::globallintrans() const {
+  // @@protoc_insertion_point(field_get:pb.GatingSet.globalLinTrans)
+  return globallintrans_ != NULL ? *globallintrans_ : *default_instance_->globallintrans_;
+}
+inline ::pb::transformation* GatingSet::mutable_globallintrans() {
+  set_has_globallintrans();
+  if (globallintrans_ == NULL) globallintrans_ = new ::pb::transformation;
+  // @@protoc_insertion_point(field_mutable:pb.GatingSet.globalLinTrans)
+  return globallintrans_;
+}
+inline ::pb::transformation* GatingSet::release_globallintrans() {
+  clear_has_globallintrans();
+  ::pb::transformation* temp = globallintrans_;
+  globallintrans_ = NULL;
+  return temp;
+}
+inline void GatingSet::set_allocated_globallintrans(::pb::transformation* globallintrans) {
+  delete globallintrans_;
+  globallintrans_ = globallintrans;
+  if (globallintrans) {
+    set_has_globallintrans();
+  } else {
+    clear_has_globallintrans();
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.GatingSet.globalLinTrans)
+}
+
+// repeated .pb.trans_local gTrans = 5;
+inline int GatingSet::gtrans_size() const {
+  return gtrans_.size();
+}
+inline void GatingSet::clear_gtrans() {
+  gtrans_.Clear();
+}
+inline const ::pb::trans_local& GatingSet::gtrans(int index) const {
+  // @@protoc_insertion_point(field_get:pb.GatingSet.gTrans)
+  return gtrans_.Get(index);
+}
+inline ::pb::trans_local* GatingSet::mutable_gtrans(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.GatingSet.gTrans)
+  return gtrans_.Mutable(index);
+}
+inline ::pb::trans_local* GatingSet::add_gtrans() {
+  // @@protoc_insertion_point(field_add:pb.GatingSet.gTrans)
+  return gtrans_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::pb::trans_local >&
+GatingSet::gtrans() const {
+  // @@protoc_insertion_point(field_list:pb.GatingSet.gTrans)
+  return gtrans_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::pb::trans_local >*
+GatingSet::mutable_gtrans() {
+  // @@protoc_insertion_point(field_mutable_list:pb.GatingSet.gTrans)
+  return &gtrans_;
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -3476,6 +7468,11 @@ template <> struct is_proto_enum< ::pb::ind_type> : ::google::protobuf::internal
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::pb::ind_type>() {
   return ::pb::ind_type_descriptor();
+}
+template <> struct is_proto_enum< ::pb::TRANS_TYPE> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::pb::TRANS_TYPE>() {
+  return ::pb::TRANS_TYPE_descriptor();
 }
 
 }  // namespace google

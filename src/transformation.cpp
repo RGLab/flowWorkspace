@@ -38,11 +38,85 @@ trans_map trans_local::cloneTransMap(){
 	return res;
 }
 
+void trans_local::convertToPb(pb::trans_local & lg_pb){
 
+	BOOST_FOREACH(trans_map::value_type & it, tp){
+		intptr_t address = it.second;
+		pb::trans_pair * tp = lg_pb.add_tp();
+		tp->set_name(it.first);
+		tp->set_trans_address(address);
+	}
+}
+
+void trans_local::convertToPb(pb::trans_local & lg_pb, pb::GatingSet & gs_pb){
+	// save  address vs name pair and address(global) is to be referred in gh
+	convertToPb(lg_pb);
+
+	//save it to global mapping (address vs trans obj)
+	BOOST_FOREACH(trans_map::value_type & it, tp){
+			intptr_t address = it.second;
+			pb::TRANS_TBL * tb = gs_pb.add_trans_tbl();
+			tb->set_trans_address(address);
+			pb::transformation * trans_pb = tb->mutable_trans();
+			transformation * trans = it.second;
+			trans->convertToPb(*trans_pb);
+		}
+}
+void trans_global::convertToPb(pb::trans_local & tg_pb, pb::GatingSet & gs_pb){
+		trans_local::convertToPb(tg_pb, gs_pb);//pass gs_pb on to the base method
+		tg_pb.set_groupname(groupName);
+		BOOST_FOREACH(vector<int>::value_type & it,sampleIDs){
+			tg_pb.add_sampleids(it);
+		}
+
+}
 /*
  * transformation
  */
+void transformation::convertToPb(pb::transformation & trans_pb){
+	trans_pb.set_iscomputed(isComputed);
+	trans_pb.set_isgateonly(isGateOnly);
+	trans_pb.set_type(type);
+	trans_pb.set_name(name);
+	trans_pb.set_channel(channel);
+	pb::calibrationTable * cal_pb = trans_pb.mutable_caltbl();
+	calTbl.convertToPb(*cal_pb);
+}
+void biexpTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_BIEXP);
+	pb::biexpTrans * bt_pb = trans_pb.mutable_bt();
+	bt_pb->set_channelrange(channelRange);
+	bt_pb->set_maxvalue(maxValue);
+	bt_pb->set_neg(neg);
+	bt_pb->set_pos(pos);
+	bt_pb->set_widthbasis(widthBasis);
+}
+void logTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_LOG);
+	pb::logTrans * lt_pb = trans_pb.mutable_lt();
+	lt_pb->set_decade(decade);
+	lt_pb->set_offset(offset);
+}
+void linTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_LIN);
 
+}
+void scaleTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_SCALE);
+	pb::scaleTrans * st_pb = trans_pb.mutable_st();
+	st_pb->set_scale_factor(scale_factor);
+}
+void flinTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_FLIN);
+	pb::flinTrans * ft_pb = trans_pb.mutable_ft();
+	ft_pb->set_max(max);
+	ft_pb->set_min(min);
+}
 
 /*
 	 * if it is pure transformation object,then assume calibration is directly read from ws

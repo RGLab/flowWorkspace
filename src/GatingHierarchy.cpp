@@ -20,7 +20,41 @@ GatingHierarchy::GatingHierarchy()
 	isLoaded=false;
 }
 
-GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh):isLoaded(false){
+void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
+	pb::populationTree * ptree = gh_pb.mutable_tree();
+	/*
+	 * cp tree
+	 */
+	VertexID_vec verIDs = getVertices();
+	for(VertexID_vec::iterator it = verIDs.begin(); it != verIDs.end(); it++){
+		VertexID thisVert = *it;
+		nodeProperties & np = getNodeProperty(thisVert);
+
+		pb::treeNodes * node = ptree->add_node();
+		pb::nodeProperties * pb_node = node->mutable_node();
+		np.convertToPb(*pb_node);
+		if(thisVert > 0){
+			node->set_parent(getParent(thisVert));
+		}
+
+
+	}
+	//cp comp
+	pb::COMP * comp_pb = gh_pb.mutable_comp();
+	comp.convertToPb(*comp_pb);
+	//cp trans
+	pb::trans_local * trans_pb = gh_pb.mutable_trans();
+	trans.convertToPb(*trans_pb);
+	//cp trans flag
+	BOOST_FOREACH(PARAM_VEC::value_type & it, transFlag){
+		pb::PARAM * tflag_pb = gh_pb.add_transflag();
+		it.convertToPb(*tflag_pb);
+	}
+
+
+}
+
+GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh):isLoaded(pb_gh.isloaded()){
 	pb::populationTree tree_pb =  pb_gh.tree();
 	for(int i = 0; i < tree_pb.node_size(); i++){
 		pb::treeNodes node_pb = tree_pb.node(i);
@@ -1236,26 +1270,5 @@ GatingHierarchy * GatingHierarchy::clone(){
  */
 void GatingHierarchy::addTransMap(trans_map tm){
 	trans.setTransMap(tm);
-
-}
-void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
-	pb::populationTree * ptree = gh_pb.mutable_tree();
-	/*
-	 * cp tree
-	 */
-	VertexID_vec verIDs = getVertices();
-	for(VertexID_vec::iterator it = verIDs.begin(); it != verIDs.end(); it++){
-		VertexID thisVert = *it;
-		nodeProperties & np = getNodeProperty(thisVert);
-
-		pb::treeNodes * node = ptree->add_node();
-		pb::nodeProperties * pb_node = node->mutable_node();
-		np.convertToPb(*pb_node);
-		if(thisVert > 0){
-			node->set_parent(getParent(thisVert));
-		}
-
-
-	}
 
 }

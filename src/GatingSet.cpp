@@ -34,7 +34,26 @@ void GatingSet::convertToPb(pb::GatingSet & pb_gs){
 		gh->convertToPb(*pb_gh);
 	  }
 
+	  // cp trans
+	  BOOST_FOREACH(trans_global_vec::value_type & it, gTrans){
+		  pb::trans_local * tg = pb_gs.add_gtrans();
+		  it.convertToPb(*tg, pb_gs);
+	  }
+	  //cp global biexp
+	  pb::transformation * trans_pb = pb_gs.mutable_globalbiexptrans();
+	  globalBiExpTrans.convertToPb(*trans_pb);
+	  //add it to the global mapping
+	  pb::TRANS_TBL * trans_tbl_pb = pb_gs.add_trans_tbl();
+	  intptr_t address = &globalBiExpTrans;
+	  trans_tbl_pb->set_trans_address(address);
 
+	  //cp global lintrans
+	  pb::transformation * trans_pb = pb_gs.mutable_globallintrans();
+	  globalLinTrans.convertToPb(*trans_pb);
+	  //add it to the global mapping
+	  pb::TRANS_TBL * trans_tbl_pb = pb_gs.add_trans_tbl();
+	  address = &globalLinTrans;
+	  trans_tbl_pb->set_trans_address(address);
 }
 /**
  * serialization by boost serialization library
@@ -97,6 +116,12 @@ void GatingSet::serialize_pb(string filename){
 			google::protobuf::ShutdownProtobufLibrary();
 }
 
+/**
+ * constructor from the archives (de-serialization)
+ * @param filename
+ * @param format
+ * @param isPB
+ */
 GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NULL)
 {
 
@@ -111,11 +136,13 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 		}
 
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
+		//restore gating hierarchy
 		for(int i = 0; i < pbGS.ghs_size(); i++){
 			pb::ghPair ghp = pbGS.ghs(i);
 			pb::GatingHierarchy gh_pb = ghp.gh();
 			ghs[ghp.samplename()] = new GatingHierarchy(gh_pb);
 		}
+		//restore the trans
 	}
 	else
 	{
