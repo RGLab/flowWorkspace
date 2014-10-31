@@ -200,7 +200,7 @@ public:
 	VertexID addRoot(wsRootNode, workspace & ws);
 	VertexID addRoot();
 	GatingHierarchy();
-	GatingHierarchy(pb::GatingHierarchy & pb_gh);
+	GatingHierarchy(pb::GatingHierarchy & pb_gh, map<intptr_t, transformation *> trans_tbl);
 
 	GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans);
 

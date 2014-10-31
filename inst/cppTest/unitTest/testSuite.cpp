@@ -6,6 +6,7 @@
 
 #include "test_header.hpp"
 float gTol = 0.05;
+bool isPB = false;
 unsigned short myTestPolymorphism(){
 	gate * g= NULL;
 
@@ -42,6 +43,7 @@ struct globalFixture{
 		cout << "Enter tolerance (e.g. 0.08):" << endl;
 //		cin >> gTol;
 		gTol = 0.08;
+
 	};
 	~globalFixture(){};
 
@@ -56,6 +58,7 @@ struct parseWorkspaceFixture{
 		myTest.isLoadArhive = false;
 		myTest.archiveFormat = ARCHIVE_TYPE_BINARY;
 		myTest.isSaveArchive = false;
+		myTest.archiveType = isPB;
 	};
 	~parseWorkspaceFixture(){};
 	testCase myTest;
@@ -76,7 +79,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.archive="../output/HIPC_trial/gs";
 //	g_loglevel = GATE_LEVEL;
 	myTest.isLoadArhive = true;
-	myTest.archiveType = PB;
+//	myTest.archiveType = PB;
 	myTest.isSaveArchive = true;
 	parser_test(myTest);
 
@@ -94,9 +97,9 @@ BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 	myTest.ncfile="../output/Blomberg/nc1_comp.nc";
 	myTest.colfile="../output/Blomberg/colnames.txt";
 	myTest.archive="../output/Blomberg/gs";
-
-//	myTest.isLoadArhive = true;
-
+	myTest.isLoadArhive = true;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -113,6 +116,9 @@ BOOST_AUTO_TEST_CASE(ITN029ST)
 	myTest.ncfile="../output/ITN/nc1.nc";
 	myTest.colfile="../output/ITN/colnames.txt";
 	myTest.archive="../output//ITN/gs";
+	myTest.isLoadArhive = false;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 
 	parser_test(myTest);
 
@@ -128,8 +134,12 @@ BOOST_AUTO_TEST_CASE(Cytotrol_NHLBI)
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/NHLBI/nc1_comp.nc";
 	myTest.colfile="../output/NHLBI/colnames.txt";
-	myTest.archive="../output/NHLBI/gs/file41e925ffb2f5";
+	myTest.archive="../output/NHLBI/gs";
 //	g_loglevel = GATE_LEVEL;
+	myTest.isLoadArhive = true;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
+
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -145,6 +155,9 @@ BOOST_AUTO_TEST_CASE(HVTN080_batch_1057)
 	myTest.ncfile="../output/HVTN080/nc_comp.nc";
 	myTest.colfile="../output/HVTN080/colnames.txt";
 	myTest.archive="../output/HVTN080/gs/gs";
+	myTest.isLoadArhive = true;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 
 
 	parser_test(myTest);
@@ -162,6 +175,9 @@ BOOST_AUTO_TEST_CASE(HVTN080_batch_0939)
 	myTest.ncfile="../output/NormalizationData/nc_comp.nc";
 	myTest.colfile="../output/NormalizationData/colnames.txt";
 	myTest.archive="../output/NormalizationData/gs/gs";
+	myTest.isLoadArhive = true;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 
 
 
@@ -180,6 +196,9 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_A)
 	myTest.ncfile="../output/vX/A1/nc_comp.nc";
 	myTest.colfile="../output/vX/A1/colnames.txt";
 	myTest.archive="../output/vX/A1/gs/gs";
+	myTest.isLoadArhive = true;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 
 
 	parser_test(myTest);
@@ -197,6 +216,9 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 	myTest.ncfile="../output/vX/B1/nc_comp.nc";
 	myTest.colfile="../output/vX/B1/colnames.txt";
 	myTest.archive="../output/vX/B1/gs/gs";
+	myTest.isLoadArhive = true;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 
 	parser_test(myTest);
 
@@ -213,9 +235,9 @@ BOOST_AUTO_TEST_CASE(bioaster)
 	myTest.ncfile="../output/bioaster/nc_comp.nc";
 	myTest.colfile="../output/bioaster/colnames.txt";
 	myTest.archive="../output/bioaster/gs/gs";
-
-//	myTest.isSaveArchive = true;
-//	myTest.isLoadArhive = true;
+	myTest.isLoadArhive = true;
+//	myTest.archiveType = PB;
+	myTest.isSaveArchive = true;
 
 
 

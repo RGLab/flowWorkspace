@@ -196,13 +196,13 @@ message ghPair{
 }
 message TRANS_TBL{
 	required uint64 trans_address = 1;
-	required transformation trans = 2;
+	optional transformation trans = 2;
 }
 message GatingSet {
 	repeated TRANS_TBL trans_tbl = 2;
 	repeated ghPair ghs = 1;
-	optional biexpTrans globalBiExpTrans = 3;
-	optional transformation globalLinTrans = 4;
+	optional uint64 globalBiExpTrans = 3;//address of globalBiExpTrans, the actual object stored in trans_tbl
+	optional uint64 globalLinTrans = 4;//address of globalLinTrans, the actual object stored in trans_tbl
 	repeated trans_local gTrans = 5;
 }
 

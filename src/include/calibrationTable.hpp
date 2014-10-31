@@ -86,6 +86,7 @@ public:
 	void setInterpolated(bool _flag){flag=_flag;};
 	bool isInterpolated(){return flag;}
 	void convertToPb(pb::calibrationTable & cal_pb);
+	calibrationTable(const pb::calibrationTable & cal_pb);
 };
 
 

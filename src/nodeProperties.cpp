@@ -35,6 +35,8 @@ nodeProperties::nodeProperties(pb::nodeProperties & np_pb):thisGate(NULL),hidden
 		case pb::ROOT:
 			indices.reset(new ROOTINDICES(ind_pb));
 			break;
+		default:
+			throw(domain_error("unknown type of event indices archive!"));
 		}
 	}
 
@@ -66,6 +68,8 @@ nodeProperties::nodeProperties(pb::nodeProperties & np_pb):thisGate(NULL),hidden
 		case pb::LOGICAL_GATE:
 			thisGate = new logicalGate(gate_pb);
 			break;
+		default:
+			throw(domain_error("unknown type of gate archive!"));
 		}
 
 	}

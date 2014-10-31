@@ -54,7 +54,7 @@ void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
 
 }
 
-GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh):isLoaded(pb_gh.isloaded()){
+GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh, map<intptr_t, transformation *> trans_tbl):isLoaded(pb_gh.isloaded()){
 	pb::populationTree tree_pb =  pb_gh.tree();
 	for(int i = 0; i < tree_pb.node_size(); i++){
 		pb::treeNodes node_pb = tree_pb.node(i);
@@ -69,6 +69,14 @@ GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh):isLoaded(pb_gh.isl
 		}
 
 	}
+	//restore comp
+	comp = compensation(pb_gh.comp());
+	//restore trans flag
+	for(int i = 0; i < pb_gh.transflag_size(); i++){
+		transFlag.push_back(PARAM(pb_gh.transflag(i)));
+	}
+	//restore trans local
+	trans = trans_local(pb_gh.trans(), trans_tbl);
 }
 
 /*

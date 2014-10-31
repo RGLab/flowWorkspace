@@ -53,6 +53,8 @@ public:
 	vector<string> marker;
 	vector<double> spillOver;
 	void convertToPb(pb::COMP & comp_pb);
+	compensation(){};
+	compensation(const pb::COMP & comp_pb);
 private:
 template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)

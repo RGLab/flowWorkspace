@@ -3236,7 +3236,7 @@ class TRANS_TBL : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 trans_address() const;
   inline void set_trans_address(::google::protobuf::uint64 value);
 
-  // required .pb.transformation trans = 2;
+  // optional .pb.transformation trans = 2;
   inline bool has_trans() const;
   inline void clear_trans();
   static const int kTransFieldNumber = 2;
@@ -3344,23 +3344,19 @@ class GatingSet : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::pb::ghPair >*
       mutable_ghs();
 
-  // optional .pb.biexpTrans globalBiExpTrans = 3;
+  // optional uint64 globalBiExpTrans = 3;
   inline bool has_globalbiexptrans() const;
   inline void clear_globalbiexptrans();
   static const int kGlobalBiExpTransFieldNumber = 3;
-  inline const ::pb::biexpTrans& globalbiexptrans() const;
-  inline ::pb::biexpTrans* mutable_globalbiexptrans();
-  inline ::pb::biexpTrans* release_globalbiexptrans();
-  inline void set_allocated_globalbiexptrans(::pb::biexpTrans* globalbiexptrans);
+  inline ::google::protobuf::uint64 globalbiexptrans() const;
+  inline void set_globalbiexptrans(::google::protobuf::uint64 value);
 
-  // optional .pb.transformation globalLinTrans = 4;
+  // optional uint64 globalLinTrans = 4;
   inline bool has_globallintrans() const;
   inline void clear_globallintrans();
   static const int kGlobalLinTransFieldNumber = 4;
-  inline const ::pb::transformation& globallintrans() const;
-  inline ::pb::transformation* mutable_globallintrans();
-  inline ::pb::transformation* release_globallintrans();
-  inline void set_allocated_globallintrans(::pb::transformation* globallintrans);
+  inline ::google::protobuf::uint64 globallintrans() const;
+  inline void set_globallintrans(::google::protobuf::uint64 value);
 
   // repeated .pb.trans_local gTrans = 5;
   inline int gtrans_size() const;
@@ -3387,8 +3383,8 @@ class GatingSet : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL > trans_tbl_;
   ::google::protobuf::RepeatedPtrField< ::pb::ghPair > ghs_;
-  ::pb::biexpTrans* globalbiexptrans_;
-  ::pb::transformation* globallintrans_;
+  ::google::protobuf::uint64 globalbiexptrans_;
+  ::google::protobuf::uint64 globallintrans_;
   ::google::protobuf::RepeatedPtrField< ::pb::trans_local > gtrans_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
@@ -7233,7 +7229,7 @@ inline void TRANS_TBL::set_trans_address(::google::protobuf::uint64 value) {
   // @@protoc_insertion_point(field_set:pb.TRANS_TBL.trans_address)
 }
 
-// required .pb.transformation trans = 2;
+// optional .pb.transformation trans = 2;
 inline bool TRANS_TBL::has_trans() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -7338,7 +7334,7 @@ GatingSet::mutable_ghs() {
   return &ghs_;
 }
 
-// optional .pb.biexpTrans globalBiExpTrans = 3;
+// optional uint64 globalBiExpTrans = 3;
 inline bool GatingSet::has_globalbiexptrans() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -7349,37 +7345,20 @@ inline void GatingSet::clear_has_globalbiexptrans() {
   _has_bits_[0] &= ~0x00000004u;
 }
 inline void GatingSet::clear_globalbiexptrans() {
-  if (globalbiexptrans_ != NULL) globalbiexptrans_->::pb::biexpTrans::Clear();
+  globalbiexptrans_ = GOOGLE_ULONGLONG(0);
   clear_has_globalbiexptrans();
 }
-inline const ::pb::biexpTrans& GatingSet::globalbiexptrans() const {
+inline ::google::protobuf::uint64 GatingSet::globalbiexptrans() const {
   // @@protoc_insertion_point(field_get:pb.GatingSet.globalBiExpTrans)
-  return globalbiexptrans_ != NULL ? *globalbiexptrans_ : *default_instance_->globalbiexptrans_;
-}
-inline ::pb::biexpTrans* GatingSet::mutable_globalbiexptrans() {
-  set_has_globalbiexptrans();
-  if (globalbiexptrans_ == NULL) globalbiexptrans_ = new ::pb::biexpTrans;
-  // @@protoc_insertion_point(field_mutable:pb.GatingSet.globalBiExpTrans)
   return globalbiexptrans_;
 }
-inline ::pb::biexpTrans* GatingSet::release_globalbiexptrans() {
-  clear_has_globalbiexptrans();
-  ::pb::biexpTrans* temp = globalbiexptrans_;
-  globalbiexptrans_ = NULL;
-  return temp;
-}
-inline void GatingSet::set_allocated_globalbiexptrans(::pb::biexpTrans* globalbiexptrans) {
-  delete globalbiexptrans_;
-  globalbiexptrans_ = globalbiexptrans;
-  if (globalbiexptrans) {
-    set_has_globalbiexptrans();
-  } else {
-    clear_has_globalbiexptrans();
-  }
-  // @@protoc_insertion_point(field_set_allocated:pb.GatingSet.globalBiExpTrans)
+inline void GatingSet::set_globalbiexptrans(::google::protobuf::uint64 value) {
+  set_has_globalbiexptrans();
+  globalbiexptrans_ = value;
+  // @@protoc_insertion_point(field_set:pb.GatingSet.globalBiExpTrans)
 }
 
-// optional .pb.transformation globalLinTrans = 4;
+// optional uint64 globalLinTrans = 4;
 inline bool GatingSet::has_globallintrans() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -7390,34 +7369,17 @@ inline void GatingSet::clear_has_globallintrans() {
   _has_bits_[0] &= ~0x00000008u;
 }
 inline void GatingSet::clear_globallintrans() {
-  if (globallintrans_ != NULL) globallintrans_->::pb::transformation::Clear();
+  globallintrans_ = GOOGLE_ULONGLONG(0);
   clear_has_globallintrans();
 }
-inline const ::pb::transformation& GatingSet::globallintrans() const {
+inline ::google::protobuf::uint64 GatingSet::globallintrans() const {
   // @@protoc_insertion_point(field_get:pb.GatingSet.globalLinTrans)
-  return globallintrans_ != NULL ? *globallintrans_ : *default_instance_->globallintrans_;
-}
-inline ::pb::transformation* GatingSet::mutable_globallintrans() {
-  set_has_globallintrans();
-  if (globallintrans_ == NULL) globallintrans_ = new ::pb::transformation;
-  // @@protoc_insertion_point(field_mutable:pb.GatingSet.globalLinTrans)
   return globallintrans_;
 }
-inline ::pb::transformation* GatingSet::release_globallintrans() {
-  clear_has_globallintrans();
-  ::pb::transformation* temp = globallintrans_;
-  globallintrans_ = NULL;
-  return temp;
-}
-inline void GatingSet::set_allocated_globallintrans(::pb::transformation* globallintrans) {
-  delete globallintrans_;
-  globallintrans_ = globallintrans;
-  if (globallintrans) {
-    set_has_globallintrans();
-  } else {
-    clear_has_globallintrans();
-  }
-  // @@protoc_insertion_point(field_set_allocated:pb.GatingSet.globalLinTrans)
+inline void GatingSet::set_globallintrans(::google::protobuf::uint64 value) {
+  set_has_globallintrans();
+  globallintrans_ = value;
+  // @@protoc_insertion_point(field_set:pb.GatingSet.globalLinTrans)
 }
 
 // repeated .pb.trans_local gTrans = 5;

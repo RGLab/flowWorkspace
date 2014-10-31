@@ -839,19 +839,18 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "\001(\0132\017.pb.trans_local\"=\n\006ghPair\022\037\n\002gh\030\001 \002"
     "(\0132\023.pb.GatingHierarchy\022\022\n\nsampleName\030\002 "
     "\002(\t\"E\n\tTRANS_TBL\022\025\n\rtrans_address\030\001 \002(\004\022"
-    "!\n\005trans\030\002 \002(\0132\022.pb.transformation\"\275\001\n\tG"
+    "!\n\005trans\030\002 \001(\0132\022.pb.transformation\"\231\001\n\tG"
     "atingSet\022 \n\ttrans_tbl\030\002 \003(\0132\r.pb.TRANS_T"
-    "BL\022\027\n\003ghs\030\001 \003(\0132\n.pb.ghPair\022(\n\020globalBiE"
-    "xpTrans\030\003 \001(\0132\016.pb.biexpTrans\022*\n\016globalL"
-    "inTrans\030\004 \001(\0132\022.pb.transformation\022\037\n\006gTr"
-    "ans\030\005 \003(\0132\017.pb.trans_local*\203\001\n\tGATE_TYPE"
-    "\022\020\n\014POLYGON_GATE\020\001\022\016\n\nRANGE_GATE\020\002\022\r\n\tBO"
-    "OL_GATE\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT_GATE"
-    "\020\005\022\020\n\014LOGICAL_GATE\020\006\022\022\n\016ELLIPSOID_GATE\020\007"
-    "*\'\n\010ind_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004ROOT\020"
-    "\002*]\n\nTRANS_TYPE\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB_FASI"
-    "GNH\020\001\022\n\n\006PB_LOG\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB_SCAL"
-    "E\020\004\022\013\n\007PB_FLIN\020\005", 2976);
+    "BL\022\027\n\003ghs\030\001 \003(\0132\n.pb.ghPair\022\030\n\020globalBiE"
+    "xpTrans\030\003 \001(\004\022\026\n\016globalLinTrans\030\004 \001(\004\022\037\n"
+    "\006gTrans\030\005 \003(\0132\017.pb.trans_local*\203\001\n\tGATE_"
+    "TYPE\022\020\n\014POLYGON_GATE\020\001\022\016\n\nRANGE_GATE\020\002\022\r"
+    "\n\tBOOL_GATE\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT_"
+    "GATE\020\005\022\020\n\014LOGICAL_GATE\020\006\022\022\n\016ELLIPSOID_GA"
+    "TE\020\007*\'\n\010ind_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004R"
+    "OOT\020\002*]\n\nTRANS_TYPE\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB_"
+    "FASIGNH\020\001\022\n\n\006PB_LOG\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB_"
+    "SCALE\020\004\022\013\n\007PB_FLIN\020\005", 2940);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GatingSet.proto", &protobuf_RegisterTypes);
   paramRange::default_instance_ = new paramRange();
@@ -10540,7 +10539,7 @@ bool TRANS_TBL::MergePartialFromCodedStream(
         break;
       }
 
-      // required .pb.transformation trans = 2;
+      // optional .pb.transformation trans = 2;
       case 2: {
         if (tag == 18) {
          parse_trans:
@@ -10583,7 +10582,7 @@ void TRANS_TBL::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->trans_address(), output);
   }
 
-  // required .pb.transformation trans = 2;
+  // optional .pb.transformation trans = 2;
   if (has_trans()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->trans(), output);
@@ -10604,7 +10603,7 @@ void TRANS_TBL::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->trans_address(), target);
   }
 
-  // required .pb.transformation trans = 2;
+  // optional .pb.transformation trans = 2;
   if (has_trans()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -10630,7 +10629,7 @@ int TRANS_TBL::ByteSize() const {
           this->trans_address());
     }
 
-    // required .pb.transformation trans = 2;
+    // optional .pb.transformation trans = 2;
     if (has_trans()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -10687,7 +10686,7 @@ void TRANS_TBL::CopyFrom(const TRANS_TBL& from) {
 }
 
 bool TRANS_TBL::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   return true;
 }
@@ -10728,8 +10727,6 @@ GatingSet::GatingSet()
 }
 
 void GatingSet::InitAsDefaultInstance() {
-  globalbiexptrans_ = const_cast< ::pb::biexpTrans*>(&::pb::biexpTrans::default_instance());
-  globallintrans_ = const_cast< ::pb::transformation*>(&::pb::transformation::default_instance());
 }
 
 GatingSet::GatingSet(const GatingSet& from)
@@ -10741,8 +10738,8 @@ GatingSet::GatingSet(const GatingSet& from)
 
 void GatingSet::SharedCtor() {
   _cached_size_ = 0;
-  globalbiexptrans_ = NULL;
-  globallintrans_ = NULL;
+  globalbiexptrans_ = GOOGLE_ULONGLONG(0);
+  globallintrans_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -10753,8 +10750,6 @@ GatingSet::~GatingSet() {
 
 void GatingSet::SharedDtor() {
   if (this != default_instance_) {
-    delete globalbiexptrans_;
-    delete globallintrans_;
   }
 }
 
@@ -10780,14 +10775,21 @@ GatingSet* GatingSet::New() const {
 }
 
 void GatingSet::Clear() {
-  if (_has_bits_[0 / 32] & 12) {
-    if (has_globalbiexptrans()) {
-      if (globalbiexptrans_ != NULL) globalbiexptrans_->::pb::biexpTrans::Clear();
-    }
-    if (has_globallintrans()) {
-      if (globallintrans_ != NULL) globallintrans_->::pb::transformation::Clear();
-    }
-  }
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<GatingSet*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  ZR_(globalbiexptrans_, globallintrans_);
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
   trans_tbl_.Clear();
   ghs_.Clear();
   gtrans_.Clear();
@@ -10829,29 +10831,33 @@ bool GatingSet::MergePartialFromCodedStream(
           goto handle_unusual;
         }
         if (input->ExpectTag(18)) goto parse_trans_tbl;
-        if (input->ExpectTag(26)) goto parse_globalBiExpTrans;
+        if (input->ExpectTag(24)) goto parse_globalBiExpTrans;
         break;
       }
 
-      // optional .pb.biexpTrans globalBiExpTrans = 3;
+      // optional uint64 globalBiExpTrans = 3;
       case 3: {
-        if (tag == 26) {
+        if (tag == 24) {
          parse_globalBiExpTrans:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_globalbiexptrans()));
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &globalbiexptrans_)));
+          set_has_globalbiexptrans();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(34)) goto parse_globalLinTrans;
+        if (input->ExpectTag(32)) goto parse_globalLinTrans;
         break;
       }
 
-      // optional .pb.transformation globalLinTrans = 4;
+      // optional uint64 globalLinTrans = 4;
       case 4: {
-        if (tag == 34) {
+        if (tag == 32) {
          parse_globalLinTrans:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_globallintrans()));
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &globallintrans_)));
+          set_has_globallintrans();
         } else {
           goto handle_unusual;
         }
@@ -10910,16 +10916,14 @@ void GatingSet::SerializeWithCachedSizes(
       2, this->trans_tbl(i), output);
   }
 
-  // optional .pb.biexpTrans globalBiExpTrans = 3;
+  // optional uint64 globalBiExpTrans = 3;
   if (has_globalbiexptrans()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->globalbiexptrans(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(3, this->globalbiexptrans(), output);
   }
 
-  // optional .pb.transformation globalLinTrans = 4;
+  // optional uint64 globalLinTrans = 4;
   if (has_globallintrans()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->globallintrans(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(4, this->globallintrans(), output);
   }
 
   // repeated .pb.trans_local gTrans = 5;
@@ -10952,18 +10956,14 @@ void GatingSet::SerializeWithCachedSizes(
         2, this->trans_tbl(i), target);
   }
 
-  // optional .pb.biexpTrans globalBiExpTrans = 3;
+  // optional uint64 globalBiExpTrans = 3;
   if (has_globalbiexptrans()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        3, this->globalbiexptrans(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(3, this->globalbiexptrans(), target);
   }
 
-  // optional .pb.transformation globalLinTrans = 4;
+  // optional uint64 globalLinTrans = 4;
   if (has_globallintrans()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        4, this->globallintrans(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(4, this->globallintrans(), target);
   }
 
   // repeated .pb.trans_local gTrans = 5;
@@ -10985,17 +10985,17 @@ int GatingSet::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[2 / 32] & (0xffu << (2 % 32))) {
-    // optional .pb.biexpTrans globalBiExpTrans = 3;
+    // optional uint64 globalBiExpTrans = 3;
     if (has_globalbiexptrans()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->globalbiexptrans());
     }
 
-    // optional .pb.transformation globalLinTrans = 4;
+    // optional uint64 globalLinTrans = 4;
     if (has_globallintrans()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->globallintrans());
     }
 
@@ -11054,10 +11054,10 @@ void GatingSet::MergeFrom(const GatingSet& from) {
   gtrans_.MergeFrom(from.gtrans_);
   if (from._has_bits_[2 / 32] & (0xffu << (2 % 32))) {
     if (from.has_globalbiexptrans()) {
-      mutable_globalbiexptrans()->::pb::biexpTrans::MergeFrom(from.globalbiexptrans());
+      set_globalbiexptrans(from.globalbiexptrans());
     }
     if (from.has_globallintrans()) {
-      mutable_globallintrans()->::pb::transformation::MergeFrom(from.globallintrans());
+      set_globallintrans(from.globallintrans());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());

@@ -62,3 +62,9 @@ void compensation::convertToPb(pb::COMP & comp_pb){
 			comp_pb.add_marker(it);
 		}
 }
+compensation::compensation(const pb::COMP & comp_pb):cid(comp_pb.cid()),prefix(comp_pb.prefix()),suffix(comp_pb.suffix()),name(comp_pb.name()),comment(comp_pb.comment()){
+	for(int i = 0; i < comp_pb.marker_size(); i++)
+		marker.push_back(comp_pb.marker(i));
+	for(int i = 0; i < comp_pb.spillover_size(); i++)
+			spillOver.push_back(comp_pb.spillover(i));
+}

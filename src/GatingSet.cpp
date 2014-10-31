@@ -34,26 +34,24 @@ void GatingSet::convertToPb(pb::GatingSet & pb_gs){
 		gh->convertToPb(*pb_gh);
 	  }
 
-	  // cp trans
+	  //save the address of global biexp (as 1st entry)
+	  pb::TRANS_TBL * trans_tbl_pb = pb_gs.add_trans_tbl();
+	  intptr_t address = (intptr_t)&globalBiExpTrans;
+	  trans_tbl_pb->set_trans_address(address);
+
+
+	  //save the address of global lintrans(as 2nd entry)
+	  trans_tbl_pb = pb_gs.add_trans_tbl();
+	  address = (intptr_t)&globalLinTrans;
+	  trans_tbl_pb->set_trans_address(address);
+
+
+	  // cp trans group
 	  BOOST_FOREACH(trans_global_vec::value_type & it, gTrans){
 		  pb::trans_local * tg = pb_gs.add_gtrans();
 		  it.convertToPb(*tg, pb_gs);
 	  }
-	  //cp global biexp
-	  pb::transformation * trans_pb = pb_gs.mutable_globalbiexptrans();
-	  globalBiExpTrans.convertToPb(*trans_pb);
-	  //add it to the global mapping
-	  pb::TRANS_TBL * trans_tbl_pb = pb_gs.add_trans_tbl();
-	  intptr_t address = &globalBiExpTrans;
-	  trans_tbl_pb->set_trans_address(address);
 
-	  //cp global lintrans
-	  pb::transformation * trans_pb = pb_gs.mutable_globallintrans();
-	  globalLinTrans.convertToPb(*trans_pb);
-	  //add it to the global mapping
-	  pb::TRANS_TBL * trans_tbl_pb = pb_gs.add_trans_tbl();
-	  address = &globalLinTrans;
-	  trans_tbl_pb->set_trans_address(address);
 }
 /**
  * serialization by boost serialization library
@@ -127,6 +125,8 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 
 
 	if(isPB){
+		GOOGLE_PROTOBUF_VERIFY_VERSION;
+		//load archive from disk to pb object
 		ifstream input(filename.c_str(), ios::in | ios::binary);
 		pb::GatingSet pbGS;
 		if (!input) {
@@ -135,14 +135,73 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 			throw(domain_error("Failed to parse GatingSet."));
 		}
 
-		GOOGLE_PROTOBUF_VERIFY_VERSION;
+		//load global trans tbl
+		map<intptr_t, transformation *> trans_tbl;
+
+		for(int i = 0; i < pbGS.trans_tbl_size(); i++){
+			pb::TRANS_TBL trans_tbl_pb = pbGS.trans_tbl(i);
+			pb::transformation trans_pb = trans_tbl_pb.trans();
+			intptr_t old_address = (intptr_t)trans_tbl_pb.trans_address();
+
+			/*
+			 * first two global trans do not need to be restored from archive
+			 * since they use the default parameters
+			 * simply add the new address
+			 */
+
+			switch(i)
+			{
+			case 0:
+				trans_tbl[old_address] = &globalBiExpTrans;
+				break;
+			case 1:
+				trans_tbl[old_address] = &globalLinTrans;
+				break;
+			default:
+				{
+					switch(trans_pb.trans_type())
+					{
+					case pb::PB_BIEXP:
+						trans_tbl[old_address] = new biexpTrans(trans_pb);
+						break;
+					case pb::PB_FASIGNH:
+						trans_tbl[old_address] = new fasinhTrans(trans_pb);
+						break;
+					case pb::PB_FLIN:
+						trans_tbl[old_address] = new flinTrans(trans_pb);
+						break;
+					case pb::PB_LIN:
+						trans_tbl[old_address] = new linTrans(trans_pb);
+						break;
+					case pb::PB_LOG:
+						trans_tbl[old_address] = new logTrans(trans_pb);
+						break;
+					case pb::PB_SCALE:
+						trans_tbl[old_address] = new scaleTrans(trans_pb);
+						break;
+					default:
+						throw(domain_error("unknown type of transformation archive!"));
+					}
+				}
+			}
+
+		}
+		/*
+		 * recover the trans_global
+		 */
+
+		for(int i = 0; i < pbGS.gtrans_size(); i++){
+			pb::trans_local trans_local_pb = pbGS.gtrans(i);
+			gTrans.push_back(trans_global(trans_local_pb, trans_tbl));
+		}
+
 		//restore gating hierarchy
 		for(int i = 0; i < pbGS.ghs_size(); i++){
 			pb::ghPair ghp = pbGS.ghs(i);
 			pb::GatingHierarchy gh_pb = ghp.gh();
-			ghs[ghp.samplename()] = new GatingHierarchy(gh_pb);
+			ghs[ghp.samplename()] = new GatingHierarchy(gh_pb, trans_tbl);
 		}
-		//restore the trans
+
 	}
 	else
 	{
