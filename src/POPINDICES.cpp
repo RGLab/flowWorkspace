@@ -6,6 +6,38 @@
  */
 
 #include "include/POPINDICES.hpp"
+vector<unsigned char> packToBytes(const vector <bool> & x){
+	/*
+	 * pack bits into bytes
+	 */
+	unsigned nBits=x.size();
+	unsigned nBytes=ceil(float(nBits)/8);
+	vector<unsigned char> x_bytes(nBytes,0);
+	for(unsigned i =0 ; i < nBits; i++) {
+		unsigned byteIndex = i / 8;
+		unsigned bitIndex = i % 8;
+		if(x[i]) {
+			// set bit
+			unsigned char mask  = 1 << bitIndex;
+			x_bytes[byteIndex] = x_bytes[byteIndex] | mask;
+		}
+	}
+	return x_bytes;
+}
+vector <bool> unpackFromBytes(unsigned nEvents, const vector<unsigned char>& x_bytes){
+	unsigned nBits=nEvents;
+	vector <bool> x(nBits,false);
+	/*
+	 * unpack bytes into bits
+	 */
+	for(unsigned i =0 ; i < nBits; i++) {
+		unsigned byteIndex = i / 8;
+		unsigned bitIndex = i % 8;
+
+		x[i] = x_bytes[byteIndex] & (1 << bitIndex);
+	}
+	return x;
+}
 
 vector<bool> BOOLINDICES::getIndices(){
 	return x;
@@ -70,16 +102,23 @@ POPINDICES * BOOLINDICES::clone(){
 }
 void BOOLINDICES::convertToPb(pb::POPINDICES & ind_pb){
 	ind_pb.set_indtype(pb::BOOL);
-	for(unsigned i = 0; i < x.size(); i++){
-		ind_pb.add_bind(x.at(i));
+	vector<unsigned char> bytes = packToBytes(x);
+	string * byte_pb = ind_pb.mutable_bind();
+	for(unsigned i = 0; i < bytes.size(); i++){
+		unsigned char byte = bytes.at(i);
+		byte_pb->append(string(1, byte));
 	}
 	ind_pb.set_nevents(nEvents);
 }
 BOOLINDICES::BOOLINDICES(pb::POPINDICES & ind_pb){
 	nEvents = ind_pb.nevents();
-	x = vector<bool>(nEvents);
-	for(int i = 0; i < ind_pb.bind_size(); i++)
-		x.at(i) = ind_pb.bind(i);
+	unsigned nBytes=ceil(float(nEvents)/8);
+	vector<unsigned char> bytes(nBytes);
+
+	for(unsigned i = 0; i < nBytes; i++)
+		bytes.at(i) = *(ind_pb.bind().substr(i, 1).c_str());
+
+	x = unpackFromBytes(nEvents, bytes);
 }
 
 POPINDICES * INTINDICES::clone(){

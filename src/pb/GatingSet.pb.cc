@@ -819,7 +819,7 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "ocal\022\032\n\002tp\030\001 \003(\0132\016.pb.trans_pair\022\021\n\tgrou"
     "pName\030\002 \001(\t\022\021\n\tsampleIDs\030\003 \003(\r\"X\n\nPOPIND"
     "ICES\022\017\n\007nEvents\030\001 \002(\007\022\035\n\007indtype\030\002 \002(\0162\014"
-    ".pb.ind_type\022\014\n\004iInd\030\003 \003(\007\022\014\n\004bInd\030\004 \003(\010"
+    ".pb.ind_type\022\014\n\004iInd\030\003 \003(\007\022\014\n\004bInd\030\004 \001(\014"
     "\"\255\001\n\016nodeProperties\022\020\n\010thisName\030\001 \002(\t\022\035\n"
     "\007fjStats\030\002 \003(\0132\014.pb.POPSTATS\022\035\n\007fcStats\030"
     "\003 \003(\0132\014.pb.POPSTATS\022\016\n\006hidden\030\004 \002(\010\022\037\n\007i"
@@ -7481,9 +7481,11 @@ POPINDICES::POPINDICES(const POPINDICES& from)
 }
 
 void POPINDICES::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   nevents_ = 0u;
   indtype_ = 0;
+  bind_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -7493,6 +7495,9 @@ POPINDICES::~POPINDICES() {
 }
 
 void POPINDICES::SharedDtor() {
+  if (bind_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete bind_;
+  }
   if (this != default_instance_) {
   }
 }
@@ -7529,13 +7534,19 @@ void POPINDICES::Clear() {
     ::memset(&first, 0, n);                                \
   } while (0)
 
-  ZR_(nevents_, indtype_);
+  if (_has_bits_[0 / 32] & 11) {
+    ZR_(nevents_, indtype_);
+    if (has_bind()) {
+      if (bind_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        bind_->clear();
+      }
+    }
+  }
 
 #undef OFFSET_OF_FIELD_
 #undef ZR_
 
   iind_.Clear();
-  bind_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -7599,25 +7610,19 @@ bool POPINDICES::MergePartialFromCodedStream(
           goto handle_unusual;
         }
         if (input->ExpectTag(29)) goto parse_iInd;
-        if (input->ExpectTag(32)) goto parse_bInd;
+        if (input->ExpectTag(34)) goto parse_bInd;
         break;
       }
 
-      // repeated bool bInd = 4;
+      // optional bytes bInd = 4;
       case 4: {
-        if (tag == 32) {
+        if (tag == 34) {
          parse_bInd:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 1, 32, input, this->mutable_bind())));
-        } else if (tag == 34) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, this->mutable_bind())));
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_bind()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(32)) goto parse_bInd;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -7664,10 +7669,10 @@ void POPINDICES::SerializeWithCachedSizes(
       3, this->iind(i), output);
   }
 
-  // repeated bool bInd = 4;
-  for (int i = 0; i < this->bind_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(
-      4, this->bind(i), output);
+  // optional bytes bInd = 4;
+  if (has_bind()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      4, this->bind(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -7697,10 +7702,11 @@ void POPINDICES::SerializeWithCachedSizes(
       WriteFixed32ToArray(3, this->iind(i), target);
   }
 
-  // repeated bool bInd = 4;
-  for (int i = 0; i < this->bind_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteBoolToArray(4, this->bind(i), target);
+  // optional bytes bInd = 4;
+  if (has_bind()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        4, this->bind(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -7726,19 +7732,19 @@ int POPINDICES::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->indtype());
     }
 
+    // optional bytes bInd = 4;
+    if (has_bind()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->bind());
+    }
+
   }
   // repeated fixed32 iInd = 3;
   {
     int data_size = 0;
     data_size = 4 * this->iind_size();
     total_size += 1 * this->iind_size() + data_size;
-  }
-
-  // repeated bool bInd = 4;
-  {
-    int data_size = 0;
-    data_size = 1 * this->bind_size();
-    total_size += 1 * this->bind_size() + data_size;
   }
 
   if (!unknown_fields().empty()) {
@@ -7767,13 +7773,15 @@ void POPINDICES::MergeFrom(const ::google::protobuf::Message& from) {
 void POPINDICES::MergeFrom(const POPINDICES& from) {
   GOOGLE_CHECK_NE(&from, this);
   iind_.MergeFrom(from.iind_);
-  bind_.MergeFrom(from.bind_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_nevents()) {
       set_nevents(from.nevents());
     }
     if (from.has_indtype()) {
       set_indtype(from.indtype());
+    }
+    if (from.has_bind()) {
+      set_bind(from.bind());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -7802,7 +7810,7 @@ void POPINDICES::Swap(POPINDICES* other) {
     std::swap(nevents_, other->nevents_);
     std::swap(indtype_, other->indtype_);
     iind_.Swap(&other->iind_);
-    bind_.Swap(&other->bind_);
+    std::swap(bind_, other->bind_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

@@ -6,7 +6,7 @@
 
 #include "test_header.hpp"
 float gTol = 0.05;
-bool isPB = false;
+
 unsigned short myTestPolymorphism(){
 	gate * g= NULL;
 
@@ -50,17 +50,51 @@ struct globalFixture{
 };
 BOOST_GLOBAL_FIXTURE(globalFixture)
 struct parseWorkspaceFixture{
-	parseWorkspaceFixture(){
+	parseWorkspaceFixture(): argc(boost::unit_test_framework::framework::master_test_suite().argc),
+	           argv(boost::unit_test_framework::framework::master_test_suite().argv)
+	{
+		/*
+		 * parse argv
+		 */
+		map<string, string> arg_map;
+		for(int i = 1; i < argc; i++){
+			string thisArg = argv[i];
+			vector<string> strSplit;
+			boost::split(strSplit,thisArg, boost::is_any_of("="));
+			if(strSplit.size() != 2)
+				throw(domain_error("invalid arguments!"));
+			else{
+				string argName = strSplit.at(0);
+				boost::replace_first(argName, "--", "");
+				string argValue = strSplit.at(1);
+				arg_map[argName] = argValue;
+			}
+		}
+		map<string, string>::iterator it;
 		myTest.tolerance = gTol;
 		myTest.isParseGate = true;
 		myTest.xmlParserOption = 1;
 		myTest.isTemplate = false;
-		myTest.isLoadArhive = false;
+
 		myTest.archiveFormat = ARCHIVE_TYPE_BINARY;
 		myTest.isSaveArchive = false;
-		myTest.archiveType = isPB;
+
+		it = arg_map.find("archiveType");
+		myTest.archiveType = it==arg_map.end()?false:it->second == "PB";
+
+		it = arg_map.find("isLoadArchive");
+
+		myTest.isLoadArhive = it==arg_map.end()?false:boost::lexical_cast<bool>(it->second);
+
+		it = arg_map.find("isSaveArchive");
+		myTest.isSaveArchive = it==arg_map.end()?false:boost::lexical_cast<bool>(it->second);
+
 	};
+
+
 	~parseWorkspaceFixture(){};
+   int argc;
+   char **argv;
 	testCase myTest;
 
 };
@@ -78,9 +112,6 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.colfile="../output/HIPC_trial/colnames.txt";
 	myTest.archive="../output/HIPC_trial/gs";
 //	g_loglevel = GATE_LEVEL;
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -89,7 +120,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 }
 BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 {
-	myTest.filename="../data/PBMC/Blomberg/Exp2_Tcell.wsp";
+	myTest.filename="../wsTestSuite/PBMC/Blomberg/Exp2_Tcell.wsp";
 	myTest.wsType = WS_WIN;
 	myTest.samples["12"]="Exp2_Sp004_1_Tcell.fcs";
 	myTest.samples["13"]="Exp2_Sp004_2_Tcell.fcs";
@@ -97,9 +128,6 @@ BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 	myTest.ncfile="../output/Blomberg/nc1_comp.nc";
 	myTest.colfile="../output/Blomberg/colnames.txt";
 	myTest.archive="../output/Blomberg/gs";
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -116,9 +144,6 @@ BOOST_AUTO_TEST_CASE(ITN029ST)
 	myTest.ncfile="../output/ITN/nc1.nc";
 	myTest.colfile="../output/ITN/colnames.txt";
 	myTest.archive="../output//ITN/gs";
-	myTest.isLoadArhive = false;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
 
 	parser_test(myTest);
 
@@ -128,17 +153,14 @@ BOOST_AUTO_TEST_CASE(ITN029ST)
 }
 BOOST_AUTO_TEST_CASE(Cytotrol_NHLBI)
 {
-	myTest.filename="../data/Cytotrol/NHLBI/flowJo/NHLBI.xml";
+	myTest.filename="../wsTestSuite/Cytotrol/NHLBI/flowJo/NHLBI.xml";
 	myTest.wsType = WS_MAC;
 	myTest.samples["1"]="CytoTrol_CytoTrol_1.fcs";
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/NHLBI/nc1_comp.nc";
 	myTest.colfile="../output/NHLBI/colnames.txt";
-	myTest.archive="../output/NHLBI/gs";
+	myTest.archive="../output/NHLBI/gs/file41e925ffb2f5";
 //	g_loglevel = GATE_LEVEL;
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
 
 	parser_test(myTest);
 
@@ -155,9 +177,6 @@ BOOST_AUTO_TEST_CASE(HVTN080_batch_1057)
 	myTest.ncfile="../output/HVTN080/nc_comp.nc";
 	myTest.colfile="../output/HVTN080/colnames.txt";
 	myTest.archive="../output/HVTN080/gs/gs";
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
 
 
 	parser_test(myTest);
@@ -175,11 +194,6 @@ BOOST_AUTO_TEST_CASE(HVTN080_batch_0939)
 	myTest.ncfile="../output/NormalizationData/nc_comp.nc";
 	myTest.colfile="../output/NormalizationData/colnames.txt";
 	myTest.archive="../output/NormalizationData/gs/gs";
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
-
-
 
 	parser_test(myTest);
 
@@ -189,17 +203,13 @@ BOOST_AUTO_TEST_CASE(HVTN080_batch_0939)
 }
 BOOST_AUTO_TEST_CASE(Lesson_8_vX_A)
 {
-	myTest.filename="../data/vX/Lesson_8_vX.wsp";
+	myTest.filename="../wsTestSuite/vX/Lesson_8_vX.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["1"]="A1.fcs";
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/vX/A1/nc_comp.nc";
 	myTest.colfile="../output/vX/A1/colnames.txt";
 	myTest.archive="../output/vX/A1/gs/gs";
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
-
 
 	parser_test(myTest);
 
@@ -209,16 +219,13 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_A)
 }
 BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 {
-	myTest.filename="../data/vX/Lesson_8_vX.wsp";
+	myTest.filename="../wsTestSuite/vX/Lesson_8_vX.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["10"]="B1 .fcs";
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/vX/B1/nc_comp.nc";
 	myTest.colfile="../output/vX/B1/colnames.txt";
 	myTest.archive="../output/vX/B1/gs/gs";
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
 
 	parser_test(myTest);
 
@@ -228,17 +235,13 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 }
 BOOST_AUTO_TEST_CASE(bioaster)
 {
-	myTest.filename="../data/bioaster_ellipsoidGate/Matrice 1.wsp";
+	myTest.filename="../wsTestSuite/bioaster_ellipsoidGate/Matrice 1.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["8"]="PANEL 1_Matrice 1.fcs";
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/bioaster/nc_comp.nc";
 	myTest.colfile="../output/bioaster/colnames.txt";
 	myTest.archive="../output/bioaster/gs/gs";
-	myTest.isLoadArhive = true;
-//	myTest.archiveType = PB;
-	myTest.isSaveArchive = true;
-
 
 
 	parser_test(myTest);

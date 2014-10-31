@@ -2301,17 +2301,17 @@ class POPINDICES : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_iind();
 
-  // repeated bool bInd = 4;
-  inline int bind_size() const;
+  // optional bytes bInd = 4;
+  inline bool has_bind() const;
   inline void clear_bind();
   static const int kBIndFieldNumber = 4;
-  inline bool bind(int index) const;
-  inline void set_bind(int index, bool value);
-  inline void add_bind(bool value);
-  inline const ::google::protobuf::RepeatedField< bool >&
-      bind() const;
-  inline ::google::protobuf::RepeatedField< bool >*
-      mutable_bind();
+  inline const ::std::string& bind() const;
+  inline void set_bind(const ::std::string& value);
+  inline void set_bind(const char* value);
+  inline void set_bind(const void* value, size_t size);
+  inline ::std::string* mutable_bind();
+  inline ::std::string* release_bind();
+  inline void set_allocated_bind(::std::string* bind);
 
   // @@protoc_insertion_point(class_scope:pb.POPINDICES)
  private:
@@ -2319,6 +2319,8 @@ class POPINDICES : public ::google::protobuf::Message {
   inline void clear_has_nevents();
   inline void set_has_indtype();
   inline void clear_has_indtype();
+  inline void set_has_bind();
+  inline void clear_has_bind();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -2327,7 +2329,7 @@ class POPINDICES : public ::google::protobuf::Message {
   ::google::protobuf::uint32 nevents_;
   int indtype_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > iind_;
-  ::google::protobuf::RepeatedField< bool > bind_;
+  ::std::string* bind_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -5876,34 +5878,80 @@ POPINDICES::mutable_iind() {
   return &iind_;
 }
 
-// repeated bool bInd = 4;
-inline int POPINDICES::bind_size() const {
-  return bind_.size();
+// optional bytes bInd = 4;
+inline bool POPINDICES::has_bind() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void POPINDICES::set_has_bind() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void POPINDICES::clear_has_bind() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void POPINDICES::clear_bind() {
-  bind_.Clear();
+  if (bind_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    bind_->clear();
+  }
+  clear_has_bind();
 }
-inline bool POPINDICES::bind(int index) const {
+inline const ::std::string& POPINDICES::bind() const {
   // @@protoc_insertion_point(field_get:pb.POPINDICES.bInd)
-  return bind_.Get(index);
+  return *bind_;
 }
-inline void POPINDICES::set_bind(int index, bool value) {
-  bind_.Set(index, value);
+inline void POPINDICES::set_bind(const ::std::string& value) {
+  set_has_bind();
+  if (bind_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    bind_ = new ::std::string;
+  }
+  bind_->assign(value);
   // @@protoc_insertion_point(field_set:pb.POPINDICES.bInd)
 }
-inline void POPINDICES::add_bind(bool value) {
-  bind_.Add(value);
-  // @@protoc_insertion_point(field_add:pb.POPINDICES.bInd)
+inline void POPINDICES::set_bind(const char* value) {
+  set_has_bind();
+  if (bind_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    bind_ = new ::std::string;
+  }
+  bind_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.POPINDICES.bInd)
 }
-inline const ::google::protobuf::RepeatedField< bool >&
-POPINDICES::bind() const {
-  // @@protoc_insertion_point(field_list:pb.POPINDICES.bInd)
+inline void POPINDICES::set_bind(const void* value, size_t size) {
+  set_has_bind();
+  if (bind_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    bind_ = new ::std::string;
+  }
+  bind_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.POPINDICES.bInd)
+}
+inline ::std::string* POPINDICES::mutable_bind() {
+  set_has_bind();
+  if (bind_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    bind_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.POPINDICES.bInd)
   return bind_;
 }
-inline ::google::protobuf::RepeatedField< bool >*
-POPINDICES::mutable_bind() {
-  // @@protoc_insertion_point(field_mutable_list:pb.POPINDICES.bInd)
-  return &bind_;
+inline ::std::string* POPINDICES::release_bind() {
+  clear_has_bind();
+  if (bind_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = bind_;
+    bind_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void POPINDICES::set_allocated_bind(::std::string* bind) {
+  if (bind_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete bind_;
+  }
+  if (bind) {
+    set_has_bind();
+    bind_ = bind;
+  } else {
+    clear_has_bind();
+    bind_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.POPINDICES.bInd)
 }
 
 // -------------------------------------------------------------------

@@ -142,7 +142,7 @@ message POPINDICES{
 	required fixed32 nEvents = 1;
 	required ind_type indtype = 2;
 	repeated fixed32 iInd = 3;
-	repeated bool bInd = 4;
+	optional bytes bInd = 4;//bits packaged into bytes
 }
 
 message nodeProperties{

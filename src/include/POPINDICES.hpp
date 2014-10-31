@@ -42,6 +42,8 @@ public:
 
 };
 
+vector<unsigned char> packToBytes(const vector <bool> & x);
+vector <bool> unpackFromBytes(unsigned nEvents, const vector<unsigned char>& x_bytes);
 /*
  * bool vector
  */
@@ -54,45 +56,22 @@ private:
 							{
 
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
-
-								/*
-								 * pack bits into bytes
-								 */
-								unsigned nBits=x.size();
-								unsigned nBytes=ceil(float(nBits)/8);
-								vector<unsigned char> x_bytes(nBytes,0);
-								for(unsigned i =0 ; i < nBits; i++) {
-									unsigned byteIndex = i / 8;
-									unsigned bitIndex = i % 8;
-									if(x[i]) {
-									    // set bit
-										unsigned char mask  = 1 << bitIndex;
-										x_bytes[byteIndex] = x_bytes[byteIndex] | mask;
-									}
-								}
-								ar & BOOST_SERIALIZATION_NVP(x_bytes);
-//
+								vector<unsigned char> bytes = packToBytes(x);
+								ar & BOOST_SERIALIZATION_NVP(bytes);
+								//
 							}
 	template<class Archive>
 						void load(Archive & ar, const unsigned int version) {
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
 								if(version>0){
-//									COUT<<"unpacking bits"<<endl;
+
+
 									unsigned nBits=nEvents;
 									unsigned nBytes=ceil(float(nBits)/8);
 									vector<unsigned char> x_bytes(nBytes,0);
-									x.resize(nBits,false);
 									ar & BOOST_SERIALIZATION_NVP(x_bytes);
-									/*
-									 * unpack bytes into bits
-									 */
-									for(unsigned i =0 ; i < nBits; i++) {
-										unsigned byteIndex = i / 8;
-										unsigned bitIndex = i % 8;
 
-										x[i] = x_bytes[byteIndex] & (1 << bitIndex);
-									}
-
+									x = unpackFromBytes(nEvents, x_bytes);
 								}
 								else
 								{

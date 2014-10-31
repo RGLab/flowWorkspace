@@ -12,7 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include <boost/algorithm/string.hpp>
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/flowJoWorkspace.hpp"
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/GatingSet.hpp"
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/GatingHierarchy.hpp"
