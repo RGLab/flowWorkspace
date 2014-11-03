@@ -49,7 +49,7 @@ boolGate::boolGate(pb::gate & gate_pb):gate(gate_pb){
 	pb::boolGate bg_pb = gate_pb.bg();
 	for(int i = 0; i < bg_pb.boolopspec_size(); i++){
 		pb::BOOL_GATE_OP thisOP_pb = bg_pb.boolopspec(i);
-		BOOL_GATE_OP thisOP = BOOL_GATE_OP();
+		BOOL_GATE_OP thisOP = BOOL_GATE_OP(thisOP_pb);
 		boolOpSpec.push_back(thisOP);
 
 //		boolOpSpec.push_back(BOOL_GATE_OP(*(bg_pb.mutable_boolopspec(i))));

@@ -21,7 +21,7 @@
 using namespace std;
 
 
-typedef struct{
+struct BOOL_GATE_OP{
 	vector<string> path;
 	char op;
 	bool isNot;
@@ -32,7 +32,8 @@ typedef struct{
 			 BOOL_GATE_OP_pb.add_path(path.at(i));
 		}
 	};
-	void BOOL_GATE_OP(const pb::BOOL_GATE_OP & BOOL_GATE_OP_pb){
+	BOOL_GATE_OP(){};
+	BOOL_GATE_OP(const pb::BOOL_GATE_OP & BOOL_GATE_OP_pb){
 		op = BOOL_GATE_OP_pb.op();
 		isNot = BOOL_GATE_OP_pb.isnot();
 		for(int i = 0; i < BOOL_GATE_OP_pb.path_size(); i++)
@@ -47,7 +48,7 @@ typedef struct{
 						ar & BOOST_SERIALIZATION_NVP(isNot);
 				    }
 
-} BOOL_GATE_OP;
+} ;
 
 
 

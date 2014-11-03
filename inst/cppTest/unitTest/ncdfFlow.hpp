@@ -38,10 +38,6 @@ public:
 	void sample_set(vector<string> _sampleNames);
 	vector<string> params_get();
 	string fileName_get();
-//	float * readSlice(unsigned int sampleID);
-	flowData readflowData(unsigned int sampleID);
-	flowData readflowData(string sampleName);
-	void writeflowData(flowData & fdata);
 };
 
 class hdfFlow:public ncdfFlow{
