@@ -137,7 +137,7 @@ public:
 	void setIndices(unsigned _nEvent);
 	void setGate(gate *gate);
 	void computeStats();
-	void convertToPb(pb::nodeProperties & np_pb);
+	void convertToPb(pb::nodeProperties & np_pb, bool isRoot);
 
 };
 BOOST_CLASS_VERSION(nodeProperties,5)

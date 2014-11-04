@@ -32,8 +32,9 @@ void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
 
 		pb::treeNodes * node = ptree->add_node();
 		pb::nodeProperties * pb_node = node->mutable_node();
-		np.convertToPb(*pb_node);
-		if(thisVert > 0){
+		bool isRoot = thisVert == 0;
+		np.convertToPb(*pb_node, isRoot);
+		if(!isRoot){
 			node->set_parent(getParent(thisVert));
 		}
 

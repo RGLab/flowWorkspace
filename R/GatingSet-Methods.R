@@ -1772,7 +1772,7 @@ setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y, ...){
 setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...){
 
       this_data <- getData(obj, ...)
-      if(y == 0){
+      if(y == "root"){
         this_data
       }else{
         #subset by indices
