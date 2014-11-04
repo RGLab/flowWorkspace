@@ -289,7 +289,7 @@ void parser_test(testCase & myTest){
 
 		gh=gs->getGatingHierarchy(curSample);
 
-		gh_accessor_test(gh);
+//		gh_accessor_test(gh);
 
 		if(!isLoadArchive)
 			gs_gating(*gs,curSample,nc);

@@ -26,9 +26,10 @@ isNcdf <- function(x){
 #' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file.
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
-#' @param type a character scalar. The valid options are :"binary","text","xml" specifying format to store tree structure.
+#' @param type a character scalar. The valid options are :"binary","text","xml" specifying format to store tree structure.(only meaningful when lib == 'BS')
 #'                                  default is "binary", which is smaller and faster but machine-dependent.
-#'                                  use "text" or "xml" for cross-platform data interchange (experimental at this stage, may or maynot work).
+#'                                  use "text" or "xml" for cross-platform data interchange (deprecated by 'PB' serialization).
+#' @param lib a character scalar specifying which serialization library to use. Can be either 'PB' (google protocol buffer) or 'BS'(boost serialization).
 #' @param ... other arguments: not used.
 #'
 #'
@@ -55,17 +56,24 @@ isNcdf <- function(x){
 save_gs<-function(G,path,overwrite = FALSE
                     , cdf = c("copy","move","skip","symlink","link")
                     , type = c("binary","text", "xml")
+                    , lib = c("PB", "BS")
                     , ...){
 #  browser()
   cdf <- match.arg(cdf)
   type <- match.arg(type)
-  fileext <-  switch(type
-                , binary = "dat"
-                , text = "txt"
-                , xml = "xml"
-                , "dat"
-            )
-
+  lib <- match.arg(lib)
+  
+  isPB <- lib == "PB"
+  if(isPB)
+    fileext <- 'pb'
+  else
+    fileext <-  switch(type
+                      , binary = "dat"
+                      , text = "txt"
+                      , xml = "xml"
+                      , "dat"
+                  )
+  
   guid <- G@guid
   if(length(guid) == 0){
     G@guid <- .uuid_gen()
@@ -136,7 +144,7 @@ save_gs<-function(G,path,overwrite = FALSE
 
   }
 #  browser()
-  invisible(.save_gs(G=G,path = path, cdf = cdf, type = type, ...))
+  invisible(.save_gs(G=G,path = path, cdf = cdf, type = type, lib = lib, ...))
   message("Done\nTo reload it, use 'load_gs' function\n")
 
 
@@ -161,25 +169,30 @@ load_gs<-function(path){
 
 
 #' serialization functions to be called by wrapper APIs
-.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link"), type = c("binary","text", "xml")){
+.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link"), type = c("binary","text", "xml"), lib = c("PB", "BS")){
 
 #    browser()
     cdf <- match.arg(cdf)
     type <- match.arg(type)
-
-    fileext <-  switch(type
-                        , binary = "dat"
-                        , text = "txt"
-                        , xml = "xml"
-                        , "dat"
-                    )
+    lib <- match.arg(lib)
+    #only meaning for for BS
     typeID <- switch(type
                       , binary = 0
                       , text = 1
                       , xml = 2
                       , 0
                   )
-
+    isPB <- lib == "PB"
+    if(isPB)
+      fileext <- 'pb'
+    else
+      fileext <-  switch(type
+          , binary = "dat"
+          , text = "txt"
+          , xml = "xml"
+          , "dat"
+      )
+    
 
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
@@ -229,7 +242,7 @@ load_gs<-function(path){
 
     message("saving tree object...")
     #save external pointer object
-    .Call("R_saveGatingSet",G@pointer,dat.file, typeID)
+    .Call("R_saveGatingSet",G@pointer,dat.file, typeID, isPB)
 
     message("saving R object...")
     saveRDS(G,rds.file)
@@ -240,7 +253,7 @@ load_gs<-function(path){
 #' unserialization functions to be called by wrapper APIs
 #' @importFrom tools file_ext
 .load_gs <- function(output,files){
-      dat.file<-file.path(output,files[grep(".dat$|.txt$|.xml$",files)])
+      dat.file<-file.path(output,files[grep(".pb$|.dat$|.txt$|.xml$",files)])
       rds.file<-file.path(output,files[grep(".rds$",files)])
 
       nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
@@ -248,8 +261,10 @@ load_gs<-function(path){
       if(length(dat.file)==0)
         stop(".dat file missing in ",output)
       if(length(dat.file)>1)
-        stop("multiple .dat files found in ",output)
+        stop("multiple .dat or .pb files found in ",output)
       fileext <- file_ext(dat.file)
+      isPB <- fileext == "pb"
+      #only meaning for for BS
       typeID <- switch(fileext
                       , "dat" = 0
                       , "txt" = 1
@@ -306,7 +321,7 @@ load_gs<-function(path){
       }
 
       message("loading tree object...")
-      gs@pointer<-.Call("R_loadGatingSet",dat.file, typeID)
+      gs@pointer<-.Call("R_loadGatingSet",dat.file, typeID, isPB)
 
 
       if(isNcdf(gs))
