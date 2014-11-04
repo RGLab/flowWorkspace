@@ -7,16 +7,16 @@
 #include "test_header.hpp"
 float gTol = 0.05;
 
-unsigned short myTestPolymorphism(){
-	gate * g= NULL;
-
-	rectGate rectg =rectGate();
-	g=&rectg;
-
-	rectGate * newG = dynamic_cast<rectGate*>(g);
-	return newG->getType();
-
-}
+//unsigned short myTestPolymorphism(){
+//	gate * g= NULL;
+//
+//	rectGate rectg =rectGate();
+//	g=&rectg;
+//
+//	rectGate * newG = dynamic_cast<rectGate*>(g);
+//	return newG->getType();
+//
+//}
 //BOOST_AUTO_TEST_SUITE(Polymorph)
 //BOOST_AUTO_TEST_CASE(gateCastDown)
 //{
@@ -250,7 +250,23 @@ BOOST_AUTO_TEST_CASE(bioaster)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-
+//BOOST_AUTO_TEST_CASE(lyoplate)
+//{
+//
+//	myTest.filename="";
+//	myTest.wsType = WS_MAC;
+//	myTest.samples["1"]="12828_1_Tcell_A01.fcs";
+//	myTest.sampNloc=1;
+//	myTest.ncfile="";
+//	myTest.colfile="/loc/no-backup/mike/colnames.txt";
+//	myTest.archive="/home/wjiang2/rglab/workspace/analysis/Lyoplate_new/output/test_pb/D54tFo7RPl";
+////	g_loglevel = GATE_LEVEL;
+//	parser_test(myTest);
+//
+//	vector<bool> isTrue(myTest.isEqual.size(), true);
+//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+//
+//}
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";

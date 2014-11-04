@@ -102,13 +102,23 @@ transformation::transformation(const pb::transformation & trans_pb){
 	calTbl = calibrationTable(trans_pb.caltbl());
 }
 void transformation::convertToPb(pb::transformation & trans_pb){
-	trans_pb.set_iscomputed(isComputed);
+
 	trans_pb.set_isgateonly(isGateOnly);
 	trans_pb.set_type(type);
 	trans_pb.set_name(name);
 	trans_pb.set_channel(channel);
-	pb::calibrationTable * cal_pb = trans_pb.mutable_caltbl();
-	calTbl.convertToPb(*cal_pb);
+	//skip saving calibration table to save disk space, which means it needs to be always recalculated when load it back
+	if(type == BIEXP)
+		trans_pb.set_iscomputed(false);
+	else
+	{
+		trans_pb.set_iscomputed(isComputed);
+		pb::calibrationTable * cal_pb = trans_pb.mutable_caltbl();
+		calTbl.convertToPb(*cal_pb);
+	}
+
+
+
 }
 void biexpTrans::convertToPb(pb::transformation & trans_pb){
 	transformation::convertToPb(trans_pb);
