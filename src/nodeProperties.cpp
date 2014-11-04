@@ -210,16 +210,20 @@ void nodeProperties::convertToPb(pb::nodeProperties & np_pb){
 		fc->set_stattype(it.first);
 		fc->set_statval(it.second);
 	}
-	//cp event index
-	if(indices!=NULL){
-		pb::POPINDICES * ind_pb = np_pb.mutable_indices();
-		indices->convertToPb(*ind_pb);
-	}
 
 	//cp gate
 	if(thisGate!=NULL){
 		pb::gate * gate_pb = np_pb.mutable_thisgate();
 		thisGate->convertToPb(*gate_pb);
+
+		//cp event index(skip it for bool gate to save disk)
+		if(indices!=NULL&&thisGate->getType()!=BOOLGATE){
+			pb::POPINDICES * ind_pb = np_pb.mutable_indices();
+			indices->convertToPb(*ind_pb);
+		}
+
 	}
+
+
 
 }
