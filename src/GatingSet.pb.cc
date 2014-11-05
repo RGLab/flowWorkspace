@@ -778,15 +778,15 @@ void protobuf_AddDesc_GatingSet_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\017GatingSet.proto\022\002pb\"4\n\nparamRange\022\014\n\004n"
-    "ame\030\001 \002(\t\022\013\n\003min\030\002 \002(\001\022\013\n\003max\030\003 \002(\001\"*\n\tr"
+    "ame\030\001 \002(\t\022\013\n\003min\030\002 \002(\002\022\013\n\003max\030\003 \002(\002\"*\n\tr"
     "angeGate\022\035\n\005param\030\001 \002(\0132\016.pb.paramRange\""
     "=\n\tparamPoly\022\016\n\006params\030\001 \003(\t\022 \n\010vertices"
     "\030\002 \003(\0132\016.pb.coordinate\"+\n\013polygonGate\022\034\n"
     "\005param\030\001 \002(\0132\r.pb.paramPoly\"\"\n\ncoordinat"
-    "e\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\"\200\001\n\013ellipseGate\022"
+    "e\022\t\n\001x\030\001 \002(\002\022\t\n\001y\030\002 \002(\002\"\200\001\n\013ellipseGate\022"
     "\032\n\002mu\030\001 \002(\0132\016.pb.coordinate\022\033\n\003cov\030\002 \003(\013"
     "2\016.pb.coordinate\022*\n\022antipodal_vertices\030\003"
-    " \003(\0132\016.pb.coordinate\022\014\n\004dist\030\004 \001(\001\"7\n\014BO"
+    " \003(\0132\016.pb.coordinate\022\014\n\004dist\030\004 \001(\002\"7\n\014BO"
     "OL_GATE_OP\022\014\n\004path\030\001 \003(\t\022\n\n\002op\030\002 \002(\r\022\r\n\005"
     "isNot\030\003 \002(\010\"0\n\010boolGate\022$\n\nboolOpSpec\030\001 "
     "\003(\0132\020.pb.BOOL_GATE_OP\"\310\001\n\004gate\022\013\n\003neg\030\001 "
@@ -796,18 +796,18 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "lygonGate\022\033\n\002eg\030\007 \001(\0132\017.pb.ellipseGate\022\030"
     "\n\002bg\030\010 \001(\0132\014.pb.boolGate\"-\n\010POPSTATS\022\020\n\010"
     "statType\030\001 \002(\t\022\017\n\007statVal\030\002 \002(\002\"\223\001\n\020cali"
-    "brationTable\022\r\n\001x\030\001 \003(\001B\002\020\001\022\r\n\001y\030\002 \003(\001B\002"
-    "\020\001\022\r\n\001b\030\003 \003(\001B\002\020\001\022\r\n\001c\030\004 \003(\001B\002\020\001\022\r\n\001d\030\005 "
-    "\003(\001B\002\020\001\022\025\n\rspline_method\030\006 \001(\r\022\017\n\007caltyp"
+    "brationTable\022\r\n\001x\030\001 \003(\002B\002\020\001\022\r\n\001y\030\002 \003(\002B\002"
+    "\020\001\022\r\n\001b\030\003 \003(\002B\002\020\001\022\r\n\001c\030\004 \003(\002B\002\020\001\022\r\n\001d\030\005 "
+    "\003(\002B\002\020\001\022\025\n\rspline_method\030\006 \001(\r\022\017\n\007caltyp"
     "e\030\007 \001(\t\022\014\n\004flag\030\010 \001(\010\"b\n\nbiexpTrans\022\024\n\014c"
-    "hannelRange\030\001 \001(\r\022\013\n\003pos\030\002 \001(\001\022\013\n\003neg\030\003 "
-    "\001(\001\022\022\n\nwidthBasis\030\004 \001(\001\022\020\n\010maxValue\030\005 \001("
-    "\001\"P\n\013fasinhTrans\022\016\n\006length\030\001 \001(\001\022\020\n\010maxR"
-    "ange\030\002 \001(\001\022\t\n\001T\030\003 \001(\001\022\t\n\001A\030\004 \001(\001\022\t\n\001M\030\005 "
-    "\001(\001\"\"\n\nscaleTrans\022\024\n\014scale_factor\030\001 \001(\002\""
-    "%\n\tflinTrans\022\013\n\003min\030\001 \001(\001\022\013\n\003max\030\002 \001(\001\"*"
-    "\n\010logTrans\022\016\n\006offset\030\001 \001(\001\022\016\n\006decade\030\002 \001"
-    "(\001\"\272\002\n\016transformation\022$\n\006calTbl\030\001 \001(\0132\024."
+    "hannelRange\030\001 \001(\r\022\013\n\003pos\030\002 \001(\002\022\013\n\003neg\030\003 "
+    "\001(\002\022\022\n\nwidthBasis\030\004 \001(\002\022\020\n\010maxValue\030\005 \001("
+    "\002\"P\n\013fasinhTrans\022\016\n\006length\030\001 \001(\002\022\020\n\010maxR"
+    "ange\030\002 \001(\002\022\t\n\001T\030\003 \001(\002\022\t\n\001A\030\004 \001(\002\022\t\n\001M\030\005 "
+    "\001(\002\"\"\n\nscaleTrans\022\024\n\014scale_factor\030\001 \001(\002\""
+    "%\n\tflinTrans\022\013\n\003min\030\001 \001(\002\022\013\n\003max\030\002 \001(\002\"*"
+    "\n\010logTrans\022\016\n\006offset\030\001 \001(\002\022\016\n\006decade\030\002 \001"
+    "(\002\"\272\002\n\016transformation\022$\n\006calTbl\030\001 \001(\0132\024."
     "pb.calibrationTable\022\022\n\nisGateOnly\030\002 \001(\010\022"
     "\014\n\004name\030\004 \001(\t\022\017\n\007channel\030\005 \001(\t\022\022\n\nisComp"
     "uted\030\006 \001(\010\022\014\n\004type\030\014 \001(\r\022\"\n\ntrans_type\030\003"
@@ -816,42 +816,42 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "t\030\t \001(\0132\r.pb.flinTrans\022\032\n\002st\030\n \001(\0132\016.pb."
     "scaleTrans\022\033\n\002ft\030\013 \001(\0132\017.pb.fasinhTrans\""
     "1\n\ntrans_pair\022\014\n\004name\030\001 \002(\t\022\025\n\rtrans_add"
-    "ress\030\002 \002(\004\"O\n\013trans_local\022\032\n\002tp\030\001 \003(\0132\016."
-    "pb.trans_pair\022\021\n\tgroupName\030\002 \001(\t\022\021\n\tsamp"
-    "leIDs\030\003 \003(\r\"X\n\nPOPINDICES\022\017\n\007nEvents\030\001 \002"
-    "(\007\022\035\n\007indtype\030\002 \002(\0162\014.pb.ind_type\022\014\n\004iIn"
-    "d\030\003 \003(\007\022\014\n\004bInd\030\004 \001(\014\"\255\001\n\016nodeProperties"
-    "\022\020\n\010thisName\030\001 \002(\t\022\035\n\007fjStats\030\002 \003(\0132\014.pb"
-    ".POPSTATS\022\035\n\007fcStats\030\003 \003(\0132\014.pb.POPSTATS"
-    "\022\016\n\006hidden\030\004 \002(\010\022\037\n\007indices\030\005 \001(\0132\016.pb.P"
-    "OPINDICES\022\032\n\010thisGate\030\006 \001(\0132\010.pb.gate\"=\n"
-    "\ttreeNodes\022 \n\004node\030\001 \002(\0132\022.pb.nodeProper"
-    "ties\022\016\n\006parent\030\002 \001(\007\"-\n\016populationTree\022\033"
-    "\n\004node\030\001 \003(\0132\r.pb.treeNodes\"u\n\004COMP\022\013\n\003c"
-    "id\030\001 \001(\t\022\016\n\006prefix\030\002 \001(\t\022\016\n\006suffix\030\003 \001(\t"
-    "\022\014\n\004name\030\004 \001(\t\022\017\n\007comment\030\005 \001(\t\022\016\n\006marke"
-    "r\030\006 \003(\t\022\021\n\tspillOver\030\007 \003(\001\"_\n\005PARAM\022\r\n\005p"
-    "aram\030\001 \001(\t\022\013\n\003log\030\002 \001(\010\022\r\n\005range\030\003 \001(\r\022\021"
-    "\n\thighValue\030\004 \001(\r\022\030\n\020calibrationIndex\030\005 "
-    "\001(\r\"\233\001\n\017GatingHierarchy\022 \n\004tree\030\002 \002(\0132\022."
-    "pb.populationTree\022\026\n\004comp\030\001 \001(\0132\010.pb.COM"
-    "P\022\020\n\010isLoaded\030\003 \001(\010\022\034\n\ttransFlag\030\004 \003(\0132\t"
-    ".pb.PARAM\022\036\n\005trans\030\005 \001(\0132\017.pb.trans_loca"
-    "l\"=\n\006ghPair\022\037\n\002gh\030\001 \002(\0132\023.pb.GatingHiera"
-    "rchy\022\022\n\nsampleName\030\002 \002(\t\"E\n\tTRANS_TBL\022\025\n"
-    "\rtrans_address\030\001 \002(\004\022!\n\005trans\030\002 \001(\0132\022.pb"
-    ".transformation\"\231\001\n\tGatingSet\022 \n\ttrans_t"
-    "bl\030\002 \003(\0132\r.pb.TRANS_TBL\022\027\n\003ghs\030\001 \003(\0132\n.p"
-    "b.ghPair\022\030\n\020globalBiExpTrans\030\003 \001(\004\022\026\n\016gl"
-    "obalLinTrans\030\004 \001(\004\022\037\n\006gTrans\030\005 \003(\0132\017.pb."
-    "trans_local*\203\001\n\tGATE_TYPE\022\020\n\014POLYGON_GAT"
-    "E\020\001\022\016\n\nRANGE_GATE\020\002\022\r\n\tBOOL_GATE\020\003\022\020\n\014EL"
-    "LIPSE_GATE\020\004\022\r\n\tRECT_GATE\020\005\022\020\n\014LOGICAL_G"
-    "ATE\020\006\022\022\n\016ELLIPSOID_GATE\020\007*\'\n\010ind_type\022\010\n"
-    "\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004ROOT\020\002*]\n\nTRANS_TYPE"
-    "\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB_FASIGNH\020\001\022\n\n\006PB_LOG"
-    "\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB_SCALE\020\004\022\013\n\007PB_FLIN\020"
-    "\005", 2961);
+    "ress\030\002 \002(\004\"S\n\013trans_local\022\032\n\002tp\030\001 \003(\0132\016."
+    "pb.trans_pair\022\021\n\tgroupName\030\002 \001(\t\022\025\n\tsamp"
+    "leIDs\030\003 \003(\rB\002\020\001\"\\\n\nPOPINDICES\022\017\n\007nEvents"
+    "\030\001 \002(\r\022\035\n\007indtype\030\002 \002(\0162\014.pb.ind_type\022\020\n"
+    "\004iInd\030\003 \003(\rB\002\020\001\022\014\n\004bInd\030\004 \001(\014\"\255\001\n\016nodePr"
+    "operties\022\020\n\010thisName\030\001 \002(\t\022\035\n\007fjStats\030\002 "
+    "\003(\0132\014.pb.POPSTATS\022\035\n\007fcStats\030\003 \003(\0132\014.pb."
+    "POPSTATS\022\016\n\006hidden\030\004 \002(\010\022\037\n\007indices\030\005 \001("
+    "\0132\016.pb.POPINDICES\022\032\n\010thisGate\030\006 \001(\0132\010.pb"
+    ".gate\"=\n\ttreeNodes\022 \n\004node\030\001 \002(\0132\022.pb.no"
+    "deProperties\022\016\n\006parent\030\002 \001(\r\"-\n\016populati"
+    "onTree\022\033\n\004node\030\001 \003(\0132\r.pb.treeNodes\"u\n\004C"
+    "OMP\022\013\n\003cid\030\001 \001(\t\022\016\n\006prefix\030\002 \001(\t\022\016\n\006suff"
+    "ix\030\003 \001(\t\022\014\n\004name\030\004 \001(\t\022\017\n\007comment\030\005 \001(\t\022"
+    "\016\n\006marker\030\006 \003(\t\022\021\n\tspillOver\030\007 \003(\002\"_\n\005PA"
+    "RAM\022\r\n\005param\030\001 \001(\t\022\013\n\003log\030\002 \001(\010\022\r\n\005range"
+    "\030\003 \001(\r\022\021\n\thighValue\030\004 \001(\r\022\030\n\020calibration"
+    "Index\030\005 \001(\r\"\233\001\n\017GatingHierarchy\022 \n\004tree\030"
+    "\002 \002(\0132\022.pb.populationTree\022\026\n\004comp\030\001 \001(\0132"
+    "\010.pb.COMP\022\020\n\010isLoaded\030\003 \001(\010\022\034\n\ttransFlag"
+    "\030\004 \003(\0132\t.pb.PARAM\022\036\n\005trans\030\005 \001(\0132\017.pb.tr"
+    "ans_local\"=\n\006ghPair\022\037\n\002gh\030\001 \002(\0132\023.pb.Gat"
+    "ingHierarchy\022\022\n\nsampleName\030\002 \002(\t\"E\n\tTRAN"
+    "S_TBL\022\025\n\rtrans_address\030\001 \002(\004\022!\n\005trans\030\002 "
+    "\001(\0132\022.pb.transformation\"\231\001\n\tGatingSet\022 \n"
+    "\ttrans_tbl\030\002 \003(\0132\r.pb.TRANS_TBL\022\027\n\003ghs\030\001"
+    " \003(\0132\n.pb.ghPair\022\030\n\020globalBiExpTrans\030\003 \001"
+    "(\004\022\026\n\016globalLinTrans\030\004 \001(\004\022\037\n\006gTrans\030\005 \003"
+    "(\0132\017.pb.trans_local*\203\001\n\tGATE_TYPE\022\020\n\014POL"
+    "YGON_GATE\020\001\022\016\n\nRANGE_GATE\020\002\022\r\n\tBOOL_GATE"
+    "\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT_GATE\020\005\022\020\n\014L"
+    "OGICAL_GATE\020\006\022\022\n\016ELLIPSOID_GATE\020\007*\'\n\010ind"
+    "_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004ROOT\020\002*]\n\nTR"
+    "ANS_TYPE\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB_FASIGNH\020\001\022\n"
+    "\n\006PB_LOG\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB_SCALE\020\004\022\013\n\007"
+    "PB_FLIN\020\005", 2969);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GatingSet.proto", &protobuf_RegisterTypes);
   paramRange::default_instance_ = new paramRange();
@@ -1090,31 +1090,31 @@ bool paramRange::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_min;
+        if (input->ExpectTag(21)) goto parse_min;
         break;
       }
 
-      // required double min = 2;
+      // required float min = 2;
       case 2: {
-        if (tag == 17) {
+        if (tag == 21) {
          parse_min:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &min_)));
           set_has_min();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(25)) goto parse_max;
+        if (input->ExpectTag(29)) goto parse_max;
         break;
       }
 
-      // required double max = 3;
+      // required float max = 3;
       case 3: {
-        if (tag == 25) {
+        if (tag == 29) {
          parse_max:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &max_)));
           set_has_max();
         } else {
@@ -1159,14 +1159,14 @@ void paramRange::SerializeWithCachedSizes(
       1, this->name(), output);
   }
 
-  // required double min = 2;
+  // required float min = 2;
   if (has_min()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->min(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->min(), output);
   }
 
-  // required double max = 3;
+  // required float max = 3;
   if (has_max()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->max(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->max(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -1190,14 +1190,14 @@ void paramRange::SerializeWithCachedSizes(
         1, this->name(), target);
   }
 
-  // required double min = 2;
+  // required float min = 2;
   if (has_min()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->min(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->min(), target);
   }
 
-  // required double max = 3;
+  // required float max = 3;
   if (has_max()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->max(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->max(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -1219,14 +1219,14 @@ int paramRange::ByteSize() const {
           this->name());
     }
 
-    // required double min = 2;
+    // required float min = 2;
     if (has_min()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // required double max = 3;
+    // required float max = 3;
     if (has_max()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
   }
@@ -2131,26 +2131,26 @@ bool coordinate::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required double x = 1;
+      // required float x = 1;
       case 1: {
-        if (tag == 9) {
+        if (tag == 13) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &x_)));
           set_has_x();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_y;
+        if (input->ExpectTag(21)) goto parse_y;
         break;
       }
 
-      // required double y = 2;
+      // required float y = 2;
       case 2: {
-        if (tag == 17) {
+        if (tag == 21) {
          parse_y:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &y_)));
           set_has_y();
         } else {
@@ -2185,14 +2185,14 @@ failure:
 void coordinate::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.coordinate)
-  // required double x = 1;
+  // required float x = 1;
   if (has_x()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->x(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->x(), output);
   }
 
-  // required double y = 2;
+  // required float y = 2;
   if (has_y()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->y(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->y(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -2205,14 +2205,14 @@ void coordinate::SerializeWithCachedSizes(
 ::google::protobuf::uint8* coordinate::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.coordinate)
-  // required double x = 1;
+  // required float x = 1;
   if (has_x()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->x(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->x(), target);
   }
 
-  // required double y = 2;
+  // required float y = 2;
   if (has_y()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->y(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->y(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -2227,14 +2227,14 @@ int coordinate::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required double x = 1;
+    // required float x = 1;
     if (has_x()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // required double y = 2;
+    // required float y = 2;
     if (has_y()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
   }
@@ -2435,16 +2435,16 @@ bool ellipseGate::MergePartialFromCodedStream(
           goto handle_unusual;
         }
         if (input->ExpectTag(26)) goto parse_antipodal_vertices;
-        if (input->ExpectTag(33)) goto parse_dist;
+        if (input->ExpectTag(37)) goto parse_dist;
         break;
       }
 
-      // optional double dist = 4;
+      // optional float dist = 4;
       case 4: {
-        if (tag == 33) {
+        if (tag == 37) {
          parse_dist:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &dist_)));
           set_has_dist();
         } else {
@@ -2497,9 +2497,9 @@ void ellipseGate::SerializeWithCachedSizes(
       3, this->antipodal_vertices(i), output);
   }
 
-  // optional double dist = 4;
+  // optional float dist = 4;
   if (has_dist()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->dist(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->dist(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -2533,9 +2533,9 @@ void ellipseGate::SerializeWithCachedSizes(
         3, this->antipodal_vertices(i), target);
   }
 
-  // optional double dist = 4;
+  // optional float dist = 4;
   if (has_dist()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->dist(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->dist(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -2557,9 +2557,9 @@ int ellipseGate::ByteSize() const {
           this->mu());
     }
 
-    // optional double dist = 4;
+    // optional float dist = 4;
     if (has_dist()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
   }
@@ -4145,15 +4145,15 @@ bool calibrationTable::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated double x = 1 [packed = true];
+      // repeated float x = 1 [packed = true];
       case 1: {
         if (tag == 10) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, this->mutable_x())));
-        } else if (tag == 9) {
+        } else if (tag == 13) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  1, 10, input, this->mutable_x())));
         } else {
           goto handle_unusual;
@@ -4162,16 +4162,16 @@ bool calibrationTable::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated double y = 2 [packed = true];
+      // repeated float y = 2 [packed = true];
       case 2: {
         if (tag == 18) {
          parse_y:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, this->mutable_y())));
-        } else if (tag == 17) {
+        } else if (tag == 21) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  1, 18, input, this->mutable_y())));
         } else {
           goto handle_unusual;
@@ -4180,16 +4180,16 @@ bool calibrationTable::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated double b = 3 [packed = true];
+      // repeated float b = 3 [packed = true];
       case 3: {
         if (tag == 26) {
          parse_b:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, this->mutable_b())));
-        } else if (tag == 25) {
+        } else if (tag == 29) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  1, 26, input, this->mutable_b())));
         } else {
           goto handle_unusual;
@@ -4198,16 +4198,16 @@ bool calibrationTable::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated double c = 4 [packed = true];
+      // repeated float c = 4 [packed = true];
       case 4: {
         if (tag == 34) {
          parse_c:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, this->mutable_c())));
-        } else if (tag == 33) {
+        } else if (tag == 37) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  1, 34, input, this->mutable_c())));
         } else {
           goto handle_unusual;
@@ -4216,16 +4216,16 @@ bool calibrationTable::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated double d = 5 [packed = true];
+      // repeated float d = 5 [packed = true];
       case 5: {
         if (tag == 42) {
          parse_d:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, this->mutable_d())));
-        } else if (tag == 41) {
+        } else if (tag == 45) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  1, 42, input, this->mutable_d())));
         } else {
           goto handle_unusual;
@@ -4306,53 +4306,53 @@ failure:
 void calibrationTable::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.calibrationTable)
-  // repeated double x = 1 [packed = true];
+  // repeated float x = 1 [packed = true];
   if (this->x_size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteTag(1, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
     output->WriteVarint32(_x_cached_byte_size_);
   }
   for (int i = 0; i < this->x_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+    ::google::protobuf::internal::WireFormatLite::WriteFloatNoTag(
       this->x(i), output);
   }
 
-  // repeated double y = 2 [packed = true];
+  // repeated float y = 2 [packed = true];
   if (this->y_size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteTag(2, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
     output->WriteVarint32(_y_cached_byte_size_);
   }
   for (int i = 0; i < this->y_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+    ::google::protobuf::internal::WireFormatLite::WriteFloatNoTag(
       this->y(i), output);
   }
 
-  // repeated double b = 3 [packed = true];
+  // repeated float b = 3 [packed = true];
   if (this->b_size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteTag(3, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
     output->WriteVarint32(_b_cached_byte_size_);
   }
   for (int i = 0; i < this->b_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+    ::google::protobuf::internal::WireFormatLite::WriteFloatNoTag(
       this->b(i), output);
   }
 
-  // repeated double c = 4 [packed = true];
+  // repeated float c = 4 [packed = true];
   if (this->c_size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteTag(4, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
     output->WriteVarint32(_c_cached_byte_size_);
   }
   for (int i = 0; i < this->c_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+    ::google::protobuf::internal::WireFormatLite::WriteFloatNoTag(
       this->c(i), output);
   }
 
-  // repeated double d = 5 [packed = true];
+  // repeated float d = 5 [packed = true];
   if (this->d_size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteTag(5, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
     output->WriteVarint32(_d_cached_byte_size_);
   }
   for (int i = 0; i < this->d_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+    ::google::protobuf::internal::WireFormatLite::WriteFloatNoTag(
       this->d(i), output);
   }
 
@@ -4386,7 +4386,7 @@ void calibrationTable::SerializeWithCachedSizes(
 ::google::protobuf::uint8* calibrationTable::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.calibrationTable)
-  // repeated double x = 1 [packed = true];
+  // repeated float x = 1 [packed = true];
   if (this->x_size() > 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
       1,
@@ -4397,10 +4397,10 @@ void calibrationTable::SerializeWithCachedSizes(
   }
   for (int i = 0; i < this->x_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleNoTagToArray(this->x(i), target);
+      WriteFloatNoTagToArray(this->x(i), target);
   }
 
-  // repeated double y = 2 [packed = true];
+  // repeated float y = 2 [packed = true];
   if (this->y_size() > 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
       2,
@@ -4411,10 +4411,10 @@ void calibrationTable::SerializeWithCachedSizes(
   }
   for (int i = 0; i < this->y_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleNoTagToArray(this->y(i), target);
+      WriteFloatNoTagToArray(this->y(i), target);
   }
 
-  // repeated double b = 3 [packed = true];
+  // repeated float b = 3 [packed = true];
   if (this->b_size() > 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
       3,
@@ -4425,10 +4425,10 @@ void calibrationTable::SerializeWithCachedSizes(
   }
   for (int i = 0; i < this->b_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleNoTagToArray(this->b(i), target);
+      WriteFloatNoTagToArray(this->b(i), target);
   }
 
-  // repeated double c = 4 [packed = true];
+  // repeated float c = 4 [packed = true];
   if (this->c_size() > 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
       4,
@@ -4439,10 +4439,10 @@ void calibrationTable::SerializeWithCachedSizes(
   }
   for (int i = 0; i < this->c_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleNoTagToArray(this->c(i), target);
+      WriteFloatNoTagToArray(this->c(i), target);
   }
 
-  // repeated double d = 5 [packed = true];
+  // repeated float d = 5 [packed = true];
   if (this->d_size() > 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
       5,
@@ -4453,7 +4453,7 @@ void calibrationTable::SerializeWithCachedSizes(
   }
   for (int i = 0; i < this->d_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleNoTagToArray(this->d(i), target);
+      WriteFloatNoTagToArray(this->d(i), target);
   }
 
   // optional uint32 spline_method = 6;
@@ -4509,10 +4509,10 @@ int calibrationTable::ByteSize() const {
     }
 
   }
-  // repeated double x = 1 [packed = true];
+  // repeated float x = 1 [packed = true];
   {
     int data_size = 0;
-    data_size = 8 * this->x_size();
+    data_size = 4 * this->x_size();
     if (data_size > 0) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
@@ -4523,10 +4523,10 @@ int calibrationTable::ByteSize() const {
     total_size += data_size;
   }
 
-  // repeated double y = 2 [packed = true];
+  // repeated float y = 2 [packed = true];
   {
     int data_size = 0;
-    data_size = 8 * this->y_size();
+    data_size = 4 * this->y_size();
     if (data_size > 0) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
@@ -4537,10 +4537,10 @@ int calibrationTable::ByteSize() const {
     total_size += data_size;
   }
 
-  // repeated double b = 3 [packed = true];
+  // repeated float b = 3 [packed = true];
   {
     int data_size = 0;
-    data_size = 8 * this->b_size();
+    data_size = 4 * this->b_size();
     if (data_size > 0) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
@@ -4551,10 +4551,10 @@ int calibrationTable::ByteSize() const {
     total_size += data_size;
   }
 
-  // repeated double c = 4 [packed = true];
+  // repeated float c = 4 [packed = true];
   {
     int data_size = 0;
-    data_size = 8 * this->c_size();
+    data_size = 4 * this->c_size();
     if (data_size > 0) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
@@ -4565,10 +4565,10 @@ int calibrationTable::ByteSize() const {
     total_size += data_size;
   }
 
-  // repeated double d = 5 [packed = true];
+  // repeated float d = 5 [packed = true];
   {
     int data_size = 0;
-    data_size = 8 * this->d_size();
+    data_size = 4 * this->d_size();
     if (data_size > 0) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
@@ -4744,7 +4744,7 @@ void biexpTrans::Clear() {
   } while (0)
 
   if (_has_bits_[0 / 32] & 31) {
-    ZR_(pos_, channelrange_);
+    ZR_(channelrange_, maxvalue_);
   }
 
 #undef OFFSET_OF_FIELD_
@@ -4774,61 +4774,61 @@ bool biexpTrans::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_pos;
+        if (input->ExpectTag(21)) goto parse_pos;
         break;
       }
 
-      // optional double pos = 2;
+      // optional float pos = 2;
       case 2: {
-        if (tag == 17) {
+        if (tag == 21) {
          parse_pos:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &pos_)));
           set_has_pos();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(25)) goto parse_neg;
+        if (input->ExpectTag(29)) goto parse_neg;
         break;
       }
 
-      // optional double neg = 3;
+      // optional float neg = 3;
       case 3: {
-        if (tag == 25) {
+        if (tag == 29) {
          parse_neg:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &neg_)));
           set_has_neg();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(33)) goto parse_widthBasis;
+        if (input->ExpectTag(37)) goto parse_widthBasis;
         break;
       }
 
-      // optional double widthBasis = 4;
+      // optional float widthBasis = 4;
       case 4: {
-        if (tag == 33) {
+        if (tag == 37) {
          parse_widthBasis:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &widthbasis_)));
           set_has_widthbasis();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(41)) goto parse_maxValue;
+        if (input->ExpectTag(45)) goto parse_maxValue;
         break;
       }
 
-      // optional double maxValue = 5;
+      // optional float maxValue = 5;
       case 5: {
-        if (tag == 41) {
+        if (tag == 45) {
          parse_maxValue:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &maxvalue_)));
           set_has_maxvalue();
         } else {
@@ -4868,24 +4868,24 @@ void biexpTrans::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->channelrange(), output);
   }
 
-  // optional double pos = 2;
+  // optional float pos = 2;
   if (has_pos()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->pos(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->pos(), output);
   }
 
-  // optional double neg = 3;
+  // optional float neg = 3;
   if (has_neg()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->neg(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->neg(), output);
   }
 
-  // optional double widthBasis = 4;
+  // optional float widthBasis = 4;
   if (has_widthbasis()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->widthbasis(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->widthbasis(), output);
   }
 
-  // optional double maxValue = 5;
+  // optional float maxValue = 5;
   if (has_maxvalue()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->maxvalue(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(5, this->maxvalue(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -4903,24 +4903,24 @@ void biexpTrans::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->channelrange(), target);
   }
 
-  // optional double pos = 2;
+  // optional float pos = 2;
   if (has_pos()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->pos(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->pos(), target);
   }
 
-  // optional double neg = 3;
+  // optional float neg = 3;
   if (has_neg()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->neg(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->neg(), target);
   }
 
-  // optional double widthBasis = 4;
+  // optional float widthBasis = 4;
   if (has_widthbasis()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->widthbasis(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->widthbasis(), target);
   }
 
-  // optional double maxValue = 5;
+  // optional float maxValue = 5;
   if (has_maxvalue()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->maxvalue(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(5, this->maxvalue(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -4942,24 +4942,24 @@ int biexpTrans::ByteSize() const {
           this->channelrange());
     }
 
-    // optional double pos = 2;
+    // optional float pos = 2;
     if (has_pos()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double neg = 3;
+    // optional float neg = 3;
     if (has_neg()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double widthBasis = 4;
+    // optional float widthBasis = 4;
     if (has_widthbasis()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double maxValue = 5;
+    // optional float maxValue = 5;
     if (has_maxvalue()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
   }
@@ -5146,71 +5146,71 @@ bool fasinhTrans::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional double length = 1;
+      // optional float length = 1;
       case 1: {
-        if (tag == 9) {
+        if (tag == 13) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &length_)));
           set_has_length();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_maxRange;
+        if (input->ExpectTag(21)) goto parse_maxRange;
         break;
       }
 
-      // optional double maxRange = 2;
+      // optional float maxRange = 2;
       case 2: {
-        if (tag == 17) {
+        if (tag == 21) {
          parse_maxRange:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &maxrange_)));
           set_has_maxrange();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(25)) goto parse_T;
+        if (input->ExpectTag(29)) goto parse_T;
         break;
       }
 
-      // optional double T = 3;
+      // optional float T = 3;
       case 3: {
-        if (tag == 25) {
+        if (tag == 29) {
          parse_T:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &t_)));
           set_has_t();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(33)) goto parse_A;
+        if (input->ExpectTag(37)) goto parse_A;
         break;
       }
 
-      // optional double A = 4;
+      // optional float A = 4;
       case 4: {
-        if (tag == 33) {
+        if (tag == 37) {
          parse_A:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &a_)));
           set_has_a();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(41)) goto parse_M;
+        if (input->ExpectTag(45)) goto parse_M;
         break;
       }
 
-      // optional double M = 5;
+      // optional float M = 5;
       case 5: {
-        if (tag == 41) {
+        if (tag == 45) {
          parse_M:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &m_)));
           set_has_m();
         } else {
@@ -5245,29 +5245,29 @@ failure:
 void fasinhTrans::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.fasinhTrans)
-  // optional double length = 1;
+  // optional float length = 1;
   if (has_length()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->length(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->length(), output);
   }
 
-  // optional double maxRange = 2;
+  // optional float maxRange = 2;
   if (has_maxrange()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->maxrange(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->maxrange(), output);
   }
 
-  // optional double T = 3;
+  // optional float T = 3;
   if (has_t()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->t(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->t(), output);
   }
 
-  // optional double A = 4;
+  // optional float A = 4;
   if (has_a()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->a(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->a(), output);
   }
 
-  // optional double M = 5;
+  // optional float M = 5;
   if (has_m()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->m(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(5, this->m(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -5280,29 +5280,29 @@ void fasinhTrans::SerializeWithCachedSizes(
 ::google::protobuf::uint8* fasinhTrans::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.fasinhTrans)
-  // optional double length = 1;
+  // optional float length = 1;
   if (has_length()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->length(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->length(), target);
   }
 
-  // optional double maxRange = 2;
+  // optional float maxRange = 2;
   if (has_maxrange()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->maxrange(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->maxrange(), target);
   }
 
-  // optional double T = 3;
+  // optional float T = 3;
   if (has_t()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->t(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->t(), target);
   }
 
-  // optional double A = 4;
+  // optional float A = 4;
   if (has_a()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->a(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->a(), target);
   }
 
-  // optional double M = 5;
+  // optional float M = 5;
   if (has_m()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->m(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(5, this->m(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -5317,29 +5317,29 @@ int fasinhTrans::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional double length = 1;
+    // optional float length = 1;
     if (has_length()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double maxRange = 2;
+    // optional float maxRange = 2;
     if (has_maxrange()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double T = 3;
+    // optional float T = 3;
     if (has_t()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double A = 4;
+    // optional float A = 4;
     if (has_a()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double M = 5;
+    // optional float M = 5;
     if (has_m()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
   }
@@ -5738,26 +5738,26 @@ bool flinTrans::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional double min = 1;
+      // optional float min = 1;
       case 1: {
-        if (tag == 9) {
+        if (tag == 13) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &min_)));
           set_has_min();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_max;
+        if (input->ExpectTag(21)) goto parse_max;
         break;
       }
 
-      // optional double max = 2;
+      // optional float max = 2;
       case 2: {
-        if (tag == 17) {
+        if (tag == 21) {
          parse_max:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &max_)));
           set_has_max();
         } else {
@@ -5792,14 +5792,14 @@ failure:
 void flinTrans::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.flinTrans)
-  // optional double min = 1;
+  // optional float min = 1;
   if (has_min()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->min(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->min(), output);
   }
 
-  // optional double max = 2;
+  // optional float max = 2;
   if (has_max()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->max(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->max(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -5812,14 +5812,14 @@ void flinTrans::SerializeWithCachedSizes(
 ::google::protobuf::uint8* flinTrans::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.flinTrans)
-  // optional double min = 1;
+  // optional float min = 1;
   if (has_min()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->min(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->min(), target);
   }
 
-  // optional double max = 2;
+  // optional float max = 2;
   if (has_max()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->max(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->max(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -5834,14 +5834,14 @@ int flinTrans::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional double min = 1;
+    // optional float min = 1;
     if (has_min()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double max = 2;
+    // optional float max = 2;
     if (has_max()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
   }
@@ -6008,26 +6008,26 @@ bool logTrans::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional double offset = 1;
+      // optional float offset = 1;
       case 1: {
-        if (tag == 9) {
+        if (tag == 13) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &offset_)));
           set_has_offset();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_decade;
+        if (input->ExpectTag(21)) goto parse_decade;
         break;
       }
 
-      // optional double decade = 2;
+      // optional float decade = 2;
       case 2: {
-        if (tag == 17) {
+        if (tag == 21) {
          parse_decade:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &decade_)));
           set_has_decade();
         } else {
@@ -6062,14 +6062,14 @@ failure:
 void logTrans::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.logTrans)
-  // optional double offset = 1;
+  // optional float offset = 1;
   if (has_offset()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->offset(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->offset(), output);
   }
 
-  // optional double decade = 2;
+  // optional float decade = 2;
   if (has_decade()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->decade(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->decade(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -6082,14 +6082,14 @@ void logTrans::SerializeWithCachedSizes(
 ::google::protobuf::uint8* logTrans::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.logTrans)
-  // optional double offset = 1;
+  // optional float offset = 1;
   if (has_offset()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->offset(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->offset(), target);
   }
 
-  // optional double decade = 2;
+  // optional float decade = 2;
   if (has_decade()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->decade(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->decade(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -6104,14 +6104,14 @@ int logTrans::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional double offset = 1;
+    // optional float offset = 1;
     if (has_offset()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
-    // optional double decade = 2;
+    // optional float decade = 2;
     if (has_decade()) {
-      total_size += 1 + 8;
+      total_size += 1 + 4;
     }
 
   }
@@ -7330,25 +7330,24 @@ bool trans_local::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(24)) goto parse_sampleIDs;
+        if (input->ExpectTag(26)) goto parse_sampleIDs;
         break;
       }
 
-      // repeated uint32 sampleIDs = 3;
+      // repeated uint32 sampleIDs = 3 [packed = true];
       case 3: {
-        if (tag == 24) {
+        if (tag == 26) {
          parse_sampleIDs:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 1, 24, input, this->mutable_sampleids())));
-        } else if (tag == 26) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, this->mutable_sampleids())));
+        } else if (tag == 24) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 26, input, this->mutable_sampleids())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(24)) goto parse_sampleIDs;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -7394,10 +7393,14 @@ void trans_local::SerializeWithCachedSizes(
       2, this->groupname(), output);
   }
 
-  // repeated uint32 sampleIDs = 3;
+  // repeated uint32 sampleIDs = 3 [packed = true];
+  if (this->sampleids_size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteTag(3, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+    output->WriteVarint32(_sampleids_cached_byte_size_);
+  }
   for (int i = 0; i < this->sampleids_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
-      3, this->sampleids(i), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32NoTag(
+      this->sampleids(i), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -7428,10 +7431,18 @@ void trans_local::SerializeWithCachedSizes(
         2, this->groupname(), target);
   }
 
-  // repeated uint32 sampleIDs = 3;
+  // repeated uint32 sampleIDs = 3 [packed = true];
+  if (this->sampleids_size() > 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
+      3,
+      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      target);
+    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
+      _sampleids_cached_byte_size_, target);
+  }
   for (int i = 0; i < this->sampleids_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteUInt32ToArray(3, this->sampleids(i), target);
+      WriteUInt32NoTagToArray(this->sampleids(i), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -7462,14 +7473,21 @@ int trans_local::ByteSize() const {
         this->tp(i));
   }
 
-  // repeated uint32 sampleIDs = 3;
+  // repeated uint32 sampleIDs = 3 [packed = true];
   {
     int data_size = 0;
     for (int i = 0; i < this->sampleids_size(); i++) {
       data_size += ::google::protobuf::internal::WireFormatLite::
         UInt32Size(this->sampleids(i));
     }
-    total_size += 1 * this->sampleids_size() + data_size;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+    }
+    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+    _sampleids_cached_byte_size_ = data_size;
+    GOOGLE_SAFE_CONCURRENT_WRITES_END();
+    total_size += data_size;
   }
 
   if (!unknown_fields().empty()) {
@@ -7651,11 +7669,11 @@ bool POPINDICES::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required fixed32 nEvents = 1;
+      // required uint32 nEvents = 1;
       case 1: {
-        if (tag == 13) {
+        if (tag == 8) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &nevents_)));
           set_has_nevents();
         } else {
@@ -7681,25 +7699,24 @@ bool POPINDICES::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(29)) goto parse_iInd;
+        if (input->ExpectTag(26)) goto parse_iInd;
         break;
       }
 
-      // repeated fixed32 iInd = 3;
+      // repeated uint32 iInd = 3 [packed = true];
       case 3: {
-        if (tag == 29) {
+        if (tag == 26) {
          parse_iInd:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED32>(
-                 1, 29, input, this->mutable_iind())));
-        } else if (tag == 26) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED32>(
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, this->mutable_iind())));
+        } else if (tag == 24) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 26, input, this->mutable_iind())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(29)) goto parse_iInd;
         if (input->ExpectTag(34)) goto parse_bInd;
         break;
       }
@@ -7742,9 +7759,9 @@ failure:
 void POPINDICES::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.POPINDICES)
-  // required fixed32 nEvents = 1;
+  // required uint32 nEvents = 1;
   if (has_nevents()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFixed32(1, this->nevents(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->nevents(), output);
   }
 
   // required .pb.ind_type indtype = 2;
@@ -7753,10 +7770,14 @@ void POPINDICES::SerializeWithCachedSizes(
       2, this->indtype(), output);
   }
 
-  // repeated fixed32 iInd = 3;
+  // repeated uint32 iInd = 3 [packed = true];
+  if (this->iind_size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteTag(3, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+    output->WriteVarint32(_iind_cached_byte_size_);
+  }
   for (int i = 0; i < this->iind_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFixed32(
-      3, this->iind(i), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32NoTag(
+      this->iind(i), output);
   }
 
   // optional bytes bInd = 4;
@@ -7775,9 +7796,9 @@ void POPINDICES::SerializeWithCachedSizes(
 ::google::protobuf::uint8* POPINDICES::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.POPINDICES)
-  // required fixed32 nEvents = 1;
+  // required uint32 nEvents = 1;
   if (has_nevents()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFixed32ToArray(1, this->nevents(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->nevents(), target);
   }
 
   // required .pb.ind_type indtype = 2;
@@ -7786,10 +7807,18 @@ void POPINDICES::SerializeWithCachedSizes(
       2, this->indtype(), target);
   }
 
-  // repeated fixed32 iInd = 3;
+  // repeated uint32 iInd = 3 [packed = true];
+  if (this->iind_size() > 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
+      3,
+      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      target);
+    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
+      _iind_cached_byte_size_, target);
+  }
   for (int i = 0; i < this->iind_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteFixed32ToArray(3, this->iind(i), target);
+      WriteUInt32NoTagToArray(this->iind(i), target);
   }
 
   // optional bytes bInd = 4;
@@ -7811,9 +7840,11 @@ int POPINDICES::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required fixed32 nEvents = 1;
+    // required uint32 nEvents = 1;
     if (has_nevents()) {
-      total_size += 1 + 4;
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->nevents());
     }
 
     // required .pb.ind_type indtype = 2;
@@ -7830,11 +7861,21 @@ int POPINDICES::ByteSize() const {
     }
 
   }
-  // repeated fixed32 iInd = 3;
+  // repeated uint32 iInd = 3 [packed = true];
   {
     int data_size = 0;
-    data_size = 4 * this->iind_size();
-    total_size += 1 * this->iind_size() + data_size;
+    for (int i = 0; i < this->iind_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt32Size(this->iind(i));
+    }
+    if (data_size > 0) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+    }
+    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+    _iind_cached_byte_size_ = data_size;
+    GOOGLE_SAFE_CONCURRENT_WRITES_END();
+    total_size += data_size;
   }
 
   if (!unknown_fields().empty()) {
@@ -8465,16 +8506,16 @@ bool treeNodes::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(21)) goto parse_parent;
+        if (input->ExpectTag(16)) goto parse_parent;
         break;
       }
 
-      // optional fixed32 parent = 2;
+      // optional uint32 parent = 2;
       case 2: {
-        if (tag == 21) {
+        if (tag == 16) {
          parse_parent:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &parent_)));
           set_has_parent();
         } else {
@@ -8515,9 +8556,9 @@ void treeNodes::SerializeWithCachedSizes(
       1, this->node(), output);
   }
 
-  // optional fixed32 parent = 2;
+  // optional uint32 parent = 2;
   if (has_parent()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFixed32(2, this->parent(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->parent(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -8537,9 +8578,9 @@ void treeNodes::SerializeWithCachedSizes(
         1, this->node(), target);
   }
 
-  // optional fixed32 parent = 2;
+  // optional uint32 parent = 2;
   if (has_parent()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFixed32ToArray(2, this->parent(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->parent(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -8561,9 +8602,11 @@ int treeNodes::ByteSize() const {
           this->node());
     }
 
-    // optional fixed32 parent = 2;
+    // optional uint32 parent = 2;
     if (has_parent()) {
-      total_size += 1 + 4;
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->parent());
     }
 
   }
@@ -9091,25 +9134,25 @@ bool COMP::MergePartialFromCodedStream(
           goto handle_unusual;
         }
         if (input->ExpectTag(50)) goto parse_marker;
-        if (input->ExpectTag(57)) goto parse_spillOver;
+        if (input->ExpectTag(61)) goto parse_spillOver;
         break;
       }
 
-      // repeated double spillOver = 7;
+      // repeated float spillOver = 7;
       case 7: {
-        if (tag == 57) {
+        if (tag == 61) {
          parse_spillOver:
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 57, input, this->mutable_spillover())));
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 61, input, this->mutable_spillover())));
         } else if (tag == 58) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, this->mutable_spillover())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(57)) goto parse_spillOver;
+        if (input->ExpectTag(61)) goto parse_spillOver;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -9199,9 +9242,9 @@ void COMP::SerializeWithCachedSizes(
       6, this->marker(i), output);
   }
 
-  // repeated double spillOver = 7;
+  // repeated float spillOver = 7;
   for (int i = 0; i < this->spillover_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
       7, this->spillover(i), output);
   }
 
@@ -9280,10 +9323,10 @@ void COMP::SerializeWithCachedSizes(
       WriteStringToArray(6, this->marker(i), target);
   }
 
-  // repeated double spillOver = 7;
+  // repeated float spillOver = 7;
   for (int i = 0; i < this->spillover_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(7, this->spillover(i), target);
+      WriteFloatToArray(7, this->spillover(i), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -9341,10 +9384,10 @@ int COMP::ByteSize() const {
       this->marker(i));
   }
 
-  // repeated double spillOver = 7;
+  // repeated float spillOver = 7;
   {
     int data_size = 0;
-    data_size = 8 * this->spillover_size();
+    data_size = 4 * this->spillover_size();
     total_size += 1 * this->spillover_size() + data_size;
   }
 

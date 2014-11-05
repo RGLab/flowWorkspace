@@ -1,8 +1,8 @@
 package pb;
 message paramRange{
 	required string name = 1;
-	required double min = 2;
-	required double max = 3;
+	required float min = 2;
+	required float max = 3;
 }
 message rangeGate{
 	required paramRange param = 1;
@@ -15,15 +15,15 @@ message polygonGate{
 	required paramPoly param = 1;
 }
 message coordinate{
-	required double x = 1;
-	required double y = 2;
+	required float x = 1;
+	required float y = 2;
 
 }
 message ellipseGate{
 	required coordinate mu = 1;// center point
  	repeated coordinate cov = 2;//covariance matrix
  	repeated coordinate antipodal_vertices = 3;
- 	optional double dist = 4;
+ 	optional float dist = 4;
 }
 message BOOL_GATE_OP{
 	repeated string path = 1;
@@ -70,11 +70,11 @@ enum ind_type {
 		ROOT = 2 ;
 	}
 message calibrationTable{
-	repeated double x = 1 [packed = true];
-	repeated double y = 2 [packed = true];
-	repeated double b = 3 [packed = true];
-	repeated double c = 4 [packed = true];
-	repeated double d = 5 [packed = true];
+	repeated float x = 1 [packed = true];
+	repeated float y = 2 [packed = true];
+	repeated float b = 3 [packed = true];
+	repeated float c = 4 [packed = true];
+	repeated float d = 5 [packed = true];
 	optional uint32 spline_method = 6;
 	optional string caltype = 7;
 	optional bool flag = 8;
@@ -89,28 +89,28 @@ enum TRANS_TYPE {
 	}
 message biexpTrans{
 	optional uint32 channelRange = 1;
-	optional double pos = 2;
-	optional double neg = 3;
-	optional double widthBasis = 4;
-	optional double maxValue = 5;
+	optional float pos = 2;
+	optional float neg = 3;
+	optional float widthBasis = 4;
+	optional float maxValue = 5;
 }
 message fasinhTrans{
-	optional double length = 1;
-	optional double maxRange= 2;
-	optional double T = 3;
-	optional double A = 4;
-	optional double M = 5;;
+	optional float length = 1;
+	optional float maxRange= 2;
+	optional float T = 3;
+	optional float A = 4;
+	optional float M = 5;;
 }
 message scaleTrans{
  optional float scale_factor = 1;
 }
 message flinTrans{
-	optional double min = 1;
-	optional double max = 2;
+	optional float min = 1;
+	optional float max = 2;
 }
 message logTrans{
-	optional double offset = 1;
-	optional double decade = 2;
+	optional float offset = 1;
+	optional float decade = 2;
 }
 message transformation{
 	optional calibrationTable calTbl = 1;
@@ -135,13 +135,13 @@ message trans_pair{
 message trans_local{
 	repeated trans_pair tp = 1;
 	optional string groupName = 2;
-	repeated uint32 sampleIDs = 3;
+	repeated uint32 sampleIDs = 3 [packed = true];
 }
 
 message POPINDICES{
-	required fixed32 nEvents = 1;
+	required uint32 nEvents = 1;
 	required ind_type indtype = 2;
-	repeated fixed32 iInd = 3;
+	repeated uint32 iInd = 3 [packed = true];
 	optional bytes bInd = 4;//bits packaged into bytes
 }
 
@@ -157,7 +157,7 @@ message nodeProperties{
 
 message treeNodes {
 	required nodeProperties node = 1;
-	optional fixed32 parent = 2;
+	optional uint32 parent = 2;
 }
 
 message populationTree{
@@ -171,7 +171,7 @@ message COMP{
 	optional string name = 4;
 	optional string comment = 5;
 	repeated string marker = 6;
-	repeated double spillOver = 7;
+	repeated float spillOver = 7;
 }
 message PARAM{
 		optional string param = 1;

@@ -22,7 +22,7 @@
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
-#include <google/protobuf/extension_set.h>
+//#include <google/protobuf/extension_set.h>
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
@@ -198,19 +198,19 @@ class paramRange : public ::google::protobuf::Message {
   inline ::std::string* release_name();
   inline void set_allocated_name(::std::string* name);
 
-  // required double min = 2;
+  // required float min = 2;
   inline bool has_min() const;
   inline void clear_min();
   static const int kMinFieldNumber = 2;
-  inline double min() const;
-  inline void set_min(double value);
+  inline float min() const;
+  inline void set_min(float value);
 
-  // required double max = 3;
+  // required float max = 3;
   inline bool has_max() const;
   inline void clear_max();
   static const int kMaxFieldNumber = 3;
-  inline double max() const;
-  inline void set_max(double value);
+  inline float max() const;
+  inline void set_max(float value);
 
   // @@protoc_insertion_point(class_scope:pb.paramRange)
  private:
@@ -226,8 +226,8 @@ class paramRange : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* name_;
-  double min_;
-  double max_;
+  float min_;
+  float max_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -551,19 +551,19 @@ class coordinate : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required double x = 1;
+  // required float x = 1;
   inline bool has_x() const;
   inline void clear_x();
   static const int kXFieldNumber = 1;
-  inline double x() const;
-  inline void set_x(double value);
+  inline float x() const;
+  inline void set_x(float value);
 
-  // required double y = 2;
+  // required float y = 2;
   inline bool has_y() const;
   inline void clear_y();
   static const int kYFieldNumber = 2;
-  inline double y() const;
-  inline void set_y(double value);
+  inline float y() const;
+  inline void set_y(float value);
 
   // @@protoc_insertion_point(class_scope:pb.coordinate)
  private:
@@ -576,8 +576,8 @@ class coordinate : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  double x_;
-  double y_;
+  float x_;
+  float y_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -673,12 +673,12 @@ class ellipseGate : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::pb::coordinate >*
       mutable_antipodal_vertices();
 
-  // optional double dist = 4;
+  // optional float dist = 4;
   inline bool has_dist() const;
   inline void clear_dist();
   static const int kDistFieldNumber = 4;
-  inline double dist() const;
-  inline void set_dist(double value);
+  inline float dist() const;
+  inline void set_dist(float value);
 
   // @@protoc_insertion_point(class_scope:pb.ellipseGate)
  private:
@@ -694,7 +694,7 @@ class ellipseGate : public ::google::protobuf::Message {
   ::pb::coordinate* mu_;
   ::google::protobuf::RepeatedPtrField< ::pb::coordinate > cov_;
   ::google::protobuf::RepeatedPtrField< ::pb::coordinate > antipodal_vertices_;
-  double dist_;
+  float dist_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -1196,64 +1196,64 @@ class calibrationTable : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // repeated double x = 1 [packed = true];
+  // repeated float x = 1 [packed = true];
   inline int x_size() const;
   inline void clear_x();
   static const int kXFieldNumber = 1;
-  inline double x(int index) const;
-  inline void set_x(int index, double value);
-  inline void add_x(double value);
-  inline const ::google::protobuf::RepeatedField< double >&
+  inline float x(int index) const;
+  inline void set_x(int index, float value);
+  inline void add_x(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
       x() const;
-  inline ::google::protobuf::RepeatedField< double >*
+  inline ::google::protobuf::RepeatedField< float >*
       mutable_x();
 
-  // repeated double y = 2 [packed = true];
+  // repeated float y = 2 [packed = true];
   inline int y_size() const;
   inline void clear_y();
   static const int kYFieldNumber = 2;
-  inline double y(int index) const;
-  inline void set_y(int index, double value);
-  inline void add_y(double value);
-  inline const ::google::protobuf::RepeatedField< double >&
+  inline float y(int index) const;
+  inline void set_y(int index, float value);
+  inline void add_y(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
       y() const;
-  inline ::google::protobuf::RepeatedField< double >*
+  inline ::google::protobuf::RepeatedField< float >*
       mutable_y();
 
-  // repeated double b = 3 [packed = true];
+  // repeated float b = 3 [packed = true];
   inline int b_size() const;
   inline void clear_b();
   static const int kBFieldNumber = 3;
-  inline double b(int index) const;
-  inline void set_b(int index, double value);
-  inline void add_b(double value);
-  inline const ::google::protobuf::RepeatedField< double >&
+  inline float b(int index) const;
+  inline void set_b(int index, float value);
+  inline void add_b(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
       b() const;
-  inline ::google::protobuf::RepeatedField< double >*
+  inline ::google::protobuf::RepeatedField< float >*
       mutable_b();
 
-  // repeated double c = 4 [packed = true];
+  // repeated float c = 4 [packed = true];
   inline int c_size() const;
   inline void clear_c();
   static const int kCFieldNumber = 4;
-  inline double c(int index) const;
-  inline void set_c(int index, double value);
-  inline void add_c(double value);
-  inline const ::google::protobuf::RepeatedField< double >&
+  inline float c(int index) const;
+  inline void set_c(int index, float value);
+  inline void add_c(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
       c() const;
-  inline ::google::protobuf::RepeatedField< double >*
+  inline ::google::protobuf::RepeatedField< float >*
       mutable_c();
 
-  // repeated double d = 5 [packed = true];
+  // repeated float d = 5 [packed = true];
   inline int d_size() const;
   inline void clear_d();
   static const int kDFieldNumber = 5;
-  inline double d(int index) const;
-  inline void set_d(int index, double value);
-  inline void add_d(double value);
-  inline const ::google::protobuf::RepeatedField< double >&
+  inline float d(int index) const;
+  inline void set_d(int index, float value);
+  inline void add_d(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
       d() const;
-  inline ::google::protobuf::RepeatedField< double >*
+  inline ::google::protobuf::RepeatedField< float >*
       mutable_d();
 
   // optional uint32 spline_method = 6;
@@ -1295,15 +1295,15 @@ class calibrationTable : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedField< double > x_;
+  ::google::protobuf::RepeatedField< float > x_;
   mutable int _x_cached_byte_size_;
-  ::google::protobuf::RepeatedField< double > y_;
+  ::google::protobuf::RepeatedField< float > y_;
   mutable int _y_cached_byte_size_;
-  ::google::protobuf::RepeatedField< double > b_;
+  ::google::protobuf::RepeatedField< float > b_;
   mutable int _b_cached_byte_size_;
-  ::google::protobuf::RepeatedField< double > c_;
+  ::google::protobuf::RepeatedField< float > c_;
   mutable int _c_cached_byte_size_;
-  ::google::protobuf::RepeatedField< double > d_;
+  ::google::protobuf::RepeatedField< float > d_;
   mutable int _d_cached_byte_size_;
   ::std::string* caltype_;
   ::google::protobuf::uint32 spline_method_;
@@ -1377,33 +1377,33 @@ class biexpTrans : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 channelrange() const;
   inline void set_channelrange(::google::protobuf::uint32 value);
 
-  // optional double pos = 2;
+  // optional float pos = 2;
   inline bool has_pos() const;
   inline void clear_pos();
   static const int kPosFieldNumber = 2;
-  inline double pos() const;
-  inline void set_pos(double value);
+  inline float pos() const;
+  inline void set_pos(float value);
 
-  // optional double neg = 3;
+  // optional float neg = 3;
   inline bool has_neg() const;
   inline void clear_neg();
   static const int kNegFieldNumber = 3;
-  inline double neg() const;
-  inline void set_neg(double value);
+  inline float neg() const;
+  inline void set_neg(float value);
 
-  // optional double widthBasis = 4;
+  // optional float widthBasis = 4;
   inline bool has_widthbasis() const;
   inline void clear_widthbasis();
   static const int kWidthBasisFieldNumber = 4;
-  inline double widthbasis() const;
-  inline void set_widthbasis(double value);
+  inline float widthbasis() const;
+  inline void set_widthbasis(float value);
 
-  // optional double maxValue = 5;
+  // optional float maxValue = 5;
   inline bool has_maxvalue() const;
   inline void clear_maxvalue();
   static const int kMaxValueFieldNumber = 5;
-  inline double maxvalue() const;
-  inline void set_maxvalue(double value);
+  inline float maxvalue() const;
+  inline void set_maxvalue(float value);
 
   // @@protoc_insertion_point(class_scope:pb.biexpTrans)
  private:
@@ -1422,11 +1422,11 @@ class biexpTrans : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  double pos_;
-  double neg_;
-  double widthbasis_;
-  double maxvalue_;
   ::google::protobuf::uint32 channelrange_;
+  float pos_;
+  float neg_;
+  float widthbasis_;
+  float maxvalue_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -1489,40 +1489,40 @@ class fasinhTrans : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // optional double length = 1;
+  // optional float length = 1;
   inline bool has_length() const;
   inline void clear_length();
   static const int kLengthFieldNumber = 1;
-  inline double length() const;
-  inline void set_length(double value);
+  inline float length() const;
+  inline void set_length(float value);
 
-  // optional double maxRange = 2;
+  // optional float maxRange = 2;
   inline bool has_maxrange() const;
   inline void clear_maxrange();
   static const int kMaxRangeFieldNumber = 2;
-  inline double maxrange() const;
-  inline void set_maxrange(double value);
+  inline float maxrange() const;
+  inline void set_maxrange(float value);
 
-  // optional double T = 3;
+  // optional float T = 3;
   inline bool has_t() const;
   inline void clear_t();
   static const int kTFieldNumber = 3;
-  inline double t() const;
-  inline void set_t(double value);
+  inline float t() const;
+  inline void set_t(float value);
 
-  // optional double A = 4;
+  // optional float A = 4;
   inline bool has_a() const;
   inline void clear_a();
   static const int kAFieldNumber = 4;
-  inline double a() const;
-  inline void set_a(double value);
+  inline float a() const;
+  inline void set_a(float value);
 
-  // optional double M = 5;
+  // optional float M = 5;
   inline bool has_m() const;
   inline void clear_m();
   static const int kMFieldNumber = 5;
-  inline double m() const;
-  inline void set_m(double value);
+  inline float m() const;
+  inline void set_m(float value);
 
   // @@protoc_insertion_point(class_scope:pb.fasinhTrans)
  private:
@@ -1541,11 +1541,11 @@ class fasinhTrans : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  double length_;
-  double maxrange_;
-  double t_;
-  double a_;
-  double m_;
+  float length_;
+  float maxrange_;
+  float t_;
+  float a_;
+  float m_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -1687,19 +1687,19 @@ class flinTrans : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // optional double min = 1;
+  // optional float min = 1;
   inline bool has_min() const;
   inline void clear_min();
   static const int kMinFieldNumber = 1;
-  inline double min() const;
-  inline void set_min(double value);
+  inline float min() const;
+  inline void set_min(float value);
 
-  // optional double max = 2;
+  // optional float max = 2;
   inline bool has_max() const;
   inline void clear_max();
   static const int kMaxFieldNumber = 2;
-  inline double max() const;
-  inline void set_max(double value);
+  inline float max() const;
+  inline void set_max(float value);
 
   // @@protoc_insertion_point(class_scope:pb.flinTrans)
  private:
@@ -1712,8 +1712,8 @@ class flinTrans : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  double min_;
-  double max_;
+  float min_;
+  float max_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -1776,19 +1776,19 @@ class logTrans : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // optional double offset = 1;
+  // optional float offset = 1;
   inline bool has_offset() const;
   inline void clear_offset();
   static const int kOffsetFieldNumber = 1;
-  inline double offset() const;
-  inline void set_offset(double value);
+  inline float offset() const;
+  inline void set_offset(float value);
 
-  // optional double decade = 2;
+  // optional float decade = 2;
   inline bool has_decade() const;
   inline void clear_decade();
   static const int kDecadeFieldNumber = 2;
-  inline double decade() const;
-  inline void set_decade(double value);
+  inline float decade() const;
+  inline void set_decade(float value);
 
   // @@protoc_insertion_point(class_scope:pb.logTrans)
  private:
@@ -1801,8 +1801,8 @@ class logTrans : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  double offset_;
-  double decade_;
+  float offset_;
+  float decade_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -2194,7 +2194,7 @@ class trans_local : public ::google::protobuf::Message {
   inline ::std::string* release_groupname();
   inline void set_allocated_groupname(::std::string* groupname);
 
-  // repeated uint32 sampleIDs = 3;
+  // repeated uint32 sampleIDs = 3 [packed = true];
   inline int sampleids_size() const;
   inline void clear_sampleids();
   static const int kSampleIDsFieldNumber = 3;
@@ -2218,6 +2218,7 @@ class trans_local : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::pb::trans_pair > tp_;
   ::std::string* groupname_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > sampleids_;
+  mutable int _sampleids_cached_byte_size_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -2280,7 +2281,7 @@ class POPINDICES : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required fixed32 nEvents = 1;
+  // required uint32 nEvents = 1;
   inline bool has_nevents() const;
   inline void clear_nevents();
   static const int kNEventsFieldNumber = 1;
@@ -2294,7 +2295,7 @@ class POPINDICES : public ::google::protobuf::Message {
   inline ::pb::ind_type indtype() const;
   inline void set_indtype(::pb::ind_type value);
 
-  // repeated fixed32 iInd = 3;
+  // repeated uint32 iInd = 3 [packed = true];
   inline int iind_size() const;
   inline void clear_iind();
   static const int kIIndFieldNumber = 3;
@@ -2334,6 +2335,7 @@ class POPINDICES : public ::google::protobuf::Message {
   ::google::protobuf::uint32 nevents_;
   int indtype_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > iind_;
+  mutable int _iind_cached_byte_size_;
   ::std::string* bind_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
@@ -2550,7 +2552,7 @@ class treeNodes : public ::google::protobuf::Message {
   inline ::pb::nodeProperties* release_node();
   inline void set_allocated_node(::pb::nodeProperties* node);
 
-  // optional fixed32 parent = 2;
+  // optional uint32 parent = 2;
   inline bool has_parent() const;
   inline void clear_parent();
   static const int kParentFieldNumber = 2;
@@ -2790,16 +2792,16 @@ class COMP : public ::google::protobuf::Message {
   inline const ::google::protobuf::RepeatedPtrField< ::std::string>& marker() const;
   inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_marker();
 
-  // repeated double spillOver = 7;
+  // repeated float spillOver = 7;
   inline int spillover_size() const;
   inline void clear_spillover();
   static const int kSpillOverFieldNumber = 7;
-  inline double spillover(int index) const;
-  inline void set_spillover(int index, double value);
-  inline void add_spillover(double value);
-  inline const ::google::protobuf::RepeatedField< double >&
+  inline float spillover(int index) const;
+  inline void set_spillover(int index, float value);
+  inline void add_spillover(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
       spillover() const;
-  inline ::google::protobuf::RepeatedField< double >*
+  inline ::google::protobuf::RepeatedField< float >*
       mutable_spillover();
 
   // @@protoc_insertion_point(class_scope:pb.COMP)
@@ -2825,7 +2827,7 @@ class COMP : public ::google::protobuf::Message {
   ::std::string* name_;
   ::std::string* comment_;
   ::google::protobuf::RepeatedPtrField< ::std::string> marker_;
-  ::google::protobuf::RepeatedField< double > spillover_;
+  ::google::protobuf::RepeatedField< float > spillover_;
   friend void  protobuf_AddDesc_GatingSet_2eproto();
   friend void protobuf_AssignDesc_GatingSet_2eproto();
   friend void protobuf_ShutdownFile_GatingSet_2eproto();
@@ -3483,7 +3485,7 @@ inline void paramRange::set_allocated_name(::std::string* name) {
   // @@protoc_insertion_point(field_set_allocated:pb.paramRange.name)
 }
 
-// required double min = 2;
+// required float min = 2;
 inline bool paramRange::has_min() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -3497,17 +3499,17 @@ inline void paramRange::clear_min() {
   min_ = 0;
   clear_has_min();
 }
-inline double paramRange::min() const {
+inline float paramRange::min() const {
   // @@protoc_insertion_point(field_get:pb.paramRange.min)
   return min_;
 }
-inline void paramRange::set_min(double value) {
+inline void paramRange::set_min(float value) {
   set_has_min();
   min_ = value;
   // @@protoc_insertion_point(field_set:pb.paramRange.min)
 }
 
-// required double max = 3;
+// required float max = 3;
 inline bool paramRange::has_max() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -3521,11 +3523,11 @@ inline void paramRange::clear_max() {
   max_ = 0;
   clear_has_max();
 }
-inline double paramRange::max() const {
+inline float paramRange::max() const {
   // @@protoc_insertion_point(field_get:pb.paramRange.max)
   return max_;
 }
-inline void paramRange::set_max(double value) {
+inline void paramRange::set_max(float value) {
   set_has_max();
   max_ = value;
   // @@protoc_insertion_point(field_set:pb.paramRange.max)
@@ -3713,7 +3715,7 @@ inline void polygonGate::set_allocated_param(::pb::paramPoly* param) {
 
 // coordinate
 
-// required double x = 1;
+// required float x = 1;
 inline bool coordinate::has_x() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -3727,17 +3729,17 @@ inline void coordinate::clear_x() {
   x_ = 0;
   clear_has_x();
 }
-inline double coordinate::x() const {
+inline float coordinate::x() const {
   // @@protoc_insertion_point(field_get:pb.coordinate.x)
   return x_;
 }
-inline void coordinate::set_x(double value) {
+inline void coordinate::set_x(float value) {
   set_has_x();
   x_ = value;
   // @@protoc_insertion_point(field_set:pb.coordinate.x)
 }
 
-// required double y = 2;
+// required float y = 2;
 inline bool coordinate::has_y() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -3751,11 +3753,11 @@ inline void coordinate::clear_y() {
   y_ = 0;
   clear_has_y();
 }
-inline double coordinate::y() const {
+inline float coordinate::y() const {
   // @@protoc_insertion_point(field_get:pb.coordinate.y)
   return y_;
 }
-inline void coordinate::set_y(double value) {
+inline void coordinate::set_y(float value) {
   set_has_y();
   y_ = value;
   // @@protoc_insertion_point(field_set:pb.coordinate.y)
@@ -3866,7 +3868,7 @@ ellipseGate::mutable_antipodal_vertices() {
   return &antipodal_vertices_;
 }
 
-// optional double dist = 4;
+// optional float dist = 4;
 inline bool ellipseGate::has_dist() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -3880,11 +3882,11 @@ inline void ellipseGate::clear_dist() {
   dist_ = 0;
   clear_has_dist();
 }
-inline double ellipseGate::dist() const {
+inline float ellipseGate::dist() const {
   // @@protoc_insertion_point(field_get:pb.ellipseGate.dist)
   return dist_;
 }
-inline void ellipseGate::set_dist(double value) {
+inline void ellipseGate::set_dist(float value) {
   set_has_dist();
   dist_ = value;
   // @@protoc_insertion_point(field_set:pb.ellipseGate.dist)
@@ -4403,151 +4405,151 @@ inline void POPSTATS::set_statval(float value) {
 
 // calibrationTable
 
-// repeated double x = 1 [packed = true];
+// repeated float x = 1 [packed = true];
 inline int calibrationTable::x_size() const {
   return x_.size();
 }
 inline void calibrationTable::clear_x() {
   x_.Clear();
 }
-inline double calibrationTable::x(int index) const {
+inline float calibrationTable::x(int index) const {
   // @@protoc_insertion_point(field_get:pb.calibrationTable.x)
   return x_.Get(index);
 }
-inline void calibrationTable::set_x(int index, double value) {
+inline void calibrationTable::set_x(int index, float value) {
   x_.Set(index, value);
   // @@protoc_insertion_point(field_set:pb.calibrationTable.x)
 }
-inline void calibrationTable::add_x(double value) {
+inline void calibrationTable::add_x(float value) {
   x_.Add(value);
   // @@protoc_insertion_point(field_add:pb.calibrationTable.x)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField< float >&
 calibrationTable::x() const {
   // @@protoc_insertion_point(field_list:pb.calibrationTable.x)
   return x_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField< float >*
 calibrationTable::mutable_x() {
   // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.x)
   return &x_;
 }
 
-// repeated double y = 2 [packed = true];
+// repeated float y = 2 [packed = true];
 inline int calibrationTable::y_size() const {
   return y_.size();
 }
 inline void calibrationTable::clear_y() {
   y_.Clear();
 }
-inline double calibrationTable::y(int index) const {
+inline float calibrationTable::y(int index) const {
   // @@protoc_insertion_point(field_get:pb.calibrationTable.y)
   return y_.Get(index);
 }
-inline void calibrationTable::set_y(int index, double value) {
+inline void calibrationTable::set_y(int index, float value) {
   y_.Set(index, value);
   // @@protoc_insertion_point(field_set:pb.calibrationTable.y)
 }
-inline void calibrationTable::add_y(double value) {
+inline void calibrationTable::add_y(float value) {
   y_.Add(value);
   // @@protoc_insertion_point(field_add:pb.calibrationTable.y)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField< float >&
 calibrationTable::y() const {
   // @@protoc_insertion_point(field_list:pb.calibrationTable.y)
   return y_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField< float >*
 calibrationTable::mutable_y() {
   // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.y)
   return &y_;
 }
 
-// repeated double b = 3 [packed = true];
+// repeated float b = 3 [packed = true];
 inline int calibrationTable::b_size() const {
   return b_.size();
 }
 inline void calibrationTable::clear_b() {
   b_.Clear();
 }
-inline double calibrationTable::b(int index) const {
+inline float calibrationTable::b(int index) const {
   // @@protoc_insertion_point(field_get:pb.calibrationTable.b)
   return b_.Get(index);
 }
-inline void calibrationTable::set_b(int index, double value) {
+inline void calibrationTable::set_b(int index, float value) {
   b_.Set(index, value);
   // @@protoc_insertion_point(field_set:pb.calibrationTable.b)
 }
-inline void calibrationTable::add_b(double value) {
+inline void calibrationTable::add_b(float value) {
   b_.Add(value);
   // @@protoc_insertion_point(field_add:pb.calibrationTable.b)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField< float >&
 calibrationTable::b() const {
   // @@protoc_insertion_point(field_list:pb.calibrationTable.b)
   return b_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField< float >*
 calibrationTable::mutable_b() {
   // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.b)
   return &b_;
 }
 
-// repeated double c = 4 [packed = true];
+// repeated float c = 4 [packed = true];
 inline int calibrationTable::c_size() const {
   return c_.size();
 }
 inline void calibrationTable::clear_c() {
   c_.Clear();
 }
-inline double calibrationTable::c(int index) const {
+inline float calibrationTable::c(int index) const {
   // @@protoc_insertion_point(field_get:pb.calibrationTable.c)
   return c_.Get(index);
 }
-inline void calibrationTable::set_c(int index, double value) {
+inline void calibrationTable::set_c(int index, float value) {
   c_.Set(index, value);
   // @@protoc_insertion_point(field_set:pb.calibrationTable.c)
 }
-inline void calibrationTable::add_c(double value) {
+inline void calibrationTable::add_c(float value) {
   c_.Add(value);
   // @@protoc_insertion_point(field_add:pb.calibrationTable.c)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField< float >&
 calibrationTable::c() const {
   // @@protoc_insertion_point(field_list:pb.calibrationTable.c)
   return c_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField< float >*
 calibrationTable::mutable_c() {
   // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.c)
   return &c_;
 }
 
-// repeated double d = 5 [packed = true];
+// repeated float d = 5 [packed = true];
 inline int calibrationTable::d_size() const {
   return d_.size();
 }
 inline void calibrationTable::clear_d() {
   d_.Clear();
 }
-inline double calibrationTable::d(int index) const {
+inline float calibrationTable::d(int index) const {
   // @@protoc_insertion_point(field_get:pb.calibrationTable.d)
   return d_.Get(index);
 }
-inline void calibrationTable::set_d(int index, double value) {
+inline void calibrationTable::set_d(int index, float value) {
   d_.Set(index, value);
   // @@protoc_insertion_point(field_set:pb.calibrationTable.d)
 }
-inline void calibrationTable::add_d(double value) {
+inline void calibrationTable::add_d(float value) {
   d_.Add(value);
   // @@protoc_insertion_point(field_add:pb.calibrationTable.d)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField< float >&
 calibrationTable::d() const {
   // @@protoc_insertion_point(field_list:pb.calibrationTable.d)
   return d_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField< float >*
 calibrationTable::mutable_d() {
   // @@protoc_insertion_point(field_mutable_list:pb.calibrationTable.d)
   return &d_;
@@ -4705,7 +4707,7 @@ inline void biexpTrans::set_channelrange(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:pb.biexpTrans.channelRange)
 }
 
-// optional double pos = 2;
+// optional float pos = 2;
 inline bool biexpTrans::has_pos() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -4719,17 +4721,17 @@ inline void biexpTrans::clear_pos() {
   pos_ = 0;
   clear_has_pos();
 }
-inline double biexpTrans::pos() const {
+inline float biexpTrans::pos() const {
   // @@protoc_insertion_point(field_get:pb.biexpTrans.pos)
   return pos_;
 }
-inline void biexpTrans::set_pos(double value) {
+inline void biexpTrans::set_pos(float value) {
   set_has_pos();
   pos_ = value;
   // @@protoc_insertion_point(field_set:pb.biexpTrans.pos)
 }
 
-// optional double neg = 3;
+// optional float neg = 3;
 inline bool biexpTrans::has_neg() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -4743,17 +4745,17 @@ inline void biexpTrans::clear_neg() {
   neg_ = 0;
   clear_has_neg();
 }
-inline double biexpTrans::neg() const {
+inline float biexpTrans::neg() const {
   // @@protoc_insertion_point(field_get:pb.biexpTrans.neg)
   return neg_;
 }
-inline void biexpTrans::set_neg(double value) {
+inline void biexpTrans::set_neg(float value) {
   set_has_neg();
   neg_ = value;
   // @@protoc_insertion_point(field_set:pb.biexpTrans.neg)
 }
 
-// optional double widthBasis = 4;
+// optional float widthBasis = 4;
 inline bool biexpTrans::has_widthbasis() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -4767,17 +4769,17 @@ inline void biexpTrans::clear_widthbasis() {
   widthbasis_ = 0;
   clear_has_widthbasis();
 }
-inline double biexpTrans::widthbasis() const {
+inline float biexpTrans::widthbasis() const {
   // @@protoc_insertion_point(field_get:pb.biexpTrans.widthBasis)
   return widthbasis_;
 }
-inline void biexpTrans::set_widthbasis(double value) {
+inline void biexpTrans::set_widthbasis(float value) {
   set_has_widthbasis();
   widthbasis_ = value;
   // @@protoc_insertion_point(field_set:pb.biexpTrans.widthBasis)
 }
 
-// optional double maxValue = 5;
+// optional float maxValue = 5;
 inline bool biexpTrans::has_maxvalue() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
@@ -4791,11 +4793,11 @@ inline void biexpTrans::clear_maxvalue() {
   maxvalue_ = 0;
   clear_has_maxvalue();
 }
-inline double biexpTrans::maxvalue() const {
+inline float biexpTrans::maxvalue() const {
   // @@protoc_insertion_point(field_get:pb.biexpTrans.maxValue)
   return maxvalue_;
 }
-inline void biexpTrans::set_maxvalue(double value) {
+inline void biexpTrans::set_maxvalue(float value) {
   set_has_maxvalue();
   maxvalue_ = value;
   // @@protoc_insertion_point(field_set:pb.biexpTrans.maxValue)
@@ -4805,7 +4807,7 @@ inline void biexpTrans::set_maxvalue(double value) {
 
 // fasinhTrans
 
-// optional double length = 1;
+// optional float length = 1;
 inline bool fasinhTrans::has_length() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -4819,17 +4821,17 @@ inline void fasinhTrans::clear_length() {
   length_ = 0;
   clear_has_length();
 }
-inline double fasinhTrans::length() const {
+inline float fasinhTrans::length() const {
   // @@protoc_insertion_point(field_get:pb.fasinhTrans.length)
   return length_;
 }
-inline void fasinhTrans::set_length(double value) {
+inline void fasinhTrans::set_length(float value) {
   set_has_length();
   length_ = value;
   // @@protoc_insertion_point(field_set:pb.fasinhTrans.length)
 }
 
-// optional double maxRange = 2;
+// optional float maxRange = 2;
 inline bool fasinhTrans::has_maxrange() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -4843,17 +4845,17 @@ inline void fasinhTrans::clear_maxrange() {
   maxrange_ = 0;
   clear_has_maxrange();
 }
-inline double fasinhTrans::maxrange() const {
+inline float fasinhTrans::maxrange() const {
   // @@protoc_insertion_point(field_get:pb.fasinhTrans.maxRange)
   return maxrange_;
 }
-inline void fasinhTrans::set_maxrange(double value) {
+inline void fasinhTrans::set_maxrange(float value) {
   set_has_maxrange();
   maxrange_ = value;
   // @@protoc_insertion_point(field_set:pb.fasinhTrans.maxRange)
 }
 
-// optional double T = 3;
+// optional float T = 3;
 inline bool fasinhTrans::has_t() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -4867,17 +4869,17 @@ inline void fasinhTrans::clear_t() {
   t_ = 0;
   clear_has_t();
 }
-inline double fasinhTrans::t() const {
+inline float fasinhTrans::t() const {
   // @@protoc_insertion_point(field_get:pb.fasinhTrans.T)
   return t_;
 }
-inline void fasinhTrans::set_t(double value) {
+inline void fasinhTrans::set_t(float value) {
   set_has_t();
   t_ = value;
   // @@protoc_insertion_point(field_set:pb.fasinhTrans.T)
 }
 
-// optional double A = 4;
+// optional float A = 4;
 inline bool fasinhTrans::has_a() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -4891,17 +4893,17 @@ inline void fasinhTrans::clear_a() {
   a_ = 0;
   clear_has_a();
 }
-inline double fasinhTrans::a() const {
+inline float fasinhTrans::a() const {
   // @@protoc_insertion_point(field_get:pb.fasinhTrans.A)
   return a_;
 }
-inline void fasinhTrans::set_a(double value) {
+inline void fasinhTrans::set_a(float value) {
   set_has_a();
   a_ = value;
   // @@protoc_insertion_point(field_set:pb.fasinhTrans.A)
 }
 
-// optional double M = 5;
+// optional float M = 5;
 inline bool fasinhTrans::has_m() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
@@ -4915,11 +4917,11 @@ inline void fasinhTrans::clear_m() {
   m_ = 0;
   clear_has_m();
 }
-inline double fasinhTrans::m() const {
+inline float fasinhTrans::m() const {
   // @@protoc_insertion_point(field_get:pb.fasinhTrans.M)
   return m_;
 }
-inline void fasinhTrans::set_m(double value) {
+inline void fasinhTrans::set_m(float value) {
   set_has_m();
   m_ = value;
   // @@protoc_insertion_point(field_set:pb.fasinhTrans.M)
@@ -4957,7 +4959,7 @@ inline void scaleTrans::set_scale_factor(float value) {
 
 // flinTrans
 
-// optional double min = 1;
+// optional float min = 1;
 inline bool flinTrans::has_min() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -4971,17 +4973,17 @@ inline void flinTrans::clear_min() {
   min_ = 0;
   clear_has_min();
 }
-inline double flinTrans::min() const {
+inline float flinTrans::min() const {
   // @@protoc_insertion_point(field_get:pb.flinTrans.min)
   return min_;
 }
-inline void flinTrans::set_min(double value) {
+inline void flinTrans::set_min(float value) {
   set_has_min();
   min_ = value;
   // @@protoc_insertion_point(field_set:pb.flinTrans.min)
 }
 
-// optional double max = 2;
+// optional float max = 2;
 inline bool flinTrans::has_max() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -4995,11 +4997,11 @@ inline void flinTrans::clear_max() {
   max_ = 0;
   clear_has_max();
 }
-inline double flinTrans::max() const {
+inline float flinTrans::max() const {
   // @@protoc_insertion_point(field_get:pb.flinTrans.max)
   return max_;
 }
-inline void flinTrans::set_max(double value) {
+inline void flinTrans::set_max(float value) {
   set_has_max();
   max_ = value;
   // @@protoc_insertion_point(field_set:pb.flinTrans.max)
@@ -5009,7 +5011,7 @@ inline void flinTrans::set_max(double value) {
 
 // logTrans
 
-// optional double offset = 1;
+// optional float offset = 1;
 inline bool logTrans::has_offset() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -5023,17 +5025,17 @@ inline void logTrans::clear_offset() {
   offset_ = 0;
   clear_has_offset();
 }
-inline double logTrans::offset() const {
+inline float logTrans::offset() const {
   // @@protoc_insertion_point(field_get:pb.logTrans.offset)
   return offset_;
 }
-inline void logTrans::set_offset(double value) {
+inline void logTrans::set_offset(float value) {
   set_has_offset();
   offset_ = value;
   // @@protoc_insertion_point(field_set:pb.logTrans.offset)
 }
 
-// optional double decade = 2;
+// optional float decade = 2;
 inline bool logTrans::has_decade() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -5047,11 +5049,11 @@ inline void logTrans::clear_decade() {
   decade_ = 0;
   clear_has_decade();
 }
-inline double logTrans::decade() const {
+inline float logTrans::decade() const {
   // @@protoc_insertion_point(field_get:pb.logTrans.decade)
   return decade_;
 }
-inline void logTrans::set_decade(double value) {
+inline void logTrans::set_decade(float value) {
   set_has_decade();
   decade_ = value;
   // @@protoc_insertion_point(field_set:pb.logTrans.decade)
@@ -5770,7 +5772,7 @@ inline void trans_local::set_allocated_groupname(::std::string* groupname) {
   // @@protoc_insertion_point(field_set_allocated:pb.trans_local.groupName)
 }
 
-// repeated uint32 sampleIDs = 3;
+// repeated uint32 sampleIDs = 3 [packed = true];
 inline int trans_local::sampleids_size() const {
   return sampleids_.size();
 }
@@ -5804,7 +5806,7 @@ trans_local::mutable_sampleids() {
 
 // POPINDICES
 
-// required fixed32 nEvents = 1;
+// required uint32 nEvents = 1;
 inline bool POPINDICES::has_nevents() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -5853,7 +5855,7 @@ inline void POPINDICES::set_indtype(::pb::ind_type value) {
   // @@protoc_insertion_point(field_set:pb.POPINDICES.indtype)
 }
 
-// repeated fixed32 iInd = 3;
+// repeated uint32 iInd = 3 [packed = true];
 inline int POPINDICES::iind_size() const {
   return iind_.size();
 }
@@ -6250,7 +6252,7 @@ inline void treeNodes::set_allocated_node(::pb::nodeProperties* node) {
   // @@protoc_insertion_point(field_set_allocated:pb.treeNodes.node)
 }
 
-// optional fixed32 parent = 2;
+// optional uint32 parent = 2;
 inline bool treeNodes::has_parent() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -6746,31 +6748,31 @@ COMP::mutable_marker() {
   return &marker_;
 }
 
-// repeated double spillOver = 7;
+// repeated float spillOver = 7;
 inline int COMP::spillover_size() const {
   return spillover_.size();
 }
 inline void COMP::clear_spillover() {
   spillover_.Clear();
 }
-inline double COMP::spillover(int index) const {
+inline float COMP::spillover(int index) const {
   // @@protoc_insertion_point(field_get:pb.COMP.spillOver)
   return spillover_.Get(index);
 }
-inline void COMP::set_spillover(int index, double value) {
+inline void COMP::set_spillover(int index, float value) {
   spillover_.Set(index, value);
   // @@protoc_insertion_point(field_set:pb.COMP.spillOver)
 }
-inline void COMP::add_spillover(double value) {
+inline void COMP::add_spillover(float value) {
   spillover_.Add(value);
   // @@protoc_insertion_point(field_add:pb.COMP.spillOver)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField< float >&
 COMP::spillover() const {
   // @@protoc_insertion_point(field_list:pb.COMP.spillOver)
   return spillover_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField< float >*
 COMP::mutable_spillover() {
   // @@protoc_insertion_point(field_mutable_list:pb.COMP.spillOver)
   return &spillover_;
