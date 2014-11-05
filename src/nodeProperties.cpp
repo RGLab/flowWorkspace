@@ -211,9 +211,14 @@ void nodeProperties::convertToPb(pb::nodeProperties & np_pb, bool isRoot){
 		fc->set_statval(it.second);
 	}
 
+	bool isGated = indices != NULL;
+
 	if(isRoot){
-		pb::POPINDICES * ind_pb = np_pb.mutable_indices();
-		indices->convertToPb(*ind_pb);
+		if(isGated){
+			pb::POPINDICES * ind_pb = np_pb.mutable_indices();
+			indices->convertToPb(*ind_pb);
+		}
+
 	}
 	else
 	{
@@ -224,7 +229,7 @@ void nodeProperties::convertToPb(pb::nodeProperties & np_pb, bool isRoot){
 
 			//only archive event index for gated non-bool gate to save disk)
 			bool nonBool = thisGate->getType() != BOOLGATE;
-			bool isGated = indices != NULL;
+
 			if(isGated&&nonBool){
 				pb::POPINDICES * ind_pb = np_pb.mutable_indices();
 				indices->convertToPb(*ind_pb);

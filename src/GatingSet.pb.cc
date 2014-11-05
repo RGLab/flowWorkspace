@@ -795,62 +795,63 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "\005 \001(\0132\r.pb.rangeGate\022\033\n\002pg\030\006 \001(\0132\017.pb.po"
     "lygonGate\022\033\n\002eg\030\007 \001(\0132\017.pb.ellipseGate\022\030"
     "\n\002bg\030\010 \001(\0132\014.pb.boolGate\"-\n\010POPSTATS\022\020\n\010"
-    "statType\030\001 \002(\t\022\017\n\007statVal\030\002 \002(\002\"\177\n\020calib"
-    "rationTable\022\t\n\001x\030\001 \003(\001\022\t\n\001y\030\002 \003(\001\022\t\n\001b\030\003"
-    " \003(\001\022\t\n\001c\030\004 \003(\001\022\t\n\001d\030\005 \003(\001\022\025\n\rspline_met"
-    "hod\030\006 \001(\r\022\017\n\007caltype\030\007 \001(\t\022\014\n\004flag\030\010 \001(\010"
-    "\"b\n\nbiexpTrans\022\024\n\014channelRange\030\001 \001(\r\022\013\n\003"
-    "pos\030\002 \001(\001\022\013\n\003neg\030\003 \001(\001\022\022\n\nwidthBasis\030\004 \001"
-    "(\001\022\020\n\010maxValue\030\005 \001(\001\"P\n\013fasinhTrans\022\016\n\006l"
-    "ength\030\001 \001(\001\022\020\n\010maxRange\030\002 \001(\001\022\t\n\001T\030\003 \001(\001"
-    "\022\t\n\001A\030\004 \001(\001\022\t\n\001M\030\005 \001(\001\"\"\n\nscaleTrans\022\024\n\014"
-    "scale_factor\030\001 \001(\002\"%\n\tflinTrans\022\013\n\003min\030\001"
-    " \001(\001\022\013\n\003max\030\002 \001(\001\"*\n\010logTrans\022\016\n\006offset\030"
-    "\001 \001(\001\022\016\n\006decade\030\002 \001(\001\"\272\002\n\016transformation"
-    "\022$\n\006calTbl\030\001 \001(\0132\024.pb.calibrationTable\022\022"
-    "\n\nisGateOnly\030\002 \001(\010\022\014\n\004name\030\004 \001(\t\022\017\n\007chan"
-    "nel\030\005 \001(\t\022\022\n\nisComputed\030\006 \001(\010\022\014\n\004type\030\014 "
-    "\001(\r\022\"\n\ntrans_type\030\003 \001(\0162\016.pb.TRANS_TYPE\022"
-    "\032\n\002bt\030\007 \001(\0132\016.pb.biexpTrans\022\030\n\002lt\030\010 \001(\0132"
-    "\014.pb.logTrans\022\032\n\003flt\030\t \001(\0132\r.pb.flinTran"
-    "s\022\032\n\002st\030\n \001(\0132\016.pb.scaleTrans\022\033\n\002ft\030\013 \001("
-    "\0132\017.pb.fasinhTrans\"1\n\ntrans_pair\022\014\n\004name"
-    "\030\001 \002(\t\022\025\n\rtrans_address\030\002 \002(\004\"O\n\013trans_l"
-    "ocal\022\032\n\002tp\030\001 \003(\0132\016.pb.trans_pair\022\021\n\tgrou"
-    "pName\030\002 \001(\t\022\021\n\tsampleIDs\030\003 \003(\r\"X\n\nPOPIND"
-    "ICES\022\017\n\007nEvents\030\001 \002(\007\022\035\n\007indtype\030\002 \002(\0162\014"
-    ".pb.ind_type\022\014\n\004iInd\030\003 \003(\007\022\014\n\004bInd\030\004 \001(\014"
-    "\"\255\001\n\016nodeProperties\022\020\n\010thisName\030\001 \002(\t\022\035\n"
-    "\007fjStats\030\002 \003(\0132\014.pb.POPSTATS\022\035\n\007fcStats\030"
-    "\003 \003(\0132\014.pb.POPSTATS\022\016\n\006hidden\030\004 \002(\010\022\037\n\007i"
-    "ndices\030\005 \001(\0132\016.pb.POPINDICES\022\032\n\010thisGate"
-    "\030\006 \001(\0132\010.pb.gate\"=\n\ttreeNodes\022 \n\004node\030\001 "
-    "\002(\0132\022.pb.nodeProperties\022\016\n\006parent\030\002 \001(\007\""
-    "-\n\016populationTree\022\033\n\004node\030\001 \003(\0132\r.pb.tre"
-    "eNodes\"u\n\004COMP\022\013\n\003cid\030\001 \001(\t\022\016\n\006prefix\030\002 "
-    "\001(\t\022\016\n\006suffix\030\003 \001(\t\022\014\n\004name\030\004 \001(\t\022\017\n\007com"
-    "ment\030\005 \001(\t\022\016\n\006marker\030\006 \003(\t\022\021\n\tspillOver\030"
-    "\007 \003(\001\"_\n\005PARAM\022\r\n\005param\030\001 \001(\t\022\013\n\003log\030\002 \001"
-    "(\010\022\r\n\005range\030\003 \001(\r\022\021\n\thighValue\030\004 \001(\r\022\030\n\020"
-    "calibrationIndex\030\005 \001(\r\"\233\001\n\017GatingHierarc"
-    "hy\022 \n\004tree\030\002 \002(\0132\022.pb.populationTree\022\026\n\004"
-    "comp\030\001 \001(\0132\010.pb.COMP\022\020\n\010isLoaded\030\003 \001(\010\022\034"
-    "\n\ttransFlag\030\004 \003(\0132\t.pb.PARAM\022\036\n\005trans\030\005 "
-    "\001(\0132\017.pb.trans_local\"=\n\006ghPair\022\037\n\002gh\030\001 \002"
-    "(\0132\023.pb.GatingHierarchy\022\022\n\nsampleName\030\002 "
-    "\002(\t\"E\n\tTRANS_TBL\022\025\n\rtrans_address\030\001 \002(\004\022"
-    "!\n\005trans\030\002 \001(\0132\022.pb.transformation\"\231\001\n\tG"
-    "atingSet\022 \n\ttrans_tbl\030\002 \003(\0132\r.pb.TRANS_T"
-    "BL\022\027\n\003ghs\030\001 \003(\0132\n.pb.ghPair\022\030\n\020globalBiE"
-    "xpTrans\030\003 \001(\004\022\026\n\016globalLinTrans\030\004 \001(\004\022\037\n"
-    "\006gTrans\030\005 \003(\0132\017.pb.trans_local*\203\001\n\tGATE_"
-    "TYPE\022\020\n\014POLYGON_GATE\020\001\022\016\n\nRANGE_GATE\020\002\022\r"
-    "\n\tBOOL_GATE\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT_"
-    "GATE\020\005\022\020\n\014LOGICAL_GATE\020\006\022\022\n\016ELLIPSOID_GA"
-    "TE\020\007*\'\n\010ind_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004R"
-    "OOT\020\002*]\n\nTRANS_TYPE\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB_"
-    "FASIGNH\020\001\022\n\n\006PB_LOG\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB_"
-    "SCALE\020\004\022\013\n\007PB_FLIN\020\005", 2940);
+    "statType\030\001 \002(\t\022\017\n\007statVal\030\002 \002(\002\"\223\001\n\020cali"
+    "brationTable\022\r\n\001x\030\001 \003(\001B\002\020\001\022\r\n\001y\030\002 \003(\001B\002"
+    "\020\001\022\r\n\001b\030\003 \003(\001B\002\020\001\022\r\n\001c\030\004 \003(\001B\002\020\001\022\r\n\001d\030\005 "
+    "\003(\001B\002\020\001\022\025\n\rspline_method\030\006 \001(\r\022\017\n\007caltyp"
+    "e\030\007 \001(\t\022\014\n\004flag\030\010 \001(\010\"b\n\nbiexpTrans\022\024\n\014c"
+    "hannelRange\030\001 \001(\r\022\013\n\003pos\030\002 \001(\001\022\013\n\003neg\030\003 "
+    "\001(\001\022\022\n\nwidthBasis\030\004 \001(\001\022\020\n\010maxValue\030\005 \001("
+    "\001\"P\n\013fasinhTrans\022\016\n\006length\030\001 \001(\001\022\020\n\010maxR"
+    "ange\030\002 \001(\001\022\t\n\001T\030\003 \001(\001\022\t\n\001A\030\004 \001(\001\022\t\n\001M\030\005 "
+    "\001(\001\"\"\n\nscaleTrans\022\024\n\014scale_factor\030\001 \001(\002\""
+    "%\n\tflinTrans\022\013\n\003min\030\001 \001(\001\022\013\n\003max\030\002 \001(\001\"*"
+    "\n\010logTrans\022\016\n\006offset\030\001 \001(\001\022\016\n\006decade\030\002 \001"
+    "(\001\"\272\002\n\016transformation\022$\n\006calTbl\030\001 \001(\0132\024."
+    "pb.calibrationTable\022\022\n\nisGateOnly\030\002 \001(\010\022"
+    "\014\n\004name\030\004 \001(\t\022\017\n\007channel\030\005 \001(\t\022\022\n\nisComp"
+    "uted\030\006 \001(\010\022\014\n\004type\030\014 \001(\r\022\"\n\ntrans_type\030\003"
+    " \001(\0162\016.pb.TRANS_TYPE\022\032\n\002bt\030\007 \001(\0132\016.pb.bi"
+    "expTrans\022\030\n\002lt\030\010 \001(\0132\014.pb.logTrans\022\032\n\003fl"
+    "t\030\t \001(\0132\r.pb.flinTrans\022\032\n\002st\030\n \001(\0132\016.pb."
+    "scaleTrans\022\033\n\002ft\030\013 \001(\0132\017.pb.fasinhTrans\""
+    "1\n\ntrans_pair\022\014\n\004name\030\001 \002(\t\022\025\n\rtrans_add"
+    "ress\030\002 \002(\004\"O\n\013trans_local\022\032\n\002tp\030\001 \003(\0132\016."
+    "pb.trans_pair\022\021\n\tgroupName\030\002 \001(\t\022\021\n\tsamp"
+    "leIDs\030\003 \003(\r\"X\n\nPOPINDICES\022\017\n\007nEvents\030\001 \002"
+    "(\007\022\035\n\007indtype\030\002 \002(\0162\014.pb.ind_type\022\014\n\004iIn"
+    "d\030\003 \003(\007\022\014\n\004bInd\030\004 \001(\014\"\255\001\n\016nodeProperties"
+    "\022\020\n\010thisName\030\001 \002(\t\022\035\n\007fjStats\030\002 \003(\0132\014.pb"
+    ".POPSTATS\022\035\n\007fcStats\030\003 \003(\0132\014.pb.POPSTATS"
+    "\022\016\n\006hidden\030\004 \002(\010\022\037\n\007indices\030\005 \001(\0132\016.pb.P"
+    "OPINDICES\022\032\n\010thisGate\030\006 \001(\0132\010.pb.gate\"=\n"
+    "\ttreeNodes\022 \n\004node\030\001 \002(\0132\022.pb.nodeProper"
+    "ties\022\016\n\006parent\030\002 \001(\007\"-\n\016populationTree\022\033"
+    "\n\004node\030\001 \003(\0132\r.pb.treeNodes\"u\n\004COMP\022\013\n\003c"
+    "id\030\001 \001(\t\022\016\n\006prefix\030\002 \001(\t\022\016\n\006suffix\030\003 \001(\t"
+    "\022\014\n\004name\030\004 \001(\t\022\017\n\007comment\030\005 \001(\t\022\016\n\006marke"
+    "r\030\006 \003(\t\022\021\n\tspillOver\030\007 \003(\001\"_\n\005PARAM\022\r\n\005p"
+    "aram\030\001 \001(\t\022\013\n\003log\030\002 \001(\010\022\r\n\005range\030\003 \001(\r\022\021"
+    "\n\thighValue\030\004 \001(\r\022\030\n\020calibrationIndex\030\005 "
+    "\001(\r\"\233\001\n\017GatingHierarchy\022 \n\004tree\030\002 \002(\0132\022."
+    "pb.populationTree\022\026\n\004comp\030\001 \001(\0132\010.pb.COM"
+    "P\022\020\n\010isLoaded\030\003 \001(\010\022\034\n\ttransFlag\030\004 \003(\0132\t"
+    ".pb.PARAM\022\036\n\005trans\030\005 \001(\0132\017.pb.trans_loca"
+    "l\"=\n\006ghPair\022\037\n\002gh\030\001 \002(\0132\023.pb.GatingHiera"
+    "rchy\022\022\n\nsampleName\030\002 \002(\t\"E\n\tTRANS_TBL\022\025\n"
+    "\rtrans_address\030\001 \002(\004\022!\n\005trans\030\002 \001(\0132\022.pb"
+    ".transformation\"\231\001\n\tGatingSet\022 \n\ttrans_t"
+    "bl\030\002 \003(\0132\r.pb.TRANS_TBL\022\027\n\003ghs\030\001 \003(\0132\n.p"
+    "b.ghPair\022\030\n\020globalBiExpTrans\030\003 \001(\004\022\026\n\016gl"
+    "obalLinTrans\030\004 \001(\004\022\037\n\006gTrans\030\005 \003(\0132\017.pb."
+    "trans_local*\203\001\n\tGATE_TYPE\022\020\n\014POLYGON_GAT"
+    "E\020\001\022\016\n\nRANGE_GATE\020\002\022\r\n\tBOOL_GATE\020\003\022\020\n\014EL"
+    "LIPSE_GATE\020\004\022\r\n\tRECT_GATE\020\005\022\020\n\014LOGICAL_G"
+    "ATE\020\006\022\022\n\016ELLIPSOID_GATE\020\007*\'\n\010ind_type\022\010\n"
+    "\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004ROOT\020\002*]\n\nTRANS_TYPE"
+    "\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB_FASIGNH\020\001\022\n\n\006PB_LOG"
+    "\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB_SCALE\020\004\022\013\n\007PB_FLIN\020"
+    "\005", 2961);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GatingSet.proto", &protobuf_RegisterTypes);
   paramRange::default_instance_ = new paramRange();
@@ -4144,97 +4145,91 @@ bool calibrationTable::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated double x = 1;
+      // repeated double x = 1 [packed = true];
       case 1: {
-        if (tag == 9) {
-         parse_x:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 9, input, this->mutable_x())));
-        } else if (tag == 10) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+        if (tag == 10) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, this->mutable_x())));
+        } else if (tag == 9) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 10, input, this->mutable_x())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(9)) goto parse_x;
-        if (input->ExpectTag(17)) goto parse_y;
+        if (input->ExpectTag(18)) goto parse_y;
         break;
       }
 
-      // repeated double y = 2;
+      // repeated double y = 2 [packed = true];
       case 2: {
-        if (tag == 17) {
+        if (tag == 18) {
          parse_y:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 17, input, this->mutable_y())));
-        } else if (tag == 18) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, this->mutable_y())));
+        } else if (tag == 17) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 18, input, this->mutable_y())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(17)) goto parse_y;
-        if (input->ExpectTag(25)) goto parse_b;
+        if (input->ExpectTag(26)) goto parse_b;
         break;
       }
 
-      // repeated double b = 3;
+      // repeated double b = 3 [packed = true];
       case 3: {
-        if (tag == 25) {
+        if (tag == 26) {
          parse_b:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 25, input, this->mutable_b())));
-        } else if (tag == 26) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, this->mutable_b())));
+        } else if (tag == 25) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 26, input, this->mutable_b())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(25)) goto parse_b;
-        if (input->ExpectTag(33)) goto parse_c;
+        if (input->ExpectTag(34)) goto parse_c;
         break;
       }
 
-      // repeated double c = 4;
+      // repeated double c = 4 [packed = true];
       case 4: {
-        if (tag == 33) {
+        if (tag == 34) {
          parse_c:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 33, input, this->mutable_c())));
-        } else if (tag == 34) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, this->mutable_c())));
+        } else if (tag == 33) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 34, input, this->mutable_c())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(33)) goto parse_c;
-        if (input->ExpectTag(41)) goto parse_d;
+        if (input->ExpectTag(42)) goto parse_d;
         break;
       }
 
-      // repeated double d = 5;
+      // repeated double d = 5 [packed = true];
       case 5: {
-        if (tag == 41) {
+        if (tag == 42) {
          parse_d:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 41, input, this->mutable_d())));
-        } else if (tag == 42) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, this->mutable_d())));
+        } else if (tag == 41) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 42, input, this->mutable_d())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(41)) goto parse_d;
         if (input->ExpectTag(48)) goto parse_spline_method;
         break;
       }
@@ -4311,34 +4306,54 @@ failure:
 void calibrationTable::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.calibrationTable)
-  // repeated double x = 1;
+  // repeated double x = 1 [packed = true];
+  if (this->x_size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteTag(1, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+    output->WriteVarint32(_x_cached_byte_size_);
+  }
   for (int i = 0; i < this->x_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(
-      1, this->x(i), output);
+    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+      this->x(i), output);
   }
 
-  // repeated double y = 2;
+  // repeated double y = 2 [packed = true];
+  if (this->y_size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteTag(2, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+    output->WriteVarint32(_y_cached_byte_size_);
+  }
   for (int i = 0; i < this->y_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(
-      2, this->y(i), output);
+    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+      this->y(i), output);
   }
 
-  // repeated double b = 3;
+  // repeated double b = 3 [packed = true];
+  if (this->b_size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteTag(3, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+    output->WriteVarint32(_b_cached_byte_size_);
+  }
   for (int i = 0; i < this->b_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(
-      3, this->b(i), output);
+    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+      this->b(i), output);
   }
 
-  // repeated double c = 4;
+  // repeated double c = 4 [packed = true];
+  if (this->c_size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteTag(4, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+    output->WriteVarint32(_c_cached_byte_size_);
+  }
   for (int i = 0; i < this->c_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(
-      4, this->c(i), output);
+    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+      this->c(i), output);
   }
 
-  // repeated double d = 5;
+  // repeated double d = 5 [packed = true];
+  if (this->d_size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteTag(5, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+    output->WriteVarint32(_d_cached_byte_size_);
+  }
   for (int i = 0; i < this->d_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(
-      5, this->d(i), output);
+    ::google::protobuf::internal::WireFormatLite::WriteDoubleNoTag(
+      this->d(i), output);
   }
 
   // optional uint32 spline_method = 6;
@@ -4371,34 +4386,74 @@ void calibrationTable::SerializeWithCachedSizes(
 ::google::protobuf::uint8* calibrationTable::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.calibrationTable)
-  // repeated double x = 1;
+  // repeated double x = 1 [packed = true];
+  if (this->x_size() > 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
+      1,
+      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      target);
+    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
+      _x_cached_byte_size_, target);
+  }
   for (int i = 0; i < this->x_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(1, this->x(i), target);
+      WriteDoubleNoTagToArray(this->x(i), target);
   }
 
-  // repeated double y = 2;
+  // repeated double y = 2 [packed = true];
+  if (this->y_size() > 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
+      2,
+      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      target);
+    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
+      _y_cached_byte_size_, target);
+  }
   for (int i = 0; i < this->y_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(2, this->y(i), target);
+      WriteDoubleNoTagToArray(this->y(i), target);
   }
 
-  // repeated double b = 3;
+  // repeated double b = 3 [packed = true];
+  if (this->b_size() > 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
+      3,
+      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      target);
+    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
+      _b_cached_byte_size_, target);
+  }
   for (int i = 0; i < this->b_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(3, this->b(i), target);
+      WriteDoubleNoTagToArray(this->b(i), target);
   }
 
-  // repeated double c = 4;
+  // repeated double c = 4 [packed = true];
+  if (this->c_size() > 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
+      4,
+      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      target);
+    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
+      _c_cached_byte_size_, target);
+  }
   for (int i = 0; i < this->c_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(4, this->c(i), target);
+      WriteDoubleNoTagToArray(this->c(i), target);
   }
 
-  // repeated double d = 5;
+  // repeated double d = 5 [packed = true];
+  if (this->d_size() > 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
+      5,
+      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      target);
+    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
+      _d_cached_byte_size_, target);
+  }
   for (int i = 0; i < this->d_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(5, this->d(i), target);
+      WriteDoubleNoTagToArray(this->d(i), target);
   }
 
   // optional uint32 spline_method = 6;
@@ -4454,39 +4509,74 @@ int calibrationTable::ByteSize() const {
     }
 
   }
-  // repeated double x = 1;
+  // repeated double x = 1 [packed = true];
   {
     int data_size = 0;
     data_size = 8 * this->x_size();
-    total_size += 1 * this->x_size() + data_size;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+    }
+    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+    _x_cached_byte_size_ = data_size;
+    GOOGLE_SAFE_CONCURRENT_WRITES_END();
+    total_size += data_size;
   }
 
-  // repeated double y = 2;
+  // repeated double y = 2 [packed = true];
   {
     int data_size = 0;
     data_size = 8 * this->y_size();
-    total_size += 1 * this->y_size() + data_size;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+    }
+    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+    _y_cached_byte_size_ = data_size;
+    GOOGLE_SAFE_CONCURRENT_WRITES_END();
+    total_size += data_size;
   }
 
-  // repeated double b = 3;
+  // repeated double b = 3 [packed = true];
   {
     int data_size = 0;
     data_size = 8 * this->b_size();
-    total_size += 1 * this->b_size() + data_size;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+    }
+    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+    _b_cached_byte_size_ = data_size;
+    GOOGLE_SAFE_CONCURRENT_WRITES_END();
+    total_size += data_size;
   }
 
-  // repeated double c = 4;
+  // repeated double c = 4 [packed = true];
   {
     int data_size = 0;
     data_size = 8 * this->c_size();
-    total_size += 1 * this->c_size() + data_size;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+    }
+    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+    _c_cached_byte_size_ = data_size;
+    GOOGLE_SAFE_CONCURRENT_WRITES_END();
+    total_size += data_size;
   }
 
-  // repeated double d = 5;
+  // repeated double d = 5 [packed = true];
   {
     int data_size = 0;
     data_size = 8 * this->d_size();
-    total_size += 1 * this->d_size() + data_size;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+    }
+    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+    _d_cached_byte_size_ = data_size;
+    GOOGLE_SAFE_CONCURRENT_WRITES_END();
+    total_size += data_size;
   }
 
   if (!unknown_fields().empty()) {

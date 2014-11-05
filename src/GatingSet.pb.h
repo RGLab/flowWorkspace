@@ -22,7 +22,7 @@
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
-//#include <google/protobuf/extension_set.h> //RS.h has conflicting Free() macro with this header
+#include <google/protobuf/extension_set.h>
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
@@ -1196,7 +1196,7 @@ class calibrationTable : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // repeated double x = 1;
+  // repeated double x = 1 [packed = true];
   inline int x_size() const;
   inline void clear_x();
   static const int kXFieldNumber = 1;
@@ -1208,7 +1208,7 @@ class calibrationTable : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< double >*
       mutable_x();
 
-  // repeated double y = 2;
+  // repeated double y = 2 [packed = true];
   inline int y_size() const;
   inline void clear_y();
   static const int kYFieldNumber = 2;
@@ -1220,7 +1220,7 @@ class calibrationTable : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< double >*
       mutable_y();
 
-  // repeated double b = 3;
+  // repeated double b = 3 [packed = true];
   inline int b_size() const;
   inline void clear_b();
   static const int kBFieldNumber = 3;
@@ -1232,7 +1232,7 @@ class calibrationTable : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< double >*
       mutable_b();
 
-  // repeated double c = 4;
+  // repeated double c = 4 [packed = true];
   inline int c_size() const;
   inline void clear_c();
   static const int kCFieldNumber = 4;
@@ -1244,7 +1244,7 @@ class calibrationTable : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< double >*
       mutable_c();
 
-  // repeated double d = 5;
+  // repeated double d = 5 [packed = true];
   inline int d_size() const;
   inline void clear_d();
   static const int kDFieldNumber = 5;
@@ -1296,10 +1296,15 @@ class calibrationTable : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< double > x_;
+  mutable int _x_cached_byte_size_;
   ::google::protobuf::RepeatedField< double > y_;
+  mutable int _y_cached_byte_size_;
   ::google::protobuf::RepeatedField< double > b_;
+  mutable int _b_cached_byte_size_;
   ::google::protobuf::RepeatedField< double > c_;
+  mutable int _c_cached_byte_size_;
   ::google::protobuf::RepeatedField< double > d_;
+  mutable int _d_cached_byte_size_;
   ::std::string* caltype_;
   ::google::protobuf::uint32 spline_method_;
   bool flag_;
@@ -4398,7 +4403,7 @@ inline void POPSTATS::set_statval(float value) {
 
 // calibrationTable
 
-// repeated double x = 1;
+// repeated double x = 1 [packed = true];
 inline int calibrationTable::x_size() const {
   return x_.size();
 }
@@ -4428,7 +4433,7 @@ calibrationTable::mutable_x() {
   return &x_;
 }
 
-// repeated double y = 2;
+// repeated double y = 2 [packed = true];
 inline int calibrationTable::y_size() const {
   return y_.size();
 }
@@ -4458,7 +4463,7 @@ calibrationTable::mutable_y() {
   return &y_;
 }
 
-// repeated double b = 3;
+// repeated double b = 3 [packed = true];
 inline int calibrationTable::b_size() const {
   return b_.size();
 }
@@ -4488,7 +4493,7 @@ calibrationTable::mutable_b() {
   return &b_;
 }
 
-// repeated double c = 4;
+// repeated double c = 4 [packed = true];
 inline int calibrationTable::c_size() const {
   return c_.size();
 }
@@ -4518,7 +4523,7 @@ calibrationTable::mutable_c() {
   return &c_;
 }
 
-// repeated double d = 5;
+// repeated double d = 5 [packed = true];
 inline int calibrationTable::d_size() const {
   return d_.size();
 }
