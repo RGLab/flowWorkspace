@@ -42,8 +42,8 @@ public:
 
 };
 
-vector<unsigned char> packToBytes(const vector <bool> & x);
-vector <bool> unpackFromBytes(unsigned nEvents, const vector<unsigned char>& x_bytes);
+void packToBytes(const vector <bool> & x, vector<unsigned char> &);
+void unpackFromBytes(vector <bool> &, const vector<unsigned char>& x_bytes);
 /*
  * bool vector
  */
@@ -56,7 +56,10 @@ private:
 							{
 
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
-								vector<unsigned char> bytes = packToBytes(x);
+								unsigned nBits=x.size();
+								unsigned nBytes=ceil(float(nBits)/8);
+								vector<unsigned char> bytes(nBytes,0);
+								packToBytes(x, bytes);
 								ar & BOOST_SERIALIZATION_NVP(bytes);
 								//
 							}
@@ -70,8 +73,8 @@ private:
 									unsigned nBytes=ceil(float(nBits)/8);
 									vector<unsigned char> x_bytes(nBytes,0);
 									ar & BOOST_SERIALIZATION_NVP(x_bytes);
-
-									x = unpackFromBytes(nEvents, x_bytes);
+									x.resize(nEvents,false);
+									unpackFromBytes(x, x_bytes);
 								}
 								else
 								{
