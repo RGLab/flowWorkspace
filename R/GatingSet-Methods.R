@@ -2088,8 +2088,9 @@ setMethod("getPopStats", "GatingSet",
         rn<-rownames(pop_stats)
         pop_stats<-as.matrix(pop_stats)
         rownames(pop_stats)<-rn
-        pop_stats
+        
     }
+    pop_stats
 })
 
 #' calculate the coefficient of variation
