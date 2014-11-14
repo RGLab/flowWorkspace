@@ -66,6 +66,6 @@ configure --host=x86_64-w64-mingw32 --prefix=/your_path/protobuf/x64 --enable-sh
 configure --host=i686-w64-mingw32 --prefix=/your_path/protobuf/i386 --enable-shared=no --with-protoc=protoc LDFLAGS='-static-libgcc' 
 
 Alternatively, pre-built pb binary can be downloaded from http://rglab.github.io/binaries/
-Once built, set up the environment variable LIB_PB similarly.
+Once built, set up the environment variable LIB_PROTOBUF similarly.
 
 You can download Rtools at http://www.murdoch-sutherland.com/Rtools/ which provides the resources for building R and R packages. You should add to the Path variable the paths to the various components of Rtools. Please read the "Windows Toolset" appendix at http://cran.r-project.org/doc/manuals/R-admin.html#The-Windows-toolset for more details.
