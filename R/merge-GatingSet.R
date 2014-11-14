@@ -75,7 +75,7 @@
                           })
 #                  browser()
                   if(!all(isTerminal)){
-                    stop("Can't drop the non-terminal nodes: ",nodesToRm[!isTerminal])
+                    stop("Can't drop the non-terminal nodes: ",paste(nodesToRm[!isTerminal], collapse = " "))
                   }    
                   nodesToRm
                 })
