@@ -2276,15 +2276,16 @@ getIndiceMat <- function(gh,y){
     
 
     if(matchCount > 0){
-      if(matchCount > 1)
-      {
+      #if(matchCount > 1)
+      #{
         #more than one matched, then do the exact match
+	# always do an exact match to avoid matching multiple entries in all_markers to a particular entry in pop_marker_list
             this_matched <- sapply(pop_marker_list, function(i)match(i, this_marker))
             this_matched <- !is.na(this_matched)
             matchCount <- length(which(this_matched))
         if(matchCount > 1)
           stop(this_marker, " is matched with more than one populations")
-      }
+      #}
 
       res <- TRUE
       names(res) <- names(pop_marker_list)[this_matched]
