@@ -19,7 +19,7 @@ AC_ARG_WITH(protobuf,
            [AS_HELP_STRING([--with-protobuf=DIR],
                            [root directory of protocol buffer installation (defaults to /usr/local)])],
            [PB_DIR="${with_protobuf}"],
-	   [PB_DIR=""])
+	   [PB_DIR="yes"])
 
 
 
@@ -86,28 +86,49 @@ else
         boost_bundled=no
 fi
 
-#protocol buffer library
-if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}"; then
-        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Using bundled protocol buffer.])
+AC_MSG_NOTICE([setting protobuf flags...])
 
-	BASEPBNAME="gpb"
-	PBTGZNAME=${BASEPBNAME}.tar.gz
-	cd src
-	if test -d ./${BASEPBNAME};
-		then 
-			echo 'found ' $BASEPBNAME ' header sources and tar archive;using what is there.'
-		else
-			echo "untarring boost include tree...";
-			gunzip -dc ${PBTGZNAME} | tar xf -;
-	fi;
-	cd ../
-	boost_bundled=yes
+if test  "${PB_DIR}" = "yes" ; then
+        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Trying to find protobuf using other methods.])
+        AC_PATH_PROG(PKG_CONFIG, pkg-config)
+
+        if test -z "${PKG_CONFIG}" ; then
+                AC_MSG_NOTICE([pkg-config was not detected. Verify pkg-config is installed correctly.])
+                AC_MSG_NOTICE([Trying with /usr/local anyway.])
+                PB_CFLAGS="-I/usr/include"
+		PB_LIBS="-L/usr/lib -lprotobuf"        
+	else
+                PB_CFLAGS="`${PKG_CONFIG} --cflags protobuf`"
+                PB_LIBS="`${PKG_CONFIG} --libs protobuf`"
+        fi
 else
-        AC_MSG_NOTICE([Using external boost '${PB_DIR}'])
+        AC_MSG_NOTICE([Using protobuf dir '${PB_DIR}'])
+
         PB_CFLAGS="-I${PB_DIR}/include"
         PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
-        boost_bundled=no
 fi
+#protocol buffer library
+#if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}"; then
+#        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Using bundled protocol buffer.])
+#
+#	BASEPBNAME="gpb"
+#	PBTGZNAME=${BASEPBNAME}.tar.gz
+#	cd src
+#	if test -d ./${BASEPBNAME};
+#		then 
+#			echo 'found ' $BASEPBNAME ' header sources and tar archive;using what is there.'
+#		else
+#			echo "untarring boost include tree...";
+#			gunzip -dc ${PBTGZNAME} | tar xf -;
+#	fi;
+#	cd ../
+#	boost_bundled=yes
+#else
+#        AC_MSG_NOTICE([Using external boost '${PB_DIR}'])
+#        PB_CFLAGS="-I${PB_DIR}/include"
+#        PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
+#        boost_bundled=no
+#fi
 
 
 
