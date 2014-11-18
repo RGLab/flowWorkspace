@@ -21,10 +21,24 @@
 using namespace std;
 
 
-typedef struct{
+struct BOOL_GATE_OP{
 	vector<string> path;
 	char op;
 	bool isNot;
+	void convertToPb(pb::BOOL_GATE_OP & BOOL_GATE_OP_pb){
+		BOOL_GATE_OP_pb.set_isnot(isNot);
+		BOOL_GATE_OP_pb.set_op(op);
+		for(unsigned i = 0; i < path.size(); i++){
+			 BOOL_GATE_OP_pb.add_path(path.at(i));
+		}
+	};
+	BOOL_GATE_OP(){};
+	BOOL_GATE_OP(const pb::BOOL_GATE_OP & BOOL_GATE_OP_pb){
+		op = BOOL_GATE_OP_pb.op();
+		isNot = BOOL_GATE_OP_pb.isnot();
+		for(int i = 0; i < BOOL_GATE_OP_pb.path_size(); i++)
+			path.push_back(BOOL_GATE_OP_pb.path(i));
+	};
 	template<class Archive>
 				    void serialize(Archive &ar, const unsigned int version)
 				    {
@@ -33,7 +47,8 @@ typedef struct{
 						ar & BOOST_SERIALIZATION_NVP(op);
 						ar & BOOST_SERIALIZATION_NVP(isNot);
 				    }
-	} BOOL_GATE_OP;
+
+} ;
 
 
 
@@ -128,6 +143,8 @@ public:
 	void setMin(double _v){min=_v;};
 	double getMax(){return max;};
 	void setMax(double _v){max=_v;};
+	void convertToPb(pb::paramRange & paramRange_pb){paramRange_pb.set_name(name);paramRange_pb.set_max(max);paramRange_pb.set_min(min);};
+	paramRange(pb::paramRange & paramRange_pb):name(paramRange_pb.name()),min(paramRange_pb.min()),max(paramRange_pb.max()){};
 };
 class paramPoly
 {
@@ -154,6 +171,24 @@ public:
 	vertices_valarray toValarray();
 	string xName(){return params.at(0);};
 	string yName(){return params.at(1);};
+	paramPoly(){};
+	void convertToPb(pb::paramPoly & paramPoly_pb){
+		BOOST_FOREACH(vector<string>::value_type & it, params){
+			paramPoly_pb.add_params(it);
+		}
+		BOOST_FOREACH(vector<coordinate>::value_type & it, vertices){
+			pb::coordinate * coor_pb = paramPoly_pb.add_vertices();
+			it.convertToPb(*coor_pb);
+		}
+	};
+	paramPoly(pb::paramPoly & paramPoly_pb){
+		for(int i = 0; i < paramPoly_pb.params_size(); i++){
+			params.push_back(paramPoly_pb.params(i));
+		}
+		for(int i = 0; i < paramPoly_pb.vertices_size(); i++){
+			vertices.push_back(coordinate(*(paramPoly_pb.mutable_vertices(i))));
+		}
+	};
 };
 
 
@@ -208,6 +243,9 @@ public:
 	 * the very reason of this gate abstraction was to make gatingheirarhcy being agnostic
 	 * about the gate type. The reason we are doing it is a compromise to the needs of R API getGate
 	 */
+	gate ();
+	gate(pb::gate & gate_pb);
+	virtual void convertToPb(pb::gate & gate_pb);
 	virtual ~gate(){};
 	virtual unsigned short getType()=0;
 	virtual vector<BOOL_GATE_OP> getBoolSpec(){throw(domain_error("undefined getBoolSpec function!"));};
@@ -218,10 +256,10 @@ public:
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
 	virtual void transforming(trans_local &){throw(domain_error("undefined transforming function!"));};
-//	virtual gate * create()=0;
-	virtual gate * clone()=0;
 
+	virtual gate * clone()=0;
 	virtual bool isNegate(){return neg;};
+	virtual bool gained(){return isGained;};
 	virtual void setNegate(bool _neg){neg=_neg;};
 	virtual bool Transformed(){return isTransformed;};
 	virtual void setTransformed(bool _isTransformed){isTransformed=_isTransformed;};
@@ -253,7 +291,8 @@ public:
 	void setParam(paramRange _param){param=_param;};
 	vertices_valarray getVertices(){return param.toValarray();};
 	rangeGate * clone(){return new rangeGate(*this);};
-
+	void convertToPb(pb::gate & gate_pb);
+	rangeGate(pb::gate & gate_pb);
 };
 
 /*
@@ -285,6 +324,8 @@ public:
 	virtual paramPoly getParam(){return param;};
 	virtual vector<string> getParamNames(){return param.getNameArray();};
 	virtual polygonGate * clone(){return new polygonGate(*this);};
+	void convertToPb(pb::gate & gate_pb);
+	polygonGate(pb::gate & gate_pb);
 };
 /*
  * rectgate is a special polygon requires simpler gating routine
@@ -305,6 +346,9 @@ public:
 	vector<bool> gating(flowData &);
 	unsigned short getType(){return RECTGATE;}
 	rectGate * clone(){return new rectGate(*this);};
+	void convertToPb(pb::gate & gate_pb);
+	rectGate(pb::gate & gate_pb);
+	rectGate():polygonGate(){};
 };
 /*
  * ellipseGate no longer needs to
@@ -363,7 +407,8 @@ public:
 	void gain(map<string,float> &);
 	virtual void transforming(trans_local &);
 	ellipseGate * clone(){return new ellipseGate(*this);};
-
+	void convertToPb(pb::gate & gate_pb);
+	ellipseGate(pb::gate & gate_pb);
 };
 BOOST_CLASS_VERSION(ellipseGate,1)
 /*
@@ -381,10 +426,12 @@ private:
 				ar & boost::serialization::make_nvp("ellipseGate",boost::serialization::base_object<ellipseGate>(*this));
 			}
 public:
-	ellipsoidGate(){};
+	ellipsoidGate():ellipseGate(){};
 	ellipsoidGate(vector<coordinate> _antipodal);
 	void transforming(trans_local &);
 	ellipsoidGate * clone(){return new ellipsoidGate(*this);};
+	void convertToPb(pb::gate & gate_pb);
+	ellipsoidGate(pb::gate & gate_pb);
 };
 
 /*
@@ -414,6 +461,8 @@ public:
 	vector<BOOL_GATE_OP> getBoolSpec(){return boolOpSpec;};
 	unsigned short getType(){return BOOLGATE;}
 	boolGate * clone(){return new boolGate(*this);};
+	void convertToPb(pb::gate & gate_pb);
+	boolGate(pb::gate & gate_pb);
 };
 /**
  * This is a dummby bool gate which is simply a side-effect of adding a node with logical indices yet
@@ -434,5 +483,9 @@ private:
 				}
 	unsigned short getType(){return LOGICALGATE;}
 	logicalGate * clone(){return new logicalGate(*this);};
+	void convertToPb(pb::gate & gate_pb);
+public:
+	logicalGate(pb::gate & gate_pb);
+	logicalGate():boolGate(){};
 };
 #endif /* GATE_HPP_ */
