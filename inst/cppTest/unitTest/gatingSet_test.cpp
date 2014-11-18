@@ -227,8 +227,7 @@ void gh_removeGate(GatingHierarchy* gh){
 }
 void clone_test(testCase myTest){
 	string archive=myTest.archive;
-	GatingSet *gs=new GatingSet();
-	restore_gs(*gs,archive,ARCHIVE_TYPE_BINARY);
+	GatingSet *gs=new GatingSet(archive,ARCHIVE_TYPE_BINARY, false);
 	gs->clone_treeOnly(gs->getSamples());
 
 }
@@ -240,12 +239,18 @@ void parser_test(testCase & myTest){
 	unsigned format = myTest.archiveFormat;
 	bool isParseGate = myTest.isParseGate;
 	bool isSaveArchive = myTest.isSaveArchive;
+	bool archiveType = myTest.archiveType;
+	string archiveName = myTest.archive;
+	if(archiveType)
+		archiveName = archiveName.append(".pb");
+	else
+		archiveName = archiveName.append(".dat");
 	unsigned short wsType = myTest.wsType;
 		boost::scoped_ptr<GatingSet> gs;
 		if(isLoadArchive)
 		{
-			gs.reset(new GatingSet());
-			restore_gs(*gs,myTest.archive, format);
+			gs.reset(new GatingSet(archiveName, format, archiveType));
+
 		}
 		else
 			gs.reset(new GatingSet(myTest.filename,isParseGate,myTest.sampNloc,1,wsType));
@@ -284,7 +289,7 @@ void parser_test(testCase & myTest){
 
 		gh=gs->getGatingHierarchy(curSample);
 
-		gh_accessor_test(gh);
+//		gh_accessor_test(gh);
 
 		if(!isLoadArchive)
 			gs_gating(*gs,curSample,nc);
@@ -317,7 +322,10 @@ void parser_test(testCase & myTest){
 //		oa << BOOST_SERIALIZATION_NVP(boost::serialization::make_array(&thisInd[0],thisInd.size()));
 
 		if((!isLoadArchive)&&isSaveArchive){
-			save_gs(*gs,myTest.archive,myTest.archiveFormat);
+			if(archiveType == PB)
+				gs->serialize_pb(archiveName);
+			else
+				gs->serialize_bs(archiveName,myTest.archiveFormat);
 		}
 
 

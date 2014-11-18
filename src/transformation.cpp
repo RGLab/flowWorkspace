@@ -38,11 +38,166 @@ trans_map trans_local::cloneTransMap(){
 	return res;
 }
 
+void trans_local::convertToPb(pb::trans_local & lg_pb){
 
+	BOOST_FOREACH(trans_map::value_type & it, tp){
+		intptr_t address = (intptr_t)it.second;
+		pb::trans_pair * tp = lg_pb.add_tp();
+		tp->set_name(it.first);
+		tp->set_trans_address(address);
+	}
+}
+void trans_local::convertToPb(pb::trans_local & lg_pb, pb::GatingSet & gs_pb){
+	// save  address vs name pair and address(global) is to be referred in gh
+	convertToPb(lg_pb);
+
+	//save it to global mapping (address vs trans obj)
+	BOOST_FOREACH(trans_map::value_type & it, tp){
+			intptr_t address = (intptr_t)it.second;
+			pb::TRANS_TBL * tb = gs_pb.add_trans_tbl();
+			tb->set_trans_address(address);
+			pb::transformation * trans_pb = tb->mutable_trans();
+			transformation * trans = it.second;
+			trans->convertToPb(*trans_pb);
+		}
+}
+trans_local::trans_local(const pb::trans_local & lg_pb, map<intptr_t, transformation *> & trans_tbl){
+
+	for(int i = 0; i < lg_pb.tp_size(); i ++){
+		pb::trans_pair tp_pb = lg_pb.tp(i);
+		intptr_t old_address = (intptr_t)tp_pb.trans_address();
+		//look up from the tbl for the new pointer
+		map<intptr_t, transformation *>::iterator it = trans_tbl.find(old_address);
+		if(it!=trans_tbl.end()){
+			tp[tp_pb.name()] = it->second;
+		}
+		else
+			throw(domain_error("the current archived transformation is not found in the global table!"));
+
+	}
+}
+void trans_global::convertToPb(pb::trans_local & tg_pb, pb::GatingSet & gs_pb){
+		trans_local::convertToPb(tg_pb, gs_pb);//pass gs_pb on to the base method
+		tg_pb.set_groupname(groupName);
+		BOOST_FOREACH(vector<int>::value_type & it,sampleIDs){
+			tg_pb.add_sampleids(it);
+		}
+
+}
+trans_global::trans_global(const pb::trans_local & tg_pb, map<intptr_t, transformation *> & trans_tbl):trans_local(tg_pb, trans_tbl){
+	groupName = tg_pb.groupname();
+	for(int i = 0; i < tg_pb.sampleids_size(); i++)
+		sampleIDs.push_back(tg_pb.sampleids(i));
+
+}
 /*
  * transformation
  */
+transformation::transformation(const pb::transformation & trans_pb){
+	isComputed = trans_pb.iscomputed();
+	isGateOnly = trans_pb.isgateonly();
+	type = trans_pb.type();
+	name = trans_pb.name();
+	channel = trans_pb.channel();
+	calTbl = calibrationTable(trans_pb.caltbl());
+}
+void transformation::convertToPb(pb::transformation & trans_pb){
 
+	trans_pb.set_isgateonly(isGateOnly);
+	trans_pb.set_type(type);
+	trans_pb.set_name(name);
+	trans_pb.set_channel(channel);
+	//skip saving calibration table to save disk space, which means it needs to be always recalculated when load it back
+	if(type == BIEXP)
+		trans_pb.set_iscomputed(false);
+	else
+	{
+		trans_pb.set_iscomputed(isComputed);
+		pb::calibrationTable * cal_pb = trans_pb.mutable_caltbl();
+		calTbl.convertToPb(*cal_pb);
+	}
+
+
+
+}
+void biexpTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_BIEXP);
+	pb::biexpTrans * bt_pb = trans_pb.mutable_bt();
+	bt_pb->set_channelrange(channelRange);
+	bt_pb->set_maxvalue(maxValue);
+	bt_pb->set_neg(neg);
+	bt_pb->set_pos(pos);
+	bt_pb->set_widthbasis(widthBasis);
+}
+biexpTrans::biexpTrans(const pb::transformation & trans_pb):transformation(trans_pb){
+	pb::biexpTrans bt_pb = trans_pb.bt();
+	channelRange = bt_pb.channelrange();
+	maxValue = bt_pb.maxvalue();
+	neg = bt_pb.neg();
+	pos = bt_pb.pos();
+	widthBasis = bt_pb.widthbasis();
+}
+void logTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_LOG);
+	pb::logTrans * lt_pb = trans_pb.mutable_lt();
+	lt_pb->set_decade(decade);
+	lt_pb->set_offset(offset);
+}
+logTrans::logTrans(const pb::transformation & trans_pb):transformation(trans_pb){
+	pb::logTrans lt_pb = trans_pb.lt();
+	decade = lt_pb.decade();
+	offset = lt_pb.offset();
+}
+void fasinhTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_FASIGNH);
+	pb::fasinhTrans * ft_pb = trans_pb.mutable_ft();
+	ft_pb->set_a(A);
+	ft_pb->set_length(length);
+	ft_pb->set_m(M);
+	ft_pb->set_maxrange(maxRange);
+	ft_pb->set_t(T);
+}
+fasinhTrans::fasinhTrans(const pb::transformation & trans_pb):transformation(trans_pb){
+	pb::fasinhTrans ft_pb = trans_pb.ft();
+	length = ft_pb.length();
+	maxRange = ft_pb.maxrange();
+	T = ft_pb.t();
+	A = ft_pb.a();
+	M = ft_pb.m();
+}
+void linTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_LIN);
+
+}
+linTrans::linTrans(const pb::transformation & trans_pb):transformation(trans_pb){}
+
+void scaleTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_SCALE);
+	pb::scaleTrans * st_pb = trans_pb.mutable_st();
+	st_pb->set_scale_factor(scale_factor);
+}
+scaleTrans::scaleTrans(const pb::transformation & trans_pb):linTrans(trans_pb){
+	pb::scaleTrans st_pb = trans_pb.st();
+	scale_factor = st_pb.scale_factor();
+}
+
+void flinTrans::convertToPb(pb::transformation & trans_pb){
+	transformation::convertToPb(trans_pb);
+	trans_pb.set_trans_type(pb::PB_FLIN);
+	pb::flinTrans * ft_pb = trans_pb.mutable_flt();
+	ft_pb->set_max(max);
+	ft_pb->set_min(min);
+}
+flinTrans::flinTrans(const pb::transformation & trans_pb):transformation(trans_pb){
+	pb::flinTrans ft_pb = trans_pb.flt();
+	max = ft_pb.max();
+	min = ft_pb.min();
+}
 
 /*
 	 * if it is pure transformation object,then assume calibration is directly read from ws

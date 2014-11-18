@@ -5,7 +5,10 @@
 #' i.e. tree is considered to be the same
 #' as long as getNodes(gh, path = "auto", showHidden = F) returns the same set
 #' 
-#' @param x a list of GatingSets
+#' @param x a list of GatingSets or one GatingSet
+#' @return 
+#' when x is a GatingSet, this function returns a list of sub-GatingSets
+#' When x is a list of GatingSets, it returns a list of list, each list itself is a list of GatingSets, which share the same gating tree. 
 .groupByTree <- function(x){
   message("Grouping by Gating tree...")
   node_seq <-unlist(lapply(x,function(this_gs){
@@ -15,7 +18,7 @@
             this_nodes <- sort(this_nodes)
             paste0(this_nodes, collapse = "|")
           }))
-  unname(split(x,node_seq))
+  unname(split(x,node_seq))#I am glad that split.default also works for GatingSet object out-of-box
 }
 
 #' split GatingSets into groups based on their flow channels
@@ -75,7 +78,7 @@
                           })
 #                  browser()
                   if(!all(isTerminal)){
-                    stop("Can't drop the non-terminal nodes: ",nodesToRm[!isTerminal])
+                    stop("Can't drop the non-terminal nodes: ",paste(nodesToRm[!isTerminal], collapse = " "))
                   }    
                   nodesToRm
                 })
