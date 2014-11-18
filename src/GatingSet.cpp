@@ -140,7 +140,7 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 
 		for(int i = 0; i < pbGS.trans_tbl_size(); i++){
 			pb::TRANS_TBL trans_tbl_pb = pbGS.trans_tbl(i);
-			pb::transformation trans_pb = trans_tbl_pb.trans();
+			pb::transformation * trans_pb = trans_tbl_pb.mutable_trans();
 			intptr_t old_address = (intptr_t)trans_tbl_pb.trans_address();
 
 			/*
@@ -159,25 +159,25 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 				break;
 			default:
 				{
-					switch(trans_pb.trans_type())
+					switch(trans_pb->trans_type())
 					{
 					case pb::PB_BIEXP:
-						trans_tbl[old_address] = new biexpTrans(trans_pb);
+						trans_tbl[old_address] = new biexpTrans(*trans_pb);
 						break;
 					case pb::PB_FASIGNH:
-						trans_tbl[old_address] = new fasinhTrans(trans_pb);
+						trans_tbl[old_address] = new fasinhTrans(*trans_pb);
 						break;
 					case pb::PB_FLIN:
-						trans_tbl[old_address] = new flinTrans(trans_pb);
+						trans_tbl[old_address] = new flinTrans(*trans_pb);
 						break;
 					case pb::PB_LIN:
-						trans_tbl[old_address] = new linTrans(trans_pb);
+						trans_tbl[old_address] = new linTrans(*trans_pb);
 						break;
 					case pb::PB_LOG:
-						trans_tbl[old_address] = new logTrans(trans_pb);
+						trans_tbl[old_address] = new logTrans(*trans_pb);
 						break;
 					case pb::PB_SCALE:
-						trans_tbl[old_address] = new scaleTrans(trans_pb);
+						trans_tbl[old_address] = new scaleTrans(*trans_pb);
 						break;
 					default:
 						throw(domain_error("unknown type of transformation archive!"));
