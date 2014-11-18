@@ -95,8 +95,8 @@ if test  "${PB_DIR}" = "yes" ; then
         if test -z "${PKG_CONFIG}" ; then
                 AC_MSG_NOTICE([pkg-config was not detected. Verify pkg-config is installed correctly.])
                 AC_MSG_NOTICE([Trying with /usr/local anyway.])
-                PB_CFLAGS="-I/usr/include"
-		PB_LIBS="-L/usr/lib -lprotobuf"        
+                PB_CFLAGS="-I/usr/local/include"
+		PB_LIBS="-L/usr/local/lib -lprotobuf"        
 	else
                 PB_CFLAGS="`${PKG_CONFIG} --cflags protobuf`"
                 PB_LIBS="`${PKG_CONFIG} --libs protobuf`"
