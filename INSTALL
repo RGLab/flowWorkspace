@@ -1,7 +1,21 @@
+You need the following C/C++ libraries to build flowWorkspace from source (using Rtools for windows users).
+-- libxml2
+-- boost
+-- google protobuf 
+
+Linux users
+=============
+These libraries are installed in non-standard locations, please pass their 'prefix' to the configure script. e.g.
+R CMD INSTALL flowWorkspace/ --configure-args='--with-xml=/home/yourname/xml_dir --with-protobuf=/home/yourname/protobuf_dir --with-boost=/home/yourname/boost_dir'
+
+Also make sure these libraries can be found by R at run-time by adding them to LD_LIBRARY_PATH environment variable. e.g.
+ export LD_LIBRARY_PATH=/home/yourname/protobuf_dir:$LD_LIBRARY_PATH
+ 
+Add this to your `~/.profile` file can avoid doing so next time.
+ 
+
 Windows users
 =============
-
-You need libxml2 and boost c++ library to build flowWorkspace from source (using Rtools).
 
 To install libxml2:
 
@@ -55,7 +69,8 @@ Similarly, once boost is built, you also need to set up the environment variable
 to find the library files and header files.
 
 
-Instruction for cross-compiling protobuf2.6.0 for windows
+Instruction for cross-compiling protobuf 2.6.0 for windows
+
 1. install cross-compiling tool chain on linux
 2. download the source
 2. first install protobuf on local linux (so that 'protoc' command is available for cross compiling later on
