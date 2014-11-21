@@ -228,10 +228,13 @@ public:
 	void adjustGate(map<string,float> & gains);
 	void drawGraph(string out);
 	int getChildren(VertexID source,string childName);
+	unsigned nodeDistance(VertexID u, VertexID v);
 	VertexID getNodeID(vector<string> gatePath);
+	VertexID getRefNodeID(VertexID u,vector<string> refPath);
+	VertexID_vec queryByPath(vector<string> gatePath);
 	VertexID getNodeID(string gatePath);
 	VertexID getDescendant(VertexID u,string popName);
-	VertexID getRefNodeID(VertexID u,string popName);
+
 	VertexID_vec getVertices(unsigned short order=0);//return the node list in vertexID order or T order
 	vector<string> getPopPaths(unsigned short order,bool fullPath,bool showHidden);
 	VertexID getAncestor(VertexID u,unsigned short level);
