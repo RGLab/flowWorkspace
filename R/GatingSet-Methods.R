@@ -392,7 +392,7 @@ unarchive<-function(file,path=tempdir()){
                   )
 
 	message("c++ parsing done!")
-	samples<-.Call("R_getSamples",G@pointer)
+	samples <- .Call("R_getSamples",G@pointer)
 
 #	browser()
 	#loading and filtering data
@@ -433,13 +433,21 @@ unarchive<-function(file,path=tempdir()){
 	{
 		files<-samples
 	}
-	G<-.addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, ...)
+	G <- .addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, ...)
 
 
 	message("done!")
 
 
-	G
+    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
+    gslist <- suppressMessages(.groupByTree(G))
+    if(length(gslist) == 1)
+      return (gslist[[1]])
+    else
+    {
+      warning("Due to the different gating tree structures, a list of GatingSets is returned instead!")
+      return (gslist)
+    }
 }
 
 #' constructors for GatingSet
@@ -2088,8 +2096,9 @@ setMethod("getPopStats", "GatingSet",
         rn<-rownames(pop_stats)
         pop_stats<-as.matrix(pop_stats)
         rownames(pop_stats)<-rn
-        pop_stats
+        
     }
+    pop_stats
 })
 
 #' calculate the coefficient of variation
