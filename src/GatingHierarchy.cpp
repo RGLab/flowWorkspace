@@ -876,15 +876,54 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 	}
 
 }
+
 /**
- *  calculate the distance between two nodes
- *  It is used to determine which reference node to win when multiple matches occur.
- * @param u
- * @param v
+ *  find the most immediate common ancestor
+ *
+ * @param u input node ID
+ * @param v input node ID
+ * @param nDepths the depths of ancestor node. It is used to as the measurement to determine which reference node to win when multiple matches occur.
+ * 											   The deeper it is, the nearer the reference is to the boolean node.
+ * @return
  */
-unsigned GatingHierarchy::nodeDistance(VertexID u, VertexID v){
-	return 0;
+VertexID GatingHierarchy::getCommonAncestor(VertexID u, VertexID v, unsigned & nDepths){
+	if(u == v)
+		throw(domain_error("Can't proceed the process of finding common ancestor for identical nodes"));
+
+	VertexID_vec p_u ,p_v ;
+	VertexID res = 0;
+	/*
+	 * calculate the levels of going up in order to find their common ancestor
+	 */
+
+	/*
+	 * trace each node back to the root
+	 */
+
+	for(VertexID curNode = u; curNode != 0; curNode = getParent(curNode))
+		p_u.push_back(curNode);
+
+	for(VertexID curNode = v; curNode != 0; curNode = getParent(curNode))
+			p_v.push_back(curNode);
+
+	/*
+	 * walking the two path (toop-down) simultaneously and stop at the first diverging node
+	 */
+	VertexID_vec::reverse_iterator it_u, it_v;
+	for(it_u = p_u.rbegin(), it_v = p_v.rbegin(); it_u != p_u.rend(), it_v != p_v.rend(); it_u++, it_v++)
+	{
+		if(*it_u == *it_v)
+			res = * it_u;
+		else
+			break;
+	}
+
+	nDepths = distance(p_u.rbegin(), it_u);
+
+	return res;
+
 }
+
 /**
   * Searching for reference node for bool gating given the refnode name and current bool node id
   *
@@ -909,17 +948,25 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 		else{
 			/*
 			 * select the nearest one to u when multiple nodes matches
+			 * The deeper the common ancestor is, the closer the refNode is to the target bool node
 			 */
 
-			vector<unsigned> dist;
-			for(VertexID_vec::iterator it = nodeIDs.begin(); it!= nodeIDs.end(); it++)
-				dist.push_back(nodeDistance(u, *it));
+			vector<unsigned> similarity;
+			for(VertexID_vec::iterator it = nodeIDs.begin(); it!= nodeIDs.end(); it++){
+				unsigned nAncestorDepths;
+				getCommonAncestor(u, *it, nAncestorDepths);
+				similarity.push_back(nAncestorDepths);
+			}
 
-			vector<unsigned>::iterator minIt = min_element(dist.begin(), dist.end());
-			if(count(dist.begin(), dist.end(), *minIt) > 1)
+
+			vector<unsigned>::iterator maxIt = max_element(similarity.begin(), similarity.end());
+			if(count(similarity.begin(), similarity.end(), *maxIt) > 1)
 				throw(domain_error(errMsg + " can't be determined due to the multiple matches with the same distance to boolean node!" ));
-			else
-				return nodeIDs.at(distance(minIt, dist.begin()));
+			else{
+				short nPos = distance(similarity.begin(), maxIt);
+				return nodeIDs.at(nPos);
+			}
+
 		}
 
 	}

@@ -228,7 +228,9 @@ public:
 	void adjustGate(map<string,float> & gains);
 	void drawGraph(string out);
 	int getChildren(VertexID source,string childName);
-	unsigned nodeDistance(VertexID u, VertexID v);
+
+	VertexID getCommonAncestor(VertexID u, VertexID v,unsigned & nDepths);
+
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getRefNodeID(VertexID u,vector<string> refPath);
 	VertexID_vec queryByPath(vector<string> gatePath);
