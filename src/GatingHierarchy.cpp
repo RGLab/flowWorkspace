@@ -896,7 +896,13 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 			vector<unsigned> similarity;
 			for(VertexID_vec::iterator it = nodeIDs.begin(); it!= nodeIDs.end(); it++){
 				unsigned nAncestorDepths;
-				getCommonAncestor(u, *it, nAncestorDepths);
+				VertexID ancestor = getCommonAncestor(u, *it, nAncestorDepths);
+				/*
+				 * set to minimum when the reference node is the descendant of bool node itself
+				 * then this reference node should be excluded since it will cause infinite-loop of self-referral
+				 */
+				if(ancestor == u)
+					nAncestorDepths = 0;
 				similarity.push_back(nAncestorDepths);
 			}
 
