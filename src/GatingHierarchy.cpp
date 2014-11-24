@@ -566,16 +566,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 		 * assume the reference node has already added during the parsing stage
 		 */
 		vector<string> nodePath=it->path;
-		if(nodePath.size()==1)
-		{
-			//search ID by nearest ancestor
-			nodeID=getRefNodeID(u,nodePath.at(0));
-		}
-		else
-		{
-
-			nodeID=getNodeID(nodePath);//search ID by path
-		}
+		nodeID=getRefNodeID(u,nodePath);
 
 		nodeProperties & curPop=getNodeProperty(nodeID);
 		//prevent self-referencing
@@ -804,49 +795,178 @@ VertexID GatingHierarchy::getNodeID(string gatePath){
 
 }
 /**
- * retrieve the VertexID by the gating path.(bottom-up searching)
+ * retrieve the VertexID by the gating path.
  * this serves as a parser to convert generic gating path into internal node ID
  * and it doesn't allow ambiguity (throw the exception when multiple nodes match)
  * @param gatePath a string vector of full(or partial) gating path
  * @return node id
  */
 VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
+	VertexID_vec nodeIDs = queryByPath(gatePath);
+	unsigned nMatches = nodeIDs.size();
+	if(nMatches == 1)
+			return nodeIDs.at(0);
+	else{
+		string errMsg;
+		for(unsigned i = 0; i < gatePath.size()-1; i ++)
+			errMsg.append(gatePath.at(i) + "/");
+		errMsg.append(gatePath.at(gatePath.size()-1));
+		if(nMatches == 0)
+			throw(domain_error(errMsg + " not found!" ));
+		else
+			throw(domain_error(errMsg + " is ambiguous within the gating tree!"));
+	}
+
+}
+
+/**
+ *  find the most immediate common ancestor
+ *
+ * @param u input node ID
+ * @param v input node ID
+ * @param nDepths the depths of ancestor node. It is used to as the measurement to determine which reference node to win when multiple matches occur.
+ * 											   The deeper it is, the nearer the reference is to the boolean node.
+ * @return
+ */
+VertexID GatingHierarchy::getCommonAncestor(VertexID u, VertexID v, unsigned & nDepths){
+	if(u == v)
+		throw(domain_error("Can't proceed the process of finding common ancestor for identical nodes"));
+
+	VertexID_vec p_u ,p_v ;
+	VertexID res = 0;
+	/*
+	 * calculate the levels of going up in order to find their common ancestor
+	 */
+
+	/*
+	 * trace each node back to the root
+	 */
+
+	for(VertexID curNode = u; curNode != 0; curNode = getParent(curNode))
+		p_u.push_back(curNode);
+
+	for(VertexID curNode = v; curNode != 0; curNode = getParent(curNode))
+			p_v.push_back(curNode);
+
+	/*
+	 * walking the two path (toop-down) simultaneously and stop at the first diverging node
+	 */
+	VertexID_vec::reverse_iterator it_u, it_v;
+	for(it_u = p_u.rbegin(), it_v = p_v.rbegin(); it_u != p_u.rend(), it_v != p_v.rend(); it_u++, it_v++)
+	{
+		if(*it_u == *it_v)
+			res = * it_u;
+		else
+			break;
+	}
+
+	nDepths = distance(p_u.rbegin(), it_u);
+
+	return res;
+
+}
+
+/**
+  * Searching for reference node for bool gating given the refnode name and current bool node id
+  *
+  *
+  * @param u the current bool node
+ * @param refPath the reference node name
+ * @return reference node id
+ */
+VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
+
+	VertexID_vec nodeIDs = queryByPath(refPath);
+	unsigned nMatches = nodeIDs.size();
+	if(nMatches == 1)
+			return nodeIDs.at(0);
+	else{
+		string errMsg = "Reference node: ";
+		for(unsigned i = 0; i < refPath.size()-1; i ++)
+			errMsg.append(refPath.at(i) + "/");
+		errMsg.append(refPath.at(refPath.size()-1));
+		if(nMatches == 0)
+			throw(domain_error(errMsg + " not found!" ));
+		else{
+			/*
+			 * select the nearest one to u when multiple nodes matches
+			 * The deeper the common ancestor is, the closer the refNode is to the target bool node
+			 */
+
+			vector<unsigned> similarity;
+			for(VertexID_vec::iterator it = nodeIDs.begin(); it!= nodeIDs.end(); it++){
+				unsigned nAncestorDepths;
+				VertexID ancestor = getCommonAncestor(u, *it, nAncestorDepths);
+				/*
+				 * set to minimum when the reference node is the descendant of bool node itself
+				 * then this reference node should be excluded since it will cause infinite-loop of self-referral
+				 */
+				if(ancestor == u)
+					nAncestorDepths = 0;
+				similarity.push_back(nAncestorDepths);
+			}
 
 
+			vector<unsigned>::iterator maxIt = max_element(similarity.begin(), similarity.end());
+			if(count(similarity.begin(), similarity.end(), *maxIt) > 1)
+				throw(domain_error(errMsg + " can't be determined due to the multiple matches with the same distance to boolean node!" ));
+			else{
+				short nPos = distance(similarity.begin(), maxIt);
+				return nodeIDs.at(nPos);
+			}
+
+		}
+
+	}
+
+
+}
+
+/**
+ * retrieve the VertexIDs by the gating path.
+ * This routine allows multiple matches
+ * @param gatePath input
+ * @return node IDs that matches to the query path
+ */
+VertexID_vec GatingHierarchy::queryByPath(vector<string> gatePath){
+	VertexID_vec res;
 	/*
 	 * search for the leaf node
 	 */
-	string leaf=gatePath.at(gatePath.size()-1);
-	VertexID_vec nodeIDs=getDescendants(0,leaf);
+	string leafName=gatePath.at(gatePath.size()-1);
+	VertexID_vec leafIDs=getDescendants(0,leafName);
 
 
 	/*
-	 * try each route from matched leaf nodes to see if there is unique match
+	 * bottom-up searching each route from matched leaf nodes
 	 */
 	VertexID_vec::iterator it_leaf,it_matched;
-	it_matched = nodeIDs.end();
+	it_matched = leafIDs.end();
 
-	for(it_leaf = nodeIDs.begin(); it_leaf != nodeIDs.end(); it_leaf++)
+	for(it_leaf = leafIDs.begin(); it_leaf != leafIDs.end(); it_leaf++)
 	{
 		/*
 		 * bottom up matching to the given gating path
 		 *
 		 */
-		VertexID curNodeID = *it_leaf; // start from the parent of the leaf node
 
+		VertexID curLeafID = *it_leaf;
+
+		// start from the parent of the leaf node
+		VertexID curNodeID = curLeafID;
 		vector<string>::reverse_iterator it;
 		for(it = gatePath.rbegin()+1;it!=gatePath.rend();it++)
 		{
 			//get current parent from node path
-			string nodeName = *it;
+			string parentNameFromPath = *it;
 
 			/*
 			 * retrieve the actual parent node from the tree
 			 */
 			VertexID parentID = getParent(curNodeID);
-			string parent = getNodeProperty(parentID).getName();
+			string parentName = getNodeProperty(parentID).getName();
 			//compare it to the parent node from the path
-			if(parent.compare(nodeName) != 0)
+			if(parentName.compare(parentNameFromPath) != 0)
 			{
 				break; //not matched then exit current route
 			}else{
@@ -854,33 +974,15 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 				curNodeID = parentID;
 			}
 		}
+
 		//when it succeeds to the end of path
-		if(it == gatePath.rend()){
-			if(it_matched == nodeIDs.end())//record the matched index if it has not been matched before
-				it_matched = it_leaf;
-			else//throw the error if it is matched second time
-			{
-				string errMsg;
-				for(unsigned i = 0; i < gatePath.size()-1; i ++)
-					errMsg.append(gatePath.at(i) + "/");
-				errMsg.append(gatePath.at(gatePath.size()-1));
-				throw(domain_error(errMsg + " is ambiguous within the gating tree!"));
-			}
-
-		}
+		if(it == gatePath.rend())
+			res.push_back(curLeafID);
 
 	}
 
-	if(it_matched == nodeIDs.end()){
-		string errMsg;
-		for(unsigned i = 0; i < gatePath.size()-1; i ++)
-			errMsg.append(gatePath.at(i) + "/");
-		errMsg.append(gatePath.at(gatePath.size()-1));
-		throw(domain_error(errMsg + " not found!" ));
-	}
 
-	else
-		return *it_matched;
+	return res;
 
 }
 
@@ -910,72 +1012,6 @@ VertexID_vec GatingHierarchy::getDescendants(VertexID u,string name){
 	return res;
 }
 
-/**
-  * top-down Searching for reference node for bool gating when the refnode name and current bool node id are given
-  * instead of nodePath.
-  * It currently select the first(nearest) one when multiple nodes matches
-  * @param u the current bool node
- * @param popName the reference node name
- * @return reference node id
- */
-VertexID GatingHierarchy::getRefNodeID(VertexID u,string popName){
-
-	/*
-	 * go one level above
-	 */
-	if(u!=0)
-		u = getAncestor(u,1);	/*
-							 *  this is the hack for now. it may break when the reference node is under the ancestor of N>=3 level above
-							 *  other than root.
-							 *  it would be more robust to have a nearest ancestor searching,but it is unclear
-							 *  regarding to definition of the distance between nodes at the moment.
-							 *
-							 */
-
-	/*
-	 * top-down searching from that ancestor
-	 */
-	VertexID_vec res1 = getDescendants(u,popName);
-
-	/*
-	 * if first round of match fails, try the second time by
-	 * traversing the entire tree (top-down searching from the root)
-	 *
-	 */
-	if(res1.size()==0)
-	{
-		if(u > 0){
-			if(g_loglevel>=POPULATION_LEVEL)
-				COUT<<"searching from the root."<<endl;
-			VertexID_vec res2 = getDescendants(0, popName);
-			/*
-			 * still not found, then report the error
-			 */
-			if(res2.size() == 0)
-			{
-				string err="Node not found:";
-				err.append(popName);
-				throw(domain_error(err));
-			}else{
-				// pick the first match
-				return res2.at(0);
-			}
-		}else{
-			string err="Node not found:";
-			err.append(popName);
-			throw(domain_error(err));
-		}
-
-
-	}else{
-		// pick the first match
-		return res1.at(0);
-	}
-
-
-	return u;
-
-}
 
 
 /**

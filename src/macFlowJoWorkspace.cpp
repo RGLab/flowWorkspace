@@ -759,6 +759,7 @@ vector<BOOL_GATE_OP> macFlowJoWorkspace::parseBooleanSpec(string specs,vector<st
 		 * 2) /pop1/pop2
 		 * the first case indicate it is a single reference node name,which requires nearest ancestor search
 		 * the second is a full path or partial path of the nodes,requires a path matching
+		 * EDIT:turns out the second case is also partial path.
 		 */
 		if(gOpObj.path.at(0).empty())
 			gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
