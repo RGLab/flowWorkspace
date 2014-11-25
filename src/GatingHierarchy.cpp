@@ -504,7 +504,7 @@ void GatingHierarchy::transformGate(){
  * assuming data have already been compensated and transformed
  *
  */
-void GatingHierarchy::gating(VertexID u,bool recompute)
+void GatingHierarchy::gating(VertexID u,bool recompute, bool computeTerminalBool)
 {
 
 //	if(!isLoaded)
@@ -523,7 +523,7 @@ void GatingHierarchy::gating(VertexID u,bool recompute)
 		 *
 		 */
 		if(recompute||!node.isGated())
-			calgate(u);
+			calgate(u, computeTerminalBool);
 	}
 
 
@@ -534,11 +534,11 @@ void GatingHierarchy::gating(VertexID u,bool recompute)
 	{
 		//add boost node
 		VertexID curChildID = *it;
-		gating(curChildID,recompute);
+		gating(curChildID,recompute, computeTerminalBool);
 	}
 
 }
-void GatingHierarchy::calgate(VertexID u)
+void GatingHierarchy::calgate(VertexID u, bool computeTerminalBool)
 {
 	nodeProperties & node=getNodeProperty(u);
 
@@ -554,7 +554,7 @@ void GatingHierarchy::calgate(VertexID u)
 	{
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"go to the ungated parent node:"<<parentNode.getName()<<endl;
-		calgate(pid);
+		calgate(pid, computeTerminalBool);
 	}
 
 
@@ -574,8 +574,15 @@ void GatingHierarchy::calgate(VertexID u)
 	switch(g->getType())
 	{
 	case BOOLGATE:
-		curIndices=boolGating(u);
-		break;
+		{
+			if(computeTerminalBool||getChildren(u).size()>0)
+				curIndices=boolGating(u, computeTerminalBool);
+			else
+				return;
+
+			break;
+
+		}
 	case LOGICALGATE://skip any gating operation since the indice is already set once the gate is added
 		node.computeStats();
 		return;
@@ -596,7 +603,7 @@ void GatingHierarchy::calgate(VertexID u)
  * @return
  */
 
-vector<bool> GatingHierarchy::boolGating(VertexID u){
+vector<bool> GatingHierarchy::boolGating(VertexID u, bool computeTerminalBool){
 
 	nodeProperties & node=getNodeProperty(u);
 	gate * g=node.getGate();
@@ -638,7 +645,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"go to the ungated reference node:"<<curPop.getName()<<endl;
-			calgate(nodeID);
+			calgate(nodeID, computeTerminalBool);
 		}
 
 		vector<bool> curPopInd=curPop.getIndices();
@@ -683,7 +690,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u){
  * @param boolOpSpec
  * @return
  */
-vector<bool> GatingHierarchy::boolGating(vector<BOOL_GATE_OP> boolOpSpec){
+vector<bool> GatingHierarchy::boolGating(vector<BOOL_GATE_OP> boolOpSpec, bool computeTerminalBool){
 
 	vector<bool> ind;
 	/*
@@ -711,7 +718,7 @@ vector<bool> GatingHierarchy::boolGating(vector<BOOL_GATE_OP> boolOpSpec){
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"go to the ungated reference node:"<<curPop.getName()<<endl;
-			calgate(nodeID);
+			calgate(nodeID, computeTerminalBool);
 		}
 
 		vector<bool> curPopInd=curPop.getIndices();

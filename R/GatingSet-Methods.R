@@ -531,7 +531,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, ...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE,...){
 
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -749,7 +749,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             recompute <- FALSE
             nodeInd <- 0
             
-            .Call("R_gating",G@pointer, mat, sampleName, gains, nodeInd, recompute, extend_val, ignore.case)
+            .Call("R_gating",G@pointer, mat, sampleName, gains, nodeInd, recompute, extend_val, ignore.case, leaf.bool)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
             #since colnames(fs) is not udpated yet.
@@ -1618,7 +1618,7 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
 #'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
 #'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
 #'                  , yet may at the cost of unnecessary data IO
-.recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE){
+.recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE){
   
   if(y == "root")
     alwaysLoadData <- TRUE #skip the checking to save time when start from root
@@ -1677,7 +1677,7 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
               nodeInd <- as.integer(nodeID)-1
               recompute <- TRUE
 #              browser()
-              res <- try(.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case), silent = TRUE)
+              res <- try(.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case, leaf.bool), silent = TRUE)
               if(class(res) == "try-error"){
                 if(!isloadData&&grepl("not found in flowData", res))
                   stop("Found ungated upstream population. Set 'alwaysLoadData = TRUE' for 'recompute' method, and try again!")
