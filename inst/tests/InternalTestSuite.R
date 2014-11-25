@@ -242,4 +242,21 @@ test_that("v 9.7.5 - mac 3.0 (no compensation and using calibrationIndex)",{
       expect_equal(thisCounts, expectCounts)
     })
 
+test_that("v 9.7.5 - mac 3.0 (boolGate that refers to the non-sibling nodes)",{
+      thisPath <- file.path(path, "094")
+      wsFile <- file.path(thisPath, "1851-M-094.xml")
+      
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name = 2, subset = "434713.fcs", execute = FALSE)
+      expect_is(gs, "GatingSet")
+      
+      gs <- parseWorkspace(ws, name = 2, subset = "434713.fcs", isNcdf = TRUE)
+      gh <- gs[[1]]
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      
+      expect_equal(thisCounts, expectCounts)
+    })
+
+
 sink()
