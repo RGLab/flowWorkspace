@@ -217,10 +217,10 @@ public:
 	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
 	void transforming();
-	void gating(VertexID,bool recompute=false);
-	void calgate(VertexID);
-	vector<bool> boolGating(VertexID);
-	vector<bool> boolGating(vector<BOOL_GATE_OP> boolOpSpec);
+	void gating(VertexID,bool recompute=false, bool computeTerminalBool=true);
+	void calgate(VertexID, bool computeTerminalBool);
+	vector<bool> boolGating(VertexID, bool computeTerminalBool);
+	vector<bool> boolGating(vector<BOOL_GATE_OP> boolOpSpec, bool computeTerminalBool);
 	void extendGate(float);
 	void extendGate(float,float);
 
