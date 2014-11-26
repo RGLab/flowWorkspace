@@ -229,7 +229,7 @@ public:
 	void drawGraph(string out);
 	int getChildren(VertexID source,string childName);
 
-	VertexID getCommonAncestor(VertexID u, VertexID v,unsigned & nDepths);
+	VertexID getCommonAncestor(VertexID_vec ,unsigned & nDepths);
 
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getRefNodeID(VertexID u,vector<string> refPath);
