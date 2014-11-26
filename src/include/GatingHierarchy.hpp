@@ -233,7 +233,7 @@ public:
 
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getRefNodeID(VertexID u,vector<string> refPath);
-	VertexID_vec queryByPath(vector<string> gatePath);
+	VertexID_vec queryByPath(VertexID ancestorID,vector<string> gatePath);
 	VertexID getNodeID(string gatePath);
 	VertexID getDescendant(VertexID u,string popName);
 
