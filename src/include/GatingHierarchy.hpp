@@ -218,7 +218,7 @@ public:
 	void printLocalTrans();//for the debugging purpose
 	void transforming();
 	void gating(VertexID,bool recompute=false, bool computeTerminalBool=true);
-	void calgate(VertexID, bool computeTerminalBool);
+	void calgate(VertexID, bool computeTerminalBool=true);
 	vector<bool> boolGating(VertexID, bool computeTerminalBool);
 	vector<bool> boolGating(vector<BOOL_GATE_OP> boolOpSpec, bool computeTerminalBool);
 	void extendGate(float);
