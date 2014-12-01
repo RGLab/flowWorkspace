@@ -60,7 +60,6 @@ class populationTree;
 class COMP;
 class PARAM;
 class GatingHierarchy;
-class ghPair;
 class TRANS_TBL;
 class GatingSet;
 
@@ -3089,102 +3088,6 @@ class GatingHierarchy : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ghPair : public ::google::protobuf::Message {
- public:
-  ghPair();
-  virtual ~ghPair();
-
-  ghPair(const ghPair& from);
-
-  inline ghPair& operator=(const ghPair& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const ghPair& default_instance();
-
-  void Swap(ghPair* other);
-
-  // implements Message ----------------------------------------------
-
-  ghPair* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ghPair& from);
-  void MergeFrom(const ghPair& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  ::google::protobuf::Metadata GetMetadata() const;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // required .pb.GatingHierarchy gh = 1;
-  inline bool has_gh() const;
-  inline void clear_gh();
-  static const int kGhFieldNumber = 1;
-  inline const ::pb::GatingHierarchy& gh() const;
-  inline ::pb::GatingHierarchy* mutable_gh();
-  inline ::pb::GatingHierarchy* release_gh();
-  inline void set_allocated_gh(::pb::GatingHierarchy* gh);
-
-  // required string sampleName = 2;
-  inline bool has_samplename() const;
-  inline void clear_samplename();
-  static const int kSampleNameFieldNumber = 2;
-  inline const ::std::string& samplename() const;
-  inline void set_samplename(const ::std::string& value);
-  inline void set_samplename(const char* value);
-  inline void set_samplename(const char* value, size_t size);
-  inline ::std::string* mutable_samplename();
-  inline ::std::string* release_samplename();
-  inline void set_allocated_samplename(::std::string* samplename);
-
-  // @@protoc_insertion_point(class_scope:pb.ghPair)
- private:
-  inline void set_has_gh();
-  inline void clear_has_gh();
-  inline void set_has_samplename();
-  inline void clear_has_samplename();
-
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
-  ::google::protobuf::uint32 _has_bits_[1];
-  mutable int _cached_size_;
-  ::pb::GatingHierarchy* gh_;
-  ::std::string* samplename_;
-  friend void  protobuf_AddDesc_GatingSet_2eproto();
-  friend void protobuf_AssignDesc_GatingSet_2eproto();
-  friend void protobuf_ShutdownFile_GatingSet_2eproto();
-
-  void InitAsDefaultInstance();
-  static ghPair* default_instance_;
-};
-// -------------------------------------------------------------------
-
 class TRANS_TBL : public ::google::protobuf::Message {
  public:
   TRANS_TBL();
@@ -3341,17 +3244,21 @@ class GatingSet : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL >*
       mutable_trans_tbl();
 
-  // repeated .pb.ghPair ghs = 1;
-  inline int ghs_size() const;
-  inline void clear_ghs();
-  static const int kGhsFieldNumber = 1;
-  inline const ::pb::ghPair& ghs(int index) const;
-  inline ::pb::ghPair* mutable_ghs(int index);
-  inline ::pb::ghPair* add_ghs();
-  inline const ::google::protobuf::RepeatedPtrField< ::pb::ghPair >&
-      ghs() const;
-  inline ::google::protobuf::RepeatedPtrField< ::pb::ghPair >*
-      mutable_ghs();
+  // repeated string sampleName = 1;
+  inline int samplename_size() const;
+  inline void clear_samplename();
+  static const int kSampleNameFieldNumber = 1;
+  inline const ::std::string& samplename(int index) const;
+  inline ::std::string* mutable_samplename(int index);
+  inline void set_samplename(int index, const ::std::string& value);
+  inline void set_samplename(int index, const char* value);
+  inline void set_samplename(int index, const char* value, size_t size);
+  inline ::std::string* add_samplename();
+  inline void add_samplename(const ::std::string& value);
+  inline void add_samplename(const char* value);
+  inline void add_samplename(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& samplename() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_samplename();
 
   // optional uint64 globalBiExpTrans = 3;
   inline bool has_globalbiexptrans() const;
@@ -3391,7 +3298,7 @@ class GatingSet : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::pb::TRANS_TBL > trans_tbl_;
-  ::google::protobuf::RepeatedPtrField< ::pb::ghPair > ghs_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> samplename_;
   ::google::protobuf::uint64 globalbiexptrans_;
   ::google::protobuf::uint64 globallintrans_;
   ::google::protobuf::RepeatedPtrField< ::pb::trans_local > gtrans_;
@@ -7137,127 +7044,6 @@ inline void GatingHierarchy::set_allocated_trans(::pb::trans_local* trans) {
 
 // -------------------------------------------------------------------
 
-// ghPair
-
-// required .pb.GatingHierarchy gh = 1;
-inline bool ghPair::has_gh() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void ghPair::set_has_gh() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void ghPair::clear_has_gh() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void ghPair::clear_gh() {
-  if (gh_ != NULL) gh_->::pb::GatingHierarchy::Clear();
-  clear_has_gh();
-}
-inline const ::pb::GatingHierarchy& ghPair::gh() const {
-  // @@protoc_insertion_point(field_get:pb.ghPair.gh)
-  return gh_ != NULL ? *gh_ : *default_instance_->gh_;
-}
-inline ::pb::GatingHierarchy* ghPair::mutable_gh() {
-  set_has_gh();
-  if (gh_ == NULL) gh_ = new ::pb::GatingHierarchy;
-  // @@protoc_insertion_point(field_mutable:pb.ghPair.gh)
-  return gh_;
-}
-inline ::pb::GatingHierarchy* ghPair::release_gh() {
-  clear_has_gh();
-  ::pb::GatingHierarchy* temp = gh_;
-  gh_ = NULL;
-  return temp;
-}
-inline void ghPair::set_allocated_gh(::pb::GatingHierarchy* gh) {
-  delete gh_;
-  gh_ = gh;
-  if (gh) {
-    set_has_gh();
-  } else {
-    clear_has_gh();
-  }
-  // @@protoc_insertion_point(field_set_allocated:pb.ghPair.gh)
-}
-
-// required string sampleName = 2;
-inline bool ghPair::has_samplename() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void ghPair::set_has_samplename() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void ghPair::clear_has_samplename() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline void ghPair::clear_samplename() {
-  if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    samplename_->clear();
-  }
-  clear_has_samplename();
-}
-inline const ::std::string& ghPair::samplename() const {
-  // @@protoc_insertion_point(field_get:pb.ghPair.sampleName)
-  return *samplename_;
-}
-inline void ghPair::set_samplename(const ::std::string& value) {
-  set_has_samplename();
-  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    samplename_ = new ::std::string;
-  }
-  samplename_->assign(value);
-  // @@protoc_insertion_point(field_set:pb.ghPair.sampleName)
-}
-inline void ghPair::set_samplename(const char* value) {
-  set_has_samplename();
-  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    samplename_ = new ::std::string;
-  }
-  samplename_->assign(value);
-  // @@protoc_insertion_point(field_set_char:pb.ghPair.sampleName)
-}
-inline void ghPair::set_samplename(const char* value, size_t size) {
-  set_has_samplename();
-  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    samplename_ = new ::std::string;
-  }
-  samplename_->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:pb.ghPair.sampleName)
-}
-inline ::std::string* ghPair::mutable_samplename() {
-  set_has_samplename();
-  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    samplename_ = new ::std::string;
-  }
-  // @@protoc_insertion_point(field_mutable:pb.ghPair.sampleName)
-  return samplename_;
-}
-inline ::std::string* ghPair::release_samplename() {
-  clear_has_samplename();
-  if (samplename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    return NULL;
-  } else {
-    ::std::string* temp = samplename_;
-    samplename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    return temp;
-  }
-}
-inline void ghPair::set_allocated_samplename(::std::string* samplename) {
-  if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    delete samplename_;
-  }
-  if (samplename) {
-    set_has_samplename();
-    samplename_ = samplename;
-  } else {
-    clear_has_samplename();
-    samplename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  }
-  // @@protoc_insertion_point(field_set_allocated:pb.ghPair.sampleName)
-}
-
-// -------------------------------------------------------------------
-
 // TRANS_TBL
 
 // required uint64 trans_address = 1;
@@ -7359,34 +7145,58 @@ GatingSet::mutable_trans_tbl() {
   return &trans_tbl_;
 }
 
-// repeated .pb.ghPair ghs = 1;
-inline int GatingSet::ghs_size() const {
-  return ghs_.size();
+// repeated string sampleName = 1;
+inline int GatingSet::samplename_size() const {
+  return samplename_.size();
 }
-inline void GatingSet::clear_ghs() {
-  ghs_.Clear();
+inline void GatingSet::clear_samplename() {
+  samplename_.Clear();
 }
-inline const ::pb::ghPair& GatingSet::ghs(int index) const {
-  // @@protoc_insertion_point(field_get:pb.GatingSet.ghs)
-  return ghs_.Get(index);
+inline const ::std::string& GatingSet::samplename(int index) const {
+  // @@protoc_insertion_point(field_get:pb.GatingSet.sampleName)
+  return samplename_.Get(index);
 }
-inline ::pb::ghPair* GatingSet::mutable_ghs(int index) {
-  // @@protoc_insertion_point(field_mutable:pb.GatingSet.ghs)
-  return ghs_.Mutable(index);
+inline ::std::string* GatingSet::mutable_samplename(int index) {
+  // @@protoc_insertion_point(field_mutable:pb.GatingSet.sampleName)
+  return samplename_.Mutable(index);
 }
-inline ::pb::ghPair* GatingSet::add_ghs() {
-  // @@protoc_insertion_point(field_add:pb.GatingSet.ghs)
-  return ghs_.Add();
+inline void GatingSet::set_samplename(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:pb.GatingSet.sampleName)
+  samplename_.Mutable(index)->assign(value);
 }
-inline const ::google::protobuf::RepeatedPtrField< ::pb::ghPair >&
-GatingSet::ghs() const {
-  // @@protoc_insertion_point(field_list:pb.GatingSet.ghs)
-  return ghs_;
+inline void GatingSet::set_samplename(int index, const char* value) {
+  samplename_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.GatingSet.sampleName)
 }
-inline ::google::protobuf::RepeatedPtrField< ::pb::ghPair >*
-GatingSet::mutable_ghs() {
-  // @@protoc_insertion_point(field_mutable_list:pb.GatingSet.ghs)
-  return &ghs_;
+inline void GatingSet::set_samplename(int index, const char* value, size_t size) {
+  samplename_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.GatingSet.sampleName)
+}
+inline ::std::string* GatingSet::add_samplename() {
+  return samplename_.Add();
+}
+inline void GatingSet::add_samplename(const ::std::string& value) {
+  samplename_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:pb.GatingSet.sampleName)
+}
+inline void GatingSet::add_samplename(const char* value) {
+  samplename_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:pb.GatingSet.sampleName)
+}
+inline void GatingSet::add_samplename(const char* value, size_t size) {
+  samplename_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:pb.GatingSet.sampleName)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+GatingSet::samplename() const {
+  // @@protoc_insertion_point(field_list:pb.GatingSet.sampleName)
+  return samplename_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+GatingSet::mutable_samplename() {
+  // @@protoc_insertion_point(field_mutable_list:pb.GatingSet.sampleName)
+  return &samplename_;
 }
 
 // optional uint64 globalBiExpTrans = 3;

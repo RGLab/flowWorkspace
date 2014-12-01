@@ -128,35 +128,35 @@ END_RCPP
 /*
  * save/load GatingSet
  */
-RcppExport SEXP R_saveGatingSet(SEXP _gsPtr,SEXP _fileName, SEXP _typeID, SEXP _isPB) {
+RcppExport SEXP R_saveGatingSet(SEXP _gsPtr, SEXP _filePath, SEXP _fileName, SEXP _typeID, SEXP _isPB) {
 BEGIN_RCPP
 
 
 
 		GatingSet *	gs=getGsPtr(_gsPtr);
 
+		string filePath=as<string>(_filePath);
 		string fileName=as<string>(_fileName);
 		unsigned short format =as<unsigned short>(_typeID);
 		bool isPB = as<bool>(_isPB);
 		if(isPB)
-			gs->serialize_pb(fileName);
+			gs->serialize_pb(filePath,fileName);
 		else
-			gs->serialize_bs(fileName, format);
+			gs->serialize_bs(filePath,fileName, format);
 
 
 END_RCPP
 }
 
 
-RcppExport SEXP R_loadGatingSet(SEXP _fileName, SEXP _typeID, SEXP _isPB) {
+RcppExport SEXP R_loadGatingSet(SEXP _filePath, SEXP _fileName, SEXP _typeID, SEXP _isPB) {
 BEGIN_RCPP
 
-
-
+		string filePath=as<string>(_filePath);
 		string fileName=as<string>(_fileName);
 		unsigned short format =as<unsigned short>(_typeID);
 		bool isPB = as<bool>(_isPB);
-		GatingSet * gs=new GatingSet(fileName, format,isPB);
+		GatingSet * gs=new GatingSet(filePath, fileName, format,isPB);
 		return XPtr<GatingSet>(gs);
 
 

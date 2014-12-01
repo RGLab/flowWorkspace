@@ -14,7 +14,7 @@
 #include "winFlowJoWorkspace.hpp"
 #include <string>
 #include <map>
-
+#include <libgen.h>
 
 
 
@@ -104,7 +104,7 @@ public:
 	GatingSet(string,bool,unsigned short,int,unsigned short wsType);
 	GatingSet(GatingHierarchy *,vector<string>);
 	GatingSet(vector<string>);
-	GatingSet(string filename, unsigned short format, bool archiveType);
+	GatingSet(string path,string filename, unsigned short format, bool archiveType);
 	GatingHierarchy * getGatingHierarchy(string );
 	GatingHierarchy * getGatingHierarchy(unsigned int);
 	void gating();
@@ -113,11 +113,11 @@ public:
 	vector<string> getSamples(void);
 
 	GatingSet * clone_treeOnly(vector<string> samples);
-	void serialize_bs(string filename, unsigned short format);
-	void serialize_pb(string filename);
+	void serialize_bs(string path,string filename, unsigned short format);
+	void serialize_pb(string path,string filename);
 	void add(GatingSet & gs,vector<string> sampleNames);
 	void addTransMap(string gName,trans_map tm);
-	void convertToPb(pb::GatingSet & gs_pb);
+	void convertToPb(pb::GatingSet & gs_pb,string path);
 
 };
 

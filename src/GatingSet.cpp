@@ -16,7 +16,7 @@
 using namespace std;
 
 
-void GatingSet::convertToPb(pb::GatingSet & pb_gs){
+void GatingSet::convertToPb(pb::GatingSet & pb_gs, string path){
 	// Verify that the version of the library that we linked against is
 	  // compatible with the version of the headers we compiled against.
 	  GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -26,12 +26,21 @@ void GatingSet::convertToPb(pb::GatingSet & pb_gs){
 		string sn = it.first;
 		GatingHierarchy * gh =  it.second;
 		/*
-		 * add a new gh_pair
+		 * construct pb object for each sample
 		 */
-		pb::ghPair * gh_pair = pb_gs.add_ghs();
-		gh_pair->set_samplename(sn);
-		pb::GatingHierarchy * pb_gh = gh_pair->mutable_gh();
-		gh->convertToPb(*pb_gh);
+
+		pb_gs.add_samplename(sn);
+		pb::GatingHierarchy pb_gh;
+		gh->convertToPb(pb_gh);
+
+		//archive each sample individually to avoid big message
+
+		string gh_file(path);
+		gh_file.append(sn);
+		ofstream output(gh_file.c_str(), ios::out | ios::trunc | ios::binary);
+		if (!pb_gh.SerializeToOstream(&output))
+			throw(domain_error("Failed to write GatingHierarchy."));
+
 	  }
 
 	  //save the address of global biexp (as 1st entry)
@@ -58,7 +67,7 @@ void GatingSet::convertToPb(pb::GatingSet & pb_gs){
  * @param filename
  * @param format archive format, can be text,xml or binary
  */
-void GatingSet::serialize_bs(string filename, unsigned short format){
+void GatingSet::serialize_bs(string path,string filename, unsigned short format){
 
 
 	    	// make an archive
@@ -66,8 +75,9 @@ void GatingSet::serialize_bs(string filename, unsigned short format){
 			if(format == ARCHIVE_TYPE_BINARY)
 				mode = mode | std::ios::binary;
 
+			path.append(filename);
 
-			std::ofstream ofs(filename.c_str(), mode);
+			std::ofstream ofs(path.c_str(), mode);
 
 
 			switch(format)
@@ -101,13 +111,18 @@ void GatingSet::serialize_bs(string filename, unsigned short format){
 
 
 	}
-void GatingSet::serialize_pb(string filename){
+/**
+ * separate filename from dir to avoid to deal with path parsing in c++
+ * @param path the dir of filename
+ * @param filename
+ */
+void GatingSet::serialize_pb(string path, string filename){
 
 	       	pb::GatingSet gs_pb;
-			convertToPb(gs_pb);
+			convertToPb(gs_pb, path);
 
-
-			ofstream output(filename.c_str(), ios::out | ios::trunc | ios::binary);
+			path.append(filename);
+			ofstream output(path.c_str(), ios::out | ios::trunc | ios::binary);
 			if (!gs_pb.SerializeToOstream(&output))
 				throw(domain_error("Failed to write GatingSet."));
 			// Optional:  Delete all global objects allocated by libprotobuf.
@@ -120,14 +135,16 @@ void GatingSet::serialize_pb(string filename){
  * @param format
  * @param isPB
  */
-GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NULL)
+GatingSet::GatingSet(string path,string filename, unsigned short format, bool isPB):wsPtr(NULL)
 {
 
-
+	string gsFile = path;
+	gsFile.append(filename);
 	if(isPB){
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
 		//load archive from disk to pb object
-		ifstream input(filename.c_str(), ios::in | ios::binary);
+
+		ifstream input(gsFile.c_str(), ios::in | ios::binary);
 		pb::GatingSet pbGS;
 		if (!input) {
 			throw(invalid_argument("File not found.." ));
@@ -196,10 +213,20 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 		}
 
 		//restore gating hierarchy
-		for(int i = 0; i < pbGS.ghs_size(); i++){
-			pb::ghPair ghp = pbGS.ghs(i);
-			pb::GatingHierarchy gh_pb = ghp.gh();
-			ghs[ghp.samplename()] = new GatingHierarchy(gh_pb, trans_tbl);
+		for(int i = 0; i < pbGS.samplename_size(); i++){
+			string sn = pbGS.samplename(i);
+
+			string gh_file(path);
+			gh_file.append(sn);
+			ifstream input(gh_file.c_str(), ios::in | ios::binary);
+			pb::GatingHierarchy gh_pb;
+			if (!input) {
+				throw(invalid_argument("File not found.." ));
+			} else if (!gh_pb.ParseFromIstream(&input)) {
+				throw(domain_error("Failed to parse GatingHierarchy."));
+			}
+
+			ghs[sn] = new GatingHierarchy(gh_pb, trans_tbl);
 		}
 
 	}
@@ -209,7 +236,7 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 		std::ios::openmode mode = std::ios::in;
 		if(format == ARCHIVE_TYPE_BINARY)
 			mode = mode | std::ios::binary;
-		std::ifstream ifs(filename.c_str(), mode);
+		std::ifstream ifs(gsFile.c_str(), mode);
 
 		switch(format)
 		{

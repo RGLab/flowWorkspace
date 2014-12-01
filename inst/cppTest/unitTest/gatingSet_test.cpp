@@ -227,7 +227,7 @@ void gh_removeGate(GatingHierarchy* gh){
 }
 void clone_test(testCase myTest){
 	string archive=myTest.archive;
-	GatingSet *gs=new GatingSet(archive,ARCHIVE_TYPE_BINARY, false);
+	GatingSet *gs=new GatingSet(archive,"gs.dat",ARCHIVE_TYPE_BINARY, false);
 	gs->clone_treeOnly(gs->getSamples());
 
 }
@@ -240,16 +240,18 @@ void parser_test(testCase & myTest){
 	bool isParseGate = myTest.isParseGate;
 	bool isSaveArchive = myTest.isSaveArchive;
 	bool archiveType = myTest.archiveType;
-	string archiveName = myTest.archive;
+	string archivePath = myTest.archive;
+	string archiveName;
 	if(archiveType)
-		archiveName = archiveName.append(".pb");
+		archiveName = "gs.pb";
 	else
-		archiveName = archiveName.append(".dat");
+		archiveName = "gs.dat";
 	unsigned short wsType = myTest.wsType;
 		boost::scoped_ptr<GatingSet> gs;
 		if(isLoadArchive)
 		{
-			gs.reset(new GatingSet(archiveName, format, archiveType));
+
+			gs.reset(new GatingSet(archivePath,archiveName, format, archiveType));
 
 		}
 		else
@@ -323,9 +325,9 @@ void parser_test(testCase & myTest){
 
 		if((!isLoadArchive)&&isSaveArchive){
 			if(archiveType == PB)
-				gs->serialize_pb(archiveName);
+				gs->serialize_pb(archivePath,archiveName);
 			else
-				gs->serialize_bs(archiveName,myTest.archiveFormat);
+				gs->serialize_bs(archivePath,archiveName,myTest.archiveFormat);
 		}
 
 

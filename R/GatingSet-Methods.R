@@ -242,7 +242,7 @@ load_gs<-function(path){
 
     message("saving tree object...")
     #save external pointer object
-    .Call("R_saveGatingSet",G@pointer,dat.file, typeID, isPB)
+    .Call("R_saveGatingSet",G@pointer, paste0(path, "/"), basename(dat.file), typeID, isPB)
 
     message("saving R object...")
     saveRDS(G,rds.file)
@@ -253,7 +253,7 @@ load_gs<-function(path){
 #' unserialization functions to be called by wrapper APIs
 #' @importFrom tools file_ext
 .load_gs <- function(output,files){
-      dat.file<-file.path(output,files[grep(".pb$|.dat$|.txt$|.xml$",files)])
+      dat.file <- files[grep(".pb$|.dat$|.txt$|.xml$",files)]
       rds.file<-file.path(output,files[grep(".rds$",files)])
 
       nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
@@ -264,7 +264,7 @@ load_gs<-function(path){
         stop("multiple .dat or .pb files found in ",output)
       fileext <- file_ext(dat.file)
       isPB <- fileext == "pb"
-      #only meaning for for BS
+      #only meaningful for BS
       typeID <- switch(fileext
                       , "dat" = 0
                       , "txt" = 1
@@ -321,7 +321,7 @@ load_gs<-function(path){
       }
 
       message("loading tree object...")
-      gs@pointer<-.Call("R_loadGatingSet",dat.file, typeID, isPB)
+      gs@pointer<-.Call("R_loadGatingSet", paste0(output, "/"), dat.file, typeID, isPB)
 
 
       if(isNcdf(gs))

@@ -98,9 +98,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* GatingHierarchy_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   GatingHierarchy_reflection_ = NULL;
-const ::google::protobuf::Descriptor* ghPair_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  ghPair_reflection_ = NULL;
 const ::google::protobuf::Descriptor* TRANS_TBL_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TRANS_TBL_reflection_ = NULL;
@@ -581,23 +578,7 @@ void protobuf_AssignDesc_GatingSet_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GatingHierarchy));
-  ghPair_descriptor_ = file->message_type(26);
-  static const int ghPair_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, gh_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, samplename_),
-  };
-  ghPair_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      ghPair_descriptor_,
-      ghPair::default_instance_,
-      ghPair_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ghPair, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(ghPair));
-  TRANS_TBL_descriptor_ = file->message_type(27);
+  TRANS_TBL_descriptor_ = file->message_type(26);
   static const int TRANS_TBL_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TRANS_TBL, trans_address_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TRANS_TBL, trans_),
@@ -613,10 +594,10 @@ void protobuf_AssignDesc_GatingSet_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(TRANS_TBL));
-  GatingSet_descriptor_ = file->message_type(28);
+  GatingSet_descriptor_ = file->message_type(27);
   static const int GatingSet_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GatingSet, trans_tbl_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GatingSet, ghs_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GatingSet, samplename_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GatingSet, globalbiexptrans_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GatingSet, globallintrans_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GatingSet, gtrans_),
@@ -700,8 +681,6 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     GatingHierarchy_descriptor_, &GatingHierarchy::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    ghPair_descriptor_, &ghPair::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     TRANS_TBL_descriptor_, &TRANS_TBL::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     GatingSet_descriptor_, &GatingSet::default_instance());
@@ -762,8 +741,6 @@ void protobuf_ShutdownFile_GatingSet_2eproto() {
   delete PARAM_reflection_;
   delete GatingHierarchy::default_instance_;
   delete GatingHierarchy_reflection_;
-  delete ghPair::default_instance_;
-  delete ghPair_reflection_;
   delete TRANS_TBL::default_instance_;
   delete TRANS_TBL_reflection_;
   delete GatingSet::default_instance_;
@@ -837,21 +814,19 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "\002 \002(\0132\022.pb.populationTree\022\026\n\004comp\030\001 \001(\0132"
     "\010.pb.COMP\022\020\n\010isLoaded\030\003 \001(\010\022\034\n\ttransFlag"
     "\030\004 \003(\0132\t.pb.PARAM\022\036\n\005trans\030\005 \001(\0132\017.pb.tr"
-    "ans_local\"=\n\006ghPair\022\037\n\002gh\030\001 \002(\0132\023.pb.Gat"
-    "ingHierarchy\022\022\n\nsampleName\030\002 \002(\t\"E\n\tTRAN"
-    "S_TBL\022\025\n\rtrans_address\030\001 \002(\004\022!\n\005trans\030\002 "
-    "\001(\0132\022.pb.transformation\"\231\001\n\tGatingSet\022 \n"
-    "\ttrans_tbl\030\002 \003(\0132\r.pb.TRANS_TBL\022\027\n\003ghs\030\001"
-    " \003(\0132\n.pb.ghPair\022\030\n\020globalBiExpTrans\030\003 \001"
-    "(\004\022\026\n\016globalLinTrans\030\004 \001(\004\022\037\n\006gTrans\030\005 \003"
-    "(\0132\017.pb.trans_local*\203\001\n\tGATE_TYPE\022\020\n\014POL"
-    "YGON_GATE\020\001\022\016\n\nRANGE_GATE\020\002\022\r\n\tBOOL_GATE"
-    "\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT_GATE\020\005\022\020\n\014L"
-    "OGICAL_GATE\020\006\022\022\n\016ELLIPSOID_GATE\020\007*\'\n\010ind"
-    "_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004ROOT\020\002*]\n\nTR"
-    "ANS_TYPE\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB_FASIGNH\020\001\022\n"
-    "\n\006PB_LOG\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB_SCALE\020\004\022\013\n\007"
-    "PB_FLIN\020\005", 2969);
+    "ans_local\"E\n\tTRANS_TBL\022\025\n\rtrans_address\030"
+    "\001 \002(\004\022!\n\005trans\030\002 \001(\0132\022.pb.transformation"
+    "\"\224\001\n\tGatingSet\022 \n\ttrans_tbl\030\002 \003(\0132\r.pb.T"
+    "RANS_TBL\022\022\n\nsampleName\030\001 \003(\t\022\030\n\020globalBi"
+    "ExpTrans\030\003 \001(\004\022\026\n\016globalLinTrans\030\004 \001(\004\022\037"
+    "\n\006gTrans\030\005 \003(\0132\017.pb.trans_local*\203\001\n\tGATE"
+    "_TYPE\022\020\n\014POLYGON_GATE\020\001\022\016\n\nRANGE_GATE\020\002\022"
+    "\r\n\tBOOL_GATE\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT"
+    "_GATE\020\005\022\020\n\014LOGICAL_GATE\020\006\022\022\n\016ELLIPSOID_G"
+    "ATE\020\007*\'\n\010ind_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004"
+    "ROOT\020\002*]\n\nTRANS_TYPE\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB"
+    "_FASIGNH\020\001\022\n\n\006PB_LOG\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB"
+    "_SCALE\020\004\022\013\n\007PB_FLIN\020\005", 2901);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GatingSet.proto", &protobuf_RegisterTypes);
   paramRange::default_instance_ = new paramRange();
@@ -880,7 +855,6 @@ void protobuf_AddDesc_GatingSet_2eproto() {
   COMP::default_instance_ = new COMP();
   PARAM::default_instance_ = new PARAM();
   GatingHierarchy::default_instance_ = new GatingHierarchy();
-  ghPair::default_instance_ = new ghPair();
   TRANS_TBL::default_instance_ = new TRANS_TBL();
   GatingSet::default_instance_ = new GatingSet();
   paramRange::default_instance_->InitAsDefaultInstance();
@@ -909,7 +883,6 @@ void protobuf_AddDesc_GatingSet_2eproto() {
   COMP::default_instance_->InitAsDefaultInstance();
   PARAM::default_instance_->InitAsDefaultInstance();
   GatingHierarchy::default_instance_->InitAsDefaultInstance();
-  ghPair::default_instance_->InitAsDefaultInstance();
   TRANS_TBL::default_instance_->InitAsDefaultInstance();
   GatingSet::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_GatingSet_2eproto);
@@ -10292,299 +10265,6 @@ void GatingHierarchy::Swap(GatingHierarchy* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int ghPair::kGhFieldNumber;
-const int ghPair::kSampleNameFieldNumber;
-#endif  // !_MSC_VER
-
-ghPair::ghPair()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:pb.ghPair)
-}
-
-void ghPair::InitAsDefaultInstance() {
-  gh_ = const_cast< ::pb::GatingHierarchy*>(&::pb::GatingHierarchy::default_instance());
-}
-
-ghPair::ghPair(const ghPair& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:pb.ghPair)
-}
-
-void ghPair::SharedCtor() {
-  ::google::protobuf::internal::GetEmptyString();
-  _cached_size_ = 0;
-  gh_ = NULL;
-  samplename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-ghPair::~ghPair() {
-  // @@protoc_insertion_point(destructor:pb.ghPair)
-  SharedDtor();
-}
-
-void ghPair::SharedDtor() {
-  if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    delete samplename_;
-  }
-  if (this != default_instance_) {
-    delete gh_;
-  }
-}
-
-void ghPair::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* ghPair::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ghPair_descriptor_;
-}
-
-const ghPair& ghPair::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_GatingSet_2eproto();
-  return *default_instance_;
-}
-
-ghPair* ghPair::default_instance_ = NULL;
-
-ghPair* ghPair::New() const {
-  return new ghPair;
-}
-
-void ghPair::Clear() {
-  if (_has_bits_[0 / 32] & 3) {
-    if (has_gh()) {
-      if (gh_ != NULL) gh_->::pb::GatingHierarchy::Clear();
-    }
-    if (has_samplename()) {
-      if (samplename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-        samplename_->clear();
-      }
-    }
-  }
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool ghPair::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:pb.ghPair)
-  for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required .pb.GatingHierarchy gh = 1;
-      case 1: {
-        if (tag == 10) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_gh()));
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(18)) goto parse_sampleName;
-        break;
-      }
-
-      // required string sampleName = 2;
-      case 2: {
-        if (tag == 18) {
-         parse_sampleName:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_samplename()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-            this->samplename().data(), this->samplename().length(),
-            ::google::protobuf::internal::WireFormat::PARSE,
-            "samplename");
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectAtEnd()) goto success;
-        break;
-      }
-
-      default: {
-      handle_unusual:
-        if (tag == 0 ||
-            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          goto success;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-success:
-  // @@protoc_insertion_point(parse_success:pb.ghPair)
-  return true;
-failure:
-  // @@protoc_insertion_point(parse_failure:pb.ghPair)
-  return false;
-#undef DO_
-}
-
-void ghPair::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:pb.ghPair)
-  // required .pb.GatingHierarchy gh = 1;
-  if (has_gh()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->gh(), output);
-  }
-
-  // required string sampleName = 2;
-  if (has_samplename()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->samplename().data(), this->samplename().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "samplename");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->samplename(), output);
-  }
-
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-  // @@protoc_insertion_point(serialize_end:pb.ghPair)
-}
-
-::google::protobuf::uint8* ghPair::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:pb.ghPair)
-  // required .pb.GatingHierarchy gh = 1;
-  if (has_gh()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        1, this->gh(), target);
-  }
-
-  // required string sampleName = 2;
-  if (has_samplename()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->samplename().data(), this->samplename().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "samplename");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->samplename(), target);
-  }
-
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:pb.ghPair)
-  return target;
-}
-
-int ghPair::ByteSize() const {
-  int total_size = 0;
-
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required .pb.GatingHierarchy gh = 1;
-    if (has_gh()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->gh());
-    }
-
-    // required string sampleName = 2;
-    if (has_samplename()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->samplename());
-    }
-
-  }
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void ghPair::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const ghPair* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ghPair*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void ghPair::MergeFrom(const ghPair& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_gh()) {
-      mutable_gh()->::pb::GatingHierarchy::MergeFrom(from.gh());
-    }
-    if (from.has_samplename()) {
-      set_samplename(from.samplename());
-    }
-  }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void ghPair::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void ghPair::CopyFrom(const ghPair& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool ghPair::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
-
-  if (has_gh()) {
-    if (!this->gh().IsInitialized()) return false;
-  }
-  return true;
-}
-
-void ghPair::Swap(ghPair* other) {
-  if (other != this) {
-    std::swap(gh_, other->gh_);
-    std::swap(samplename_, other->samplename_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata ghPair::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = ghPair_descriptor_;
-  metadata.reflection = ghPair_reflection_;
-  return metadata;
-}
-
-
-// ===================================================================
-
-#ifndef _MSC_VER
 const int TRANS_TBL::kTransAddressFieldNumber;
 const int TRANS_TBL::kTransFieldNumber;
 #endif  // !_MSC_VER
@@ -10855,7 +10535,7 @@ void TRANS_TBL::Swap(TRANS_TBL* other) {
 
 #ifndef _MSC_VER
 const int GatingSet::kTransTblFieldNumber;
-const int GatingSet::kGhsFieldNumber;
+const int GatingSet::kSampleNameFieldNumber;
 const int GatingSet::kGlobalBiExpTransFieldNumber;
 const int GatingSet::kGlobalLinTransFieldNumber;
 const int GatingSet::kGTransFieldNumber;
@@ -10878,6 +10558,7 @@ GatingSet::GatingSet(const GatingSet& from)
 }
 
 void GatingSet::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   globalbiexptrans_ = GOOGLE_ULONGLONG(0);
   globallintrans_ = GOOGLE_ULONGLONG(0);
@@ -10932,7 +10613,7 @@ void GatingSet::Clear() {
 #undef ZR_
 
   trans_tbl_.Clear();
-  ghs_.Clear();
+  samplename_.Clear();
   gtrans_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -10948,16 +10629,21 @@ bool GatingSet::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .pb.ghPair ghs = 1;
+      // repeated string sampleName = 1;
       case 1: {
         if (tag == 10) {
-         parse_ghs:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_ghs()));
+         parse_sampleName:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->add_samplename()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->samplename(this->samplename_size() - 1).data(),
+            this->samplename(this->samplename_size() - 1).length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "samplename");
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(10)) goto parse_ghs;
+        if (input->ExpectTag(10)) goto parse_sampleName;
         if (input->ExpectTag(18)) goto parse_trans_tbl;
         break;
       }
@@ -11045,10 +10731,14 @@ failure:
 void GatingSet::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:pb.GatingSet)
-  // repeated .pb.ghPair ghs = 1;
-  for (int i = 0; i < this->ghs_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->ghs(i), output);
+  // repeated string sampleName = 1;
+  for (int i = 0; i < this->samplename_size(); i++) {
+  ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+    this->samplename(i).data(), this->samplename(i).length(),
+    ::google::protobuf::internal::WireFormat::SERIALIZE,
+    "samplename");
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->samplename(i), output);
   }
 
   // repeated .pb.TRANS_TBL trans_tbl = 2;
@@ -11083,11 +10773,14 @@ void GatingSet::SerializeWithCachedSizes(
 ::google::protobuf::uint8* GatingSet::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:pb.GatingSet)
-  // repeated .pb.ghPair ghs = 1;
-  for (int i = 0; i < this->ghs_size(); i++) {
+  // repeated string sampleName = 1;
+  for (int i = 0; i < this->samplename_size(); i++) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->samplename(i).data(), this->samplename(i).length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "samplename");
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        1, this->ghs(i), target);
+      WriteStringToArray(1, this->samplename(i), target);
   }
 
   // repeated .pb.TRANS_TBL trans_tbl = 2;
@@ -11149,12 +10842,11 @@ int GatingSet::ByteSize() const {
         this->trans_tbl(i));
   }
 
-  // repeated .pb.ghPair ghs = 1;
-  total_size += 1 * this->ghs_size();
-  for (int i = 0; i < this->ghs_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->ghs(i));
+  // repeated string sampleName = 1;
+  total_size += 1 * this->samplename_size();
+  for (int i = 0; i < this->samplename_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->samplename(i));
   }
 
   // repeated .pb.trans_local gTrans = 5;
@@ -11191,7 +10883,7 @@ void GatingSet::MergeFrom(const ::google::protobuf::Message& from) {
 void GatingSet::MergeFrom(const GatingSet& from) {
   GOOGLE_CHECK_NE(&from, this);
   trans_tbl_.MergeFrom(from.trans_tbl_);
-  ghs_.MergeFrom(from.ghs_);
+  samplename_.MergeFrom(from.samplename_);
   gtrans_.MergeFrom(from.gtrans_);
   if (from._has_bits_[2 / 32] & (0xffu << (2 % 32))) {
     if (from.has_globalbiexptrans()) {
@@ -11219,7 +10911,6 @@ void GatingSet::CopyFrom(const GatingSet& from) {
 bool GatingSet::IsInitialized() const {
 
   if (!::google::protobuf::internal::AllAreInitialized(this->trans_tbl())) return false;
-  if (!::google::protobuf::internal::AllAreInitialized(this->ghs())) return false;
   if (!::google::protobuf::internal::AllAreInitialized(this->gtrans())) return false;
   return true;
 }
@@ -11227,7 +10918,7 @@ bool GatingSet::IsInitialized() const {
 void GatingSet::Swap(GatingSet* other) {
   if (other != this) {
     trans_tbl_.Swap(&other->trans_tbl_);
-    ghs_.Swap(&other->ghs_);
+    samplename_.Swap(&other->samplename_);
     std::swap(globalbiexptrans_, other->globalbiexptrans_);
     std::swap(globallintrans_, other->globallintrans_);
     gtrans_.Swap(&other->gtrans_);
