@@ -126,13 +126,27 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 
 	if(isPB){
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
-		//load archive from disk to pb object
-		ifstream input(filename.c_str(), ios::in | ios::binary);
+
+
+		int fd = open(filename.c_str(), O_RDONLY);
 		pb::GatingSet pbGS;
-		if (!input) {
+		if (fd == -1) {
 			throw(invalid_argument("File not found.." ));
-		} else if (!pbGS.ParseFromIstream(&input)) {
-			throw(domain_error("Failed to parse GatingSet."));
+		} else{
+
+			 ZeroCopyInputStream* raw_input = new FileInputStream(fd);
+			 CodedInputStream* coded_input = new CodedInputStream(raw_input);
+			 coded_input->SetTotalBytesLimit(std::numeric_limits<int>::max(), 536870912);
+			 bool success = pbGS.ParseFromCodedStream(coded_input);
+
+			delete coded_input;
+			delete raw_input;
+			close(fd);
+
+			if (!success) {
+				throw(domain_error("Failed to parse GatingSet."));
+			}
+
 		}
 
 		//load global trans tbl
