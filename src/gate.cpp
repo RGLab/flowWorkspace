@@ -288,10 +288,17 @@ ellipseGate::ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist):
 	isGained = true;
 	neg = false;
 }
-ellipseGate::ellipseGate(vector<coordinate> _antipodal):antipodal_vertices(_antipodal),dist(1){
+
+ellipseGate::ellipseGate(vector<coordinate> _antipodal, vector<string> _params):antipodal_vertices(_antipodal),dist(1){
 	isTransformed = false;
 	isGained = false;
 	neg = false;
+
+	/*
+	 * init the dummy vertices for base class
+	 * (this deprecated inheritance exists for the sake of legacy archive)
+	 */
+	param.setName(_params);
 }
 
 void ellipseGate::extend(flowData & fdata,float extend_val){
@@ -712,7 +719,7 @@ void ellipseGate::transforming(trans_local & trans){
 		isTransformed=true;
 	}
 }
-ellipsoidGate::ellipsoidGate(vector<coordinate> _antipodal):ellipseGate(_antipodal)
+ellipsoidGate::ellipsoidGate(vector<coordinate> _antipodal, vector<string> _params):ellipseGate(_antipodal,_params)
 {}
 /*
  * ellipsoidGate does not follow the regular transforming process

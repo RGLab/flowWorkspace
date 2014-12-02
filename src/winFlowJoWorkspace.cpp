@@ -464,16 +464,16 @@ ellipsoidGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	wsPolyGateNode pGNode(node.getNodePtr());
 	polygonGate * pg=getGate(pGNode, "*[local-name()='edge']/*[local-name()='vertex']");
 	vector<coordinate> v=pg->getParam().getVertices();
-	paramPoly pPoly;
+
 
 	/*
 	 * copy four coordinates
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipsoidGate * g=new ellipsoidGate(v);
-	pPoly.setName(pg->getParam().getNameArray());
-	g->setParam(pPoly);
+
+	ellipsoidGate * g=new ellipsoidGate(v, pg->getParam().getNameArray());
+
 	delete pg;
 
 	return(g);
