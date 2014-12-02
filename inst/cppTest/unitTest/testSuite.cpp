@@ -236,8 +236,15 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+
+/**
+ * this workspace somehow breaks on load BS archive for ellipsoidGate
+ * But it works with PB archive
+ *  either it is to be further investigation or to be ignored if no hisotry BS archive associated with ellipsoidGate
+ */
 BOOST_AUTO_TEST_CASE(bioaster)
 {
+
 	myTest.filename="../wsTestSuite/bioaster_ellipsoidGate/Matrice 1.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["8"]="PANEL 1_Matrice 1.fcs";
