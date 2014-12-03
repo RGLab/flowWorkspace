@@ -93,7 +93,7 @@ public:
 
 	POPINDICES * clone();
 	void convertToPb(pb::POPINDICES & ind_pb);
-	BOOLINDICES(pb::POPINDICES & ind_pb);
+	BOOLINDICES(const pb::POPINDICES & ind_pb);
 
 };
 BOOST_CLASS_VERSION(BOOLINDICES,1)
@@ -116,7 +116,7 @@ private:
 public:
 	INTINDICES():POPINDICES(){};
 	INTINDICES(vector <bool> _ind);
-	INTINDICES(pb::POPINDICES & ind_pb);
+	INTINDICES(const pb::POPINDICES & ind_pb);
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();
@@ -140,7 +140,7 @@ private:
 public:
 	ROOTINDICES():POPINDICES(){};
 	ROOTINDICES(unsigned _nEvents):POPINDICES(_nEvents){};
-	ROOTINDICES(pb::POPINDICES & ind_pb);
+	ROOTINDICES(const pb::POPINDICES & ind_pb);
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();

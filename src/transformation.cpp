@@ -64,7 +64,7 @@ void trans_local::convertToPb(pb::trans_local & lg_pb, pb::GatingSet & gs_pb){
 trans_local::trans_local(const pb::trans_local & lg_pb, map<intptr_t, transformation *> & trans_tbl){
 
 	for(int i = 0; i < lg_pb.tp_size(); i ++){
-		pb::trans_pair tp_pb = lg_pb.tp(i);
+		const pb::trans_pair & tp_pb = lg_pb.tp(i);
 		intptr_t old_address = (intptr_t)tp_pb.trans_address();
 		//look up from the tbl for the new pointer
 		map<intptr_t, transformation *>::iterator it = trans_tbl.find(old_address);
@@ -131,7 +131,7 @@ void biexpTrans::convertToPb(pb::transformation & trans_pb){
 	bt_pb->set_widthbasis(widthBasis);
 }
 biexpTrans::biexpTrans(const pb::transformation & trans_pb):transformation(trans_pb){
-	pb::biexpTrans bt_pb = trans_pb.bt();
+	const pb::biexpTrans & bt_pb = trans_pb.bt();
 	channelRange = bt_pb.channelrange();
 	maxValue = bt_pb.maxvalue();
 	neg = bt_pb.neg();
@@ -146,7 +146,7 @@ void logTrans::convertToPb(pb::transformation & trans_pb){
 	lt_pb->set_offset(offset);
 }
 logTrans::logTrans(const pb::transformation & trans_pb):transformation(trans_pb){
-	pb::logTrans lt_pb = trans_pb.lt();
+	const pb::logTrans & lt_pb = trans_pb.lt();
 	decade = lt_pb.decade();
 	offset = lt_pb.offset();
 }
@@ -161,7 +161,7 @@ void fasinhTrans::convertToPb(pb::transformation & trans_pb){
 	ft_pb->set_t(T);
 }
 fasinhTrans::fasinhTrans(const pb::transformation & trans_pb):transformation(trans_pb){
-	pb::fasinhTrans ft_pb = trans_pb.ft();
+	const pb::fasinhTrans & ft_pb = trans_pb.ft();
 	length = ft_pb.length();
 	maxRange = ft_pb.maxrange();
 	T = ft_pb.t();
@@ -182,7 +182,7 @@ void scaleTrans::convertToPb(pb::transformation & trans_pb){
 	st_pb->set_scale_factor(scale_factor);
 }
 scaleTrans::scaleTrans(const pb::transformation & trans_pb):linTrans(trans_pb){
-	pb::scaleTrans st_pb = trans_pb.st();
+	const pb::scaleTrans & st_pb = trans_pb.st();
 	scale_factor = st_pb.scale_factor();
 }
 
@@ -194,7 +194,7 @@ void flinTrans::convertToPb(pb::transformation & trans_pb){
 	ft_pb->set_min(min);
 }
 flinTrans::flinTrans(const pb::transformation & trans_pb):transformation(trans_pb){
-	pb::flinTrans ft_pb = trans_pb.flt();
+	const pb::flinTrans & ft_pb = trans_pb.flt();
 	max = ft_pb.max();
 	min = ft_pb.min();
 }

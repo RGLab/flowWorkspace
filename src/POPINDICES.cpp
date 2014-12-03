@@ -110,7 +110,7 @@ void BOOLINDICES::convertToPb(pb::POPINDICES & ind_pb){
 	}
 	ind_pb.set_nevents(nEvents);
 }
-BOOLINDICES::BOOLINDICES(pb::POPINDICES & ind_pb){
+BOOLINDICES::BOOLINDICES(const pb::POPINDICES & ind_pb){
 	nEvents = ind_pb.nevents();
 	//fetch byte stream from pb
 	vector<unsigned char> bytes(ind_pb.bind().begin(),ind_pb.bind().end());
@@ -132,7 +132,7 @@ void INTINDICES::convertToPb(pb::POPINDICES & ind_pb){
 	ind_pb.set_nevents(nEvents);
 }
 
-INTINDICES::INTINDICES(pb::POPINDICES & ind_pb){
+INTINDICES::INTINDICES(const pb::POPINDICES & ind_pb){
 	nEvents = ind_pb.nevents();
 	unsigned nSize = ind_pb.iind_size();
 	x = vector<unsigned>(nEvents);
@@ -149,6 +149,6 @@ void ROOTINDICES::convertToPb(pb::POPINDICES & ind_pb){
 	ind_pb.set_indtype(pb::ROOT);
 	ind_pb.set_nevents(nEvents);
 }
-ROOTINDICES::ROOTINDICES(pb::POPINDICES & ind_pb){
+ROOTINDICES::ROOTINDICES(const pb::POPINDICES & ind_pb){
 	nEvents = ind_pb.nevents();
 }

@@ -144,7 +144,7 @@ public:
 	double getMax(){return max;};
 	void setMax(double _v){max=_v;};
 	void convertToPb(pb::paramRange & paramRange_pb){paramRange_pb.set_name(name);paramRange_pb.set_max(max);paramRange_pb.set_min(min);};
-	paramRange(pb::paramRange & paramRange_pb):name(paramRange_pb.name()),min(paramRange_pb.min()),max(paramRange_pb.max()){};
+	paramRange(const pb::paramRange & paramRange_pb):name(paramRange_pb.name()),min(paramRange_pb.min()),max(paramRange_pb.max()){};
 };
 class paramPoly
 {
@@ -181,12 +181,12 @@ public:
 			it.convertToPb(*coor_pb);
 		}
 	};
-	paramPoly(pb::paramPoly & paramPoly_pb){
+	paramPoly(const pb::paramPoly & paramPoly_pb){
 		for(int i = 0; i < paramPoly_pb.params_size(); i++){
 			params.push_back(paramPoly_pb.params(i));
 		}
 		for(int i = 0; i < paramPoly_pb.vertices_size(); i++){
-			vertices.push_back(coordinate(*(paramPoly_pb.mutable_vertices(i))));
+			vertices.push_back(coordinate(paramPoly_pb.vertices(i)));
 		}
 	};
 };
@@ -244,7 +244,7 @@ public:
 	 * about the gate type. The reason we are doing it is a compromise to the needs of R API getGate
 	 */
 	gate ();
-	gate(pb::gate & gate_pb);
+	gate(const pb::gate & gate_pb);
 	virtual void convertToPb(pb::gate & gate_pb);
 	virtual ~gate(){};
 	virtual unsigned short getType()=0;
@@ -292,7 +292,7 @@ public:
 	vertices_valarray getVertices(){return param.toValarray();};
 	rangeGate * clone(){return new rangeGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
-	rangeGate(pb::gate & gate_pb);
+	rangeGate(const pb::gate & gate_pb);
 };
 
 /*
@@ -325,7 +325,7 @@ public:
 	virtual vector<string> getParamNames(){return param.getNameArray();};
 	virtual polygonGate * clone(){return new polygonGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
-	polygonGate(pb::gate & gate_pb);
+	polygonGate(const pb::gate & gate_pb);
 };
 /*
  * rectgate is a special polygon requires simpler gating routine
@@ -347,7 +347,7 @@ public:
 	unsigned short getType(){return RECTGATE;}
 	rectGate * clone(){return new rectGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
-	rectGate(pb::gate & gate_pb);
+	rectGate(const pb::gate & gate_pb);
 	rectGate():polygonGate(){};
 };
 /*
@@ -408,7 +408,7 @@ public:
 	virtual void transforming(trans_local &);
 	ellipseGate * clone(){return new ellipseGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
-	ellipseGate(pb::gate & gate_pb);
+	ellipseGate(const pb::gate & gate_pb);
 };
 BOOST_CLASS_VERSION(ellipseGate,1)
 /*
@@ -431,7 +431,7 @@ public:
 	void transforming(trans_local &);
 	ellipsoidGate * clone(){return new ellipsoidGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
-	ellipsoidGate(pb::gate & gate_pb);
+	ellipsoidGate(const pb::gate & gate_pb);
 };
 
 /*
@@ -462,7 +462,7 @@ public:
 	unsigned short getType(){return BOOLGATE;}
 	boolGate * clone(){return new boolGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
-	boolGate(pb::gate & gate_pb);
+	boolGate(const pb::gate & gate_pb);
 };
 /**
  * This is a dummby bool gate which is simply a side-effect of adding a node with logical indices yet
@@ -485,7 +485,7 @@ private:
 	logicalGate * clone(){return new logicalGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
 public:
-	logicalGate(pb::gate & gate_pb);
+	logicalGate(const pb::gate & gate_pb);
 	logicalGate():boolGate(){};
 };
 #endif /* GATE_HPP_ */
