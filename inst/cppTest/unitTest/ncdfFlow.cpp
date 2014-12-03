@@ -39,10 +39,14 @@ vector<string> ncdfFlow::params_get(){
  */
 #define ERR(e) {throw(ios_base::failure(nc_strerror(e)));}
 
+<<<<<<< HEAD
 
 
 
 
+=======
+
+>>>>>>> e2a84e34743a698e7a1f40e95104ca1c6f28286d
 flowData hdfFlow::readflowData(string sampleName)
 {
 
@@ -156,6 +160,7 @@ flowData hdfFlow::readflowData(unsigned int sampleIndx)
 	return res;
 
 }
+<<<<<<< HEAD
 /* to simply the installation and avoid dealing with both c++ and c library of netCDF
  * the IO using ncdfFlow package exposed API directly
  */
@@ -186,3 +191,5 @@ flowData hdfFlow::readflowData(unsigned int sampleIndx)
 //	res.params_set(params);
 //
 //}
+=======
+>>>>>>> e2a84e34743a698e7a1f40e95104ca1c6f28286d
