@@ -12,19 +12,19 @@ nodeProperties::nodeProperties():thisGate(NULL),hidden(false){}
  * convert pb object to internal structure
  * @param np_pb
  */
-nodeProperties::nodeProperties(pb::nodeProperties & np_pb):thisGate(NULL),hidden(false){
+nodeProperties::nodeProperties(const pb::nodeProperties & np_pb):thisGate(NULL),hidden(false){
 	thisName = np_pb.thisname();
 	hidden = np_pb.hidden();
 	for(int i = 0; i < np_pb.fcstats_size(); i++){
-	   pb::POPSTATS	stat_pb = np_pb.fcstats(i);
+	   const pb::POPSTATS &	stat_pb = np_pb.fcstats(i);
 	   fcStats[stat_pb.stattype()] = stat_pb.statval();
 	}
 	for(int i = 0; i < np_pb.fjstats_size(); i++){
-	   pb::POPSTATS	stat_pb = np_pb.fjstats(i);
+	   const pb::POPSTATS & stat_pb = np_pb.fjstats(i);
 	   fjStats[stat_pb.stattype()] = stat_pb.statval();
 	}
 	if(np_pb.has_indices()){
-		pb::POPINDICES ind_pb = np_pb.indices();
+		const pb::POPINDICES & ind_pb = np_pb.indices();
 		switch(ind_pb.indtype()){
 		case pb::BOOL:
 			indices.reset(new BOOLINDICES(ind_pb));
@@ -44,7 +44,7 @@ nodeProperties::nodeProperties(pb::nodeProperties & np_pb):thisGate(NULL),hidden
 	 * parse gate
 	 */
 	if(np_pb.has_thisgate()){
-		pb::gate gate_pb = np_pb.thisgate();
+		const pb::gate & gate_pb = np_pb.thisgate();
 		switch(gate_pb.type())
 		{
 		case pb::RANGE_GATE:

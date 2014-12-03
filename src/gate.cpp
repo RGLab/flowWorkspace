@@ -16,7 +16,7 @@
 * init the bool values in constructors
 */
 gate::gate():neg(false),isTransformed(false),isGained(false){};
-gate::gate(pb::gate & gate_pb):neg(gate_pb.neg()),isTransformed(gate_pb.istransformed()),isGained(gate_pb.isgained()){}
+gate::gate(const pb::gate & gate_pb):neg(gate_pb.neg()),isTransformed(gate_pb.istransformed()),isGained(gate_pb.isgained()){}
 void gate::convertToPb(pb::gate & gate_pb){
 	//cp basic members
 		gate_pb.set_istransformed(isTransformed);
@@ -24,7 +24,7 @@ void gate::convertToPb(pb::gate & gate_pb){
 		gate_pb.set_isgained(isGained);
 }
 rangeGate::rangeGate():gate(){}
-rangeGate::rangeGate(pb::gate & gate_pb):gate(gate_pb),param(paramRange(*(gate_pb.mutable_rg()->mutable_param()))){}
+rangeGate::rangeGate(const pb::gate & gate_pb):gate(gate_pb),param(paramRange(gate_pb.rg().param())){}
 void rangeGate::convertToPb(pb::gate & gate_pb){
 	gate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::RANGE_GATE);
@@ -34,7 +34,7 @@ void rangeGate::convertToPb(pb::gate & gate_pb){
 	pb::paramRange * pr_pb = g_pb->mutable_param();
 	param.convertToPb(*pr_pb);
 }
-polygonGate::polygonGate(pb::gate & gate_pb):gate(gate_pb),param(paramPoly(*(gate_pb.mutable_pg()->mutable_param()))){}
+polygonGate::polygonGate(const pb::gate & gate_pb):gate(gate_pb),param(paramPoly(gate_pb.pg().param())){}
 void polygonGate::convertToPb(pb::gate & gate_pb){
 	gate::convertToPb(gate_pb);
 
@@ -45,14 +45,14 @@ void polygonGate::convertToPb(pb::gate & gate_pb){
 	pb::paramPoly * pr_pb = g_pb->mutable_param();
 	param.convertToPb(*pr_pb);
 }
-boolGate::boolGate(pb::gate & gate_pb):gate(gate_pb){
-	pb::boolGate bg_pb = gate_pb.bg();
+boolGate::boolGate(const pb::gate & gate_pb):gate(gate_pb){
+	const pb::boolGate & bg_pb = gate_pb.bg();
 	for(int i = 0; i < bg_pb.boolopspec_size(); i++){
-		pb::BOOL_GATE_OP thisOP_pb = bg_pb.boolopspec(i);
+		const pb::BOOL_GATE_OP & thisOP_pb = bg_pb.boolopspec(i);
 		BOOL_GATE_OP thisOP = BOOL_GATE_OP(thisOP_pb);
 		boolOpSpec.push_back(thisOP);
 
-//		boolOpSpec.push_back(BOOL_GATE_OP(*(bg_pb.mutable_boolopspec(i))));
+
 	}
 }
 void boolGate::convertToPb(pb::gate & gate_pb){
@@ -68,13 +68,13 @@ void boolGate::convertToPb(pb::gate & gate_pb){
 	}
 
 }
-ellipseGate::ellipseGate(pb::gate & gate_pb):polygonGate(gate_pb),mu(coordinate(*(gate_pb.mutable_eg()->mutable_mu()))),dist(gate_pb.eg().dist()){
-	pb::ellipseGate eg_pb = gate_pb.eg();
+ellipseGate::ellipseGate(const pb::gate & gate_pb):polygonGate(gate_pb),mu(coordinate(gate_pb.eg().mu())),dist(gate_pb.eg().dist()){
+	const pb::ellipseGate & eg_pb = gate_pb.eg();
 	for(int i = 0; i < eg_pb.antipodal_vertices_size(); i++){
-		antipodal_vertices.push_back(coordinate(*(eg_pb.mutable_antipodal_vertices(i))));
+		antipodal_vertices.push_back(coordinate(eg_pb.antipodal_vertices(i)));
 	}
 	for(int i = 0; i < eg_pb.cov_size(); i++){
-		cov.push_back(coordinate(*(eg_pb.mutable_cov(i))));
+		cov.push_back(coordinate(eg_pb.cov(i)));
 	}
 }
 
@@ -102,18 +102,18 @@ void ellipsoidGate::convertToPb(pb::gate & gate_pb){
 	ellipseGate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::ELLIPSOID_GATE);
 }
-ellipsoidGate::ellipsoidGate(pb::gate & gate_pb):ellipseGate(gate_pb){};
+ellipsoidGate::ellipsoidGate(const pb::gate & gate_pb):ellipseGate(gate_pb){};
 void rectGate::convertToPb(pb::gate & gate_pb){
 	polygonGate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::RECT_GATE);
 }
-rectGate::rectGate(pb::gate & gate_pb):polygonGate(gate_pb){};
+rectGate::rectGate(const pb::gate & gate_pb):polygonGate(gate_pb){};
 
 void logicalGate::convertToPb(pb::gate & gate_pb){
 	boolGate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::LOGICAL_GATE);
 }
-logicalGate::logicalGate(pb::gate & gate_pb):boolGate(gate_pb){};
+logicalGate::logicalGate(const pb::gate & gate_pb):boolGate(gate_pb){};
 polygonGate::polygonGate():gate(){};
 boolGate::boolGate():gate(){};
 
