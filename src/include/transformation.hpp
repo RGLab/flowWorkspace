@@ -24,9 +24,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/compare.hpp>
 #include <boost/regex.hpp>
-
 #include "global.hpp"
-
 using namespace std;
 
 struct coordinate
@@ -43,11 +41,6 @@ struct coordinate
 						}
 	coordinate(double _x,double _y){x=_x;y=_y;};
 	coordinate(){};
-	void convertToPb(pb::coordinate & coor_pb){
-		coor_pb.set_x(x);
-		coor_pb.set_y(y);
-	};
-	coordinate(pb::coordinate & coor_pb):x(coor_pb.x()),y(coor_pb.y()){};
 };
 bool compare_x(coordinate i, coordinate j);
 bool compare_y(coordinate i, coordinate j);
@@ -100,8 +93,6 @@ public:
 	virtual unsigned short getType(){return type;};
 	virtual void setType(unsigned short _type){type=_type;};
 	virtual transformation * clone(){return new transformation(*this);};
-	virtual void convertToPb(pb::transformation & trans_pb);
-	transformation(const pb::transformation & trans_pb);
 };
 /* case insensitive compare predicate*/
 struct ciLessBoost : std::binary_function<std::string, std::string, bool>
@@ -114,27 +105,12 @@ struct ciLessBoost : std::binary_function<std::string, std::string, bool>
 typedef map<string,transformation *, ciLessBoost> trans_map;/* we always do case-insensitive searching for transformation lookup
 due to some of channel name discrepancies occured in flowJo workspaces*/
 
-struct PARAM{
+typedef struct {
 		string param;
 		bool log;
 		unsigned range;
 		unsigned highValue;
 		unsigned calibrationIndex;
-		PARAM(){};
-		PARAM(const pb::PARAM & param_pb){
-			param = param_pb.param();
-			log = param_pb.log();
-			range = param_pb.range();
-			highValue = param_pb.highvalue();
-			calibrationIndex = param_pb.calibrationindex();
-		};
-		 void convertToPb(pb::PARAM & param_pb){
-			 param_pb.set_param(param);
-			 param_pb.set_log(log);
-			 param_pb.set_range(range);
-			 param_pb.set_highvalue(highValue);
-			 param_pb.set_calibrationindex(calibrationIndex);
-		 };
 		template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)
 			{
@@ -142,7 +118,7 @@ struct PARAM{
 
 				ar & BOOST_SERIALIZATION_NVP(param) & BOOST_SERIALIZATION_NVP(log) & BOOST_SERIALIZATION_NVP(range) & BOOST_SERIALIZATION_NVP(highValue) & BOOST_SERIALIZATION_NVP(calibrationIndex);
 			}
-		};
+		} PARAM;
 typedef vector<PARAM> PARAM_VEC;
 
 PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name);
@@ -163,11 +139,6 @@ public:
 	transformation * getTran(string);
 	trans_map cloneTransMap();
 	void addTrans(string tName,transformation* trans){tp[tName]=trans;};
-	virtual void convertToPb(pb::trans_local & lg_pb, pb::GatingSet & gs_pb);
-	trans_local(){};
-	trans_local(const pb::trans_local & tg_pb, map<intptr_t, transformation *> & trans_tbl);
-	virtual void convertToPb(pb::trans_local & lg_pb);
-
 };
 
 class trans_global:public trans_local{
@@ -189,10 +160,6 @@ public:
 	vector<int> getSampleIDs(){return sampleIDs;}
 	string getGroupName(){return groupName;}
 	void setGroupName(string _groupName){groupName=_groupName;};
-	void convertToPb(pb::trans_local & tg_pb, pb::GatingSet & gs_pb);
-	trans_global(){};
-	trans_global(const pb::trans_local & tg_pb, map<intptr_t, transformation *> & trans_tbl);
-
 };
 
 typedef vector<trans_global> trans_global_vec;
@@ -221,8 +188,7 @@ public:
 	biexpTrans();
 	void computCalTbl();
 	biexpTrans * clone(){return new biexpTrans(*this);};
-	void convertToPb(pb::transformation & trans_pb);
-	biexpTrans(const pb::transformation & trans_pb);
+
 };
 
 class fasinhTrans:public transformation{
@@ -248,9 +214,33 @@ public:
 	fasinhTrans(double , double , double , double , double );
 	void transforming(valarray<double> & input);
 	fasinhTrans * clone(){return new fasinhTrans(*this);};
-	void convertToPb(pb::transformation & trans_pb);
-	fasinhTrans(const pb::transformation & trans_pb);
+
+
 };
+
+//class logicleTrans:public transformation{
+//
+//	friend class boost::serialization::access;
+//private:
+//	int channelRange;
+//	double pos, neg, widthBasis, maxValue;
+//
+//	template<class Archive>
+//				void serialize(Archive &ar, const unsigned int version)
+//				{
+//					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+//
+//					ar & BOOST_SERIALIZATION_NVP(channelRange);
+//					ar & BOOST_SERIALIZATION_NVP(pos);
+//					ar & BOOST_SERIALIZATION_NVP(neg);
+//					ar & BOOST_SERIALIZATION_NVP(widthBasis);
+//					ar & BOOST_SERIALIZATION_NVP(maxValue);
+//				}
+//
+//
+//public:
+//	logicleTrans * clone(){return new logicleTrans(*this);};
+//};
 
 /*
  * TODO:right now set two flags to TRUE in the contructor to avoid doing cal table stuff,
@@ -276,8 +266,6 @@ public:
 	double flog(double x,double _max,double _min);
 	void transforming(valarray<double> & input);
 	logTrans * clone(){return new logTrans(*this);};
-	void convertToPb(pb::transformation & trans_pb);
-	logTrans(const pb::transformation & trans_pb);
 };
 
 
@@ -295,8 +283,6 @@ public:
         linTrans();
         void transforming(valarray<double> & input);
         linTrans * clone(){return new linTrans(*this);};
-        void convertToPb(pb::transformation & trans_pb);
-        linTrans(const pb::transformation & trans_pb);
 };
 
 /*
@@ -319,8 +305,6 @@ public:
 	scaleTrans(float _scale_factor);
 	void transforming(valarray<double> & input);
 	scaleTrans * clone(){return new scaleTrans(*this);};
-	void convertToPb(pb::transformation & trans_pb);
-	scaleTrans(const pb::transformation & trans_pb);
 };
 
 
@@ -343,8 +327,6 @@ public:
 	double flin(double x);
 	void transforming(valarray<double> & input);
 	flinTrans * clone(){return new flinTrans(*this);};
-	void convertToPb(pb::transformation & trans_pb);
-	flinTrans(const pb::transformation & trans_pb);
 };
 
 

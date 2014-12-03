@@ -200,7 +200,7 @@ public:
 	VertexID addRoot(wsRootNode, workspace & ws);
 	VertexID addRoot();
 	GatingHierarchy();
-	GatingHierarchy(pb::GatingHierarchy & pb_gh, map<intptr_t, transformation *> trans_tbl);
+//	~GatingHierarchy();
 
 	GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool isGating,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans);
 
@@ -249,7 +249,6 @@ public:
 	GatingHierarchy * clone(const trans_map & _trans,trans_global_vec * _gTrans);
 	GatingHierarchy * clone();
 	void addTransMap(trans_map tm);
-	void convertToPb(pb::GatingHierarchy & gh_pb);
 };
 BOOST_CLASS_VERSION(GatingHierarchy,3)
 

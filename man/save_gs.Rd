@@ -7,8 +7,7 @@
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
 save_gs(G, path, overwrite = FALSE, cdf = c("copy", "move", "skip",
-  "symlink", "link"), type = c("binary", "text", "xml"), lib = c("PB",
-  "BS"), ...)
+  "symlink", "link"), type = c("binary", "text", "xml"), ...)
 
 load_gs(path)
 
@@ -27,11 +26,9 @@ load_gslist(path)
 Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 It is useful to "skip" archiving cdf file if raw data has not been changed.}
 
-\item{type}{a character scalar. The valid options are :"binary","text","xml" specifying format to store tree structure.(only meaningful when lib == 'BS')
+\item{type}{a character scalar. The valid options are :"binary","text","xml" specifying format to store tree structure.
 default is "binary", which is smaller and faster but machine-dependent.
-use "text" or "xml" for cross-platform data interchange (deprecated by 'PB' serialization).}
-
-\item{lib}{a character scalar specifying which serialization library to use. Can be either 'PB' (google protocol buffer) or 'BS'(boost serialization).}
+use "text" or "xml" for cross-platform data interchange (experimental at this stage, may or maynot work).}
 
 \item{...}{other arguments: not used.}
 
