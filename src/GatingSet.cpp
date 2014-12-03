@@ -175,6 +175,9 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 				{
 					switch(trans_pb.trans_type())
 					{
+					case pb::PB_CALTBL:
+						trans_tbl[old_address] = new transformation(trans_pb);
+						break;
 					case pb::PB_BIEXP:
 						trans_tbl[old_address] = new biexpTrans(trans_pb);
 						break;
@@ -190,9 +193,9 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 					case pb::PB_LOG:
 						trans_tbl[old_address] = new logTrans(trans_pb);
 						break;
-					case pb::PB_SCALE:
-						trans_tbl[old_address] = new scaleTrans(trans_pb);
-						break;
+//					case pb::PB_SCALE:
+//						trans_tbl[old_address] = new scaleTrans(trans_pb);
+//						break;
 					default:
 						throw(domain_error("unknown type of transformation archive!"));
 					}

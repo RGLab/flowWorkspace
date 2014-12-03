@@ -131,7 +131,10 @@ void biexpTrans::convertToPb(pb::transformation & trans_pb){
 	bt_pb->set_widthbasis(widthBasis);
 }
 biexpTrans::biexpTrans(const pb::transformation & trans_pb):transformation(trans_pb){
+	if(!trans_pb.has_bt())
+		throw(domain_error("biexpTrans field not found in pb::transformation!"));
 	const pb::biexpTrans & bt_pb = trans_pb.bt();
+
 	channelRange = bt_pb.channelrange();
 	maxValue = bt_pb.maxvalue();
 	neg = bt_pb.neg();
