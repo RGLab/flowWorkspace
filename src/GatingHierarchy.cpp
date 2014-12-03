@@ -991,7 +991,7 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 					unsigned nAncestorDepths;
 					VertexID_vec thisNodeVec(2);
 					thisNodeVec.at(0) = u;
-					thisNodeVec.at(0) = *it;
+					thisNodeVec.at(1) = *it;
 					VertexID ancestor = getCommonAncestor(thisNodeVec, nAncestorDepths);
 					/*
 					 * set to minimum when the reference node is the descendant of bool node itself

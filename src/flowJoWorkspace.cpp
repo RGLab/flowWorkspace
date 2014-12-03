@@ -245,7 +245,9 @@ void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isPars
 			COUT<<"parse the population Node:"<<np.getName()<<endl;
 	//add pop counts
 	POPSTATS fjStats;
-	fjStats["count"]=atoi(node.getProperty("count").c_str());
+	string sCount = node.getProperty("count");
+	//set the empty stats to -1
+	fjStats["count"] = sCount.empty()?-1:atoi(sCount.c_str());
 	np.setStats(fjStats,false);
 
 	try
