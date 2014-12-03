@@ -824,9 +824,9 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "\r\n\tBOOL_GATE\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT"
     "_GATE\020\005\022\020\n\014LOGICAL_GATE\020\006\022\022\n\016ELLIPSOID_G"
     "ATE\020\007*\'\n\010ind_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004"
-    "ROOT\020\002*]\n\nTRANS_TYPE\022\014\n\010PB_BIEXP\020\000\022\016\n\nPB"
-    "_FASIGNH\020\001\022\n\n\006PB_LOG\020\002\022\n\n\006PB_LIN\020\003\022\014\n\010PB"
-    "_SCALE\020\004\022\013\n\007PB_FLIN\020\005", 2901);
+    "ROOT\020\002*^\n\nTRANS_TYPE\022\r\n\tPB_CALTBL\020\000\022\n\n\006P"
+    "B_LOG\020\001\022\n\n\006PB_LIN\020\002\022\013\n\007PB_FLIN\020\003\022\016\n\nPB_F"
+    "ASIGNH\020\004\022\014\n\010PB_BIEXP\020\005", 2902);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GatingSet.proto", &protobuf_RegisterTypes);
   paramRange::default_instance_ = new paramRange();

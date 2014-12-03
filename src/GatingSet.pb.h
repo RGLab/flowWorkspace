@@ -108,16 +108,16 @@ inline bool ind_type_Parse(
     ind_type_descriptor(), name, value);
 }
 enum TRANS_TYPE {
-  PB_BIEXP = 0,
-  PB_FASIGNH = 1,
-  PB_LOG = 2,
-  PB_LIN = 3,
-  PB_SCALE = 4,
-  PB_FLIN = 5
+  PB_CALTBL = 0,
+  PB_LOG = 1,
+  PB_LIN = 2,
+  PB_FLIN = 3,
+  PB_FASIGNH = 4,
+  PB_BIEXP = 5
 };
 bool TRANS_TYPE_IsValid(int value);
-const TRANS_TYPE TRANS_TYPE_MIN = PB_BIEXP;
-const TRANS_TYPE TRANS_TYPE_MAX = PB_FLIN;
+const TRANS_TYPE TRANS_TYPE_MIN = PB_CALTBL;
+const TRANS_TYPE TRANS_TYPE_MAX = PB_BIEXP;
 const int TRANS_TYPE_ARRAYSIZE = TRANS_TYPE_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* TRANS_TYPE_descriptor();
