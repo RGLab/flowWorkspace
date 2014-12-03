@@ -292,7 +292,7 @@ END_RCPP
 }
 
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val, SEXP _ignore_case){
+RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val, SEXP _ignore_case, SEXP _computeTerminalBool){
 BEGIN_RCPP
 
 
@@ -304,7 +304,7 @@ BEGIN_RCPP
 	unsigned short nodeInd=as<unsigned short>(_nodeInd);
 	bool recompute=as<bool>(_recompute);
 	bool ignore_case=as<bool>(_ignore_case);
-
+	bool computeTerminalBool=as<bool>(_computeTerminalBool);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
 	Rcpp::NumericMatrix orig(_mat);
@@ -328,7 +328,7 @@ BEGIN_RCPP
 		gh->transforming();
 	}
 
-	gh->gating(nodeInd,recompute);
+	gh->gating(nodeInd,recompute, computeTerminalBool);
 
 	if(!recompute)
 	{
@@ -774,7 +774,7 @@ BEGIN_RCPP
 		//parse boolean expression from R data structure into c++
 		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
 		//perform bool gating
-		vector<bool> curIndices= gh->boolGating(boolOp);
+		vector<bool> curIndices= gh->boolGating(boolOp, true);
 		//combine with parent indices
 		nodeProperties & parentNode=gh->getNodeProperty(gh->getParent(nodeID));
 		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());

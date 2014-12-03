@@ -217,10 +217,10 @@ public:
 	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
 	void transforming();
-	void gating(VertexID,bool recompute=false);
-	void calgate(VertexID);
-	vector<bool> boolGating(VertexID);
-	vector<bool> boolGating(vector<BOOL_GATE_OP> boolOpSpec);
+	void gating(VertexID,bool recompute=false, bool computeTerminalBool=true);
+	void calgate(VertexID, bool computeTerminalBool);
+	vector<bool> boolGating(VertexID, bool computeTerminalBool);
+	vector<bool> boolGating(vector<BOOL_GATE_OP> boolOpSpec, bool computeTerminalBool);
 	void extendGate(float);
 	void extendGate(float,float);
 
@@ -229,11 +229,11 @@ public:
 	void drawGraph(string out);
 	int getChildren(VertexID source,string childName);
 
-	VertexID getCommonAncestor(VertexID u, VertexID v,unsigned & nDepths);
+	VertexID getCommonAncestor(VertexID_vec ,unsigned & nDepths);
 
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getRefNodeID(VertexID u,vector<string> refPath);
-	VertexID_vec queryByPath(vector<string> gatePath);
+	VertexID_vec queryByPath(VertexID ancestorID,vector<string> gatePath);
 	VertexID getNodeID(string gatePath);
 	VertexID getDescendant(VertexID u,string popName);
 
