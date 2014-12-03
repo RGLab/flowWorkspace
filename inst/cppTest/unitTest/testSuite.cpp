@@ -66,7 +66,7 @@ BOOST_FIXTURE_TEST_SUITE(parseWorkspace,parseWorkspaceFixture)
 BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 {
 
-	myTest.filename="../data/PBMC/HIPC_trial/data/HIPC_trial.xml";
+	myTest.filename="../wsTestSuite/PBMC/HIPC_trial/data/HIPC_trial.xml";
 	myTest.wsType = WS_MAC;
 	myTest.samples["1"]="004_A1_A01.fcs";
 	myTest.samples["2"]="004_B1_B01.fcs";
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 }
 BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 {
-	myTest.filename="../data/PBMC/Blomberg/Exp2_Tcell.wsp";
+	myTest.filename="../wsTestSuite/PBMC/Blomberg/Exp2_Tcell.wsp";
 	myTest.wsType = WS_WIN;
 	myTest.samples["12"]="Exp2_Sp004_1_Tcell.fcs";
 	myTest.samples["13"]="Exp2_Sp004_2_Tcell.fcs";
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(ITN029ST)
 }
 BOOST_AUTO_TEST_CASE(Cytotrol_NHLBI)
 {
-	myTest.filename="../data/Cytotrol/NHLBI/flowJo/NHLBI.xml";
+	myTest.filename="../wsTestSuite/Cytotrol/NHLBI/flowJo/NHLBI.xml";
 	myTest.wsType = WS_MAC;
 	myTest.samples["1"]="CytoTrol_CytoTrol_1.fcs";
 	myTest.sampNloc=1;
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(HVTN080_batch_0939)
 }
 BOOST_AUTO_TEST_CASE(Lesson_8_vX_A)
 {
-	myTest.filename="../data/vX/Lesson_8_vX.wsp";
+	myTest.filename="../wsTestSuite/vX/Lesson_8_vX.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["1"]="A1.fcs";
 	myTest.sampNloc=1;
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_A)
 }
 BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 {
-	myTest.filename="../data/vX/Lesson_8_vX.wsp";
+	myTest.filename="../wsTestSuite/vX/Lesson_8_vX.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["10"]="B1 .fcs";
 	myTest.sampNloc=1;
@@ -204,13 +204,34 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 }
 BOOST_AUTO_TEST_CASE(bioaster)
 {
-	myTest.filename="../data/bioaster_ellipsoidGate/Matrice 1.wsp";
+	myTest.filename="../wsTestSuite/bioaster_ellipsoidGate/Matrice 1.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["8"]="PANEL 1_Matrice 1.fcs";
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/bioaster/nc_comp.nc";
 	myTest.colfile="../output/bioaster/colnames.txt";
 	myTest.archive="../output/bioaster/gs/gs.dat";
+
+//	myTest.isSaveArchive = true;
+//	myTest.isLoadArhive = true;
+
+
+
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
+BOOST_AUTO_TEST_CASE(ragon)
+{
+	myTest.filename="../wsTestSuite/Ragon/neut v non neut v9.xml";
+	myTest.wsType = WS_MAC_3;
+	myTest.samples["28"]="477889_env_cct_norm_concatenated.txt";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/Ragon/nc_comp.nc";
+	myTest.colfile="../output/Ragon/colnames.txt";
+	myTest.archive="../output/Ragon/gs.dat";
 
 //	myTest.isSaveArchive = true;
 //	myTest.isLoadArhive = true;

@@ -222,8 +222,8 @@ test_that("v 9.7.4 - mac 3.0",{
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]
-      
-      expect_equal(thisCounts, expectCounts)
+      expectCounts[flowJo.count ==0, flowJo.count := -1]#fix the legacy counts
+      expect_equivalent(thisCounts, expectCounts)
     })
 
 test_that("v 9.7.5 - mac 3.0 (no compensation and using calibrationIndex)",{
@@ -238,8 +238,8 @@ test_that("v 9.7.5 - mac 3.0 (no compensation and using calibrationIndex)",{
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      
-      expect_equal(thisCounts, expectCounts)
+      expectCounts[flowJo.count ==0, flowJo.count := -1] #fix the legacy counts
+      expect_equivalent(thisCounts, expectCounts)
     })
 
 sink()
