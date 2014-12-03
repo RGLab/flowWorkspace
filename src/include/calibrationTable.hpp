@@ -26,8 +26,6 @@ using namespace std;
 #include <boost/serialization/valarray.hpp>
 #include <boost/graph/adj_list_serialize.hpp>
 #include <boost/serialization/assume_abstract.hpp>
-#include <boost/foreach.hpp>
-#include "../GatingSet.pb.h"
 
 struct Spline_Coefs{
 	map<string,vector<double> > coefs;
@@ -85,8 +83,6 @@ public:
 	int getMethod(){return spline_method;};
 	void setInterpolated(bool _flag){flag=_flag;};
 	bool isInterpolated(){return flag;}
-	void convertToPb(pb::calibrationTable & cal_pb);
-	calibrationTable(const pb::calibrationTable & cal_pb);
 };
 
 

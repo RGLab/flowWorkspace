@@ -59,5 +59,3 @@ Suggests:
     ,knitr
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-SystemRequirements: xml2, protobuf >= 2.6.0
-

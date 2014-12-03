@@ -148,12 +148,6 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 	xmlXPathFreeObject(transParentNodeRes);
 
 	res.setTransMap(curTp);
-
-	//store another cp in trans_global_vec since it is up to GatingSet to clean up these trans pointers
-	trans_global tg;
-	tg.setTransMap(curTp);
-	gTrans->push_back(tg);
-
 	return res;
 }
 /*

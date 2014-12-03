@@ -12,234 +12,90 @@
 #include <libxml/parser.h>
 #include <iostream>
 #include <exception>
-
 using namespace std;
 
 
-void GatingSet::convertToPb(pb::GatingSet & pb_gs){
-	// Verify that the version of the library that we linked against is
-	  // compatible with the version of the headers we compiled against.
-	  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-	  BOOST_FOREACH(gh_map::value_type & it,ghs){
-
-		string sn = it.first;
-		GatingHierarchy * gh =  it.second;
-		/*
-		 * add a new gh_pair
-		 */
-		pb::ghPair * gh_pair = pb_gs.add_ghs();
-		gh_pair->set_samplename(sn);
-		pb::GatingHierarchy * pb_gh = gh_pair->mutable_gh();
-		gh->convertToPb(*pb_gh);
-	  }
-
-	  //save the address of global biexp (as 1st entry)
-	  pb::TRANS_TBL * trans_tbl_pb = pb_gs.add_trans_tbl();
-	  intptr_t address = (intptr_t)&globalBiExpTrans;
-	  trans_tbl_pb->set_trans_address(address);
-
-
-	  //save the address of global lintrans(as 2nd entry)
-	  trans_tbl_pb = pb_gs.add_trans_tbl();
-	  address = (intptr_t)&globalLinTrans;
-	  trans_tbl_pb->set_trans_address(address);
-
-
-	  // cp trans group
-	  BOOST_FOREACH(trans_global_vec::value_type & it, gTrans){
-		  pb::trans_local * tg = pb_gs.add_gtrans();
-		  it.convertToPb(*tg, pb_gs);
-	  }
-
-}
-/**
- * serialization by boost serialization library
- * @param filename
- * @param format archive format, can be text,xml or binary
- */
-void GatingSet::serialize_bs(string filename, unsigned short format){
-
-
-	    	// make an archive
-			std::ios::openmode mode = std::ios::out|std::ios::trunc;
-			if(format == ARCHIVE_TYPE_BINARY)
-				mode = mode | std::ios::binary;
-
-
-			std::ofstream ofs(filename.c_str(), mode);
-
-
-			switch(format)
-			{
-			case ARCHIVE_TYPE_BINARY:
-				{
-					boost::archive::binary_oarchive oa(ofs);
-					oa << BOOST_SERIALIZATION_NVP(*this);
-				}
-
-				break;
-			case ARCHIVE_TYPE_TEXT:
-				{
-					boost::archive::text_oarchive oa1(ofs);
-					oa1 << BOOST_SERIALIZATION_NVP(*this);
-				}
-
-				break;
-			case ARCHIVE_TYPE_XML:
-				{
-					boost::archive::xml_oarchive oa2(ofs);
-					oa2 << BOOST_SERIALIZATION_NVP(*this);
-				}
-
-				break;
-			default:
-				throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
-				break;
-
-			}
-
-
-	}
-void GatingSet::serialize_pb(string filename){
-
-	       	pb::GatingSet gs_pb;
-			convertToPb(gs_pb);
-
-
-			ofstream output(filename.c_str(), ios::out | ios::trunc | ios::binary);
-			if (!gs_pb.SerializeToOstream(&output))
-				throw(domain_error("Failed to write GatingSet."));
-			// Optional:  Delete all global objects allocated by libprotobuf.
-			google::protobuf::ShutdownProtobufLibrary();
-}
-
-/**
- * constructor from the archives (de-serialization)
- * @param filename
- * @param format
- * @param isPB
- */
-GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NULL)
-{
-
-
-	if(isPB){
-		GOOGLE_PROTOBUF_VERIFY_VERSION;
-		//load archive from disk to pb object
-		ifstream input(filename.c_str(), ios::in | ios::binary);
-		pb::GatingSet pbGS;
-		if (!input) {
-			throw(invalid_argument("File not found.." ));
-		} else if (!pbGS.ParseFromIstream(&input)) {
-			throw(domain_error("Failed to parse GatingSet."));
-		}
-
-		//load global trans tbl
-		map<intptr_t, transformation *> trans_tbl;
-
-		for(int i = 0; i < pbGS.trans_tbl_size(); i++){
-			pb::TRANS_TBL trans_tbl_pb = pbGS.trans_tbl(i);
-			pb::transformation * trans_pb = trans_tbl_pb.mutable_trans();
-			intptr_t old_address = (intptr_t)trans_tbl_pb.trans_address();
-
-			/*
-			 * first two global trans do not need to be restored from archive
-			 * since they use the default parameters
-			 * simply add the new address
-			 */
-
-			switch(i)
-			{
-			case 0:
-				trans_tbl[old_address] = &globalBiExpTrans;
-				break;
-			case 1:
-				trans_tbl[old_address] = &globalLinTrans;
-				break;
-			default:
-				{
-					switch(trans_pb->trans_type())
-					{
-					case pb::PB_BIEXP:
-						trans_tbl[old_address] = new biexpTrans(*trans_pb);
-						break;
-					case pb::PB_FASIGNH:
-						trans_tbl[old_address] = new fasinhTrans(*trans_pb);
-						break;
-					case pb::PB_FLIN:
-						trans_tbl[old_address] = new flinTrans(*trans_pb);
-						break;
-					case pb::PB_LIN:
-						trans_tbl[old_address] = new linTrans(*trans_pb);
-						break;
-					case pb::PB_LOG:
-						trans_tbl[old_address] = new logTrans(*trans_pb);
-						break;
-					case pb::PB_SCALE:
-						trans_tbl[old_address] = new scaleTrans(*trans_pb);
-						break;
-					default:
-						throw(domain_error("unknown type of transformation archive!"));
-					}
-				}
-			}
-
-		}
-		/*
-		 * recover the trans_global
-		 */
-
-		for(int i = 0; i < pbGS.gtrans_size(); i++){
-			pb::trans_local trans_local_pb = pbGS.gtrans(i);
-			gTrans.push_back(trans_global(trans_local_pb, trans_tbl));
-		}
-
-		//restore gating hierarchy
-		for(int i = 0; i < pbGS.ghs_size(); i++){
-			pb::ghPair ghp = pbGS.ghs(i);
-			pb::GatingHierarchy gh_pb = ghp.gh();
-			ghs[ghp.samplename()] = new GatingHierarchy(gh_pb, trans_tbl);
-		}
-
-	}
-	else
-	{
-		// open the archive
-		std::ios::openmode mode = std::ios::in;
+void save_gs(const GatingSet &gs,string filename, unsigned short format){
+	    // make an archive
+		std::ios::openmode mode = std::ios::out|std::ios::trunc;
 		if(format == ARCHIVE_TYPE_BINARY)
 			mode = mode | std::ios::binary;
-		std::ifstream ifs(filename.c_str(), mode);
 
-		switch(format)
-		{
-		case ARCHIVE_TYPE_BINARY:
+
+	    std::ofstream ofs(filename.c_str(), mode);
+
+	    switch(format)
+	    {
+	    case ARCHIVE_TYPE_BINARY:
+	    	{
+	    		boost::archive::binary_oarchive oa(ofs);
+	    		oa << BOOST_SERIALIZATION_NVP(gs);
+	    	}
+
+	    	break;
+	    case ARCHIVE_TYPE_TEXT:
 			{
-				boost::archive::binary_iarchive ia(ifs);
-				ia >> BOOST_SERIALIZATION_NVP(*this);
+				boost::archive::text_oarchive oa1(ofs);
+				oa1 << BOOST_SERIALIZATION_NVP(gs);
 			}
 
-			break;
-		case ARCHIVE_TYPE_TEXT:
-			{
-				boost::archive::text_iarchive ia1(ifs);
-				ia1 >> BOOST_SERIALIZATION_NVP(*this);
-			}
+	    	break;
+	    case ARCHIVE_TYPE_XML:
+	    	{
+	    		boost::archive::xml_oarchive oa2(ofs);
+				oa2 << BOOST_SERIALIZATION_NVP(gs);
+	    	}
 
-			break;
-		case ARCHIVE_TYPE_XML:
-			{
-				boost::archive::xml_iarchive ia2(ifs);
-				ia2 >> BOOST_SERIALIZATION_NVP(*this);
-			}
-
-			break;
+		    break;
 		default:
 			throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
-			break;
+		    break;
 
-		}
+	    }
+
+
+
+
+
 	}
+void restore_gs(GatingSet &s, string filename, unsigned short format)
+{
+
+    // open the archive
+	std::ios::openmode mode = std::ios::in;
+	if(format == ARCHIVE_TYPE_BINARY)
+		mode = mode | std::ios::binary;
+    std::ifstream ifs(filename.c_str(), mode);
+
+    switch(format)
+	{
+	case ARCHIVE_TYPE_BINARY:
+		{
+			boost::archive::binary_iarchive ia(ifs);
+			ia >> BOOST_SERIALIZATION_NVP(s);
+		}
+
+		break;
+	case ARCHIVE_TYPE_TEXT:
+		{
+			boost::archive::text_iarchive ia1(ifs);
+			ia1 >> BOOST_SERIALIZATION_NVP(s);
+		}
+
+		break;
+	case ARCHIVE_TYPE_XML:
+		{
+			boost::archive::xml_iarchive ia2(ifs);
+			ia2 >> BOOST_SERIALIZATION_NVP(s);
+		}
+
+		break;
+	default:
+		throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
+		break;
+
+	}
+
 
 
 }

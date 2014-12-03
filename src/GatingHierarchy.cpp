@@ -20,65 +20,7 @@ GatingHierarchy::GatingHierarchy()
 	isLoaded=false;
 }
 
-void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
-	pb::populationTree * ptree = gh_pb.mutable_tree();
-	/*
-	 * cp tree
-	 */
-	VertexID_vec verIDs = getVertices();
-	for(VertexID_vec::iterator it = verIDs.begin(); it != verIDs.end(); it++){
-		VertexID thisVert = *it;
-		nodeProperties & np = getNodeProperty(thisVert);
 
-		pb::treeNodes * node = ptree->add_node();
-		pb::nodeProperties * pb_node = node->mutable_node();
-		bool isRoot = thisVert == 0;
-		np.convertToPb(*pb_node, isRoot);
-		if(!isRoot){
-			node->set_parent(getParent(thisVert));
-		}
-
-
-	}
-	//cp comp
-	pb::COMP * comp_pb = gh_pb.mutable_comp();
-	comp.convertToPb(*comp_pb);
-	//cp trans
-	pb::trans_local * trans_pb = gh_pb.mutable_trans();
-	trans.convertToPb(*trans_pb);
-	//cp trans flag
-	BOOST_FOREACH(PARAM_VEC::value_type & it, transFlag){
-		pb::PARAM * tflag_pb = gh_pb.add_transflag();
-		it.convertToPb(*tflag_pb);
-	}
-
-
-}
-
-GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh, map<intptr_t, transformation *> trans_tbl):isLoaded(pb_gh.isloaded()){
-	pb::populationTree tree_pb =  pb_gh.tree();
-	for(int i = 0; i < tree_pb.node_size(); i++){
-		pb::treeNodes node_pb = tree_pb.node(i);
-		pb::nodeProperties np_pb = node_pb.node();
-
-		VertexID curChildID = boost::add_vertex(tree);
-		tree[curChildID] = nodeProperties(np_pb);
-
-		if(node_pb.has_parent()){
-			VertexID parentID = node_pb.parent();
-			boost::add_edge(parentID,curChildID,tree);
-		}
-
-	}
-	//restore comp
-	comp = compensation(pb_gh.comp());
-	//restore trans flag
-	for(int i = 0; i < pb_gh.transflag_size(); i++){
-		transFlag.push_back(PARAM(pb_gh.transflag(i)));
-	}
-	//restore trans local
-	trans = trans_local(pb_gh.trans(), trans_tbl);
-}
 
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
@@ -183,7 +125,7 @@ void GatingHierarchy::addPopulation(VertexID parentID,workspace & ws,wsNode * pa
 VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 {
 
-
+	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
 
 	//validity check
 	int res = getChildren(parentID, popName);
@@ -212,7 +154,7 @@ VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 void GatingHierarchy::removeNode(VertexID nodeID)
 {
 
-
+	typedef boost::graph_traits<populationTree>::vertex_descriptor vertex_t;
 	//remove edge associated with this node
 	EdgeID e=getInEdges(nodeID);
 	/*removing vertex cause the rearrange node index

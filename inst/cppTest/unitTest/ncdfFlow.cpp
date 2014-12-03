@@ -39,14 +39,7 @@ vector<string> ncdfFlow::params_get(){
  */
 #define ERR(e) {throw(ios_base::failure(nc_strerror(e)));}
 
-<<<<<<< HEAD
 
-
-
-
-=======
-
->>>>>>> e2a84e34743a698e7a1f40e95104ca1c6f28286d
 flowData hdfFlow::readflowData(string sampleName)
 {
 
@@ -160,36 +153,3 @@ flowData hdfFlow::readflowData(unsigned int sampleIndx)
 	return res;
 
 }
-<<<<<<< HEAD
-/* to simply the installation and avoid dealing with both c++ and c library of netCDF
- * the IO using ncdfFlow package exposed API directly
- */
-//flowData ncdfFlow::readflowData(unsigned int sampleID)
-//{
-//	if(fileName.empty())
-//		throw(ios_base::failure("ncdfFlow is not associated with any cdf file yet!\n"));
-//	cout<<"opening file:"<<fileName.c_str()<<endl;
-//
-//	int nChannel=params.size();
-//	int _channel[2]={1,nChannel};
-//	int _sampleID=sampleID+1;
-//	double * mat=readSlice(fileName.c_str(), _channel,_sampleID);
-//
-//	/*
-//	 * read slice
-//	 */
-//
-//	/*
-//	 * get counts
-//	 */
-//	int nEcount=readEventCounts(fileName.c_str());
-//
-//	/*
-//	 * return a flowData object
-//	 */
-//	flowData res(mat,(unsigned int)nRow,(unsigned int)nChannels);
-//	res.params_set(params);
-//
-//}
-=======
->>>>>>> e2a84e34743a698e7a1f40e95104ca1c6f28286d

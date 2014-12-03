@@ -16,29 +16,27 @@ ifeq ($(boost_bundled),yes)
 	bregex_objs=${bregex_src:.cpp=.o}
 endif
 
-pb_bundled=@pb_bundled@
+PKG_CPPFLAGS =-DROUT -Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags}
+PKG_LIBS =${bgl_objs} ${bregex_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` @PKG_LIBS@ 
 
-PKG_CPPFLAGS =-DROUT -Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags} ${pb_cppflags}
-PKG_LIBS =${bgl_objs} ${bregex_objs} ${pb_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` @PKG_LIBS@ 
-
-#USERDIR =	../inst/lib
-#USERLIB	=	libflowWorkspace$(DYLIB_EXT)
+USERDIR =	../inst/lib
+USERLIB	=	libflowWorkspace$(DYLIB_EXT)
 
 all: 	$(SHLIB) userLibrary
 
 $(SHLIB): $(OBJECTS) $(bgl_objs) ${bregex_objs}
 
-#userLibrary: 	$(USERLIB)
-#		-@if test ! -e $(USERDIR)$(R_ARCH); then mkdir -p $(USERDIR)$(R_ARCH); fi
-#		cp $(USERLIB) $(USERDIR)$(R_ARCH)
-#		rm $(USERLIB)
+userLibrary: 	$(USERLIB)
+		-@if test ! -e $(USERDIR)$(R_ARCH); then mkdir -p $(USERDIR)$(R_ARCH); fi
+		cp $(USERLIB) $(USERDIR)$(R_ARCH)
+		rm $(USERLIB)
 
 #simply copy the SHLIB instead of rebuilding it
 #make sure to insert the full path of lib since mac has problem to find it at run time
-#$(USERLIB):$(SHLIB)
-#	cp $(SHLIB) $(USERLIB) 
+$(USERLIB):$(SHLIB)
+	cp $(SHLIB) $(USERLIB) 
 #note that $ALL_LIBS contains $(bgl_objs) ${bregex_objs} already
-#		@if test -e "/usr/bin/install_name_tool"; then /usr/bin/install_name_tool -id $(R_PACKAGE_DIR)/lib$(R_ARCH)/$(USERLIB) $(USERLIB); fi
+		@if test -e "/usr/bin/install_name_tool"; then /usr/bin/install_name_tool -id $(R_PACKAGE_DIR)/lib$(R_ARCH)/$(USERLIB) $(USERLIB); fi
 
 
 .PHONY: 	all clean userLibrary

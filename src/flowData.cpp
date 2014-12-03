@@ -33,7 +33,6 @@ flowData::flowData(const double* mat,vector<string> _params,unsigned _nEvents,un
 	data=valarray<double>(mat,nSize);
 	ignore_case = _ignore_case;
 }
-#ifdef ROUT
 flowData::flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case){
 
 	List dimnames=mat.attr("dimnames");
@@ -47,7 +46,6 @@ flowData::flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case){
 		data[j]=mat[j];
 	ignore_case = _ignore_case;
 }
-#endif
 valarray<double> flowData::getData(){
 	return data;
 }

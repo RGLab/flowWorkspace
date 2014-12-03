@@ -31,19 +31,15 @@ private:
 
 
 public:
-	POPINDICES():nEvents(0){};
-	POPINDICES(unsigned _nEvents):nEvents(_nEvents){};
+	POPINDICES(){nEvents=0;};
 	virtual ~POPINDICES(){};
 	virtual vector<bool> getIndices()=0;
 	virtual unsigned getCount()=0;
 	unsigned getTotal(){return nEvents;}
 	virtual POPINDICES * clone()=0;
-	virtual void convertToPb(pb::POPINDICES & ind_pb) = 0;
 
 };
 
-void packToBytes(const vector <bool> & x, vector<unsigned char> &);
-void unpackFromBytes(vector <bool> &, const vector<unsigned char>& x_bytes);
 /*
  * bool vector
  */
@@ -56,25 +52,45 @@ private:
 							{
 
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
+
+								/*
+								 * pack bits into bytes
+								 */
 								unsigned nBits=x.size();
 								unsigned nBytes=ceil(float(nBits)/8);
-								vector<unsigned char> bytes(nBytes,0);
-								packToBytes(x, bytes);
-								ar & BOOST_SERIALIZATION_NVP(bytes);
-								//
+								vector<unsigned char> x_bytes(nBytes,0);
+								for(unsigned i =0 ; i < nBits; i++) {
+									unsigned byteIndex = i / 8;
+									unsigned bitIndex = i % 8;
+									if(x[i]) {
+									    // set bit
+										unsigned char mask  = 1 << bitIndex;
+										x_bytes[byteIndex] = x_bytes[byteIndex] | mask;
+									}
+								}
+								ar & BOOST_SERIALIZATION_NVP(x_bytes);
+//
 							}
 	template<class Archive>
 						void load(Archive & ar, const unsigned int version) {
 								ar & boost::serialization::make_nvp("POPINDICES",boost::serialization::base_object<POPINDICES>(*this));
 								if(version>0){
-
-
+//									COUT<<"unpacking bits"<<endl;
 									unsigned nBits=nEvents;
 									unsigned nBytes=ceil(float(nBits)/8);
 									vector<unsigned char> x_bytes(nBytes,0);
+									x.resize(nBits,false);
 									ar & BOOST_SERIALIZATION_NVP(x_bytes);
-									x.resize(nEvents,false);
-									unpackFromBytes(x, x_bytes);
+									/*
+									 * unpack bytes into bits
+									 */
+									for(unsigned i =0 ; i < nBits; i++) {
+										unsigned byteIndex = i / 8;
+										unsigned bitIndex = i % 8;
+
+										x[i] = x_bytes[byteIndex] & (1 << bitIndex);
+									}
+
 								}
 								else
 								{
@@ -86,14 +102,12 @@ private:
 
 	  BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
-	BOOLINDICES():POPINDICES(){};
+	BOOLINDICES(){nEvents=0;};
 	BOOLINDICES(vector <bool> _ind);
 	vector<bool> getIndices();
 	unsigned getCount();
 
 	POPINDICES * clone();
-	void convertToPb(pb::POPINDICES & ind_pb);
-	BOOLINDICES(pb::POPINDICES & ind_pb);
 
 };
 BOOST_CLASS_VERSION(BOOLINDICES,1)
@@ -114,13 +128,11 @@ private:
 
 
 public:
-	INTINDICES():POPINDICES(){};
+	INTINDICES(){nEvents=0;};
 	INTINDICES(vector <bool> _ind);
-	INTINDICES(pb::POPINDICES & ind_pb);
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();
-	void convertToPb(pb::POPINDICES & ind_pb);
 };
 
 /*
@@ -138,13 +150,12 @@ private:
 
 
 public:
-	ROOTINDICES():POPINDICES(){};
-	ROOTINDICES(unsigned _nEvents):POPINDICES(_nEvents){};
-	ROOTINDICES(pb::POPINDICES & ind_pb);
+	ROOTINDICES(){nEvents=0;};
+	ROOTINDICES(unsigned _nEvents){nEvents=_nEvents;};
 	vector<bool> getIndices();
 	unsigned getCount();
 	POPINDICES * clone();
-	void convertToPb(pb::POPINDICES & ind_pb);
+
 };
 
 

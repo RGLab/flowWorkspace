@@ -15,11 +15,6 @@ AC_ARG_WITH(boost,
                            [root directory of boost installation (defaults to /usr/local)])],
            [BOOST_DIR="${with_boost}"],
 	   [BOOST_DIR=""])
-AC_ARG_WITH(protobuf,
-           [AS_HELP_STRING([--with-protobuf=DIR],
-                           [root directory of protocol buffer installation (defaults to /usr/local)])],
-           [PB_DIR="${with_protobuf}"],
-	   [PB_DIR="yes"])
 
 
 
@@ -64,6 +59,7 @@ fi
 
 
 #boost serialzation library
+#AC_MSG_NOTICE([setting boost serialzation flags...])
 if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         AC_MSG_NOTICE([No directory was specified for --with-boost. Using bundled boost.])
 
@@ -86,58 +82,15 @@ else
         boost_bundled=no
 fi
 
-AC_MSG_NOTICE([setting protobuf flags...])
-
-if test  "${PB_DIR}" = "yes" ; then
-        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Trying to find protobuf using other methods.])
-        AC_PATH_PROG(PKG_CONFIG, pkg-config)
-
-        if test -z "${PKG_CONFIG}" ; then
-                AC_MSG_NOTICE([pkg-config was not detected. Verify pkg-config is installed correctly.])
-                AC_MSG_NOTICE([Trying with /usr/local anyway.])
-                PB_CFLAGS="-I/usr/local/include"
-		PB_LIBS="-L/usr/local/lib -lprotobuf"        
-	else
-                PB_CFLAGS="`${PKG_CONFIG} --cflags protobuf`"
-                PB_LIBS="`${PKG_CONFIG} --libs protobuf`"
-        fi
-else
-        AC_MSG_NOTICE([Using protobuf dir '${PB_DIR}'])
-
-        PB_CFLAGS="-I${PB_DIR}/include"
-        PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
-fi
-#protocol buffer library
-#if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}"; then
-#        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Using bundled protocol buffer.])
-#
-#	BASEPBNAME="gpb"
-#	PBTGZNAME=${BASEPBNAME}.tar.gz
-#	cd src
-#	if test -d ./${BASEPBNAME};
-#		then 
-#			echo 'found ' $BASEPBNAME ' header sources and tar archive;using what is there.'
-#		else
-#			echo "untarring boost include tree...";
-#			gunzip -dc ${PBTGZNAME} | tar xf -;
-#	fi;
-#	cd ../
-#	boost_bundled=yes
-#else
-#        AC_MSG_NOTICE([Using external boost '${PB_DIR}'])
-#        PB_CFLAGS="-I${PB_DIR}/include"
-#        PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
-#        boost_bundled=no
-#fi
 
 
 
-PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS $PB_CFLAGS"
+PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS"
 if test "${COMPILER}" = "clang"; then
   PKG_CPPFLAGS+="-ftemplate-depth=900"
 fi
 
-PKG_LIBS="$XML2_LIBS $BOOST_LIBS $PB_LIBS"
+PKG_LIBS="$XML2_LIBS $BOOST_LIBS"
 
 # Checks for library functions.
 AC_MSG_NOTICE([Using the following compilation and linking flags for flowWorkspace])
