@@ -17,8 +17,6 @@
 #include <libgen.h>
 
 
-
-
 using namespace std;
 
 #define ARCHIVE_TYPE_BINARY 0

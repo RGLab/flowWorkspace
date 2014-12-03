@@ -142,16 +142,18 @@ GatingSet::GatingSet(string path,string filename, unsigned short format, bool is
 	gsFile.append(filename);
 	if(isPB){
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
-		//load archive from disk to pb object
+		 //load archive from disk to pb object
 
 		ifstream input(gsFile.c_str(), ios::in | ios::binary);
+
+
 		pb::GatingSet pbGS;
 		if (!input) {
 			throw(invalid_argument("File not found.." ));
-		} else if (!pbGS.ParseFromIstream(&input)) {
-			throw(domain_error("Failed to parse GatingSet."));
 		}
-
+		else if (!pbGS.ParseFromIstream(&input)) {
+	               throw(domain_error("Failed to parse GatingSet."));
+		}
 		//load global trans tbl
 		map<intptr_t, transformation *> trans_tbl;
 

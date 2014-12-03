@@ -394,7 +394,7 @@ private:
 public:
 	ellipseGate(){dist = 1;};
 	ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist);
-	ellipseGate(vector<coordinate> _antipodal);
+	ellipseGate(vector<coordinate> _antipodal, vector<string> _params);
 	vector<bool> gating(flowData &);
 	vector<coordinate> getCovarianceMat(){return cov;};
 	coordinate getMu(){return mu;};
@@ -427,7 +427,7 @@ private:
 			}
 public:
 	ellipsoidGate():ellipseGate(){};
-	ellipsoidGate(vector<coordinate> _antipodal);
+	ellipsoidGate(vector<coordinate> _antipodal, vector<string> _params);
 	void transforming(trans_local &);
 	ellipsoidGate * clone(){return new ellipsoidGate(*this);};
 	void convertToPb(pb::gate & gate_pb);

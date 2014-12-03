@@ -187,36 +187,40 @@ void gh_counts(GatingHierarchy* gh,vector<bool> &isEqual, const float tolerance)
 		VertexID u=*it;
 		if(u!=ROOTNODE){
 			nodeProperties &node=gh->getNodeProperty(u);
-			unsigned flowJoCount = node.getStats(false)["count"];
-			unsigned myCount = node.getStats(true)["count"];
-			cout<<u<<"."<<node.getName()<<":";
-			cout<< flowJoCount;
-			cout<<"("<<myCount<<") "<< "cv = ";
-
-			bool thisEqual;
-			float thisCV ;
-			float thisTol = tolerance;
-			if(flowJoCount == myCount){
-				thisEqual = true;
-				thisCV = 0;
-			}
-			else
+			int flowJoCount = node.getStats(false)["count"];
+			if(flowJoCount != -1) //skip the unrecorded flowJo counts
 			{
-				float min = flowJoCount>myCount?myCount:flowJoCount;
-				float max = flowJoCount<myCount?myCount:flowJoCount;
-				float mean = (min+max)/2;
-				float sd = sqrt((pow((min-mean), 2) + pow((max-mean), 2))/2);
-				boost::math::normal_distribution<> dist(mean,sd);
-				float Q1 = quantile(dist,0.25);
-				float Q3 = quantile(dist,0.75);
-				float IQR = Q3 - Q1;
-				thisCV = IQR/mean;
-				thisTol = 1/max+thisTol;//add the weight of N of cells to make it more robust
-				thisEqual = (thisCV < thisTol);
-//				cout << Q1 <<":" <<Q3 << " " << thisCV<<endl;
+
+				int myCount = node.getStats(true)["count"];
+				cout<<u<<"."<<node.getName()<<":";
+				cout<< flowJoCount;
+				cout<<"("<<myCount<<") "<< "cv = ";
+
+				bool thisEqual;
+				float thisCV ;
+				float thisTol = tolerance;
+				if(flowJoCount == myCount){
+					thisEqual = true;
+					thisCV = 0;
+				}
+				else
+				{
+					float min = flowJoCount>myCount?myCount:flowJoCount;
+					float max = flowJoCount<myCount?myCount:flowJoCount;
+					float mean = (min+max)/2;
+					float sd = sqrt((pow((min-mean), 2) + pow((max-mean), 2))/2);
+					boost::math::normal_distribution<> dist(mean,sd);
+					float Q1 = quantile(dist,0.25);
+					float Q3 = quantile(dist,0.75);
+					float IQR = Q3 - Q1;
+					thisCV = IQR/mean;
+					thisTol = 1/max+thisTol;//add the weight of N of cells to make it more robust
+					thisEqual = (thisCV < thisTol);
+	//				cout << Q1 <<":" <<Q3 << " " << thisCV<<endl;
+				}
+				cout << thisCV << " tol = " << thisTol << endl;
+				isEqual.push_back(thisEqual);
 			}
-			cout << thisCV << " tol = " << thisTol << endl;
-			isEqual.push_back(thisEqual);
 		}
 	}
 }

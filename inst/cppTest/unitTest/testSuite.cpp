@@ -236,8 +236,15 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+
+/**
+ * this workspace somehow breaks on load BS archive for ellipsoidGate
+ * But it works with PB archive
+ *  either it is to be further investigation or to be ignored if no hisotry BS archive associated with ellipsoidGate
+ */
 BOOST_AUTO_TEST_CASE(bioaster)
 {
+
 	myTest.filename="../wsTestSuite/bioaster_ellipsoidGate/Matrice 1.wsp";
 	myTest.wsType = WS_VX;
 	myTest.samples["8"]="PANEL 1_Matrice 1.fcs";
@@ -253,23 +260,27 @@ BOOST_AUTO_TEST_CASE(bioaster)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-//BOOST_AUTO_TEST_CASE(lyoplate)
-//{
-//
-//	myTest.filename="";
-//	myTest.wsType = WS_MAC;
-//	myTest.samples["1"]="12828_1_Tcell_A01.fcs";
-//	myTest.sampNloc=1;
-//	myTest.ncfile="";
-//	myTest.colfile="/loc/no-backup/mike/colnames.txt";
-//	myTest.archive="/home/wjiang2/rglab/workspace/analysis/Lyoplate_new/output/test_pb/D54tFo7RPl";
-////	g_loglevel = GATE_LEVEL;
-//	parser_test(myTest);
-//
-//	vector<bool> isTrue(myTest.isEqual.size(), true);
-//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-//
-//}
+BOOST_AUTO_TEST_CASE(ragon)
+{
+	myTest.filename="../wsTestSuite/Ragon/neut v non neut v9.xml";
+	myTest.wsType = WS_MAC_3;
+	myTest.samples["28"]="477889_env_cct_norm_concatenated.txt";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/Ragon/nc_comp.nc";
+	myTest.colfile="../output/Ragon/colnames.txt";
+	myTest.archive="../output/Ragon/gs.dat";
+
+//	myTest.isSaveArchive = true;
+//	myTest.isLoadArhive = true;
+
+
+
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";
