@@ -319,8 +319,8 @@ public:
 	scaleTrans(float _scale_factor);
 	void transforming(valarray<double> & input);
 	scaleTrans * clone(){return new scaleTrans(*this);};
-	void convertToPb(pb::transformation & trans_pb);
-	scaleTrans(const pb::transformation & trans_pb);
+//	void convertToPb(pb::transformation & trans_pb);
+//	scaleTrans(const pb::transformation & trans_pb);
 };
 
 

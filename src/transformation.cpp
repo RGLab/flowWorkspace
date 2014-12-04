@@ -178,16 +178,17 @@ void linTrans::convertToPb(pb::transformation & trans_pb){
 }
 linTrans::linTrans(const pb::transformation & trans_pb):transformation(trans_pb){}
 
-void scaleTrans::convertToPb(pb::transformation & trans_pb){
-	transformation::convertToPb(trans_pb);
-	trans_pb.set_trans_type(pb::PB_SCALE);
-	pb::scaleTrans * st_pb = trans_pb.mutable_st();
-	st_pb->set_scale_factor(scale_factor);
-}
-scaleTrans::scaleTrans(const pb::transformation & trans_pb):linTrans(trans_pb){
-	const pb::scaleTrans & st_pb = trans_pb.st();
-	scale_factor = st_pb.scale_factor();
-}
+//void scaleTrans::convertToPb(pb::transformation & trans_pb){
+//	transformation::convertToPb(trans_pb);
+//	trans_pb.set_trans_type(pb::PB_SCALE);
+//	pb::scaleTrans * st_pb = trans_pb.mutable_st();
+//	st_pb->set_scale_factor(scale_factor);
+//}
+//scaleTrans::scaleTrans(const pb::transformation & trans_pb):linTrans(trans_pb){
+//	const pb::scaleTrans & st_pb = trans_pb.st();
+//	scale_factor = st_pb.scale_factor();
+//}
+
 
 void flinTrans::convertToPb(pb::transformation & trans_pb){
 	transformation::convertToPb(trans_pb);
