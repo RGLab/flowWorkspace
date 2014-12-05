@@ -17,7 +17,7 @@
 #include "google/protobuf/io/zero_copy_stream_impl.h"
 #include "google/protobuf/io/coded_stream.h"
 using namespace google::protobuf::io;
-#include <fcntl.h>
+//#include <fcntl.h>
 
 
 using namespace std;

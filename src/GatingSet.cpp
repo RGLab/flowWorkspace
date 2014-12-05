@@ -128,20 +128,25 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 
-		int fd = open(filename.c_str(), O_RDONLY);
+//		int fd = open(filename.c_str(), O_RDONLY);
+		ifstream input(filename.c_str(), ios::in | ios::binary);
 		pb::GatingSet pbGS;
-		if (fd == -1) {
+//		if (fd == -1) {
+		if (!input) {
 			throw(invalid_argument("File not found.." ));
 		} else{
 
-			 ZeroCopyInputStream* raw_input = new FileInputStream(fd);
-			 CodedInputStream* coded_input = new CodedInputStream(raw_input);
-			 coded_input->SetTotalBytesLimit(std::numeric_limits<int>::max(), 536870912);
-			 bool success = pbGS.ParseFromCodedStream(coded_input);
+//			 ZeroCopyInputStream* raw_input = new FileInputStream(fd);
+			 IstreamInputStream raw_input(&input);
+			 CodedInputStream coded_input(&raw_input);
+			 coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), 536870912);
+			 bool success = pbGS.ParseFromCodedStream(&coded_input);
+//
+//			delete coded_input;
+//			delete raw_input;
+//			close(fd);
 
-			delete coded_input;
-			delete raw_input;
-			close(fd);
+
 
 			if (!success) {
 				throw(domain_error("Failed to parse GatingSet."));
