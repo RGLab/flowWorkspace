@@ -325,7 +325,7 @@ void parser_test(testCase & myTest){
 //		boost::archive::binary_oarchive oa(ofs);
 //		oa << BOOST_SERIALIZATION_NVP(boost::serialization::make_array(&thisInd[0],thisInd.size()));
 
-		if((!isLoadArchive)&&isSaveArchive){
+		if(isSaveArchive){
 			if(archiveType == PB)
 				gs->serialize_pb(archiveName);
 			else
