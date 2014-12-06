@@ -244,18 +244,18 @@ void parser_test(testCase & myTest){
 	bool isParseGate = myTest.isParseGate;
 	bool isSaveArchive = myTest.isSaveArchive;
 	bool archiveType = myTest.archiveType;
-	string archivePath = myTest.archive;
-	string archiveName;
+	string archiveName = myTest.archive;
+
 	if(archiveType)
-		archiveName = "gs.pb";
+		archiveName = archiveName.append(".pb");
 	else
-		archiveName = "gs.dat";
+		archiveName = archiveName.append(".dat");
 	unsigned short wsType = myTest.wsType;
 		boost::scoped_ptr<GatingSet> gs;
 		if(isLoadArchive)
 		{
 
-			gs.reset(new GatingSet(archivePath,archiveName, format, archiveType));
+			gs.reset(new GatingSet(archiveName, format, archiveType));
 
 		}
 		else
@@ -327,11 +327,11 @@ void parser_test(testCase & myTest){
 //		boost::archive::binary_oarchive oa(ofs);
 //		oa << BOOST_SERIALIZATION_NVP(boost::serialization::make_array(&thisInd[0],thisInd.size()));
 
-		if((!isLoadArchive)&&isSaveArchive){
+		if(isSaveArchive){
 			if(archiveType == PB)
-				gs->serialize_pb(archivePath,archiveName);
+				gs->serialize_pb(archiveName);
 			else
-				gs->serialize_bs(archivePath,archiveName,myTest.archiveFormat);
+				gs->serialize_bs(archiveName,myTest.archiveFormat);
 		}
 
 

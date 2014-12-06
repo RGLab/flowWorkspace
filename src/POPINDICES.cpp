@@ -135,7 +135,7 @@ void INTINDICES::convertToPb(pb::POPINDICES & ind_pb){
 INTINDICES::INTINDICES(const pb::POPINDICES & ind_pb){
 	nEvents = ind_pb.nevents();
 	unsigned nSize = ind_pb.iind_size();
-	x = vector<unsigned>(nEvents);
+	x = vector<unsigned>(nSize);
 	for(unsigned i = 0; i < nSize; i++)
 		x.at(i) = ind_pb.iind(i);
 }

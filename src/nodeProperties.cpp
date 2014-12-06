@@ -74,6 +74,56 @@ nodeProperties::nodeProperties(const pb::nodeProperties & np_pb):thisGate(NULL),
 
 	}
 }
+
+
+void nodeProperties::convertToPb(pb::nodeProperties & np_pb, bool isRoot){
+
+	np_pb.set_thisname(thisName);
+	np_pb.set_hidden(hidden);
+	//copy fj stats
+	BOOST_FOREACH(POPSTATS::value_type & it, fjStats){
+		pb::POPSTATS *fj = np_pb.add_fjstats();
+		fj->set_stattype(it.first);
+		fj->set_statval(it.second);
+	}
+	//copy fc stats
+	BOOST_FOREACH(POPSTATS::value_type & it, fcStats){
+		pb::POPSTATS *fc = np_pb.add_fcstats();
+		fc->set_stattype(it.first);
+		fc->set_statval(it.second);
+	}
+
+	bool isGated = indices != NULL;
+
+	if(isRoot){
+		if(isGated){
+			pb::POPINDICES * ind_pb = np_pb.mutable_indices();
+			indices->convertToPb(*ind_pb);
+		}
+
+	}
+	else
+	{
+		//cp gate
+		if(thisGate!=NULL){
+			pb::gate * gate_pb = np_pb.mutable_thisgate();
+			thisGate->convertToPb(*gate_pb);
+
+			//only archive event index for gated non-bool gate to save disk)
+			bool nonBool = thisGate->getType() != BOOLGATE;
+
+			if(isGated&&nonBool){
+				pb::POPINDICES * ind_pb = np_pb.mutable_indices();
+				indices->convertToPb(*ind_pb);
+			}
+
+		}
+
+	}
+
+
+}
+
 /* since nodeProperties contains non-copyable scope_ptr member
  * , customized copy and assignment constructor is required
  *
@@ -191,53 +241,5 @@ unsigned nodeProperties::getCounts(){
 	if(!this->isGated())
 		throw(domain_error("trying to get counts for unGated node!"));
 	return indices->getCount();
-
-}
-
-void nodeProperties::convertToPb(pb::nodeProperties & np_pb, bool isRoot){
-
-	np_pb.set_thisname(thisName);
-	np_pb.set_hidden(hidden);
-	//copy fj stats
-	BOOST_FOREACH(POPSTATS::value_type & it, fjStats){
-		pb::POPSTATS *fj = np_pb.add_fjstats();
-		fj->set_stattype(it.first);
-		fj->set_statval(it.second);
-	}
-	//copy fc stats
-	BOOST_FOREACH(POPSTATS::value_type & it, fcStats){
-		pb::POPSTATS *fc = np_pb.add_fcstats();
-		fc->set_stattype(it.first);
-		fc->set_statval(it.second);
-	}
-
-	bool isGated = indices != NULL;
-
-	if(isRoot){
-		if(isGated){
-			pb::POPINDICES * ind_pb = np_pb.mutable_indices();
-			indices->convertToPb(*ind_pb);
-		}
-
-	}
-	else
-	{
-		//cp gate
-		if(thisGate!=NULL){
-			pb::gate * gate_pb = np_pb.mutable_thisgate();
-			thisGate->convertToPb(*gate_pb);
-
-			//only archive event index for gated non-bool gate to save disk)
-			bool nonBool = thisGate->getType() != BOOLGATE;
-
-			if(isGated&&nonBool){
-				pb::POPINDICES * ind_pb = np_pb.mutable_indices();
-				indices->convertToPb(*ind_pb);
-			}
-
-		}
-
-	}
-
 
 }

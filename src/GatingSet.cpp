@@ -12,7 +12,7 @@
 #include <libxml/parser.h>
 #include <iostream>
 #include <exception>
-
+#include "include/delimitedMessage.hpp"
 using namespace std;
 
 
@@ -67,7 +67,7 @@ void GatingSet::convertToPb(pb::GatingSet & pb_gs, string path){
  * @param filename
  * @param format archive format, can be text,xml or binary
  */
-void GatingSet::serialize_bs(string path,string filename, unsigned short format){
+void GatingSet::serialize_bs(string filename, unsigned short format){
 
 
 	    	// make an archive
@@ -75,9 +75,9 @@ void GatingSet::serialize_bs(string path,string filename, unsigned short format)
 			if(format == ARCHIVE_TYPE_BINARY)
 				mode = mode | std::ios::binary;
 
-			path.append(filename);
 
-			std::ofstream ofs(path.c_str(), mode);
+
+			std::ofstream ofs(filename.c_str(), mode);
 
 
 			switch(format)
@@ -116,19 +116,19 @@ void GatingSet::serialize_bs(string path,string filename, unsigned short format)
  * @param path the dir of filename
  * @param filename
  */
-void GatingSet::serialize_pb(string path, string filename){
+void GatingSet::serialize_pb(string filename){
 
 	       	pb::GatingSet gs_pb;
-			convertToPb(gs_pb, path);
+			convertToPb(gs_pb, filename);
 
-			path.append(filename);
-			ofstream output(path.c_str(), ios::out | ios::trunc | ios::binary);
+
+			ofstream output(filename.c_str(), ios::out | ios::trunc | ios::binary);
+
 			if (!gs_pb.SerializeToOstream(&output))
 				throw(domain_error("Failed to write GatingSet."));
 			// Optional:  Delete all global objects allocated by libprotobuf.
 			google::protobuf::ShutdownProtobufLibrary();
 }
-
 /**
  * constructor from the archives (de-serialization)
  * @param filename
@@ -147,13 +147,31 @@ GatingSet::GatingSet(string path,string filename, unsigned short format, bool is
 		ifstream input(gsFile.c_str(), ios::in | ios::binary);
 
 
+
 		pb::GatingSet pbGS;
 		if (!input) {
 			throw(invalid_argument("File not found.." ));
+		pb::GatingSet pbGS;
+
+		if (!input) {
+			throw(invalid_argument("File not found.." ));
+		} else{
+
+
+			 IstreamInputStream raw_input(&input);
+			 CodedInputStream coded_input(&raw_input);
+			 coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), 536870912);
+			 bool success = pbGS.ParseFromCodedStream(&coded_input);
+
+
+
+			if (!success) {
+				throw(domain_error("Failed to parse GatingSet."));
+			}
+
+
 		}
-		else if (!pbGS.ParseFromIstream(&input)) {
-	               throw(domain_error("Failed to parse GatingSet."));
-		}
+
 		//load global trans tbl
 		map<intptr_t, transformation *> trans_tbl;
 
