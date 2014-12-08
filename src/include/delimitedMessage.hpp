@@ -13,11 +13,11 @@
 
 bool writeDelimitedTo(
     const google::protobuf::MessageLite& message,
-    google::protobuf::io::ZeroCopyOutputStream* rawOutput);
+    google::protobuf::io::ZeroCopyOutputStream & rawOutput);
 
 bool readDelimitedFrom(
-    google::protobuf::io::ZeroCopyInputStream* rawInput,
-    google::protobuf::MessageLite* message);
+    google::protobuf::io::ZeroCopyInputStream & rawInput,
+    google::protobuf::MessageLite & message);
 
 
 

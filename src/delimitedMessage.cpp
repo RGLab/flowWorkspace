@@ -1,15 +1,15 @@
 #include "include/delimitedMessage.hpp"
 /**
- * non-official code written by protobuf's author Kenton Varda
+ *  based on the non-official code written by protobuf's author Kenton Varda
  * @param rawInput
  * @param message
  * @return
  */
 bool writeDelimitedTo(
     const google::protobuf::MessageLite& message,
-    google::protobuf::io::ZeroCopyOutputStream* rawOutput) {
+    google::protobuf::io::ZeroCopyOutputStream & rawOutput) {
   // We create a new coded stream for each message.  Don't worry, this is fast.
-  google::protobuf::io::CodedOutputStream output(rawOutput);
+  google::protobuf::io::CodedOutputStream output(&rawOutput);
 
   // Write the size.
   const int size = message.ByteSize();
@@ -29,13 +29,13 @@ bool writeDelimitedTo(
   return true;
 }
 bool readDelimitedFrom(
-    google::protobuf::io::ZeroCopyInputStream* rawInput,
-    google::protobuf::MessageLite* message) {
+    google::protobuf::io::ZeroCopyInputStream & rawInput,
+    google::protobuf::MessageLite & message) {
   // We create a new coded stream for each message.  Don't worry, this is fast,
   // and it makes sure the 64MB total size limit is imposed per-message rather
   // than on the whole stream.  (See the CodedInputStream interface for more
   // info on this limit.)
-  google::protobuf::io::CodedInputStream input(rawInput);
+  google::protobuf::io::CodedInputStream input(&rawInput);
 
   // Read the size.
   uint32_t size;
@@ -46,7 +46,7 @@ bool readDelimitedFrom(
       input.PushLimit(size);
 
   // Parse the message.
-  if (!message->MergeFromCodedStream(&input)) return false;
+  if (!message.MergeFromCodedStream(&input)) return false;
   if (!input.ConsumedEntireMessage()) return false;
 
   // Release the limit.

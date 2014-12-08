@@ -231,7 +231,7 @@ void gh_removeGate(GatingHierarchy* gh){
 }
 void clone_test(testCase myTest){
 	string archive=myTest.archive;
-	GatingSet *gs=new GatingSet(archive,"gs.dat",ARCHIVE_TYPE_BINARY, false);
+	GatingSet *gs=new GatingSet(archive,ARCHIVE_TYPE_BINARY, false);
 	gs->clone_treeOnly(gs->getSamples());
 
 }

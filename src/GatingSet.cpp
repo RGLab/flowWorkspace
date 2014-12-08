@@ -16,52 +16,6 @@
 using namespace std;
 
 
-void GatingSet::convertToPb(pb::GatingSet & pb_gs, string path){
-	// Verify that the version of the library that we linked against is
-	  // compatible with the version of the headers we compiled against.
-	  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-	  BOOST_FOREACH(gh_map::value_type & it,ghs){
-
-		string sn = it.first;
-		GatingHierarchy * gh =  it.second;
-		/*
-		 * construct pb object for each sample
-		 */
-
-		pb_gs.add_samplename(sn);
-		pb::GatingHierarchy pb_gh;
-		gh->convertToPb(pb_gh);
-
-		//archive each sample individually to avoid big message
-
-		string gh_file(path);
-		gh_file.append(sn);
-		ofstream output(gh_file.c_str(), ios::out | ios::trunc | ios::binary);
-		if (!pb_gh.SerializeToOstream(&output))
-			throw(domain_error("Failed to write GatingHierarchy."));
-
-	  }
-
-	  //save the address of global biexp (as 1st entry)
-	  pb::TRANS_TBL * trans_tbl_pb = pb_gs.add_trans_tbl();
-	  intptr_t address = (intptr_t)&globalBiExpTrans;
-	  trans_tbl_pb->set_trans_address(address);
-
-
-	  //save the address of global lintrans(as 2nd entry)
-	  trans_tbl_pb = pb_gs.add_trans_tbl();
-	  address = (intptr_t)&globalLinTrans;
-	  trans_tbl_pb->set_trans_address(address);
-
-
-	  // cp trans group
-	  BOOST_FOREACH(trans_global_vec::value_type & it, gTrans){
-		  pb::trans_local * tg = pb_gs.add_gtrans();
-		  it.convertToPb(*tg, pb_gs);
-	  }
-
-}
 /**
  * serialization by boost serialization library
  * @param filename
@@ -117,17 +71,72 @@ void GatingSet::serialize_bs(string filename, unsigned short format){
  * @param filename
  */
 void GatingSet::serialize_pb(string filename){
+		// Verify that the version of the library that we linked against is
+		// compatible with the version of the headers we compiled against.
+		GOOGLE_PROTOBUF_VERIFY_VERSION;
+		//init the output stream
+		ofstream output(filename.c_str(), ios::out | ios::trunc | ios::binary);
+		google::protobuf::io::OstreamOutputStream raw_output(&output);
 
-	       	pb::GatingSet gs_pb;
-			convertToPb(gs_pb, filename);
+		//empty message for gs
+		pb::GatingSet gs_pb;
+
+		/*
+		 * add messages for trans
+		 */
+
+		//save the address of global biexp (as 1st entry)
+		pb::TRANS_TBL * trans_tbl_pb = gs_pb.add_trans_tbl();
+		intptr_t address = (intptr_t)&globalBiExpTrans;
+		trans_tbl_pb->set_trans_address(address);
 
 
-			ofstream output(filename.c_str(), ios::out | ios::trunc | ios::binary);
+		//save the address of global lintrans(as 2nd entry)
+		trans_tbl_pb = gs_pb.add_trans_tbl();
+		address = (intptr_t)&globalLinTrans;
+		trans_tbl_pb->set_trans_address(address);
 
-			if (!gs_pb.SerializeToOstream(&output))
-				throw(domain_error("Failed to write GatingSet."));
-			// Optional:  Delete all global objects allocated by libprotobuf.
+
+		// cp trans group
+		BOOST_FOREACH(trans_global_vec::value_type & it, gTrans){
+			pb::trans_local * tg = gs_pb.add_gtrans();
+			it.convertToPb(*tg, gs_pb);
+		}
+
+		//add sample name
+		BOOST_FOREACH(gh_map::value_type & it,ghs){
+				string sn = it.first;
+				gs_pb.add_samplename(sn);
+		}
+
+		//write gs message to stream
+		bool success = writeDelimitedTo(gs_pb, raw_output);
+
+		if (!success){
 			google::protobuf::ShutdownProtobufLibrary();
+			throw(domain_error("Failed to write GatingSet."));
+		}else
+		{
+			/*
+			 * write pb message for each sample
+			 */
+
+			BOOST_FOREACH(gh_map::value_type & it,ghs){
+					string sn = it.first;
+					GatingHierarchy * gh =  it.second;
+
+					pb::GatingHierarchy pb_gh;
+					gh->convertToPb(pb_gh);
+					//write the message
+					bool success = writeDelimitedTo(pb_gh, raw_output);
+					if (!success)
+						throw(domain_error("Failed to write GatingHierarchy."));
+			}
+
+		}
+
+		// Optional:  Delete all global objects allocated by libprotobuf.
+		google::protobuf::ShutdownProtobufLibrary();
 }
 /**
  * constructor from the archives (de-serialization)
@@ -135,123 +144,104 @@ void GatingSet::serialize_pb(string filename){
  * @param format
  * @param isPB
  */
-GatingSet::GatingSet(string path,string filename, unsigned short format, bool isPB):wsPtr(NULL)
+GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NULL)
 {
 
-	string gsFile = path;
-	gsFile.append(filename);
+
 	if(isPB){
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
-		 //load archive from disk to pb object
-
-		ifstream input(gsFile.c_str(), ios::in | ios::binary);
-
-
-
-		pb::GatingSet pbGS;
-		if (!input) {
-			throw(invalid_argument("File not found.." ));
-		pb::GatingSet pbGS;
-
+		ifstream input(filename.c_str(), ios::in | ios::binary);
 		if (!input) {
 			throw(invalid_argument("File not found.." ));
 		} else{
+			 pb::GatingSet pbGS;
 
-
-			 IstreamInputStream raw_input(&input);
-			 CodedInputStream coded_input(&raw_input);
-			 coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), 536870912);
-			 bool success = pbGS.ParseFromCodedStream(&coded_input);
-
-
+			 google::protobuf::io::IstreamInputStream raw_input(&input);
+			 //read gs message
+			 bool success = readDelimitedFrom(raw_input, pbGS);
 
 			if (!success) {
 				throw(domain_error("Failed to parse GatingSet."));
 			}
 
+			//parse global trans tbl from message
+			map<intptr_t, transformation *> trans_tbl;
 
-		}
+			for(int i = 0; i < pbGS.trans_tbl_size(); i++){
+				const pb::TRANS_TBL & trans_tbl_pb = pbGS.trans_tbl(i);
+				const pb::transformation & trans_pb = trans_tbl_pb.trans();
+				intptr_t old_address = (intptr_t)trans_tbl_pb.trans_address();
 
-		//load global trans tbl
-		map<intptr_t, transformation *> trans_tbl;
+				/*
+				 * first two global trans do not need to be restored from archive
+				 * since they use the default parameters
+				 * simply add the new address
+				 */
 
-		for(int i = 0; i < pbGS.trans_tbl_size(); i++){
-			const pb::TRANS_TBL & trans_tbl_pb = pbGS.trans_tbl(i);
-			const pb::transformation & trans_pb = trans_tbl_pb.trans();
-			intptr_t old_address = (intptr_t)trans_tbl_pb.trans_address();
-
-			/*
-			 * first two global trans do not need to be restored from archive
-			 * since they use the default parameters
-			 * simply add the new address
-			 */
-
-			switch(i)
-			{
-			case 0:
-				trans_tbl[old_address] = &globalBiExpTrans;
-				break;
-			case 1:
-				trans_tbl[old_address] = &globalLinTrans;
-				break;
-			default:
+				switch(i)
 				{
-					switch(trans_pb.trans_type())
+				case 0:
+					trans_tbl[old_address] = &globalBiExpTrans;
+					break;
+				case 1:
+					trans_tbl[old_address] = &globalLinTrans;
+					break;
+				default:
 					{
-					case pb::PB_CALTBL:
-						trans_tbl[old_address] = new transformation(trans_pb);
-						break;
-					case pb::PB_BIEXP:
-						trans_tbl[old_address] = new biexpTrans(trans_pb);
-						break;
-					case pb::PB_FASIGNH:
-						trans_tbl[old_address] = new fasinhTrans(trans_pb);
-						break;
-					case pb::PB_FLIN:
-						trans_tbl[old_address] = new flinTrans(trans_pb);
-						break;
-					case pb::PB_LIN:
-						trans_tbl[old_address] = new linTrans(trans_pb);
-						break;
-					case pb::PB_LOG:
-						trans_tbl[old_address] = new logTrans(trans_pb);
-						break;
-//					case pb::PB_SCALE:
-//						trans_tbl[old_address] = new scaleTrans(trans_pb);
-//						break;
-					default:
-						throw(domain_error("unknown type of transformation archive!"));
+						switch(trans_pb.trans_type())
+						{
+						case pb::PB_CALTBL:
+							trans_tbl[old_address] = new transformation(trans_pb);
+							break;
+						case pb::PB_BIEXP:
+							trans_tbl[old_address] = new biexpTrans(trans_pb);
+							break;
+						case pb::PB_FASIGNH:
+							trans_tbl[old_address] = new fasinhTrans(trans_pb);
+							break;
+						case pb::PB_FLIN:
+							trans_tbl[old_address] = new flinTrans(trans_pb);
+							break;
+						case pb::PB_LIN:
+							trans_tbl[old_address] = new linTrans(trans_pb);
+							break;
+						case pb::PB_LOG:
+							trans_tbl[old_address] = new logTrans(trans_pb);
+							break;
+	//					case pb::PB_SCALE:
+	//						trans_tbl[old_address] = new scaleTrans(trans_pb);
+	//						break;
+						default:
+							throw(domain_error("unknown type of transformation archive!"));
+						}
 					}
 				}
+
+			}
+			/*
+			 * recover the trans_global
+			 */
+
+			for(int i = 0; i < pbGS.gtrans_size(); i++){
+				const pb::trans_local & trans_local_pb = pbGS.gtrans(i);
+				gTrans.push_back(trans_global(trans_local_pb, trans_tbl));
 			}
 
-		}
-		/*
-		 * recover the trans_global
-		 */
+			//read gating hierarchy messages
+			for(int i = 0; i < pbGS.samplename_size(); i++){
+				string sn = pbGS.samplename(i);
+				//gh message is stored as the same order as sample name vector in gs
+				pb::GatingHierarchy gh_pb;
+				bool success = readDelimitedFrom(raw_input, gh_pb);
 
-		for(int i = 0; i < pbGS.gtrans_size(); i++){
-			const pb::trans_local & trans_local_pb = pbGS.gtrans(i);
-			gTrans.push_back(trans_global(trans_local_pb, trans_tbl));
-		}
+				if (!success) {
+					throw(domain_error("Failed to parse GatingHierarchy."));
+				}
 
-		//restore gating hierarchy
-		for(int i = 0; i < pbGS.samplename_size(); i++){
-			string sn = pbGS.samplename(i);
 
-			string gh_file(path);
-			gh_file.append(sn);
-			ifstream input(gh_file.c_str(), ios::in | ios::binary);
-			pb::GatingHierarchy gh_pb;
-			if (!input) {
-				throw(invalid_argument("File not found.." ));
-			} else if (!gh_pb.ParseFromIstream(&input)) {
-				throw(domain_error("Failed to parse GatingHierarchy."));
+				ghs[sn] = new GatingHierarchy(gh_pb, trans_tbl);
 			}
-
-			ghs[sn] = new GatingHierarchy(gh_pb, trans_tbl);
 		}
-
 	}
 	else
 	{
@@ -259,7 +249,7 @@ GatingSet::GatingSet(string path,string filename, unsigned short format, bool is
 		std::ios::openmode mode = std::ios::in;
 		if(format == ARCHIVE_TYPE_BINARY)
 			mode = mode | std::ios::binary;
-		std::ifstream ifs(gsFile.c_str(), mode);
+		std::ifstream ifs(filename.c_str(), mode);
 
 		switch(format)
 		{
