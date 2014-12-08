@@ -1,7 +1,7 @@
 You need the following C/C++ libraries to build flowWorkspace from source (using Rtools for windows users).
 -- libxml2
 -- boost
--- google protobuf 
+-- google protobuf (>= 2.6.0) (https://github.com/google/protobuf/releases)
 
 Linux users
 =============

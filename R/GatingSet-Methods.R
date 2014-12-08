@@ -66,13 +66,16 @@ save_gs<-function(G,path,overwrite = FALSE
   isPB <- lib == "PB"
   if(isPB)
     fileext <- 'pb'
-  else
+  else{
+    warning("Boost serialization format is to be deprecated. Try to use 'google protocal buffer' instead (lib = 'PB')!")
     fileext <-  switch(type
-                      , binary = "dat"
-                      , text = "txt"
-                      , xml = "xml"
-                      , "dat"
-                  )
+        , binary = "dat"
+        , text = "txt"
+        , xml = "xml"
+        , "dat"
+    )
+  }
+    
   
   guid <- G@guid
   if(length(guid) == 0){
@@ -185,14 +188,17 @@ load_gs<-function(path){
     isPB <- lib == "PB"
     if(isPB)
       fileext <- 'pb'
-    else
+    else{
+      warning("Boost serialization format is to be deprecated. Try to use 'google protocal buffer' instead (lib = 'PB')!")
       fileext <-  switch(type
           , binary = "dat"
           , text = "txt"
           , xml = "xml"
           , "dat"
       )
-    
+      
+    }
+      
 
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
@@ -264,6 +270,8 @@ load_gs<-function(path){
         stop("multiple .dat or .pb files found in ",output)
       fileext <- file_ext(dat.file)
       isPB <- fileext == "pb"
+      if(!isPB)
+        warning("Boost serialization format is to be deprecated. Try to resave it with 'google protocal buffer' (lib = 'PB')!")
       #only meaningful for BS
       typeID <- switch(fileext
                       , "dat" = 0
