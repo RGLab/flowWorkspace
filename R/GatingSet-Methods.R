@@ -67,7 +67,7 @@ save_gs<-function(G,path,overwrite = FALSE
   if(isPB)
     fileext <- 'pb'
   else{
-    warning("Boost serialization format is to be deprecated. Try to use 'google protocal buffer' instead (lib = 'PB')!")
+    warning("Boost serialization format is to be deprecated. Try to use 'google protocol buffer' instead (lib = 'PB')!")
     fileext <-  switch(type
         , binary = "dat"
         , text = "txt"
@@ -189,7 +189,7 @@ load_gs<-function(path){
     if(isPB)
       fileext <- 'pb'
     else{
-      warning("Boost serialization format is to be deprecated. Try to use 'google protocal buffer' instead (lib = 'PB')!")
+      warning("Boost serialization format is to be deprecated. Try to use 'google protocol buffer' instead (lib = 'PB')!")
       fileext <-  switch(type
           , binary = "dat"
           , text = "txt"
@@ -271,7 +271,7 @@ load_gs<-function(path){
       fileext <- file_ext(dat.file)
       isPB <- fileext == "pb"
       if(!isPB)
-        warning("Boost serialization format is to be deprecated. Try to resave it with 'google protocal buffer' (lib = 'PB')!")
+        warning("Boost serialization format is to be deprecated. Try to resave it with 'google protocol buffer' (lib = 'PB')!")
       #only meaningful for BS
       typeID <- switch(fileext
                       , "dat" = 0
