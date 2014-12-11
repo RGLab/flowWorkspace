@@ -255,7 +255,7 @@ test_that("setNode",{
 
 test_that("getPopStats",{
   
-      thisRes <- getPopStats(gs, path = "full")
+      thisRes <- getPopStats(gs, path = "full", format = "wide")
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))

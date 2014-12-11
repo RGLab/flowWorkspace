@@ -2080,7 +2080,7 @@ setMethod("show","GatingSet",function(object){
 #' @export 
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("wide", "long"), path = "auto", ...) {
+    function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "auto", ...) {
 
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
