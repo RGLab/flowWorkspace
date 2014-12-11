@@ -461,16 +461,23 @@ unarchive<-function(file,path=tempdir()){
 
 	message("done!")
 
+    
+     
+    #we don't want to return the splitted gs since they share the same cdf and externalptr
+    #thus should be handled differently(more efficiently) from the regular gslist
 
-    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
+#    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
     gslist <- suppressMessages(.groupByTree(G))
-    if(length(gslist) == 1)
-      return (gslist[[1]])
-    else
+    if(length(gslist) > 1)
+      warning("GatingSet contains different gating tree structures and must be cleaned before using it! ")
+#    if(length(gslist) == 1){
+#      return (gslist[[1]])      
+#    }else
     {
-      warning("Due to the different gating tree structures, a list of GatingSets is returned instead!")
-      return (gslist)
+#      warning("Due to the different gating tree structures, a list of GatingSets is returned instead!")
+#      return (gslist)
     }
+    G
 }
 
 #' constructors for GatingSet
@@ -785,7 +792,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             #it is used to display the data.
             #so we need update this range info by transforming it
             tInd <- grepl("[Tt]ime",cnd)
-            tRg  <- range(mat[,tInd])
+            if(any(tInd))
+              tRg  <- range(mat[,tInd])
+            else
+              tRg <- NULL
             axis.labels <- .transformRange(G,sampleName,wsType,fs@frames,timeRange = tRg)
 
 		}else{
