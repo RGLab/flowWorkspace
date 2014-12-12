@@ -318,7 +318,7 @@ load_gs<-function(path){
                           }, simplify = FALSE)
 
 
-        gs <- new("GatingSet", flag = TRUE, FCSPath = thisPath, guid = thisGuid, axis = axis, data = fs)
+        gs <- new("GatingSet", flag = TRUE, guid = thisGuid, axis = axis, data = fs)
       }
 
       
@@ -426,19 +426,21 @@ unarchive<-function(file,path=tempdir()){
 		for(file in samples){
 
 			#########################################################
-			#get full path for each fcs and store in FCSPath slot
+			#get full path for each fcs
 			#########################################################
 			##escape "illegal" characters
 			file<-gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",file)))))))
-			absPath<-list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
-
-			if(length(absPath)==0){
+			absPath <- list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
+            nFound <- length(absPath)
+			if(nFound == 0){
 				warning("Can't find ",file," in directory: ",path,"\n");
 				excludefiles<-c(excludefiles,TRUE);
 
-			}else{
-#				browser()
-				dataPaths<-c(dataPaths,dirname(absPath[1]))
+			}else if(nFound > 1){
+              stop('Multiple files found for:', file) 
+            }else{
+              
+				dataPaths<-c(dataPaths,dirname(absPath))
 				excludefiles<-c(excludefiles,FALSE);
 			}
 		}
@@ -450,7 +452,7 @@ unarchive<-function(file,path=tempdir()){
 
 
 		files<-file.path(dataPaths,samples)
-        G@FCSPath <- dataPaths
+        
 	}else
 	{
 		files<-samples
@@ -523,7 +525,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			message("generating new GatingSet from the gating template...")
 			Object@pointer <- .Call("R_NewGatingSet",x@pointer,sampleNames(x),samples)
             Object@guid <- .uuid_gen()
-            Object@FCSPath <- dataPaths
+            
 			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
             #if the gating template is already gated, it needs to be recompute explicitly
             #in order to update the counts
@@ -1343,7 +1345,6 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     is.gh <- class(x) == "GatingHierarchy"
     if(is.gh){
       x <- new("GatingSet", pointer = x@pointer 
-                          , FCSPath = x@FCSPath
                           , data = x@data
                           , flag = x@flag
                           , axis = x@axis
@@ -2006,7 +2007,6 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
 #      as(x[i], "GatingHierarchy")
       #new takes less time than as method
       new("GatingHierarchy", pointer = x@pointer 
-                            , FCSPath = x@FCSPath
                             , data = x@data
                             , flag = x@flag
                             , axis = x@axis

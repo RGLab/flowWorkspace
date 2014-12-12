@@ -66,9 +66,6 @@ setGeneric("getTotal",function(x,y,...)standardGeneric("getTotal"))
 setGeneric("getSamples",function(x,...)standardGeneric("getSamples"))
 
 #' @export
-setGeneric("getSample",function(x,...)standardGeneric("getSample"))
-
-#' @export
 setGeneric("getSampleGroups",function(x)standardGeneric("getSampleGroups"))
 
 #' @export
