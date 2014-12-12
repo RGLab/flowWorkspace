@@ -403,13 +403,12 @@ unarchive<-function(file,path=tempdir()){
 
 
 	message("calling c++ parser...")
-#	browser()
 
 	time1<-Sys.time()
 	G <- GatingSet(x = xmlFileName
-                  , y = sampleIDs
+                  , y = as.character(sampleIDs)
                   , includeGates = includeGates
-                  , sampNloc=sampNloc
+                  , sampNloc = sampNloc
                   , xmlParserOption = xmlParserOption
                   , wsType = wsType
                   )

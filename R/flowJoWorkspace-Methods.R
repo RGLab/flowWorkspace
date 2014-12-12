@@ -147,8 +147,20 @@ setMethod("summary",c("flowJoWorkspace"),function(object){
 #' @rdname parseWorkspace
 #' @export 
 #' @importFrom utils menu
-setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,execute=TRUE,isNcdf=FALSE,subset=NULL,requiregates=TRUE,includeGates=TRUE, path=obj@path, sampNloc="keyword", ...){
-	
+setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
+      .preprocessor(obj, ...)
+    })
+
+.preprocessor <- function(obj, name = NULL
+                              , execute = TRUE
+                              , isNcdf = FALSE
+                              , subset = NULL
+                              , requiregates = TRUE
+                              , includeGates = TRUE
+                              , path = obj@path
+                              , sampNloc = "keyword"
+                              , ...)
+{	
     sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))	
 			
 	if(isNcdf&!TRUE){
@@ -162,65 +174,62 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
     
     wsType <- .getWorkspaceType(wsversion)
     wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
-    filenames <- .getFileNames(x, wsType);
-      
-    s <- .getSamples(x, wsType, sampNloc = sampNloc);
-    g <- .getSampleGroups(x, wsType);
+    
+    #sample info  
+    allSamples <- .getSamples(x, wsType, sampNloc = sampNloc)
+    # group Info
+    g <- .getSampleGroups(x, wsType)
+    # merge two
+	sg <- merge(allSamples, g, by="sampleID");
 	
-	sg<-merge(s,g,by="sampleID");
-	#requiregates - exclude samples where there are no gates? if(requiregates==TRUE)
+    #requiregates - exclude samples where there are no gates? if(requiregates==TRUE)
 	if(requiregates){
-		sg<-sg[sg$pop.counts>0,]
+		sg <- sg[sg$pop.counts>0,]
 	}
-		
+	
+    # filter by group name
 	sg$groupName<-factor(sg$groupName)
 	groups<-levels(sg$groupName)
+    
 	if(is.null(name)){
 	message("Choose which group of samples to import:\n");
-	result<-menu(groups,graphics=FALSE);
+    groupInd <- menu(groups,graphics=FALSE);
 	}else if(is.numeric(name)){
 		if(length(groups)<name)
 			stop("Invalid sample group index.")
-		result<-name
+		groupInd <- name
 	}else if(is.character(name)){
 		if(is.na(match(name,groups)))
 			stop("Invalid sample group name.")
-		result<-match(name,groups)
+          groupInd <- match(name,groups)
 	}
+    group.name <- groups[groupInd]
+    sg <- subset(sg, groupName == group.name)
+#    browser()    
+    #filter by subset (sample name or numeric index)
 	if(is.factor(subset)){
 		subset<-as.character(subset)
 	}
 	if(is.character(subset)){
-	#subset s sg by file name
-          #pull the file names from the keywords
-          filenames<-.getKeyword(obj,"$FIL", wsNodePath[["sample"]])
-          #need to match filename to sampleID
-          sg<-cbind(sg,filename=sapply(sg$sampleID,function(x).getKeywordsBySampleID(obj,x,"$FIL", wsNodePath[["sample"]])))
-          sg<-subset(sg,filename%in%subset)
-	}
-	if(grepl("mac",wsType)){
-		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
-			xpathApply(x,paste(wsNodePath[["sample"]], "[@sampleID='",i,"']",sep=""))[[1]]
-			})
-	}else{
-		l<-sapply(sg[sg$groupName==groups[result],]$sampleID,function(i){
-			xpathApply(x,paste(wsNodePath[["sample"]], "/DataSet[@sampleID='",i,"']",sep=""))[[1]]
-			})
-	}
-#	browser()
-	# Allow import of a subset of samples
-	if(!missing(subset)){
-	if(is.numeric(subset)){
-		if(max(subset)<=length(l)&min(subset)>=1)
-		l<-l[subset]
-	}
-	}
-	if(length(l)==0){
-		stop("No samples in this workspace to parse!")
-#		return(new("GatingSet"))
-	}
-	message("Parsing ",length(l)," samples");
-    sampleIDs<-unlist(lapply(l,xmlGetAttr,"sampleID"))
+          sg <- subset(sg, name %in% subset)
+	}else if(is.numeric(subset))
+      sg <- sg[subset, ] 
+
+    #check if there are samples to parse
+    sampleIDs <- sg[["sampleID"]]
+    nSample <- length(sampleIDs)
+    if(nSample == 0)
+      stop("No samples in this workspace to parse!")
+    
+    
+    #check duplicated sample names
+    sampleSelected <- sg[["name"]]
+    isDup <- duplicated(sampleSelected)
+    if(any(isDup))
+      stop("Duplicated sample names detected within group: ", paste(sampleSelected[isDup], collapse = " "), "\n Please check if the appropriate group is selected.")
+
+    
+	message("Parsing ", nSample," samples");
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
                     ,sampleIDs
                     ,execute=execute
@@ -233,7 +242,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj,name=NULL,e
                     , sampNloc = sampNloc
                     ,...)
 		
-})
+}
 
 
 getFileNames <- function(ws){
