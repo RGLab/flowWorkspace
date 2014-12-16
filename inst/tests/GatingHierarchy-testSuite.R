@@ -29,10 +29,16 @@ test_that("getNodeInd ",{
       expect_equal(.getNodeInd(gh, "CD8/38- DR+"), 15)
       
       #non-unqiue partial path
-      expect_error(.getNodeInd(gh, "/38- DR+"), "is ambiguous within the gating tree")
+      expect_error(.getNodeInd(gh, "/38- DR+"), "not found")
       
       #non-unique node name indexing
       expect_error(.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree")
+      
+      #dealing with root
+      expect_equal(.getNodeInd(gh, "/not debris"), 2)
+      expect_equal(.getNodeInd(gh, "not debris"), 2)
+      expect_equal(.getNodeInd(gh, "/root/not debris"), 2)
+      expect_equal(.getNodeInd(gh, "root/not debris"), 2)
       
     })
 

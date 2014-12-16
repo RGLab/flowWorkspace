@@ -852,10 +852,15 @@ bool isEmpty(string path){
  * @return
  */
 VertexID GatingHierarchy::getNodeID(string gatePath){
+
 	StringVec res;
 	boost::split(res,gatePath,boost::is_any_of("/"));
 	//remove the empty string
 	res.erase(remove_if(res.begin(),res.end(), isEmpty), res.end());
+
+	//prepend root if it is absolute path (starts with /) and root is not yet prepended yet
+	if(gatePath[0] == '/' && res.at(0)!= "root")
+		res.insert(res.begin(), "root");
 	return (getNodeID(res));
 
 }
