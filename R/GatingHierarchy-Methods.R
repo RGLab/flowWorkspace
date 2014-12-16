@@ -1258,7 +1258,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
           {
 
             f <- function(x){
-              ifelse(x>0,log10((x)/max_val)/decade+offset,min_val)
+              sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
             }
             assign("decade", curTrans$decade, environment(f))
             assign("offset", curTrans$offset, environment(f))
