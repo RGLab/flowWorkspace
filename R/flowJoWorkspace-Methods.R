@@ -317,6 +317,8 @@ mkformula<-function(dims,isChar=FALSE){
 #' 
 #' @param obj A \code{flowJoWorkspace}
 #' @param y c\code{character} specifying the sample names
+#' @param ... other arguments
+#'      sampNloc a \code{character} the location where the sample name is specified. See \code{parseWorkspace} for more details.
 #' 
 #' @details
 #'   Retrieve a list of keywords from a \code{flowJoWorkspace}  
@@ -333,24 +335,32 @@ mkformula<-function(dims,isChar=FALSE){
 #' @aliases getKeywords
 #' @rdname getKeywords
 #' @export 
-setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y){
+setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y, ...){
       x <- obj@doc
       wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
       wsType <- .getWorkspaceType(wsversion)
       wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
-      .getKeywords(obj@doc,y, wsNodePath[["sample"]])
+      .getKeywords(obj@doc,y, wsNodePath[["sample"]], ...)
 })
 
-.getKeywords <- function(doc,y, samplePath = "/Workspace/SampleList/Sample"){
-  #match sample name to the keywords  
-  w <- which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
+.getKeywords <- function(doc,y, samplePath = "/Workspace/SampleList/Sample", sampNloc = "keyword"){
+  sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))  
+  
+  if(sampNloc == "keyword"){
+    w <- which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
+    if(length(w)==0)
+      warning("Sample name ",y," not found in Keywords of workspace")
+  }else{
+    w <- which(xpathApply(doc, file.path(samplePath,"SampleNode") ,function(x)xmlGetAttr(x,"name"))%in%y)
+    if(length(w)==0)
+      warning("Sample name ",y," not found in SampleNode of workspace")
+  }
+  
   if(length(w)==0){
-    warning("Sample ",y," not found in Keywords of workspace");
     ##Use the DataSet tag to locate the sample
     w <- which(xpathApply(doc, file.path(samplePath,"DataSet") ,function(x)xmlGetAttr(x,"uri"))%in%y)
-    #last resort to match to the SampleNode name attribute
     if(length(w)==0)
-      w <- which(xpathApply(doc, file.path(samplePath,"SampleNode") ,function(x)xmlGetAttr(x,"name"))%in%y)
+      stop("failed to locate Sample ",y," within workspace")      
   }
   l <- xpathApply(doc,paste(samplePath,"[",w,"]/Keywords/node()",sep=""),xmlAttrs)
   names(l)<-lapply(l,function(x)x[["name"]])

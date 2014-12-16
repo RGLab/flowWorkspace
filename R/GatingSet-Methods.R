@@ -457,7 +457,7 @@ unarchive<-function(file,path=tempdir()){
 	{
 		files<-samples
 	}
-	G <- .addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, ...)
+	G <- .addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ...)
 
 
 	message("done!")
@@ -547,7 +547,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE,...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", ...){
 
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -690,7 +690,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
          # return keywords from workspace successfully, thus it is currently
          # only used when execute = FALSE
          if(!is.null(ws))
-           kw <- getKeywords(ws, sampleName)
+           kw <- getKeywords(ws, sampleName, sampNloc = sampNloc)
          #use $PnB to determine the number of parameters since {N,R,S) could be
          #redundant in some workspaces
          key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
