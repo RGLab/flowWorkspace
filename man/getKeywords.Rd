@@ -5,12 +5,15 @@
 \alias{getKeywords,flowJoWorkspace,character-method}
 \title{Get Keywords}
 \usage{
-\S4method{getKeywords}{flowJoWorkspace,character}(obj, y)
+\S4method{getKeywords}{flowJoWorkspace,character}(obj, y, ...)
 }
 \arguments{
 \item{obj}{A \code{flowJoWorkspace}}
 
 \item{y}{c\code{character} specifying the sample names}
+
+\item{...}{other arguments
+     sampNloc a \code{character} the location where the sample name is specified. See \code{parseWorkspace} for more details.}
 }
 \value{
 A list of keyword - value pairs.

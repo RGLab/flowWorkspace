@@ -148,6 +148,12 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 	xmlXPathFreeObject(transParentNodeRes);
 
 	res.setTransMap(curTp);
+
+	//store another cp in trans_global_vec since it is up to GatingSet to clean up these trans pointers
+	trans_global tg;
+	tg.setTransMap(curTp);
+	gTrans->push_back(tg);
+
 	return res;
 }
 /*
@@ -458,16 +464,16 @@ ellipsoidGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	wsPolyGateNode pGNode(node.getNodePtr());
 	polygonGate * pg=getGate(pGNode, "*[local-name()='edge']/*[local-name()='vertex']");
 	vector<coordinate> v=pg->getParam().getVertices();
-	paramPoly pPoly;
+
 
 	/*
 	 * copy four coordinates
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipsoidGate * g=new ellipsoidGate(v);
-	pPoly.setName(pg->getParam().getNameArray());
-	g->setParam(pPoly);
+
+	ellipsoidGate * g=new ellipsoidGate(v, pg->getParam().getNameArray());
+
 	delete pg;
 
 	return(g);

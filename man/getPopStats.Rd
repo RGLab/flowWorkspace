@@ -19,10 +19,10 @@
 \S4method{getPopStats}{GatingHierarchy}(x, path = "auto", ...)
 
 \S4method{getPopStats}{GatingSet}(x, statistic = c("freq", "count"),
-  flowJo = FALSE, subpopulations = NULL, format = c("wide", "long"),
+  flowJo = FALSE, subpopulations = NULL, format = c("long", "wide"),
   path = "auto", ...)
 
-\S4method{getPopStats}{GatingSetList}(x, format = c("wide", "long"), ...)
+\S4method{getPopStats}{GatingSetList}(x, format = c("long", "wide"), ...)
 }
 \arguments{
 \item{x}{A \code{GatingHierarchy} or \code{GatingSet}}

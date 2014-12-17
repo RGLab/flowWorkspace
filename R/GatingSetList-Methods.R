@@ -116,7 +116,7 @@ setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ..
     })
 #' @rdname getPopStats
 #' @export
-setMethod("getPopStats","GatingSetList",function(x, format = c("wide", "long"), ...){
+setMethod("getPopStats","GatingSetList",function(x, format = c("long", "wide"), ...){
       
       format <- match.arg(format)
       res <- lapply(x,getPopStats, level =1, format = format,...)

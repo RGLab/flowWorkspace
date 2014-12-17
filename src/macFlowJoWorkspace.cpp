@@ -592,16 +592,16 @@ ellipseGate* macFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 	wsPolyGateNode pGNode(node.getNodePtr());
 	polygonGate * pg=getGate(pGNode);
 	vector<coordinate> v=pg->getParam().getVertices();
-	paramPoly pPoly;
+
 
 	/*
 	 * copy four coordinates
 	 */
 	if(v.size()!=4)
 		throw(domain_error("invalid number of antipode pionts of ellipse gate!"));
-	ellipseGate * g=new ellipseGate(v);
-	pPoly.setName(pg->getParam().getNameArray());
-	g->setParam(pPoly);
+	ellipseGate * g=new ellipseGate(v, pg->getParam().getNameArray());
+
+
 
 	delete pg;
 
