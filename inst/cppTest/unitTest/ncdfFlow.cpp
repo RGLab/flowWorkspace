@@ -39,7 +39,6 @@ vector<string> ncdfFlow::params_get(){
  */
 #define ERR(e) {throw(ios_base::failure(nc_strerror(e)));}
 
-
 flowData hdfFlow::readflowData(string sampleName)
 {
 

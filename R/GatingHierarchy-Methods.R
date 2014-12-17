@@ -1258,7 +1258,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
           {
 
             f <- function(x){
-              ifelse(x>0,log10((x)/max_val)/decade+offset,min_val)
+              sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
             }
             assign("decade", curTrans$decade, environment(f))
             assign("offset", curTrans$offset, environment(f))
@@ -1693,30 +1693,6 @@ setMethod("sampleNames","GatingHierarchy",function(object){
       object@name
     })
 
-#' Get the sample name associated with a GatingHierarchy
-#'
-#' Return  the sample name
-#' @param x A \code{GatingHierarchy}
-#' @param isFullPath \code{isFullPath} is a logical value indicating whether the full path of the sample FCS file is returned.Default is FALSE.
-#'
-#' @details Returns the name of the sample, or the path to the FCS file.
-#' @return  A "character" vector of length 1. Either the sample name or the path to the FCS file.
-#'
-#' @examples
-#'   \dontrun{
-#'     #G is  a GatingHierarhcy
-#'     getSample(G)
-#'   }
-#' @aliases getSample
-#' @rdname getSample
-setMethod("getSample","GatingHierarchy",function(x,isFullPath=FALSE){
-      thisSample <- sampleNames(x)
-      
-      if(isFullPath)
-        thisSample <- file.path(x@FCSPath,thisSample)
-      thisSample
-      
-    })
 
 #' @export
 #' @rdname pData-methods
