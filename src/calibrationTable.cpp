@@ -109,4 +109,30 @@ valarray<double> calibrationTable::transforming(valarray<double> & input){
 }
 
 
+void calibrationTable::convertToPb(pb::calibrationTable & cal_pb){
+	for(unsigned i = 0; i < x.size(); i++){
+		cal_pb.add_x(x[i]);
+		cal_pb.add_y(y[i]);
+		cal_pb.add_b(b[i]);
+		cal_pb.add_c(c[i]);
+		cal_pb.add_d(d[i]);
+	}
+	cal_pb.set_spline_method(spline_method);
+	cal_pb.set_caltype(caltype);
+	cal_pb.set_flag(flag);
+}
 
+calibrationTable::calibrationTable(const pb::calibrationTable & cal_pb){
+	int nSize = cal_pb.x_size();
+	init(nSize);
+	for(int i = 0; i < nSize; i++){
+		x[i] = cal_pb.x(i);
+		y[i] = cal_pb.y(i);
+		b[i] = cal_pb.b(i);
+		c[i] = cal_pb.c(i);
+		d[i] = cal_pb.d(i);
+	}
+	spline_method = cal_pb.spline_method();
+	caltype = cal_pb.caltype();
+	flag = cal_pb.flag();
+}

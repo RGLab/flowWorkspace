@@ -73,10 +73,10 @@ test_that("getGate", {
     })
 
 test_that("getPopStats", {
-      thisRes <- getPopStats(gslist)
+      thisRes <- getPopStats(gslist, format = "wide")
       expect_is(thisRes, "matrix")
       expect_equal(colnames(thisRes), sampleNames(gslist))
-      expect_equal(thisRes[,1, drop = F], getPopStats(gs))
+      expect_equal(thisRes[,1, drop = F], getPopStats(gs, format = "wide"))
       
     })
 

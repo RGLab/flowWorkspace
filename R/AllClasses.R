@@ -89,7 +89,7 @@ setClass("flowJoWorkspace"
 #' @section Slots:
 #' 
 #' \describe{
-#'     \item{\code{FCSPath}:}{Object of class \code{"character"}. A path to the fcs files associated with this GatingSet } 
+#'     \item{\code{FCSPath}:}{deprecated} 
 #'     \item{\code{data}:}{Object of class \code{"flowSet"}. flow data associated with this GatingSet }
 #'     \item{\code{flag}:}{Object of class \code{"logical"}. A flag indicating whether the gates, transformations, and compensation matrices have been applied to data, or simply imported.}
 #'     \item{\code{axis}:}{Object of class \code{"list"}. stores the axis information used for plotGate.}

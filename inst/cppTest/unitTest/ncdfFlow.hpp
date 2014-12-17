@@ -7,7 +7,7 @@
 #define NCDFFLOW_HPP_
 #include <string>
 #include "hdf5.h"
-#include <R.h>
+//#include <R.h>
 #include <stdlib.h>
 #define DATASETNAME "/exprsMat"
 #include <netcdf.h>
@@ -38,9 +38,6 @@ public:
 	void sample_set(vector<string> _sampleNames);
 	vector<string> params_get();
 	string fileName_get();
-//	float * readSlice(unsigned int sampleID);
-
-
 };
 
 class hdfFlow:public ncdfFlow{

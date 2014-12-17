@@ -5,30 +5,20 @@
 \alias{parseWorkspace,flowJoWorkspace-method}
 \title{Parse a flowJo Workspace}
 \usage{
-\S4method{parseWorkspace}{flowJoWorkspace}(obj, name = NULL, execute = TRUE,
-  isNcdf = FALSE, subset = NULL, requiregates = TRUE,
-  includeGates = TRUE, path = obj@path, sampNloc = "keyword", ...)
+\S4method{parseWorkspace}{flowJoWorkspace}(obj, ...)
 }
 \arguments{
 \item{obj}{A \code{flowJoWorkspace} to be parsed.}
 
-\item{name}{\code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.}
-
-\item{execute}{\code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default.}
-
-\item{isNcdf}{\code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.}
-
-\item{subset}{\code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.}
-
-\item{requiregates}{\code{logical} Should samples that have no gates be included?}
-
-\item{includeGates}{\code{logical} Should gates be imported, or just the data with compensation and transformation?}
-
-\item{path}{The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.}
-
-\item{sampNloc}{a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".}
-
 \item{...}{\itemize{
+\item name \code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.
+\item execute \code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default.
+\item isNcdf \code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.
+\item subset \code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.
+\item requiregates \code{logical} Should samples that have no gates be included?
+\item includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
+\item path The path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. This argument is mandatory.
+\item sampNloc a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".
 \item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.
 \item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
 \item ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)

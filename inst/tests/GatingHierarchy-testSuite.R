@@ -29,10 +29,16 @@ test_that("getNodeInd ",{
       expect_equal(.getNodeInd(gh, "CD8/38- DR+"), 15)
       
       #non-unqiue partial path
-      expect_error(.getNodeInd(gh, "/38- DR+"), "is ambiguous within the gating tree")
+      expect_error(.getNodeInd(gh, "/38- DR+"), "not found")
       
       #non-unique node name indexing
       expect_error(.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree")
+      
+      #dealing with root
+      expect_equal(.getNodeInd(gh, "/not debris"), 2)
+      expect_equal(.getNodeInd(gh, "not debris"), 2)
+      expect_equal(.getNodeInd(gh, "/root/not debris"), 2)
+      expect_equal(.getNodeInd(gh, "root/not debris"), 2)
       
     })
 
@@ -400,16 +406,6 @@ test_that("pretty10exp",{
     })
 
 
-test_that("getSample",{
-      
-  expect_equal(getSample(gh), "CytoTrol_CytoTrol_1.fcs")
-  
-  expect_true(grepl("/CytoTrol_CytoTrol_1.fcs", getSample(gh, isFullPath = TRUE)))
-
-})
-
-
-
 
 test_that("getIndiceMat for COMPASS",{
       
@@ -420,86 +416,76 @@ test_that("getIndiceMat for COMPASS",{
       
     })
 
-test_that("getPopChnlMapping for COMPASS",{
+test_that("getPopChnlMapping",{
       
       fr <- getData(gh, use.exprs = FALSE) 
       this_pd <- pData(parameters(fr))
+      this_pd
+      #'make up ICS markers
+      this_pd[8:12, "desc"] <- c("IL2", "IL4", "IL22", "TNFa", "CD154")
       
-      #no mapping provided
-      thisRes <- try(.getPopChnlMapping(this_pd, c("CD8/38- DR+","CD8/CCR7- 45RA+"), NULL), silent = TRUE)
-      expect_is(thisRes, "try-error")
-      expect_output(thisRes[[1]], "No markers in flow data matches Populations")
+      #'no mapping provided 
       
-      #correct mapping provided
-      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
-                                        , list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")
-                                        )
-                     )
-      expect_is(thisRes, "data.frame")
-     
-      expectRes <- data.frame(pop = c("CD8/38- DR+", "CD8/CCR7- 45RA+")
-                                  , name = c("<R660-A>", "<G560-A>")
-                                  , desc = c("CD38 APC", "CCR7 PE")
-                                  , row.names = c("$P6", "$P10")
-                              )
-                                                            
-      for(i in 1:ncol(thisRes))
-            thisRes[,i] <- as.factor(thisRes[, i])
-          
-      expect_identical(thisRes,expectRes)
+      #we don't parse + signs since they could be part of pop names
+      nodes <- c("CD4/IL2+","CD4/IL22+")
+      expect_error(.getPopChnlMapping(this_pd, nodes), "Marker not found: IL2+")
+      
+      #remove + from pop names
+      nodes <- c("CD4/IL2","CD4/IL22")
+      expectRes <- data.frame(pop = nodes
+          , name = c("<V450-A>", "<G560-A>")
+          , desc = c("IL2", "IL22")
+          , stringsAsFactors = F
+      )
+      expect_equivalent(.getPopChnlMapping(this_pd, nodes), expectRes)
+      
+      #partial match for IL22
+      nodes <- c("CD4/IL2","CD4/22")
+      expectRes[["pop"]] <- nodes 
+      expect_equivalent(.getPopChnlMapping(this_pd, nodes), expectRes)
+      
+      #'mapping provided
+      
+      # but without the proper names
+      nodes <- c("CD4/IL2+","CD4/IL22+")
+      mapping <- list("IL2", "IL22")
+      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: IL2+")
+      # add names
+      names(mapping) <- nodes
+      expectRes[["pop"]] <- nodes
+      expect_equivalent(.getPopChnlMapping(this_pd, nodes, mapping), expectRes)
       
       
       #incorrect mapping
-      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
-                                        , list("CD8/38- DR+" = "CD38", "CD8/CCR7- 45RA+" = "CCR7 PE")
-                                        )
-                     , silent = TRUE)
-       for(i in 1:ncol(thisRes))
-         thisRes[,i] <- as.factor(thisRes[, i])                 
-       expect_equivalent(thisRes,expectRes)                 
-#      expect_is(thisRes, "try-error")
-#      expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                     
+      mapping <- list("IL2", "IL3")
+      names(mapping) <- nodes
+      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: IL3")
       
-      #correct mappping with extra items
-      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
-                                      , list("CD8/38- DR+" = "CD38 APC"
-                                            , "CD8/CCR7- 45RA+" = "CCR7 PE"
-                                            , "CD3+" = "CD3 V450"
-                                            )
-                                       )
-                      )
-      expect_is(thisRes, "data.frame")
-      for(i in 1:ncol(thisRes))
-        thisRes[,i] <- as.factor(thisRes[, i])
-      expect_identical(thisRes,expectRes)                     
+      #ambiguous mapping
+      mapping <- list("IL2", "2")
+      names(mapping) <- nodes
+      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "2  paritally matched to multiple markers but failed to exactly matched to any of them")
       
-
-      #mapping with incorrect extra item
-      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
-                                    , list("CD8/38- DR+" = "CD38 APC"
-                                        , "CD8/CCR7- 45RA+" = "CCR7 PE"
-                                        , "CD3+" = "450"
-                                    )
-                                  )
-                              )
-      expect_is(thisRes, "data.frame")
-      for(i in 1:ncol(thisRes))
-        thisRes[,i] <- as.factor(thisRes[, i])
-      expect_identical(thisRes,expectRes)
       
-      #incorrect mappping with extra items
-      thisRes <- try(.getPopChnlMapping(this_pd,  c("CD8/38- DR+","CD8/CCR7- 45RA+")
-                                      , list("CD8/38- DR+" = "CD38"
-                                          , "CD8/CCR7- 45RA+" = "CCR7 PE"
-                                          , "CD3+" = "CD3 V450"
-                                      )
-                                  )
-                              ,silent = TRUE)
-        for(i in 1:ncol(thisRes))
-          thisRes[,i] <- as.factor(thisRes[, i])
-        expect_identical(thisRes,expectRes)                          
-#        expect_is(thisRes, "try-error")
-#        expect_output(thisRes[[1]], "No markers in flow data matches Populations:CD8/38- DR+")                          
+      #correct mappping with extra items (ignored during the matching)
+      mapping <- list("IL2", "IL22")
+      names(mapping) <- nodes
+      mapping[["extra"]] <- "marker1"
+      expect_equivalent(.getPopChnlMapping(this_pd, nodes, mapping), expectRes)                     
+      
+      #correct partial mapping
+      mapping <- list("IL2", "154")
+      names(mapping) <- nodes                          
+      expectRes[2,"name"] <- "Time"
+      expectRes[2,"desc"] <- "CD154"
+      expect_equivalent(.getPopChnlMapping(this_pd, nodes, mapping), expectRes)
+      
+      #case sensitive at the moment
+      mapping <- list("IL2", "cd154")
+      names(mapping) <- nodes                          
+      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: cd154")
+      
       
     })
-    
+
+

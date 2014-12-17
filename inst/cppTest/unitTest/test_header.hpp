@@ -12,15 +12,16 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include <boost/algorithm/string.hpp>
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/flowJoWorkspace.hpp"
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/GatingSet.hpp"
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/GatingHierarchy.hpp"
-#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/R_GatingSet.hpp"
+//#include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/R_GatingSet.hpp"
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/transformation.hpp"
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/spline.hpp"
 #include "ncdfFlow.hpp"
 using namespace std;
+
 
 struct testCase{
 	string filename; //xml file name
@@ -38,6 +39,7 @@ struct testCase{
 	bool isLoadArhive;// whether to load archived gs
 	bool isSaveArchive;
 	unsigned archiveFormat;
+	bool archiveType;// boost or google
 
 } ;
 hdfFlow gs_attachCDF(GatingSet & gs,testCase myTest);

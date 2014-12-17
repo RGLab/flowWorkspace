@@ -487,7 +487,11 @@ BEGIN_RCPP
 	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
-	return wrap(gh->getNodeProperty(u).getIndices());
+	nodeProperties & node = gh->getNodeProperty(u);
+	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
+	if(u>0&&!node.isGated())
+		gh->calgate(u);
+	return wrap(node.getIndices());
 
 END_RCPP
 }

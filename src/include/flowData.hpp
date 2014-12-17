@@ -12,9 +12,13 @@
 #include <string>
 #include <valarray>
 #include <stdexcept>
-#include <Rcpp.h>
+
 using namespace std;
+
+#ifdef ROUT
+#include <Rcpp.h>
 using namespace Rcpp;
+#endif
 
 #include <boost/config.hpp>
 #include <boost/archive/tmpdir.hpp>
@@ -66,7 +70,9 @@ public:
 	flowData & operator=(const flowData& source);//explicitly define the copy assignment since the default one is compiler-specific
 	flowData();
 	flowData(const double* mat,vector<string>,unsigned _nEvents,unsigned _sampleID, bool _ignore_case = false);
+#ifdef ROUT
 	flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case=false);
+#endif
 	slice getSlice(string channel);
 	void updateSlice(string channel,valarray<double> x);
 	valarray<double> subset(string channel);
