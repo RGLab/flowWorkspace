@@ -86,3 +86,4 @@ test_that("trimWhiteSpace",
       expect_equal(trimWhiteSpace("\t a \r b \t\r\n"), "a \r b")
     })
 
+

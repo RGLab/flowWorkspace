@@ -2278,88 +2278,60 @@ getIndiceMat <- function(gh,y){
 }
 #' create mapping between pops and channels
 #' 
-#' The goal is to match the marker provided by user up to the flowFrame
-#' to return the accurate channel info for indexing the flow data 
+#' The goal is translate the markers provided by user map or directly parsed from popNames (when map is NULL)
+#' to the accurate channel info for indexing the flow data 
 #' because user might give the short form of either  'name' or 'desc' of flowFrame based on swap argument.
 #' 
 #' @param this_pd \code{data.frame} extraced from flowFrame object to provide the channel and marker info
 #' @param popNames \code{character} node names in gating tree
-#' @param popo_marker_list \code{list} contains the node-to-marker provided by user 
+#' @param map \code{list} contains the node-to-marker mapping explicitly specified user 
 #' 
-.getPopChnlMapping <- function(this_pd, popNames, pop_marker_list, swap = FALSE){
+.getPopChnlMapping <- function(this_pd, popNames, map =  NULL, swap = FALSE){
     
   datSrc <- ifelse(swap, "name", "desc")
   this_pd[, datSrc] <- as.vector(this_pd[, datSrc])
-  
-
-  #parse the markers of interest from pop names
-  markers_selected <- sapply(popNames,function(this_pop){
-    this_pops <- strsplit(split="/", this_pop, fixed=TRUE)[[1]]
-    #get the terminal node
-    term_pop <- this_pops[length(this_pops)]
-    term_pop
-  },USE.NAMES=FALSE)
 
   #match to the pdata of flow frame
   all_markers <- this_pd[,datSrc]
-
   all_markers[is.na(all_markers)] <- "NA"
-  is_matched <- sapply(all_markers,function(this_marker){
-    
-    ##using the marker name provided by arguments by default
-    if(is.null(pop_marker_list))
-      matchCount <- 0
-    else{
-      this_matched <- sapply(pop_marker_list, function(i)grepl(pattern = i, x = this_marker, fixed=TRUE))
-      
-      matchCount <- length(which(this_matched))  
-    }
-    
-
-    if(matchCount > 0){
-      if(matchCount > 1)
-      {
-        #more than one matched, then do the exact match
-            this_matched <- sapply(pop_marker_list, function(i)match(i, this_marker))
-            this_matched <- !is.na(this_matched)
-            matchCount <- length(which(this_matched))
-        if(matchCount > 1)
-          stop(this_marker, " is matched with more than one populations")
-      }
-
-      res <- TRUE
-      names(res) <- names(pop_marker_list)[this_matched]
-    }else{
-      #if not given by user, then try to match the name extracted from pop name
-      this_matched <- sapply(markers_selected, function(i)grepl(pattern = i, x = this_marker, fixed=TRUE))
-#      browser()
-      matchCount <- length(which(this_matched))
-      if(matchCount > 1){
-        stop("multiple populations mached to:", this_marker)
-      }else if(matchCount == 0){
-        res <- FALSE
-      }else{
-        res <- TRUE
-        names(res) <- popNames[this_matched]
-      }
-    }
-
-    res
-  }, USE.NAMES=FALSE)
-
-  pop_matched <- is_matched[is_matched]
-  matched_names <- names(pop_matched)
-  sub_match_ind <- match(popNames, matched_names)
-  no_match <- is.na(sub_match_ind)
-  if(any(no_match)){
-    stop("No markers in flow data matches ", "Populations:", paste(popNames[no_match],collapse="; "))
-
-  }
-
-  cbind(pop=as.character(matched_names[sub_match_ind]),this_pd[is_matched,c("name", "desc")][sub_match_ind,])
-
-
-
+#  browser()
+  res <- ldply(popNames, function(popName){
+                
+                #fetch the marker from map first
+                toMatch <- map[[popName]]
+                #if not supplied, parse it from popName
+                if(is.null(toMatch)){
+                  this_pops <- strsplit(split="/", popName, fixed=TRUE)[[1]]
+                  #get the terminal node
+                  toMatch <- this_pops[length(this_pops)]
+                }
+                
+        #        browser()
+                #partial match first
+                matchedInd <- grep(toMatch, all_markers, fixed = TRUE)
+                if(length(matchedInd) > 1)
+                {
+                  #Switch to exact match because multiple markers matched
+                  matchedInd <- match(toMatch, all_markers)
+                  matchedInd <- matchedInd[!is.na(matchedInd)]
+                  
+                  if(length(matchedInd) == 0){ 
+                    #no exact match
+                    stop(toMatch, "  paritally matched to multiple markers but failed to exactly matched to any of them. ")
+                  }else if(length(matchedInd) > 1){
+                    #multiple exact matches
+                    stop(toMatch, "exactly matches to multiple markers!")
+                  }
+                }else if(length(matchedInd) == 0){
+                  #no partial match
+                  stop("Marker not found: ", toMatch)
+                }
+                
+                this_pd[matchedInd,c("name", "desc")]
+                  
+              })
+  cbind(pop = popNames, res, stringsAsFactors = F)          
+ 
 }
 
 #' Return the cell events data that express in any of the single populations defined in \code{y}
