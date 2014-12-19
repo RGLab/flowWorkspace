@@ -143,7 +143,8 @@ length(gs_groups)
 This divides all the `GatingSet`s into different groups, each group shares the same tree structure. Here we have `4` groups, 
 ## Check if the discrepancy can be resolved by dropping leaf nodes
 ```{r error=TRUE}
-flowWorkspace:::.checkRedundantNodes(gs_groups)
+res <- try(flowWorkspace:::.checkRedundantNodes(gs_groups), silent = TRUE)
+print(res[[1]])
 ```
 
 Apparently the non-leaf node (`singlets`) fails this check, and it is up to user to decide whether to hide this node or keep this group separate from further merging.Here we try to hide it.
