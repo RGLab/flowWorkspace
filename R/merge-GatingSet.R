@@ -44,7 +44,7 @@
 #' try to determine the redundant terminal nodes that can be removed
 #' in order to make trees mergable
 #' @param x \code{GatingSet} or \code{list} of groups(each group is a list of 'GatingSet`) 
-.checkRedundantNodes <- function(x, ...){
+.checkRedundantNodes <- function(x, path = "auto", ...){
   
   nodeSet <- lapply(x,function(thisObj){
         
@@ -58,7 +58,7 @@
                 stop("invalid x!")
               }
               
-              getNodes(gh, ...)
+              getNodes(gh, path = path, ...)
             })
   commonNodes <- Reduce(intersect, nodeSet)
   toRemove <- mapply(nodeSet,x,FUN=function(thisNodeSet,thisObj){
