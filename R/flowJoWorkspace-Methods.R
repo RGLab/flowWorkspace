@@ -40,7 +40,7 @@ setMethod("openWorkspace",signature=signature(file="character"),definition= func
 	}else{
 		stop("Require a filename of a workspace, but received ",class(x)[1]);
 	}
-	ver<-xpathApply(x,"/Workspace",function(x)xmlGetAttr(x,"version"))[[1]]
+	ver <- xpathApply(x,"/Workspace",function(x)xmlGetAttr(x,"version"))[[1]]
 	x<-new("flowJoWorkspace",version=ver,.cache=new.env(parent=emptyenv()),file=basename(file),path=dirname(file),doc=x, options = as.integer(options))
 	x@.cache$flag=TRUE;
 	return(x);
@@ -78,14 +78,6 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 	workspace@.cache$flag<-FALSE;
 })
 
-
-#' @param object \code{flowJoWorkspace}
-#' @rdname flowJoWorkspace-class
-#' @aliases 
-#' summary,flowJoWorkspace-method
-setMethod("summary",c("flowJoWorkspace"),function(object){
-	show(object);
-})
 
 #' match version string to the support list
 #' 
@@ -171,7 +163,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
 	
 	x<-obj@doc;
 	
-	wsversion<-xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]];
+	wsversion <- obj@version
     
     wsType <- .getWorkspaceType(wsversion)
     wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
@@ -251,7 +243,7 @@ getFileNames <- function(ws){
     stop("ws should be a flowJoWorkspace")
   }else{
     x <- ws@doc
-    wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+    wsversion <- ws@version
     wsType <- .getWorkspaceType(wsversion)
     .getFileNames(x, wsType)
   }
@@ -295,28 +287,16 @@ mkformula<-function(dims,isChar=FALSE){
 	return(form)
 }
 
-#setAs("GatingSet","list",function(from){l<-vector("list",length(from));
-#for (i in seq_along(l)){
-#l[[i]]<-from[[i]]
-#}
-#l})
 
 
-.getKeywordsBySampleID <- function(obj,sid,kw=NULL, samplePath = "/Workspace/SampleList/Sample"){
-  kws<-xpathApply(obj@doc,sprintf(paste0(samplePath,"[@sampleID='%s']/Keywords/Keyword"),sid),xmlAttrs)
-  if(!is.null(kw)){
-    unlist(lapply(kws,function(x)x["value"][x["name"]%in%kw]))
-  }else{
-    kws
-  }
-}
+
 
 #' Get Keywords
 #' 
 #' Retrieve keywords associated with a workspace
 #' 
 #' @param obj A \code{flowJoWorkspace}
-#' @param y c\code{character} specifying the sample names
+#' @param y c\code{character} or \code{numeric} specifying the sample name or sample ID
 #' @param ... other arguments
 #'      sampNloc a \code{character} the location where the sample name is specified. See \code{parseWorkspace} for more details.
 #' 
@@ -330,30 +310,60 @@ mkformula<-function(dims,isChar=FALSE){
 #'   ws <- openWorkspace(wsfile);
 #'   
 #'   getSamples(ws)
-#'   getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
-#' 
+#'   res <- try(getKeywords(ws,"CytoTrol_CytoTrol_1.fcs"), silent = TRUE)
+#'   print(res[[1]])
+#'   getKeywords(ws, 1)
 #' @aliases getKeywords
 #' @rdname getKeywords
 #' @export 
 setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y, ...){
+      if(length(y) > 1)
+        stop("getKeywords can only work with one sample at a time!")
       x <- obj@doc
-      wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+      wsversion <- obj@version
       wsType <- .getWorkspaceType(wsversion)
       wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
-      .getKeywords(obj@doc,y, wsNodePath[["sample"]], ...)
+      .getKeywordsBySampleName(obj@doc,y, wsNodePath[["sample"]], ...)
 })
+#' @rdname getKeywords
+#' @export 
+setMethod("getKeywords",c("flowJoWorkspace","numeric"),function(obj,y, ...){
+      if(length(y) > 1)
+        stop("getKeywords can only work with one sample at a time!")
+      x <- obj@doc
+      wsversion <- obj@version
+      wsType <- .getWorkspaceType(wsversion)
+      wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
+      .getKeywordsBySampleID(obj@doc,y, wsNodePath[["sample"]], ...)
+    })
 
-.getKeywords <- function(doc,y, samplePath = "/Workspace/SampleList/Sample", sampNloc = "keyword"){
+.getKeywordsBySampleID <- function(obj, sid, samplePath = "/Workspace/SampleList/Sample"){
+  
+  xpath <- sprintf(paste0(samplePath,"[@sampleID='%s']"),sid)
+  sampleNode <- xpathApply(obj, xpath)
+  if(length(sampleNode) == 0)
+    stop("sampleID ", sid, " not found!")
+  
+  kw <- xpathApply(sampleNode[[1]], "Keywords/Keyword", function(i){
+                                      attr <- xmlAttrs(i)
+                                      attrValue <- attr[["value"]]
+                                      names(attrValue) <- attr[["name"]]
+                                      attrValue
+                                    })
+  as.list(unlist(kw))
+  
+}
+.getKeywordsBySampleName <- function(doc, y, samplePath = "/Workspace/SampleList/Sample", sampNloc = "keyword"){
   sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))  
   
   if(sampNloc == "keyword"){
     w <- which(xpathApply(doc, file.path(samplePath, "Keywords/Keyword[@name='$FIL']"),function(x)xmlGetAttr(x,"value"))%in%y)
     if(length(w)==0)
-      warning("Sample name ",y," not found in Keywords of workspace")
+      warning("Sample name ", y," not found in Keywords of workspace")
   }else{
     w <- which(xpathApply(doc, file.path(samplePath,"SampleNode") ,function(x)xmlGetAttr(x,"name"))%in%y)
     if(length(w)==0)
-      warning("Sample name ",y," not found in SampleNode of workspace")
+      warning("Sample name ", y," not found in SampleNode of workspace")
   }
   
   if(length(w)==0){
@@ -362,9 +372,12 @@ setMethod("getKeywords",c("flowJoWorkspace","character"),function(obj,y, ...){
     if(length(w)==0)
       stop("failed to locate Sample ",y," within workspace")      
   }
+  
+  if(length(w) > 1)
+    stop("Character '", y, "' can't uniquely identify sample within the workspace!Try to set 'y' to a numeric sampleID instead.")
   l <- xpathApply(doc,paste(samplePath,"[",w,"]/Keywords/node()",sep=""),xmlAttrs)
-  names(l)<-lapply(l,function(x)x[["name"]])
-  l<-lapply(l,function(x)x[["value"]])
+  names(l) <- lapply(l,function(x)x[["name"]])
+  l <- lapply(l,function(x)x[["value"]])
   return(l)
 }
 
@@ -407,7 +420,7 @@ getFJWSubsetIndices<-function(ws,key=NULL,value=NULL,group,requiregates=TRUE){
 		stop("ws must be a flowJoWorkspace object")
 	}
     x <- ws@doc
-    wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+    wsversion <- ws@version
     wsType <- .getWorkspaceType(wsversion)
     wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
     
@@ -464,9 +477,10 @@ trimWhiteSpace<-function (x)
 #' @export  
 setMethod("getSamples","flowJoWorkspace",function(x, sampNloc="keyword"){
       sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))
-      x <- x@doc
-      wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
+      
+      wsversion <- x@version
       wsType <- .getWorkspaceType(wsversion)
+      x <- x@doc
       .getSamples(x, wsType = wsType, sampNloc = sampNloc)
 })
 
@@ -488,8 +502,8 @@ setMethod("getSamples","flowJoWorkspace",function(x, sampNloc="keyword"){
 #' @rdname getSampleGroups
 #' @export 
 setMethod("getSampleGroups","flowJoWorkspace",function(x){
+            wsversion <- x@version      
             x <- x@doc
-            wsversion <- xpathApply(x,"/Workspace",function(z)xmlGetAttr(z,"version")[[1]])[[1]]
             wsType <- .getWorkspaceType(wsversion)
 			.getSampleGroups(x, wsType = wsType)
 		})
