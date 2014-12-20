@@ -3,14 +3,17 @@
 \name{getKeywords,flowJoWorkspace,character-method}
 \alias{getKeywords}
 \alias{getKeywords,flowJoWorkspace,character-method}
+\alias{getKeywords,flowJoWorkspace,numeric-method}
 \title{Get Keywords}
 \usage{
 \S4method{getKeywords}{flowJoWorkspace,character}(obj, y, ...)
+
+\S4method{getKeywords}{flowJoWorkspace,numeric}(obj, y, ...)
 }
 \arguments{
 \item{obj}{A \code{flowJoWorkspace}}
 
-\item{y}{c\code{character} specifying the sample names}
+\item{y}{c\code{character} or \code{numeric} specifying the sample name or sample ID}
 
 \item{...}{other arguments
      sampNloc a \code{character} the location where the sample name is specified. See \code{parseWorkspace} for more details.}
@@ -31,6 +34,8 @@ require(flowWorkspaceData)
   ws <- openWorkspace(wsfile);
 
   getSamples(ws)
-  getKeywords(ws,"CytoTrol_CytoTrol_1.fcs")
+  res <- try(getKeywords(ws,"CytoTrol_CytoTrol_1.fcs"), silent = TRUE)
+  print(res[[1]])
+  getKeywords(ws, 1)
 }
 

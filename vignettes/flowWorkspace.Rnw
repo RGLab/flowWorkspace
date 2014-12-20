@@ -43,7 +43,7 @@ wsfile<-list.files(d,pattern="A2004Analysis.xml",full=T)
 In order to open this workspace we call:
 <<openws,results=verbatim>>=
 ws<-openWorkspace(wsfile)
-summary(ws)
+ws
 @
 
 We see that this a version 2.0 workspace file. It's location and filename are printed. Additionally, you are notified that the workspace file is open. This refers to the fact that the XML document is internally represented using 'C' data structures from the \Rpackage{XML} package. After importing the file, the workspace must be explicitly closed using \Rfunction{closeWorkspace()} in order to free up that memory.
