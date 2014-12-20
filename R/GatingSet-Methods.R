@@ -448,6 +448,7 @@ unarchive<-function(file,path=tempdir()){
 		if(length(which(excludefiles))>0){
 			message("Removing ",length(which(excludefiles))," samples from the analysis since we can't find their FCS files.");
 			samples<-samples[!excludefiles];
+            sampleIDs <- sampleIDs[!excludefiles]
 		}
 
 
@@ -457,7 +458,7 @@ unarchive<-function(file,path=tempdir()){
 	{
 		files<-samples
 	}
-	G <- .addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ...)
+	G <- .addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, sampleIDs = sampleIDs,...)
 
 
 	message("done!")
@@ -547,7 +548,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", ...){
+.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", sampleIDs = NULL,...){
 
     if(length(files)==0)
       stop("not sample to be added to GatingSet!")
@@ -579,8 +580,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
     prefixColNames <- NULL
     assign("prefixColNames",NULL,tempenv)
 
-	axis <- lapply(files,function(file,tempenv){
-
+	axis <- lapply(1:length(files),function(i,tempenv){
+        file <- files[i]
+        sampleID <- sampleIDs[i]
         #get global variable
         prefixColNames <- tempenv$prefixColNames
 
@@ -690,7 +692,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
          # return keywords from workspace successfully, thus it is currently
          # only used when execute = FALSE
          if(!is.null(ws))
-           kw <- getKeywords(ws, sampleName, sampNloc = sampNloc)
+           kw <- getKeywords(ws, sampleID)
          #use $PnB to determine the number of parameters since {N,R,S) could be
          #redundant in some workspaces
          key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))

@@ -3,14 +3,7 @@
 \name{flowJoWorkspace-class}
 \alias{flowJoWorkspace-class}
 \alias{show,flowJoWorkspace-method}
-\alias{summary,flowJoWorkspace-method}
 \title{An R representation of a flowJo workspace.}
-\usage{
-\S4method{summary}{flowJoWorkspace}(object)
-}
-\arguments{
-\item{object}{\code{flowJoWorkspace}}
-}
 \description{
 Objects can be created by calls of the form \code{new("flowJoWorkspace.xml", ...)}.
 }
@@ -30,7 +23,7 @@ require(flowWorkspaceData)
   d<-system.file("extdata",package="flowWorkspaceData")
   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
   ws <- openWorkspace(wsfile);
-  summary(ws)
+  ws
   getSamples(ws)
 }
 \seealso{
