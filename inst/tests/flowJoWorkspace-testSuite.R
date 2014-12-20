@@ -8,8 +8,6 @@ test_that("show workspace",
       expectRes <- paste(fjRes[["ws_show"]][-2], collapse = "")
       expect_output(thisRes, expectRes)
       
-      expectRes <- paste(capture.output(summary(ws)[-2]), collapse = "")
-      expect_output(expectRes, expectRes)
     })
 
 test_that("getWorkspaceType",
@@ -40,14 +38,17 @@ test_that("getFileNames workspace",
 
 test_that("getKeywordsBySampleID workspace",
     {
-      expect_equal(.getKeywordsBySampleID(ws, sid = 1, samplePath = "/Workspace/SampleList/Sample"), fjRes[["getkwByID_ws"]])
-      expect_equal(.getKeywordsBySampleID(ws, sid = 1, kw = "P8DISPLAY", samplePath = "/Workspace/SampleList/Sample"), c(value = "LOG"))
+      thisExpectRes <- fjRes[["getkwByID_ws"]]
+      thisExpectRes <- lapply(fjRes[["getkwByID_ws"]], "[[", "value")
+      names(thisExpectRes) <- lapply(fjRes[["getkwByID_ws"]], "[[", "name")
+      expect_equal(flowWorkspace:::.getKeywordsBySampleID(ws@doc, sid = 1, samplePath = "/Workspace/SampleList/Sample"), thisExpectRes)
+      
     })
 
 test_that("getKeywords workspace",
     {
-      expect_equal(getKeywords(ws, "CytoTrol_CytoTrol_1.fcs"), fjRes[["getkw_ws"]])
-      expect_equal(.getKeywords(ws@doc, "CytoTrol_CytoTrol_1.fcs", samplePath = "/Workspace/SampleList/Sample"), fjRes[["getkw_ws"]])
+      expect_error(getKeywords(ws, "CytoTrol_CytoTrol_1.fcs"), "Character 'CytoTrol_CytoTrol_1.fcs' can't uniquely identify")
+      expect_equal(getKeywords(ws, 1), fjRes[["getkw_ws"]])
     })
 
 test_that(".getKeyword workspace",

@@ -52,7 +52,7 @@ setOldClass("XMLInternalDocument")
 #'   d<-system.file("extdata",package="flowWorkspaceData")
 #'   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
 #'   ws <- openWorkspace(wsfile);
-#'   summary(ws)
+#'   ws
 #'   getSamples(ws)
 #' 
 #' @name flowJoWorkspace-class
