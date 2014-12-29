@@ -18,7 +18,7 @@ endif
 
 pb_bundled=@pb_bundled@
 
-PKG_CPPFLAGS =-DROUT -Wno-deprecated @PKG_CPPFLAGS@ ${bgl_cppflags} ${pb_cppflags}
+PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@ ${bgl_cppflags} ${pb_cppflags}
 PKG_LIBS =${bgl_objs} ${bregex_objs} ${pb_objs} `${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` @PKG_LIBS@ 
 
 #USERDIR =	../inst/lib
