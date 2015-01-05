@@ -7,18 +7,19 @@
 \alias{GatingSet,flowSet,ANY-method}
 \title{constructors for GatingSet}
 \usage{
-\S4method{GatingSet}{character,character}(x, y, includeGates = FALSE,
+\S4method{GatingSet}{character,character}(x, y, guids, includeGates = FALSE,
   sampNloc = "keyword", xmlParserOption, wsType)
 
 \S4method{GatingSet}{flowSet,ANY}(x)
 
-\S4method{GatingSet}{GatingHierarchy,character}(x, y, path = ".",
-  isNcdf = FALSE, ...)
+\S4method{GatingSet}{GatingHierarchy,character}(x, y, path = ".", ...)
 }
 \arguments{
 \item{x}{\code{character} or \code{flowSet} or \code{GatingHierarchy}}
 
 \item{y}{\code{character} or\code{missing}}
+
+\item{guids}{\code{character} vectors to uniquely identify each sample (Sometime FCS file names alone may not be unique)}
 
 \item{includeGates}{\code{logical} whether to parse the gates or just simply extract the flowJo stats}
 
@@ -29,8 +30,6 @@
 \item{wsType}{\code{character} workspace type, can be value of "win", "macII", "vX", "macIII".}
 
 \item{path}{\code{character} specifies the path to the flow data (FCS files)}
-
-\item{isNcdf}{\code{logical} whether to use ncdfFlowSet or flowSet as the underlying flow data storage}
 
 \item{...}{other arguments. see \link{parseWorkspace}}
 }

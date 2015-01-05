@@ -399,14 +399,14 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,sampleIDs,execute,path,isNcdf,includeGates,sampNloc="keyword",xmlParserOption, wsType, ...){
-
-
+.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, additional.keys, ...){
+  
 	message("calling c++ parser...")
 
 	time1<-Sys.time()
 	G <- GatingSet(x = xmlFileName
-                  , y = as.character(sampleIDs)
+                  , y = as.character(samples[["sampleID"]])
+                  , guids = samples[["guid"]]
                   , includeGates = includeGates
                   , sampNloc = sampNloc
                   , xmlParserOption = xmlParserOption
@@ -414,51 +414,72 @@ unarchive<-function(file,path=tempdir()){
                   )
 
 	message("c++ parsing done!")
-	samples <- .Call("R_getSamples",G@pointer)
 
-#	browser()
+	
 	#loading and filtering data
 	if(execute)
 	{
 
-		dataPaths<-vector("character")
-		excludefiles<-vector("logical")
-		for(file in samples){
-
-			#########################################################
-			#get full path for each fcs
-			#########################################################
-			##escape "illegal" characters
-			file<-gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",file)))))))
-			absPath <- list.files(pattern=paste("^",file,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
-            nFound <- length(absPath)
-			if(nFound == 0){
-				warning("Can't find ",file," in directory: ",path,"\n");
-				excludefiles<-c(excludefiles,TRUE);
-
-			}else if(nFound > 1){
-              stop('Multiple files found for:', file) 
-            }else{
+        
+        nSamples <- nrow(samples)
+    	samples.matched <- ldply(1:nSamples, function(i){
+                                              row <- samples[i,]
+                                              filename <- row[["name"]]
+                                              guid <- row[["guid"]]
+                                              sampleID <- row[["sampleID"]]
+                                              #########################################################
+                                              #get full path for each fcs
+                                              #########################################################
+                                              ##escape "illegal" characters
+                                              filename <- gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",filename)))))))
+                                              absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
+                                              nFound <- length(absPath)
+                           
+                                              if(nFound == 0){
+                                              	warning("Can't find ",filename," in directory: ",path,"\n");
+                                                row <- NULL              
+                                              }else if(nFound > 1){
+                                                  #try to use additional keywords to help find the correct file
+                                                  if(is.null(additional.keys))
+                                                    stop('Multiple files matched for:', filename)
+                                                  else
+                                                  {
+                                                     guids.fcs <-  sapply(absPath, function(thisPath){
+                                                                       # get keyword from FCS header
+                                                                      kw <- as.list(read.FCSheader(thisPath)[[1]])
+                                                                      kw <- trimWhiteSpace(unlist(kw[additional.keys]))
+                                                                      # construct guids
+                                                                      thisFile <- basename(thisPath)
+                                                                      paste(c(thisFile, as.vector(kw)), collapse = "_")
+                                                                    }, USE.NAMES = F)  
+                                                    matchInd <- grep(guid, guids.fcs)                                
+                                                    if(length(matchInd)==0){
+                                                      warning("Can't find ",guid," in directory: ",path,"\n");
+                                                      row <- NULL
+                                                    }else if(length(matchInd) > 1){
+                                                      stop('Multiple files matched for:', guid)
+                                                    }else
+                                                      absPath <- absPath[matchInd]
+                                                  }
+                                              }
+                                              
+                                              row[["file"]] <- absPath
+                                              row
+                                    	})
+    	#Remove samples where files don't exist.
+        nMatched <- nrow(samples.matched)
+    	if(nMatched < nSamples){
+    		message("Removing ", nSamples -  nMatched," samples from the analysis since we can't find their FCS files.");
+    		
               
-				dataPaths<-c(dataPaths,dirname(absPath))
-				excludefiles<-c(excludefiles,FALSE);
-			}
-		}
-		#Remove samples where files don't exist.
-		if(length(which(excludefiles))>0){
-			message("Removing ",length(which(excludefiles))," samples from the analysis since we can't find their FCS files.");
-			samples<-samples[!excludefiles];
-            sampleIDs <- sampleIDs[!excludefiles]
-		}
-
-
-		files<-file.path(dataPaths,samples)
+    	}
         
 	}else
-	{
-		files<-samples
-	}
-	G <- .addGatingHierarchies(G,files,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, sampleIDs = sampleIDs,...)
+      samples.matched  <- samples
+      
+      
+    
+	G <- .addGatingHierarchies(G,samples.matched,execute,isNcdf, wsType = wsType, sampNloc = sampNloc,  ...)
 
 
 	message("done!")
@@ -487,11 +508,10 @@ unarchive<-function(file,path=tempdir()){
 #' construct object from existing gating hierarchy(gating template) and flow data
 #'
 #' @param path \code{character} specifies the path to the flow data (FCS files)
-#' @param isNcdf \code{logical} whether to use ncdfFlowSet or flowSet as the underlying flow data storage
 #' @param ... other arguments. see \link{parseWorkspace}
 #' @rdname GatingSet-methods
 #' @export 
-setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", isNcdf=FALSE,  ...){
+setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
 
 			samples <- y
 			dataPaths <- vector("character")
@@ -527,7 +547,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			Object@pointer <- .Call("R_NewGatingSet",x@pointer,sampleNames(x),samples)
             Object@guid <- .uuid_gen()
             
-			Object<-.addGatingHierarchies(Object,files,execute=TRUE,isNcdf=isNcdf,...)
+            sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
+			Object<-.addGatingHierarchies(Object,samples = sampletbl,execute=TRUE,...)
             #if the gating template is already gated, it needs to be recompute explicitly
             #in order to update the counts
             #otherwise, the counts should already have been updated during the copying
@@ -547,26 +568,37 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
+#' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G,files,execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", sampleIDs = NULL,...){
+.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", ...){
 
-    if(length(files)==0)
+    if(nrow(samples)==0)
       stop("not sample to be added to GatingSet!")
-
+  
+    guids <- samples[["guid"]]
     #load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
-			fs<-read.ncdfFlowSet(files,isWriteSlice=FALSE,...)
+            #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
+            pd <- AnnotatedDataFrame(data = data.frame(name = guids
+                                                        ,row.names = guids
+                                                        ,stringsAsFactors=FALSE
+                                                       )
+                                        ,varMetadata = data.frame(labelDescription="Name"
+                                            ,row.names="name")
+                                    )
+                                    
+			fs <- read.ncdfFlowSet(samples[["file"]],isWriteSlice=FALSE, phenoData = pd, ...)
 		}else{
 			message("Creating flowSet...")
 			fs<-read.flowSet(files,...)
 		}
 	}else{
       #create dummy flowSet
-      frList <- sapply(basename(files), function(thisSample){
+      frList <- sapply(guids, function(thisSample){
                         mat <- matrix(data = numeric(0))
                         colnames(mat) <- "FSC-A"
                         fr <- suppressWarnings(flowFrame(exprs = mat))
@@ -580,16 +612,17 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
     prefixColNames <- NULL
     assign("prefixColNames",NULL,tempenv)
 
-	axis <- lapply(1:length(files),function(i,tempenv){
-        file <- files[i]
-        sampleID <- sampleIDs[i]
+	axis <- apply(samples,1,function(row,tempenv){
+        
+        sampleID <- as.numeric(row[["sampleID"]])
+        guid <- row[["guid"]]
         #get global variable
         prefixColNames <- tempenv$prefixColNames
 
-		sampleName<-basename(file)
+		
 
         # get comp
-        comp <- .Call("R_getCompensation", G@pointer, sampleName)
+        comp <- .Call("R_getCompensation", G@pointer, guid)
         cid <- comp$cid
         
 
@@ -598,13 +631,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         ##################################
         if(execute)
 		{
-
+            file <- row[["file"]]
             cnd <- colnames(fs)
 			message("loading data: ",file);
 			if(isNcdf)
 				data <- read.FCS(file)[, cnd]
 			else
-				data <- fs[[sampleName]]
+				data <- fs[[guid]]
 
             #alter colnames(replace "/" with "_") for flowJo X
             if(wsType == "vX"){
@@ -767,7 +800,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             recompute <- FALSE
             nodeInd <- 0
             
-            .Call("R_gating",G@pointer, mat, sampleName, gains, nodeInd, recompute, extend_val, ignore.case, leaf.bool)
+            .Call("R_gating",G@pointer, mat, guid, gains, nodeInd, recompute, extend_val, ignore.case, leaf.bool)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
             #since colnames(fs) is not udpated yet.
@@ -786,10 +819,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
             data@exprs <- mat #circumvent the validity check of exprs<- to speed up
             if(isNcdf){
-              fs[[sampleName]] <- data
+              fs[[guid]] <- data
 
             }else{
-              assign(sampleName,data,fs@frames)
+              assign(guid,data,fs@frames)
             }
             #range info within parameter object is not always the same as the real data range
             #it is used to display the data.
@@ -799,7 +832,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               tRg  <- range(mat[,tInd])
             else
               tRg <- NULL
-            axis.labels <- .transformRange(G,sampleName,wsType,fs@frames,timeRange = tRg)
+            axis.labels <- .transformRange(G,guid,wsType,fs@frames,timeRange = tRg)
 
 		}else{
           #extract gains from keyword of ws
@@ -827,7 +860,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
           names(gains) <- prefixColNames
           #transform and adjust the gates without gating
-          .Call("R_computeGates",G@pointer, sampleName, gains, extend_val, extend_to)
+          .Call("R_computeGates",G@pointer, guid, gains, extend_val, extend_to)
           axis.labels <- list()
         }
 
@@ -838,7 +871,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         axis.labels
 	},tempenv)
 
-    names(axis) <- basename(files)
+    names(axis) <- guids
     G@axis <- axis
     G@flag <- execute #assume the excution would succeed if the entire G gets returned finally
 

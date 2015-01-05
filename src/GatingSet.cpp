@@ -644,29 +644,31 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
  * @param groupID
  * @param isParseGate
  */
-void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate)
+void GatingSet::parseWorkspace(unsigned short groupID,bool isParseGate, StringVec sampleNames)
 {
 	//first get all the sample IDs for given groupID
 	vector<string> sampleID=wsPtr->getSampleID(groupID);
-	parseWorkspace(sampleID,isParseGate);
+	parseWorkspace(sampleID,isParseGate, sampleNames);
 
 }
-void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate)
+void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate, StringVec sampleNames)
 {
-
+	unsigned nSample = sampleNames.size();
+	if(nSample!=sampleIDs.size())
+		throw(domain_error("Sizes of sampleIDs and sampleNames are not equal!"));
 	//contruct gating hiearchy for each sampleID
-	vector<string>::iterator it;
-	for(it=sampleIDs.begin();it!=sampleIDs.end();it++)
+	for(unsigned i = 0; i < nSample; i++)
 	{
+		string sampleID = sampleIDs.at(i);
+		string sampleName = sampleNames.at(i);
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-			COUT<<endl<<"... start parsing sample: "<<*it<<"... "<<endl;
-		wsSampleNode curSampleNode=getSample(*wsPtr,*it);
+			COUT<<endl<<"... start parsing sample: "<< sampleID <<"... "<<endl;
+		wsSampleNode curSampleNode=getSample(*wsPtr, sampleID);
 
 		GatingHierarchy *curGh=new GatingHierarchy(curSampleNode,*wsPtr,isParseGate,&gTrans,&globalBiExpTrans,&globalLinTrans);
 
-		string sampleName=wsPtr->getSampleName(curSampleNode);
+//		string sampleName=wsPtr->getSampleName(curSampleNode);
 
-//		curGh->setSample(sampleName);
 		ghs[sampleName]=curGh;//add to the map
 
 
