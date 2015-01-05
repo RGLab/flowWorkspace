@@ -22,6 +22,7 @@ flowWorkspace.par.init <- function(){
                     , compMatChName = "name"
                     , compMatVal = "value"
                     )
+  mac_II_path[["sampleID"]] <- mac_II_path[["sample"]]
                     
   #mac version 3.0 (flowJo version 9.7.2-9.7.4)
   mac_III_path <- mac_II_path
@@ -30,14 +31,15 @@ flowWorkspace.par.init <- function(){
   mac_III_path[["compMatName"]] <- "matrixName"
   mac_III_path[["compMatChName"]] <- "fluorName"
   mac_III_path[["compMatVal"]] <- "spillValue"
-  
+  mac_III_path[["sampleID"]] <- mac_III_path[["sample"]]
   ####windows version
   #inherit most paths from mac                                      
   win_path <- mac_II_path
   win_path[["popNode"]] <- "./*/Population"
   win_path[["gateDim"]] <- "*[local-name()='dimension']"#relative to gateNode
   win_path[["gateParam"]] <- "*[local-name()='parameter']"#relative to dimNode
-  
+  win_path[["sampleID"]] <- file.path(win_path[["sample"]],"DataSet")
+
   ####version X
   #inherit most paths from win
   vX_path <- win_path
