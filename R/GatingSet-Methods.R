@@ -594,7 +594,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			fs <- read.ncdfFlowSet(samples[["file"]],isWriteSlice=FALSE, phenoData = pd, ...)
 		}else{
 			message("Creating flowSet...")
-			fs<-read.flowSet(files,...)
+			fs<-read.flowSet(samples[["file"]],...)
 		}
 	}else{
       #create dummy flowSet

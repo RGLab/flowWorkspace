@@ -213,7 +213,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
       sg[["guid"]] <- as.vector(apply(sg, 1, function(row){
                   sampleID <- as.numeric(row[["sampleID"]])
                   sn <- row[["name"]]
-                  kw <- unlist(getKeywords(ws, sampleID)[additional.keys])
+                  kw <- unlist(getKeywords(obj, sampleID)[additional.keys])
                   paste(c(sn,kw), collapse = "_")
                 }))  
     }else
