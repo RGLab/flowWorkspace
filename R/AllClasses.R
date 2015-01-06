@@ -180,6 +180,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' 
 #' @param x \code{character} or \code{flowSet} or \code{GatingHierarchy}
 #' @param y \code{character} or\code{missing}
+#' @param guids \code{character} vectors to uniquely identify each sample (Sometime FCS file names alone may not be unique)
 #' @param includeGates \code{logical} whether to parse the gates or just simply extract the flowJo stats
 #' @param sampNloc \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".
 #' @param xmlParserOption \code{integer} option passed to \code{\link{xmlTreeParse}} 
@@ -188,7 +189,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' @rdname GatingSet-methods
 #' @aliases GatingSet
 #' @export 
-setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE, sampNloc="keyword",xmlParserOption, wsType){
+setMethod("GatingSet",c("character","character"),function(x,y, guids, includeGates=FALSE, sampNloc="keyword",xmlParserOption, wsType){
       
       xmlFileName<-x
       sampleIDs<-y
@@ -205,7 +206,7 @@ setMethod("GatingSet",c("character","character"),function(x,y,includeGates=FALSE
       if(!file.exists(xmlFileName))
         stop(xmlFileName," not found!")
       Object<-new("GatingSet")
-      Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType))
+      Object@pointer<-.Call("R_parseWorkspace",xmlFileName,sampleIDs,guids,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType))
       Object@guid <- .uuid_gen()
       Object@flag <- FALSE
 
