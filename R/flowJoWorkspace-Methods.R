@@ -117,7 +117,8 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'          \item extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 #'          \item leaf.bool a \code{logical} whether to compute the leaf boolean gates. Default is TRUE. It helps to speed up parsing by turning it off when the statistics of these leaf boolean gates are not important for analysis. (e.g. COMPASS package will calculate them by itself.)
-#'                                           If needed, they can be calculated by calling \code{recompute} method at later stage.    
+#'                                           If needed, they can be calculated by calling \code{recompute} method at later stage.
+#'          \item additional.keys \code{character} vector:  By default, FCS filename is used to uniquely identify samples. When filename is not sufficient to serve as guid, parser can optionally combine it with other keywords (parsed from FCS header) to make guid (concatenated with "_").    
 #'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 #'      	}
 #' @details
@@ -145,21 +146,14 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     })
 
 .preprocessor <- function(obj, name = NULL
-                              , execute = TRUE
-                              , isNcdf = FALSE
                               , subset = NULL
                               , requiregates = TRUE
-                              , includeGates = TRUE
                               , path = obj@path
                               , sampNloc = "keyword"
+                              , additional.keys = NULL
                               , ...)
 {	
     sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))	
-			
-	if(isNcdf&!TRUE){
-	stop("isNcdf must be FALSE since you don't have netcdf installed");
-	}
-	
 	
 	x<-obj@doc;
 	
@@ -209,30 +203,38 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
       sg <- sg[subset, ] 
 
     #check if there are samples to parse
-    sampleIDs <- sg[["sampleID"]]
-    nSample <- length(sampleIDs)
+    
+    nSample <- nrow(sg)
     if(nSample == 0)
       stop("No samples in this workspace to parse!")
     
+    #use other keywords in addition to name to uniquely identify samples 
+    if(!is.null(additional.keys)){
+      sg[["guid"]] <- as.vector(apply(sg, 1, function(row){
+                  sampleID <- as.numeric(row[["sampleID"]])
+                  sn <- row[["name"]]
+                  kw <- unlist(getKeywords(obj, sampleID)[additional.keys])
+                  paste(c(sn,kw), collapse = "_")
+                }))  
+    }else
+      sg[["guid"]] <- sg[["name"]] 
     
-    #check duplicated sample names
-    sampleSelected <- sg[["name"]]
-    isDup <- duplicated(sampleSelected)
+    
+    #check duplicated sample keys
+    isDup <- duplicated(sg[["guid"]])
     if(any(isDup))
-      stop("Duplicated sample names detected within group: ", paste(sampleSelected[isDup], collapse = " "), "\n Please check if the appropriate group is selected.")
+      stop("Duplicated sample names detected within group: ", paste(sg[["guid"]][isDup], collapse = " "), "\n Please check if the appropriate group is selected.")
 
     
 	message("Parsing ", nSample," samples");
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
-                    ,sampleIDs
-                    ,execute=execute
-                    ,isNcdf=isNcdf
-                    ,includeGates=includeGates
+                    , samples = sg[,c("name", "sampleID", "guid")]
                     ,path=path
                     ,xmlParserOption = obj@options
                     ,wsType=wsType
                     ,ws = obj
                     , sampNloc = sampNloc
+                    , additional.keys = additional.keys
                     ,...)
 		
 }
@@ -334,12 +336,16 @@ setMethod("getKeywords",c("flowJoWorkspace","numeric"),function(obj,y, ...){
       wsversion <- obj@version
       wsType <- .getWorkspaceType(wsversion)
       wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
-      .getKeywordsBySampleID(obj@doc,y, wsNodePath[["sample"]], ...)
+      .getKeywordsBySampleID(obj@doc,y, wsNodePath[["sampleID"]],...)
     })
 
-.getKeywordsBySampleID <- function(obj, sid, samplePath = "/Workspace/SampleList/Sample"){
+.getKeywordsBySampleID <- function(obj, sid, sampleIDPath = "/Workspace/SampleList/Sample"){
   
-  xpath <- sprintf(paste0(samplePath,"[@sampleID='%s']"),sid)
+  xpath <- sprintf(paste0(sampleIDPath,"[@sampleID='%s']"),sid)
+  
+  if(basename(sampleIDPath)!= "Sample")
+    xpath <- file.path(xpath, "..")
+  
   sampleNode <- xpathApply(obj, xpath)
   if(length(sampleNode) == 0)
     stop("sampleID ", sid, " not found!")
@@ -348,7 +354,7 @@ setMethod("getKeywords",c("flowJoWorkspace","numeric"),function(obj,y, ...){
                                       attr <- xmlAttrs(i)
                                       attrValue <- attr[["value"]]
                                       names(attrValue) <- attr[["name"]]
-                                      attrValue
+                                      trimWhiteSpace(attrValue)
                                     })
   as.list(unlist(kw))
   
