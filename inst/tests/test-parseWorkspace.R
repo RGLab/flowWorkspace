@@ -61,6 +61,12 @@ test_that("getTransformations ",{
 source("GatingHierarchy-testSuite.R", local = TRUE)
 source("GatingSet-testSuite.R", local = TRUE)
 
+test_that("use additional keywords for guid",{
+      suppressWarnings(gs2 <- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = "$TOT")))
+      expect_equal(sampleNames(gs2[[1]]), paste(sampleNames(gh), flowWorkspace:::trimWhiteSpace(keyword(gh)[["$TOT"]]), sep = "_"))
+      expect_equal(getPopStats(gs2[[1]]), getPopStats(gh))
+        
+    })
 
 
 test_that("closeWorkspace",

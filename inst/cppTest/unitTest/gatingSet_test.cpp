@@ -267,11 +267,14 @@ void parser_test(testCase & myTest){
 			vector<string> sampleIDs;
 			for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
 				sampleIDs.push_back(it->first);
+			vector<string> sampleNames;
+				for(map<string,string>::iterator it=myTest.samples.begin();it!=myTest.samples.end();it++)
+					sampleNames.push_back(it->second);
 			if(isTemplate)
 				sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
 
 			if(!isLoadArchive)
-				gs->parseWorkspace(sampleIDs,isParseGate);
+				gs->parseWorkspace(sampleIDs,isParseGate,sampleNames);
 
 			cout<<endl<<"get sample names from gating set"<<endl;
 
