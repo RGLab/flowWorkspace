@@ -48,7 +48,7 @@ test_that("flowData ",{
 
 test_that("clone & rbind2",{
       
-      capture.output(gs_clone <- clone(gs))
+      suppressMessages(invisible(capture.output(gs_clone <- clone(gs))))
       expect_is(gs_clone, "GatingSet");
       
       #check data consistency
@@ -68,7 +68,7 @@ test_that("clone & rbind2",{
       clone_sn <- sampleNames(gs_clone)
       gslist <- GatingSetList(list(gs, gs_clone))
       expect_is(gslist, "GatingSetList");
-      gs <<- rbind2(gslist)
+      suppressMessages(gs <<- rbind2(gslist))
       
       new_samples <- sampleNames(gs) 
       expect_identical(new_samples, c(orig_sn, clone_sn))

@@ -15,7 +15,7 @@ source("flowJoWorkspace-testSuite.R", local = TRUE)
 gs <- NULL
 
 test_that("Can parse workspace",{
-    suppressWarnings(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE)))
+    dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE))))
 	expect_that(gs, is_a("GatingSet"));
 	
 })
@@ -30,7 +30,7 @@ test_that("extract GatingHierarchy from GatingSet",{
 
 test_that("parse without gating",{
       
-      suppressWarnings(gs1 <- try(parseWorkspace(ws, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", execute = FALSE)))
+      dd <- capture.output(suppressMessages(gs1 <- try(parseWorkspace(ws, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", execute = FALSE))))
       expect_that(gs1, is_a("GatingSet"));
       gh1 <- gs1[[1]]
       
@@ -62,12 +62,30 @@ source("GatingHierarchy-testSuite.R", local = TRUE)
 source("GatingSet-testSuite.R", local = TRUE)
 
 test_that("use additional keywords for guid",{
-      suppressWarnings(gs2 <- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = "$TOT")))
+      dd <- capture.output(suppressMessages(gs2 <- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = "$TOT"))))
       expect_equal(sampleNames(gs2[[1]]), paste(sampleNames(gh), flowWorkspace:::trimWhiteSpace(keyword(gh)[["$TOT"]]), sep = "_"))
       expect_equal(getPopStats(gs2[[1]]), getPopStats(gh))
         
     })
 
+test_that("supply sampleID--file mapping through 'path'",{
+      mapping <- data.frame(sampleID1 = '1', file = file.path(dataDir, "CytoTrol_CytoTrol_11.fcs"))
+      expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
+                  , "When 'path' is a data.frame, it must contain columns")
+      colnames(mapping)[1] <- "sampleID"
+      expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
+          , "must be numeric")
+      mapping[["sampleID"]] <- 1
+      expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
+          , "not sample")
+      mapping[["sampleID"]] <- 19
+      expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
+          , "not a valid file")
+      mapping[["file"]] <- file.path(dataDir, "CytoTrol_CytoTrol_1.fcs")
+      dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
+      expect_equal(getPopStats(gs3[[1]]), getPopStats(gh))
+      
+    })
 
 test_that("closeWorkspace",
     {
