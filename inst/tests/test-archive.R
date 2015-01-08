@@ -5,10 +5,10 @@ gs <- NULL
 
 test_that("load GatingSet from archive",
 {
-  gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))
+  suppressWarnings(suppressMessages(gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
   #update the gating results
   # since the gating results stored in achive was not accurate due to the ellipse gates
-  recompute(gs)
+  suppressMessages(recompute(gs))
   expect_that(gs, is_a("GatingSet"))
 })
 
@@ -109,9 +109,9 @@ source("GatingHierarchy-testSuite.R", local = TRUE)
 test_that("Construct new GatingSet based on the existing gating hierarchy",
     {
       #re-load the gs since the trans get lost during clone 
-      gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))
+      suppressWarnings(suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
       gh <- gs[[1]] 
-      gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE)
+      suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE))
       expect_that(gs, is_a("GatingSet"))
     })
 
