@@ -399,7 +399,7 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, additional.keys, ...){
+.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path = ws@path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, additional.keys, ...){
   
 	message("calling c++ parser...")
 
@@ -419,53 +419,71 @@ unarchive<-function(file,path=tempdir()){
 	#loading and filtering data
 	if(execute)
 	{
-
-        
         nSamples <- nrow(samples)
-    	samples.matched <- ldply(1:nSamples, function(i){
-                                              row <- samples[i,]
-                                              filename <- row[["name"]]
-                                              guid <- row[["guid"]]
-                                              sampleID <- row[["sampleID"]]
-                                              #########################################################
-                                              #get full path for each fcs
-                                              #########################################################
-                                              ##escape "illegal" characters
-                                              filename <- gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",filename)))))))
-                                              absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
-                                              nFound <- length(absPath)
-                           
-                                              if(nFound == 0){
-                                              	warning("Can't find ",filename," in directory: ",path,"\n");
-                                                row <- NULL              
-                                              }else if(nFound > 1){
-                                                  #try to use additional keywords to help find the correct file
-                                                  if(is.null(additional.keys))
-                                                    stop('Multiple files matched for:', filename)
-                                                  else
-                                                  {
-                                                     guids.fcs <-  sapply(absPath, function(thisPath){
-                                                                       # get keyword from FCS header
-                                                                      kw <- as.list(read.FCSheader(thisPath)[[1]])
-                                                                      kw <- trimWhiteSpace(unlist(kw[additional.keys]))
-                                                                      # construct guids
-                                                                      thisFile <- basename(thisPath)
-                                                                      paste(c(thisFile, as.vector(kw)), collapse = "_")
-                                                                    }, USE.NAMES = F)  
-                                                    matchInd <- grep(guid, guids.fcs)                                
-                                                    if(length(matchInd)==0){
-                                                      warning("Can't find ",guid," in directory: ",path,"\n");
-                                                      row <- NULL
-                                                    }else if(length(matchInd) > 1){
-                                                      stop('Multiple files matched for:', guid)
-                                                    }else
-                                                      absPath <- absPath[matchInd]
-                                                  }
-                                              }
-                                              
-                                              row[["file"]] <- absPath
-                                              row
-                                    	})
+        
+        if(is.data.frame(path)){
+          #use the file path provided by mapping
+        
+        #validity check for path
+        mapCols <- c("sampleID", "file")
+        if(!setequal(colnames(path), c("sampleID", "file")))
+          stop("When 'path' is a data.frame, it must contain columns: ", paste(dQuote(mapCols), collapse = ","))
+        if(class(path[["sampleID"]])!="numeric")
+          stop("'sampleID' column in 'path' argument must be numeric!")
+        
+        path[["file"]] <- as.character(path[["file"]])
+        
+        samples.matched <- merge(samples, path, by = "sampleID")
+          
+        }else{
+          
+          #search file system
+          
+      	  samples.matched <- ldply(1:nSamples, function(i){
+                                                row <- samples[i,]
+                                                filename <- row[["name"]]
+                                                guid <- row[["guid"]]
+                                                sampleID <- row[["sampleID"]]
+                                                #########################################################
+                                                #get full path for each fcs
+                                                #########################################################
+                                                ##escape "illegal" characters
+                                                filename <- gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",filename)))))))
+                                                absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
+                                                nFound <- length(absPath)
+                             
+                                                if(nFound == 0){
+                                                	warning("Can't find ",filename," in directory: ",path,"\n");
+                                                  row <- NULL              
+                                                }else if(nFound > 1){
+                                                    #try to use additional keywords to help find the correct file
+                                                    if(is.null(additional.keys))
+                                                      stop('Multiple files matched for:', filename)
+                                                    else
+                                                    {
+                                                       guids.fcs <-  sapply(absPath, function(thisPath){
+                                                                         # get keyword from FCS header
+                                                                        kw <- as.list(read.FCSheader(thisPath)[[1]])
+                                                                        kw <- trimWhiteSpace(unlist(kw[additional.keys]))
+                                                                        # construct guids
+                                                                        thisFile <- basename(thisPath)
+                                                                        paste(c(thisFile, as.vector(kw)), collapse = "_")
+                                                                      }, USE.NAMES = F)  
+                                                      matchInd <- grep(guid, guids.fcs)                                
+                                                      if(length(matchInd)==0){
+                                                        warning("Can't find ",guid," in directory: ",path,"\n");
+                                                        row <- NULL
+                                                      }else if(length(matchInd) > 1){
+                                                        stop('Multiple files matched for:', guid)
+                                                      }else
+                                                        absPath <- absPath[matchInd]
+                                                    }
+                                                }
+                                                
+                                                row[["file"]] <- absPath
+                                                row
+                                      	})
+        }
     	#Remove samples where files don't exist.
         nMatched <- nrow(samples.matched)
     	if(nMatched < nSamples){
@@ -479,7 +497,7 @@ unarchive<-function(file,path=tempdir()){
       
       
     
-	G <- .addGatingHierarchies(G,samples.matched,execute,isNcdf, wsType = wsType, sampNloc = sampNloc,  ...)
+	G <- .addGatingHierarchies(G,samples.matched,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ws = ws, ...)
 
 
 	message("done!")
