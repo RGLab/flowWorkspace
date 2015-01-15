@@ -480,7 +480,9 @@ unarchive<-function(file,path=tempdir()){
                                                     }
                                                 }
                                                 
-                                                row[["file"]] <- absPath
+                                                if(!is.null(row))
+                                                  row[["file"]] <- absPath
+                                                
                                                 row
                                       	})
         }
@@ -591,7 +593,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 .addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", ...){
 
     if(nrow(samples)==0)
-      stop("not sample to be added to GatingSet!")
+      stop("no sample to be added to GatingSet!")
   
     guids <- samples[["guid"]]
     #load the raw data from FCS

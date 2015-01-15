@@ -17,6 +17,16 @@ gs <- NULL
 test_that("Can parse workspace",{
     dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE))))
 	expect_that(gs, is_a("GatingSet"));
+    
+    expect_warning(expect_error(suppressMessages(parseWorkspace(ws
+                                                                , path = file.path(dataDir, "gs_manual")
+                                                                , name = 4
+                                                                , subset = "CytoTrol_CytoTrol_1.fcs"
+                                                                )
+                                                )
+                                  , "no sample")
+                       , "Can't find")
+                
 	
 })
 
@@ -77,7 +87,7 @@ test_that("supply sampleID--file mapping through 'path'",{
           , "must be numeric")
       mapping[["sampleID"]] <- 1
       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
-          , "not sample")
+          , "no sample")
       mapping[["sampleID"]] <- 19
       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
           , "not a valid file")
