@@ -235,7 +235,6 @@ load_gslist<-function(path){
   g
 }
 #' @rdname getSingleCellExpression
-#' @param ... other arguments
 #' @export
 setMethod("getSingleCellExpression",signature=c("GatingSetList","character"),function(x, nodes, ...){
       
