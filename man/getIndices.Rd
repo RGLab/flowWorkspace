@@ -10,7 +10,7 @@
 \arguments{
 \item{obj}{A \code{GatingHierarchy} representing a sample.}
 
-\item{y}{A \code{character} giving the name or full(/partial) gating path or index of the population / node of interest.}
+\item{y}{A \code{character} giving the name or full(/partial) gating path of the population / node of interest.}
 }
 \value{
 A logical vector of length equal to the number of events in the FCS file that determines whether each event is or is not included in the current gate.

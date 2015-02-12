@@ -60,8 +60,8 @@ Objects store a collection of GatingSets,which usually has the same gating trees
 
     #get flow data from it
     getData(gslist2)
-    #get gated flow data from a particular popoulation (by numeric or character index)
-    getData(gslist2,4)
+    #get gated flow data from a particular popoulation
+    getData(gslist2, "3+")
 
     #extract the gates associated with one popoulation
     getGate(gslist2,"3+")

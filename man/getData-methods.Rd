@@ -22,7 +22,7 @@
 \arguments{
 \item{obj}{A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.}
 
-\item{y}{\code{character}  the node name or full(/partial) gating path or \code{numeric} node index.
+\item{y}{\code{character}  the node name or full(/partial) gating path.
 If not specified, will return the complete flowFrame/flowSet at the root node.}
 
 \item{...}{arguments passed to ncdfFlow::[[}
