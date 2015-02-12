@@ -982,7 +982,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2, path = "auto", ...){
 #'  Return the flowCore gate definition object associated with a node in a \code{GatingHierarchy} or \code{GatingSet} object.
 #' 
 #' @param obj A \code{GatingHierrarchy} or \code{GatingSet}
-#' @param y A \code{character} the name or full(/partial) gating path of the node of interest.  Or, a \code{numeric} index into the node list of nodes in the \code{GatingHierarchy} or \code{GatingSet}.
+#' @param y A \code{character} the name or full(/partial) gating path of the node of interest.
 #' 
 #' @return  A gate object from \code{flowCore}. Usually a \code{polygonGate}, but may be a \code{rectangleGate}. Boolean gates are represented by a \code{"BooleanGate"} S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If \code{obj} is a \code{GatingSet}, assuming the trees associated with each \code{GatingHierarchy} are identical, then this method will return a list of gates, one for each sample in the \code{GatingSet} corresponding to the same population indexed by \code{y}.
 #' 
@@ -1056,7 +1056,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #'  Returns a logical vector that describes whether each event in a sample is included or excluded by this gate.
 #' 
 #' @param obj A \code{GatingHierarchy} representing a sample.
-#' @param y A \code{character} giving the name or full(/partial) gating path or index of the population / node of interest.
+#' @param y A \code{character} giving the name or full(/partial) gating path of the population / node of interest.
 #' 
 #' @details  Returns a logical vector that describes whether each event in the data file is included in the given gate of this \code{GatingHierarchy}. The indices are for all events in the file, and do not reflect the population counts relative to the parent but relative to the root. To get population frequencies relative to the parent one cross-tabulate the  indices of \code{y} with the indices of its parent.
 #' 
@@ -1115,7 +1115,7 @@ setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(ob
 #' To update the data, use \code{flowData} method.
 
 #' @param obj A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.
-#' @param  y \code{character}  the node name or full(/partial) gating path or \code{numeric} node index.
+#' @param  y \code{character}  the node name or full(/partial) gating path.
 #'                             	If not specified, will return the complete flowFrame/flowSet at the root node.
 #' @param ... arguments passed to ncdfFlow::[[
 #'
