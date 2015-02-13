@@ -1010,8 +1010,13 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 					mat<-matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters))
 					if(nrow(mat)==2)#convert to rectangleGate
 						rectangleGate(.gate=mat,filterId=filterId)
-					else
-						polygonGate(.gate=mat,filterId=filterId)
+					else{
+                      #restore gate coordinates due to the double overflow during pb archiving
+                      mat[mat == Inf] <- .Machine$double.xmax
+                      mat[mat == -Inf] <- -.Machine$double.xmax
+                      polygonGate(.gate=mat,filterId=filterId)
+                    }
+						
 				}else if(g$type==2)
 					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=filterId)
 				else if(g$type %in% c(3,6))
