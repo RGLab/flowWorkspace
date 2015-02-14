@@ -10,11 +10,6 @@ AC_ARG_WITH(xml2,
                            [root directory of xml2 installation (defaults to /usr/local)])],
            [XML2_DIR="${with_xml2}"],
 	   [XML2_DIR="yes"])
-AC_ARG_WITH(boost,
-           [AS_HELP_STRING([--with-boost=DIR],
-                           [root directory of boost installation (defaults to /usr/local)])],
-           [BOOST_DIR="${with_boost}"],
-	   [BOOST_DIR=""])
 AC_ARG_WITH(protobuf,
            [AS_HELP_STRING([--with-protobuf=DIR],
                            [root directory of protocol buffer installation (defaults to /usr/local)])],
@@ -63,29 +58,6 @@ else
 fi
 
 
-#boost serialzation library
-if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
-        AC_MSG_NOTICE([No directory was specified for --with-boost. Using bundled boost.])
-
-	BASEBOOSTNAME="bst"
-	BOOSTTGZNAME=${BASEBOOSTNAME}.tar.gz
-	cd src
-	if test -d ./${BASEBOOSTNAME};
-		then 
-			echo 'found ' $BASEBOOSTNAME ' header sources and tar archive;using what is there.'
-		else
-			echo "untarring boost include tree...";
-			gunzip -dc ${BOOSTTGZNAME} | tar xf -;
-	fi;
-	cd ../
-	boost_bundled=yes
-else
-        AC_MSG_NOTICE([Using external boost '${BOOST_DIR}'])
-        BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
-        BOOST_LIBS="-L${BOOST_DIR}/lib -L${BOOST_DIR}/lib64 -lboost_serialization -lboost_regex"
-        boost_bundled=no
-fi
-
 AC_MSG_NOTICE([setting protobuf flags...])
 
 if test  "${PB_DIR}" = "yes" ; then
@@ -132,12 +104,12 @@ fi
 
 
 
-PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS $PB_CFLAGS"
+PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
 if test "${COMPILER}" = "clang"; then
   PKG_CPPFLAGS+=" -ftemplate-depth=900"
 fi
 
-PKG_LIBS="$XML2_LIBS $BOOST_LIBS $PB_LIBS"
+PKG_LIBS="$XML2_LIBS $PB_LIBS"
 
 # Checks for library functions.
 AC_MSG_NOTICE([Using the following compilation and linking flags for flowWorkspace])
@@ -145,6 +117,5 @@ AC_MSG_NOTICE([   PKG_CPPFLAGS=${PKG_CPPFLAGS}])
 AC_SUBST(PKG_CPPFLAGS)
 AC_MSG_NOTICE([   PKG_LIBS=${PKG_LIBS}])
 AC_SUBST(PKG_LIBS)
-AC_SUBST(boost_bundled)
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT

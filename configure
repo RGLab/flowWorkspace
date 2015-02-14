@@ -3654,7 +3654,7 @@ $as_echo "$as_me: Using xml2 dir '${XML2_DIR}'" >&6;}
 fi
 
 
-#boost serialzation library
+#boost bundled library
 if test  "${BOOST_DIR}" = "yes" || test -z "${BOOST_DIR}"; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: No directory was specified for --with-boost. Using bundled boost." >&5
 $as_echo "$as_me: No directory was specified for --with-boost. Using bundled boost." >&6;}
@@ -3674,7 +3674,6 @@ $as_echo "$as_me: No directory was specified for --with-boost. Using bundled boo
 else
         { $as_echo "$as_me:${as_lineno-$LINENO}: Using external boost '${BOOST_DIR}'" >&5
 $as_echo "$as_me: Using external boost '${BOOST_DIR}'" >&6;}
-        BOOST_CFLAGS="-I${BOOST_DIR}/include/boost"
         BOOST_LIBS="-L${BOOST_DIR}/lib -L${BOOST_DIR}/lib64 -lboost_serialization -lboost_regex"
         boost_bundled=no
 fi
@@ -3769,7 +3768,7 @@ fi
 
 
 
-PKG_CPPFLAGS="$XML2_CFLAGS $BOOST_CFLAGS $PB_CFLAGS"
+PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
 if test "${COMPILER}" = "clang"; then
   PKG_CPPFLAGS+=" -ftemplate-depth=900"
 fi
