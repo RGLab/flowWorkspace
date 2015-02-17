@@ -33,7 +33,7 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, Stri
 	Rcpp::IntegerVector countVec(nVec);
 	Rcpp::IntegerVector parentCountVec(nVec);
 
-	StringVec allNodes = gsPtr->getGatingHierarchy(0)->getPopPaths(REGULAR, isFullPath, true);
+	StringVec allNodes = gsPtr->getGatingHierarchy(sampleNames.at(0))->getPopPaths(REGULAR, isFullPath, true);
 
 	unsigned counter = 0;
 	for(unsigned i = 0; i < nSample; i++){
