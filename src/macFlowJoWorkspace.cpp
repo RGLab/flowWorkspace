@@ -683,12 +683,23 @@ boolGate* macFlowJoWorkspace::getGate(wsBooleanGateNode & node){
 	string specs=node.getProperty("specification");
 
 	//get string vector of gating paths
-	xmlXPathObjectPtr resPaths=node.xpathInNode(".//String");
+	xmlXPathObjectPtr resPaths=node.xpathInNode("GatePaths/*/*");
 	vector<string> gPaths;
+	string thisGatePath;
 	for(int i=0;i<resPaths->nodesetval->nodeNr;i++)
 	{
 		wsNode curGPNode(resPaths->nodesetval->nodeTab[i]);
-		gPaths.push_back(curGPNode.getContent());
+		thisGatePath = curGPNode.getContent();
+		/*
+		 * need extra treatment for QuotedString
+		 */
+		if(curGPNode.getName()  == "QuotedString"){
+			//strip double quotes
+			thisGatePath = thisGatePath.substr(1, thisGatePath.size()-2);
+			//trim the heading/tailing spaces
+			thisGatePath = boost::regex_replace(thisGatePath, boost::regex("(^\\s)|(\\s$)"), "");
+		}
+		gPaths.push_back(thisGatePath);
 
 	}
 	xmlXPathFreeObject(resPaths);
@@ -699,6 +710,7 @@ boolGate* macFlowJoWorkspace::getGate(wsBooleanGateNode & node){
 
 }
 
+
 vector<BOOL_GATE_OP> macFlowJoWorkspace::parseBooleanSpec(string specs,vector<string> gPaths){
 
 	vector<BOOL_GATE_OP> res;
@@ -706,27 +718,30 @@ vector<BOOL_GATE_OP> macFlowJoWorkspace::parseBooleanSpec(string specs,vector<st
 	/*
 	 * parse the spec strings to get logical operations among populations
 	 */
-//	vector<unsigned short> op_vec;
-	boost::replace_all(specs,"! G","!G");
-	vector<string> tokens;
-	boost::split(tokens, specs, boost::is_any_of(" "));
-	unsigned short nTokens=tokens.size();
-	unsigned short nPopulations=(nTokens+1)/2;
+
+	boost::replace_all(specs," ","");
+
+	//tokenize by boolean operator: & or |
+
+	int subMatch[] = {-1,1};
+	boost::sregex_token_iterator token_begin(specs.begin(), specs.end(), boost::regex("([\\&|\\|])"), subMatch), token_end;
+
+	unsigned short i = 0;
+	vector<string> popTokens, opTokens;
+	string thisToken;
+	while(token_begin!=token_end){
+		i++;
+		thisToken = *token_begin++;
+		if(i%2 == 1)
+			popTokens.push_back(thisToken);//like G0, G1...
+		else
+			opTokens.push_back(thisToken);//operators: !, &
+
+	}
+	unsigned short nPopulations=popTokens.size();
 	if(nPopulations!=gPaths.size())
 	{
 		throw(domain_error("the logical operators and the gating paths do not pair correctly!"));
-	}
-
-	vector<string> popTokens;
-	vector<string> opTokens;
-
-	popTokens.push_back(tokens.at(0));//get the first G
-
-	for(unsigned i=1;i<nPopulations;i++)
-	{
-		opTokens.push_back(tokens.at(i*2-1));//operators: !, &
-		popTokens.push_back(tokens.at(i*2));//like G0, G1...
-
 	}
 
 
@@ -747,7 +762,7 @@ vector<BOOL_GATE_OP> macFlowJoWorkspace::parseBooleanSpec(string specs,vector<st
 		 */
 		string sIndex=boost::erase_all_copy(curPopToken,"!");
 		boost::erase_all(sIndex,"G");
-		unsigned short index=atoi(sIndex.c_str());
+		unsigned short index = boost::lexical_cast<unsigned short>(sIndex);
 		/*
 		 * select respective gating path string and split it into vector
 		 */
