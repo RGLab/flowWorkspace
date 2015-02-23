@@ -15,7 +15,6 @@
 #include "spline.hpp"
 using namespace std;
 #include <boost/config.hpp>
-#include <boost/archive/tmpdir.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -23,10 +22,16 @@ using namespace std;
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/vector.hpp>
-#include <boost/serialization/valarray.hpp>
 #include <boost/graph/adj_list_serialize.hpp>
 #include <boost/serialization/assume_abstract.hpp>
 #include <boost/foreach.hpp>
+/*
+ * these are local copies since they are missing from BH package
+ */
+#include "boost/archive/tmpdir.hpp"
+#include "boost/serialization/scoped_ptr.hpp"
+#include "boost/serialization/valarray.hpp"
+
 #include "../GatingSet.pb.h"
 
 struct Spline_Coefs{
