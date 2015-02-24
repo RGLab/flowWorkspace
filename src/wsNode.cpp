@@ -71,4 +71,7 @@ string wsNode::getContent(){
 
 }
 
-
+string wsNode::getName(){
+	string res =(const char*)this->thisNode->name;
+	return res;
+}
