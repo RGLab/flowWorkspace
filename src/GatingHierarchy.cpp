@@ -1009,13 +1009,35 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 
 
 				vector<unsigned>::iterator maxIt = max_element(similarity.begin(), similarity.end());
-				if(count(similarity.begin(), similarity.end(), *maxIt) > 1)
-					throw(domain_error(errMsg + " can't be determined due to the multiple matches with the same distance to boolean node!" ));
-				else{
-					short nPos = distance(similarity.begin(), maxIt);
-					return nodeIDs.at(nPos);
+				vector<unsigned> matchedInd;
+				for(unsigned i = 0; i < similarity.size(); i++){
+					if(similarity.at(i) == *maxIt)
+						matchedInd.push_back(i);
 				}
+				/*
+				 * try to break the tie when multiple nodes have the same minimum depths
+				 * by picking the one with the node depth closest to u
+				 */
+				unsigned nTie = matchedInd.size();
+				vector<unsigned> relativeDepthVec(nTie);
+				unsigned boolNodeDepth = getNodeDepths(u);
+				unsigned nPos;
+				if(nTie > 1){
+					for(unsigned i = 0; i < nTie; i ++){
+						VertexID thisNode = nodeIDs.at(matchedInd.at(i));
+						relativeDepthVec.at(i) = abs(getNodeDepths(thisNode) - boolNodeDepth);
+					}
+					vector<unsigned>::iterator minIt = min_element(relativeDepthVec.begin(), relativeDepthVec.end());
+					if(count(relativeDepthVec.begin(), relativeDepthVec.end(), *minIt) > 1)
+						throw(domain_error(errMsg + " can't be determined due to the multiple matches with the same distance to boolean node!" ));
+					else{
+						nPos = matchedInd.at(distance(relativeDepthVec.begin(), minIt));
+					}
+				}else{
 
+					nPos = matchedInd.at(0);
+				}
+				return nodeIDs.at(nPos);
 			}
 
 		}
@@ -1205,8 +1227,17 @@ vector<string> GatingHierarchy::getPopPaths(unsigned short order,bool fullPath,b
 	}
 	return res;
 }
+unsigned GatingHierarchy::getNodeDepths(VertexID u){
+	unsigned i = 0;
+	while(u > 0){
+		u = getParent(u);
+		i++;
+	}
+
+	return i ;
+}
 /*
- * assume getParent only returns one parent node
+ * assume getParent only returns one parent nodeGatingHierarchy
  */
 VertexID GatingHierarchy::getAncestor(VertexID u,unsigned short level){
 
