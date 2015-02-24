@@ -19,6 +19,7 @@ public:
 	string getProperty(string propName);
 	string getNsProperty(string propName,string ns);
 	string getContent();
+	string getName();
 	xmlXPathObjectPtr xpathInNode(string xpath);
 	xmlXPathObjectPtr xpath(string xpath);
 	xmlNodePtr getNodePtr(){return thisNode;};

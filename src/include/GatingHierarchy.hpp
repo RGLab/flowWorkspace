@@ -230,7 +230,7 @@ public:
 	int getChildren(VertexID source,string childName);
 
 	VertexID getCommonAncestor(VertexID_vec ,unsigned & nDepths);
-
+	unsigned getNodeDepths(VertexID);
 	VertexID getNodeID(vector<string> gatePath);
 	VertexID getRefNodeID(VertexID u,vector<string> refPath);
 	VertexID_vec queryByPath(VertexID ancestorID,vector<string> gatePath);
