@@ -154,7 +154,7 @@ hdfFlow gs_attachCDF(GatingSet & gs,testCase myTest)
 	 */
 	return attachData(ncFile,sampleNames,params);
 }
-void gs_gating(GatingSet &gs,string curSample, hdfFlow nc){
+void gs_gating(GatingSet &gs,string curSample, hdfFlow nc, map<string,float> &gains){
 	cout<<endl<<"do the gating after the parsing"<<endl;
 
 	//read transformed data once for all nodes
@@ -172,6 +172,7 @@ void gs_gating(GatingSet &gs,string curSample, hdfFlow nc){
 	 */
 	gh->loadData(res);//
 	gh->extendGate(0);
+	gh->adjustGate(gains);
 	gh->transformGate();
 	gh->transforming();
 
@@ -179,47 +180,50 @@ void gs_gating(GatingSet &gs,string curSample, hdfFlow nc){
 	gh->unloadData();
 
 }
-void gh_counts(GatingHierarchy* gh,vector<bool> &isEqual, const float tolerance){
+void gh_counts(GatingHierarchy* gh,vector<bool> &isEqual, const float tolerance, const vector<VertexID> skipPops){
 	cout<<endl<<"flowJo(flowcore) counts after gating"<<endl;
 	VertexID_vec vertices=gh->getVertices(0);
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
-		if(u!=ROOTNODE){
-			nodeProperties &node=gh->getNodeProperty(u);
-			int flowJoCount = node.getStats(false)["count"];
-			if(flowJoCount != -1) //skip the unrecorded flowJo counts
-			{
-
-				int myCount = node.getStats(true)["count"];
-				cout<<u<<"."<<node.getName()<<":";
-				cout<< flowJoCount;
-				cout<<"("<<myCount<<") "<< "cv = ";
-
-				bool thisEqual;
-				float thisCV ;
-				float thisTol = tolerance;
-				if(flowJoCount == myCount){
-					thisEqual = true;
-					thisCV = 0;
-				}
-				else
+		if(find(skipPops.begin(), skipPops.end(), u) == skipPops.end())//skip some pops that flowJo records the wrong counts
+		{
+			if(u!=ROOTNODE){
+				nodeProperties &node=gh->getNodeProperty(u);
+				int flowJoCount = node.getStats(false)["count"];
+				if(flowJoCount != -1) //skip the unrecorded flowJo counts
 				{
-					float min = flowJoCount>myCount?myCount:flowJoCount;
-					float max = flowJoCount<myCount?myCount:flowJoCount;
-					float mean = (min+max)/2;
-					float sd = sqrt((pow((min-mean), 2) + pow((max-mean), 2))/2);
-					boost::math::normal_distribution<> dist(mean,sd);
-					float Q1 = quantile(dist,0.25);
-					float Q3 = quantile(dist,0.75);
-					float IQR = Q3 - Q1;
-					thisCV = IQR/mean;
-					thisTol = 1/max+thisTol;//add the weight of N of cells to make it more robust
-					thisEqual = (thisCV < thisTol);
-	//				cout << Q1 <<":" <<Q3 << " " << thisCV<<endl;
+
+					int myCount = node.getStats(true)["count"];
+					cout<<u<<"."<<node.getName()<<":";
+					cout<< flowJoCount;
+					cout<<"("<<myCount<<") "<< "cv = ";
+
+					bool thisEqual;
+					float thisCV ;
+					float thisTol = tolerance;
+					if(flowJoCount == myCount){
+						thisEqual = true;
+						thisCV = 0;
+					}
+					else
+					{
+						float min = flowJoCount>myCount?myCount:flowJoCount;
+						float max = flowJoCount<myCount?myCount:flowJoCount;
+						float mean = (min+max)/2;
+						float sd = sqrt((pow((min-mean), 2) + pow((max-mean), 2))/2);
+						boost::math::normal_distribution<> dist(mean,sd);
+						float Q1 = quantile(dist,0.25);
+						float Q3 = quantile(dist,0.75);
+						float IQR = Q3 - Q1;
+						thisCV = IQR/mean;
+						thisTol = 1/max+thisTol;//add the weight of N of cells to make it more robust
+						thisEqual = (thisCV < thisTol);
+		//				cout << Q1 <<":" <<Q3 << " " << thisCV<<endl;
+					}
+					cout << thisCV << " tol = " << thisTol << endl;
+					isEqual.push_back(thisEqual);
 				}
-				cout << thisCV << " tol = " << thisTol << endl;
-				isEqual.push_back(thisEqual);
 			}
 		}
 	}
@@ -245,6 +249,7 @@ void parser_test(testCase & myTest){
 	bool isSaveArchive = myTest.isSaveArchive;
 	bool archiveType = myTest.archiveType;
 	string archiveName = myTest.archive;
+	map<string,float> gains = myTest.gains;
 
 	if(archiveType)
 		archiveName = archiveName.append(".pb");
@@ -301,7 +306,7 @@ void parser_test(testCase & myTest){
 //		gh_accessor_test(gh);
 
 		if(!isLoadArchive)
-			gs_gating(*gs,curSample,nc);
+			gs_gating(*gs,curSample,nc, gains);
 
 		/*
 		 * recompute the gate to check if the pop indices are restored properly
@@ -315,7 +320,7 @@ void parser_test(testCase & myTest){
 			gh->unloadData();;
 		}
 
-		gh_counts(gh, myTest.isEqual, myTest.tolerance);
+		gh_counts(gh, myTest.isEqual, myTest.tolerance, myTest.skipPops);
 //		nodeProperties * np = gh->getNodeProperty(102);
 //		vector<bool> thisInd = np->getIndices();
 //		vector<bool> thisInd1(1024);

@@ -40,7 +40,8 @@ struct testCase{
 	bool isSaveArchive;
 	unsigned archiveFormat;
 	bool archiveType;// boost or google
-
+	map<string,float> gains;
+	vector<VertexID> skipPops;
 } ;
 hdfFlow gs_attachCDF(GatingSet & gs,testCase myTest);
 void gs_gating(GatingSet &gs,string curSample, hdfFlow nc);

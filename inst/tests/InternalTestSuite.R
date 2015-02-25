@@ -175,6 +175,26 @@ test_that("v 9.4.2 - mac 2.0",{
       
     })
 
+#1. boolean specification contains double spaces and non-spaces, which leads to the fix that uses boolean operator as delimiter instead of space)
+#2. boolean gate refers to the node (AM) that appears both at sibling and children level, which leads to further checking in getRefNodes routines
+#3. boolean gate has quotedString which leads to more generic xpath searching for gatePath and trailing space removal.
+test_that("v 9.4.4 - mac 2.0 ",{
+      
+      thisPath <- file.path(path, "JJ")
+      wsFile <- file.path(thisPath, "JJ_FlowJo_.xml")
+      
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name = "Test", subset = 1, execute = FALSE)
+      expect_is(gs, "GatingSet")
+      
+      gs <- parseWorkspace(ws, name = "Test", subset = 1)
+      gh <- gs[[1]]
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      expect_equal(thisCounts, expectCounts)
+      
+    })
+
 
 test_that("v 9.5.2 - mac 2.0",{
       
