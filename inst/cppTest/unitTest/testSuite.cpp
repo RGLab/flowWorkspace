@@ -281,27 +281,31 @@ BOOST_AUTO_TEST_CASE(ragon)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-//BOOST_AUTO_TEST_CASE(JJ)
-//{
-//	myTest.filename="../wsTestSuite/JJ/JJ_FlowJo_.xml";
-//	myTest.wsType = WS_MAC;
-//	myTest.samples["221"] = "Panel 2_A9001.fcs";
-//	myTest.sampNloc=1;
-//	myTest.ncfile="../output/JJ/data.nc";
-//	myTest.colfile="../output/JJ/colnames.txt";
-//	myTest.archive="../output/JJ/gs";
-//
-////	myTest.isSaveArchive = true;
-////	myTest.isLoadArhive = true;
-//
-//
-//
-//	parser_test(myTest);
-//
-//	vector<bool> isTrue(myTest.isEqual.size(), true);
-//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-//
-//}
+BOOST_AUTO_TEST_CASE(JJ)
+{
+	myTest.filename="../wsTestSuite/JJ/JJ_FlowJo_.xml";
+	myTest.wsType = WS_MAC;
+	myTest.samples["221"] = "Panel 2_A9001.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/JJ/data.nc";
+	myTest.colfile="../output/JJ/colnames.txt";
+	myTest.archive="../output/JJ/gs";
+
+	myTest.tolerance = 0.5;
+
+
+	map<string,float> gains;
+	gains["Time"] = 0.01;
+	myTest.gains = gains;
+	vector<VertexID> skip;
+	skip.push_back(174);
+	myTest.skipPops = skip;
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";
