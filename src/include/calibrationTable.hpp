@@ -28,9 +28,9 @@ using namespace std;
 /*
  * these are local copies since they are missing from BH package
  */
-#include "boost/archive/tmpdir.hpp"
-#include "boost/serialization/scoped_ptr.hpp"
-#include "boost/serialization/valarray.hpp"
+#include <boost/archive/tmpdir.hpp>
+#include <boost/serialization/scoped_ptr.hpp>
+#include <boost/serialization/valarray.hpp>
 
 #include "../GatingSet.pb.h"
 

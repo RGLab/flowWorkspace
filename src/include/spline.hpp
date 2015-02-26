@@ -22,7 +22,7 @@ using namespace Rcpp;
 #define COUT cout
 #endif
 
-#include <math.h>
+#include <cmath>
 #include <stdexcept>
 #include <iostream>
 #include <valarray>
