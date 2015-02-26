@@ -12,7 +12,7 @@ bs_objs=${bs_src:.cpp=.o}
 	
 pb_bundled=@pb_bundled@
 
-PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@ ${pb_cppflags}
+PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@ ${pb_cppflags} -Iboost_serialization
 PKG_LIBS =${bs_objs} ${pb_objs} `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags()"` @PKG_LIBS@ 
 
 

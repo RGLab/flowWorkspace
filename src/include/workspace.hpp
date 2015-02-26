@@ -15,7 +15,6 @@
 #include "transformation.hpp"
 #include <iostream>
 #include <algorithm>
-#include <math.h>
 #include <fstream>
 
 
