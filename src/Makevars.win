@@ -1,4 +1,22 @@
-PKG_CPPFLAGS =-DROUT -I$(LIB_XML2)/$(R_ARCH)/include/libxml2  -I$(LIB_BOOST)/$(R_ARCH)/include -I$(LIB_PROTOBUF)/$(R_ARCH)/include -DLIBXML_STATIC
 
-PKG_LIBS +=`${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` -L/usr/lib/x86_64-linux-gnu -L$(LIB_XML2)/$(R_ARCH)/lib $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a $(LIB_BOOST)/$(R_ARCH)/lib/libboost_serialization-mgw46-mt-1_52.a $(LIB_BOOST)/$(R_ARCH)/lib/libboost_regex-mgw46-mt-1_52.a $(LIB_PROTOBUF)/$(R_ARCH)/lib/libprotobuf.a -lws2_32
+bs_src=${wildcard boost_serialization/*.cpp} 
+bs_objs=${bs_src:.cpp=.o}
+	
+pb_bundled=@pb_bundled@
+
+PKG_CPPFLAGS =-DROUT -I$(LIB_XML2)/$(R_ARCH)/include/libxml2 -Iboost_serialization -I$(LIB_PROTOBUF)/$(R_ARCH)/include -DLIBXML_STATIC
+
+PKG_LIBS += ${bs_objs} $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a $(LIB_PROTOBUF)/$(R_ARCH)/lib/libprotobuf.a `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags()"` -lws2_32
+
+all: 	$(SHLIB) 
+
+$(SHLIB): $(OBJECTS) $(bs_objs)
+
+
+.PHONY: 	all clean 
+
+clean:
+		rm -f $(OBJECTS) $(bs_objs) $(SHLIB)
+ 
+
 
