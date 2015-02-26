@@ -9,13 +9,9 @@
 #define R_GATINGSET_HPP_
 
 
-//#include <Rinternals.h>
-//#include <Rdefines.h>
-//#include <Rmath.h>
-//#include "GatingSet.hpp"
 
 #include <Rcpp.h>
-//#include <cmath>
+
 #include "GatingSet.hpp"
 using namespace Rcpp;
 RcppExport SEXP R_openWorkspace(SEXP _fileName);
