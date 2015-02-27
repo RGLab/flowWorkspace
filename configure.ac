@@ -75,7 +75,12 @@ if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
 			echo "untarring protobuf ...";
 			gunzip -dc ${PBTGZNAME} | tar xf -;
 		fi;
-		
+
+        #have to do this to update the standard automake symlinked fils (e.g. ./compile) in this folder		
+        cd ${BASEPBNAME}
+        automake --add-missing
+        cd ..
+
 		echo "building protobuf...";
 		PBBUILD="pb_build"
 		if test -d ./${PBBUILD}; then

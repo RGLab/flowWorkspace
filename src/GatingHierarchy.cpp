@@ -1025,7 +1025,7 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 				if(nTie > 1){
 					for(unsigned i = 0; i < nTie; i ++){
 						VertexID thisNode = nodeIDs.at(matchedInd.at(i));
-						relativeDepthVec.at(i) = abs(getNodeDepths(thisNode) - boolNodeDepth);
+						relativeDepthVec.at(i) = std::abs((int)(getNodeDepths(thisNode) - boolNodeDepth));
 					}
 					vector<unsigned>::iterator minIt = min_element(relativeDepthVec.begin(), relativeDepthVec.end());
 					if(count(relativeDepthVec.begin(), relativeDepthVec.end(), *minIt) > 1)
