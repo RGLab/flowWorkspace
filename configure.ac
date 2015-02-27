@@ -33,6 +33,7 @@ AC_TYPE_SIZE_T
 
 # Check the compiler configured with R
 COMPILER=`R CMD config CC`
+MAKE=`R CMD config MAKE`
 
 #xml2 lib
 AC_MSG_NOTICE([setting xml2 flags...])
@@ -60,47 +61,41 @@ fi
 
 AC_MSG_NOTICE([setting protobuf flags...])
 
-if test  "${PB_DIR}" = "yes" ; then
-        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Trying to find protobuf using other methods.])
-        AC_PATH_PROG(PKG_CONFIG, pkg-config)
 
-        if test -z "${PKG_CONFIG}" ; then
-                AC_MSG_NOTICE([pkg-config was not detected. Verify pkg-config is installed correctly.])
-                AC_MSG_NOTICE([Trying with /usr/local anyway.])
-                PB_CFLAGS="-I/usr/local/include"
-		PB_LIBS="-L/usr/local/lib -lprotobuf"        
-	else
-                PB_CFLAGS="`${PKG_CONFIG} --cflags protobuf`"
-                PB_LIBS="`${PKG_CONFIG} --libs protobuf`"
-        fi
+
+if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
+        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Using bundled protocol buffer.])
+
+		BASEPBNAME="protobuf-2.6.0"
+		PBTGZNAME=${BASEPBNAME}.tgz
+		cd src
+		if test -d ./${BASEPBNAME}; then 
+			echo 'found ' $BASEPBNAME ' header sources and tar archive;using what is there.'
+		else
+			echo "untarring protobuf ...";
+			gunzip -dc ${PBTGZNAME} | tar xf -;
+		fi;
+		
+		echo "building protobuf...";
+		PBBUILD="pb_build"
+		if test -d ./${PBBUILD}; then
+			echo 'found ' $PBBUILD ' ;using what is there.'
+		else
+			mkdir ${PBBUILD}
+		fi;
+		cd ${PBBUILD};
+		../${BASEPBNAME}/configure --enable-static=no
+		$MAKE
+	
+		PB_CFLAGS="-I${BASEPBNAME}/src"
+		#PB_LIBS will be set in Makevars file
+		cd ../../
 else
         AC_MSG_NOTICE([Using protobuf dir '${PB_DIR}'])
 
         PB_CFLAGS="-I${PB_DIR}/include"
         PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
 fi
-#protocol buffer library
-#if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}"; then
-#        AC_MSG_NOTICE([No directory was specified for --with-protobuf. Using bundled protocol buffer.])
-#
-#	BASEPBNAME="gpb"
-#	PBTGZNAME=${BASEPBNAME}.tar.gz
-#	cd src
-#	if test -d ./${BASEPBNAME};
-#		then 
-#			echo 'found ' $BASEPBNAME ' header sources and tar archive;using what is there.'
-#		else
-#			echo "untarring boost include tree...";
-#			gunzip -dc ${PBTGZNAME} | tar xf -;
-#	fi;
-#	cd ../
-#	boost_bundled=yes
-#else
-#        AC_MSG_NOTICE([Using external boost '${PB_DIR}'])
-#        PB_CFLAGS="-I${PB_DIR}/include"
-#        PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
-#        boost_bundled=no
-#fi
 
 
 
@@ -117,5 +112,7 @@ AC_MSG_NOTICE([   PKG_CPPFLAGS=${PKG_CPPFLAGS}])
 AC_SUBST(PKG_CPPFLAGS)
 AC_MSG_NOTICE([   PKG_LIBS=${PKG_LIBS}])
 AC_SUBST(PKG_LIBS)
+AC_MSG_NOTICE([   bundled protobuf is in ${PBBUILD}])
+AC_SUBST(PBBUILD)
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT
