@@ -1,3 +1,0 @@
-source files are copied from boost_1_55
-compiles with the headers from BH package
-3 boost searialization header copies are kept since they are  missing from BH
