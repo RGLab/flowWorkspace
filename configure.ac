@@ -76,9 +76,10 @@ if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
 			gunzip -dc ${PBTGZNAME} | tar xf -;
 		fi;
 
-        #have to do this to update the standard automake symlinked fils (e.g. ./compile) in this folder		
+        #run this bootstrap script to update all the gnu auto build files (e.g.  automake symlinked fils (e.g. ./compile), alocal.m4,etc... )		
         cd ${BASEPBNAME}
-        automake --add-missing
+        ./autogen.sh
+        automake --add-missing #do this because the old Autoconf (e.g. 2.13) may not handle this in autoreconf
         cd ..
 
 		echo "building protobuf...";
