@@ -80,6 +80,7 @@ if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
         cd ${BASEPBNAME}
         ./autogen.sh
         automake --add-missing #do this because the old Autoconf (e.g. 2.13) may not handle this in autoreconf
+        mv m4/lt~obsolete.m4 m4/lt-obsolete.m4 # R CMD check gives warning about ~ character in filename 
         cd ..
 
 		echo "building protobuf...";
