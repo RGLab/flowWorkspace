@@ -438,8 +438,8 @@ unarchive<-function(file,path=tempdir()){
         }else{
           
           #search file system
-          
-      	  samples.matched <- ldply(1:nSamples, function(i){
+          key.env <- new.env(parent = emptyenv())
+      	  samples.matched <- ldply(1:nSamples, function(i, key.env){
                                                 row <- samples[i,]
                                                 filename <- row[["name"]]
                                                 guid <- row[["guid"]]
@@ -454,16 +454,18 @@ unarchive<-function(file,path=tempdir()){
                                                 
                                                 #searching file by keyword $FIL when it is enabled
                                                 if(nFound == 0 && searchByKeyword){
-                                                    all.files <- list.files(pattern= ".fcs",path=path,recursive=TRUE,full.names=TRUE)  
-                                                    
-                                                    if(length(all.files) > 0){
+                                                    #read FCS headers if key.fils  has not been filled yet
+                                                    if(is.null(key.env[["key.fils"]])){
+                                                      all.files <- list.files(pattern= ".fcs",path=path,recursive=TRUE,full.names=TRUE)  
+                                                      if(length(all.files) > 0)
+                                                        key.env[["key.fils"]] <- read.FCSheader(all.files, keyword = "$FIL")
+                                                      }
+                                                      key.fils <- key.env[["key.fils"]]
                                                       message(filename," not found in directory: ",path,". Try the FCS keyword '$FIL' ...")  
-                                                      key.fils <- read.FCSheader(all.files, keyword = "$FIL")
                                                       absPath <- names(key.fils[key.fils == filename])
-                                                      nFound <- length(absPath)    
-                                                    }
+                                                      nFound <- length(absPath)
                                                      
-                                                  }
+                                                }
                                                   
                                                 if(nFound == 0){
                                                 	warning("Can't find ",filename," in directory: ",path,"\n");
@@ -497,7 +499,7 @@ unarchive<-function(file,path=tempdir()){
                                                   row[["file"]] <- absPath
                                                 
                                                 row
-                                      	})
+                                      	}, key.env)
         }
     	#Remove samples where files don't exist.
         nMatched <- nrow(samples.matched)
