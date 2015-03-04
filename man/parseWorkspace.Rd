@@ -30,6 +30,7 @@
 \item leaf.bool a \code{logical} whether to compute the leaf boolean gates. Default is TRUE. It helps to speed up parsing by turning it off when the statistics of these leaf boolean gates are not important for analysis. (e.g. COMPASS package will calculate them by itself.)
                                  If needed, they can be calculated by calling \code{recompute} method at later stage.
 \item additional.keys \code{character} vector:  By default, FCS filename is used to uniquely identify samples. When filename is not sufficient to serve as guid, parser can optionally combine it with other keywords (parsed from FCS header) to make guid (concatenated with "_").
+\item searchByKeyword \code{logical}: whether look up samples by their FCS keyword '$FIL' when the parser could not find them by FCS file name. (Sometime FCS file names could be altered but keyword preserves the original name). Default is TRUE.
 \item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 }}
 }

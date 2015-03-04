@@ -399,8 +399,8 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path = ws@path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, additional.keys, ...){
-  
+.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path = ws@path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, additional.keys, searchByKeyword =  TRUE, ...){
+      
 	message("calling c++ parser...")
 
 	time1<-Sys.time()
@@ -451,7 +451,20 @@ unarchive<-function(file,path=tempdir()){
                                                 filename <- gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",filename)))))))
                                                 absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
                                                 nFound <- length(absPath)
-                             
+                                                
+                                                #searching file by keyword $FIL when it is enabled
+                                                if(nFound == 0 && searchByKeyword){
+                                                    all.files <- list.files(pattern= ".fcs",path=path,recursive=TRUE,full.names=TRUE)  
+                                                    
+                                                    if(length(all.files) > 0){
+                                                      message(filename," not found in directory: ",path,". Try the FCS keyword '$FIL' ...")  
+                                                      key.fils <- read.FCSheader(all.files, keyword = "$FIL")
+                                                      absPath <- names(key.fils[key.fils == filename])
+                                                      nFound <- length(absPath)    
+                                                    }
+                                                     
+                                                  }
+                                                  
                                                 if(nFound == 0){
                                                 	warning("Can't find ",filename," in directory: ",path,"\n");
                                                   row <- NULL              
@@ -461,7 +474,7 @@ unarchive<-function(file,path=tempdir()){
                                                       stop('Multiple files matched for:', filename)
                                                     else
                                                     {
-                                                       guids.fcs <-  sapply(absPath, function(thisPath){
+                                                       guids.fcs <-  sapall.filesply(absPath, function(thisPath){
                                                                          # get keyword from FCS header
                                                                         kw <- as.list(read.FCSheader(thisPath)[[1]])
                                                                         kw <- trimWhiteSpace(unlist(kw[additional.keys]))

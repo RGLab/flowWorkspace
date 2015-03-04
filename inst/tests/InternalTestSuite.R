@@ -211,6 +211,19 @@ test_that("v 9.5.2 - mac 2.0",{
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
       expect_equal(thisCounts, expectCounts, tol = 11e-3)
       
+      #create a temp folder and symlink to original files to test the feature of searching sample by keyword $FIL
+      # in the use case where the fcs has been modified
+      fcs <- list.files(pattern = "fcs", file.path(thisPath, "Bcell"), full = T)[[1]]
+      tmp <- tempfile()
+      dir.create(tmp)
+      newFCS <- file.path(tmp, "test.fcs")
+      file.symlink(fcs, newFCS)
+      expect_warning(suppressMessages(expect_error(gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp, searchByKeyword = FALSE), "no sample")), "Can't find")
+      expect_message(gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp), "Try the FCS keyword")
+      gh <- gs[[1]]
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      expect_equal(thisCounts, expectCounts, tol = 11e-3)
+      unlink(tmp,recursive = T)
     })
 
 test_that("v 9.6.3 - mac 2.0 (ignore highValue for FSC/SSC)",{
