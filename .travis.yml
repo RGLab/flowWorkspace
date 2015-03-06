@@ -1,0 +1,11 @@
+language: r
+warnings_are_errors: false
+bioc_required: true
+
+r_binary_packages:
+  - testthat
+r_github_packages:
+  - RGLab/flowCore
+branches:
+  only:
+    - trunk
