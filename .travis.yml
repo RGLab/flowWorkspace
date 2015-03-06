@@ -3,23 +3,24 @@ warnings_are_errors: false
 bioc_required: true
 before_install:
   - sudo apt-get install -y -f libhdf5-7 libhdf5-dev
+  - sudo apt-get install -y r-bioc-rgraphviz r-bioc-rbgl r-bioc-zlibbioc r-bioc-graph
 r_binary_packages:
   - testthat
   - RcppArmadillo
   - DEoptimR
-#  - corpcor
-#  - hexbin
-#  - IDPmisc
-#  - zlibbioc
+  - corpcor
+  - hexbin
+  - IDPmisc
   - reshape2
-#  - markdown
+  - markdown
   - XML
   - robustbase
-  - graph
-#  - data.table
-#  - knitr
-#  - RBGL
-#  - Rgraphviz	
+  - data.table
+  - knitr
+# - RBGL
+# - zlibbioc
+# - graph
+# - Rgraphviz	
 branches:
   only:
     - travis 
