@@ -1,8 +1,17 @@
 language: r
 warnings_are_errors: false
+env:
+  global:
+    - BIOC_USE_DEVEL="TRUE"
 bioc_required: true
-before_install:
-  - sudo apt-get install -y libhdf5-serial-dev
+apt_packages:
+  - libhdf5-7 
+  - libhdf5-dev
+  - r-bioc-rgraphviz
+  - r-bioc-rbgl
+  - r-bioc-zlibbioc
+  - r-bioc-graph
+  - r-bioc-biobase	
 r_binary_packages:
   - testthat
   - RcppArmadillo
@@ -10,16 +19,18 @@ r_binary_packages:
   - corpcor
   - hexbin
   - IDPmisc
-  - zlibbioc
   - reshape2
   - markdown
   - XML
   - robustbase
-  - graph
   - data.table
   - knitr
-  - RBGL
-  - Rgraphviz	
+  - pcaPP
+  - rrcov
+# - RBGL
+# - zlibbioc
+# - graph
+# - Rgraphviz	
 branches:
   only:
     - travis 
