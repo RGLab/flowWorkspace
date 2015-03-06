@@ -1,9 +1,17 @@
 language: r
 warnings_are_errors: false
+env:
+  global:
+    - BIOC_USE_DEVEL="TRUE"
 bioc_required: true
-before_install:
-  - sudo apt-get install -y -f libhdf5-7 libhdf5-dev
-  - sudo apt-get install -y r-bioc-rgraphviz r-bioc-rbgl r-bioc-zlibbioc r-bioc-graph
+apt_packages:
+  - libhdf5-7 
+  - libhdf5-dev
+  - r-bioc-rgraphviz
+  - r-bioc-rbgl
+  - r-bioc-zlibbioc
+  - r-bioc-graph
+  - r-bioc-biobase	
 r_binary_packages:
   - testthat
   - RcppArmadillo
@@ -17,6 +25,8 @@ r_binary_packages:
   - robustbase
   - data.table
   - knitr
+  - pcaPP
+  - rrcov
 # - RBGL
 # - zlibbioc
 # - graph
