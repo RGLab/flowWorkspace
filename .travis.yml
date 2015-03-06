@@ -2,7 +2,7 @@ language: r
 warnings_are_errors: false
 bioc_required: true
 before_install:
-  - sudo apt-get install -y libhdf5-dev
+  - sudo apt-get install -y -f libhdf5-dev
 r_binary_packages:
   - testthat
   - RcppArmadillo
