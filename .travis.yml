@@ -22,4 +22,4 @@ r_binary_packages:
   - Rgraphviz	
 branches:
   only:
-    - trunk
+    - travis 
