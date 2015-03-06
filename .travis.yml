@@ -7,19 +7,19 @@ r_binary_packages:
   - testthat
   - RcppArmadillo
   - DEoptimR
-  - corpcor
-  - hexbin
-  - IDPmisc
-  - zlibbioc
+#  - corpcor
+#  - hexbin
+#  - IDPmisc
+#  - zlibbioc
   - reshape2
-  - markdown
+#  - markdown
   - XML
   - robustbase
   - graph
-  - data.table
-  - knitr
-  - RBGL
-  - Rgraphviz	
+#  - data.table
+#  - knitr
+#  - RBGL
+#  - Rgraphviz	
 branches:
   only:
     - travis 
