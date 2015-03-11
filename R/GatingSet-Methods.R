@@ -618,7 +618,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
             #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
-            pd <- AnnotatedDataFrame(data = data.frame(name = guids
+            pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
                                                         ,row.names = guids
                                                         ,stringsAsFactors=FALSE
                                                        )
@@ -1940,13 +1940,20 @@ setMethod("pData","GatingSet",function(object){
 #' @export
 #' @rdname pData-methods
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
-			fs<-flowData(object)
-			rownames(value)<-value$name
-			pData(fs)<-value
-			varM<-varMetadata(phenoData(fs))
-			varM[-1,]<-rownames(varM)[-1]
-			varMetadata(phenoData(fs))<-varM
-			flowData(object)<-fs
+      
+			fs <- flowData(object)
+            new.rownames <- rownames(value)
+            if(is.null(new.rownames))
+              new.rownames <- value[["name"]] #use name column when rownames are absent
+			   
+            rownames(value) <- new.rownames 
+              
+			pData(fs) <- value
+            
+			varM <- varMetadata(phenoData(fs))
+			varM[-1,] <- rownames(varM)[-1]
+			varMetadata(phenoData(fs)) <- varM
+			flowData(object) <- fs
 			return (object)
 		})
 
@@ -2004,7 +2011,7 @@ subset.GatingSet <- function (x, subset, ...)
         r & !is.na(r)
       }
   
-  x[as.character(pd[r, "name"])]
+  x[as.character(rownames(pd[r, ]))]
 }
 #' @rdname getGate
 #' @export 
