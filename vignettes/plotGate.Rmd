@@ -212,7 +212,7 @@ do.call(grid.arrange, c(latticeObjs, nrow = 1, main = "Tcell subsets"))
 gslist <- lapply(1:4, function(i){
               gs_clone <- clone(gs)
               sampleNames(gs_clone) <- paste0(i, ".fcs")
-              
+              pData(gs_clone)[["name"]] <- paste0(i, ".fcs")
               gs_clone
               })
 gs <- GatingSetList(gslist)

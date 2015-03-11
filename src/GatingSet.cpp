@@ -684,7 +684,7 @@ GatingHierarchy * GatingSet::getGatingHierarchy(string sampleName)
 
 	gh_map::iterator it=ghs.find(sampleName);
 	if(it==ghs.end())
-		throw(domain_error(sampleName+"not found in gating set!"));
+		throw(domain_error(sampleName+" not found in gating set!"));
 	else
 		return it->second;
 }
@@ -696,6 +696,7 @@ GatingHierarchy * GatingSet::getGatingHierarchy(unsigned index)
 
 		return getGatingHierarchy(getSamples().at(index));
 }
+
 vector<string> GatingSet::getSamples(void)
 {
 		vector<string> res;
