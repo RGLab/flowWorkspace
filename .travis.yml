@@ -33,4 +33,8 @@ r_binary_packages:
 # - Rgraphviz	
 branches:
   only:
-    - trunk
+    - travis 
+notifications:
+  email:
+    on_success: change
+    on_failure: change

@@ -1469,6 +1469,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       if(strip){
         #rename sample name with popName in order to display it in strip
         sampleNames(parentData) <- popName
+        pData(parentData)[["name"]] <- popName
         if(!is.null(curGates))
           names(curGates) <- popName
         if(!is.null(stats))
