@@ -226,7 +226,6 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     if(any(isDup))
       stop("Duplicated sample names detected within group: ", paste(sg[["guid"]][isDup], collapse = " "), "\n Please check if the appropriate group is selected.")
 
-    
 	message("Parsing ", nSample," samples");
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
                     , samples = sg[,c("name", "sampleID", "guid")]
@@ -604,6 +603,9 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
       sn <- xpathApply(top, file.path(wsNodePath[["sample"]], "Keywords/Keyword[@name='$FIL']"), function(x){
             xmlAttrs(x)[["value"]]
           })
+      
+      if(length(sn) == 0)
+        stop("sample name is not found in 'keyword' node!Please try 'sampleName' node by setting sampNloc = 'sampleName")
       s[, "name"] <- unlist(sn)   
     }
     
