@@ -827,7 +827,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             }
 
             names(gains) <- this_pd$name
-
+            gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
             #update colnames in order for the gating to find right dims
             if(!is.null(prefixColNames)){
               dimnames(mat) <- list(NULL, prefixColNames)
