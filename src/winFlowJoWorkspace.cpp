@@ -190,11 +190,19 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					string curCmpChName=sPrefix+curChName;//append prefix
 					trans_map curtp=it->getTransMap();
 					trans_map::iterator resIt=curtp.find(curCmpChName);
-					transformation * curTrans;
+					//try generic version if channel-specific is not found
 					if(resIt==curtp.end())
-						curTrans=curtp["*"];
-					else
+						resIt = curtp.find("*");
+					transformation * curTrans;
+					if(resIt!=curtp.end())
 						curTrans=resIt->second;
+					else{
+						/*
+						 * use default biexp trans if nothing matched
+						 */
+						curTrans = _globalBiExpTrans;
+
+					}
 
 					tp[curCmpChName]=curTrans;
 
