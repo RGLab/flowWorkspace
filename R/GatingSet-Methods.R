@@ -605,6 +605,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
+#' @importFrom stringr str_sub
 .addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", ...){
 
     if(nrow(samples)==0)
@@ -673,10 +674,23 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 				data <- read.FCS(file)[, cnd]
 			else
 				data <- fs[[guid]]
-
+            
             #alter colnames(replace "/" with "_") for flowJo X
+            #record the locations where '/' character is detected and will be used to restore it accurately
+            slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
             if(wsType == "vX"){
-                new_cnd <- gsub("/","_",cnd)
+                #treat each channel
+                new_cnd <- mapply(cnd, slash_loc, FUN = function(thisCol, this_slash){
+                                            #replace each individual / based on their detected location
+                                            if(any(this_slash > 0))
+                                            {
+                                              for(this_loc in this_slash)
+                                                str_sub(thisCol, this_loc, this_loc) <- "_"
+                                            }
+                                              
+                                            thisCol
+                                            }
+                                  , USE.NAMES = FALSE)
                 if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- new_cnd
                   colnames(data) <- cnd
@@ -842,7 +856,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               #restore the orig colnames(replace "_" with "/") for flowJo X
               if(wsType == "vX"){
-                old_cnd <- gsub("_","/",cnd)
+                #use slash locations to avoid tamper the original '_' character in channel names 
+                old_cnd <- mapply(cnd, slash_loc, FUN = function(thisCol, this_slash){
+                                    #restore each individual _ based on  detected '/' locations
+                                    if(any(this_slash > 0))
+                                    {
+                                      for(this_loc in this_slash)
+                                        str_sub(thisCol, this_loc, this_loc) <- "/"
+                                    }
+                                    
+                                    thisCol
+                                  }
+                                  , USE.NAMES = FALSE)
                 if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- old_cnd
                   colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX  
@@ -853,6 +878,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             }
 
             data@exprs <- mat #circumvent the validity check of exprs<- to speed up
+            
             if(isNcdf){
               fs[[guid]] <- data
 
