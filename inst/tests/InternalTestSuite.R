@@ -70,7 +70,23 @@ test_that("v 10.0.7 - vX 20.0 (cytof no compensation)",{
 #      expect_equal(thisCounts, expectCounts)
     })
 
-
+test_that("v 7.6.1- win 1.6 (use default biexp trans when channel-specific trans not found within its respective trans group )",{
+      
+      thisPath <- file.path(path, "GYO")
+      wsFile <- file.path(thisPath, "whole blood GYO-0109 050214.wsp")
+      ws <- openWorkspace(wsFile)
+      
+      gs <- parseWorkspace(ws, name = 2, subset = 1, path = thisPath,  execute = FALSE)
+      expect_is(gs, "GatingSet")
+      
+      gs <- parseWorkspace(ws, name = 2, path = thisPath)
+      gh <- gs[[1]]
+      
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      expect_equal(thisCounts, expectCounts)
+      
+    })
 
 test_that("v 7.6.5 - win 1.61 (PBMC)",{
       

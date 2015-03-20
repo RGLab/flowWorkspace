@@ -751,39 +751,25 @@ void ellipsoidGate::transforming(trans_local & trans){
 		 * so simply throws error for now
 		 */
 		string err="Don't know how to scale the ellipsoidGate on the non-linear data space: ";
-		if(trans_x==NULL)
-		{
-			//do the special scaling first for linear ellipsoidGate
-			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
-			if(g_loglevel>=POPULATION_LEVEL)
-				COUT<<"scaling: "<<channel_x<<endl;;
+		float maxVal = trans_x==NULL?262144:4096;
 
-			scale_f.transforming(vert.x);
-			for(unsigned i=0;i<antipodal_vertices.size();i++)
-				antipodal_vertices.at(i).x=vert.x[i];
-		}
-		else
-		{
-			err.append(channel_x);
-			throw(domain_error(err));
-		}
+		//do the special scaling first for linear ellipsoidGate
+		scaleTrans scale_x(maxVal/256);//assuming the max value is always 262144, thus 262144/256 = 1024
+		if(g_loglevel>=POPULATION_LEVEL)
+			COUT<<"scaling: "<<channel_x<<endl;;
+		scale_x.transforming(vert.x);
+		for(unsigned i=0;i<antipodal_vertices.size();i++)
+			antipodal_vertices.at(i).x=vert.x[i];
 
-		if(trans_y==NULL)
-		{
-			//do the special scaling first for linear ellipsoidGate
-			scaleTrans scale_f(1024);//assuming the max value is always 262144, thus 262144/256 = 1024
-			if(g_loglevel>=POPULATION_LEVEL)
-				COUT<<"scaling: "<<channel_y<<endl;;
+		maxVal = trans_y==NULL?262144:4096;
+		//do the special scaling first for linear ellipsoidGate
+		scaleTrans scale_y(maxVal/256);//assuming the max value is always 262144, thus 262144/256 = 1024
+		if(g_loglevel>=POPULATION_LEVEL)
+			COUT<<"scaling: "<<channel_y<<endl;;
 
-			scale_f.transforming(vert.y);
-			for(unsigned i=0;i<antipodal_vertices.size();i++)
-				antipodal_vertices.at(i).y=vert.y[i];
-		}
-		else
-		{
-			err.append(channel_y);
-			throw(domain_error(err));
-		}
+		scale_y.transforming(vert.y);
+		for(unsigned i=0;i<antipodal_vertices.size();i++)
+			antipodal_vertices.at(i).y=vert.y[i];
 
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
