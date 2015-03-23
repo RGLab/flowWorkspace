@@ -254,6 +254,22 @@ BEGIN_RCPP
 
 				break;
 			}
+			case FASINH:
+			{
+				fasinhTrans * thisTrans = dynamic_cast<fasinhTrans *>(curTrans);
+
+				res.push_back(List::create(Named("type","fasinh")
+											, Named("A", thisTrans->A)
+											, Named("M", thisTrans->M)
+											, Named("T", thisTrans->T)
+//											, Named("length", thisTrans->length)
+//											, Named("maxRange", thisTrans->maxRange)
+											)
+											,transName
+							);
+
+				break;
+			}
 			default:
 				throw(domain_error("unknown transformation in R_getTransformations!"));
 		}

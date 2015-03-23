@@ -973,7 +973,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL){
 #  browser()
 
-     cal<-.getTransformations(G@pointer, sampleName)
+     trans<-.getTransformations(G@pointer, sampleName)
      comp<-.Call("R_getCompensation",G@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
@@ -982,26 +982,27 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
-    cal_names <-trimWhiteSpace(names(cal))
+    trans_names <-trimWhiteSpace(names(trans))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 
 				#added gsub
               if(wsType == "vX"){
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
-                j <- match(names(rawRange)[i],cal_names)
+                j <- match(names(rawRange)[i],trans_names)
                 isMatched <- !is.na(j)
               }else{
-                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],cal_names);
+                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],trans_names);
                 isMatched <- length(j)!=0
               }
 
               this_chnl <- names(rawRange)[i]
               prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")
 				if(isMatched){
-#									browser()
-					rw<-rawRange[,i];
-					if(attr(cal[[j]],"type")!="gateOnly"){
-						r<-cal[[j]](c(rw))
+									
+					rw <- rawRange[,i];
+                    typeAttr <- attr(trans[[j]],"type")
+					if(is.null(typeAttr)||typeAttr!="gateOnly"){
+						r<-trans[[j]](c(rw))
 					}else{
 						r<-rw
 					}
@@ -1019,7 +1020,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 						base10raw<-unlist(lapply(2:6,function(e)10^e))
 						base10raw<-c(0,base10raw)
 						raw<-base10raw[base10raw>min(rw)&base10raw<max(rw)]
-						pos<-signif(cal[[j]](raw))
+						pos<-signif(trans[[j]](raw))
 
 
 						assign("prefixedChnl",prefixedChnl,tempenv)

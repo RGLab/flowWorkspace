@@ -1254,7 +1254,14 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 #			browser()
       .getTransformations(x@pointer,sampleNames(x), ...)
 		})
-    
+#' inverse hyperbolic sine transform function
+#' copied fom c++ code
+.asinht <- function (x) 
+{
+  
+  (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10));
+  
+}    
 .getTransformations <- function(pointer,sampleName, channel = NULL, ...){
     trans <- .Call("R_getTransformations",pointer,sampleName)
     transList <- lapply(trans,function(curTrans){
@@ -1279,8 +1286,15 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
             attr(f,"type")<-"gateOnly"
 
 
-          }else if(curTrans$type %in% c("caltbl" , "biexp"))
-             f <- .flowJoTrans(curTrans, ...)
+          }else if(curTrans$type %in% c("caltbl" , "biexp")){
+            f <- .flowJoTrans(curTrans, ...)
+          }else if(curTrans$type=="fasinh"){
+            
+            f <- function(x)(asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
+            assign("T", curTrans$T, environment(f))
+            assign("M", curTrans$M, environment(f))
+            assign("A", curTrans$A, environment(f))
+          }
 
           return (f)
         })

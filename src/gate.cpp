@@ -747,14 +747,14 @@ void ellipsoidGate::transforming(trans_local & trans){
 
 
 		/*
-		 * we don't know the exact scaling rules for ellipsoidGate of non-linear space yet
-		 * so simply throws error for now
+		 * assuming the max value for linear scale is 262144, thus 262144/256 = 1024
+		 * and non-linear scale is 4096, thus 4096/256 = 16
 		 */
-		string err="Don't know how to scale the ellipsoidGate on the non-linear data space: ";
 		float maxVal = trans_x==NULL?262144:4096;
 
-		//do the special scaling first for linear ellipsoidGate
-		scaleTrans scale_x(maxVal/256);//assuming the max value is always 262144, thus 262144/256 = 1024
+		//do the special scaling for  ellipsoidGate
+		scaleTrans scale_x(maxVal/256);
+
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<"scaling: "<<channel_x<<endl;;
 		scale_x.transforming(vert.x);
