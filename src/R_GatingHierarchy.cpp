@@ -161,13 +161,14 @@ END_RCPP
 
 
 
-RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName){
+RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName, SEXP _inverse){
 BEGIN_RCPP
 
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
+	bool inverse=as<bool>(_inverse);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	trans_map trans=gh->getLocalTrans().getTransMap();
@@ -178,6 +179,12 @@ BEGIN_RCPP
 		transformation * curTrans=it->second;
 		if(curTrans==NULL)
 			throw(domain_error("empty transformation for channel"+it->first));
+
+		if(inverse){
+			transformation inverseTrans = curTrans->getInverseTransformation();
+			curTrans = &inverseTrans;
+		}
+
 
 		string transName=curTrans->getName()+" "+it->first;
 

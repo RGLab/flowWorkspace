@@ -102,6 +102,7 @@ public:
 	virtual transformation * clone(){return new transformation(*this);};
 	virtual void convertToPb(pb::transformation & trans_pb);
 	transformation(const pb::transformation & trans_pb);
+	virtual transformation getInverseTransformation();
 };
 /* case insensitive compare predicate*/
 struct ciLessBoost : std::binary_function<std::string, std::string, bool>
@@ -228,8 +229,8 @@ public:
 class fasinhTrans:public transformation{
 	friend class boost::serialization::access;
 public:
-	double length, maxRange;//unused at this moment
-	double T, A, M;
+	double maxRange;//unused at this moment
+	double length,T, A, M;
 private:
 	template<class Archive>
 				void serialize(Archive &ar, const unsigned int version)

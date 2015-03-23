@@ -265,7 +265,7 @@ void fasinhTrans::transforming(valarray<double> & input){
 
 
 	for(unsigned i=0;i<input.size();i++){
-		input[i] = ( asinh(input[i] * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10));
+		input[i] = length * (asinh(input[i] * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10));
 	}
 //		double myB = (M + A) * log(10);
 //		double myC = A * log(10);
@@ -291,6 +291,36 @@ void fasinhTrans::transforming(valarray<double> & input){
 
 }
 
+transformation transformation::getInverseTransformation(){
+	if(!calTbl.isInterpolated()){
+		 /* calculate calibration table from the function
+		 */
+		if(!computed())
+		{
+			if(g_loglevel>=POPULATION_LEVEL)
+				COUT<<"computing calibration table..."<<endl;
+			computCalTbl();
+		}
+
+		if(!isInterpolated())
+		{
+			if(g_loglevel>=POPULATION_LEVEL)
+				COUT<<"spline interpolating..."<<endl;
+			interpolate();
+		}
+	}
+
+	//clone the existing trans
+	transformation inverse = *this;
+	//swap the x, y vectors in calTbl
+
+
+	inverse.calTbl.setX(this->calTbl.getY());
+	inverse.calTbl.setY(this->calTbl.getX());
+
+
+	return inverse;
+}
 void logTrans::transforming(valarray<double> & input){
 
 

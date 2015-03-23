@@ -1262,8 +1262,8 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
   (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10));
   
 }    
-.getTransformations <- function(pointer,sampleName, channel = NULL, ...){
-    trans <- .Call("R_getTransformations",pointer,sampleName)
+.getTransformations <- function(pointer,sampleName, channel = NULL, inverse = FALSE, ...){
+    trans <- .Call("R_getTransformations",pointer,sampleName, inverse)
     transList <- lapply(trans,function(curTrans){
 #						browser()
           if(curTrans$type=="log")
@@ -1287,7 +1287,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 
 
           }else if(curTrans$type %in% c("caltbl" , "biexp")){
-            f <- .flowJoTrans(curTrans, ...)
+            f <- .flowJoTrans(curTrans)
           }else if(curTrans$type=="fasinh"){
             
             f <- function(x)(asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
