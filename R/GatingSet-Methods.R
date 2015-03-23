@@ -601,12 +601,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
 #' @param extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
+#' @param transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
 #' @importFrom stringr str_sub
-.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", ...){
+.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
     if(nrow(samples)==0)
       stop("no sample to be added to GatingSet!")
@@ -846,7 +847,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               dimnames(mat) <- list(NULL, prefixColNames)
             }
-            recompute <- FALSE
+            
+            recompute <- !transform #recompute flag controls whether gates and data need to be transformed
             nodeInd <- 0
             
             .Call("R_gating",G@pointer, mat, guid, gains, nodeInd, recompute, extend_val, ignore.case, leaf.bool)
@@ -929,7 +931,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           names(gains) <- prefixColNames
           gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
           #transform and adjust the gates without gating
-          .Call("R_computeGates",G@pointer, guid, gains, extend_val, extend_to)
+          if(transform)
+            .Call("R_computeGates",G@pointer, guid, gains, extend_val, extend_to)
           axis.labels <- list()
         }
 

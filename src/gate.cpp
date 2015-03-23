@@ -299,6 +299,7 @@ ellipseGate::ellipseGate(vector<coordinate> _antipodal, vector<string> _params):
 	 * (this deprecated inheritance exists for the sake of legacy archive)
 	 */
 	param.setName(_params);
+	computeCov();
 }
 
 void ellipseGate::extend(flowData & fdata,float extend_val){
@@ -715,18 +716,20 @@ void ellipseGate::transforming(trans_local & trans){
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
-		computeCov();
+
 		isTransformed=true;
 	}
 }
 ellipsoidGate::ellipsoidGate(vector<coordinate> _antipodal, vector<string> _params):ellipseGate(_antipodal,_params)
-{}
+{
+	computeCov();
+}
 /*
  * ellipsoidGate does not follow the regular transforming process
- * for historical reason, it is defined in 256 * 256 scale, and we don't know
- * how to translate it to the transformed scale yet, thus simply throw exception
- * for the EllipsoidGate defined on the non-linear data channel
- * for linear channels, we will do the same rescaling here.
+ * for historical reason, it is defined in 256 * 256 scale.
+ * For linear channel, we simply linear scale it back to raw scale
+ * For non-linear channel, We need to first inverse transform it back to raw scale
+ * before transforming to the ultimate appropriate data scale.
  */
 void ellipsoidGate::transforming(trans_local & trans){
 
@@ -748,33 +751,41 @@ void ellipsoidGate::transforming(trans_local & trans){
 
 		/*
 		 * assuming the max value for linear scale is 262144, thus 262144/256 = 1024
-		 * and non-linear scale is 4096, thus 4096/256 = 16
 		 */
-		float maxVal = trans_x==NULL?262144:4096;
+		scaleTrans scale_t(262144/256);
+		scaleTrans dummy(1);
+		if(trans_x==NULL){
+			// scaling for linear channel
+			trans_x = &scale_t;
+		}else{
+			// non-linear channel
 
-		//do the special scaling for  ellipsoidGate
-		scaleTrans scale_x(maxVal/256);
+			trans_y = &dummy;
+		}
 
 		if(g_loglevel>=POPULATION_LEVEL)
-			COUT<<"scaling: "<<channel_x<<endl;;
-		scale_x.transforming(vert.x);
+			COUT<<"transforming: "<<channel_x<<endl;;
+		trans_x->transforming(vert.x);
 		for(unsigned i=0;i<antipodal_vertices.size();i++)
 			antipodal_vertices.at(i).x=vert.x[i];
 
-		maxVal = trans_y==NULL?262144:4096;
-		//do the special scaling first for linear ellipsoidGate
-		scaleTrans scale_y(maxVal/256);//assuming the max value is always 262144, thus 262144/256 = 1024
-		if(g_loglevel>=POPULATION_LEVEL)
-			COUT<<"scaling: "<<channel_y<<endl;;
+		if(trans_x==NULL){
+			// scaling for linear channel
+			trans_y = &scale_t;
+		}else{
+			trans_y = &dummy;
+		}
 
-		scale_y.transforming(vert.y);
+		if(g_loglevel>=POPULATION_LEVEL)
+			COUT<<"transforming: "<<channel_y<<endl;;
+		trans_y->transforming(vert.y);
 		for(unsigned i=0;i<antipodal_vertices.size();i++)
 			antipodal_vertices.at(i).y=vert.y[i];
 
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
 
-		computeCov();
+
 		isTransformed=true;
 	}
 
