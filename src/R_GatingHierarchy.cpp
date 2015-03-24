@@ -181,8 +181,8 @@ BEGIN_RCPP
 			throw(domain_error("empty transformation for channel"+it->first));
 
 		if(inverse){
-			transformation inverseTrans = curTrans->getInverseTransformation();
-			curTrans = &inverseTrans;
+			boost::shared_ptr<transformation> inverseTrans = curTrans->getInverseTransformation();
+			curTrans = inverseTrans.get();//not safe, make sure not to delete it since it belongs to shared_ptr
 		}
 
 

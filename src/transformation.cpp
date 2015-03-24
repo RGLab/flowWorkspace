@@ -230,8 +230,8 @@ linTrans::linTrans():transformation(true,LIN){
         calTbl.setInterpolated(true);
 }
 
-scaleTrans::scaleTrans():linTrans(),scale_factor(1024){}
-scaleTrans::scaleTrans(float _scale_factor):linTrans(),scale_factor(_scale_factor){}
+scaleTrans::scaleTrans():linTrans(),t_scale(256), r_scale(262144){}
+scaleTrans::scaleTrans(int _t_scale, int _r_scale):linTrans(),t_scale(_t_scale), r_scale(_r_scale){}
 
 flinTrans::flinTrans():transformation(false,FLIN),min(0),max(0){
 	calTbl.setInterpolated(true);
@@ -291,7 +291,10 @@ void fasinhTrans::transforming(valarray<double> & input){
 
 }
 
-transformation transformation::getInverseTransformation(){
+/*
+ *
+ */
+boost::shared_ptr<transformation>  transformation::getInverseTransformation(){
 	if(!calTbl.isInterpolated()){
 		 /* calculate calibration table from the function
 		 */
@@ -311,15 +314,18 @@ transformation transformation::getInverseTransformation(){
 	}
 
 	//clone the existing trans
-	transformation inverse = *this;
+	boost::shared_ptr<transformation>  inverse = boost::shared_ptr<transformation>(new transformation(*this));
 	//swap the x, y vectors in calTbl
 
 
-	inverse.calTbl.setX(this->calTbl.getY());
-	inverse.calTbl.setY(this->calTbl.getX());
+	inverse->calTbl.setX(this->calTbl.getY());
+	inverse->calTbl.setY(this->calTbl.getX());
 
 
 	return inverse;
+}
+boost::shared_ptr<transformation> scaleTrans::getInverseTransformation(){
+	return boost::shared_ptr<transformation>(new scaleTrans(r_scale, t_scale));//swap the raw and trans scale
 }
 void logTrans::transforming(valarray<double> & input){
 
@@ -347,7 +353,7 @@ void linTrans::transforming(valarray<double> & input){
 
 void scaleTrans::transforming(valarray<double> & input){
 
-		input*=scale_factor;
+		input*=(t_scale/r_scale);
 }
 
 void flinTrans::transforming(valarray<double> & input){

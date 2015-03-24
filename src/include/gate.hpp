@@ -13,6 +13,7 @@
 #include <vector>
 #include "flowData.hpp"
 #include "transformation.hpp"
+#include <R_ext/Constants.h>
 //#include <boost/geometry.hpp>
 //#include <boost/geometry/geometries/point_xy.hpp>
 //#include <boost/geometry/geometries/polygon.hpp>
@@ -319,6 +320,7 @@ public:
 	virtual void gain(map<string,float> &);
 	virtual vector<bool> gating(flowData &);
 	virtual void transforming(trans_local &);
+	virtual void transforming(transformation * trans_x, transformation * trans_y);
 	virtual vertices_valarray getVertices(){return param.toValarray();};
 	void setParam(paramPoly _param){param=_param;};
 	virtual paramPoly getParam(){return param;};
@@ -355,7 +357,6 @@ public:
  * inherit polygon since we are now doing the gating
  * without interpolating it into polygon
  * For the legacy archive, we preserve this class definition
- * TODO: the inheritance is to be removed in future
  */
 class ellipseGate:public polygonGate {
 	friend class boost::serialization::access;
@@ -399,9 +400,8 @@ public:
 	vector<coordinate> getCovarianceMat(){return cov;};
 	coordinate getMu(){return mu;};
 	double getDist(){return dist;};
-//	void setAntipodal(vector<coordinate> _v){antipodal_vertices=_v;};
 	void computeCov();
-	unsigned short getType(){return ELLIPSEGATE;}
+	virtual unsigned short getType(){return ELLIPSEGATE;}
 	void extend(flowData &,float);
 	void extend(float,float);
 	void gain(map<string,float> &);
@@ -409,13 +409,18 @@ public:
 	ellipseGate * clone(){return new ellipseGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
 	ellipseGate(const pb::gate & gate_pb);
+	void toPolygon(unsigned nVertices);//ellipseGate doesn't need it , but ellipsoidGate will need it to handle the special scale (256)
 };
 BOOST_CLASS_VERSION(ellipseGate,1)
 /*
  * the purpose of having this class is to do the special scaling to the gate coordinates
  * due to the historical FlowJo's implementation (win/vX) of the ellipsoid gate that the foci, distance, and edge points are expressed in 256 x 256 display coordinates
  * to scale back to data space , for linear channel, the scaling factor is max_val/256
- * for non-linear channel, we are not sure yet
+ * for non-linear channel, we need to
+ * 1. Interpolate it to polygon
+ * 2. inverse transform polygon back to raw scale
+ * 3. then transform it to data scale
+ * Thus we still need to preserve the inheritance to the polygonGate
  */
 class ellipsoidGate:public ellipseGate {
 	friend class boost::serialization::access;
@@ -432,6 +437,8 @@ public:
 	ellipsoidGate * clone(){return new ellipsoidGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
 	ellipsoidGate(const pb::gate & gate_pb);
+	vector<bool> gating(flowData &);
+	unsigned short getType(){return POLYGONGATE;}//expose it to R as polygonGate since the original antipodal points can't be used directly anyway
 };
 
 /*

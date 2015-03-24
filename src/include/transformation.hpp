@@ -102,7 +102,8 @@ public:
 	virtual transformation * clone(){return new transformation(*this);};
 	virtual void convertToPb(pb::transformation & trans_pb);
 	transformation(const pb::transformation & trans_pb);
-	virtual transformation getInverseTransformation();
+	virtual boost::shared_ptr<transformation> getInverseTransformation();
+	virtual void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
 };
 /* case insensitive compare predicate*/
 struct ciLessBoost : std::binary_function<std::string, std::string, bool>
@@ -224,6 +225,12 @@ public:
 	biexpTrans * clone(){return new biexpTrans(*this);};
 	void convertToPb(pb::transformation & trans_pb);
 	biexpTrans(const pb::transformation & trans_pb);
+	void setTransformedScale(int scale){
+		channelRange = scale;
+		//recompute cal table
+		computCalTbl();
+		interpolate();
+	};
 };
 
 class fasinhTrans:public transformation{
@@ -251,6 +258,8 @@ public:
 	fasinhTrans * clone(){return new fasinhTrans(*this);};
 	void convertToPb(pb::transformation & trans_pb);
 	fasinhTrans(const pb::transformation & trans_pb);
+	boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
+	void setTransformedScale(int scale){length = scale;};
 };
 
 /*
@@ -279,6 +288,8 @@ public:
 	logTrans * clone(){return new logTrans(*this);};
 	void convertToPb(pb::transformation & trans_pb);
 	logTrans(const pb::transformation & trans_pb);
+	boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
+	void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
 };
 
 
@@ -298,6 +309,8 @@ public:
         linTrans * clone(){return new linTrans(*this);};
         void convertToPb(pb::transformation & trans_pb);
         linTrans(const pb::transformation & trans_pb);
+        boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
+        void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
 };
 
 /*
@@ -307,22 +320,41 @@ class scaleTrans:public linTrans{
 friend class boost::serialization::access;
 	private:
 				template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
+				void load(Archive &ar, const unsigned int version)
 				{
 						ar & boost::serialization::make_nvp("linTrans",boost::serialization::base_object<transformation>(*this));
-						ar & BOOST_SERIALIZATION_NVP(scale_factor);
-				}
+						if(version < 1){
+							float scale_factor;
+							ar & BOOST_SERIALIZATION_NVP(scale_factor);
+							t_scale = 256;
+							r_scale = 262144;
+						}
+						else
+						{
+							ar & BOOST_SERIALIZATION_NVP(t_scale);
+							ar & BOOST_SERIALIZATION_NVP(r_scale);
+						}
 
-	float scale_factor;
+				}
+				template<class Archive>
+				void save(Archive &ar, const unsigned int version) const{
+					ar & boost::serialization::make_nvp("linTrans",boost::serialization::base_object<transformation>(*this));
+					ar & BOOST_SERIALIZATION_NVP(t_scale);
+					ar & BOOST_SERIALIZATION_NVP(r_scale);
+				}
+				BOOST_SERIALIZATION_SPLIT_MEMBER()
+	int t_scale; //transformed scale
+	int r_scale; // raw scale
 
 public:
 	scaleTrans();
-	scaleTrans(float _scale_factor);
+	scaleTrans(int,int);
 	void transforming(valarray<double> & input);
 	scaleTrans * clone(){return new scaleTrans(*this);};
-//	void convertToPb(pb::transformation & trans_pb);
-//	scaleTrans(const pb::transformation & trans_pb);
+	boost::shared_ptr<transformation> getInverseTransformation();
+	void setTransformedScale(int _scale){t_scale = _scale;};
 };
+BOOST_CLASS_VERSION(scaleTrans,1)
 
 
 class flinTrans:public transformation{
@@ -346,6 +378,8 @@ public:
 	flinTrans * clone(){return new flinTrans(*this);};
 	void convertToPb(pb::transformation & trans_pb);
 	flinTrans(const pb::transformation & trans_pb);
+	boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
+	void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
 };
 
 
