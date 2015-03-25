@@ -102,7 +102,11 @@ void ellipsoidGate::convertToPb(pb::gate & gate_pb){
 	ellipseGate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::ELLIPSOID_GATE);
 }
-ellipsoidGate::ellipsoidGate(const pb::gate & gate_pb):ellipseGate(gate_pb){};
+ellipsoidGate::ellipsoidGate(const pb::gate & gate_pb):ellipseGate(gate_pb){
+	//deal with legacy archive that did not interpolate ellipsoidGate
+	if(param.getVertices().size() == 0)
+		toPolygon(100);
+};
 void rectGate::convertToPb(pb::gate & gate_pb){
 	polygonGate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::RECT_GATE);
@@ -299,7 +303,7 @@ ellipseGate::ellipseGate(vector<coordinate> _antipodal, vector<string> _params):
 	 * (this deprecated inheritance exists for the sake of legacy archive)
 	 */
 	param.setName(_params);
-	computeCov();
+
 }
 
 void ellipseGate::extend(flowData & fdata,float extend_val){
@@ -371,8 +375,11 @@ void ellipseGate::gain(map<string,float> & gains){
 
 /*
  * covert antipodal points to covariance matrix and mean
+ * antipodal points must be transformed first.
  */
 void ellipseGate::computeCov(){
+	if(!Transformed())
+		throw(domain_error("antipodal points of ellipseGate must be transformed before computing covariance matrix!"));
 
 	vector<coordinate> v=antipodal_vertices;
 	unsigned short nSize = v.size();
@@ -808,9 +815,11 @@ void ellipseGate::transforming(trans_local & trans){
 		}
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
-		//recompute the covariance matrix after transformed
-		computeCov();
 		isTransformed=true;
+
+		//compute the covariance matrix after transformed
+		computeCov();
+
 	}
 }
 ellipsoidGate::ellipsoidGate(vector<coordinate> _antipodal, vector<string> _params):ellipseGate(_antipodal,_params)

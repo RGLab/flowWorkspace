@@ -1254,14 +1254,20 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 #			browser()
       .getTransformations(x@pointer,sampleNames(x), ...)
 		})
-#' inverse hyperbolic sine transform function
+
+    
+#' inverse hyperbolic sine transform function 
 #' copied fom c++ code
-.asinht <- function (x) 
+.fasinh <- function (x, M = 4.079181246, T = 12000, A =  0.6989700043, length = 256) 
 {
   
-  (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10));
+  length * ((asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10)))
   
-}    
+}
+#' inverse of inverse hyperbolic sine transform
+.fsinh <- function(x, M = 4.079181246, T = 12000, A =  0.6989700043, length = 256){
+  sinh(((M + A) * log(10)) * x/length - A * log(10)) * T / sinh(M * log(10)) 
+}
 .getTransformations <- function(pointer,sampleName, channel = NULL, inverse = FALSE, ...){
     trans <- .Call("R_getTransformations",pointer,sampleName, inverse)
     transList <- lapply(trans,function(curTrans){
@@ -1289,11 +1295,18 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
           }else if(curTrans$type %in% c("caltbl" , "biexp")){
             f <- .flowJoTrans(curTrans)
           }else if(curTrans$type=="fasinh"){
+            f <- function(x){}
+            #copy the default fasinh function definition
+            if(inverse)
+              body(f) <- body(.fsinh)
+            else
+              body(f) <- body(.fasinh)
+            #update the formals (arguments)
+            formals(f)[["T"]] <- curTrans$T 
+            formals(f)[["M"]] <- curTrans$M
+            formals(f)[["A"]] <- curTrans$A
+            formals(f)[["length"]] <- curTrans$length
             
-            f <- function(x)(asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
-            assign("T", curTrans$T, environment(f))
-            assign("M", curTrans$M, environment(f))
-            assign("A", curTrans$A, environment(f))
           }
 
           return (f)

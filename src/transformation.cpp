@@ -225,7 +225,18 @@ fasinhTrans::fasinhTrans():transformation(false,FASINH),length(256),maxRange(262
 fasinhTrans::fasinhTrans(double _length, double _maxRange, double _T, double _A, double _M):transformation(false, FASINH),length(_length),maxRange(_maxRange), T(_T),A(_A),M(_M){
 	calTbl.setInterpolated(true);
 }
+boost::shared_ptr<transformation>  fasinhTrans::getInverseTransformation(){
+	return boost::shared_ptr<transformation>(new fsinhTrans(length, maxRange, T, A , M));
+}
+fsinhTrans::fsinhTrans():fasinhTrans(){}
 
+fsinhTrans::fsinhTrans(double _length, double _maxRange, double _T, double _A, double _M):fasinhTrans(_length,_maxRange, _T, _A, _M){}
+
+void fsinhTrans:: transforming(valarray<double> & input){
+	for(unsigned i=0;i<input.size();i++)
+		input[i] = sinh(((M + A) * log(10)) * input[i]/length - A * log(10)) * T / sinh(M * log(10));
+
+}
 linTrans::linTrans():transformation(true,LIN){
         calTbl.setInterpolated(true);
 }
@@ -239,6 +250,8 @@ flinTrans::flinTrans():transformation(false,FLIN),min(0),max(0){
 flinTrans::flinTrans(double _minRange, double _maxRange):transformation(false,FLIN),min(_minRange),max(_maxRange){
 	calTbl.setInterpolated(true);
 }
+
+
 /*
  *
  *now we switch back to zero imputation instead of min value since
@@ -256,6 +269,7 @@ double logTrans::flog(double x,double T,double _min) {
 /*
  * these transforming functions change the input data
  */
+
 
 
 /*
@@ -324,6 +338,7 @@ boost::shared_ptr<transformation>  transformation::getInverseTransformation(){
 
 	return inverse;
 }
+
 boost::shared_ptr<transformation> scaleTrans::getInverseTransformation(){
 	return boost::shared_ptr<transformation>(new scaleTrans(r_scale, t_scale));//swap the raw and trans scale
 }

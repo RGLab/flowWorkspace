@@ -381,13 +381,13 @@ private:
 			{
 				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
 				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
-				if(version>=1){
+//				if(version>=1){
 					ar & BOOST_SERIALIZATION_NVP(cov);
 					ar & BOOST_SERIALIZATION_NVP(mu);
 					ar & BOOST_SERIALIZATION_NVP(dist);
-				}else{
-					computeCov();
-				}
+//				}else{
+//					computeCov();
+//				}
 
 			}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
@@ -397,9 +397,18 @@ public:
 	ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist);
 	ellipseGate(vector<coordinate> _antipodal, vector<string> _params);
 	vector<bool> gating(flowData &);
-	vector<coordinate> getCovarianceMat(){return cov;};
-	coordinate getMu(){return mu;};
-	double getDist(){return dist;};
+	vector<coordinate> getCovarianceMat(){
+		if(!Transformed())
+			throw(domain_error("EllipseGate has not been transformed so covariance matrix is unavailable!"));
+		return cov;};
+	coordinate getMu(){
+		if(!Transformed())
+				throw(domain_error("EllipseGate has not been transformed so mu is unavailable!"));
+		return mu;};
+	double getDist(){
+		if(!Transformed())
+			throw(domain_error("EllipseGate has not been transformed so dist is unavailable!"));
+		return dist;};
 	void computeCov();
 	virtual unsigned short getType(){return ELLIPSEGATE;}
 	void extend(flowData &,float);

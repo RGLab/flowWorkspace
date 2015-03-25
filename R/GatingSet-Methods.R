@@ -476,7 +476,7 @@ unarchive<-function(file,path=tempdir()){
                                                       stop('Multiple files matched for:', filename)
                                                     else
                                                     {
-                                                       guids.fcs <-  sapall.filesply(absPath, function(thisPath){
+                                                       guids.fcs <-  sapply(absPath, function(thisPath){
                                                                          # get keyword from FCS header
                                                                         kw <- as.list(read.FCSheader(thisPath)[[1]])
                                                                         kw <- trimWhiteSpace(unlist(kw[additional.keys]))

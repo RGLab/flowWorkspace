@@ -179,9 +179,9 @@ BEGIN_RCPP
 		transformation * curTrans=it->second;
 		if(curTrans==NULL)
 			throw(domain_error("empty transformation for channel"+it->first));
-
+		boost::shared_ptr<transformation> inverseTrans;//must declare outside of if block to make it life cycle through end of loop
 		if(inverse){
-			boost::shared_ptr<transformation> inverseTrans = curTrans->getInverseTransformation();
+			inverseTrans = curTrans->getInverseTransformation();
 			curTrans = inverseTrans.get();//not safe, make sure not to delete it since it belongs to shared_ptr
 		}
 
@@ -269,8 +269,8 @@ BEGIN_RCPP
 											, Named("A", thisTrans->A)
 											, Named("M", thisTrans->M)
 											, Named("T", thisTrans->T)
-//											, Named("length", thisTrans->length)
-//											, Named("maxRange", thisTrans->maxRange)
+											, Named("length", thisTrans->length)
+											, Named("maxRange", thisTrans->maxRange)
 											)
 											,transName
 							);

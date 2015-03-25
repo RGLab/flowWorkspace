@@ -254,12 +254,40 @@ private:
 public:
 	fasinhTrans();
 	fasinhTrans(double , double , double , double , double );
-	void transforming(valarray<double> & input);
+	virtual void transforming(valarray<double> & input);
 	fasinhTrans * clone(){return new fasinhTrans(*this);};
 	void convertToPb(pb::transformation & trans_pb);
 	fasinhTrans(const pb::transformation & trans_pb);
-	boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
+	boost::shared_ptr<transformation> getInverseTransformation();
 	void setTransformedScale(int scale){length = scale;};
+};
+/*
+ * inverse transformation of fasinhTrans
+ */
+class fsinhTrans:public fasinhTrans{
+	friend class boost::serialization::access;
+//private:
+//	template<class Archive>
+//				void serialize(Archive &ar, const unsigned int version)
+//				{
+//					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
+//
+//					ar & BOOST_SERIALIZATION_NVP(maxRange);
+//					ar & BOOST_SERIALIZATION_NVP(length);
+//					ar & BOOST_SERIALIZATION_NVP(T);
+//					ar & BOOST_SERIALIZATION_NVP(A);
+//					ar & BOOST_SERIALIZATION_NVP(M);
+//				}
+
+public:
+	fsinhTrans();
+	fsinhTrans(double , double , double , double , double );
+	void transforming(valarray<double> & input);
+//	fsinhTrans * clone(){return new fasinhTrans(*this);};
+//	void convertToPb(pb::transformation & trans_pb);
+//	fasinhTrans(const pb::transformation & trans_pb);
+//	boost::shared_ptr<transformation> getInverseTransformation();
+//	void setTransformedScale(int scale){length = scale;};
 };
 
 /*
