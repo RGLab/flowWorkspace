@@ -476,7 +476,7 @@ unarchive<-function(file,path=tempdir()){
                                                       stop('Multiple files matched for:', filename)
                                                     else
                                                     {
-                                                       guids.fcs <-  sapall.filesply(absPath, function(thisPath){
+                                                       guids.fcs <-  sapply(absPath, function(thisPath){
                                                                          # get keyword from FCS header
                                                                         kw <- as.list(read.FCSheader(thisPath)[[1]])
                                                                         kw <- trimWhiteSpace(unlist(kw[additional.keys]))
@@ -601,12 +601,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
 #' @param extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
+#' @param transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
 #' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
 #' @importFrom stringr str_sub
-.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword", ...){
+.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
     if(nrow(samples)==0)
       stop("no sample to be added to GatingSet!")
@@ -846,7 +847,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               dimnames(mat) <- list(NULL, prefixColNames)
             }
-            recompute <- FALSE
+            
+            recompute <- !transform #recompute flag controls whether gates and data need to be transformed
             nodeInd <- 0
             
             .Call("R_gating",G@pointer, mat, guid, gains, nodeInd, recompute, extend_val, ignore.case, leaf.bool)
@@ -929,7 +931,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           names(gains) <- prefixColNames
           gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
           #transform and adjust the gates without gating
-          .Call("R_computeGates",G@pointer, guid, gains, extend_val, extend_to)
+          if(transform)
+            .Call("R_computeGates",G@pointer, guid, gains, extend_val, extend_to)
           axis.labels <- list()
         }
 
@@ -973,7 +976,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL){
 #  browser()
 
-     cal<-.getTransformations(G@pointer, sampleName)
+     trans<-.getTransformations(G@pointer, sampleName)
      comp<-.Call("R_getCompensation",G@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
@@ -982,26 +985,27 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
-    cal_names <-trimWhiteSpace(names(cal))
+    trans_names <-trimWhiteSpace(names(trans))
 	datarange<-sapply(1:dim(rawRange)[2],function(i){
 
 				#added gsub
               if(wsType == "vX"){
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
-                j <- match(names(rawRange)[i],cal_names)
+                j <- match(names(rawRange)[i],trans_names)
                 isMatched <- !is.na(j)
               }else{
-                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],cal_names);
+                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],trans_names);
                 isMatched <- length(j)!=0
               }
 
               this_chnl <- names(rawRange)[i]
               prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")
 				if(isMatched){
-#									browser()
-					rw<-rawRange[,i];
-					if(attr(cal[[j]],"type")!="gateOnly"){
-						r<-cal[[j]](c(rw))
+									
+					rw <- rawRange[,i];
+                    typeAttr <- attr(trans[[j]],"type")
+					if(is.null(typeAttr)||typeAttr!="gateOnly"){
+						r<-trans[[j]](c(rw))
 					}else{
 						r<-rw
 					}
@@ -1019,7 +1023,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 						base10raw<-unlist(lapply(2:6,function(e)10^e))
 						base10raw<-c(0,base10raw)
 						raw<-base10raw[base10raw>min(rw)&base10raw<max(rw)]
-						pos<-signif(cal[[j]](raw))
+						pos<-signif(trans[[j]](raw))
 
 
 						assign("prefixedChnl",prefixedChnl,tempenv)
