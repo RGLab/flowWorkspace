@@ -306,6 +306,55 @@ BOOST_AUTO_TEST_CASE(JJ)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+/**
+ * EllipsoidGate defined on both linear and non-linear channels
+ */
+BOOST_AUTO_TEST_CASE(treg)
+{
+	myTest.filename="../wsTestSuite/McGill/Treg/20131206_Treg.1.ellipseidGate.wsp";
+	myTest.wsType = WS_VX;
+	myTest.samples["9"] = "samples_F4.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/McGill/Treg/data.nc";
+	myTest.colfile="../output/McGill/Treg/colnames.txt";
+	myTest.archive="../output/McGill/Treg/gs";
+
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
+/**
+ *  CyTOF data with elliposoidGate and fasinh transformation defined
+ */
+BOOST_AUTO_TEST_CASE(provide)
+{
+	myTest.filename="../wsTestSuite/PROVIDE/batch1 local and week 53.wsp";
+	myTest.wsType = WS_VX;
+	myTest.samples["5"] = "1097pi_cells_found_normalized.fcs";
+	myTest.sampNloc=2;
+	myTest.ncfile="../output/PROVIDE/data.nc";
+	myTest.colfile="../output/PROVIDE/colnames.txt";
+	myTest.archive="../output/PROVIDE/gs";
+
+	myTest.tolerance = 0.2;
+
+
+//	map<string,float> gains;
+//	gains["Time"] = 0.01;
+//	myTest.gains = gains;
+	vector<VertexID> skip;
+//	skip.push_back(16);
+//	skip.push_back(99);
+//	myTest.skipPops = skip;
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
+
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";

@@ -38,7 +38,7 @@ test_that("v 10.0.7 - vX 20.0 (ellipsoidGate)",{
       expect_equal(thisCounts, expectCounts, tol = 1e-3)
     })
 
-#test_that("v 10.0.7 - vX 20.0 (McGill)",{
+#test_that("v 10.0.7 - vX 20.0 (McGill/BMDCs) linear transformation",{
 #      
 #      thisPath <- file.path(path, "McGill/BMDCs")
 #      wsFile <- file.path(thisPath, "20140124 BMDCs.1.wsp")
@@ -53,6 +53,54 @@ test_that("v 10.0.7 - vX 20.0 (ellipsoidGate)",{
 #      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
 #      expect_equal(thisCounts, expectCounts)
 #    })
+
+test_that("v 10.0.7 - vX 20.0 (McGill/treg) ellipseidGate (biexponential)",{
+      
+      thisPath <- file.path(path, "McGill/Treg")
+      wsFile <- file.path(thisPath, "20131206_Treg.1.ellipseidGate.wsp")
+      
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name = 3, subset = 4, execute = FALSE)
+      expect_is(gs, "GatingSet")
+      g <- getGate(gs[[1]], "CD4Ellipse")
+      #transformed ellipse Gate
+      expect_is(g, "polygonGate")
+      expect_equal(range(g@boundaries[, "Comp-APC-A"]), c(2218.833, 3301.143), tol = 1e-6)
+      expect_equal(range(g@boundaries[, "SSC-A"]), c(9884.187, 58723.813), tol = 1e-6)
+      
+      #skip gate transform
+      gs <- parseWorkspace(ws, name = 3, subset = 4, execute = FALSE, transform = FALSE)
+      g <- getGate(gs[[1]], "CD4Ellipse")
+      expect_is(g, "polygonGate")
+      #ellipsoidGate should be in 256 * 256 scale
+      expect_equal(range(g@boundaries[, "Comp-APC-A"]), c(142.8034, 208.1966), tol = 1e-6)
+      expect_equal(range(g@boundaries[, "SSC-A"]), c(9.652527, 57.347473), tol = 1e-6)
+      
+      gs <- parseWorkspace(ws, name = 3, subset = 4)
+      
+      gh <- gs[[1]]
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      expect_equal(thisCounts, expectCounts)
+    })
+
+test_that("v 10.0.7 - vX 20.0 (PROVIDE/CyTOF) ellipseidGate (fasinh)",{
+      
+      thisPath <- file.path(path, "PROVIDE")
+      wsFile <- file.path(thisPath, "batch1 local and week 53.wsp")
+      
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name = 1, subset = 3, execute = FALSE, sampNloc = "sampleNode")
+      expect_is(gs, "GatingSet")
+      
+      
+      gs <- parseWorkspace(ws, name = 1, subset = 3, sampNloc = "sampleNode")
+      
+      gh <- gs[[1]]
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      expect_equal(thisCounts, expectCounts)
+    })
 
 test_that("v 10.0.7 - vX 20.0 (cytof no compensation)",{
       

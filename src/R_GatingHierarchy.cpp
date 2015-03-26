@@ -161,13 +161,14 @@ END_RCPP
 
 
 
-RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName){
+RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName, SEXP _inverse){
 BEGIN_RCPP
 
 
 	GatingSet *	gs=getGsPtr(_gsPtr);
 
 	string sampleName=as<string>(_sampleName);
+	bool inverse=as<bool>(_inverse);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	trans_map trans=gh->getLocalTrans().getTransMap();
@@ -178,6 +179,12 @@ BEGIN_RCPP
 		transformation * curTrans=it->second;
 		if(curTrans==NULL)
 			throw(domain_error("empty transformation for channel"+it->first));
+		boost::shared_ptr<transformation> inverseTrans;//must declare outside of if block to make it life cycle through end of loop
+		if(inverse){
+			inverseTrans = curTrans->getInverseTransformation();
+			curTrans = inverseTrans.get();//not safe, make sure not to delete it since it belongs to shared_ptr
+		}
+
 
 		string transName=curTrans->getName()+" "+it->first;
 
@@ -251,6 +258,22 @@ BEGIN_RCPP
 											)
 								,transName
 								);
+
+				break;
+			}
+			case FASINH:
+			{
+				fasinhTrans * thisTrans = dynamic_cast<fasinhTrans *>(curTrans);
+
+				res.push_back(List::create(Named("type","fasinh")
+											, Named("A", thisTrans->A)
+											, Named("M", thisTrans->M)
+											, Named("T", thisTrans->T)
+											, Named("length", thisTrans->length)
+											, Named("maxRange", thisTrans->maxRange)
+											)
+											,transName
+							);
 
 				break;
 			}
