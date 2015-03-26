@@ -8,7 +8,7 @@
 
 #include "include/macFlowJoWorkspace.hpp"
 
-//#define PI 3.141592653589793238462
+
 
 /*constructors of flowJoWorkspace for mac and win derived classes
  *

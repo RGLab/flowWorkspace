@@ -102,7 +102,11 @@ void ellipsoidGate::convertToPb(pb::gate & gate_pb){
 	ellipseGate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::ELLIPSOID_GATE);
 }
-ellipsoidGate::ellipsoidGate(const pb::gate & gate_pb):ellipseGate(gate_pb){};
+ellipsoidGate::ellipsoidGate(const pb::gate & gate_pb):ellipseGate(gate_pb){
+	//deal with legacy archive that did not interpolate ellipsoidGate
+	if(param.getVertices().size() == 0)
+		toPolygon(100);
+};
 void rectGate::convertToPb(pb::gate & gate_pb){
 	polygonGate::convertToPb(gate_pb);
 	gate_pb.set_type(pb::RECT_GATE);
@@ -299,6 +303,7 @@ ellipseGate::ellipseGate(vector<coordinate> _antipodal, vector<string> _params):
 	 * (this deprecated inheritance exists for the sake of legacy archive)
 	 */
 	param.setName(_params);
+
 }
 
 void ellipseGate::extend(flowData & fdata,float extend_val){
@@ -370,8 +375,11 @@ void ellipseGate::gain(map<string,float> & gains){
 
 /*
  * covert antipodal points to covariance matrix and mean
+ * antipodal points must be transformed first.
  */
 void ellipseGate::computeCov(){
+	if(!Transformed())
+		throw(domain_error("antipodal points of ellipseGate must be transformed before computing covariance matrix!"));
 
 	vector<coordinate> v=antipodal_vertices;
 	unsigned short nSize = v.size();
@@ -671,10 +679,103 @@ vector<bool> polygonGate::gating(flowData & fdata){
 		ind.flip();
 	return ind;
 }
+
 /*
- * we moved the interpolation to polygonGate form gating method to here because
- * gating may not be called when only gates to be extracted
+ * interpolation has to be done on the transformed original 4 coordinates
+ * otherwise, the interpolation results will be wrong
  */
+void ellipseGate::toPolygon(unsigned nVertices){
+
+
+
+
+	/*
+	 * using 4 vertices to fit polygon points
+	 */
+	vector<coordinate> v=antipodal_vertices;
+	vector<coordinate> vertices=param.getVertices();
+	vertices.clear();//reset the vertices
+
+	unsigned nSize=v.size();
+	/*
+	 * scaling and centering the points
+	 */
+	coordinate mu;
+	mu.x=0;
+	mu.y=0;
+	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
+	{
+		mu.x+=it->x;
+		mu.y+=it->y;
+	}
+	mu.x=mu.x/nSize;
+	mu.y=mu.y/nSize;
+
+	coordinate sd;
+	sd.x=0;
+	sd.y=0;
+	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
+	{
+		sd.x+=pow((it->x-mu.x),2);
+		sd.y+=pow((it->y-mu.y),2);
+	}
+	sd.x=sqrt(sd.x/nSize);
+	sd.y=sqrt(sd.y/nSize);
+
+	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
+	{
+		it->x=(it->x-mu.x)/sd.x;
+		it->y=(it->y-mu.y)/sd.y;
+	}
+
+	/*
+	 * find the right positions of four antipodals
+	 */
+	coordinate R=*max_element(v.begin(),v.end(),compare_x);
+	coordinate L=*min_element(v.begin(),v.end(),compare_x);
+
+	coordinate T=*max_element(v.begin(),v.end(),compare_y);
+	coordinate B=*min_element(v.begin(),v.end(),compare_y);
+
+	/*
+	 * calculate the a,b length
+	 */
+	coordinate E;
+	E.x=hypot(L.x-R.x,L.y-R.y)/2;
+	E.y=hypot(T.x-B.x,T.y-B.y)/2;
+
+	/*
+	 * calculate the rotation angle
+	 */
+	double phi=tan((R.y-L.y)/(R.x-L.x));
+	double CY=(B.y+T.y)/2;
+	double CX=(R.x+L.x)/2;
+
+	double delta=2*PI/nVertices;
+	/*
+	 * fit the polygon points
+	 */
+	for(unsigned short i=0;i<nVertices;i++)
+	{
+		double S=i*delta;
+		coordinate p;
+		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
+		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
+
+
+		/*
+		 * scale back
+		 */
+		p.x=p.x*sd.x+mu.x;
+		p.y=p.y*sd.y+mu.y;
+
+		vertices.push_back(p);
+	}
+
+	param.setVertices(vertices);
+
+}
+
 void ellipseGate::transforming(trans_local & trans){
 	if(!Transformed())
 	{
@@ -714,19 +815,32 @@ void ellipseGate::transforming(trans_local & trans){
 		}
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT<<endl;
-
-		computeCov();
 		isTransformed=true;
+
+		//compute the covariance matrix after transformed
+		computeCov();
+
 	}
 }
 ellipsoidGate::ellipsoidGate(vector<coordinate> _antipodal, vector<string> _params):ellipseGate(_antipodal,_params)
-{}
+{
+	/*
+	 * interpolate to polygon gate
+	 */
+
+	toPolygon(100);
+}
 /*
+ *
+ * we moved the interpolation to polygonGate form gating method to here because
+ * gating may not be called when only gates to be extracted
+ *
+ *
  * ellipsoidGate does not follow the regular transforming process
- * for historical reason, it is defined in 256 * 256 scale, and we don't know
- * how to translate it to the transformed scale yet, thus simply throw exception
- * for the EllipsoidGate defined on the non-linear data channel
- * for linear channels, we will do the same rescaling here.
+ * for historical reason, it is defined in 256 * 256 scale.
+ * For linear channel, we simply linear scale it back to raw scale
+ * For non-linear channel, We need to first inverse transform it back to raw scale
+ * before transforming to the ultimate appropriate data scale.
  */
 void ellipsoidGate::transforming(trans_local & trans){
 
@@ -747,40 +861,75 @@ void ellipsoidGate::transforming(trans_local & trans){
 
 
 		/*
-		 * we don't know the exact scaling rules for ellipsoidGate of non-linear space yet
-		 * so simply throws error for now
+		 * re-construct the trans object that was used by flowJo to transform ellipsoid gate to 256 scale
 		 */
-		string err="Don't know how to scale the ellipsoidGate on the non-linear data space: ";
-		float maxVal = trans_x==NULL?262144:4096;
+		boost::scoped_ptr<transformation> trans_gate_x,trans_gate_y;
+		if(trans_x == NULL)
+			trans_gate_x.reset(new scaleTrans()); //create default scale trans for linear, assuming the max value for linear scale is always 262144
+		else
+			trans_gate_x.reset(trans_x->clone()); //copy existing trans_x for non-linear
 
-		//do the special scaling first for linear ellipsoidGate
-		scaleTrans scale_x(maxVal/256);//assuming the max value is always 262144, thus 262144/256 = 1024
-		if(g_loglevel>=POPULATION_LEVEL)
-			COUT<<"scaling: "<<channel_x<<endl;;
-		scale_x.transforming(vert.x);
-		for(unsigned i=0;i<antipodal_vertices.size();i++)
-			antipodal_vertices.at(i).x=vert.x[i];
+		if(trans_y == NULL)
+			trans_gate_y.reset(new scaleTrans()); //create default scale trans for linear
+		else
+			trans_gate_y.reset(trans_y->clone()); //copy existing trans_y for non-linear
 
-		maxVal = trans_y==NULL?262144:4096;
-		//do the special scaling first for linear ellipsoidGate
-		scaleTrans scale_y(maxVal/256);//assuming the max value is always 262144, thus 262144/256 = 1024
-		if(g_loglevel>=POPULATION_LEVEL)
-			COUT<<"scaling: "<<channel_y<<endl;;
+		//set to scale 256
+		trans_gate_x->setTransformedScale(256);
+		trans_gate_y->setTransformedScale(256);
 
-		scale_y.transforming(vert.y);
-		for(unsigned i=0;i<antipodal_vertices.size();i++)
-			antipodal_vertices.at(i).y=vert.y[i];
+		//get its inverse
+		boost::shared_ptr<transformation> inverseTrans_x = trans_gate_x->getInverseTransformation();
+		boost::shared_ptr<transformation> inverseTrans_y = trans_gate_y->getInverseTransformation();
 
-		if(g_loglevel>=POPULATION_LEVEL)
-			COUT<<endl;
 
-		computeCov();
+		/*
+		 * transform the polygon from 256 to raw
+		 */
+		polygonGate::transforming(inverseTrans_x.get(), inverseTrans_y.get());
+
+
+
+		/*
+		 * transform the raw to the actual data scale (for non-linear channel)
+		 */
+		isTransformed = false;//reset transform flag otherwise the transforming won't get executed
+		polygonGate::transforming(trans_x, trans_y);
+
 		isTransformed=true;
 	}
 
 }
-
+/*
+ * ellipsoidGate can't use ellipseGate gating function due to its special treatment of the scale
+ */
+vector<bool> ellipsoidGate::gating(flowData & fdata){
+	return polygonGate::gating(fdata);
+}
+/*
+ * a wrapper that calls transforming(transformation * , transformation * )
+ */
 void polygonGate::transforming(trans_local & trans){
+
+		/*
+		 * get channel names to select respective transformation functions
+		 */
+		string channel_x=param.xName();
+		string channel_y=param.yName();
+
+
+		/*
+		 * do the actual transformations
+		 */
+		transformation * trans_x=trans.getTran(channel_x);
+		transformation * trans_y=trans.getTran(channel_y);
+
+		transforming(trans_x, trans_y);
+}
+/*
+ * the actual transforming logic for polygonGate, that is shared by polyonGate and ellipsoidGate(due to the special scale)
+ */
+void polygonGate::transforming(transformation * trans_x, transformation * trans_y){
 	if(!Transformed())
 	{
 		vector<coordinate> vertices=param.getVertices();
@@ -793,31 +942,21 @@ void polygonGate::transforming(trans_local & trans){
 		//get vertices in valarray format
 		vertices_valarray vert(vertices);
 
-		/*
-		 * do the actual transformations
-		 */
-		transformation * trans_x=trans.getTran(channel_x);
-		transformation * trans_y=trans.getTran(channel_y);
-
 
 		if(trans_x!=NULL)
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_x<<endl;;
-	//		valarray<double> output_x(trans_x->transforming(vert.x));
 			trans_x->transforming(vert.x);
 			for(unsigned i=0;i<vertices.size();i++)
-	//			vertices.at(i).x=output_x[i];// yodate coordinates-based vertices
 				vertices.at(i).x=vert.x[i];
 		}
 		if(trans_y!=NULL)
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"transforming: "<<channel_y<<endl;;
-	//		valarray<double> output_y(trans_y->transforming(vert.y));
 			trans_y->transforming(vert.y);
 			for(unsigned i=0;i<vertices.size();i++)
-	//			vertices.at(i).y=output_y[i];
 				vertices.at(i).y=vert.y[i];
 		}
 		if(g_loglevel>=POPULATION_LEVEL)
