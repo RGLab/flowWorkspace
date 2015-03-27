@@ -461,6 +461,9 @@ unarchive<-function(file,path=tempdir()){
                                                         key.env[["key.fils"]] <- read.FCSheader(all.files, keyword = "$FIL")
                                                       }
                                                       key.fils <- key.env[["key.fils"]]
+                                                      #$FIL is optional keyword according to FCS3.1 standard
+                                                      #so some FCS may not have this thus need to remove NA entries
+                                                      key.fils <- key.fils[!is.na(key.fils)] 
                                                       message(filename," not found in directory: ",path,". Try the FCS keyword '$FIL' ...")  
                                                       absPath <- names(key.fils[key.fils == filename])
                                                       nFound <- length(absPath)
