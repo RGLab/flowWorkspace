@@ -381,13 +381,13 @@ private:
 			{
 				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
 				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
-//				if(version>=1){
+				if(version>=1){
 					ar & BOOST_SERIALIZATION_NVP(cov);
 					ar & BOOST_SERIALIZATION_NVP(mu);
 					ar & BOOST_SERIALIZATION_NVP(dist);
-//				}else{
-//					computeCov();
-//				}
+				}else{
+					computeCov();
+				}
 
 			}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
