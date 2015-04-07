@@ -118,6 +118,25 @@ test_that("v 10.0.7 - vX 20.0 (cytof no compensation)",{
 #      expect_equal(thisCounts, expectCounts)
     })
 
+test_that("v 10.0.7r2 - vX 20.0 (NotNode)",{
+      
+      thisPath <- file.path(path, "NotNode")
+      wsFile <- file.path(thisPath, "WSwithNotNodePopulation.wsp")
+      
+      ws <- openWorkspace(wsFile)
+      
+      gs <- parseWorkspace(ws, name = 1, path = file.path(path), execute = FALSE)
+      
+      expect_is(gs, "GatingSet")
+      gh <- gs[[1]]
+      g <- getGate(gh, "CD20+⁻")
+      expect_is(g, "booleanFilter")
+      expect_equal(g@deparse, "!LIVE/Single Cells/CD45+/CD20+")
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      expect_equal(thisCounts[,c("flowJo.count", "node"), with = F], expectCounts[,c("flowJo.count", "node"), with = F])
+    })
+
 test_that("v 7.6.1- win 1.6 (use default biexp trans when channel-specific trans not found within its respective trans group )",{
       
       thisPath <- file.path(path, "GYO")

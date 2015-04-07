@@ -36,7 +36,7 @@ public:
      string getSampleName(wsSampleNode &);
      void parseVersionList();
      unsigned short getVersionMin();
-
+     vector<BOOL_GATE_OP> parseBooleanSpec(string specs,vector<string> gPaths);
 };
 
 
