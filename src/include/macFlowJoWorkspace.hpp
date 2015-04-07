@@ -19,7 +19,7 @@ private:
 					ar & boost::serialization::base_object<flowJoWorkspace>(*this);
 
 				}
-	vector<BOOL_GATE_OP> parseBooleanSpec(string specs,vector<string> gPaths);
+
 public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);

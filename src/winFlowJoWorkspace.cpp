@@ -11,8 +11,8 @@
 
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc):flowJoWorkspace(doc){
 	COUT<<"windows version of flowJo workspace recognized."<<endl;
-
-	nodePath.popNode="./*/Population";//relative to sampleNode
+	//(unfortunately libxml2 doesn't support union query e.g.('*/(Population|NotNode)')
+	nodePath.popNode="./*/*[name()='Population' or name()='NotNode']";//relative to sampleNode
 	nodePath.gateDim="*[local-name()='dimension']";//relative to gateNode
 	nodePath.gateParam="*[local-name()='parameter']";//relative to dimNode
 
@@ -662,37 +662,54 @@ gate * winFlowJoWorkspace::getGate(wsRectGateNode & node){
 }
 gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 
+	if(node.getName()=="NotNode"){
+		/*
+		 * NotNode is a special population node that negate its dependent
+		 * We parse it as a boolean gate
+		 */
+		xmlXPathObjectPtr resPaths=node.xpathInNode("Dependents/Dependent");
+		if(resPaths->nodesetval->nodeNr != 1)
+			throw(domain_error("'NotNode' must have one (and only one) 'Dependent'"));
+		wsNode curGPNode(resPaths->nodesetval->nodeTab[0]);
+		vector<string> gPaths;
+		gPaths.push_back(curGPNode.getProperty("name"));
+		boolGate * gate=new boolGate();
+		xmlXPathFreeObject(resPaths);
+		gate->boolOpSpec = parseBooleanSpec("!G0", gPaths);
+		return gate;
+	}else{
 
-	xmlXPathObjectPtr resGate=node.xpathInNode("Gate/*");
-	wsNode gNode(resGate->nodesetval->nodeTab[0]);
-	xmlXPathFreeObject(resGate);
-	const xmlChar * gateType=gNode.getNodePtr()->name;
-	if(xmlStrEqual(gateType,(const xmlChar *)"PolygonGate"))
-	{
-		wsPolyGateNode pGNode(gNode.getNodePtr());
-		if(g_loglevel>=GATE_LEVEL)
-			COUT<<"parsing PolygonGate.."<<endl;
-		return(getGate(pGNode));
 
-	}
-	else if(xmlStrEqual(gateType,(const xmlChar *)"RectangleGate"))
-	{
-		wsRectGateNode rGNode(gNode.getNodePtr());
-		if(g_loglevel>=GATE_LEVEL)
-			COUT<<"parsing RectangleGate.."<<endl;
-		return(getGate(rGNode));
-	}
-	else if(xmlStrEqual(gateType,(const xmlChar *)"EllipsoidGate"))
-	{
-		wsEllipseGateNode eGNode(gNode.getNodePtr());
-		if(g_loglevel>=GATE_LEVEL)
-			COUT<<"parsing EllipsoidGate.."<<endl;
-		return(getGate(eGNode));
-	}
-	else
-	{
-//		COUT<<"gate type: "<<gateType<<" is not supported!"<<endl;
-		throw(domain_error("invalid  gate type!"));
-	}
+		xmlXPathObjectPtr resGate=node.xpathInNode("Gate/*");
+		wsNode gNode(resGate->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(resGate);
+		const xmlChar * gateType=gNode.getNodePtr()->name;
+		if(xmlStrEqual(gateType,(const xmlChar *)"PolygonGate"))
+		{
+			wsPolyGateNode pGNode(gNode.getNodePtr());
+			if(g_loglevel>=GATE_LEVEL)
+				COUT<<"parsing PolygonGate.."<<endl;
+			return(getGate(pGNode));
 
+		}
+		else if(xmlStrEqual(gateType,(const xmlChar *)"RectangleGate"))
+		{
+			wsRectGateNode rGNode(gNode.getNodePtr());
+			if(g_loglevel>=GATE_LEVEL)
+				COUT<<"parsing RectangleGate.."<<endl;
+			return(getGate(rGNode));
+		}
+		else if(xmlStrEqual(gateType,(const xmlChar *)"EllipsoidGate"))
+		{
+			wsEllipseGateNode eGNode(gNode.getNodePtr());
+			if(g_loglevel>=GATE_LEVEL)
+				COUT<<"parsing EllipsoidGate.."<<endl;
+			return(getGate(eGNode));
+		}
+		else
+		{
+	//		COUT<<"gate type: "<<gateType<<" is not supported!"<<endl;
+			throw(domain_error("invalid  gate type!"));
+		}
+	}
 }
