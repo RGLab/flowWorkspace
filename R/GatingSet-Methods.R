@@ -1434,7 +1434,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #' @importMethodsFrom flowViz xyplot densityplot
 #' @importFrom RColorBrewer brewer.pal
 .plotGate <- function(x, y, formula=NULL, cond=NULL
-                      , smooth=FALSE ,type=c("xyplot","densityplot")
+                      , smooth=FALSE ,type=c("xyplot","densityplot", "histogram")
                       , main = NULL
                       , fitGate=FALSE
                       , overlay = NULL
@@ -1652,7 +1652,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                           )
         thisCall[[1]]<-quote(xyplot)
 
-	}else
+	}else if(type == "densityplot")
 	{
 		if(length(params)==1)
 		{
@@ -1664,7 +1664,18 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                            )
           thisCall[[1]]<-quote(densityplot)
 		}
-	}
+	}else{
+      if(length(params)==1)
+      {
+        
+        thisCall<-as.call(c(as.list(thisCall)
+                        
+                        , stack = FALSE
+                    )
+        )
+        thisCall[[1]]<-quote(histogram)
+      }
+    }
 	return(eval(thisCall))
 }
 
