@@ -2476,6 +2476,7 @@ getIndiceMat <- function(gh,y){
 #' 
 #' @param x A \code{GatingSet} or \code{GatingSetList} object .
 #' @param nodes \code{character} vector specifying different cell populations
+#' @param other.markers \code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.  
 #' @param swap \code{logical} indicates whether channels and markers of flow data are swapped.
 #' @param threshold \code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.
 #' @param ... other arguments
@@ -2500,21 +2501,30 @@ getIndiceMat <- function(gh,y){
 #' }
 #' @rdname getSingleCellExpression
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, swap = FALSE, threshold = TRUE, ...){
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, other.markers = NULL, swap = FALSE, threshold = TRUE, ...){
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
       
       message(".", appendLF = FALSE)
-      
       fr <- fs[[sample, use.exprs = FALSE]] 
-      this_pd <- pData(parameters(fr))  
+      this_pd <- pData(parameters(fr))
       #get pop vs channel mapping
       pop_chnl <- .getPopChnlMapping(this_pd, nodes, swap = swap, ...)
       chnls <- as.character(pop_chnl[,"name"])
       pops <-  as.character(pop_chnl[,"pop"])
+      markers <- as.character(pop_chnl[, datSrc])  
       
-      markers <- as.character(pop_chnl[, datSrc])
+      #append the extra markers
+      if(!is.null(other.markers)){
+        other_marker_chnl <- ldply(other.markers, getChannelMarker, frm = fr)
+        other_chnls <- other_marker_chnl[["name"]]
+        other_markers <- other_marker_chnl[["desc"]]
+        
+        chnls <- c(chnls, other_chnls)
+        markers <- c(markers, other_markers)
+      }
+      
     
       nodeIds <- sapply(pops, function(pop){
             ind <- .Call("R_getNodeID",x@pointer,sample, pop)
