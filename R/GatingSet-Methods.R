@@ -1097,19 +1097,21 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'                         If not given, we automatically assign the colors.}
 #'  \item{key}{Lattice legend paraemter for overlay symbols.}
 #'
-#'  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
+#'  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A" and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(default.y = "FSC-A"))'}
 #'
-#'  \item{type}{ \code{character} either "xyplot" or "densityplot". Default is "xyplot"}
+#'  \item{type}{ \code{character} either "xyplot" or "densityplot". Default is "xyplot"  and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(type = "xyplot"))'}
 #'
-#'  \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot}
+#'  \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot. Default is FALSE and  session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(fitGate = FALSE))'}
 #'
 #'  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
 #'
 #'
-#'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale}
+#'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale. Default is TRUE and can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(raw.scale = TRUE))'}
 #'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
 #'                                            either by instrument measurement range or the actual data range.
-#'                     or \code{numeric} which specifies customized range.}
+#'                     or \code{numeric} which specifies customized range.
+#'                      They can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(xlim = "instrument"))'
+#' }
 #'
 #'  \item{...}{
 #'
@@ -1434,23 +1436,23 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #' @importMethodsFrom flowViz xyplot densityplot
 #' @importFrom RColorBrewer brewer.pal
 .plotGate <- function(x, y, formula=NULL, cond=NULL
-                      , smooth=FALSE ,type=c("xyplot","densityplot")
+                      , smooth=FALSE ,type = flowWorkspace.par.get("plotGate")[["type"]]
                       , main = NULL
-                      , fitGate=FALSE
+                      , fitGate = flowWorkspace.par.get("plotGate")[["fitGate"]]
                       , overlay = NULL
                       , overlay.symbol = NULL
                       , key = NULL
                       , stack = FALSE
                       , xbin = 32
-                      , stats , default.y = "SSC-A", scales
+                      , stats , default.y = flowWorkspace.par.get("plotGate")[["default.y"]], scales
                       , strip = TRUE
                       , path = "auto"
-                      , xlim = "instrument"
-                      , ylim = "instrument"
+                      , xlim = flowWorkspace.par.get("plotGate")[["xlim"]]
+                      , ylim = flowWorkspace.par.get("plotGate")[["xlim"]]
                       , ...){
 
 
-	type<- match.arg(type)
+	type <- match.arg(type, c("xyplot","densityplot", "histogram"))
 
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
     is.gh <- class(x) == "GatingHierarchy"
@@ -1652,7 +1654,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                           )
         thisCall[[1]]<-quote(xyplot)
 
-	}else
+	}else if(type == "densityplot")
 	{
 		if(length(params)==1)
 		{
@@ -1664,7 +1666,18 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                            )
           thisCall[[1]]<-quote(densityplot)
 		}
-	}
+	}else{
+      if(length(params)==1)
+      {
+        
+        thisCall<-as.call(c(as.list(thisCall)
+                        
+                        , stack = FALSE
+                    )
+        )
+        thisCall[[1]]<-quote(histogram)
+      }
+    }
 	return(eval(thisCall))
 }
 
@@ -2465,6 +2478,7 @@ getIndiceMat <- function(gh,y){
 #' 
 #' @param x A \code{GatingSet} or \code{GatingSetList} object .
 #' @param nodes \code{character} vector specifying different cell populations
+#' @param other.markers \code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.  
 #' @param swap \code{logical} indicates whether channels and markers of flow data are swapped.
 #' @param threshold \code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.
 #' @param ... other arguments
@@ -2489,21 +2503,30 @@ getIndiceMat <- function(gh,y){
 #' }
 #' @rdname getSingleCellExpression
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, swap = FALSE, threshold = TRUE, ...){
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, other.markers = NULL, swap = FALSE, threshold = TRUE, ...){
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sapply(sampleNames(x),function(sample){
       
       message(".", appendLF = FALSE)
-      
       fr <- fs[[sample, use.exprs = FALSE]] 
-      this_pd <- pData(parameters(fr))  
+      this_pd <- pData(parameters(fr))
       #get pop vs channel mapping
       pop_chnl <- .getPopChnlMapping(this_pd, nodes, swap = swap, ...)
       chnls <- as.character(pop_chnl[,"name"])
       pops <-  as.character(pop_chnl[,"pop"])
+      markers <- as.character(pop_chnl[, datSrc])  
       
-      markers <- as.character(pop_chnl[, datSrc])
+      #append the extra markers
+      if(!is.null(other.markers)){
+        other_marker_chnl <- ldply(other.markers, getChannelMarker, frm = fr)
+        other_chnls <- other_marker_chnl[["name"]]
+        other_markers <- other_marker_chnl[["desc"]]
+        
+        chnls <- c(chnls, other_chnls)
+        markers <- c(markers, other_markers)
+      }
+      
     
       nodeIds <- sapply(pops, function(pop){
             ind <- .Call("R_getNodeID",x@pointer,sample, pop)

@@ -899,6 +899,7 @@ BEGIN_RCPP
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
 	bool threshold = as<bool>(_threshold);
+
 	NODEID_vec nodeIDs = as<NODEID_vec>(_nodeIDs);
 	unsigned nNodes = nodeIDs.size();
 	vector<BoolVec> indexList(nNodes);
@@ -912,8 +913,8 @@ BEGIN_RCPP
 	NumericMatrix data = as<NumericMatrix>(_data);
 	unsigned n = data.nrow();
 	unsigned k = data.ncol();
-	if(k != nNodes)
-			stop("the number of nodes is different from the columns of the input data matrix !");
+	if(k!= nNodes && threshold)
+		stop("when 'threshold = TRUE' , the number of nodes and the columns of the input data matrix must be the same!");
 	BoolVec ind = indexList.at(0);
 	for(vector<BoolVec>::iterator it = indexList.begin() + 1; it!=indexList.end(); it++)
 		transform (ind.begin(), ind.end(), it->begin(), ind.begin(),logical_or<bool>());
