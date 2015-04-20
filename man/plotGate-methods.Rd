@@ -54,19 +54,21 @@ Nodes can be accessed with \code{\link{getNodes}}.}
                         If not given, we automatically assign the colors.}
  \item{key}{Lattice legend paraemter for overlay symbols.}
 
- \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A".}
+ \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A" and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(default.y = "FSC-A"))'}
 
- \item{type}{ \code{character} either "xyplot" or "densityplot". Default is "xyplot"}
+ \item{type}{ \code{character} either "xyplot" or "densityplot". Default is "xyplot"  and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(type = "xyplot"))'}
 
- \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot}
+ \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot. Default is FALSE and  session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(fitGate = FALSE))'}
 
  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
 
 
- \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale}
+ \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale. Default is TRUE and can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(raw.scale = TRUE))'}
  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
                                            either by instrument measurement range or the actual data range.
-                    or \code{numeric} which specifies customized range.}
+                    or \code{numeric} which specifies customized range.
+                     They can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(xlim = "instrument"))'
+}
 
  \item{...}{
 

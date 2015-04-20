@@ -8,7 +8,7 @@
 \title{Return the cell events data that express in any of the single populations defined in \code{y}}
 \usage{
 \S4method{getSingleCellExpression}{GatingSet,character}(x, nodes,
-  swap = FALSE, threshold = TRUE, ...)
+  other.markers = NULL, swap = FALSE, threshold = TRUE, ...)
 
 \S4method{getSingleCellExpression}{GatingSetList,character}(x, nodes, ...)
 }
@@ -16,6 +16,8 @@
 \item{x}{A \code{GatingSet} or \code{GatingSetList} object .}
 
 \item{nodes}{\code{character} vector specifying different cell populations}
+
+\item{other.markers}{\code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.}
 
 \item{swap}{\code{logical} indicates whether channels and markers of flow data are swapped.}
 

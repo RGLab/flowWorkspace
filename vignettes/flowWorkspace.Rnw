@@ -52,7 +52,7 @@ We see that this a version 2.0 workspace file. It's location and filename are pr
 With the workspace file open, we have not yet imported the XML document. The next step parses the XML workspace and creates R data structures to represent some of the information therein. Specifically, by calling \Rfunction{parseWorkspace()} the user will be presented with a list of \textit{groups} in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a \Rclass{GatingHierarchy} for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a \Rclass{GatingSet} object. Calling \Rfunction{parseWorkspace()} is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument \texttt{execute=T/F} specifies whether you want to load, compensate, transform the data and compute statistics immediately after parsing the XML tree.
 
 <<parsews,results=hide>>=
-G<-parseWorkspace(ws,name=1,path=ws@path,isNcdf=FALSE,cleanup=FALSE,keep.indices=TRUE); #import the first group
+G<-parseWorkspace(ws,name=1,path=ws@path,isNcdf=FALSE); #import the first group
 #Lots of output here suppressed for the vignette.
 @
 
