@@ -70,7 +70,13 @@ flowWorkspace.par.init <- function(){
                                                                                           , left = list(tck =0.5))
                                                                  , axis.text = list(cex = 0.5)
                                                                 )
-                                      , plotGate = list(arrange = TRUE)
+                                      , plotGate = list(arrange = TRUE
+                                                        , type = "xyplot"
+                                                        , fitGate = FALSE
+                                                        , raw.scale = TRUE
+                                                        , xlim = "instrument"
+                                                        , ylim = "instrument"
+                                                        , default.y = "SSC-A")
                                     )
   
 }

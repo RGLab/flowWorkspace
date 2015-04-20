@@ -1642,7 +1642,7 @@ pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #' @param data a flowFrame
 .formatAxis <- function(x, data, xParam, yParam
                           , scales=list()
-                          , raw.scale = TRUE
+                          , raw.scale = flowWorkspace.par.get("plotGate")[["raw.scale"]]
                           , ...){
 	
 
