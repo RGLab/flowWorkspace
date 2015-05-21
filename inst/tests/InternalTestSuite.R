@@ -137,6 +137,20 @@ test_that("v 10.0.7r2 - vX 20.0 (NotNode)",{
       expect_equal(thisCounts[,c("flowJo.count", "node"), with = F], expectCounts[,c("flowJo.count", "node"), with = F])
     })
 
+test_that("v 10.0.8 - vX 20.0 (slash_issue_vX)",{
+      thisPath <- file.path(path, "slash_issue_vX")
+      wsFile <- file.path(thisPath, "IFEP004.wsp")
+      
+      ws <- openWorkspace(wsFile)
+      
+      gs <- parseWorkspace(ws, name = 5, path = file.path(thisPath), execute = T)
+      
+      expect_is(gs, "GatingSet")
+      gh <- gs[[1]]
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+      expect_equal(thisCounts, expectCounts)
+    })
 test_that("v 7.6.1- win 1.6 (use default biexp trans when channel-specific trans not found within its respective trans group )",{
       
       thisPath <- file.path(path, "GYO")

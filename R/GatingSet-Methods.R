@@ -609,7 +609,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
-#' @importFrom stringr str_sub str_sub<-
 .addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
     if(nrow(samples)==0)
@@ -683,18 +682,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             #record the locations where '/' character is detected and will be used to restore it accurately
             slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
             if(wsType == "vX"){
-                #treat each channel
-                new_cnd <- mapply(cnd, slash_loc, FUN = function(thisCol, this_slash){
-                                            #replace each individual / based on their detected location
-                                            if(any(this_slash > 0))
-                                            {
-                                              for(this_loc in this_slash)
-                                                str_sub(thisCol, this_loc, this_loc) <- "_"
-                                            }
-                                              
-                                            thisCol
-                                            }
-                                  , USE.NAMES = FALSE)
+              new_cnd <- .fix_channel_slash(cnd, slash_loc)
                 if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- new_cnd
                   colnames(data) <- cnd
@@ -861,18 +849,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               #restore the orig colnames(replace "_" with "/") for flowJo X
               if(wsType == "vX"){
-                #use slash locations to avoid tamper the original '_' character in channel names 
-                old_cnd <- mapply(cnd, slash_loc, FUN = function(thisCol, this_slash){
-                                    #restore each individual _ based on  detected '/' locations
-                                    if(any(this_slash > 0))
-                                    {
-                                      for(this_loc in this_slash)
-                                        str_sub(thisCol, this_loc, this_loc) <- "/"
-                                    }
-                                    
-                                    thisCol
-                                  }
-                                  , USE.NAMES = FALSE)
+                #use slash locations to avoid tamper the original '_' character in channel names
+                old_cnd <- .fix_channel_slash(cnd, slash_loc)
+                
                 if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- old_cnd
                   colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX  
@@ -898,7 +877,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               tRg  <- range(mat[,tInd])
             else
               tRg <- NULL
-            axis.labels <- .transformRange(G,guid,wsType,fs@frames,timeRange = tRg)
+            axis.labels <- .transformRange(G,guid,wsType,fs@frames,timeRange = tRg, slash_loc)
 
 		}else{
           #extract gains from keyword of ws
@@ -967,6 +946,31 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	G
 }
 
+#' toggle the channel names between '/' and '_' character
+#' 
+#' FlowJoX tends to replace '/' in the original channel names with '_' in gates and transformations.
+#' We need to do the same to the flow data but also need to change it back during the process since
+#' the channel names of the flowSet can't be modified until the data is fully compensated.
+#' @param chnls the channel names
+#' @param slash_loc a list that records the locations of the original slash character within each channel name
+#'                  so that when restoring slash it won't tamper the the original '_' character. 
+#' @return the toggled channel names
+#' @importFrom stringr str_sub str_sub<-   
+.fix_channel_slash <- function(chnls, slash_loc = NULL){
+  mapply(chnls, slash_loc, FUN = function(thisCol, this_slash){
+        toggleTo <- ifelse(grepl("/", thisCol), "_", "/")
+        #replace each individual /|_ based on their detected location
+        if(any(this_slash > 0))
+        {
+          for(this_loc in this_slash)
+            str_sub(thisCol, this_loc, this_loc) <- toggleTo
+        }
+        
+        thisCol
+      }
+      , USE.NAMES = FALSE)  
+  
+}
 
 #' transform the range slot and construct axis label and pos for the plotting
 #' @param gh \code{GatingHierarchy}
@@ -976,7 +980,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'
 #' @return
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
-.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL){
+.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL){
 #  browser()
 
      trans<-.getTransformations(G@pointer, sampleName)
@@ -985,6 +989,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
      suffix <- comp$suffix
 
 	rawRange <- range(get(sampleName,frmEnv))
+    oldnames <- names(rawRange)
+    
+    if(wsType == "vX"&&!is.null(slash_loc)){
+      names(rawRange) <- .fix_channel_slash(oldnames, slash_loc)
+      
+    }
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
