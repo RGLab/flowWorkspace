@@ -329,8 +329,11 @@ boost::shared_ptr<transformation>  transformation::getInverseTransformation(){
 
 	//clone the existing trans
 	boost::shared_ptr<transformation>  inverse = boost::shared_ptr<transformation>(new transformation(*this));
-	//swap the x, y vectors in calTbl
+	//make sure to reset type to avoid type-discrepancy because
+	//it returns the base transformation type instead of the original one (e.g. biexp)
+	inverse->type = CALTBL;
 
+	//swap the x, y vectors in calTbl
 
 	inverse->calTbl.setX(this->calTbl.getY());
 	inverse->calTbl.setY(this->calTbl.getX());
