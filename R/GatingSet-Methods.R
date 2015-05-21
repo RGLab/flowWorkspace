@@ -983,50 +983,52 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
      comp<-.Call("R_getCompensation",G@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
-#	frmEnv<-dataenv$data$ncfs@frames
-	rawRange<-range(get(sampleName,frmEnv))
+
+	rawRange <- range(get(sampleName,frmEnv))
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
     trans_names <-trimWhiteSpace(names(trans))
-	datarange<-sapply(1:dim(rawRange)[2],function(i){
-
+    
+	datarange <- sapply(1:dim(rawRange)[2],function(i){
+               thisRange <- rawRange[i]
+               this_chnl <- names(thisRange)
 				#added gsub
               if(wsType == "vX"){
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
-                j <- match(names(rawRange)[i],trans_names)
+                j <- match(this_chnl, trans_names)
                 isMatched <- !is.na(j)
               }else{
-                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],trans_names);
+                j<-grep(gsub(suffix,"",gsub(prefix,"",this_chnl)),trans_names);
                 isMatched <- length(j)!=0
               }
-
-              this_chnl <- names(rawRange)[i]
-              prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")
+              
+              
 				if(isMatched){
-									
-					rw <- rawRange[,i];
-                    typeAttr <- attr(trans[[j]],"type")
+                    prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")					
+					rw <- thisRange[,1]
+                    thisTrans <- trans[[j]]
+                    typeAttr <- attr(thisTrans, "type")
 					if(is.null(typeAttr)||typeAttr!="gateOnly"){
-						r<-trans[[j]](c(rw))
+						r <- thisTrans(rw)
 					}else{
-						r<-rw
+						r <- rw
 					}
 					###An unfortunate hack. If we use the log transformation, then negative values are undefined, so
 					##We'll test the transformed range for NaN and convert to zero.
-					r[is.nan(r)]<-0;
+					r[is.nan(r)] <- 0
 
 					###Is this transformed?
 					if(!all(rw==r)){
 
-#						browser()
+
 						######################################
-						#equal interal at raw scale
+						#pretty ticks by equal interval at raw scale
 						######################################
-						base10raw<-unlist(lapply(2:6,function(e)10^e))
-						base10raw<-c(0,base10raw)
-						raw<-base10raw[base10raw>min(rw)&base10raw<max(rw)]
-						pos<-signif(trans[[j]](raw))
+						base10raw <- unlist(lapply(2:6,function(e)10^e))
+						base10raw <- c(0,base10raw)
+						raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
+						pos <- signif(thisTrans(raw))
 
 
 						assign("prefixedChnl",prefixedChnl,tempenv)
@@ -1043,16 +1045,16 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                     timeRange
 #                    range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
                   }else{
-                    rawRange[,i]
+                    thisRange[,1]
                   }
 
 				}
 			})
 
-#	browser()
-	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
-	datapar<-parameters(get(sampleName,frmEnv))
-	pData(datapar)[,c("range","minRange","maxRange")]<-datarange
+	
+	datarange <- t(rbind(datarange[2,]-datarange[1,],datarange))
+	datapar <- parameters(get(sampleName,frmEnv))
+	pData(datapar)[,c("range","minRange","maxRange")] <- datarange
 
 	eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
 
@@ -1441,7 +1443,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                       , fitGate = flowWorkspace.par.get("plotGate")[["fitGate"]]
                       , overlay = NULL
                       , overlay.symbol = NULL
-                      , key = NULL
+                      , key = "auto"
                       , stack = FALSE
                       , xbin = 32
                       , stats , default.y = flowWorkspace.par.get("plotGate")[["default.y"]], scales
@@ -1611,7 +1613,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
             overlay.symbol <- sapply(overlay.fill, function(col)list(fill = col), simplify = FALSE)
           }
           #set legend automatically if it is not given
-          if(is.null(key)){
+          if(isTRUE(key == "auto")){
             
              key = list(text = list(names(overlay.symbol), cex = 0.6)
                                 , points = list(col = sapply(overlay.symbol, "[[", "fill") 
@@ -1646,13 +1648,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                             ,list(smooth = smooth
                                   ,overlay = overlay
                                   ,overlay.symbol = overlay.symbol
-                                  , key = key
                                   , defaultCond = defaultCond
                                   , xbin = xbin
                                   )
                             )
                           )
         thisCall[[1]]<-quote(xyplot)
+        if(is.list(key))
+          thisCall[["key"]] <- key
 
 	}else if(type == "densityplot")
 	{
