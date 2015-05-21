@@ -1,11 +1,27 @@
 .Rproj.user
 
-src/*.o
-src/*.so
+*.o
+*.so
+*.a
+*.log
+
 src/bst
+src/.project
+src/.cproject
+src/.settings
+src/pb_build
+src/protobuf-2.6.0
+src/uTest
+src/Default
+examples
+fjWsExamples
+output
+
 tools
+wsTestSuite
 inst/lib
 
+.project
 .Rhistory
 config.log
 config.status

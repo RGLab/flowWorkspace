@@ -609,7 +609,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
-#' @importFrom stringr str_sub str_sub<-
 .addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
     if(nrow(samples)==0)
@@ -683,18 +682,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             #record the locations where '/' character is detected and will be used to restore it accurately
             slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
             if(wsType == "vX"){
-                #treat each channel
-                new_cnd <- mapply(cnd, slash_loc, FUN = function(thisCol, this_slash){
-                                            #replace each individual / based on their detected location
-                                            if(any(this_slash > 0))
-                                            {
-                                              for(this_loc in this_slash)
-                                                str_sub(thisCol, this_loc, this_loc) <- "_"
-                                            }
-                                              
-                                            thisCol
-                                            }
-                                  , USE.NAMES = FALSE)
+              new_cnd <- .fix_channel_slash(cnd, slash_loc)
                 if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- new_cnd
                   colnames(data) <- cnd
@@ -861,18 +849,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             if(!is.null(prefixColNames)){
               #restore the orig colnames(replace "_" with "/") for flowJo X
               if(wsType == "vX"){
-                #use slash locations to avoid tamper the original '_' character in channel names 
-                old_cnd <- mapply(cnd, slash_loc, FUN = function(thisCol, this_slash){
-                                    #restore each individual _ based on  detected '/' locations
-                                    if(any(this_slash > 0))
-                                    {
-                                      for(this_loc in this_slash)
-                                        str_sub(thisCol, this_loc, this_loc) <- "/"
-                                    }
-                                    
-                                    thisCol
-                                  }
-                                  , USE.NAMES = FALSE)
+                #use slash locations to avoid tamper the original '_' character in channel names
+                old_cnd <- .fix_channel_slash(cnd, slash_loc)
+                
                 if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- old_cnd
                   colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX  
@@ -898,7 +877,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               tRg  <- range(mat[,tInd])
             else
               tRg <- NULL
-            axis.labels <- .transformRange(G,guid,wsType,fs@frames,timeRange = tRg)
+            axis.labels <- .transformRange(G,guid,wsType,fs@frames,timeRange = tRg, slash_loc)
 
 		}else{
           #extract gains from keyword of ws
@@ -967,6 +946,31 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	G
 }
 
+#' toggle the channel names between '/' and '_' character
+#' 
+#' FlowJoX tends to replace '/' in the original channel names with '_' in gates and transformations.
+#' We need to do the same to the flow data but also need to change it back during the process since
+#' the channel names of the flowSet can't be modified until the data is fully compensated.
+#' @param chnls the channel names
+#' @param slash_loc a list that records the locations of the original slash character within each channel name
+#'                  so that when restoring slash it won't tamper the the original '_' character. 
+#' @return the toggled channel names
+#' @importFrom stringr str_sub str_sub<-   
+.fix_channel_slash <- function(chnls, slash_loc = NULL){
+  mapply(chnls, slash_loc, FUN = function(thisCol, this_slash){
+        toggleTo <- ifelse(grepl("/", thisCol), "_", "/")
+        #replace each individual /|_ based on their detected location
+        if(any(this_slash > 0))
+        {
+          for(this_loc in this_slash)
+            str_sub(thisCol, this_loc, this_loc) <- toggleTo
+        }
+        
+        thisCol
+      }
+      , USE.NAMES = FALSE)  
+  
+}
 
 #' transform the range slot and construct axis label and pos for the plotting
 #' @param gh \code{GatingHierarchy}
@@ -976,57 +980,65 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'
 #' @return
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
-.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL){
+.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL){
 #  browser()
 
      trans<-.getTransformations(G@pointer, sampleName)
      comp<-.Call("R_getCompensation",G@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
-#	frmEnv<-dataenv$data$ncfs@frames
-	rawRange<-range(get(sampleName,frmEnv))
+
+	rawRange <- range(get(sampleName,frmEnv))
+    oldnames <- names(rawRange)
+    
+    if(wsType == "vX"&&!is.null(slash_loc)){
+      names(rawRange) <- .fix_channel_slash(oldnames, slash_loc)
+      
+    }
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
     trans_names <-trimWhiteSpace(names(trans))
-	datarange<-sapply(1:dim(rawRange)[2],function(i){
-
+    
+	datarange <- sapply(1:dim(rawRange)[2],function(i){
+               thisRange <- rawRange[i]
+               this_chnl <- names(thisRange)
 				#added gsub
               if(wsType == "vX"){
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
-                j <- match(names(rawRange)[i],trans_names)
+                j <- match(this_chnl, trans_names)
                 isMatched <- !is.na(j)
               }else{
-                j<-grep(gsub(suffix,"",gsub(prefix,"",names(rawRange)))[i],trans_names);
+                j<-grep(gsub(suffix,"",gsub(prefix,"",this_chnl)),trans_names);
                 isMatched <- length(j)!=0
               }
-
-              this_chnl <- names(rawRange)[i]
-              prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")
+              
+              
 				if(isMatched){
-									
-					rw <- rawRange[,i];
-                    typeAttr <- attr(trans[[j]],"type")
+                    prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")					
+					rw <- thisRange[,1]
+                    thisTrans <- trans[[j]]
+                    typeAttr <- attr(thisTrans, "type")
 					if(is.null(typeAttr)||typeAttr!="gateOnly"){
-						r<-trans[[j]](c(rw))
+						r <- thisTrans(rw)
 					}else{
-						r<-rw
+						r <- rw
 					}
 					###An unfortunate hack. If we use the log transformation, then negative values are undefined, so
 					##We'll test the transformed range for NaN and convert to zero.
-					r[is.nan(r)]<-0;
+					r[is.nan(r)] <- 0
 
 					###Is this transformed?
 					if(!all(rw==r)){
 
-#						browser()
+
 						######################################
-						#equal interal at raw scale
+						#pretty ticks by equal interval at raw scale
 						######################################
-						base10raw<-unlist(lapply(2:6,function(e)10^e))
-						base10raw<-c(0,base10raw)
-						raw<-base10raw[base10raw>min(rw)&base10raw<max(rw)]
-						pos<-signif(trans[[j]](raw))
+						base10raw <- unlist(lapply(2:6,function(e)10^e))
+						base10raw <- c(0,base10raw)
+						raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
+						pos <- signif(thisTrans(raw))
 
 
 						assign("prefixedChnl",prefixedChnl,tempenv)
@@ -1043,16 +1055,16 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                     timeRange
 #                    range(exprs(dataenv$data$ncfs[[sampleName]])[,this_chnl])
                   }else{
-                    rawRange[,i]
+                    thisRange[,1]
                   }
 
 				}
 			})
 
-#	browser()
-	datarange<-t(rbind(datarange[2,]-datarange[1,],datarange))
-	datapar<-parameters(get(sampleName,frmEnv))
-	pData(datapar)[,c("range","minRange","maxRange")]<-datarange
+	
+	datarange <- t(rbind(datarange[2,]-datarange[1,],datarange))
+	datapar <- parameters(get(sampleName,frmEnv))
+	pData(datapar)[,c("range","minRange","maxRange")] <- datarange
 
 	eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
 
@@ -1441,7 +1453,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                       , fitGate = flowWorkspace.par.get("plotGate")[["fitGate"]]
                       , overlay = NULL
                       , overlay.symbol = NULL
-                      , key = NULL
+                      , key = "auto"
                       , stack = FALSE
                       , xbin = 32
                       , stats , default.y = flowWorkspace.par.get("plotGate")[["default.y"]], scales
@@ -1611,7 +1623,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
             overlay.symbol <- sapply(overlay.fill, function(col)list(fill = col), simplify = FALSE)
           }
           #set legend automatically if it is not given
-          if(is.null(key)){
+          if(isTRUE(key == "auto")){
             
              key = list(text = list(names(overlay.symbol), cex = 0.6)
                                 , points = list(col = sapply(overlay.symbol, "[[", "fill") 
@@ -1646,13 +1658,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                             ,list(smooth = smooth
                                   ,overlay = overlay
                                   ,overlay.symbol = overlay.symbol
-                                  , key = key
                                   , defaultCond = defaultCond
                                   , xbin = xbin
                                   )
                             )
                           )
         thisCall[[1]]<-quote(xyplot)
+        if(is.list(key))
+          thisCall[["key"]] <- key
 
 	}else if(type == "densityplot")
 	{
