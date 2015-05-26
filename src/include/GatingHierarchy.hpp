@@ -136,7 +136,7 @@ private:
 					typedef boost::graph_traits<populationTreeOld>::edge_iterator myEdgeIt;
 					myEdgeIt first, last;
 
-					for (tie(first, last) = edges(treeOld);first != last; ++first)
+					for (boost::tie(first, last) = edges(treeOld);first != last; ++first)
 					{
 						EdgeID e = *first;
 						VertexID s=source(e,treeOld);
@@ -148,7 +148,7 @@ private:
 					//copy properties manually
 					boost::graph_traits<populationTree>::vertex_iterator v_start, v_end;
 
-					for (tie(v_start, v_end) = vertices(treeOld);
+					for (boost::tie(v_start, v_end) = vertices(treeOld);
 							v_start != v_end; ++v_start)
 					{
 						VertexID thisV = *v_start;
