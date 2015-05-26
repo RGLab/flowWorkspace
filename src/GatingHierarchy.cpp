@@ -796,7 +796,7 @@ VertexID_vec GatingHierarchy::getVertices(unsigned short order){
 		case REGULAR:
 		{
 			VertexIt it_begin,it_end;
-			tie(it_begin,it_end)=boost::vertices(tree);
+			boost::tie(it_begin,it_end)=boost::vertices(tree);
 			for(VertexIt it=it_begin;it!=it_end;it++)
 				res.push_back((unsigned long)*it);
 		}
@@ -1259,7 +1259,7 @@ EdgeID GatingHierarchy::getInEdges(VertexID target){
 
 		boost::graph_traits<populationTree>::in_edge_iterator in_i, in_end;
 
-		for (tie(in_i, in_end) = in_edges(target,tree);
+		for (boost::tie(in_i, in_end) = in_edges(target,tree);
 			         in_i != in_end; ++in_i)
 		{
 			EdgeID e = *in_i;
@@ -1295,7 +1295,7 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 		EdgeID e;
 		boost::graph_traits<populationTree>::out_edge_iterator out_i, out_end;
 
-		for (tie(out_i, out_end) = out_edges(source,tree);
+		for (boost::tie(out_i, out_end) = out_edges(source,tree);
 				 out_i != out_end; ++out_i)
 			{
 			  e = *out_i;
