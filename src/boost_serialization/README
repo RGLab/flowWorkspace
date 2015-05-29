@@ -1,3 +1,3 @@
-source files are copied from boost_1_55
+source files are copied from boost_1_58 (excluding the staled source 'shared_ptr_helper.cpp' that prevents bs from compiling)
 compiles with the headers from BH package
 3 boost searialization header copies are kept since they are  missing from BH
