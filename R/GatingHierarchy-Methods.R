@@ -1729,6 +1729,6 @@ setMethod("sampleNames","GatingHierarchy",function(object){
 #' @export
 #' @rdname pData-methods
 setMethod("pData","GatingHierarchy",function(object){
-      pData(flowData(object))[sampleNames(object),]
+      pData(flowData(object))[sampleNames(object), , drop = FALSE]
     })
 
