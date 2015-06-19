@@ -18,6 +18,20 @@ test_that("Can parse workspace",{
     dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE))))
 	expect_that(gs, is_a("GatingSet"));
     
+    #parse pData from xml
+    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "XML", additional.keys = "$TOT", execute = F)))
+    pd1 <- pData(gs1)
+    expect_equal(nrow(pd1), 4)
+    
+    #parse pData from FCS
+    dd <- capture.output(suppressWarnings(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "FCS", additional.keys = "$TOT"))))
+    pd2 <- pData(gs2)
+    expect_equal(nrow(pd2), 2)
+        
+    expect_equivalent(pd1[1:2, ], pd2)
+    
+    #subset by sampleNames
+#    parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")
     expect_warning(expect_error(suppressMessages(parseWorkspace(ws
                                                                 , path = file.path(dataDir, "gs_manual")
                                                                 , name = 4

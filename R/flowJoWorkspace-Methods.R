@@ -120,7 +120,9 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'          \item leaf.bool a \code{logical} whether to compute the leaf boolean gates. Default is TRUE. It helps to speed up parsing by turning it off when the statistics of these leaf boolean gates are not important for analysis. (e.g. COMPASS package will calculate them by itself.)
 #'                                           If needed, they can be calculated by calling \code{recompute} method at later stage.
 #'          \item additional.keys \code{character} vector:  By default, FCS filename is used to uniquely identify samples. When filename is not sufficient to serve as guid, parser can optionally combine it with other keywords (parsed from FCS header) to make guid (concatenated with "_").    
-#'          \item searchByKeyword \code{logical}: whether look up samples by their FCS keyword '$FIL' when the parser could not find them by FCS file name. (Sometime FCS file names could be altered but keyword preserves the original name). Default is TRUE.  
+#'          \item searchByKeyword \code{logical}: whether look up samples by their FCS keyword '$FIL' when the parser could not find them by FCS file name. (Sometime FCS file names could be altered but keyword preserves the original name). Default is TRUE.
+#'          \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
+#'          \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"    
 #'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 #'      	}
 #' @details
@@ -132,11 +134,23 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #' @examples
 #' \dontrun{
 #' 	 #f is a xml file name of a flowJo workspace
-#' 	ws<-openWorkspace(f)
-#' 	G<-parseWorkspace(ws,execute=TRUE,isNcdf=FALSE,path="."); #assume that the fcs files are below the current directory.
-#' 	#G is a GatingSet.
-#' 	G1<-parseWorkspace(ws)
-#' 	#G1 is a GatingSet.
+#' 	ws <- openWorkspace(f)
+#'  #parse the second group
+#' 	gs <- parseWorkspace(ws, name = 2); #assume that the fcs files are under the same folder as workspace
+#' 
+#'  
+#'  gs <- parseWorkspace(ws, name = 4
+#'                         , path = dataDir     #specify the FCS path 
+#'                         , subset = "CytoTrol_CytoTrol_1.fcs"     #subset the parsing by FCS filename
+#'                         , isNcdf = FALSE)#turn off cdf storage mode (normally you don't want to do this for parsing large dataset)
+#' 
+#'  
+#' 
+#'  gs <- parseWorkspace(ws, path = dataDir, name = 4
+#'                          , keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME") #tell the parser to extract keywords as pData
+#'                          , keywords.source = "XML" # keywords are extracted from xml workspace (alternatively can be set to "FCS")
+#'                          , additional.keys = "$TOT" #combine additional keywords with FCS filename as guid 
+#'                          , execute = F) # parse workspace without the actual gating (can save time if just want to get the info from xml)
 #' }
 #'
 #' @aliases parseWorkspace
@@ -226,6 +240,10 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     if(any(isDup))
       stop("Duplicated sample names detected within group: ", paste(sg[["guid"]][isDup], collapse = " "), "\n Please check if the appropriate group is selected.")
 
+    isDup <- duplicated(sg[["sampleID"]])
+    if(any(isDup))
+      stop("duplicated samples ID within group: ", paste(sg[["sampleID"]][isDup], collapse = " "))
+    
 	message("Parsing ", nSample," samples");
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
                     , samples = sg[,c("name", "sampleID", "guid")]

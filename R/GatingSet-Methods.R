@@ -398,9 +398,11 @@ unarchive<-function(file,path=tempdir()){
 }
 
 
+#' @importFrom dplyr group_by do %>%
+.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path = ws@path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, additional.keys, searchByKeyword =  TRUE, keywords = NULL, keywords.source = "XML", ...){
 
-.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path = ws@path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, additional.keys, searchByKeyword =  TRUE, ...){
-      
+    keywords.source <- match.arg(keywords.source, c("XML", "FCS"))
+    
 	message("calling c++ parser...")
 
 	time1<-Sys.time()
@@ -437,7 +439,7 @@ unarchive<-function(file,path=tempdir()){
           
         }else{
           
-          #search file system
+          #search file system to resolve the file path
           key.env <- new.env(parent = emptyenv())
       	  samples.matched <- ldply(1:nSamples, function(i, key.env){
                                                 row <- samples[i,]
@@ -514,12 +516,40 @@ unarchive<-function(file,path=tempdir()){
         
 	}else
       samples.matched  <- samples
+#     browser() 
+    #parse keywords into pData
+    if(!is.null(keywords)){
       
-      
+      pd <- samples.matched %>% 
+              group_by(guid) %>% 
+              do({
+                    if(keywords.source == "XML")
+                    {  #parse pData from workspace
+                      kws <- getKeywords(ws, .[["sampleID"]])
+                      kw <- kws[keywords]
+                    }else{
+                      #parse pData by reading the fcs headers
+                      kw <- read.FCSheader(.[["file"]] , keyword = keywords)[[1]]
+                      kw <- trimws(kw)
+                    }
+                  data.frame(c(.["name"], unlist(kw)), check.names = F, stringsAsFactors = F)
+                })
+        
+      #somehow dplyr doesn't like rownames so we have to manually add it
+      rownames(pd) <- pd[["guid"]] 
+      #also dplyr::select won't drop the first column(which might be on purpose since it could be used as index internally)
+      #so unfortunately we need to remove it in traditional way
+      pd[["guid"]] <- NULL
+      class(pd) <- "data.frame"
+    }  
     
 	G <- .addGatingHierarchies(G,samples.matched,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ws = ws, ...)
 
-
+    #attach pData
+    if(!is.null(keywords)){
+      pData(G) <- pd
+    }
+    
 	message("done!")
 
     
