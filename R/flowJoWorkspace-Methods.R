@@ -104,7 +104,9 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'      	\item name \code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.
 #'      	\item execute \code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default. 
 #'      	\item isNcdf \code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.
-#'      	\item subset \code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.
+#'      	\item subset \code{numeric} vector specifying the subset of samples in a group to import.
+#'                        Or a \code{character} specifying the FCS filenames to be imported.
+#'                        Or an \code{expression} to be passed to 'subset' function to filter samples by 'pData' (Note that the columns referred by the expression must also be explicitly specified in 'keywords' argument)  
 #'      	\item requiregates \code{logical} Should samples that have no gates be included?
 #'      	\item includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
 #'      	\item path either a \code{character} scalar or \code{data.frame}. When \code{character}, it is a path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. 
@@ -151,6 +153,11 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'                          , keywords.source = "XML" # keywords are extracted from xml workspace (alternatively can be set to "FCS")
 #'                          , additional.keys = "$TOT" #combine additional keywords with FCS filename as guid 
 #'                          , execute = F) # parse workspace without the actual gating (can save time if just want to get the info from xml)
+#' 
+#' #subset by pData (extracted from keywords)
+#' gs <- parseWorkspace(ws, path = dataDir, name = 4
+#'                          , subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2")
+#'                          , keywords = "TUBE NAME)
 #' }
 #'
 #' @aliases parseWorkspace
@@ -160,19 +167,23 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
       .preprocessor(obj, ...)
     })
-
+#' @importFrom dplyr group_by do %>%
 .preprocessor <- function(obj, name = NULL
                               , subset = NULL
                               , requiregates = TRUE
                               , sampNloc = "keyword"
                               , additional.keys = NULL
+                              , keywords = NULL, keywords.source = "XML"
+                              , execute = TRUE
+                              , path = obj@path
+                              , searchByKeyword =  TRUE
                               , ...)
 {	
     sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))	
 	
-	x<-obj@doc;
-	
-	wsversion <- obj@version
+  	x<-obj@doc;
+  	
+  	wsversion <- obj@version
     
     wsType <- .getWorkspaceType(wsversion)
     wsNodePath <- flowWorkspace.par.get("nodePath")[[wsType]]
@@ -182,78 +193,319 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     # group Info
     g <- .getSampleGroups(x, wsType)
     # merge two
-	sg <- merge(allSamples, g, by="sampleID");
-	
-    #requiregates - exclude samples where there are no gates? if(requiregates==TRUE)
-	if(requiregates){
-		sg <- sg[sg$pop.counts>0,]
-	}
-	
+  	sg <- merge(allSamples, g, by="sampleID");
+  	
+      #requiregates - exclude samples where there are no gates? if(requiregates==TRUE)
+  	if(requiregates){
+  		sg <- sg[sg$pop.counts>0,]
+  	}
+  	
     # filter by group name
-	sg$groupName<-factor(sg$groupName)
-	groups<-levels(sg$groupName)
-    
-	if(is.null(name)){
-	message("Choose which group of samples to import:\n");
-    groupInd <- menu(groups,graphics=FALSE);
-	}else if(is.numeric(name)){
-		if(length(groups)<name)
-			stop("Invalid sample group index.")
-		groupInd <- name
-	}else if(is.character(name)){
-		if(is.na(match(name,groups)))
-			stop("Invalid sample group name.")
-          groupInd <- match(name,groups)
-	}
+  	sg$groupName<-factor(sg$groupName)
+  	groups<-levels(sg$groupName)
+      
+  	if(is.null(name)){
+  	message("Choose which group of samples to import:\n");
+      groupInd <- menu(groups,graphics=FALSE);
+  	}else if(is.numeric(name)){
+  		if(length(groups)<name)
+  			stop("Invalid sample group index.")
+  		groupInd <- name
+  	}else if(is.character(name)){
+  		if(is.na(match(name,groups)))
+  			stop("Invalid sample group name.")
+            groupInd <- match(name,groups)
+  	}
     group.name <- groups[groupInd]
+    
+    subset <- substitute(subset)
     sg <- subset(sg, groupName == group.name)
-#    browser()    
-    #filter by subset (sample name or numeric index)
-	if(is.factor(subset)){
-		subset<-as.character(subset)
-	}
-	if(is.character(subset)){
-          sg <- subset(sg, name %in% subset)
-	}else if(is.numeric(subset))
-      sg <- sg[subset, ] 
-
-    #check if there are samples to parse
     
-    nSample <- nrow(sg)
-    if(nSample == 0)
-      stop("No samples in this workspace to parse!")
+  
+    #handle the non-expression 'subset' (e.g. character, numerical or logical index)
+	  subset_evaluated <- try(eval(subset,  parent.frame()), silent = TRUE) #eval it outside of pd first
+	  if(class(subset_evaluated) != "try-error" && !is.null(subset_evaluated)){
+      # when factor convert it to character
+      if(is.factor(subset_evaluated)){
+        subset_evaluated <- as.character(subset_evaluated)
+      }
+      # when character, evaluate it as sample names
+      # and convert it to logical vector
+      if(is.character(subset_evaluated)){
+        subset_evaluated <- eval(substitute(name %in% s, list(s = subset_evaluated)), sg)
+      }
+      #do the filtering
+      if(is.numeric(subset_evaluated)||is.logical(subset_evaluated))
+        sg <- sg[subset_evaluated, ,drop = FALSE]
+	    else
+	      stop("Unsupported 'subset' type!")
+      
+      #set it to NULL to avoid repeatedly evaluating later
+      subset_evaluated <- NULL
+	  }
     
-    #use other keywords in addition to name to uniquely identify samples 
-    if(!is.null(additional.keys)){
-      sg[["guid"]] <- as.vector(apply(sg, 1, function(row){
-                  sampleID <- as.numeric(row[["sampleID"]])
-                  sn <- row[["name"]]
-                  kw <- unlist(getKeywords(obj, sampleID)[additional.keys])
-                  paste(c(sn,kw), collapse = "_")
-                }))  
-    }else
-      sg[["guid"]] <- sg[["name"]] 
-    
-    
+  	nSample <- nrow(sg)
+  	if(nSample == 0)
+  	  stop("No samples in this workspace to parse!")  
+  
     #check duplicated sample keys
     isDup <- duplicated(sg[["guid"]])
     if(any(isDup))
       stop("Duplicated sample names detected within group: ", paste(sg[["guid"]][isDup], collapse = " "), "\n Please check if the appropriate group is selected.")
-
+    
     isDup <- duplicated(sg[["sampleID"]])
     if(any(isDup))
       stop("duplicated samples ID within group: ", paste(sg[["sampleID"]][isDup], collapse = " "))
     
+    
+    #use other keywords in addition to name to uniquely identify samples 
+    if(!is.null(additional.keys)){
+      sg[["guid"]] <- as.vector(apply(sg, 1, function(row){
+                sampleID <- as.numeric(row[["sampleID"]])
+                sn <- row[["name"]]
+                kw <- unlist(getKeywords(obj, sampleID)[additional.keys])
+                paste(c(sn,kw), collapse = "_")
+              }))  
+    }else
+      sg[["guid"]] <- sg[["name"]] 
+          
+    samples <- sg[,c("name", "sampleID", "guid")]
+    #parse the pData and apply the filter (subset)
+    keywords.source <- match.arg(keywords.source, c("XML", "FCS"))
+    
+    #matching FCS files to the samples of xml
+    if(execute)
+    {
+      
+      
+      if(is.data.frame(path)){
+        #use the file path provided by mapping
+        
+        #validity check for path
+        mapCols <- c("sampleID", "file")
+        if(!setequal(colnames(path), c("sampleID", "file")))
+          stop("When 'path' is a data.frame, it must contain columns: ", paste(dQuote(mapCols), collapse = ","))
+        if(class(path[["sampleID"]])!="numeric")
+          stop("'sampleID' column in 'path' argument must be numeric!")
+        
+        path[["file"]] <- as.character(path[["file"]])
+        
+        samples <- merge(samples, path, by = "sampleID")
+        if(nrow(samples) > 0)
+          samples[["nFound"]] <- 1
+        else
+          stop("No samples in this workspace to parse!")
+        
+      }else{
+        
+        #search file system to resolve the file path
+        key.env <- new.env(parent = emptyenv())
+        samples <- samples %>%
+                              group_by(guid) %>%
+                              do({
+                                  
+                                  filename <- .[["name"]]
+                                  guid <- .[["guid"]]
+                                  sampleID <- .[["sampleID"]]
+                                  
+                                  #########################################################
+                                  #get full path for each fcs
+                                  #########################################################
+#                                  browser()
+                                  ##escape "special" characters
+                                  charToEsc <- c("?","]","-","+",")","(") %>% 
+                                                  paste0("\\", .) %>%  #prepend \\
+                                                  paste(collapse = "|") %>%# concatenate them
+                                                  paste0("(", . , ")") #construct pattern 
+                                                                                       
+                                  
+                                  
+                                  
+                                  filename <- gsub(charToEsc, "\\\\\\1", filename)
+                                  absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
+                                  nFound <- length(absPath)
+                                  
+                                  #searching file by keyword $FIL when it is enabled
+                                  if(nFound == 0 && searchByKeyword){
+                                    
+                                    #read FCS headers if key.fils  has not been filled yet
+                                    if(is.null(key.env[["key.fils"]])){
+                                      all.files <- list.files(pattern= ".fcs",path=path,recursive=TRUE,full.names=TRUE)  
+                                      if(length(all.files) > 0)
+                                        key.env[["key.fils"]] <- read.FCSheader(all.files, keyword = "$FIL")
+                                    }
+                                    key.fils <- key.env[["key.fils"]]
+                                    #$FIL is optional keyword according to FCS3.1 standard
+                                    #so some FCS may not have this thus need to remove NA entries
+                                    key.fils <- key.fils[!is.na(key.fils)] 
+#                                    message(filename," not found in directory: ",path,". Try the FCS keyword '$FIL' ...")  
+                                    absPath <- names(key.fils[key.fils == filename])
+                                    nFound <- length(absPath)
+                                    
+                                  }
+                                  
+                                  if(nFound > 1){
+                                    #try to use additional keywords to help find the correct file
+                                    if(!is.null(additional.keys))
+                                    {
+                                      guids.fcs <-  sapply(absPath, function(thisPath){
+                                            # get keyword from FCS header
+                                            kw <- as.list(read.FCSheader(thisPath)[[1]])
+                                            kw <- trimWhiteSpace(unlist(kw[additional.keys]))
+                                            # construct guids
+                                            thisFile <- basename(thisPath)
+                                            paste(c(thisFile, as.vector(kw)), collapse = "_")
+                                          }, USE.NAMES = F)  
+                                      matchInd <- grep(guid, guids.fcs)
+                                      nFound <- length(matchInd)
+                                      if(nFound == 1)
+                                        absPath <- absPath[matchInd]
+                                    }
+                                  }
+                                  
+                                  if(nFound != 1)
+                                    absPath <- ""
+
+                                  cbind(., data.frame(file = absPath, nFound = nFound, stringsAsFactors = FALSE))
+                                })
+      }
+      
+    }else{
+      samples[["file"]] <- ""
+      samples[["nFound"]] <- 1
+    }
+      
+    
+
+    #parse  pData
+    if(!is.null(keywords)){
+      #somehow dplyr doesn't like rownames and dplyr::select won't drop the first column(which might be on purpose since it could be used as index internally)
+      #and these should be fine since we need to preserve guid column and convert it to rownames later on anyway (deu to the legacy code) 
+      pd <- samples %>% 
+          group_by(guid) %>% 
+          do({
+                if(keywords.source == "XML")
+                {  #parse pData from workspace
+                  kws <- getKeywords(obj, .[["sampleID"]])
+                  
+                  kw <- kws[keywords]
+                }else{
+                  if(execute){
+   
+                    #skip those non-unique matched samples
+                    if(.[["nFound"]] == 1){
+                      #parse pData by reading the fcs headers
+                      kw <- read.FCSheader(.[["file"]] , keyword = keywords)[[1]]
+                      kw <- trimws(kw)  
+                    }else
+                      kw <- NULL
+                      
+                  }else
+                    stop("Please set 'execute' to TRUE in order to parse pData from FCS file!")
+                  }
+                if(is.null(kw))
+                  data.frame()
+                else
+                  cbind(., data.frame(as.list(kw), check.names = F, stringsAsFactors = F))
+                  
+              })
+      
+    }else{
+      pd <- samples
+    }
+        
+   
+    #handle 'subset' as an expression
+    if(!is.null(subset_evaluated)){ #check if it is already evaluated
+      if(class(subset_evaluated) == "try-error"){#if fails, then try it as an expression to be evaluated within pData
+        message("filter samples by pData...")
+        subset_evaluated <- eval(subset,  pd)  
+        pd <- pd[subset_evaluated, ]
+      }  
+    }
+
+    
+    #check if there are samples to parse
+    missingInd <- pd[["nFound"]] == 0
+    nMissing <- sum(missingInd)
+    if(nMissing > 0){
+      warning("Can't find the FCS files for the following samples:\n", pd[missingInd, ][["guid"]] %>% paste(collapse = "\n"))
+    }
+    
+    dupInd <- pd[["nFound"]] > 1
+    nDup <- sum(dupInd)
+    if(nDup > 0){
+      warning("Multiple FCS files are matched to these samples:\n", pd[nDup, ][["guid"]] %>% paste(collapse = "\n"))
+    }
+    
+    pd <- pd[!(missingInd|dupInd),]
+   
+    
+    pd <- droplevels(pd)
+    nSample <- nrow(pd)        
 	message("Parsing ", nSample," samples");
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
-                    , samples = sg[,c("name", "sampleID", "guid")]
+                    , pd = pd 
                     ,xmlParserOption = obj@options
                     ,wsType=wsType
                     ,ws = obj
                     , sampNloc = sampNloc
                     , additional.keys = additional.keys
+                    , execute = execute
                     ,...)
 		
+}
+
+.parseWorkspace <- function(xmlFileName, execute, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, pd, ...){
+  
+  
+#	message("calling c++ parser...")
+  
+  
+  G <- GatingSet(x = xmlFileName
+      , y = as.character(pd[["sampleID"]])
+      , guids = pd[["guid"]]
+      , includeGates = includeGates
+      , sampNloc = sampNloc
+      , xmlParserOption = xmlParserOption
+      , wsType = wsType
+  )
+  
+#	message("c++ parsing done!")
+  
+  #gating
+  G <- .addGatingHierarchies(G,pd,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ws = ws, ...)
+  
+  
+  #attach pData
+  rownames(pd) <- pd[["guid"]] 
+  pd[["guid"]] <- NULL
+  #remove temporary columns
+  pd[["sampleID"]] <- NULL
+  pd[["nFound"]] <- NULL
+  pd[["file"]] <- NULL
+  class(pd) <- "data.frame"
+  pData(G) <- pd
+    
+  message("done!")
+  
+  
+  
+  #we don't want to return the splitted gs since they share the same cdf and externalptr
+  #thus should be handled differently(more efficiently) from the regular gslist
+  
+#    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
+  gslist <- suppressMessages(.groupByTree(G))
+  if(length(gslist) > 1)
+    warning("GatingSet contains different gating tree structures and must be cleaned before using it! ")
+#    if(length(gslist) == 1){
+#      return (gslist[[1]])      
+#    }else
+  {
+#      warning("Due to the different gating tree structures, a list of GatingSets is returned instead!")
+#      return (gslist)
+  }
+  G
 }
 
 

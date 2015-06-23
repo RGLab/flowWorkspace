@@ -15,23 +15,9 @@ source("flowJoWorkspace-testSuite.R", local = TRUE)
 gs <- NULL
 
 test_that("Can parse workspace",{
-    dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", isNcdf = TRUE))))
+    dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs"))))
 	expect_that(gs, is_a("GatingSet"));
-    
-    #parse pData from xml
-    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "XML", additional.keys = "$TOT", execute = F)))
-    pd1 <- pData(gs1)
-    expect_equal(nrow(pd1), 4)
-    
-    #parse pData from FCS
-    dd <- capture.output(suppressWarnings(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "FCS", additional.keys = "$TOT"))))
-    pd2 <- pData(gs2)
-    expect_equal(nrow(pd2), 2)
         
-    expect_equivalent(pd1[1:2, ], pd2)
-    
-    #subset by sampleNames
-#    parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")
     expect_warning(expect_error(suppressMessages(parseWorkspace(ws
                                                                 , path = file.path(dataDir, "gs_manual")
                                                                 , name = 4
@@ -101,7 +87,7 @@ test_that("supply sampleID--file mapping through 'path'",{
           , "must be numeric")
       mapping[["sampleID"]] <- 1
       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
-          , "no sample")
+          , "No sample")
       mapping[["sampleID"]] <- 19
       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
           , "not a valid file")
@@ -111,6 +97,39 @@ test_that("supply sampleID--file mapping through 'path'",{
       
     })
 
+test_that("parse pData from keyword", {
+      #parse pData from xml
+    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "XML", additional.keys = "$TOT", execute = F)))
+    pd1 <- pData(gs1)
+    expect_equal(nrow(pd1), 4)
+    
+    #parse pData from FCS
+    dd <- capture.output(suppressWarnings(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "FCS", additional.keys = "$TOT"))))
+    pd2 <- pData(gs2)
+    expect_equal(nrow(pd2), 2)
+        
+    expect_equivalent(pd1[1:2, ], pd2)
+    
+    })
+
+
+test_that("subset", {
+
+    #subset by keyword  
+    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2"), keywords = "TUBE NAME", execute = F)))
+    #subset by sample names
+    dd <- capture.output(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4, subset = c("CytoTrol_CytoTrol_1.fcs", "CytoTrol_CytoTrol_2.fcs"), keywords = "TUBE NAME", execute = F)))
+    expect_equivalent(pData(gs1), pData(gs2))
+    
+    #subset by numeric index
+    dd <- capture.output(suppressMessages((gs3 <- parseWorkspace(ws, path = dataDir, name = 4, subset = 1:2, keywords = "TUBE NAME", execute = F))))
+    expect_equivalent(pData(gs1), pData(gs3))
+    
+    expect_error(gs4 <- parseWorkspace(ws, path = dataDir, name = 4, subset = 1:2, keywords = "TUBE NAME", execute = F, keywords.source = "FCS")
+                , "Please set 'execute' to TRUE")
+    
+            
+    })
 test_that("closeWorkspace",
     {
       closeWorkspace(ws)

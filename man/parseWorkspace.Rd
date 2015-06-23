@@ -15,7 +15,9 @@
 \item name \code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.
 \item execute \code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default.
 \item isNcdf \code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.
-\item subset \code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.
+\item subset \code{numeric} vector specifying the subset of samples in a group to import.
+              Or a \code{character} specifying the FCS filenames to be imported.
+              Or an \code{expression} to be passed to 'subset' function to filter samples by 'pData' (Note that the columns referred by the expression must also be explicitly specified in 'keywords' argument)
 \item requiregates \code{logical} Should samples that have no gates be included?
 \item includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
 \item path either a \code{character} scalar or \code{data.frame}. When \code{character}, it is a path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files.
@@ -66,6 +68,11 @@ The \code{subset} argument allows one to select a set of files from the chosen s
                          , keywords.source = "XML" # keywords are extracted from xml workspace (alternatively can be set to "FCS")
                          , additional.keys = "$TOT" #combine additional keywords with FCS filename as guid
                          , execute = F) # parse workspace without the actual gating (can save time if just want to get the info from xml)
+
+#subset by pData (extracted from keywords)
+gs <- parseWorkspace(ws, path = dataDir, name = 4
+                         , subset = `TUBE NAME` \%in\% c("CytoTrol_1", "CytoTrol_2")
+                         , keywords = "TUBE NAME)
 }
 }
 \seealso{
