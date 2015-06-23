@@ -93,8 +93,12 @@ test_that("v 10.0.7 - vX 20.0 (PROVIDE/CyTOF) ellipseidGate (fasinh)",{
       gs <- parseWorkspace(ws, name = 1, subset = 3, execute = FALSE, sampNloc = "sampleNode")
       expect_is(gs, "GatingSet")
       
+      #won't find the file if $TOT is taken into account(most likely the data provided was wrong)
+      expect_error(gs <- parseWorkspace(ws, name = 1, subset = 3, sampNloc = "sampleNode")
+                   , " no sample")
       
-      gs <- parseWorkspace(ws, name = 1, subset = 3, sampNloc = "sampleNode")
+      #relax the rules (shouldn't be doing this, just for the sake of testing)
+      gs <- parseWorkspace(ws, name = 1, subset = 3, sampNloc = "sampleNode", additional.keys = NULL)
       
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
@@ -177,12 +181,13 @@ test_that("v 7.6.5 - win 1.61 (PBMC)",{
       ws <- openWorkspace(wsFile)
       gs <- parseWorkspace(ws, name = 1, subset = 1, sampNloc = "sampleNode", execute = FALSE)
       expect_is(gs, "GatingSet")
-      gs <- parseWorkspace(ws, name = 1, subset = 1, sampNloc = "sampleNode", isNcdf = TRUE)
+      gs <- parseWorkspace(ws, name = 1, subset = 1, sampNloc = "sampleNode")
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
       expect_equal(thisCounts, expectCounts)
       
+            
     })
 
 test_that("v 7.6.5 - win 1.61 (sampNloc = 'sampleNode')",{
@@ -210,6 +215,8 @@ test_that("v 9.0.1 - mac 2.0 (HVTN RV144 -- options = 1)",{
       wsFile <- file.path(thisPath, "Batch 1264 RV144.xml")
 
       ws <- openWorkspace(wsFile, options = 1)
+      
+      #not sure how to suppress the long stacks of C messages (XML package)
       gs <- parseWorkspace(ws, name = 4, subset = 1, execute = FALSE)
       expect_is(gs, "GatingSet")
       
@@ -316,7 +323,7 @@ test_that("v 9.5.2 - mac 2.0",{
       newFCS <- file.path(tmp, "test.fcs")
       file.symlink(fcs, newFCS)
       expect_warning(suppressMessages(expect_error(gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp, searchByKeyword = FALSE), "no sample")), "Can't find")
-      expect_message(gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp), "Try the FCS keyword")
+      gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp)
       gh <- gs[[1]]
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
       expect_equal(thisCounts, expectCounts, tol = 11e-3)

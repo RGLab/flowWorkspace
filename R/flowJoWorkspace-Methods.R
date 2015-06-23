@@ -121,7 +121,8 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 #'          \item leaf.bool a \code{logical} whether to compute the leaf boolean gates. Default is TRUE. It helps to speed up parsing by turning it off when the statistics of these leaf boolean gates are not important for analysis. (e.g. COMPASS package will calculate them by itself.)
 #'                                           If needed, they can be calculated by calling \code{recompute} method at later stage.
-#'          \item additional.keys \code{character} vector:  By default, FCS filename is used to uniquely identify samples. When filename is not sufficient to serve as guid, parser can optionally combine it with other keywords (parsed from FCS header) to make guid (concatenated with "_").    
+#'          \item additional.keys \code{character} vector:  The keywords (parsed from FCS header) to be combined(concatenated with "_") with FCS filename
+#'                                                          to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
 #'          \item searchByKeyword \code{logical}: whether look up samples by their FCS keyword '$FIL' when the parser could not find them by FCS file name. (Sometime FCS file names could be altered but keyword preserves the original name). Default is TRUE.
 #'          \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 #'          \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"    
@@ -151,13 +152,13 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'  gs <- parseWorkspace(ws, path = dataDir, name = 4
 #'                          , keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME") #tell the parser to extract keywords as pData
 #'                          , keywords.source = "XML" # keywords are extracted from xml workspace (alternatively can be set to "FCS")
-#'                          , additional.keys = "$TOT" #combine additional keywords with FCS filename as guid 
+#'                          , additional.keys = c("PATIENT ID") #use additional keywords together with FCS filename to uniquely identify samples
 #'                          , execute = F) # parse workspace without the actual gating (can save time if just want to get the info from xml)
 #' 
 #' #subset by pData (extracted from keywords)
 #' gs <- parseWorkspace(ws, path = dataDir, name = 4
 #'                          , subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2")
-#'                          , keywords = "TUBE NAME)
+#'                          , keywords = "TUBE NAME")
 #' }
 #'
 #' @aliases parseWorkspace
@@ -172,7 +173,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                               , subset = NULL
                               , requiregates = TRUE
                               , sampNloc = "keyword"
-                              , additional.keys = NULL
+                              , additional.keys = "$TOT"
                               , keywords = NULL, keywords.source = "XML"
                               , execute = TRUE
                               , path = obj@path
@@ -320,13 +321,13 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                                                                                        
                                   
                                   
-                                  
+                                  #try to search by file name first
                                   filename <- gsub(charToEsc, "\\\\\\1", filename)
                                   absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
                                   nFound <- length(absPath)
-                                  
+                                  isFileNameSearchFailed <- nFound == 0
                                   #searching file by keyword $FIL when it is enabled
-                                  if(nFound == 0 && searchByKeyword){
+                                  if(isFileNameSearchFailed && searchByKeyword){
                                     
                                     #read FCS headers if key.fils  has not been filled yet
                                     if(is.null(key.env[["key.fils"]])){
@@ -344,16 +345,16 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                                     
                                   }
                                   
-                                  if(nFound > 1){
-                                    #try to use additional keywords to help find the correct file
+                                  if(nFound >= 1){
+                                    #try to use additional keywords to further prune the matching results
                                     if(!is.null(additional.keys))
                                     {
                                       guids.fcs <-  sapply(absPath, function(thisPath){
                                             # get keyword from FCS header
-                                            kw <- as.list(read.FCSheader(thisPath)[[1]])
-                                            kw <- trimWhiteSpace(unlist(kw[additional.keys]))
+                                            kws <- as.list(read.FCSheader(thisPath)[[1]])
+                                            kw <- trimws(unlist(kws[additional.keys]))
                                             # construct guids
-                                            thisFile <- basename(thisPath)
+                                            thisFile <- ifelse(isFileNameSearchFailed, kws["$FIL"], basename(thisPath))
                                             paste(c(thisFile, as.vector(kw)), collapse = "_")
                                           }, USE.NAMES = F)  
                                       matchInd <- grep(guid, guids.fcs)
@@ -439,7 +440,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     }
     
     pd <- pd[!(missingInd|dupInd),]
-   
+  
     
     pd <- droplevels(pd)
     nSample <- nrow(pd)        
@@ -462,7 +463,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
 #	message("calling c++ parser...")
   
   
-  G <- GatingSet(x = xmlFileName
+  gs <- GatingSet(x = xmlFileName
       , y = as.character(pd[["sampleID"]])
       , guids = pd[["guid"]]
       , includeGates = includeGates
@@ -474,9 +475,9 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
 #	message("c++ parsing done!")
   
   #gating
-  G <- .addGatingHierarchies(G,pd,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ws = ws, ...)
+  gs <- .addGatingHierarchies(gs,pd,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ws = ws, ...)
   
-  
+
   #attach pData
   rownames(pd) <- pd[["guid"]] 
   pd[["guid"]] <- NULL
@@ -485,17 +486,38 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
   pd[["nFound"]] <- NULL
   pd[["file"]] <- NULL
   class(pd) <- "data.frame"
-  pData(G) <- pd
+  pData(gs) <- pd
     
   message("done!")
-  
+
+  # It is probably unnecessary since the previous check on
+  # the $TOT keywords (through default 'keywords' argument) should be sufficient
+
+  #compare the root counts between fc and fj                  
+  #double check if the correct raw file is used 
+#   if(execute){
+#     invisible(lapply(gs, function(gh){
+#       
+#       sn <- sampleNames(gh)
+#       fj.count <- as.integer(getTotal(gh, "root", flowJo = T))
+#       fc.count <- as.integer(getTotal(gh, "root", flowJo = F))
+#       
+#       if(fj.count == -1){
+#         warning("root count for flowJo is not available: ", sn)
+#       }else{
+#         if(fj.count != fc.count)
+#           stop("Total event counts mismatched between flowJo and flowCore!", sn)  
+#       }        
+#       
+#     }))  
+#   }
   
   
   #we don't want to return the splitted gs since they share the same cdf and externalptr
   #thus should be handled differently(more efficiently) from the regular gslist
   
 #    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
-  gslist <- suppressMessages(.groupByTree(G))
+  gslist <- suppressMessages(.groupByTree(gs))
   if(length(gslist) > 1)
     warning("GatingSet contains different gating tree structures and must be cleaned before using it! ")
 #    if(length(gslist) == 1){
@@ -505,7 +527,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
 #      warning("Due to the different gating tree structures, a list of GatingSets is returned instead!")
 #      return (gslist)
   }
-  G
+  gs
 }
 
 

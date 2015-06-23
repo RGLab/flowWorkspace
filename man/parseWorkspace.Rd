@@ -31,7 +31,8 @@
                         But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 \item leaf.bool a \code{logical} whether to compute the leaf boolean gates. Default is TRUE. It helps to speed up parsing by turning it off when the statistics of these leaf boolean gates are not important for analysis. (e.g. COMPASS package will calculate them by itself.)
                                  If needed, they can be calculated by calling \code{recompute} method at later stage.
-\item additional.keys \code{character} vector:  By default, FCS filename is used to uniquely identify samples. When filename is not sufficient to serve as guid, parser can optionally combine it with other keywords (parsed from FCS header) to make guid (concatenated with "_").
+\item additional.keys \code{character} vector:  The keywords (parsed from FCS header) to be combined(concatenated with "_") with FCS filename
+                                                to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
 \item searchByKeyword \code{logical}: whether look up samples by their FCS keyword '$FIL' when the parser could not find them by FCS file name. (Sometime FCS file names could be altered but keyword preserves the original name). Default is TRUE.
 \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
@@ -66,13 +67,13 @@ The \code{subset} argument allows one to select a set of files from the chosen s
  gs <- parseWorkspace(ws, path = dataDir, name = 4
                          , keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME") #tell the parser to extract keywords as pData
                          , keywords.source = "XML" # keywords are extracted from xml workspace (alternatively can be set to "FCS")
-                         , additional.keys = "$TOT" #combine additional keywords with FCS filename as guid
+                         , additional.keys = c("PATIENT ID") #use additional keywords together with FCS filename to uniquely identify samples
                          , execute = F) # parse workspace without the actual gating (can save time if just want to get the info from xml)
 
 #subset by pData (extracted from keywords)
 gs <- parseWorkspace(ws, path = dataDir, name = 4
                          , subset = `TUBE NAME` \%in\% c("CytoTrol_1", "CytoTrol_2")
-                         , keywords = "TUBE NAME)
+                         , keywords = "TUBE NAME")
 }
 }
 \seealso{
