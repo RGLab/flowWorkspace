@@ -420,7 +420,7 @@ test_that("getPopChnlMapping",{
       
       fr <- getData(gh, use.exprs = FALSE) 
       this_pd <- pData(parameters(fr))
-      this_pd
+      
       #'make up ICS markers
       this_pd[8:12, "desc"] <- c("IL2", "IL4", "IL22", "TNFa", "CD154")
       
@@ -432,10 +432,10 @@ test_that("getPopChnlMapping",{
       
       #remove + from pop names
       nodes <- c("CD4/IL2","CD4/IL22")
-      expectRes <- data.frame(pop = nodes
-          , name = c("<V450-A>", "<G560-A>")
+      expectRes <- data.frame(name = c("<V450-A>", "<G560-A>")
           , desc = c("IL2", "IL22")
           , stringsAsFactors = F
+          , pop = nodes
       )
       expect_equivalent(.getPopChnlMapping(this_pd, nodes), expectRes)
       

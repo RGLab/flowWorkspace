@@ -786,7 +786,6 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @rdname getNodes
 #' @export 
 #' @importFrom BiocGenerics duplicated
-#' @importFrom plyr ddply . ldply
 setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
 
             order <- match.arg(order,c("regular","tsort","bfs"))
@@ -938,22 +937,20 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 
 
         nodePath <- getNodes(x, path = path, ...)
-        
-        stats <- ldply(nodePath, function(thisPath){
-    					curStats <- .getPopStat(x,thisPath)
-                        data.frame(flowCore.freq = curStats$flowCore["proportion"]
-                                    ,flowJo.freq = curStats$flowJo["proportion"]
-            						,flowJo.count = curStats$flowJo["count"]
-            						,flowCore.count = curStats$flowCore["count"]
-                                    , node = thisPath
-                                    , stringsAsFactors = FALSE
-            						)
-            		
-                      })
-
-      stats <- data.table(stats)
-      rownames(stats) <- stats[, node]
-      stats
+        stats <- rbindlist(lapply(nodePath, function(thisPath){
+              		          			curStats <- .getPopStat(x,thisPath)
+                                  data.table(flowCore.freq = curStats$flowCore["proportion"]
+                                              ,flowJo.freq = curStats$flowJo["proportion"]
+                                  						,flowJo.count = curStats$flowJo["count"]
+                                  						,flowCore.count = curStats$flowCore["count"]
+                                              , node = thisPath
+                                            
+                                  						)
+                                  })
+                            )
+      
+        rownames(stats) <- stats[, node]
+        stats
 		})
 
 .computeCV_gh <- function(gh, ...){
