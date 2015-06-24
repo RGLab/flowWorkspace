@@ -92,7 +92,21 @@ test_that("getSingleCellExpression for COMPASS",{
       thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
       expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
       expect_equivalent(thisRes,expectRes)
+
+      #perserve the intensity that belows the gate threhold
+      thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE"), threshold = F) 
       
+      #return more markers
+      thisRes1 <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+')
+                                         , map = list("CD8/38- DR+" = "CD38 APC"
+                                                      , "CD8/CCR7- 45RA+" = "CCR7 PE")
+                                         , threshold = F
+                                         , other.markers = c("CD4", "CD8") 
+                                        )
+      #expect extra two columns
+      all.equal(colnames(thisRes1[[1]]), c(colnames(expectRes[[1]]), "CD4 PcpCy55", "CD8 APCH7"))
+      thisRes1 <- lapply(thisRes1, function(mat)mat[, 1:2])
+      expect_equivalent(thisRes,thisRes1)
     })
 
 #TODO:write test cases for save_gslist /load_gslist 

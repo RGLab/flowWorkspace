@@ -2300,6 +2300,7 @@ getIndiceMat <- function(gh,y){
 #' @param popNames \code{character} node names in gating tree
 #' @param map \code{list} contains the node-to-marker mapping explicitly specified user 
 #' 
+#' @importFrom dplyr mutate
 .getPopChnlMapping <- function(this_pd, popNames, map =  NULL, swap = FALSE, ignore.case = FALSE){
     
   datSrc <- ifelse(swap, "name", "desc")
@@ -2308,50 +2309,52 @@ getIndiceMat <- function(gh,y){
   #match to the pdata of flow frame
   all_markers <- this_pd[,datSrc]
   all_markers[is.na(all_markers)] <- "NA"
-#  browser()
-  res <- ldply(popNames, function(popName){
-                
-                #fetch the marker from map first
-                toMatch <- map[[popName]]
-                #if not supplied, parse it from popName
-                if(is.null(toMatch)){
-                  this_pops <- strsplit(split="/", popName, fixed=TRUE)[[1]]
-                  #get the terminal node
-                  toMatch <- this_pops[length(this_pops)]
-                }
-                
-                
-                #partial match first
-                if(ignore.case)
-                  matchedInd <- grep(tolower(toMatch), tolower(all_markers), fixed = TRUE)
-                else
-                  matchedInd <- grep(toMatch, all_markers, fixed = TRUE)
-                if(length(matchedInd) > 1)
-                {
-                  #Switch to exact match because multiple markers matched
-                  if(ignore.case)
-                    matchedInd <- match(tolower(toMatch), tolower(all_markers))
-                  else
-                    matchedInd <- match(toMatch, all_markers)
-                  matchedInd <- matchedInd[!is.na(matchedInd)]
-                  
-                  if(length(matchedInd) == 0){ 
-                    #no exact match
-                    stop(toMatch, "  paritally matched to multiple markers but failed to exactly matched to any of them. ")
-                  }else if(length(matchedInd) > 1){
-                    #multiple exact matches
-                    stop(toMatch, "exactly matches to multiple markers!")
-                  }
-                }else if(length(matchedInd) == 0){
-                  #no partial match
-                  stop("Marker not found: ", toMatch)
-                }
-                
-                this_pd[matchedInd,c("name", "desc")]
-                  
-              })
-  cbind(pop = popNames, res, stringsAsFactors = F)          
  
+  
+  lapply(popNames, function(popName){
+      
+      
+      #fetch the marker from map first
+      toMatch <- map[[popName]]
+      #if not supplied, parse it from popName
+      if(is.null(toMatch)){
+        this_pops <- strsplit(split="/", popName, fixed=TRUE)[[1]]
+        #get the terminal node
+        toMatch <- this_pops[length(this_pops)]
+      }
+      
+      
+      #partial match first
+      if(ignore.case)
+        matchedInd <- grep(tolower(toMatch), tolower(all_markers), fixed = TRUE)
+      else
+        matchedInd <- grep(toMatch, all_markers, fixed = TRUE)
+      if(length(matchedInd) > 1)
+      {
+        #Switch to exact match because multiple markers matched
+        if(ignore.case)
+          matchedInd <- match(tolower(toMatch), tolower(all_markers))
+        else
+          matchedInd <- match(toMatch, all_markers)
+        matchedInd <- matchedInd[!is.na(matchedInd)]
+        
+        if(length(matchedInd) == 0){ 
+          #no exact match
+          stop(toMatch, "  paritally matched to multiple markers but failed to exactly matched to any of them. ")
+        }else if(length(matchedInd) > 1){
+          #multiple exact matches
+          stop(toMatch, "exactly matches to multiple markers!")
+        }
+      }else if(length(matchedInd) == 0){
+        #no partial match
+        stop("Marker not found: ", toMatch)
+      }
+      
+      this_pd[matchedInd,c("name", "desc")]
+      
+  })%>% bind_rows %>% mutate(pop = popNames)
+
+
 }
 
 #' Return the cell events data that express in any of the single populations defined in \code{y}
@@ -2384,6 +2387,7 @@ getIndiceMat <- function(gh,y){
 #' 	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+") , list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
 #' }
 #' @rdname getSingleCellExpression
+#' @importFrom dplyr bind_rows
 #' @export
 setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, other.markers = NULL, swap = FALSE, threshold = TRUE, ...){
   datSrc <- ifelse(swap, "name", "desc")
@@ -2395,13 +2399,14 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       this_pd <- pData(parameters(fr))
       #get pop vs channel mapping
       pop_chnl <- .getPopChnlMapping(this_pd, nodes, swap = swap, ...)
-      chnls <- as.character(pop_chnl[,"name"])
-      pops <-  as.character(pop_chnl[,"pop"])
-      markers <- as.character(pop_chnl[, datSrc])  
+      chnls <- as.character(pop_chnl[["name"]])
+      pops <-  as.character(pop_chnl[["pop"]])
+      markers <- as.character(pop_chnl[[datSrc]])  
       
       #append the extra markers
       if(!is.null(other.markers)){
-        other_marker_chnl <- ldply(other.markers, getChannelMarker, frm = fr)
+        
+        other_marker_chnl <- lapply(other.markers, getChannelMarker, frm = fr)%>% bind_rows
         other_chnls <- other_marker_chnl[["name"]]
         other_markers <- other_marker_chnl[["desc"]]
         
