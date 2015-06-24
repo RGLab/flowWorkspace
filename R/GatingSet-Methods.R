@@ -463,7 +463,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' 4. compute the stats (when execute == TRUE)
 #' 
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
-#' @param ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
+#' @param channel.ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 #' @param extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
 #' @param extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
@@ -472,7 +472,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
+.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, channel.ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
   if(nrow(samples)==0)
     stop("no sample to be added to GatingSet!")
@@ -571,7 +571,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 				if(is.null(compensation)){
                   ## try to match marker from comp with flow data in case flowJo is not consistent with data
-                  markerInd <- sapply(marker, function(thisMarker)grep(thisMarker, cnd, ignore.case = ignore.case))
+                  markerInd <- sapply(marker, function(thisMarker)grep(thisMarker, cnd, ignore.case = channel.ignore.case))
                   matchedMarker <- cnd[markerInd]
                   if(length(matchedMarker) != length(marker))
                     stop("channels mismatched between compensation and flow data!")
@@ -710,7 +710,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             recompute <- !transform #recompute flag controls whether gates and data need to be transformed
             nodeInd <- 0
             
-            .Call("R_gating",G@pointer, mat, guid, gains, nodeInd, recompute, extend_val, ignore.case, leaf.bool)
+            .Call("R_gating",G@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
             #since colnames(fs) is not udpated yet.
