@@ -123,7 +123,6 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'                                           If needed, they can be calculated by calling \code{recompute} method at later stage.
 #'          \item additional.keys \code{character} vector:  The keywords (parsed from FCS header) to be combined(concatenated with "_") with FCS filename
 #'                                                          to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
-#'          \item searchByKeyword \code{logical}: whether look up samples by their FCS keyword '$FIL' when the parser could not find them by FCS file name. (Sometime FCS file names could be altered but keyword preserves the original name). Default is TRUE.
 #'          \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 #'          \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"    
 #'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
@@ -177,9 +176,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                               , keywords = NULL, keywords.source = "XML"
                               , execute = TRUE
                               , path = obj@path
-                              , searchByKeyword =  TRUE
                               , ...)
 {	
+    
+    searchByKeyword <- TRUE #a deprecated argument
+    
     sampNloc <- match.arg(sampNloc, c("keyword", "sampleNode"))	
 	
   	x<-obj@doc;

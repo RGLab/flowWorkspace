@@ -322,7 +322,7 @@ test_that("v 9.5.2 - mac 2.0",{
       dir.create(tmp)
       newFCS <- file.path(tmp, "test.fcs")
       file.symlink(fcs, newFCS)
-      expect_warning(suppressMessages(expect_error(gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp, searchByKeyword = FALSE), "no sample")), "Can't find")
+      
       gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp)
       gh <- gs[[1]]
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
