@@ -399,148 +399,6 @@ unarchive<-function(file,path=tempdir()){
 
 
 
-.parseWorkspace <- function(xmlFileName,samples, execute = TRUE, path = ws@path, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, additional.keys, searchByKeyword =  TRUE, ...){
-      
-	message("calling c++ parser...")
-
-	time1<-Sys.time()
-	G <- GatingSet(x = xmlFileName
-                  , y = as.character(samples[["sampleID"]])
-                  , guids = samples[["guid"]]
-                  , includeGates = includeGates
-                  , sampNloc = sampNloc
-                  , xmlParserOption = xmlParserOption
-                  , wsType = wsType
-                  )
-
-	message("c++ parsing done!")
-
-	
-	#loading and filtering data
-	if(execute)
-	{
-        nSamples <- nrow(samples)
-        
-        if(is.data.frame(path)){
-          #use the file path provided by mapping
-        
-        #validity check for path
-        mapCols <- c("sampleID", "file")
-        if(!setequal(colnames(path), c("sampleID", "file")))
-          stop("When 'path' is a data.frame, it must contain columns: ", paste(dQuote(mapCols), collapse = ","))
-        if(class(path[["sampleID"]])!="numeric")
-          stop("'sampleID' column in 'path' argument must be numeric!")
-        
-        path[["file"]] <- as.character(path[["file"]])
-        
-        samples.matched <- merge(samples, path, by = "sampleID")
-          
-        }else{
-          
-          #search file system
-          key.env <- new.env(parent = emptyenv())
-      	  samples.matched <- ldply(1:nSamples, function(i, key.env){
-                                                row <- samples[i,]
-                                                filename <- row[["name"]]
-                                                guid <- row[["guid"]]
-                                                sampleID <- row[["sampleID"]]
-                                                #########################################################
-                                                #get full path for each fcs
-                                                #########################################################
-                                                ##escape "illegal" characters
-                                                filename <- gsub("\\?","\\\\?",gsub("\\]","\\\\]",gsub("\\[","\\\\[",gsub("\\-","\\\\-",gsub("\\+","\\\\+",gsub("\\)","\\\\)",gsub("\\(","\\\\(",filename)))))))
-                                                absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
-                                                nFound <- length(absPath)
-                                                
-                                                #searching file by keyword $FIL when it is enabled
-                                                if(nFound == 0 && searchByKeyword){
-                                                    #read FCS headers if key.fils  has not been filled yet
-                                                    if(is.null(key.env[["key.fils"]])){
-                                                      all.files <- list.files(pattern= ".fcs",path=path,recursive=TRUE,full.names=TRUE)  
-                                                      if(length(all.files) > 0)
-                                                        key.env[["key.fils"]] <- read.FCSheader(all.files, keyword = "$FIL")
-                                                      }
-                                                      key.fils <- key.env[["key.fils"]]
-                                                      #$FIL is optional keyword according to FCS3.1 standard
-                                                      #so some FCS may not have this thus need to remove NA entries
-                                                      key.fils <- key.fils[!is.na(key.fils)] 
-                                                      message(filename," not found in directory: ",path,". Try the FCS keyword '$FIL' ...")  
-                                                      absPath <- names(key.fils[key.fils == filename])
-                                                      nFound <- length(absPath)
-                                                     
-                                                }
-                                                  
-                                                if(nFound == 0){
-                                                	warning("Can't find ",filename," in directory: ",path,"\n");
-                                                  row <- NULL              
-                                                }else if(nFound > 1){
-                                                    #try to use additional keywords to help find the correct file
-                                                    if(is.null(additional.keys))
-                                                      stop('Multiple files matched for:', filename)
-                                                    else
-                                                    {
-                                                       guids.fcs <-  sapply(absPath, function(thisPath){
-                                                                         # get keyword from FCS header
-                                                                        kw <- as.list(read.FCSheader(thisPath)[[1]])
-                                                                        kw <- trimWhiteSpace(unlist(kw[additional.keys]))
-                                                                        # construct guids
-                                                                        thisFile <- basename(thisPath)
-                                                                        paste(c(thisFile, as.vector(kw)), collapse = "_")
-                                                                      }, USE.NAMES = F)  
-                                                      matchInd <- grep(guid, guids.fcs)                                
-                                                      if(length(matchInd)==0){
-                                                        warning("Can't find ",guid," in directory: ",path,"\n");
-                                                        row <- NULL
-                                                      }else if(length(matchInd) > 1){
-                                                        stop('Multiple files matched for:', guid)
-                                                      }else
-                                                        absPath <- absPath[matchInd]
-                                                    }
-                                                }
-                                                
-                                                if(!is.null(row))
-                                                  row[["file"]] <- absPath
-                                                
-                                                row
-                                      	}, key.env)
-        }
-    	#Remove samples where files don't exist.
-        nMatched <- nrow(samples.matched)
-    	if(nMatched < nSamples){
-    		message("Removing ", nSamples -  nMatched," samples from the analysis since we can't find their FCS files.");
-    		
-              
-    	}
-        
-	}else
-      samples.matched  <- samples
-      
-      
-    
-	G <- .addGatingHierarchies(G,samples.matched,execute,isNcdf, wsType = wsType, sampNloc = sampNloc, ws = ws, ...)
-
-
-	message("done!")
-
-    
-     
-    #we don't want to return the splitted gs since they share the same cdf and externalptr
-    #thus should be handled differently(more efficiently) from the regular gslist
-
-#    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
-    gslist <- suppressMessages(.groupByTree(G))
-    if(length(gslist) > 1)
-      warning("GatingSet contains different gating tree structures and must be cleaned before using it! ")
-#    if(length(gslist) == 1){
-#      return (gslist[[1]])      
-#    }else
-    {
-#      warning("Due to the different gating tree structures, a list of GatingSets is returned instead!")
-#      return (gslist)
-    }
-    G
-}
-
 #' constructors for GatingSet
 #'
 #' construct object from existing gating hierarchy(gating template) and flow data
@@ -598,7 +456,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		})
 
 
-#' constructing gating set
+ 
+#' 1. loads the raw data (when execute == TRUE)
+#' 2. compensate and transform the data (when execute == TRUE) 
+#' 3. transform gates(extend and apply gains when applicable)
+#' 4. compute the stats (when execute == TRUE)
+#' 
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
 #' @param ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 #' @param extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
@@ -611,29 +474,34 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importClassesFrom flowCore flowFrame flowSet
 .addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
-    if(nrow(samples)==0)
-      stop("no sample to be added to GatingSet!")
+  if(nrow(samples)==0)
+    stop("no sample to be added to GatingSet!")
+
+  guids <- samples[["guid"]]
   
-    guids <- samples[["guid"]]
-    #load the raw data from FCS
+  #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
+  pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
+                                             ,row.names = guids
+                                             ,stringsAsFactors=FALSE
+                                            )
+                          ,varMetadata = data.frame(labelDescription="Name",row.names="name")
+                          )
+    
+  #load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
-            #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
-            pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
-                                                        ,row.names = guids
-                                                        ,stringsAsFactors=FALSE
-                                                       )
-                                        ,varMetadata = data.frame(labelDescription="Name"
-                                            ,row.names="name")
-                                    )
                                     
 			fs <- read.ncdfFlowSet(samples[["file"]],isWriteSlice=FALSE, phenoData = pd, ...)
 		}else{
 			message("Creating flowSet...")
-			fs<-read.flowSet(samples[["file"]],...)
+      
+      #read.flowSet would ignore given file names and use sampleNames(pd) if phenoData is given
+      #so we have to modify pd afterwards
+			fs <- read.flowSet(samples[["file"]], ...)
+			sampleNames(fs) <- guids
 		}
 	}else{
       #create dummy flowSet
@@ -666,30 +534,30 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         
 
         ##################################
-        #Compensating the data
-        ##################################
-        if(execute)
+    #Compensating the data
+    ##################################
+    if(execute)
 		{
-            file <- row[["file"]]
-            cnd <- colnames(fs)
+      file <- row[["file"]]
+      cnd <- colnames(fs)
 			message("loading data: ",file);
 			if(isNcdf)
 				data <- read.FCS(file)[, cnd]
 			else
 				data <- fs[[guid]]
             
-            #alter colnames(replace "/" with "_") for flowJo X
-            #record the locations where '/' character is detected and will be used to restore it accurately
-            slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
-            if(wsType == "vX"){
-              new_cnd <- .fix_channel_slash(cnd, slash_loc)
-                if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
-                  cnd <- new_cnd
-                  colnames(data) <- cnd
-                  
-                }
-                   
-            }
+      #alter colnames(replace "/" with "_") for flowJo X
+      #record the locations where '/' character is detected and will be used to restore it accurately
+      slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
+      if(wsType == "vX"){
+        new_cnd <- .fix_channel_slash(cnd, slash_loc)
+          if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+            cnd <- new_cnd
+            colnames(data) <- cnd
+            
+          }
+             
+      }
 
 
 
@@ -717,7 +585,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
                 res <- try(compensate(data,compobj),silent=TRUE)
 				if(inherits(res,"try-error")){
-					message("Data is probably stored already compensated");
+					message("Data is probably already compensated");
 				}else{
 					data <- res
 					rm(res);
@@ -751,7 +619,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 					res <- try(compensate(data,compobj),silent=TRUE)
 
 					if(inherits(res,"try-error")){
-						message("Data is probably stored already compensated");
+						message("Data is probably already compensated");
 					}else{
 						data<-res
 						rm(res);
@@ -1902,6 +1770,7 @@ setMethod("sampleNames","GatingSet",function(object){
 #' sampleNames<-
 #' sampleNames<-,GatingSet-method
 #' sampleNames<-,GatingSet,ANY-method
+#' @importMethodsFrom Biobase sampleNames<-
 #' @rdname sampleNames
 #' @export
 setReplaceMethod("sampleNames",

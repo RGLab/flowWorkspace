@@ -15,7 +15,9 @@
 \item name \code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.
 \item execute \code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default.
 \item isNcdf \code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.
-\item subset \code{numeric} vector specifying the subset of samples in a group to import. Or a \code{character} specifying the FCS filenames to be imported.
+\item subset \code{numeric} vector specifying the subset of samples in a group to import.
+              Or a \code{character} specifying the FCS filenames to be imported.
+              Or an \code{expression} to be passed to 'subset' function to filter samples by 'pData' (Note that the columns referred by the expression must also be explicitly specified in 'keywords' argument)
 \item requiregates \code{logical} Should samples that have no gates be included?
 \item includeGates \code{logical} Should gates be imported, or just the data with compensation and transformation?
 \item path either a \code{character} scalar or \code{data.frame}. When \code{character}, it is a path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files.
@@ -29,8 +31,10 @@
                         But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 \item leaf.bool a \code{logical} whether to compute the leaf boolean gates. Default is TRUE. It helps to speed up parsing by turning it off when the statistics of these leaf boolean gates are not important for analysis. (e.g. COMPASS package will calculate them by itself.)
                                  If needed, they can be calculated by calling \code{recompute} method at later stage.
-\item additional.keys \code{character} vector:  By default, FCS filename is used to uniquely identify samples. When filename is not sufficient to serve as guid, parser can optionally combine it with other keywords (parsed from FCS header) to make guid (concatenated with "_").
-\item searchByKeyword \code{logical}: whether look up samples by their FCS keyword '$FIL' when the parser could not find them by FCS file name. (Sometime FCS file names could be altered but keyword preserves the original name). Default is TRUE.
+\item additional.keys \code{character} vector:  The keywords (parsed from FCS header) to be combined(concatenated with "_") with FCS filename
+                                                to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
+\item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
+\item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
 \item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 }}
 }
@@ -47,11 +51,28 @@ The \code{subset} argument allows one to select a set of files from the chosen s
 \examples{
 \dontrun{
 	 #f is a xml file name of a flowJo workspace
-	ws<-openWorkspace(f)
-	G<-parseWorkspace(ws,execute=TRUE,isNcdf=FALSE,path="."); #assume that the fcs files are below the current directory.
-	#G is a GatingSet.
-	G1<-parseWorkspace(ws)
-	#G1 is a GatingSet.
+	ws <- openWorkspace(f)
+ #parse the second group
+	gs <- parseWorkspace(ws, name = 2); #assume that the fcs files are under the same folder as workspace
+
+
+ gs <- parseWorkspace(ws, name = 4
+                        , path = dataDir     #specify the FCS path
+                        , subset = "CytoTrol_CytoTrol_1.fcs"     #subset the parsing by FCS filename
+                        , isNcdf = FALSE)#turn off cdf storage mode (normally you don't want to do this for parsing large dataset)
+
+
+
+ gs <- parseWorkspace(ws, path = dataDir, name = 4
+                         , keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME") #tell the parser to extract keywords as pData
+                         , keywords.source = "XML" # keywords are extracted from xml workspace (alternatively can be set to "FCS")
+                         , additional.keys = c("PATIENT ID") #use additional keywords together with FCS filename to uniquely identify samples
+                         , execute = F) # parse workspace without the actual gating (can save time if just want to get the info from xml)
+
+#subset by pData (extracted from keywords)
+gs <- parseWorkspace(ws, path = dataDir, name = 4
+                         , subset = `TUBE NAME` \%in\% c("CytoTrol_1", "CytoTrol_2")
+                         , keywords = "TUBE NAME")
 }
 }
 \seealso{
