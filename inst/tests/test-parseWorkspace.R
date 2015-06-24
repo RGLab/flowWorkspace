@@ -15,8 +15,11 @@ source("flowJoWorkspace-testSuite.R", local = TRUE)
 gs <- NULL
 
 test_that("Can parse workspace",{
+    #in-memory version
+    dd <- capture.output(suppressMessages(gs <- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL, isNcdf = FALSE))))
+    #hdf version
     dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))))
-	expect_that(gs, is_a("GatingSet"));
+	  expect_that(gs, is_a("GatingSet"));
         
     expect_warning(expect_error(suppressMessages(parseWorkspace(ws
                                                                 , path = file.path(dataDir, "gs_manual")

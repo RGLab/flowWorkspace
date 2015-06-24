@@ -474,29 +474,34 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importClassesFrom flowCore flowFrame flowSet
 .addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
-    if(nrow(samples)==0)
-      stop("no sample to be added to GatingSet!")
+  if(nrow(samples)==0)
+    stop("no sample to be added to GatingSet!")
+
+  guids <- samples[["guid"]]
   
-    guids <- samples[["guid"]]
-    #load the raw data from FCS
+  #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
+  pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
+                                             ,row.names = guids
+                                             ,stringsAsFactors=FALSE
+                                            )
+                          ,varMetadata = data.frame(labelDescription="Name",row.names="name")
+                          )
+    
+  #load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
-            #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
-            pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
-                                                        ,row.names = guids
-                                                        ,stringsAsFactors=FALSE
-                                                       )
-                                        ,varMetadata = data.frame(labelDescription="Name"
-                                            ,row.names="name")
-                                    )
                                     
 			fs <- read.ncdfFlowSet(samples[["file"]],isWriteSlice=FALSE, phenoData = pd, ...)
 		}else{
 			message("Creating flowSet...")
-			fs<-read.flowSet(samples[["file"]],...)
+      
+      #read.flowSet would ignore given file names and use sampleNames(pd) if phenoData is given
+      #so we have to modify pd afterwards
+			fs <- read.flowSet(samples[["file"]], ...)
+			sampleNames(fs) <- guids
 		}
 	}else{
       #create dummy flowSet
@@ -529,30 +534,30 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         
 
         ##################################
-        #Compensating the data
-        ##################################
-        if(execute)
+    #Compensating the data
+    ##################################
+    if(execute)
 		{
-            file <- row[["file"]]
-            cnd <- colnames(fs)
+      file <- row[["file"]]
+      cnd <- colnames(fs)
 			message("loading data: ",file);
 			if(isNcdf)
 				data <- read.FCS(file)[, cnd]
 			else
 				data <- fs[[guid]]
             
-            #alter colnames(replace "/" with "_") for flowJo X
-            #record the locations where '/' character is detected and will be used to restore it accurately
-            slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
-            if(wsType == "vX"){
-              new_cnd <- .fix_channel_slash(cnd, slash_loc)
-                if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
-                  cnd <- new_cnd
-                  colnames(data) <- cnd
-                  
-                }
-                   
-            }
+      #alter colnames(replace "/" with "_") for flowJo X
+      #record the locations where '/' character is detected and will be used to restore it accurately
+      slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
+      if(wsType == "vX"){
+        new_cnd <- .fix_channel_slash(cnd, slash_loc)
+          if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+            cnd <- new_cnd
+            colnames(data) <- cnd
+            
+          }
+             
+      }
 
 
 
@@ -580,7 +585,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
                 res <- try(compensate(data,compobj),silent=TRUE)
 				if(inherits(res,"try-error")){
-					message("Data is probably stored already compensated");
+					message("Data is probably already compensated");
 				}else{
 					data <- res
 					rm(res);
@@ -614,7 +619,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 					res <- try(compensate(data,compobj),silent=TRUE)
 
 					if(inherits(res,"try-error")){
-						message("Data is probably stored already compensated");
+						message("Data is probably already compensated");
 					}else{
 						data<-res
 						rm(res);
