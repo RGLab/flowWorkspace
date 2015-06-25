@@ -25,7 +25,7 @@
 \item sampNloc a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".
 \item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.
 \item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
-\item ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
+\item channel.ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 \item extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
 \item extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
                         But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
@@ -35,6 +35,7 @@
                                                 to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
 \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
+\item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.
 \item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 }}
 }
