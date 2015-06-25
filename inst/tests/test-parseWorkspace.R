@@ -102,17 +102,31 @@ test_that("supply sampleID--file mapping through 'path'",{
     })
 
 test_that("parse pData from keyword", {
-      #parse pData from xml
-    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "XML", additional.keys = "$TOT", execute = F)))
+    keys <- c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME")
+    #parse pData from xml
+    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, execute = F)))
     pd1 <- pData(gs1)
     expect_equal(nrow(pd1), 4)
     
     #parse pData from FCS
-    dd <- capture.output(suppressWarnings(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME"), keywords.source = "FCS", additional.keys = "$TOT"))))
+    dd <- capture.output(suppressWarnings(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, keywords.source = "FCS"))))
     pd2 <- pData(gs2)
     expect_equal(nrow(pd2), 2)
         
     expect_equivalent(pd1[1:2, ], pd2)
+    
+    #case insensitive
+    keys <- tolower(keys)
+    expect_warning(dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, execute = F)))
+                   , "keyword not found")
+    pd2 <- pData(gs1)
+    expect_true(all(is.na(pd2[[2]])))
+    
+    #ignore case for keyword
+    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, execute = F, keyword.ignore.case = T)))
+    pd2 <- pData(gs1)
+    colnames(pd1)[-1] <- keys
+    expect_equal(pd1, pd2)
     
     })
 
