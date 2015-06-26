@@ -34,6 +34,7 @@ void rangeGate::convertToPb(pb::gate & gate_pb){
 	pb::paramRange * pr_pb = g_pb->mutable_param();
 	param.convertToPb(*pr_pb);
 }
+
 polygonGate::polygonGate(const pb::gate & gate_pb):gate(gate_pb),param(paramPoly(gate_pb.pg().param())){}
 void polygonGate::convertToPb(pb::gate & gate_pb){
 	gate::convertToPb(gate_pb);

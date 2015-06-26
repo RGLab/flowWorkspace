@@ -358,6 +358,32 @@ GatingSet::~GatingSet()
 
 }
 
+/**
+ * update channel information stored in GatingSet
+ * @param chnl_map the mapping between the old and new channel names
+ */
+void GatingSet::updateChannels(const CHANNEL_MAP & chnl_map){
+	//update trans
+	for(trans_global_vec::iterator it=gTrans.begin();it!=gTrans.end();it++)
+	{
+
+		if(g_loglevel>=GATING_SET_LEVEL)
+			COUT<<endl<< "update channels for transformation group:"<<it->getGroupName()<<endl;
+		it->updateChannels(chnl_map);
+
+	}
+
+	//update gh
+	BOOST_FOREACH(gh_map::value_type & it,ghs){
+			GatingHierarchy * ghPtr=it.second;
+			string sampleName=it.first;
+			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+				COUT<<endl<<"update channels for GatingHierarchy:"<<sampleName<<endl;
+			ghPtr->updateChannels(chnl_map);
+			//comp
+		}
+}
+
 /*
  * up to caller to free the memory
  */

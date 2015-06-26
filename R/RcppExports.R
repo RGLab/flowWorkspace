@@ -34,3 +34,25 @@
     invisible(.Call('flowWorkspace_addTrans', PACKAGE = 'flowWorkspace', gsPtr, transformList))
 }
 
+#' Update the channel information of a GatingSet (c++ part)
+#' 
+#' It updates the channels stored in gates,compensations and transformations
+#' based on given mapping between the old and new channel names.
+#' 
+#' @param gs a GatingSet
+#' @param sampleNames the sample names specifies samples to be operated on
+#' @param map \code{data.frame} contains the mapping from old to new channel names
+#'                             Note: Make sure to remove the '<' or '>' characters from 'old` name because the API tries 
+#'                                   to only look at the raw channel name so that the gates with both prefixed and non-prefixed names could be updated. 
+#'                                   
+#' @examples 
+#' \dontrun{
+#'  updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A")  ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
+#'                                          , new = c("<QDot 655-A>")
+#'                                          )
+#'                        , nodes = "14-")  
+#'}
+.updateChannels <- function(gs, map) {
+    invisible(.Call('flowWorkspace_updateChannels', PACKAGE = 'flowWorkspace', gs, map))
+}
+
