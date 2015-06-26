@@ -10,50 +10,51 @@ using namespace Rcpp;
 Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, StringVec subpopulation, bool flowJo, bool isFullPath);
 RcppExport SEXP flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP sampleNamesSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP );
-        Rcpp::traits::input_parameter< StringVec >::type sampleNames(sampleNamesSEXP );
-        Rcpp::traits::input_parameter< StringVec >::type subpopulation(subpopulationSEXP );
-        Rcpp::traits::input_parameter< bool >::type flowJo(flowJoSEXP );
-        Rcpp::traits::input_parameter< bool >::type isFullPath(isFullPathSEXP );
-        Rcpp::List __result = getPopCounts(gsPtr, sampleNames, subpopulation, flowJo, isFullPath);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< StringVec >::type sampleNames(sampleNamesSEXP);
+    Rcpp::traits::input_parameter< StringVec >::type subpopulation(subpopulationSEXP);
+    Rcpp::traits::input_parameter< bool >::type flowJo(flowJoSEXP);
+    Rcpp::traits::input_parameter< bool >::type isFullPath(isFullPathSEXP);
+    __result = Rcpp::wrap(getPopCounts(gsPtr, sampleNames, subpopulation, flowJo, isFullPath));
+    return __result;
 END_RCPP
 }
 // getSplineCoefs
-Rcpp::List getSplineCoefs(int channelRange = 4096, double maxValue = 262144, double pos = 4.5, double neg = 0, double widthBasis = -10);
+Rcpp::List getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis);
 RcppExport SEXP flowWorkspace_getSplineCoefs(SEXP channelRangeSEXP, SEXP maxValueSEXP, SEXP posSEXP, SEXP negSEXP, SEXP widthBasisSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< int >::type channelRange(channelRangeSEXP );
-        Rcpp::traits::input_parameter< double >::type maxValue(maxValueSEXP );
-        Rcpp::traits::input_parameter< double >::type pos(posSEXP );
-        Rcpp::traits::input_parameter< double >::type neg(negSEXP );
-        Rcpp::traits::input_parameter< double >::type widthBasis(widthBasisSEXP );
-        Rcpp::List __result = getSplineCoefs(channelRange, maxValue, pos, neg, widthBasis);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type channelRange(channelRangeSEXP);
+    Rcpp::traits::input_parameter< double >::type maxValue(maxValueSEXP);
+    Rcpp::traits::input_parameter< double >::type pos(posSEXP);
+    Rcpp::traits::input_parameter< double >::type neg(negSEXP);
+    Rcpp::traits::input_parameter< double >::type widthBasis(widthBasisSEXP);
+    __result = Rcpp::wrap(getSplineCoefs(channelRange, maxValue, pos, neg, widthBasis));
+    return __result;
 END_RCPP
 }
 // addTrans
 void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList);
 RcppExport SEXP flowWorkspace_addTrans(SEXP gsPtrSEXP, SEXP transformListSEXP) {
 BEGIN_RCPP
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP );
-        Rcpp::traits::input_parameter< Rcpp::S4 >::type transformList(transformListSEXP );
-        addTrans(gsPtr, transformList);
-    }
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< Rcpp::S4 >::type transformList(transformListSEXP);
+    addTrans(gsPtr, transformList);
+    return R_NilValue;
+END_RCPP
+}
+// updateChannels
+void updateChannels(Rcpp::S4 gs, Rcpp::DataFrame map);
+RcppExport SEXP flowWorkspace_updateChannels(SEXP gsSEXP, SEXP mapSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::S4 >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type map(mapSEXP);
+    updateChannels(gs, map);
     return R_NilValue;
 END_RCPP
 }

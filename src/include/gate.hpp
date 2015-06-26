@@ -134,6 +134,12 @@ public:
 	paramRange(){};
 	vertices_valarray toValarray();
 	void setName(string _n){name=_n;};
+	void updateChannels(const CHANNEL_MAP & chnl_map){
+
+			CHANNEL_MAP::const_iterator itChnl = chnl_map.find(name);
+			if(itChnl!=chnl_map.end())
+				name = itChnl->second;
+	};
 	string getName(){return name;}
 	vector<string> getNameArray(){
 			vector<string> res;
@@ -169,6 +175,17 @@ public:
 	void setVertices(vector<coordinate> _v){vertices=_v;};
 	vector<string>  getNameArray(){return params;};
 	void setName(vector<string> _params){params=_params;};
+	void updateChannels(const CHANNEL_MAP & chnl_map){
+
+			for(vector<string>::iterator it = params.begin(); it != params.end(); it++)
+			{
+				string curName = *it;
+
+				CHANNEL_MAP::const_iterator itChnl = chnl_map.find(curName);
+				if(itChnl!=chnl_map.end())
+					*it = itChnl->second;
+			}
+		};
 	vertices_valarray toValarray();
 	string xName(){return params.at(0);};
 	string yName(){return params.at(1);};
@@ -257,7 +274,7 @@ public:
 	virtual vector<string> getParamNames(){throw(domain_error("undefined getParam function!"));};
 	virtual vertices_valarray getVertices(){throw(domain_error("undefined getVertices function!"));};
 	virtual void transforming(trans_local &){throw(domain_error("undefined transforming function!"));};
-
+	virtual void updateChannels(const CHANNEL_MAP & chnl_map){throw(domain_error("undefined updateChannels function!"));};
 	virtual gate * clone()=0;
 	virtual bool isNegate(){return neg;};
 	virtual bool gained(){return isGained;};
@@ -290,6 +307,7 @@ public:
 	paramRange getParam(){return param;};
 	vector<string> getParamNames(){return param.getNameArray();};
 	void setParam(paramRange _param){param=_param;};
+	void updateChannels(const CHANNEL_MAP & chnl_map){param.updateChannels(chnl_map);};
 	vertices_valarray getVertices(){return param.toValarray();};
 	rangeGate * clone(){return new rangeGate(*this);};
 	void convertToPb(pb::gate & gate_pb);
@@ -323,6 +341,7 @@ public:
 	virtual void transforming(transformation * trans_x, transformation * trans_y);
 	virtual vertices_valarray getVertices(){return param.toValarray();};
 	void setParam(paramPoly _param){param=_param;};
+	void updateChannels(const CHANNEL_MAP & chnl_map){param.updateChannels(chnl_map);};
 	virtual paramPoly getParam(){return param;};
 	virtual vector<string> getParamNames(){return param.getNameArray();};
 	virtual polygonGate * clone(){return new polygonGate(*this);};

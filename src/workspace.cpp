@@ -49,6 +49,17 @@ valarray<double> workspace::toArray(string sCalTable){
 	return res;
 }
 
+void compensation::updateChannels(const CHANNEL_MAP & chnl_map){
+
+	for(vector<string>::iterator it = marker.begin(); it != marker.end(); it++)
+	{
+		string curName = *it;
+
+		CHANNEL_MAP::const_iterator itChnl = chnl_map.find(curName);
+		if(itChnl!=chnl_map.end())
+			*it = itChnl->second;
+	}
+}
 void compensation::convertToPb(pb::COMP & comp_pb){
 	comp_pb.set_cid(cid);
 	comp_pb.set_name(name);

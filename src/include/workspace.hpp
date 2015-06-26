@@ -53,6 +53,7 @@ public:
 	vector<double> spillOver;
 	void convertToPb(pb::COMP & comp_pb);
 	compensation(){};
+	void updateChannels(const CHANNEL_MAP & chnl_map);
 	compensation(const pb::COMP & comp_pb);
 private:
 template<class Archive>

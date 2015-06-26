@@ -114,6 +114,7 @@ public:
 	void add(GatingSet & gs,vector<string> sampleNames);
 	void addTransMap(string gName,trans_map tm);
 	void convertToPb(pb::GatingSet & gs_pb,string path);
+	void updateChannels(const CHANNEL_MAP & chnl_map);
 
 };
 
