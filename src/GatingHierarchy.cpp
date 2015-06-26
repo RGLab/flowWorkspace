@@ -225,7 +225,39 @@ void GatingHierarchy::removeNode(VertexID nodeID)
 compensation GatingHierarchy::getCompensation(){
 	return comp;
 }
+void GatingHierarchy::updateChannels(const CHANNEL_MAP & chnl_map){
+	//update comp
+	comp.updateChannels(chnl_map);
 
+	//update gates
+
+	VertexID_vec vertices=getVertices(0);
+
+	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
+	{
+		VertexID u=*it;
+		nodeProperties & node=getNodeProperty(u);
+		if(u!=0)
+		{
+			gate *g=node.getGate();
+			if(g==NULL)
+				throw(domain_error("no gate available for this node"));
+			if(g_loglevel>=POPULATION_LEVEL)
+				COUT << "update channels for " <<node.getName()<<endl;
+			if(g->getType()!=BOOLGATE&&g->getType()!=LOGICALGATE)
+				g->updateChannels(chnl_map);
+		}
+	}
+
+	//update local trans
+	trans.updateChannels(chnl_map);
+
+
+	//update flag
+	for(PARAM_VEC::iterator it = transFlag.begin(); it != transFlag.end(); it++)
+		it->updateChannels(chnl_map);
+
+}
 void GatingHierarchy::printLocalTrans(){
 	COUT<<endl<<"get trans from gating hierarchy"<<endl;
 	trans_map trans=this->trans.getTransMap();

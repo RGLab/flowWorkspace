@@ -214,6 +214,7 @@ public:
 
 
 	compensation getCompensation();
+	void updateChannels(const CHANNEL_MAP & chnl_map);
 	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
 	void transforming();

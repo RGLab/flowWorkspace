@@ -76,6 +76,37 @@ trans_local::trans_local(const pb::trans_local & lg_pb, map<intptr_t, transforma
 
 	}
 }
+
+void trans_local::updateChannels(const CHANNEL_MAP & chnl_map){
+
+
+	for(CHANNEL_MAP::const_iterator it = chnl_map.begin(); it != chnl_map.end(); it++)
+	{
+		string oldN = it->first;
+		string newN = it->second;
+		trans_map::iterator itTrans=tp.find(oldN);
+		if(itTrans!=tp.end())
+		{
+			if(g_loglevel>=GATING_SET_LEVEL)
+				COUT<<"update transformation: "<< oldN << "-->" << newN <<endl;
+
+			transformation * curTran = itTrans->second;
+			curTran->setChannel(newN);
+			/*
+			 *
+			 * have to delete the old one before adding newN
+			 * because tp[newN] could be just updating existing tp[oldN]
+			 * instead of inserting new entry due to the fact tp trans_map is set to case insensitive key searching
+			 * otherwise, tp.erase would lead to losing the entry when oldN and newN are equivalent
+			 */
+			tp.erase(itTrans);
+			tp[newN] = curTran; //add new entry
+
+		}
+
+	}
+}
+
 void trans_global::convertToPb(pb::trans_local & tg_pb, pb::GatingSet & gs_pb){
 		trans_local::convertToPb(tg_pb, gs_pb);//pass gs_pb on to the base method
 		tg_pb.set_groupname(groupName);

@@ -115,7 +115,7 @@ struct ciLessBoost : std::binary_function<std::string, std::string, bool>
 
 typedef map<string,transformation *, ciLessBoost> trans_map;/* we always do case-insensitive searching for transformation lookup
 due to some of channel name discrepancies occured in flowJo workspaces*/
-
+typedef std::map<std::string, std::string> CHANNEL_MAP;
 struct PARAM{
 		string param;
 		bool log;
@@ -123,6 +123,11 @@ struct PARAM{
 		unsigned highValue;
 		unsigned calibrationIndex;
 		PARAM(){};
+		void updateChannels(const CHANNEL_MAP & chnl_map){
+			CHANNEL_MAP::const_iterator itChnl = chnl_map.find(param);
+			if(itChnl!=chnl_map.end())
+				param = itChnl->second;
+		};
 		PARAM(const pb::PARAM & param_pb){
 			param = param_pb.param();
 			log = param_pb.log();
@@ -169,7 +174,7 @@ public:
 	trans_local(){};
 	trans_local(const pb::trans_local & tg_pb, map<intptr_t, transformation *> & trans_tbl);
 	virtual void convertToPb(pb::trans_local & lg_pb);
-
+	void updateChannels(const CHANNEL_MAP & chnl_map);
 };
 
 class trans_global:public trans_local{
