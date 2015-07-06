@@ -80,13 +80,14 @@ trans_local::trans_local(const pb::trans_local & lg_pb, map<intptr_t, transforma
 void trans_local::updateChannels(const CHANNEL_MAP & chnl_map){
 
 
-	for(CHANNEL_MAP::const_iterator it = chnl_map.begin(); it != chnl_map.end(); it++)
+	for(trans_map::iterator itTrans = tp.begin(); itTrans != tp.end(); itTrans++)
 	{
-		string oldN = it->first;
-		string newN = it->second;
-		trans_map::iterator itTrans=tp.find(oldN);
-		if(itTrans!=tp.end())
+		string oldN = itTrans->first;
+
+		CHANNEL_MAP::const_iterator itChnl = chnl_map.find(oldN);
+		if(itChnl!=chnl_map.end())
 		{
+			string newN = itChnl->second;
 			if(g_loglevel>=GATING_SET_LEVEL)
 				COUT<<"update transformation: "<< oldN << "-->" << newN <<endl;
 
