@@ -9,7 +9,7 @@ updateChannels(gs, map, all = TRUE)
 \arguments{
 \item{gs}{a GatingSet object}
 
-\item{map}{\code{data.frame} contains the mapping from old to new channel names
+\item{map}{\code{data.frame} contains the mapping from old (case insensitive) to new channel names
 Note: Make sure to remove the '<' or '>' characters from 'old` name because the API tries
       to only look at the raw channel name so that the gates with both prefixed and non-prefixed names could be updated.}
 
@@ -26,7 +26,7 @@ based on given mapping between the old and new channel names.
 \examples{
 \dontrun{
   ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
- gs <- updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A"a)
+ gs <- updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A")
                                          , new = c("QDot 655-A")
                                          )
                      )
