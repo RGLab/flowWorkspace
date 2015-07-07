@@ -115,7 +115,7 @@ struct ciLessBoost : std::binary_function<std::string, std::string, bool>
 
 typedef map<string,transformation *, ciLessBoost> trans_map;/* we always do case-insensitive searching for transformation lookup
 due to some of channel name discrepancies occured in flowJo workspaces*/
-typedef std::map<std::string, std::string> CHANNEL_MAP;
+typedef std::map<std::string, std::string, ciLessBoost> CHANNEL_MAP;
 struct PARAM{
 		string param;
 		bool log;

@@ -472,7 +472,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(G, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, channel.ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
+.addGatingHierarchies <- function(gs, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, channel.ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
 
   if(nrow(samples)==0)
     stop("no sample to be added to GatingSet!")
@@ -529,7 +529,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		
 
         # get comp
-        comp <- .Call("R_getCompensation", G@pointer, guid)
+        comp <- .Call("R_getCompensation", gs@pointer, guid)
         cid <- comp$cid
         
 
@@ -710,7 +710,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             recompute <- !transform #recompute flag controls whether gates and data need to be transformed
             nodeInd <- 0
             
-            .Call("R_gating",G@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool)
+            .Call("R_gating",gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
             #since colnames(fs) is not udpated yet.
@@ -745,7 +745,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               tRg  <- range(mat[,tInd])
             else
               tRg <- NULL
-            axis.labels <- .transformRange(G,guid,wsType,fs@frames,timeRange = tRg, slash_loc)
+            axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc)
 
 		}else{
           #extract gains from keyword of ws
@@ -782,7 +782,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
           #transform and adjust the gates without gating
           if(transform)
-            .Call("R_computeGates",G@pointer, guid, gains, extend_val, extend_to)
+            .Call("R_computeGates",gs@pointer, guid, gains, extend_val, extend_to)
           axis.labels <- list()
         }
 
@@ -794,24 +794,35 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	},tempenv)
 
     names(axis) <- guids
-    G@axis <- axis
-    G@flag <- execute #assume the excution would succeed if the entire G gets returned finally
+    gs@axis <- axis
+    gs@flag <- execute #assume the excution would succeed if the entire G gets returned finally
 
 	if(execute)
 	{
 #		browser()
-		#update colnames
+        #sync channel info for gates and comps ,trans
+        if(channel.ignore.case){
+          #get non-prefixed channel names
+          raw.cols <- colnames(fs)
+          #since updateChannels does case insensitive matching
+          #so we simply set both old and new columns with raw.cols 
+          map <- data.frame(old = raw.cols, new = raw.cols)
+          updateChannels(gs, map, all = FALSE) 
+        }
+        
+		#update data with prefixed columns
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
 		if(!is.null(tempenv$prefixColNames))
           colnames(fs) <- tempenv$prefixColNames
-
+        
+        
 		#attach filename and colnames to internal stucture for gating
 #		browser()
 	}
 
-    flowData(G) <- fs
-	G
+    flowData(gs) <- fs
+	gs
 }
 
 #' toggle the channel names between '/' and '_' character

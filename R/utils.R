@@ -4,7 +4,7 @@
 #' based on given mapping between the old and new channel names.
 #' 
 #' @param gs a GatingSet object
-#' @param map \code{data.frame} contains the mapping from old to new channel names
+#' @param map \code{data.frame} contains the mapping from old (case insensitive) to new channel names
 #'                             Note: Make sure to remove the '<' or '>' characters from 'old` name because the API tries 
 #'                                   to only look at the raw channel name so that the gates with both prefixed and non-prefixed names could be updated. 
 #' @param all \code{logical} whether to update the flow data as well
@@ -14,7 +14,7 @@
 #' @examples 
 #' \dontrun{
 #'   ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
-#'  gs <- updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A"a)
+#'  gs <- updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A")
 #'                                          , new = c("QDot 655-A")
 #'                                          )
 #'                      )  
@@ -61,7 +61,8 @@
   #and we have to make sure updated comp.chnls
   #doesn't interfere the second run of updateChannels
   
-  comp <- .Call("R_getCompensation", gs@pointer, sampleNames(gs)[1])
+  sn <- .Call("R_getSamples", gs@pointer)[1] #can't use sampleNames(gs) since flow data may not be bound to gs yet when it is used within parseWorkspace
+  comp <- .Call("R_getCompensation", gs@pointer, sn)
 #   comp.chnl <- comp$parameters
   prefix <- comp$prefix
   suffix <- comp$suffix

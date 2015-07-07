@@ -195,7 +195,7 @@ void updateChannels(Rcpp::S4 gs, Rcpp::DataFrame map){
 
 	Rcpp::XPtr<GatingSet> gsPtr = gs.slot("pointer");
 	//convert dataframe to map
-	std::map<std::string, std::string> stdmap;
+	CHANNEL_MAP stdmap;
 	std::vector<std::string> oldN =  map["old"];
 	std::vector<std::string> newN =  map["new"];
 	for(unsigned i = 0; i < oldN.size(); i++){
