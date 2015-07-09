@@ -12,7 +12,7 @@
 winFlowJoWorkspace::winFlowJoWorkspace(xmlDoc * doc):flowJoWorkspace(doc){
 	COUT<<"windows version of flowJo workspace recognized."<<endl;
 	//(unfortunately libxml2 doesn't support union query e.g.('*/(Population|NotNode)')
-	nodePath.popNode="./*/*[name()='Population' or name()='NotNode']";//relative to sampleNode
+	nodePath.popNode="./*/*[name()='Population' or name()='NotNode' or name()='OrNode' or name()='AndNode']";//relative to sampleNode
 	nodePath.gateDim="*[local-name()='dimension']";//relative to gateNode
 	nodePath.gateParam="*[local-name()='parameter']";//relative to dimNode
 
@@ -676,6 +676,30 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 		boolGate * gate=new boolGate();
 		xmlXPathFreeObject(resPaths);
 		gate->boolOpSpec = parseBooleanSpec("!G0", gPaths);
+		return gate;
+	}else if(node.getName()=="OrNode"||node.getName()=="AndNode"){
+		/*
+		 * NotNode is a special population node that negate its dependent
+		 * We parse it as a boolean gate
+		 */
+		xmlXPathObjectPtr resPaths=node.xpathInNode("Dependents/Dependent");
+		unsigned nDep = resPaths->nodesetval->nodeNr;
+		if(nDep < 2)
+			throw(domain_error("'OrNode' must have at least two 'Dependent' nodes"));
+		vector<string> gPaths;
+		std::stringstream specs;
+		for(unsigned i =0; i < nDep; i++){
+			wsNode curGPNode(resPaths->nodesetval->nodeTab[i]);
+			gPaths.push_back(curGPNode.getProperty("name"));
+			string op = node.getName()=="OrNode"?"|":"&";
+			if(i == 0)
+				op = "";
+			specs << specs.str() << op << "G" << i ;
+		}
+
+		boolGate * gate=new boolGate();
+		xmlXPathFreeObject(resPaths);
+		gate->boolOpSpec = parseBooleanSpec(specs.str(), gPaths);
 		return gate;
 	}else{
 
