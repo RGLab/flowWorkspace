@@ -28,7 +28,6 @@ Imports:
 	XML,
 	tools,gridExtra,Rgraphviz
     ,data.table
-    ,plyr
     ,dplyr
     ,latticeExtra
     ,Rcpp
