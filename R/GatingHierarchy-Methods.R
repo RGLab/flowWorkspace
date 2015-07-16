@@ -1471,7 +1471,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 #' plotGate(gh, c("cd3", "cd4", "cd4/IL2", "cd4/IFNg"), path = "auto", projections = projections, gpar = c(nrow = 2))
 #'
 #' }
-#' @importFrom gridExtra grid.arrange
+#' @importFrom gridExtra arrangeGrob
 #' @importFrom flowCore getChannelMarker
 #' @rdname plotGate-methods
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
@@ -1524,9 +1524,9 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 						#defaultCond is passed to flowViz::xyplot to disable lattice strip
 						return(.plotGate(x, y, par.settings = par.settings, formula = formula, ...))
 					})
-#			browser()
+			
 			if(flowWorkspace.par.get("plotGate")[["arrange"]]&&arrange)
-				do.call(grid.arrange,c(plotObjs,main = arrange.main,gpar))
+				plot(do.call(arrangeGrob, c(grobs = plotObjs, top = arrange.main, gpar)))
 			else
 				plotObjs
 
