@@ -32,7 +32,7 @@ Nodes can be accessed with \code{\link{getNodes}}.}
 \item{...}{\itemize{
  \item{bool}{ \code{logical} specifying whether to plot boolean gates.}
  \item{arrange.main}{ \code{character} The title of the main page of the plot. Default is the sample name. Only valid when \code{x} is GatingHierarchy}
- \item{arrange}{ \code{logical} indicating whether to arrange different populations/nodes on the same page via \code{grid.arrange} call.}
+ \item{arrange}{ \code{logical} indicating whether to arrange different populations/nodes on the same page via \code{arrangeGrob} call.}
  \item{merge}{ \code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
 \item{projections}{ \code{list} of character vectors used to customize x,y axis. By default, the x,y axis are determined by the respective gate parameters.
                                 The elements of the list are named by the population name or path (see \code{y}). Each element is a pair of named character specifying the channel name(or marker name) for x, y axis.
