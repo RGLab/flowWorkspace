@@ -79,19 +79,20 @@ trans_local::trans_local(const pb::trans_local & lg_pb, map<intptr_t, transforma
 
 void trans_local::updateChannels(const CHANNEL_MAP & chnl_map){
 
-
-	for(trans_map::iterator itTrans = tp.begin(); itTrans != tp.end(); itTrans++)
+	//iterate throiugh chnl_map instead of tp since tp iterator will be invalidated when erased
+	for(CHANNEL_MAP::const_iterator itChnl = chnl_map.begin(); itChnl != chnl_map.end(); itChnl++)
 	{
-		string oldN = itTrans->first;
 
-		CHANNEL_MAP::const_iterator itChnl = chnl_map.find(oldN);
-		if(itChnl!=chnl_map.end())
+		string oldN = itChnl->first;
+		trans_map::iterator itTp = tp.find(oldN);
+
+		if(itTp!=tp.end())
 		{
 			string newN = itChnl->second;
 			if(g_loglevel>=GATING_SET_LEVEL)
 				COUT<<"update transformation: "<< oldN << "-->" << newN <<endl;
 
-			transformation * curTran = itTrans->second;
+			transformation * curTran = itTp->second;
 			curTran->setChannel(newN);
 			/*
 			 *
@@ -100,7 +101,7 @@ void trans_local::updateChannels(const CHANNEL_MAP & chnl_map){
 			 * instead of inserting new entry due to the fact tp trans_map is set to case insensitive key searching
 			 * otherwise, tp.erase would lead to losing the entry when oldN and newN are equivalent
 			 */
-			tp.erase(itTrans);
+			tp.erase(itTp);
 			tp[newN] = curTran; //add new entry
 
 		}
