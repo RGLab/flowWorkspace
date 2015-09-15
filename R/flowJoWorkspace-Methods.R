@@ -327,8 +327,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                                   
                                   
                                   #try to search by file name first
-                                  filename <- gsub(charToEsc, "\\\\\\1", filename)
-                                  absPath <- list.files(pattern=paste("^",filename,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
+                                  filename.pattern <- gsub(charToEsc, "\\\\\\1", filename)
+                                  absPath <- list.files(pattern=paste("^",filename.pattern,"",sep=""),path=path,recursive=TRUE,full.names=TRUE)
                                   nFound <- length(absPath)
                                   isFileNameSearchFailed <- nFound == 0
                                   #searching file by keyword $FIL when it is enabled
@@ -362,7 +362,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                                             thisFile <- ifelse(isFileNameSearchFailed, kws["$FIL"], basename(thisPath))
                                             paste(c(thisFile, as.vector(kw)), collapse = "_")
                                           }, USE.NAMES = F)  
-                                      matchInd <- grep(guid, guids.fcs)
+                                      matchInd <- which(guid == guids.fcs) #do strict matching instead grep due to the special characters
                                       nFound <- length(matchInd)
                                       if(nFound == 1)
                                         absPath <- absPath[matchInd]
