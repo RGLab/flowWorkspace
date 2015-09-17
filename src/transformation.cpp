@@ -132,7 +132,14 @@ transformation::transformation(const pb::transformation & trans_pb){
 	type = trans_pb.type();
 	name = trans_pb.name();
 	channel = trans_pb.channel();
-	calTbl = calibrationTable(trans_pb.caltbl());
+	/* For PB_BIEXP, caltbl was not saved during archiving and thus could be 0x0
+	  and thus trans_pb.caltbl() call is supposed to fall back to return the one from default_instance, which should not be null.
+	  However strange enough, in some circumstances (e.g. after save_gs() call), this default_instance_->caltbl_ does become null
+	  which leads this pb auto generated accessor function to be unsafe to be invoked.
+	  So we have to skip it in case of biexp. (we don't need to do it anyway)
+	*/
+	if(trans_pb.trans_type() != pb::PB_BIEXP)
+		calTbl = calibrationTable(trans_pb.caltbl());
 }
 void transformation::convertToPb(pb::transformation & trans_pb){
 
@@ -140,7 +147,12 @@ void transformation::convertToPb(pb::transformation & trans_pb){
 	trans_pb.set_type(type);
 	trans_pb.set_name(name);
 	trans_pb.set_channel(channel);
-	//skip saving calibration table to save disk space, which means it needs to be always recalculated when load it back
+	/*skip saving calibration table to save disk space, which means it needs to be always recalculated when load it back
+	 	 Setting the flag to FALSE can only make sure it is recomputed properly for the APIs where the flag is checked first
+		but it is not sufficient to prevent the segfault because the pointer to the caltbl in pb object is unset and somehow the
+		default_instance_->caltbl_ can also be null due to some previous operations (i.e.`save_gs`). So ::pb::calibrationTable& transformation::caltbl
+		becomes unsafe to call.
+	*/
 	if(type == BIEXP)
 		trans_pb.set_iscomputed(false);
 	else
@@ -173,6 +185,9 @@ biexpTrans::biexpTrans(const pb::transformation & trans_pb):transformation(trans
 	neg = bt_pb.neg();
 	pos = bt_pb.pos();
 	widthBasis = bt_pb.widthbasis();
+
+	//make sure to always recompute caltbl (regardless of compute flag) since it was not saved for the sake of space
+	computCalTbl();
 }
 void logTrans::convertToPb(pb::transformation & trans_pb){
 	transformation::convertToPb(trans_pb);

@@ -3646,7 +3646,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: setting protobuf flags..." >&5
 $as_echo "$as_me: setting protobuf flags..." >&6;}
 
-
+USE_BUNDLED_PB=false
 
 if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: No directory was specified for --with-protobuf. Using bundled protocol buffer." >&5
@@ -3683,6 +3683,7 @@ $as_echo "$as_me: No directory was specified for --with-protobuf. Using bundled 
 		PB_CFLAGS="-I${BASEPBNAME}/src"
 		#PB_LIBS will be set in Makevars file
 		cd ../../
+		USE_BUNDLED_PB=true
 else
         { $as_echo "$as_me:${as_lineno-$LINENO}: Using protobuf dir '${PB_DIR}'" >&5
 $as_echo "$as_me: Using protobuf dir '${PB_DIR}'" >&6;}
@@ -3709,8 +3710,10 @@ $as_echo "$as_me:    PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}:    PKG_LIBS=${PKG_LIBS}" >&5
 $as_echo "$as_me:    PKG_LIBS=${PKG_LIBS}" >&6;}
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}:    bundled protobuf is in ${PBBUILD}" >&5
+if test USE_BUNDLED_PB = true; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}:    bundled protobuf is in ${PBBUILD}" >&5
 $as_echo "$as_me:    bundled protobuf is in ${PBBUILD}" >&6;}
+fi
 
 ac_config_files="$ac_config_files src/Makevars"
 

@@ -61,7 +61,7 @@ fi
 
 AC_MSG_NOTICE([setting protobuf flags...])
 
-
+USE_BUNDLED_PB=false
 
 if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
         AC_MSG_NOTICE([No directory was specified for --with-protobuf. Using bundled protocol buffer.])
@@ -97,6 +97,7 @@ if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
 		PB_CFLAGS="-I${BASEPBNAME}/src"
 		#PB_LIBS will be set in Makevars file
 		cd ../../
+		USE_BUNDLED_PB=true
 else
         AC_MSG_NOTICE([Using protobuf dir '${PB_DIR}'])
 
@@ -119,7 +120,9 @@ AC_MSG_NOTICE([   PKG_CPPFLAGS=${PKG_CPPFLAGS}])
 AC_SUBST(PKG_CPPFLAGS)
 AC_MSG_NOTICE([   PKG_LIBS=${PKG_LIBS}])
 AC_SUBST(PKG_LIBS)
-AC_MSG_NOTICE([   bundled protobuf is in ${PBBUILD}])
+if test USE_BUNDLED_PB = true; then
+	AC_MSG_NOTICE([   bundled protobuf is in ${PBBUILD}])
+fi
 AC_SUBST(PBBUILD)
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT
