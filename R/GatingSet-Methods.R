@@ -2420,9 +2420,12 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
         other_marker_chnl <- lapply(other.markers, getChannelMarker, frm = fr)%>% bind_rows
         other_chnls <- other_marker_chnl[["name"]]
         other_markers <- other_marker_chnl[["desc"]]
+
+        #remove the other_chnls that are already present in chnls
+        toKeep <- ! other_chnls %in% chnls
         
-        chnls <- c(chnls, other_chnls)
-        markers <- c(markers, other_markers)
+        chnls <- c(chnls, other_chnls[toKeep])
+        markers <- c(markers, other_markers[toKeep])
       }
       
     

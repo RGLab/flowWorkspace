@@ -371,5 +371,13 @@ test_that("getSingleCellExpression for COMPASS",{
       expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
       expect_equivalent(thisRes,expectRes)
       
+      #test other.markers (redundant marker should be merged automatically)
+      thisRes <- getSingleCellExpression(gs, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') 
+                                          , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")
+                                          , other.markers = c("CD4", "CD38 APC")
+                                          , threshold = FALSE
+                                          )
+      expect_equal(colnames(thisRes[[1]]), c("CD38 APC", "CCR7 PE", "CD4 PcpCy55"))
+      
     })
 
