@@ -32,8 +32,8 @@ AC_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 
 # Check the compiler configured with R
-COMPILER=`R CMD config CC`
-MAKE=`R CMD config MAKE`
+COMPILER=`${R_HOME}/bin/R CMD config CC`
+MAKE=`${R_HOME}/bin/R CMD config MAKE`
 
 #xml2 lib
 AC_MSG_NOTICE([setting xml2 flags...])

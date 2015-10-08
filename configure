@@ -3572,8 +3572,8 @@ fi
 
 
 # Check the compiler configured with R
-COMPILER=`R CMD config CC`
-MAKE=`R CMD config MAKE`
+COMPILER=`${R_HOME}/bin/R CMD config CC`
+MAKE=`${R_HOME}/bin/R CMD config MAKE`
 
 #xml2 lib
 { $as_echo "$as_me:${as_lineno-$LINENO}: setting xml2 flags..." >&5
