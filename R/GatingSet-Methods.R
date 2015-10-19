@@ -2219,8 +2219,8 @@ setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)),
 
 #' @rdname keyword
 #' @export
-setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing"){
-        lapply(object, flowCore::keyword)
+setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing", ...){
+        lapply(object, flowCore::keyword, ...)
 
     })
 #' @rdname keyword
