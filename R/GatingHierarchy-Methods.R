@@ -726,7 +726,7 @@ setMethod("show","GatingHierarchy",function(object){
 #'
 #' @param object \code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}
 #' @param keyword \code{character} specifying keyword name. When \code{missing}, extract all keywords.
-#'
+#' @param ... other arguments passed to \code{\link[flowCore]{keyword-methods}}
 #' @seealso \code{\link[flowCore]{keyword-methods}}
 #'
 #' @aliases keyword
@@ -736,6 +736,8 @@ setMethod("show","GatingHierarchy",function(object){
 #'       keyword(G)
 #'       #get all the keywords from one sample
 #'       keyword(G[[1]])
+#'       # filter the instrument setting   
+#'       keyword(G[[1]], compact = TRUE)
 #'       #get single keyword from all samples
 #'       keyword(G, "FILENAME")
 #'       #get single keyword from one sample
@@ -750,9 +752,9 @@ setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 		})
 #' @rdname keyword
 #' @export    
-setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing"){
-
-      flowCore::keyword(getData(object, use.exprs = FALSE))
+setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing", ...){
+      fr <- getData(object, use.exprs = FALSE)
+      flowCore::keyword(fr, ...)
     })
 
 #'  Get the names of all nodes from a gating hierarchy.

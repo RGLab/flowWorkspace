@@ -13,13 +13,13 @@
 \usage{
 \S4method{keyword}{GatingHierarchy,character}(object, keyword)
 
-\S4method{keyword}{GatingHierarchy,missing}(object, keyword = "missing")
+\S4method{keyword}{GatingHierarchy,missing}(object, keyword = "missing", ...)
 
-\S4method{keyword}{GatingSet,missing}(object, keyword = "missing")
+\S4method{keyword}{GatingSet,missing}(object, keyword = "missing", ...)
 
 \S4method{keyword}{GatingSet,character}(object, keyword)
 
-\S4method{keyword}{GatingSetList,missing}(object, keyword = "missing")
+\S4method{keyword}{GatingSetList,missing}(object, keyword = "missing", ...)
 
 \S4method{keyword}{GatingSetList,character}(object, keyword)
 }
@@ -27,6 +27,8 @@
 \item{object}{\code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}}
 
 \item{keyword}{\code{character} specifying keyword name. When \code{missing}, extract all keywords.}
+
+\item{...}{other arguments passed to \code{\link[flowCore]{keyword-methods}}}
 }
 \description{
 Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}
@@ -40,6 +42,8 @@ See \code{keyword} in Package `flowCore'
       keyword(G)
       #get all the keywords from one sample
       keyword(G[[1]])
+      # filter the instrument setting
+      keyword(G[[1]], compact = TRUE)
       #get single keyword from all samples
       keyword(G, "FILENAME")
       #get single keyword from one sample

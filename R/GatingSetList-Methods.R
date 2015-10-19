@@ -146,8 +146,8 @@ setMethod("getPopStats","GatingSetList",function(x, format = c("long", "wide"), 
     })
 #' @rdname keyword
 #' @export
-setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing"){
-      selectMethod("keyword",signature = c(x="GatingSet",y="missing"))(object, keyword)
+setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing", ...){
+      selectMethod("keyword",signature = c(x="GatingSet",y="missing"))(object, keyword, ...)
       
     })
 #' @rdname keyword
