@@ -417,4 +417,44 @@ test_that("v 9.7.5 - mac 3.0 (boolGate that refers to the non-sibling nodes)",{
     })
 
 
+test_that("gatingML-cytobank parsing",{
+  xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
+  g <- read.gatingML.cytobank(xmlfile)
+  fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
+  fs <- read.ncdfFlowSet(fcsFiles)
+  
+  
+  ## Compensate the data with the compensation information stored in `graphGML` object
+  fs <- compensate(fs, g)
+  ## Extract transformation functions from `graphGML` and transform the data
+  trans <- getTransformations(g)
+  fs <- transform(fs, trans)
+  
+  
+  ## Construct the **GatingSet** and apply gates stored in `graphGML`
+  gs <- GatingSet(fs)
+  gating(g, gs)
+  
+  
+  #' ## verify the stats are correct
+  
+  #' 
+  #load stats from cytobank
+  cytobank_counts <- read.csv(system.file("extdata/cytotrol_tcell_cytobank_counts.csv", package = "flowWorkspace"), skip = 7, stringsAsFactors = F)
+  #convert it to the same format
+  colnames(cytobank_counts)[1] <- "Population"
+  cytobank_counts <- plyr::arrange(cytobank_counts, Population)
+  
+  #load openCyto stats
+  openCyto_counts <- getPopStats(gs, statType = "count")
+  openCyto_counts <- reshape2::dcast(openCyto_counts, Population ~ name, value.var = "Count")
+  
+  
+  expect_equal(cytobank_counts, openCyto_counts)
+  
+  
+  
+  })
+
+
 sink()
