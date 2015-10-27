@@ -21,11 +21,10 @@ The Default parser (flowUtils::read.gatingML) does not  parse the population tre
 the custom information from cytobank. (e.g. gate name, fcs filename).
 }
 \examples{
+\dontrun{
 xml <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
 g <- read.gatingML.cytobank(xml) #parse the population tree
-plotTree(g) #visualize it
-nodeData(g)[[1]] # access individual gates
-g@graphData[["compensation"]] #access comps
-g@graphData[["transformations"]] #access trans
+plot(g) #visualize it
+}
 }
 
