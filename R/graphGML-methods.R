@@ -192,7 +192,7 @@ gating.graphGML <- function(gt, gs, ...) {
 #     parentInd <- match(parent, getNodes(gs[[1]], showHidden = TRUE))
 #     if (is.na(parentInd)) 
 #       stop("parent node '", parent, "' not gated yet!")
-
+  
     this_gate <- gt_node[["gateInfo"]][["gate"]]
     this_gate <- sapply(sampleNames(gs), function(i)this_gate)
     #update gates that are tailored for specific samples

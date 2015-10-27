@@ -48,7 +48,7 @@ Collate:
     'merge-GatingSet.R'
     'utils.R'
     'read.gatingML.cytobank.R'
-    'graphGatingML-methods.R'
+    'graphGML-methods.R'
     'zzz.R'
 Depends:
     R (>= 2.16.0),flowCore(>= 1.33.13),flowViz(>= 1.29.27),ncdfFlow(>= 2.13.08),gridExtra

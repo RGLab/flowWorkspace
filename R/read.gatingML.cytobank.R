@@ -7,7 +7,6 @@
 #' 
 #' @importClassesFrom graph graphNEL graphBase graph
 #' @importClassesFrom Biobase AssayData
-#' @importClassesFrom rrcov Ulist Uvector
 #' @export
 setClass("graphGML", contains = "graphNEL")
 
@@ -24,13 +23,11 @@ setClass("graphGML", contains = "graphNEL")
 #' The gate and population name are stored in nodeData of each node. 
 #' Compensation and transformations are stored in graphData.
 #' @examples 
-#' 
+#' \dontrun{
 #' xml <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
 #' g <- read.gatingML.cytobank(xml) #parse the population tree
-#' plotTree(g) #visualize it
-#' nodeData(g)[[1]] # access individual gates
-#' g@@graphData[["compensation"]] #access comps
-#' g@@graphData[["transformations"]] #access trans
+#' plot(g) #visualize it
+#' }
 read.gatingML.cytobank <- function(file, ...){
   
   #parse all the elements:gate, GateSets, comp, trans
@@ -48,9 +45,9 @@ read.gatingML.cytobank <- function(file, ...){
       
       # message(class(obj))
       
-      sb <- subset(gateInfo, id == objID)
+      sb <- gateInfo[id == objID, ]
       if(nrow(sb)>0){
-        orig_params <- sb[["params"]]
+        orig_params <- sb[, params]
         orig_params <- strsplit(split = ":", orig_params)[[1]]
         params <- parameters(obj)
         ind <- sapply(orig_params, function(orig_param)grep(paste0(orig_param, "$"), params))
@@ -68,8 +65,7 @@ read.gatingML.cytobank <- function(file, ...){
   
   #determine comps and trans to be used
   
-  
-  comp_refs <- gateInfo[["comp_ref"]]
+  comp_refs <- gateInfo[, comp_ref]
   comp_refs <- unique(comp_refs[comp_refs!=""])
   if(length(comp_refs) > 1)
     stop("More than one compensation referred in gates!")
@@ -81,16 +77,6 @@ read.gatingML.cytobank <- function(file, ...){
   }
   g@graphData[["compensation"]] <- comps
 
-  #don't need to do this since flowUtils already exported multiple trans for each referring channel  
-#   trans_ref <- gateInfo[["trans_ref"]]
-#   trans_ref <- unique(trans_ref[trans_ref!=""])
-#   if(length(trans_ref) > 1)
-#     stop("More than one transformations referred in gates!")
-#   else{
-#     
-#       trans <- flowEnv[[trans_ref]]
-#   }
-  
   
   trans <-  sapply(ls(flowEnv), function(i){
                         
@@ -120,53 +106,54 @@ read.gatingML.cytobank <- function(file, ...){
 #' @param ... additional arguments passed to the handlers of 'xmlTreeParse'
 #' @return a data.frame that contains three columns: id (gateId), name (gate name), fcs (fcs_file_filename).
 #' @importFrom XML xmlRoot xmlName xmlGetAttr xmlValue xmlElementsByTagName xmlChildren
-#' @importFrom plyr ldply
 parse.gateInfo <- function(file, ...)
 {       
   
   root <- xmlRoot(flowUtils:::smartTreeParse(file,...))
   
-  ldply(xmlChildren(root), function(node){
-    nodeName <- xmlName(node)
-    
-    if(grepl("*Gate", nodeName)){
-      
-      
-        id <- xmlGetAttr(node, "id")
-        
-        name <- getCustomNodeInfo(node, "name")
-        fcs_file_filename <- getCustomNodeInfo(node, "fcs_file_filename")
-        gate_id <- getCustomNodeInfo(node, "gate_id")#used to find tailored gate
-        if(nodeName %in% c("BooleanGate"))
-        {          
-          comp_ref <- trans_ref <- params <- ""
-        }else
-        {
-          if(nodeName == "QuadrantGate"){
-            dimTag <- "divider"
-            #update id with quardant definition
-            quadrantList <- xmlElementsByTagName(node, "Quadrant")
-            id <- unname(sapply(quadrantList, function(i)xmlGetAttr(i, "id")))
+  rbindlist(
+    lapply(xmlChildren(root), function(node){
+            nodeName <- xmlName(node)
             
-          }else
-            dimTag <- "dimension"
-        
-          dimNode <- xmlElementsByTagName(node, dimTag)
-          comp_ref <- unique(sapply(dimNode, function(i)xmlGetAttr(i, "compensation-ref")))
-          trans_ref <- unique(unname(unlist(compact(sapply(dimNode, function(i)xmlGetAttr(i, "transformation-ref"))))))
-          trans_ref <- ifelse(is.null(trans_ref), "", trans_ref)
-          params <- paste(sapply(dimNode, function(i)xmlGetAttr(i[["fcs-dimension"]], "name")), collapse = ":")
-        }
-        # message(name)
-        # browser()
-        data.frame(id = id, name = name, gate_id = gate_id, fcs = fcs_file_filename
-          , comp_ref = comp_ref, trans_ref = trans_ref, params = params
-          , stringsAsFactors = FALSE)
-        
-      
-    }
+            if(grepl("*Gate", nodeName)){
+              
+              
+                id <- xmlGetAttr(node, "id")
+                
+                name <- getCustomNodeInfo(node, "name")
+                fcs_file_filename <- getCustomNodeInfo(node, "fcs_file_filename")
+                gate_id <- getCustomNodeInfo(node, "gate_id")#used to find tailored gate
+                if(nodeName %in% c("BooleanGate"))
+                {          
+                  comp_ref <- trans_ref <- params <- ""
+                }else
+                {
+                  if(nodeName == "QuadrantGate"){
+                    dimTag <- "divider"
+                    #update id with quardant definition
+                    quadrantList <- xmlElementsByTagName(node, "Quadrant")
+                    id <- unname(sapply(quadrantList, function(i)xmlGetAttr(i, "id")))
+                    
+                  }else
+                    dimTag <- "dimension"
+                
+                  dimNode <- xmlElementsByTagName(node, dimTag)
+                  comp_ref <- unique(sapply(dimNode, function(i)xmlGetAttr(i, "compensation-ref")))
+                  trans_ref <- unique(unname(unlist(compact(sapply(dimNode, function(i)xmlGetAttr(i, "transformation-ref"))))))
+                  trans_ref <- ifelse(is.null(trans_ref), "", trans_ref)
+                  params <- paste(sapply(dimNode, function(i)xmlGetAttr(i[["fcs-dimension"]], "name")), collapse = ":")
+                }
+                # message(name)
+                # browser()
+                data.table(id = id, name = name, gate_id = gate_id, fcs = fcs_file_filename
+                  , comp_ref = comp_ref, trans_ref = trans_ref, params = params
+                  )
+                
+              
+            }
     
-  }, .id = NULL)
+  })
+  )
 }
 
 getCustomNodeInfo <- function(node, nodeName){
@@ -215,7 +202,6 @@ matchPath <- function(g, leaf, nodeSet){
 #' @param gateInfo the data.frame contains the gate name, fcs filename parsed by parse.gateInfo function
 #' @return a graphNEL represent the population tree. The gate and population name are stored as nodeData in each node.
 #' @importFrom graph graphNEL nodeDataDefaults<- nodeData<- addEdge edges removeNode
-#' @importFrom plyr compact dlply
 constructTree <- function(flowEnv, gateInfo){
   
   #parse the references from boolean gates
@@ -249,7 +235,7 @@ constructTree <- function(flowEnv, gateInfo){
     thisGateSet <- gateSets[[popId]]
     nDepth <- length(thisGateSet)
     
-    popName <- subset(gateInfo, id == popId)[["name"]]
+    popName <- gateInfo[id == popId, name]
     #add pop name
     nodeData(g, popId, "popName") <- popName
     
@@ -277,22 +263,21 @@ constructTree <- function(flowEnv, gateInfo){
     }
     
     #add gate
-    sb <- subset(gateInfo, id == gateID)
+    sb <- gateInfo[id == gateID, ]
     #try to find the tailored gate
-    tg_sb <- subset(gateInfo, gate_id == sb[["gate_id"]] & fcs != "")
+    tg_sb <- gateInfo[gate_id == sb[, gate_id] & fcs != "", ]
     
-    tg <- dlply(tg_sb, "id", function(row){
-                gateID <- row[["id"]]
+    
+    tg <- sapply(tg_sb[, id], function(gateID){
                 flowEnv[[gateID]]
-              })
-    names(tg) <- tg_sb[["fcs"]]
-#     browser()
+              }, simplify = FALSE)
+    names(tg) <- tg_sb[, fcs]
 #     message(popName)
     gate <- flowEnv[[gateID]]
     
     nodeData(g, popId, "gateInfo") <- list(list(gate = gate
-                                                , gateName = sb[["name"]]
-                                                , fcs = sb[["fcs"]]
+                                                , gateName = sb[, name]
+                                                , fcs = sb[, fcs]
                                                 , tailored_gate = tg
                                               )
                                           )
@@ -308,3 +293,4 @@ constructTree <- function(flowEnv, gateInfo){
 #   }
   g
 }
+
