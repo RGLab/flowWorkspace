@@ -1,0 +1,88 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{How to plot gated data}
+-->
+
+---
+title: "How to parse gatingML into a GatingSet"
+author: "Mike Jiang"
+date: "October 27, 2015"
+output: html_document
+---
+
+This vignette demonstrates how the gatingML files exported from Cytobank can be imported into R as a GatingSet object.
+
+### Load the gatingML file as a **graphGML** object
+```{r message=FALSE}
+library(flowWorkspace)
+xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
+g <- read.gatingML.cytobank(xmlfile)
+class(g)
+```
+
+
+### **graphGML** stores the gating hierarchy
+```{r}
+g
+```
+
+### It can be inspected by various accessors.
+```{r}
+getNodes(g)
+getParent(g, "GateSet_694130")
+getChildren(g, "GateSet_694130")
+
+```
+
+### The Population tree can be plotted
+```{r fig.width=4,fig.height=4}
+plot(g)
+```
+
+The node with **dotted** border means the `tailored` gates(or sample-specific gates) are defined for that population.
+
+### Read raw FCS files
+```{r message=FALSE}
+fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
+fs <- read.ncdfFlowSet(fcsFiles)
+```
+
+### Compensate the data
+```{r message=FALSE}
+fs <- compensate(fs, g)
+```
+
+### Transform the data
+```{r message=FALSE}
+trans <- getTransformations(g)
+trans
+fs <- transform(fs, trans)
+```
+
+
+### Visualize the outcome of compensation and transformation
+```{r fig.width=4,fig.height=4, fig.show='hold'}
+ densityplot(~`CD4`, fs)
+ xyplot(`CD4` ~`CD8`, fs, smooth = FALSE, xbin = 32)
+
+```
+
+
+### Construct the **GatingSet** and apply the gates
+```{r message=FALSE}
+gs <- GatingSet(fs)
+gating(g, gs)
+```
+
+
+### Plot the gates
+```{r}
+plotGate(gs[[1]])
+```
+
+### Extract the population statistics
+```{r results='markup'}
+getPopStats(gs, statType = "count")
+```
+
+
