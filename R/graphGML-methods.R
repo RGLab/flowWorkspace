@@ -194,11 +194,15 @@ gating.graphGML <- function(gt, gs, ...) {
 #       stop("parent node '", parent, "' not gated yet!")
   
     this_gate <- gt_node[["gateInfo"]][["gate"]]
-    this_gate <- sapply(sampleNames(gs), function(i)this_gate)
+    sn <- sampleNames(gs)
+    this_gate <- sapply(sn, function(i)this_gate)
+    
     #update gates that are tailored for specific samples
     tailor_gate <- gt_node[["gateInfo"]][["tailored_gate"]]
-    if(length(tailor_gate) >0){
-          this_gate[names(tailor_gate)] <- tailor_gate
+    tg_sn <- names(tailor_gate)
+    tg_sn <- tg_sn[tg_sn %in% sn] #filter tailor gates in case sample set provided are not complete
+    if(length(tg_sn) >0){
+          this_gate[tg_sn] <- tailor_gate[tg_sn]
     }
     
     
