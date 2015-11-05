@@ -32,7 +32,14 @@ AC_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 
 # Check the compiler configured with R
-COMPILER=`${R_HOME}/bin/R CMD config CC`
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+COMPILER=`"${R_HOME}/bin/R" CMD config CC`
+MYCXX=`"${R_HOME}/bin/R" CMD config CXX`
+MYCXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 MAKE=`${R_HOME}/bin/R CMD config MAKE`
 
 #xml2 lib
@@ -92,7 +99,9 @@ if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
 		fi;
 		cd ${PBBUILD};
 		../${BASEPBNAME}/configure --enable-static=no
-		$MAKE
+		CXX=${MYCXX} 
+		CXXFLAGS=${MYCXXFLAGS}
+		$MAKE 
 	
 		PB_CFLAGS="-I${BASEPBNAME}/src"
 		#PB_LIBS will be set in Makevars file
@@ -108,9 +117,9 @@ fi
 
 
 PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
-if test "${COMPILER}" = "clang"; then
+#if test "${COMPILER}" = "clang"; then
   PKG_CPPFLAGS+=" -ftemplate-depth=900"
-fi
+#fi
 
 PKG_LIBS="$XML2_LIBS $PB_LIBS"
 
