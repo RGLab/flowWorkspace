@@ -118,9 +118,9 @@ fi
 
 
 PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
-#if test "${COMPILER}" = "clang"; then
+if test "${CC}" = "clang"; then
   PKG_CPPFLAGS+=" -ftemplate-depth=900"
-#fi
+fi
 
 PKG_LIBS="$XML2_LIBS $PB_LIBS"
 
