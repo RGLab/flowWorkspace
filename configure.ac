@@ -24,9 +24,9 @@ AC_ARG_WITH(protobuf,
 # Checks for header files.
 
 
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_TYPE_SIZE_T
+# Checks for typedefs, structures, and compiler characteristics.(these two macros caches the CC setting thus void the settings of below)
+#AC_HEADER_STDBOOL
+#AC_TYPE_SIZE_T
 
 # Check the compiler configured with R
 : ${R_HOME=`R RHOME`}
