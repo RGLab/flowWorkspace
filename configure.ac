@@ -18,9 +18,6 @@ AC_ARG_WITH(protobuf,
 
 
 
-# Checks for programs.
-AC_PROG_CXX
-AC_PROG_CC
 
 # Checks for libraries.
 
@@ -38,9 +35,15 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 COMPILER=`"${R_HOME}/bin/R" CMD config CC`
-MYCXX=`"${R_HOME}/bin/R" CMD config CXX`
-MYCXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+CXX=`"${R_HOME}/bin/R" CMD config CXX`
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+CC=`"${R_HOME}/bin/R" CMD config CC`
+CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 MAKE=`${R_HOME}/bin/R CMD config MAKE`
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
 
 #xml2 lib
 AC_MSG_NOTICE([setting xml2 flags...])
@@ -98,9 +101,7 @@ if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
 			mkdir ${PBBUILD}
 		fi;
 		cd ${PBBUILD};
-		../${BASEPBNAME}/configure --enable-static=no
-		CXX=${MYCXX} 
-		CXXFLAGS=${MYCXXFLAGS}
+		../${BASEPBNAME}/configure --enable-static=no CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}"
 		$MAKE 
 	
 		PB_CFLAGS="-I${BASEPBNAME}/src"
