@@ -118,7 +118,7 @@ fi
 
 
 PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
-if test "${CC}" = "clang"; then
+if [[ "${CC}" == "clang"* ]]; then
   PKG_CPPFLAGS+=" -ftemplate-depth=900"
 fi
 
