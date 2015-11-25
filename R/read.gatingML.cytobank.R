@@ -125,9 +125,12 @@ parse.gateInfo <- function(file, ...)
                 gate_id <- getCustomNodeInfo(node, "gate_id")#used to find tailored gate
                 if(nodeName %in% c("BooleanGate"))
                 {          
-                  comp_ref <- trans_ref <- params <- ""
+                  gate_def <- comp_ref <- trans_ref <- params <- ""
                 }else
                 {
+                  
+                  gate_def <- getCustomNodeInfo(node, "definition")
+                  
                   if(nodeName == "QuadrantGate"){
                     dimTag <- "divider"
                     #update id with quardant definition
@@ -146,7 +149,7 @@ parse.gateInfo <- function(file, ...)
                 # message(name)
                 # browser()
                 data.table(id = id, name = name, gate_id = gate_id, fcs = fcs_file_filename
-                  , comp_ref = comp_ref, trans_ref = trans_ref, params = params
+                  , comp_ref = comp_ref, trans_ref = trans_ref, params = params, gate_def = gate_def
                   )
                 
               
@@ -202,6 +205,7 @@ matchPath <- function(g, leaf, nodeSet){
 #' @param gateInfo the data.frame contains the gate name, fcs filename parsed by parse.gateInfo function
 #' @return a graphNEL represent the population tree. The gate and population name are stored as nodeData in each node.
 #' @importFrom graph graphNEL nodeDataDefaults<- nodeData<- addEdge edges removeNode
+#' @importFrom jsonlite fromJSON
 constructTree <- function(flowEnv, gateInfo){
   
   #parse the references from boolean gates
@@ -274,11 +278,29 @@ constructTree <- function(flowEnv, gateInfo){
     names(tg) <- tg_sb[, fcs]
 #     message(popName)
     gate <- flowEnv[[gateID]]
+    #parse bounding info
+    cytobank_gate_def <- fromJSON(sb[, gate_def])
     
+#     if(gateID == "Gate_2095590_UEQtMShIaXN0byk.")
+#       browser()
+    
+    pname <- parameters(gate)
+    if(length(pname) == 1){
+      bound <- cytobank_gate_def[["scale"]][c("min", "max")]
+      bound <- t(as.matrix(bound))
+      rownames(bound) <- pname
+    }
+    else
+      bound <- t(sapply(c("x", "y"), function(axis){
+        cytobank_gate_def[["scale"]][[axis]][c("min", "max")]
+      }))
+    
+    rownames(bound) <- as.vector(parameters(gate))
     nodeData(g, popId, "gateInfo") <- list(list(gate = gate
                                                 , gateName = sb[, name]
                                                 , fcs = sb[, fcs]
                                                 , tailored_gate = tg
+                                                , bound = bound
                                               )
                                           )
     
@@ -294,3 +316,224 @@ constructTree <- function(flowEnv, gateInfo){
   g
 }
 
+#' extend the gate to the minimum and maximum limit of both dimensions
+#' based on the bounding information.
+#' It is equivalent to the behavior of shifting the off-scale boundary events into the gate boundary that is describled in
+#' bounding transformation section of gatingML standard.
+#' The advantage of extending gates instead of shifting data are two folds: 
+#' 1. Avoid the extra computation each time applying or plotting the gates
+#' 2. Avoid changing the data distribution caused by adding the gates
+#' @export
+#' @param gate a flowCore filter/gate
+#' @param bound numeric matrix representing the bouding information parsed from gatingML. Each row corresponds to a channel.
+#'        rownames should be the channel names. colnames should be c("min", "max")
+#' @param data.range numeric matrix specifying the data limits of each channel. It is used to set the extended value of vertices and must has the same structure as 'bound'.        
+#'        when it is not supplied, c(-.Machine$integer.max, - .Machine$integer.max) is used.
+#' @param ... other arguments        
+extend <- function(gate, bound, data.range = NULL, ...)UseMethod("extend")
+
+#' @export
+#' @S3method extend polygonGate
+#' @rdname extend
+#' @param plot whether to plot the extended polygon.
+extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
+  
+  #linear functions
+  f.solve <- list(x = function(x, slope, x1, y1){
+                                
+                                res <- slope * (x -  x1) + y1
+                                names(res) <- "y"
+                                res
+                              }
+            ,y =  function(y, slope, x1, y1){
+                                
+                                res <- (y -  y1) / slope + x1
+                                names(res) <- "x"
+                                res
+                            }
+            )
+  
+  #update chnnl names with generic axis names 
+  chnls <- as.vector(rownames(bound))
+  axis.names <- c("x", "y")
+  rownames(bound) <- axis.names
+  
+  verts.orig <- gate@boundaries
+  verts <- data.table(verts.orig)
+  pname <- as.vector(parameters(gate))
+  setnames(verts, colnames(verts), pname)
+  ind <- match(pname, chnls)
+  new.name <- axis.names[ind]
+  setnames(verts, pname, new.name)
+  
+  if(is.null(data.range)){
+    data.range <- data.frame(min = c(-.Machine$integer.max, - .Machine$integer.max)
+                          , max = c(.Machine$integer.max, .Machine$integer.max)
+                          , row.names = c("x", "y")
+                          )
+  }else{
+    rname <- rownames(data.range)
+    ind <- match(rname, chnls)
+    rownames(data.range) <- axis.names[ind]
+  }
+    
+  
+  
+  #accumulatively update verts by detecting and inserting the intersection points 
+  #removing off-bound vertex points and inserting extended points
+  #for each boundary line
+  for(dim in axis.names){ #loop from x to y
+    
+    for(bn in colnames(bound)){# loop from min to max
+      intersect.coord <- bound[dim, bn][[1]]
+      names(intersect.coord) <- dim
+      nVerts <- nrow(verts)
+      
+      
+      # centroid <- colMeans(verts)
+      this.intersect <- lapply(1:nVerts, function(i){ #loop through each edge
+        #get two vertices
+        j <- ifelse(i == nVerts, 1, i + 1)
+        #get coordinates
+        y2 <- verts[j, y]
+        x2 <- verts[j, x]
+        
+        y1 <- verts[i, y]
+        x1 <- verts[i, x]
+        #compute the slope
+        slope <- (y2 - y1) / (x2 - x1)  
+        #get ranges
+        rg <- list(x = range(c(x1,x2)), y = range(c(y1,y2)))
+        this.rg <- rg[[dim]]  
+        #       points(x1, y1, col = "green")
+        #       points(x2, y2, col = "blue")    
+        #find inersect point
+        # message(i)
+#         if(i == 3)
+          
+        if(intersect.coord <= this.rg[2]&&intersect.coord >= this.rg[1]){
+          
+          #take care of horizontal/vertical edges
+          if(is.infinite(slope)){#vertical edge
+            if(dim == "x")
+              return(NULL) #parallel to vertical bound, no intersect
+            else
+              point <- c(x = x1, intersect.coord)
+          }else if(slope == 0){ #horizontal edge
+            if(dim == "y")
+              return(NULL)
+            else
+              point <- c(intersect.coord, y = y1)
+          }else{
+            #otherwise use linear function to compute the x or y coordinate
+            thisFun <- f.solve[[dim]]
+            # get the y axis of the intersected point
+            res <- thisFun(intersect.coord, slope, x1, y1)
+            # browser()
+            names(intersect.coord) <- dim
+            point <- c(intersect.coord, res)[axis.names]  
+          }
+          
+          c(point, id = i + 0.5)
+          
+        }
+        
+      })
+      
+
+      
+      
+      this.intersect <- do.call(rbind, this.intersect)
+      dim.flip <- ifelse(dim == "x", "y", "x")
+#       this.intersect <- this.intersect[order(this.intersect[[dim.flip]]),] #bottom to top/or left to right
+      nCount <- ifelse(is.null(this.intersect), 0, nrow(this.intersect))
+      if(nCount > 0){
+        if(nCount!= 2)
+          stop("Unsupported number of intersected points with ", bn, " boundary on ", dim, " axis: ", nCount)
+        
+        verts[, id := 1:nVerts]#record the id before insertion
+        this.intersect <- as.data.table(this.intersect)
+        #insert the intersect points
+        verts <- rbindlist(list(verts, this.intersect))
+        verts <- verts[order(id),]
+
+        #remove off-bound points
+        if(bn == "min")
+          ind <- verts[, dim, with = FALSE] < intersect.coord
+        else
+          ind <- verts[, dim, with = FALSE] > intersect.coord
+        ind <- as.vector(ind)
+        verts <- verts[!ind, ]        
+        
+        #add extended points  
+        this.extend <- this.intersect
+        this.extend[, dim] <- data.range[dim, bn]
+        
+        #sort by the coordinates
+        vals <- order(this.extend[[dim.flip]]) 
+        this.extend[, order:= vals]
+        #increase or decrease id values based on the position of that extended point
+        if((bn == "min" && dim == "x") || (bn == "max" && dim == "y"))
+          this.extend[, id:= ifelse(order == 1, id - 0.2, id + 0.2)]
+        else
+          this.extend[, id:= ifelse(order == 2, id - 0.2, id + 0.2)]
+        
+        this.extend[, order := NULL]
+        
+        verts <- rbindlist(list(verts, this.extend))
+        verts <- verts[order(id),]
+
+      }
+
+    }
+  }
+  
+
+  
+
+  
+  if(plot){
+    plot(type = "n", x = verts.orig[,1], y = verts.orig[,2])
+    polygon(verts.orig, lwd =  3)
+    # points(verts.orig, col = "red")
+    points(t(as.data.frame(colMeans(verts.orig))), col = "red")
+    abline(v = bound[1,], lty = "dashed", col = "red")
+    abline(h = bound[2,], lty = "dashed", col = "red")
+    text(verts, labels = verts[, id], col = "red")  
+    # points(intersect.points[, c(axis.names)], col = "blue") 
+    polygon(verts, lty = "dotted", border = "green", lwd = 3)
+  }
+  
+  
+  verts <- verts[, new.name, with = FALSE] 
+  setnames(verts, new.name, chnls)
+  
+  polygonGate(verts)
+  
+  
+}
+
+
+#' order points clockwise so that they can be used for polygon
+#' 
+#' It is done by calculating the angle of the ray that cross the vertex and centroid point
+#' Note: It only works for convex polygon. For concave 
+# order.polygon <- function(verts, centroid = colMeans(verts), plot = FALSE){
+#   
+#   #center the points by centroid
+#   ##TODO::atan2 seems to be inaccurate when centroid is far off
+#   ## maybe switch to atan would fix ?
+#   verts.scaled <- scale(verts, center = centroid, scale = FALSE)
+#   angles <- apply(verts.scaled, 1, function(vert){
+#                   atan2(vert["y"], vert["x"])
+#                 })
+# 
+#   verts.new <- verts[order(angles),]
+#   if(plot){
+#     plot(type = "n", x = verts.new[,1], y = verts.new[,2])
+#     text(verts.new, labels = 1:nrow(verts.new), col = "red")  
+#     points(t(as.data.frame(centroid)), col = "blue")
+#     polygon(verts.new)  
+#   }
+#   verts.new
+# }

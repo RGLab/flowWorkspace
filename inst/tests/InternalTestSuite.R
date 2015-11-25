@@ -417,7 +417,7 @@ test_that("v 9.7.5 - mac 3.0 (boolGate that refers to the non-sibling nodes)",{
     })
 
 
-test_that("gatingML-cytobank parsing",{
+test_that("gatingML-cytobank parsing: cytotrol tcell",{
   xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
   g <- read.gatingML.cytobank(xmlfile)
   fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
@@ -455,6 +455,40 @@ test_that("gatingML-cytobank parsing",{
   
   
   })
+
+test_that("gatingML-cytobank parsing: cytotrol tcell",{
+  thisPath <- file.path(path, "/gatingML/Merck/SecondExample")
+  xmlfile <- file.path(thisPath, "CytExp_10624_Gates_v3.xml")
+  g <- read.gatingML.cytobank(xmlfile)
+  fcsFiles <- list.files(pattern = "\\.fcs", thisPath, full = T)
+  fs <- read.ncdfFlowSet(fcsFiles)
+  
+  fs <- compensate(fs, g)
+  
+  trans <- getTransformations(g)
+  fs <- transform(fs, trans)
+  
+  gs <- GatingSet(fs)
+  gating(g, gs)
+  
+  ### Verify the stats are correct
+  #load stats from cytobank
+  cytobank_counts <- read.csv(file.path(thisPath, "secondExample.csv"), skip = 7, stringsAsFactors = F, check.names = F)
+  #convert it to the same format
+  colnames(cytobank_counts)[1] <- "Population"
+  cytobank_counts[["Population"]] <- gsub("_EventCounts", "", cytobank_counts[["Population"]])
+  cytobank_counts <- plyr::arrange(cytobank_counts, Population)
+  
+  #load openCyto stats
+  openCyto_counts <- getPopStats(gs, statType = "count")
+  openCyto_counts <- reshape2::dcast(openCyto_counts, Population ~ name, value.var = "Count")
+  openCyto_counts[["Population"]] <- gsub(" ", "", openCyto_counts[["Population"]])
+  #compare two
+  expect_equal(cytobank_counts, openCyto_counts)
+  
+  
+  
+})
 
 
 sink()
