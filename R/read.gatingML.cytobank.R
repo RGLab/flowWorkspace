@@ -359,6 +359,10 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
   rownames(bound) <- axis.names
   
   verts.orig <- gate@boundaries
+  #fix Inf (from rectangleGate)
+  verts.orig[verts.orig==Inf] <- .Machine$integer.max
+  verts.orig[verts.orig==-Inf] <- -.Machine$integer.max
+  
   verts <- data.table(verts.orig)
   pname <- as.vector(parameters(gate))
   setnames(verts, colnames(verts), pname)
@@ -434,7 +438,8 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
             point <- c(intersect.coord, res)[axis.names]  
           }
           
-          c(point, id = i + 0.5)
+          
+          c(point, id = i + 0.5)#jitter a positive ammount to break the tie with vert1
           
         }
         
@@ -453,6 +458,7 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
         
         verts[, id := 1:nVerts]#record the id before insertion
         this.intersect <- as.data.table(this.intersect)
+        
         #insert the intersect points
         verts <- rbindlist(list(verts, this.intersect))
         verts <- verts[order(id),]
@@ -469,16 +475,27 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
         this.extend <- this.intersect
         this.extend[, dim] <- data.range[dim, bn]
         
-        #sort by the coordinates
-        vals <- order(this.extend[[dim.flip]]) 
-        this.extend[, order:= vals]
-        #increase or decrease id values based on the position of that extended point
-        if((bn == "min" && dim == "x") || (bn == "max" && dim == "y"))
-          this.extend[, id:= ifelse(order == 1, id - 0.2, id + 0.2)]
-        else
-          this.extend[, id:= ifelse(order == 2, id - 0.2, id + 0.2)]
+        #sort by the Id
+        this.extend[, is.increase:= order(id) == 1]
+        #check if it reaches to the last point of polygon
+        #which implies the other point is the first point of polygon
+        #then overwrite the order info
+        this.extend[, is.last := id == verts[,max(id)]] 
+        #increase id values when
+        #1. it is the last point
+        #2. it is not last, but has smaller id
+        nLast <- sum(this.extend[, is.last])
+        if(nLast == 0){
+          this.extend[, id:= ifelse(is.increase, id + 0.2, id - 0.2)]  
+        }else if(nLast == 1){
+          this.extend[, id := ifelse(is.last, id + 0.2, id - 0.2)]  
+        }else
+          stop("multiple intersection reach the last point!")
         
-        this.extend[, order := NULL]
+        
+        
+        this.extend[, is.increase := NULL]
+        this.extend[, is.last := NULL]
         
         verts <- rbindlist(list(verts, this.extend))
         verts <- verts[order(id),]
@@ -496,7 +513,7 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
     plot(type = "n", x = verts.orig[,1], y = verts.orig[,2])
     polygon(verts.orig, lwd =  3)
     # points(verts.orig, col = "red")
-    points(t(as.data.frame(colMeans(verts.orig))), col = "red")
+    # points(t(as.data.frame(colMeans(verts.orig))), col = "red")
     abline(v = bound[1,], lty = "dashed", col = "red")
     abline(h = bound[2,], lty = "dashed", col = "red")
     text(verts, labels = verts[, id], col = "red")  
@@ -513,27 +530,41 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
   
 }
 
+#' @export
+#' @S3method extend rectangleGate
+#' @rdname extend
+extend.rectangleGate <- function(gate, ...){
+  pnames <- parameters(gate)
+  nParam <- length(pnames)
+  
+  if(nParam == 2){
+    gate <- fix.rectangleGate(gate)
+    
+    extend(as(gate, "polygonGate"), ...)
+  }
+    
+  else
+    gate
+}
 
-#' order points clockwise so that they can be used for polygon
-#' 
-#' It is done by calculating the angle of the ray that cross the vertex and centroid point
-#' Note: It only works for convex polygon. For concave 
-# order.polygon <- function(verts, centroid = colMeans(verts), plot = FALSE){
-#   
-#   #center the points by centroid
-#   ##TODO::atan2 seems to be inaccurate when centroid is far off
-#   ## maybe switch to atan would fix ?
-#   verts.scaled <- scale(verts, center = centroid, scale = FALSE)
-#   angles <- apply(verts.scaled, 1, function(vert){
-#                   atan2(vert["y"], vert["x"])
-#                 })
-# 
-#   verts.new <- verts[order(angles),]
-#   if(plot){
-#     plot(type = "n", x = verts.new[,1], y = verts.new[,2])
-#     text(verts.new, labels = 1:nrow(verts.new), col = "red")  
-#     points(t(as.data.frame(centroid)), col = "blue")
-#     polygon(verts.new)  
-#   }
-#   verts.new
-# }
+#' @export
+#' @S3method extend ellipsoidGate
+#' @rdname extend
+extend.ellipsoidGate <- function(gate, ...){
+  #fix the ellipsoidGate parsed from gatingML
+  gate <- fix.ellipsoidGate(gate)
+  extend(as(gate, "polygonGate"), ...)
+}
+
+fix.ellipsoidGate <- function(gate){
+  pnames <- as.vector(parameters(gate))
+  dimnames(gate@cov) <- list(pnames,pnames)
+  names(gate@mean) <- pnames
+  gate
+}
+fix.rectangleGate <- function(gate){
+  pnames <- parameters(gate)
+  names(gate@min) <- pnames
+  names(gate@max) <- pnames
+  gate
+}
