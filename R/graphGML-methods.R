@@ -220,9 +220,7 @@ gating.graphGML <- function(gt, gs, ...) {
         bound[rn, ] <- thisTrans@f(unlist(bound[rn, ]))
     }
       
-    #TODO:extend 1d gate and ellipse gate
-    if(length(parameters(this_gate)) == 2 && is(this_gate, "polygonGate"))
-      this_gate <- extend(this_gate,bound = bound)
+    this_gate <- extend(this_gate,bound = bound)
     
     sn <- sampleNames(gs)
     this_gate <- sapply(sn, function(i)this_gate)
@@ -232,16 +230,8 @@ gating.graphGML <- function(gt, gs, ...) {
     tg_sn <- names(tailor_gate)
     tg_sn <- tg_sn[tg_sn %in% sn] #filter tailor gates in case sample set provided are not complete
     if(length(tg_sn) >0){
-      
-      
-      this_tgs <- lapply(tailor_gate[tg_sn], function(this_tg){
-        if(length(parameters(this_tg)) == 2 && is(this_tg, "polygonGate"))
-          this_tg <- extend(this_tg,bound = bound)  
-        this_tg
-      })
-      
-      
-          this_gate[tg_sn] <- this_tgs
+      this_tgs <- lapply(tailor_gate[tg_sn], extend,bound = bound)  
+      this_gate[tg_sn] <- this_tgs
     }
     
     

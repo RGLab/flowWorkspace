@@ -2,7 +2,9 @@
 % Please edit documentation in R/read.gatingML.cytobank.R
 \name{extend}
 \alias{extend}
+\alias{extend.ellipsoidGate}
 \alias{extend.polygonGate}
+\alias{extend.rectangleGate}
 \title{extend the gate to the minimum and maximum limit of both dimensions
 based on the bounding information.
 It is equivalent to the behavior of shifting the off-scale boundary events into the gate boundary that is describled in
@@ -14,6 +16,10 @@ The advantage of extending gates instead of shifting data are two folds:
 extend(gate, bound, data.range = NULL, ...)
 
 \method{extend}{polygonGate}(gate, bound, data.range = NULL, plot = FALSE)
+
+\method{extend}{rectangleGate}(gate, ...)
+
+\method{extend}{ellipsoidGate}(gate, ...)
 }
 \arguments{
 \item{gate}{a flowCore filter/gate}

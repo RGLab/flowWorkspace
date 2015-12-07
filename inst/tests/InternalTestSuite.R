@@ -450,7 +450,7 @@ test_that("gatingML-cytobank parsing: cytotrol tcell",{
   openCyto_counts <- reshape2::dcast(openCyto_counts, Population ~ name, value.var = "Count")
   
   
-  expect_equal(cytobank_counts, openCyto_counts)
+  expect_equal(cytobank_counts, openCyto_counts, tol = 4e-4)
   
   
   
