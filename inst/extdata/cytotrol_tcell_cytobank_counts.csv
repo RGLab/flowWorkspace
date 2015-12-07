@@ -2,17 +2,19 @@ Experiment Name:,cytotrol_tcell
 Project Name:,test
 Primary Researcher:,Mike Jiang
 Compensation used:,File-internal Compensation
-Exported at:,December  4 2015 - 12:24 pm
+Exported at:,December  7 2015 - 11:33 am
 Link to experiment:,https://www.cytobank.org/cytobank/experiments/48376
 
 FCS Filename,CytoTrol_CytoTrol_1.fcs,CytoTrol_CytoTrol_2.fcs
 not debris,87876,87648
 singlets,79845,79641
-CD3,53141,50780
-CD8,12866,12419
-CD4,33654,32235
-Q1,419,383
+CD3,53138,50782
+CD8,12863,12418
+CD4,33654,32237
+Q1,419,384
 Q2,11429,10905
 Q3,17687,16971
-Q4,4119,3976
-CD8_Q2,2332,2212
+Q4,4119,3977
+CD8_Q2,2332,2211
+CD38 range,2332,2211
+HLA range,2316,2196

@@ -541,12 +541,27 @@ extend.rectangleGate <- function(gate, ...){
     gate <- fix.rectangleGate(gate)
     
     extend(as(gate, "polygonGate"), ...)
+  }else{
+    extend.rectangleGate1d(gate, ...)
   }
     
-  else
-    gate
 }
 
+extend.rectangleGate1d <- function(gate, bound, data.range = NULL)
+{
+  if(is.null(data.range))
+    data.range <- c(min = -.Machine$integer.max, max= .Machine$integer.max)
+  
+  
+  if(gate@min <= bound[, "min"][[1]])
+    gate@min <- data.range["min"]
+  
+  if(gate@max >= bound[, "max"][[1]])
+    gate@max <- data.range["max"]
+  
+  gate
+  
+}
 #' @export
 #' @S3method extend ellipsoidGate
 #' @rdname extend
