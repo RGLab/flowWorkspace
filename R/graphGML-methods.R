@@ -173,14 +173,16 @@ setMethod("gating", signature = c("graphGML", "GatingSet"), function(x, y, ...){
 #' @importFrom RBGL tsort
 gating.graphGML <- function(gt, gs, ...) {
   
-  
-  
+  trans <- getTransformations(gt)
+  trans.func <- trans@transforms
   gt_nodes <- tsort(gt)
   for (nodeID in gt_nodes) {
     
     # get parent node to gate
     gt_node <- getNodes(gt, nodeID, only.names = F)
     popName <- gt_node[["popName"]]
+    
+    
     parentID <- getParent(gt, nodeID)
     
     if(length(parentID) == 0)
@@ -188,25 +190,62 @@ gating.graphGML <- function(gt, gs, ...) {
     else
       parent <- getNodes(gt, parentID, only.names = F)[["popName"]]
     
+    gs_nodes <- basename(getChildren(gs[[1]], parent))
+    
+    if (length(gs_nodes) == 0)
+      isGated <- FALSE
+    else
+      isGated <- any(popName %in% gs_nodes)
+    
     #TODO: rename the node name with path in order to match against gs    
 #     parentInd <- match(parent, getNodes(gs[[1]], showHidden = TRUE))
 #     if (is.na(parentInd)) 
 #       stop("parent node '", parent, "' not gated yet!")
-  
-    this_gate <- gt_node[["gateInfo"]][["gate"]]
+    if(isGated){
+      message("Skip gating! Population '", paste(popName, collapse = ","), "' already exists.")
+      next
+    }
+    message(popName)
+    gateInfo <- gt_node[["gateInfo"]]
+    this_gate <- gateInfo[["gate"]]
+    
+#     if(popName == "PD-1(Histo)")
+#       browser()
+    
+    # transform bounds if applicable
+    bound <- gateInfo[["bound"]]
+    for(rn in rownames(bound)){
+      thisTrans <- trans.func[[rn]]
+      if(!is.null(thisTrans))
+        bound[rn, ] <- thisTrans@f(unlist(bound[rn, ]))
+    }
+      
+    #TODO:extend 1d gate and ellipse gate
+    if(length(parameters(this_gate)) == 2 && is(this_gate, "polygonGate"))
+      this_gate <- extend(this_gate,bound = bound)
+    
     sn <- sampleNames(gs)
     this_gate <- sapply(sn, function(i)this_gate)
     
     #update gates that are tailored for specific samples
-    tailor_gate <- gt_node[["gateInfo"]][["tailored_gate"]]
+    tailor_gate <- gateInfo[["tailored_gate"]]
     tg_sn <- names(tailor_gate)
     tg_sn <- tg_sn[tg_sn %in% sn] #filter tailor gates in case sample set provided are not complete
     if(length(tg_sn) >0){
-          this_gate[tg_sn] <- tailor_gate[tg_sn]
+      
+      
+      this_tgs <- lapply(tailor_gate[tg_sn], function(this_tg){
+        if(length(parameters(this_tg)) == 2 && is(this_tg, "polygonGate"))
+          this_tg <- extend(this_tg,bound = bound)  
+        this_tg
+      })
+      
+      
+          this_gate[tg_sn] <- this_tgs
     }
     
     
-    message(popName)
+    
     
     add(gs, this_gate, parent = parent, name = popName)
     
