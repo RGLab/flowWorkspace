@@ -450,13 +450,13 @@ test_that("gatingML-cytobank parsing: cytotrol tcell",{
   openCyto_counts <- reshape2::dcast(openCyto_counts, Population ~ name, value.var = "Count")
   
   
-  expect_equal(cytobank_counts, openCyto_counts, tol = 4e-4)
+  expect_equal(cytobank_counts, openCyto_counts, tol = 5e-4)
   
   
   
   })
 
-test_that("gatingML-cytobank parsing: cytotrol tcell",{
+test_that("gatingML-cytobank parsing: Merck SecondExample",{
   thisPath <- file.path(path, "/gatingML/Merck/SecondExample")
   xmlfile <- file.path(thisPath, "CytExp_10624_Gates_v3.xml")
   g <- read.gatingML.cytobank(xmlfile)
