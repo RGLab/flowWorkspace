@@ -29,8 +29,8 @@ g
 ### It can be inspected by various accessors.
 ```{r}
 getNodes(g)
-getParent(g, "GateSet_694130")
-getChildren(g, "GateSet_694130")
+getParent(g, "GateSet_722318")
+getChildren(g, "GateSet_722318")
 
 ```
 
