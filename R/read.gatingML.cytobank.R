@@ -336,7 +336,7 @@ extend <- function(gate, bound, data.range = NULL, ...)UseMethod("extend")
 #' @S3method extend polygonGate
 #' @rdname extend
 #' @param plot whether to plot the extended polygon.
-extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
+extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE, skip.channel = FALSE){
   
   #linear functions
   f.solve <- list(x = function(x, slope, x1, y1){
@@ -355,6 +355,11 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
   
   #update chnnl names with generic axis names 
   chnls <- as.vector(rownames(bound))
+  if(skip.channel)
+    is.skip <- grepl(c("^[FS]SC"), chnls)
+  else
+    is.skip <- rep(FALSE, 2)
+  
   axis.names <- c("x", "y")
   rownames(bound) <- axis.names
   
@@ -386,7 +391,7 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
   #accumulatively update verts by detecting and inserting the intersection points 
   #removing off-bound vertex points and inserting extended points
   #for each boundary line
-  for(dim in axis.names){ #loop from x to y
+  for(dim in axis.names[!is.skip]){ #loop from x to y
     
     for(bn in colnames(bound)){# loop from min to max
       intersect.coord <- bound[dim, bn][[1]]
@@ -547,17 +552,25 @@ extend.rectangleGate <- function(gate, ...){
     
 }
 
-extend.rectangleGate1d <- function(gate, bound, data.range = NULL)
+extend.rectangleGate1d <- function(gate, bound, data.range = NULL, skip.channel = FALSE)
 {
-  if(is.null(data.range))
-    data.range <- c(min = -.Machine$integer.max, max= .Machine$integer.max)
+  if(skip.channel)
+    is.skip <- grepl(c("^[FS]SC"), parameters(gate))
+  else
+    is.skip <- FALSE
+  if(!is.skip)
+  {
+    if(is.null(data.range))
+      data.range <- c(min = -.Machine$integer.max, max= .Machine$integer.max)
+    
+    
+    if(gate@min <= bound[, "min"][[1]])
+      gate@min <- data.range["min"]
+    
+    if(gate@max >= bound[, "max"][[1]])
+      gate@max <- data.range["max"]  
+  }
   
-  
-  if(gate@min <= bound[, "min"][[1]])
-    gate@min <- data.range["min"]
-  
-  if(gate@max >= bound[, "max"][[1]])
-    gate@max <- data.range["max"]
   
   gate
   
