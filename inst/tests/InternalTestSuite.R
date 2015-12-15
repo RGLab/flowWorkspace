@@ -500,7 +500,7 @@ test_that("gatingML-cytobank parsing: Merck FirstExample",{
   setkey(cytobank_counts_long, fcs_filename, population)
   dt_merged <- merge(opencyto_counts, cytobank_counts_long)
 
-  dt_merged[count.x != count.y]
+  expect_equal(nrow(dt_merged[count.x != count.y]), 0)
 })
 
 test_that("gatingML-cytobank parsing: Merck SecondExample",{
