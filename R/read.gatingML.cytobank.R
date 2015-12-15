@@ -245,65 +245,46 @@ constructTree <- function(flowEnv, gateInfo){
     
     if(nDepth == 1){#root node
       gateID <- thisGateSet[1]
-
+      g <- addGate(gateInfo,flowEnv, g, popId, gateID)
     }else{
       #traverse all the potential parent GateSets(i.e. subset)
-      parents_popIds <- names(counts[counts == nDepth - 1])
-      for(parentID in parents_popIds)
-      {
-        pGateSet <- gateSets[[parentID]]
-        #check the overlaps between two sets
-        if(setequal(intersect(pGateSet, thisGateSet), pGateSet))
-        { #if it is indeed a subset of the current gateSet
-          gateID <- setdiff(thisGateSet, pGateSet) #parse out the gateID
-          #add edge
-          g <- addEdge(parentID, popId, g)
-          # There might be multiple parents due to the duplicated GateSets allowed in gatingML
-          # it is not clear which one should be picked and
-          # we pick the first one for now
-          break 
-        }
+      #must go all the way up to the root
+      #because the difference between parent and current node could be more than level 1
+      for(pDepth in (nDepth - 1):1){
+        parents_popIds <- names(counts[counts == pDepth])
+        matchRes <- findParent(gateSets, thisGateSet, parents_popIds)  
+        if(!is.null(matchRes))
+          break
       }
+      parentID <- matchRes[["parentID"]]
+      gateIDs <- matchRes[["gateIDs"]]  
+      #when length(gateIDs) > 1, then we need to add each gate as a separate pop
+      #even though some of these gates do not have GateSet defined in gatingML
+      for(i in 1:length(gateIDs)){
+        gateID <- gateIDs[i]
+        if(i < length(gateIDs)){
+          #need to create the new pop that is not currently defined in gatingML GateSets
+          thisPopId <- gateID #use gateID as popID, which can not be found in gate_info
+          
+          #add new pop
+          g <- addNode(thisPopId, g)
+          thisGateName <- gateInfo[id == gateID, name]
+          nodeData(g, thisPopId, "popName") <- paste0(thisGateName, "_0")
+          
+          g <- addEdge(parentID, thisPopId, g)
+          g <- addGate(gateInfo,flowEnv, g, thisPopId, gateID)
+          parentID <- thisPopId #update the parent 
+        }else{
+          thisPopId <- popId
+          g <- addEdge(parentID, thisPopId, g)
+          g <- addGate(gateInfo,flowEnv, g, thisPopId, gateID)
+        }
+
+      }
+      
     }
     
-    #add gate
-    sb <- gateInfo[id == gateID, ]
-    #try to find the tailored gate
-    tg_sb <- gateInfo[gate_id == sb[, gate_id] & fcs != "", ]
-    
-    
-    tg <- sapply(tg_sb[, id], function(gateID){
-                flowEnv[[gateID]]
-              }, simplify = FALSE)
-    names(tg) <- tg_sb[, fcs]
-#     message(popName)
-    gate <- flowEnv[[gateID]]
-    #parse bounding info
-    cytobank_gate_def <- fromJSON(sb[, gate_def])
-    
-#     if(gateID == "Gate_2095590_UEQtMShIaXN0byk.")
-#       browser()
-    
-    pname <- parameters(gate)
-    if(length(pname) == 1){
-      bound <- cytobank_gate_def[["scale"]][c("min", "max")]
-      bound <- t(as.matrix(bound))
-      rownames(bound) <- pname
-    }
-    else
-      bound <- t(sapply(c("x", "y"), function(axis){
-        cytobank_gate_def[["scale"]][[axis]][c("min", "max")]
-      }))
-    
-    rownames(bound) <- as.vector(parameters(gate))
-    nodeData(g, popId, "gateInfo") <- list(list(gate = gate
-                                                , gateName = sb[, name]
-                                                , fcs = sb[, fcs]
-                                                , tailored_gate = tg
-                                                , bound = bound
-                                              )
-                                          )
-    
+
   }
   
   #prune the tree by removing the orphan nodes
@@ -313,6 +294,74 @@ constructTree <- function(flowEnv, gateInfo){
 #     if(length(inEdges(node, g)[[1]]) == 0)
 #       g <- removeNode(node, g)
 #   }
+  g
+}
+
+findParent <- function(gateSets,thisGateSet, parents_popIds){
+  isFound <- FALSE
+  for(parentID in parents_popIds)
+  {
+    pGateSet <- gateSets[[parentID]]
+    #check the overlaps between two sets
+    if(setequal(intersect(pGateSet, thisGateSet), pGateSet))
+    { 
+      isFound <- TRUE
+      #if it is indeed a subset of the current gateSet
+      gateIDs <- setdiff(thisGateSet, pGateSet) #parse out the gateID
+      
+      # There might be multiple parents due to the duplicated GateSets allowed in gatingML
+      # it is not clear which one should be picked and
+      # we pick the first one for now
+      
+      break 
+    }
+  }
+  if(isFound)
+    return(list(parentID = parentID, gateIDs = gateIDs))
+  else
+    return(NULL)
+  
+}
+
+
+addGate <- function(gateInfo,flowEnv, g, popId, gateID){
+  #add gate
+  sb <- gateInfo[id == gateID, ]
+  #try to find the tailored gate
+  tg_sb <- gateInfo[gate_id == sb[, gate_id] & fcs != "", ]
+  
+  
+  tg <- sapply(tg_sb[, id], function(gateID){
+    flowEnv[[gateID]]
+  }, simplify = FALSE)
+  names(tg) <- tg_sb[, fcs]
+  #     message(popName)
+  gate <- flowEnv[[gateID]]
+  #parse bounding info
+  cytobank_gate_def <- fromJSON(sb[, gate_def])
+  
+  #     if(gateID == "Gate_2095590_UEQtMShIaXN0byk.")
+  #       browser()
+  
+  pname <- parameters(gate)
+  if(length(pname) == 1){
+    bound <- cytobank_gate_def[["scale"]][c("min", "max")]
+    bound <- t(as.matrix(bound))
+    rownames(bound) <- pname
+  }
+  else
+    bound <- t(sapply(c("x", "y"), function(axis){
+      cytobank_gate_def[["scale"]][[axis]][c("min", "max")]
+    }))
+  
+  rownames(bound) <- as.vector(parameters(gate))
+  nodeData(g, popId, "gateInfo") <- list(list(gate = gate
+                                              , gateName = sb[, name]
+                                              , fcs = sb[, fcs]
+                                              , tailored_gate = tg
+                                              , bound = bound
+  )
+  )
   g
 }
 
