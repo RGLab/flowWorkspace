@@ -469,7 +469,7 @@ test_that("gatingML-cytobank parsing: Merck FirstExample",{
   fs <- transform(fs, trans)
   
   gs <- GatingSet(fs)
-  gating(g, gs, is.extend = F)
+  gating(g, gs)
   
   ### Verify the stats are correct
   #load stats from cytobank
@@ -499,8 +499,8 @@ test_that("gatingML-cytobank parsing: Merck FirstExample",{
   setkey(opencyto_counts, fcs_filename, population)
   setkey(cytobank_counts_long, fcs_filename, population)
   dt_merged <- merge(opencyto_counts, cytobank_counts_long)
-
-  expect_equal(nrow(dt_merged[count.x != count.y]), 0)
+  unequaled <- dt_merged[count.x != count.y]
+  expect_equal(nrow(unequaled), 0)
 })
 
 test_that("gatingML-cytobank parsing: Merck SecondExample",{
