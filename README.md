@@ -19,7 +19,7 @@ bicLite(flowWorkspace) # may be older
 # Then, install the latest version from github using devtools package 
 install.packages("devtools") 
 library(devtools) #load it
-install_github("flowWorkspace","RGLab",branch="master")
+install_github("flowWorkspace/RGLab", ref="trunk")
 
 ```
 
@@ -27,7 +27,7 @@ install_github("flowWorkspace","RGLab",branch="master")
 
 ```r
 library(flowWorkspace)
-dataDir <- system.file("extdata",package="flowWorkspaceData")
+dataDir <- system.file("extdata", package="flowWorkspaceData")
 wsfile <- list.files(dataDir, pattern="manual.xml",full=TRUE)
 ws <- openWorkspace(wsfile);
 gs <- parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")
