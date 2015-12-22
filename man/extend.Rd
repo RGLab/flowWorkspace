@@ -13,7 +13,7 @@ The advantage of extending gates instead of shifting data are two folds:
 1. Avoid the extra computation each time applying or plotting the gates
 2. Avoid changing the data distribution caused by adding the gates}
 \usage{
-extend(gate, bound, data.range = NULL, ...)
+extend(gate, bound, data.range = NULL, plot = FALSE, ...)
 
 \method{extend}{polygonGate}(gate, bound, data.range = NULL, plot = FALSE)
 
@@ -30,9 +30,9 @@ rownames should be the channel names. colnames should be c("min", "max")}
 \item{data.range}{numeric matrix specifying the data limits of each channel. It is used to set the extended value of vertices and must has the same structure as 'bound'.
 when it is not supplied, c(-.Machine$integer.max, - .Machine$integer.max) is used.}
 
-\item{...}{other arguments}
-
 \item{plot}{whether to plot the extended polygon.}
+
+\item{...}{other arguments}
 }
 \description{
 extend the gate to the minimum and maximum limit of both dimensions
