@@ -456,6 +456,53 @@ test_that("gatingML-cytobank parsing: cytotrol tcell",{
   
   })
 
+test_that("gatingML-cytobank parsing: Merck FirstExample",{
+  thisPath <- file.path(path, "/gatingML/Merck/firstExample")
+  xmlfile <- file.path(thisPath, "CytExp_10623_Gates_v5.xml")
+  g <- read.gatingML.cytobank(xmlfile)
+  fcsFiles <- list.files(pattern = "\\.fcs", thisPath, full = T)
+  fs <- read.ncdfFlowSet(fcsFiles)
+  
+  fs <- compensate(fs, g)
+  
+  trans <- getTransformations(g)
+  fs <- transform(fs, trans)
+  
+  gs <- GatingSet(fs)
+  gating(g, gs, is.extend = F)
+  
+  ### Verify the stats are correct
+  #load stats from cytobank
+  cytobank_counts <- fread(file.path(thisPath,"population_counts.csv"), stringsAsFactors = FALSE)
+  # Melt the data
+  cytobank_counts_long <- melt(cytobank_counts, variable.name = "population", value.name = "count", id.vars = "FCS Filename")
+  # Change column names
+  setnames(cytobank_counts_long, c("FCS Filename"), c("fcs_filename"))
+  # Properly format the column names
+  cytobank_counts_long <- cytobank_counts_long[,population := gsub("_EventCounts", "", population)]
+  
+  
+  # extract the counts from our gating sets
+  #load openCyto stats
+  opencyto_counts <- getPopStats(gs, statType = "count")
+  setnames(opencyto_counts, names(opencyto_counts), c("fcs_filename", "population", "parent", "count", "parent_count"))
+  #drop the parent column for simplicity
+  opencyto_counts <- opencyto_counts[,.(fcs_filename, population, count)]
+  #Remove spaces in population names as cytobank removes them here
+  opencyto_counts <- opencyto_counts[, population := gsub(" ", "", population)]
+  
+  
+  
+  # merge the two data.tables
+
+  # set key (fcs_filename, population)
+  setkey(opencyto_counts, fcs_filename, population)
+  setkey(cytobank_counts_long, fcs_filename, population)
+  dt_merged <- merge(opencyto_counts, cytobank_counts_long)
+
+  dt_merged[count.x != count.y]
+})
+
 test_that("gatingML-cytobank parsing: Merck SecondExample",{
   thisPath <- file.path(path, "/gatingML/Merck/SecondExample")
   xmlfile <- file.path(thisPath, "CytExp_10624_Gates_v3.xml")
