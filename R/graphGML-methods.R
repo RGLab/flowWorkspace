@@ -171,7 +171,7 @@ setMethod("gating", signature = c("graphGML", "GatingSet"), function(x, y, ...){
 })
 
 #' @importFrom RBGL tsort
-gating.graphGML <- function(gt, gs, ...) {
+gating.graphGML <- function(gt, gs, is.extend = TRUE, ...) {
   
   trans <- getTransformations(gt)
   trans.func <- trans@transforms
@@ -220,7 +220,7 @@ gating.graphGML <- function(gt, gs, ...) {
         bound[rn, ] <- thisTrans@f(unlist(bound[rn, ]))
     }
       
-    this_gate <- extend(this_gate,bound = bound)
+    this_gate <- extend(this_gate,bound = bound, skip.channel = !is.extend)
     
     sn <- sampleNames(gs)
     this_gate <- sapply(sn, function(i)this_gate)
@@ -230,7 +230,7 @@ gating.graphGML <- function(gt, gs, ...) {
     tg_sn <- names(tailor_gate)
     tg_sn <- tg_sn[tg_sn %in% sn] #filter tailor gates in case sample set provided are not complete
     if(length(tg_sn) >0){
-      this_tgs <- lapply(tailor_gate[tg_sn], extend,bound = bound)  
+      this_tgs <- lapply(tailor_gate[tg_sn], extend,bound = bound, skip.channel = !is.extend)  
       this_gate[tg_sn] <- this_tgs
     }
     
