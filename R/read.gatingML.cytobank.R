@@ -378,6 +378,7 @@ addGate <- function(gateInfo,flowEnv, g, popId, gateID){
 #'        rownames should be the channel names. colnames should be c("min", "max")
 #' @param data.range numeric matrix specifying the data limits of each channel. It is used to set the extended value of vertices and must has the same structure as 'bound'.        
 #'        when it is not supplied, c(-.Machine$integer.max, - .Machine$integer.max) is used.
+#' @param skip.channel whether to skip extending some channels (e.g. SSC or FSC)
 #' @param ... other arguments        
 extend <- function(gate, bound, data.range = NULL, ...)UseMethod("extend")
 
