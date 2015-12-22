@@ -378,7 +378,6 @@ addGate <- function(gateInfo,flowEnv, g, popId, gateID){
 #'        rownames should be the channel names. colnames should be c("min", "max")
 #' @param data.range numeric matrix specifying the data limits of each channel. It is used to set the extended value of vertices and must has the same structure as 'bound'.        
 #'        when it is not supplied, c(-.Machine$integer.max, - .Machine$integer.max) is used.
-#' @param skip.channel whether to skip extending some channels (e.g. SSC or FSC)
 #' @param ... other arguments        
 extend <- function(gate, bound, data.range = NULL, ...)UseMethod("extend")
 
@@ -386,7 +385,7 @@ extend <- function(gate, bound, data.range = NULL, ...)UseMethod("extend")
 #' @S3method extend polygonGate
 #' @rdname extend
 #' @param plot whether to plot the extended polygon.
-extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE, skip.channel = FALSE){
+extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE){
   
   #linear functions
   f.solve <- list(x = function(x, slope, x1, y1){
@@ -405,10 +404,6 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE, ski
   
   #update chnnl names with generic axis names 
   chnls <- as.vector(rownames(bound))
-  if(skip.channel)
-    is.skip <- grepl(c("^[FS]SC"), chnls)
-  else
-    is.skip <- rep(FALSE, 2)
   
   axis.names <- c("x", "y")
   rownames(bound) <- axis.names
@@ -441,7 +436,7 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE, ski
   #accumulatively update verts by detecting and inserting the intersection points 
   #removing off-bound vertex points and inserting extended points
   #for each boundary line
-  for(dim in axis.names[!is.skip]){ #loop from x to y
+  for(dim in axis.names){ #loop from x to y
     
     for(bn in colnames(bound)){# loop from min to max
       intersect.coord <- bound[dim, bn][[1]]
@@ -531,26 +526,30 @@ extend.polygonGate <- function(gate, bound, data.range = NULL, plot = FALSE, ski
         this.extend[, dim] <- data.range[dim, bn]
         
         #sort by the Id
-        this.extend[, is.increase:= order(id) == 1]
-        #check if it reaches to the last point of polygon
-        #which implies the other point is the first point of polygon
-        #then overwrite the order info
-        this.extend[, is.last := id == verts[,max(id)]] 
-        #increase id values when
-        #1. it is the last point
-        #2. it is not last, but has smaller id
-        nLast <- sum(this.extend[, is.last])
-        if(nLast == 0){
-          this.extend[, id:= ifelse(is.increase, id + 0.2, id - 0.2)]  
-        }else if(nLast == 1){
-          this.extend[, id := ifelse(is.last, id + 0.2, id - 0.2)]  
+        this.extend[, is.smaller:= order(id) == 1]
+        #check if head-tail node situation
+        
+        this.extend[, is.tail := id == verts[,max(id)]] 
+        this.extend[, is.head := id == verts[,min(id)]] 
+        
+        nhead <- sum(this.extend[, is.head])
+        ntail <- sum(this.extend[, is.tail])
+        
+        
+        if(nhead == 0||ntail == 0){#two consecutive points
+          this.extend[is.smaller == TRUE, id := id + 0.1]
+          this.extend[is.smaller == FALSE, id := this.extend[is.smaller == TRUE, id] + 0.1]
+        }else if(nhead == 1 && ntail == 1){
+          #deal with head-tail points
+          this.extend[is.smaller == TRUE, id := id - 0.1]
+          this.extend[is.smaller == FALSE, id := this.extend[is.smaller == TRUE, id] - 0.1]
         }else
-          stop("multiple intersection reach the last point!")
+          stop("Incorrect number of head and tail points!")
         
         
-        
-        this.extend[, is.increase := NULL]
-        this.extend[, is.last := NULL]
+        this.extend[, is.smaller := NULL]
+        this.extend[, is.head := NULL]
+        this.extend[, is.tail := NULL]
         
         verts <- rbindlist(list(verts, this.extend))
         verts <- verts[order(id),]
@@ -602,14 +601,9 @@ extend.rectangleGate <- function(gate, ...){
     
 }
 
-extend.rectangleGate1d <- function(gate, bound, data.range = NULL, skip.channel = FALSE)
+extend.rectangleGate1d <- function(gate, bound, data.range = NULL)
 {
-  if(skip.channel)
-    is.skip <- grepl(c("^[FS]SC"), parameters(gate))
-  else
-    is.skip <- FALSE
-  if(!is.skip)
-  {
+  
     if(is.null(data.range))
       data.range <- c(min = -.Machine$integer.max, max= .Machine$integer.max)
     
@@ -619,7 +613,7 @@ extend.rectangleGate1d <- function(gate, bound, data.range = NULL, skip.channel 
     
     if(gate@max >= bound[, "max"][[1]])
       gate@max <- data.range["max"]  
-  }
+  
   
   
   gate

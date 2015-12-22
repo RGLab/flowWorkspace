@@ -15,8 +15,7 @@ The advantage of extending gates instead of shifting data are two folds:
 \usage{
 extend(gate, bound, data.range = NULL, ...)
 
-\method{extend}{polygonGate}(gate, bound, data.range = NULL, plot = FALSE,
-  skip.channel = FALSE)
+\method{extend}{polygonGate}(gate, bound, data.range = NULL, plot = FALSE)
 
 \method{extend}{rectangleGate}(gate, ...)
 
@@ -34,8 +33,6 @@ when it is not supplied, c(-.Machine$integer.max, - .Machine$integer.max) is use
 \item{...}{other arguments}
 
 \item{plot}{whether to plot the extended polygon.}
-
-\item{skip.channel}{whether to skip extending some channels (e.g. SSC or FSC)}
 }
 \description{
 extend the gate to the minimum and maximum limit of both dimensions
