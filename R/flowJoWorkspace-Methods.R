@@ -228,7 +228,15 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     sg <- subset(sg, groupName == group.name)
     
     #parse the pData and apply the filter (subset)
-    pd <- .parse.pData(obj, keywords, sg, keywords.source, execute, additional.keys, path, keyword.ignore.case, subset)
+    pd <- .parse.pData(obj = obj, keywords = keywords, sg = sg
+                      , keywords.source = keywords.source
+                      , execute = execute
+                      , additional.keys = additional.keys
+                      , path = path
+                      , keyword.ignore.case = keyword.ignore.case
+                      , subset = subset
+                      , ... #arguments for read.FCSheader
+                      )
     
 	.parseWorkspace(xmlFileName=file.path(obj@path,obj@file)
                     , pd = pd 
@@ -241,7 +249,10 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
 		
 }
 
-.parse.pData <- function(obj, keywords, sg, keywords.source, execute, additional.keys, path, keyword.ignore.case, subset){
+.parse.pData <- function(obj, keywords, sg, keywords.source, execute, additional.keys, path, keyword.ignore.case, subset, emptyValue = TRUE
+                          , ... #other arguments ignored
+                         )
+{
   
   #handle the non-expression 'subset' (e.g. character, numerical or logical index)
   subset_evaluated <- try(eval(subset,  parent.frame(n = 2)), silent = TRUE) #eval it outside of pd first
@@ -354,7 +365,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                   if(is.null(key.env[["key.fils"]])){
                     all.files <- list.files(pattern= ".fcs",path=path,recursive=TRUE,full.names=TRUE)  
                     if(length(all.files) > 0)
-                      key.env[["key.fils"]] <- read.FCSheader(all.files, keyword = "$FIL")
+                      key.env[["key.fils"]] <- read.FCSheader(all.files, keyword = "$FIL", emptyValue = emptyValue)
                   }
                   key.fils <- key.env[["key.fils"]]
                   #$FIL is optional keyword according to FCS3.1 standard
@@ -372,7 +383,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                   {
                     guids.fcs <-  sapply(absPath, function(thisPath){
                           # get keyword from FCS header
-                          kws <- as.list(read.FCSheader(thisPath)[[1]])
+                          kws <- as.list(read.FCSheader(thisPath, emptyValue = emptyValue)[[1]])
                           kw <- trimws(unlist(kws[additional.keys]))
                           # construct guids
                           thisFile <- ifelse(isFileNameSearchFailed, kws["$FIL"], basename(thisPath))
@@ -413,7 +424,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                   #skip those non-unique matched samples
                   if(.[["nFound"]] == 1){
                     #parse pData by reading the fcs headers
-                    kws <- read.FCSheader(.[["file"]])[[1]] %>% trimws %>% as.list 
+                    kws <- read.FCSheader(.[["file"]], emptyValue = emptyValue)[[1]] %>% trimws %>% as.list 
                   }else
                     kws <- NULL
                   
