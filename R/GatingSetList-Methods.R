@@ -29,7 +29,7 @@ setMethod("rbind2",
         #combine tree structure
         ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
         sampleList <- lapply(x, sampleNames, level =1)
-        pointer <- .Call("R_combineGatingSet",ptrlist,sampleList,package="flowWorkspace")
+        pointer <- .cpp_combineGatingSet(ptrlist,sampleList)
         G <- new("GatingSet")
         G@pointer <- pointer
         G@guid <- .uuid_gen()

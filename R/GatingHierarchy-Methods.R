@@ -186,7 +186,7 @@ NULL
 #return a graphNEL object that only contans the node Name and isBool flags
 .getGraph <- function(x){
   DotFile <- tempfile(fileext=".dot")
-  .Call("R_plotGh",x@pointer,sampleNames(x),DotFile,FALSE)
+  .cpp_plotGh(x@pointer,sampleNames(x),DotFile)
 #  browser()
   #read dot from into Ragraph
   g <- agread(DotFile)
@@ -795,7 +795,7 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
             orderInd <- orderInd - 1
 
             if(is.numeric(path)){
-              nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
               
               if(path == 1){
                 nodeNames <- basename(nodeNames)
@@ -818,10 +818,10 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
               }
 
             }else if(path == "auto"){
-                nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
+                nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
               
             }else if(path == "full"){
-              nodeNames <- .Call("R_getNodes",x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
             }else
 			  stop("Invalid 'path' argument. The valid input is 'full' or 'auto' or a numeric value.")
 
@@ -859,7 +859,7 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 #' @rdname getParent
 #' @export 
 setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, ...){
-            pind <- .Call("R_getParent",obj@pointer,sampleNames(obj)[1], y)
+            pind <- .cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
             pind <- pind +1
 			getNodes(obj, showHidden = TRUE, ...)[pind]
 		})
@@ -868,7 +868,7 @@ setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, .
 #' @aliases getChildren   
 setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y, showHidden = TRUE, ...){
 			
-            cind <- .Call("R_getChildren",obj@pointer,sampleNames(obj), y, showHidden)
+            cind <- .cpp_getChildren(obj@pointer,sampleNames(obj), y, showHidden)
             cind <- cind + 1
 			getNodes(obj, showHidden = TRUE, ...)[cind]
 })
@@ -905,7 +905,7 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 	stopifnot(!missing(y))
 
     
-	stats<-.Call("R_getPopStats",x@pointer,sampleNames(x), y)
+	stats<-.cpp_getPopStats(x@pointer,sampleNames(x), y)
 
     
 	parent<-try(getParent(x, y),silent=T)
@@ -916,7 +916,7 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 	else
 	{
 		
-		pstats<-.Call("R_getPopStats",x@pointer,sampleNames(x), parent)
+		pstats<-.cpp_getPopStats(x@pointer,sampleNames(x), parent)
 	}
 
 
@@ -1000,7 +1000,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2, path = "auto", ...){
 setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 			
 
-				g<-.Call("R_getGate",obj@pointer,sampleNames(obj), y)
+				g<-.cpp_getGate(obj@pointer,sampleNames(obj), y)
 				filterId <- g$filterId
 				if(g$type==1)
 				{
@@ -1048,7 +1048,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
         
 .getNodeInd <- function(obj,y, ...){
     
-    ind <- .Call("R_getNodeID",obj@pointer,sampleNames(obj)[1], y)
+    ind <- .cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
 
     ind + 1 # convert to R index
 
@@ -1084,7 +1084,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #' @export
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
             
-            .Call("R_getIndices",obj@pointer,sampleNames(obj), y)
+            .cpp_getIndices(obj@pointer,sampleNames(obj), y)
 
 		})
 
@@ -1094,7 +1094,7 @@ setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,
 
 #			browser()
       
-      .Call("R_getGateFlag",obj@pointer,sampleNames(obj), y)
+      .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
 
     })
 
@@ -1102,7 +1102,7 @@ setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,
 setGeneric("isNegated",function(obj, y, ...)standardGeneric("isNegated"))
 setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
       
-      .Call("R_getNegateFlag",obj@pointer,sampleNames(obj), y)
+      .cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
       
       
     })
@@ -1268,7 +1268,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
   sinh(((M + A) * log(10)) * x/length - A * log(10)) * T / sinh(M * log(10)) 
 }
 .getTransformations <- function(pointer,sampleName, channel = NULL, inverse = FALSE, ...){
-    trans <- .Call("R_getTransformations",pointer,sampleName, inverse)
+    trans <- .cpp_getTransformations(pointer,sampleName, inverse)
     transList <- lapply(trans,function(curTrans){
 #						browser()
           if(curTrans$type=="log")
@@ -1420,7 +1420,7 @@ flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, 
 #' @export 
 #' @rdname getCompensationMatrices
 setMethod("getCompensationMatrices","GatingHierarchy",function(x){
-			comp<-.Call("R_getCompensation",x@pointer,sampleNames(x))
+			comp<-.cpp_getCompensation(x@pointer,sampleNames(x))
 			cid<-comp$cid
 #			browser()
 			if(cid=="")
@@ -1696,7 +1696,7 @@ setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="character")
     ,function(x,y,value){
       
-      .Call("R_setNodeName",x@pointer,sampleNames(x), y,value)
+      .cpp_setNodeName(x@pointer,sampleNames(x), y,value)
     })
 
 #' hide/unhide a node
@@ -1715,7 +1715,7 @@ setMethod("setNode"
     ,function(x,y,value){
       
       hidden = !value
-      .Call("R_setNodeFlag",x@pointer,sampleNames(x), y, hidden)
+      .cpp_setNodeFlag(x@pointer,sampleNames(x), y, hidden)
     })
 
 #' @rdname sampleNames

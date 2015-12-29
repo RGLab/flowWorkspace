@@ -256,7 +256,7 @@ setMethod("add",
     sn <- sampleNames(gh)
     
     ptr <- gh@pointer
-	nodeID <- .Call("R_addGate", ptr, sn, filterObject, parent, name)
+	nodeID <- .cpp_addGate( ptr, sn, filterObject, parent, name)
 
     if(recompute){
       extend_val <- 0
@@ -266,7 +266,7 @@ setMethod("add",
       #which may not be optimal for bool gate
       data <- getData(gh)
       mat <- exprs(data)
-      .Call("R_gating", ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case, TRUE)
+      .cpp_gating( ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case, TRUE)
     }
         
 	nodeID+1
@@ -413,7 +413,7 @@ setMethod("Rm",
             #will change during deletion
 			lapply(childrenNodes,function(child)Rm(child,envir))
             
-			.Call("R_removeNode",envir@pointer,sampleNames(envir), symbol)
+			.cpp_removeNode(envir@pointer,sampleNames(envir), symbol)
 		})
 
 

@@ -61,8 +61,8 @@
   #and we have to make sure updated comp.chnls
   #doesn't interfere the second run of updateChannels
   
-  sn <- .Call("R_getSamples", gs@pointer)[1] #can't use sampleNames(gs) since flow data may not be bound to gs yet when it is used within parseWorkspace
-  comp <- .Call("R_getCompensation", gs@pointer, sn)
+  sn <- .cpp_getSamples( gs@pointer)[1] #can't use sampleNames(gs) since flow data may not be bound to gs yet when it is used within parseWorkspace
+  comp <- .cpp_getCompensation( gs@pointer, sn)
 #   comp.chnl <- comp$parameters
   prefix <- comp$prefix
   suffix <- comp$suffix
