@@ -59,7 +59,7 @@ Suggests:
     ,flowWorkspaceData
     ,RSVGTipsDevice
     ,knitr
-LinkingTo: Rcpp, BH(>= 1.58.0-1)
+LinkingTo: Rcpp, BH(>= 1.60.0-1)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make
 
