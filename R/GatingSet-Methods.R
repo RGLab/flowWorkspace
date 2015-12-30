@@ -472,7 +472,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(gs, samples, execute,isNcdf,compensation=NULL,wsType = "", extend_val = 0, extend_to = -4000, prefix = TRUE, channel.ignore.case = FALSE, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword",  transform = TRUE, ...){
+.addGatingHierarchies <- function(gs, samples, execute,isNcdf
+                                      ,compensation=NULL,wsType = ""
+                                      , extend_val = 0, extend_to = -4000
+                                      , prefix = TRUE, channel.ignore.case = FALSE
+                                      , ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
+                                      ,  transform = TRUE, ...){
 
   if(nrow(samples)==0)
     stop("no sample to be added to GatingSet!")
@@ -541,8 +546,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       file <- row[["file"]]
       cnd <- colnames(fs)
 			message("loading data: ",file);
+            
 			if(isNcdf)
-				data <- read.FCS(file)[, cnd]
+				data <- read.FCS(file, ...)[, cnd]
 			else
 				data <- fs[[guid]]
             

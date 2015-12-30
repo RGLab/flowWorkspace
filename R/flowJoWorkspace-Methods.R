@@ -492,7 +492,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
   
   return(pd)
 }
-.parseWorkspace <- function(xmlFileName, execute, isNcdf = TRUE, includeGates = TRUE,sampNloc="keyword",xmlParserOption, wsType, ws, pd, ...){
+.parseWorkspace <- function(xmlFileName, execute, isNcdf = TRUE, includeGates = TRUE
+                            ,sampNloc="keyword",xmlParserOption, wsType, ws, pd, ...){
   
   
 #	message("calling c++ parser...")
