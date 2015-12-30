@@ -18,6 +18,27 @@ test_that("v 10.0.6 - vX 1.8",{
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]
       expect_equal(thisCounts, expectCounts)
+      
+      #test double delimiter issue
+      fcsname <- pData(gs)[["name"]]
+      fr <- read.FCS(file.path(thisPath, fcsname))
+      tmp <- tempdir()
+      write.FCS(fr, filename = file.path(tmp, fcsname), delimiter = "/")
+      
+      expect_error(gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = F, path = tmp)
+                  , "Empty keyword name") #flowSet
+      expect_error(gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = T, path = tmp)
+          , "Empty keyword name")#ncdfFlowSet
+              
+      gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = T, path = tmp, emptyValue = F)#ncdf
+      gh <- gs[[1]]
+      thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]            
+      expect_equal(thisCounts, expectCounts)
+      
+      gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = F, path = tmp, emptyValue = F)#flowSet
+      gh <- gs[[1]]
+      thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]            
+      expect_equal(thisCounts, expectCounts)
     })
 
 
