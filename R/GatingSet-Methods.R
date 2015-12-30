@@ -248,7 +248,7 @@ load_gs<-function(path){
 
     message("saving tree object...")
     #save external pointer object
-    .Call("R_saveGatingSet",G@pointer, dat.file, typeID, isPB)
+    .cpp_saveGatingSet(G@pointer, dat.file, typeID, isPB)
 
     message("saving R object...")
     saveRDS(G,rds.file)
@@ -329,7 +329,7 @@ load_gs<-function(path){
       }
 
       message("loading tree object...")
-      gs@pointer<-.Call("R_loadGatingSet", dat.file, typeID, isPB)
+      gs@pointer<-.cpp_loadGatingSet( dat.file, typeID, isPB)
 
 
       if(isNcdf(gs))
@@ -440,7 +440,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			files<-file.path(dataPaths,samples)
 			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
-			Object@pointer <- .Call("R_NewGatingSet",x@pointer,sampleNames(x),samples)
+			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
             Object@guid <- .uuid_gen()
             
             sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
@@ -534,7 +534,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		
 
         # get comp
-        comp <- .Call("R_getCompensation", gs@pointer, guid)
+        comp <- .cpp_getCompensation( gs@pointer, guid)
         cid <- comp$cid
         
 
@@ -716,7 +716,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             recompute <- !transform #recompute flag controls whether gates and data need to be transformed
             nodeInd <- 0
             
-            .Call("R_gating",gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool)
+            .cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
             #since colnames(fs) is not udpated yet.
@@ -788,7 +788,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
           #transform and adjust the gates without gating
           if(transform)
-            .Call("R_computeGates",gs@pointer, guid, gains, extend_val, extend_to)
+            .cpp_computeGates(gs@pointer, guid, gains, extend_val, extend_to)
           axis.labels <- list()
         }
 
@@ -869,7 +869,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #  browser()
 
      trans<-.getTransformations(G@pointer, sampleName)
-     comp<-.Call("R_getCompensation",G@pointer,sampleName)
+     comp<-.cpp_getCompensation(G@pointer,sampleName)
      prefix <- comp$prefix
      suffix <- comp$suffix
 
@@ -1606,7 +1606,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 			clone <- x
 			#clone c structure
 			message("cloning tree structure...")
-			clone@pointer <- .Call("R_CloneGatingSet",x@pointer,sampleNames(x))
+			clone@pointer <- .cpp_CloneGatingSet(x@pointer,sampleNames(x))
             clone@guid <- .uuid_gen()
 
 			#deep copying flow Data
@@ -1666,7 +1666,7 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
   
   extend_val <- 0
   ignore_case <- FALSE
-  gains <- NULL
+  gains <- numeric(0)
   lapply(x,function(gh){
 
 
@@ -1718,7 +1718,7 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
               nodeInd <- as.integer(nodeID)-1
               recompute <- TRUE
 #              browser()
-              res <- try(.Call("R_gating",gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case, leaf.bool), silent = TRUE)
+              res <- try(.cpp_gating(gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case, leaf.bool), silent = TRUE)
               if(class(res) == "try-error"){
                 if(!isloadData&&grepl("not found in flowData", res))
                   stop("Found ungated upstream population. Set 'alwaysLoadData = TRUE' for 'recompute' method, and try again!")
@@ -1797,7 +1797,7 @@ setReplaceMethod("sampleNames",
       oldNames <- sampleNames(object)
       #update c++ data structure
       mapply(oldNames,value, FUN = function(oldName, newName){
-            .Call("R_setSample", object@pointer, oldName, newName)
+            .cpp_setSample( object@pointer, oldName, newName)
       })
 
       #update data
@@ -1991,7 +1991,7 @@ setMethod("setNode"
 #' @rdname loglevel
 #' @export 
 getLoglevel <- function(){
-  level <- .Call("R_getLogLevel")
+  level <- .cpp_getLogLevel()
   c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")[level + 1]
 }
 
@@ -2010,7 +2010,7 @@ getLoglevel <- function(){
 setLoglevel <- function(level = "none"){
   valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
   level <- match.arg(level, valid_levels)
-  .Call("R_setLogLevel", as.integer(match(level, valid_levels) - 1))
+  .cpp_setLogLevel( as.integer(match(level, valid_levels) - 1))
   level
 }
 
@@ -2297,11 +2297,8 @@ getIndiceMat <- function(gh,y){
 .getIndiceMat <- function(gs, thisSample, nodes){
 
   #extract logical indices for each cytokine gate
-  indice_list <- sapply(nodes,function(this_node).Call("R_getIndices"
-            , gs@pointer
-            , thisSample
-            , this_node)
-      ,simplify = FALSE)
+  indice_list <- sapply(nodes,function(this_node).cpp_getIndices(gs@pointer, thisSample, this_node)
+                        ,simplify = FALSE)
   
   #construct the indice matrix
   do.call(cbind, indice_list)
@@ -2436,14 +2433,14 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       
     
       nodeIds <- sapply(pops, function(pop){
-            ind <- .Call("R_getNodeID",x@pointer,sample, pop)
+            ind <- .cpp_getNodeID(x@pointer,sample, pop)
             ind + 1 # convert to R index
           })
       nodeIds <- as.integer(nodeIds) - 1
       data <- fs[[sample, chnls]]
       data <- exprs(data)
       
-      data <- .Call("R_getSingleCellExpression", x@pointer, sample, nodeIds, data, markers, threshold)
+      data <- .cpp_getSingleCellExpression( x@pointer, sample, nodeIds, data, markers, threshold)
       data
           
 
@@ -2478,7 +2475,7 @@ insertGate <- function(gs, gate, parent, children){
   #copy the entire tree structure
   message("cloning tree structure...")
   clone <- gs
-  clone@pointer <- .Call("R_CloneGatingSet",gs@pointer,sampleNames(gs))
+  clone@pointer <- .cpp_CloneGatingSet(gs@pointer,sampleNames(gs))
   #remove the old children
   lapply(children, function(child)Rm(child, clone))
   

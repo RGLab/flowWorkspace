@@ -14,8 +14,8 @@
  * write R API
  */
 
-#include "include/R_GatingHierarchy.hpp"
-#include "include/R_GatingSet.hpp"
+#include "include/GatingHierarchy.hpp"
+#include "include/GatingSet.hpp"
 #include <stdexcept>
 #include "include/gate.hpp"
 #include "include/transformation.hpp"
@@ -24,83 +24,56 @@ using namespace std;
 /*
  * only expose gating set pointer to R to avoid gc() by R
  */
-RcppExport SEXP R_plotGh(SEXP _gsPtr,SEXP _sampleName,SEXP _output) {
-BEGIN_RCPP
-
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
+//[[Rcpp::export(name=".cpp_plotGh")]]
+void plotGh(XPtr<GatingSet> gs,string sampleName,string output) {
 
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
+  gh->drawGraph(output);
 
-	string output=as<string>(_output);
- 	gh->drawGraph(output);
-
-END_RCPP
 }
 
 
 /*
  * return node names as a character vector
  */
-RcppExport SEXP R_getNodes(SEXP _gsPtr,SEXP _sampleName,SEXP _order,SEXP _fullPath, SEXP _showHidden){
-BEGIN_RCPP
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
+//[[Rcpp::export(name=".cpp_getNodes")]]
+StringVec getNodes(XPtr<GatingSet> gs,string sampleName
+                  ,unsigned short order
+                  ,bool fullPath
+                  , bool showHidden){
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	unsigned short order=as<unsigned short>(_order);
-	bool fullPath=as<bool>(_fullPath);
-	bool showHidden=as<bool>(_showHidden);
 
-	return wrap(gh->getPopPaths(order,fullPath,showHidden));
-END_RCPP
+	return gh->getPopPaths(order,fullPath,showHidden);
+
 }
 
 /*
  * query by path
  */
-RcppExport SEXP R_getNodeID(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getNodeID")]]
+NODEID getNodeID(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingSet *	gs=getGsPtr(_gsPtr);
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
-	return wrap((NODEID)gh->getNodeID(gatePath));
 
+	return (NODEID)gh->getNodeID(gatePath);
 
-END_RCPP
 }
-RcppExport SEXP R_getParent(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getParent")]]
+NODEID getParent(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
-	return wrap((NODEID)gh->getParent(u));
-END_RCPP
+	return (NODEID)gh->getParent(u);
+
 }
 
-RcppExport SEXP R_getChildren(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath, SEXP _showHidden){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getChildren")]]
+vector<NODEID> getChildren(XPtr<GatingSet> gs,string sampleName
+                             ,string gatePath, bool showHidden){
 
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-	bool showHidden = as<bool>(_showHidden);
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
+
 	NODEID u = gh->getNodeID(gatePath);
 	VertexID_vec childrenID = gh->getChildren(u);
 	vector<NODEID> res;
@@ -111,20 +84,15 @@ BEGIN_RCPP
 			res.push_back(thisNodeID);
 	}
 
-	return wrap(res);
-END_RCPP
+	return res;
+
 }
 
-RcppExport SEXP R_getPopStats(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getPopStats")]]
+List getPopStats(XPtr<GatingSet> gs,string sampleName
+                     ,string gatePath){
 
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
 	nodeProperties &node=gh->getNodeProperty(u);
 
@@ -132,22 +100,14 @@ BEGIN_RCPP
 						,Named("FlowJo",node.getStats(false))
 						);
 
-END_RCPP
 }
 
 
 
-RcppExport SEXP R_getCompensation(SEXP _gsPtr,SEXP _sampleName){
-BEGIN_RCPP
-
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
-
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	compensation comp=gh->getCompensation();
+//[[Rcpp::export(name=".cpp_getCompensation")]]
+List getCompensation(XPtr<GatingSet> gs,string sampleName){
+  GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
+  compensation comp=gh->getCompensation();
 	return(List::create(Named("cid",comp.cid)
 						,Named("prefix",comp.prefix)
 						,Named("suffix",comp.suffix)
@@ -156,19 +116,14 @@ BEGIN_RCPP
 						,Named("spillOver",comp.spillOver))
 			);
 
-END_RCPP
+
 }
 
 
 
-RcppExport SEXP R_getTransformations(SEXP _gsPtr,SEXP _sampleName, SEXP _inverse){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getTransformations")]]
+List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
-	bool inverse=as<bool>(_inverse);
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 	trans_map trans=gh->getLocalTrans().getTransMap();
@@ -283,26 +238,20 @@ BEGIN_RCPP
 
 	}
 	return (res);
-
-
-
-END_RCPP
 }
 
 /*
  * compute gates(i.e. extending, adjust, transfroming) without doing the actual gating
  * mainly used for extacting gates from workspace only
  */
-RcppExport SEXP R_computeGates(SEXP _gsPtr,SEXP _sampleName,SEXP _gains, SEXP _extend_val, SEXP _extend_to){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_computeGates")]]
+void computeGates(XPtr<GatingSet> gs,string sampleName
+                    ,NumericVector gainsVec
+                    , float extend_val, float extend_to){
 
-	GatingSet *	gs=getGsPtr(_gsPtr);
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	float extend_val = as<float>(_extend_val);
-	float extend_to = as<float>(_extend_to);
+
 	map<string,float> gains;
-	NumericVector gainsVec= as<NumericVector>(_gains);
 	vector<string> chnlNames = gainsVec.names();
 	for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
 		gains[*it]=gainsVec[*it];
@@ -311,36 +260,30 @@ BEGIN_RCPP
 	gh->adjustGate(gains);
 	gh->transformGate();
 
-END_RCPP
 }
 
 
-RcppExport SEXP R_gating(SEXP _gsPtr,SEXP _mat,SEXP _sampleName,SEXP _gains, SEXP _nodeInd,SEXP _recompute, SEXP _extend_val, SEXP _ignore_case, SEXP _computeTerminalBool){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_gating")]]
+void gating(XPtr<GatingSet> gs
+              , NumericMatrix orig
+              ,string sampleName
+              ,NumericVector gainsVec
+              , unsigned short nodeInd
+              ,bool recompute, float extend_val
+              , bool ignore_case, bool computeTerminalBool){
 
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
-
-	unsigned short nodeInd=as<unsigned short>(_nodeInd);
-	bool recompute=as<bool>(_recompute);
-	bool ignore_case=as<bool>(_ignore_case);
-	bool computeTerminalBool=as<bool>(_computeTerminalBool);
+ 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-	Rcpp::NumericMatrix orig(_mat);
+//	Rcpp::NumericMatrix orig(mat);
 	unsigned sampleID=numeric_limits<unsigned>::max();//dummy sample index
 	flowData fdata(orig,sampleID,ignore_case);
 
 	gh->loadData(fdata);
 	if(!recompute)
 	{
-		float extend_val = as<float>(_extend_val);
-
+	
 		map<string,float> gains;
-		NumericVector gainsVec= as<NumericVector>(_gains);
 		vector<string> chnlNames = gainsVec.names();
 		for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
 			gains[*it]=gainsVec[*it];
@@ -369,20 +312,14 @@ BEGIN_RCPP
 	}
 	gh->unloadData();
 
-END_RCPP
+
 }
 
 
-RcppExport SEXP R_getGate(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getGate")]]
+List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
 	if(u<0)
 		throw(domain_error("not valid vertexID!"));
@@ -494,81 +431,58 @@ BEGIN_RCPP
 
 	}
 
-END_RCPP
+
 }
 
-RcppExport SEXP R_getIndices(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
-BEGIN_RCPP
-
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
-
+//[[Rcpp::export(name=".cpp_getIndices")]]
+vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
 	nodeProperties & node = gh->getNodeProperty(u);
 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
 	if(u>0&&!node.isGated())
 		gh->calgate(u);
-	return wrap(node.getIndices());
+	return node.getIndices();
 
-END_RCPP
+
 }
 
-RcppExport SEXP R_setIndices(SEXP _gsPtr,SEXP _sampleName,SEXP _i, SEXP _ind){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_setIndices")]]
+void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
 
 
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
-	int u=as<int>(_i);
 	if(u<0)throw(domain_error("not valid vertexID!"));
 
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	BoolVec ind = as<BoolVec>(_ind);
+
 	nodeProperties & node = gh->getNodeProperty(u);
 	node.setIndices(ind);
 	node.computeStats();
 
-END_RCPP
 }
 
 
-RcppExport SEXP R_getGateFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getGateFlag")]]
+bool getGateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
-	return wrap(gh->getNodeProperty(u).isGated());
+	return gh->getNodeProperty(u).isGated();
 
-END_RCPP
+
 }
 
-RcppExport SEXP R_getNegateFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath){
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getNegateFlag")]]
+bool getNegateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-
-	GatingSet *	gs=getGsPtr(_gsPtr);
-
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	string gatePath=as<string>(_gatePath);
 	NODEID u = gh->getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
-	return wrap(gh->getNodeProperty(u).getGate()->isNegate());
+	return gh->getNodeProperty(u).getGate()->isNegate();
 
-END_RCPP
 }
 
 
@@ -753,46 +667,32 @@ gate * newGate(List filter){
 
 }
 
-RcppExport SEXP R_addGate(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _gatePath,SEXP _popName) {
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_addGate")]]
+NODEID addGate(XPtr<GatingSet> gs,string sampleName
+                   ,List filter
+                   ,string gatePath
+                   ,string popName) {
 
-
-		GatingSet *	gs=getGsPtr(_gsPtr);
-		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-		string gatePath=as<string>(_gatePath);
 		NODEID u = gh->getNodeID(gatePath);
-		string popName=as<string>(_popName);
-		List filter=as<List>(_filter);
 		gate * g=newGate(filter);
 
 
 		VertexID nodeID=gh->addGate(g,u,popName);
 
 
-		return wrap((NODEID)nodeID);
+		return (NODEID)nodeID;
 
-
-
-END_RCPP
 }
 /**
  * mainly used for openCyto rectRef gate which first being added as a rectangle gate
  * and then gated as boolean filter
  */
-RcppExport SEXP R_boolGating(SEXP _gsPtr,SEXP _sampleName,SEXP _filter,SEXP _nodeID) {
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_boolGating")]]
+void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID) {
 
-
-		GatingSet *	gs=getGsPtr(_gsPtr);
-		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-
-		unsigned nodeID=as<unsigned>(_nodeID);
-
-		List filter=as<List>(_filter);
-
 		nodeProperties & node=gh->getNodeProperty(nodeID);
 		//parse boolean expression from R data structure into c++
 		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
@@ -805,22 +705,17 @@ BEGIN_RCPP
 		node.setIndices(curIndices);
 		node.computeStats();
 
-END_RCPP
+
 }
 
 
-RcppExport SEXP R_setGate(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath,SEXP _filter) {
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_setGate")]]
+void setGate(XPtr<GatingSet> gs,string sampleName
+               ,string gatePath,List filter) {
 
-
-		GatingSet *	gs=getGsPtr(_gsPtr);
-		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-		string gatePath=as<string>(_gatePath);
 		NODEID u = gh->getNodeID(gatePath);
-
-		List filter=as<List>(_filter);
 
 		gate * g=newGate(filter);
 
@@ -830,77 +725,55 @@ BEGIN_RCPP
 		old_g=NULL;
 		node.setGate(g);
 
-END_RCPP
+
 }
 
-RcppExport SEXP R_removeNode(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath) {
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_removeNode")]]
+void removeNode(XPtr<GatingSet> gs,string sampleName
+                  ,string gatePath) {
 
-
-		GatingSet *	gs=getGsPtr(_gsPtr);
-		string sampleName=as<string>(_sampleName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-
-		string gatePath=as<string>(_gatePath);
 		NODEID u = gh->getNodeID(gatePath);
 
 		gh->removeNode(u);
 
-END_RCPP
 }
 
-RcppExport SEXP R_setNodeName(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath, SEXP _newNodeName) {
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_setNodeName")]]
+void setNodeName(XPtr<GatingSet> gs,string sampleName
+                   ,string gatePath, string newNodeName) {
 
-
-		GatingSet *	gs=getGsPtr(_gsPtr);
-		string sampleName=as<string>(_sampleName);
-		string newNodeName=as<string>(_newNodeName);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-
-		string gatePath=as<string>(_gatePath);
 		NODEID u = gh->getNodeID(gatePath);
 
 		nodeProperties &node=gh->getNodeProperty(u);
 		node.setName(newNodeName.c_str());
 
-
-END_RCPP
 }
 
-RcppExport SEXP R_setNodeFlag(SEXP _gsPtr,SEXP _sampleName,SEXP _gatePath, SEXP _hidden) {
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_setNodeFlag")]]
+void setNodeFlag(XPtr<GatingSet> gs,string sampleName
+                   ,string gatePath, bool hidden) {
 
-
-		GatingSet *	gs=getGsPtr(_gsPtr);
-		string sampleName=as<string>(_sampleName);
-		bool hidden=as<bool>(_hidden);
 		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-
-		string gatePath=as<string>(_gatePath);
 		NODEID u = gh->getNodeID(gatePath);
 
 		nodeProperties &node=gh->getNodeProperty(u);
 		node.setHiddenFlag(hidden);
 
-
-END_RCPP
 }
 
-RcppExport SEXP R_getSingleCellExpression(SEXP _gsPtr,SEXP _sampleName,SEXP _nodeIDs, SEXP _data, SEXP _markers, SEXP _threshold) {
-BEGIN_RCPP
+//[[Rcpp::export(name=".cpp_getSingleCellExpression")]]
+NumericMatrix getSingleCellExpression(XPtr<GatingSet> gs,string sampleName
+                                 ,NODEID_vec nodeIDs, NumericMatrix data
+                                 , CharacterVector markers, bool threshold) {
 
 	//get indices from each node
-	GatingSet *	gs=getGsPtr(_gsPtr);
-	string sampleName=as<string>(_sampleName);
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
 
-	bool threshold = as<bool>(_threshold);
-
-	NODEID_vec nodeIDs = as<NODEID_vec>(_nodeIDs);
 	unsigned nNodes = nodeIDs.size();
 	vector<BoolVec> indexList(nNodes);
 	for(unsigned i =0; i < nNodes; i++){
@@ -910,7 +783,6 @@ BEGIN_RCPP
 
 
 	// or operation among these indices
-	NumericMatrix data = as<NumericMatrix>(_data);
 	unsigned n = data.nrow();
 	unsigned k = data.ncol();
 	if(k!= nNodes && threshold)
@@ -941,11 +813,9 @@ BEGIN_RCPP
 	}
 
 
-	CharacterVector markers = as<CharacterVector>(_markers);
 	Rcpp::List dimnms =  Rcpp::List::create(CharacterVector::create(),markers);
 
 	output.attr("dimnames") = dimnms;
 
 	return output;
-END_RCPP
 }

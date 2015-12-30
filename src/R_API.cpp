@@ -6,7 +6,7 @@
  *  Created on: Aug 18, 2014
  *      Author: wjiang2
  */
-#include "include/R_GatingSet.hpp"//need to be manually added to RcppExports.CPP as well
+#include "include/GatingSet.hpp"
 
 //[[Rcpp::plugins(temp)]]
 
