@@ -261,7 +261,7 @@ setMethod("add",
     if(recompute){
       extend_val <- 0
       ignore_case <- FALSE
-      gains <- NULL
+      gains <- numeric(0)
       #this always load the raw data
       #which may not be optimal for bool gate
       data <- getData(gh)
