@@ -13,7 +13,7 @@ The advantage of extending gates instead of shifting data are two folds:
 1. Avoid the extra computation each time applying or plotting the gates
 2. Avoid changing the data distribution caused by adding the gates}
 \usage{
-extend(gate, bound, data.range = NULL, plot = FALSE, ...)
+extend(gate, bound, data.range = NULL, plot = FALSE)
 
 \method{extend}{polygonGate}(gate, bound, data.range = NULL, plot = FALSE)
 
