@@ -1273,16 +1273,29 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 #						browser()
           if(curTrans$type=="log")
           {
-
-            f <- function(x){
-              sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
+            if(inverse){
+              f <- function(x, min_val = 0
+                                , max_val = 262143
+                                , decade = curTrans$decade
+                                , offset = curTrans$offset
+                            )
+              {
+                  10 ^ ((x - offset) * decade) * max_val
+              }
+              
+              attr(f,"type")<-"flog.inverse"
+            }else{
+              f <- function(x){
+                sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
+              }
+              assign("decade", curTrans$decade, environment(f))
+              assign("offset", curTrans$offset, environment(f))
+              assign("min_val", 0, environment(f))
+              assign("max_val", 262143, environment(f))
+              
+              attr(f,"type")<-"flog"  
             }
-            assign("decade", curTrans$decade, environment(f))
-            assign("offset", curTrans$offset, environment(f))
-            assign("min_val", 0, environment(f))
-            assign("max_val", 262143, environment(f))
-
-            attr(f,"type")<-"flog"
+            
 
           }
           else if(curTrans$type=="lin")

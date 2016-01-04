@@ -288,6 +288,7 @@ public:
 	fsinhTrans();
 	fsinhTrans(double , double , double , double , double );
 	void transforming(valarray<double> & input);
+	boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
 //	fsinhTrans * clone(){return new fasinhTrans(*this);};
 //	void convertToPb(pb::transformation & trans_pb);
 //	fasinhTrans(const pb::transformation & trans_pb);
@@ -321,7 +322,11 @@ public:
 	logTrans * clone(){return new logTrans(*this);};
 	void convertToPb(pb::transformation & trans_pb);
 	logTrans(const pb::transformation & trans_pb);
-	boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
+	/*
+	 * To avoid creating extra transformation class in c++ (since it is probably never going to be used in c++ code)
+	 * we simply return the logTrans itself and let R code to handle the inverse logic
+	 */
+	boost::shared_ptr<transformation> getInverseTransformation(){return  boost::shared_ptr<transformation>(this->clone());};
 	void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
 };
 

@@ -3,6 +3,27 @@ context("parse workspaces of various flowJo versions ")
 path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
+test_that("Inverse function of flog ",{
+      thisPath <- file.path(path, "inverse")
+      wsFile <- file.path(thisPath, "Small.xml")
+      ws <- openWorkspace(wsFile)
+      
+      gs <- parseWorkspace(ws, name=1, emptyValue=FALSE)
+      
+      gh <- gs[[1]]
+      thisCounts <- getPopStats(gs)
+      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      expect_equal(thisCounts, expectCounts)
+      
+      
+      trans <- getTransformations(gh)
+      inverse <- getTransformations(gh, inverse = T)
+      raw <- c(1, 1e2, 1e3,1e5)
+      log <- trans[[1]](raw)
+      expect_equal(inverse[[1]](log), raw)
+      
+    })
+
 test_that("v 10.0.6 - vX 1.8",{
       
       thisPath <- file.path(path, "mssm")
