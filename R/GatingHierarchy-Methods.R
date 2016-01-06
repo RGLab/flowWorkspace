@@ -1256,17 +1256,40 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 
     
 #' inverse hyperbolic sine transform function 
-#' copied fom c++ code
-.fasinh <- function (x, M = 4.079181246, T = 12000, A =  0.6989700043, length = 256) 
+#'  
+#'  hyperbolic sine/inverse hyperbolic sine (flowJo-version) transform function constructor
+#' 
+#' @rdname flowJo.fasinh
+#' @param m numeric the full width of the transformed display in asymptotic decades
+#' @param t numeric the maximum value of input data
+#' @param a numeric Additional negative range to be included in the display in asymptotic decades
+#' @param length numeric the maximum value of transformed data
+#' @return fasinh/fsinh transform function
+#' @examples 
+#' trans <- flowJo.fasinh()
+#' data.raw <- c(1,1e2,1e3)
+#' data.trans <- trans(raw)
+#' data.trans
+#' 
+#' inverse.trans <- flowJo.fsinh()
+#' inverse.trans(data.trans)
+#' 
+#' @export
+flowJo.fasinh <- function (m = 4.0, t = 12000, a =  0.7, length = 256) 
 {
-  
-  length * ((asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10)))
-  
+  function(x){ #copied fom c++ code
+    length * ((asinh(x * sinh(m * log(10)) / t) + a * log(10)) / ((m + a) * log(10)))
+  }
 }
-#' inverse of inverse hyperbolic sine transform
-.fsinh <- function(x, M = 4.079181246, T = 12000, A =  0.6989700043, length = 256){
-  sinh(((M + A) * log(10)) * x/length - A * log(10)) * T / sinh(M * log(10)) 
+
+#' @rdname flowJo.fasinh
+#' @export
+flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
+  function(x){
+    sinh(((m + a) * log(10)) * x/length - a * log(10)) * t / sinh(m * log(10)) 
+  }
 }
+
 .getTransformations <- function(pointer,sampleName, channel = NULL, inverse = FALSE, ...){
     trans <- .cpp_getTransformations(pointer,sampleName, inverse)
     transList <- lapply(trans,function(curTrans){
@@ -1307,17 +1330,10 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
           }else if(curTrans$type %in% c("caltbl" , "biexp")){
             f <- .flowJoTrans(curTrans)
           }else if(curTrans$type=="fasinh"){
-            f <- function(x){}
-            #copy the default fasinh function definition
             if(inverse)
-              body(f) <- body(.fsinh)
+              f <- flowJo.fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
             else
-              body(f) <- body(.fasinh)
-            #update the formals (arguments)
-            formals(f)[["T"]] <- curTrans$T 
-            formals(f)[["M"]] <- curTrans$M
-            formals(f)[["A"]] <- curTrans$A
-            formals(f)[["length"]] <- curTrans$length
+              f <- flowJo.fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
             
           }
 
