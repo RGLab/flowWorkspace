@@ -1268,7 +1268,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, ...){
 #' @examples 
 #' trans <- flowJo.fasinh()
 #' data.raw <- c(1,1e2,1e3)
-#' data.trans <- trans(raw)
+#' data.trans <- trans(data.raw)
 #' data.trans
 #' 
 #' inverse.trans <- flowJo.fsinh()
