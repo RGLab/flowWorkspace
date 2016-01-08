@@ -640,3 +640,71 @@ fix.rectangleGate <- function(gate){
   names(gate@max) <- pnames
   gate
 }
+
+#' A wrapper that parse the gatingML and FCS files into GatingSet
+#' @param xml the full path of gatingML file
+#' @param FCS FCS files to be loaded
+#' @return a GatingSet
+#' @export
+parse.gatingML <- function(xml, FCS){
+  g <- read.gatingML.cytobank(xml)
+  fs <- read.ncdfFlowSet(FCS)
+  
+  
+  ## Compensate the data with the compensation information stored in `graphGML` object
+  fs <- compensate(fs, g)
+  ## Extract transformation functions from `graphGML` and transform the data
+  trans <- getTransformations(g)
+  fs <- transform(fs, trans)
+  
+  
+  ## Construct the **GatingSet** and apply gates stored in `graphGML`
+  gs <- GatingSet(fs)
+  gating(g, gs)
+  gs
+}
+
+#' compare the counts to cytobank's exported csv so that the parsing result can be verified.
+#' @param gs parsed GatingSet
+#' @param file the stats file (contains the populatio counts) exported from cytobank. 
+#'        
+#' @param id.vars either "population" or "FCS filename" that tells whether the stats file format is one population per row or FCS file per row.        
+#' @return a data.table (in long format) that contains the counts from openCyto and Cytobank side by side.         
+#' @export merge.counts
+merge.counts <- function(gs, file, id.vars = c("FCS Filename", "population")){
+  #load stats from cytobank
+  id.vars <- match.arg(id.vars)  
+  variable.name <- ifelse(id.vars == "population", "FCS Filename", "population")
+  cytobank_counts <- fread(file, stringsAsFactors = FALSE)
+  
+  if(id.vars == "population"){
+    #modify column name because cytobank always put FCS filename
+    #as the first header regardless of the orienation of stats table
+    setnames(cytobank_counts, "FCS Filename", "population")
+  }
+  # Melt the data
+  cytobank_counts_long <- melt(cytobank_counts, variable.name = variable.name, value.name = "count", id.vars = id.vars)
+  # Change column names
+  setnames(cytobank_counts_long, c("FCS Filename"), c("fcs_filename"))
+  # Properly format the column names
+  cytobank_counts_long <- cytobank_counts_long[,population := gsub("_EventCounts", "", population)]
+  
+  
+  # extract the counts from our gating sets
+  #load openCyto stats
+  opencyto_counts <- getPopStats(gs, statType = "count")
+  setnames(opencyto_counts, names(opencyto_counts), c("fcs_filename", "population", "parent", "count", "parent_count"))
+  #drop the parent column for simplicity
+  opencyto_counts <- opencyto_counts[,.(fcs_filename, population, count)]
+  #Remove spaces in population names as cytobank removes them here
+  opencyto_counts <- opencyto_counts[, population := gsub(" ", "", population)]
+  
+  
+  
+  # merge the two data.tables
+  
+  # set key (fcs_filename, population)
+  setkey(opencyto_counts, fcs_filename, population)
+  setkey(cytobank_counts_long, fcs_filename, population)
+  merge(opencyto_counts, cytobank_counts_long)
+}
