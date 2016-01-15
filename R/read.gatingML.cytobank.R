@@ -84,6 +84,7 @@ read.gatingML.cytobank <- function(file, ...){
                                 if(is(obj, "transformation"))
                                   obj
                               }, USE.NAMES = FALSE)
+  
   trans <- compact(trans)
   chnl <- sapply(trans, function(tran)unname(parameters(tran@parameters)), USE.NAMES = F)
   #convert from transform object to function since transform has empty function in .Data slot
@@ -91,8 +92,11 @@ read.gatingML.cytobank <- function(file, ...){
   trans <- sapply(trans, eval, USE.NAMES = F)
   ind <- chnl != "any"
   
-  g@graphData[["transformations"]] <- transformList(chnl[ind], trans[ind]) 
-  
+  chnl <- chnl[ind]
+  trans <- trans[ind]
+  if(length(trans) > 0)
+    g@graphData[["transformations"]] <- transformList(chnl, trans) 
+
   as(g, "graphGML")
   
 }
@@ -655,7 +659,8 @@ parse.gatingML <- function(xml, FCS){
   fs <- compensate(fs, g)
   ## Extract transformation functions from `graphGML` and transform the data
   trans <- getTransformations(g)
-  fs <- transform(fs, trans)
+  if(!is.null(trans))
+    fs <- transform(fs, trans)
   
   
   ## Construct the **GatingSet** and apply gates stored in `graphGML`
