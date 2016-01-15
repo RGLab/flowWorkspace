@@ -17,4 +17,12 @@ a GatingSet
 \description{
 A wrapper that parse the gatingML and FCS files into GatingSet
 }
+\examples{
+\dontrun{
+xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
+fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
+gs <- parse.gatingML(xmlfile, fcsFiles)
+plotGate(gs[[1]])
+}
+}
 

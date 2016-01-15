@@ -650,6 +650,14 @@ fix.rectangleGate <- function(gate){
 #' @param FCS FCS files to be loaded
 #' @return a GatingSet
 #' @export
+#' @examples 
+#' \dontrun{
+#' xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
+#' fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
+#' gs <- parse.gatingML(xmlfile, fcsFiles)
+#' plotGate(gs[[1]])
+#' }
+
 parse.gatingML <- function(xml, FCS){
   g <- read.gatingML.cytobank(xml)
   fs <- read.ncdfFlowSet(FCS)
@@ -676,6 +684,16 @@ parse.gatingML <- function(xml, FCS){
 #' @param id.vars either "population" or "FCS filename" that tells whether the stats file format is one population per row or FCS file per row.        
 #' @return a data.table (in long format) that contains the counts from openCyto and Cytobank side by side.         
 #' @export compare.counts
+#' @examples 
+#' \dontrun{
+#' xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
+#' fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
+#' gs <- parse.gatingML(xmlfile, fcsFiles)
+#' ## verify the stats are correct
+#' statsfile <- system.file("extdata/cytotrol_tcell_cytobank_counts.csv", package = "flowWorkspace")
+#' dt_merged <- compare.counts(gs, statsfile, id.vars = "population")
+#' all.equal(dt_merged[, count.x], dt_merged[, count.y], tol = 5e-4)
+#' }
 compare.counts <- function(gs, file, id.vars = c("FCS Filename", "population")){
   #load stats from cytobank
   id.vars <- match.arg(id.vars)  
