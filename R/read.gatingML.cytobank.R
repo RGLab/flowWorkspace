@@ -675,8 +675,8 @@ parse.gatingML <- function(xml, FCS){
 #'        
 #' @param id.vars either "population" or "FCS filename" that tells whether the stats file format is one population per row or FCS file per row.        
 #' @return a data.table (in long format) that contains the counts from openCyto and Cytobank side by side.         
-#' @export merge.counts
-merge.counts <- function(gs, file, id.vars = c("FCS Filename", "population")){
+#' @export compare.counts
+compare.counts <- function(gs, file, id.vars = c("FCS Filename", "population")){
   #load stats from cytobank
   id.vars <- match.arg(id.vars)  
   variable.name <- ifelse(id.vars == "population", "FCS Filename", "population")
