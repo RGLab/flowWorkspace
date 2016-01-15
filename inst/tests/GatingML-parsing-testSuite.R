@@ -1,7 +1,15 @@
 context("parse gatingMLs exported from Cytobank ")
 
-path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
+path <- "~/rglab/workspace/flowWorkspace/wsTestSuite/gatingML"
 
+
+
+test_that("gatingML-cytobank parsing: no transformations",{
+  xmlfile <- file.path(path, "no_trans.xml")
+  g <- read.gatingML.cytobank(xmlfile)
+  expect_is(g, "graphGML")
+  expect_null(getTransformations(g))
+})
 
 test_that("gatingML-cytobank parsing: cytotrol tcell",{
   xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
@@ -21,7 +29,7 @@ test_that("gatingML-cytobank parsing: cytotrol tcell",{
 })
 
 test_that("gatingML-cytobank parsing: Merck FirstExample",{
-  thisPath <- file.path(path, "/gatingML/Merck/firstExample")
+  thisPath <- file.path(path, "Merck/firstExample")
   xmlfile <- file.path(thisPath, "CytExp_10623_Gates_v5.xml")
   fcsFiles <- list.files(pattern = "\\.fcs", thisPath, full = T)
   gs <- parse.gatingML(xmlfile, fcsFiles[c(1,3,6)])
@@ -35,7 +43,7 @@ test_that("gatingML-cytobank parsing: Merck FirstExample",{
 })
 
 test_that("gatingML-cytobank parsing: Merck SecondExample",{
-  thisPath <- file.path(path, "/gatingML/Merck/SecondExample")
+  thisPath <- file.path(path, "/Merck/SecondExample")
   xmlfile <- file.path(thisPath, "CytExp_10624_Gates_v3.xml")
   fcsFiles <- list.files(pattern = "\\.fcs", thisPath, full = T)
   
