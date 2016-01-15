@@ -19,7 +19,7 @@ test_that("gatingML-cytobank parsing: cytotrol tcell",{
   
   #' ## verify the stats are correct
   statsfile <- system.file("extdata/cytotrol_tcell_cytobank_counts.csv", package = "flowWorkspace")
-  dt_merged <- merge.counts(gs, statsfile, id.vars = "population")
+  dt_merged <- compare.counts(gs, statsfile, id.vars = "population")
   
   
   expect_equal(dt_merged[, count.x], dt_merged[, count.y], tol = 5e-4)
@@ -36,7 +36,7 @@ test_that("gatingML-cytobank parsing: Merck FirstExample",{
   
   ### Verify the stats are correct
   statsfile <- file.path(thisPath,"population_counts.csv")
-  dt_merged <- merge.counts(gs, statsfile)
+  dt_merged <- compare.counts(gs, statsfile)
   
   unequaled <- dt_merged[count.x != count.y]
   expect_equal(nrow(unequaled), 0)
@@ -51,7 +51,7 @@ test_that("gatingML-cytobank parsing: Merck SecondExample",{
   
   ### Verify the stats are correct
   statsfile <- file.path(thisPath,"secondExample.csv")
-  dt_merged <- merge.counts(gs, statsfile, id.vars = "population") #subset the files to speed up testing
+  dt_merged <- compare.counts(gs, statsfile, id.vars = "population") #subset the files to speed up testing
   
   
   unequaled <- dt_merged[count.x != count.y]
