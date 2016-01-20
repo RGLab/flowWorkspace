@@ -174,7 +174,8 @@ setMethod("gating", signature = c("graphGML", "GatingSet"), function(x, y, ...){
 gating.graphGML <- function(gt, gs, ...) {
   
   trans <- getTransformations(gt)
-  trans.func <- trans@transforms
+  if(!is.null(trans))
+    trans.func <- trans@transforms
   gt_nodes <- tsort(gt)
   for (nodeID in gt_nodes) {
     
@@ -214,11 +215,15 @@ gating.graphGML <- function(gt, gs, ...) {
     
     # transform bounds if applicable
     bound <- gateInfo[["bound"]]
-    for(rn in rownames(bound)){
-      thisTrans <- trans.func[[rn]]
-      if(!is.null(thisTrans))
-        bound[rn, ] <- thisTrans@f(unlist(bound[rn, ]))
+    if(!is.null(trans))
+    {
+      for(rn in rownames(bound)){
+        thisTrans <- trans.func[[rn]]
+        if(!is.null(thisTrans))
+          bound[rn, ] <- thisTrans@f(unlist(bound[rn, ]))
+      }  
     }
+    
       
     this_gate <- extend(this_gate,bound = bound)
     
