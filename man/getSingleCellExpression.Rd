@@ -8,7 +8,8 @@
 \title{Return the cell events data that express in any of the single populations defined in \code{y}}
 \usage{
 \S4method{getSingleCellExpression}{GatingSet,character}(x, nodes,
-  other.markers = NULL, swap = FALSE, threshold = TRUE, ...)
+  other.markers = NULL, swap = FALSE, threshold = TRUE,
+  mc.cores = getOption("mc.cores", 1L), ...)
 
 \S4method{getSingleCellExpression}{GatingSetList,character}(x, nodes, ...)
 }
@@ -22,6 +23,8 @@
 \item{swap}{\code{logical} indicates whether channels and markers of flow data are swapped.}
 
 \item{threshold}{\code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.}
+
+\item{mc.cores}{passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.}
 
 \item{...}{other arguments
 
