@@ -2380,6 +2380,7 @@ getIndiceMat <- function(gh,y){
 #' @param other.markers \code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.  
 #' @param swap \code{logical} indicates whether channels and markers of flow data are swapped.
 #' @param threshold \code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.
+#' @param mc.cores passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.
 #' @param ... other arguments
 #' 
 #'      map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel 
@@ -2403,10 +2404,14 @@ getIndiceMat <- function(gh,y){
 #' @rdname getSingleCellExpression
 #' @importFrom dplyr bind_rows
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, other.markers = NULL, swap = FALSE, threshold = TRUE, ...){
+setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, other.markers = NULL, swap = FALSE, threshold = TRUE, mc.cores = getOption("mc.cores", 1L), ...){
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
-  sapply(sampleNames(x),function(sample){
+  sn <- sampleNames(x)
+  
+  names(sn) <- sn
+  
+  thisCall <- quote(lapply(sn,function(sample){
       
       message(".", appendLF = FALSE)
       fr <- fs[[sample, use.exprs = FALSE]] 
@@ -2444,8 +2449,15 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       data
           
 
-  }, simplify = FALSE)     
-
+      })
+    )
+  
+  if(mc.cores > 1){
+    require(parallel)
+    thisCall[[1]] <- quote(mclapply)
+    thisCall[["mc.cores"]] <- mc.cores
+    }
+  eval(thisCall)
 })
 
 #' insert a dummy gate to the GatingSet
