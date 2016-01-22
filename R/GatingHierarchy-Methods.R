@@ -1760,3 +1760,67 @@ setMethod("pData","GatingHierarchy",function(object){
       pData(flowData(object))[sampleNames(object), , drop = FALSE]
     })
 
+#' Get/set the column(channel) or marker names
+#' 
+#' It simply calls the methods for the underlying flow data (flowSet/ncdfFlowSet/ncdfFlowList).
+#' @param x,object GatingHierarchy/GatingSet/GatingSetList
+#' @param value named character vector for markernames<-, regular character vector for colnames<-.
+#' @examples 
+#' \dontrun{
+#' 
+#' markers.new <- c("CD4", "CD8")
+#' chnls <- c("<B710-A>", "<R780-A>")
+#' names(markers.new) <- chnls
+#' markernames(gs) <- markers.new
+#' 
+#' chnls <- colnames(gs)
+#' chnls.new <- chnls
+#' chnls.new[c(1,4)] <- c("fsc", "ssc")
+#' colnames(gs) <-  chnls.new
+#' }
+#' @importFrom flowCore markernames
+#' @rdname markernames
+#' @export
+setMethod("markernames",
+          signature=signature(object="GatingHierarchy"),
+          definition=function(object){
+            
+            markernames(getData(object))
+            
+          })
+
+
+#' @rdname markernames
+#' @importFrom flowCore markernames<-
+#' @export
+setReplaceMethod("markernames",
+                 signature=signature(object="GatingHierarchy", value="ANY"), function(object, value){
+                   
+                   sn <- sampleNames(object)
+                   markernames(flowData(object)@frames[[sn]]) <- value
+                   
+                   object
+                 })
+
+            
+#' @param do.NULL,prefix not used.
+#' @rdname markernames
+#' @export
+setMethod("colnames",
+          signature=signature(x="GatingHierarchy"),
+          definition=function(x, do.NULL="missing", prefix="missing"){
+            
+            colnames(getData(x))
+            
+          })
+
+#' @rdname markernames
+#' @export
+setReplaceMethod("colnames",
+                 signature=signature(x="GatingHierarchy", value="ANY"), function(x, value){
+                  stop("Can't change colnames for the individual sample. Please call colnames<- on the whole GatingSet instead!") 
+#                    sn <- sampleNames(x)
+#                    colnames(flowData(x)@frames[[sn]]) <- value
+                   
+                   # x
+                 })

@@ -185,7 +185,7 @@ void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList){
 //'                                   
 //' @examples 
 //' \dontrun{
-//'  updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A")  ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
+//'  updateChannels(gs, map = data.frame(old = c("Qdot 655-A")  ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
 //'                                          , new = c("<QDot 655-A>")
 //'                                          )
 //'                        , nodes = "14-")  

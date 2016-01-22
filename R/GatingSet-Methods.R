@@ -2564,3 +2564,44 @@ setMethod("transform",
       gs
     })
 
+#' @rdname markernames
+#' @importFrom flowCore markernames
+#' @export
+setMethod("markernames",
+          signature=signature(object="GatingSet"),
+          definition=function(object){
+            
+            markernames(flowData(object))
+            
+          })
+
+#' @rdname markernames
+#' @importFrom flowCore markernames<-
+#' @export
+setReplaceMethod("markernames",
+                 signature=signature(object="GatingSet", value="ANY"), function(object, value){
+                   
+                   markernames(flowData(object)) <- value
+                   
+                   object
+                 })
+
+#' @rdname markernames
+#' @export
+setMethod("colnames",
+          signature=signature(x="GatingSet"),
+          definition=function(x, do.NULL="missing", prefix="missing"){
+            
+            colnames(flowData(x))
+            
+          })
+
+#' @rdname markernames
+#' @export
+setReplaceMethod("colnames",
+                 signature=signature(x="GatingSet", value="ANY"), function(x, value){
+                   
+                   colnames(flowData(x)) <- value
+                   
+                   x
+                 })
