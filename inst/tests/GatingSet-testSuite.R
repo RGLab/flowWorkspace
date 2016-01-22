@@ -381,3 +381,52 @@ test_that("getSingleCellExpression for COMPASS",{
       
     })
 
+
+test_that("markernames", {
+  markers <- c('CD4 PcpCy55','CD38 APC','CD8 APCH7','CD3 V450','HLA-DR V500','CCR7 PE','CD45RA PECy7')
+  expect_equal(markernames(gs), markers)
+  
+  markers.new <- c("CD4", "CD8")
+  chnls <- c("<B710-A>", "<R780-A>")
+  names(markers.new) <- chnls
+  gh <- gs[[1]]
+  markernames(gh) <- markers.new
+  expect_equivalent(markernames(gh)[c(1,3)], markers.new)
+  
+  expect_warning(res <- markernames(gs), "not consistent")
+  expect_equal(unique(lapply(gs, markernames)), res)
+
+  
+  markernames(gs) <-  markers.new
+  expect_equivalent(markernames(gs)[c(1,3)], markers.new)
+  
+  #restore original markers
+  markers.orig <- markers[c(1,3)]
+  names(markers.orig) <- chnls
+  markernames(gs) <-  markers.orig
+  expect_equal(markernames(gs), markers)
+  
+})
+
+test_that("colnames", {
+  chnls <- c('FSC-A','FSC-H','FSC-W','SSC-A','<B710-A>','<R660-A>','<R780-A>','<V450-A>','<V545-A>','<G560-A>','<G780-A>','Time')
+  expect_equal(colnames(gs), chnls)
+  
+  chnls.new <- chnls
+  chnls.new[c(1,4)] <- c("fsc", "ssc")
+  
+  gh <- gs[[1]]
+  expect_error(colnames(gh) <- chnls.new, "Can't change")
+  
+  colnames(gs) <-  chnls.new
+  expect_equal(colnames(gs), chnls.new)
+  expect_equal(colnames(gs[[1]]), chnls.new)
+  expect_equal(colnames(gs[[2]]), chnls.new)
+  
+  #restore original chnls
+  colnames(gs) <-  chnls
+  expect_equal(colnames(gs), chnls)
+  expect_equal(colnames(gs[[1]]), chnls)
+  expect_equal(colnames(gs[[2]]), chnls)
+  
+})

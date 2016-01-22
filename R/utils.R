@@ -14,7 +14,7 @@
 #' @examples 
 #' \dontrun{
 #'   ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
-#'  gs <- updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A")
+#'  gs <- updateChannels(gs, map = data.frame(old = c("Qdot 655-A")
 #'                                          , new = c("QDot 655-A")
 #'                                          )
 #'                      )  

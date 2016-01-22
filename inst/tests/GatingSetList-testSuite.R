@@ -109,5 +109,52 @@ test_that("getSingleCellExpression for COMPASS",{
       expect_equivalent(thisRes,thisRes1)
     })
 
+test_that("markernames", {
+  expect_true(setequal(markernames(gslist), sort(markernames(gs))))
+  
+  #create discrepancy
+  chnls <- c("<B710-A>", "<R780-A>")
+  markers <- c("CD4", "CD8")
+  names(markers) <- chnls
+  markernames(gslist@data[[1]]) <- markers
+  expect_warning(res <- markernames(gslist), "not unique")
+  tmp <- lapply(gslist@data, function(gs)sort(markernames(gs)))
+  expect_equal(res, tmp)
+  
+
+  #setter
+  markernames(gslist) <- markers
+  expect_equivalent(markernames(gslist)[c(4,6)], markers)
+  #restore original markers
+  markers <- c("CD4 PcpCy55", "CD8 APCH7")
+  names(markers) <- chnls
+  markernames(gslist) <- markers
+  expect_equivalent(markernames(gslist)[c(4,6)], markers)
+  
+})
+
+test_that("colnames", {
+  chnls <- c('FSC-A','FSC-H','FSC-W','SSC-A','<B710-A>','<R660-A>','<R780-A>','<V450-A>','<V545-A>','<G560-A>','<G780-A>','Time')
+  expect_equal(colnames(gslist), chnls)
+  
+  chnls.new <- chnls
+  chnls.new[c(1,4)] <- c("fsc", "ssc")
+  
+  #create discrepancy
+  colnames(gslist@data[[1]]) <- chnls.new
+  expect_error(colnames(gslist), "not unique")
+  
+  expect_error(colnames(gslist) <- chnls.new, "not safe")
+  
+  #test the different order
+  colnames(gslist@data[[1]]) <- sort(chnls)
+  expect_warning(colnames(gslist), "different orders")
+  
+  #restore original chnls
+  colnames(gslist@data[[1]]) <- chnls
+  expect_equal(colnames(gslist), chnls)
+  
+})
+
 #TODO:write test cases for save_gslist /load_gslist 
 
