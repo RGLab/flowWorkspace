@@ -124,12 +124,12 @@ test_that("markernames", {
 
   #setter
   markernames(gslist) <- markers
-  expect_equivalent(markernames(gslist)[c(4,6)], markers)
+  expect_equivalent(markernames(gslist)[c(1,3)], markers)
   #restore original markers
   markers <- c("CD4 PcpCy55", "CD8 APCH7")
   names(markers) <- chnls
   markernames(gslist) <- markers
-  expect_equivalent(markernames(gslist)[c(4,6)], markers)
+  expect_equivalent(markernames(gslist)[c(1,3)], markers)
   
 })
 
