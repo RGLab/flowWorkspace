@@ -1,0 +1,323 @@
+---
+title: "flowWorkspace Introduction: A Package to store and maninpulate gated flow data"
+output: 
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
+vignette: >    
+  %\VignetteKeywords{flow cytometry, single cell assay, import}
+  %\VignettePackage{flowWorkspace}  
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{flowWorkspace Introduction: A Package to store and maninpulate gated flow data}   
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "markup", message = FALSE)
+```
+
+
+## Purpose
+The purpose of this package is to provide the infrastructure (`GatingSet`) to store, represent and exchange the gated flow data. By this we mean, accessing the samples, groups, transformations, compensation matrices, gates, and population statistics in the gating tree.
+
+The `GatingSet` can be built from scratch within `R` or imported from `flowJo` XML workspaces (i.e. `.xml` or `.wsp` files) . We cannot import `.jo` files directly. You will have to save them in XML workspace format.
+
+
+## Import flowJo workspace
+The following section walks through opening and importing a flowJo workspace.
+
+### Opening a Workspace
+We represent flowJo workspaces using `flowJoWorkspace` objects. We only need to know the path to, and filename of the flowJo workspace.
+
+```{r findxml}
+library(flowWorkspace)
+path <- system.file("extdata",package="flowWorkspaceData");
+wsfile <- list.files(path, pattern="A2004Analysis.xml", full = TRUE)
+```
+
+In order to open this workspace we call:
+```{r openws,results='markup'}
+ws <- openWorkspace(wsfile)
+ws
+```
+
+We see that this a version 2.0 workspace file. It's location and filename are printed. Additionally, you are notified that the workspace file is open. This refers to the fact that the XML document is internally represented using 'C' data structures from the `XML` package. After importing the file, the workspace must be explicitly closed using `closeWorkspace()` in order to free up that memory.
+
+With the workspace file open,some basic sample information can be accessed through some helper methods.
+For example, the list of samples in a workspace can be accessed by:
+```{r getsamples-ws}
+getSamples(ws)
+```
+The `compID` column tells you which compensation matrix to apply to a group of files, and similarly, based on the name of the compensation matrix, which transformations to apply.
+
+
+And the groups can be accessed by:
+```{r getgroups}
+getSampleGroups(ws)
+```
+
+Keywords stored in xml workspace can also retrieved by:
+```{r}
+sn <- "a2004_O1T2pb05i_A1_A01.fcs"
+getKeywords(ws, sn)[1:5]
+```
+
+### Parsing the Workspace
+These are all retrieved by directly querying xml file. In order to get more information about the gating tree, we need to actually parse the XML workspace into R data structures to represent some of the information therein. Specifically, by calling `parseWorkspace()` the user will be presented with a list of `groups` in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a `GatingHierarchy` for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a `GatingSet` object. Calling `parseWorkspace()` is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument `execute=T/F` specifies whether you want to load, compensate, transform the data and compute statistics immediately after parsing the XML tree. Argument `path` can be used to specify where the FCS files are stored.
+
+```{r parsews,message=FALSE}
+gs <- parseWorkspace(ws,name = 1); #import the first group
+#Lots of output here suppressed for the vignette.
+gs
+```
+We have generated a `GatingSet` with `r length(gs)` samples, each  of which has `r length(getNodes(gs))-1` associated gates.
+
+To list the samples stored in `GatingSet`:
+```{r sampleNames}
+sampleNames(gs)
+```
+Note that it is different from the previous call `getSamples` on `workspace` where the latter list all samples stored in `xml` file and here are the ones actually get parsed. Because sometime not all of samples in xml will be imported for various reason. Also we've seen an extra string `_xxx` is attached to the end of each sample name. It is due to the argument `additional.keys` has the default value set to `'$TOT'`. See more details on these parsing options from [How to parse a flowJo workspace](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseFlowJo.html).
+
+## Basics on GatingSet
+
+Subsets of `GatingSet` can be accessed using the standard R subset syntax `[`.
+```{r subset}
+gs[1]
+```
+At this point we have parsed the workspace file and generate the gating hierarchy associated with each sample imported from the file. The data have been loaded, compensated, and transformed in the workspace, and gating has been executed. The resulting `GatingSet` contains a replicated analysis of the original flowJo workspace.
+
+We can plot the gating tree:
+```{r plotTree}
+plot(gs)
+```
+
+We can list the nodes (populations) in the gating hierarchy:
+```{r getNodes-path-1}
+getNodes(gs, path = 1)
+```
+Note that `path` argument specifies the depth of the gating path for each population. 
+As shown, `depth` of `1` (i.e. leaf or terminal node name) may not be sufficient to uniquely identify each population. The issue can be resolved by increasing the `path` or simply returning the full path of the node:
+```{r getNodes-path-full}
+getNodes(gs, path = "full")
+```
+But `full` path may not be neccessary and could be too long to be visualized. So we provide the `path = 'auto'` option to determine the shortest path that is still unique within the gating tree.
+```{r getNodes-path-auto}
+nodelist <- getNodes(gs, path = "auto")
+nodelist
+```
+
+We can get the gate associated with the specific population:
+
+```{r getGate}
+node <- nodelist[3]
+g <- getGate(gs, node)
+g
+```
+We can retrieve the population statistics :
+```{r getStats}
+getPopStats(gs)[1:10,]
+```
+We can plot individual gates: note the scale of the transformed axes.
+Second argument is the node path of any depths as long as it is uniquely identifieable.
+```{r plotGate-nodeName}
+plotGate(gs, "pDC")
+```
+More details about gate visualization can be found [here](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/plotGate.html).
+
+If we have  metadata associated with the experiment, it can be attached to the `GatingSet`.
+```{r annotate}
+d <- data.frame(sample=factor(c("sample 1", "sample 2")),treatment=factor(c("sample","control")) )
+pd <- pData(gs)
+pd <- cbind(pd,d)
+pData(gs) <- pd
+pData(gs)
+```
+We cann subset the `GatingSet` by its `pData` directly:
+```{r}
+subset(gs, treatment == "control")
+```
+
+The underling `flow data`(`flowSet` or `ncdfFlowSet` ) can be retrieved by:
+```{r}
+fs <- getData(gs)
+class(fs)
+nrow(fs[[1]])
+```
+Note that the data is already compensated and transformed during the parsing.
+
+We can retrieve the subset of data associated with a population node:
+```{r getData-gh}
+fs <- getData(gs, node)
+nrow(fs[[1]])
+```
+## GatingHierarchy
+We can retrieve a single gating hierarchical tree (corresponding to one sample) by `[[` operator
+```{r gh}
+gh <- gs[[1]]
+gh
+```
+Note that the index can be either numeric or character (the `guid` returned by `sampleNames` method)
+
+We can do similar operations on this `GatingHierarchy` object and same methods behave differently from `GatingSet` 
+```{r}
+head(getPopStats(gh))
+```
+Here `getPopStats` returns both the stats directly stored in `flowJo` xml workspace and one calcuated by `GatingSet` through the gating. There are could be minor difference between the two due to the numerical errors. However the difference should not be significant. Therore this can be used as the validity check for the parsing accuracy.
+```{r plotPopCV}
+plotPopCV(gh)
+```
+
+`plotGate` method without specifying any node will layout all the gates in the same plot
+```{r}
+plotGate(gh)
+```
+
+We can retrieve the indices specifying if an event is included inside or outside a gate using:
+```{r getInd}
+table(getIndices(gh,node))
+```
+The indices returned are relative to the parent population (member of parent AND member of current gate), so they reflect the true hierarchical gating structure.
+
+We can retrieve all the compensation matrices from the `GatingHierarchy` in case we wish to use the compensation or transformation for the new data, 
+
+```{r getCMAT}
+C <- getCompensationMatrices(gh);
+C
+```
+
+Or we can retrieve transformations:
+
+```{r getTrans,results='markup'}
+T <- getTransformations(gh)
+names(T)
+T[[1]]
+```
+
+`getTransformations` returns a list of functions to be
+applied to different dimensions of the data. 
+Above, the transformation is applied to this sample, the appropriate dimension
+is transformed using a channel--specific function from the list.
+
+
+## Build the gating hierarchy from scratch
+`GatingSet` provides methods to build a gating tree from raw FCS files and add or remove flowCore gates(or populations) to or from it.
+
+Firstly,we start from a flowSet that contains three ungated flow samples:
+```{r create gs}
+data(GvHD)
+#select raw flow data
+fs <- GvHD[1:2]
+```
+Then construct a \code{GatingSet} from \code{flowSet}:
+```{r GatingSet constructor}
+gs <- GatingSet(fs)
+```
+
+Then compensate it:
+```{r compensate}
+cfile <- system.file("extdata","compdata","compmatrix", package="flowCore")
+comp.mat <- read.table(cfile, header=TRUE, skip=2, check.names = FALSE)
+## create a compensation object 
+comp <- compensation(comp.mat)
+#compensate GatingSet
+gs <- compensate(gs, comp)
+```
+
+Then we can transform it with any transformation defined by user through `trans_new` function of `scales` package.
+```{r user-transformation}
+require(scales)
+trans.func <- asinh
+inv.func <- sinh
+trans.obj <- trans_new("myAsinh", trans.func, inv.func)
+```
+The `inverse` transformation is required so that the `gates` and data can be visualized in `transformed` scale with `axis` label still remains in the raw scale. Optionally `breaks` and `format` function can be supplied to further customize the appearance of axis labels.
+
+Besides doing all these by hand, we also provide some buildin transformations: `asinhtGml2_trans`, `flowJo_biexp_trans`, `flowJo_fasinh_trans` and `logicle_trans`. These are all very commonly used transformations in flow data analysis. User can construct the transform object by simply one-line of code. e.g.
+```{r transform-build-in}
+trans.obj <- asinhtGml2_trans()
+trans.obj
+```
+
+Once `transformer` object is created, we must convert it to `transformerList` for `GatingSet` to use.
+```{r transformerList}
+chnls <- colnames(fs)[3:6] 
+transList <- transformerList(chnls, trans.obj)
+gs <- transform(gs, transList)
+getNodes(gs) 
+```
+It now only contains the root node. We can add our first rectangleGate:
+```{r add-rectGate}
+rg <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangle")
+nodeID <- add(gs, rg)
+nodeID
+getNodes(gs)  
+```
+Note that the gate is added to root node by default if parent is not specified.
+Then we add a quadGate to the new population generated by the rectangeGate which is named after filterId of the gate because the name is not specified when `add` method is called.
+```{r add-quadGate}
+qg <- quadGate("FL1-H"= 0.2, "FL2-H"= 0.4)
+nodeIDs <- add(gs,qg,parent="rectangle")
+nodeIDs 
+getNodes(gs)
+```
+Here quadGate produces four population nodes/populations whose names are named after dimensions of gate if not specified.
+
+Boolean Gate can also be defined and added to GatingSet:
+```{r add-boolGate}
+bg <- booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC+CD45 PE-`)
+bg
+nodeID2 <- add(gs,bg,parent="rectangle")
+nodeID2
+getNodes(gs)
+```
+The gating hierarchy is plotted by:
+```{r plot-gh,eval=FALSE}
+plot(gs, bool=TRUE)
+```
+Note that boolean gate is skipped by default and thus need to be enabled explictily.
+
+Now all the gates are added to the gating tree but the actual data is not gated yet.
+This is done by calling `recompute` method explictily:
+```{r recompute}
+recompute(gs)
+```
+After gating is finished,gating results can be visualized by `plotGate` method:
+```{r plotGate-rect}
+plotGate(gs,"rectangle") #plot one Gate
+```
+Multiple gates can be plotted on the same pannel:
+```{r plotGate-multiple}
+plotGate(gs,getChildren(gs[[1]], "rectangle")) 
+```
+We may also want to plot all the gates without specifying the gate index:
+```{r plotGate-gh-bool,eval=FALSE}
+plotGate(gs[[1]], bool=TRUE)
+```
+
+If we want to remove one node, simply:
+```{r rm}
+Rm('rectangle', gs)
+getNodes(gs)
+```
+As we see,removing one node causes all its descendants to be removed as well.
+### archive and clone
+
+Oftentime, we need to save a GatingSet including the gated flow data,gates and populations to disk and reload it later on. It can be done by:
+```{r archive,eval=FALSE}
+tmp <- tempdir()
+save_gs(gs,path = file.path(tmp,"my_gs"))
+gs <- load_gs(file.path(tmp,"my_gs"))
+``` 
+We also provide the `clone` method to make a full copy of an existing `GatingSet`:
+```{r clone,eval=FALSE}
+gs_cloned <- clone(gs)
+```
+
+Note that the `GatingSet` contains environment slots and external pointer that point to the internal C data structure. So make sure to use these methods in order to save or make a copy of existing object.
+The regular R assignment (<-) or `save` routine doesn't work as expected for the `GatingSet` object.
+
+## Troubleshooting and error reporting
+If this package is throwing errors when parsing your workspace, contact the package author by emails for post an issue on https://github.com/RGLab/flowWorkspace/issues. If you can send your workspace by email, we can test, debug, and fix the package so that it works for you. Our goal is to provide a tool that works, and that people find useful.
+
+
