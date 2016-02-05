@@ -19,8 +19,7 @@
 \item{only.function}{\code{logical} whether to return the function or the entire transformer object(see \code{scales} package) that contains transform and inverse and breaks function.}
 
 \item{...}{other arguments
- equal.spaced \code{logical} passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals
-pretty \code{logical} whether to format axis labels}
+equal.spaced \code{logical} passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals}
 }
 \value{
 lists of functions(or transform objects when only.function is FALSE), with each element of the list representing a transformation applied to a specific

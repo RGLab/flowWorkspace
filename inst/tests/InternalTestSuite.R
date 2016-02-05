@@ -4,12 +4,6 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 test_that("Inverse function of flog ",{
-      wsFile <- file.path(path, "BM_data.xml")
-      ws <- openWorkspace(wsFile)
-      
-      gs <- parseWorkspace(ws, name=1, execute = FALSE)
-    })
-test_that("Inverse function of flog ",{
       thisPath <- file.path(path, "inverse")
       wsFile <- file.path(thisPath, "Small.xml")
       ws <- openWorkspace(wsFile)
