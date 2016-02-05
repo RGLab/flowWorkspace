@@ -85,6 +85,7 @@ flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, 
 #' @param equal.space whether breaks at equal-spaced intervals
 #' @param trans.fun the transform function (only needed when equal.space is TRUE)
 #' @param inverse.fun the inverse function (only needed when equal.space is TRUE)
+#' @export 
 #' @examples  
 #' data(GvHD)
 #' fr <- GvHD[[1]]
@@ -156,6 +157,7 @@ flowJo_biexp_breaks <- function (n = 6, equal.space = FALSE, ...)
 #' Used by other specific trans constructor
 #' @param name transformation name
 #' @inheritParams flow_breaks
+#' @export
 flow_trans <- function(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6){
   
   brk <- function(x){
@@ -177,7 +179,7 @@ flow_trans <- function(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6)
 
 #' flowJo biexponential transformation. 
 #' 
-#' Used for biexponential scale layer \code{\link{scale_x_flowJo_biexp}}
+#' Used for constructing biexponential transformation object.
 #' 
 #' @export
 #' @importFrom scales trans_new format_format
@@ -283,29 +285,29 @@ flowJo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
   flow_trans(name = "flowJo_fasinh", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
 
-#' inverse hyperbolic sine transform function (GatingML 2.0 version)
+#' inverse hyperbolic sine transform function generator (GatingML 2.0 version)
 #'  
 #' hyperbolic sine/inverse hyperbolic sine transform function constructor.
 #' It is simply a special form of \code{flowJo.fasinh} with \code{length} set to 1
 #' and different default values for parameters \code{t,m,a}.
 #' 
-#' @rdname asinh.Gml2
+#' @rdname asinh_Gml2
 #' @param M numeric the full width of the transformed display in asymptotic decades
 #' @param T numeric the maximum value of input data
 #' @param A numeric Additional negative range to be included in the display in asymptotic decades
 #' @param inverse whether to return the inverse function
 #' @return fasinh/fsinh transform function
 #' @examples 
-#' trans <- asinh.Gml2()
+#' trans <- asinh_Gml2()
 #' data.raw <- c(1,1e2,1e3)
 #' data.trans <- trans(data.raw)
 #' data.trans
 #' 
-#' inverse.trans <- asinh.Gml2(inverse = TRUE)
+#' inverse.trans <- asinh_Gml2(inverse = TRUE)
 #' inverse.trans(data.trans)
 #' 
 #' @export
-asinh.Gml2 <- function(T = 262144,M = 4.5,A = 0, inverse = FALSE)
+asinh_Gml2 <- function(T = 262144,M = 4.5,A = 0, inverse = FALSE)
 {
 
     if(inverse){
@@ -323,7 +325,7 @@ asinh.Gml2 <- function(T = 262144,M = 4.5,A = 0, inverse = FALSE)
 #' Used to construct \code{\link{asinhtGml2_trans}} object
 #' 
 #' @inheritParams flow_breaks
-#' @param ... parameters passed to asinh.Gml2
+#' @param ... parameters passed to asinh_Gml2
 #' @return a function generates fasinh or fsinh space
 #' @examples 
 #' 
@@ -333,7 +335,7 @@ asinh.Gml2 <- function(T = 262144,M = 4.5,A = 0, inverse = FALSE)
 #' brks # fasinh space displayed at raw data scale
 #' 
 #' #transform it to verify it is equal-spaced at transformed scale
-#' trans.func <- asinh.Gml2()
+#' trans.func <- asinh_Gml2()
 #' brks.trans <- trans.func(brks)
 #' brks.trans 
 #' @export
@@ -341,8 +343,8 @@ asinhtGml2_breaks <- function (n = 6, equal.space = FALSE, ...)
 {
   
   function(x) {
-    transFunc <- asinh.Gml2(...)
-    invFunc <- asinh.Gml2(..., inverse = TRUE)
+    transFunc <- asinh_Gml2(...)
+    invFunc <- asinh_Gml2(..., inverse = TRUE)
     flow_breaks(x, n = n, equal.space = equal.space, transFunc, invFunc)
   }
 }
@@ -357,8 +359,8 @@ asinhtGml2_breaks <- function (n = 6, equal.space = FALSE, ...)
 #' asinhtGml2_trans()
 #' @export
 asinhtGml2_trans <- function(..., n = 6, equal.space = FALSE){
-  trans <- asinh.Gml2(...)
-  inv <- asinh.Gml2(..., inverse = TRUE)
+  trans <- asinh_Gml2(...)
+  inv <- asinh_Gml2(..., inverse = TRUE)
   flow_trans(name = "asinhtGml2", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
 

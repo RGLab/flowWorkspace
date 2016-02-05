@@ -11,7 +11,7 @@
 \item{x}{graphGML}
 }
 \value{
-transformList object
+transformerList object
 }
 \description{
 Extract transformations from graphGML object.

@@ -6,27 +6,39 @@
 ---
 title: "How to parse gatingML into a GatingSet"
 author: "Mike Jiang"
-date: "October 27, 2015"
-output: html_document
+output: 
+  html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "markup", message = FALSE, warning = FALSE)
+```
+
 
 This vignette demonstrates how the gatingML files exported from Cytobank can be imported into R as a GatingSet object.
 
-### Load the gatingML file as a **graphGML** object
-```{r message=FALSE}
+```{r}
 library(flowWorkspace)
+fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full.names = TRUE)
 xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
+```
+
+## Use `parse.gatingML`
+The entire parsing work can be done with single convevient function `parse.gatingML`:
+```{r, eval=FALSE}
+gs <- parse.gatingML(xmlfile, fcsFiles)
+```
+
+## Load GatingML and FCS separately
+Or you can divide the parse into several steps to have more controls.
+
+### Load the gatingML file as a **graphGML** object
+```{r}
 g <- read.gatingML.cytobank(xmlfile)
 class(g)
-```
-
-
-### **graphGML** stores the gating hierarchy
-```{r}
 g
 ```
-
-### It can be inspected by various accessors.
+**graphGML** stores the gating hierarchy, which can be inspected by various accessors.
 ```{r}
 getNodes(g)
 getParent(g, "GateSet_722318")
@@ -34,7 +46,7 @@ getChildren(g, "GateSet_722318")
 
 ```
 
-### The Population tree can be plotted
+And the population tree can be plotted
 ```{r fig.width=4,fig.height=4}
 plot(g)
 ```
@@ -42,46 +54,53 @@ plot(g)
 The node with **dotted** border means the `tailored` gates(or sample-specific gates) are defined for that population.
 
 ### Read raw FCS files
-```{r message=FALSE}
-fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
+```{r}
 fs <- read.ncdfFlowSet(fcsFiles)
 ```
 
-### Compensate the data
-```{r message=FALSE}
-fs <- compensate(fs, g)
+### Construct the **GatingSet**
+```{r}
+gs <- GatingSet(fs)
 ```
 
-### Transform the data
-```{r message=FALSE}
+### Compensate the `GatingSet`
+```{r}
+gs <- compensate(gs, g)
+```
+
+### Extract the transformation
+```{r}
 trans <- getTransformations(g)
 trans
-fs <- transform(fs, trans)
+```
+
+### Transform the `GatingSet`
+```{r}
+gs <- transform(gs, trans)
 ```
 
 
 ### Visualize the outcome of compensation and transformation
 ```{r fig.width=4,fig.height=4, fig.show='hold'}
- densityplot(~`CD4`, fs)
- xyplot(`CD4` ~`CD8`, fs, smooth = FALSE, xbin = 32)
-
+require(ggcyto)
+ggcyto(gs, aes(x = CD4), subset = "root") + geom_density()
+ggcyto(gs, aes(x = CD4, y = CD8), subset = "root") + geom_hex()
 ```
 
 
-### Construct the **GatingSet** and apply the gates
-```{r message=FALSE}
-gs <- GatingSet(fs)
+### Apply the gates to **GatingSet**
+```{r}
 gating(g, gs)
 ```
 
 
 ### Plot the gates
 ```{r}
-plotGate(gs[[1]])
+autoplot(gs[[1]])
 ```
 
 ### Extract the population statistics
-```{r results='markup'}
+```{r}
 getPopStats(gs, statType = "count")
 ```
 

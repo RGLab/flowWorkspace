@@ -7,7 +7,7 @@
 asinhtGml2_trans(..., n = 6, equal.space = FALSE)
 }
 \arguments{
-\item{...}{parameters passed to asinh.Gml2}
+\item{...}{parameters passed to asinh_Gml2}
 
 \item{n}{desired number of breaks (the actual number will be different depending on the data range)}
 

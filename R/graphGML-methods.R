@@ -174,8 +174,7 @@ setMethod("gating", signature = c("graphGML", "GatingSet"), function(x, y, ...){
 gating.graphGML <- function(gt, gs, ...) {
   
   trans <- getTransformations(gt)
-  if(!is.null(trans))
-    trans.func <- trans@transforms
+  
   gt_nodes <- tsort(gt)
   for (nodeID in gt_nodes) {
     
@@ -218,9 +217,9 @@ gating.graphGML <- function(gt, gs, ...) {
     if(!is.null(trans))
     {
       for(rn in rownames(bound)){
-        thisTrans <- trans.func[[rn]]
+        thisTrans <- trans[[rn]]
         if(!is.null(thisTrans))
-          bound[rn, ] <- thisTrans@f(unlist(bound[rn, ]))
+          bound[rn, ] <- thisTrans[["transform"]](unlist(bound[rn, ]))
       }  
     }
     
@@ -259,31 +258,51 @@ setMethod("getCompensationMatrices", signature = "graphGML", definition = functi
 
 #' Extract transformations from graphGML object.
 #' @param x graphGML
-#' @return transformList object
-#' @importFrom flowCore transformList eval parameters colnames
+#' @return transformerList object
+#' @importFrom flowCore eval parameters colnames
 #' @export
 setMethod("getTransformations", signature = c(x = "graphGML"), function(x){
-  
-  x@graphData[["transformations"]]
-  
-  
+  trans <- x@graphData[["transformations"]]
+  if(!is.null(trans)){
+    chnls <- names(trans)
+    trans <- sapply(trans, function(thisTrans){
+      
+      #convert from transform object to function since transform has empty function in .Data slot
+      #which is not suitable for transformList constructor  
+      trans.fun <- eval(thisTrans)
+      trans.type <- class(thisTrans)
+      if(extends(trans.type, "asinhtGml2")){
+        inv.func <- asinh_Gml2(thisTrans@T, thisTrans@M, thisTrans@A, inverse = TRUE)
+        
+      }else
+        stop("Don't know how to inverse transformation: ", trans.type)
+      
+      trans.obj <- flow_trans(trans.type, trans.fun, inv.func)
+      
+    }
+    , USE.NAMES = FALSE, simplify = FALSE)
+    
+    trans <- transformerList(chnls, trans)
+  }
+  trans
 })
 
-#' compensate a flowSet based on the compensation information stored in graphGML object
+#' compensate a GatingSet based on the compensation information stored in graphGML object
 #' 
 #' 
-#' @param x flowSet
+#' @param x GatingSet
 #' @param spillover graphGML
 #' @param ... unused.
-#' @return compensated flowSet
+#' @return compensated GatingSet
 #' @importFrom flowCore compensate
 #' @export
-setMethod("compensate", signature = c("flowSet", "graphGML"), function(x, spillover, ...){
+setMethod("compensate", signature = c("GatingSet", "graphGML"), function(x, spillover, ...){
   
   comp <- getCompensationMatrices(spillover)
   
   if(comp == "FCS"){
-    mat <- compact(spillover(x[[1, use.exprs = FALSE]]))[[1]]
+    fs <- getData(x)
+    mat <- compact(spillover(fs[[1, use.exprs = FALSE]]))[[1]]
     comp <- compensation(mat)
   }
   compensate(x, comp)

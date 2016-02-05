@@ -17,7 +17,7 @@ flowJo_biexp_trans(..., n = 6, equal.space = FALSE)
 biexponential transformation object
 }
 \description{
-Used for biexponential scale layer \code{\link{scale_x_flowJo_biexp}}
+Used for constructing biexponential transformation object.
 }
 \examples{
 data(GvHD)
