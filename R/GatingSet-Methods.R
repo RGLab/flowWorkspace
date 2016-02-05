@@ -320,7 +320,13 @@ load_gs<-function(path){
 
         gs <- new("GatingSet", flag = TRUE, guid = thisGuid, axis = axis, data = fs)
       }
-
+      
+      if(!.hasSlot(gs, "transformation"))
+        gs@transformation <- list()
+       
+      if(!.hasSlot(gs, "compensation"))
+        gs@compensation <- NULL
+      
       
       guid <- try(slot(gs,"guid"),silent=T)
       if(class(guid)=="try-error"){
@@ -858,7 +864,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 }
 
 #' transform the range slot and construct axis label and pos for the plotting
-#' @param gh \code{GatingHierarchy}
+#' @param G \code{GatingSet} It is an incomplete GatingSet object which does not have data slot assigned yet.
 #' @param wsType \code{character} flowJo workspace type
 #' @param frmEnv \code{environment} point to the \code{frames} slot of the original \code{flowSet}
 #' @param timeRange \code{numeric} vector specifying the range for 'time' channel
@@ -866,12 +872,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @return
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL){
-#  browser()
+ 
 
-     trans<-.getTransformations(G@pointer, sampleName)
-     comp<-.cpp_getCompensation(G@pointer,sampleName)
-     prefix <- comp$prefix
-     suffix <- comp$suffix
+ trans <- getTransformations(G[[sampleName]])
+ comp<-.cpp_getCompensation(G@pointer,sampleName)
+ prefix <- comp$prefix
+ suffix <- comp$suffix
 
 	rawRange <- range(get(sampleName,frmEnv))
     oldnames <- names(rawRange)
@@ -2037,10 +2043,12 @@ setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
 
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
-#      as(x[i], "GatingHierarchy")
+      data <- x@data
+      if(is.null(data))
+        data <- new("flowSet")
       #new takes less time than as method
       new("GatingHierarchy", pointer = x@pointer 
-                            , data = x@data
+                            , data = data
                             , flag = x@flag
                             , axis = x@axis
                             , guid = x@guid

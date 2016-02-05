@@ -1233,7 +1233,6 @@ getAxisLabels <- function(obj,...){
 #' @param channel \code{character} channel name
 #' @param ... other arguments
 #'         equal.spaced \code{logical} passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals 
-#'        pretty \code{logical} whether to format axis labels 
 #' @details
 #' Returns a list of the transformations or a transformation in the flowJo workspace. 
 #' The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples 
@@ -1348,36 +1347,17 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
   
 }
 #' extract trans from c++
-.getTransformations <- function(pointer,sampleName, equal.space = FALSE, pretty = TRUE, ...){
+.getTransformations <- function(pointer,sampleName, equal.space = FALSE, ...){
     trans.func <- .cpp_getTransformations(pointer,sampleName, inverse = FALSE)
     inv.func <- .cpp_getTransformations(pointer,sampleName, inverse = TRUE)
     trans.list <- .convertTrans(trans.func)
     inv.list <- .convertTrans(inv.func)
     mapply(trans.list, inv.list, FUN = function(trans, inv){
-          trans.type <- attr(trans,"type") 
-          if(trans.type != "gateOnly"){
-            brk.func <- function(x){
-              flow_breaks(x, equal.space =equal.space, trans.fun = trans, inverse.fun = inv)
-              }
-              
-              
-          }else
-            brk.func <- pretty_breaks() 
-           
-          
-          
-          if(pretty){
-            fmt <- flowWorkspace:::pretty10exp  
-            formals(fmt)[["drop.1"]] <- TRUE
-          }else
-            fmt <- format_format(digits = 0)
-          
-          trans_new(trans.type, transform = trans, inverse = inv
-                                      , breaks = brk.func 
-                        #             , format = fmt
-                        #               , domain = c(-Inf, 4096)
-                                  )
-        })
+#           trans.type <- attr(trans,"type") 
+#           if(trans.type != "gateOnly"){
+            flow_trans(name = "flowJo_biexp", trans.fun = trans, inverse.fun = inv, n = 6, equal.space = equal.space)
+          # }
+        }, SIMPLIFY = FALSE)
    
     
   }
