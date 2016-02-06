@@ -25,12 +25,20 @@ is supported.
 }
 \examples{
 \dontrun{
+data(GvHD)
+fs <- GvHD[1:2]
+gs <- GatingSet(fs)
+
 #construct biexponential transformation function
-biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+
 #make a transformList object
-transFuns <- transformList(chnls, biexpTrans)
+chnls <- c("FL1-H", "FL2-H")
+transList <- transformerList(chnls, biexpTrans)
+
 #add it to GatingSet
-gs_trans <- transform(gs, transFuns)
+gs_trans <- transform(gs, transList)
+
 }
 }
 

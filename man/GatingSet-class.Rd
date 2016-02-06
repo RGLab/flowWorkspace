@@ -52,6 +52,8 @@ It allows the use to load a workspace and subset desired samples before proceedi
     \item{\code{axis}:}{Object of class \code{"list"}. stores the axis information used for plotGate.}
     \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}
     \item{\code{guid}:}{Object of class \code{"character"}. the unique identifier for GatingSet object.}
+    \item{\code{transformation}:}{Object of class \code{"list"}. a list of transformation objects used by GatingSet.}
+   \item{\code{compensation}:}{Object of class \code{"ANY"}. compensation objects.}
   }
 }
 \examples{

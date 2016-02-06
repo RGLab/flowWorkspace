@@ -35,6 +35,9 @@ setMethod("rbind2",
         G@guid <- .uuid_gen()
         G@flag <- TRUE
         G@axis <- unlist(lapply(x,slot,"axis",level = 1),recursive = FALSE)
+        #TODO: to waring about losing trans and comp info when they are different across gs
+        G@transformation <- x@data[[1]]@transformation
+        G@compensation <- x@data[[1]]@compensation
         #combine R objects
         
         flowData(G) <- fs
@@ -249,5 +252,12 @@ setMethod("transform",
     definition = function(`_data`, ...)
     {
       res <- lapply(`_data`, function(gs)transform(gs, ...), level = 1)
+      GatingSetList(res)
+    })
+
+#' @rdname compensate
+setMethod("compensate", signature=signature(x="GatingSetList", spillover="compensation"),
+    definition=function(x, spillover){
+      res <- lapply(x, function(gs)compensate(gs, ...), level = 1)
       GatingSetList(res)
     })

@@ -2,7 +2,7 @@ Package: flowWorkspace
 Type: Package
 Title: Import flowJo Workspaces into BioConductor and replicate flowJo gating
     with flowCore
-Version: 3.17.23
+Version: 3.17.24
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -35,10 +35,12 @@ Imports:
     ,stringr
     ,flowUtils
     ,jsonlite
+    ,scales
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
     'flowJoWorkspace-Methods.R'
+    'flow_trans.R'
     'GatingHierarchy-Methods.R'
     'GatingSet-Methods.R'
     'GatingSetList-Methods.R'

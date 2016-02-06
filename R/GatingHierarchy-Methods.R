@@ -1190,24 +1190,22 @@ prettyAxis <- function(gh, channel){
         res <- getAxisLabels(gh)[[channel]] #this call is to be deprecated once we figure out how to preserve trans when cloning GatingSet
         if(is.null(res)){
           #try to grab trans and do inverse trans for axis label on the fly
-            trans <- getTransformations(gh, channel)
+            trans <- getTransformations(gh, channel, only.function = FALSE)
             if(is.null(trans)){
               res <- NULL
             }else{
-              inverseTrans <- getTransformations(gh, channel, inverse = TRUE)
-              
+              inv.func <- trans[["inverse"]]
+              trans.func <- trans[["transform"]]
+              brk.func <- trans[["breaks"]]
+
               fr <- getData(gh, use.exprs = FALSE)
               r <- as.vector(range(fr)[,channel])#range
-              rw <- inverseTrans(r)
-              ######################################
-              #create equal spaced locations at raw scale
-              ######################################
-              base10raw <- unlist(lapply(2:6,function(e)10^e))
-              base10raw <- c(0,base10raw)
-              raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
-              pos <- signif(trans(raw))
+              raw <- inv.func(r)
+              brks <- brk.func(raw)
+              pos <- signif(trans.func(brks))
               #format it
-              label <- pretty10exp(as.numeric(raw),drop.1=TRUE)
+              label <- trans[["format"]](brks)
+                
               
               res <- list(label = label, at = pos)
             }
@@ -1230,206 +1228,161 @@ getAxisLabels <- function(obj,...){
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
 #'
 #' @param x A \code{GatingHierarchy} object
+#' @param inverse \code{logical} whether to return the inverse transformation function. Valid when only.funtion is TRUE
+#' @param only.function \code{logical} whether to return the function or the entire transformer object(see \code{scales} package) that contains transform and inverse and breaks function.
+#' @param channel \code{character} channel name
 #' @param ... other arguments
-#' 
-#'         inverse \code{logical} whether to return the inverse transformation function.
-#'         channel \code{character} channel name
+#'         equal.spaced \code{logical} passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals 
+#'        pretty \code{logical} whether to format axis labels 
 #' @details
-#' Returns a list of the transformations or a transformation in the flowJo workspace. The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples in the \code{flowJoWorkspace}. Each element of \code{L} is itself a \code{list} of length \code{M}, where \code{M} is the number of parameters that were transformed for a sample or group of samples in a \code{flowJoWorkspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis, using two different sets of transformations, then L will be of length 2, and each element of L will be of length 5. The elements of \code{L} represent channel- or parameter-specific transformation functions that map from raw intensity values to channel-space used by flowJo.
-#' this method currently is used convert transformation funtion from c++ to R
-#' mainly for transforming range info
+#' Returns a list of the transformations or a transformation in the flowJo workspace. 
+#' The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples 
+#' in the \code{flowJoWorkspace}. Each element of \code{L} is itself a \code{list} of length \code{M}, 
+#' where \code{M} is the number of parameters that were transformed for a sample or group of samples 
+#' in a \code{flowJoWorkspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis, 
+#' using two different sets of transformations, then L will be of length 2, and each element of L will be of length 5. 
+#' The elements of \code{L} represent channel- or parameter-specific transformation functions that map from raw intensity values 
+#' to channel-space used by flowJo.
 #' @return
-#' lists of functions, with each element of the list representing a transformation applied to a specific channel/parameter of a sample.
+#' lists of functions(or transform objects when only.function is FALSE), with each element of the list representing a transformation applied to a specific 
+#' channel/parameter of a sample.
 #' @examples
 #' \dontrun{
 #' 	#Assume gh is a GatingHierarchy
 #' 	getTransformations(gh); # return a list transformation functions
 #'  getTransformations(gh, inverse = TRUE); # return a list inverse transformation functions 
-#'  getTransformations(gh, channel = "<B710-A") # only return the transfromation associated with given channel
+#'  getTransformations(gh, channel = "FL1-H") # only return the transfromation associated with given channel
+#'  getTransformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
 #' }
 #' @aliases getTransformations
 #' @rdname getTransformations
-setMethod("getTransformations","GatingHierarchy",function(x, ...){
-#			browser()
-      .getTransformations(x@pointer,sampleNames(x), ...)
-		})
-
-    
-#' inverse hyperbolic sine transform function 
-#'  
-#'  hyperbolic sine/inverse hyperbolic sine (flowJo-version) transform function constructor
-#' 
-#' @rdname flowJo.fasinh
-#' @param m numeric the full width of the transformed display in asymptotic decades
-#' @param t numeric the maximum value of input data
-#' @param a numeric Additional negative range to be included in the display in asymptotic decades
-#' @param length numeric the maximum value of transformed data
-#' @return fasinh/fsinh transform function
-#' @examples 
-#' trans <- flowJo.fasinh()
-#' data.raw <- c(1,1e2,1e3)
-#' data.trans <- trans(data.raw)
-#' data.trans
-#' 
-#' inverse.trans <- flowJo.fsinh()
-#' inverse.trans(data.trans)
-#' 
-#' @export
-flowJo.fasinh <- function (m = 4.0, t = 12000, a =  0.7, length = 256) 
-{
-  function(x){ #copied fom c++ code
-    length * ((asinh(x * sinh(m * log(10)) / t) + a * log(10)) / ((m + a) * log(10)))
-  }
-}
-
-#' @rdname flowJo.fasinh
-#' @export
-flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
-  function(x){
-    sinh(((m + a) * log(10)) * x/length - a * log(10)) * t / sinh(m * log(10)) 
-  }
-}
-
-.getTransformations <- function(pointer,sampleName, channel = NULL, inverse = FALSE, ...){
-    trans <- .cpp_getTransformations(pointer,sampleName, inverse)
-    transList <- lapply(trans,function(curTrans){
-#						browser()
-          if(curTrans$type=="log")
-          {
-            if(inverse){
-              f <- function(x, min_val = 0
-                                , max_val = 262143
-                                , decade = curTrans$decade
-                                , offset = curTrans$offset
-                            )
-              {
-                  10 ^ ((x - offset) * decade) * max_val
-              }
-              
-              attr(f,"type")<-"flog.inverse"
-            }else{
-              f <- function(x){
-                sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
-              }
-              assign("decade", curTrans$decade, environment(f))
-              assign("offset", curTrans$offset, environment(f))
-              assign("min_val", 0, environment(f))
-              assign("max_val", 262143, environment(f))
-              
-              attr(f,"type")<-"flog"  
-            }
-            
-
-          }
-          else if(curTrans$type=="lin")
-          {
-            f<-function(x){x*64}
-            attr(f,"type")<-"gateOnly"
-
-
-          }else if(curTrans$type %in% c("caltbl" , "biexp")){
-            f <- .flowJoTrans(curTrans)
-          }else if(curTrans$type=="fasinh"){
-            if(inverse)
-              f <- flowJo.fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
-            else
-              f <- flowJo.fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
-            
-          }
-
-          return (f)
-        })
-    
-    #try to match to given channel
-    if(!is.null(channel)){
-      trans_names <- names(transList)
-      #do strict match first
-      j <- grep(paste0("^", channel, "$"), trans_names)
-      if(length(j) == 0){
-        #do fuzzy match if no matches
-        j <- grep(channel, trans_names)
+setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
+      trans.objects <- x@transformation 
+      if(length(trans.objects) == 0){
+        trans.objects <- .getTransformations(x@pointer,sampleNames(x), ...)  
       }
       
-      if(length(j) > 1){
-          stop("multiple tranformation functions matched to: ", channel)
-      }else if(length(j) == 0){
-        return(NULL)
-      }else{
-        transList[[j]]
+      #this option is for backward compatibility
+      if(only.function){
+        trans.objects <- sapply(trans.objects, function(obj){
+          
+                    if(inverse)
+                      obj[["inverse"]]
+                    else
+                      obj[["transform"]]
+            })      
       }
-    }else
-      transList
-    
-  }
+      
+      
+      #try to match to given channel
+      if(!is.null(channel)){
+        trans_names <- names(trans.objects)
+        #do strict match first
+        j <- grep(paste0("^", channel, "$"), trans_names)
+        if(length(j) == 0){
+          #do fuzzy match if no matches
+          j <- grep(channel, trans_names)
+        }
+        
+        if(length(j) > 1){
+          stop("multiple tranformation functions matched to: ", channel)
+        }else if(length(j) == 0){
+          return(NULL)
+        }else{
+          trans.objects[[j]]
+        }
+      }else
+        trans.objects
+})
+
+
+.convertTrans <- function(trans, inverse = FALSE){
+  transList <- lapply(trans,function(curTrans){
+#						browser()
+        if(curTrans$type=="log")
+        {
+          if(inverse){
+            f <- function(x, min_val = 0
+                , max_val = 262143
+                , decade = curTrans$decade
+                , offset = curTrans$offset
+            )
+            {
+              10 ^ ((x - offset) * decade) * max_val
+            }
+            
+            attr(f,"type")<-"flog.inverse"
+          }else{
+            f <- function(x){
+              sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
+            }
+            assign("decade", curTrans$decade, environment(f))
+            assign("offset", curTrans$offset, environment(f))
+            assign("min_val", 0, environment(f))
+            assign("max_val", 262143, environment(f))
+            
+            attr(f,"type")<-"flog"  
+          }
+          
+          
+        }
+        else if(curTrans$type=="lin")
+        {
+          f<-function(x){x*64}
+          attr(f,"type")<-"gateOnly"
+          
+          
+        }else if(curTrans$type %in% c("caltbl" , "biexp")){
+          f <- .flowJoTrans(curTrans)
+        }else if(curTrans$type=="fasinh"){
+          if(inverse)
+            f <- flowJo.fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
+          else
+            f <- flowJo.fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
+          
+        }
+        
+        return (f)
+      })
   
-#' wrap the calibration table into transformation function using stats:::splinefun
-#' 
-#' @param coef the coefficients returned by the calibration table from flowJo
-.flowJoTrans <- function(coef, inverse = FALSE){
-  if(inverse){
-    #swap x y vector
-    x <- coef$z$x 
-    coef$z$x <- coef$z$y
-    coef$z$y <- x
-    
-  }
-  #define the dummy spline function(simplied version of the one from stats package)
-  f <- function (x, deriv = 0)
-  {
-    deriv <- as.integer(deriv)
-    if (deriv < 0 || deriv > 3)
-      stop("'deriv' must be between 0 and 3")
-    if (deriv > 0) {
-      z0 <- double(z$n)
-      z[c("y", "b", "c")] <- switch(deriv, list(y = z$b, b = 2 *
-                  z$c, c = 3 * z$d), list(y = 2 * z$c, b = 6 * z$d,
-              c = z0), list(y = 6 * z$d, b = z0, c = z0))
-      z[["d"]] <- z0
-    }
-    
-    res <- stats::: .splinefun(x,z)
-    if (deriv > 0 && z$method == 2 && any(ind <- x <= z$x[1L]))
-      res[ind] <- ifelse(deriv == 1, z$y[1L], 0)
-    res
-  }
-  #update the parameters of the function
-  z<-coef$z
-  z$n<-length(z$x)
-  z$method<-coef$method
-  assign("z",z,environment(f))
-  
-  type <- coef$type 
-  attr(f,"type") <- type 
-  if(type == "biexp")
-      attr(f,"parameters") <- list(channelRange = coef$channelRange
-                                  , maxValue = coef$maxValue
-                                  , neg = coef$neg
-                                  , pos = coef$pos
-                                  , widthBasis = coef$widthBasis
-                                )
-  
-  
-  return (f)
-  
-}  
-#' construct the flowJo-type biexponentioal transformation function
-#' 
-#' Normally it was parsed from flowJo xml workspace. This function provides the alternate 
-#' way to construct the flowJo version of logicle transformation function within R.
-#' 
-#' @param channelRange \code{numeric} the maximum value of transformed data
-#' @param maxValue \code{numeric} the maximum value of input data
-#' @param pos \code{numeric} the full width of the transformed display in asymptotic decades
-#' @param neg \code{numeric} Additional negative range to be included in the display in asymptotic decades
-#' @param widthBasis \code{numeric} unkown.
-#' @param inverse \code{logical} whether to return the inverse transformation function. 
-#' @export 
-flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
-  
-  coef <- .getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis)
-  .flowJoTrans(coef, inverse = inverse)
   
 }
+#' extract trans from c++
+.getTransformations <- function(pointer,sampleName, equal.space = FALSE, pretty = TRUE, ...){
+    trans.func <- .cpp_getTransformations(pointer,sampleName, inverse = FALSE)
+    inv.func <- .cpp_getTransformations(pointer,sampleName, inverse = TRUE)
+    trans.list <- .convertTrans(trans.func)
+    inv.list <- .convertTrans(inv.func)
+    mapply(trans.list, inv.list, FUN = function(trans, inv){
+          trans.type <- attr(trans,"type") 
+          if(trans.type != "gateOnly"){
+            brk.func <- function(x){
+              flow_breaks(x, equal.space =equal.space, trans.fun = trans, inverse.fun = inv)
+              }
+              
+              
+          }else
+            brk.func <- pretty_breaks() 
+           
+          
+          
+          if(pretty){
+            fmt <- flowWorkspace:::pretty10exp  
+            formals(fmt)[["drop.1"]] <- TRUE
+          }else
+            fmt <- format_format(digits = 0)
+          
+          trans_new(trans.type, transform = trans, inverse = inv
+                                      , breaks = brk.func 
+                        #             , format = fmt
+                        #               , domain = c(-Inf, 4096)
+                                  )
+        })
+   
+    
+  }
+  
+
 
 #'  Retrieve the compensation matrices from a GatingHierarchy
 #'
@@ -1449,33 +1402,38 @@ flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, 
 #' @export 
 #' @rdname getCompensationMatrices
 setMethod("getCompensationMatrices","GatingHierarchy",function(x){
-			comp<-.cpp_getCompensation(x@pointer,sampleNames(x))
-			cid<-comp$cid
-#			browser()
-			if(cid=="")
-				cid=-2
-			if(cid!="-1" && cid!="-2"){
-				marker<-comp$parameters
-				compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
-			}else if(cid=="-2"){
-				#TODO the matrix may be acquisition defined.
-#				message("No compensation");
-				compobj<-NULL
-			}
-			else if(cid=="-1")
-			{
-				##Acquisition defined compensation.
-				nm<-comp$comment
-
-				if(grepl("Acquisition-defined",nm)){
-					###Code to compensate the sample using the acquisition defined compensation matrices.
-#					message("Compensating with Acquisition defined compensation matrix");
-					#browser()
-					compobj<-compensation(spillover(getData(x))$SPILL)
-
-				}
-
-			}
+      
+      compobj <- x@compensation
+      if(is.null(compobj)){
+        comp<-.cpp_getCompensation(x@pointer,sampleNames(x))
+        cid<-comp$cid
+        #			browser()
+        if(cid=="")
+          cid=-2
+        if(cid!="-1" && cid!="-2"){
+          marker<-comp$parameters
+          compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+        }else if(cid=="-2"){
+          #TODO the matrix may be acquisition defined.
+          #				message("No compensation");
+          compobj<-NULL
+        }
+        else if(cid=="-1")
+        {
+          ##Acquisition defined compensation.
+          nm<-comp$comment
+          
+          if(grepl("Acquisition-defined",nm)){
+            ###Code to compensate the sample using the acquisition defined compensation matrices.
+            #					message("Compensating with Acquisition defined compensation matrix");
+            #browser()
+            compobj<-compensation(spillover(getData(x))$SPILL)
+            
+          }
+          
+        }  
+      }
+			
 			compobj
 
 })
