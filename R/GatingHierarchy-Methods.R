@@ -1351,7 +1351,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
     trans.func <- .cpp_getTransformations(pointer,sampleName, inverse = FALSE)
     inv.func <- .cpp_getTransformations(pointer,sampleName, inverse = TRUE)
     trans.list <- .convertTrans(trans.func)
-    inv.list <- .convertTrans(inv.func)
+    inv.list <- .convertTrans(inv.func, inverse = TRUE)
     mapply(trans.list, inv.list, FUN = function(trans, inv){
 #           trans.type <- attr(trans,"type") 
 #           if(trans.type != "gateOnly"){
