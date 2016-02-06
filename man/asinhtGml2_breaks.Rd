@@ -11,7 +11,7 @@ asinhtGml2_breaks(n = 6, equal.space = FALSE, ...)
 
 \item{equal.space}{whether breaks at equal-spaced intervals}
 
-\item{...}{parameters passed to asinh.Gml2}
+\item{...}{parameters passed to asinh_Gml2}
 }
 \value{
 a function generates fasinh or fsinh space
@@ -26,7 +26,7 @@ brks <- brks.func(data)
 brks # fasinh space displayed at raw data scale
 
 #transform it to verify it is equal-spaced at transformed scale
-trans.func <- asinh.Gml2()
+trans.func <- asinh_Gml2()
 brks.trans <- trans.func(brks)
 brks.trans
 }

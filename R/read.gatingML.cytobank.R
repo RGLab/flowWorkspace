@@ -87,15 +87,14 @@ read.gatingML.cytobank <- function(file, ...){
   
   trans <- compact(trans)
   chnl <- sapply(trans, function(tran)unname(parameters(tran@parameters)), USE.NAMES = F)
-  #convert from transform object to function since transform has empty function in .Data slot
-  #which is not suitable for transformList constructor
-  trans <- sapply(trans, eval, USE.NAMES = F)
+  
   ind <- chnl != "any"
   
   chnl <- chnl[ind]
   trans <- trans[ind]
+  names(trans) <- chnl
   if(length(trans) > 0)
-    g@graphData[["transformations"]] <- transformList(chnl, trans) 
+    g@graphData[["transformations"]] <- trans
 
   as(g, "graphGML")
   
@@ -661,18 +660,18 @@ fix.rectangleGate <- function(gate){
 parse.gatingML <- function(xml, FCS){
   g <- read.gatingML.cytobank(xml)
   fs <- read.ncdfFlowSet(FCS)
-  
+  gs <- GatingSet(fs)
   
   ## Compensate the data with the compensation information stored in `graphGML` object
-  fs <- compensate(fs, g)
+  gs <- compensate(gs, g)
+  
   ## Extract transformation functions from `graphGML` and transform the data
   trans <- getTransformations(g)
   if(!is.null(trans))
-    fs <- transform(fs, trans)
+    gs <- transform(gs, trans)
   
   
-  ## Construct the **GatingSet** and apply gates stored in `graphGML`
-  gs <- GatingSet(fs)
+  ##Apply gates stored in `graphGML`
   gating(g, gs)
   gs
 }
