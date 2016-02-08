@@ -61,6 +61,7 @@ Suggests:
     ,flowWorkspaceData
     ,RSVGTipsDevice
     ,knitr
+    ,ggcyto
 LinkingTo: Rcpp, BH(>= 1.60.0-1)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make
