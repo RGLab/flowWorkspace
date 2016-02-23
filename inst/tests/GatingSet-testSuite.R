@@ -136,11 +136,11 @@ test_that("getGate for gs",{
       
       thisRes <- getGate(gs, "CD3+")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_ellipse.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(thisRes, expectRes, tol = 3e-08)
       
       thisRes <- getGate(gs, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_polygon.rds"))
-      expect_equal(thisRes, expectRes)
+      expect_equal(thisRes, expectRes, tol = 2e-08)
     })
 
 test_that("preporcess the gating tree to prepare for the plotGate",{
@@ -369,7 +369,8 @@ test_that("getSingleCellExpression for COMPASS",{
       
       thisRes <- getSingleCellExpression(gs, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
       expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
-      expect_equivalent(thisRes,expectRes)
+#      browser()
+      expect_equal(thisRes,expectRes, tol = 1.2e-07)
       
       #test other.markers (redundant marker should be merged automatically)
       thisRes <- getSingleCellExpression(gs, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') 

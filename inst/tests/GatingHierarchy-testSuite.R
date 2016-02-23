@@ -63,7 +63,7 @@ test_that("getCompensationMatrices ",{
       
       thisRes <- getCompensationMatrices(gh)
       expectRes <- readRDS(file.path(resultDir, "getCompensationMatrices_gh.rds"))
-      expect_equal(thisRes,expectRes)
+      expect_equal(thisRes,expectRes, tolerance = 2e-08)
       
     })
 
