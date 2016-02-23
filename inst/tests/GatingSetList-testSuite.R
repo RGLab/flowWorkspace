@@ -47,7 +47,7 @@ test_that("pData<-", {
       pd <- pData(gslist)
       pd$group <- letters[1:2]
       pData(gslist) <- pd
-      expect_equal(pData(gslist), pd)
+      expect_equal(pData(gslist), pd, check.attributes = FALSE)
       
     })
 
