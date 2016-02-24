@@ -20,8 +20,7 @@ library(scales)
 #create tranformer object from scratch
 trans <- logicleTransform(w = 0.5, t = 262144, m = 4.5, a = 0)
 inv <- inverseLogicleTransform(trans = trans)
-brks <- logicle_breaks(n = 5, equal.space = FALSE, w = 0.5, t = 262144, m = 4.5, a = 0)
-trans.obj <- trans_new("logicle", transform = trans, inverse = inv, breaks = brks)
+trans.obj <- flow_trans("logicle", trans, inv, n = 5, equal.space = FALSE)
 
 #or simply use convenient constructor
 #trans.obj <- logicle_trans(n = 5, equal.space = FALSE, w = 0.5, t = 262144, m = 4.5, a = 0)

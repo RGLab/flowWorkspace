@@ -20,6 +20,14 @@ fasinh transformation object
 Used to construct the inverse hyperbolic sine transform object.
 }
 \examples{
-flowJo_fasinh_trans()
+trans.obj <- flowJo_fasinh_trans(equal.space = TRUE)
+data <- 1:1e3
+brks.func <- trans.obj[["breaks"]]
+brks <- brks.func(data)
+brks # fasinh space displayed at raw data scale
+
+#transform it to verify it is equal-spaced at transformed scale
+trans.func <- trans.obj[["transform"]]
+round(trans.func(brks))
 }
 
