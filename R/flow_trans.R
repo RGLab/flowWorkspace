@@ -121,37 +121,6 @@ flow_breaks <- function(x, n = 6, equal.space = FALSE, trans.fun, inverse.fun){
   myBreaks
 }
 
-#' flowJo biexponential breaks (integer breaks on biexp-transformed scales)
-#' 
-#' Used to construct \code{\link{flowJo_biexp_trans}} object
-#' 
-#' @export
-#' @inheritParams flow_breaks
-#' @param ... parameters passed to \code{\link[flowWorkspace]{flowJoTrans}}
-#' @return a function generates biexponential space
-#' @examples 
-#' 
-#' data(GvHD)
-#' fr <- GvHD[[1]]
-#' data.raw <- exprs(fr)[, "FL1-H"]
-#' brks.func <- flowJo_biexp_breaks(equal.space = TRUE)
-#' brks <- brks.func(data.raw)
-#' round(brks) # biexp space displayed at raw data scale
-#' 
-#' #transform it to verify it is equal-spaced at transformed scale
-#' trans.func <- flowJoTrans()
-#' brks.trans <- trans.func(brks)
-#' round(brks.trans )
-flowJo_biexp_breaks <- function (n = 6, equal.space = FALSE, ...) 
-{
-  
-  function(x) {
-    transFunc <- flowJoTrans(...)
-    invFunc <- flowJoTrans(..., inverse = TRUE)
-    flow_breaks(x, n = n, equal.space = equal.space, transFunc, invFunc)
-  }
-  
-}
 
 #' helper function to generate a trans objects
 #' Used by other specific trans constructor
@@ -183,7 +152,8 @@ flow_trans <- function(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6)
 #' 
 #' @export
 #' @importFrom scales trans_new format_format
-#' @inheritParams flowJo_biexp_breaks
+#' @inheritParams flow_breaks
+#' @param ... parameters passed to \code{\link[flowWorkspace]{flowJoTrans}}
 #' @examples 
 #' data(GvHD)
 #' fr <- GvHD[[1]]
@@ -242,42 +212,24 @@ flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
 }
 
 
-#' flowJo inverse hyperbolic sine breaks (integer breaks on fasinh-transformed scales)
+ 
+#' flowJo inverse hyperbolic sine transformation.
 #' 
-#' Used to construct \code{\link{flowJo_fasinh_trans}} object
-#' 
+#' Used to construct the inverse hyperbolic sine transform object.
+#'
 #' @inheritParams flow_breaks
 #' @param ... parameters passed to flowJo.fasinh
-#' @return a function generates fasinh or fsinh space
+#' @return fasinh transformation object
 #' @examples 
-#' 
+#' trans.obj <- flowJo_fasinh_trans(equal.space = TRUE)
 #' data <- 1:1e3
-#' brks.func <- flowJo_fasinh_breaks(equal.space = TRUE)
+#' brks.func <- trans.obj[["breaks"]]
 #' brks <- brks.func(data)
 #' brks # fasinh space displayed at raw data scale
 #' 
 #' #transform it to verify it is equal-spaced at transformed scale
-#' trans.func <- flowJo.fasinh()
+#' trans.func <- trans.obj[["transform"]]
 #' round(trans.func(brks))
-#' @export
-flowJo_fasinh_breaks <- function (n = 6, equal.space = FALSE, ...) 
-{
-  
-  function(x) {
-    transFunc <- flowJo.fasinh(...)
-    invFunc <- flowJo.fsinh(...)
-    flow_breaks(x, n = n, equal.space = equal.space, transFunc, invFunc)
-  }
-}
-
-#' flowJo inverse hyperbolic sine transformation.
-#' 
-#' Used to construct the inverse hyperbolic sine transform object.
-#' 
-#' @inheritParams flowJo_fasinh_breaks
-#' @return fasinh transformation object
-#' @examples 
-#' flowJo_fasinh_trans()
 #' @export
 flowJo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
   trans <- flowJo.fasinh(...)
@@ -320,43 +272,26 @@ asinh_Gml2 <- function(T = 262144,M = 4.5,A = 0, inverse = FALSE)
       
   
 }
-#' Inverse hyperbolic sine breaks (GatingML 2.0 version)
-#' 
-#' Used to construct \code{\link{asinhtGml2_trans}} object
-#' 
-#' @inheritParams flow_breaks
-#' @param ... parameters passed to asinh_Gml2
-#' @return a function generates fasinh or fsinh space
-#' @examples 
-#' 
-#' data <- 1:1e3
-#' brks.func <- asinhtGml2_breaks(equal.space = TRUE)
-#' brks <- brks.func(data)
-#' brks # fasinh space displayed at raw data scale
-#' 
-#' #transform it to verify it is equal-spaced at transformed scale
-#' trans.func <- asinh_Gml2()
-#' brks.trans <- trans.func(brks)
-#' brks.trans 
-#' @export
-asinhtGml2_breaks <- function (n = 6, equal.space = FALSE, ...) 
-{
-  
-  function(x) {
-    transFunc <- asinh_Gml2(...)
-    invFunc <- asinh_Gml2(..., inverse = TRUE)
-    flow_breaks(x, n = n, equal.space = equal.space, transFunc, invFunc)
-  }
-}
+ 
 
 #' Inverse hyperbolic sine transformation.
 #' 
 #' Used to construct inverse hyperbolic sine transform object.
 #' 
-#' @inheritParams asinhtGml2_breaks
+#' @inheritParams flow_breaks
+#' @param ... parameters passed to asinh_Gml2
 #' @return asinhtGml2 transformation object
 #' @examples 
-#' asinhtGml2_trans()
+#' trans.obj <- asinhtGml2_trans(equal.space = TRUE)
+#' data <- 1:1e3
+#' brks.func <- trans.obj[["breaks"]]
+#' brks <- brks.func(data)
+#' brks # fasinh space displayed at raw data scale
+#' 
+#' #transform it to verify it is equal-spaced at transformed scale
+#' trans.func <- trans.obj[["transform"]]
+#' brks.trans <- trans.func(brks)
+#' brks.trans 
 #' @export
 asinhtGml2_trans <- function(..., n = 6, equal.space = FALSE){
   trans <- asinh_Gml2(...)
@@ -364,42 +299,12 @@ asinhtGml2_trans <- function(..., n = 6, equal.space = FALSE){
   flow_trans(name = "asinhtGml2", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
 
-#' flowCore logicle breaks (integer breaks on logicle-transformed scales)
-#' 
-#' Used to construct \code{\link{logicle_trans}} object
-#' 
-#' @inheritParams flow_breaks
-#' @param ... parameters passed to flowJo.fasinh
-#' @return a function that generates logicle space
-#' @examples 
-#' 
-#' data <- 1:1e3
-#' brks.func <- logicle_breaks(equal.space = TRUE)
-#' brks <- brks.func(data)
-#' brks # logicle space displayed at raw data scale
-#' 
-#' #logicle transform it to verify it is equal-spaced at transformed scale
-#' trans.obj <- logicleTransform()
-#' trans.func <- slot(trans.obj, ".Data")
-#' brks.trans <- trans.func(brks)
-#' brks.trans 
-#' @export
-logicle_breaks <- function (n = 6, equal.space = FALSE, ...) 
-{
-  
-  function(x) {
-    trans.obj <- logicleTransform(...)
-    transFunc <- trans.obj@.Data
-    invFunc <- inverseLogicleTransform(trans = trans.obj)@.Data
-    flow_breaks(x, n = n, equal.space = equal.space, transFunc, invFunc)
-  }
-}
 
 #' logicle transformation.
 #' 
 #' Used for construct logicle transform object.
 #' 
-#' @inheritParams logicle_breaks
+#' @inheritParams flow_breaks
 #' @param ... arguments passed to logicleTransform.
 #' @return a logicle transformation object
 #' @examples 
