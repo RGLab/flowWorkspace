@@ -322,3 +322,42 @@ logicle_trans <- function(..., n = 6, equal.space = FALSE){
   inv <- inverseLogicleTransform(trans = trans.obj)@.Data
   flow_trans(name = "logicle", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
+
+
+#' GatingML2 version of logicle transformation.
+#' 
+#' The only difference from \link{logicle_trans} is it is scaled to c(0,1) range.
+#' 
+#' @inheritParams flow_breaks
+#' @param T,M,W,A see \link{logicleGml2}
+#' @return a logicleGml2 transformation object
+#' @examples 
+#' trans.obj <- logicleGml2_trans(equal.space = TRUE)
+#' data <- 1:1e3
+#' brks.func <- trans.obj[["breaks"]]
+#' brks <- brks.func(data)
+#' brks # logicle space displayed at raw data scale
+#' #transform it to verify the equal-spaced breaks at transformed scale
+#' print(trans.obj[["transform"]](brks))
+#' @export
+logicleGml2_trans <- function (T = 262144, M = 4.5, W = 0.5, A = 0, n = 6, equal.space = FALSE) 
+{
+  
+  trans <- function (x) 
+  {
+    
+    flowCore:::logicle_transform(as.double(x), as.double(T), as.double(W), as.double(M), as.double(A), FALSE)/M
+    
+    
+  }
+  
+  
+  inv <- function (x) 
+  {
+    
+    flowCore:::logicle_transform(as.double(x) * M, as.double(T), as.double(W), as.double(M), as.double(A), TRUE)
+    
+    
+  }
+  flow_trans(name = "logicleGml2", trans.fun = trans, inverse.fun = inv,n = n, equal.space = equal.space)
+}
