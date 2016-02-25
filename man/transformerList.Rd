@@ -26,5 +26,9 @@ trans.obj <- flow_trans("logicle", trans, inv, n = 5, equal.space = FALSE)
 #trans.obj <- logicle_trans(n = 5, equal.space = FALSE, w = 0.5, t = 262144, m = 4.5, a = 0)
 
 transformerList(c("FL1-H", "FL2-H"), trans.obj)
+
+#use different transformer for each channel
+trans.obj2 <- asinhtGml2_trans()
+transformerList(c("FL1-H", "FL2-H"), list(trans.obj, trans.obj2))
 }
 
