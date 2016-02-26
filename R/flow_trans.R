@@ -329,7 +329,7 @@ logicle_trans <- function(..., n = 6, equal.space = FALSE){
 #' The only difference from \link{logicle_trans} is it is scaled to c(0,1) range.
 #' 
 #' @inheritParams flow_breaks
-#' @param T,M,W,A see \link{logicleGml2}
+#' @param T,M,W,A see \link{logicletGml2}
 #' @return a logicleGml2 transformation object
 #' @examples 
 #' trans.obj <- logicleGml2_trans(equal.space = TRUE)

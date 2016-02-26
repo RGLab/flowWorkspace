@@ -8,7 +8,7 @@ logicleGml2_trans(T = 262144, M = 4.5, W = 0.5, A = 0, n = 6,
   equal.space = FALSE)
 }
 \arguments{
-\item{T,M,W,A}{see \link{logicleGml2}}
+\item{T,M,W,A}{see \link{logicletGml2}}
 
 \item{n}{desired number of breaks (the actual number will be different depending on the data range)}
 
