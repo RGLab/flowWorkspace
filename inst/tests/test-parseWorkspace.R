@@ -68,7 +68,7 @@ test_that("getTransformations ",{
       
       thisRes <- getTransformations(gh)
       expectRes <- readRDS(file.path(resultDir, "getTransformations_gh.rds"))
-      expectRes <- sapply(expectRes, function(f){attr(f, "type") <- "caltbl"; f})
+      expectRes <- sapply(expectRes, function(f){attr(f, "type") <- "biexp"; f})
       expect_equal(thisRes,expectRes)
       
     })

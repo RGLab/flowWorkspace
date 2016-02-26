@@ -1333,11 +1333,16 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
           
         }else if(curTrans$type %in% c("caltbl" , "biexp")){
           f <- .flowJoTrans(curTrans)
+          attr(f,"type")<-"biexp"
         }else if(curTrans$type=="fasinh"){
-          if(inverse)
+          if(inverse){
             f <- flowJo.fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
-          else
+            attr(f,"type")<-"fsinh"
+          }else{
             f <- flowJo.fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
+            attr(f,"type")<-"fasinh"
+          }
+            
           
         }
         
@@ -1352,11 +1357,13 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
     inv.func <- .cpp_getTransformations(pointer,sampleName, inverse = TRUE)
     trans.list <- .convertTrans(trans.func)
     inv.list <- .convertTrans(inv.func, inverse = TRUE)
+    trans.name <- "flowJo_"
     mapply(trans.list, inv.list, FUN = function(trans, inv){
-#           trans.type <- attr(trans,"type") 
-#           if(trans.type != "gateOnly"){
-            flow_trans(name = "flowJo_biexp", trans.fun = trans, inverse.fun = inv, n = 6, equal.space = equal.space)
-          # }
+           trans.type <- attr(trans,"type") 
+           if(trans.type != "gateOnly"){
+             trans.name <- paste0(trans.name, trans.type)
+            flow_trans(name = trans.name, trans.fun = trans, inverse.fun = inv, n = 6, equal.space = equal.space)
+           }
         }, SIMPLIFY = FALSE)
    
     

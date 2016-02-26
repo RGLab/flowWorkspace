@@ -80,6 +80,27 @@ test_that("v 10.0.7 - vX 20.0 (ellipsoidGate)",{
       expect_equal(thisCounts, expectCounts, tol = 1e-3)
     })
 
+test_that("v 10.0.7 - vX 20.0 (missing_namespace and flin)",{
+      
+      thisPath <- file.path(path, "missing_namespace")
+      wsFile <- file.path(thisPath, "BM_data.xml")
+      
+      ws <- openWorkspace(wsFile)
+      expect_error(gs <- parseWorkspace(ws, name = 1, subset = 1, execute = FALSE)
+                    , "*: unknown tranformation type!transforms:linear")
+      
+      
+      wsFile <- file.path(thisPath, "BM_data_corrected.xml")
+      
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name = 1, subset = 1, execute = FALSE)
+      expect_is(gs, "GatingSet")
+      gh <- gs[[1]]
+      trans <- getTransformations(gh, only = F)
+      expect_equal(trans[[2]][["name"]], "flowJo_flog")
+    })
+
+# invalid xml with Namespace prefix defintion missing #TODO: try to be robust on this kind of xml error
 #test_that("v 10.0.7 - vX 20.0 (McGill/BMDCs) linear transformation",{
 #      
 #      thisPath <- file.path(path, "McGill/BMDCs")
