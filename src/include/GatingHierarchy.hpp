@@ -96,7 +96,6 @@ private:
 	populationTree tree;
 
 	bool isLoaded;
-
 	PARAM_VEC transFlag;
 	trans_local trans;
 	template<class Archive>
@@ -217,7 +216,7 @@ public:
 	void updateChannels(const CHANNEL_MAP & chnl_map);
 	trans_local getLocalTrans(){return trans;}
 	void printLocalTrans();//for the debugging purpose
-	void transforming();
+	void transforming(double timestep);
 	void gating(VertexID,bool recompute=false, bool computeTerminalBool=true);
 	void calgate(VertexID, bool computeTerminalBool=true);
 	vector<bool> boolGating(VertexID, bool computeTerminalBool);

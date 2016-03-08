@@ -371,7 +371,7 @@ void GatingHierarchy::unloadData()
 /*
  * transform the data
  */
-void GatingHierarchy::transforming()
+void GatingHierarchy::transforming(double timestep = 1)
 {
 	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 		COUT <<"start transforming data :"<<fdata.getSampleID()<<endl;
@@ -389,24 +389,36 @@ void GatingHierarchy::transforming()
 	{
 
 		string curChannel=*it1;
-
-		transformation *curTrans=trans.getTran(curChannel);
-
-		if(curTrans!=NULL)
-		{
-			if(curTrans->gateOnly())
-				continue;
-
-			valarray<double> x(this->fdata.subset(curChannel));
+		if(curChannel=="Time"||curChannel=="time"){
+			//special treatment for time channel
 			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-				COUT<<"transforming "<<curChannel<<" with func:"<<curTrans->getChannel()<<endl;
+				COUT<<"multiplying "<<curChannel<<" by :"<< timestep << endl;
+			valarray<double> x(this->fdata.subset(curChannel));
+			x = x * timestep;
+			fdata.updateSlice(curChannel, x);
 
-			curTrans->transforming(x);
-			/*
-			 * update fdata
-			 */
-			fdata.updateSlice(curChannel,x);
-//			fdata.data[fdata.getSlice(curChannel)]=x;
+		}
+		else
+		{
+			transformation *curTrans=trans.getTran(curChannel);
+
+					if(curTrans!=NULL)
+					{
+						if(curTrans->gateOnly())
+							continue;
+
+						valarray<double> x(this->fdata.subset(curChannel));
+						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+							COUT<<"transforming "<<curChannel<<" with func:"<<curTrans->getChannel()<<endl;
+
+						curTrans->transforming(x);
+						/*
+						 * update fdata
+						 */
+						fdata.updateSlice(curChannel,x);
+			//			fdata.data[fdata.getSlice(curChannel)]=x;
+
+					}
 
 		}
 

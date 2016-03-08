@@ -270,7 +270,7 @@ void gating(XPtr<GatingSet> gs
               ,NumericVector gainsVec
               , unsigned short nodeInd
               ,bool recompute, float extend_val
-              , bool ignore_case, bool computeTerminalBool){
+              , bool ignore_case, bool computeTerminalBool, float timestep){
 
  
 	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
@@ -291,7 +291,7 @@ void gating(XPtr<GatingSet> gs
 		gh->extendGate(extend_val);
 		gh->adjustGate(gains);
 		gh->transformGate();
-		gh->transforming();
+		gh->transforming(timestep);
 	}
 
 	gh->gating(nodeInd,recompute, computeTerminalBool);

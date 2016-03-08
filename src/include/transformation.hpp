@@ -122,6 +122,8 @@ struct PARAM{
 		unsigned range;
 		unsigned highValue;
 		unsigned calibrationIndex;
+		//EDIT: can't trust this info from xml
+//		double timestep;//only meaningful for time channel which is used to scale time channel (only for data, not for gates since gates are already stored at scaled value)
 		PARAM(){};
 		void updateChannels(const CHANNEL_MAP & chnl_map){
 			CHANNEL_MAP::const_iterator itChnl = chnl_map.find(param);
@@ -134,6 +136,7 @@ struct PARAM{
 			range = param_pb.range();
 			highValue = param_pb.highvalue();
 			calibrationIndex = param_pb.calibrationindex();
+//			timestep = param_pb.timestep();
 		};
 		 void convertToPb(pb::PARAM & param_pb){
 			 param_pb.set_param(param);
@@ -141,6 +144,7 @@ struct PARAM{
 			 param_pb.set_range(range);
 			 param_pb.set_highvalue(highValue);
 			 param_pb.set_calibrationindex(calibrationIndex);
+//			 param_pb.set_timestep(timestep);
 		 };
 		template<class Archive>
 			void serialize(Archive &ar, const unsigned int version)

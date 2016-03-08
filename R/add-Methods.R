@@ -266,7 +266,7 @@ setMethod("add",
       #which may not be optimal for bool gate
       data <- getData(gh)
       mat <- exprs(data)
-      .cpp_gating( ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case, TRUE)
+      .cpp_gating( ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case, TRUE, 1)
     }
         
 	nodeID+1

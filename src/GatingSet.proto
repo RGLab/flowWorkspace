@@ -180,6 +180,7 @@ message PARAM{
 		optional uint32 range = 3;
 		optional uint32 highValue = 4;
 		optional uint32 calibrationIndex = 5;
+		//optional float timestep = 6;
 }
 message GatingHierarchy {
 	required populationTree tree = 2;
