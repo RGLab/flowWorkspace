@@ -178,8 +178,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gating
-void gating(XPtr<GatingSet> gs, NumericMatrix orig, string sampleName, NumericVector gainsVec, unsigned short nodeInd, bool recompute, float extend_val, bool ignore_case, bool computeTerminalBool);
-RcppExport SEXP flowWorkspace_gating(SEXP gsSEXP, SEXP origSEXP, SEXP sampleNameSEXP, SEXP gainsVecSEXP, SEXP nodeIndSEXP, SEXP recomputeSEXP, SEXP extend_valSEXP, SEXP ignore_caseSEXP, SEXP computeTerminalBoolSEXP) {
+void gating(XPtr<GatingSet> gs, NumericMatrix orig, string sampleName, NumericVector gainsVec, unsigned short nodeInd, bool recompute, float extend_val, bool ignore_case, bool computeTerminalBool, float timestep);
+RcppExport SEXP flowWorkspace_gating(SEXP gsSEXP, SEXP origSEXP, SEXP sampleNameSEXP, SEXP gainsVecSEXP, SEXP nodeIndSEXP, SEXP recomputeSEXP, SEXP extend_valSEXP, SEXP ignore_caseSEXP, SEXP computeTerminalBoolSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
@@ -191,7 +191,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type extend_val(extend_valSEXP);
     Rcpp::traits::input_parameter< bool >::type ignore_case(ignore_caseSEXP);
     Rcpp::traits::input_parameter< bool >::type computeTerminalBool(computeTerminalBoolSEXP);
-    gating(gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool);
+    Rcpp::traits::input_parameter< float >::type timestep(timestepSEXP);
+    gating(gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep);
     return R_NilValue;
 END_RCPP
 }

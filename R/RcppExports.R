@@ -47,7 +47,7 @@
 #'                                   
 #' @examples 
 #' \dontrun{
-#'  updateGateParameter(gs, map = data.frame(old = c("Qdot 655-A")  ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
+#'  updateChannels(gs, map = data.frame(old = c("Qdot 655-A")  ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
 #'                                          , new = c("<QDot 655-A>")
 #'                                          )
 #'                        , nodes = "14-")  
@@ -92,8 +92,8 @@
     invisible(.Call('flowWorkspace_computeGates', PACKAGE = 'flowWorkspace', gs, sampleName, gainsVec, extend_val, extend_to))
 }
 
-.cpp_gating <- function(gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool) {
-    invisible(.Call('flowWorkspace_gating', PACKAGE = 'flowWorkspace', gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool))
+.cpp_gating <- function(gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep) {
+    invisible(.Call('flowWorkspace_gating', PACKAGE = 'flowWorkspace', gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep))
 }
 
 .cpp_getGate <- function(gs, sampleName, gatePath) {

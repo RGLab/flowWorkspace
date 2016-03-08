@@ -21,6 +21,7 @@ PBBUILDDIR = $(PBBUILD)/src/google/protobuf/
 pb_objs=$(PBBUILDDIR).libs/*.o $(PBBUILDDIR)stubs/.libs/*.o $(PBBUILDDIR)io/.libs/*.o
 endif
 
+CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@ -Iboost_serialization
 PKG_LIBS =${bs_lib} ${pb_lib} `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags()"` @PKG_LIBS@ 
 

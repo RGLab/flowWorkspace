@@ -3,6 +3,16 @@ context("parse workspaces of various flowJo versions ")
 path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
+
+test_that("Time gate ",{
+  thisPath <- file.path(path, "flin")
+  wsFile <- file.path(thisPath, "A01.wsp")
+  ws <- openWorkspace(wsFile)
+  gs <- parseWorkspace(ws, name = 1, subset = 1)
+  res <- getPopStats(gs[[1]])
+  expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 9e-4)
+})
+
 test_that("Inverse function of flog ",{
       thisPath <- file.path(path, "inverse")
       wsFile <- file.path(thisPath, "Small.xml")
@@ -237,7 +247,8 @@ test_that("v 10.0.8 - vX 20.0 (slash_issue_vX)",{
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+      
+      expect_equal(thisCounts, expectCounts, tol = 2.3e-06)
     })
 test_that("v 7.6.1- win 1.6 (use default biexp trans when channel-specific trans not found within its respective trans group )",{
       

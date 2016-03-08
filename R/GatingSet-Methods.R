@@ -697,7 +697,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             # once confirmed that workspace is a reliable source for this info
             # we can parse it from ws as well
             this_pd <- pData(parameters(data))
-            paramIDs <- rownames(pData(parameters(data)))
+            #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
+            time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)   
+            this_pd <- subset(this_pd, !time.ind)
+            paramIDs <- rownames(this_pd)
             key_names <- paste(paramIDs,"G",sep="")
             kw <- keyword(data)
             if(as.numeric(kw[["FCSversion"]])>=3){
@@ -711,9 +714,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             }else{
               gains <- rep(1,length(paramIDs))
             }
-
+            
             names(gains) <- this_pd$name
             gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
+            
             #update colnames in order for the gating to find right dims
             if(!is.null(prefixColNames)){
               dimnames(mat) <- list(NULL, prefixColNames)
@@ -722,7 +726,14 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             recompute <- !transform #recompute flag controls whether gates and data need to be transformed
             nodeInd <- 0
             
-            .cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool)
+            if(any(time.ind)){
+              time.range <- range(mat[, time.ind])
+              timestep <- compute.timestep(kw, time.range) #timestep is used to convert time channel to seconds  
+            }else
+              timestep <- 1
+            
+            
+            .cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool, timestep)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
             #since colnames(fs) is not udpated yet.
@@ -837,6 +848,29 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	gs
 }
 
+compute.timestep <- function(kw, unit.range){
+  
+  btime <- kw[["$BTIM"]]
+  etime <- kw[["$ETIM"]]
+  if(is.null(btime)||is.null(etime))
+    retun(1)
+  else{
+    #prefix the 4th section . (replace :) so that strptime recognize the fractional seconds in the input string
+    terms <- rep('([0-9]{2})', 4)
+    pat <- paste(terms, collapse = ":") 
+    pat <- paste0("^", pat, "$")
+    rep <- "\\1:\\2:\\3\\.\\4"
+    etime <- sub(pat, rep, etime) 
+    btime <- sub(pat, rep, btime)
+    format <- "%H:%M:%OS"
+    
+    time.total <- difftime(strptime(etime, format), strptime(btime, format), units = "secs")
+    
+    round(as.numeric(time.total)/diff(unit.range), 2)
+    
+  }
+  
+}
 #' toggle the channel names between '/' and '_' character
 #' 
 #' FlowJoX tends to replace '/' in the original channel names with '_' in gates and transformations.
@@ -1725,8 +1759,9 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
               nodeID <- .getNodeInd(gh, i)
               nodeInd <- as.integer(nodeID)-1
               recompute <- TRUE
+              timestep <- 1
 #              browser()
-              res <- try(.cpp_gating(gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case, leaf.bool), silent = TRUE)
+              res <- try(.cpp_gating(gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case, leaf.bool, timestep), silent = TRUE)
               if(class(res) == "try-error"){
                 if(!isloadData&&grepl("not found in flowData", res))
                   stop("Found ungated upstream population. Set 'alwaysLoadData = TRUE' for 'recompute' method, and try again!")

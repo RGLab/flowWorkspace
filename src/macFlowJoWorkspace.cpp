@@ -90,7 +90,22 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 
 
 		if(g_loglevel>=GATING_SET_LEVEL)
-			COUT<<curParam.param<<":"<<curParam.log<<":"<<curParam.range<<endl;
+			COUT<<curParam.param<<":"<<curParam.log<<":"<<curParam.range;
+/*
+ * We can't determine '$TIMESTEP' soly from workspace since the this keyword value in xml is not as reliable as the one in FCS TEXT
+ */
+//		if(curParam.param.compare("Time") == 0||curParam.param.compare("time") == 0){
+//			path="Keywords/*[@name='$TIMESTEP']";
+//			xmlXPathObjectPtr parRes=sampleNode.xpathInNode(path);
+//			wsNode parNode(parRes->nodesetval->nodeTab[0]);
+//			xmlXPathFreeObject(parRes);
+//			string sTimestep = parNode.getProperty("value");
+//			curParam.timestep=strtod(sTimestep.c_str(), NULL);
+//			if(g_loglevel>=GATING_SET_LEVEL)
+//				COUT<<":"<<sTimestep;
+//		}
+		if(g_loglevel>=GATING_SET_LEVEL)
+				COUT<<endl;
 		res.push_back(curParam);
 	}
 	xmlXPathFreeObject(parRes);
