@@ -4,6 +4,20 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+test_that("No gate extension ",{
+      thisPath <- file.path(path, "negCoordinates")
+      wsFile <- file.path(thisPath, "08-Mar-2016.wsp")
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name = 1, subset = 1) #default extend_val = 0 will extend the gate  
+      res <- getPopStats(gs[[1]])
+      expect_more_than(res[11, abs(flowJo.freq - flowCore.freq)], 0.1)
+      
+      gs <- parseWorkspace(ws, name = 1, extend_val = -2e3)#relax the threshold to disable extension
+      res <- getPopStats(gs[[1]])
+      expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 3e-3)
+    })
+
+
 test_that("Time gate ",{
   thisPath <- file.path(path, "flin")
   wsFile <- file.path(thisPath, "A01.wsp")
