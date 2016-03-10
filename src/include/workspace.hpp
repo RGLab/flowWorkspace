@@ -40,9 +40,6 @@ using namespace std;
  *
  */
 class compensation{
-//	friend std::ostream & operator<<(std::ostream &os, const compensation &gh);
-	friend class boost::serialization::access;
-
 public:
 	string cid;
 	string prefix;
@@ -55,19 +52,6 @@ public:
 	compensation(){};
 	void updateChannels(const CHANNEL_MAP & chnl_map);
 	compensation(const pb::COMP & comp_pb);
-private:
-template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & BOOST_SERIALIZATION_NVP(cid);
-					ar & BOOST_SERIALIZATION_NVP(prefix);
-					ar & BOOST_SERIALIZATION_NVP(suffix);
-					ar & BOOST_SERIALIZATION_NVP(name);
-					ar & BOOST_SERIALIZATION_NVP(comment);
-					ar & BOOST_SERIALIZATION_NVP(marker);
-					ar & BOOST_SERIALIZATION_NVP(spillOver);
-				}
-
 };
 
 
@@ -85,56 +69,16 @@ struct xpath{
 	string compMatChName;
 	string compMatVal;
 	unsigned short sampNloc;//get FCS filename(or sampleName) from either $FIL keyword or name attribute of sampleNode
-	template<class Archive>
-		void serialize(Archive &ar, const unsigned int version)
-		{
-
-
-			ar & BOOST_SERIALIZATION_NVP(group);
-			ar & BOOST_SERIALIZATION_NVP(sampleRef);
-			ar & BOOST_SERIALIZATION_NVP(sample);
-			ar & BOOST_SERIALIZATION_NVP(sampleNode);
-			ar & BOOST_SERIALIZATION_NVP(popNode);
-			ar & BOOST_SERIALIZATION_NVP(sampNloc);
-
-			ar & BOOST_SERIALIZATION_NVP(attrName);
-			ar & BOOST_SERIALIZATION_NVP(compMatName);
-			ar & BOOST_SERIALIZATION_NVP(compMatChName);
-			ar & BOOST_SERIALIZATION_NVP(compMatVal);
-		}
 };
 
 
 
 class workspace{
-//	friend std::ostream & operator<<(std::ostream &os, const workspace &gh);
-	friend class boost::serialization::access;
 public:
 	 xpath nodePath;
 //protected:
 
 	 xmlDoc * doc;
-
-private:
-	 template<class Archive>
-	 		    void save(Archive &ar, const unsigned int version) const
-	 		    {
-	 				ar & BOOST_SERIALIZATION_NVP(nodePath);
-	 				ar & BOOST_SERIALIZATION_NVP(doc);
-
-	 		    }
-	 template<class Archive>
-	 	 		    void load(Archive &ar, const unsigned int version)
-	 	 		    {
-	 	 				ar & BOOST_SERIALIZATION_NVP(nodePath);
-	 	 				ar & BOOST_SERIALIZATION_NVP(doc);
-	 	 				if(version<2){
-	 	 					unsigned short dMode;
-	 	 					ar & BOOST_SERIALIZATION_NVP(dMode);
-	 	 				}
-
-	 	 		    }
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 public:
 	 workspace(){doc=NULL;};
@@ -156,7 +100,6 @@ public:
 
 
 };
-BOOST_CLASS_VERSION(workspace,2)
 
 #endif /* WORKSPACE_HPP_ */
 

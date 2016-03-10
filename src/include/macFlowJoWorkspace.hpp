@@ -10,16 +10,6 @@
 #include "flowJoWorkspace.hpp"
 
 class macFlowJoWorkspace:public flowJoWorkspace{
-friend class boost::serialization::access;
-
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::base_object<flowJoWorkspace>(*this);
-
-				}
-
 public:
 	macFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
@@ -35,14 +25,6 @@ public:
 };
 
 class macFlowJoWorkspace_3:public macFlowJoWorkspace{
-	friend class boost::serialization::access;
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::base_object<macFlowJoWorkspace>(*this);
-
-				}
 public:
 	macFlowJoWorkspace_3(xmlDoc * _doc);
 };

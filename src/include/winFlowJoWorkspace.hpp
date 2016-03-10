@@ -10,14 +10,6 @@
 #include "flowJoWorkspace.hpp"
 
 class winFlowJoWorkspace:public flowJoWorkspace{
-	friend class boost::serialization::access;
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::base_object<flowJoWorkspace>(*this);
-
-				}
 public:
 	winFlowJoWorkspace(xmlDoc *);
 	compensation getCompensation(wsSampleNode sampleNode);
@@ -33,14 +25,6 @@ public:
 };
 
 class xFlowJoWorkspace:public winFlowJoWorkspace{
-	friend class boost::serialization::access;
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::base_object<winFlowJoWorkspace>(*this);
-
-				}
 public:
 	xFlowJoWorkspace(xmlDoc * _doc);
 	trans_global_vec getGlobalTrans(){trans_global_vec res;

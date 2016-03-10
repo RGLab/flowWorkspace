@@ -160,12 +160,12 @@
     .Call('flowWorkspace_NewGatingSet_rootOnly', PACKAGE = 'flowWorkspace', sampleNames)
 }
 
-.cpp_saveGatingSet <- function(gs, fileName, format, isPB) {
-    invisible(.Call('flowWorkspace_saveGatingSet', PACKAGE = 'flowWorkspace', gs, fileName, format, isPB))
+.cpp_saveGatingSet <- function(gs, fileName) {
+    invisible(.Call('flowWorkspace_saveGatingSet', PACKAGE = 'flowWorkspace', gs, fileName))
 }
 
-.cpp_loadGatingSet <- function(fileName, format, isPB) {
-    .Call('flowWorkspace_loadGatingSet', PACKAGE = 'flowWorkspace', fileName, format, isPB)
+.cpp_loadGatingSet <- function(fileName) {
+    .Call('flowWorkspace_loadGatingSet', PACKAGE = 'flowWorkspace', fileName)
 }
 
 .cpp_CloneGatingSet <- function(gs, samples) {

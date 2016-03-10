@@ -84,8 +84,6 @@ struct OurVertexPropertyWriterR {
  */
 
 class GatingHierarchy{
-//	friend std::ostream & operator<<(std::ostream &os, const GatingHierarchy &gh);
-	friend class boost::serialization::access;
 private:
 	compensation comp;/*compensation is currently done in R due to the linear Algebra
 						e[, cols] <- t(solve(t(spillover))%*%t(e[,cols]))
@@ -98,97 +96,6 @@ private:
 	bool isLoaded;
 	PARAM_VEC transFlag;
 	trans_local trans;
-	template<class Archive>
-				    void save(Archive &ar, const unsigned int version) const
-				    {
-						ar & BOOST_SERIALIZATION_NVP(comp);
-						ar & BOOST_SERIALIZATION_NVP(fdata);
-						ar & BOOST_SERIALIZATION_NVP(tree);
-
-				        ar & BOOST_SERIALIZATION_NVP(isLoaded);
-
-				        ar.register_type(static_cast<biexpTrans *>(NULL));
-						ar.register_type(static_cast<flinTrans *>(NULL));
-						ar.register_type(static_cast<logTrans *>(NULL));
-						ar.register_type(static_cast<linTrans *>(NULL));
-						ar.register_type(static_cast<fasinhTrans *>(NULL));
-
-				        ar & BOOST_SERIALIZATION_NVP(transFlag);
-
-
-				        ar & BOOST_SERIALIZATION_NVP(trans);
-
-				    }
-	template<class Archive>
-			void load(Archive &ar, const unsigned int version)
-			{
-
-				ar & BOOST_SERIALIZATION_NVP(comp);
-				ar & BOOST_SERIALIZATION_NVP(fdata);
-				if(version < 2){
-					//load the old structure
-					populationTreeOld treeOld;
-					ar & BOOST_SERIALIZATION_NVP(treeOld);
-					//copy the graph structure without property
-					tree=populationTree(num_vertices(treeOld));//copy vertex
-					//copy edges
-					typedef boost::graph_traits<populationTreeOld>::edge_iterator myEdgeIt;
-					myEdgeIt first, last;
-
-					for (boost::tie(first, last) = edges(treeOld);first != last; ++first)
-					{
-						EdgeID e = *first;
-						VertexID s=source(e,treeOld);
-						VertexID t=target(e,treeOld);
-						boost::add_edge(s,t,tree);
-					}
-
-
-					//copy properties manually
-					boost::graph_traits<populationTree>::vertex_iterator v_start, v_end;
-
-					for (boost::tie(v_start, v_end) = vertices(treeOld);
-							v_start != v_end; ++v_start)
-					{
-						VertexID thisV = *v_start;
-						tree[thisV] = *(treeOld[thisV]);
-					}
-				}
-				else
-					ar & BOOST_SERIALIZATION_NVP(tree);
-
-				if(version==0){
-					bool isGated=false;
-					ar & BOOST_SERIALIZATION_NVP(isGated);
-				}
-
-
-		        ar & BOOST_SERIALIZATION_NVP(isLoaded);
-
-		        ar.register_type(static_cast<biexpTrans *>(NULL));
-				ar.register_type(static_cast<flinTrans *>(NULL));
-				ar.register_type(static_cast<logTrans *>(NULL));
-				ar.register_type(static_cast<linTrans *>(NULL));
-				ar.register_type(static_cast<fasinhTrans *>(NULL));
-
-				if(version==0){
-					trans_global_vec *gTrans;
-					ar & BOOST_SERIALIZATION_NVP(gTrans);
-				}
-
-
-		        ar & BOOST_SERIALIZATION_NVP(transFlag);
-
-
-		        ar & BOOST_SERIALIZATION_NVP(trans);
-
-		        if(version<3){
-		        	unsigned short dMode;
-		        	ar & BOOST_SERIALIZATION_NVP(dMode);
-		        }
-		    }
-BOOST_SERIALIZATION_SPLIT_MEMBER()
-
 public:
 
 	/*append the gate to the tree*/
@@ -251,7 +158,5 @@ public:
 	void addTransMap(trans_map tm);
 	void convertToPb(pb::GatingHierarchy & gh_pb);
 };
-BOOST_CLASS_VERSION(GatingHierarchy,3)
-
 
 #endif /* GATINGHIERARCHY_HPP_ */

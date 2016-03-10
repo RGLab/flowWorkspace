@@ -34,13 +34,6 @@ struct coordinate
 //	friend class boost::serialization::access;
 
 	double x,y;
-	template<class Archive>
-						void serialize(Archive &ar, const unsigned int version)
-						{
-
-
-							ar & BOOST_SERIALIZATION_NVP(x) & BOOST_SERIALIZATION_NVP(y);
-						}
 	coordinate(double _x,double _y){x=_x;y=_y;};
 	coordinate(){};
 	void convertToPb(pb::coordinate & coor_pb){
@@ -55,9 +48,6 @@ bool compare_y(coordinate i, coordinate j);
 
 
 class transformation{
-
-	friend class boost::serialization::access;
-
 protected:
 	calibrationTable calTbl;
 	bool isGateOnly;
@@ -65,19 +55,6 @@ protected:
 	string name;
 	string channel;
 	bool isComputed;//this flag allow lazy computCalTbl/interpolation
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-
-
-					ar & BOOST_SERIALIZATION_NVP(calTbl);
-					ar & BOOST_SERIALIZATION_NVP(isGateOnly);
-					ar & BOOST_SERIALIZATION_NVP(type);
-					ar & BOOST_SERIALIZATION_NVP(name);
-					ar & BOOST_SERIALIZATION_NVP(channel);
-					ar & BOOST_SERIALIZATION_NVP(isComputed);
-				}
 public:
 	transformation();
 	transformation(bool _isGate,unsigned short _type);
@@ -146,28 +123,14 @@ struct PARAM{
 			 param_pb.set_calibrationindex(calibrationIndex);
 //			 param_pb.set_timestep(timestep);
 		 };
-		template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
-			{
-
-
-				ar & BOOST_SERIALIZATION_NVP(param) & BOOST_SERIALIZATION_NVP(log) & BOOST_SERIALIZATION_NVP(range) & BOOST_SERIALIZATION_NVP(highValue) & BOOST_SERIALIZATION_NVP(calibrationIndex);
-			}
 		};
 typedef vector<PARAM> PARAM_VEC;
 
 PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name);
 
 class trans_local{
-	friend std::ostream & operator<<(std::ostream &os, const trans_local &gh);
-	friend class boost::serialization::access;
 private:
 	trans_map tp;
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & BOOST_SERIALIZATION_NVP(tp);
-				}
 public:
 	trans_map getTransMap(){return tp;};
 	void setTransMap(trans_map _tp){tp=_tp;};
@@ -182,19 +145,9 @@ public:
 };
 
 class trans_global:public trans_local{
-
-	friend class boost::serialization::access;
 private:
 	string groupName;
 	vector<int> sampleIDs;
-	template<class Archive>
-			    void serialize(Archive &ar, const unsigned int version)
-			    {
-        			ar & boost::serialization::make_nvp("trans_local",boost::serialization::base_object<trans_local>(*this));
-					ar & BOOST_SERIALIZATION_NVP(groupName);
-					ar & BOOST_SERIALIZATION_NVP(sampleIDs);
-
-			    }
 public:
 	void setSampleIDs(vector<int> _sampleIDs){sampleIDs=_sampleIDs;}
 	vector<int> getSampleIDs(){return sampleIDs;}
@@ -209,25 +162,9 @@ public:
 typedef vector<trans_global> trans_global_vec;
 
 class biexpTrans:public transformation{
-	friend class boost::serialization::access;
 public:
 	int channelRange;
 	double pos, neg, widthBasis, maxValue;
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-
-					setType(BIEXP);//force it to be BIEXP because this value in the old archive was CALTBL
-
-					ar & BOOST_SERIALIZATION_NVP(channelRange);
-					ar & BOOST_SERIALIZATION_NVP(pos);
-					ar & BOOST_SERIALIZATION_NVP(neg);
-					ar & BOOST_SERIALIZATION_NVP(widthBasis);
-					ar & BOOST_SERIALIZATION_NVP(maxValue);
-				}
-
 public:
 	biexpTrans();
 	void computCalTbl();
@@ -243,23 +180,9 @@ public:
 };
 
 class fasinhTrans:public transformation{
-	friend class boost::serialization::access;
 public:
 	double maxRange;//unused at this moment
 	double length,T, A, M;
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-
-					ar & BOOST_SERIALIZATION_NVP(maxRange);
-					ar & BOOST_SERIALIZATION_NVP(length);
-					ar & BOOST_SERIALIZATION_NVP(T);
-					ar & BOOST_SERIALIZATION_NVP(A);
-					ar & BOOST_SERIALIZATION_NVP(M);
-				}
-
 public:
 	fasinhTrans();
 	fasinhTrans(double , double , double , double , double );
@@ -274,19 +197,6 @@ public:
  * inverse transformation of fasinhTrans
  */
 class fsinhTrans:public fasinhTrans{
-	friend class boost::serialization::access;
-//private:
-//	template<class Archive>
-//				void serialize(Archive &ar, const unsigned int version)
-//				{
-//					ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-//
-//					ar & BOOST_SERIALIZATION_NVP(maxRange);
-//					ar & BOOST_SERIALIZATION_NVP(length);
-//					ar & BOOST_SERIALIZATION_NVP(T);
-//					ar & BOOST_SERIALIZATION_NVP(A);
-//					ar & BOOST_SERIALIZATION_NVP(M);
-//				}
 
 public:
 	fsinhTrans();
@@ -305,16 +215,6 @@ public:
  * we should consider redesign the classes so that logTrans does not share this extra feature from parent class
  */
 class logTrans:public transformation{
-
-	friend class boost::serialization::access;
-private:
-		template<class Archive>
-					void serialize(Archive &ar, const unsigned int version)
-					{
-						ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-						ar & BOOST_SERIALIZATION_NVP(offset);
-						ar & BOOST_SERIALIZATION_NVP(decade);
-					}
 public:
 		double offset;
 		double decade;
@@ -336,15 +236,6 @@ public:
 
 
 class linTrans:public transformation{
-friend class boost::serialization::access;
-        private:
-                        template<class Archive>
-                                                void serialize(Archive &ar, const unsigned int version)
-                                                {
-                                                        ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-
-                                                }
-
 public:
         linTrans();
         void transforming(valarray<double> & input);
@@ -359,32 +250,6 @@ public:
  * This class is dedicated to scale the EllipsoidGate
  */
 class scaleTrans:public linTrans{
-friend class boost::serialization::access;
-	private:
-				template<class Archive>
-				void load(Archive &ar, const unsigned int version)
-				{
-						ar & boost::serialization::make_nvp("linTrans",boost::serialization::base_object<transformation>(*this));
-						if(version < 1){
-							float scale_factor;
-							ar & BOOST_SERIALIZATION_NVP(scale_factor);
-							t_scale = 256;
-							r_scale = 262144;
-						}
-						else
-						{
-							ar & BOOST_SERIALIZATION_NVP(t_scale);
-							ar & BOOST_SERIALIZATION_NVP(r_scale);
-						}
-
-				}
-				template<class Archive>
-				void save(Archive &ar, const unsigned int version) const{
-					ar & boost::serialization::make_nvp("linTrans",boost::serialization::base_object<transformation>(*this));
-					ar & BOOST_SERIALIZATION_NVP(t_scale);
-					ar & BOOST_SERIALIZATION_NVP(r_scale);
-				}
-				BOOST_SERIALIZATION_SPLIT_MEMBER()
 	int t_scale; //transformed scale
 	int r_scale; // raw scale
 
@@ -396,22 +261,12 @@ public:
 	boost::shared_ptr<transformation> getInverseTransformation();
 	void setTransformedScale(int _scale){t_scale = _scale;};
 };
-BOOST_CLASS_VERSION(scaleTrans,1)
+
 
 
 class flinTrans:public transformation{
 	double min;
 	double max;
-friend class boost::serialization::access;
-	private:
-			template<class Archive>
-						void serialize(Archive &ar, const unsigned int version)
-						{
-							ar & boost::serialization::make_nvp("transformation",boost::serialization::base_object<transformation>(*this));
-							ar & BOOST_SERIALIZATION_NVP(min);
-							ar & BOOST_SERIALIZATION_NVP(max);
-						}
-
 public:
 	flinTrans();
 	flinTrans(double _minRange, double _maxRange);

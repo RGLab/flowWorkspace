@@ -26,10 +26,6 @@ isNcdf <- function(x){
 #' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file.
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
-#' @param type a character scalar. The valid options are :"binary","text","xml" specifying format to store tree structure.(only meaningful when lib == 'BS')
-#'                                  default is "binary", which is smaller and faster but machine-dependent.
-#'                                  use "text" or "xml" for cross-platform data interchange (deprecated by 'PB' serialization).
-#' @param lib a character scalar specifying which serialization library to use. Can be either 'PB' (google protocol buffer) or 'BS'(boost serialization).
 #' @param ... other arguments: not used.
 #'
 #'
@@ -55,26 +51,10 @@ isNcdf <- function(x){
 #' @aliases save_gs load_gs save_gslist load_gslist
 save_gs<-function(G,path,overwrite = FALSE
                     , cdf = c("copy","move","skip","symlink","link")
-                    , type = c("binary","text", "xml")
-                    , lib = c("PB", "BS")
                     , ...){
 #  browser()
   cdf <- match.arg(cdf)
-  type <- match.arg(type)
-  lib <- match.arg(lib)
-  
-  isPB <- lib == "PB"
-  if(isPB)
-    fileext <- 'pb'
-  else{
-    warning("Boost serialization format is to be deprecated. Try to use 'google protocol buffer' instead (lib = 'PB')!")
-    fileext <-  switch(type
-        , binary = "dat"
-        , text = "txt"
-        , xml = "xml"
-        , "dat"
-    )
-  }
+  fileext <- 'pb'
     
   
   guid <- G@guid
@@ -147,7 +127,7 @@ save_gs<-function(G,path,overwrite = FALSE
 
   }
 #  browser()
-  invisible(.save_gs(G=G,path = path, cdf = cdf, type = type, lib = lib, ...))
+  invisible(.save_gs(G=G,path = path, cdf = cdf, ...))
   message("Done\nTo reload it, use 'load_gs' function\n")
 
 
@@ -172,34 +152,12 @@ load_gs<-function(path){
 
 
 #' serialization functions to be called by wrapper APIs
-.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link"), type = c("binary","text", "xml"), lib = c("PB", "BS")){
+.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link")){
 
 #    browser()
     cdf <- match.arg(cdf)
-    type <- match.arg(type)
-    lib <- match.arg(lib)
-    #only meaning for for BS
-    typeID <- switch(type
-                      , binary = 0
-                      , text = 1
-                      , xml = 2
-                      , 0
-                  )
-    isPB <- lib == "PB"
-    if(isPB)
-      fileext <- 'pb'
-    else{
-      warning("Boost serialization format is to be deprecated. Try to use 'google protocol buffer' instead (lib = 'PB')!")
-      fileext <-  switch(type
-          , binary = "dat"
-          , text = "txt"
-          , xml = "xml"
-          , "dat"
-      )
-      
-    }
-      
-
+    fileext <- 'pb'
+    
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
     #generate uuid for the legacy GatingSet Object
@@ -248,7 +206,7 @@ load_gs<-function(path){
 
     message("saving tree object...")
     #save external pointer object
-    .cpp_saveGatingSet(G@pointer, dat.file, typeID, isPB)
+    .cpp_saveGatingSet(G@pointer, dat.file)
 
     message("saving R object...")
     saveRDS(G,rds.file)
@@ -271,14 +229,7 @@ load_gs<-function(path){
       fileext <- file_ext(dat.file)
       isPB <- fileext == "pb"
       if(!isPB)
-        warning("Boost serialization format is to be deprecated. Try to resave it with 'google protocol buffer' (lib = 'PB')!")
-      #only meaningful for BS
-      typeID <- switch(fileext
-                      , "dat" = 0
-                      , "txt" = 1
-                      , "xml" = 2
-                      , 0
-                      )
+        stop("Legacy 'Boost serialization' format is detected. Try to load it with 'BS2PB' package and resave it!")
       if(length(rds.file)==0)
         stop(".rds file missing in ",output)
       if(length(rds.file)>1)
@@ -335,7 +286,7 @@ load_gs<-function(path){
       }
 
       message("loading tree object...")
-      gs@pointer<-.cpp_loadGatingSet( dat.file, typeID, isPB)
+      gs@pointer<-.cpp_loadGatingSet(dat.file)
 
 
       if(isNcdf(gs))
@@ -347,60 +298,6 @@ load_gs<-function(path){
       }
       message("Done")
       list(gs=gs,files=c(dat.file,rds.file))
-}
-
-#' archive/unarchive to/from a tar file
-#'
-#' Defunct by save_gs/load_gs
-#' @param G a \code{GatingSet}
-#' @param file a \code{character} target/source archive file name
-#' @aliases archive unarchive
-#' @rdname archive
-#' @export
-archive<-function(G,file=tempfile()){
-	.Defunct("save_gs")
-	filename<-basename(file)
-	dirname<-dirname(file)
-	filename<-sub(".tar$","",filename)
-#	browser()
-    toTar<- .save_gs(G,path  = dirname)
-
-	curDir<-getwd()
-	setwd(dirname)
-	system(paste("tar -cf ",basename(file),paste(basename(toTar),collapse=" ")))
-#	tar(tarfile=file,files=toTar) #somehow the R internal tar doesn't work
-
-	#remove intermediate files
-	file.remove(basename(toTar))
-	setwd(curDir)
-	message("Done\nTo reload it, use 'unarchive' function\n")
-
-}
-
-
-#' @param path a \code{character} target folder that stores cdf file
-#' @export
-#' @rdname archive
-unarchive<-function(file,path=tempdir()){
-    .Defunct("load_gs")
-	if(!file.exists(file))
-		stop(file,"' not found!")
-#	browser()
-	files<-untar(tarfile=file,list=TRUE)
-
-#	message("extracting files...")
-
-	output<-path
-	untar(tarfile=file,exdir=output)
-
-    res <- .load_gs(output = path, files = files)
-    toRemove <- res$files
-    gs <- res$gs
-	#clean up the intermediate files
-	file.remove(toRemove)
-	message("Done")
-	return (gs)
-
 }
 
 
