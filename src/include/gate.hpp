@@ -14,9 +14,6 @@
 #include "flowData.hpp"
 #include "transformation.hpp"
 #include <R_ext/Constants.h>
-//#include <boost/geometry.hpp>
-//#include <boost/geometry/geometries/point_xy.hpp>
-//#include <boost/geometry/geometries/polygon.hpp>
 
 
 using namespace std;
@@ -116,19 +113,10 @@ public:
 class paramRange
 {
 
-	friend class boost::serialization::access;
 private:
 
 	string name;
 	double min, max;
-	template<class Archive>
-						void serialize(Archive &ar, const unsigned int version)
-						{
-
-							ar & BOOST_SERIALIZATION_NVP(name);
-							ar & BOOST_SERIALIZATION_NVP(min);
-							ar & BOOST_SERIALIZATION_NVP(max);
-						}
 public:
 	paramRange(double _min,double _max,string _name){min=_min;max=_max;name=_name;};
 	paramRange(){};
@@ -155,21 +143,11 @@ public:
 };
 class paramPoly
 {
-//	friend std::ostream & operator<<(std::ostream &os, const paramPoly &gh);
-	friend class boost::serialization::access;
 private:
 
 
 	vector<string> params;//params.at(0) is x, params.at(1) is y axis
 	vector<coordinate> vertices;
-
-	template<class Archive>
-					void serialize(Archive &ar, const unsigned int version)
-					{
-
-						ar & BOOST_SERIALIZATION_NVP(params);
-						ar & BOOST_SERIALIZATION_NVP(vertices);
-					}
 public:
 	vector<coordinate> getVertices(){return vertices;};
 	void setVertices(vector<coordinate> _v){vertices=_v;};
@@ -221,38 +199,11 @@ public:
  * in order to avoid the dispatching to parent method and thus degraded to the parent gate object
  */
 class gate {
-//	friend std::ostream & operator<<(std::ostream &os, const gate &gh);
-	friend class boost::serialization::access;
-
 protected:
 	bool neg;
 	bool isTransformed;
 	bool isGained;
-private:
-	template<class Archive>
-			void save(Archive &ar, const unsigned int version) const
-			{
 
-				ar & BOOST_SERIALIZATION_NVP(neg);
-				ar & BOOST_SERIALIZATION_NVP(isTransformed);
-				if(version>0)
-					ar & BOOST_SERIALIZATION_NVP(isGained);
-
-			}
-	template<class Archive>
-			void load(Archive &ar, const unsigned int version)
-			{
-
-				ar & BOOST_SERIALIZATION_NVP(neg);
-				ar & BOOST_SERIALIZATION_NVP(isTransformed);
-				if(version>0)
-					ar & BOOST_SERIALIZATION_NVP(isGained);
-				else{
-					isGained = false;
-				}
-
-			}
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	/*
 	 * exact string returned by std::type_info::name() is compiler-dependent
@@ -282,20 +233,11 @@ public:
 	virtual bool Transformed(){return isTransformed;};
 	virtual void setTransformed(bool _isTransformed){isTransformed=_isTransformed;};
 };
-BOOST_CLASS_VERSION(gate,1)
+
 
 class rangeGate:public gate {
-	friend class boost::serialization::access;
-
 private:
 	paramRange param;
-	template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
-			{
-				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
-				ar & BOOST_SERIALIZATION_NVP(param);
-
-			}
 public:
 	rangeGate();
 	unsigned short getType(){return RANGEGATE;}
@@ -319,17 +261,8 @@ public:
  *
  */
 class polygonGate:public gate {
-	friend class boost::serialization::access;
 protected:
 	paramPoly param;
-private:
-	template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
-			{
-				ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
-				ar & BOOST_SERIALIZATION_NVP(param);
-
-			}
 public:
 	polygonGate();
 	virtual unsigned short getType(){return POLYGONGATE;}
@@ -354,15 +287,6 @@ public:
  * as a regular polygonGate
  */
 class rectGate:public polygonGate {
-	friend class boost::serialization::access;
-
-private:
-	template<class Archive>
-			void serialize(Archive &ar, const unsigned int version)
-			{
-				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
-
-			}
 public:
 	vector<bool> gating(flowData &);
 	unsigned short getType(){return RECTGATE;}
@@ -378,39 +302,11 @@ public:
  * For the legacy archive, we preserve this class definition
  */
 class ellipseGate:public polygonGate {
-	friend class boost::serialization::access;
 protected:
 	vector<coordinate> antipodal_vertices; //four antipodal points of ellipse (to be deprecated)
 	coordinate mu;// center point
 	vector<coordinate> cov;//covariance matrix
 	double dist; //size of ellipse
-private:
-
-	template<class Archive>
-			void save(Archive &ar, const unsigned int version) const
-			{
-				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
-				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
-				ar & BOOST_SERIALIZATION_NVP(cov);
-				ar & BOOST_SERIALIZATION_NVP(mu);
-				ar & BOOST_SERIALIZATION_NVP(dist);
-			}
-	template<class Archive>
-			void load(Archive &ar, const unsigned int version)
-			{
-				ar & boost::serialization::make_nvp("polygonGate",boost::serialization::base_object<polygonGate>(*this));
-				ar & BOOST_SERIALIZATION_NVP(antipodal_vertices);
-				if(version>=1){
-					ar & BOOST_SERIALIZATION_NVP(cov);
-					ar & BOOST_SERIALIZATION_NVP(mu);
-					ar & BOOST_SERIALIZATION_NVP(dist);
-				}else{
-					computeCov();
-				}
-
-			}
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
-
 public:
 	ellipseGate(){dist = 1;};
 	ellipseGate(coordinate _mu, vector<coordinate> _cov, double _dist);
@@ -439,7 +335,7 @@ public:
 	ellipseGate(const pb::gate & gate_pb);
 	void toPolygon(unsigned nVertices);//ellipseGate doesn't need it , but ellipsoidGate will need it to handle the special scale (256)
 };
-BOOST_CLASS_VERSION(ellipseGate,1)
+
 /*
  * the purpose of having this class is to do the special scaling to the gate coordinates
  * due to the historical FlowJo's implementation (win/vX) of the ellipsoid gate that the foci, distance, and edge points are expressed in 256 x 256 display coordinates
@@ -451,13 +347,6 @@ BOOST_CLASS_VERSION(ellipseGate,1)
  * Thus we still need to preserve the inheritance to the polygonGate
  */
 class ellipsoidGate:public ellipseGate {
-	friend class boost::serialization::access;
-private:
-	template<class Archive>
-	void serialize(Archive &ar, const unsigned int version)
-			{
-				ar & boost::serialization::make_nvp("ellipseGate",boost::serialization::base_object<ellipseGate>(*this));
-			}
 public:
 	ellipsoidGate():ellipseGate(){};
 	ellipsoidGate(vector<coordinate> _antipodal, vector<string> _params);
@@ -478,20 +367,9 @@ public:
  * thus GatingHierarchy data structure should be invisible to gate.
  */
 class boolGate:public gate {
-	friend class boost::serialization::access;
-
-
 public:
 	boolGate();
 	vector<BOOL_GATE_OP> boolOpSpec;//the gatePaths with the their logical operators
-private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::make_nvp("gate",boost::serialization::base_object<gate>(*this));
-					ar & BOOST_SERIALIZATION_NVP(boolOpSpec);
-
-				}
 public:
 	vector<BOOL_GATE_OP> getBoolSpec(){return boolOpSpec;};
 	unsigned short getType(){return BOOLGATE;}
@@ -508,14 +386,7 @@ public:
  * Eventually we may want to extend it to store extra information.
  */
 class logicalGate:public boolGate {
-	friend class boost::serialization::access;
 private:
-	template<class Archive>
-				void serialize(Archive &ar, const unsigned int version)
-				{
-					ar & boost::serialization::make_nvp("boolGate",boost::serialization::base_object<boolGate>(*this));
-
-				}
 	unsigned short getType(){return LOGICALGATE;}
 	logicalGate * clone(){return new logicalGate(*this);};
 	void convertToPb(pb::gate & gate_pb);

@@ -95,23 +95,14 @@ XPtr<GatingSet> NewGatingSet_rootOnly(StringVec sampleNames) {
  * save/load GatingSet
  */
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void saveGatingSet(XPtr<GatingSet> gs
-                , string fileName
-                , unsigned short format, bool isPB) {
-
-		if(isPB)
+void saveGatingSet(XPtr<GatingSet> gs, string fileName) {
 			gs->serialize_pb(fileName);
-		else
-			gs->serialize_bs(fileName, format);
-
 }
 
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
-XPtr<GatingSet> loadGatingSet(string fileName, unsigned short format, bool isPB) {
-
-	
-		GatingSet * gs=new GatingSet(fileName, format,isPB);
+XPtr<GatingSet> loadGatingSet(string fileName) {
+		GatingSet * gs=new GatingSet(fileName);
 		return XPtr<GatingSet>(gs);
 
 }

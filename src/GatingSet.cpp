@@ -14,57 +14,6 @@
 #include <exception>
 #include "include/delimitedMessage.hpp"
 using namespace std;
-
-
-/**
- * serialization by boost serialization library
- * @param filename
- * @param format archive format, can be text,xml or binary
- */
-void GatingSet::serialize_bs(string filename, unsigned short format){
-
-
-	    	// make an archive
-			std::ios::openmode mode = std::ios::out|std::ios::trunc;
-			if(format == ARCHIVE_TYPE_BINARY)
-				mode = mode | std::ios::binary;
-
-
-
-			std::ofstream ofs(filename.c_str(), mode);
-
-
-			switch(format)
-			{
-			case ARCHIVE_TYPE_BINARY:
-				{
-					boost::archive::binary_oarchive oa(ofs);
-					oa << BOOST_SERIALIZATION_NVP(*this);
-				}
-
-				break;
-			case ARCHIVE_TYPE_TEXT:
-				{
-					boost::archive::text_oarchive oa1(ofs);
-					oa1 << BOOST_SERIALIZATION_NVP(*this);
-				}
-
-				break;
-			case ARCHIVE_TYPE_XML:
-				{
-					boost::archive::xml_oarchive oa2(ofs);
-					oa2 << BOOST_SERIALIZATION_NVP(*this);
-				}
-
-				break;
-			default:
-				throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
-				break;
-
-			}
-
-
-	}
 /**
  * separate filename from dir to avoid to deal with path parsing in c++
  * @param path the dir of filename
@@ -144,11 +93,8 @@ void GatingSet::serialize_pb(string filename){
  * @param format
  * @param isPB
  */
-GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NULL)
+GatingSet::GatingSet(string filename):wsPtr(NULL)
 {
-
-
-	if(isPB){
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
 		ifstream input(filename.c_str(), ios::in | ios::binary);
 		if (!input) {
@@ -242,45 +188,6 @@ GatingSet::GatingSet(string filename, unsigned short format, bool isPB):wsPtr(NU
 				ghs[sn] = new GatingHierarchy(gh_pb, trans_tbl);
 			}
 		}
-	}
-	else
-	{
-		// open the archive
-		std::ios::openmode mode = std::ios::in;
-		if(format == ARCHIVE_TYPE_BINARY)
-			mode = mode | std::ios::binary;
-		std::ifstream ifs(filename.c_str(), mode);
-
-		switch(format)
-		{
-		case ARCHIVE_TYPE_BINARY:
-			{
-				boost::archive::binary_iarchive ia(ifs);
-				ia >> BOOST_SERIALIZATION_NVP(*this);
-			}
-
-			break;
-		case ARCHIVE_TYPE_TEXT:
-			{
-				boost::archive::text_iarchive ia1(ifs);
-				ia1 >> BOOST_SERIALIZATION_NVP(*this);
-			}
-
-			break;
-		case ARCHIVE_TYPE_XML:
-			{
-				boost::archive::xml_iarchive ia2(ifs);
-				ia2 >> BOOST_SERIALIZATION_NVP(*this);
-			}
-
-			break;
-		default:
-			throw(invalid_argument("invalid archive format!only 0,1 or 2 are valid type."));
-			break;
-
-		}
-	}
-
 
 }
 

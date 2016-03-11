@@ -14,17 +14,8 @@
 #include <boost/lexical_cast.hpp>
 
 class flowJoWorkspace:public workspace{
-//	friend std::ostream & operator<<(std::ostream &os, const flowJoWorkspace &gh);
-	friend class boost::serialization::access;
 private:
 	string versionList;
-
-	template<class Archive>
-		    void serialize(Archive &ar, const unsigned int version)
-		    {
-        		ar & boost::serialization::make_nvp("workspace",boost::serialization::base_object<workspace>(*this));
-				ar & BOOST_SERIALIZATION_NVP(versionList);
-		    }
 public:
 	 flowJoWorkspace(xmlDoc *);
 	 vector <string> getSampleID(unsigned short);

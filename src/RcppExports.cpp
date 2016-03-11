@@ -409,28 +409,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // saveGatingSet
-void saveGatingSet(XPtr<GatingSet> gs, string fileName, unsigned short format, bool isPB);
-RcppExport SEXP flowWorkspace_saveGatingSet(SEXP gsSEXP, SEXP fileNameSEXP, SEXP formatSEXP, SEXP isPBSEXP) {
+void saveGatingSet(XPtr<GatingSet> gs, string fileName);
+RcppExport SEXP flowWorkspace_saveGatingSet(SEXP gsSEXP, SEXP fileNameSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< string >::type fileName(fileNameSEXP);
-    Rcpp::traits::input_parameter< unsigned short >::type format(formatSEXP);
-    Rcpp::traits::input_parameter< bool >::type isPB(isPBSEXP);
-    saveGatingSet(gs, fileName, format, isPB);
+    saveGatingSet(gs, fileName);
     return R_NilValue;
 END_RCPP
 }
 // loadGatingSet
-XPtr<GatingSet> loadGatingSet(string fileName, unsigned short format, bool isPB);
-RcppExport SEXP flowWorkspace_loadGatingSet(SEXP fileNameSEXP, SEXP formatSEXP, SEXP isPBSEXP) {
+XPtr<GatingSet> loadGatingSet(string fileName);
+RcppExport SEXP flowWorkspace_loadGatingSet(SEXP fileNameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< string >::type fileName(fileNameSEXP);
-    Rcpp::traits::input_parameter< unsigned short >::type format(formatSEXP);
-    Rcpp::traits::input_parameter< bool >::type isPB(isPBSEXP);
-    __result = Rcpp::wrap(loadGatingSet(fileName, format, isPB));
+    __result = Rcpp::wrap(loadGatingSet(fileName));
     return __result;
 END_RCPP
 }
