@@ -36,6 +36,8 @@ read.gatingML.cytobank <- function(file, ...){
   
   #parse gate info (id vs fcs and pop name)
   gateInfo <- parse.gateInfo(file)
+  if(nrow(gateInfo) == 0)
+    stop("No gates defined in gatingML file!")
   
   #restore the original gate parameter names 
   #because flowUtils add comp and tran names as prefix which is really not neccessary (even problematic) here.
@@ -225,6 +227,8 @@ constructTree <- function(flowEnv, gateInfo){
   })
   
   gateSets <- compact(gateSets)
+  if(length(gateSets) == 0)
+    stop("No GateSets defined in gatingML file!")
   popIds <- names(gateSets)
   #sort by the depths of path
   counts <- sapply(gateSets, function(i)length(i))
