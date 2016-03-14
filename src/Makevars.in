@@ -5,12 +5,6 @@
 ifneq (,)
 This makefile requires GNU Make.
 endif
-
-
-bs_src=${wildcard boost_serialization/*.cpp} 
-bs_objs=${bs_src:.cpp=.o}
-bs_lib = libboost_serialization.a
-	
 	
 PBBUILD=@PBBUILD@
 
@@ -22,17 +16,14 @@ pb_objs=$(PBBUILDDIR).libs/*.o $(PBBUILDDIR)stubs/.libs/*.o $(PBBUILDDIR)io/.lib
 endif
 
 CXX_STD = CXX11
-PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@ -Iboost_serialization
-PKG_LIBS =${bs_lib} ${pb_lib} `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags()"` @PKG_LIBS@ 
+PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@
+PKG_LIBS =${pb_lib} `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags()"` @PKG_LIBS@ 
 
 
 all: 	$(SHLIB) 
 
-$(SHLIB): $(OBJECTS) $(bs_lib) $(pb_lib)
+$(SHLIB): $(OBJECTS) $(pb_lib)
 
-#archive bs objects
-$(bs_lib): $(bs_objs)
-		$(AR) rs $(bs_lib) ${bs_objs}
 
 #archive pb objects (only executed when pb_lib is set)
 $(pb_lib): $(pb_objs)
@@ -41,5 +32,5 @@ $(pb_lib): $(pb_objs)
 .PHONY: 	all clean 
 
 clean:
-		rm -f $(OBJECTS) $(bs_lib) $(bs_objs) $(pb_lib) $(SHLIB)
+		rm -f $(OBJECTS) $(pb_lib) $(SHLIB)
  
