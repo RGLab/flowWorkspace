@@ -302,8 +302,21 @@ setMethod("compensate", signature = c("GatingSet", "graphGML"), function(x, spil
   
   if(comp == "FCS"){
     fs <- getData(x)
-    mat <- compact(spillover(fs[[1, use.exprs = FALSE]]))[[1]]
-    comp <- compensation(mat)
+    fr <- fs[[1, use.exprs = FALSE]]
+    #can't use spillover method directly because it will error out when none is found
+    mat <- keyword(fr, c("spillover", "SPILL"))
+    mat <- compact(mat)
+    if(length(mat) == 0){
+      skip <- TRUE
+      warning("Compensation is skipped!Because gates refer to 'FCS' for compensation but no spillover is found in FCS.")
+    }else{
+      skip <- FALSE
+      mat <- mat[[1]]  
+      comp <- compensation(mat)
+    }
   }
-  compensate(x, comp)
+  if(skip)
+    x
+  else
+    compensate(x, comp)
 })
