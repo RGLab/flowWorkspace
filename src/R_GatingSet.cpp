@@ -6,7 +6,7 @@
  *  Created on: Mar 30, 2012
  *      Author: wjiang2
  */
-#include "include/GatingSet.hpp"
+#include "../inst/include/flowWorkspace/GatingSet.hpp"
 
 GatingSet * getGsPtr(SEXP _gsPtr){
 

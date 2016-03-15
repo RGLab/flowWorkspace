@@ -4,7 +4,7 @@
  *  Created on: Mar 15, 2012
  *      Author: wjiang2
  */
-#include "include/flowJoWorkspace.hpp"
+#include "../inst/include/flowWorkspace/flowJoWorkspace.hpp"
 
 
 

@@ -7,7 +7,7 @@
 
 
 
-#include "include/gate.hpp"
+#include "../inst/include/flowWorkspace/gate.hpp"
 #include <algorithm>
 #include <valarray>
 

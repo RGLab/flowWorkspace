@@ -6,7 +6,7 @@
  */
 
 
-#include "include/macFlowJoWorkspace.hpp"
+#include "../inst/include/flowWorkspace/macFlowJoWorkspace.hpp"
 
 
 

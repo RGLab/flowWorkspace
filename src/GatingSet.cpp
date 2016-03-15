@@ -6,13 +6,13 @@
  */
 
 
-#include "include/GatingSet.hpp"
+#include "../inst/include/flowWorkspace/GatingSet.hpp"
 #include <string>
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <iostream>
 #include <exception>
-#include "include/delimitedMessage.hpp"
+#include "../inst/include/flowWorkspace/delimitedMessage.hpp"
 using namespace std;
 /**
  * separate filename from dir to avoid to deal with path parsing in c++
