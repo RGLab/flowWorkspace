@@ -28,7 +28,7 @@ typedef map<string,float> POPSTATS;
  *
  */
 class nodeProperties{
-private:
+public:
 	string thisName;
 	gate * thisGate;
 	boost::scoped_ptr<POPINDICES> indices;

@@ -14,7 +14,7 @@
 #include <boost/lexical_cast.hpp>
 
 class flowJoWorkspace:public workspace{
-private:
+public:
 	string versionList;
 public:
 	 flowJoWorkspace(xmlDoc *);
