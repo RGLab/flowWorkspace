@@ -8,7 +8,7 @@
 
 
 
-#include "../inst/include/flowWorkspace/workspace.hpp"
+#include "include/workspace.hpp"
 #include <iostream>
 #include <sstream>
 workspace::~workspace(){

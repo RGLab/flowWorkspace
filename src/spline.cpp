@@ -9,7 +9,7 @@
  *	equations to determine them.  Either Choleski or Gaussian
  *	elimination could be used.
  */
-#include "../inst/include/flowWorkspace/spline.hpp"
+#include "include/spline.hpp"
 /*TODO:change it to c++ version
  * n :number of input points
  * x,y:coordinates of input points

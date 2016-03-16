@@ -4,6 +4,16 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+test_that("EllipsoidGate defined on log-transformed channels ",{
+      thisPath <- file.path(path, "ellipsoid_log")
+      wsFile <- file.path(thisPath, "xml_spillover2.xml")
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name=1, execute = T, sampNloc = "sampleNode", subset = "spillover_B2.fcs")
+        
+      res <- getPopStats(gs[[1]])
+      expect_equal(res[, flowJo.count], res[, flowCore.count], tol = 1.1e-3)
+})
+
 test_that("No gate extension ",{
       thisPath <- file.path(path, "negCoordinates")
       wsFile <- file.path(thisPath, "08-Mar-2016.wsp")

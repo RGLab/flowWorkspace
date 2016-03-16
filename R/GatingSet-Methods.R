@@ -859,7 +859,8 @@ compute.timestep <- function(kw, unit.range){
 						######################################
 						base10raw <- unlist(lapply(2:6,function(e)10^e))
 						base10raw <- c(0,base10raw)
-						raw <- base10raw[base10raw>min(rw)&base10raw<max(rw)]
+						raw <- base10raw[base10raw>=min(rw)&base10raw<max(rw)]
+						
 						pos <- signif(thisTrans(raw))
 
 

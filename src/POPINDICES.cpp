@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "../inst/include/flowWorkspace/POPINDICES.hpp"
+#include "include/POPINDICES.hpp"
 void packToBytes(const vector <bool> & x, vector<unsigned char> & bytes){
 	/*
 	 * pack bits into bytes

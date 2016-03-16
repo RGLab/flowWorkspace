@@ -14,11 +14,11 @@
  * write R API
  */
 
-#include "../inst/include/flowWorkspace/GatingHierarchy.hpp"
-#include "../inst/include/flowWorkspace/GatingSet.hpp"
+#include "include/GatingHierarchy.hpp"
+#include "include/GatingSet.hpp"
 #include <stdexcept>
-#include "../inst/include/flowWorkspace/gate.hpp"
-#include "../inst/include/flowWorkspace/transformation.hpp"
+#include "include/gate.hpp"
+#include "include/transformation.hpp"
 using namespace std;
 
 /*
@@ -152,6 +152,7 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 				res.push_back(List::create(Named("type","log")
 											,Named("decade",thisTrans->decade)
 											,Named("offset",thisTrans->offset)
+											,Named("T",thisTrans->T)
 											)
 								,transName
 								);

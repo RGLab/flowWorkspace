@@ -1302,7 +1302,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
         {
           if(inverse){
             f <- function(x, min_val = 0
-                , max_val = 262143
+                , max_val = curTrans$T
                 , decade = curTrans$decade
                 , offset = curTrans$offset
             )
@@ -1318,7 +1318,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
             assign("decade", curTrans$decade, environment(f))
             assign("offset", curTrans$offset, environment(f))
             assign("min_val", 0, environment(f))
-            assign("max_val", 262143, environment(f))
+            assign("max_val", curTrans$T, environment(f))
             
             attr(f,"type")<-"flog"  
           }

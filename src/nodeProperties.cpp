@@ -4,7 +4,7 @@
  *  Created on: Apr 16, 2012
  *      Author: wjiang2
  */
-#include "../inst/include/flowWorkspace/nodeProperties.hpp"
+#include "include/nodeProperties.hpp"
 #include <algorithm>
 nodeProperties::nodeProperties():thisGate(NULL),hidden(false){}
 

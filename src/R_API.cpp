@@ -6,7 +6,7 @@
  *  Created on: Aug 18, 2014
  *      Author: wjiang2
  */
-#include "../inst/include/flowWorkspace/GatingSet.hpp"
+#include "include/GatingSet.hpp"
 
 //[[Rcpp::plugins(temp)]]
 

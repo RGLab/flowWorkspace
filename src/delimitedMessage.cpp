@@ -1,4 +1,4 @@
-#include "../inst/include/flowWorkspace/delimitedMessage.hpp"
+#include "include/delimitedMessage.hpp"
 /**
  *  based on the non-official code written by protobuf's author Kenton Varda
  * @param rawInput

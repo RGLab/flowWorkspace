@@ -2,7 +2,7 @@
 // source: GatingSet.proto
 
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
-#include "../inst/include/flowWorkspace/GatingSet.pb.h"
+#include "GatingSet.pb.h"
 
 #include <algorithm>
 
@@ -376,9 +376,10 @@ void protobuf_AssignDesc_GatingSet_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(flinTrans));
   logTrans_descriptor_ = file->message_type(15);
-  static const int logTrans_offsets_[2] = {
+  static const int logTrans_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(logTrans, offset_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(logTrans, decade_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(logTrans, t_),
   };
   logTrans_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -782,51 +783,51 @@ void protobuf_AddDesc_GatingSet_2eproto() {
     "\002\"P\n\013fasinhTrans\022\016\n\006length\030\001 \001(\002\022\020\n\010maxR"
     "ange\030\002 \001(\002\022\t\n\001T\030\003 \001(\002\022\t\n\001A\030\004 \001(\002\022\t\n\001M\030\005 "
     "\001(\002\"\"\n\nscaleTrans\022\024\n\014scale_factor\030\001 \001(\002\""
-    "%\n\tflinTrans\022\013\n\003min\030\001 \001(\002\022\013\n\003max\030\002 \001(\002\"*"
+    "%\n\tflinTrans\022\013\n\003min\030\001 \001(\002\022\013\n\003max\030\002 \001(\002\"5"
     "\n\010logTrans\022\016\n\006offset\030\001 \001(\002\022\016\n\006decade\030\002 \001"
-    "(\002\"\272\002\n\016transformation\022$\n\006calTbl\030\001 \001(\0132\024."
-    "pb.calibrationTable\022\022\n\nisGateOnly\030\002 \001(\010\022"
-    "\014\n\004name\030\004 \001(\t\022\017\n\007channel\030\005 \001(\t\022\022\n\nisComp"
-    "uted\030\006 \001(\010\022\014\n\004type\030\014 \001(\r\022\"\n\ntrans_type\030\003"
-    " \001(\0162\016.pb.TRANS_TYPE\022\032\n\002bt\030\007 \001(\0132\016.pb.bi"
-    "expTrans\022\030\n\002lt\030\010 \001(\0132\014.pb.logTrans\022\032\n\003fl"
-    "t\030\t \001(\0132\r.pb.flinTrans\022\032\n\002st\030\n \001(\0132\016.pb."
-    "scaleTrans\022\033\n\002ft\030\013 \001(\0132\017.pb.fasinhTrans\""
-    "1\n\ntrans_pair\022\014\n\004name\030\001 \002(\t\022\025\n\rtrans_add"
-    "ress\030\002 \002(\004\"S\n\013trans_local\022\032\n\002tp\030\001 \003(\0132\016."
-    "pb.trans_pair\022\021\n\tgroupName\030\002 \001(\t\022\025\n\tsamp"
-    "leIDs\030\003 \003(\rB\002\020\001\"\\\n\nPOPINDICES\022\017\n\007nEvents"
-    "\030\001 \002(\r\022\035\n\007indtype\030\002 \002(\0162\014.pb.ind_type\022\020\n"
-    "\004iInd\030\003 \003(\rB\002\020\001\022\014\n\004bInd\030\004 \001(\014\"\255\001\n\016nodePr"
-    "operties\022\020\n\010thisName\030\001 \002(\t\022\035\n\007fjStats\030\002 "
-    "\003(\0132\014.pb.POPSTATS\022\035\n\007fcStats\030\003 \003(\0132\014.pb."
-    "POPSTATS\022\016\n\006hidden\030\004 \002(\010\022\037\n\007indices\030\005 \001("
-    "\0132\016.pb.POPINDICES\022\032\n\010thisGate\030\006 \001(\0132\010.pb"
-    ".gate\"=\n\ttreeNodes\022 \n\004node\030\001 \002(\0132\022.pb.no"
-    "deProperties\022\016\n\006parent\030\002 \001(\r\"-\n\016populati"
-    "onTree\022\033\n\004node\030\001 \003(\0132\r.pb.treeNodes\"u\n\004C"
-    "OMP\022\013\n\003cid\030\001 \001(\t\022\016\n\006prefix\030\002 \001(\t\022\016\n\006suff"
-    "ix\030\003 \001(\t\022\014\n\004name\030\004 \001(\t\022\017\n\007comment\030\005 \001(\t\022"
-    "\016\n\006marker\030\006 \003(\t\022\021\n\tspillOver\030\007 \003(\002\"_\n\005PA"
-    "RAM\022\r\n\005param\030\001 \001(\t\022\013\n\003log\030\002 \001(\010\022\r\n\005range"
-    "\030\003 \001(\r\022\021\n\thighValue\030\004 \001(\r\022\030\n\020calibration"
-    "Index\030\005 \001(\r\"\233\001\n\017GatingHierarchy\022 \n\004tree\030"
-    "\002 \002(\0132\022.pb.populationTree\022\026\n\004comp\030\001 \001(\0132"
-    "\010.pb.COMP\022\020\n\010isLoaded\030\003 \001(\010\022\034\n\ttransFlag"
-    "\030\004 \003(\0132\t.pb.PARAM\022\036\n\005trans\030\005 \001(\0132\017.pb.tr"
-    "ans_local\"E\n\tTRANS_TBL\022\025\n\rtrans_address\030"
-    "\001 \002(\004\022!\n\005trans\030\002 \001(\0132\022.pb.transformation"
-    "\"\224\001\n\tGatingSet\022 \n\ttrans_tbl\030\002 \003(\0132\r.pb.T"
-    "RANS_TBL\022\022\n\nsampleName\030\001 \003(\t\022\030\n\020globalBi"
-    "ExpTrans\030\003 \001(\004\022\026\n\016globalLinTrans\030\004 \001(\004\022\037"
-    "\n\006gTrans\030\005 \003(\0132\017.pb.trans_local*\203\001\n\tGATE"
-    "_TYPE\022\020\n\014POLYGON_GATE\020\001\022\016\n\nRANGE_GATE\020\002\022"
-    "\r\n\tBOOL_GATE\020\003\022\020\n\014ELLIPSE_GATE\020\004\022\r\n\tRECT"
-    "_GATE\020\005\022\020\n\014LOGICAL_GATE\020\006\022\022\n\016ELLIPSOID_G"
-    "ATE\020\007*\'\n\010ind_type\022\010\n\004BOOL\020\000\022\007\n\003INT\020\001\022\010\n\004"
-    "ROOT\020\002*^\n\nTRANS_TYPE\022\r\n\tPB_CALTBL\020\000\022\n\n\006P"
-    "B_LOG\020\001\022\n\n\006PB_LIN\020\002\022\013\n\007PB_FLIN\020\003\022\016\n\nPB_F"
-    "ASIGNH\020\004\022\014\n\010PB_BIEXP\020\005", 2902);
+    "(\002\022\t\n\001T\030\003 \001(\002\"\272\002\n\016transformation\022$\n\006calT"
+    "bl\030\001 \001(\0132\024.pb.calibrationTable\022\022\n\nisGate"
+    "Only\030\002 \001(\010\022\014\n\004name\030\004 \001(\t\022\017\n\007channel\030\005 \001("
+    "\t\022\022\n\nisComputed\030\006 \001(\010\022\014\n\004type\030\014 \001(\r\022\"\n\nt"
+    "rans_type\030\003 \001(\0162\016.pb.TRANS_TYPE\022\032\n\002bt\030\007 "
+    "\001(\0132\016.pb.biexpTrans\022\030\n\002lt\030\010 \001(\0132\014.pb.log"
+    "Trans\022\032\n\003flt\030\t \001(\0132\r.pb.flinTrans\022\032\n\002st\030"
+    "\n \001(\0132\016.pb.scaleTrans\022\033\n\002ft\030\013 \001(\0132\017.pb.f"
+    "asinhTrans\"1\n\ntrans_pair\022\014\n\004name\030\001 \002(\t\022\025"
+    "\n\rtrans_address\030\002 \002(\004\"S\n\013trans_local\022\032\n\002"
+    "tp\030\001 \003(\0132\016.pb.trans_pair\022\021\n\tgroupName\030\002 "
+    "\001(\t\022\025\n\tsampleIDs\030\003 \003(\rB\002\020\001\"\\\n\nPOPINDICES"
+    "\022\017\n\007nEvents\030\001 \002(\r\022\035\n\007indtype\030\002 \002(\0162\014.pb."
+    "ind_type\022\020\n\004iInd\030\003 \003(\rB\002\020\001\022\014\n\004bInd\030\004 \001(\014"
+    "\"\255\001\n\016nodeProperties\022\020\n\010thisName\030\001 \002(\t\022\035\n"
+    "\007fjStats\030\002 \003(\0132\014.pb.POPSTATS\022\035\n\007fcStats\030"
+    "\003 \003(\0132\014.pb.POPSTATS\022\016\n\006hidden\030\004 \002(\010\022\037\n\007i"
+    "ndices\030\005 \001(\0132\016.pb.POPINDICES\022\032\n\010thisGate"
+    "\030\006 \001(\0132\010.pb.gate\"=\n\ttreeNodes\022 \n\004node\030\001 "
+    "\002(\0132\022.pb.nodeProperties\022\016\n\006parent\030\002 \001(\r\""
+    "-\n\016populationTree\022\033\n\004node\030\001 \003(\0132\r.pb.tre"
+    "eNodes\"u\n\004COMP\022\013\n\003cid\030\001 \001(\t\022\016\n\006prefix\030\002 "
+    "\001(\t\022\016\n\006suffix\030\003 \001(\t\022\014\n\004name\030\004 \001(\t\022\017\n\007com"
+    "ment\030\005 \001(\t\022\016\n\006marker\030\006 \003(\t\022\021\n\tspillOver\030"
+    "\007 \003(\002\"_\n\005PARAM\022\r\n\005param\030\001 \001(\t\022\013\n\003log\030\002 \001"
+    "(\010\022\r\n\005range\030\003 \001(\r\022\021\n\thighValue\030\004 \001(\r\022\030\n\020"
+    "calibrationIndex\030\005 \001(\r\"\233\001\n\017GatingHierarc"
+    "hy\022 \n\004tree\030\002 \002(\0132\022.pb.populationTree\022\026\n\004"
+    "comp\030\001 \001(\0132\010.pb.COMP\022\020\n\010isLoaded\030\003 \001(\010\022\034"
+    "\n\ttransFlag\030\004 \003(\0132\t.pb.PARAM\022\036\n\005trans\030\005 "
+    "\001(\0132\017.pb.trans_local\"E\n\tTRANS_TBL\022\025\n\rtra"
+    "ns_address\030\001 \002(\004\022!\n\005trans\030\002 \001(\0132\022.pb.tra"
+    "nsformation\"\224\001\n\tGatingSet\022 \n\ttrans_tbl\030\002"
+    " \003(\0132\r.pb.TRANS_TBL\022\022\n\nsampleName\030\001 \003(\t\022"
+    "\030\n\020globalBiExpTrans\030\003 \001(\004\022\026\n\016globalLinTr"
+    "ans\030\004 \001(\004\022\037\n\006gTrans\030\005 \003(\0132\017.pb.trans_loc"
+    "al*\203\001\n\tGATE_TYPE\022\020\n\014POLYGON_GATE\020\001\022\016\n\nRA"
+    "NGE_GATE\020\002\022\r\n\tBOOL_GATE\020\003\022\020\n\014ELLIPSE_GAT"
+    "E\020\004\022\r\n\tRECT_GATE\020\005\022\020\n\014LOGICAL_GATE\020\006\022\022\n\016"
+    "ELLIPSOID_GATE\020\007*\'\n\010ind_type\022\010\n\004BOOL\020\000\022\007"
+    "\n\003INT\020\001\022\010\n\004ROOT\020\002*^\n\nTRANS_TYPE\022\r\n\tPB_CA"
+    "LTBL\020\000\022\n\n\006PB_LOG\020\001\022\n\n\006PB_LIN\020\002\022\013\n\007PB_FLI"
+    "N\020\003\022\016\n\nPB_FASIGNH\020\004\022\014\n\010PB_BIEXP\020\005", 2913);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GatingSet.proto", &protobuf_RegisterTypes);
   paramRange::default_instance_ = new paramRange();
@@ -5895,6 +5896,7 @@ void flinTrans::Swap(flinTrans* other) {
 #ifndef _MSC_VER
 const int logTrans::kOffsetFieldNumber;
 const int logTrans::kDecadeFieldNumber;
+const int logTrans::kTFieldNumber;
 #endif  // !_MSC_VER
 
 logTrans::logTrans()
@@ -5917,6 +5919,7 @@ void logTrans::SharedCtor() {
   _cached_size_ = 0;
   offset_ = 0;
   decade_ = 0;
+  t_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -5962,7 +5965,7 @@ void logTrans::Clear() {
     ::memset(&first, 0, n);                                \
   } while (0)
 
-  ZR_(offset_, decade_);
+  ZR_(offset_, t_);
 
 #undef OFFSET_OF_FIELD_
 #undef ZR_
@@ -6006,6 +6009,21 @@ bool logTrans::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(29)) goto parse_T;
+        break;
+      }
+
+      // optional float T = 3;
+      case 3: {
+        if (tag == 29) {
+         parse_T:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &t_)));
+          set_has_t();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -6045,6 +6063,11 @@ void logTrans::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->decade(), output);
   }
 
+  // optional float T = 3;
+  if (has_t()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->t(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -6063,6 +6086,11 @@ void logTrans::SerializeWithCachedSizes(
   // optional float decade = 2;
   if (has_decade()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->decade(), target);
+  }
+
+  // optional float T = 3;
+  if (has_t()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->t(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -6084,6 +6112,11 @@ int logTrans::ByteSize() const {
 
     // optional float decade = 2;
     if (has_decade()) {
+      total_size += 1 + 4;
+    }
+
+    // optional float T = 3;
+    if (has_t()) {
       total_size += 1 + 4;
     }
 
@@ -6120,6 +6153,9 @@ void logTrans::MergeFrom(const logTrans& from) {
     if (from.has_decade()) {
       set_decade(from.decade());
     }
+    if (from.has_t()) {
+      set_t(from.t());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -6145,6 +6181,7 @@ void logTrans::Swap(logTrans* other) {
   if (other != this) {
     std::swap(offset_, other->offset_);
     std::swap(decade_, other->decade_);
+    std::swap(t_, other->t_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

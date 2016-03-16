@@ -13,7 +13,7 @@
 #include <vector>
 #include "flowData.hpp"
 #include "transformation.hpp"
-#include <R_ext/Constants.h>
+//#include <R_ext/Constants.h>
 
 
 using namespace std;

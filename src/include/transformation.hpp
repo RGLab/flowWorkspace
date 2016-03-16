@@ -126,7 +126,7 @@ struct PARAM{
 		};
 typedef vector<PARAM> PARAM_VEC;
 
-PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name);
+PARAM_VEC::const_iterator findTransFlag(const PARAM_VEC & pVec, const string & name, const string & , const string & );
 
 class trans_local{
 public:
@@ -218,20 +218,26 @@ class logTrans:public transformation{
 public:
 		double offset;
 		double decade;
+		unsigned scale;
+		unsigned T; //top value; derived from keyword $PnR for each channel
 public:
-	logTrans();
-	logTrans(double _offset,double _decade);
+	logTrans();//deprecated
+	logTrans(double _offset,double _decade, unsigned T, unsigned _scale);
 	double flog(double x,double _max,double _min);
 	void transforming(valarray<double> & input);
 	logTrans * clone(){return new logTrans(*this);};
 	void convertToPb(pb::transformation & trans_pb);
 	logTrans(const pb::transformation & trans_pb);
-	/*
-	 * To avoid creating extra transformation class in c++ (since it is probably never going to be used in c++ code)
-	 * we simply return the logTrans itself and let R code to handle the inverse logic
-	 */
-	boost::shared_ptr<transformation> getInverseTransformation(){return  boost::shared_ptr<transformation>(this->clone());};
-	void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
+
+	boost::shared_ptr<transformation> getInverseTransformation();
+	void setTransformedScale(int _scale){scale = _scale;};
+};
+
+class logInverseTrans:public logTrans{
+public:
+	logInverseTrans(double _offset,double _decade, unsigned _T, unsigned _scale):logTrans(_offset, _decade, _T, _scale){};
+	void transforming(valarray<double> & input);
+
 };
 
 

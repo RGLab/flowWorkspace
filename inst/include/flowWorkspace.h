@@ -2,6 +2,6 @@
 #ifndef __flowWorkspace_h__
 #define __flowWorkspace_h__
 
-#include "flowWorkspace/GatingSet.hpp"
+#include "../../src/include/GatingSet.hpp"
 
 #endif // __flowWorkspace_h__
