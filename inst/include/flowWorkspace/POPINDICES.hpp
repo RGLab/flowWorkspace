@@ -16,7 +16,7 @@
 #include <boost/scoped_ptr.hpp>
 
 class POPINDICES{
-protected:
+public:
 	unsigned nEvents;
 public:
 	POPINDICES():nEvents(0){};
@@ -36,7 +36,7 @@ void unpackFromBytes(vector <bool> &, const vector<unsigned char>& x_bytes);
  * bool vector
  */
 class BOOLINDICES:public POPINDICES{
-private:
+public:
 	vector <bool> x;
 public:
 	BOOLINDICES():POPINDICES(){};
@@ -54,7 +54,7 @@ public:
  * int vector
  */
 class INTINDICES:public POPINDICES{
-private:
+public:
 	vector <unsigned> x;
 public:
 	INTINDICES():POPINDICES(){};

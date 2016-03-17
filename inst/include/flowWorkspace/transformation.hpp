@@ -48,7 +48,7 @@ bool compare_y(coordinate i, coordinate j);
 
 
 class transformation{
-protected:
+public:
 	calibrationTable calTbl;
 	bool isGateOnly;
 	unsigned short type;//could have been avoided if it is not required by R API getTransformation that needs to extract concrete transformation
@@ -129,7 +129,7 @@ typedef vector<PARAM> PARAM_VEC;
 PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name);
 
 class trans_local{
-private:
+public:
 	trans_map tp;
 public:
 	trans_map getTransMap(){return tp;};
@@ -145,7 +145,7 @@ public:
 };
 
 class trans_global:public trans_local{
-private:
+public:
 	string groupName;
 	vector<int> sampleIDs;
 public:
