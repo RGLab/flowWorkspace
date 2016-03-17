@@ -750,7 +750,7 @@ compute.timestep <- function(kw, unit.range){
   btime <- kw[["$BTIM"]]
   etime <- kw[["$ETIM"]]
   if(is.null(btime)||is.null(etime))
-    retun(1)
+    return(1)
   else{
     #prefix the 4th section . (replace :) so that strptime recognize the fractional seconds in the input string
     terms <- rep('([0-9]{2})', 4)
