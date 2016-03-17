@@ -112,6 +112,7 @@ message flinTrans{
 message logTrans{
 	optional float offset = 1;
 	optional float decade = 2;
+	optional float T = 3;
 }
 message transformation{
 	optional calibrationTable calTbl = 1;

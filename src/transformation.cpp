@@ -5,17 +5,27 @@
  *      Author: wjiang2
  */
 
-#include "../inst/include/flowWorkspace/transformation.hpp"
+#include "include/transformation.hpp"
 bool compare_x(coordinate i, coordinate j) { return i.x<j.x; }
 bool compare_y(coordinate i, coordinate j) { return i.y<j.y; }
-
-PARAM_VEC::iterator findTransFlag(PARAM_VEC & pVec, string name){
-	PARAM_VEC::iterator it;
+/**
+ *
+ * @param pVec
+ * @param name  channel name (possibly prefixed by comp.prefix)
+ * @param comp
+ * @return
+ */
+PARAM_VEC::const_iterator findTransFlag(const PARAM_VEC & pVec, const string & name, const string & prefix, const string & suffix){
+	PARAM_VEC::const_iterator it;
 	for(it=pVec.begin();it!=pVec.end();it++)
 	{
-		if(it->param.compare(name)==0)
+		//	try both the bare and prefixed chnl ma,e
+		string chnl = it->param;
+		string chnl_comp = prefix + chnl + suffix;//append prefix
+		if(chnl.compare(name)==0||chnl_comp.compare(name)==0)
 			break;
 	}
+
 	return it;
 }
 trans_map trans_local::cloneTransMap(){
@@ -195,11 +205,13 @@ void logTrans::convertToPb(pb::transformation & trans_pb){
 	pb::logTrans * lt_pb = trans_pb.mutable_lt();
 	lt_pb->set_decade(decade);
 	lt_pb->set_offset(offset);
+	lt_pb->set_t(T);
 }
 logTrans::logTrans(const pb::transformation & trans_pb):transformation(trans_pb){
 	const pb::logTrans & lt_pb = trans_pb.lt();
 	decade = lt_pb.decade();
 	offset = lt_pb.offset();
+	T = lt_pb.t();
 }
 void fasinhTrans::convertToPb(pb::transformation & trans_pb){
 	transformation::convertToPb(trans_pb);
@@ -258,14 +270,14 @@ flinTrans::flinTrans(const pb::transformation & trans_pb):transformation(trans_p
 
 transformation::transformation():isGateOnly(false),type(CALTBL),isComputed(true){}
 transformation::transformation(bool _isGate, unsigned short _type):isGateOnly(_isGate),type(_type),isComputed(true){}
-logTrans::logTrans():transformation(false,LOG),offset(0),decade(1){
+logTrans::logTrans():transformation(false,LOG),offset(0),decade(1),T(262144), scale(1){
 	calTbl.setInterpolated(true);
 }
 
-logTrans::logTrans(double _offset,double _decade):transformation(false,LOG),offset(_offset),decade(_decade){
+
+logTrans::logTrans(double _offset,double _decade, unsigned _T, unsigned _scale):transformation(false,LOG),offset(_offset),decade(_decade),T(_T), scale(_scale){
 	calTbl.setInterpolated(true);
 }
-
 fasinhTrans::fasinhTrans():transformation(false,FASINH),length(256),maxRange(262144), T(262144),A(0),M(4.5){
 	calTbl.setInterpolated(true);
 }
@@ -276,6 +288,10 @@ fasinhTrans::fasinhTrans(double _length, double _maxRange, double _T, double _A,
 boost::shared_ptr<transformation>  fasinhTrans::getInverseTransformation(){
 	return boost::shared_ptr<transformation>(new fsinhTrans(length, maxRange, T, A , M));
 }
+boost::shared_ptr<transformation>  logTrans::getInverseTransformation(){
+	return boost::shared_ptr<transformation>(new logInverseTrans(offset, decade, T,scale));
+}
+
 fsinhTrans::fsinhTrans():fasinhTrans(){}
 
 fsinhTrans::fsinhTrans(double _length, double _maxRange, double _T, double _A, double _M):fasinhTrans(_length,_maxRange, _T, _A, _M){}
@@ -396,17 +412,29 @@ boost::shared_ptr<transformation> scaleTrans::getInverseTransformation(){
 void logTrans::transforming(valarray<double> & input){
 
 
-		double thisMax=262144;//input.max();
+//		double thisMax=input.max();//max val must be globally determined during xml parsing
 		double thisMin=0;//input.min();
 
 		for(unsigned i=0;i<input.size();i++){
-			input[i]=flog(input[i],thisMax,thisMin);
+			input[i]=flog(input[i],T,thisMin) * scale;
+		}
+
+}
+void logInverseTrans::transforming(valarray<double> & input){
+
+
+//		double thisMax=input.max();
+		double thisMin=0;//input.min();
+
+		for(unsigned i=0;i<input.size();i++){
+			input[i]= pow(10, (input[i]/scale - 1) * decade) * T;
 		}
 
 
 //		input=log10(input);
 
 }
+
 double flinTrans::flin(double x){
 	double T=max;
 	double A=min;

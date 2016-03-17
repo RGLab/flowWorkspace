@@ -4,7 +4,7 @@
  *  Created on: Mar 15, 2012
  *      Author: wjiang2
  */
-#include "../inst/include/flowWorkspace/flowJoWorkspace.hpp"
+#include "include/flowJoWorkspace.hpp"
 
 
 
@@ -203,9 +203,20 @@ PARAM_VEC flowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
 		xmlXPathFreeObject(parDisplay);
 		string curFlag=curDisplayNode.getProperty("value");
 
+		/**
+		 * get PnR (mainly used to init T value in flog)
+		 */
+		stringstream ss2(stringstream::in | stringstream::out);
+		ss2 << "Keywords/*[@name='$P"<<i<<"R']";
+		path=ss2.str();
+		xmlXPathObjectPtr parR=sampleNode.xpathInNode(path);
+		wsNode curRNode(parR->nodesetval->nodeTab[0]);
+		xmlXPathFreeObject(parR);
+		string curR=curRNode.getProperty("value");
+
 		curParam.param=pName;
 		curParam.log=curFlag.compare("LOG")==0;
-		curParam.range=4096;//not sure how to get this value from win workspaces
+		curParam.range=atoi(curR.c_str());
 
 		if(g_loglevel>=GATING_SET_LEVEL)
 			COUT<<pName<<":"<<curFlag;

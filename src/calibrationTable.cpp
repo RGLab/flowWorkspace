@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "../inst/include/flowWorkspace/calibrationTable.hpp"
+#include "include/calibrationTable.hpp"
 #include <fstream>
 calibrationTable::calibrationTable(){
 	flag=false;

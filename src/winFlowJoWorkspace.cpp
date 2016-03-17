@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "../inst/include/flowWorkspace/winFlowJoWorkspace.hpp"
+#include "include/winFlowJoWorkspace.hpp"
 
 
 
@@ -121,7 +121,11 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 				COUT<<"flog func:"<<pname<<endl;
 			double offset=atof(transNode.getProperty("offset").c_str());
 			double decade=atof(transNode.getProperty("decades").c_str());
-			logTrans *curTran=new logTrans(offset,decade);
+			// get top scale value from PnR stored in transFlag
+			PARAM_VEC::const_iterator pit = findTransFlag(transFlag, pname, comp.prefix, comp.suffix);
+			if(pit==transFlag.end())
+				throw(domain_error(pname + " does not exist in transFlag vector!"));
+			logTrans *curTran=new logTrans(offset,decade,pit->range,1);
 			curTran->setName("");
 			curTran->setChannel(pname);
 

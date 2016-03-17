@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "../inst/include/flowWorkspace/GatingHierarchy.hpp"
+#include "include/GatingHierarchy.hpp"
 
 
 
