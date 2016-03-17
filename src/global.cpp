@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "include/global.hpp"
+#include "../inst/include/flowWorkspace/global.hpp"
 
 unsigned short g_loglevel = 0;
 

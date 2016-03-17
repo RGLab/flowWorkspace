@@ -17,7 +17,7 @@ using namespace std;
 #include <boost/config.hpp>
 #include <boost/graph/adj_list_serialize.hpp>
 #include <boost/foreach.hpp>
-#include "../GatingSet.pb.h"
+#include "GatingSet.pb.h"
 
 struct Spline_Coefs{
 	map<string,vector<double> > coefs;

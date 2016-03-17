@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "include/winFlowJoWorkspace.hpp"
+#include "../inst/include/flowWorkspace/winFlowJoWorkspace.hpp"
 
 
 

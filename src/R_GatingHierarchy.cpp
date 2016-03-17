@@ -14,11 +14,11 @@
  * write R API
  */
 
-#include "include/GatingHierarchy.hpp"
-#include "include/GatingSet.hpp"
+#include "../inst/include/flowWorkspace/GatingHierarchy.hpp"
+#include "../inst/include/flowWorkspace/GatingSet.hpp"
 #include <stdexcept>
-#include "include/gate.hpp"
-#include "include/transformation.hpp"
+#include "../inst/include/flowWorkspace/gate.hpp"
+#include "../inst/include/flowWorkspace/transformation.hpp"
 using namespace std;
 
 /*

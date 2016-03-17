@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "include/transformation.hpp"
+#include "../inst/include/flowWorkspace/transformation.hpp"
 bool compare_x(coordinate i, coordinate j) { return i.x<j.x; }
 bool compare_y(coordinate i, coordinate j) { return i.y<j.y; }
 

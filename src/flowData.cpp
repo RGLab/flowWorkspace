@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "include/flowData.hpp"
+#include "../inst/include/flowWorkspace/flowData.hpp"
 
 #include <algorithm>
 
