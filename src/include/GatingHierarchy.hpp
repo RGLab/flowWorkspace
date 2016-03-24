@@ -84,7 +84,7 @@ struct OurVertexPropertyWriterR {
  */
 
 class GatingHierarchy{
-public:
+private:
 	compensation comp;/*compensation is currently done in R due to the linear Algebra
 						e[, cols] <- t(solve(t(spillover))%*%t(e[,cols]))
 						we can try uBlas for this simple task, but when cid=="-1",we still need to
