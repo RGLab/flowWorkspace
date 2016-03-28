@@ -14,6 +14,6 @@
 #define GATE_LEVEL 4
 
 extern unsigned short g_loglevel;
-
+extern bool my_throw_on_error;
 
 #endif /* GLOBAL_HPP_ */

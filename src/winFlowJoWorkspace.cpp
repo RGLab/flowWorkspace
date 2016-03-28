@@ -737,7 +737,7 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 		else
 		{
 	//		COUT<<"gate type: "<<gateType<<" is not supported!"<<endl;
-			throw(domain_error("invalid  gate type!"));
+			throw(logic_error("invalid  gate type!"));
 		}
 	}
 }

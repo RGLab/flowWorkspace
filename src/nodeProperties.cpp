@@ -184,7 +184,7 @@ void nodeProperties::setStats(POPSTATS s,bool isFlowCore){
 
 gate * nodeProperties::getGate(){
 	if(thisGate==NULL)
-		throw(domain_error("gate is not parsed!"));
+		throw(logic_error("gate is not parsed!"));
 	return(thisGate);
 }
 

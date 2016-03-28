@@ -158,3 +158,7 @@ void setLogLevel(unsigned short loglevel) {
 
 }
 
+//[[Rcpp::export(name=".cpp_togleErrorFlag")]]
+void toggleErrorFlag(){
+	my_throw_on_error = !my_throw_on_error;
+}

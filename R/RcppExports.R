@@ -188,3 +188,7 @@
     invisible(.Call('flowWorkspace_setLogLevel', PACKAGE = 'flowWorkspace', loglevel))
 }
 
+.cpp_togleErrorFlag <- function() {
+    invisible(.Call('flowWorkspace_toggleErrorFlag', PACKAGE = 'flowWorkspace'))
+}
+
