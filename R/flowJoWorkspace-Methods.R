@@ -196,6 +196,9 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     
     #sample info  
     allSamples <- .getSamples(x, wsType, sampNloc = sampNloc)
+    #some time the sample name is stored as full file path in xml
+    allSamples[["name"]] <- gsub("\\\\", "/", allSamples[["name"]]) #convert the potential windowns path
+    allSamples[["name"]] <- basename(allSamples[["name"]]) #strip the potential dir path
     # group Info
     g <- .getSampleGroups(x, wsType)
     # merge two
