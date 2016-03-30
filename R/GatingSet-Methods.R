@@ -2405,66 +2405,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
   eval(thisCall)
 })
 
-#' insert a dummy gate to the GatingSet
-#' 
-#' Is is useful trick to make the tree structure of GatingSet same with other so that
-#' they can be combined into a 'GatingSetList' object.
-#' 
-#' @param gs \code{GatingSet} to work with
-#' @param gate \code{filter} a dummy gate to be inserted, its 'filterId' will be used as the population name
-#' @param parent \code{character} full path of parent node where the new dummy gate to be added to
-#' @param children \code{character} full path of chidlren nodes that the new dummy gate to be parent of
-#' @return  a new \code{GatingSet} object with the new gate added but share the same flow data with the input 'GatingSet'
-#' @examples 
-#' \dontrun{
-#' #construct a dummy singlet gate 
-#'  dummyGate <- rectangleGate("FSC-A" = c(-Inf, Inf), "FSC-H" = c(-Inf, Inf), filterId = "singlets")
-#' #insert it between the 'not debris" node and "lymph" node
-#'  gs_clone <- insertGate(gs, dummyGate, "not debris", "lymph") 
-#' }
-insertGate <- function(gs, gate, parent, children){
-  dummyNode <- gate@filterId
-  nodes <- getNodes(gs)
-  dummyPath <- file.path(parent, dummyNode)
-  if(any(grepl(dummyPath, nodes)))
-    stop(dummyPath, " already exists!")
-  
-  #copy the entire tree structure
-  message("cloning tree structure...")
-  clone <- gs
-  clone@pointer <- .cpp_CloneGatingSet(gs@pointer,sampleNames(gs))
-  #remove the old children
-  lapply(children, function(child)Rm(child, clone))
-  
-  # add the new node
-  add(clone, gate, parent = parent)
-  #copy children
-  ancester <- getNodes(clone)
-  nodesToadd <- nodes[!nodes%in%ancester]
-  
-  lapply(nodesToadd, function(node){
-        
-        if(node%in%children)
-          thisParent <- dummyNode #add the old direct children to the new dummy node
-        else{
-          #copy the other nodes to its parent
-          oldParent <- getParent(gs, node)
-          #match to the new parent
-          thisNodes <- getNodes(clone)
-          thisParent <- thisNodes[match(oldParent, gsub(paste0("/", dummyNode), "", thisNodes))] 
-        }
-        popName <- basename(node)
-        lapply(sampleNames(gs),function(sn){
-              gh <- gs[[sn]]
-              gate <- getGate(gh, node)
-              negated <- flowWorkspace:::isNegated(gh, node)
-              add(clone[[sn]], gate, name = popName, parent = thisParent, negated = negated)      
-            })  
-        
-      })
-  recompute(clone)
-  clone
-}
+
 
 #' tranform the flow data asssociated with the GatingSet
 #' 

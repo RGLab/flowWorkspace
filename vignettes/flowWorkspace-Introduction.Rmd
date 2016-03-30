@@ -9,7 +9,6 @@ author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
 vignette: >    
   %\VignetteKeywords{flow cytometry, single cell assay, import}
   %\VignettePackage{flowWorkspace}  
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{flowWorkspace Introduction: A Package to store and maninpulate gated flow data}   
 ---
 

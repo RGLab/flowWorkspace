@@ -556,7 +556,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
   #thus should be handled differently(more efficiently) from the regular gslist
   
 #    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
-  gslist <- suppressMessages(.groupByTree(gs))
+  gslist <- suppressMessages(groupByTree(gs))
   if(length(gslist) > 1)
     warning("GatingSet contains different gating tree structures and must be cleaned before using it! ")
 #    if(length(gslist) == 1){
