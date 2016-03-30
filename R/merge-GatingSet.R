@@ -5,12 +5,20 @@
 #'
 #' @description 
 #' groupByTree(x)
+#' 
 #' groupByChannels(x)
+#' 
 #' checkRedundantNodes(x)
+#' 
 #' dropRedundantNodes(x, toRemove)
+#' 
 #' dropRedundantChannels(gs)
+#' 
 #' updateChannels(gs, map, all = TRUE)
+#' 
 #' insertGate(gs, gate, parent, children)
+#' 
+#' setNodes(x, y, FALSE)
 #' 
 #' @details 
 #' In order to merge multiple GatingSets into single \link{GatingSetList}, the gating trees and channel names must be
@@ -29,6 +37,8 @@
 #' \link{updateChannels} modifies the channel names in place. (Usually used to standardize the channels among GatingSets due to the letter case discrepancies or typo).
 #' 
 #' \link{insertGate} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{dropRedundantNodes}
+#' 
+#' \link{setNodes} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
 #' 
 #' @rdname standardize-GatingSet
 #' @aliases merge-GatingSet
