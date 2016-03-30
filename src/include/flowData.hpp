@@ -31,7 +31,7 @@ using namespace Rcpp;
  */
 class flowData{
 
-public:
+private:
 	vector<string> params;
 	unsigned sampleID;//it is only valid when access cdf version of flowdata, used as index for sample dimension
 	valarray<double> data;

@@ -37,6 +37,15 @@ struct BOOL_GATE_OP{
 		for(int i = 0; i < BOOL_GATE_OP_pb.path_size(); i++)
 			path.push_back(BOOL_GATE_OP_pb.path(i));
 	};
+	template<class Archive>
+				    void serialize(Archive &ar, const unsigned int version)
+				    {
+
+						ar & BOOST_SERIALIZATION_NVP(path);
+						ar & BOOST_SERIALIZATION_NVP(op);
+						ar & BOOST_SERIALIZATION_NVP(isNot);
+				    }
+
 } ;
 
 
@@ -104,7 +113,7 @@ public:
 class paramRange
 {
 
-public:
+private:
 
 	string name;
 	double min, max;
@@ -134,7 +143,7 @@ public:
 };
 class paramPoly
 {
-public:
+private:
 
 
 	vector<string> params;//params.at(0) is x, params.at(1) is y axis
@@ -190,7 +199,7 @@ public:
  * in order to avoid the dispatching to parent method and thus degraded to the parent gate object
  */
 class gate {
-public:
+protected:
 	bool neg;
 	bool isTransformed;
 	bool isGained;
@@ -227,7 +236,7 @@ public:
 
 
 class rangeGate:public gate {
-public:
+private:
 	paramRange param;
 public:
 	rangeGate();
@@ -252,7 +261,7 @@ public:
  *
  */
 class polygonGate:public gate {
-public:
+protected:
 	paramPoly param;
 public:
 	polygonGate();
@@ -377,7 +386,7 @@ public:
  * Eventually we may want to extend it to store extra information.
  */
 class logicalGate:public boolGate {
-public:
+private:
 	unsigned short getType(){return LOGICALGATE;}
 	logicalGate * clone(){return new logicalGate(*this);};
 	void convertToPb(pb::gate & gate_pb);

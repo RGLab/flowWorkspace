@@ -39,7 +39,7 @@ typedef map<string,GatingHierarchy*> gh_map;
 
 /*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
 class GatingSet{
-public:
+
 	biexpTrans globalBiExpTrans; //default bi-exponential transformation functions
 	linTrans globalLinTrans;
 	trans_global_vec gTrans;//parsed from xml workspace

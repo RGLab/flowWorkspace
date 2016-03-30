@@ -27,7 +27,7 @@ struct Spline_Coefs{
 
 class calibrationTable{
 	friend std::ostream & operator<<(std::ostream &os, const calibrationTable &gh);
-public:
+private:
 	valarray<double> x,y,b,c,d;
 	int spline_method;
 	string caltype;//TODO:move this to transformation class
