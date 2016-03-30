@@ -486,3 +486,12 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// toggleErrorFlag
+void toggleErrorFlag();
+RcppExport SEXP flowWorkspace_toggleErrorFlag() {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    toggleErrorFlag();
+    return R_NilValue;
+END_RCPP
+}

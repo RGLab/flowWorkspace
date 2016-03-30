@@ -11,7 +11,7 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <iostream>
-#include <exception>
+
 #include "include/delimitedMessage.hpp"
 using namespace std;
 /**

@@ -11,8 +11,6 @@
 
 
 
-
-
 //default constructor without argument
 GatingHierarchy::GatingHierarchy()
 {
@@ -160,7 +158,23 @@ void GatingHierarchy::addPopulation(VertexID parentID,workspace & ws,wsNode * pa
 			//convert to the node format that GatingHierarchy understands
 			nodeProperties &curChild=tree[curChildID];
 			//attach the populationNode to the boost node as property
-			ws.to_popNode(curChildNode,curChild,isParseGate);
+			try
+			{
+				ws.to_popNode(curChildNode,curChild,isParseGate);
+			}
+			catch(logic_error & e){
+				if(my_throw_on_error){
+					throw(e);
+				}
+				else
+				{
+					//remove the failed node
+					boost::remove_vertex(curChildID,tree);
+					COUT << e.what()<< endl;
+					break;
+				}
+
+			}
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"node created:"<<curChild.getName()<<endl;
 

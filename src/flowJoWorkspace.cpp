@@ -281,8 +281,9 @@ void flowJoWorkspace::to_popNode(wsPopNode &node,nodeProperties & np,bool isPars
 	{
 		if(isParseGate)np.setGate(getGate(node));
 	}
-	catch (int e) {
-		COUT<<"extracting gate failed:"<<np.getName()<<endl;
+	catch (logic_error & e) {
+
+		throw(logic_error("extracting gate failed:" + np.getName()));
 	}
 
 
