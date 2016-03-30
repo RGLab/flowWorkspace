@@ -25,17 +25,19 @@ Imports:
     stats4,
     utils,
     RBGL,
-	XML,
-	tools,gridExtra,Rgraphviz
-    ,data.table
-    ,dplyr
-    ,latticeExtra
-    ,Rcpp
-    ,RColorBrewer
-    ,stringr
-    ,flowUtils
-    ,jsonlite
-    ,scales
+    XML,
+    tools,
+    gridExtra,
+	Rgraphviz,
+	data.table,
+    dplyr,
+    latticeExtra,
+    Rcpp,
+    RColorBrewer,
+    stringr,
+    flowUtils,
+    jsonlite,
+    scales
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
@@ -57,12 +59,12 @@ Depends:
     R (>= 2.16.0),flowCore(>= 1.37.8),flowViz(>= 1.29.27),ncdfFlow(>= 2.17.4),gridExtra
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
-    testthat
-    ,flowWorkspaceData
-    ,RSVGTipsDevice
-    ,knitr
-    ,ggcyto
+    testthat,
+	flowWorkspaceData,
+	RSVGTipsDevice,
+	knitr,
+	ggcyto
 LinkingTo: Rcpp, BH(>= 1.60.0-1)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make
-
+RoxygenNote: 5.0.1
