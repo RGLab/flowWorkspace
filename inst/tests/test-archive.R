@@ -12,6 +12,13 @@ test_that("load GatingSet from archive",
   expect_that(gs, is_a("GatingSet"))
 })
 
+test_that("save GatingSet to archive",
+    {
+      tmp <- tempfile()
+      save_gs(gs, path = tmp)
+      gs <<- load_gs(tmp)
+      expect_that(gs, is_a("GatingSet"))
+    })
 ## it is placed here because trans may get cleared later on by cloning process
 test_that("getTransformations",{    
       
