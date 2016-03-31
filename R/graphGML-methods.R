@@ -30,6 +30,7 @@ setMethod("getNodes", signature = c("graphGML"),
   }else
   {
     res <- nodeData(x, y)
+    
   }
   if(only.names){
     res <- sapply(res,`[[`,"popName")
@@ -38,6 +39,22 @@ setMethod("getNodes", signature = c("graphGML"),
       res <- res[[1]]
    res
 })
+
+#' get full path of the parent
+#' @inheritParams getNodes
+getPath <- function(x, y){
+  #get full path
+  nodeIds <- y
+  thisNodeID <- y
+  while(length(thisNodeID) > 0){
+    thisNodeID <- getParent(x, thisNodeID)
+    nodeIds <- c(thisNodeID,nodeIds)
+  }
+  
+  pops <- lapply(nodeIds, function(i)nodeData(x,i)[[1]][["popName"]])
+  path <- paste(pops, collapse = "/")
+  paste0("/", path)
+}
 
 #' get children nodes
 #'
@@ -187,8 +204,10 @@ gating.graphGML <- function(gt, gs, ...) {
     
     if(length(parentID) == 0)
       parent <- "root"
-    else
-      parent <- getNodes(gt, parentID, only.names = F)[["popName"]]
+    else{
+      parent <- getPath(gt, parentID)
+    }
+      
     
     gs_nodes <- basename(getChildren(gs[[1]], parent))
     
