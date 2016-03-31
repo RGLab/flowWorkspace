@@ -53,7 +53,12 @@ read.gatingML.cytobank <- function(file, ...){
         orig_params <- strsplit(split = ":", orig_params)[[1]]
         params <- parameters(obj)
         ind <- sapply(orig_params, function(orig_param)grep(paste0(orig_param, "$"), params))
-        parameters(obj) <- orig_params[ind]   
+        
+        orig_param <- orig_params[ind]
+        #cytobank add Comp_ prefix when the custom compensation is specified and referred by gates
+        #We always strip it to ensure the bare channel names are used for gates (so that flow data does not need changes)
+        # orig_param <- sub("(^Comp_)(.*)", "\\2", orig_param)
+        parameters(obj) <- orig_param    
         flowEnv[[objID]] <-  obj  
       }
       
@@ -69,13 +74,23 @@ read.gatingML.cytobank <- function(file, ...){
   
   comp_refs <- gateInfo[, comp_ref]
   comp_refs <- unique(comp_refs[comp_refs!=""])
+  comp_refs <- comp_refs[comp_refs != "uncompensated"]
   if(length(comp_refs) > 1)
     stop("More than one compensation referred in gates!")
   else{
     if(comp_refs == "FCS")
       comps <- "FCS"
-    else
+    else{
       comps <- flowEnv[[comp_refs]]
+      #strip Comp_ prefix that was added by cytobank 
+#       mat <- comps@spillover
+#       comp_param <- colnames(mat)
+#       comp_param <- sapply(comp_param, function(i)sub("(^Comp_)(.*)", "\\2", i), USE.NAMES = FALSE)
+#       colnames(mat) <- comp_param
+#       comps <- compensation(mat)
+      
+    }
+      
   }
   g@graphData[["compensation"]] <- comps
 
