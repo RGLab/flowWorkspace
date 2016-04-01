@@ -41,8 +41,9 @@ setMethod("getNodes", signature = c("graphGML"),
 })
 
 #' get full path of the parent
-#' @inheritParams getNodes
-getPath <- function(x, y){
+#' @param x \code{graphGML}
+#' @param y \code{character} node index. When \code{missing}, return all the nodes
+.getPath <- function(x, y){
   #get full path
   nodeIds <- y
   thisNodeID <- y
@@ -205,7 +206,7 @@ gating.graphGML <- function(gt, gs, ...) {
     if(length(parentID) == 0)
       parent <- "root"
     else{
-      parent <- getPath(gt, parentID)
+      parent <- .getPath(gt, parentID)
     }
       
     
