@@ -299,8 +299,11 @@ setMethod("getTransformations", signature = c(x = "graphGML"), function(x){
 setMethod("compensate", signature = c("GatingSet", "graphGML"), function(x, spillover, ...){
   
   comp <- getCompensationMatrices(spillover)
-  
-  if(comp == "FCS"){
+  if(is(comp, "compensation")){
+    prefix <- TRUE
+    skip <- FALSE
+  }else if(comp == "FCS"){
+    prefix <- FALSE
     fs <- getData(x)
     fr <- fs[[1, use.exprs = FALSE]]
     #can't use spillover method directly because it will error out when none is found
@@ -317,6 +320,20 @@ setMethod("compensate", signature = c("GatingSet", "graphGML"), function(x, spil
   }
   if(skip)
     x
-  else
+  else{
+    
+    if(prefix){
+      
+      comp_param <- colnames(comp@spillover)
+      #strip prefix
+      comp_param <- sapply(comp_param, function(i)sub("(^Comp_)(.*)", "\\2", i), USE.NAMES = FALSE)
+      #match to chnls
+      chnls <- colnames(x)
+      ind <- match(comp_param, chnls)
+      chnls[ind] <- paste0("Comp_", chnls[ind])
+      colnames(x) <- chnls
+    }
     compensate(x, comp)
+  }
+    
 })
