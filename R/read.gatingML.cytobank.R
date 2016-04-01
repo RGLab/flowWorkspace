@@ -734,7 +734,13 @@ compare.counts <- function(gs, file, id.vars = c("FCS Filename", "population")){
   # extract the counts from our gating sets
   #load openCyto stats
   opencyto_counts <- getPopStats(gs, statType = "count")
+  
   setnames(opencyto_counts, names(opencyto_counts), c("fcs_filename", "population", "parent", "count", "parent_count"))
+  #add root entry
+  root_count <- opencyto_counts[parent == "root", ]
+  root_count[, population := "root"]
+  root_count[, count := parent_count]
+  opencyto_counts <- rbindlist(list(root_count, opencyto_counts))
   #drop the parent column for simplicity
   opencyto_counts <- opencyto_counts[,.(fcs_filename, population, count)]
   #Remove spaces in population names as cytobank removes them here

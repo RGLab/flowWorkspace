@@ -19,7 +19,7 @@ updateChannels(gs, map, all = TRUE)
 
 insertGate(gs, gate, parent, children)
 
-setNodes(x, y, FALSE)
+setNode(x, y, FALSE)
 }
 \details{
 In order to merge multiple GatingSets into single \link{GatingSetList}, the gating trees and channel names must be
@@ -39,6 +39,6 @@ consistent. These functions help removing the discrepancies and standardize the 
 
 \link{insertGate} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{dropRedundantNodes}
 
-\link{setNodes} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
+\link{setNode} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
 }
 
