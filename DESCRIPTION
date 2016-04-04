@@ -35,7 +35,7 @@ Imports:
     Rcpp,
     RColorBrewer,
     stringr,
-    flowUtils (>= 1.35.4),
+    flowUtils,
     jsonlite,
     scales
 Collate:
