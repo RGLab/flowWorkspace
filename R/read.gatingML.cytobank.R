@@ -98,7 +98,8 @@ read.gatingML.cytobank <- function(file, ...){
   trans <-  sapply(ls(flowEnv), function(i){
                         
                                 obj <- flowEnv[[i]]
-                                if(is(obj, "transformation"))
+                                #exclude the compensatedParameter since it also inherits transformation class
+                                if(is(obj, "transformation")&&!is(obj, "compensatedParameter"))
                                   obj
                               }, USE.NAMES = FALSE)
   
