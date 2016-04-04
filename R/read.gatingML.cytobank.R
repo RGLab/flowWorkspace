@@ -55,9 +55,11 @@ read.gatingML.cytobank <- function(file, ...){
         ind <- sapply(orig_params, function(orig_param)grep(paste0(orig_param, "$"), params))
         
         orig_param <- orig_params[ind]
+        
         #cytobank add Comp_ prefix when the custom compensation is specified and referred by gates
         #We always strip it to ensure the bare channel names are used for gates (so that flow data does not need changes)
-        # orig_param <- sub("(^Comp_)(.*)", "\\2", orig_param)
+        orig_param <- sub("(^Comp_)(.*)", "\\2", orig_param)
+        
         parameters(obj) <- orig_param    
         flowEnv[[objID]] <-  obj  
       }
