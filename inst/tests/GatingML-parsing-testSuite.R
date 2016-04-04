@@ -2,6 +2,35 @@ context("parse gatingMLs exported from Cytobank ")
 
 path <- "~/rglab/workspace/flowWorkspace/wsTestSuite/gatingML"
 
+test_that("gatingML-cytobank parsing: custom comp and gates with prefixed channels ",{
+      thisPath <- file.path(path, "ics")
+      #load the original automated gating set
+      gs_orig <- load_gs(file.path(thisPath, "autogating")) 
+      gt <- openCyto::gatingTemplate(file.path(thisPath, "template/gt_080.csv"))
+      flowIncubator::toggle.helperGates(gt, gs_orig) #hide the helper gates
+      stats <- getPopStats(gs_orig)[order(Population),]
+      
+      #export the gs_orig to xml
+      tmp <- tempfile()
+      flowIncubator::GatingSet2GatingML(gs_orig, tmp)
+      
+      #parse the exported xml
+      fcs <- file.path(path, "ics/769121.fcs")
+      gs_parsed <- parse.gatingML(tmp, fcs)
+      
+      parsedStats <- getPopStats(gs_parsed)[order(Population),]
+      expect_equal(stats, parsedStats, tol = 2e-4)
+      
+      #upload xml to cytobank and download the cytobank version of xml
+      
+      #parse the cytobank xml 
+      xmlfile <- file.path(path, "ics/CytExp_52926_Gates_v5.xml")
+      gs_parsed <- parse.gatingML(xmlfile, fcs)
+      
+      parsedStats <- getPopStats(gs_parsed)[order(Population),]
+      expect_equal(stats, parsedStats, tol = 2e-4)
+      
+    })
 
 
 test_that("gatingML-cytobank parsing: no transformations",{
