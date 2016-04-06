@@ -17,20 +17,23 @@ endif
 
 CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@
-PKG_LIBS =${pb_lib} `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags()"` @PKG_LIBS@ 
+PKG_LIBS =${USERLIB} `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags()"` @PKG_LIBS@ 
 
+USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
+USERLIB = ${USERDIR}/${pb_lib}
 
 all: 	$(SHLIB) 
 
-$(SHLIB): $(OBJECTS) $(pb_lib)
+$(SHLIB): $(USERLIB)
 
 
 #archive pb objects (only executed when pb_lib is set)
-$(pb_lib): $(pb_objs)
-		$(AR) rs $(pb_lib) ${pb_objs}
-		
+$(USERLIB): ${pb_objs}
+	mkdir -p "${USERDIR}"
+	$(AR) rs "${USERLIB}" ${pb_objs}
+
 .PHONY: 	all clean 
 
 clean:
-		rm -f $(OBJECTS) $(pb_lib) $(SHLIB)
+		rm -f $(OBJECTS) $(SHLIB)
  
