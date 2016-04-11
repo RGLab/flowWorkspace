@@ -1128,13 +1128,13 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 	//curve1: y = a1 * x ^0.5 + b1 (horizontal)
 	double x_max = xdata.max();
 	double y_max = ydata.max();
-	double nStep = (x_max - intersect.x) / nLen;
+	double nStep = (x_max - intersect.x) / (nLen - 2);//make sure reach to the edge value so that gate covers all boundary events
 	for(auto i = 0; i < nLen; i++){
 		curve1.at(i).x = intersect.x + nStep * i;
 		curve1.at(i).y = a1 * pow(curve1.at(i).x, 0.5) + intersect.y;
 	}
 	//curve2: x = a2 * y ^0.5 + b2 (vertical)
-	nStep = (y_max - intersect.y) / nLen;
+	nStep = (y_max - intersect.y) / (nLen - 2);
 	for(auto i = 0; i < nLen; i++){
 		curve2.at(i).y = intersect.y + nStep * i;
 		curve2.at(i).x = a2 * pow(curve2.at(i).y, 0.5) + intersect.x;

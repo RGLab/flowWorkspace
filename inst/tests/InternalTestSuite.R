@@ -4,6 +4,16 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+test_that("curlyQuad gate ",{
+      thisPath <- file.path(path, "curlyQuad")
+      wsFile <- file.path(thisPath, "20151208_TBNK_DS.xml")
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name=2)
+      
+      res <- getPopStats(gs[[1]])
+      expect_equal(res[, flowJo.count], res[, flowCore.count], tol = 3.7e-3)
+    })
+
 test_that("EllipsoidGate defined on log-transformed channels ",{
       thisPath <- file.path(path, "ellipsoid_log")
       wsFile <- file.path(thisPath, "xml_spillover2.xml")
