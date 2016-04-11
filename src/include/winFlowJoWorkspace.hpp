@@ -22,6 +22,7 @@ public:
 	  gate * getGate(wsRectGateNode &);
 	  ellipsoidGate * getGate(wsEllipseGateNode &);
 	  rangeGate * getGate(wsRangeGateNode &);
+	  CurlyGuadGate* getGate(wsCurlyQuadGateNode &);
 };
 
 class xFlowJoWorkspace:public winFlowJoWorkspace{

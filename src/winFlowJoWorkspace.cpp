@@ -492,6 +492,65 @@ ellipsoidGate* winFlowJoWorkspace::getGate(wsEllipseGateNode & node){
 
 }
 
+CurlyGuadGate* winFlowJoWorkspace::getGate(wsCurlyQuadGateNode & node){
+	//get intersection point
+	xmlXPathObjectPtr resPara=node.xpathInNode(nodePath.gateDim);
+	int nParam=resPara->nodesetval->nodeNr;
+	if(nParam!=2)
+		throw(logic_error("invalid number of dimensions for CurlyGuad gate!"));
+	/*
+	 * parse the parameters
+	 */
+
+	vector<string> dims;
+	coordinate intersect;
+	string quadPattern;
+	for(int i=0;i<nParam;i++)
+	{
+		wsNode curPNode(resPara->nodesetval->nodeTab[i]);
+
+		//get parameter name from the children node
+		string dim;
+		xmlXPathObjectPtr resPName=curPNode.xpathInNode(nodePath.gateParam);
+		dim = wsNode(resPName->nodesetval->nodeTab[0]).getProperty("name");
+		xmlXPathFreeObject(resPName);
+		dims.push_back(dim);
+
+		//get coordinates from properties
+
+		string sVal=curPNode.getProperty("min");
+		if(sVal.empty()){
+			sVal = curPNode.getProperty("max");
+			quadPattern.append("-");//note that it is opposite of the population sign
+			if(sVal.empty())
+				throw(logic_error("Can't find min or max property in dimension: " + dim));
+		}else
+			quadPattern.append("+");
+		if(i == 0)
+			intersect.x = boost::lexical_cast<double>(sVal);
+		else
+			intersect.y = boost::lexical_cast<double>(sVal);
+	}
+	QUAD quad;
+	if(quadPattern == "-+")
+		quad = Q1;
+	else if(quadPattern == "++")
+		quad = Q2;
+	else if(quadPattern == "+-")
+		quad = Q3;
+	else if(quadPattern == "--")
+		quad = Q4;
+	//save it to param of polygonGate
+	paramPoly pp;
+	vector<coordinate> vert;
+	vert.push_back(intersect);
+	pp.setVertices(vert);
+	pp.setName(dims);
+	CurlyGuadGate * g=new CurlyGuadGate(pp, quad);
+	return(g);
+
+}
+
 /*
  * The only difference of parsing between polygon and ellipsoid
  * resides in vertexPath, default is "*[local-name()='vertex']", which is for polygon
@@ -733,6 +792,13 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 			if(g_loglevel>=GATE_LEVEL)
 				COUT<<"parsing EllipsoidGate.."<<endl;
 			return(getGate(eGNode));
+		}
+		else if(xmlStrEqual(gateType,(const xmlChar *)"CurlyQuad"))
+		{
+			wsCurlyQuadGateNode curlyGNode(gNode.getNodePtr());
+			if(g_loglevel>=GATE_LEVEL)
+				COUT<<"parsing CurlyQuad.."<<endl;
+			return(getGate(curlyGNode));
 		}
 		else
 		{

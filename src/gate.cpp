@@ -752,7 +752,7 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	double CY=(B.y+T.y)/2;
 	double CX=(R.x+L.x)/2;
 
-	double delta=2*PI/nVertices;
+	double delta=2*pi/nVertices;
 	/*
 	 * fit the polygon points
 	 */
@@ -1080,3 +1080,128 @@ vertices_valarray paramRange::toValarray(){
 }
 
 
+vector<bool> CurlyGuadGate::gating(flowData & fdata){
+	if(interpolated)
+	{
+		return polygonGate::gating(fdata);
+	}
+	else
+	{
+		throw(logic_error("CurlyQuad gate has not been converted to polygonGate yet!"));
+	}
+
+
+}
+
+
+void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & comp){
+	coordinate intersect = param.getVertices().at(0);
+	vector<string> chnls = param.getNameArray();
+
+	string x_chnl = chnls.at(0);
+	string y_chnl = chnls.at(1);
+
+	vector<double> mat = comp.spillOver;
+	//add prefix to raw channels
+	vector<string> markers = comp.marker;
+	for(auto & v: markers){
+		v = comp.prefix + v + comp.suffix;
+	}
+	//match two dims against marker list in comp
+	unsigned short i, j;
+	i = find_pos(markers, x_chnl, false);//c index
+	j = find_pos(markers, y_chnl, false);
+
+	//locate the a value
+	unsigned short nParam = markers.size();
+	double a1 = mat.at(i*nParam + j);
+	double a2 = mat.at(j*nParam + i);
+
+	valarray<double> xdata(fdata.subset(x_chnl));
+	valarray<double> ydata(fdata.subset(y_chnl));
+
+	/*
+	 * interpolate two curves
+	 */
+	unsigned nLen = 20;
+	vector<coordinate> curve1(nLen), curve2(nLen);
+	//curve1: y = a1 * x ^0.5 + b1 (horizontal)
+	double x_max = xdata.max();
+	double y_max = ydata.max();
+	double nStep = (x_max - intersect.x) / nLen;
+	for(auto i = 0; i < nLen; i++){
+		curve1.at(i).x = intersect.x + nStep * i;
+		curve1.at(i).y = a1 * pow(curve1.at(i).x, 0.5) + intersect.y;
+	}
+	//curve2: x = a2 * y ^0.5 + b2 (vertical)
+	nStep = (y_max - intersect.y) / nLen;
+	for(auto i = 0; i < nLen; i++){
+		curve2.at(i).y = intersect.y + nStep * i;
+		curve2.at(i).x = a2 * pow(curve2.at(i).y, 0.5) + intersect.x;
+	}
+
+	vector<coordinate> polyVert; //the interpolated vertices for polygon
+	double x_min = xdata.min();
+	double y_min = ydata.min();
+	/*
+	 * add the other edges
+	 */
+	switch(quadrant)
+	{
+	case Q1:
+	{
+		//start with curv2
+		polyVert = curve2;
+		//top left
+		polyVert.push_back(coordinate(x_min, y_max));
+		//bottom left
+		polyVert.push_back(coordinate(x_min, intersect.y));
+		//bottom right
+		polyVert.push_back(curve2.at(0));
+	}
+		break;
+	case Q2:
+	{
+		//start with curv1
+		polyVert = curve1;
+		//top right
+		polyVert.push_back(coordinate(x_max, y_max));
+		//top left
+		polyVert.push_back(coordinate(intersect.x, y_max));
+		//add curve2 reversely
+		unsigned len = polyVert.size();
+		polyVert.resize(len+curve2.size());
+		reverse_copy(curve2.begin(), curve2.end(), polyVert.begin()+len);
+	}
+		break;
+	case Q3:
+	{
+		polyVert = curve1;
+		//bottom right
+
+		polyVert.push_back(coordinate(x_max,y_min));
+		//bottom left
+		polyVert.push_back(coordinate(intersect.x,y_min));
+		//top left
+		polyVert.push_back(intersect);
+	}
+		break;
+	case Q4://quadrant 4 is actually a rectangle
+	{
+		polyVert.push_back(intersect);
+
+		polyVert.push_back(coordinate(intersect.x, y_min));
+		polyVert.push_back(coordinate(x_min, y_min));
+		polyVert.push_back(coordinate(x_min, intersect.y));
+		polyVert.push_back(intersect);
+	}
+		break;
+	default:
+		throw(logic_error("invalid quadrant"));
+	}
+
+	param.setVertices(polyVert);
+
+
+	interpolated = true;
+}

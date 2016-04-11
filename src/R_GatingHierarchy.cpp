@@ -330,8 +330,9 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	gate *g = node.getGate();
 	string nodeName = node.getName();
 	unsigned short gType=g->getType();
-	if(gType==RECTGATE)
+	if(gType==RECTGATE||gType == CURLYQUADGATE)
 		gType=POLYGONGATE;
+
 	switch(gType)
 	{
 		case ELLIPSEGATE:

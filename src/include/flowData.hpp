@@ -24,6 +24,7 @@ using namespace Rcpp;
 #include <boost/graph/adj_list_serialize.hpp>
 #include <boost/algorithm/string.hpp>
 
+unsigned find_pos(vector<string> s,string pattern, bool ignore_case);
 /*
  * representing one FCS data
  * currently used as a transient copy of flow data (passed from R)
@@ -45,9 +46,9 @@ public:
 #ifdef ROUT
 	flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case=false);
 #endif
-	slice getSlice(string channel);
+	slice getSlice(string channel) const;
 	void updateSlice(string channel,valarray<double> x);
-	valarray<double> subset(string channel);
+	valarray<double> subset(string channel) const;
 	/*
 	 * accessors
 	 */

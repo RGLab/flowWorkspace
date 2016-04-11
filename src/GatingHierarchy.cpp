@@ -178,6 +178,13 @@ void GatingHierarchy::addPopulation(VertexID parentID,workspace & ws,wsNode * pa
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT<<"node created:"<<curChild.getName()<<endl;
 
+//			//interpolate curlyquad gate here since it needs the access to comp
+//			gate * g = curChild.getGate();
+//			if(g->getType() == CURLYQUADGATE)
+//			{
+//				CurlyGuadGate * curlyGate = dynamic_cast<CurlyGuadGate *>(g);
+//				curlyGate->interpolate(comp);
+//			}
 
 			//add relation between current node and parent node
 			boost::add_edge(parentID,curChildID,tree);
@@ -644,6 +651,13 @@ void GatingHierarchy::calgate(VertexID u, bool computeTerminalBool)
 	case LOGICALGATE://skip any gating operation since the indice is already set once the gate is added
 		node.computeStats();
 		return;
+	case CURLYQUADGATE: //interpolate curlyquad gate here since it needs the access to comp
+		{
+			CurlyGuadGate * curlyGate = dynamic_cast<CurlyGuadGate *>(g);
+			curlyGate->interpolate(fdata, comp);
+			curIndices=g->gating(fdata);
+		}
+		break;
 	default:
 		curIndices=g->gating(fdata);
 	}
