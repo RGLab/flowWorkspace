@@ -174,7 +174,7 @@ void gs_gating(GatingSet &gs,string curSample, hdfFlow nc, map<string,float> &ga
 	gh->extendGate(0);
 	gh->adjustGate(gains);
 	gh->transformGate();
-	gh->transforming();
+	gh->transforming(1);
 
 	gh->gating(0,false);
 	gh->unloadData();
@@ -235,7 +235,7 @@ void gh_removeGate(GatingHierarchy* gh){
 }
 void clone_test(testCase myTest){
 	string archive=myTest.archive;
-	GatingSet *gs=new GatingSet(archive,ARCHIVE_TYPE_BINARY, false);
+	GatingSet *gs=new GatingSet(archive);
 	gs->clone_treeOnly(gs->getSamples());
 
 }
@@ -260,7 +260,7 @@ void parser_test(testCase & myTest){
 		if(isLoadArchive)
 		{
 
-			gs.reset(new GatingSet(archiveName, format, archiveType));
+			gs.reset(new GatingSet(archiveName));
 
 		}
 		else
@@ -315,7 +315,7 @@ void parser_test(testCase & myTest){
 		{
 			flowData res=nc.readflowData(curSample);
 			gh->loadData(res);//
-			gh->transforming();
+			gh->transforming(1);
 			gh->gating(0,true);
 			gh->unloadData();;
 		}
@@ -339,7 +339,8 @@ void parser_test(testCase & myTest){
 			if(archiveType == PB)
 				gs->serialize_pb(archiveName);
 			else
-				gs->serialize_bs(archiveName,myTest.archiveFormat);
+				throw("bs is no longer supported!");
+//				gs->serialize_bs(archiveName,myTest.archiveFormat);
 		}
 
 
