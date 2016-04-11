@@ -752,7 +752,7 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	double CY=(B.y+T.y)/2;
 	double CX=(R.x+L.x)/2;
 
-	double delta=2*PI/nVertices;
+	double delta=2*pi/nVertices;
 	/*
 	 * fit the polygon points
 	 */
