@@ -14,7 +14,7 @@
 #include "flowData.hpp"
 #include "transformation.hpp"
 //#include <R_ext/Constants.h>
-
+#include "compensation.hpp"
 
 using namespace std;
 
@@ -57,6 +57,7 @@ struct BOOL_GATE_OP{
 #define ELLIPSEGATE 4
 #define RECTGATE 5
 #define LOGICALGATE 6
+#define CURLYQUADGATE 7
 
 #define AND 1
 #define OR 2
@@ -393,5 +394,28 @@ private:
 public:
 	logicalGate(const pb::gate & gate_pb);
 	logicalGate():boolGate(){};
+};
+
+enum QUAD{
+	Q1,//-+
+	Q2,//++
+	Q3,//+-
+	Q4//--
+
+};
+/**
+ * Before interpolation, the intersection points are stored as the first element of param in polygonGate
+ */
+class CurlyGuadGate:public polygonGate{
+	bool interpolated;
+	QUAD quadrant;
+public:
+	CurlyGuadGate(paramPoly _inter, QUAD _quad):quadrant(_quad),interpolated(false){
+		param = _inter;
+		isTransformed=true; //the intersection point is already in transformed scale
+	};
+	void interpolate(const flowData &, const compensation &);
+	vector<bool> gating(flowData &);
+	virtual unsigned short getType(){return CURLYQUADGATE;}
 };
 #endif /* GATE_HPP_ */

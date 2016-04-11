@@ -76,6 +76,11 @@ public:
 	wsBooleanGateNode(xmlNodePtr node){setNodePtr(node);};
 
 };
+class wsCurlyQuadGateNode:public wsNode{
+public:
+	wsCurlyQuadGateNode(xmlNodePtr node){setNodePtr(node);};
+
+};
 
 typedef vector<wsPopNode> wsPopNodeSet;
 

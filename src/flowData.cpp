@@ -94,7 +94,7 @@ void flowData::updateSlice(string channel,valarray<double> x){
 	data[getSlice(channel)]=x;
 }
 
-slice flowData::getSlice(string channel){
+slice flowData::getSlice(string channel) const{
 
 		unsigned paramInd=find_pos(params,channel, ignore_case);
 
@@ -103,7 +103,7 @@ slice flowData::getSlice(string channel){
 
 }
 
-valarray<double> flowData::subset(string channel){
+valarray<double> flowData::subset(string channel) const{
 		return data[getSlice(channel)];
 
 }

@@ -39,22 +39,6 @@ using namespace std;
  * this may potentially reduce the amount of code
  *
  */
-class compensation{
-public:
-	string cid;
-	string prefix;
-	string suffix;
-	string name;
-	string comment;// store "Acquisition-defined" when the spillOver matrix is not supplied and cid==-1
-	vector<string> marker;
-	vector<double> spillOver;
-	void convertToPb(pb::COMP & comp_pb);
-	compensation(){};
-	void updateChannels(const CHANNEL_MAP & chnl_map);
-	compensation(const pb::COMP & comp_pb);
-};
-
-
 struct xpath{
 	string group;
 	string sampleRef;
