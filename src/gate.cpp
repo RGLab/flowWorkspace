@@ -1109,24 +1109,13 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 	}
 	//match two dims against marker list in comp
 	unsigned short i, j;
-	i = find_pos(markers, x_chnl, false);
+	i = find_pos(markers, x_chnl, false);//c index
 	j = find_pos(markers, y_chnl, false);
-//	auto it1 = find(markers.begin(), markers.end(), x_chnl);
-//	if(it1 == markers.end())
-//		throw(logic_error("gate dimension not found in compensation: " + x_chnl));
-//	else
-//		i = it1 - markers.begin();
-//
-//	auto it2 = find(markers.begin(), markers.end(), y_chnl);
-//	if(it2 == markers.end())
-//		throw(logic_error("gate dimension not found in compensation: " + y_chnl));
-//	else
-//		j = it2 - markers.begin();
 
 	//locate the a value
 	unsigned short nParam = markers.size();
-	double a1 = mat.at((i-1)*nParam + j - 1);
-	double a2 = mat.at((j-1)*nParam + i - 1);
+	double a1 = mat.at(i*nParam + j);
+	double a2 = mat.at(j*nParam + i);
 
 	valarray<double> xdata(fdata.subset(x_chnl));
 	valarray<double> ydata(fdata.subset(y_chnl));
@@ -1134,19 +1123,19 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 	/*
 	 * interpolate two curves
 	 */
-	unsigned nLen = 100;
+	unsigned nLen = 20;
 	vector<coordinate> curve1(nLen), curve2(nLen);
 	//curve1: y = a1 * x ^0.5 + b1 (horizontal)
 	double x_max = xdata.max();
 	double y_max = ydata.max();
 	double nStep = (x_max - intersect.x) / nLen;
-	for(auto i = 0; i < 100; i = i + nStep){
+	for(auto i = 0; i < nLen; i++){
 		curve1.at(i).x = intersect.x + nStep * i;
 		curve1.at(i).y = a1 * pow(curve1.at(i).x, 0.5) + intersect.y;
 	}
 	//curve2: x = a2 * y ^0.5 + b2 (vertical)
 	nStep = (y_max - intersect.y) / nLen;
-	for(auto i = 0; i < 100; i = i + nStep){
+	for(auto i = 0; i < nLen; i++){
 		curve2.at(i).y = intersect.y + nStep * i;
 		curve2.at(i).x = a2 * pow(curve2.at(i).y, 0.5) + intersect.x;
 	}
@@ -1160,18 +1149,16 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 	switch(quadrant)
 	{
 	case Q1:
-		{
-		//start from bottom left corner and traverse counter-clock wise
-		coordinate bl(x_min, intersect.y);
-		polyVert.push_back(bl);
+	{
+		//start with curv2
+		polyVert = curve2;
 		//top left
 		polyVert.push_back(coordinate(x_min, y_max));
-		//reverse copy curve2
-		polyVert.resize(2+curve2.size());
-		reverse_copy(curve1.begin(),curve1.end(), polyVert.begin() +2);
-		//back to start
-		polyVert.push_back(bl);
-		}
+		//bottom left
+		polyVert.push_back(coordinate(x_min, intersect.y));
+		//bottom right
+		polyVert.push_back(curve2.at(0));
+	}
 		break;
 	case Q2:
 	{
@@ -1184,7 +1171,7 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 		//add curve2 reversely
 		unsigned len = polyVert.size();
 		polyVert.resize(len+curve2.size());
-		reverse_copy(polyVert.begin(), polyVert.end(), polyVert.begin()+len);
+		reverse_copy(curve2.begin(), curve2.end(), polyVert.begin()+len);
 	}
 		break;
 	case Q3:

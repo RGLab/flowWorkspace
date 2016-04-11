@@ -354,7 +354,32 @@ BOOST_AUTO_TEST_CASE(provide)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+BOOST_AUTO_TEST_CASE(curlyquad)
+{
+	myTest.filename="../wsTestSuite/curlyQuad/20151208_TBNK_DS.xml";
+	myTest.wsType = WS_VX;
+	myTest.samples["78"] = "A1001.001.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/curlyQuad/comp.nc";
+	myTest.colfile="../output/curlyQuad/colnames.txt";
+	myTest.archive="../output/curlyQuad/gs";
 
+	myTest.tolerance = 0.2;
+
+
+//	map<string,float> gains;
+//	gains["Time"] = 0.01;
+//	myTest.gains = gains;
+	vector<VertexID> skip;
+//	skip.push_back(16);
+//	skip.push_back(99);
+//	myTest.skipPops = skip;
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";
