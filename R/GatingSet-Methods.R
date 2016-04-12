@@ -229,7 +229,7 @@ load_gs<-function(path){
       fileext <- file_ext(dat.file)
       isPB <- fileext == "pb"
       if(!isPB)
-        stop("Legacy 'Boost serialization' format is detected. Try to load it with 'GatingSetLoader' package and resave it!")
+        stop("Legacy 'Boost serialization' format is detected. Try to convert it with 'boost2protobuf' package!")
       if(length(rds.file)==0)
         stop(".rds file missing in ",output)
       if(length(rds.file)>1)
