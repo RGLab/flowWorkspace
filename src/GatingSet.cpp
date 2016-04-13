@@ -294,104 +294,69 @@ void GatingSet::updateChannels(const CHANNEL_MAP & chnl_map){
 /*
  * up to caller to free the memory
  */
-/*
- * non-serialization version,should be faster
- * but no transformation object gets copied
- */
-GatingSet* GatingSet::clone_treeOnly(vector<string> samples){
+GatingSet* GatingSet::clone(vector<string> samples){
+	GatingSet * gs=new GatingSet();
 
+	//deep copying trans_global_vec
+	trans_global_vec new_gtrans;
+	map<transformation *, transformation * > trans_tbl;
 
+	for(auto & it : gTrans){
+		//copy trans_global
+		trans_global newTransGroup;
 
-	GatingSet * newGS=new GatingSet();
+		newTransGroup.setGroupName(it.getGroupName());
+		newTransGroup.setSampleIDs(it.getSampleIDs());
 
-	newGS->add(*this,samples);
+		//clone trans_map
+		trans_map newTmap;
+		for(auto & v : it.getTransMap()){
+			transformation * orig = v.second;
+			transformation * trans = orig->clone();
+			newTmap[v.first] = trans;
+			//maintain a map between orig and new trans
+			trans_tbl[orig] =  trans;
+		}
+		//save map into trans_global
+		newTransGroup.setTransMap(newTmap);
+		//save new trans_global into trans_global_vec
+		new_gtrans.push_back(newTransGroup);
+	}
+	gs->set_gTrans(new_gtrans);
 
-	return newGS;
+	//copy gh
+
+	for(auto & it : samples)
+	{
+		string curSampleName = it;
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+			COUT<<endl<<"... copying GatingHierarchy: "<<curSampleName<<"... "<<endl;
+		//except trans, the entire gh object is copiable
+		GatingHierarchy * curGh = new GatingHierarchy();
+		*curGh = *getGatingHierarchy(curSampleName);
+
+		//update trans_local with new trans pointers
+		trans_map newTmap = curGh->getLocalTrans().getTransMap();
+		for(auto & v : newTmap){
+			transformation * orig = v.second;
+			auto trans_it = trans_tbl.find(orig);
+			if(trans_it == trans_tbl.end())
+				throw(logic_error("the current transformation is not found in global trans table!"));
+
+			transformation * trans = trans_it->second;
+			v.second = trans;
+		}
+		curGh->addTransMap(newTmap);
+
+		gs->ghs[curSampleName]=curGh;//add to the map
+
+	}
+
+	return gs;
 }
 /*
- * memory buffer version
- */
-//GatingSet* GatingSet::clone_sstream(vector<string> samples){
-//
-//
-//	stringstream ss (stringstream::in | stringstream::out | stringstream::binary);
-//
-//	{
-//		boost::archive::binary_oarchive oa(ss);
-//		oa << *this;
-//	}
-//
-//
-//	GatingSet * newGS=new GatingSet();
-//
-//	{
-//		boost::archive::binary_iarchive ia(ss);
-//		ia >> *newGS;
-//	}
-//
-//
-//
-//	//remove unused samples
-//	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
-//			GatingHierarchy * ghPtr=it.second;
-//			string sampleName=it.first;
-//			/*
-//			 * if the sampleName not in the clone sample list ,remove it from the tree map
-//			 */
-//			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
-//			if(fit==samples.end())
-//			{
-//				delete ghPtr;
-//				newGS->ghs.erase(sampleName);
-//			}
-//
-//
-//		}
-//
-//	return newGS;
-//}
-///*
-// * disk version because stringstream has size limit
-// */
-//GatingSet* GatingSet::clone_fstream(vector<string> samples){
-//
-//
-//	save_gs(*this,"tmp");
-//
-//	GatingSet * newGS=new GatingSet();
-//
-//	restore_gs(*newGS,"tmp");
-//
-//	//remove unused samples
-//	BOOST_FOREACH(gh_map::value_type & it,newGS->ghs){
-//			GatingHierarchy * ghPtr=it.second;
-//			string sampleName=it.first;
-//			/*
-//			 * if the sampleName not in the clone sample list ,remove it from the tree map
-//			 */
-//			vector<string>::iterator fit=find(samples.begin(),samples.end(),sampleName);
-//			if(fit==samples.end())
-//			{
-//				delete ghPtr;
-//				newGS->ghs.erase(sampleName);
-//			}
-//
-//
-//		}
-//
-//	return newGS;
-//}
-//void GatingSet::add(gate * g,string parentName,string nodeName){
-//
-//	BOOST_FOREACH(gh_map::value_type & it,ghs){
-//
-//				GatingHierarchy * gh=it.second;
-//				gh->addGate(g,parentName,nodeName);
-//			}
-//}
-/*
- *TODO: trans is not copied for now since it involves copying the global trans vector
- *and rematch them to each individual hierarchy
+ *
+ * copy gating trees from self to the dest gs
  */
 void GatingSet::add(GatingSet & gs,vector<string> sampleNames){
 

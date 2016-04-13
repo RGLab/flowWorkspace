@@ -64,14 +64,14 @@ public:
 	void parseWorkspace(vector<string>,bool, StringVec sampleNames);
 	vector<string> getSamples(void);
 
-	GatingSet * clone_treeOnly(vector<string> samples);
+	GatingSet * clone(vector<string> samples);
 
 	void serialize_pb(string filename);
 	void add(GatingSet & gs,vector<string> sampleNames);
 	void addTransMap(string gName,trans_map tm);
 	void convertToPb(pb::GatingSet & gs_pb,string path);
 	void updateChannels(const CHANNEL_MAP & chnl_map);
-
+	void set_gTrans(const trans_global_vec & _gTrans){gTrans = _gTrans;};
 };
 
 

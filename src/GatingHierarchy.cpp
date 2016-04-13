@@ -1460,6 +1460,7 @@ GatingHierarchy * GatingHierarchy::clone(){
 }
 /**
  * It is mainly used by Rcpp API addTrans to propagate global trans map to each sample
+ * EDIT: But now also used by clone methods
   * @param trans trans_map
  */
 void GatingHierarchy::addTransMap(trans_map tm){

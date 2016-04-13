@@ -63,6 +63,12 @@ test_that("clone & rbind2",{
       #check tree consistentcy
       expect_identical(getNodes(gs[[1]]), getNodes(gs_clone[[1]]))
       
+      #check if trans is preserved
+      expect.equal(getTransformations(gs[[1]]), getTransformations(gs_clone[[1]]))
+      
+      expect_equal(getPopStats(gs), getPopStats(gs_clone))
+      expect_equal(getPopStats(gs[[1]]), getPopStats(gs_clone[[1]]))
+      
       #construct gslist to rbind2
       sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
       clone_sn <- sampleNames(gs_clone)

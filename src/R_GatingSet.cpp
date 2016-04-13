@@ -111,7 +111,7 @@ XPtr<GatingSet> loadGatingSet(string fileName) {
 //[[Rcpp::export(name=".cpp_CloneGatingSet")]]
 XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs,StringVec samples) {
 
-		GatingSet * gs_new=gs->clone_treeOnly(samples);
+		GatingSet * gs_new=gs->clone(samples);
 
 		return XPtr<GatingSet>(gs_new);
 
