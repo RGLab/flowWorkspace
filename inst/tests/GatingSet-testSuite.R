@@ -64,7 +64,7 @@ test_that("clone & rbind2",{
       expect_identical(getNodes(gs[[1]]), getNodes(gs_clone[[1]]))
       
       #check if trans is preserved
-      expect.equal(getTransformations(gs[[1]]), getTransformations(gs_clone[[1]]))
+      expect_equal(getTransformations(gs[[1]]), getTransformations(gs_clone[[1]]))
       
       expect_equal(getPopStats(gs), getPopStats(gs_clone))
       expect_equal(getPopStats(gs[[1]]), getPopStats(gs_clone[[1]]))
