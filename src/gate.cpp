@@ -1094,55 +1094,85 @@ vector<bool> CurlyGuadGate::gating(flowData & fdata){
 }
 
 
-void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & comp){
-	coordinate intersect = param.getVertices().at(0);
-	vector<string> chnls = param.getNameArray();
+void CurlyGuadGate::interpolate(trans_local & trans){
 
-	string x_chnl = chnls.at(0);
-	string y_chnl = chnls.at(1);
+	string x_chnl = param.xName();
+	string y_chnl = param.yName();
+	/*
+	 * transform intersect back to raw
+	 */
 
-	vector<double> mat = comp.spillOver;
-	//add prefix to raw channels
-	vector<string> markers = comp.marker;
-	for(auto & v: markers){
-		v = comp.prefix + v + comp.suffix;
+	transformation * trans_x = trans.getTran(x_chnl);
+	transformation * trans_y = trans.getTran(y_chnl);
+
+	//inverse to raw
+	boost::shared_ptr<transformation> inverseTrans_x, inverseTrans_y;
+	if(trans_x!=NULL){
+		inverseTrans_x = trans_x->getInverseTransformation();
+
 	}
-	//match two dims against marker list in comp
-	unsigned short i, j;
-	i = find_pos(markers, x_chnl, false);//c index
-	j = find_pos(markers, y_chnl, false);
+	if(trans_y!=NULL){
+		inverseTrans_y = trans_y->getInverseTransformation();
+	}
+	polygonGate::transforming(inverseTrans_x.get(), inverseTrans_y.get());
+	setTransformed(false);
 
+	/*
+	 * and rescale raw to 256 space
+	 */
+	boost::scoped_ptr<transformation> trans_gate_x,trans_gate_y;
+	if(trans_x == NULL)
+		trans_gate_x.reset(new scaleTrans()); //create default scale trans for linear, assuming the max value for linear scale is always 262144
+	else
+		trans_gate_x.reset(trans_x->clone()); //copy existing trans_x for non-linear
+
+	if(trans_y == NULL)
+		trans_gate_y.reset(new scaleTrans()); //create default scale trans for linear
+	else
+		trans_gate_y.reset(trans_y->clone()); //copy existing trans_y for non-linear
+
+	//set to scale 256
+	int topScale = 255;
+	trans_gate_x->setTransformedScale(topScale);
+	trans_gate_y->setTransformedScale(topScale);
+
+	polygonGate::transforming(trans_gate_x.get(), trans_gate_y.get());
+	setTransformed(false);
+	coordinate center = param.getVertices().at(0);
+	double x_mu = center.x;
+	double y_mu = center.y;
 	//locate the a value
-	unsigned short nParam = markers.size();
-	double a1 = mat.at(i*nParam + j);
-	double a2 = mat.at(j*nParam + i);
+	double multiplier = 0.001;
 
-	valarray<double> xdata(fdata.subset(x_chnl));
-	valarray<double> ydata(fdata.subset(y_chnl));
 
 	/*
 	 * interpolate two curves
 	 */
-	unsigned nLen = 20;
+	unsigned nLen = 40;
 	vector<coordinate> curve1(nLen), curve2(nLen);
-	//curve1: y = a1 * x ^0.5 + b1 (horizontal)
-	double x_max = xdata.max();
-	double y_max = ydata.max();
-	double nStep = (x_max - intersect.x) / (nLen - 2);//make sure reach to the edge value so that gate covers all boundary events
+	//curve1: round(multiplier * (x - x.mu) ^ 2) + y.mu (horizontal)
+	double x_max = topScale;//xdata.max();
+	double y_max = topScale;//ydata.max();
+	double nStep = (x_max - x_mu) / nLen;
+	double delta;
 	for(auto i = 0; i < nLen; i++){
-		curve1.at(i).x = intersect.x + nStep * i;
-		curve1.at(i).y = a1 * pow(curve1.at(i).x, 0.5) + intersect.y;
+		delta = nStep * i;
+		curve1.at(i).x = x_mu + delta;
+		curve1.at(i).y = multiplier * pow(delta, 2) + y_mu;
 	}
-	//curve2: x = a2 * y ^0.5 + b2 (vertical)
-	nStep = (y_max - intersect.y) / (nLen - 2);
+	//curve2:  (vertical)
+	nStep = (y_max - y_mu) / nLen;
 	for(auto i = 0; i < nLen; i++){
-		curve2.at(i).y = intersect.y + nStep * i;
-		curve2.at(i).x = a2 * pow(curve2.at(i).y, 0.5) + intersect.x;
+		delta = nStep * i;
+		curve2.at(i).y = y_mu + delta;
+		curve2.at(i).x = multiplier * pow(delta, 2) + x_mu;
 	}
 
 	vector<coordinate> polyVert; //the interpolated vertices for polygon
-	double x_min = xdata.min();
-	double y_min = ydata.min();
+	double x_min = -numeric_limits<double>::max();//xdata.min();
+	double y_min = -numeric_limits<double>::max();//ydata.min();
+
+
 	/*
 	 * add the other edges
 	 */
@@ -1155,7 +1185,7 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 		//top left
 		polyVert.push_back(coordinate(x_min, y_max));
 		//bottom left
-		polyVert.push_back(coordinate(x_min, intersect.y));
+		polyVert.push_back(coordinate(x_min, y_mu));
 		//bottom right
 		polyVert.push_back(curve2.at(0));
 	}
@@ -1167,7 +1197,7 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 		//top right
 		polyVert.push_back(coordinate(x_max, y_max));
 		//top left
-		polyVert.push_back(coordinate(intersect.x, y_max));
+		polyVert.push_back(coordinate(x_mu, y_max));
 		//add curve2 reversely
 		unsigned len = polyVert.size();
 		polyVert.resize(len+curve2.size());
@@ -1181,19 +1211,19 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 
 		polyVert.push_back(coordinate(x_max,y_min));
 		//bottom left
-		polyVert.push_back(coordinate(intersect.x,y_min));
+		polyVert.push_back(coordinate(x_mu,y_min));
 		//top left
-		polyVert.push_back(intersect);
+		polyVert.push_back(center);
 	}
 		break;
 	case Q4://quadrant 4 is actually a rectangle
 	{
-		polyVert.push_back(intersect);
+		polyVert.push_back(center);
 
-		polyVert.push_back(coordinate(intersect.x, y_min));
+		polyVert.push_back(coordinate(x_mu, y_min));
 		polyVert.push_back(coordinate(x_min, y_min));
-		polyVert.push_back(coordinate(x_min, intersect.y));
-		polyVert.push_back(intersect);
+		polyVert.push_back(coordinate(x_min, y_mu));
+		polyVert.push_back(center);
 	}
 		break;
 	default:
@@ -1202,6 +1232,17 @@ void CurlyGuadGate::interpolate(const flowData & fdata, const compensation & com
 
 	param.setVertices(polyVert);
 
-
+	/*
+	 * scale back to the raw scale
+	 */
+	boost::shared_ptr<transformation> inverseGate_x,inverseGate_y;
+	if(trans_gate_x){
+		inverseGate_x = trans_gate_x->getInverseTransformation();
+	}
+	if(trans_gate_y!=NULL){
+		inverseGate_y = trans_gate_y->getInverseTransformation();
+	}
+	polygonGate::transforming(inverseGate_x.get(), inverseGate_y.get());
+	setTransformed(false);
 	interpolated = true;
 }

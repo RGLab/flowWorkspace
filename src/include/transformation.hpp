@@ -81,6 +81,7 @@ public:
 	transformation(const pb::transformation & trans_pb);
 	virtual boost::shared_ptr<transformation> getInverseTransformation();
 	virtual void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
+	virtual int getTransformedScale(){throw(domain_error("getTransformedScale function not defined!"));};
 };
 /* case insensitive compare predicate*/
 struct ciLessBoost : std::binary_function<std::string, std::string, bool>
@@ -177,6 +178,7 @@ public:
 		computCalTbl();
 		interpolate();
 	};
+	int getTransformedScale(){return channelRange;};
 };
 
 class fasinhTrans:public transformation{
@@ -192,6 +194,7 @@ public:
 	fasinhTrans(const pb::transformation & trans_pb);
 	boost::shared_ptr<transformation> getInverseTransformation();
 	void setTransformedScale(int scale){length = scale;};
+	int getTransformedScale(){return length;};
 };
 /*
  * inverse transformation of fasinhTrans
@@ -231,6 +234,7 @@ public:
 
 	boost::shared_ptr<transformation> getInverseTransformation();
 	void setTransformedScale(int _scale){scale = _scale;};
+	int getTransformedScale(){return scale;};
 };
 
 class logInverseTrans:public logTrans{
@@ -250,6 +254,7 @@ public:
         linTrans(const pb::transformation & trans_pb);
         boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
         void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
+
 };
 
 /*
@@ -266,6 +271,7 @@ public:
 	scaleTrans * clone(){return new scaleTrans(*this);};
 	boost::shared_ptr<transformation> getInverseTransformation();
 	void setTransformedScale(int _scale){t_scale = _scale;};
+
 };
 
 
@@ -283,6 +289,7 @@ public:
 	flinTrans(const pb::transformation & trans_pb);
 	boost::shared_ptr<transformation> getInverseTransformation(){throw(domain_error("inverse function not defined!"));};
 	void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
+
 };
 
 
