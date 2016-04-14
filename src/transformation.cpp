@@ -447,7 +447,7 @@ void linTrans::transforming(valarray<double> & input){
 
 void scaleTrans::transforming(valarray<double> & input){
 
-		input*=(t_scale/r_scale);
+		input*=(t_scale/(double)r_scale);
 }
 
 void flinTrans::transforming(valarray<double> & input){
