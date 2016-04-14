@@ -411,11 +411,16 @@ class CurlyGuadGate:public polygonGate{
 	bool interpolated;
 	QUAD quadrant;
 public:
-	CurlyGuadGate(paramPoly _inter, QUAD _quad):quadrant(_quad),interpolated(false){
+	CurlyGuadGate(paramPoly _inter, QUAD _quad):polygonGate(),quadrant(_quad),interpolated(false){
 		param = _inter;
-		isTransformed=true; //the intersection point is already in transformed scale
 	};
-	void interpolate(const flowData &, const compensation &);
+	void transforming(trans_local & trans){
+		if(interpolated)
+			polygonGate::transforming(trans);
+		else
+			throw(logic_error("CurlyGuadGate can't not be transformed before interpolation!"));
+	};
+	void interpolate(trans_local & trans);
 	vector<bool> gating(flowData &);
 	virtual unsigned short getType(){return CURLYQUADGATE;}
 };

@@ -559,8 +559,15 @@ void GatingHierarchy::transformGate(){
 					throw(domain_error("no gate available for this node"));
 				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
-				if(g->getType()!=BOOLGATE)
+				unsigned short gateType= g->getType();
+				if(gateType == CURLYQUADGATE)
+				{
+					CurlyGuadGate * curlyGate = dynamic_cast<CurlyGuadGate *>(g);
+					curlyGate->interpolate(trans);//the interpolated polygon is in raw scale
+				}
+				if(gateType!=BOOLGATE)
 					g->transforming(trans);
+
 			}
 		}
 }
@@ -651,13 +658,6 @@ void GatingHierarchy::calgate(VertexID u, bool computeTerminalBool)
 	case LOGICALGATE://skip any gating operation since the indice is already set once the gate is added
 		node.computeStats();
 		return;
-	case CURLYQUADGATE: //interpolate curlyquad gate here since it needs the access to comp
-		{
-			CurlyGuadGate * curlyGate = dynamic_cast<CurlyGuadGate *>(g);
-			curlyGate->interpolate(fdata, comp);
-			curIndices=g->gating(fdata);
-		}
-		break;
 	default:
 		curIndices=g->gating(fdata);
 	}
