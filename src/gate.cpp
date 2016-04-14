@@ -1106,38 +1106,49 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 	transformation * trans_y = trans.getTran(y_chnl);
 
 	//inverse to raw
-	boost::shared_ptr<transformation> inverseTrans_x, inverseTrans_y;
-	if(trans_x!=NULL){
-		inverseTrans_x = trans_x->getInverseTransformation();
-
-	}
-	if(trans_y!=NULL){
-		inverseTrans_y = trans_y->getInverseTransformation();
-	}
-	polygonGate::transforming(inverseTrans_x.get(), inverseTrans_y.get());
-	setTransformed(false);
+//	boost::shared_ptr<transformation> inverseTrans_x, inverseTrans_y;
+//	if(trans_x!=NULL){
+//		inverseTrans_x = trans_x->getInverseTransformation();
+//
+//	}
+//	if(trans_y!=NULL){
+//		inverseTrans_y = trans_y->getInverseTransformation();
+//	}
+//	polygonGate::transforming(inverseTrans_x.get(), inverseTrans_y.get());
+//	setTransformed(false);
+//
+//	/*
+//	 * and rescale raw to 256 space
+//	 */
+//	boost::scoped_ptr<transformation> trans_gate_x,trans_gate_y;
+//	if(trans_x == NULL)
+//		trans_gate_x.reset(new scaleTrans()); //create default scale trans for linear, assuming the max value for linear scale is always 262144
+//	else
+//		trans_gate_x.reset(trans_x->clone()); //copy existing trans_x for non-linear
+//
+//	if(trans_y == NULL)
+//		trans_gate_y.reset(new scaleTrans()); //create default scale trans for linear
+//	else
+//		trans_gate_y.reset(trans_y->clone()); //copy existing trans_y for non-linear
+//
+//	//set to scale 256
+//	int displayScale = 255;
+//	trans_gate_x->setTransformedScale(topScale);
+//	trans_gate_y->setTransformedScale(topScale);
+//	polygonGate::transforming(trans_gate_x.get(), trans_gate_y.get());
 
 	/*
-	 * and rescale raw to 256 space
+	 * directly map from log scale to 225 space to make the curve smoother
 	 */
-	boost::scoped_ptr<transformation> trans_gate_x,trans_gate_y;
-	if(trans_x == NULL)
-		trans_gate_x.reset(new scaleTrans()); //create default scale trans for linear, assuming the max value for linear scale is always 262144
-	else
-		trans_gate_x.reset(trans_x->clone()); //copy existing trans_x for non-linear
+	int displayScale = 255;
+	scaleTrans tx(displayScale, trans_x->getTransformedScale());
+	scaleTrans ty(displayScale, trans_y->getTransformedScale());
+	scaleTrans *trans_gate_x = &tx;
+	scaleTrans *trans_gate_y = &ty;
+	polygonGate::transforming(trans_gate_x, trans_gate_y);
 
-	if(trans_y == NULL)
-		trans_gate_y.reset(new scaleTrans()); //create default scale trans for linear
-	else
-		trans_gate_y.reset(trans_y->clone()); //copy existing trans_y for non-linear
+	setTransformed(false);//reset flag so that it won't interfere the next transforming
 
-	//set to scale 256
-	int topScale = 255;
-	trans_gate_x->setTransformedScale(topScale);
-	trans_gate_y->setTransformedScale(topScale);
-
-	polygonGate::transforming(trans_gate_x.get(), trans_gate_y.get());
-	setTransformed(false);
 	coordinate center = param.getVertices().at(0);
 	double x_mu = center.x;
 	double y_mu = center.y;
@@ -1151,8 +1162,8 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 	unsigned nLen = 40;
 	vector<coordinate> curve1(nLen), curve2(nLen);
 	//curve1: round(multiplier * (x - x.mu) ^ 2) + y.mu (horizontal)
-	double x_max = topScale;//xdata.max();
-	double y_max = topScale;//ydata.max();
+	double x_max = displayScale;//xdata.max();
+	double y_max = displayScale;//ydata.max();
 	double nStep = (x_max - x_mu) / nLen;
 	double delta;
 	for(auto i = 0; i < nLen; i++){
@@ -1243,6 +1254,6 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 		inverseGate_y = trans_gate_y->getInverseTransformation();
 	}
 	polygonGate::transforming(inverseGate_x.get(), inverseGate_y.get());
-	setTransformed(false);
+//	setTransformed(false);
 	interpolated = true;
 }
