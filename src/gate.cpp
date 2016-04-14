@@ -1180,8 +1180,8 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 	}
 
 	vector<coordinate> polyVert; //the interpolated vertices for polygon
-	double x_min = -numeric_limits<double>::max();//xdata.min();
-	double y_min = -numeric_limits<double>::max();//ydata.min();
+	double x_min = -4e3;//-numeric_limits<double>::max();//xdata.min();
+	double y_min = -4e3;//-numeric_limits<double>::max();//ydata.min();
 
 
 	/*
