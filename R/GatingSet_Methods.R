@@ -1590,6 +1590,13 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
 			.recompute(x, ...)
 
 		})
+    
+#' @rdname recompute
+    setMethod("recompute",c("GatingSetList"),function(x, ...){
+          selectMethod("recompute", signature = c("GatingSet"))(x, ...)
+          
+        })
+    
 #' @param x \code{GatingSet}
 #' @param y \code{character} 
 #' @param alwaysLoadData \code{logical} specifies whether to load the flow raw data for gating

@@ -4,9 +4,12 @@
 \name{recompute,GatingSet-method}
 \alias{recompute}
 \alias{recompute,GatingSet-method}
+\alias{recompute,GatingSetList-method}
 \title{Compute the cell events by the gates stored within the gating tree}
 \usage{
 \S4method{recompute}{GatingSet}(x, ...)
+
+\S4method{recompute}{GatingSetList}(x, ...)
 }
 \arguments{
 \item{x}{\code{GatingSet}}
