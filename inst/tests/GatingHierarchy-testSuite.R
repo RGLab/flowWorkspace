@@ -194,7 +194,7 @@ test_that("show ",{
       
       thisRes <- paste(capture.output(show(gh)), collapse = "")
       expectRes <- "Sample:  CytoTrol_CytoTrol_1.fcs GatingHierarchy with  24  gates"
-      expect_output(thisRes, expectRes)
+      expect_equal(thisRes, expectRes)
             
     })
 
@@ -202,8 +202,8 @@ test_that("keyword",{
       thisRes <- keyword(gh)
       expectRes <- readRDS(file.path(resultDir, "kw_gh.rds"))
       kw_fn <- "flowWorkspaceData/extdata/CytoTrol_CytoTrol_1.fcs"
-      expect_output(thisRes$FILENAME, kw_fn)
-      expect_output(expectRes$FILENAME, kw_fn)
+      expect_true(grepl(kw_fn, thisRes$FILENAME))
+      expect_true(grepl(kw_fn, expectRes$FILENAME))
       expectRes$FILENAME <- NULL
       thisRes$FILENAME <- NULL
       expect_equal(thisRes, expectRes)
@@ -250,7 +250,7 @@ test_that("getChildren",{
 
 test_that(".getPopStat",{
       
-      expect_error(.getPopStat(gh, 3), "Error : expecting a string")
+      expect_error(.getPopStat(gh, 3), "expecting a string")
       
       expect_error(.getPopStat(gh, "singlet"), "not found")
       
