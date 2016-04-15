@@ -28,42 +28,38 @@ Imports:
     XML,
     tools,
     gridExtra,
-	Rgraphviz,
-	data.table,
+    Rgraphviz,
+    data.table,
     dplyr,
     latticeExtra,
     Rcpp,
     RColorBrewer,
     stringr,
-    flowUtils (>= 1.35.4),
-    jsonlite,
     scales
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
-    'flowJoWorkspace-Methods.R'
-    'flow_trans.R'
-    'GatingHierarchy-Methods.R'
-    'GatingSet-Methods.R'
-    'GatingSetList-Methods.R'
-    'filterObject-Methods.R'
-    'add-Methods.R'
-    'setGate-Methods.R'
+    'GatingHierarchy_Methods.R'
+    'GatingSet_Methods.R'
+    'GatingSetList_Methods.R'
     'RcppExports.R'
-    'merge-GatingSet.R'
+    'filterObject_Methods.R'
+    'add_Methods.R'
+    'flowJoWorkspace_Methods.R'
+    'flow_trans.R'
+    'merge_GatingSet.R'
+    'setGate_Methods.R'
     'utils.R'
-    'read.gatingML.cytobank.R'
-    'graphGML-methods.R'
     'zzz.R'
 Depends:
     R (>= 2.16.0),flowCore(>= 1.37.8),flowViz(>= 1.29.27),ncdfFlow(>= 2.17.4),gridExtra
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
-	flowWorkspaceData,
-	RSVGTipsDevice,
-	knitr,
-	ggcyto
+    flowWorkspaceData,
+    RSVGTipsDevice,
+    knitr,
+    ggcyto
 LinkingTo: Rcpp, BH(>= 1.60.0-1)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make

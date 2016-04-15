@@ -1,4 +1,4 @@
-#' @include GatingHierarchy-Methods.R
+#' @include GatingHierarchy_Methods.R
 NULL
 
 #' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
