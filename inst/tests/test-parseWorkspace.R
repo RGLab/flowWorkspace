@@ -202,6 +202,6 @@ test_that("closeWorkspace",
   closeWorkspace(ws)
   thisRes <- paste(capture.output(show(ws))[-2], collapse = "")
   expectRes <- paste(fjRes[["ws_show_close"]][-2], collapse = "")
-  expect_output(thisRes, expectRes)
+  expect_equal(thisRes, expectRes)
   
 })

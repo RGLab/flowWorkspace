@@ -6,7 +6,7 @@ test_that("show workspace",
     {
       thisRes <- paste(capture.output(show(ws))[-2], collapse = "")
       expectRes <- paste(fjRes[["ws_show"]][-2], collapse = "")
-      expect_output(thisRes, expectRes)
+      expect_equal(thisRes, expectRes)
       
     })
 
