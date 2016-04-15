@@ -80,14 +80,15 @@ sampleNames(gs)
 Note that it is different from the previous call `getSamples` on `workspace` where the latter list all samples stored in `xml` file and here are the ones actually get parsed. Because sometime not all of samples in xml will be imported for various reason. Also we've seen an extra string `_xxx` is attached to the end of each sample name. It is due to the argument `additional.keys` has the default value set to `'$TOT'`. See more details on these parsing options from [How to parse a flowJo workspace](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseFlowJo.html).
 
 ## Import gatingML
-We currently support gatingML2.0 files exported from `Cytobank` system. It can be done with one convevient function `parse.gatingML` that simply takes file paths of `gatingML` and `FCS`.
+We currently support gatingML2.0 files exported from `Cytobank` system. It can be done with one convevient function `parse.gatingML` from `CytoML` package that simply takes file paths of `gatingML` and `FCS`.
 
-```{r parseGatingML}
-xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "flowWorkspace")
+```{r parseGatingML, eval=FALSE}
+library(CytoML)
+xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "CytoML")
 fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
 gs1 <- parse.gatingML(xmlfile, fcsFiles)
 ```
-If you want to dive into details and sub-steps of the parsing process, see [How to parse a GatingML](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseGatingML.html).
+If you want to dive into details and sub-steps of the parsing process, see vignette of [CytoML](https://github.com/RGLab/CytoML).
   
 
 ## Basics on GatingSet
