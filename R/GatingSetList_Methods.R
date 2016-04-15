@@ -70,11 +70,7 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
       as(res, "GatingSetList")
     })
 
-# @rdname recompute
-setMethod("recompute",c("GatingSetList"),function(x, ...){
-      selectMethod("recompute", signature = c("GatingSet"))(x, ...)
-      
-    })
+
 
 #' @rdname getData-methods
 #' @export
