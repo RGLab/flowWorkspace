@@ -1,4 +1,4 @@
-#' @include filterObject-Methods.R
+#' @include filterObject_Methods.R
 NULL
 
 #' update the gate

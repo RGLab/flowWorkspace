@@ -1,4 +1,4 @@
-#' @include GatingSet-Methods.R
+#' @include GatingSet_Methods.R
 NULL
 
 #' @param y \code{missing} not used.
@@ -70,8 +70,7 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
       as(res, "GatingSetList")
     })
 
-#' @rdname recompute
-#' @export
+# @rdname recompute
 setMethod("recompute",c("GatingSetList"),function(x, ...){
       selectMethod("recompute", signature = c("GatingSet"))(x, ...)
       

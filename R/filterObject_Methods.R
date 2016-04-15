@@ -1,4 +1,4 @@
-#' @include GatingSet-Methods.R
+#' @include GatingSet_Methods.R
 NULL
 
 #' convert flowCore filter to a list 
