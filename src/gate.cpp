@@ -1105,47 +1105,38 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 	transformation * trans_x = trans.getTran(x_chnl);
 	transformation * trans_y = trans.getTran(y_chnl);
 
-	//inverse to raw
-//	boost::shared_ptr<transformation> inverseTrans_x, inverseTrans_y;
-//	if(trans_x!=NULL){
-//		inverseTrans_x = trans_x->getInverseTransformation();
-//
-//	}
-//	if(trans_y!=NULL){
-//		inverseTrans_y = trans_y->getInverseTransformation();
-//	}
-//	polygonGate::transforming(inverseTrans_x.get(), inverseTrans_y.get());
-//	setTransformed(false);
-//
-//	/*
-//	 * and rescale raw to 256 space
-//	 */
-//	boost::scoped_ptr<transformation> trans_gate_x,trans_gate_y;
-//	if(trans_x == NULL)
-//		trans_gate_x.reset(new scaleTrans()); //create default scale trans for linear, assuming the max value for linear scale is always 262144
-//	else
-//		trans_gate_x.reset(trans_x->clone()); //copy existing trans_x for non-linear
-//
-//	if(trans_y == NULL)
-//		trans_gate_y.reset(new scaleTrans()); //create default scale trans for linear
-//	else
-//		trans_gate_y.reset(trans_y->clone()); //copy existing trans_y for non-linear
-//
-//	//set to scale 256
-//	int displayScale = 255;
-//	trans_gate_x->setTransformedScale(topScale);
-//	trans_gate_y->setTransformedScale(topScale);
-//	polygonGate::transforming(trans_gate_x.get(), trans_gate_y.get());
 
 	/*
-	 * directly map from log scale to 225 space to make the curve smoother
+	 * and rescale raw to 256 space
 	 */
+	boost::scoped_ptr<transformation> trans_gate_x,trans_gate_y;
+	if(trans_x == NULL)
+		trans_gate_x.reset(new scaleTrans()); //create default scale trans for linear, assuming the max value for linear scale is always 262144
+	else
+		trans_gate_x.reset(trans_x->clone()); //copy existing trans_x for non-linear
+
+	if(trans_y == NULL)
+		trans_gate_y.reset(new scaleTrans()); //create default scale trans for linear
+	else
+		trans_gate_y.reset(trans_y->clone()); //copy existing trans_y for non-linear
+
+	//set to scale 256
 	int displayScale = 255;
-	scaleTrans tx(displayScale, trans_x->getRawScale());
-	scaleTrans ty(displayScale, trans_y->getRawScale());
-	scaleTrans *trans_gate_x = &tx;
-	scaleTrans *trans_gate_y = &ty;
-	polygonGate::transforming(trans_gate_x, trans_gate_y);
+	trans_gate_x->setTransformedScale(displayScale);
+	trans_gate_y->setTransformedScale(displayScale);
+	polygonGate::transforming(trans_gate_x.get(), trans_gate_y.get());
+
+//	/*
+//	 * directly map from log scale to 225 space to make the curve smoother
+//	 */
+//	int displayScale = 255;
+//	scaleTrans tx(displayScale, trans_x->getRawScale());
+//	scaleTrans ty(displayScale, trans_y->getRawScale());
+//	scaleTrans *trans_gate_x = &tx;
+//	scaleTrans *trans_gate_y = &ty;
+//	polygonGate::transforming(trans_gate_x, trans_gate_y);
+
+
 
 	setTransformed(false);//reset flag so that it won't interfere the next transforming
 
