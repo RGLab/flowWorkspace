@@ -1141,8 +1141,8 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 	 * directly map from log scale to 225 space to make the curve smoother
 	 */
 	int displayScale = 255;
-	scaleTrans tx(displayScale, trans_x->getTransformedScale());
-	scaleTrans ty(displayScale, trans_y->getTransformedScale());
+	scaleTrans tx(displayScale, trans_x->getRawScale());
+	scaleTrans ty(displayScale, trans_y->getRawScale());
 	scaleTrans *trans_gate_x = &tx;
 	scaleTrans *trans_gate_y = &ty;
 	polygonGate::transforming(trans_gate_x, trans_gate_y);
@@ -1254,6 +1254,6 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 		inverseGate_y = trans_gate_y->getInverseTransformation();
 	}
 	polygonGate::transforming(inverseGate_x.get(), inverseGate_y.get());
-//	setTransformed(false);
+	setTransformed(false);
 	interpolated = true;
 }
