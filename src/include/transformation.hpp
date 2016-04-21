@@ -82,6 +82,7 @@ public:
 	virtual boost::shared_ptr<transformation> getInverseTransformation();
 	virtual void setTransformedScale(int scale){throw(domain_error("setTransformedScale function not defined!"));};
 	virtual int getTransformedScale(){throw(domain_error("getTransformedScale function not defined!"));};
+	virtual int getRawScale(){throw(domain_error("getRawScale function not defined!"));};
 };
 /* case insensitive compare predicate*/
 struct ciLessBoost : std::binary_function<std::string, std::string, bool>
@@ -179,6 +180,8 @@ public:
 		interpolate();
 	};
 	int getTransformedScale(){return channelRange;};
+	int getRawScale(){return maxValue;};
+
 };
 
 class fasinhTrans:public transformation{
@@ -195,6 +198,7 @@ public:
 	boost::shared_ptr<transformation> getInverseTransformation();
 	void setTransformedScale(int scale){length = scale;};
 	int getTransformedScale(){return length;};
+	int getRawScale(){return T;};
 };
 /*
  * inverse transformation of fasinhTrans
@@ -235,6 +239,7 @@ public:
 	boost::shared_ptr<transformation> getInverseTransformation();
 	void setTransformedScale(int _scale){scale = _scale;};
 	int getTransformedScale(){return scale;};
+	int getRawScale(){return T;};
 };
 
 class logInverseTrans:public logTrans{
