@@ -364,7 +364,7 @@ BOOST_AUTO_TEST_CASE(curlyquad1)
 	myTest.colfile="../output/curlyQuad1/colnames.txt";
 	myTest.archive="../output/curlyQuad1/gs";
 
-	myTest.tolerance = 0.2;
+	myTest.tolerance = 0.15;
 
 
 //	map<string,float> gains;
@@ -388,9 +388,9 @@ BOOST_AUTO_TEST_CASE(curlyquad2)
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/curlyQuad2/comp.nc";
 	myTest.colfile="../output/curlyQuad2/colnames.txt";
-	myTest.archive="../output/curlyQuad/gs";
+	myTest.archive="../output/curlyQuad2/gs";
 
-	myTest.tolerance = 0.2;
+//	myTest.tolerance = 0.2;
 
 
 //	map<string,float> gains;
