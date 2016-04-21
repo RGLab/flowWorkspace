@@ -354,14 +354,40 @@ BOOST_AUTO_TEST_CASE(provide)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-BOOST_AUTO_TEST_CASE(curlyquad)
+BOOST_AUTO_TEST_CASE(curlyquad1)
 {
-	myTest.filename="../wsTestSuite/curlyQuad/20151208_TBNK_DS.xml";
+	myTest.filename="../wsTestSuite/curlyQuad/example1/20151208_TBNK_DS.xml";
 	myTest.wsType = WS_VX;
 	myTest.samples["78"] = "A1001.001.fcs";
 	myTest.sampNloc=1;
-	myTest.ncfile="../output/curlyQuad/comp.nc";
-	myTest.colfile="../output/curlyQuad/colnames.txt";
+	myTest.ncfile="../output/curlyQuad1/comp.nc";
+	myTest.colfile="../output/curlyQuad1/colnames.txt";
+	myTest.archive="../output/curlyQuad1/gs";
+
+	myTest.tolerance = 0.2;
+
+
+//	map<string,float> gains;
+//	gains["Time"] = 0.01;
+//	myTest.gains = gains;
+	vector<VertexID> skip;
+//	skip.push_back(16);
+//	skip.push_back(99);
+//	myTest.skipPops = skip;
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
+BOOST_AUTO_TEST_CASE(curlyquad2)
+{
+	myTest.filename="../wsTestSuite/curlyQuad/example2/20-Apr-2016.wsp";
+	myTest.wsType = WS_VX;
+	myTest.samples["1"] = "CytoTrol_CytoTrol_1.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/curlyQuad2/comp.nc";
+	myTest.colfile="../output/curlyQuad2/colnames.txt";
 	myTest.archive="../output/curlyQuad/gs";
 
 	myTest.tolerance = 0.2;
