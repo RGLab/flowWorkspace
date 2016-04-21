@@ -4,14 +4,24 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
-test_that("curlyQuad gate ",{
-      thisPath <- file.path(path, "curlyQuad")
+test_that("curlyQuad gate1 ",{
+      thisPath <- file.path(path, "curlyQuad/example1")
       wsFile <- file.path(thisPath, "20151208_TBNK_DS.xml")
       ws <- openWorkspace(wsFile)
       gs <- parseWorkspace(ws, name=2)
       
       res <- getPopStats(gs[[1]])
-      expect_equal(res[, flowJo.count], res[, flowCore.count], tol = 3.7e-3)
+      expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 7e-3)
+    })
+
+test_that("curlyQuad gate ",{
+      thisPath <- file.path(path, "curlyQuad/example2")
+      wsFile <- file.path(thisPath, "20-Apr-2016.wsp")
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name=1)
+      
+      res <- getPopStats(gs[[1]])
+      expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 1.6e-2)
     })
 
 test_that("EllipsoidGate defined on log-transformed channels ",{
@@ -30,7 +40,7 @@ test_that("No gate extension ",{
       ws <- openWorkspace(wsFile)
       gs <- parseWorkspace(ws, name = 1, subset = 1) #default extend_val = 0 will extend the gate  
       res <- getPopStats(gs[[1]])
-      expect_more_than(res[11, abs(flowJo.freq - flowCore.freq)], 0.1)
+      expect_gt(res[11, abs(flowJo.freq - flowCore.freq)], 0.1)
       
       gs <- parseWorkspace(ws, name = 1, extend_val = -2e3)#relax the threshold to disable extension
       res <- getPopStats(gs[[1]])
@@ -88,7 +98,7 @@ test_that("v 10.0.6 - vX 1.8",{
       fcsname <- pData(gs)[["name"]]
       fr <- read.FCS(file.path(thisPath, fcsname))
       tmp <- tempdir()
-      write.FCS(fr, filename = file.path(tmp, fcsname), delimiter = "/")
+      suppressWarnings(write.FCS(fr, filename = file.path(tmp, fcsname), delimiter = "/"))
       
       expect_error(gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = F, path = tmp)
                   , "Empty keyword name") #flowSet
@@ -201,8 +211,9 @@ test_that("v 10.0.7 - vX 20.0 (PROVIDE/CyTOF) ellipseidGate (fasinh)",{
       expect_is(gs, "GatingSet")
       
       #won't find the file if $TOT is taken into account(most likely the data provided was wrong)
-      expect_error(gs <- parseWorkspace(ws, name = 1, subset = 3, sampNloc = "sampleNode")
-                   , " no sample")
+      expect_warning(expect_error(gs <- parseWorkspace(ws, name = 1, subset = 3, sampNloc = "sampleNode")
+                   , "no sample to be added to GatingSet!")
+               , "Can't find the FCS")
       
       #relax the rules (shouldn't be doing this, just for the sake of testing)
       gs <- parseWorkspace(ws, name = 1, subset = 3, sampNloc = "sampleNode", additional.keys = NULL)
@@ -220,7 +231,7 @@ test_that("v 10.0.7 - vX 20.0 (cytof no compensation)",{
       
       ws <- openWorkspace(wsFile)
       
-      gs <- parseWorkspace(ws, name = 1, path = file.path(path), execute = FALSE)
+      expect_warning(gs <- parseWorkspace(ws, name = 1, path = file.path(path), execute = FALSE), "different gating tree structures")
       
       expect_is(gs, "GatingSet")
 #      gh <- gs[[1]]
@@ -293,7 +304,7 @@ test_that("v 7.6.1- win 1.6 (use default biexp trans when channel-specific trans
       gs <- parseWorkspace(ws, name = 2, subset = 1, path = thisPath,  execute = FALSE)
       expect_is(gs, "GatingSet")
       
-      gs <- parseWorkspace(ws, name = 2, path = thisPath)
+      expect_warning(gs <- parseWorkspace(ws, name = 2, path = thisPath), "Can't find the FCS")
       gh <- gs[[1]]
       
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))
@@ -331,7 +342,7 @@ test_that("v 7.6.5 - win 1.61 (sampNloc = 'sampleNode')",{
       
       gs <- parseWorkspace(ws, name = 1, subset = 1, path = file.path(thisPath,"Tcell"), sampNloc = "sampleNode", isNcdf = TRUE)
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      suppressWarnings(expectCounts <- fread(file.path(thisPath, "expectCounts.csv")))      
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
       expect_equal(thisCounts, expectCounts)
       
