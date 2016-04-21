@@ -423,5 +423,7 @@ public:
 	void interpolate(trans_local & trans);
 	vector<bool> gating(flowData &);
 	virtual unsigned short getType(){return CURLYQUADGATE;}
+	CurlyGuadGate * clone(){return new CurlyGuadGate(*this);};
+
 };
 #endif /* GATE_HPP_ */
