@@ -1198,7 +1198,7 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 		//bottom left
 		polyVert.push_back(coordinate(x_min, y_mu));
 		//bottom right
-		polyVert.push_back(curve2.at(0));
+		polyVert.push_back(curve2.front());
 	}
 		break;
 	case Q2:
@@ -1208,7 +1208,7 @@ void CurlyGuadGate::interpolate(trans_local & trans){
 		//top right
 		polyVert.push_back(coordinate(x_max, y_max));
 		//top left
-		polyVert.push_back(coordinate(x_mu, y_max));
+		polyVert.push_back(curve2.back());
 		//add curve2 reversely
 		unsigned len = polyVert.size();
 		polyVert.resize(len+curve2.size());
