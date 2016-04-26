@@ -402,7 +402,11 @@ boost::shared_ptr<transformation>  transformation::getInverseTransformation(){
 	inverse->calTbl.setX(this->calTbl.getY());
 	inverse->calTbl.setY(this->calTbl.getX());
 
-
+	//re-interpolate the inverse calibration tbl
+	inverse->calTbl.setInterpolated(false);
+	if(g_loglevel>=POPULATION_LEVEL)
+			COUT<<"spline interpolating..."<<endl;
+	inverse->interpolate();
 	return inverse;
 }
 

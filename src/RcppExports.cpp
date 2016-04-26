@@ -22,8 +22,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // getSplineCoefs
-Rcpp::List getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis);
-RcppExport SEXP flowWorkspace_getSplineCoefs(SEXP channelRangeSEXP, SEXP maxValueSEXP, SEXP posSEXP, SEXP negSEXP, SEXP widthBasisSEXP) {
+Rcpp::List getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis, bool inverse);
+RcppExport SEXP flowWorkspace_getSplineCoefs(SEXP channelRangeSEXP, SEXP maxValueSEXP, SEXP posSEXP, SEXP negSEXP, SEXP widthBasisSEXP, SEXP inverseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -32,7 +32,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type pos(posSEXP);
     Rcpp::traits::input_parameter< double >::type neg(negSEXP);
     Rcpp::traits::input_parameter< double >::type widthBasis(widthBasisSEXP);
-    __result = Rcpp::wrap(getSplineCoefs(channelRange, maxValue, pos, neg, widthBasis));
+    Rcpp::traits::input_parameter< bool >::type inverse(inverseSEXP);
+    __result = Rcpp::wrap(getSplineCoefs(channelRange, maxValue, pos, neg, widthBasis, inverse));
     return __result;
 END_RCPP
 }
