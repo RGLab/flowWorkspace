@@ -549,19 +549,6 @@ biexpTrans::biexpTrans():transformation(false, BIEXP),channelRange(4096), pos(4.
   * directly translated from java routine from tree star
   */
 
-void logInterpolate(double *f, int i, long n, double x)
-{
-	double minVal = f[i];
-	double maxVal = x;
-	double logMinVal = log(minVal);
-	double logMaxVal = log(maxVal);
-	for (int j = i; j < n; j++)
-	{
-		float frxn = (float)(j - i) / (float)(n - i);
-		double curVal = frxn * (logMaxVal - logMinVal) + logMinVal;
-		f[j] = exp(curVal);
-	}
-}
 void biexpTrans::computCalTbl(){
 	/*
 	 * directly translated from java routine from tree star
@@ -589,20 +576,26 @@ void biexpTrans::computCalTbl(){
 	double minimum = maximum / exp(positiveRange);
 	double negativeRange = logRoot(positiveRange, width);
 
-	double *positive = new double[channelRange + 1];
-	double *negative = new double[channelRange + 1];
-	positive[0] = negative[0] = 1.;
-	logInterpolate(positive, 0, channelRange + 1, exp(positiveRange));
-	logInterpolate(negative, 0, channelRange + 1, exp(-negativeRange));
+	double maxChannlVal = channelRange + 1;
+	unsigned int nPoints = maxChannlVal;//4097;//fix the number of points so that it won't lost the precision when scale is set to 256 (i.e. channelRange = 256)
+
+	valarray<double> positive(nPoints), negative(nPoints), vals(nPoints);
+	double step = (maxChannlVal-1)/(double)(nPoints -1);
+	for (int j = 0; j < nPoints; j++)
+	{
+		vals[j] = j * step;
+		positive[j] = exp((float)(j) / (float)(nPoints) * positiveRange);
+		negative[j] = exp((float)(j) / (float)(nPoints) * (-negativeRange));
+	}
+
+
 
 	double s = exp((positiveRange + negativeRange) * (width + extra / decades));
-	int j;
-	for (j = 0; j < channelRange + 1; j++)
-		negative[j] *= s;
+	negative *= s;
 	s = positive[zeroChan] - negative[zeroChan];
-	for (j = zeroChan; j < channelRange + 1; j++)
+	for (int j = zeroChan; j < nPoints; j++)
 		positive[j] = minimum * (positive[j] - negative[j] - s);
-	for (j = 0; j < zeroChan; j++)
+	for (int j = 0; j < zeroChan; j++)
 		positive[j] = -positive[2 * zeroChan - j];
 
 	/*
@@ -610,20 +603,13 @@ void biexpTrans::computCalTbl(){
 	 */
 	calTbl.setCaltype("flowJo");
 	calTbl.setMethod(2);
-	calTbl.init(channelRange+1);
-	valarray<double> x(channelRange+1),y(channelRange+1);
-	for (int chan = 0; chan <= channelRange; chan++)
-	{
-		y[chan] =chan;
-		x[chan] = positive[chan];
-	}
-	calTbl.setX(x);
-	calTbl.setY(y);
+	calTbl.init(nPoints);
+
+	calTbl.setX(positive);
+	calTbl.setY(vals);
 
 	isComputed=true;
 
-	delete[] positive;
-	delete[] negative;
 
 }
 
