@@ -380,8 +380,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                                       , extend_val = 0, extend_to = -4000
                                       , prefix = TRUE, channel.ignore.case = FALSE
                                       , ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
-                                      ,  transform = TRUE, ...){
-
+                                      ,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM"), ...){
+  timestep.source  <- match.arg(timestep.source )
   if(nrow(samples)==0)
     stop("no sample to be added to GatingSet!")
 
@@ -625,7 +625,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             
             if(any(time.ind)){
               time.range <- range(mat[, time.ind])
-              timestep <- compute.timestep(kw, time.range) #timestep is used to convert time channel to seconds  
+              timestep <- compute.timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds  
             }else
               timestep <- 1
             
@@ -745,28 +745,37 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	gs
 }
 
-compute.timestep <- function(kw, unit.range){
+# prefer to $TIMESTEP keyword when it is non NULL
+compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "BTIM")){
+  timestep.source  <- match.arg(timestep.source )
+  #check if $TIMESTEP is available
+  kw.ts <- kw[["$TIMESTEP"]]
+  if(is.null(kw.ts))
+    timestep.source <- "BTIM"
   
-  btime <- kw[["$BTIM"]]
-  etime <- kw[["$ETIM"]]
-  if(is.null(btime)||is.null(etime))
-    return(1)
+  if(timestep.source  == "TIMESTEP")
+    as.numeric(kw.ts)
   else{
-    #prefix the 4th section . (replace :) so that strptime recognize the fractional seconds in the input string
-    terms <- rep('([0-9]{2})', 4)
-    pat <- paste(terms, collapse = ":") 
-    pat <- paste0("^", pat, "$")
-    rep <- "\\1:\\2:\\3\\.\\4"
-    etime <- sub(pat, rep, etime) 
-    btime <- sub(pat, rep, btime)
-    format <- "%H:%M:%OS"
     
-    time.total <- difftime(strptime(etime, format), strptime(btime, format), units = "secs")
-    
-    round(as.numeric(time.total)/diff(unit.range), 2)
-    
-  }
-  
+    btime <- kw[["$BTIM"]]
+    etime <- kw[["$ETIM"]]
+    if(is.null(btime)||is.null(etime))
+      return(1)
+    else{
+      #prefix the 4th section . (replace :) so that strptime recognize the fractional seconds in the input string
+      terms <- rep('([0-9]{2})', 4)
+      pat <- paste(terms, collapse = ":") 
+      pat <- paste0("^", pat, "$")
+      rep <- "\\1:\\2:\\3\\.\\4"
+      etime <- sub(pat, rep, etime) 
+      btime <- sub(pat, rep, btime)
+      format <- "%H:%M:%OS"
+      
+      time.total <- difftime(strptime(etime, format), strptime(btime, format), units = "secs")
+      as.numeric(time.total)/diff(unit.range)
+      
+    }
+  }  
 }
 #' toggle the channel names between '/' and '_' character
 #' 
