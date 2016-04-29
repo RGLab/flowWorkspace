@@ -76,7 +76,9 @@ flowWorkspace.par.init <- function(){
                                                         , raw.scale = TRUE
                                                         , xlim = "instrument"
                                                         , ylim = "instrument"
-                                                        , default.y = "SSC-A")
+                                                        , default.x = "FSC-A"
+                                                        , default.y = "SSC-A"
+                                                        )
                                     )
   
 }
