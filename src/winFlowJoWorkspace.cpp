@@ -43,7 +43,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 	unsigned short nTransParentNodes=transParentNodeRes->nodesetval->nodeNr;
 	if(nTransParentNodes<=0)
 	{
-		COUT<<"compensation not found!"<<endl;
+		COUT<<"Transformation not found!"<<endl;
 		xmlXPathFreeObject(transParentNodeRes);
 		return(res);
 	}else if(nTransParentNodes>1){
@@ -402,6 +402,7 @@ compensation winFlowJoWorkspace::getCompensation(wsSampleNode sampleNode)
 
 		comp.cid=node.getProperty("id");
 		comp.prefix=node.getProperty("prefix");
+		comp.suffix=node.getProperty("suffix");
 		/*
 		 * -1:Acquisition-defined,to be computed from data
 		 * -2:None
