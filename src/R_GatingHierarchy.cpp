@@ -486,7 +486,15 @@ bool getNegateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	return gh->getNodeProperty(u).getGate()->isNegate();
 
 }
+//[[Rcpp::export(name=".cpp_getHiddenFlag")]]
+bool getHiddenFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh->getNodeID(gatePath);
+	if(u<0)throw(domain_error("not valid vertexID!"));
+	return gh->getNodeProperty(u).getHiddenFlag();
+
+}
 
 vector<BOOL_GATE_OP> boolFilter_R_to_C(List filter){
 

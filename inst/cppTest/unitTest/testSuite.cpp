@@ -406,6 +406,22 @@ BOOST_AUTO_TEST_CASE(curlyquad2)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+BOOST_AUTO_TEST_CASE(gs2flowjo)
+{
+	myTest.filename="/loc/no-backup/mike/test/ws/temp.wsp";
+	myTest.wsType = WS_VX;
+	myTest.samples["1"] = "CytoTrol_CytoTrol_1.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/curlyQuad2/comp.nc";
+	myTest.colfile="../output/curlyQuad2/colnames.txt";
+	myTest.archive="../output/curlyQuad2/gs";
+
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";

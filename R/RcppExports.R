@@ -116,6 +116,10 @@
     .Call('flowWorkspace_getNegateFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
+.cpp_getHiddenFlag <- function(gs, sampleName, gatePath) {
+    .Call('flowWorkspace_getHiddenFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+}
+
 .cpp_addGate <- function(gs, sampleName, filter, gatePath, popName) {
     .Call('flowWorkspace_addGate', PACKAGE = 'flowWorkspace', gs, sampleName, filter, gatePath, popName)
 }
