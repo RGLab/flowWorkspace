@@ -56,7 +56,14 @@ test_that("Time gate ",{
   res <- getPopStats(gs[[1]])
   expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 9e-4)
 })
-
+test_that("Time gate2--when computed timestep is very different from $TIMESTEP ",{
+      thisPath <- file.path(path, "timegate")
+      wsFile <- file.path(thisPath, "MX1 Analysis VISC.xml")
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws,name="Group 1",subset=11)
+      res <- getPopStats(gs[[1]])[flowJo.count!=-1,]
+      expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 8e-3)
+    })
 test_that("Inverse function of flog ",{
       thisPath <- file.path(path, "inverse")
       wsFile <- file.path(thisPath, "Small.xml")
