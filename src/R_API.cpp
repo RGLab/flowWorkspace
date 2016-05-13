@@ -80,7 +80,7 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, Stri
 //' which is computed by biexpTrans class and then return to R for constructing flowJo transformation function within R.
 //' Mainly used for openCyto autoGating process where no xml workspace is needed to create flowJo transformation.
 //[[Rcpp::export(".getSplineCoefs")]]
-Rcpp::List getSplineCoefs(int channelRange=4096, double maxValue=262144, double pos = 4.5, double neg = 0, double widthBasis = -10){
+Rcpp::List getSplineCoefs(int channelRange=4096, double maxValue=262144, double pos = 4.5, double neg = 0, double widthBasis = -10, bool inverse = false){
 
 	biexpTrans curTran;
 	curTran.channelRange = channelRange;
@@ -93,6 +93,12 @@ Rcpp::List getSplineCoefs(int channelRange=4096, double maxValue=262144, double 
 	curTran.computCalTbl();
 	calibrationTable cal = curTran.getCalTbl();
 
+	if(inverse)
+	{
+		valarray<double> tmp = cal.getX();
+		cal.setX(cal.getY());
+		cal.setY(tmp);
+	}
 	cal.interpolate();
 	Spline_Coefs obj=cal.getSplineCoefs();
 
