@@ -262,6 +262,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// getHiddenFlag
+bool getHiddenFlag(XPtr<GatingSet> gs, string sampleName, string gatePath);
+RcppExport SEXP flowWorkspace_getHiddenFlag(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP gatePathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< string >::type gatePath(gatePathSEXP);
+    __result = Rcpp::wrap(getHiddenFlag(gs, sampleName, gatePath));
+    return __result;
+END_RCPP
+}
 // addGate
 NODEID addGate(XPtr<GatingSet> gs, string sampleName, List filter, string gatePath, string popName);
 RcppExport SEXP flowWorkspace_addGate(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP filterSEXP, SEXP gatePathSEXP, SEXP popNameSEXP) {

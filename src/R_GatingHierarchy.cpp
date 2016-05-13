@@ -140,8 +140,8 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 			curTrans = inverseTrans.get();//not safe, make sure not to delete it since it belongs to shared_ptr
 		}
 
-
-		string transName=curTrans->getName()+" "+it->first;
+		string chnl = it->first;
+//		string transName = curTrans->getName()+" "+chnl;
 
 		switch(curTrans->getType())
 		{
@@ -154,7 +154,7 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 											,Named("offset",thisTrans->offset)
 											,Named("T",thisTrans->T)
 											)
-								,transName
+								,chnl
 								);
 				break;
 			}
@@ -162,7 +162,7 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 			{
 
 				res.push_back(List::create(Named("type","lin"))
-								,transName
+								,chnl
 								);
 				break;
 			}
@@ -181,7 +181,7 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 											,Named("method",obj.method)
 											,Named("type", "caltbl")
 											)
-								,transName
+								,chnl
 								);
 				break;
 			}
@@ -212,7 +212,7 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 											, Named("pos", thisTrans->pos)
 											, Named("widthBasis", thisTrans->widthBasis)
 											)
-								,transName
+								,chnl
 								);
 
 				break;
@@ -228,7 +228,7 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 											, Named("length", thisTrans->length)
 											, Named("maxRange", thisTrans->maxRange)
 											)
-											,transName
+											,chnl
 							);
 
 				break;
@@ -486,7 +486,15 @@ bool getNegateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	return gh->getNodeProperty(u).getGate()->isNegate();
 
 }
+//[[Rcpp::export(name=".cpp_getHiddenFlag")]]
+bool getHiddenFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
+	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh->getNodeID(gatePath);
+	if(u<0)throw(domain_error("not valid vertexID!"));
+	return gh->getNodeProperty(u).getHiddenFlag();
+
+}
 
 vector<BOOL_GATE_OP> boolFilter_R_to_C(List filter){
 

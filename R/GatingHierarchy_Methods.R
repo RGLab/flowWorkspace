@@ -1107,6 +1107,15 @@ setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(ob
 
     })
 
+setGeneric("isHidden",function(obj, y, ...)standardGeneric("isHidden"))
+setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+      
+      .cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
+      
+      
+    })
+
+
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #'
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
