@@ -768,6 +768,8 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 
 
 		xmlXPathObjectPtr resGate=node.xpathInNode("Gate/*");
+		if(resGate->nodesetval->nodeNr!=1)
+			throw(logic_error("invalid 'Gate' node!"));
 		wsNode gNode(resGate->nodesetval->nodeTab[0]);
 		xmlXPathFreeObject(resGate);
 		const xmlChar * gateType=gNode.getNodePtr()->name;
