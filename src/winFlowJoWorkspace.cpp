@@ -98,8 +98,9 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 			curTran->widthBasis=atof(transNode.getProperty("width").c_str());
 			curTran->maxValue=atof(transNode.getProperty("maxRange").c_str());
 			unsigned short thisLen=atoi(transNode.getProperty("length").c_str());
-			if(thisLen!=256)
-				throw(domain_error("length is not 256 for biex transformation!"));
+			curTran->channelRange = thisLen;
+//			if(thisLen!=256)
+//				throw(domain_error("length is not 256 for biex transformation!"));
 			/*
 			 * do the lazy calibration table calculation and interpolation
 			 * when it gets saved in gh
