@@ -1099,7 +1099,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
 #' @importClassesFrom flowCore filters filtersList
 #' @importFrom flowCore filters filtersList
-.preplot <- function(x, y, type, stats, formula, default.y = "SSC-A"){
+.preplot <- function(x, y, type, stats, formula, default.x = "FSC-A", default.y = "SSC-A"){
   samples <- sampleNames(x)
 
   isBool <- FALSE
@@ -1143,7 +1143,13 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
   if(class(curGates[[1]])=="booleanFilter")
   {
-    params<-rev(parameters(getGate(x[[1]],getParent(x[[1]],y))))
+    parent <- getParent(x[[1]],y)
+    if(parent == "root"){
+      params <- c(default.y, default.x)
+    }else{
+      params<-rev(parameters(getGate(x[[1]],parent)))  
+    }
+    
     overlay <- sapply(samples,function(curSample)getIndices(x[[curSample]],y), simplify = FALSE)
     curGates <- NULL
     isBool <- TRUE
@@ -1288,7 +1294,10 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                       , key = "auto"
                       , stack = FALSE
                       , xbin = 32
-                      , stats , default.y = flowWorkspace.par.get("plotGate")[["default.y"]], scales
+                      , stats 
+                      , default.y = flowWorkspace.par.get("plotGate")[["default.y"]]
+                      , default.x = flowWorkspace.par.get("plotGate")[["default.x"]]
+                      , scales
                       , strip = TRUE
                       , path = "auto"
                       , xlim = flowWorkspace.par.get("plotGate")[["xlim"]]
@@ -1333,7 +1342,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 	#################################
 	# setup axis labels and scales
 	################################
-    parseRes <- .preplot (x, y, type, stats, formula, default.y)
+    parseRes <- .preplot (x, y, type, stats, formula, default.x, default.y)
 
     curGates <- parseRes$gates
     xParam <- parseRes$xParam
