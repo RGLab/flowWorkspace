@@ -1286,18 +1286,14 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
       if(!is.null(channel)){
         trans_names <- names(trans.objects)
         #do strict match first
-        j <- grep(paste0("^", channel, "$"), trans_names)
-        if(length(j) == 0){
-          #do fuzzy match if no matches
-          j <- grep(channel, trans_names)
-        }
-
-        if(length(j) > 1){
+        j <- trans_names %in% channel
+        
+        if(sum(j) > 1){
           stop("multiple tranformation functions matched to: ", channel)
-        }else if(length(j) == 0){
+        }else if(sum(j) == 0){
           return(NULL)
         }else{
-          trans.objects[[j]]
+          trans.objects[[which(j)]]
         }
       }else
         trans.objects

@@ -38,7 +38,7 @@ test_that("getTransformations",{
       tran <- getTransformations(gh, channel = "<B710-A>")
       expect_is(tran, "function")
       
-      expect_error(tran <- getTransformations(gh, channel = "<"), "multiple tranformation")
+      expect_null(getTransformations(gh, channel = "<"))
       
       tran <- getTransformations(gh, channel = "<B710-AA>")
       expect_null(tran)
