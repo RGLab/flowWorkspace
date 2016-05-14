@@ -834,19 +834,13 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 	datarange <- sapply(1:dim(rawRange)[2],function(i){
                thisRange <- rawRange[i]
                this_chnl <- names(thisRange)
-				#added gsub
-              if(wsType == "vX"){
+               prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
-                j <- match(this_chnl, trans_names)
+                j <- match(prefixedChnl, trans_names)
                 isMatched <- !is.na(j)
-              }else{
-                j<-grep(gsub(suffix,"",gsub(prefix,"",this_chnl)),trans_names);
-                isMatched <- length(j)!=0
-              }
-              
               
 				if(isMatched){
-                    prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")					
+                    					
 					rw <- thisRange[,1]
                     thisTrans <- trans[[j]]
                     typeAttr <- attr(thisTrans, "type")
