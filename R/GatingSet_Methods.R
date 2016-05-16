@@ -2363,7 +2363,8 @@ getIndiceMat <- function(gh,y){
 #' 	geData(G,3)
 #' 	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+"))
 #' 	res[[1]]
-#' 	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+") , list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
+#'  # if it fails to match the given nodes to the markers, then try to provide the mapping between node and marker explicitly
+#' 	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+") , map = list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
 #' }
 #' @rdname getSingleCellExpression
 #' @importFrom dplyr bind_rows
