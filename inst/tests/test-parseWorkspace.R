@@ -73,7 +73,11 @@ test_that("getTransformations ",{
                                 f
                               })
       names(expectRes) <- sapply(names(expectRes), function(tn){strsplit(tn, " ")[[1]][4]}, USE.NAMES = FALSE)
-      expect_equal(thisRes,expectRes)
+      
+      expect_equal(thisRes[1:7],expectRes)
+      
+      names(expectRes) <- gsub("<|>", "", names(expectRes)) 
+      expect_equal(thisRes[8:14],expectRes)
       
     })
 source("GatingHierarchy-testSuite.R", local = TRUE)
