@@ -32,7 +32,7 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 			return xpath;
 
 }
-trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans){
+trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
 
 	trans_local res;
 
@@ -164,7 +164,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 /*
  * choose the trans from global trans vector to attach to current sample
  */
-trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans){
+trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
 
 	trans_local res;
 	unsigned sampleID=atoi(root.getProperty("sampleID").c_str());
@@ -191,8 +191,10 @@ trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 				string curChName=isTransIt->param;
 				if(isTransIt->log)
 				{
+					string curCmpChName = curChName;
 					//TODO:check the logic here(compare with mac version)
-					string curCmpChName=sPrefix+curChName;//append prefix
+					if(prefixed)
+					    curCmpChName = sPrefix + curCmpChName;//append prefix
 					trans_map curtp=it->getTransMap();
 					trans_map::iterator resIt=curtp.find(curCmpChName);
 					//try generic version if channel-specific is not found

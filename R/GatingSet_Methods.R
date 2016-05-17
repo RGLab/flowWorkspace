@@ -665,7 +665,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               tRg  <- range(mat[,tInd])
             else
               tRg <- NULL
-            axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc)
+            axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc, compChnlInd = wh)
 
 		}else{
           #extract gains from keyword of ws
@@ -811,7 +811,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 #'
 #' @return
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
-.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL){
+.transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL, compChnlInd){
 
 
  trans <- getTransformations(G[[sampleName]])
@@ -834,10 +834,12 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 	datarange <- sapply(1:dim(rawRange)[2],function(i){
                thisRange <- rawRange[i]
                this_chnl <- names(thisRange)
-               prefixedChnl <- paste(prefix,this_chnl,suffix,sep="")
-                #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
-                j <- match(prefixedChnl, trans_names)
-                isMatched <- !is.na(j)
+               if(i%in%compChnlInd)
+                 this_chnl <- paste(prefix,this_chnl,suffix,sep="")
+
+               #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
+              j <- match(this_chnl, trans_names)
+              isMatched <- !is.na(j)
 
 				if(isMatched){
 
@@ -867,10 +869,10 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 						pos <- signif(thisTrans(raw))
 
 
-						assign("prefixedChnl",prefixedChnl,tempenv)
+						assign("this_chnl",this_chnl,tempenv)
 						assign("raw",raw,tempenv);
 						assign("pos",pos,tempenv);
-						eval(expression(axis.labels[[prefixedChnl]]<-list(label=as.character(raw),at=pos)),envir=tempenv);
+						eval(expression(axis.labels[[this_chnl]]<-list(label=as.character(raw),at=pos)),envir=tempenv);
 					}
 					return(r);
 				}else{
