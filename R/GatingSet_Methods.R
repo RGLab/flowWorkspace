@@ -433,8 +433,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         guid <- row[["guid"]]
         #get global variable
         prefixColNames <- tempenv$prefixColNames
-
-
+        comp_param_ind <- tempenv$comp_param_ind
+        
 
         # get comp
         comp <- .cpp_getCompensation( gs@pointer, guid)
@@ -570,15 +570,16 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               else
                 comp_param <- comp$parameters
 
-              wh <- match(comp_param, prefixColNames)
+              comp_param_ind <- match(comp_param, prefixColNames)
 
-              prefixColNames[wh] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
+              prefixColNames[comp_param_ind] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
 
 
 
             }
         }else{
           prefixColNames <- cnd
+          comp_param_ind <- seq_along(cnd)
         }
           ##################################
           #transforming and gating
@@ -665,7 +666,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               tRg  <- range(mat[,tInd])
             else
               tRg <- NULL
-            axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc, compChnlInd = wh)
+            axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc, compChnlInd = comp_param_ind)
 
 		}else{
           #extract gains from keyword of ws
@@ -708,6 +709,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
         #set global variable
         tempenv$prefixColNames <- prefixColNames
+        tempenv$comp_param_ind <- comp_param_ind
 
         #return axis.labels
         axis.labels
