@@ -55,8 +55,8 @@ save_gs<-function(G,path,overwrite = FALSE
 #  browser()
   cdf <- match.arg(cdf)
   fileext <- 'pb'
-    
-  
+
+
   guid <- G@guid
   if(length(guid) == 0){
     G@guid <- .uuid_gen()
@@ -157,7 +157,7 @@ load_gs<-function(path){
 #    browser()
     cdf <- match.arg(cdf)
     fileext <- 'pb'
-    
+
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
     #generate uuid for the legacy GatingSet Object
@@ -271,14 +271,14 @@ load_gs<-function(path){
 
         gs <- new("GatingSet", flag = TRUE, guid = thisGuid, axis = axis, data = fs)
       }
-      
+
       if(!.hasSlot(gs, "transformation"))
         gs@transformation <- list()
-       
+
       if(!.hasSlot(gs, "compensation"))
         gs@compensation <- NULL
-      
-      
+
+
       guid <- try(slot(gs,"guid"),silent=T)
       if(class(guid)=="try-error"){
         #generate the guid for the legacy archive
@@ -309,7 +309,7 @@ load_gs<-function(path){
 #' @param path \code{character} specifies the path to the flow data (FCS files)
 #' @param ... other arguments. see \link{parseWorkspace}
 #' @rdname GatingSet-methods
-#' @export 
+#' @export
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
 
 			samples <- y
@@ -344,10 +344,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
 			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
-            Object@guid <- .uuid_gen()
-            
-            sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
-			Object<-.addGatingHierarchies(Object,samples = sampletbl,execute=TRUE,...)
+      Object@guid <- .uuid_gen()
+
+      sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
+			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE,...)
             #if the gating template is already gated, it needs to be recompute explicitly
             #in order to update the counts
             #otherwise, the counts should already have been updated during the copying
@@ -359,12 +359,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 		})
 
 
- 
+
 #' 1. loads the raw data (when execute == TRUE)
-#' 2. compensate and transform the data (when execute == TRUE) 
+#' 2. compensate and transform the data (when execute == TRUE)
 #' 3. transform gates(extend and apply gains when applicable)
 #' 4. compute the stats (when execute == TRUE)
-#' 
+#'
 #' @param prefix a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations
 #' @param channel.ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 #' @param extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
@@ -375,7 +375,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importClassesFrom flowCore flowFrame flowSet
-.addGatingHierarchies <- function(gs, samples, execute,isNcdf
+.addGatingHierarchies <- function(gs, samples, execute,isNcdf = TRUE
                                       ,compensation=NULL,wsType = ""
                                       , extend_val = 0, extend_to = -4000
                                       , prefix = TRUE, channel.ignore.case = FALSE
@@ -386,7 +386,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
     stop("no sample to be added to GatingSet!")
 
   guids <- samples[["guid"]]
-  
+
   #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
   pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
                                              ,row.names = guids
@@ -394,18 +394,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                                             )
                           ,varMetadata = data.frame(labelDescription="Name",row.names="name")
                           )
-    
+
   #load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
-                                    
+
 			fs <- read.ncdfFlowSet(samples[["file"]],isWriteSlice=FALSE, phenoData = pd, ...)
 		}else{
 			message("Creating flowSet...")
-      
+
       #read.flowSet would ignore given file names and use sampleNames(pd) if phenoData is given
       #so we have to modify pd afterwards
 			fs <- read.flowSet(samples[["file"]], ...)
@@ -428,18 +428,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
     assign("prefixColNames",NULL,tempenv)
 
 	axis <- apply(samples,1,function(row,tempenv){
-        
+
         sampleID <- as.numeric(row[["sampleID"]])
         guid <- row[["guid"]]
         #get global variable
         prefixColNames <- tempenv$prefixColNames
 
-		
+
 
         # get comp
         comp <- .cpp_getCompensation( gs@pointer, guid)
         cid <- comp$cid
-        
+
 
         ##################################
     #Compensating the data
@@ -449,12 +449,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       file <- row[["file"]]
       cnd <- colnames(fs)
 			message("loading data: ",file);
-            
+
 			if(isNcdf)
 				data <- read.FCS(file, ...)[, cnd]
 			else
 				data <- fs[[guid]]
-            
+
       #alter colnames(replace "/" with "_") for flowJo X
       #record the locations where '/' character is detected and will be used to restore it accurately
       slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
@@ -463,9 +463,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
             cnd <- new_cnd
             colnames(data) <- cnd
-            
+
           }
-             
+
       }
 
 
@@ -509,7 +509,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			{
 				##Acquisition defined compensation.
 				nm <- comp$comment
-				
+
 
 				if(grepl("Acquisition-defined",nm)){
 					###Code to compensate the sample using the acquisition defined compensation matrices.
@@ -518,13 +518,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 					if(is.null(compensation))
 					{
 						compobj <- compensation(spillover(data)$SPILL)
-						
+
 					}else
 					{
 						compobj <- compensation
-						
+
 					}
-					
+
 					res <- try(compensate(data,compobj),silent=TRUE)
 
 					if(inherits(res,"try-error")){
@@ -539,7 +539,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 			}
        }else{
-         # get kw from ws (We are not sure yet if this R API will always 
+         # get kw from ws (We are not sure yet if this R API will always
          # return keywords from workspace successfully, thus it is currently
          # only used when execute = FALSE
          if(!is.null(ws))
@@ -548,7 +548,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
          #redundant in some workspaces
          key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
          key_names <- gsub("B", "N", key_names, fixed = TRUE)
-         cnd <- as.vector(unlist(kw[key_names]))   
+         cnd <- as.vector(unlist(kw[key_names]))
 
        }
 
@@ -569,12 +569,12 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                 comp_param <- parameters(compobj)
               else
                 comp_param <- comp$parameters
-              				
+
               wh <- match(comp_param, prefixColNames)
-              
+
               prefixColNames[wh] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
-              
-                
+
+
 
             }
         }else{
@@ -595,7 +595,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             # we can parse it from ws as well
             this_pd <- pData(parameters(data))
             #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
-            time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)   
+            time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)
             this_pd <- subset(this_pd, !time.ind)
             paramIDs <- rownames(this_pd)
             key_names <- paste(paramIDs,"G",sep="")
@@ -611,25 +611,25 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             }else{
               gains <- rep(1,length(paramIDs))
             }
-            
+
             names(gains) <- this_pd$name
             gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
-            
+
             #update colnames in order for the gating to find right dims
             if(!is.null(prefixColNames)){
               dimnames(mat) <- list(NULL, prefixColNames)
             }
-            
+
             recompute <- !transform #recompute flag controls whether gates and data need to be transformed
             nodeInd <- 0
-            
+
             if(any(time.ind)){
               time.range <- range(mat[, time.ind])
-              timestep <- compute.timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds  
+              timestep <- compute.timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds
             }else
               timestep <- 1
-            
-            
+
+
             .cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool, timestep)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
@@ -639,18 +639,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               if(wsType == "vX"){
                 #use slash locations to avoid tamper the original '_' character in channel names
                 old_cnd <- .fix_channel_slash(cnd, slash_loc)
-                
+
                 if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- old_cnd
-                  colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX  
+                  colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX
                 }
-                
+
               }
               dimnames(mat) <- list(NULL, cnd)
             }
 
             data@exprs <- mat #circumvent the validity check of exprs<- to speed up
-            
+
             if(isNcdf){
               fs[[guid]] <- data
 
@@ -674,13 +674,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           #once we have confirmed that ws is a reliable source of keyword
           #EDIT: Acutally we've already found one workspace from PROVIDE study
           #that does not contain the gain keyword for all channels. So the ws is not reliable source of keyword
-          
+
 
           gains <- rep(1,length(cnd))#init with default 1
-          
+
           #get gains from keywords
           kw_gains <- grep("P[0-9]{1,}G", names(kw))
-          
+
           if(length(kw_gains) > 0){
             key_names <- unique(names(kw[kw_gains]))
             kw_gains <- kw[key_names]
@@ -688,15 +688,15 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             # Sometimes the keywords where the gain is not set, the gain value is NULL.
             # We replace these instances with the default of 1.
             kw_gains[sapply(kw_gains, is.null)] <- 1
-            
+
             #update the default gain values
-            #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)        
+            #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)
             found_gain_chnl_ind <-  as.numeric(gsub('G$', "", gsub('^\\$P', "", key_names)))
-            gains[found_gain_chnl_ind] <- as.numeric(kw_gains)                      
+            gains[found_gain_chnl_ind] <- as.numeric(kw_gains)
           }
-            
-          
-          
+
+
+
 
           names(gains) <- prefixColNames
           gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
@@ -725,18 +725,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           #get non-prefixed channel names
           raw.cols <- colnames(fs)
           #since updateChannels does case insensitive matching
-          #so we simply set both old and new columns with raw.cols 
+          #so we simply set both old and new columns with raw.cols
           map <- data.frame(old = raw.cols, new = raw.cols)
-          updateChannels(gs, map, all = FALSE) 
+          updateChannels(gs, map, all = FALSE)
         }
-        
+
 		#update data with prefixed columns
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
 		if(!is.null(tempenv$prefixColNames))
           colnames(fs) <- tempenv$prefixColNames
-        
-        
+
+
 		#attach filename and colnames to internal stucture for gating
 #		browser()
 	}
@@ -752,11 +752,11 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
   kw.ts <- kw[["$TIMESTEP"]]
   if(is.null(kw.ts))
     timestep.source <- "BTIM"
-  
+
   if(timestep.source  == "TIMESTEP")
     as.numeric(kw.ts)
   else{
-    
+
     btime <- kw[["$BTIM"]]
     etime <- kw[["$ETIM"]]
     if(is.null(btime)||is.null(etime))
@@ -764,29 +764,29 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
     else{
       #prefix the 4th section . (replace :) so that strptime recognize the fractional seconds in the input string
       terms <- rep('([0-9]{2})', 4)
-      pat <- paste(terms, collapse = ":") 
+      pat <- paste(terms, collapse = ":")
       pat <- paste0("^", pat, "$")
       rep <- "\\1:\\2:\\3\\.\\4"
-      etime <- sub(pat, rep, etime) 
+      etime <- sub(pat, rep, etime)
       btime <- sub(pat, rep, btime)
       format <- "%H:%M:%OS"
-      
+
       time.total <- difftime(strptime(etime, format), strptime(btime, format), units = "secs")
       as.numeric(time.total)/diff(unit.range)
-      
+
     }
-  }  
+  }
 }
 #' toggle the channel names between '/' and '_' character
-#' 
+#'
 #' FlowJoX tends to replace '/' in the original channel names with '_' in gates and transformations.
 #' We need to do the same to the flow data but also need to change it back during the process since
 #' the channel names of the flowSet can't be modified until the data is fully compensated.
 #' @param chnls the channel names
 #' @param slash_loc a list that records the locations of the original slash character within each channel name
-#'                  so that when restoring slash it won't tamper the the original '_' character. 
+#'                  so that when restoring slash it won't tamper the the original '_' character.
 #' @return the toggled channel names
-#' @importFrom stringr str_sub str_sub<-   
+#' @importFrom stringr str_sub str_sub<-
 .fix_channel_slash <- function(chnls, slash_loc = NULL){
   mapply(chnls, slash_loc, FUN = function(thisCol, this_slash){
         toggleTo <- ifelse(grepl("/", thisCol), "_", "/")
@@ -796,11 +796,11 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
           for(this_loc in this_slash)
             str_sub(thisCol, this_loc, this_loc) <- toggleTo
         }
-        
+
         thisCol
       }
-      , USE.NAMES = FALSE)  
-  
+      , USE.NAMES = FALSE)
+
 }
 
 #' transform the range slot and construct axis label and pos for the plotting
@@ -812,7 +812,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 #' @return
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL){
- 
+
 
  trans <- getTransformations(G[[sampleName]])
  comp<-.cpp_getCompensation(G@pointer,sampleName)
@@ -821,16 +821,16 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 
 	rawRange <- range(get(sampleName,frmEnv))
     oldnames <- names(rawRange)
-    
+
     if(wsType == "vX"&&!is.null(slash_loc)){
       names(rawRange) <- .fix_channel_slash(oldnames, slash_loc)
-      
+
     }
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
     trans_names <-trimWhiteSpace(names(trans))
-    
+
 	datarange <- sapply(1:dim(rawRange)[2],function(i){
                thisRange <- rawRange[i]
                this_chnl <- names(thisRange)
@@ -838,9 +838,9 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
                 #have to do strict match for vX since trans functions can be defined for both compensated and uncompensated channel
                 j <- match(prefixedChnl, trans_names)
                 isMatched <- !is.na(j)
-              
+
 				if(isMatched){
-                    					
+
 					rw <- thisRange[,1]
                     thisTrans <- trans[[j]]
                     typeAttr <- attr(thisTrans, "type")
@@ -863,7 +863,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 						base10raw <- unlist(lapply(2:6,function(e)10^e))
 						base10raw <- c(0,base10raw)
 						raw <- base10raw[base10raw>=min(rw)&base10raw<max(rw)]
-						
+
 						pos <- signif(thisTrans(raw))
 
 
@@ -887,7 +887,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 				}
 			})
 
-	
+
 	datarange <- t(rbind(datarange[2,]-datarange[1,],datarange))
 	datapar <- parameters(get(sampleName,frmEnv))
 	pData(datapar)[,c("range","minRange","maxRange")] <- datarange
@@ -931,7 +931,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 #'  \item{cond}{ \code{character} the conditioning variable to be passed to lattice plot.}
 #'
 #'  \item{overlay}{Node names. These populations are plotted on top of the existing gates(defined by \code{y} argument) as the overlaid dots.}
-#'  \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population. 
+#'  \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population.
 #'                         If not given, we automatically assign the colors.}
 #'  \item{key}{Lattice legend paraemter for overlay symbols.}
 #'
@@ -990,7 +990,7 @@ setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,...){
 
 setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
 
-      
+
       plotList <- .mergeGates(x[[1]],y,bool,merge)
       if(length(plotList) > 1)
         stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
@@ -998,8 +998,8 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       y <- plotList[[1]]
       return(.plotGate(x,y,...))
 #						})
-      
-      
+
+
     })
 
 ##recursively parsing conditional variables
@@ -1141,9 +1141,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     if(parent == "root"){
       params <- c(default.y, default.x)
     }else{
-      params<-rev(parameters(getGate(x[[1]],parent)))  
+      params<-rev(parameters(getGate(x[[1]],parent)))
     }
-    
+
     overlay <- sapply(samples,function(curSample)getIndices(x[[curSample]],y), simplify = FALSE)
     curGates <- NULL
     isBool <- TRUE
@@ -1288,7 +1288,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                       , key = "auto"
                       , stack = FALSE
                       , xbin = 32
-                      , stats 
+                      , stats
                       , default.y = flowWorkspace.par.get("plotGate")[["default.y"]]
                       , default.x = flowWorkspace.par.get("plotGate")[["default.x"]]
                       , scales
@@ -1304,14 +1304,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
     is.gh <- class(x) == "GatingHierarchy"
     if(is.gh){
-      x <- new("GatingSet", pointer = x@pointer 
+      x <- new("GatingSet", pointer = x@pointer
                           , data = x@data
                           , flag = x@flag
                           , axis = x@axis
                           , guid = x@guid
                           , transformation = x@transformation
                           , compensation = x@compensation
-                          )[x@name]       
+                          )[x@name]
     }
 
     gh <- x[[1]]
@@ -1332,7 +1332,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       main <- lattice:::updateList(default_main, main)
 
 
-    
+
 	#################################
 	# setup axis labels and scales
 	################################
@@ -1350,7 +1350,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       else
         overlay <- c(overlay, y)
     }
-  
+
 
 #    browser()
         #get data
@@ -1461,18 +1461,18 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
           }
           #set legend automatically if it is not given
           if(isTRUE(key == "auto")){
-            
+
              key = list(text = list(names(overlay.symbol), cex = 0.6)
-                                , points = list(col = sapply(overlay.symbol, "[[", "fill") 
+                                , points = list(col = sapply(overlay.symbol, "[[", "fill")
                                                 , pch = 19
-                                                , cex = 0.5) 
+                                                , cex = 0.5)
                           , columns = length(overlay.symbol)
                           , between = 0.3
                           , space = "bottom"
                           , padding.text = 5)
           }
           overlay <- sapply(overlay, function(thisOverlay)getData(x,thisOverlay)[,params])
-          
+
           if(is.gh){
             if(strip){
 #              browser()
@@ -1481,7 +1481,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
                             sampleNames(thisOverlay) <- popName
                             thisOverlay
                       })
-           names(overlay.symbol) <- names(overlay)       
+           names(overlay.symbol) <- names(overlay)
           }
         }
       }
@@ -1519,9 +1519,9 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 	}else{
       if(length(params)==1)
       {
-        
+
         thisCall<-as.call(c(as.list(thisCall)
-                        
+
                         , stack = FALSE
                     )
         )
@@ -1578,16 +1578,16 @@ setMethod("clone",c("GatingSet"),function(x,...){
 
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' Compute the cell events by the gates stored within the gating tree
-#' 
+#'
 #' Compute each cell event to see if it falls into the gate stored within the gating tree
 #' and store the result as cell count.
-#' 
-#' It is usually used immediately after \link{add} or \link{setGate} calls. 
-#'  
+#'
+#' It is usually used immediately after \link{add} or \link{setGate} calls.
+#'
 #' @param x \code{GatingSet}
 #' @param ... other arguments
-#'          y \code{character} node name or node path 
-#'          alwaysLoadData \code{logical} 
+#'          y \code{character} node name or node path
+#'          alwaysLoadData \code{logical}
 #'                  specifies whether to load the flow raw data for gating
 #'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
 #'                  Default 'FALSE' will check the parent node and reference to determine whether to load the data
@@ -1602,15 +1602,15 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
 			.recompute(x, ...)
 
 		})
-    
+
 #' @rdname recompute
     setMethod("recompute",c("GatingSetList"),function(x, ...){
           selectMethod("recompute", signature = c("GatingSet"))(x, ...)
-          
+
         })
-    
+
 #' @param x \code{GatingSet}
-#' @param y \code{character} 
+#' @param y \code{character}
 #' @param alwaysLoadData \code{logical} specifies whether to load the flow raw data for gating
 #'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
 #'                  Default 'FALSE' will check the parent node and reference to determine whether to load the data
@@ -1619,10 +1619,10 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
 #'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
 #'                  , yet may at the cost of unnecessary data IO
 .recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE){
-  
+
   if(y == "root")
     alwaysLoadData <- TRUE #skip the checking to save time when start from root
-  
+
   extend_val <- 0
   ignore_case <- FALSE
   gains <- numeric(0)
@@ -1701,7 +1701,7 @@ setMethod("recompute",c("GatingSet"),function(x, ...){
 #' @param X \code{GatingSet}
 #' @param FUN \code{function} to be applied to each sample in 'GatingSet'
 #' @param ... other arguments to be passed to 'FUN'
-#' 
+#'
 #' @rdname lapply-methods
 #' @aliases
 #' lapply,GatingSet-method
@@ -1743,7 +1743,7 @@ setMethod("sampleNames","GatingSet",function(object){
 #' @name sampleNames
 #' @param value \code{character} new sample names
 #' @usage \S4method{sampleNames}{GatingSet}(object) <- value
-#' @aliases 
+#' @aliases
 #' sampleNames<-
 #' sampleNames<-,GatingSet-method
 #' sampleNames<-,GatingSet,ANY-method
@@ -1793,7 +1793,7 @@ setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...
           this_data <- Subset(this_data,indices)
         this_data
       }
-      
+
 
 		})
 
@@ -1817,7 +1817,7 @@ setMethod("flowData",signature("GatingSet"),function(x){
 #' @name flowData
 #' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
 #' @usage \S4method{flowData}{GatingSet}(x) <- value
-#' @aliases 
+#' @aliases
 #' flowData<-
 #' flowData<-,GatingSet-method
 #' @rdname flowData
@@ -1846,24 +1846,24 @@ setMethod("pData","GatingSet",function(object){
 			pData(flowData(object))
 		})
 #' @name pData
-#' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object    
+#' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object
 #' @usage \S4method{pData}{GatingSet,data.frame}(object) <- value
-#' @aliases 
+#' @aliases
 #' pData<-
 #' pData<-,GatingSet,data.frame-method
 #' @export
 #' @rdname pData-methods
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
-      
+
 			fs <- flowData(object)
             new.rownames <- rownames(value)
             if(is.null(new.rownames))
               new.rownames <- value[["name"]] #use name column when rownames are absent
-			   
-            rownames(value) <- new.rownames 
-              
+
+            rownames(value) <- new.rownames
+
 			pData(fs) <- value
-            
+
 			varM <- varMetadata(phenoData(fs))
 			varM[-1,] <- rownames(varM)[-1]
 			varMetadata(phenoData(fs)) <- varM
@@ -1905,36 +1905,36 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 		})
 
 #' subset the GatingSet/GatingSetList based on 'pData'
-#' 
+#'
 #' @param x \code{GatingSet} or \code{GatingSetList}
 #' @param subset logical expression(within the context of pData) indicating samples to keep. see \code{\link[base:subset]{subset}}
 #' @param ... other arguments. (not used)
 #' @return a code{GatingSet} or \code{GatingSetList} object
 #' @rdname subset
-#' @export 
-subset.GatingSet <- function (x, subset, ...) 
+#' @export
+subset.GatingSet <- function (x, subset, ...)
 {
   pd <- pData(x)
-  r <- if (missing(subset)) 
+  r <- if (missing(subset))
         rep_len(TRUE, nrow(x))
       else {
         e <- substitute(subset)
         r <- eval(e, pd, parent.frame())
-        if (!is.logical(r)) 
+        if (!is.logical(r))
           stop("'subset' must be logical")
         r & !is.na(r)
       }
-  
+
   x[as.character(rownames(pd[r, ]))]
 }
 #' @rdname getGate
-#' @export 
+#' @export
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
 			lapply(obj,function(x)getGate(x,y))
 		})
-    
+
 #' @rdname setNode-methods
-#' @export 
+#' @export
 setMethod("setNode"
     ,signature(x="GatingSet",y="character",value="ANY")
     ,function(x,y,value){
@@ -1943,13 +1943,13 @@ setMethod("setNode"
           })
     })
 
-#' get/set the log level 
-#' 
+#' get/set the log level
+#'
 #' It is helpful sometime to get more detailed print out for the purpose of trouble shooting
-#' 
+#'
 #' @return a character that represents the internal log level
 #' @rdname loglevel
-#' @export 
+#' @export
 getLoglevel <- function(){
   level <- .cpp_getLogLevel()
   c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")[level + 1]
@@ -1960,13 +1960,13 @@ getLoglevel <- function(){
 #'                              , can be value of c("none", "GatingSet", "GatingHierarchy", "Population", "gate")
 #'                                 default is "none" , which does not print any information from C parser.
 #'
-#' @examples 
+#' @examples
 #' getLoglevel()
 #' setLoglevel("Population")
 #' getLoglevel()
-#'  
+#'
 #' @rdname loglevel
-#' @export 
+#' @export
 setLoglevel <- function(level = "none"){
   valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
   level <- match.arg(level, valid_levels)
@@ -1999,15 +1999,15 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
       if(is.null(data))
         data <- new("flowSet")
       #new takes less time than as method
-      new("GatingHierarchy", pointer = x@pointer 
+      new("GatingHierarchy", pointer = x@pointer
                             , data = data
                             , flag = x@flag
                             , axis = x@axis
                             , guid = x@guid
                             , transformation = x@transformation
                             , compensation = x@compensation
-                            , name = i)                             
-      
+                            , name = i)
+
     })
 
 #' Methods to get the length of a GatingSet
@@ -2015,7 +2015,7 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
 #' Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
 #'
 #' @param x \code{GatingSet}
-#' @param object \code{object} 
+#' @param object \code{object}
 #' @aliases length
 #' @rdname length
 #' @export
@@ -2024,7 +2024,7 @@ setMethod("length","GatingSet",function(x){
     })
 
 #' @rdname length
-#' @export 
+#' @export
 setMethod("show","GatingSet",function(object){
       cat("A GatingSet with",length(object), "samples\n")
     })
@@ -2040,8 +2040,8 @@ setMethod("show","GatingSet",function(object){
 #' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
 #' @param path \code{character} see \link{getNodes}
-#' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format  
-#' @param subpopulations \code{character} vector to specify a subset of populations to return. (only valid when format is "long")  
+#' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format
+#' @param subpopulations \code{character} vector to specify a subset of populations to return. (only valid when format is "long")
 #' @param ... Additional arguments passed to \link{getNodes}
 #'
 #' @details
@@ -2061,17 +2061,17 @@ setMethod("show","GatingSet",function(object){
 #'         #proportion for the fifth population
 #'         getProp(gh,getNodes(gh)[5])
 #'         getTotal(gh,getNodes(gh,tsort=T)[5])
-#'         
+#'
 #'         #gs is a GatingSet
 #'         getPopStats(gs)
 #'         #optionally output in long format as a data.table
 #'         getPopStats(gs, format = "long", path = "auto")
-#'         #only get stats for a subset of populations 
+#'         #only get stats for a subset of populations
 #'         getPopStats(gs, format = "long", subpopulations = getNodes(gs)[4:6])
 #'         }
 #' @aliases getPopStats
 #' @rdname getPopStats
-#' @export 
+#' @export
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
     function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "auto", ...) {
@@ -2081,12 +2081,12 @@ setMethod("getPopStats", "GatingSet",
       statistic <- match.arg(statistic)
       format <- match.arg(format)
       path <- match.arg(path, c("full", "auto"))
-       
+
       if(format == "long"){
-        
+
         if(is.null(subpopulations))
           subpopulations <- getNodes(x, path = path, ...)[-1]
-        
+
         pop_stats <- .getPopCounts(x@pointer, sampleNames(x), subpopulations, flowJo, path == "full")
         pop_stats <- data.table(name = pop_stats[["name"]]
                               , Population = pop_stats[["Population"]]
@@ -2094,10 +2094,10 @@ setMethod("getPopStats", "GatingSet",
                               , Count = pop_stats[["Count"]]
                               , ParentCount = pop_stats[["ParentCount"]]
                             )
-        
+
       }else{
-        
-      
+
+
         # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
         # are returned.
         if (flowJo) {
@@ -2105,7 +2105,7 @@ setMethod("getPopStats", "GatingSet",
         } else {
           statistic <- paste("flowCore", statistic, sep = ".")
         }
-        
+
         stats <- lapply(x,function(y){
                 d<-getPopStats(y, path = path,...)
                 d$key<-rownames(d)
@@ -2116,14 +2116,14 @@ setMethod("getPopStats", "GatingSet",
                 d
         })
         pop_stats <- Reduce(function(x,y)merge(x,y,all=TRUE),stats)
-        
+
         rownames(pop_stats) <- pop_stats[,key]
         setkey(pop_stats,NULL)
         pop_stats$key<-NULL
         rn<-rownames(pop_stats)
         pop_stats<-as.matrix(pop_stats)
         rownames(pop_stats)<-rn
-        
+
     }
     pop_stats
 })
@@ -2138,10 +2138,10 @@ setMethod("getPopStats", "GatingSet",
         thisStat <- getPopStats(gh, ...)
         thisStat
       })
-  
+
   cv <- do.call(rbind
               ,lapply(statList,function(x){
-                    
+
                     res <- apply(x[,list(flowJo.count,flowCore.count)],1,function(x){
                           cv <- IQR(x)/median(x)
                           ifelse(is.nan(cv),0,cv)
@@ -2150,7 +2150,7 @@ setMethod("getPopStats", "GatingSet",
                     res
                   })
              )
-               
+
   cv
 
 }
@@ -2209,7 +2209,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' It adds the boolean gates and does the gating on the fly, and
 #' return the indices associated with that bool gate, and remove the bool gate
 #' the typical use case would be extracting any-cytokine-expressed cells
-#' 
+#'
 #' @param obj \code{GatingSet}
 #' @param y a quoted expression.
 #' @examples
@@ -2250,12 +2250,12 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y){
 #' Return the single-cell matrix of 1/0 dichotomized expression
 #' @param gh \code{GatingHierarchy} object
 #' @param y \code{character} node name
-#' @export 
+#' @export
 getIndiceMat <- function(gh,y){
   strExpr <- as.character(y)
   nodes <- strsplit(strExpr,split="\\|")[[1]]
-  .getIndiceMat(gh, sampleNames(gh), nodes)  
-  
+  .getIndiceMat(gh, sampleNames(gh), nodes)
+
 }
 
 .getIndiceMat <- function(gs, thisSample, nodes){
@@ -2263,35 +2263,35 @@ getIndiceMat <- function(gh,y){
   #extract logical indices for each cytokine gate
   indice_list <- sapply(nodes,function(this_node).cpp_getIndices(gs@pointer, thisSample, this_node)
                         ,simplify = FALSE)
-  
+
   #construct the indice matrix
   do.call(cbind, indice_list)
 #  as.data.table(indice_list)
 }
 #' create mapping between pops and channels
-#' 
+#'
 #' The goal is translate the markers provided by user map or directly parsed from popNames (when map is NULL)
-#' to the accurate channel info for indexing the flow data 
+#' to the accurate channel info for indexing the flow data
 #' because user might give the short form of either  'name' or 'desc' of flowFrame based on swap argument.
-#' 
+#'
 #' @param this_pd \code{data.frame} extraced from flowFrame object to provide the channel and marker info
 #' @param popNames \code{character} node names in gating tree
-#' @param map \code{list} contains the node-to-marker mapping explicitly specified user 
-#' 
+#' @param map \code{list} contains the node-to-marker mapping explicitly specified user
+#'
 #' @importFrom dplyr mutate
 .getPopChnlMapping <- function(this_pd, popNames, map =  NULL, swap = FALSE, ignore.case = FALSE){
-    
+
   datSrc <- ifelse(swap, "name", "desc")
   this_pd[, datSrc] <- as.vector(this_pd[, datSrc])
 
   #match to the pdata of flow frame
   all_markers <- this_pd[,datSrc]
   all_markers[is.na(all_markers)] <- "NA"
- 
-  
+
+
   lapply(popNames, function(popName){
-      
-      
+
+
       #fetch the marker from map first
       toMatch <- map[[popName]]
       #if not supplied, parse it from popName
@@ -2300,8 +2300,8 @@ getIndiceMat <- function(gh,y){
         #get the terminal node
         toMatch <- this_pops[length(this_pops)]
       }
-      
-      
+
+
       #partial match first
       if(ignore.case)
         matchedInd <- grep(tolower(toMatch), tolower(all_markers), fixed = TRUE)
@@ -2315,8 +2315,8 @@ getIndiceMat <- function(gh,y){
         else
           matchedInd <- match(toMatch, all_markers)
         matchedInd <- matchedInd[!is.na(matchedInd)]
-        
-        if(length(matchedInd) == 0){ 
+
+        if(length(matchedInd) == 0){
           #no exact match
           stop(toMatch, "  paritally matched to multiple markers but failed to exactly matched to any of them. ")
         }else if(length(matchedInd) > 1){
@@ -2327,33 +2327,33 @@ getIndiceMat <- function(gh,y){
         #no partial match
         stop("Marker not found: ", toMatch)
       }
-      
+
       this_pd[matchedInd,c("name", "desc")]
-      
+
   })%>% bind_rows %>% mutate(pop = popNames)
 
 
 }
 
 #' Return the cell events data that express in any of the single populations defined in \code{y}
-#' 
+#'
 #' Returns a list of matrix containing the events that expressed in any one of the populations efined in \code{y}
-#' 
+#'
 #' @param x A \code{GatingSet} or \code{GatingSetList} object .
 #' @param nodes \code{character} vector specifying different cell populations
-#' @param other.markers \code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.  
+#' @param other.markers \code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.
 #' @param swap \code{logical} indicates whether channels and markers of flow data are swapped.
 #' @param threshold \code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.
 #' @param mc.cores passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.
 #' @param ... other arguments
-#' 
-#'      map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel 
-#'                         names (as specified in either the \code{desc} or \code{name} 
-#'                          columns of the parameters of the associated \code{flowFrame}s 
+#'
+#'      map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
+#'                         names (as specified in either the \code{desc} or \code{name}
+#'                          columns of the parameters of the associated \code{flowFrame}s
 #'                          in the \code{GatingSet}). see examples.
-#' 
+#'
 #'      ignore.case whether to ignore case when match the marker names. Default is FALSE.
-#' 
+#'
 #' @return A \code{list} of \code{numerci matrices}
 #' @aliases getSingleCellExpression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
@@ -2373,35 +2373,35 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
   datSrc <- ifelse(swap, "name", "desc")
   fs <- getData(x)
   sn <- sampleNames(x)
-  
+
   names(sn) <- sn
-  
+
   thisCall <- quote(lapply(sn,function(sample){
-      
+
       message(".", appendLF = FALSE)
-      fr <- fs[[sample, use.exprs = FALSE]] 
+      fr <- fs[[sample, use.exprs = FALSE]]
       this_pd <- pData(parameters(fr))
       #get pop vs channel mapping
       pop_chnl <- .getPopChnlMapping(this_pd, nodes, swap = swap, ...)
       chnls <- as.character(pop_chnl[["name"]])
       pops <-  as.character(pop_chnl[["pop"]])
-      markers <- as.character(pop_chnl[[datSrc]])  
-      
+      markers <- as.character(pop_chnl[[datSrc]])
+
       #append the extra markers
       if(!is.null(other.markers)){
-        
+
         other_marker_chnl <- lapply(other.markers, getChannelMarker, frm = fr)%>% bind_rows
         other_chnls <- other_marker_chnl[["name"]]
         other_markers <- other_marker_chnl[["desc"]]
 
         #remove the other_chnls that are already present in chnls
         toKeep <- ! other_chnls %in% chnls
-        
+
         chnls <- c(chnls, other_chnls[toKeep])
         markers <- c(markers, other_markers[toKeep])
       }
-      
-    
+
+
       nodeIds <- sapply(pops, function(pop){
             ind <- .cpp_getNodeID(x@pointer,sample, pop)
             ind + 1 # convert to R index
@@ -2409,14 +2409,14 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
       nodeIds <- as.integer(nodeIds) - 1
       data <- fs[[sample, chnls]]
       data <- exprs(data)
-      
+
       data <- .cpp_getSingleCellExpression( x@pointer, sample, nodeIds, data, markers, threshold)
       data
-          
+
 
       })
     )
-  
+
   if(mc.cores > 1){
     require(parallel)
     thisCall[[1]] <- quote(mclapply)
@@ -2428,34 +2428,34 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
 
 
 #' tranform the flow data asssociated with the GatingSet
-#' 
+#'
 #' The transformation functions are saved in the GatingSet and can be retrieved by \link{getTransformations}.
 #' Currently only flowJo-type biexponential transformation(either returned by \link{getTransformations} or constructed by \link{flowJoTrans})
-#' is supported. 
-#' 
+#' is supported.
+#'
 #' @param _data \code{GatingSet} or \code{GatingSetList}
 #' @param ... expect a \code{transformList} object
-#' 
+#'
 #' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
 #' @examples
 #' \dontrun{
 #' data(GvHD)
 #' fs <- GvHD[1:2]
 #' gs <- GatingSet(fs)
-#' 
+#'
 #' #construct biexponential transformation function
 #' biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
-#' 
+#'
 #' #make a transformList object
 #' chnls <- c("FL1-H", "FL2-H")
 #' transList <- transformerList(chnls, biexpTrans)
-#' 
+#'
 #' #add it to GatingSet
 #' gs_trans <- transform(gs, transList)
 #'
-#' }   
+#' }
 #' @export
-#' @rdname transform 
+#' @rdname transform
 #' @importMethodsFrom ncdfFlow transform
 setMethod("transform",
     signature = signature(`_data` = "GatingSet"),
@@ -2469,7 +2469,7 @@ setMethod("transform",
       if(!is(transObjs, "transformerList"))
         stop("expect the second argument as a 'transformerList' object!")
       gs@transformation <- transObjs
-      
+
       fs <- getData(gs)
       transList <- lapply(transObjs, function(obj)obj[["transform"]])
       transList <- transformList(names(transObjs), transList)
@@ -2479,65 +2479,65 @@ setMethod("transform",
     })
 
 #' Constructor for transformerList object
-#' 
+#'
 #' Similar to \code{transformList} function, it constructs a list of transformer objects generated by \code{trans_new}
 #' method from \code{scales} so that the inverse and breaks functions are also included.
 #' @param from channel names
 #' @param trans a \code{trans} object or a lost of \code{trans} objects constructed by \code{trans_new} method.
 #' @export
-#' @examples 
+#' @examples
 #' library(scales)
 #' #create tranformer object from scratch
 #' trans <- logicleTransform(w = 0.5, t = 262144, m = 4.5, a = 0)
 #' inv <- inverseLogicleTransform(trans = trans)
 #' trans.obj <- flow_trans("logicle", trans, inv, n = 5, equal.space = FALSE)
-#' 
+#'
 #' #or simply use convenient constructor
 #' #trans.obj <- logicle_trans(n = 5, equal.space = FALSE, w = 0.5, t = 262144, m = 4.5, a = 0)
-#' 
+#'
 #' transformerList(c("FL1-H", "FL2-H"), trans.obj)
-#' 
+#'
 #' #use different transformer for each channel
 #' trans.obj2 <- asinhtGml2_trans()
 #' transformerList(c("FL1-H", "FL2-H"), list(trans.obj, trans.obj2))
-transformerList <- function (from, trans) 
+transformerList <- function (from, trans)
 {
   from <- unique(from)
   if(is(trans, "trans"))trans <- list(trans)
-  if (!is.character(from)) 
+  if (!is.character(from))
     stop("'from' must be character vectors.", call. = FALSE)
-  if (!is.list(trans)) 
+  if (!is.list(trans))
     trans <- list(trans)
-  if (!all(sapply(trans, is, "trans"))) 
+  if (!all(sapply(trans, is, "trans")))
     stop("'trans' must be a list of transformer objects (generated by scales::trans_new method)", call. = FALSE)
   trans <- rep(trans, length(from))
   trans <- trans[1:length(from)]
   names(trans) <- from
   attr(trans, "class") <- c("transformerList", "list")
-  
+
   return(trans)
 }
 
 #' compensate the flow data asssociated with the GatingSet
-#' 
+#'
 #' The compensation is saved in the GatingSet and can be retrieved by \link{getCompensationMatrices}.
-#' 
+#'
 #' @param x \code{GatingSet} or \code{GatingSetList}
 #' @param spillover \code{compensation} object
-#' 
+#'
 #' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data compensated.
 #' @examples
 #' \dontrun{
-#' 
+#'
 #' cfile <- system.file("extdata","compdata","compmatrix", package="flowCore")
 #' comp.mat <- read.table(cfile, header=TRUE, skip=2, check.names = FALSE)
-#' ## create a compensation object 
+#' ## create a compensation object
 #' comp <- compensation(comp.mat,compensationId="comp1")
 #' #add it to GatingSet
 #' gs <- compensate(gs, comp)
-#' }   
+#' }
 #' @export
-#' @rdname compensate 
+#' @rdname compensate
 #' @importMethodsFrom ncdfFlow compensate
 setMethod("compensate", signature=signature(x="GatingSet", spillover="compensation"),
     definition=function(x, spillover){
@@ -2554,9 +2554,9 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="compensati
 setMethod("markernames",
           signature=signature(object="GatingSet"),
           definition=function(object){
-            
+
             markernames(flowData(object))
-            
+
           })
 
 #' @rdname markernames
@@ -2564,9 +2564,9 @@ setMethod("markernames",
 #' @export
 setReplaceMethod("markernames",
                  signature=signature(object="GatingSet", value="ANY"), function(object, value){
-                   
+
                    markernames(flowData(object)) <- value
-                   
+
                    object
                  })
 
@@ -2575,17 +2575,17 @@ setReplaceMethod("markernames",
 setMethod("colnames",
           signature=signature(x="GatingSet"),
           definition=function(x, do.NULL="missing", prefix="missing"){
-            
+
             colnames(flowData(x))
-            
+
           })
 
 #' @rdname markernames
 #' @export
 setReplaceMethod("colnames",
                  signature=signature(x="GatingSet", value="ANY"), function(x, value){
-                   
+
                    colnames(flowData(x)) <- value
-                   
+
                    x
                  })
