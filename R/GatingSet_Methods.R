@@ -434,7 +434,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         #get global variable
         prefixColNames <- tempenv$prefixColNames
         comp_param_ind <- tempenv$comp_param_ind
-        
+
 
         # get comp
         comp <- .cpp_getCompensation( gs@pointer, guid)
@@ -1164,22 +1164,10 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
   {
     if(length(params) == 1)
     {
-      chnls <- colnames(getData(x))
+
       if(is.null(formula)){
         xParam <- params
-        y.candidates <- chnls[-match(xParam,chnls)]
-
-        if(default.y%in%y.candidates)
-          yParam <- default.y
-        else{
-          if(!default.y %in% chnls)
-            stop("default.y '", default.y, "' is not valid channel name!Try to reset it")
-            #pick other channel for y axis
-            y.candidates <- y.candidates[!grepl("[Tt]ime", y.candidates)]
-            yParam <- y.candidates[1]
-            warning("Y axis is set to '", yParam, "' because default.y '",default.y, "' can not be used as y axis!\n To eliminate this warning, set type = 'densityplot' or change the default y channel through 'default.y' ")
-        }
-
+        yParam <- fix_y_axis(gs = x, x = xParam, y = default.y)
       }else{
         forRes <- .formulaParser(formula)
         yParam <- as.character(forRes[["yTerm"]])
@@ -1213,6 +1201,22 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
   list(gates = curGates, xParam = as.vector(xParam), yParam = as.vector(yParam), stats = stats, isBool = isBool)
 }
 
+fix_y_axis <- function(gs, x, y){
+  chnls <- colnames(getData(gs))
+  y.candidates <- chnls[-match(x,chnls)]
+
+  if(y%in%y.candidates)
+    yParam <- y
+  else{
+    if(!y %in% chnls)
+      stop("default y '", y, "' is not valid channel name!Try to reset it")
+    #pick other channel for y axis
+    y.candidates <- y.candidates[!grepl("[Tt]ime", y.candidates)]
+    yParam <- y.candidates[1]
+    warning("Y axis is set to '", yParam, "' because default y '", y, "' can not be used as y axis!\n To eliminate this warning, change the default y channel")
+  }
+  return(yParam)
+}
 #' @param x a \code{GatingSet}
 #' @param overlay a list of gate indices or event indices (named by sampleNames(x))
 #' @param ... other arguments
