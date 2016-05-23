@@ -371,7 +371,7 @@ test_that("v 9.0.1 - mac 2.0 (HVTN RV144 -- options = 1)",{
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+      expect_equal(thisCounts, expectCounts, tol = 1e-5)
       
     })
 
@@ -442,7 +442,7 @@ test_that("v 9.4.4 - mac 2.0 ",{
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+      expect_equal(thisCounts, expectCounts, tol = 2.5e-4)
       
     })
 
@@ -459,8 +459,8 @@ test_that("v 9.5.2 - mac 2.0",{
       gs <- parseWorkspace(ws, name = 2, subset = 1, path = file.path(thisPath,"Bcell"), isNcdf = TRUE)
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts, tol = 11e-3)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 5e-3)
       
       #create a temp folder and symlink to original files to test the feature of searching sample by keyword $FIL
       # in the use case where the fcs has been modified
@@ -472,8 +472,8 @@ test_that("v 9.5.2 - mac 2.0",{
       
       gs <- parseWorkspace(ws, name = 2, subset = 1, path = tmp)
       gh <- gs[[1]]
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts, tol = 11e-3)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 5e-3)
       unlink(tmp,recursive = T)
     })
 
@@ -507,7 +507,7 @@ test_that("v 9.7.4 - mac 3.0",{
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]
       expectCounts[flowJo.count ==0, flowJo.count := -1]#fix the legacy counts
-      expect_equivalent(thisCounts, expectCounts)
+      expect_equal(thisCounts, expectCounts, check.attributes = FALSE, tol = 3.3e-3)
     })
 
 test_that("v 9.7.5 - mac 3.0 (no compensation and using calibrationIndex)",{
@@ -523,7 +523,7 @@ test_that("v 9.7.5 - mac 3.0 (no compensation and using calibrationIndex)",{
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
       expectCounts[flowJo.count ==0, flowJo.count := -1] #fix the legacy counts
-      expect_equivalent(thisCounts, expectCounts)
+      expect_equal(thisCounts, expectCounts, check.attributes = FALSE, tol = 2e-4)
     })
 
 test_that("v 9.7.5 - mac 3.0 (boolGate that refers to the non-sibling nodes)",{

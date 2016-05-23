@@ -142,7 +142,7 @@ test_that("getGate for gs",{
       
       thisRes <- getGate(gs, "CD3+")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_ellipse.rds"))
-      expect_equal(thisRes, expectRes, tol = 3e-08)
+      expect_equal(thisRes, expectRes, tol = 5e-04)
       
       thisRes <- getGate(gs, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_polygon.rds"))
@@ -267,7 +267,7 @@ test_that("getPopStats",{
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
       expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames
       
-      expect_equal(as.data.table(thisRes), expectRes[,-1, with = F])
+      expect_equal(as.data.table(thisRes), expectRes[,-1, with = F], tol = 2e-3)
       
       #use auto path
       stats_wide <- getPopStats(gs, format = "wide", path = "auto")
@@ -292,7 +292,7 @@ test_that("getPopStats",{
 
 test_that("compute CV from gs",{
       
-      thisRes <- .computeCV(gs)
+      thisRes <- flowWorkspace:::.computeCV(gs)
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "cv_gs.csv"))
@@ -376,7 +376,7 @@ test_that("getSingleCellExpression for COMPASS",{
       thisRes <- getSingleCellExpression(gs, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
       expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
 #      browser()
-      expect_equal(thisRes,expectRes, tol = 1.2e-07)
+      expect_equal(thisRes,expectRes)
       
       #test other.markers (redundant marker should be merged automatically)
       thisRes <- getSingleCellExpression(gs, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') 
