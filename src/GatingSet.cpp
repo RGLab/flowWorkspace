@@ -401,7 +401,7 @@ void GatingSet::add(GatingSet & gs,vector<string> sampleNames){
 
 	}
 }
-/*
+/*Defunct
  * TODO:current version of this contructor is based on gating template ,simply copying
  * compensation and transformation,more options can be allowed in future like providing different
  * comp and trans

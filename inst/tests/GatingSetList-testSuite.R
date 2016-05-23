@@ -59,7 +59,7 @@ test_that("getData", {
       
       thisRes <- getData(gslist, "CD8")
       expect_is(thisRes, "ncdfFlowList")
-      expect_equal(nrow(thisRes[[1]]),  14570)
+      expect_equal(nrow(thisRes[[1]]),  14564)
       
     })
 
