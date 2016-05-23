@@ -385,14 +385,15 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 	{
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
-		transformation *curTran=new transformation();
-		calibrationTable caltbl("flowJo",2);
+
+		biexpTrans *curTran=new biexpTrans();
+
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
 			throw(domain_error("empty name for calibration table"));
 
 		if(g_loglevel>=GATING_SET_LEVEL)
-			COUT<<"parsing calibrationTable:"<<tname<<endl;
+			COUT<<"parsing biexp from calibrationTable node:"<<tname<<endl;
 		/*
 		 * parse the string from tname to extract channel name
 		 */
@@ -420,6 +421,18 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 			transGroupName=curTran->getName();
 		}
 
+		curTran->pos = atof(calTblNode.getProperty("biexponentialDecades").c_str());
+		curTran->neg = atof(calTblNode.getProperty("biexponentialNegDecades").c_str());
+		curTran->widthBasis = atof(calTblNode.getProperty("biexponentialWidth").c_str());
+		/* parse maxValue and channelRange
+		 *
+		 * We now compute caltbl from biexp
+		 * theoretically we don't need to parse caltbl anymore,
+		 * but mac workspace doesn't seem to store the biexp paramters: maxValue and channelRange
+		 * to play safe, we get these two values by looking at caltbl content instead of guessing it
+		 * from other sources (e.g. keywords)
+		 */
+		calibrationTable caltbl("flowJo",2);
 		string sTbl=calTblNode.getContent();
 		/*
 		 * parse the stream to x,y double arrays
@@ -432,12 +445,8 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		caltbl.setY(tbl[slice(0,nX,2)]);
 		caltbl.setX(tbl[slice(1,nX,2)]);
 
-		curTran->setCalTbl(caltbl);
-
-		/*since it is base class of transformation,which means the caltbl is already given by workspace
-		 * no need to compute later on. so set this flag to be true to assure the subsequent interpolation can be performed
-		 */
-		curTran->setComputeFlag(true);
+		curTran->maxValue = caltbl.getX()[nX-1];
+		curTran->channelRange = caltbl.getY()[nX-1];
 
 		/*Find the respective reference(iterator) by name from the trans_global_vec
 		 * If not found,push back a new entry in the vector and return its reference

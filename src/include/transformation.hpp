@@ -49,7 +49,7 @@ bool compare_y(coordinate i, coordinate j);
 
 class transformation{
 protected:
-	calibrationTable calTbl;
+	calibrationTable calTbl; //no longer have to store calTbl since we now can compute it from biexp even for mac workspace
 	bool isGateOnly;
 	unsigned short type;//could have been avoided if it is not required by R API getTransformation that needs to extract concrete transformation
 	string name;
