@@ -386,7 +386,7 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
 
-		biexpTrans *curTran=new biexpTrans();
+		biexpTrans *bt=new biexpTrans();
 
 		string tname=calTblNode.getProperty("name");
 		if(tname.empty())
@@ -406,9 +406,9 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 			/*
 			 * generic cal table (non-channel-specific)
 			 */
-			curTran->setName("Generic");
+			bt->setName("Generic");
 			//record the index of this caltbl instead
-			curTran->setChannel(boost::lexical_cast<std::string>(i+1));
+			bt->setChannel(boost::lexical_cast<std::string>(i+1));
 			transGroupName="Generic";
 		}
 		else
@@ -416,14 +416,14 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 			/*
 			 * channel-specific cal table
 			 */
-			curTran->setName(boost::trim_copy((tname.substr(0,nPrefix))));
-			curTran->setChannel(tname.substr(nPrefix,tname.length()-nPrefix));
-			transGroupName=curTran->getName();
+			bt->setName(boost::trim_copy((tname.substr(0,nPrefix))));
+			bt->setChannel(tname.substr(nPrefix,tname.length()-nPrefix));
+			transGroupName=bt->getName();
 		}
 
-		curTran->pos = atof(calTblNode.getProperty("biexponentialDecades").c_str());
-		curTran->neg = atof(calTblNode.getProperty("biexponentialNegDecades").c_str());
-		curTran->widthBasis = atof(calTblNode.getProperty("biexponentialWidth").c_str());
+		bt->pos = atof(calTblNode.getProperty("biexponentialDecades").c_str());
+		bt->neg = atof(calTblNode.getProperty("biexponentialNegDecades").c_str());
+		bt->widthBasis = atof(calTblNode.getProperty("biexponentialWidth").c_str());
 		/* parse maxValue and channelRange
 		 *
 		 * We now compute caltbl from biexp
@@ -445,9 +445,26 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		caltbl.setY(tbl[slice(0,nX,2)]);
 		caltbl.setX(tbl[slice(1,nX,2)]);
 
-		curTran->maxValue = caltbl.getX()[nX-1];
-		curTran->channelRange = caltbl.getY()[nX-1];
+		bt->maxValue = caltbl.getX()[nX-1];
+		bt->channelRange = caltbl.getY()[nX-1];
 
+		transformation * curTran = bt;
+		/*
+		 * sometime, the biexp parameters may not be stored properly
+		 * then we have to fall back to caltbl version
+		 */
+		try
+		{
+			bt->computCalTbl();
+		}catch(const logic_error & e){
+
+			COUT << e.what() << std::endl;
+			COUT << "caused by the invalid biexp parameters!Downcast the biexp to Calibration table instead!"<< std::endl;
+			delete bt;
+			curTran = new transformation();
+			curTran->setType(CALTBL);
+			curTran->setCalTbl(caltbl);
+		}
 		/*Find the respective reference(iterator) by name from the trans_global_vec
 		 * If not found,push back a new entry in the vector and return its reference
 		 */
