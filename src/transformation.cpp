@@ -551,6 +551,8 @@ biexpTrans::biexpTrans():transformation(false, BIEXP),channelRange(4096), pos(4.
 }
  /*
   * directly translated from java routine from tree star
+  * potential segfault risk: the inappropriate biexp parameters can cause
+  * the indexing of valarray out of the boundary.
   */
 
 void biexpTrans::computCalTbl(){
@@ -596,11 +598,21 @@ void biexpTrans::computCalTbl(){
 
 	double s = exp((positiveRange + negativeRange) * (width + extra / decades));
 	negative *= s;
+
+	//ensure it is not out-of-bound
+	if(zeroChan<0||zeroChan>=nPoints)
+		throw(logic_error("invalid zeroChan: " + std::to_string(zeroChan)));
+
 	s = positive[zeroChan] - negative[zeroChan];
 	for (int j = zeroChan; j < nPoints; j++)
 		positive[j] = minimum * (positive[j] - negative[j] - s);
-	for (int j = 0; j < zeroChan; j++)
-		positive[j] = -positive[2 * zeroChan - j];
+	for (int j = 0; j < zeroChan; j++){
+		int m = 2 * zeroChan - j;
+		if(m<0||m>=nPoints)
+				throw(logic_error("invalid value from '2 * zeroChan - j': " + std::to_string(m)));
+		positive[j] = -positive[m];
+	}
+
 
 	/*
 	 * save the calibration table
