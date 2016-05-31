@@ -422,6 +422,23 @@ BOOST_AUTO_TEST_CASE(gs2flowjo)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+BOOST_AUTO_TEST_CASE(invalid_biexp_parameter)
+{
+
+	myTest.filename="/home/wjiang2/rglab/workspace/BioC/devel/flowWorkspaceData/inst/extdata/A2004Analysis.xml";
+	myTest.wsType = WS_MAC;
+	myTest.samples["1"]="a2004_O1T2pb05i";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/invalid_biexp_parameter/nc_comp.nc";
+	myTest.colfile="../output/invalid_biexp_parameter/colnames.txt";
+	myTest.archive="../output/invalid_biexp_parameter/gs";
+//	g_loglevel = GATE_LEVEL;
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";
