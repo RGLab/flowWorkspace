@@ -480,7 +480,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 				if(is.null(compensation)){
                   ## try to match marker from comp with flow data in case flowJo is not consistent with data
-                  markerInd <- sapply(marker, function(thisMarker)grep(paste0("^", thisMarker , "$"), cnd, ignore.case = channel.ignore.case))
+                  markerInd <- unlist(lapply(marker, function(thisMarker)grep(paste0("^", thisMarker , "$"), cnd, ignore.case = channel.ignore.case)))
                   matchedMarker <- cnd[markerInd]
                   if(length(matchedMarker) != length(marker))
                     stop("channels mismatched between compensation and flow data!")
