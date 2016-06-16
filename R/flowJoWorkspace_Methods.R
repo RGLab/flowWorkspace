@@ -23,7 +23,7 @@ NULL
 #' }
 #' 
 #' @importFrom XML xmlTreeParse xmlAttrs xmlGetAttr xmlTreeParse xmlRoot xmlValue xpathApply
-#' 
+#' @import flowCore ncdfFlow
 #' @aliases openWorkspace
 #' @rdname openWorkspace
 #' @export 

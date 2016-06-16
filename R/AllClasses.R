@@ -468,7 +468,6 @@ GatingSetList <- function(x,samples = NULL)
 #' @name booleanFilter-class
 #' @rdname booleanFilter-class
 #' @exportClass booleanFilter
-#' @importClassesFrom flowCore filter concreteFilter expressionFilter
 #' @aliases 
 #' show,booleanFilter-method
 setClass("booleanFilter"
@@ -512,7 +511,6 @@ char2booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter") {
 #' @param object \code{booleanFilter}
 #' @rdname booleanFilter-class
 #' @export 
-#' @importMethodsFrom flowCore identifier
 setMethod("show",signature("booleanFilter"),function(object){
 			
 			msg <- paste("booleanFilter filter '", identifier(object),
