@@ -371,10 +371,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param extend_to \code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 #' @param transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
-#' @importMethodsFrom flowCore colnames colnames<- compensate spillover sampleNames
-#' @importFrom flowCore compensation read.FCS read.FCSheader read.flowSet
 #' @importFrom Biobase AnnotatedDataFrame
-#' @importClassesFrom flowCore flowFrame flowSet
 .addGatingHierarchies <- function(gs, samples, execute,isNcdf = TRUE
                                       ,compensation=NULL,wsType = ""
                                       , extend_val = 0, extend_to = -4000
@@ -1095,8 +1092,6 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #' @param type \code{character} either 'xyplot' or 'densityplot'
 #' @param stats \code{numeric} proportions of cell population. If \code{missing} then extract it from \code{gatingHiearchy}
 #' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
-#' @importClassesFrom flowCore filters filtersList
-#' @importFrom flowCore filters filtersList
 .preplot <- function(x, y, type, stats, formula, default.x = "FSC-A", default.y = "SSC-A"){
   samples <- sampleNames(x)
 
@@ -1284,7 +1279,6 @@ fix_y_axis <- function(gs, x, y){
 #' @param xlim, ylim \code{character} can be either "instrument" or "data" which determines the x, y axis scale either by instrument measurement range or the actual data range.
 #'          or \code{numeric} which specifies customized range.
 #' @param ... other arguments passed to .formAxis and flowViz
-#' @importMethodsFrom flowCore nrow parameters parameters<-
 #' @importMethodsFrom flowViz xyplot densityplot
 #' @importFrom RColorBrewer brewer.pal
 .plotGate <- function(x, y, formula=NULL, cond=NULL
@@ -1786,7 +1780,6 @@ setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y, ...){
     })
 #' @rdname getData-methods
 #' @export
-#' @importMethodsFrom flowCore Subset
 setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...){
 
       this_data <- getData(obj, ...)
@@ -2464,7 +2457,6 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
 #' }
 #' @export
 #' @rdname transform
-#' @importMethodsFrom ncdfFlow transform
 setMethod("transform",
     signature = signature(`_data` = "GatingSet"),
     definition = function(`_data`, ...)
@@ -2546,7 +2538,6 @@ transformerList <- function (from, trans)
 #' }
 #' @export
 #' @rdname compensate
-#' @importMethodsFrom ncdfFlow compensate
 setMethod("compensate", signature=signature(x="GatingSet", spillover="compensation"),
     definition=function(x, spillover){
       x@compensation <- spillover
@@ -2557,7 +2548,6 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="compensati
     })
 
 #' @rdname markernames
-#' @importFrom flowCore markernames
 #' @export
 setMethod("markernames",
           signature=signature(object="GatingSet"),
@@ -2568,7 +2558,6 @@ setMethod("markernames",
           })
 
 #' @rdname markernames
-#' @importFrom flowCore markernames<-
 #' @export
 setReplaceMethod("markernames",
                  signature=signature(object="GatingSet", value="ANY"), function(object, value){

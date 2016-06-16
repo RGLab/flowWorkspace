@@ -743,7 +743,6 @@ setMethod("show","GatingHierarchy",function(object){
 #'       #get single keyword from one sample
 #'       keyword(G[[1, "FILENAME")
 #'     }
-#' @importFrom flowCore keyword
 #' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
@@ -994,7 +993,6 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2, path = "auto", ...){
 #'   }
 #' @aliases
 #' getGate
-#' @importFrom flowCore polygonGate rectangleGate
 #' @rdname getGate
 #' @export
 setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
@@ -1079,7 +1077,6 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #' }
 #'
 #' @aliases getIndices
-#' @importFrom ncdfFlow getIndices
 #' @rdname getIndices
 #' @export
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
@@ -1453,7 +1450,6 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 #'
 #' }
 #' @importFrom gridExtra arrangeGrob
-#' @importFrom flowCore getChannelMarker
 #' @rdname plotGate-methods
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                     , function(x, y, ...
@@ -1728,7 +1724,6 @@ setMethod("pData","GatingHierarchy",function(object){
 #' chnls.new[c(1,4)] <- c("fsc", "ssc")
 #' colnames(gs) <-  chnls.new
 #' }
-#' @importFrom flowCore markernames
 #' @rdname markernames
 #' @export
 setMethod("markernames",
@@ -1741,7 +1736,6 @@ setMethod("markernames",
 
 
 #' @rdname markernames
-#' @importFrom flowCore markernames<-
 #' @export
 setReplaceMethod("markernames",
                  signature=signature(object="GatingHierarchy", value="ANY"), function(object, value){

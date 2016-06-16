@@ -89,7 +89,6 @@ NULL
 #' @aliases
 #' add
 #' Rm
-#' @importFrom flowCore add
 setMethod("add",
 		signature=c(wf="GatingSet", "list"),
 		definition=function(wf, action, ...)
@@ -131,8 +130,6 @@ setMethod("add",
       
     })
     
-#' @importClassesFrom flowCore filterList filtersList ellipsoidGate intersectFilter polygonGate rectangleGate filters
-#' @importFrom flowCore filterList filtersList filters
 #' @param validityCheck \code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.
 #' @export 
 #' @rdname add
@@ -372,7 +369,6 @@ setMethod("add",
 #			.addGate(wf,filterObject,...)
 #		})
 
-#' @importFrom flowCore Rm
 #' @export 
 #' @rdname add
 setMethod("Rm",

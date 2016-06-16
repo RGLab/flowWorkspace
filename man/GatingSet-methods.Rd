@@ -39,7 +39,7 @@ construct object from xml workspace file and a list of sampleIDs (not intended t
 
 construct a gatingset with empty trees (just root node)
 
-construct object from existing gating hierarchy(gating template) and flow data
+construct object from existing gating hierarchy(gating template) and flow data (Defunct)
 }
 \examples{
 \dontrun{
