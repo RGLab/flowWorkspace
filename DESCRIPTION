@@ -34,7 +34,8 @@ Imports:
     Rcpp,
     RColorBrewer,
     stringr,
-    scales
+    scales,
+    flowViz
 Collate:
     'AllGenerics.R'
     'AllClasses.R'
