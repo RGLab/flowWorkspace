@@ -97,9 +97,9 @@ test_that("v 10.0.6 - vX 1.8",{
       gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = TRUE)
       
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+            
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[-1, flowJo.count], thisCounts[-1, flowCore.count], tol = 3.7e-3)
       
       #test double delimiter issue
       fcsname <- pData(gs)[["name"]]
@@ -114,13 +114,13 @@ test_that("v 10.0.6 - vX 1.8",{
               
       gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = T, path = tmp, emptyValue = F)#ncdf
       gh <- gs[[1]]
-      thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]            
-      expect_equal(thisCounts, expectCounts)
+      thisCounts <- getPopStats(gh)            
+      expect_equal(thisCounts[-1, flowJo.count], thisCounts[-1, flowCore.count], tol = 3.7e-3)
       
       gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = F, path = tmp, emptyValue = F)#flowSet
       gh <- gs[[1]]
-      thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]            
-      expect_equal(thisCounts, expectCounts)
+      thisCounts <- getPopStats(gh)            
+      expect_equal(thisCounts[-1, flowJo.count], thisCounts[-1, flowCore.count], tol = 3.7e-3)
     })
 
 

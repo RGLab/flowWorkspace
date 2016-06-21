@@ -201,13 +201,13 @@ void polygonGate::extend(flowData & fdata,float extend_val){
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
-			v.at(i).x=xMin;
+			v.at(i).x=min(xMin, v.at(i).x);
 		}
 		if(v.at(i).y<=extend_val)
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
-			v.at(i).y=yMin;
+			v.at(i).y=min(yMin, v.at(i).y);
 
 		}
 	}
@@ -230,13 +230,13 @@ void polygonGate::extend(float extend_val, float extend_to){
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<x<<"from "<<v.at(i).x<<" to :"<<xMin<<endl;
-			v.at(i).x=xMin;
+			v.at(i).x=min(xMin,v.at(i).x);
 		}
 		if(v.at(i).y<=extend_val)
 		{
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT <<"extending "<<y<<"from "<<v.at(i).y<<" to :"<<yMin<<endl;
-			v.at(i).y=yMin;
+			v.at(i).y=min(yMin, v.at(i).y);
 
 		}
 	}
@@ -520,7 +520,7 @@ void rangeGate::extend(flowData & fdata,float extend_val){
 	{
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
-		param.setMin(xMin);
+		param.setMin(min(xMin, param.getMin()));
 	}
 
 
@@ -534,7 +534,7 @@ void rangeGate::extend(float extend_val, float extend_to){
 	{
 		if(g_loglevel>=POPULATION_LEVEL)
 			COUT <<"extending "<<pName<<"from "<<param.getMin()<<" to :"<<xMin<<endl;
-		param.setMin(xMin);
+		param.setMin(min(xMin, param.getMin()));
 	}
 
 
