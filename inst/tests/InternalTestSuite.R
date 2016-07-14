@@ -5,6 +5,16 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 sink("/dev/null")
 
 test_that("curlyQuad gate1 ",{
+      thisPath <- file.path(path, "gate_extension")
+      wsFile <- file.path(thisPath, "VSVG OGH 14OCT15.wsp")
+      ws <- openWorkspace(wsFile)
+      gs <- parseWorkspace(ws, name=2)
+      
+      res <- getPopStats(gs[[1]])
+      expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 2e-3)
+    })
+
+test_that("curlyQuad gate1 ",{
       thisPath <- file.path(path, "curlyQuad/example1")
       wsFile <- file.path(thisPath, "20151208_TBNK_DS.xml")
       ws <- openWorkspace(wsFile)
