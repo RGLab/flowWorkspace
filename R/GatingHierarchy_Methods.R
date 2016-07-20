@@ -1597,18 +1597,22 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 	plotList
 }
 #copy from sfsmisc package
-pretty10exp<-function (x, drop.1 = FALSE, digits.fuzz = 7)
+#modified to handle NA values
+pretty10exp <-function (x, drop.1 = FALSE, digits.fuzz = 7)
 {
 	eT <- floor(log10(abs(x)) + 10^-digits.fuzz)
 	mT <- signif(x/10^eT, digits.fuzz)
 	ss <- vector("list", length(x))
-	for (i in seq(along = x)) ss[[i]] <- if (x[i] == 0)
-					quote(0)
-				else if (drop.1 && mT[i] == 1)
-					substitute(10^E, list(E = eT[i]))
-				else if (drop.1 && mT[i] == -1)
-					substitute(-10^E, list(E = eT[i]))
-				else substitute(A %*% 10^E, list(A = mT[i], E = eT[i]))
+	for (i in seq(along = x)) ss[[i]] <- if (is.na(x[i]))
+                	                  quote(NA)
+                    	  else if (x[i] == 0)
+                					quote(0)
+                				else if (drop.1 && mT[i] == 1)
+                					substitute(10^E, list(E = eT[i]))
+                				else if (drop.1 && mT[i] == -1)
+                					substitute(-10^E, list(E = eT[i]))
+                				else substitute(A %*% 10^E, list(A = mT[i], E = eT[i]))
+	
 	do.call("expression", ss)
 }
 
