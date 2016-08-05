@@ -35,8 +35,12 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 COMPILER=`"${R_HOME}/bin/R" CMD config CC`
-CXX=`"${R_HOME}/bin/R" CMD config CXX`
-CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+CXX1X=`"${R_HOME}/bin/R" CMD config CXX1X`
+CXX1XSTD=`"${R_HOME}/bin/R" CMD config CXX1XSTD`
+CXX="${CXX1X} ${CXX1XSTD}"
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXX1XFLAGS`
+AC_LANG(C++)
+
 CC=`"${R_HOME}/bin/R" CMD config CC`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 MAKE=`${R_HOME}/bin/R CMD config MAKE`
