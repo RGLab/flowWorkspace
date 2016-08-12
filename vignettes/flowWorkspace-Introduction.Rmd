@@ -255,6 +255,14 @@ Once `transformer` object is created, we must convert it to `transformerList` fo
 ```{r transformerList}
 chnls <- colnames(fs)[3:6] 
 transList <- transformerList(chnls, trans.obj)
+```
+Alternatively, the overloaded `estimateLogicle` method can be used directly on `GatingHierarchy` to generate a `transformerList` object automatically.
+```{r estimateLogicle}
+estimateLogicle(gs[[1]], chnls)
+```
+
+Now we can transform `GatingSet` with `transformerList` object. It will also store the transformation in the `GatingSet` and can be used to inverse-transform the data.
+```{r transform-gs}
 gs <- transform(gs, transList)
 getNodes(gs) 
 ```
