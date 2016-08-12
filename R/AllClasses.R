@@ -447,7 +447,7 @@ GatingSetList <- function(x,samples = NULL)
   
   if(validObject(x)){
     gslist <- x@data
-    #' make sure the column names of flow data are in the same order
+    # make sure the column names of flow data are in the same order
     cols <- flowCore::colnames(getData(gslist[[1]]))
     gslist <- lapply(gslist, function(gs){
           flowData(gs) <- flowData(gs)[,cols]
