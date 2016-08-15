@@ -1393,8 +1393,9 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
 setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 
       compobj <- x@compensation
+      sn <- sampleNames(x)
       if(is.null(compobj)){
-        comp<-.cpp_getCompensation(x@pointer,sampleNames(x))
+        comp<-.cpp_getCompensation(x@pointer, sn)
         cid<-comp$cid
         #			browser()
         if(cid=="")
@@ -1421,6 +1422,8 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
           }
 
         }
+      }else{
+        compobj <- compobj[[sn]]
       }
 
 			compobj

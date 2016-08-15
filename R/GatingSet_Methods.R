@@ -381,8 +381,23 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
   timestep.source  <- match.arg(timestep.source )
   if(nrow(samples)==0)
     stop("no sample to be added to GatingSet!")
-
+  
   guids <- samples[["guid"]]
+  
+  if(!is.null(compensation)){
+    #replicate the single comp 
+    if(is(compensation, "compensation")){
+      compensation <- sapply(guids, function(guid)compensation, simplify = FALSE)   
+    }else{
+      if(is.list(compensation)){
+        if(!setequal(names(compensation), guids))
+          stop("names of the compensation list must match the 'guids' of samples!")
+      }else
+        stop("'compensation' should be either a compensation object of a list of compensation objects!")
+    }
+     
+  }
+  
 
   #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
   pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
@@ -465,7 +480,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
       }
 
-
+      compensation <- compensation[[guid]]
 
 			if(cid=="")
 				cid=-2
@@ -476,6 +491,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 				marker <- comp$parameters
 
 				if(is.null(compensation)){
+                  
                   ## try to match marker from comp with flow data in case flowJo is not consistent with data
                   markerInd <- unlist(lapply(marker, function(thisMarker)grep(paste0("^", thisMarker , "$"), cnd, ignore.case = channel.ignore.case)))
                   matchedMarker <- cnd[markerInd]
@@ -741,6 +757,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	}
 
     flowData(gs) <- fs
+    if(!is.null(compensation))
+      gs@compensation <- compensation #append the customized compensations provided outside of xml
 	gs
 }
 
