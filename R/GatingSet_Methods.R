@@ -390,7 +390,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       compensation <- sapply(guids, function(guid)compensation, simplify = FALSE)   
     }else{
       if(is.list(compensation)){
-        if(!setequal(names(compensation), guids))
+        if(!all(guids %in% names(compensation)))
           stop("names of the compensation list must match the 'guids' of samples!")
       }else
         stop("'compensation' should be either a compensation object of a list of compensation objects!")
@@ -758,7 +758,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
     flowData(gs) <- fs
     if(!is.null(compensation))
-      gs@compensation <- compensation #append the customized compensations provided outside of xml
+      gs@compensation <- compensation[guids] #append the customized compensations provided outside of xml
 	gs
 }
 
@@ -2570,7 +2570,7 @@ estimateLogicle.GatingHierarchy <- function(x, channels, ...){
 #' The compensation is saved in the GatingSet and can be retrieved by \link{getCompensationMatrices}.
 #'
 #' @param x \code{GatingSet} or \code{GatingSetList}
-#' @param spillover \code{compensation} object
+#' @param spillover \code{compensation} object or a list of \code{compensation} objects
 #'
 #' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data compensated.
 #' @examples
@@ -2585,14 +2585,19 @@ estimateLogicle.GatingHierarchy <- function(x, channels, ...){
 #' }
 #' @export
 #' @rdname compensate
-setMethod("compensate", signature=signature(x="GatingSet", spillover="compensation"),
+setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
     definition=function(x, spillover){
-      x@compensation <- spillover
+      samples <- sampleNames(x)
+      if(!is.list(spillover)||is.data.frame(spillover)){
+        spillover <- sapply(samples, function(guid)spillover, simplify = FALSE)
+      }
+      x@compensation <- spillover[samples]
       fs <- getData(x)
       suppressMessages(fs_comp <- compensate(fs, spillover))
       flowData(x) <- fs_comp
       x
     })
+
 
 #' @rdname markernames
 #' @export

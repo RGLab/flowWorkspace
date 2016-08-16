@@ -52,10 +52,7 @@ test_that("parse without gating",{
       
       thisStats <- getPopStats(gh1)[, list(flowJo.freq,flowJo.count, node)]
       expectStats <- getPopStats(gh)[, list(flowJo.freq,flowJo.count, node)]
-      expect_equal      dd <- capture.output(suppressMessages(
-              gs1 <- try(parseWorkspace(ws, name = 4
-                      , compensation = comp
-                      , execute = TRUE))))(thisStats, expectStats)
+      expect_equal(thisStats, expectStats)
       
       #exclude the gates that require extension since the extend_to are different 
       # based on whether data is loaded
@@ -70,10 +67,10 @@ test_that("parse without gating",{
 test_that("external comp", {
       comp <- getCompensationMatrices(gh)
       #single comp
-      dd <- capture.output(suppressMessages(
+      dd <- capture.output(suppressWarnings(suppressMessages(
                           gs1 <- try(parseWorkspace(ws, name = 4
                                       , compensation = comp
-                                      , execute = TRUE))))
+                                      , execute = TRUE)))))
       expect_that(gs1, is_a("GatingSet"));
       expect_is(gs1@compensation, "list")
       
@@ -86,10 +83,10 @@ test_that("external comp", {
       
       #a list of comp
       comp <- gs1@compensation
-      dd <- capture.output(suppressMessages(
+      dd <- capture.output(suppressWarnings(suppressMessages(
               gs1 <- try(parseWorkspace(ws, name = 4
                       , compensation = comp
-                      , execute = TRUE))))
+                      , execute = TRUE)))))
       expect_that(gs1, is_a("GatingSet"));
       expect_is(gs1@compensation, "list")
       expect_equal(comp, gs1@compensation)
@@ -97,12 +94,16 @@ test_that("external comp", {
       thisStats <- getPopStats(gh1)
       expect_equal(thisStats, expectStats)
       
-      #wrong type of comp
-      #inconsistent length or names of list
+      
+      #extra elements
       comp[3] <- comp[1]
       names(comp)[3] <- "dd"
-      expect_error(dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE))))
-                    , regexp = "must match the 'guids'")
+      dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE))))
+      expect_that(gs1, is_a("GatingSet"));
+      expect_is(gs1@compensation, "list")
+      expect_equal(comp[1:2], gs1@compensation)
+      
+      #inconsistent names of list
       comp[[3]] <- NULL
       names(comp)[2] <- "dd"
       expect_error(dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE))))
