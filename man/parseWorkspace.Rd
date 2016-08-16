@@ -23,7 +23,7 @@
 \item path either a \code{character} scalar or \code{data.frame}. When \code{character}, it is a path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. 
                                                 When it is a \code{data.frame}, it is expected to contain two columns:'sampleID' and 'file', which is used as the mapping between 'sampleID' and FCS file (absolute) path. When such mapping is provided, the file system searching is avoided.
 \item sampNloc a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
-\item compensation=NULL: a \code{matrix} that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
+\item compensation=NULL: a \code{compensation} or a list of \code{compensation}s that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
 \item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
 \item channel.ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 \item extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
@@ -75,6 +75,9 @@ gs <- parseWorkspace(ws, path = dataDir, name = 4
                          , subset = `TUBE NAME` \%in\% c("CytoTrol_1", "CytoTrol_2")
                          , keywords = "TUBE NAME")
 }
+
+#overide the default compensation defined in xml with the customized compenstations
+gs <- parseWorkspace(ws, name = 2, compensation = comps); #comp is either a compensation object or a list of compensation objects
 
 }
 \seealso{

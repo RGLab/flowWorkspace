@@ -260,7 +260,8 @@ dropRedundantChannels <- function(gs, ...){
 updateChannels <- function(gs, map, all = TRUE){
   
   map <- .preprocessMap(gs, map)
-  
+  if(!is.null(gs@compensation))
+    stop("'updateChannels' can only update the compensation stored at c++ level!")
   #update gates and comps ,trans
   .updateChannels(gs, map)
   
