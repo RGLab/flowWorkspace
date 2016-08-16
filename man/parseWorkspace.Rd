@@ -74,11 +74,11 @@ The \code{subset} argument allows one to select a set of files from the chosen s
 gs <- parseWorkspace(ws, path = dataDir, name = 4
                          , subset = `TUBE NAME` \%in\% c("CytoTrol_1", "CytoTrol_2")
                          , keywords = "TUBE NAME")
-}
+
 
 #overide the default compensation defined in xml with the customized compenstations
 gs <- parseWorkspace(ws, name = 2, compensation = comps); #comp is either a compensation object or a list of compensation objects
-
+}
 }
 \seealso{
 \code{\link{getSampleGroups}},\code{\link{GatingSet}}

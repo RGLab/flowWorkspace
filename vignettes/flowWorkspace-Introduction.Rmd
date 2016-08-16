@@ -5,6 +5,7 @@ output:
     number_sections: yes
     theme: united
     toc: yes
+    toc_float: yes
 author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
 vignette: >    
   %\VignetteKeywords{flow cytometry, single cell assay, import}
@@ -235,6 +236,13 @@ comp <- compensation(comp.mat)
 #compensate GatingSet
 gs <- compensate(gs, comp)
 ```
+
+<span style = "color:red">**New**: You can now pass a list of `compensation` objects with elements named by `sampleNames(gs)` to achieve sample-specific compensations. e.g. </span>
+```{r eval=FALSE}
+gs <- compensate(gs, comp.list)
+```
+
+
 
 Then we can transform it with any transformation defined by user through `trans_new` function of `scales` package.
 ```{r user-transformation}
