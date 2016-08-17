@@ -277,8 +277,7 @@ load_gs<-function(path){
 
       if(!.hasSlot(gs, "compensation"))
         gs@compensation <- NULL
-
-
+      
       guid <- try(slot(gs,"guid"),silent=T)
       if(class(guid)=="try-error"){
         #generate the guid for the legacy archive
@@ -296,6 +295,17 @@ load_gs<-function(path){
         flowData(gs)@file <- nc.file
 
       }
+      #deal with legacy gs that stores single comp in compensation slot
+      comp <- gs@compensation
+      if(!is.null(comp))
+      {
+        if(!is.list(comp)||is.data.frame(comp)){
+          gs@compensation <- sapply(sampleNames(gs), function(sn)comp, simplify = FALSE)
+        }
+         
+      }
+       
+
       message("Done")
       list(gs=gs,files=c(dat.file,rds.file))
 }
