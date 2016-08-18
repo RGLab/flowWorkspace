@@ -521,13 +521,14 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
   
 
   #attach pData
+  pd <- as.data.frame(pd)
   rownames(pd) <- pd[["guid"]] 
   pd[["guid"]] <- NULL
   #remove temporary columns
   pd[["sampleID"]] <- NULL
   pd[["nFound"]] <- NULL
   pd[["file"]] <- NULL
-  class(pd) <- "data.frame"
+  
   pData(gs) <- pd
     
   message("done!")
