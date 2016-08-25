@@ -157,11 +157,19 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
 #' @rdname save_gs
 #' @export
 save_gslist<-function(gslist,path,...){
-    
-  if(!file.exists(path))
+  
+  if(file.exists(path)){
+    expect <- unlist(lapply(gslist, slot, name = "guid", level = 1))
+    expect <- c(expect, "samples.rds")
+    if(!setequal(list.files(path), expect))
+      stop("The existing target path '", path, "' does not seem to match the source 'GatingSetList'!")
+  }else{
     dir.create(path = path)
+  }
+    
   #do the dir normalization again after it is created
   path <- normalizePath(path,mustWork = TRUE)
+  
   lapply(gslist,function(gs){
 #        this_dir <- tempfile(pattern="gs",tmpdir=path)
 #        dir.create(path = this_dir)
