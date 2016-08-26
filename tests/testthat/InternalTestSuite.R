@@ -381,9 +381,8 @@ test_that("v 9.0.1 - mac 2.0 (HVTN RV144 -- options = 1)",{
       thisPath <- file.path(path, "HVTN/RV144")
       wsFile <- file.path(thisPath, "Batch 1264 RV144.xml")
 
-      ws <- openWorkspace(wsFile, options = 1)
-      
-      #not sure how to suppress the long stacks of C messages (XML package)
+      dd <- capture_output(ws <- openWorkspace(wsFile, options = 1))
+      #not sure how to suppress the long stacks of C messages (XML package)      
       gs <- parseWorkspace(ws, name = 4, subset = 1, execute = FALSE)
       expect_is(gs, "GatingSet")
       
