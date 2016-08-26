@@ -4,6 +4,19 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+
+test_that("gate extension ",{
+      thisPath <- file.path(path, "gate_extension")
+      wsFile <- file.path(thisPath, "02-15-2013 ICS.xml")
+      ws <- openWorkspace(wsFile)
+      gs <- suppressWarnings(parseWorkspace(ws, name=3))
+      
+      res <- getPopStats(gs[[1]])[flowJo.count != -1, ]
+      
+      expect_equal(res[, flowJo.freq], res[, flowCore.freq], tol = 3e-2)
+    })
+
+
 test_that("curlyQuad gate1 ",{
       thisPath <- file.path(path, "gate_extension")
       wsFile <- file.path(thisPath, "VSVG OGH 14OCT15.wsp")
@@ -146,9 +159,9 @@ test_that("v 10.0.7 - vX 20.0 (ellipsoidGate)",{
       gs <- parseWorkspace(ws, name = "Matrice", subset = 1, isNcdf = TRUE)
       
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts, tol = 1e-3)
+     
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 1.1e-2)
     })
 
 test_that("v 10.0.7 - vX 20.0 (missing_namespace and flin)",{
@@ -325,10 +338,8 @@ test_that("v 7.6.1- win 1.6 (use default biexp trans when channel-specific trans
       expect_warning(gs <- parseWorkspace(ws, name = 2, path = thisPath), "Can't find the FCS")
       gh <- gs[[1]]
       
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
-      
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 5e-3)
     })
 
 test_that("v 7.6.5 - win 1.61 (PBMC)",{
@@ -341,10 +352,9 @@ test_that("v 7.6.5 - win 1.61 (PBMC)",{
       expect_is(gs, "GatingSet")
       gs <- parseWorkspace(ws, name = 1, subset = 1, sampNloc = "sampleNode")
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
-      
+            
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 9e-3)
             
     })
 
@@ -360,9 +370,8 @@ test_that("v 7.6.5 - win 1.61 (sampNloc = 'sampleNode')",{
       
       gs <- parseWorkspace(ws, name = 1, subset = 1, path = file.path(thisPath,"Tcell"), sampNloc = "sampleNode", isNcdf = TRUE)
       gh <- gs[[1]]
-      suppressWarnings(expectCounts <- fread(file.path(thisPath, "expectCounts.csv")))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 2e-4)
       
     })
 
@@ -397,9 +406,8 @@ test_that("v 9.0.1 - mac 2.0 (HVTN 080-0880)",{
       
       gs <- parseWorkspace(ws, name = 4, subset = 1, isNcdf = TRUE)
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 2e-3)
       
     })
 
@@ -431,9 +439,8 @@ test_that("v 9.4.2 - mac 2.0",{
       
       gs <- parseWorkspace(ws, name = 2, subset = 1, isNcdf = TRUE)
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts, tol = 35e-4)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 5e-3)
       
     })
 
@@ -451,9 +458,8 @@ test_that("v 9.4.4 - mac 2.0 ",{
       
       gs <- parseWorkspace(ws, name = "Test", subset = 1)
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts, tol = 2.5e-4)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 2e-2)
       
     })
 
@@ -499,9 +505,8 @@ test_that("v 9.6.3 - mac 2.0 (ignore highValue for FSC/SSC)",{
       
       gs <- parseWorkspace(ws, name = 1, subset = "Specimen_001_Tube_024.fcs", isNcdf = TRUE)
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh, path = "full")[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts, tol = 8e-05)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 7e-3)
       
     })
 
@@ -547,10 +552,8 @@ test_that("v 9.7.5 - mac 3.0 (boolGate that refers to the non-sibling nodes)",{
       
       gs <- parseWorkspace(ws, name = 2, subset = "434713.fcs", isNcdf = TRUE)
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      
-      expect_equal(thisCounts, expectCounts)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, flowJo.freq], thisCounts[, flowCore.freq], tol = 2e-3)
     })
 
 

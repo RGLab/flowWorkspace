@@ -289,10 +289,11 @@ void gating(XPtr<GatingSet> gs
 		for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
 			gains[*it]=gainsVec[*it];
 		}
-		gh->extendGate(extend_val);
+
 		gh->adjustGate(gains);
 		gh->transformGate();
 		gh->transforming(timestep);
+		gh->extendGate(extend_val);
 	}
 
 	gh->gating(nodeInd,recompute, computeTerminalBool);
