@@ -171,10 +171,11 @@ void gs_gating(GatingSet &gs,string curSample, hdfFlow nc, map<string,float> &ga
 	 * then load data from memory (as it(res) is passed from R routine
 	 */
 	gh->loadData(res);//
-	gh->extendGate(0);
+
 	gh->adjustGate(gains);
 	gh->transformGate();
 	gh->transforming(1);
+	gh->extendGate(0);
 
 	gh->gating(0,false);
 	gh->unloadData();
