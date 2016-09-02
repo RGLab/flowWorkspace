@@ -5,8 +5,8 @@ test_check("flowWorkspace")
 
 #devtools::test("~/rglab/workspace/flowWorkspace")
 
-#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/inst/tests/test-archive.R")
-#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/inst/tests/test-parseWorkspace.R")
+#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/test-archive.R")
+#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/test-parseWorkspace.R")
 
-#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/inst/tests/InternalTestSuite.R")
+#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/InternalTestSuite.R")
 

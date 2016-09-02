@@ -1595,7 +1595,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 			message("cloning flow data...")
 			fs <- flowData(x)
 			if(isNcdf(x))
-				fs_clone<-ncdfFlow::clone.ncdfFlowSet(fs,isEmpty=FALSE,isNew=TRUE,...)
+				fs_clone<-clone.ncdfFlowSet(fs,...)
 			else
 				fs_clone<-flowCore:::copyFlowSet(fs)
 
