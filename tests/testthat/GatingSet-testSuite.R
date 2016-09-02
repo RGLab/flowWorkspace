@@ -48,7 +48,7 @@ test_that("flowData ",{
 
 test_that("clone & rbind2",{
       
-      suppressMessages(invisible(capture.output(gs_clone <- clone(gs))))
+      expect_message(gs_clone <- clone(gs), "copying data")
       expect_is(gs_clone, "GatingSet");
       
       #check data consistency
@@ -68,6 +68,10 @@ test_that("clone & rbind2",{
       
       expect_equal(getPopStats(gs), getPopStats(gs_clone))
       expect_equal(getPopStats(gs[[1]]), getPopStats(gs_clone[[1]]))
+      
+      #clone without copying hdf data
+      expect_message(gs_clone1 <- clone(gs, isNew = FALSE), "cloned")
+      expect_equal(getData(gs_clone1)@file, fs1@file)
       
       #construct gslist to rbind2
       sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
