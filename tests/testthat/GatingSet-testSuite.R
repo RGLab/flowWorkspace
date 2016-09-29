@@ -390,6 +390,16 @@ test_that("getSingleCellExpression for COMPASS",{
                                           )
       expect_equal(colnames(thisRes[[1]]), c("CD38 APC", "CCR7 PE", "CD4 PcpCy55"))
       
+      #swap
+      expect_warning(thisRes2 <- getSingleCellExpression(gs, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') 
+                                         , map = list("CD8/38- DR+" = "R660", "CD8/CCR7- 45RA+" = "G560")
+                                         , other.markers = c("B710", "R660")
+                                         , threshold = FALSE
+                                         , swap = T
+                                        ), "partially matched")
+      expect_equivalent(thisRes2,thisRes)
+      expect_equal(colnames(thisRes2[[1]]), c("<R660-A>", "<G560-A>", "<B710-A>"))
+      
     })
 
 
