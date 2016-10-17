@@ -6,14 +6,16 @@
 \alias{transform,GatingSetList-method}
 \title{tranform the flow data asssociated with the GatingSet}
 \usage{
-\S4method{transform}{GatingSet}(`_data`, ...)
+\S4method{transform}{GatingSet}(`_data`, translist, ...)
 
 \S4method{transform}{GatingSetList}(`_data`, ...)
 }
 \arguments{
 \item{_data}{\code{GatingSet} or \code{GatingSetList}}
 
-\item{...}{expect a \code{transformList} object}
+\item{translist}{expect a \code{transformList} object}
+
+\item{...}{other arguments passed to 'transform' method for 'ncdfFlowSet'.(e.g. 'ncdfFile')}
 }
 \value{
 a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
