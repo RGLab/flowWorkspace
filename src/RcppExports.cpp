@@ -6,6 +6,38 @@
 
 using namespace Rcpp;
 
+// getSingleCellExpressionByGate
+NumericMatrix getSingleCellExpressionByGate(XPtr<GatingSet> gs, string sampleName, List markers_pops, NumericMatrix data, CharacterVector markers, bool threshold);
+RcppExport SEXP flowWorkspace_getSingleCellExpressionByGate(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP markers_popsSEXP, SEXP dataSEXP, SEXP markersSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< List >::type markers_pops(markers_popsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type markers(markersSEXP);
+    Rcpp::traits::input_parameter< bool >::type threshold(thresholdSEXP);
+    __result = Rcpp::wrap(getSingleCellExpressionByGate(gs, sampleName, markers_pops, data, markers, threshold));
+    return __result;
+END_RCPP
+}
+// getSingleCellExpression
+NumericMatrix getSingleCellExpression(XPtr<GatingSet> gs, string sampleName, vector<string> pops, NumericMatrix data, CharacterVector markers, bool threshold);
+RcppExport SEXP flowWorkspace_getSingleCellExpression(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP popsSEXP, SEXP dataSEXP, SEXP markersSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type pops(popsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type markers(markersSEXP);
+    Rcpp::traits::input_parameter< bool >::type threshold(thresholdSEXP);
+    __result = Rcpp::wrap(getSingleCellExpression(gs, sampleName, pops, data, markers, threshold));
+    return __result;
+END_RCPP
+}
 // getPopCounts
 Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, StringVec subpopulation, bool flowJo, bool isFullPath);
 RcppExport SEXP flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP sampleNamesSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
@@ -352,22 +384,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type hidden(hiddenSEXP);
     setNodeFlag(gs, sampleName, gatePath, hidden);
     return R_NilValue;
-END_RCPP
-}
-// getSingleCellExpression
-NumericMatrix getSingleCellExpression(XPtr<GatingSet> gs, string sampleName, NODEID_vec nodeIDs, NumericMatrix data, CharacterVector markers, bool threshold);
-RcppExport SEXP flowWorkspace_getSingleCellExpression(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP nodeIDsSEXP, SEXP dataSEXP, SEXP markersSEXP, SEXP thresholdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
-    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
-    Rcpp::traits::input_parameter< NODEID_vec >::type nodeIDs(nodeIDsSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type markers(markersSEXP);
-    Rcpp::traits::input_parameter< bool >::type threshold(thresholdSEXP);
-    __result = Rcpp::wrap(getSingleCellExpression(gs, sampleName, nodeIDs, data, markers, threshold));
-    return __result;
 END_RCPP
 }
 // parseWorkspace

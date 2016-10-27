@@ -5,11 +5,12 @@
 \alias{getSingleCellExpression}
 \alias{getSingleCellExpression,GatingSet,character-method}
 \alias{getSingleCellExpression,GatingSetList,character-method}
+\alias{getSingleCellExpressionByGate}
 \title{Return the cell events data that express in any of the single populations defined in \code{y}}
 \usage{
-\S4method{getSingleCellExpression}{GatingSet,character}(x, nodes,
-  other.markers = NULL, swap = FALSE, threshold = TRUE,
-  mc.cores = getOption("mc.cores", 1L), ...)
+\S4method{getSingleCellExpression}{GatingSet,character}(x, nodes, ...)
+
+getSingleCellExpressionByGate(...)
 
 \S4method{getSingleCellExpression}{GatingSetList,character}(x, nodes, ...)
 }
@@ -18,22 +19,26 @@
 
 \item{nodes}{\code{character} vector specifying different cell populations}
 
-\item{other.markers}{\code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.}
-
-\item{swap}{\code{logical} indicates whether channels and markers of flow data are swapped.}
-
-\item{threshold}{\code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.}
-
-\item{mc.cores}{passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.}
-
 \item{...}{other arguments
 
-     map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
+       other.markers \code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.
+
+       swap \code{logical} indicates whether channels and markers of flow data are swapped.
+       
+       threshold \code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.
+       
+       marginal \code{logical} indicates whether to the gate is treaded as 1d marginal gate. Default is TRUE, which means markers are determined either
+                               by node name or by 'map' argument explained below. When FALSE, the markers are determined by the gate dimensions.
+                               and node name and 'map' argument are ignored.
+
+       map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
                         names (as specified in either the \code{desc} or \code{name}
                          columns of the parameters of the associated \code{flowFrame}s
                          in the \code{GatingSet}). see examples.
 
-     ignore.case whether to ignore case when match the marker names. Default is FALSE.}
+       ignore.case whether to ignore case when match the marker names. Default is FALSE.
+
+       mc.cores passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.}
 }
 \value{
 A \code{list} of \code{numerci matrices}
@@ -44,11 +49,20 @@ Returns a list of matrix containing the events that expressed in any one of the 
 \examples{
 \dontrun{
   #G is a GatingSet
-	geData(G,3)
-	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+"))
+	nodes <- c("4+/TNFa+", "4+/IL2+")
+	res <- getSingleCellExpression(gs, nodes)
 	res[[1]]
+	
  # if it fails to match the given nodes to the markers, then try to provide the mapping between node and marker explicitly
-	res <- getSingleCellExpression(gs[1], c("4+/TNFa+", "4+/IL2+") , map = list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
+	res <- getSingleCellExpression(gs, nodes , map = list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
+	
+	# It can also operate on the 2d gates by setting marginal to FALSE
+	# The markers are no longer deduced from node names or supplied by map
+	# Instead, it retrieves the markers that are associated with the gates
+	nodes <- c("4+/TNFa+IFNg+", "4+/IL2+IL3+")
+	res <- getSingleCellExpression(gs, nodes, marginal = FALSE)
+	#or simply call convenient wrapper
+	getSingleCellExpressionByGate(gs, nodes)
 }
 }
 \author{
