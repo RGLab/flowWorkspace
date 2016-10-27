@@ -1,4 +1,4 @@
-test_that("compensate a GatingSet", {
+test_that("compensate & transform a GatingSet", {
       fs <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore"))
       gs <- GatingSet(fs)
       
@@ -10,10 +10,21 @@ test_that("compensate a GatingSet", {
       expectRes <- fsApply(compensate(fs, comp.mat), colMeans, use.exprs = TRUE)
       
       gs1 <- compensate(gs, comp.mat)
+      fs1 <- getData(gs1)
+      #the flowset has been cloned
       expect_failure(expect_equal(gs1@data@frames, gs@data@frames))
+      
+      #cdf version
+      suppressMessages(fs <- ncdfFlowSet(fs))
+      gs <- GatingSet(fs)
+      gs1 <- compensate(gs, comp.mat)
+      fs1 <- getData(gs1)
+      #ncdfFlowSet is not cloned
+      expect_equal(gs1@data@frames, gs@data@frames)
+      
       expect_is(gs1@compensation, "list")
       expect_equal(names(gs1@compensation), sampleNames(gs))
-      expect_equal(fsApply(getData(gs1), colMeans, use.exprs = TRUE), expectRes)
+      expect_equal(fsApply(fs1, colMeans, use.exprs = TRUE), expectRes)
       
       # list
       comp <- sapply(sampleNames(fs), function(sn)comp.mat, simplify = FALSE)
@@ -45,5 +56,26 @@ test_that("compensate a GatingSet", {
       expect_is(gs4@compensation, "list")
       expect_equal(names(gs4@compensation), sampleNames(gs))
       expect_equal(fsApply(getData(gs4), colMeans, use.exprs = TRUE), expectRes)
+    
+      #trans
+      translist <- estimateLogicle(fs[[1]], c("FL1-H", "FL2-H"))
+      fs.trans <- transform(fs, translist)  
+      expectRes <- fsApply(fs.trans, colMeans, use.exprs = TRUE)
       
+      transObj <- estimateLogicle(gs[[1]], c("FL1-H", "FL2-H"))
+      
+      expect_error(gs.trans <- transform(gs), regexp = "transformerList")
+      expect_error(gs.trans <- transform(gs, translist), regexp = "transformerList")
+      
+      suppressMessages(gs.trans <- transform(gs, transObj))
+      expect_equal(gs.trans@transformation, transObj)
+      fs.trans.gs <- getData(gs.trans)
+      expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
+      
+      #customerize cdf path
+      tmp <- tempfile(fileext = ".cdf")
+      suppressMessages(gs.trans <- transform(gs, transObj, ncdfFile = tmp))
+      fs.trans.gs <- getData(gs.trans)
+      expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
+      expect_equal(fs.trans.gs@file, tmp)
     })

@@ -2461,8 +2461,8 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
 #' is supported.
 #'
 #' @param _data \code{GatingSet} or \code{GatingSetList}
-#' @param ... expect a \code{transformList} object
-#'
+#' @param translist expect a \code{transformList} object
+#' @param ... other arguments passed to 'transform' method for 'ncdfFlowSet'.(e.g. 'ncdfFile')
 #' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
 #' @examples
 #' \dontrun{
@@ -2485,21 +2485,18 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
 #' @rdname transform
 setMethod("transform",
     signature = signature(`_data` = "GatingSet"),
-    definition = function(`_data`, ...)
+    definition = function(`_data`, translist, ...)
     {
-      dots <- list(...)
-      if(length(dots) == 0)
-        stop("expect the second argument as a 'transformerList' object!")
-      transObjs <- dots[[1]]
+      
       gs <- `_data`
-      if(!is(transObjs, "transformerList"))
+      if(missing(translist)||!is(translist, "transformerList"))
         stop("expect the second argument as a 'transformerList' object!")
-      gs@transformation <- transObjs
+      gs@transformation <- translist
 
       fs <- getData(gs)
-      transList <- lapply(transObjs, function(obj)obj[["transform"]])
-      transList <- transformList(names(transObjs), transList)
-      suppressMessages(fs_trans <- transform(fs, transList))
+      tList <- lapply(translist, function(obj)obj[["transform"]])
+      tList <- transformList(names(translist), tList)
+      suppressMessages(fs_trans <- transform(fs, tList, ...))
       flowData(gs) <- fs_trans
       gs
     })
