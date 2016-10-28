@@ -133,13 +133,13 @@ getIndiceMat <- function(gh,y){
 
 #' Return the cell events data that express in any of the single populations defined in \code{y}
 #'
-#' Returns a list of matrix containing the events that expressed in any one of the populations efined in \code{y}
+#' Returns a list of matrix containing the events that expressed in any one of the populations defined in \code{y}
 #'
 #' @param x A \code{GatingSet} or \code{GatingSetList} object .
 #' @param nodes \code{character} vector specifying different cell populations
 #' @param ... other arguments
 #' 
-#'        other.markers \code{character} vector specifying the extra markers/channels to be returned besiedes the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.
+#'        other.markers \code{character} vector specifying the extra markers/channels to be returned besides the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.
 #' 
 #'        swap \code{logical} indicates whether channels and markers of flow data are swapped.
 #'        
