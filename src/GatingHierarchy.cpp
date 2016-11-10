@@ -278,7 +278,7 @@ void GatingHierarchy::removeNode(VertexID nodeID)
 	boost::remove_vertex(nodeID,tree);
 
 }
-/**
+/*
  * Getter function for compensation member
  * @return
  */
@@ -894,9 +894,15 @@ public:
 
 };
 
-/*
- * retrieve the vertexIDs in topological order,BFS or in regular order
+/**
+ * retrieve all the node IDs
+ *
+ * @param order accept 3 values: REGULAR(0) is the same original order by which nodes were added;
+ * 								 TSORT(1) topological order;
+ * 								 BFS(2) breadth first searching order
+ * @return a vector of node IDs
  */
+
 
 VertexID_vec GatingHierarchy::getVertices(unsigned short order){
 
@@ -960,6 +966,12 @@ bool isEmpty(string path){
 /**
  * retrieve the VertexID by the gating path
  * @param gatePath single string containing full(or partial) gating path
+ *
+ * For example:
+ * \code
+ * gh->getNodeID("singlet");
+ * gh->getNodeID("CD3/CD4+");
+ * \endcode
   */
 VertexID GatingHierarchy::getNodeID(string gatePath){
 
@@ -1227,6 +1239,14 @@ VertexID_vec GatingHierarchy::queryByPath(VertexID ancestorID, vector<string> ga
  * @param u the ancestor node id to search from
  * @param name the node name to search for
  * @return the vector of node id that match
+ *
+ * For example:
+ * \code
+ * VertexID parentID = gh->getNodeID("CD3");
+ * //this may return two descendants: "CD3/CD4/CCR7+ 45RA+" and "CD3/CD8/CCR7+ 45RA+"
+ * gh->getDescendants(parentID, "CCR7+ 45RA+");
+ * \endcode
+
  */
 VertexID_vec GatingHierarchy::getDescendants(VertexID u,string name){
 	VertexID_vec nodesTomatch, res;
@@ -1282,13 +1302,13 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string popName){
 }
 
 /**
- * retrieve population paths
+ * retrieve all the population paths
  *
  * The assumption is each node only has one parent.
  *
- * @param order passed to getVertices function
+ * @param order passed to GatingHierarchy::getVertices function
  * @param fullPath flag indicates whether to return full path or partial path
- * @param showHidden wether to include the hidden nodes
+ * @param showHidden whether to include the hidden nodes
  * @return
  */
 vector<string> GatingHierarchy::getPopPaths(unsigned short order,bool fullPath,bool showHidden){
@@ -1401,6 +1421,11 @@ EdgeID GatingHierarchy::getInEdges(VertexID target){
 	return(res.at(0));
 }
 
+/**
+ * Get parent node id for the given node
+ *
+ * @param target child ID
+ */
 VertexID GatingHierarchy::getParent(VertexID target){
 	EdgeID e=getInEdges(target);
 	return  boost::source(e, tree);
@@ -1435,7 +1460,7 @@ VertexID_vec GatingHierarchy::getChildren(VertexID source){
 	return(res);
 }
 
-/**
+/*
  * retrieve single child node by parent id and child name.
  * @param source id of the source node
  * @param childName the child node name

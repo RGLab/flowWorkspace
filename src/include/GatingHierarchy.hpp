@@ -96,13 +96,13 @@ private:
 						we can try uBlas for this simple task, but when cid=="-1",we still need to
 						do this in R since comp is extracted from FCS keyword (unless it can be optionally extracted from workspace keyword)
 	 	 	 	 	  */
-	flowData fdata; /**< flow events data */
+	flowData fdata; /*< flow events data */
 
-	populationTree tree; /**< the gating tree */
+	populationTree tree; /*< the gating tree */
 
-	bool isLoaded; /**< The flag indicates whether the flow data is loaded */
-	PARAM_VEC transFlag; /**< for internal use of parse flowJo workspace */
-	trans_local trans; /**< the transformation used for this particular GatingHierarchy object */
+	bool isLoaded; /*< The flag indicates whether the flow data is loaded */
+	PARAM_VEC transFlag; /*< for internal use of parse flowJo workspace */
+	trans_local trans; /*< the transformation used for this particular GatingHierarchy object */
 
 public:
 

@@ -13,7 +13,7 @@
 using namespace std;
 
 
-
+/*! population stats */
 typedef map<string,float> POPSTATS;
 /*
  *TODO: this class should exist apart from populationTree object
@@ -27,10 +27,16 @@ typedef map<string,float> POPSTATS;
  * Also reference member's life cycle is different from its host object, which could be problematic.
  *
  */
+/**
+ * \class nodeProperties
+ * \brief The container that holds gate and population information
+ *
+ * It has the population name, the pointer to the base \link<gate> object, gate indices and population stats.
+ */
 class nodeProperties{
 private:
 	string thisName;
-	gate * thisGate;
+	gate * thisGate; /**< pointer to the abstract gate object */
 	boost::scoped_ptr<POPINDICES> indices;
 	POPSTATS fjStats,fcStats;
 	bool hidden;

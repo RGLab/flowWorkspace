@@ -200,6 +200,12 @@ public:
  * form gate class. Thus it is necessary to define clone function for each derived gate class
  * in order to avoid the dispatching to parent method and thus degraded to the parent gate object
  */
+/**
+ * \class gate
+ * \brief the base gate class
+ *
+ * It is an abstract class that is inherited by other concrete gate types.
+ */
 class gate {
 protected:
 	bool neg;
@@ -262,6 +268,12 @@ public:
  * TODO:using #include <boost/multi_array.hpp> instead to make it easier to convert to R data structure hopefully.
  *
  */
+/**
+ * \class polygonGate
+ * \brief polygon shaped gate
+ *
+ * It is the most common gate type used in gating.
+ */
 class polygonGate:public gate {
 protected:
 	paramPoly param;
@@ -288,6 +300,12 @@ public:
  * it doesn't overload getType member function, which means it is exposed to R
  * as a regular polygonGate
  */
+/**
+ * \class rectGate
+ * \brief rectangle gate
+ *
+ * It is a special polygonGate and has the simpler(faster) gating calculation.
+ */
 class rectGate:public polygonGate {
 public:
 	vector<bool> gating(flowData &);
@@ -297,11 +315,13 @@ public:
 	rectGate(const pb::gate & gate_pb);
 	rectGate():polygonGate(){};
 };
-/*
- * ellipseGate no longer needs to
- * inherit polygon since we are now doing the gating
- * without interpolating it into polygon
- * For the legacy archive, we preserve this class definition
+
+/**
+ * \class ellipseGate
+ * \brief ellipse gate
+ *
+ * It actually no longer needs to inherit polygonGate since we are now doing the gating
+ * without interpolating it into polygon. But for backward compatibility (the legacy archive), we preserve this class definition.
  */
 class ellipseGate:public polygonGate {
 protected:
@@ -361,12 +381,17 @@ public:
 };
 
 /*
- * instead of defining the gating function here in boolGate
- * we put the gating logic in GatingHierarchy gating function
- * because it is needs to access indices from reference nodes
- * which actually belong to GatingHierarchy object.
+ *.
  * And gate classes are sits in more abstract level than GatingHierarchy in the C++ class tree,
  * thus GatingHierarchy data structure should be invisible to gate.
+ */
+/**
+ * \class boolGate
+ * \brief boolean gate
+ *
+ * It is not the geometric gate but the boolean combination of the other reference gates.
+ * So instead of defining the gating function in this class, the actual gating logic for boolGate is defined
+ * in GatingHierarchy::gating function because it needs the indices from the reference nodes which are only accessible at GatingHierarchy object.
  */
 class boolGate:public gate {
 public:
@@ -380,12 +405,13 @@ public:
 	boolGate(const pb::gate & gate_pb);
 };
 /**
- * This is a dummby bool gate which is simply a side-effect of adding a node with logical indices yet
- * without proper gating object to deal with.
+ * \class logicalGate
+ * \brief a special boolGate
  *
- * Currently the framework does not support adding a population node without associating with the gate.
- * Therefore this class is a quick and dirty way of storing the gating results from clustering-based gating algorithm.
- * Eventually we may want to extend it to store extra information.
+ * This is mainly used to deal with the situation where the gating algorithm (typically clustering based gating) doesn't generate any type of gate object.
+ * In order still be able to record the gating results (i.e. the logical indices), this logicalGate can be used as the dummy gate to be added to the node.
+ * Because nodeProperties requires a population node to have a gate to be associated with.
+ *
  */
 class logicalGate:public boolGate {
 private:
@@ -404,7 +430,7 @@ enum QUAD{
 	Q4//--
 
 };
-/**
+/*
  * Before interpolation, the intersection points are stored as the first element of param in polygonGate
  */
 class CurlyGuadGate:public polygonGate{
