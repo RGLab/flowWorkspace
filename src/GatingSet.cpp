@@ -14,7 +14,7 @@
 
 #include "include/delimitedMessage.hpp"
 using namespace std;
-/**
+/*
  * separate filename from dir to avoid to deal with path parsing in c++
  * @param path the dir of filename
  * @param filename
@@ -87,7 +87,7 @@ void GatingSet::serialize_pb(string filename){
 		// Optional:  Delete all global objects allocated by libprotobuf.
 		google::protobuf::ShutdownProtobufLibrary();
 }
-/**
+/*
  * constructor from the archives (de-serialization)
  * @param filename
  * @param format
@@ -265,7 +265,7 @@ GatingSet::~GatingSet()
 
 }
 
-/**
+/*
  * update channel information stored in GatingSet
  * @param chnl_map the mapping between the old and new channel names
  */
@@ -464,9 +464,6 @@ GatingSet::GatingSet(vector<string> sampleNames){
 
 
 		GatingHierarchy *curGh=new GatingHierarchy();
-//		curGh->setNcPtr(NULL);
-
-
 		curGh->addRoot();//add default root
 
 
@@ -537,7 +534,7 @@ GatingSet::GatingSet(string sFileName,bool isParseGate,unsigned short sampNloc,i
 		 }
 }
 
-/**
+/*
  * doesn't seem to be used anymore
  * @param groupID
  * @param isParseGate
@@ -577,6 +574,12 @@ void GatingSet::parseWorkspace(vector<string> sampleIDs,bool isParseGate, String
 
 }
 
+/**
+ * Retrieve the GatingHierarchy object from GatingSet by sample name.
+ *
+ * @param sampleName a string providing the sample name as the key
+ * @return a pointer to the GatingHierarchy object
+ */
 GatingHierarchy * GatingSet::getGatingHierarchy(string sampleName)
 {
 
@@ -594,7 +597,9 @@ GatingHierarchy * GatingSet::getGatingHierarchy(unsigned index)
 
 		return getGatingHierarchy(getSamples().at(index));
 }
-
+/**
+ * Retrieve the names of all the samples that have GatingHierarchy stored in the GatingSet
+  */
 vector<string> GatingSet::getSamples(void)
 {
 		vector<string> res;
@@ -607,10 +612,15 @@ vector<string> GatingSet::getSamples(void)
 }
 
 /**
- *  change the sample name by inserting a new entry and deleting the old one
- *  do nothing when the newName is the same as the old (because the current logic will lose
- *  it by erase it)
- *  */
+ *  rename a sample
+ *
+ * @param oldName which sample to change
+ * @param newName the new sample name
+ */
+/*  It is done by inserting a new entry and deleting the old one (because the name is stored as the key of map structure.)
+*  do nothing when the newName is the same as the old (because the current logic will lose
+*  it by erase it)
+*  */
 void GatingSet::setSample(string oldName, string newName)
 {
 		if(oldName.compare(newName) != 0){
@@ -630,7 +640,7 @@ void GatingSet::gating(){
 //
 //}
 
-/**
+/*
  * It is used by R API to add global transformation object during the auto gating.
  * @param tName transformation name (usually channel name)
  * @param tm trans_map
