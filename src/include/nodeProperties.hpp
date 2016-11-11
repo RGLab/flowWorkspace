@@ -27,6 +27,8 @@ typedef map<string,float> POPSTATS;
  * Also reference member's life cycle is different from its host object, which could be problematic.
  *
  */
+
+typedef boost::scoped_ptr<POPINDICES> popIndPtr;/*! the pointer to the event indices*/
 /**
  * \class nodeProperties
  * \brief The container that holds gate and population information
@@ -37,7 +39,7 @@ class nodeProperties{
 private:
 	string thisName;
 	gate * thisGate; /**< pointer to the abstract gate object */
-	boost::scoped_ptr<POPINDICES> indices;
+	popIndPtr indices;/**< scoped_ptr to the POPINDICES */
 	POPSTATS fjStats,fcStats;
 	bool hidden;
 

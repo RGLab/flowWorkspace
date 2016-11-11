@@ -15,6 +15,12 @@
 #include "gate.hpp"
 #include <boost/scoped_ptr.hpp>
 
+/**
+ * \class POPINDICES
+ * \brief the event indices for the subpopulation
+ *
+ *  It is an abstract class that hides the details of implementation of the actual indices type.
+ */
 class POPINDICES{
 protected:
 	unsigned nEvents;
@@ -22,8 +28,18 @@ public:
 	POPINDICES():nEvents(0){};
 	POPINDICES(unsigned _nEvents):nEvents(_nEvents){};
 	virtual ~POPINDICES(){};
+	/**
+	 * convert the POPINDICES to bool vector
+	 *
+	 */
 	virtual vector<bool> getIndices()=0;
+	/**
+	 * compute the event count from the event indices
+	 */
 	virtual unsigned getCount()=0;
+	/**
+	 * retrieve the total number of events for the original ungated events data
+	 */
 	unsigned getTotal(){return nEvents;}
 	virtual POPINDICES * clone()=0;
 	virtual void convertToPb(pb::POPINDICES & ind_pb) = 0;

@@ -89,7 +89,7 @@ struct OurVertexPropertyWriterR {
 
 class GatingHierarchy{
 private:
-	compensation comp; /**< compensation object */
+	compensation comp; /*< compensation object */
 
 	/* compensation is currently done in R due to the linear Algebra
 						e[, cols] <- t(solve(t(spillover))%*%t(e[,cols]))
@@ -98,7 +98,7 @@ private:
 	 	 	 	 	  */
 	flowData fdata; /*< flow events data */
 
-	populationTree tree; /*< the gating tree */
+	populationTree tree; /**< the gating tree */
 
 	bool isLoaded; /*< The flag indicates whether the flow data is loaded */
 	PARAM_VEC transFlag; /*< for internal use of parse flowJo workspace */
