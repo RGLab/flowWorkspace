@@ -761,7 +761,7 @@ gate* winFlowJoWorkspace::getGate(wsPopNode & node){
 			string op = node.getName()=="OrNode"?"|":"&";
 			if(i == 0)
 				op = "";
-			specs << specs.str() << op << "G" << i ;
+			specs << op << "G" << i ;
 		}
 
 		boolGate * gate=new boolGate();

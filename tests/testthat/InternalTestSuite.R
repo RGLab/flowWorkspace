@@ -289,25 +289,43 @@ test_that("v 10.0.7r2 - vX 20.0 (NotNode)",{
       expect_equal(thisCounts[,c("flowJo.count", "node"), with = F], expectCounts[,c("flowJo.count", "node"), with = F])
     })
 
-test_that("v 10.0.8r1 - vX 20.0 (OrNode)",{
+test_that("v 10.2 - vX 20.0 (AndNode)",{
       
-      thisPath <- file.path(path, "combineNode/OrNode")
-      wsFile <- file.path(thisPath, "Test_EW.wsp")
+      thisPath <- file.path(path, "combineNode/AndNode")
+      wsFile <- file.path(thisPath, "test_gates.wsp")
       
       ws <- openWorkspace(wsFile)
       
-      gs <- parseWorkspace(ws, name = 1, path = file.path(path))
+      gs <- parseWorkspace(ws, name = 1, path = file.path(path), execute = FALSE)
       
       expect_is(gs, "GatingSet")
-      gh <- gs[[1]]
-      g <- getGate(gh, "CD44+")
-      expect_is(g, "booleanFilter")
-      expect_equal(g@deparse, "FCS singlets/SSC singlets/Lymphocytes/CD8/F5/Live/Q6: CD44+ , CD62L+|FCS singlets/SSC singlets/Lymphocytes/CD8/F5/Live/Q7: CD44+ , CD62L-")
       
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
-      expect_equal(thisCounts, expectCounts)
+      gh <- gs[[1]]
+      g <- getGate(gh, "CD4/CD107+IFNg+IL2+Mip1b+TNF+")
+      expect_is(g, "booleanFilter")
+      expect_equal(g@deparse, "Lymphocytes/Single Cells/CD3/CD4/CD107&Lymphocytes/Single Cells/CD3/CD4/IFNg&Lymphocytes/Single Cells/CD3/CD4/IL2&Lymphocytes/Single Cells/CD3/CD4/Mip1b&Lymphocytes/Single Cells/CD3/CD4/TNF")
     })
+
+test_that("v 10.0.8r1 - vX 20.0 (OrNode)",{
+  
+  thisPath <- file.path(path, "combineNode/OrNode")
+  wsFile <- file.path(thisPath, "Test_EW.wsp")
+  
+  ws <- openWorkspace(wsFile)
+  
+  gs <- parseWorkspace(ws, name = 1, path = file.path(path))
+  
+  expect_is(gs, "GatingSet")
+  gh <- gs[[1]]
+  g <- getGate(gh, "CD44+")
+  expect_is(g, "booleanFilter")
+  expect_equal(g@deparse, "FCS singlets/SSC singlets/Lymphocytes/CD8/F5/Live/Q6: CD44+ , CD62L+|FCS singlets/SSC singlets/Lymphocytes/CD8/F5/Live/Q7: CD44+ , CD62L-")
+  
+  expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+  thisCounts <- getPopStats(gh)[, list(flowJo.count,flowCore.count, node)]
+  expect_equal(thisCounts, expectCounts)
+})
+
 
 
 test_that("v 10.0.8 - vX 20.0 (slash_issue_vX)",{
