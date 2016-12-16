@@ -971,6 +971,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 #'  \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot. Default is FALSE and  session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(fitGate = FALSE))'}
 #'
 #'  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
+#' \item{strip.text}{either "parent" (the parent population name) or "gate "(the gate name).}
 #'
 #'
 #'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale. Default is TRUE and can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(raw.scale = TRUE))'}
@@ -1302,6 +1303,7 @@ fix_y_axis <- function(gs, x, y){
 #' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
 #' @param overlay either the gate indice list or event indices list
 #' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}
+#' @param strip.text either "parent" (the parent population name) or "gate "(the gate name).
 #' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
 #' @param path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method
 #' @param xlim, ylim \code{character} can be either "instrument" or "data" which determines the x, y axis scale either by instrument measurement range or the actual data range.
@@ -1323,6 +1325,7 @@ fix_y_axis <- function(gs, x, y){
                       , default.x = flowWorkspace.par.get("plotGate")[["default.x"]]
                       , scales
                       , strip = TRUE
+                      , strip.text = c("parent", "gate")
                       , path = "auto"
                       , xlim = flowWorkspace.par.get("plotGate")[["xlim"]]
                       , ylim = flowWorkspace.par.get("plotGate")[["xlim"]]
@@ -1330,7 +1333,7 @@ fix_y_axis <- function(gs, x, y){
 
 
 	type <- match.arg(type, c("xyplot","densityplot", "histogram"))
-
+	strip.text <- match.arg(strip.text)
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
     is.gh <- class(x) == "GatingHierarchy"
     if(is.gh){
@@ -1347,10 +1350,15 @@ fix_y_axis <- function(gs, x, y){
     gh <- x[[1]]
 
 	if(is.list(y))
-      popName<-y$parentId
+	  parent<-y$parentId
 	else
-      popName<-getParent(gh, y, path = path)
-
+	  parent<-getParent(gh, y, path = path)
+    
+  if(strip.text == "parent"){
+    popName <- parent
+  }else{
+    popName <- y
+  }
     #set default title
 #    popName <- getNodes(gh, path = path, showHidden = TRUE)[pid]
 
@@ -1385,7 +1393,7 @@ fix_y_axis <- function(gs, x, y){
 #    browser()
         #get data
     #subset on channels to speed up loading data from disk
-    parentData <- getData(x, popName, j = params)
+    parentData <- getData(x, parent, j = params)
     defaultCond <- "name"
     if(is.gh){
       if(strip){
