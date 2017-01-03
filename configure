@@ -589,6 +589,7 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 PBBUILD
 PKG_LIBS
+PB_INCLUDE
 PKG_CPPFLAGS
 XML2_CONFIG
 ac_ct_CC
@@ -2992,19 +2993,19 @@ $as_echo "$as_me: No directory was specified for --with-protobuf. Using bundled 
 		cd ${PBBUILD};
 		../${BASEPBNAME}/configure --enable-static=no CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}"
 		$MAKE
+		PB_INCLUDE="${BASEPBNAME}/src"
 
-		PB_CFLAGS="-I${BASEPBNAME}/src"
 		#PB_LIBS will be set in Makevars file
 		cd ../../
 		USE_BUNDLED_PB=true
 else
         { $as_echo "$as_me:${as_lineno-$LINENO}: Using protobuf dir '${PB_DIR}'" >&5
 $as_echo "$as_me: Using protobuf dir '${PB_DIR}'" >&6;}
+		PB_INCLUDE="${PB_DIR}/include"
 
-        PB_CFLAGS="-I${PB_DIR}/include"
         PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
 fi
-
+PB_CFLAGS="-I${PB_INCLUDE}"
 
 
 PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
@@ -3019,6 +3020,9 @@ PKG_LIBS="$XML2_LIBS $PB_LIBS"
 $as_echo "$as_me: Using the following compilation and linking flags for flowWorkspace" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}:    PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&5
 $as_echo "$as_me:    PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&6;}
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}:    PB_INCLUDE=${PB_INCLUDE}" >&5
+$as_echo "$as_me:    PB_INCLUDE=${PB_INCLUDE}" >&6;}
 
 { $as_echo "$as_me:${as_lineno-$LINENO}:    PKG_LIBS=${PKG_LIBS}" >&5
 $as_echo "$as_me:    PKG_LIBS=${PKG_LIBS}" >&6;}

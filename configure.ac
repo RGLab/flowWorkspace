@@ -107,18 +107,18 @@ if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
 		cd ${PBBUILD};
 		../${BASEPBNAME}/configure --enable-static=no CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}"
 		$MAKE 
-	
-		PB_CFLAGS="-I${BASEPBNAME}/src"
+		PB_INCLUDE="${BASEPBNAME}/src"
+		
 		#PB_LIBS will be set in Makevars file
 		cd ../../
 		USE_BUNDLED_PB=true
 else
         AC_MSG_NOTICE([Using protobuf dir '${PB_DIR}'])
-
-        PB_CFLAGS="-I${PB_DIR}/include"
+		PB_INCLUDE="${PB_DIR}/include"
+        
         PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
 fi
-
+PB_CFLAGS="-I${PB_INCLUDE}"
 
 
 PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
@@ -132,6 +132,8 @@ PKG_LIBS="$XML2_LIBS $PB_LIBS"
 AC_MSG_NOTICE([Using the following compilation and linking flags for flowWorkspace])
 AC_MSG_NOTICE([   PKG_CPPFLAGS=${PKG_CPPFLAGS}])
 AC_SUBST(PKG_CPPFLAGS)
+AC_MSG_NOTICE([   PB_INCLUDE=${PB_INCLUDE}])
+AC_SUBST(PB_INCLUDE)
 AC_MSG_NOTICE([   PKG_LIBS=${PKG_LIBS}])
 AC_SUBST(PKG_LIBS)
 if test USE_BUNDLED_PB = true; then
