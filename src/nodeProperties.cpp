@@ -8,7 +8,7 @@
 #include <algorithm>
 nodeProperties::nodeProperties():thisGate(NULL),hidden(false){}
 
-/**
+/*
  * convert pb object to internal structure
  * @param np_pb
  */
@@ -168,12 +168,21 @@ nodeProperties::~nodeProperties(){
 	}
 }
 
-
+/**
+ * retrieve the pop stats that was pre-calculated and stored in the node.
+ *
+ * @param isFlowCore when true, return the calculated stats; if false, returns the stats parsed from xml (only relevant for the GatingHierarchy parsed from flowJo)
+  */
 POPSTATS nodeProperties::getStats(bool isFlowCore){
 
 	return(isFlowCore?this->fcStats:this->fjStats);
 }
 
+/**
+ * setter method for the private member of pop stats
+ * @param s POPSTATS
+ * @param isFlowCore flag indicates if the stats is for flowJo workspace.
+ */
 void nodeProperties::setStats(POPSTATS s,bool isFlowCore){
 	if(isFlowCore)
 		fcStats=s;
@@ -181,16 +190,24 @@ void nodeProperties::setStats(POPSTATS s,bool isFlowCore){
 		fjStats=s;
 
 }
-
+/**
+ * getter for the private member of gate
+ * @return the pointer to an abstract base \link<gate> object
+ */
 gate * nodeProperties::getGate(){
 	if(thisGate==NULL)
 		throw(logic_error("gate is not parsed!"));
 	return(thisGate);
 }
-
+/**
+ * getter for the private member of population name
+ */
 string nodeProperties::getName(){
 	return(this->thisName);
 }
+/**
+ * setter for the private member of population name
+ */
 
 void nodeProperties::setName(const char * popName){
 	if(string(popName).find('/') != std::string::npos){
@@ -205,6 +222,9 @@ bool nodeProperties::getHiddenFlag(){
 	return (hidden);
 }
 
+/**
+ * setter for the private member of gate
+ */
 void nodeProperties::setGate(gate *gate){
 	thisGate=gate;
 }
@@ -233,10 +253,19 @@ void nodeProperties::setIndices(vector<bool> _ind){
  * potentially it is step can be done within the same loop in gating
  * TODO:MFI can be calculated here as well
  */
+/**
+ * update the pop stats
+ *
+ * It is important to call this function after gate indices are updated.
+ */
 void nodeProperties::computeStats(){
 		fcStats["count"]=getCounts();
 }
-
+/**
+ * calculate the cell count for the current population.
+ *
+ * It may or may not be the same as the value retrieved from nodeProperties::getStats especially when the gate indices are updated but nodeProperties::computeStats has not been called.
+ */
 unsigned nodeProperties::getCounts(){
 	if(!this->isGated())
 		throw(domain_error("trying to get counts for unGated node!"));
