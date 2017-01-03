@@ -30,6 +30,7 @@ typedef boost::adjacency_list<  // adjacency_list is a template depending on :
  * the entire graph adjacency_list is copiable now
  * thus eliminate the need for customized clone member functions
  */
+/** populationTree represented as a boost graph (adjacency list) */
 typedef boost::adjacency_list<  // adjacency_list is a template depending on :
     boost::vecS,               //  The container used for egdes : here, std::list.
     boost::vecS,                //  The container used for vertices: here, std::vector.

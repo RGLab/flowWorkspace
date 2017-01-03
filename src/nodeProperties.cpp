@@ -229,15 +229,23 @@ void nodeProperties::setGate(gate *gate){
 	thisGate=gate;
 }
 
+/**
+ * Retrieve the event indices (relative to the whole ungated event data) from the node
+ * @return a bool vector
+ */
 vector<bool> nodeProperties::getIndices(){
 		if(!this->isGated())
 			throw(domain_error("trying to get Indices for unGated node!"));
 		return indices->getIndices();
 		}
-
 void nodeProperties::setIndices(unsigned _nEvent){
 		indices.reset(new ROOTINDICES(_nEvent));
 }
+
+/**
+ * update the node with the new indices
+ *
+ */
 void nodeProperties::setIndices(vector<bool> _ind){
 	unsigned nEvents=count(_ind.begin(),_ind.end(),true);
 	unsigned nSizeInt=sizeof(unsigned)*nEvents;
