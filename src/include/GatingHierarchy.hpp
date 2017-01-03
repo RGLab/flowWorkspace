@@ -77,28 +77,36 @@ struct OurVertexPropertyWriterR {
 
 
 
-/*GatingHierarchy is a tree that holds the gate definitions hierarchically,
- along with the transformation functions and compensation matrix,
- Once the one FCS file is associated,the tree can also hold indices that subset the events
- It can serves as a gating template when data is empty
+/**
+ ** \class GatingHierarchy
+ **
+ ** \brief The class that holds the gating tree.
+ **
+ ** It stores the transformation, compensation and gating information as well as the flow data (transiently).
+	Each FCS file is associated with one GatingHierarchy object.
+	It can also serves as a gating template when data is empty.
  */
 
 class GatingHierarchy{
 private:
-	compensation comp;/*compensation is currently done in R due to the linear Algebra
+	compensation comp; /**< compensation object */
+
+	/* compensation is currently done in R due to the linear Algebra
 						e[, cols] <- t(solve(t(spillover))%*%t(e[,cols]))
 						we can try uBlas for this simple task, but when cid=="-1",we still need to
 						do this in R since comp is extracted from FCS keyword (unless it can be optionally extracted from workspace keyword)
 	 	 	 	 	  */
-	flowData fdata;
-	populationTree tree;
+	flowData fdata; /**< flow events data */
 
-	bool isLoaded;
-	PARAM_VEC transFlag;
-	trans_local trans;
+	populationTree tree; /**< the gating tree */
+
+	bool isLoaded; /**< The flag indicates whether the flow data is loaded */
+	PARAM_VEC transFlag; /**< for internal use of parse flowJo workspace */
+	trans_local trans; /**< the transformation used for this particular GatingHierarchy object */
+
 public:
 
-	/*append the gate to the tree*/
+
 	void addChild(VertexID parent,VertexID child);
 	VertexID addGate(gate* g,VertexID parentID,string popName);
 	void removeNode(VertexID nodeID);

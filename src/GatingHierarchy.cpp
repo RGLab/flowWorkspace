@@ -11,7 +11,14 @@
 
 
 
-//default constructor without argument
+/**
+ * default constructor that creates an empty gating tree
+ *
+ * examples:
+ * \code
+ * 	GatingHierarchy *curGh=new GatingHierarchy();
+ * \endcode
+ */
 GatingHierarchy::GatingHierarchy()
 {
 
@@ -141,8 +148,17 @@ VertexID GatingHierarchy::addRoot(wsRootNode root, workspace & ws)
 
 	return(u);
 }
-/*
- * add empty root with only name set as default 'root'
+/**
+ * add empty root node to the gating tree with the name set to 'root'
+ *
+ * \return the newly added root node Id
+ *
+ * For example:
+ * \code
+ * 	GatingHierarchy *curGh=new GatingHierarchy();
+ *	curGh->addRoot();
+ * \endcode
+ *
  */
 VertexID GatingHierarchy::addRoot(){
 
@@ -262,6 +278,10 @@ void GatingHierarchy::removeNode(VertexID nodeID)
 	boost::remove_vertex(nodeID,tree);
 
 }
+/**
+ * Getter function for compensation member
+ * @return
+ */
 compensation GatingHierarchy::getCompensation(){
 	return comp;
 }
@@ -686,7 +706,7 @@ void GatingHierarchy::calgate(VertexID u, bool computeTerminalBool)
 	node.setIndices(curIndices);
 	node.computeStats();
 }
-/**
+/*
  * bool gating operates on the indices of reference nodes
  * because they are global, thus needs to be combined with parent indices
  * in cases of negated gate (i.e. !A & !B)
@@ -772,7 +792,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u, bool computeTerminalBool){
 	return ind;
 
 }
-/**
+/*
  * external boolOpSpec can be provided .
  * It is mainly used by openCyto rectRef gate
  * (needs to be combined with parent indices)
@@ -928,7 +948,7 @@ VertexID_vec GatingHierarchy::getVertices(unsigned short order){
 
 }
 
-/**
+/*
  *  Unary predicate for checking whether a string is empty
  * @param path
  * @return
@@ -940,8 +960,7 @@ bool isEmpty(string path){
 /**
  * retrieve the VertexID by the gating path
  * @param gatePath single string containing full(or partial) gating path
- * @return
- */
+  */
 VertexID GatingHierarchy::getNodeID(string gatePath){
 
 	StringVec res;
@@ -955,7 +974,7 @@ VertexID GatingHierarchy::getNodeID(string gatePath){
 	return (getNodeID(res));
 
 }
-/**
+/*
  * retrieve the VertexID by the gating path.
  * this serves as a parser to convert generic gating path into internal node ID
  * and it doesn't allow ambiguity (throw the exception when multiple nodes match)
@@ -980,7 +999,7 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 
 }
 
-/**
+/*
  *  find the most immediate common ancestor
  *
  * @param nodeIDs input node IDs
@@ -1040,7 +1059,7 @@ VertexID GatingHierarchy::getCommonAncestor(VertexID_vec nodeIDs, unsigned & nDe
 
 }
 
-/**
+/*
   * Searching for reference node for bool gating given the refnode name and current bool node id
   *
   *
@@ -1138,7 +1157,7 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 }
 
 
-/**
+/*
  * retrieve the VertexIDs by the gating path.
  * This routine allows multiple matches
  * @param ancestorID when gatePath is partial path, this node ID narrow the searching range.
@@ -1231,7 +1250,7 @@ VertexID_vec GatingHierarchy::getDescendants(VertexID u,string name){
 
 
 
-/**
+/*
  * retrieve VertexID that matches population name given an ancestor node
  * It is used to search for the first node in the gating path (full or partial).
  * This is different from getRefNodeID in the way that pop name must be uniquely identifiable in the tree.
@@ -1264,7 +1283,8 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string popName){
 
 /**
  * retrieve population paths
-  * the assumption is each node only has one parent
+ *
+ * The assumption is each node only has one parent.
  *
  * @param order passed to getVertices function
  * @param fullPath flag indicates whether to return full path or partial path
@@ -1318,6 +1338,12 @@ vector<string> GatingHierarchy::getPopPaths(unsigned short order,bool fullPath,b
 	}
 	return res;
 }
+
+/**
+ * Compute the depth of the given node
+ *
+ * @param u node ID
+ */
 unsigned GatingHierarchy::getNodeDepths(VertexID u){
 	unsigned i = 0;
 	while(u > 0){
@@ -1327,8 +1353,13 @@ unsigned GatingHierarchy::getNodeDepths(VertexID u){
 
 	return i ;
 }
-/*
- * assume getParent only returns one parent nodeGatingHierarchy
+/**
+ * Get ancestor node for the given node
+ *
+ * Assume getParent only returns one parent node per GatingHierarchy
+ *
+ * @param u the given node ID
+ * @param level specify the distance from the given node
  */
 VertexID GatingHierarchy::getAncestor(VertexID u,unsigned short level){
 
@@ -1374,8 +1405,10 @@ VertexID GatingHierarchy::getParent(VertexID target){
 	EdgeID e=getInEdges(target);
 	return  boost::source(e, tree);
 }
-/*
+/**
  * retrieve all children nodes
+ *
+ * @param source parent node ID
  */
 VertexID_vec GatingHierarchy::getChildren(VertexID source){
 
@@ -1426,12 +1459,20 @@ int GatingHierarchy::getChildren(VertexID source,string childName){
 	return(curNodeID);
 
 }
+
 /*
  *
  * make sure to use this API always since since it is safe way to access tree nodes due to the validity check
  *
  *since the vertex bundle should always exist as long as the  tree and node exist, thus it is safe
  * to return the reference of it
+ */
+/**
+ * Retrieve the node properties
+ *
+ * It is the only way to access the gate, population indices and stats of the given node
+ * @param u node ID
+ * @return a reference to the nodeProperties object
  */
 nodeProperties & GatingHierarchy::getNodeProperty(VertexID u){
 
@@ -1477,7 +1518,7 @@ GatingHierarchy * GatingHierarchy::clone(){
 
 	return res;
 }
-/**
+/*
  * It is mainly used by Rcpp API addTrans to propagate global trans map to each sample
  * EDIT: But now also used by clone methods
   * @param trans trans_map

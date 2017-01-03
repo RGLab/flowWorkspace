@@ -50,7 +50,7 @@ class GatingSet{
 	biexpTrans globalBiExpTrans; //default bi-exponential transformation functions
 	linTrans globalLinTrans;
 	trans_global_vec gTrans;//parsed from xml workspace
-	gh_map ghs;
+	gh_map ghs;  /**< the map stores pairs of sample name and GatingHierarchy pointer */
 	workspace * wsPtr;
 
 private:
