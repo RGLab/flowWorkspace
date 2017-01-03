@@ -27,7 +27,8 @@ using namespace std;
 #define WS_MAC 2
 #define WS_VX 3
 #define WS_MAC_3 4
-/*
+
+ /*
  * have to use pointer GatingHierarchy * here,
  * because GatingHierarchy's destructor is responsible for clearing dynamically allocated memory
  * within GatingHierarchy,like nodeProperties * that further contains the gate *.
@@ -37,7 +38,13 @@ using namespace std;
  */
 typedef map<string,GatingHierarchy*> gh_map;
 
-/*GatingSet is multiple GatingHierarchies that has the flow data associated and gated*/
+/**
+ * \class GatingSet
+ * \brief A container class that stores multiple GatingHierarchy objects.
+ *
+ *  It also stores the global transformations.
+ *
+ */
 class GatingSet{
 
 	biexpTrans globalBiExpTrans; //default bi-exponential transformation functions
