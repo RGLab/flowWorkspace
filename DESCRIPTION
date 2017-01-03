@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with the gated cytometry
-Version: 3.21.4
+Version: 3.21.5
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -60,7 +60,8 @@ Suggests:
     flowWorkspaceData,
     RSVGTipsDevice,
     knitr,
-    ggcyto
+    ggcyto,
+    parallel
 LinkingTo: Rcpp, BH(>= 1.62.0-1)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
