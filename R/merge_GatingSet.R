@@ -126,6 +126,9 @@ checkRedundantNodes <- function(x, path = "auto", ...){
               if(class(thisObj) == "list")
               {
                 gh <- thisObj[[1]][[1]]
+              }else if(class(thisObj) == "GatingSet")
+              {
+                gh <- thisObj[[1]]
               }else if(class(thisObj) == "GatingHierarchy")
               {
                 gh <- thisObj
@@ -140,6 +143,9 @@ checkRedundantNodes <- function(x, path = "auto", ...){
                   if(class(thisObj) == "list")
                   {
                     gh <- thisObj[[1]][[1]]
+                  }else if(class(thisObj) == "GatingSet")
+                  {
+                    gh <- thisObj[[1]]
                   }else if(class(thisObj) == "GatingHierarchy")
                   {
                     gh <- thisObj
@@ -186,7 +192,7 @@ dropRedundantNodes <- function(x,toRemove){
           for(thisNode in thisNodeSet){
 #                browser()
                 message("Removing ", thisNode)
-                if(class(thisObj) == "GatingHierarchy")
+                if(is(thisObj, "GatingSet"))
                     Rm(thisNode,thisObj)
                 else if(class(thisObj) == "list")
                   for(this_gs in thisObj)
