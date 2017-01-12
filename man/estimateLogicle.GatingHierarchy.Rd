@@ -22,7 +22,7 @@ See details in \link[flowCore]{estimateLogicle}
 \examples{
 \dontrun{
  # gs is a GatingSet
- trans.list <- estimateLogical(gs[[1]], c("CD3", "CD4", "CD8")) 
+ trans.list <- estimateLogicle(gs[[1]], c("CD3", "CD4", "CD8")) 
  # trans.list is a transformerList that can be directly applied to GatinigSet
  gs <- transform(gs, trans.list)
 }
