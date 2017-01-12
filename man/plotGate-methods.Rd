@@ -61,6 +61,7 @@ Nodes can be accessed with \code{\link{getNodes}}.}
  \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot. Default is FALSE and  session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(fitGate = FALSE))'}
 
  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
+\item{strip.text}{either "parent" (the parent population name) or "gate "(the gate name).}
 
 
  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale. Default is TRUE and can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(raw.scale = TRUE))'}
