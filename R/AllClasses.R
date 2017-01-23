@@ -426,11 +426,23 @@ setValidity("GatingSetList", validGatingSetListObject)
 #' @description use \code{GatingSetList} constructor to create a GatingSetList from a list of GatingSet
 #' 
 #' @param x a \code{list} of \code{GatingSet}
-#' @param samples \code{character} vector specifying the sample names.
-#'                 if NULL, the sample names are extracted from GatingSets
+#' @param samples \code{character} vector specifying the order of samples.
+#'                 if not specified, the samples are ordered as the underlying stored order.
 #'
 #' @rdname GatingSetList-class 
 #' @export 
+#' @examples 
+#' \dontrun{
+#' samleNames(gsA) # return A1, A2
+#' samleNames(gsB) # return B1, B2
+#' gs.list <- list(gsA, gsB)
+#' gslist<- GatingSetList(gs.list)
+#' sampleNames(gslist) #return A1,A2,B1,B2
+#' 
+#' #set different order when create the GatingSetList
+#' gslist<- GatingSetList(gs.list, samples = c("A1","B1", "A2", "B2"))
+#' sampleNames(gslist) #return A1,B1,A2,B2
+#' }
 GatingSetList <- function(x,samples = NULL)
 {
   names(x)<-NULL#strip names from the list because rbind2 doesn't like it

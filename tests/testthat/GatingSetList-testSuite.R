@@ -24,6 +24,11 @@ test_that("GatingSetList constructor", {
       
       suppressMessages(gs_clone <- clone(gs))
       sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
+      #reorder by samples argument
+      samp <- c("CytoTrol_CytoTrol_2.fcs", "CytoTrol_CytoTrol_1.fcs")
+      gslist <- GatingSetList(list(gs, gs_clone), samples = samp)
+      expect_equal(sampleNames(gslist), samp)
+      
       gslist <<- GatingSetList(list(gs, gs_clone))
       
     })
