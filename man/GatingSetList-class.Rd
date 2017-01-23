@@ -14,8 +14,8 @@ GatingSetList(x, samples = NULL)
 \arguments{
 \item{x}{a \code{list} of \code{GatingSet}}
 
-\item{samples}{\code{character} vector specifying the sample names.
-if NULL, the sample names are extracted from GatingSets}
+\item{samples}{\code{character} vector specifying the order of samples.
+if not specified, the samples are ordered as the underlying stored order.}
 
 \item{y}{\code{missing} not used.}
 
@@ -98,6 +98,17 @@ Objects store a collection of GatingSets,which usually has the same gating trees
     gs_merged2
   }
 
+\dontrun{
+samleNames(gsA) # return A1, A2
+samleNames(gsB) # return B1, B2
+gs.list <- list(gsA, gsB)
+gslist<- GatingSetList(gs.list)
+sampleNames(gslist) #return A1,A2,B1,B2
+
+#set different order when create the GatingSetList
+gslist<- GatingSetList(gs.list, samples = c("A1","B1", "A2", "B2"))
+sampleNames(gslist) #return A1,B1,A2,B2
+}
 }
 \seealso{
 \code{\linkS4class{GatingSet}}
