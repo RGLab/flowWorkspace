@@ -254,15 +254,15 @@ test_that(".getPopStat",{
       
       expect_error(.getPopStat(gh, "singlet"), "not found")
       
-      expect_equal(.getPopStat(gh, "singlets"), list(flowCore = c(proportion = 9.487789e-01, count = 8.702200e+04)
-                                            , flowJo = c(proportion = 9.488988e-01, count = 8.703300e+04)
+      expect_equal(.getPopStat(gh, "singlets"), list(openCyto = c(proportion = 9.487789e-01, count = 8.702200e+04)
+                                            , xml = c(proportion = 9.488988e-01, count = 8.703300e+04)
                                             )
                       , tol = 1e-7 )
       
       
       
-      expect_equal(.getPopStat(gh, "root"), list(flowCore = c(proportion = 1, count = 119531)
-                                            , flowJo = c(proportion = 1, count = 119531)
+      expect_equal(.getPopStat(gh, "root"), list(openCyto = c(proportion = 1, count = 119531)
+                                            , xml = c(proportion = 1, count = 119531)
                                         )
                                 )
     })      
@@ -272,9 +272,9 @@ test_that("getProp",{
       
       expect_equal(getProp(gh, "singlets"), 0.9487789)
       
-      expect_equal(getProp(gh, "singlets", flowJo = FALSE), 0.9487789)
+      expect_equal(getProp(gh, "singlets", xml = FALSE), 0.9487789)
       
-      expect_equal(getProp(gh, "singlets", flowJo = TRUE), 0.9488988, tol = 1e-7)
+      expect_equal(getProp(gh, "singlets", xml = TRUE), 0.9488988, tol = 1e-7)
       
       expect_error(getProp(gh, "singlet"), "singlet not found")
     })      
@@ -283,9 +283,9 @@ test_that("getTotal",{
       
       expect_equal(getTotal(gh, "singlets"), 87022)
       
-      expect_equal(getTotal(gh, "singlets", flowJo = FALSE), 87022)
+      expect_equal(getTotal(gh, "singlets", xml = FALSE), 87022)
       
-      expect_equal(getTotal(gh, "singlets", flowJo = TRUE), 87033)
+      expect_equal(getTotal(gh, "singlets", xml = TRUE), 87033)
       
       expect_error(getTotal(gh, "singlet"), "singlet not found")
     })      
@@ -301,7 +301,7 @@ test_that("getPopStats",{
       expectRes[, node := V1]
       expectRes[, V1 := NULL]
       expect_equal(rownames(thisRes),expectRes[["node"]])#check rownames 
-      expect_equal(thisRes[, flowJo.freq], thisRes[, flowCore.freq], tol = 3e-3) 
+      expect_equal(thisRes[, xml.freq], thisRes[, openCyto.freq], tol = 3e-3) 
     })
 
 test_that("compute CV from gh",{

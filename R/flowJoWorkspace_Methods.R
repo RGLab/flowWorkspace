@@ -542,11 +542,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
 #     invisible(lapply(gs, function(gh){
 #       
 #       sn <- sampleNames(gh)
-#       fj.count <- as.integer(getTotal(gh, "root", flowJo = T))
-#       fc.count <- as.integer(getTotal(gh, "root", flowJo = F))
+#       fj.count <- as.integer(getTotal(gh, "root", xml = T))
+#       fc.count <- as.integer(getTotal(gh, "root", xml = F))
 #       
 #       if(fj.count == -1){
-#         warning("root count for flowJo is not available: ", sn)
+#         warning("root count for xml is not available: ", sn)
 #       }else{
 #         if(fj.count != fc.count)
 #           stop("Total event counts mismatched between flowJo and flowCore!", sn)  

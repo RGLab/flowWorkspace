@@ -50,8 +50,8 @@ test_that("parse without gating",{
       expect_that(gs1, is_a("GatingSet"));
       gh1 <- gs1[[1]]
       
-      thisStats <- getPopStats(gh1)[, list(flowJo.freq,flowJo.count, node)]
-      expectStats <- getPopStats(gh)[, list(flowJo.freq,flowJo.count, node)]
+      thisStats <- getPopStats(gh1)[, list(xml.freq,xml.count, node)]
+      expectStats <- getPopStats(gh)[, list(xml.freq,xml.count, node)]
       expect_equal(thisStats, expectStats)
       
       #exclude the gates that require extension since the extend_to are different 
