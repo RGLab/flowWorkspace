@@ -5,7 +5,7 @@
 \alias{plotPopCV}
 \alias{plotPopCV,GatingHierarchy-method}
 \alias{plotPopCV,GatingSet-method}
-\title{Plot the coefficient of variation between flowJo and flowCore population statistics for each population in a gating hierarchy.}
+\title{Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy.}
 \usage{
 \S4method{plotPopCV}{GatingHierarchy}(x, m = 2, n = 2, path = "auto", ...)
 
@@ -29,7 +29,7 @@
 Nothing is returned.
 }
 \description{
-This function plots the coefficient of variation calculated between the flowJo population statistics and the flowCore population statistics for each population in a gating hierarchy extracted from a flowJoWorkspace.
+This function plots the coefficient of variation calculated between the xml population statistics and the openCyto population statistics for each population in a gating hierarchy extracted from a xml Workspace.
 }
 \details{
 The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.

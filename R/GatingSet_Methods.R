@@ -1139,7 +1139,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       stats <- sapply(samples,function(thisSample){
             lapply(y$popIds,function(thisY){
                   curGh <- x[[thisSample]]
-                  getProp(curGh, thisY, flowJo = F)
+                  getProp(curGh, thisY, xml = F)
                 })
           },simplify = FALSE)
     }
@@ -1156,7 +1156,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     if(missing(stats)){
       stats <- sapply(samples,function(thisSample){
             curGh <- x[[thisSample]]
-            getProp(curGh, y,flowJo = F)
+            getProp(curGh, y,xml = F)
           },simplify = FALSE)
     }else
       stats = stats
@@ -2071,23 +2071,23 @@ setMethod("show","GatingSet",function(object){
 #'   or the population proportions or the total number of events of a node (population) in a GatingHierarchy
 #'
 #' getProp calculates the population proportion (events in the gate / events in the parent population) associated with a node in the \code{GatingHierarchy}.
-#' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the flowJo counts, flowCore counts and frequencies.
+#' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
 #' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
-#' @param flowJo \code{logical} indicating whether the statistics come from FlowJo (if parsed from xml workspace) or from flowCore.
+#' @param xml \code{logical} indicating whether the statistics come from xml (if parsed from xml workspace) or from openCyto.
 #' @param path \code{character} see \link{getNodes}
 #' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format
 #' @param subpopulations \code{character} vector to specify a subset of populations to return. (only valid when format is "long")
 #' @param ... Additional arguments passed to \link{getNodes}
 #'
 #' @details
-#' getPopStats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the flowJo and flowCore derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
+#' getPopStats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
 #' getProp returns the proportion of cells in the gate, relative to its parent.
 #' getTotal returns the total number of events included in this gate. The contents of "thisTot" variable in the "metadata" environment of the \code{nodeData} element associated with the gating tree and gate / population.
 #'
 #' @return
-#' getPopStats returns a \code{data.frame} with columns for the population name, flowJo derived counts, flowCore derived counts, and the population proportions (relative to their parent pouplation).
+#' getPopStats returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
 #' getProp returns  a population frequency \code{numeric}.
 #' getTotal returns a \code{numeric} value of the total number of elements in the population.
 #' @seealso \code{\link{getNodes}}
@@ -2111,7 +2111,7 @@ setMethod("show","GatingSet",function(object){
 #' @export
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), flowJo = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "auto", ...) {
+    function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "auto", ...) {
 
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
@@ -2124,7 +2124,7 @@ setMethod("getPopStats", "GatingSet",
         if(is.null(subpopulations))
           subpopulations <- getNodes(x, path = path, ...)[-1]
 
-        pop_stats <- .getPopCounts(x@pointer, sampleNames(x), subpopulations, flowJo, path == "full")
+        pop_stats <- .getPopCounts(x@pointer, sampleNames(x), subpopulations, xml, path == "full")
         pop_stats <- data.table(name = pop_stats[["name"]]
                               , Population = pop_stats[["Population"]]
                               , Parent = pop_stats[["Parent"]]
@@ -2135,12 +2135,12 @@ setMethod("getPopStats", "GatingSet",
       }else{
 
 
-        # The 'flowJo' flag determines whether the 'flowJo' or 'flowCore' statistics
+        # The 'xml' flag determines whether the 'xml' or 'openCyto' statistics
         # are returned.
-        if (flowJo) {
-          statistic <- paste("flowJo", statistic, sep = ".")
+        if (xml) {
+          statistic <- paste("xml", statistic, sep = ".")
         } else {
-          statistic <- paste("flowCore", statistic, sep = ".")
+          statistic <- paste("openCyto", statistic, sep = ".")
         }
 
         stats <- lapply(x,function(y){
@@ -2179,7 +2179,7 @@ setMethod("getPopStats", "GatingSet",
   cv <- do.call(rbind
               ,lapply(statList,function(x){
 
-                    res <- apply(x[,list(flowJo.count,flowCore.count)],1,function(x){
+                    res <- apply(x[,list(xml.count,openCyto.count)],1,function(x){
                           cv <- IQR(x)/median(x)
                           ifelse(is.nan(cv),0,cv)
                         })
@@ -2191,9 +2191,9 @@ setMethod("getPopStats", "GatingSet",
   cv
 
 }
-#' Plot the coefficient of variation between flowJo and flowCore population statistics for each population in a gating hierarchy.
+#' Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy.
 #'
-#' This function plots the coefficient of variation calculated between the flowJo population statistics and the flowCore population statistics for each population in a gating hierarchy extracted from a flowJoWorkspace.
+#' This function plots the coefficient of variation calculated between the xml population statistics and the openCyto population statistics for each population in a gating hierarchy extracted from a xml Workspace.
 #' @param x A \code{GatingHierarchy} from or a \code{GatingSet}.
 #' @param m \code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.
 #' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.

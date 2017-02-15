@@ -875,26 +875,26 @@ setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y,
 #' @rdname getPopStats
 #' @export
 #' @aliases getProp
-setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo = FALSE){
+setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,xml = FALSE){
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 
 			stats<-.getPopStat(x,y)
-			if(flowJo)
-				unname(stats$flowJo["proportion"])
+			if(xml)
+				unname(stats$xml["proportion"])
 			else
-				unname(stats$flowCore["proportion"])
+				unname(stats$openCyto["proportion"])
 
 		})
 #' @rdname getPopStats
 #' @export
 #' @aliases getTotal
-setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,flowJo = FALSE){
+setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,xml = FALSE){
             stats<-.getPopStat(x,y)
-			if(flowJo)
-				unname(stats$flowJo["count"])
+			if(xml)
+				unname(stats$xml["count"])
 			else
-				unname(stats$flowCore["count"])
+				unname(stats$openCyto["count"])
 #			browser()
 
 		})
@@ -920,12 +920,12 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,f
 
 
 #	browser()
-	list(flowCore=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
+	list(openCyto=c(proportion=as.numeric(ifelse(pstats$FlowCore["count"]==0
 										,0
 										,stats$FlowCore["count"]/pstats$FlowCore["count"]
 										))
 					,count=as.numeric(stats$FlowCore["count"]))
-		,flowJo=c(proportion=as.numeric(ifelse(pstats$FlowJo["count"]==0
+		,xml=c(proportion=as.numeric(ifelse(pstats$FlowJo["count"]==0
 										,0
 										,stats$FlowJo["count"]/pstats$FlowJo["count"]
 										))
@@ -940,10 +940,10 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
         nodePath <- getNodes(x, path = path, ...)
         stats <- rbindlist(lapply(nodePath, function(thisPath){
               		          			curStats <- .getPopStat(x,thisPath)
-                                  data.table(flowCore.freq = curStats$flowCore["proportion"]
-                                              ,flowJo.freq = curStats$flowJo["proportion"]
-                                  						,flowJo.count = curStats$flowJo["count"]
-                                  						,flowCore.count = curStats$flowCore["count"]
+                                  data.table(openCyto.freq = curStats$openCyto["proportion"]
+                                              ,xml.freq = curStats$xml["proportion"]
+                                  						,openCyto.count = curStats$openCyto["count"]
+                                  						,xml.count = curStats$xml["count"]
                                               , node = thisPath
 
                                   						)
@@ -960,7 +960,7 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
     rn<-rownames(x)
     x<-as.data.frame(x)
     rownames(x)<-rn
-    cv<-apply(as.matrix(x[,c("flowJo.count","flowCore.count")]),1,function(y)IQR(y)/median(y));
+    cv<-apply(as.matrix(x[,c("xml.count","openCyto.count")]),1,function(y)IQR(y)/median(y));
     cv<-as.matrix(cv,nrow=length(cv))
     cv[is.nan(cv)]<-0
     rownames(cv) <- as.character(rownames(x))

@@ -189,7 +189,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_value[["stats"]] <- sapply(samples,function(thisSample){
                                           lapply(7:8,function(thisY){
                                                 curGh <- gs[[thisSample]]
-                                                getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],flowJo = F)
+                                                getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],xml = F)
                                               })
                                         },simplify = FALSE)
       curGates <- sapply(samples,function(curSample){
