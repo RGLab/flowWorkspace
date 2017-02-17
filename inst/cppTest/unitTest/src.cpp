@@ -18,7 +18,7 @@ int main(void) {
 
 
 
-	vector<testCase> myTest(16);
+	vector<testCase> myTest(17);
 	unsigned short i;
 
 	i=0;
@@ -150,9 +150,17 @@ int main(void) {
 	myTest.at(i).colfile="../output/mssm/colnames.txt";
 	myTest.at(i).archive="../data/mssm/gs.dat";
 
+	i=16;
+	myTest.at(i).filename="../";
+	myTest.at(i).samples["35"]="35120.fcs";
+	myTest.at(i).sampNloc=1;
+	myTest.at(i).ncfile="../output/mssm/data.nc";
+	myTest.at(i).colfile="../output/mssm/colnames.txt";
+	myTest.at(i).archive="../data/mssm/gs.dat";
+
 //	cout<<"select test sample id: "<<endl;
 //	cin>>i;
-	i=15;
+	i=16;
 
 //	clone_test(myTest.at(i));
 //	unsigned loop=4000;
