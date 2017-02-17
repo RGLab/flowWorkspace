@@ -15,7 +15,7 @@
 #include "transformation.hpp"
 //#include <R_ext/Constants.h>
 #include "compensation.hpp"
-
+#include "ellipse2points.hpp"
 using namespace std;
 
 

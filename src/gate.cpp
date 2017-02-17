@@ -696,81 +696,24 @@ void ellipseGate::toPolygon(unsigned nVertices){
 	vector<coordinate> v=antipodal_vertices;
 	vector<coordinate> vertices=param.getVertices();
 	vertices.clear();//reset the vertices
-
-	unsigned nSize=v.size();
-	/*
-	 * scaling and centering the points
-	 */
-	coordinate mu;
-	mu.x=0;
-	mu.y=0;
-	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
-	{
-		mu.x+=it->x;
-		mu.y+=it->y;
-	}
-	mu.x=mu.x/nSize;
-	mu.y=mu.y/nSize;
-
-	coordinate sd;
-	sd.x=0;
-	sd.y=0;
-	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
-	{
-		sd.x+=pow((it->x-mu.x),2);
-		sd.y+=pow((it->y-mu.y),2);
-	}
-	sd.x=sqrt(sd.x/nSize);
-	sd.y=sqrt(sd.y/nSize);
-
-	for(vector<coordinate>::iterator it=v.begin();it!=v.end();it++)
-	{
-		it->x=(it->x-mu.x)/sd.x;
-		it->y=(it->y-mu.y)/sd.y;
-	}
-
-	/*
-	 * find the right positions of four antipodals
-	 */
-	coordinate R=*max_element(v.begin(),v.end(),compare_x);
-	coordinate L=*min_element(v.begin(),v.end(),compare_x);
-
-	coordinate T=*max_element(v.begin(),v.end(),compare_y);
-	coordinate B=*min_element(v.begin(),v.end(),compare_y);
-
-	/*
-	 * calculate the a,b length
-	 */
-	coordinate E;
-	E.x=hypot(L.x-R.x,L.y-R.y)/2;
-	E.y=hypot(T.x-B.x,T.y-B.y)/2;
-
-	/*
-	 * calculate the rotation angle
-	 */
-	double phi=tan((R.y-L.y)/(R.x-L.x));
-	double CY=(B.y+T.y)/2;
-	double CX=(R.x+L.x)/2;
-
-	double delta=2*pi/nVertices;
+	vertices.resize(nVertices);
 	/*
 	 * fit the polygon points
 	 */
+
+	vector<float> x, y;
+	for(auto & i : antipodal_vertices)
+	{
+		x.push_back(i.x);
+		y.push_back(i.y);
+	}
+
+	ellipse_parsed res = parseEllipse(x, y);
+	matrix mat = toPoly(res,nVertices);
 	for(unsigned short i=0;i<nVertices;i++)
 	{
-		double S=i*delta;
-		coordinate p;
-		p.x=CX+E.x*cos(S)*cos(phi)-E.y*sin(S)*sin(phi);
-		p.y=CY+E.x*cos(S)*sin(phi)+E.y*sin(S)*cos(phi);
-
-
-		/*
-		 * scale back
-		 */
-		p.x=p.x*sd.x+mu.x;
-		p.y=p.y*sd.y+mu.y;
-
-		vertices.push_back(p);
+		vertices[i].x = mat.x[i];
+		vertices[i].y = mat.y[i];
 	}
 
 	param.setVertices(vertices);
