@@ -2,10 +2,17 @@
 compact <- function (l) 
   Filter(Negate(is.null), l)
 
-LdFlags <- function(lib=c("pb", "all")){
+LdFlags <- function(lib=c("pb", "flowWorkspace", "all")){
   lib <- match.arg(lib)
-  
-  libpaths <- paste0("lib", Sys.getenv("R_ARCH"), if(lib == "pb") "/libprotobuf.a" else c("/libflowWorkspace.a", "/libprotobuf.a"))
-  libpaths <- lapply(libpaths, function(libpath)tools::file_path_as_absolute( base::system.file(libpath, package = "flowWorkspace" )))
+  libs <- c("/libflowWorkspace.a", "/libprotobuf.a")
+  if(lib == "pb") 
+    lib <- libs[2]
+  else if(lib == "flowWorkspace")
+    lib <- libs[1]
+  else
+    lib <- libs
+    
+  libpaths <- paste0("lib", Sys.getenv("R_ARCH"), lib)
+  libpaths <- lapply(libpaths, function(libpath)tools::file_path_as_absolute(base::system.file(libpath, package = "flowWorkspace" )))
   cat(paste(libpaths, collapse = " "))
 }
