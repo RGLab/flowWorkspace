@@ -492,6 +492,17 @@ setClass("booleanFilter"
 #' @param filterId \code{character} identifier
 #' @rdname booleanFilter-class
 #' @export 
+#' @examples 
+#' # "4+/TNFa+" and "4+/IL2+" are two existing gates
+#' #note: no spaces between node names and & , ! operators
+#' booleanFilter(`4+/TNFa+&!4+/IL2+`)
+#' 
+#' #programmatically 
+#' n1 <- "4+/TNFa+"
+#' n2 <- "4+/IL2+"
+#' exprs <- paste0(n1, "&!", n2)
+#' call <- substitute(booleanFilter(v), list(v = as.symbol(exprs)))
+#' eval(call)
 booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter")
 {
 	subs <- substitute(expr)
