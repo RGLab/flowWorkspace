@@ -16,8 +16,20 @@ test_that("save GatingSet to archive",
     {
       tmp <- tempfile()
       save_gs(gs, path = tmp)
+      
       gs <<- load_gs(tmp)
       expect_that(gs, is_a("GatingSet"))
+      
+      expect_error(save_gs(gs, path = tmp), "already exists")
+      
+      expect_message(save_gs(gs, path = tmp, overwrite = TRUE), "Done")
+      
+      expect_error(save_gs(gs[1], path = tmp, overwrite = TRUE), "doesn't match")
+      
+      cdf <- gs@data@file
+      file.copy(cdf, file.path(tmp, "redundant.nc"))
+      expect_error(save_gs(gs, path = tmp, overwrite = TRUE), "Not a valid")
+    
     })
 ## it is placed here because trans may get cleared later on by cloning process
 test_that("getTransformations",{    
