@@ -16,3 +16,32 @@ LdFlags <- function(lib=c("pb", "flowWorkspace", "all")){
   libpaths <- lapply(libpaths, function(libpath)tools::file_path_as_absolute(base::system.file(libpath, package = "flowWorkspace" )))
   cat(paste(libpaths, collapse = " "))
 }
+
+
+#' Get Cell Population Statistics and Sample Metadata
+#'
+#' @param object a \code{GatingSet} or \code{GatingSetList}
+#' @param ... additional arguments passed to \code{getPopStats}
+#'
+#' @return a \code{data.table} of merged population statistics with sample metadata.
+#' @export
+#' @importFrom dplyr inner_join
+#' @examples
+#'  \dontrun{
+#'     #G is a GatingSetList
+#'     stats = getMergedStats(G)
+#'   }
+getMergedStats = function(object,...){
+	if(!inherits(object,"GatingSet")&!inherits(object,"GatingSetList")){
+		stop("object must be a GatingSet or GatingSetList")
+	}
+	stats = getPopStats(object,...)
+	#process name column so that it contains XXX.fcs
+	message("Processing sample names..")
+	stats[,name := gsub("(fcs).*","\\1",name)]
+	pd = pData(object)
+	message("merging..")
+	ret = inner_join(stats,pd,by="name")
+	message("Done")
+	return(ret)
+}
