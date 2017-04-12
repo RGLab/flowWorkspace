@@ -120,7 +120,7 @@ PARAM_VEC macFlowJoWorkspace::getTransFlag(wsSampleNode sampleNode){
  * also need to double check the use case :cid==-2 && version<9
  * since the current c logic may not be consistent with R code
  */
-trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
+trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,map<string,float> & gains,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
 
 
 	trans_local res;
