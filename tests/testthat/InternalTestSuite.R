@@ -5,6 +5,18 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 sink("/dev/null")
 
 
+test_that("skip gains from FCS for vX ",{
+  thisPath <- file.path(path, "no_gains_vX")
+  wsFile <- file.path(thisPath, "10-Apr-2017.wsp")
+  ws <- openWorkspace(wsFile)
+  gs <- suppressWarnings(parseWorkspace(ws, name=2))
+  
+  res <- getPopStats(gs[[1]])
+  
+  expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 1e-3)
+})
+
+
 test_that("gate extension ",{
       thisPath <- file.path(path, "gate_extension")
       wsFile <- file.path(thisPath, "02-15-2013 ICS.xml")
