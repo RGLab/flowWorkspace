@@ -369,7 +369,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                   
                   #read FCS headers if key.fils  has not been filled yet
                   if(is.null(key.env[["key.fils"]])){
-                    all.files <- list.files(pattern= ".fcs",path=path,recursive=TRUE,full.names=TRUE)  
+                    all.files <- list.files(pattern= ".fcs$",path=path,recursive=TRUE,full.names=TRUE)  
                     if(length(all.files) > 0)
                       key.env[["key.fils"]] <- read.FCSheader(all.files, keyword = "$FIL", emptyValue = emptyValue)
                   }
