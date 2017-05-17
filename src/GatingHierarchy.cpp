@@ -109,7 +109,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool 
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<endl<<"parsing transformation..."<<endl;
 		//prefixed version
-		trans = ws.getTransformation(root,gains, comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans, true);
+		trans = ws.getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans, true);
 
 		/*
 		 * unprefixed version. Both version of trans are added (sometime they are identical)
@@ -120,7 +120,7 @@ GatingHierarchy::GatingHierarchy(wsSampleNode curSampleNode,workspace & ws,bool 
 		 * vX doesn't have this issue since trans for each parameter/channel
 		 * is explicitly defined in transform node.
 		 */
-		trans_local trans_raw=ws.getTransformation(root, gains, comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans, false);
+		trans_local trans_raw=ws.getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans, false);
 		//merge raw version of trans map to theprefixed version
 		trans_map tp = trans_raw.getTransMap();
 		for(trans_map::iterator it=tp.begin();it!=tp.end();it++)

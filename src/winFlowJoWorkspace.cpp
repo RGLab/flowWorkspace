@@ -32,7 +32,7 @@ string winFlowJoWorkspace::xPathSample(string sampleID){
 			return xpath;
 
 }
-trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,map<string,float> & gains,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
+trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
 
 	trans_local res;
 
@@ -83,15 +83,6 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,map<string,float
 		 */
 		if(pname.empty())
 			pname="*";
-		else
-		{
-			//set gains for each channel
-			string sgain = transNode.getProperty("gain");
-			if(!sgain.empty())
-				gains[pname] = atof(sgain.c_str());
-
-		}
-
 
 		string transType=(const char*)transNode.getNodePtr()->name;
 		if(transType.compare("biex")==0)
@@ -173,7 +164,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,map<string,float
 /*
  * choose the trans from global trans vector to attach to current sample
  */
-trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,map<string,float> & gains,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
+trans_local winFlowJoWorkspace::getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
 
 	trans_local res;
 	unsigned sampleID=atoi(root.getProperty("sampleID").c_str());
