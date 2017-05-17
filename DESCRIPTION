@@ -2,7 +2,7 @@ Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with the gated cytometry
 Version: 3.23.0
-ate: 2011-06-10
+Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
 Description: This package is designed to facilitate comparison of automated

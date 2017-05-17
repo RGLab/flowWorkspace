@@ -613,32 +613,34 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             message(paste("gating ..."))
             #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
             mat <- data@exprs #using @ is faster than exprs()
+            
             #get gains from keywords
-            # for now we still parse it from data
-            # once confirmed that workspace is a reliable source for this info
-            # we can parse it from ws as well
+            # # for now we still parse it from data
+            # # once confirmed that workspace is a reliable source for this info
+            # # we can parse it from ws as well
             this_pd <- pData(parameters(data))
-            #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
+            # #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
             time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)
-            this_pd <- subset(this_pd, !time.ind)
-            paramIDs <- rownames(this_pd)
-            key_names <- paste(paramIDs,"G",sep="")
+            # this_pd <- subset(this_pd, !time.ind)
+            # paramIDs <- rownames(this_pd)
+            # key_names <- paste(paramIDs,"G",sep="")
             kw <- keyword(data)
-            if(as.numeric(kw[["FCSversion"]])>=3){
-              kw_gains <- kw[key_names]
-
-              # For keywords where the gain is not set, the gain is NULL.
-              # We replace these instances with the default of 1.
-              kw_gains[sapply(kw_gains, is.null)] <- 1
-
-              gains <- as.numeric(kw_gains)
-            }else{
-              gains <- rep(1,length(paramIDs))
-            }
-
-            names(gains) <- this_pd$name
-            gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
-
+            # if(as.numeric(kw[["FCSversion"]])>=3&&wsType!="vX"){
+            #   kw_gains <- kw[key_names]
+            # 
+            #   # For keywords where the gain is not set, the gain is NULL.
+            #   # We replace these instances with the default of 1.
+            #   kw_gains[sapply(kw_gains, is.null)] <- 1
+            # 
+            #   gains <- as.numeric(kw_gains)
+            # }else{
+            #   gains <- rep(1,length(paramIDs))
+            # }
+            # 
+            # names(gains) <- this_pd$name
+            # gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
+            gains <- numeric()#gain is no longer relevant
+            names(gains) <- character()
             #update colnames in order for the gating to find right dims
             if(!is.null(prefixColNames)){
               dimnames(mat) <- list(NULL, prefixColNames)
