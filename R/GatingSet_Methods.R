@@ -76,7 +76,7 @@ save_gs<-function(G,path,overwrite = FALSE
         dat_ind <- grep(paste0("\\.",fileext,"$"),this_files)
 
         if(length(rds_ind)!=1||length(dat_ind)!=1){
-          stop("Not a valid GatingSet archiving folder!")
+          stop("Not a valid GatingSet archiving folder! ", path)
         }else{
           this_rds <- this_files[rds_ind]
           this_dat <- this_files[dat_ind]
@@ -92,7 +92,7 @@ save_gs<-function(G,path,overwrite = FALSE
         if(length(this_files)!=0){
           cdf_ind <- grep("\\.nc$",this_files)
           if(length(cdf_ind) != 1){
-            stop("Not a valid GatingSet archiving folder!")
+            stop("Not a valid GatingSet archiving folder! ", path)
           }
         }
 
