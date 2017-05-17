@@ -617,6 +617,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             # for now we still parse it from data
             # once confirmed that workspace is a reliable source for this info
             # we can parse it from ws as well
+            #(for vX, gains from FCS will be ignored, instead, it will be parsed from workspace transformation node
+            # and usually only linear transformed channel has gain attribute)
             this_pd <- pData(parameters(data))
             #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
             time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)

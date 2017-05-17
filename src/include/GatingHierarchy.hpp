@@ -105,7 +105,7 @@ private:
 	trans_local trans; /*< the transformation used for this particular GatingHierarchy object */
 
 public:
-
+	map<string,float> gains;
 
 	void addChild(VertexID parent,VertexID child);
 	VertexID addGate(gate* g,VertexID parentID,string popName);
