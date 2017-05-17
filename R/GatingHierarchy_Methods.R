@@ -1528,10 +1528,13 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 	names(plotList)<-plotList
 	if(length(plotList)==0)
 		stop("not gates to plot")
-
+	
+	
 
 	if(merge)
 	{
+	  allNodes <- getNodes(gh, showHidden = TRUE, path = "auto")
+	  sn <- sampleNames(gh)
 		#check if they have same parents and parameters
 		keylist <- sapply(plotList,function(y){
 
@@ -1541,7 +1544,10 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                         thisParam <- parameters(curGate)
 						if(extends(class(curGate),"filter"))
 						{
-							pid<-getParent(gh,y, path = "auto")
+							#use id instead of node name to avoid the special characters (e.g. '!') from interfering the 
+						  #parsing of parent info from the contatenated string  later on
+						  pid <- .cpp_getParent(gh@pointer,sn, y)+1
+							
                             myPrj <- projections[[as.character(y)]]
                             if(is.null(myPrj)){
                               myPrj <- thisParam
@@ -1590,8 +1596,8 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 			toRemoveInd <- match(toRemove,poplist)
 			#								browser()
 
-			curPid <- strsplit(curKey, split="|", fixed=TRUE)[[1]][1]#extract pid
-			plotList[[toReplaceInd]] <- list(popIds=toMerge,parentId=curPid)
+			curPid <- as.integer(strsplit(curKey, split="|", fixed=TRUE)[[1]][1])#extract pid
+			plotList[[toReplaceInd]] <- list(popIds=toMerge,parentId=allNodes[curPid])
 			plotList[toRemoveInd] <- NULL
 			poplist[toRemoveInd] <- NULL#make sure syn y as well vector since it is used to index plotList
 		}
