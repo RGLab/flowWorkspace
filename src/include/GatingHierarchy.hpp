@@ -157,6 +157,7 @@ public:
 	VertexID getAncestor(VertexID u,unsigned short level);
 	EdgeID getInEdges(VertexID target);
 	VertexID getParent(VertexID);
+	bool isDescendant(VertexID u, VertexID v);
 	VertexID_vec getDescendants(VertexID u,string name);
 	VertexID_vec getChildren(VertexID);
 	nodeProperties & getNodeProperty(VertexID);
