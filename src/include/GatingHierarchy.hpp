@@ -107,7 +107,7 @@ private:
 public:
 
 
-	void addChild(VertexID parent,VertexID child);
+	void moveNode(string node, string parent);
 	VertexID addGate(gate* g,VertexID parentID,string popName);
 	void removeNode(VertexID nodeID);
 	void addPopulation(VertexID parentID,workspace & ws,wsNode * parentNode,bool isGating);

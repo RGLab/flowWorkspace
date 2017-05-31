@@ -144,6 +144,18 @@
     invisible(.Call('flowWorkspace_removeNode', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath))
 }
 
+#' move a node within the gating tree
+#'
+#' This is light-weight since it only update the edge in graph and requires user to
+#' invoke recompute to update gating
+#'
+#' @param gsPtr external pointer that points to the C data structure of GatingSet
+#' @param sampleName sample name
+#' @param node node name
+.moveNode <- function(gsPtr, sampleName, node, parent) {
+    invisible(.Call('flowWorkspace_moveNode', PACKAGE = 'flowWorkspace', gsPtr, sampleName, node, parent))
+}
+
 .cpp_setNodeName <- function(gs, sampleName, gatePath, newNodeName) {
     invisible(.Call('flowWorkspace_setNodeName', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, newNodeName))
 }
