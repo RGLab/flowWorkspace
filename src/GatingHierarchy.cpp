@@ -287,8 +287,14 @@ void GatingHierarchy::removeNode(VertexID nodeID)
  * @param child node id to be moved
  */
 void GatingHierarchy::moveNode(string node, string parent){
+	if(parent == node)
+		throw(domain_error("Can't move the node to itself!"));
 
-	VertexID pid = getNodeID(parent), cid = getNodeID(node);
+	VertexID cid = getNodeID(node), pid = getNodeID(parent);
+	if(isDescendant(cid, pid))
+		throw(domain_error("Can't move the node to its descendants!"));
+
+
 	VertexID pid_old = getParent(cid);
 	if(pid != pid_old)
 	{
@@ -1253,6 +1259,25 @@ VertexID_vec GatingHierarchy::queryByPath(VertexID ancestorID, vector<string> ga
 
 	return res;
 
+}
+
+/**
+ * check if v is the descendant of u
+ * @param u
+ * @param v
+ * @return
+ */
+bool GatingHierarchy::isDescendant(VertexID u, VertexID v){
+	VertexID_vec nodesTomatch;
+	custom_bfs_visitor vis(nodesTomatch);
+	boost::breadth_first_search(tree, u, boost::visitor(vis));
+
+	for(auto & it : nodesTomatch)
+	{
+		if(it == v)
+			return true;
+	}
+	return false;
 }
 
 /**
