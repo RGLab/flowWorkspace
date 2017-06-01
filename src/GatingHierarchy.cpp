@@ -278,6 +278,27 @@ void GatingHierarchy::removeNode(VertexID nodeID)
 	boost::remove_vertex(nodeID,tree);
 
 }
+
+/**
+ *
+ * It moves one node to the target parent.
+ *
+ * @param parent the target parent id
+ * @param child node id to be moved
+ */
+void GatingHierarchy::moveNode(string node, string parent){
+
+	VertexID pid = getNodeID(parent), cid = getNodeID(node);
+	VertexID pid_old = getParent(cid);
+	if(pid != pid_old)
+	{
+		boost::remove_edge(pid_old, cid, tree);
+		boost::add_edge(pid, cid, tree);
+
+	}
+
+}
+
 /*
  * Getter function for compensation member
  * @return

@@ -360,6 +360,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// moveNode
+void moveNode(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, string parent);
+RcppExport SEXP flowWorkspace_moveNode(SEXP gsPtrSEXP, SEXP sampleNameSEXP, SEXP nodeSEXP, SEXP parentSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< string >::type node(nodeSEXP);
+    Rcpp::traits::input_parameter< string >::type parent(parentSEXP);
+    moveNode(gsPtr, sampleName, node, parent);
+    return R_NilValue;
+END_RCPP
+}
 // setNodeName
 void setNodeName(XPtr<GatingSet> gs, string sampleName, string gatePath, string newNodeName);
 RcppExport SEXP flowWorkspace_setNodeName(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP gatePathSEXP, SEXP newNodeNameSEXP) {

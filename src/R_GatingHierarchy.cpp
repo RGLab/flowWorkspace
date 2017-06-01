@@ -751,6 +751,24 @@ void removeNode(XPtr<GatingSet> gs,string sampleName
 
 }
 
+//' move a node within the gating tree
+//'
+//' This is light-weight since it only update the edge in graph and requires user to
+//' invoke recompute to update gating
+//'
+//' @param gsPtr external pointer that points to the C data structure of GatingSet
+//' @param sampleName sample name
+//' @param node node name
+//[[Rcpp::export(".moveNode")]]
+void moveNode(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, string parent){
+
+  GatingHierarchy * gh = gsPtr->getGatingHierarchy(sampleName);
+
+  gh->moveNode(node, parent);
+
+
+}
+
 //[[Rcpp::export(name=".cpp_setNodeName")]]
 void setNodeName(XPtr<GatingSet> gs,string sampleName
                    ,string gatePath, string newNodeName) {
