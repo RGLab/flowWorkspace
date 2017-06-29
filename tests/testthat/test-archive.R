@@ -1,7 +1,7 @@
 context("GatingSet archive")
 
 gs <- NULL
-
+isCpStaticGate <<- TRUE
 
 test_that("load GatingSet from archive",
 {
@@ -124,24 +124,23 @@ test_that("extract GatingHierarchy from GatingSet",{
 source("GatingHierarchy-testSuite.R", local = TRUE)
 
 
-##has some issue with the latest change from #203, 
-##since this feature is almost useless outside of ITN project, we will discontinue to support and test it.
-#test_that("Construct new GatingSet based on the existing gating hierarchy",
-#    {
-#      #re-load the gs since the trans get lost during clone 
-#      suppressWarnings(suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
-#      gh <- gs[[1]] 
-#      suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE))
-#      expect_that(gs, is_a("GatingSet"))
-#    })
-#
-#source("GatingSet-testSuite.R", local = TRUE)
-#
-#gh <- NULL
-#test_that("extract GatingHierarchy from GatingSet",{
-#      gh <<- gs[[1]] 
-#      expect_that(gh, is_a("GatingHierarchy"));  
-#    })
-#
-#
-#source("GatingHierarchy-testSuite.R", local = TRUE)
+##TODO: has some issue with the latest change from #203, breaks the test on getSingleCellExpression call
+test_that("Construct new GatingSet based on the existing gating hierarchy",
+   {
+     #re-load the gs since the trans get lost during clone
+     suppressWarnings(suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
+     gh <- gs[[1]]
+     suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE))
+     expect_that(gs, is_a("GatingSet"))
+   })
+isCpStaticGate <<- TRUE
+source("GatingSet-testSuite.R", local = TRUE)
+
+gh <- NULL
+test_that("extract GatingHierarchy from GatingSet",{
+     gh <<- gs[[1]]
+     expect_that(gh, is_a("GatingHierarchy"));
+   })
+
+
+source("GatingHierarchy-testSuite.R", local = TRUE)

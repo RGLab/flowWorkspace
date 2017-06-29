@@ -406,15 +406,18 @@ test_that("pretty10exp",{
     })
 
 
-
-test_that("getIndiceMat for COMPASS",{
-      
-      thisRes <- getIndiceMat(gh, "CD8/38- DR+|CD8/CCR7- 45RA+")
-      expectRes <- readRDS(file.path(resultDir, "getIndiceMat_gh.rds"))
-      expect_equal(thisRes,expectRes)
-      
-      
-    })
+if(!isCpStaticGate)
+{
+  test_that("getIndiceMat for COMPASS",{
+    
+    thisRes <- getIndiceMat(gh, "CD8/38- DR+|CD8/CCR7- 45RA+")
+    expectRes <- readRDS(file.path(resultDir, "getIndiceMat_gh.rds"))
+    expect_equal(thisRes,expectRes)
+    
+    
+  })
+  
+}
 
 test_that("getPopChnlMapping",{
       
