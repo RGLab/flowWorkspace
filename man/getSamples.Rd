@@ -2,8 +2,8 @@
 % Please edit documentation in R/flowJoWorkspace_Methods.R
 \docType{methods}
 \name{getSamples,flowJoWorkspace-method}
-\alias{getSamples}
 \alias{getSamples,flowJoWorkspace-method}
+\alias{getSamples}
 \title{Get a list of samples from a flowJo workspace}
 \usage{
 \S4method{getSamples}{flowJoWorkspace}(x, sampNloc = "keyword")
@@ -29,4 +29,3 @@ Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including 
         getSamples(ws);
       }
 }
-

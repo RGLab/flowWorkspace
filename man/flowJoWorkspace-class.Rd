@@ -19,6 +19,7 @@ Objects can be created by calls of the form \code{new("flowJoWorkspace.xml", ...
   \item{\code{options}:}{Object of class \code{"integer"}. The XML parsing options passed to \code{\link{xmlTreeParse}}. }
   }
 }
+
 \examples{
   require(flowWorkspaceData)
   d<-system.file("extdata",package="flowWorkspaceData")
@@ -32,4 +33,3 @@ Objects can be created by calls of the form \code{new("flowJoWorkspace.xml", ...
 \code{\linkS4class{GatingSet}} 
   \code{\linkS4class{GatingHierarchy}}
 }
-

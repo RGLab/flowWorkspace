@@ -32,4 +32,3 @@ comp <- compensation(comp.mat,compensationId="comp1")
 gs <- compensate(gs, comp)
 }
 }
-

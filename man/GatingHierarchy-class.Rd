@@ -33,4 +33,3 @@ Given a GatingHierarchy, one can extract the data associated with any subpopulat
 \seealso{
 \code{\linkS4class{GatingSet}}
 }
-

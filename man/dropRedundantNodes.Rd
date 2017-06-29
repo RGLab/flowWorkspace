@@ -27,4 +27,3 @@ dropRedundantNodes(gs_groups, toRm)
 GatingSetList(gslist)
 }
 }
-

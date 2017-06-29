@@ -2,8 +2,9 @@
 % Please edit documentation in R/GatingSet_Methods.R
 \docType{methods}
 \name{flowData,GatingSet-method}
-\alias{flowData}
 \alias{flowData,GatingSet-method}
+\alias{flowData}
+\alias{flowData}
 \alias{flowData<-}
 \alias{flowData<-,GatingSet-method}
 \title{Fetch or replace the flowData object associated with a GatingSet .}
@@ -26,4 +27,3 @@ Accessor method that gets or replaces the flowset/ncdfFlowSet object in a Gating
 \details{
 Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.
 }
-

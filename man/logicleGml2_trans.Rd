@@ -29,4 +29,3 @@ brks # logicle space displayed at raw data scale
 #transform it to verify the equal-spaced breaks at transformed scale
 print(trans.obj[["transform"]](brks))
 }
-

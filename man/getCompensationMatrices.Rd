@@ -2,8 +2,8 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \docType{methods}
 \name{getCompensationMatrices,GatingHierarchy-method}
-\alias{getCompensationMatrices}
 \alias{getCompensationMatrices,GatingHierarchy-method}
+\alias{getCompensationMatrices}
 \title{Retrieve the compensation matrices from a GatingHierarchy}
 \usage{
 \S4method{getCompensationMatrices}{GatingHierarchy}(x)
@@ -26,4 +26,3 @@ Return all the compensation matrices in a GatingHierarchy.
   getCompensationMatrices(gh);
 }
 }
-

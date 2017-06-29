@@ -26,4 +26,3 @@ new.parent <- "singlets"
 moveNode(gh, "CD4", new.parent)
 getParent(gh, "CD4")
 }
-

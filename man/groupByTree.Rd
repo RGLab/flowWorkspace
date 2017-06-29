@@ -25,4 +25,3 @@ gslist <- list(gs1, gs2, gs3, gs4, gs5)
 gs_groups <- groupByTree(gslist)
 }
 }
-

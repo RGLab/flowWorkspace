@@ -2,10 +2,10 @@
 % Please edit documentation in R/AllClasses.R, R/GatingSet_Methods.R
 \docType{methods}
 \name{GatingSet,character,character-method}
-\alias{GatingSet}
-\alias{GatingSet,GatingHierarchy,character-method}
 \alias{GatingSet,character,character-method}
+\alias{GatingSet}
 \alias{GatingSet,flowSet,ANY-method}
+\alias{GatingSet,GatingHierarchy,character-method}
 \title{constructors for GatingSet}
 \usage{
 \S4method{GatingSet}{character,character}(x, y, guids, includeGates = FALSE,
@@ -39,7 +39,7 @@ construct object from xml workspace file and a list of sampleIDs (not intended t
 
 construct a gatingset with empty trees (just root node)
 
-construct object from existing gating hierarchy(gating template) and flow data (Defunct)
+construct object from existing gating hierarchy(gating template) and flow data
 }
 \examples{
 \dontrun{
@@ -47,4 +47,3 @@ construct object from existing gating hierarchy(gating template) and flow data (
 gs <- GatingSet(fdata)
 }
 }
-

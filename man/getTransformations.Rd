@@ -2,8 +2,8 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \docType{methods}
 \name{getTransformations,GatingHierarchy-method}
-\alias{getTransformations}
 \alias{getTransformations,GatingHierarchy-method}
+\alias{getTransformations}
 \title{Return a list of transformations or a transformation in a GatingHierarchy}
 \usage{
 \S4method{getTransformations}{GatingHierarchy}(x, channel = NULL,
@@ -47,4 +47,3 @@ to channel-space used by flowJo.
  getTransformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
 }
 }
-

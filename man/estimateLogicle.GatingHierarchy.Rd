@@ -27,4 +27,3 @@ See details in \link[flowCore]{estimateLogicle}
  gs <- transform(gs, trans.list)
 }
 }
-

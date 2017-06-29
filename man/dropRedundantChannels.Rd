@@ -22,4 +22,3 @@ Removing these redundant channels can help standardize the channels across diffe
 gs_new <- dropRedundantChannels(gs)
 }
 }
-

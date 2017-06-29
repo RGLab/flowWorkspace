@@ -23,4 +23,3 @@ Determine tick mark locations and labels for a given channel axis
  prettyAxis(gh, "<B710-A>")
 }
 }
-

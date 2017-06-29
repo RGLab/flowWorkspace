@@ -2,8 +2,8 @@
 % Please edit documentation in R/flowJoWorkspace_Methods.R
 \docType{methods}
 \name{getSampleGroups,flowJoWorkspace-method}
-\alias{getSampleGroups}
 \alias{getSampleGroups,flowJoWorkspace-method}
+\alias{getSampleGroups}
 \title{Get a table of sample groups from a flowJo workspace}
 \usage{
 \S4method{getSampleGroups}{flowJoWorkspace}(x)
@@ -29,4 +29,3 @@ Returns a table of samples and groups defined in the flowJo workspace
 \seealso{
 \code{\link{flowJoWorkspace-class}} \code{\link{openWorkspace}}
 }
-
