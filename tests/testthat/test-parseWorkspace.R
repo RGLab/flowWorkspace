@@ -137,6 +137,7 @@ test_that("getTransformations ",{
       expect_equal(thisRes[8:14],expectRes)
       
     })
+isCpStaticGate <<- TRUE
 source("GatingHierarchy-testSuite.R", local = TRUE)
 source("GatingSet-testSuite.R", local = TRUE)
 
