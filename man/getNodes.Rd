@@ -2,8 +2,8 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \docType{methods}
 \name{getNodes,GatingSet-method}
-\alias{getNodes}
 \alias{getNodes,GatingSet-method}
+\alias{getNodes}
 \title{Get the names of all nodes from a gating hierarchy.}
 \usage{
 \S4method{getNodes}{GatingSet}(x, y = NULL, order = "regular",
@@ -34,4 +34,3 @@ getNodes returns a \code{character} vector of node/population names, ordered app
 integer indices of nodes are based on regular order,so whenver need to map from character node name to integer node ID,make sure
 to use default order which is regular.
 }
-

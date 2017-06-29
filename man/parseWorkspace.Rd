@@ -2,8 +2,8 @@
 % Please edit documentation in R/flowJoWorkspace_Methods.R
 \docType{methods}
 \name{parseWorkspace,flowJoWorkspace-method}
-\alias{parseWorkspace}
 \alias{parseWorkspace,flowJoWorkspace-method}
+\alias{parseWorkspace}
 \title{Parse a flowJo Workspace}
 \usage{
 \S4method{parseWorkspace}{flowJoWorkspace}(obj, ...)
@@ -83,4 +83,3 @@ gs <- parseWorkspace(ws, name = 2, compensation = comps); #comp is either a comp
 \seealso{
 \code{\link{getSampleGroups}},\code{\link{GatingSet}}
 }
-

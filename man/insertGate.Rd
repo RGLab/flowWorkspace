@@ -30,4 +30,3 @@ they can be combined into a 'GatingSetList' object.
  gs_clone <- insertGate(gs, dummyGate, "not debris", "lymph") 
 }
 }
-

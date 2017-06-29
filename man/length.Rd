@@ -2,8 +2,8 @@
 % Please edit documentation in R/GatingSet_Methods.R
 \docType{methods}
 \name{length,GatingSet-method}
-\alias{length}
 \alias{length,GatingSet-method}
+\alias{length}
 \alias{show,GatingSet-method}
 \title{Methods to get the length of a GatingSet}
 \usage{
@@ -19,4 +19,3 @@
 \description{
 Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
 }
-

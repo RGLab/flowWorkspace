@@ -2,8 +2,9 @@
 % Please edit documentation in R/AllClasses.R, R/GatingSetList_Methods.R
 \docType{class}
 \name{GatingSetList-class}
-\alias{GatingSetList}
 \alias{GatingSetList-class}
+\alias{GatingSetList}
+\alias{GatingSetList}
 \alias{rbind2,GatingSetList,missing-method}
 \title{Class \code{"GatingSetList"}}
 \usage{
@@ -114,4 +115,3 @@ sampleNames(gslist) #return A1,B1,A2,B2
 \code{\linkS4class{GatingSet}}
   \code{\linkS4class{GatingHierarchy}}
 }
-

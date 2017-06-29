@@ -2,24 +2,24 @@
 % Please edit documentation in R/add_Methods.R
 \docType{methods}
 \name{add,GatingSet,list-method}
-\alias{Rm}
-\alias{Rm,character,GatingHierarchy,character-method}
-\alias{Rm,character,GatingSet,character-method}
-\alias{Rm,character,GatingSetList,character-method}
+\alias{add,GatingSet,list-method}
 \alias{add}
+\alias{Rm}
+\alias{add,GatingSetList,list-method}
+\alias{add,GatingSet,filtersList-method}
+\alias{add,GatingSet,filterList-method}
+\alias{add,GatingSetList,filterList-method}
+\alias{add,GatingSetList,filtersList-method}
+\alias{add,GatingSet,filter-method}
+\alias{add,GatingSet,filters-method}
+\alias{add,GatingSetList,filter-method}
+\alias{add,GatingSetList,filters-method}
 \alias{add,GatingHierarchy,filter-method}
 \alias{add,GatingHierarchy,filters-method}
 \alias{add,GatingHierarchy,quadGate-method}
-\alias{add,GatingSet,filter-method}
-\alias{add,GatingSet,filterList-method}
-\alias{add,GatingSet,filters-method}
-\alias{add,GatingSet,filtersList-method}
-\alias{add,GatingSet,list-method}
-\alias{add,GatingSetList,filter-method}
-\alias{add,GatingSetList,filterList-method}
-\alias{add,GatingSetList,filters-method}
-\alias{add,GatingSetList,filtersList-method}
-\alias{add,GatingSetList,list-method}
+\alias{Rm,character,GatingSet,character-method}
+\alias{Rm,character,GatingSetList,character-method}
+\alias{Rm,character,GatingHierarchy,character-method}
 \title{Create a GatingSet and add/remove the flowCore gate(or population) to/from a GatingHierarchy/GatingSet.}
 \usage{
 \S4method{add}{GatingSet,list}(wf, action, ...)
@@ -151,4 +151,3 @@ They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \
 \seealso{
 \code{\link{GatingSet-class}}
 }
-

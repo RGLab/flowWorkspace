@@ -4,7 +4,7 @@
 \alias{subset.GatingSet}
 \title{subset the GatingSet/GatingSetList based on 'pData'}
 \usage{
-subset.GatingSet(x, subset, ...)
+\method{subset}{GatingSet}(x, subset, ...)
 }
 \arguments{
 \item{x}{\code{GatingSet} or \code{GatingSetList}}
@@ -19,4 +19,3 @@ a code{GatingSet} or \code{GatingSetList} object
 \description{
 subset the GatingSet/GatingSetList based on 'pData'
 }
-

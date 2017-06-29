@@ -2,8 +2,8 @@
 % Please edit documentation in R/GatingSet_Methods.R
 \docType{methods}
 \name{recompute,GatingSet-method}
-\alias{recompute}
 \alias{recompute,GatingSet-method}
+\alias{recompute}
 \alias{recompute,GatingSetList-method}
 \title{Compute the cell events by the gates stored within the gating tree}
 \usage{
@@ -32,4 +32,3 @@ and store the result as cell count.
 \details{
 It is usually used immediately after \link{add} or \link{setGate} calls.
 }
-

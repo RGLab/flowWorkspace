@@ -43,4 +43,3 @@ gs_trans <- transform(gs, transList)
 
 }
 }
-

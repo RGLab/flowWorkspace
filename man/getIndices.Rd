@@ -2,8 +2,8 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \docType{methods}
 \name{getIndices,GatingHierarchy,character-method}
-\alias{getIndices}
 \alias{getIndices,GatingHierarchy,character-method}
+\alias{getIndices}
 \title{Get the membership indices for each event with respect to a particular gate in a GatingHierarchy}
 \usage{
 \S4method{getIndices}{GatingHierarchy,character}(obj, y)
@@ -37,4 +37,3 @@ The indices returned reference all events in the file and are not directly suita
 \seealso{
 \code{\link{getPopStats}}
 }
-

@@ -2,10 +2,10 @@
 % Please edit documentation in R/setGate_Methods.R
 \docType{methods}
 \name{setGate,GatingHierarchy,character,filter-method}
-\alias{setGate}
 \alias{setGate,GatingHierarchy,character,filter-method}
-\alias{setGate,GatingSet,character,filterList-method}
+\alias{setGate}
 \alias{setGate,GatingSet,character,list-method}
+\alias{setGate,GatingSet,character,filterList-method}
 \title{update the gate}
 \usage{
 \S4method{setGate}{GatingHierarchy,character,filter}(obj, y, value,
@@ -44,4 +44,3 @@ setGate(gs[1:2], "lymph", flist)
 recompute(gs[1:2], "lymph") 
 }
 }
-

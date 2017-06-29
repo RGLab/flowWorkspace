@@ -2,10 +2,10 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \docType{methods}
 \name{getParent,GatingSet,character-method}
-\alias{getChildren}
-\alias{getChildren,GatingSet,character-method}
-\alias{getParent}
 \alias{getParent,GatingSet,character-method}
+\alias{getParent}
+\alias{getChildren,GatingSet,character-method}
+\alias{getChildren}
 \title{Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy}
 \usage{
 \S4method{getParent}{GatingSet,character}(obj, y, ...)
@@ -41,4 +41,3 @@ Returns the name of the parent population or a character/numeric vector of all t
 \seealso{
 \code{\link{getNodes}}
 }
-

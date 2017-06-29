@@ -30,4 +30,3 @@ brks # fasinh space displayed at raw data scale
 trans.func <- trans.obj[["transform"]]
 round(trans.func(brks))
 }
-

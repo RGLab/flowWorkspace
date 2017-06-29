@@ -23,4 +23,3 @@ Get Cell Population Statistics and Sample Metadata
     stats = getMergedStats(G)
   }
 }
-

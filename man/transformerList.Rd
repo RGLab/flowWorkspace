@@ -31,4 +31,3 @@ transformerList(c("FL1-H", "FL2-H"), trans.obj)
 trans.obj2 <- asinhtGml2_trans()
 transformerList(c("FL1-H", "FL2-H"), list(trans.obj, trans.obj2))
 }
-

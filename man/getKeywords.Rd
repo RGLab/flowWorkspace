@@ -2,8 +2,8 @@
 % Please edit documentation in R/flowJoWorkspace_Methods.R
 \docType{methods}
 \name{getKeywords,flowJoWorkspace,character-method}
-\alias{getKeywords}
 \alias{getKeywords,flowJoWorkspace,character-method}
+\alias{getKeywords}
 \alias{getKeywords,flowJoWorkspace,numeric-method}
 \title{Get Keywords}
 \usage{
@@ -39,4 +39,3 @@ Retrieve a list of keywords from a \code{flowJoWorkspace}
   print(res[[1]])
   getKeywords(ws, 1)
 }
-

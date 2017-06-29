@@ -2,11 +2,11 @@
 % Please edit documentation in R/filterObject_Methods.R
 \docType{methods}
 \name{filterObject,rectangleGate-method}
+\alias{filterObject,rectangleGate-method}
 \alias{filterObject}
+\alias{filterObject,polygonGate-method}
 \alias{filterObject,booleanFilter-method}
 \alias{filterObject,ellipsoidGate-method}
-\alias{filterObject,polygonGate-method}
-\alias{filterObject,rectangleGate-method}
 \title{convert flowCore filter to a list 
  
 It convert the flowCore gate to a list whose structure can be understood by 
@@ -33,4 +33,3 @@ convert flowCore filter to a list
 It convert the flowCore gate to a list whose structure can be understood by 
 underlying c++ data structure.
 }
-

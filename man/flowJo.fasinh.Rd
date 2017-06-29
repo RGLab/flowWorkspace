@@ -34,4 +34,3 @@ inverse.trans <- flowJo.fsinh()
 inverse.trans(data.trans)
 
 }
-

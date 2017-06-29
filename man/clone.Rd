@@ -2,8 +2,8 @@
 % Please edit documentation in R/GatingSet_Methods.R
 \name{clone}
 \alias{clone}
-\alias{clone,GatingSet-method}
 \alias{clone-methods}
+\alias{clone,GatingSet-method}
 \title{clone a GatingSet}
 \usage{
 clone(x, ...)
@@ -31,4 +31,3 @@ Note that the regular R assignment operation on a \code{GatingSet} object does n
 
   }
 }
-

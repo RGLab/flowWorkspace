@@ -2,8 +2,9 @@
 % Please edit documentation in R/AllClasses.R
 \docType{class}
 \name{booleanFilter-class}
-\alias{booleanFilter}
 \alias{booleanFilter-class}
+\alias{show,booleanFilter-method}
+\alias{booleanFilter}
 \alias{char2booleanFilter}
 \alias{show,booleanFilter-method}
 \title{A class describing logical operation (& or |) of the reference populations}
@@ -45,4 +46,3 @@ eval(call)
 \seealso{
 \code{\link{add}} \code{\linkS4class{GatingHierarchy}}
 }
-

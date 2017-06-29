@@ -2,9 +2,9 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \docType{methods}
 \name{plot,GatingSet,missing-method}
+\alias{plot,GatingSet,missing-method}
 \alias{plot}
 \alias{plot,GatingSet,character-method}
-\alias{plot,GatingSet,missing-method}
 \title{plot a gating tree}
 \usage{
 \S4method{plot}{GatingSet,missing}(x, y, ...)
@@ -69,4 +69,3 @@ Plot a tree/graph representing the GatingHierarchy
 }
 
 }
-

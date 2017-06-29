@@ -2,8 +2,8 @@
 % Please edit documentation in R/AllClasses.R
 \docType{package}
 \name{flowWorkspace-package}
-\alias{flowWorkspace}
 \alias{flowWorkspace-package}
+\alias{flowWorkspace}
 \title{Import and replicate flowJo workspaces and gating schemes using flowCore.}
 \description{
 Import flowJo workspaces into R. Generate the flowJo gating hierarchy and gates using flowCore functionality. Transform and compensate data in accordance with flowJo settings. Plot gates, gating hierarchies,  population statistics, and compare flowJo vs flowCore population summaries.
@@ -19,10 +19,9 @@ Import flowJo workspaces into R. Generate the flowJo gating hierarchy and gates 
     Depends: \tab R (>= 2.16.0),Rcpp (>= 0.9.9)\cr
   }
 }
-\author{
-Greg Finak, Mike Jiang
-}
 \references{
 \url{http://www.rglab.org/}
 }
-
+\author{
+Greg Finak, Mike Jiang
+}

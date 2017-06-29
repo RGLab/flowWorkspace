@@ -33,4 +33,3 @@ inverse.trans <- asinh_Gml2(inverse = TRUE)
 inverse.trans(data.trans)
 
 }
-

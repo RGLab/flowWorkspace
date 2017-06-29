@@ -14,4 +14,3 @@ getIndiceMat(gh, y)
 \description{
 Return the single-cell matrix of 1/0 dichotomized expression
 }
-

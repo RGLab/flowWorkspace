@@ -22,4 +22,3 @@ flow_trans(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6)
 helper function to generate a trans objects
 Used by other specific trans constructor
 }
-

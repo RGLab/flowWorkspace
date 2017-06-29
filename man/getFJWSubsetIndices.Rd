@@ -30,4 +30,3 @@ Returns an index vector into the samples in a flowJo workspace for use with pars
 \seealso{
 \code{\link{parseWorkspace}}
 }
-

@@ -2,10 +2,10 @@
 % Please edit documentation in R/flowJoWorkspace_Methods.R
 \docType{methods}
 \name{openWorkspace,character-method}
-\alias{closeWorkspace}
-\alias{closeWorkspace,flowJoWorkspace-method}
-\alias{openWorkspace}
 \alias{openWorkspace,character-method}
+\alias{openWorkspace}
+\alias{closeWorkspace,flowJoWorkspace-method}
+\alias{closeWorkspace}
 \title{Open/Close a flowJo workspace}
 \usage{
 \S4method{openWorkspace}{character}(file, options = 0, ...)
@@ -41,4 +41,3 @@ Open an XML flowJo workspace file and return a \code{flowJoWorkspace} object. Th
 }
 
 }
-

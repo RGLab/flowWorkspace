@@ -27,4 +27,3 @@ gs_groups <- groupByTree(gslist)
 toRm <- checkRedundantNodes(gs_groups)
 }
 }
-

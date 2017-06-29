@@ -15,4 +15,3 @@ isNcdf(x)
 \description{
 determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
 }
-
