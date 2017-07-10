@@ -63,7 +63,7 @@ Suggests:
     knitr,
     ggcyto,
     parallel
-LinkingTo: Rcpp, BH(>= 1.62.0-1)
+LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
 RoxygenNote: 6.0.1

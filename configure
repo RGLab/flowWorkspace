@@ -587,9 +587,7 @@ PACKAGE_URL=''
 ac_unique_file="src/GatingHierarchy.cpp"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-PBBUILD
 PKG_LIBS
-PB_INCLUDE
 PKG_CPPFLAGS
 XML2_CONFIG
 ac_ct_CC
@@ -644,7 +642,6 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 with_xml2
-with_protobuf
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1267,8 +1264,6 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-xml2=DIR         root directory of xml2 installation (defaults to
                           /usr/local)
-  --with-protobuf=DIR     root directory of protocol buffer installation
-                          (defaults to /usr/local)
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -1797,16 +1792,6 @@ if test "${with_xml2+set}" = set; then :
 else
   XML2_DIR="yes"
 fi
-
-
-# Check whether --with-protobuf was given.
-if test "${with_protobuf+set}" = set; then :
-  withval=$with_protobuf; PB_DIR="${with_protobuf}"
-else
-  PB_DIR="yes"
-fi
-
-
 
 
 
@@ -2957,63 +2942,12 @@ $as_echo "$as_me: Using xml2 dir '${XML2_DIR}'" >&6;}
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: setting protobuf flags..." >&5
-$as_echo "$as_me: setting protobuf flags..." >&6;}
-
-USE_BUNDLED_PB=false
-
-if test  "${PB_DIR}" = "yes" || test -z "${PB_DIR}" ; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: No directory was specified for --with-protobuf. Using bundled protocol buffer." >&5
-$as_echo "$as_me: No directory was specified for --with-protobuf. Using bundled protocol buffer." >&6;}
-
-		BASEPBNAME="protobuf-2.6.0"
-		PBTGZNAME=${BASEPBNAME}.tgz
-		cd src
-		if test -d ./${BASEPBNAME}; then
-			echo 'found ' $BASEPBNAME ' header sources and tar archive;using what is there.'
-		else
-			echo "untarring protobuf ...";
-			gunzip -dc ${PBTGZNAME} | tar xf -;
-		fi;
-
-        #run this bootstrap script to update all the gnu auto build files (e.g.  automake symlinked fils (e.g. ./compile), alocal.m4,etc... )
-        cd ${BASEPBNAME}
-        ./autogen.sh
-        automake --add-missing #do this because the old Autoconf (e.g. 2.13) may not handle this in autoreconf
-        mv m4/lt~obsolete.m4 m4/lt-obsolete.m4 # R CMD check gives warning about ~ character in filename
-        cd ..
-
-		echo "building protobuf...";
-		PBBUILD="pb_build"
-		if test -d ./${PBBUILD}; then
-			echo 'found ' $PBBUILD ' ;using what is there.'
-		else
-			mkdir ${PBBUILD}
-		fi;
-		cd ${PBBUILD};
-		../${BASEPBNAME}/configure --enable-static=no CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CC="${CC}" CFLAGS="${CFLAGS}"
-		$MAKE
-		PB_INCLUDE="${BASEPBNAME}/src"
-
-		#PB_LIBS will be set in Makevars file
-		cd ../../
-		USE_BUNDLED_PB=true
-else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: Using protobuf dir '${PB_DIR}'" >&5
-$as_echo "$as_me: Using protobuf dir '${PB_DIR}'" >&6;}
-		PB_INCLUDE="${PB_DIR}/include"
-
-        PB_LIBS="-L${PB_DIR}/lib -lprotobuf"
-fi
-PB_CFLAGS="-I${PB_INCLUDE}"
-
-
-PKG_CPPFLAGS="$XML2_CFLAGS $PB_CFLAGS"
+PKG_CPPFLAGS="$XML2_CFLAGS"
 if grep -q "^clang" <<< "${CC}" ; then
   PKG_CPPFLAGS+=" -ftemplate-depth=900"
 fi
 
-PKG_LIBS="$XML2_LIBS $PB_LIBS"
+PKG_LIBS="$XML2_LIBS"
 
 # Checks for library functions.
 { $as_echo "$as_me:${as_lineno-$LINENO}: Using the following compilation and linking flags for flowWorkspace" >&5
@@ -3021,16 +2955,8 @@ $as_echo "$as_me: Using the following compilation and linking flags for flowWork
 { $as_echo "$as_me:${as_lineno-$LINENO}:    PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&5
 $as_echo "$as_me:    PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&6;}
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}:    PB_INCLUDE=${PB_INCLUDE}" >&5
-$as_echo "$as_me:    PB_INCLUDE=${PB_INCLUDE}" >&6;}
-
 { $as_echo "$as_me:${as_lineno-$LINENO}:    PKG_LIBS=${PKG_LIBS}" >&5
 $as_echo "$as_me:    PKG_LIBS=${PKG_LIBS}" >&6;}
-
-if test USE_BUNDLED_PB = true; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}:    bundled protobuf is in ${PBBUILD}" >&5
-$as_echo "$as_me:    bundled protobuf is in ${PBBUILD}" >&6;}
-fi
 
 ac_config_files="$ac_config_files src/Makevars"
 
