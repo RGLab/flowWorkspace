@@ -107,7 +107,7 @@ save_gs<-function(G,path,overwrite = FALSE
           #check if the target path is the same as current cdf path
 #            browser()
           this_cdf <- file.path(path,this_files[cdf_ind])
-          if(normalizePath(getData(G)@file)==this_cdf){
+          if(normalizePath(getData(G)@file)==normalizePath(this_cdf)){
             cdf <- "skip"
           }
           if(cdf != "skip"){
