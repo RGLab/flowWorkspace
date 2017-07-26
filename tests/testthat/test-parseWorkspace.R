@@ -133,8 +133,7 @@ test_that("getTransformations ",{
       
       expect_equal(thisRes[1:7],expectRes)
       
-      names(expectRes) <- gsub("<|>", "", names(expectRes)) 
-      expect_equal(thisRes[8:14],expectRes)
+      
       
     })
 isCpStaticGate <<- TRUE
@@ -247,8 +246,8 @@ test_that("updateChannles",{
                   )
   
   #check trans
-  trans <- getTransformations(gs1[[1]])
-  expect_equal(names(trans), trans_names %>% gsub("B710-A", "b710", .) %>% gsub("V450-A", "v450-a", .))
+  trans <- getTransformations(gs1[[1]], channel = "all")
+  expect_equal(names(trans)[1:7], trans_names %>% gsub("B710-A", "b710", .) %>% gsub("V450-A", "v450-a", .))
   
   #update flow data
   gs1 <- updateChannels(gs1, map)

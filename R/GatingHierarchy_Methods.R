@@ -1266,7 +1266,8 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
       if(length(trans.objects) == 0){
         trans.objects <- .getTransformations(x@pointer,sampleNames(x), ...)
       }
-
+      trans_names <- names(trans.objects)
+      
       #this option is for backward compatibility
       if(only.function){
         trans.objects <- sapply(trans.objects, function(obj){
@@ -1281,19 +1282,35 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
 
       #try to match to given channel
       if(!is.null(channel)){
-        trans_names <- names(trans.objects)
-        #do strict match first
-        j <- trans_names %in% channel
-        
-        if(sum(j) > 1){
-          stop("multiple tranformation functions matched to: ", channel)
-        }else if(sum(j) == 0){
-          return(NULL)
-        }else{
-          trans.objects[[which(j)]]
+        if(channel=="all")
+        {
+          # skip filtering only when specifically asked for (by setting channel  to "all", reserved for interal usage
+          # when data was not available during the parsing xml stage)
+          trans.objects
+        }else
+        {
+          #do strict match first
+          j <- trans_names %in% channel
+          
+          if(sum(j) > 1){
+            stop("multiple tranformation functions matched to: ", channel)
+          }else if(sum(j) == 0){
+            return(NULL)
+          }else{
+            trans.objects[[which(j)]]
+          }
         }
       }else
-        trans.objects
+      {
+        
+         
+          #filter out the non-prefixed trans objs by default
+          chnls <- colnames(x)
+          
+         trans.objects[trans_names %in% chnls]  
+       
+      }
+        
 })
 
 
