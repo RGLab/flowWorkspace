@@ -843,7 +843,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL, compChnlInd){
 
 
- trans <- getTransformations(G[[sampleName]])
+ trans <- getTransformations(G[[sampleName]], channel = "all")
  comp<-.cpp_getCompensation(G@pointer,sampleName)
  prefix <- comp$prefix
  suffix <- comp$suffix
