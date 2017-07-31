@@ -6,8 +6,9 @@
  *  Created on: Mar 30, 2012
  *      Author: wjiang2
  */
-#include "include/GatingSet.hpp"
-
+#include "cytolib/GatingSet.hpp"
+#include <Rcpp.h>
+using namespace Rcpp;
 GatingSet * getGsPtr(SEXP _gsPtr){
 
 	if(R_ExternalPtrAddr(_gsPtr)==0)

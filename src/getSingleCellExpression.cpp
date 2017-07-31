@@ -1,6 +1,6 @@
 #include <Rcpp.h>
-#include "include/GatingHierarchy.hpp"
-#include "include/GatingSet.hpp"
+#include "cytolib/GatingHierarchy.hpp"
+#include "cytolib/GatingSet.hpp"
 #include <stdexcept>
 // #include "include/gate.hpp"
 // #include "include/transformation.hpp"

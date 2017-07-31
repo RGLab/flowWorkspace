@@ -6,8 +6,9 @@
  *  Created on: Aug 18, 2014
  *      Author: wjiang2
  */
-#include "include/GatingSet.hpp"
-
+#include "cytolib/GatingSet.hpp"
+#include <Rcpp.h>
+using namespace Rcpp;
 //[[Rcpp::plugins(temp)]]
 
 //' grab vectors of pop counts and the parent counts along with their paths and FCS filenames

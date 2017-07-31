@@ -2,7 +2,7 @@
 CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT -I$(LIB_XML2)/$(R_ARCH)/include/libxml2 -DLIBXML_STATIC
 
-PKG_LIBS += $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags();cat(' ');RProtoBufLib:::LdFlags()"` -lws2_32
+PKG_LIBS += $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a `${R_HOME}/bin/Rscript -e "flowCore:::LdFlags();cat(' ');cytolib:::LdFlags();cat(' ');RProtoBufLib:::LdFlags()"` -lws2_32
 
 #expose headers in installed package include folder
 USERINCLUDE = $(R_PACKAGE_DIR)/include
