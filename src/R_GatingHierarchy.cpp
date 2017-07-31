@@ -14,12 +14,30 @@
  * write R API
  */
 
-#include "include/GatingHierarchy.hpp"
-#include "include/GatingSet.hpp"
+#include "cytolib/GatingHierarchy.hpp"
+#include "cytolib/GatingSet.hpp"
 #include <stdexcept>
-#include "include/gate.hpp"
-#include "include/transformation.hpp"
+#include "cytolib/gate.hpp"
+#include "cytolib/transformation.hpp"
 using namespace std;
+
+#include "cytolib/flowData.hpp"
+#include <Rcpp.h>
+using namespace Rcpp;
+flowData mat2flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case){
+	flowData fd;
+	List dimnames=mat.attr("dimnames");
+	fd.params=as<vector<string> >(dimnames[1]);
+	unsigned nChannls=fd.params.size();
+	fd.nEvents=mat.nrow();
+	unsigned nSize=nChannls*fd.nEvents;
+	fd.sampleID=_sampleID;
+	fd.data.resize(nSize);
+	for(unsigned j=0;j<nSize;j++)
+		fd.data[j]=mat[j];
+	fd.ignore_case = _ignore_case;
+	return fd;
+}
 
 /*
  * only expose gating set pointer to R to avoid gc() by R
@@ -278,7 +296,7 @@ void gating(XPtr<GatingSet> gs
 
 //	Rcpp::NumericMatrix orig(mat);
 	unsigned sampleID=numeric_limits<unsigned>::max();//dummy sample index
-	flowData fdata(orig,sampleID,ignore_case);
+	flowData fdata =mat2flowData(orig,sampleID,ignore_case);
 
 	gh->loadData(fdata);
 	if(!recompute)
