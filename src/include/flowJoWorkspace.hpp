@@ -8,7 +8,7 @@
 #ifndef FLOWJOWORKSPACE_HPP_
 #define FLOWJOWORKSPACE_HPP_
 
-#include "cytolib/workspace.hpp"
+#include "workspace.hpp"
 #include "cytolib/transformation.hpp"
 #include <sstream>
 #include <boost/lexical_cast.hpp>

@@ -296,9 +296,9 @@ void gating(XPtr<GatingSet> gs
 
 //	Rcpp::NumericMatrix orig(mat);
 	unsigned sampleID=numeric_limits<unsigned>::max();//dummy sample index
-	flowData fdata =mat2flowData(orig,sampleID,ignore_case);
 
-	gh->loadData(fdata);
+
+	gh->loadData(mat2flowData(orig,sampleID,ignore_case));
 	if(!recompute)
 	{
 	

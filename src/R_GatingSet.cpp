@@ -6,7 +6,8 @@
  *  Created on: Mar 30, 2012
  *      Author: wjiang2
  */
-#include "cytolib/GatingSet.hpp"
+
+#include "include/ws2gs.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
 GatingSet * getGsPtr(SEXP _gsPtr){
@@ -32,16 +33,9 @@ XPtr<GatingSet> parseWorkspace(string fileName,StringVec sampleIDs
                             ,unsigned short sampNloc,int xmlParserOption
                             , unsigned short wsType) 
 {
-
-		
-
-		GatingSet * gs=new GatingSet(fileName,isParseGate,sampNloc,xmlParserOption, wsType);
-		gs->parseWorkspace(sampleIDs,isParseGate,sampleNames);
-		/*
-		 * using default finalizer to delete gs,which is triggered by gc() when
-		 * xptr is out of scope
-		 */
-
+		workspace * ws = openWorkspace(fileName, sampNloc,xmlParserOption, wsType);
+		GatingSet * gs = ws2gs(ws, sampleIDs,isParseGate,sampleNames);
+		delete ws;
 		return XPtr<GatingSet>(gs);
 
 
