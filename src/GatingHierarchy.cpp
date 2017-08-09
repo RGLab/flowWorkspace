@@ -62,11 +62,14 @@ void GatingHierarchy::convertToPb(pb::GatingHierarchy & gh_pb){
 
 GatingHierarchy::GatingHierarchy(pb::GatingHierarchy & pb_gh, map<intptr_t, transformation *> & trans_tbl):isLoaded(pb_gh.isloaded()){
 	const pb::populationTree & tree_pb =  pb_gh.tree();
-	for(int i = 0; i < tree_pb.node_size(); i++){
+	int nNodes = tree_pb.node_size();
+
+	tree = populationTree(nNodes);
+	for(int i = 0; i < nNodes; i++){
 		const pb::treeNodes & node_pb = tree_pb.node(i);
 		const pb::nodeProperties & np_pb = node_pb.node();
 
-		VertexID curChildID = boost::add_vertex(tree);
+		VertexID curChildID = i;
 		tree[curChildID] = nodeProperties(np_pb);
 
 		if(node_pb.has_parent()){
