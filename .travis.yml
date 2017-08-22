@@ -1,39 +1,20 @@
+# Sample .travis.yml for R projects
+
 language: r
-warnings_are_errors: false
-env:
-  global:
-    - BIOC_USE_DEVEL="TRUE"
+r: bioc-devel
+dist: trusty
+
+cache: packages
+
+warnings_are_errors: true
+sudo: false
+
 bioc_required: true
-apt_packages:
-  - libhdf5-7 
-  - libhdf5-dev
-  - r-bioc-rgraphviz
-  - r-bioc-rbgl
-  - r-bioc-zlibbioc
-  - r-bioc-graph
-  - r-bioc-biobase	
-r_binary_packages:
-  - testthat
-  - RcppArmadillo
-  - DEoptimR
-  - corpcor
-  - hexbin
-  - IDPmisc
-  - reshape2
-  - markdown
-  - XML
-  - robustbase
-  - data.table
-  - knitr
-  - pcaPP
-  - rrcov
-# - RBGL
-# - zlibbioc
-# - graph
-# - Rgraphviz	
-branches:
-  only:
-    - travis 
+
+env:
+ global:
+   - CRAN: http://cran.rstudio.com
+
 notifications:
   email:
     on_success: change

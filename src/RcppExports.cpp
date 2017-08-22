@@ -538,3 +538,53 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+
+static const R_CallMethodDef CallEntries[] = {
+    {"flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &flowWorkspace_getSingleCellExpressionByGate, 6},
+    {"flowWorkspace_getSingleCellExpression", (DL_FUNC) &flowWorkspace_getSingleCellExpression, 6},
+    {"flowWorkspace_getPopCounts", (DL_FUNC) &flowWorkspace_getPopCounts, 5},
+    {"flowWorkspace_getSplineCoefs", (DL_FUNC) &flowWorkspace_getSplineCoefs, 6},
+    {"flowWorkspace_addTrans", (DL_FUNC) &flowWorkspace_addTrans, 2},
+    {"flowWorkspace_updateChannels", (DL_FUNC) &flowWorkspace_updateChannels, 2},
+    {"flowWorkspace_plotGh", (DL_FUNC) &flowWorkspace_plotGh, 3},
+    {"flowWorkspace_getNodes", (DL_FUNC) &flowWorkspace_getNodes, 5},
+    {"flowWorkspace_getNodeID", (DL_FUNC) &flowWorkspace_getNodeID, 3},
+    {"flowWorkspace_getParent", (DL_FUNC) &flowWorkspace_getParent, 3},
+    {"flowWorkspace_getChildren", (DL_FUNC) &flowWorkspace_getChildren, 4},
+    {"flowWorkspace_getPopStats", (DL_FUNC) &flowWorkspace_getPopStats, 3},
+    {"flowWorkspace_getCompensation", (DL_FUNC) &flowWorkspace_getCompensation, 2},
+    {"flowWorkspace_getTransformations", (DL_FUNC) &flowWorkspace_getTransformations, 3},
+    {"flowWorkspace_computeGates", (DL_FUNC) &flowWorkspace_computeGates, 5},
+    {"flowWorkspace_gating", (DL_FUNC) &flowWorkspace_gating, 10},
+    {"flowWorkspace_getGate", (DL_FUNC) &flowWorkspace_getGate, 3},
+    {"flowWorkspace_getIndices", (DL_FUNC) &flowWorkspace_getIndices, 3},
+    {"flowWorkspace_setIndices", (DL_FUNC) &flowWorkspace_setIndices, 4},
+    {"flowWorkspace_getGateFlag", (DL_FUNC) &flowWorkspace_getGateFlag, 3},
+    {"flowWorkspace_getNegateFlag", (DL_FUNC) &flowWorkspace_getNegateFlag, 3},
+    {"flowWorkspace_getHiddenFlag", (DL_FUNC) &flowWorkspace_getHiddenFlag, 3},
+    {"flowWorkspace_addGate", (DL_FUNC) &flowWorkspace_addGate, 5},
+    {"flowWorkspace_boolGating", (DL_FUNC) &flowWorkspace_boolGating, 4},
+    {"flowWorkspace_setGate", (DL_FUNC) &flowWorkspace_setGate, 4},
+    {"flowWorkspace_removeNode", (DL_FUNC) &flowWorkspace_removeNode, 3},
+    {"flowWorkspace_moveNode", (DL_FUNC) &flowWorkspace_moveNode, 4},
+    {"flowWorkspace_setNodeName", (DL_FUNC) &flowWorkspace_setNodeName, 4},
+    {"flowWorkspace_setNodeFlag", (DL_FUNC) &flowWorkspace_setNodeFlag, 4},
+    {"flowWorkspace_parseWorkspace", (DL_FUNC) &flowWorkspace_parseWorkspace, 7},
+    {"flowWorkspace_getSamples", (DL_FUNC) &flowWorkspace_getSamples, 1},
+    {"flowWorkspace_NewGatingSet", (DL_FUNC) &flowWorkspace_NewGatingSet, 3},
+    {"flowWorkspace_NewGatingSet_rootOnly", (DL_FUNC) &flowWorkspace_NewGatingSet_rootOnly, 1},
+    {"flowWorkspace_saveGatingSet", (DL_FUNC) &flowWorkspace_saveGatingSet, 2},
+    {"flowWorkspace_loadGatingSet", (DL_FUNC) &flowWorkspace_loadGatingSet, 1},
+    {"flowWorkspace_CloneGatingSet", (DL_FUNC) &flowWorkspace_CloneGatingSet, 2},
+    {"flowWorkspace_combineGatingSet", (DL_FUNC) &flowWorkspace_combineGatingSet, 2},
+    {"flowWorkspace_setSample", (DL_FUNC) &flowWorkspace_setSample, 3},
+    {"flowWorkspace_getLogLevel", (DL_FUNC) &flowWorkspace_getLogLevel, 0},
+    {"flowWorkspace_setLogLevel", (DL_FUNC) &flowWorkspace_setLogLevel, 1},
+    {"flowWorkspace_toggleErrorFlag", (DL_FUNC) &flowWorkspace_toggleErrorFlag, 0},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_flowWorkspace(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}
