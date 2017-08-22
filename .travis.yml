@@ -7,9 +7,12 @@ dist: trusty
 cache: packages
 
 warnings_are_errors: true
-sudo: false
+sudo: required
+
 
 bioc_required: true
+install:
+- R -e 'devtools::install_deps(dep = T,type="binary")'
 
 env:
  global:
