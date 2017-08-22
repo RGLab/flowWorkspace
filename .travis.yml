@@ -12,7 +12,7 @@ sudo: required
 
 bioc_required: true
 install:
-- R -e 'devtools::install_deps(dep = T,type="binary")'
+  - R -e 'devtools::install_deps(dep = T,type="binary")'
 
 env:
  global:
