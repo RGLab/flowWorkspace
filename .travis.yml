@@ -17,26 +17,6 @@ env:
 -apt_packages:
 -  - libhdf5-7 
 -  - libhdf5-dev
--  - r-bioc-rgraphviz
--  - r-bioc-rbgl
--  - r-bioc-zlibbioc
--  - r-bioc-graph
--  - r-bioc-biobase     
--r_binary_packages:
--  - testthat
--  - RcppArmadillo
--  - DEoptimR
--  - corpcor
--  - hexbin
--  - IDPmisc
--  - reshape2
--  - markdown
--  - XML
--  - robustbase
--  - data.table
--  - knitr
--  - pcaPP
--  - rrcov
 
 notifications:
   email:
