@@ -6,7 +6,7 @@ dist: trusty
 
 cache: packages
 
-warnings_are_errors: true
+warnings_are_errors: false 
 sudo: required
 
 
