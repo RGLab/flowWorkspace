@@ -248,7 +248,7 @@ VertexID GatingHierarchy::addGate(gate* g,VertexID parentID,string popName)
 	int res = getChildren(parentID, popName);
 	if( res >0 ){
 		popName.append(" already exists!");
-		throw(Rcpp::exception((popName).c_str()));
+		throw(domain_error((popName)));
 	}else{
 		VertexID curChildID = boost::add_vertex(tree);
 
@@ -291,11 +291,11 @@ void GatingHierarchy::removeNode(VertexID nodeID)
  */
 void GatingHierarchy::moveNode(string node, string parent){
 	if(parent == node)
-		throw(Rcpp::exception(string("Can't move the node to itself!").c_str()));
+		throw(domain_error(string("Can't move the node to itself!")));
 
 	VertexID cid = getNodeID(node), pid = getNodeID(parent);
 	if(isDescendant(cid, pid))
-		throw(Rcpp::exception(string("Can't move the node to its descendants!").c_str()));
+		throw(domain_error(string("Can't move the node to its descendants!")));
 
 
 	VertexID pid_old = getParent(cid);
@@ -331,7 +331,7 @@ void GatingHierarchy::updateChannels(const CHANNEL_MAP & chnl_map){
 		{
 			gate *g=node.getGate();
 			if(g==NULL)
-				throw(Rcpp::exception(string("no gate available for this node").c_str()));
+				throw(domain_error(string("no gate available for this node")));
 			if(g_loglevel>=POPULATION_LEVEL)
 				COUT << "update channels for " <<node.getName()<<endl;
 			if(g->getType()!=BOOLGATE&&g->getType()!=LOGICALGATE)
@@ -358,7 +358,7 @@ void GatingHierarchy::printLocalTrans(){
 
 
 		if(!curTrans->isInterpolated())
-				throw(Rcpp::exception(string("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first).c_str()));
+				throw(domain_error(string("non-interpolated calibration table:"+curTrans->getName()+curTrans->getChannel()+" from channel"+it->first)));
 
 
 		COUT<<it->first<<curTrans->getName()<<" "<<curTrans->getChannel()<<endl;;
@@ -382,7 +382,7 @@ void GatingHierarchy::printLocalTrans(){
 //	//subset the results by indices for non-root node
 //	if(nodeID>0)
 //	{
-//		throw(Rcpp::exception(("accessing data through non-root node is not supported yet!").c_str()));
+//		throw(domain_error(("accessing data through non-root node is not supported yet!")));
 //	}
 //	else
 //		return res;
@@ -398,7 +398,7 @@ flowData GatingHierarchy::getData(VertexID nodeID)
 	//subset the results by indices for non-root node
 	if(nodeID>0)
 	{
-		throw(Rcpp::exception(string("accessing data through non-root node is not supported yet!").c_str()));
+		throw(domain_error(string("accessing data through non-root node is not supported yet!")));
 	}
 	else
 		return res;
@@ -466,7 +466,7 @@ void GatingHierarchy::transforming(double timestep = 1)
 	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 		COUT <<"start transforming data :"<<fdata.getSampleID()<<endl;
 	if(!isLoaded)
-		throw(Rcpp::exception(string("data is not loaded yet!").c_str()));
+		throw(domain_error(string("data is not loaded yet!")));
 
 //	unsigned nEvents=fdata.nEvents;
 //	unsigned nChannls=fdata.nChannls;
@@ -533,7 +533,7 @@ void GatingHierarchy::extendGate(float extend_val){
 			COUT <<endl<<"start extending Gates for:"<<fdata.getSampleID()<<endl;
 
 		if(!isLoaded)
-				throw(Rcpp::exception(string("data is not loaded yet!").c_str()));
+				throw(domain_error(string("data is not loaded yet!")));
 
 		VertexID_vec vertices=getVertices(0);
 
@@ -545,7 +545,7 @@ void GatingHierarchy::extendGate(float extend_val){
 			{
 				gate *g=node.getGate();
 				if(g==NULL)
-					throw(Rcpp::exception(string("no gate available for this node").c_str()));
+					throw(domain_error(string("no gate available for this node")));
 				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
@@ -572,7 +572,7 @@ void GatingHierarchy::extendGate(float extend_val, float extend_to){
 			{
 				gate *g=node.getGate();
 				if(g==NULL)
-					throw(Rcpp::exception(string("no gate available for this node").c_str()));
+					throw(domain_error(string("no gate available for this node")));
 				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
@@ -598,7 +598,7 @@ void GatingHierarchy::adjustGate(map<string,float> &gains){
 			{
 				gate *g=node.getGate();
 				if(g==NULL)
-					throw(Rcpp::exception(string("no gate available for this node").c_str()));
+					throw(domain_error(string("no gate available for this node")));
 				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				if(g->getType()!=BOOLGATE)
@@ -625,7 +625,7 @@ void GatingHierarchy::transformGate(){
 			{
 				gate *g=node.getGate();
 				if(g==NULL)
-					throw(Rcpp::exception(string("no gate available for this node").c_str()));
+					throw(domain_error(string("no gate available for this node")));
 				if(g_loglevel>=POPULATION_LEVEL)
 					COUT <<node.getName()<<endl;
 				unsigned short gateType= g->getType();
@@ -649,7 +649,7 @@ void GatingHierarchy::gating(VertexID u,bool recompute, bool computeTerminalBool
 {
 
 //	if(!isLoaded)
-//			throw(Rcpp::exception(("data is not loaded yet!").c_str()));
+//			throw(domain_error(("data is not loaded yet!")));
 
 
 	nodeProperties & node=getNodeProperty(u);
@@ -706,7 +706,7 @@ void GatingHierarchy::calgate(VertexID u, bool computeTerminalBool)
 	gate *g=node.getGate();
 
 	if(g==NULL)
-		throw(Rcpp::exception(string("no gate available for this node").c_str()));
+		throw(domain_error(string("no gate available for this node")));
 
 	/*
 	 * calculate the indices for the current node
@@ -779,7 +779,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u, bool computeTerminalBool){
 		if(nodeID == u){
 			string strErr = "The boolean gate is referencing to itself: ";
 			strErr.append(curPop.getName());
-			throw(Rcpp::exception((strErr).c_str()));
+			throw(domain_error((strErr)));
 		}
 
 		if(!curPop.isGated())
@@ -810,7 +810,7 @@ vector<bool> GatingHierarchy::boolGating(VertexID u, bool computeTerminalBool){
 					transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_or<bool>());
 					break;
 				default:
-					throw(Rcpp::exception(string("not supported operator!").c_str()));
+					throw(domain_error(string("not supported operator!")));
 			}
 		}
 
@@ -883,7 +883,7 @@ vector<bool> GatingHierarchy::boolGating(vector<BOOL_GATE_OP> boolOpSpec, bool c
 					transform (ind.begin(), ind.end(), curPopInd.begin(), ind.begin(),logical_or<bool>());
 					break;
 				default:
-					throw(Rcpp::exception(string("not supported operator!").c_str()));
+					throw(domain_error(string("not supported operator!")));
 			}
 		}
 
@@ -901,7 +901,7 @@ vector<bool> GatingHierarchy::boolGating(vector<BOOL_GATE_OP> boolOpSpec, bool c
  */
 void GatingHierarchy::drawGraph(string output)
 {
-	ofstream outputFile(output.c_str());
+	ofstream outputFile(output);
 
 	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriterR(tree));
 	outputFile.close();
@@ -977,7 +977,7 @@ VertexID_vec GatingHierarchy::getVertices(unsigned short order){
 		break;
 
 		default:
-			throw(Rcpp::exception(string("not valid sort type for tree traversal!").c_str()));
+			throw(domain_error(string("not valid sort type for tree traversal!")));
 	}
 
 	return(res);
@@ -1034,9 +1034,9 @@ VertexID GatingHierarchy::getNodeID(vector<string> gatePath){
 			errMsg.append(gatePath.at(i) + "/");
 		errMsg.append(gatePath.at(gatePath.size()-1));
 		if(nMatches == 0)
-			throw(Rcpp::exception((errMsg + " not found!").c_str()));
+			throw(domain_error((errMsg + " not found!")));
 		else
-			throw(Rcpp::exception((errMsg + " is ambiguous within the gating tree!").c_str()));
+			throw(domain_error((errMsg + " is ambiguous within the gating tree!")));
 	}
 
 }
@@ -1136,7 +1136,7 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 				errMsg.append(refPath.at(i) + "/");
 			errMsg.append(refPath.at(refPath.size()-1));
 			if(nMatches == 0)
-				throw(Rcpp::exception((errMsg + " not found!" ).c_str()));
+				throw(domain_error((errMsg + " not found!" )));
 			else{
 				/*
 				 * select the nearest one to u when multiple nodes matches
@@ -1181,7 +1181,7 @@ VertexID GatingHierarchy::getRefNodeID(VertexID u,vector<string> refPath){
 					}
 					vector<unsigned>::iterator minIt = min_element(relativeDepthVec.begin(), relativeDepthVec.end());
 					if(count(relativeDepthVec.begin(), relativeDepthVec.end(), *minIt) > 1)
-						throw(Rcpp::exception((errMsg + " can't be determined due to the multiple matches with the same distance to boolean node!" ).c_str()));
+						throw(domain_error((errMsg + " can't be determined due to the multiple matches with the same distance to boolean node!" )));
 					else{
 						nPos = matchedInd.at(distance(relativeDepthVec.begin(), minIt));
 					}
@@ -1339,13 +1339,13 @@ VertexID GatingHierarchy::getDescendant(VertexID u,string popName){
 	switch (nMatches){
 	case 0:
 			popName.append(" not found within the gating tree!");
-			throw(Rcpp::exception((popName).c_str()));
+			throw(domain_error((popName)));
 	case 1:
 			return (res.at(0));
 
 	default:
 			popName.append(" is ambiguous within the gating tree!");
-			throw(Rcpp::exception((popName).c_str()));
+			throw(domain_error((popName)));
 	}
 
 }
@@ -1386,7 +1386,7 @@ vector<string> GatingHierarchy::getPopPaths(unsigned short order,bool fullPath,b
 					getNodeID(nodeName);
 					break;//quit the path growing if not no error (i.e. it is unique)
 				}
-				catch(const Rcpp::exception & e){
+				catch(const domain_error & e){
 					// otherwise do nothing but continue to grow the path
 				}
 
@@ -1459,13 +1459,13 @@ EdgeID GatingHierarchy::getInEdges(VertexID target){
 
 	}
 	else
-		throw(Rcpp::exception((err+" :invalid vertexID!").c_str()));
+		throw(domain_error((err+" :invalid vertexID!")));
 
 
 	if(res.size()==0)
-		throw(Rcpp::exception((err+" :parent not found!").c_str()));
+		throw(domain_error((err+" :parent not found!")));
 	if(res.size()>1) //we only allow one parent per node
-		throw(Rcpp::exception((err+" :multiple parent nodes found!").c_str()));
+		throw(domain_error((err+" :multiple parent nodes found!")));
 
 	return(res.at(0));
 }
