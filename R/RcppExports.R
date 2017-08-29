@@ -2,11 +2,11 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 .cpp_getSingleCellExpressionByGate <- function(gs, sampleName, markers_pops, data, markers, threshold) {
-    .Call('flowWorkspace_getSingleCellExpressionByGate', PACKAGE = 'flowWorkspace', gs, sampleName, markers_pops, data, markers, threshold)
+    .Call('_flowWorkspace_getSingleCellExpressionByGate', PACKAGE = 'flowWorkspace', gs, sampleName, markers_pops, data, markers, threshold)
 }
 
 .cpp_getSingleCellExpression <- function(gs, sampleName, pops, data, markers, threshold) {
-    .Call('flowWorkspace_getSingleCellExpression', PACKAGE = 'flowWorkspace', gs, sampleName, pops, data, markers, threshold)
+    .Call('_flowWorkspace_getSingleCellExpression', PACKAGE = 'flowWorkspace', gs, sampleName, pops, data, markers, threshold)
 }
 
 #' grab vectors of pop counts and the parent counts along with their paths and FCS filenames
@@ -19,7 +19,7 @@
 #' @param flowJo logical flag to specify whether flowCore or flowJo counts to return
 #' @param isFullPath logical flag to specify whether return the full path or partial path of populations
 .getPopCounts <- function(gsPtr, sampleNames, subpopulation, flowJo, isFullPath) {
-    .Call('flowWorkspace_getPopCounts', PACKAGE = 'flowWorkspace', gsPtr, sampleNames, subpopulation, flowJo, isFullPath)
+    .Call('_flowWorkspace_getPopCounts', PACKAGE = 'flowWorkspace', gsPtr, sampleNames, subpopulation, flowJo, isFullPath)
 }
 
 #' construct the biexpTrans c++ object on the fly
@@ -30,7 +30,7 @@
 #' which is computed by biexpTrans class and then return to R for constructing flowJo transformation function within R.
 #' Mainly used for openCyto autoGating process where no xml workspace is needed to create flowJo transformation.
 .getSplineCoefs <- function(channelRange = 4096L, maxValue = 262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE) {
-    .Call('flowWorkspace_getSplineCoefs', PACKAGE = 'flowWorkspace', channelRange, maxValue, pos, neg, widthBasis, inverse)
+    .Call('_flowWorkspace_getSplineCoefs', PACKAGE = 'flowWorkspace', channelRange, maxValue, pos, neg, widthBasis, inverse)
 }
 
 #' store the transformation functions created from R into GatingSet
@@ -39,7 +39,7 @@
 #' @param transformList a transformList that constains a list of transformation functions.
 #'         Each of these functions carries the attributes to be used to convert to c++ transformation
 .addTrans <- function(gsPtr, transformList) {
-    invisible(.Call('flowWorkspace_addTrans', PACKAGE = 'flowWorkspace', gsPtr, transformList))
+    invisible(.Call('_flowWorkspace_addTrans', PACKAGE = 'flowWorkspace', gsPtr, transformList))
 }
 
 #' Update the channel information of a GatingSet (c++ part)
@@ -61,87 +61,87 @@
 #'                        , nodes = "14-")  
 #'}
 .updateChannels <- function(gs, map) {
-    invisible(.Call('flowWorkspace_updateChannels', PACKAGE = 'flowWorkspace', gs, map))
+    invisible(.Call('_flowWorkspace_updateChannels', PACKAGE = 'flowWorkspace', gs, map))
 }
 
 .cpp_plotGh <- function(gs, sampleName, output) {
-    invisible(.Call('flowWorkspace_plotGh', PACKAGE = 'flowWorkspace', gs, sampleName, output))
+    invisible(.Call('_flowWorkspace_plotGh', PACKAGE = 'flowWorkspace', gs, sampleName, output))
 }
 
 .cpp_getNodes <- function(gs, sampleName, order, fullPath, showHidden) {
-    .Call('flowWorkspace_getNodes', PACKAGE = 'flowWorkspace', gs, sampleName, order, fullPath, showHidden)
+    .Call('_flowWorkspace_getNodes', PACKAGE = 'flowWorkspace', gs, sampleName, order, fullPath, showHidden)
 }
 
 .cpp_getNodeID <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getNodeID', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getNodeID', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_getParent <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getParent', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getParent', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_getChildren <- function(gs, sampleName, gatePath, showHidden) {
-    .Call('flowWorkspace_getChildren', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, showHidden)
+    .Call('_flowWorkspace_getChildren', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, showHidden)
 }
 
 .cpp_getPopStats <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getPopStats', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getPopStats', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_getCompensation <- function(gs, sampleName) {
-    .Call('flowWorkspace_getCompensation', PACKAGE = 'flowWorkspace', gs, sampleName)
+    .Call('_flowWorkspace_getCompensation', PACKAGE = 'flowWorkspace', gs, sampleName)
 }
 
 .cpp_getTransformations <- function(gs, sampleName, inverse) {
-    .Call('flowWorkspace_getTransformations', PACKAGE = 'flowWorkspace', gs, sampleName, inverse)
+    .Call('_flowWorkspace_getTransformations', PACKAGE = 'flowWorkspace', gs, sampleName, inverse)
 }
 
 .cpp_computeGates <- function(gs, sampleName, gainsVec, extend_val, extend_to) {
-    invisible(.Call('flowWorkspace_computeGates', PACKAGE = 'flowWorkspace', gs, sampleName, gainsVec, extend_val, extend_to))
+    invisible(.Call('_flowWorkspace_computeGates', PACKAGE = 'flowWorkspace', gs, sampleName, gainsVec, extend_val, extend_to))
 }
 
 .cpp_gating <- function(gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep) {
-    invisible(.Call('flowWorkspace_gating', PACKAGE = 'flowWorkspace', gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep))
+    invisible(.Call('_flowWorkspace_gating', PACKAGE = 'flowWorkspace', gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep))
 }
 
 .cpp_getGate <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getGate', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getGate', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_getIndices <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getIndices', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getIndices', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_setIndices <- function(gs, sampleName, u, ind) {
-    invisible(.Call('flowWorkspace_setIndices', PACKAGE = 'flowWorkspace', gs, sampleName, u, ind))
+    invisible(.Call('_flowWorkspace_setIndices', PACKAGE = 'flowWorkspace', gs, sampleName, u, ind))
 }
 
 .cpp_getGateFlag <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getGateFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getGateFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_getNegateFlag <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getNegateFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getNegateFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_getHiddenFlag <- function(gs, sampleName, gatePath) {
-    .Call('flowWorkspace_getHiddenFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
+    .Call('_flowWorkspace_getHiddenFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath)
 }
 
 .cpp_addGate <- function(gs, sampleName, filter, gatePath, popName) {
-    .Call('flowWorkspace_addGate', PACKAGE = 'flowWorkspace', gs, sampleName, filter, gatePath, popName)
+    .Call('_flowWorkspace_addGate', PACKAGE = 'flowWorkspace', gs, sampleName, filter, gatePath, popName)
 }
 
 .cpp_boolGating <- function(gs, sampleName, filter, nodeID) {
-    invisible(.Call('flowWorkspace_boolGating', PACKAGE = 'flowWorkspace', gs, sampleName, filter, nodeID))
+    invisible(.Call('_flowWorkspace_boolGating', PACKAGE = 'flowWorkspace', gs, sampleName, filter, nodeID))
 }
 
 .cpp_setGate <- function(gs, sampleName, gatePath, filter) {
-    invisible(.Call('flowWorkspace_setGate', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, filter))
+    invisible(.Call('_flowWorkspace_setGate', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, filter))
 }
 
 .cpp_removeNode <- function(gs, sampleName, gatePath) {
-    invisible(.Call('flowWorkspace_removeNode', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath))
+    invisible(.Call('_flowWorkspace_removeNode', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath))
 }
 
 #' move a node within the gating tree
@@ -153,62 +153,62 @@
 #' @param sampleName sample name
 #' @param node node name
 .moveNode <- function(gsPtr, sampleName, node, parent) {
-    invisible(.Call('flowWorkspace_moveNode', PACKAGE = 'flowWorkspace', gsPtr, sampleName, node, parent))
+    invisible(.Call('_flowWorkspace_moveNode', PACKAGE = 'flowWorkspace', gsPtr, sampleName, node, parent))
 }
 
 .cpp_setNodeName <- function(gs, sampleName, gatePath, newNodeName) {
-    invisible(.Call('flowWorkspace_setNodeName', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, newNodeName))
+    invisible(.Call('_flowWorkspace_setNodeName', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, newNodeName))
 }
 
 .cpp_setNodeFlag <- function(gs, sampleName, gatePath, hidden) {
-    invisible(.Call('flowWorkspace_setNodeFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, hidden))
+    invisible(.Call('_flowWorkspace_setNodeFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, hidden))
 }
 
 .cpp_parseWorkspace <- function(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType) {
-    .Call('flowWorkspace_parseWorkspace', PACKAGE = 'flowWorkspace', fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType)
+    .Call('_flowWorkspace_parseWorkspace', PACKAGE = 'flowWorkspace', fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType)
 }
 
 .cpp_getSamples <- function(gsPtr) {
-    .Call('flowWorkspace_getSamples', PACKAGE = 'flowWorkspace', gsPtr)
+    .Call('_flowWorkspace_getSamples', PACKAGE = 'flowWorkspace', gsPtr)
 }
 
 .cpp_NewGatingSet <- function(gsPtr, sampleName, newSampleNames) {
-    .Call('flowWorkspace_NewGatingSet', PACKAGE = 'flowWorkspace', gsPtr, sampleName, newSampleNames)
+    .Call('_flowWorkspace_NewGatingSet', PACKAGE = 'flowWorkspace', gsPtr, sampleName, newSampleNames)
 }
 
 .cpp_NewGatingSet_rootOnly <- function(sampleNames) {
-    .Call('flowWorkspace_NewGatingSet_rootOnly', PACKAGE = 'flowWorkspace', sampleNames)
+    .Call('_flowWorkspace_NewGatingSet_rootOnly', PACKAGE = 'flowWorkspace', sampleNames)
 }
 
 .cpp_saveGatingSet <- function(gs, fileName) {
-    invisible(.Call('flowWorkspace_saveGatingSet', PACKAGE = 'flowWorkspace', gs, fileName))
+    invisible(.Call('_flowWorkspace_saveGatingSet', PACKAGE = 'flowWorkspace', gs, fileName))
 }
 
 .cpp_loadGatingSet <- function(fileName) {
-    .Call('flowWorkspace_loadGatingSet', PACKAGE = 'flowWorkspace', fileName)
+    .Call('_flowWorkspace_loadGatingSet', PACKAGE = 'flowWorkspace', fileName)
 }
 
 .cpp_CloneGatingSet <- function(gs, samples) {
-    .Call('flowWorkspace_CloneGatingSet', PACKAGE = 'flowWorkspace', gs, samples)
+    .Call('_flowWorkspace_CloneGatingSet', PACKAGE = 'flowWorkspace', gs, samples)
 }
 
 .cpp_combineGatingSet <- function(gsList, sampleList) {
-    .Call('flowWorkspace_combineGatingSet', PACKAGE = 'flowWorkspace', gsList, sampleList)
+    .Call('_flowWorkspace_combineGatingSet', PACKAGE = 'flowWorkspace', gsList, sampleList)
 }
 
 .cpp_setSample <- function(gs, oldName, newName) {
-    invisible(.Call('flowWorkspace_setSample', PACKAGE = 'flowWorkspace', gs, oldName, newName))
+    invisible(.Call('_flowWorkspace_setSample', PACKAGE = 'flowWorkspace', gs, oldName, newName))
 }
 
 .cpp_getLogLevel <- function() {
-    .Call('flowWorkspace_getLogLevel', PACKAGE = 'flowWorkspace')
+    .Call('_flowWorkspace_getLogLevel', PACKAGE = 'flowWorkspace')
 }
 
 .cpp_setLogLevel <- function(loglevel) {
-    invisible(.Call('flowWorkspace_setLogLevel', PACKAGE = 'flowWorkspace', loglevel))
+    invisible(.Call('_flowWorkspace_setLogLevel', PACKAGE = 'flowWorkspace', loglevel))
 }
 
 .cpp_togleErrorFlag <- function() {
-    invisible(.Call('flowWorkspace_toggleErrorFlag', PACKAGE = 'flowWorkspace'))
+    invisible(.Call('_flowWorkspace_toggleErrorFlag', PACKAGE = 'flowWorkspace'))
 }
 

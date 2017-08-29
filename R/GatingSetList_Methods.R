@@ -176,12 +176,12 @@ save_gslist<-function(gslist,path,...){
 #        browser()
         guid <- gs@guid
         if(length(guid)==0){
-          gs@guid <- flowWorkspace:::.uuid_gen()
+          gs@guid <- .uuid_gen()
           guid <- gs@guid
         }
         this_dir <- file.path(path,guid) 
 
-#        invisible(flowWorkspace:::.save_gs(gs,path = this_dir, ...))
+#        invisible(.save_gs(gs,path = this_dir, ...))
         suppressMessages(save_gs(gs,path = this_dir, ...))
       }, level =1)
 #  browser()
@@ -203,7 +203,7 @@ load_gslist<-function(path){
 #   browser()
   res <- lapply(dirs,function(this_dir){
 #        browser()
-        flowWorkspace:::.load_gs(output = this_dir, files = list.files(this_dir))$gs      
+        .load_gs(output = this_dir, files = list.files(this_dir))$gs      
       })
   samples <- readRDS(file.path(path,"samples.rds"))
   GatingSetList(res, samples = samples)

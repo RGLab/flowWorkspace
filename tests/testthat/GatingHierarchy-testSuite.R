@@ -2,43 +2,43 @@ context("GatingHierarchy Accessors")
 
 test_that(".isCompensated",
     {
-      expect_true(.isCompensated(gh))
+      expect_true(flowWorkspace:::.isCompensated(gh))
     })
 
 test_that("getNodeInd ",{
       
       #invalid numeric indexing
-      expect_error(.getNodeInd(gh, 2), "string")
+      expect_error(flowWorkspace:::.getNodeInd(gh, 2), "string")
       
       #invalid node name
-      expect_error(.getNodeInd(gh, "singlet"), "singlet not found")
+      expect_error(flowWorkspace:::.getNodeInd(gh, "singlet"), "singlet not found")
       
       #valid unique node name
-      expect_equal(.getNodeInd(gh, "singlets"), 3)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "singlets"), 3)
       
-      expect_equal(.getNodeInd(gh, "root"), 1)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "root"), 1)
       
-      expect_equal(.getNodeInd(gh, "CD3+"), 4)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "CD3+"), 4)
       
       #full path indexing
-      expect_equal(.getNodeInd(gh, "/not debris/singlets/CD3+/CD4/38- DR+"), 6)
-      expect_equal(.getNodeInd(gh, "/not debris/singlets/CD3+/CD8/38- DR+"), 15)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "/not debris/singlets/CD3+/CD4/38- DR+"), 6)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "/not debris/singlets/CD3+/CD8/38- DR+"), 15)
       
       #partial path 
-      expect_equal(.getNodeInd(gh, "CD4/38- DR+"), 6)
-      expect_equal(.getNodeInd(gh, "CD8/38- DR+"), 15)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "CD4/38- DR+"), 6)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "CD8/38- DR+"), 15)
       
       #non-unqiue partial path
-      expect_error(.getNodeInd(gh, "/38- DR+"), "not found")
+      expect_error(flowWorkspace:::.getNodeInd(gh, "/38- DR+"), "not found")
       
       #non-unique node name indexing
-      expect_error(.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree")
+      expect_error(flowWorkspace:::.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree")
       
       #dealing with root
-      expect_equal(.getNodeInd(gh, "/not debris"), 2)
-      expect_equal(.getNodeInd(gh, "not debris"), 2)
-      expect_equal(.getNodeInd(gh, "/root/not debris"), 2)
-      expect_equal(.getNodeInd(gh, "root/not debris"), 2)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "/not debris"), 2)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "not debris"), 2)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "/root/not debris"), 2)
+      expect_equal(flowWorkspace:::.getNodeInd(gh, "root/not debris"), 2)
       
     })
 
@@ -53,7 +53,7 @@ test_that("getIndices ",{
 
 test_that("getAxisLabels ",{
       
-      thisRes <- getAxisLabels(gh)
+      thisRes <- flowWorkspace:::getAxisLabels(gh)
       expectRes <- readRDS(file.path(resultDir, "getAxisLabels_gh.rds"))
       expect_equal(thisRes,expectRes, tol = 0.017)
       
@@ -68,11 +68,11 @@ test_that("getCompensationMatrices ",{
     })
 
 test_that(".isBoolGate ",{
-      expect_false(.isBoolGate(gh, "singlets"))
+      expect_false(flowWorkspace:::.isBoolGate(gh, "singlets"))
       
       bf <- booleanFilter("CD4/38- DR+|CD4/CCR7- 45RA+", filterId = "myBoolFilter")
       suppressWarnings(id <- add(gh, bf))
-      expect_true(.isBoolGate(gh, "myBoolFilter"))
+      expect_true(flowWorkspace:::.isBoolGate(gh, "myBoolFilter"))
       invisible(Rm("myBoolFilter", gh))
     })
 
@@ -171,19 +171,19 @@ test_that(".getAllDescendants",{
       nodelist <- new.env(parent=emptyenv())
       allNodes <- getNodes(gh, showHidden = TRUE)
       nodelist$v <-integer()
-      .getAllDescendants(gh, "CD3+", nodelist)
+      flowWorkspace:::.getAllDescendants(gh, "CD3+", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd3_gh.rds"))
       expect_equal(allNodes[thisRes], expectRes)
       
       nodelist$v <-integer()
-      .getAllDescendants(gh, "CD4", nodelist)
+      flowWorkspace:::.getAllDescendants(gh, "CD4", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd4_gh.rds"))
       expect_equal(allNodes[thisRes], expectRes)
       
       nodelist$v <-integer()
-      .getAllDescendants(gh, "CD8", nodelist)
+      flowWorkspace:::.getAllDescendants(gh, "CD8", nodelist)
       thisRes <- nodelist$v
       expectRes <- readRDS(file.path(resultDir, "getAllDescendants_cd8_gh.rds"))
       expect_equal(allNodes[thisRes], expectRes)
@@ -250,18 +250,18 @@ test_that("getChildren",{
 
 test_that(".getPopStat",{
       
-      expect_error(.getPopStat(gh, 3), "string")
+      expect_error(flowWorkspace:::.getPopStat(gh, 3), "string")
       
-      expect_error(.getPopStat(gh, "singlet"), "not found")
+      expect_error(flowWorkspace:::.getPopStat(gh, "singlet"), "not found")
       
-      expect_equal(.getPopStat(gh, "singlets"), list(openCyto = c(proportion = 9.487789e-01, count = 8.702200e+04)
+      expect_equal(flowWorkspace:::.getPopStat(gh, "singlets"), list(openCyto = c(proportion = 9.487789e-01, count = 8.702200e+04)
                                             , xml = c(proportion = 9.488988e-01, count = 8.703300e+04)
                                             )
                       , tol = 1e-7 )
       
       
       
-      expect_equal(.getPopStat(gh, "root"), list(openCyto = c(proportion = 1, count = 119531)
+      expect_equal(flowWorkspace:::.getPopStat(gh, "root"), list(openCyto = c(proportion = 1, count = 119531)
                                             , xml = c(proportion = 1, count = 119531)
                                         )
                                 )
@@ -306,7 +306,7 @@ test_that("getPopStats",{
 
 test_that("compute CV from gh",{
       
-      thisRes <- .computeCV_gh(gh)
+      thisRes <- flowWorkspace:::.computeCV_gh(gh)
       expect_is(thisRes, "matrix")
       
       expectRes <- readRDS(file.path(resultDir, "cv_gh.rds"))
@@ -352,12 +352,12 @@ test_that(".mergeGates",{
                         , "CD4/38- DR-" = c("SSC-A", "<V545-A>")
                     )
                           
-      expect_error(.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
+      expect_error(flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
                   , "Given projection")
 
       #swapped x,y (we don't really allow to change the dimensions for 2D gate yet, only the order can be changed)
       projections[["CD4/38- DR-"]] <- c("<R660-A>", "<V545-A>")                     
-      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
+      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE, projections = projections)
       expectRes <- list(`CD4/38- DR+` = list(popIds = nodes[6:9]
                                   , parentId = nodes[5])
                           )      
@@ -365,17 +365,17 @@ test_that(".mergeGates",{
       
       
       #merge 4 quadrants
-      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE)
+      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = TRUE)
       
       expect_equal(thisRes, expectRes)
       
             
       # 4 quadrants + 1 pop
-      thisRes <- .mergeGates(gh, i = nodes[5:9], bool = FALSE, merge = TRUE)
+      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[5:9], bool = FALSE, merge = TRUE)
       expectRes <- c(`CD4` = "CD4", expectRes) 
       expect_equal(thisRes, expectRes)
       
-      thisRes <- .mergeGates(gh, i = nodes[6:12], bool = FALSE, merge = TRUE)
+      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:12], bool = FALSE, merge = TRUE)
       expectRes <- list(`CD4/38- DR+` = list(popIds = nodes[6:9]
                                   , parentId = "CD4")
                         ,`CD4/CCR7- 45RA+` = list(popIds = nodes[10:12]
@@ -385,7 +385,7 @@ test_that(".mergeGates",{
       expect_equal(thisRes, expectRes)
       
       #4 quadrants without merge
-      thisRes <- .mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = FALSE)
+      thisRes <- flowWorkspace:::.mergeGates(gh, i = nodes[6:9], bool = FALSE, merge = FALSE)
       expectRes <- list(`CD4/38- DR+` = "CD4/38- DR+"
                         , `CD4/38+ DR+` = "CD4/38+ DR+"
                         , `CD4/38+ DR-` = "CD4/38+ DR-"
@@ -396,11 +396,11 @@ test_that(".mergeGates",{
 
 test_that("pretty10exp",{
       
-      thisRes <- pretty10exp(c(1, 10, 100, 1000), drop.1 = TRUE)
+      thisRes <- flowWorkspace:::pretty10exp(c(1, 10, 100, 1000), drop.1 = TRUE)
       expectRes <- expression(10^0, 10^1, 10^2, 10^3)
       expect_equal(thisRes, expectRes)
       
-      thisRes <- pretty10exp(c(1, 10, 100, 1000), drop.1 = FALSE)
+      thisRes <- flowWorkspace:::pretty10exp(c(1, 10, 100, 1000), drop.1 = FALSE)
       expectRes <- expression(1 %*% 10^0, 1 %*% 10^1, 1 %*% 10^2, 1 %*% 10^3)
       expect_equal(thisRes, expectRes)      
     })
@@ -431,7 +431,7 @@ test_that("getPopChnlMapping",{
       
       #we don't parse + signs since they could be part of pop names
       nodes <- c("CD4/IL2+","CD4/IL22+")
-      expect_error(.getPopChnlMapping(this_pd, nodes), "Marker not found: IL2+")
+      expect_error(flowWorkspace:::.getPopChnlMapping(this_pd, nodes), "Marker not found: IL2+")
       
       #remove + from pop names
       nodes <- c("CD4/IL2","CD4/IL22")
@@ -440,53 +440,53 @@ test_that("getPopChnlMapping",{
           , stringsAsFactors = F
           , pop = nodes
       )
-      expect_equivalent(.getPopChnlMapping(this_pd, nodes), expectRes)
+      expect_equivalent(flowWorkspace:::.getPopChnlMapping(this_pd, nodes), expectRes)
       
       #partial match for IL22
       nodes <- c("CD4/IL2","CD4/22")
       expectRes[["pop"]] <- nodes 
-      expect_equivalent(.getPopChnlMapping(this_pd, nodes), expectRes)
+      expect_equivalent(flowWorkspace:::.getPopChnlMapping(this_pd, nodes), expectRes)
       
       #'mapping provided
       
       # but without the proper names
       nodes <- c("CD4/IL2+","CD4/IL22+")
       mapping <- list("IL2", "IL22")
-      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: IL2+")
+      expect_error(flowWorkspace:::.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: IL2+")
       # add names
       names(mapping) <- nodes
       expectRes[["pop"]] <- nodes
-      expect_equivalent(.getPopChnlMapping(this_pd, nodes, mapping), expectRes)
+      expect_equivalent(flowWorkspace:::.getPopChnlMapping(this_pd, nodes, mapping), expectRes)
       
       
       #incorrect mapping
       mapping <- list("IL2", "IL3")
       names(mapping) <- nodes
-      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: IL3")
+      expect_error(flowWorkspace:::.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: IL3")
       
       #ambiguous mapping
       mapping <- list("IL2", "2")
       names(mapping) <- nodes
-      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "2  paritally matched to multiple markers but failed to exactly matched to any of them")
+      expect_error(flowWorkspace:::.getPopChnlMapping(this_pd, nodes, mapping), "2  paritally matched to multiple markers but failed to exactly matched to any of them")
       
       
       #correct mappping with extra items (ignored during the matching)
       mapping <- list("IL2", "IL22")
       names(mapping) <- nodes
       mapping[["extra"]] <- "marker1"
-      expect_equivalent(.getPopChnlMapping(this_pd, nodes, mapping), expectRes)                     
+      expect_equivalent(flowWorkspace:::.getPopChnlMapping(this_pd, nodes, mapping), expectRes)                     
       
       #correct partial mapping
       mapping <- list("IL2", "154")
       names(mapping) <- nodes                          
       expectRes[2,"name"] <- "Time"
       expectRes[2,"desc"] <- "CD154"
-      expect_equivalent(.getPopChnlMapping(this_pd, nodes, mapping), expectRes)
+      expect_equivalent(flowWorkspace:::.getPopChnlMapping(this_pd, nodes, mapping), expectRes)
       
       #case sensitive at the moment
       mapping <- list("IL2", "cd154")
       names(mapping) <- nodes                          
-      expect_error(.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: cd154")
+      expect_error(flowWorkspace:::.getPopChnlMapping(this_pd, nodes, mapping), "Marker not found: cd154")
       
       
     })
