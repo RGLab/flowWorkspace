@@ -20,6 +20,7 @@ PKGLIB = ${USERDIR}/libflowWorkspace.a
 
  
 all:  $(USERHEADER)	$(SHLIB)
+	if [ `uname -s` = 'Darwin' ]; then install_name_tool -change /usr/local/clang4/lib/libc++.1.dylib /usr/lib/libc++.1.dylib $(SHLIB); fi
 
 $(SHLIB): $(PKGLIB)
 
