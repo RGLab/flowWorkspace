@@ -52,8 +52,8 @@ for(tsub in c("CD4", "CD8"))
     add(gs3, getGate(gs2, tsub), parent = "CD3+")
     for(toAdd in getChildren(gs2, tsub))
     {
-        thisParent <- getParent(gs2[[1]], toAdd, path = "auto")
-        add(gs3, getGate(gs2, toAdd), parent = thisParent)
+        thisParent <- getParent(gs2[[1]], toAdd,path="auto")
+        add(gs3, getGate(gs2, toAdd), parent = thisParent) 
     }
   }
 sampleNames(gs3) <- "3.fcs"
