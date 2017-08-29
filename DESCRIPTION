@@ -18,6 +18,7 @@ Imports:
     BiocGenerics,
     graph,
     graphics,
+    grDevices,
     lattice,
     methods,
     stats,

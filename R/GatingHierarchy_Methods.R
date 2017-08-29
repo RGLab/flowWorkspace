@@ -1044,6 +1044,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 
 		})
 
+#' @export
 .getNodeInd <- function(obj,y, ...){
 
     ind <- .cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)

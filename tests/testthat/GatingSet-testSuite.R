@@ -166,7 +166,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
                             , isBool = FALSE
                         )
       
-      myValue <- .preplot(gs, "CD4", "xyplot", stats = stats, formula = NULL, default.y = "SSC-A")
+      myValue <- flowWorkspace:::.preplot(gs, "CD4", "xyplot", stats = stats, formula = NULL, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
       
             
@@ -175,14 +175,14 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       
       expect_value["xParam"] <- "SSC-A" 
       expect_value["yParam"] <- "FSC-A"
-      myValue <- .preplot(gs, "CD4", "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
+      myValue <- flowWorkspace:::.preplot(gs, "CD4", "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
       
       samples <- sampleNames(gs)
       
       #miss stats argument
       expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], getNodes(gs[[sn]])[5]), simplify = FALSE)
-      myValue <- .preplot(x = gs, y = "CD4", type = "xyplot", formula = f1, default.y = "SSC-A")
+      myValue <- flowWorkspace:::.preplot(x = gs, y = "CD4", type = "xyplot", formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
 
       #y is a list
@@ -202,7 +202,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_value[["xParam"]] <- xParam
       expect_value[["yParam"]] <- yParam
       
-      myValue <- .preplot(x = gs, y = list(popIds=getNodes(gs)[7:8]), type = "xyplot", formula = NULL, default.y = "SSC-A")
+      myValue <- flowWorkspace:::.preplot(x = gs, y = list(popIds=getNodes(gs)[7:8]), type = "xyplot", formula = NULL, default.y = "SSC-A")
 
       expect_identical(myValue, expect_value)
       
