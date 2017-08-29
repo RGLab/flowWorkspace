@@ -267,7 +267,7 @@ dropRedundantChannels <- function(gs, ...){
 #' @importFrom ncdfFlow colnames<-
 updateChannels <- function(gs, map, all = TRUE){
   
-  map <- flowWorkspace:::.preprocessMap(gs, map)
+  map <- .preprocessMap(gs, map)
   
   #update gates and comps ,trans(c++ part)
   .updateChannels(gs, map)
@@ -399,7 +399,7 @@ insertGate <- function(gs, gate, parent, children){
         lapply(sampleNames(gs),function(sn){
               gh <- gs[[sn]]
               gate <- getGate(gh, node)
-              negated <- flowWorkspace:::isNegated(gh, node)
+              negated <- isNegated(gh, node)
               add(clone[[sn]], gate, name = popName, parent = thisParent, negated = negated)      
             })  
         

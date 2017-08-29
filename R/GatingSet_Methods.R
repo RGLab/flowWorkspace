@@ -332,7 +332,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 				#########################################################
 				##escape "illegal" characters
 				file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
-				absPath<-list.files(pattern=paste("^",file,"$",sep=""),path=path,recursive=TRUE,full=TRUE)
+				absPath<-list.files(pattern=paste("^",file,"$",sep=""),path=path,recursive=TRUE,full.names=TRUE)
 
 				if(length(absPath)==0){
 					warning("Can't find ",file," in directory: ",path,"\n");

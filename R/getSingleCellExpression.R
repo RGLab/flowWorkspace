@@ -264,7 +264,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
   )
   
   if(mc.cores > 1){
-    require(parallel)
+    requireNamespace(parallel)
     thisCall[[1]] <- quote(mclapply)
     thisCall[["mc.cores"]] <- mc.cores
   }
