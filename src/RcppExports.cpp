@@ -538,6 +538,7 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+<<<<<<< HEAD
 
 static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},

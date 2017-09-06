@@ -901,7 +901,7 @@ vector<bool> GatingHierarchy::boolGating(vector<BOOL_GATE_OP> boolOpSpec, bool c
  */
 void GatingHierarchy::drawGraph(string output)
 {
-	ofstream outputFile(output);
+	ofstream outputFile(output.c_str());
 
 	boost::write_graphviz(outputFile,tree,OurVertexPropertyWriterR(tree));
 	outputFile.close();
