@@ -24,18 +24,27 @@ using namespace std;
 #include "cytolib/flowData.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
+
 flowData mat2flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case){
 	flowData fd;
 	List dimnames=mat.attr("dimnames");
 	fd.params=as<vector<string> >(dimnames[1]);
-	unsigned nChannls=fd.params.size();
+
 	fd.nEvents=mat.nrow();
-	unsigned nSize=nChannls*fd.nEvents;
 	fd.sampleID=_sampleID;
+	fd.ignore_case = _ignore_case;
+
+#ifdef PRT//array version
+	fd.data = REAL(mat.get__());
+#else
+//valarray version
+	unsigned nChannls=fd.params.size();
+	unsigned nSize=nChannls*fd.nEvents;
 	fd.data.resize(nSize);
 	for(unsigned j=0;j<nSize;j++)
 		fd.data[j]=mat[j];
-	fd.ignore_case = _ignore_case;
+#endif
+
 	return fd;
 }
 
@@ -316,6 +325,7 @@ void gating(XPtr<GatingSet> gs
 
 	gh->gating(nodeInd,recompute, computeTerminalBool);
 
+#ifndef PRT
 	if(!recompute)
 	{
 		/*
@@ -330,6 +340,7 @@ void gating(XPtr<GatingSet> gs
 		for(int j=0;j<orig.ncol()*orig.nrow();j++)
 			orig[j]=updatedMat[j];
 	}
+#endif
 	gh->unloadData();
 
 

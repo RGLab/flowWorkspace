@@ -265,9 +265,6 @@ void parser_test(testCase & myTest){
 
 		}
 		else
-			gs.reset(new GatingSet(myTest.filename,isParseGate,myTest.sampNloc,1,wsType));
-
-		if(!isLoadArchive)
 		{
 			//parse a set of sampleIDs
 			vector<string> sampleIDs;
@@ -280,7 +277,12 @@ void parser_test(testCase & myTest){
 				sampleIDs.erase(sampleIDs.begin());//remove the first sample,which is used for testing gating template feature
 
 			if(!isLoadArchive)
-				gs->parseWorkspace(sampleIDs,isParseGate,sampleNames);
+			{
+				workspace * ws = openWorkspace(myTest.filename, myTest.sampNloc,myTest.xmlParserOption, wsType);
+				gs.reset(ws2gs(ws,sampleIDs,isParseGate,sampleNames));
+				delete ws;
+			}
+
 
 			cout<<endl<<"get sample names from gating set"<<endl;
 
