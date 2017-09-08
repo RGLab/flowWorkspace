@@ -126,7 +126,7 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 			PARAM_VEC::const_iterator pit = findTransFlag(transFlag, pname, comp.prefix, comp.suffix);
 			if(pit==transFlag.end())
 				throw(domain_error(pname + " does not exist in transFlag vector!"));
-			logTrans *curTran=new logTrans(offset,decade,pit->range,1);
+			logTrans *curTran=new logTrans(offset,decade,1,pit->range);
 			curTran->setName("");
 			curTran->setChannel(pname);
 
