@@ -15,10 +15,10 @@
 #include <boost/algorithm/string.hpp>
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/ws2gs.hpp"
 #include "/home/wjiang2/rglab/workspace/flowWorkspace/src/include/flowJoWorkspace.hpp"
-#include "/home/wjiang2/rglab/workspace/cytolib/src/include/GatingSet.hpp"
-#include "/home/wjiang2/rglab/workspace/cytolib/src/include/GatingHierarchy.hpp"
-#include "/home/wjiang2/rglab/workspace/cytolib/src/include/transformation.hpp"
-#include "/home/wjiang2/rglab/workspace/cytolib/src/include/spline.hpp"
+#include "cytolib/GatingSet.hpp"
+#include "cytolib/GatingHierarchy.hpp"
+#include "cytolib/transformation.hpp"
+#include "cytolib/spline.hpp"
 #include "ncdfFlow.hpp"
 using namespace std;
 
