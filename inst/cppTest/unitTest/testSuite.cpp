@@ -440,9 +440,9 @@ BOOST_AUTO_TEST_CASE(gs2flowjo)
 BOOST_AUTO_TEST_CASE(invalid_biexp_parameter)
 {
 
-	myTest.filename="/home/wjiang2/rglab/workspace/BioC/devel/flowWorkspaceData/inst/extdata/A2004Analysis.xml";
+	myTest.filename="/home/wjiang2/R/x86_64-pc-linux-gnu-library/3.4/flowWorkspaceData/extdata/A2004Analysis.xml";
 	myTest.wsType = WS_MAC;
-	myTest.samples["1"]="a2004_O1T2pb05i";
+	myTest.samples["1"]="a2004_O1T2pb05i_A1_A01.fcs";
 	myTest.sampNloc=1;
 	myTest.ncfile="../output/invalid_biexp_parameter/nc_comp.nc";
 	myTest.colfile="../output/invalid_biexp_parameter/colnames.txt";

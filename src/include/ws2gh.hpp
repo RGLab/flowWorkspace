@@ -8,7 +8,7 @@
 #ifndef INCLUDE_WS2GH_HPP_
 #define INCLUDE_WS2GH_HPP_
 
-#include "cytolib/GatingSet.hpp"
+#include <cytolib/GatingSet.hpp>
 #include "macFlowJoWorkspace.hpp"
 #include "winFlowJoWorkspace.hpp"
 

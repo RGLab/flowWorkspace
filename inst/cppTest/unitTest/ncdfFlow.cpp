@@ -146,9 +146,9 @@ flowData hdfFlow::readflowData(unsigned int sampleIndx)
 
 
 	flowData res(data_out,params,(unsigned int)nEvents,sampleIndx);
-
+#ifndef PRT
 	delete[] data_out;
-
+#endif
 	return res;
 
 }
