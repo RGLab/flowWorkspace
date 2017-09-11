@@ -1356,10 +1356,10 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
           # attr(f,"type")<-"biexp"
         }else if(curTrans$type=="fasinh"){
           if(inverse){
-            f <- flowJo.fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
+            f <- flowJo.fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)#in flowJo curTrans$length is not used
             attr(f,"type")<-"fsinh"
           }else{
-            f <- flowJo.fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
+            f <- flowJo.fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)
             attr(f,"type")<-"fasinh"
           }
 

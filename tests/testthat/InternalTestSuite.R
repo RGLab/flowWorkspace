@@ -192,7 +192,7 @@ test_that("v 10.0.7 - vX 20.0 (missing_namespace and flin)",{
       gs <- parseWorkspace(ws, name = 1, subset = 1, execute = FALSE)
       expect_is(gs, "GatingSet")
       gh <- gs[[1]]
-      trans <- getTransformations(gh, only = F)
+      trans <- getTransformations(gh, only = F, channel = "all")
       expect_equal(trans[[2]][["name"]], "flowJo_flog")
     })
 
