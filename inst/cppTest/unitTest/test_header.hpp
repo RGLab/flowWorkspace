@@ -42,6 +42,8 @@ struct testCase{
 	bool archiveType;// boost or google
 	map<string,float> gains;
 	vector<VertexID> skipPops;
+//	vector<double> times;//global variable to collect run time
+
 } ;
 hdfFlow gs_attachCDF(GatingSet & gs,testCase myTest);
 void gs_gating(GatingSet &gs,string curSample, hdfFlow nc);

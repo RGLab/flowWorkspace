@@ -94,7 +94,10 @@ struct parseWorkspaceFixture{
 	};
 
 
-	~parseWorkspaceFixture(){};
+
+	~parseWorkspaceFixture(){
+
+	};
    int argc;
    char **argv;
 	testCase myTest;
