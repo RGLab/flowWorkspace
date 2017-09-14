@@ -327,22 +327,22 @@ BOOST_AUTO_TEST_CASE(treg)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-BOOST_AUTO_TEST_CASE(EllipsoidGate_10)
-{
-	myTest.filename="../wsTestSuite/EllipsoidGate_10.2/mA J21 for HT.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["33"] = "MarquageA_Lung_IN_001.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/EllipsoidGate_10.2/data.nc";
-	myTest.colfile="../output/EllipsoidGate_10.2/colnames.txt";
-	myTest.archive="../output/EllipsoidGate_10.2/gs";
-
-	parser_test(myTest);
-
-	vector<bool> isTrue(myTest.isEqual.size(), true);
-	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-
-}
+//BOOST_AUTO_TEST_CASE(EllipsoidGate_10)
+//{
+//	myTest.filename="../wsTestSuite/EllipsoidGate_10.2/mA J21 for HT.wsp";
+//	myTest.wsType = WS_VX;
+//	myTest.samples["33"] = "MarquageA_Lung_IN_001.fcs";
+//	myTest.sampNloc=1;
+//	myTest.ncfile="../output/EllipsoidGate_10.2/data.nc";
+//	myTest.colfile="../output/EllipsoidGate_10.2/colnames.txt";
+//	myTest.archive="../output/EllipsoidGate_10.2/gs";
+//
+//	parser_test(myTest);
+//
+//	vector<bool> isTrue(myTest.isEqual.size(), true);
+//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+//
+//}
 /**
  *  CyTOF data with elliposoidGate and fasinh transformation defined
  */
@@ -424,39 +424,39 @@ BOOST_AUTO_TEST_CASE(curlyquad2)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-BOOST_AUTO_TEST_CASE(gs2flowjo)
-{
-	myTest.filename="/loc/no-backup/mike/test/ws/temp.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["1"] = "CytoTrol_CytoTrol_1.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/curlyQuad2/comp.nc";
-	myTest.colfile="../output/curlyQuad2/colnames.txt";
-	myTest.archive="../output/curlyQuad2/gs";
-
-	parser_test(myTest);
-
-	vector<bool> isTrue(myTest.isEqual.size(), true);
-	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-
-}
-BOOST_AUTO_TEST_CASE(invalid_biexp_parameter)
-{
-
-	myTest.filename="/home/wjiang2/R/x86_64-pc-linux-gnu-library/3.4/flowWorkspaceData/extdata/A2004Analysis.xml";
-	myTest.wsType = WS_MAC;
-	myTest.samples["1"]="a2004_O1T2pb05i_A1_A01.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/invalid_biexp_parameter/nc_comp.nc";
-	myTest.colfile="../output/invalid_biexp_parameter/colnames.txt";
-	myTest.archive="../output/invalid_biexp_parameter/gs";
-//	g_loglevel = GATE_LEVEL;
-	parser_test(myTest);
-
-	vector<bool> isTrue(myTest.isEqual.size(), true);
-	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-
-}
+//BOOST_AUTO_TEST_CASE(gs2flowjo)
+//{
+//	myTest.filename="/loc/no-backup/mike/test/ws/temp.wsp";
+//	myTest.wsType = WS_VX;
+//	myTest.samples["1"] = "CytoTrol_CytoTrol_1.fcs";
+//	myTest.sampNloc=1;
+//	myTest.ncfile="../output/gs2flowjo/comp.nc";
+//	myTest.colfile="../output/gs2flowjo/colnames.txt";
+//	myTest.archive="../output/gs2flowjo/gs";
+//
+//	parser_test(myTest);
+//
+//	vector<bool> isTrue(myTest.isEqual.size(), true);
+//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+//
+//}
+//BOOST_AUTO_TEST_CASE(invalid_biexp_parameter)
+//{
+//
+//	myTest.filename="/home/wjiang2/R/x86_64-pc-linux-gnu-library/3.4/flowWorkspaceData/extdata/A2004Analysis.xml";
+//	myTest.wsType = WS_MAC;
+//	myTest.samples["1"]="a2004_O1T2pb05i_A1_A01.fcs";
+//	myTest.sampNloc=1;
+//	myTest.ncfile="../output/invalid_biexp_parameter/nc_comp.nc";
+//	myTest.colfile="../output/invalid_biexp_parameter/colnames.txt";
+//	myTest.archive="../output/invalid_biexp_parameter/gs";
+////	g_loglevel = GATE_LEVEL;
+//	parser_test(myTest);
+//
+//	vector<bool> isTrue(myTest.isEqual.size(), true);
+//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+//
+//}
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";
