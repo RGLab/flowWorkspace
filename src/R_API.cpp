@@ -9,6 +9,11 @@
 #include "cytolib/GatingSet.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
+#ifdef PRT
+	#define ARRAY_TYPE vector<double>
+#else
+	#define ARRAY_TYPE valarray<double>
+#endif
 //[[Rcpp::plugins(temp)]]
 
 //' grab vectors of pop counts and the parent counts along with their paths and FCS filenames
@@ -96,7 +101,7 @@ Rcpp::List getSplineCoefs(int channelRange=4096, double maxValue=262144, double 
 
 	if(inverse)
 	{
-		valarray<double> tmp = cal.getX();
+		ARRAY_TYPE tmp = cal.getX();
 		cal.setX(cal.getY());
 		cal.setY(tmp);
 	}

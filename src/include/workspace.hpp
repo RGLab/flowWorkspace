@@ -20,8 +20,6 @@
 
 using namespace std;
 
-
-using namespace std;
 /*TODO: so far I have seen the major difference between win and mac workspace is the xpath(like xpath of sample node)
  * if this is the case eventually we can try to use one template class (eliminate two derived classes )
  * with T structure that stores different versions of xpaths for win/mac,for example:
@@ -79,7 +77,11 @@ public:
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
 	 virtual void to_popNode(wsRootNode &, nodeProperties &)=0;
 	 virtual void to_popNode(wsPopNode &,nodeProperties &,bool isGating)=0;
+#ifndef PRT
 	 valarray<double> toArray(string sCalTable);
+#else
+	 void toArray(string sCalTable, vector<double> &x, vector<double> &y);
+#endif
 	 virtual void parseVersionList(){};
 
 

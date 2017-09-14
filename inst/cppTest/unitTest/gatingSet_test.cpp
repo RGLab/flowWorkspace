@@ -322,7 +322,7 @@ void parser_test(testCase & myTest){
 			flowData res=nc.readflowData(curSample);
 			gh->loadData(res);//
 			gh->transforming(1);
-			gh->gating(0,true);
+			gh->gating(0, true);
 			gh->unloadData();
 #ifdef PRT
 			delete res.data;
@@ -336,6 +336,7 @@ void parser_test(testCase & myTest){
 //			myTest.times.push_back(runtime);
 			timelog << runtime << ",";
 			timelog.close();
+			cout << runtime << endl;
 		}
 
 		gh_counts(gh, myTest.isEqual, myTest.tolerance, myTest.skipPops);
