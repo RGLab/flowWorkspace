@@ -95,7 +95,7 @@ GatingSet * ws2gs(workspace * ws, vector<string> sampleIDs,bool isParseGate, Str
 		 if(g_loglevel>=GATING_SET_LEVEL)
 			 COUT<<"... start parsing global transformations... "<<endl;
 		 gTrans=ws->getGlobalTrans();
-		 gs->set_gTrans(gTrans);
+
 	 }
 
 	unsigned nSample = sampleNames.size();
@@ -117,5 +117,6 @@ GatingSet * ws2gs(workspace * ws, vector<string> sampleIDs,bool isParseGate, Str
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<"Gating hierarchy created: "<<sampleName<<endl;
 	}
+	gs->set_gTrans(gTrans);
 	return gs;
 }
