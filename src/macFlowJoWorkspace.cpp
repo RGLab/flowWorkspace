@@ -437,14 +437,20 @@ trans_global_vec macFlowJoWorkspace::getGlobalTrans(){
 		/*
 		 * parse the stream to x,y double arrays
 		 */
+
+#ifndef PRT
 		valarray<double> tbl(toArray(sTbl));
 		unsigned nX=tbl.size()/2;
-
 		caltbl.init(nX);
-
 		caltbl.setY(tbl[slice(0,nX,2)]);
 		caltbl.setX(tbl[slice(1,nX,2)]);
-
+#else
+		vector<double> x,y;
+		toArray(sTbl, x, y);
+		caltbl.setY(y);
+		caltbl.setX(x);
+		unsigned nX = x.size();
+#endif
 		bt->maxValue = caltbl.getX()[nX-1];
 		bt->channelRange = caltbl.getY()[nX-1];
 
