@@ -334,24 +334,31 @@ vector<BOOL_GATE_OP> flowJoWorkspace::parseBooleanSpec(string specs,vector<strin
 
 	//tokenize by boolean operator: & or |
 
-	int subMatch[] = {-1,1};
-	boost::sregex_token_iterator token_begin(specs.begin(), specs.end(), boost::regex("([\\&|\\|])"), subMatch), token_end;
-
+	boost::char_separator<char> sep("", "&|"); // first arg specify dropped seperator and secoond for the kept separators
+	boost::tokenizer<boost::char_separator<char>> tokens(specs, sep);
 	unsigned short i = 0;
 	vector<string> popTokens, opTokens;
-	string thisToken;
-	while(token_begin!=token_end){
-		i++;
-		thisToken = *token_begin++;
-		if(i%2 == 1)
+
+	for(string thisToken : tokens)
+	{
+
+		if(i%2 == 0)
 			popTokens.push_back(thisToken);//like G0, G1...
 		else
-			opTokens.push_back(thisToken);//operators: !, &
+			opTokens.push_back(thisToken);//operators: |, &
+		i++;
 
 	}
 	unsigned short nPopulations=popTokens.size();
 	if(nPopulations!=gPaths.size())
 	{
+		cout << specs << endl;
+		for(auto p:gPaths)
+			cout << p << " ";
+		cout << endl;
+		for(auto p:popTokens)
+					cout << p << " ";
+		cout << endl;
 		throw(domain_error("the logical operators and the gating paths do not pair correctly!"));
 	}
 
