@@ -12,6 +12,7 @@
 #include "cytolib/transformation.hpp"
 #include <sstream>
 #include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
 
 class flowJoWorkspace:public workspace{
 private:

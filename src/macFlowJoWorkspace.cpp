@@ -328,8 +328,15 @@ trans_local macFlowJoWorkspace::getTransformation(wsRootNode root,const compensa
 					 * some flowJo workspace somehow have highvalue inappropriately set to 4096
 					 * to FSC/SSC-like channels, so here we explicitly skip them
 					 */
-					boost::regex ex("[FS]SC-[AWH]");
-					if(!boost::regex_match(transChName,ex))
+					vector<string> pat = {"FSC-A", "FSC-W", "FSC-H", "SSC-A", "SSC-W", "SSC-H"};
+					bool isSC = false;
+					for(string p : pat)
+						if(boost::contains(transChName, p))
+						{
+							isSC = true;
+							break;
+						}
+					if(!isSC)
 						curTran=_globalLinTrans;
 				}
 			}
@@ -746,7 +753,7 @@ boolGate* macFlowJoWorkspace::getGate(wsBooleanGateNode & node){
 			//strip double quotes
 			thisGatePath = thisGatePath.substr(1, thisGatePath.size()-2);
 			//trim the heading/tailing spaces
-			thisGatePath = boost::regex_replace(thisGatePath, boost::regex("(^\\s)|(\\s$)"), "");
+			boost::trim(thisGatePath);
 		}
 		gPaths.push_back(thisGatePath);
 
