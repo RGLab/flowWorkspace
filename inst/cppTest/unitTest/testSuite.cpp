@@ -47,7 +47,7 @@ struct globalFixture{
 	~globalFixture(){};
 
 };
-BOOST_GLOBAL_FIXTURE(globalFixture)
+BOOST_GLOBAL_FIXTURE(globalFixture);
 struct parseWorkspaceFixture{
 	parseWorkspaceFixture(): argc(boost::unit_test_framework::framework::master_test_suite().argc),
 	           argv(boost::unit_test_framework::framework::master_test_suite().argv)

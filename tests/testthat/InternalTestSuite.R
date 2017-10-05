@@ -16,7 +16,7 @@ test_that("skip gains from FCS for vX ",{
   expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 1e-3)
 })
 
-
+#somehow the latest Rstudio crashes on this particular test case (but not in R console command)
 test_that("gate extension ",{
       thisPath <- file.path(path, "gate_extension")
       wsFile <- file.path(thisPath, "02-15-2013 ICS.xml")
