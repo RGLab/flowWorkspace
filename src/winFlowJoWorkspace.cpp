@@ -107,16 +107,17 @@ trans_local xFlowJoWorkspace::getTransformation(wsRootNode root,const compensati
 			 */
 			curTp[curTran->getChannel()]=curTran;
 		}else if(transType.compare("linear")==0){
-//			if(g_loglevel>=GATING_SET_LEVEL)
-//				COUT<<"flin func:"<<pname<<endl;
-//			double minRange=atof(transNode.getProperty("minRange").c_str());
-//			double maxRange=atof(transNode.getProperty("maxRange").c_str());
-//			flinTrans *curTran=new flinTrans(minRange,maxRange);
-//			curTran->setName("");
-//			curTran->setChannel(pname);
-//
-//			curTp[curTran->getChannel()]=curTran;
-			//do nothing for linear trans
+			//only meaningful for scaling ellipsoidGate from 256 back to raw
+			if(g_loglevel>=GATING_SET_LEVEL)
+				COUT<<"flin func:"<<pname<<endl;
+			double minRange=atof(transNode.getProperty("minRange").c_str());
+			double maxRange=atof(transNode.getProperty("maxRange").c_str());
+			scaleTrans *curTran=new scaleTrans(maxRange,maxRange);
+			curTran->setName("");
+			curTran->setChannel(pname);
+
+			curTp[curTran->getChannel()]=curTran;
+
 		}else if(transType.compare("log")==0){
 			if(g_loglevel>=GATING_SET_LEVEL)
 				COUT<<"flog func:"<<pname<<endl;

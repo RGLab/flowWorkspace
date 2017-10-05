@@ -161,109 +161,111 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 		transformation * curTrans=it->second;
 		if(curTrans==NULL)
 			throw(domain_error("empty transformation for channel"+it->first));
-		boost::shared_ptr<transformation> inverseTrans;//must declare outside of if block to make it life cycle through end of loop
-		if(inverse){
-			inverseTrans = curTrans->getInverseTransformation();
-			curTrans = inverseTrans.get();//not safe, make sure not to delete it since it belongs to shared_ptr
-		}
-
-		string chnl = it->first;
-//		string transName = curTrans->getName()+" "+chnl;
-
-		switch(curTrans->getType())
+		if(!curTrans->gateOnly())
 		{
-
-			case LOG:
-			{
-				logTrans * thisTrans = dynamic_cast<logTrans *>(curTrans);
-				res.push_back(List::create(Named("type","log")
-											,Named("decade",thisTrans->decade)
-											,Named("offset",thisTrans->offset)
-											,Named("T",thisTrans->T)
-											)
-								,chnl
-								);
-				break;
+			boost::shared_ptr<transformation> inverseTrans;//must declare outside of if block to make it life cycle through end of loop
+			if(inverse){
+				inverseTrans = curTrans->getInverseTransformation();
+				curTrans = inverseTrans.get();//not safe, make sure not to delete it since it belongs to shared_ptr
 			}
-			case LIN:
+
+			string chnl = it->first;
+	//		string transName = curTrans->getName()+" "+chnl;
+
+			switch(curTrans->getType())
 			{
 
-				res.push_back(List::create(Named("type","lin"))
-								,chnl
-								);
-				break;
-			}
-			case CALTBL:
-			{
-				if(!curTrans->computed()){
-					curTrans->computCalTbl();
+				case LOG:
+				{
+					logTrans * thisTrans = dynamic_cast<logTrans *>(curTrans);
+					res.push_back(List::create(Named("type","log")
+												,Named("decade",thisTrans->decade)
+												,Named("offset",thisTrans->offset)
+												,Named("T",thisTrans->T)
+												)
+									,chnl
+									);
+					break;
 				}
-				if(!curTrans->isInterpolated()){
-					curTrans->interpolate();
+				case LIN:
+				{
+
+					res.push_back(List::create(Named("type","lin"))
+									,chnl
+									);
+					break;
 				}
+				case CALTBL:
+				{
+					if(!curTrans->computed()){
+						curTrans->computCalTbl();
+					}
+					if(!curTrans->isInterpolated()){
+						curTrans->interpolate();
+					}
 
-				Spline_Coefs obj=curTrans->getSplineCoefs();
+					Spline_Coefs obj=curTrans->getSplineCoefs();
 
-				res.push_back(List::create(Named("z",obj.coefs)
-											,Named("method",obj.method)
-											,Named("type", "caltbl")
-											)
-								,chnl
+					res.push_back(List::create(Named("z",obj.coefs)
+												,Named("method",obj.method)
+												,Named("type", "caltbl")
+												)
+									,chnl
+									);
+					break;
+				}
+				case BIEXP:
+				{
+					biexpTrans * thisTrans = dynamic_cast<biexpTrans *>(curTrans);
+					/*
+					 * do all the CALTBL operation
+					 */
+					if(!curTrans->computed()){
+						curTrans->computCalTbl();
+					}
+					if(!curTrans->isInterpolated()){
+						curTrans->interpolate();
+					}
+
+					Spline_Coefs obj=curTrans->getSplineCoefs();
+
+					/*
+					 * in addition, output the 5 arguments
+					 */
+					res.push_back(List::create(Named("z",obj.coefs)
+												,Named("method",obj.method)
+												,Named("type","biexp")
+												, Named("channelRange", thisTrans->channelRange)
+												, Named("maxValue", thisTrans->maxValue)
+												, Named("neg", thisTrans->neg)
+												, Named("pos", thisTrans->pos)
+												, Named("widthBasis", thisTrans->widthBasis)
+												)
+									,chnl
+									);
+
+					break;
+				}
+				case FASINH:
+				{
+					fasinhTrans * thisTrans = dynamic_cast<fasinhTrans *>(curTrans);
+
+					res.push_back(List::create(Named("type","fasinh")
+												, Named("A", thisTrans->A)
+												, Named("M", thisTrans->M)
+												, Named("T", thisTrans->T)
+												, Named("length", thisTrans->length)
+												, Named("maxRange", thisTrans->maxRange)
+												)
+												,chnl
 								);
-				break;
-			}
-			case BIEXP:
-			{
-				biexpTrans * thisTrans = dynamic_cast<biexpTrans *>(curTrans);
-				/*
-				 * do all the CALTBL operation
-				 */
-				if(!curTrans->computed()){
-					curTrans->computCalTbl();
+
+					break;
 				}
-				if(!curTrans->isInterpolated()){
-					curTrans->interpolate();
-				}
-
-				Spline_Coefs obj=curTrans->getSplineCoefs();
-
-				/*
-				 * in addition, output the 5 arguments
-				 */
-				res.push_back(List::create(Named("z",obj.coefs)
-											,Named("method",obj.method)
-											,Named("type","biexp")
-											, Named("channelRange", thisTrans->channelRange)
-											, Named("maxValue", thisTrans->maxValue)
-											, Named("neg", thisTrans->neg)
-											, Named("pos", thisTrans->pos)
-											, Named("widthBasis", thisTrans->widthBasis)
-											)
-								,chnl
-								);
-
-				break;
+				default:
+					throw(domain_error("unknown transformation in R_getTransformations!"));
 			}
-			case FASINH:
-			{
-				fasinhTrans * thisTrans = dynamic_cast<fasinhTrans *>(curTrans);
-
-				res.push_back(List::create(Named("type","fasinh")
-											, Named("A", thisTrans->A)
-											, Named("M", thisTrans->M)
-											, Named("T", thisTrans->T)
-											, Named("length", thisTrans->length)
-											, Named("maxRange", thisTrans->maxRange)
-											)
-											,chnl
-							);
-
-				break;
-			}
-			default:
-				throw(domain_error("unknown transformation in R_getTransformations!"));
 		}
-
 	}
 	return (res);
 }
