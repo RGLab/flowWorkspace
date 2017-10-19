@@ -403,7 +403,8 @@ setMethod("add",
               }
               # browser()
               #convert it to logical
-              ind <- action == pop
+              ind <- action == thisPop
+              ind[is.na(ind)] <- FALSE#in case there are some NA values in factor
               add(wf, ind, name = pop, ...)
             }
           })

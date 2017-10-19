@@ -90,7 +90,9 @@ test_that("add factor vector", {
     vec[ind4] <- "Q4"
     #convert to local ind relative to parent
     vec <- vec[vec!=""]
+    vec[vec == "Q4"] <- NA#mimic NA vals in factor
     vec <- as.factor(vec)
+    
     #add empty pop by adding levels
     levels(vec) <- c(levels(vec) , "Q5")
     vec
@@ -99,15 +101,14 @@ test_that("add factor vector", {
   
   add(gs, fac.list, parent = "rectangle")
   
-  expect_equal(getNodes(gs)[7:11], c("/rectangle/Q1", "/rectangle/Q2", "/rectangle/Q3", "/rectangle/Q4", "/rectangle/Q5"))
+  expect_equal(getNodes(gs)[7:10], c("/rectangle/Q1", "/rectangle/Q2", "/rectangle/Q3", "/rectangle/Q5"))
   expect_equal(getTotal(gs[[1]], "Q1"), getTotal(gs[[1]], "CD15 FITC-CD45 PE+"))
   expect_equal(getTotal(gs[[1]], "Q2"), getTotal(gs[[1]], "CD15 FITC+CD45 PE+"))
   expect_equal(getTotal(gs[[1]], "Q3"), getTotal(gs[[1]], "CD15 FITC+CD45 PE-"))
-  expect_equal(getTotal(gs[[1]], "Q4"), getTotal(gs[[1]], "CD15 FITC-CD45 PE-"))
   expect_equal(getTotal(gs[[1]], "Q5"),0)
   Rm("Q1", gs)
   Rm("Q2", gs)
   Rm("Q3", gs)
-  Rm("Q4", gs)
+  
   Rm("Q5", gs)
   })
