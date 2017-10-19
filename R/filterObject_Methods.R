@@ -106,3 +106,20 @@ setMethod("filterObject",signature=c("ellipsoidGate"),function(x){
           , dist = x@distance
           ,filterId=x@filterId)  
     })
+
+
+#' @rdname filterObject
+#' @export
+setMethod("filterObject",signature=c("logical"),function(x){
+  
+  list(type=as.integer(6)
+       , negated = FALSE
+       ,filterId = "dummy_logicalGate") 
+})
+
+#' #' @rdname filterObject
+#' #' @export
+#' setMethod("filterObject",signature=c("logicalFilterResult"),function(x){
+#'   
+#'   selectMethod("filterObject",signature = c("logical"))(x)
+#' })

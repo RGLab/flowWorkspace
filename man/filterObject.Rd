@@ -7,6 +7,7 @@
 \alias{filterObject,polygonGate-method}
 \alias{filterObject,booleanFilter-method}
 \alias{filterObject,ellipsoidGate-method}
+\alias{filterObject,logical-method}
 \title{convert flowCore filter to a list 
  
 It convert the flowCore gate to a list whose structure can be understood by 
@@ -19,6 +20,8 @@ underlying c++ data structure.}
 \S4method{filterObject}{booleanFilter}(x)
 
 \S4method{filterObject}{ellipsoidGate}(x)
+
+\S4method{filterObject}{logical}(x)
 }
 \arguments{
 \item{x}{\code{filter} a flowCore gate. Currently supported gates are:
