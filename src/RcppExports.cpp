@@ -538,6 +538,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setCounts
+void setCounts(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, int count);
+RcppExport SEXP _flowWorkspace_setCounts(SEXP gsPtrSEXP, SEXP sampleNameSEXP, SEXP nodeSEXP, SEXP countSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< string >::type node(nodeSEXP);
+    Rcpp::traits::input_parameter< int >::type count(countSEXP);
+    setCounts(gsPtr, sampleName, node, count);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
@@ -581,6 +594,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
+    {"_flowWorkspace_setCounts", (DL_FUNC) &_flowWorkspace_setCounts, 4},
     {NULL, NULL, 0}
 };
 

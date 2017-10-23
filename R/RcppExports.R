@@ -212,3 +212,14 @@
     invisible(.Call('_flowWorkspace_toggleErrorFlag', PACKAGE = 'flowWorkspace'))
 }
 
+#' set the event counts for a given node
+#'
+#'
+#' @param gsPtr external pointer that points to the C data structure of GatingSet
+#' @param sampleName sample name
+#' @param node node name
+#' @param count the event count to be stored
+.set.count.xml <- function(gsPtr, sampleName, node, count) {
+    invisible(.Call('_flowWorkspace_setCounts', PACKAGE = 'flowWorkspace', gsPtr, sampleName, node, count))
+}
+

@@ -1,5 +1,23 @@
 context("filterObject (convert flowCore filter to list")
 
+test_that("filterObject from logical", {
+  #logical vector
+  lg <- rep(TRUE, 10)
+  
+  expectRes <- list(type = 6L
+                    , negated = FALSE
+                    , filterId = "dummy_logicalGate"
+  )
+  expect_equal(filterObject(lg), expectRes)
+  
+  #filterResult
+  # rg <- rectangleGate(filterId="myRectGate", "FSC-H"=c(200, 600))
+  # fr <- GvHD[[1]]
+  # lg <- filter(fr, rg)
+  # 
+  # expect_equal(filterObject(lg), expectRes)
+  
+})
 test_that("filterObject from rectangleGate", {
       #2d gate
       rg <- rectangleGate(filterId="myRectGate", "FSC-H"=c(200, 600), "SSC-H"=c(0, 400))
