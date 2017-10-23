@@ -15,8 +15,8 @@ NULL
 #' @export 
 setMethod("filterObject",signature=c("rectangleGate"),function(x){
       params<-parameters(x)
-      
-      if(length(params)==1)
+      nDim <- length(params)
+      if(nDim==1)
       {
         #convert to rangeGate
         filterObject<-list(type=as.integer(2)
@@ -25,7 +25,7 @@ setMethod("filterObject",signature=c("rectangleGate"),function(x){
             ,filterId=x@filterId
         )
         
-      }else
+      }else if(nDim==2)
       {
         #convert to rectGate gate
         mat<-rbind(x@min,x@max)
@@ -33,7 +33,8 @@ setMethod("filterObject",signature=c("rectangleGate"),function(x){
             ,params=params
             ,boundaries=mat
             ,filterId=x@filterId)  
-      }
+      }else
+        stop(nDim, "D rectangleGate is not supported by GatingSet!")
       filterObject
     })
 
