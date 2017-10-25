@@ -7,7 +7,7 @@
 
 
 
-#include "include/wsNode.hpp"
+#include "flowWorkspace/wsNode.hpp"
 
 
 /**

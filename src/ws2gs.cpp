@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 
-#include "include/ws2gs.hpp"
+#include "flowWorkspace/ws2gs.hpp"
 /**
  * read xml file and create the appropriate flowJoWorkspace object
  * The reason to return a dynamically allocated pointer is solely for the sake of runtime polymorphism

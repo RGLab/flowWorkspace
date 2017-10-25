@@ -7,7 +7,7 @@
  *      Author: wjiang2
  */
 
-#include "include/ws2gs.hpp"
+#include "flowWorkspace/ws2gs.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
 GatingSet * getGsPtr(SEXP _gsPtr){
