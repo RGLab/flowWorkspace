@@ -4,7 +4,7 @@
  *  Created on: Mar 19, 2012
  *      Author: wjiang2
  */
-#include "include/ws2gh.hpp"
+#include "flowWorkspace/ws2gh.hpp"
 
 /*
  * add root node first before recursively add the other nodes

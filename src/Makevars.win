@@ -1,19 +1,14 @@
 
 CXX_STD = CXX11
-PKG_CPPFLAGS =-DROUT -I$(LIB_XML2)/$(R_ARCH)/include/libxml2 -DLIBXML_STATIC
+PKG_CPPFLAGS =-DROUT -I../inst/include/ -I$(LIB_XML2)/$(R_ARCH)/include/libxml2 -DLIBXML_STATIC
 
 PKG_LIBS += $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a `${R_HOME}/bin/Rscript -e "cytolib:::LdFlags();cat(' ');RProtoBufLib:::LdFlags()"` -lws2_32
-
-#expose headers in installed package include folder
-USERINCLUDE = $(R_PACKAGE_DIR)/include
-USERHEADERDIR = $(USERINCLUDE)/flowWorkspace
-USERHEADER = $(USERINCLUDE)/GatingSet.hpp
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a
 
 
-all:  $(USERHEADER)	$(SHLIB)
+all:  $(SHLIB)
  
 $(SHLIB): $(PKGLIB)
 
@@ -23,11 +18,6 @@ $(PKGLIB): $(OBJECTS)
 	mkdir -p "${USERDIR}"
 	$(AR) rs "${PKGLIB}" $(OBJECTS)
 
-
-#copy the src/include/* to package include
-$(USERHEADER): 
-	mkdir -p "${USERHEADERDIR}"
-	cp include/* ${USERHEADERDIR} -f
 
 .PHONY: 	all clean 
 

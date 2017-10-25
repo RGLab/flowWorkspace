@@ -7,19 +7,14 @@ This makefile requires GNU Make.
 endif
 	
 CXX_STD = CXX11
-PKG_CPPFLAGS =-DROUT @PKG_CPPFLAGS@
+PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@
 PKG_LIBS =`${R_HOME}/bin/Rscript -e "cytolib:::LdFlags();cat(' ');RProtoBufLib:::LdFlags()"` @PKG_LIBS@ 
-
-#expose headers in installed package include folder
-USERINCLUDE = $(R_PACKAGE_DIR)/include
-USERHEADERDIR = $(USERINCLUDE)/flowWorkspace
-USERHEADER = $(USERINCLUDE)/GatingSet.hpp
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a
 
  
-all:  $(USERHEADER)	$(SHLIB)
+all:  $(SHLIB)
 	if [ `uname -s` = 'Darwin' ]; then install_name_tool -change /usr/local/clang4/lib/libc++.1.dylib /usr/lib/libc++.1.dylib $(SHLIB); fi
 
 $(SHLIB): $(PKGLIB)
@@ -30,13 +25,6 @@ $(PKGLIB): $(OBJECTS)
 	mkdir -p "${USERDIR}"
 	$(AR) rs "${PKGLIB}" $(OBJECTS)
 
-
-#copy the src/include/* to package include
-$(USERHEADER): 
-	mkdir -p "${USERHEADERDIR}"
-	cp include/* ${USERHEADERDIR}
-	
- 		
 
 .PHONY: 	all clean 
 
