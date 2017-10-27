@@ -20,7 +20,6 @@ NULL
 #' The order of the names is clock-wise starting from the top left quadrant population.
 #' @param ... some other arguments to specify how the gates are added to the gating tree.
 #' \itemize{
-#'       The default value is NULL,then the name will be extracted from the filterId of the gate to be added 
 #'       \item negated: a \code{logical} scalar to specify whether the gate is negated,which means the the population outside of the gate will be kept as the result population.
 #'       It is FALSE by default. 
 #'  }
