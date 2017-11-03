@@ -5,6 +5,17 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 sink("/dev/null")
 
 
+test_that("vertical ellipsoidGate for vX ",{
+  thisPath <- file.path(path, "ellipsoid_vertical")
+  wsFile <- file.path(thisPath, "20171103.circle.flow.ctl.wsp")
+  ws <- openWorkspace(wsFile)
+  gs <- suppressWarnings(parseWorkspace(ws, name=1))
+  
+  res <- getPopStats(gs[[1]])
+  
+  expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 0.02)
+})
+
 test_that("skip gains from FCS for vX ",{
   thisPath <- file.path(path, "no_gains_vX")
   wsFile <- file.path(thisPath, "10-Apr-2017.wsp")
@@ -470,9 +481,11 @@ test_that("v 9.2 - mac 2.0 (ITN029)",{
       
       gs <- parseWorkspace(ws, name = 2, subset = 1, isNcdf = TRUE)
       gh <- gs[[1]]
-      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
-      thisCounts <- getPopStats(gh)[, list(xml.count,openCyto.count, node)]
-      expect_equal(thisCounts, expectCounts, check.attributes = FALSE)
+      # expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
+      # thisCounts <- getPopStats(gh)[, list(xml.count,openCyto.count, node)]
+      # expect_equal(thisCounts, expectCounts, check.attributes = FALSE)
+      thisCounts <- getPopStats(gh)
+      expect_equal(thisCounts[, xml.freq], thisCounts[, openCyto.freq], tol = 7e-3)
       
     })
 test_that("v 9.4.2 - mac 2.0",{
