@@ -39,12 +39,12 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, Stri
 	Rcpp::IntegerVector countVec(nVec);
 	Rcpp::IntegerVector parentCountVec(nVec);
 
-	// StringVec allNodes = gsPtr->getGatingHierarchy(sampleNames.at(0))->getPopPaths(REGULAR, isFullPath, true);
 
 	unsigned counter = 0;
 	for(unsigned i = 0; i < nSample; i++){
 		std::string sn = sampleNames.at(i);
 		GatingHierarchy * gh = gsPtr->getGatingHierarchy(sn);
+		//we are confident that allNodes is ordered by its nodeIds(ie. vertexID)
 		StringVec allNodes = gsPtr->getGatingHierarchy(sampleNames.at(i))->getPopPaths(REGULAR, isFullPath, true);
 		for(unsigned j = 0; j < nPop; j++){
 			 	std::string pop = subpopulation.at(j);
