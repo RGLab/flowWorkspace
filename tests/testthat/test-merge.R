@@ -1,7 +1,7 @@
 context("merg/standardize GatingSets")
 
-gs0 <- load_gs(file.path(dataDir,"gs_manual"))
-gs1 <- clone(gs0)
+suppressMessages(gs0 <- load_gs(file.path(dataDir,"gs_manual")))
+suppressMessages(gs1 <- clone(gs0))
 sampleNames(gs1) <- "1.fcs"
 
 # simply the tree
@@ -10,10 +10,10 @@ for(toRm in nodes[grepl("CCR", nodes)])
   Rm(toRm, gs1)
 
 # remove two terminal nodes
-gs2 <- clone(gs1)
+suppressMessages(gs2 <- clone(gs1))
 sampleNames(gs2) <- "2.fcs"
 #create a merged gs
-gs6 <- rbind2(GatingSetList(list(gs1, gs2)))
+suppressMessages(gs6 <- rbind2(GatingSetList(list(gs1, gs2))))
 Rm("DPT", gs6[[1]])
 Rm("DNT", gs6[[1]])
 
@@ -21,38 +21,38 @@ Rm("DPT", gs2)
 Rm("DNT", gs2)
 
 # remove singlets gate
-gs3 <- clone(gs2)
+suppressMessages(gs3 <- clone(gs2))
 Rm("singlets", gs3)
-add(gs3, getGate(gs2, "CD3+"), parent = "not debris")
+suppressMessages(add(gs3, getGate(gs2, "CD3+"), parent = "not debris"))
 for(tsub in c("CD4", "CD8"))
 {
-  add(gs3, getGate(gs2, tsub), parent = "CD3+")
+  suppressMessages(add(gs3, getGate(gs2, tsub), parent = "CD3+"))
   for(toAdd in getChildren(gs2, tsub))
   {
     thisParent <- getParent(gs2[[1]], toAdd, path = "auto")
-    add(gs3, getGate(gs2, toAdd), parent = thisParent)
+    suppressMessages(add(gs3, getGate(gs2, toAdd), parent = thisParent))
   }
 }
 sampleNames(gs3) <- "3.fcs"
 
 # spin the branch to make it isomorphic
-gs4 <- clone(gs3)
+suppressMessages(gs4 <- clone(gs3))
 # rm cd4 branch first
 Rm("CD4", gs4)
 # add it back
-add(gs4, getGate(gs3, "CD4"), parent = "CD3+")
+suppressMessages(add(gs4, getGate(gs3, "CD4"), parent = "CD3+"))
 # add all the chilren back
 for(toAdd in getChildren(gs3, "CD4"))
 {
   thisParent <- getParent(gs3[[1]], toAdd)
-  add(gs4, getGate(gs3, toAdd), parent = thisParent)
+  suppressMessages(add(gs4, getGate(gs3, toAdd), parent = thisParent))
 }
 sampleNames(gs4) <- "4.fcs"
 
-gs5 <- clone(gs4)
+suppressMessages(gs5 <- clone(gs4))
 # add another redundant node
-add(gs5, getGate(gs0, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4")
-add(gs5, getGate(gs0, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4")
+suppressMessages(add(gs5, getGate(gs0, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4"))
+suppressMessages(add(gs5, getGate(gs0, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4"))
 sampleNames(gs5) <- "5.fcs"
 
 
