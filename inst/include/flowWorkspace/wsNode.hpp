@@ -11,6 +11,15 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#ifdef ROUT
+#include <Rcpp.h>
+#define COUT Rcpp::Rcout //flowWorkspace is still using Rcpp, so we don't bother replace COUT with PRINT yet
+#endif
+
+
+#ifndef ROUT
+#define COUT cout
+#endif
 
 class wsNode{
 
