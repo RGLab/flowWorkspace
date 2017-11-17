@@ -9,11 +9,7 @@
 #include "cytolib/GatingSet.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
-#ifdef PRT
-	#define ARRAY_TYPE vector<double>
-#else
-	#define ARRAY_TYPE valarray<double>
-#endif
+#define ARRAY_TYPE vector<double>
 //[[Rcpp::plugins(temp)]]
 
 //' grab vectors of pop counts and the parent counts along with their paths and FCS filenames

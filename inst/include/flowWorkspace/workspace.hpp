@@ -77,11 +77,7 @@ public:
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
 	 virtual void to_popNode(wsRootNode &, nodeProperties &)=0;
 	 virtual void to_popNode(wsPopNode &,nodeProperties &,bool isGating)=0;
-#ifndef PRT
-	 valarray<double> toArray(string sCalTable);
-#else
 	 void toArray(string sCalTable, vector<double> &x, vector<double> &y);
-#endif
 	 virtual void parseVersionList(){};
 
 

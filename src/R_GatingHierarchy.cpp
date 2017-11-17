@@ -34,16 +34,7 @@ flowData mat2flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case){
 	fd.sampleID=_sampleID;
 	fd.ignore_case = _ignore_case;
 
-#ifdef PRT//array version
 	fd.data = REAL(mat.get__());
-#else
-//valarray version
-	unsigned nChannls=fd.params.size();
-	unsigned nSize=nChannls*fd.nEvents;
-	fd.data.resize(nSize);
-	for(unsigned j=0;j<nSize;j++)
-		fd.data[j]=mat[j];
-#endif
 
 	return fd;
 }
@@ -327,22 +318,6 @@ void gating(XPtr<GatingSet> gs
 
 	gh->gating(nodeInd,recompute, computeTerminalBool);
 
-#ifndef PRT
-	if(!recompute)
-	{
-		/*
-		 * copy the transformed data from gh before unload it
-		 */
-		valarray<double> updatedMat(gh->getData(0).getData());
-
-
-		/*
-		 * update the _mat
-		 */
-		for(int j=0;j<orig.ncol()*orig.nrow();j++)
-			orig[j]=updatedMat[j];
-	}
-#endif
 	gh->unloadData();
 
 
