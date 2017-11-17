@@ -110,9 +110,8 @@ GatingSet * ws2gs(workspace * ws, vector<string> sampleIDs,bool isParseGate, Str
 			COUT<<endl<<"... start parsing sample: "<< sampleID <<"... "<<endl;
 		wsSampleNode curSampleNode=getSample(*ws, sampleID);
 
-		GatingHierarchy *gh = ws2gh(curSampleNode,*ws,isParseGate,&gTrans,gs->get_globalBiExpTrans(),gs->get_globalLinTrans());
-
-		gs->addGatingHierarchy(gh, sampleName);
+		GatingHierarchy & gh = gs->addGatingHierarchy(sampleName);
+		ws2gh(gh,curSampleNode,*ws,isParseGate,&gTrans,gs->get_globalBiExpTrans(),gs->get_globalLinTrans());
 
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<"Gating hierarchy created: "<<sampleName<<endl;

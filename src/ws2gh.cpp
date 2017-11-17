@@ -5,7 +5,8 @@
  *      Author: wjiang2
  */
 #include "flowWorkspace/ws2gh.hpp"
-
+bool my_throw_on_error = true;
+unsigned short g_loglevel = 0;
 /*
  * add root node first before recursively add the other nodes
  * since root node does not have gates as the others do
@@ -81,10 +82,9 @@ void addPopulation(populationTree &tree, VertexID parentID,workspace & ws,wsNode
 /*
  * Constructor that starts from a particular sampleNode from workspace to build a tree
  */
-GatingHierarchy * ws2gh(wsSampleNode curSampleNode,workspace & ws,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans)
+void ws2gh(GatingHierarchy & gh, wsSampleNode curSampleNode,workspace & ws,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans)
 {
 
-	GatingHierarchy * gh;
 	wsRootNode root=ws.getRoot(curSampleNode);
 	if(isParseGate)
 	{
@@ -118,16 +118,15 @@ GatingHierarchy * ws2gh(wsSampleNode curSampleNode,workspace & ws,bool isParseGa
 		{
 			trans.addTrans(it->first, it->second);
 		}
-		gh = new GatingHierarchy(comp, transFlag, trans);
+		gh = GatingHierarchy(comp, transFlag, trans);
+
 	}
-	else
-		gh = new GatingHierarchy();
 
 	if(g_loglevel>=POPULATION_LEVEL)
 		COUT<<endl<<"parsing populations..."<<endl;
 
-	populationTree &tree = gh->getTree();
+	populationTree &tree = gh.getTree();
 	VertexID pVerID=addRoot(tree, root,ws);
 	addPopulation(tree, pVerID,ws,&root,isParseGate);
-	return gh;
+
 }

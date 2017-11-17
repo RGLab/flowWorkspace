@@ -45,8 +45,8 @@ flowData mat2flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case){
 //[[Rcpp::export(name=".cpp_plotGh")]]
 void plotGh(XPtr<GatingSet> gs,string sampleName,string output) {
 
-	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-  gh->drawGraph(output);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+  gh.drawGraph(output);
 
 }
 
@@ -60,9 +60,9 @@ StringVec getNodes(XPtr<GatingSet> gs,string sampleName
                   ,bool fullPath
                   , bool showHidden){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-	return gh->getPopPaths(order,fullPath,showHidden);
+	return gh.getPopPaths(order,fullPath,showHidden);
 
 }
 
@@ -72,17 +72,17 @@ StringVec getNodes(XPtr<GatingSet> gs,string sampleName
 //[[Rcpp::export(name=".cpp_getNodeID")]]
 NODEID getNodeID(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-	return (NODEID)gh->getNodeID(gatePath);
+	return (NODEID)gh.getNodeID(gatePath);
 
 }
 //[[Rcpp::export(name=".cpp_getParent")]]
 NODEID getParent(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-	NODEID u = gh->getNodeID(gatePath);
-	return (NODEID)gh->getParent(u);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	return (NODEID)gh.getParent(u);
 
 }
 
@@ -90,14 +90,14 @@ NODEID getParent(XPtr<GatingSet> gs,string sampleName,string gatePath){
 vector<NODEID> getChildren(XPtr<GatingSet> gs,string sampleName
                              ,string gatePath, bool showHidden){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-	NODEID u = gh->getNodeID(gatePath);
-	VertexID_vec childrenID = gh->getChildren(u);
+	NODEID u = gh.getNodeID(gatePath);
+	VertexID_vec childrenID = gh.getChildren(u);
 	vector<NODEID> res;
 	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++){
 		NODEID thisNodeID = *it;
-		bool isHidden = gh->getNodeProperty(thisNodeID).getHiddenFlag();
+		bool isHidden = gh.getNodeProperty(thisNodeID).getHiddenFlag();
 		if(showHidden||(!isHidden))
 			res.push_back(thisNodeID);
 	}
@@ -110,9 +110,9 @@ vector<NODEID> getChildren(XPtr<GatingSet> gs,string sampleName
 List getPopStats(XPtr<GatingSet> gs,string sampleName
                      ,string gatePath){
 
-	GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-	NODEID u = gh->getNodeID(gatePath);
-	nodeProperties &node=gh->getNodeProperty(u);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	nodeProperties &node=gh.getNodeProperty(u);
 
 	return List::create(Named("FlowCore",node.getStats(true))
 						,Named("FlowJo",node.getStats(false))
@@ -124,8 +124,8 @@ List getPopStats(XPtr<GatingSet> gs,string sampleName
 
 //[[Rcpp::export(name=".cpp_getCompensation")]]
 List getCompensation(XPtr<GatingSet> gs,string sampleName){
-  GatingHierarchy *gh=gs->getGatingHierarchy(sampleName);
-  compensation comp=gh->getCompensation();
+  GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+  compensation comp=gh.getCompensation();
 	return(List::create(Named("cid",comp.cid)
 						,Named("prefix",comp.prefix)
 						,Named("suffix",comp.suffix)
@@ -143,8 +143,8 @@ List getCompensation(XPtr<GatingSet> gs,string sampleName){
 List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	trans_map trans=gh->getLocalTrans().getTransMap();
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	trans_map trans=gh.getLocalTrans().getTransMap();
 	List res;
 
 	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
@@ -270,16 +270,16 @@ void computeGates(XPtr<GatingSet> gs,string sampleName
                     ,NumericVector gainsVec
                     , float extend_val, float extend_to){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
 	map<string,float> gains;
 	vector<string> chnlNames = gainsVec.names();
 	for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
 		gains[*it]=gainsVec[*it];
 	}
-	gh->extendGate(extend_val, extend_to);
-	gh->adjustGate(gains);
-	gh->transformGate();
+	gh.extendGate(extend_val, extend_to);
+	gh.adjustGate(gains);
+	gh.transformGate();
 
 }
 
@@ -294,13 +294,13 @@ void gating(XPtr<GatingSet> gs
               , bool ignore_case, bool computeTerminalBool, float timestep){
 
  
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
 //	Rcpp::NumericMatrix orig(mat);
 	unsigned sampleID=numeric_limits<unsigned>::max();//dummy sample index
 
 
-	gh->loadData(mat2flowData(orig,sampleID,ignore_case));
+	gh.loadData(mat2flowData(orig,sampleID,ignore_case));
 	if(!recompute)
 	{
 	
@@ -310,15 +310,15 @@ void gating(XPtr<GatingSet> gs
 			gains[*it]=gainsVec[*it];
 		}
 
-		gh->adjustGate(gains);
-		gh->transformGate();
-		gh->transforming(timestep);
-		gh->extendGate(extend_val);
+		gh.adjustGate(gains);
+		gh.transformGate();
+		gh.transforming(timestep);
+		gh.extendGate(extend_val);
 	}
 
-	gh->gating(nodeInd,recompute, computeTerminalBool);
+	gh.gating(nodeInd,recompute, computeTerminalBool);
 
-	gh->unloadData();
+	gh.unloadData();
 
 
 }
@@ -327,13 +327,13 @@ void gating(XPtr<GatingSet> gs
 //[[Rcpp::export(name=".cpp_getGate")]]
 List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	NODEID u = gh->getNodeID(gatePath);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
 	if(u<0)
 		throw(domain_error("not valid vertexID!"));
 	if(u==0)
 		throw(domain_error("no gate associated with root node."));
-	nodeProperties & node = gh->getNodeProperty(u);
+	nodeProperties & node = gh.getNodeProperty(u);
 	gate *g = node.getGate();
 	string nodeName = node.getName();
 	unsigned short gType=g->getType();
@@ -446,13 +446,13 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 //[[Rcpp::export(name=".cpp_getIndices")]]
 vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	NODEID u = gh->getNodeID(gatePath);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
-	nodeProperties & node = gh->getNodeProperty(u);
+	nodeProperties & node = gh.getNodeProperty(u);
 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
 	if(u>0&&!node.isGated())
-		gh->gating(u);
+		gh.gating(u);
 	return node.getIndices();
 
 
@@ -464,9 +464,9 @@ void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
 
 	if(u<0)throw(domain_error("not valid vertexID!"));
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-	nodeProperties & node = gh->getNodeProperty(u);
+	nodeProperties & node = gh.getNodeProperty(u);
 	node.setIndices(ind);
 	node.computeStats();
 
@@ -476,10 +476,10 @@ void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
 //[[Rcpp::export(name=".cpp_getGateFlag")]]
 bool getGateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	NODEID u = gh->getNodeID(gatePath);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
-	return gh->getNodeProperty(u).isGated();
+	return gh.getNodeProperty(u).isGated();
 
 
 }
@@ -487,19 +487,19 @@ bool getGateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 //[[Rcpp::export(name=".cpp_getNegateFlag")]]
 bool getNegateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	NODEID u = gh->getNodeID(gatePath);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
-	return gh->getNodeProperty(u).getGate()->isNegate();
+	return gh.getNodeProperty(u).getGate()->isNegate();
 
 }
 //[[Rcpp::export(name=".cpp_getHiddenFlag")]]
 bool getHiddenFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
-	GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-	NODEID u = gh->getNodeID(gatePath);
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
 	if(u<0)throw(domain_error("not valid vertexID!"));
-	return gh->getNodeProperty(u).getHiddenFlag();
+	return gh.getNodeProperty(u).getHiddenFlag();
 
 }
 
@@ -690,13 +690,13 @@ NODEID addGate(XPtr<GatingSet> gs,string sampleName
                    ,string gatePath
                    ,string popName) {
 
-		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-		NODEID u = gh->getNodeID(gatePath);
+		NODEID u = gh.getNodeID(gatePath);
 		gate * g=newGate(filter);
 
 
-		VertexID nodeID=gh->addGate(g,u,popName);
+		VertexID nodeID=gh.addGate(g,u,popName);
 
 
 		return (NODEID)nodeID;
@@ -709,14 +709,14 @@ NODEID addGate(XPtr<GatingSet> gs,string sampleName
 //[[Rcpp::export(name=".cpp_boolGating")]]
 void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID) {
 
-		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
-		nodeProperties & node=gh->getNodeProperty(nodeID);
+		GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+		nodeProperties & node=gh.getNodeProperty(nodeID);
 		//parse boolean expression from R data structure into c++
 		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
 		//perform bool gating
-		vector<bool> curIndices= gh->boolGating(boolOp, true);
+		vector<bool> curIndices= gh.boolGating(boolOp, true);
 		//combine with parent indices
-		nodeProperties & parentNode=gh->getNodeProperty(gh->getParent(nodeID));
+		nodeProperties & parentNode=gh.getNodeProperty(gh.getParent(nodeID));
 		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
 		//save the indices
 		node.setIndices(curIndices);
@@ -730,13 +730,13 @@ void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID
 void setGate(XPtr<GatingSet> gs,string sampleName
                ,string gatePath,List filter) {
 
-		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-		NODEID u = gh->getNodeID(gatePath);
+		NODEID u = gh.getNodeID(gatePath);
 
 		gate * g=newGate(filter);
 
-		nodeProperties & node=gh->getNodeProperty(u);
+		nodeProperties & node=gh.getNodeProperty(u);
 		gate * old_g = node.getGate();
 		delete old_g;
 		old_g=NULL;
@@ -749,11 +749,11 @@ void setGate(XPtr<GatingSet> gs,string sampleName
 void removeNode(XPtr<GatingSet> gs,string sampleName
                   ,string gatePath) {
 
-		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-		NODEID u = gh->getNodeID(gatePath);
+		NODEID u = gh.getNodeID(gatePath);
 
-		gh->removeNode(u);
+		gh.removeNode(u);
 
 }
 
@@ -768,9 +768,9 @@ void removeNode(XPtr<GatingSet> gs,string sampleName
 //[[Rcpp::export(".moveNode")]]
 void moveNode(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, string parent){
 
-  GatingHierarchy * gh = gsPtr->getGatingHierarchy(sampleName);
+  GatingHierarchy & gh = gsPtr->getGatingHierarchy(sampleName);
 
-  gh->moveNode(node, parent);
+  gh.moveNode(node, parent);
 
 
 }
@@ -779,11 +779,11 @@ void moveNode(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, strin
 void setNodeName(XPtr<GatingSet> gs,string sampleName
                    ,string gatePath, string newNodeName) {
 
-		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-		NODEID u = gh->getNodeID(gatePath);
+		NODEID u = gh.getNodeID(gatePath);
 
-		nodeProperties &node=gh->getNodeProperty(u);
+		nodeProperties &node=gh.getNodeProperty(u);
 		node.setName(newNodeName.c_str());
 
 }
@@ -792,11 +792,11 @@ void setNodeName(XPtr<GatingSet> gs,string sampleName
 void setNodeFlag(XPtr<GatingSet> gs,string sampleName
                    ,string gatePath, bool hidden) {
 
-		GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-		NODEID u = gh->getNodeID(gatePath);
+		NODEID u = gh.getNodeID(gatePath);
 
-		nodeProperties &node=gh->getNodeProperty(u);
+		nodeProperties &node=gh.getNodeProperty(u);
 		node.setHiddenFlag(hidden);
 
 }

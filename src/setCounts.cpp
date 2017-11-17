@@ -16,9 +16,9 @@ using namespace Rcpp;
 //[[Rcpp::export(".set.count.xml")]]
 void setCounts(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, int count){
   // Rcpp::Rcout << sampleName << std::endl;
-  GatingHierarchy * gh = gsPtr->getGatingHierarchy(sampleName);
-  VertexID nodeID = gh->getNodeID(node);
-  nodeProperties & np = gh->getNodeProperty(nodeID);
+  GatingHierarchy & gh = gsPtr->getGatingHierarchy(sampleName);
+  VertexID nodeID = gh.getNodeID(node);
+  nodeProperties & np = gh.getNodeProperty(nodeID);
   POPSTATS fjStats;
   fjStats["count"]= count;
   np.setStats(fjStats, false);

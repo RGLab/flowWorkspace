@@ -5,7 +5,7 @@
 
 #include "test_header.hpp"
 float gTol = 0.05;
-
+unsigned short g_loglevel;
 //unsigned short myTestPolymorphism(){
 //	gate * g= NULL;
 //

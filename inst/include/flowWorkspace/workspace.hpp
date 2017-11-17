@@ -64,7 +64,22 @@ public:
 
 public:
 	 workspace(){doc=NULL;};
-	 virtual ~workspace();
+	 virtual ~workspace()
+	 {
+			if(doc!=NULL)
+			{
+				xmlFreeDoc(doc);
+				doc = NULL;
+
+				/*
+				 *Free the global variables that may
+				 *have been allocated by the parser.
+				 */
+				xmlCleanupParser();
+				if(g_loglevel>=GATING_SET_LEVEL)
+					COUT<<"xml freed!"<<endl;
+			}
+	 }
 	 virtual string xPathSample(string sampleID)=0;
 	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode)=0;
 	 virtual trans_local getTransformation(wsRootNode,const compensation &,PARAM_VEC &,trans_global_vec *, biexpTrans * _globalBiExpTrans, linTrans * _globalLinTrans, bool prefixed)=0;
@@ -77,7 +92,20 @@ public:
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
 	 virtual void to_popNode(wsRootNode &, nodeProperties &)=0;
 	 virtual void to_popNode(wsPopNode &,nodeProperties &,bool isGating)=0;
-	 void toArray(string sCalTable, vector<double> &x, vector<double> &y);
+	 void toArray(string sCalTable, vector<double> &x, vector<double> &y)
+	 {
+		 vector<string> stringVec;
+		 	boost::split(stringVec,sCalTable,boost::is_any_of(","));
+		 	int nLen = stringVec.size()/2;
+		 	x.resize(nLen);
+		 	y.resize(nLen);
+		 	for(unsigned i=0;i<nLen;i++)
+		 	{
+		 		y[i]=atof(stringVec.at(2*i).c_str());
+		 		x[i]=atof(stringVec.at(2*i + 1).c_str());
+		 //		COUT<<res[i]<<",";
+		 	}
+	 }
 	 virtual void parseVersionList(){};
 
 

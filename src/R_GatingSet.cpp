@@ -58,7 +58,7 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
                ,StringVec newSampleNames) 
   {
 
-		GatingHierarchy* gh=gsPtr->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=gsPtr->getGatingHierarchy(sampleName);
 
 		/*
 		 * used gh as the template to clone multiple ghs in the new gs
