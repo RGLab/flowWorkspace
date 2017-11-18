@@ -5,7 +5,7 @@
 
 #include "test_header.hpp"
 float gTol = 0.05;
-unsigned short g_loglevel;
+
 //unsigned short myTestPolymorphism(){
 //	gate * g= NULL;
 //
@@ -49,8 +49,8 @@ struct globalFixture{
 };
 BOOST_GLOBAL_FIXTURE(globalFixture);
 struct parseWorkspaceFixture{
-	parseWorkspaceFixture(): argc(boost::unit_test_framework::framework::master_test_suite().argc),
-	           argv(boost::unit_test_framework::framework::master_test_suite().argv)
+	parseWorkspaceFixture(): argc(boost::unit_test::framework::master_test_suite().argc),
+	           argv(boost::unit_test::framework::master_test_suite().argv)
 	{
 		/*
 		 * parse argv
@@ -79,7 +79,7 @@ struct parseWorkspaceFixture{
 		myTest.isSaveArchive = false;
 
 		it = arg_map.find("archiveType");
-		myTest.archiveType = it==arg_map.end()?false:it->second == "PB";
+		myTest.archiveType = it==arg_map.end()?true:it->second == "PB";
 
 		it = arg_map.find("isLoadArchive");
 
@@ -105,6 +105,24 @@ struct parseWorkspaceFixture{
 };
 
 BOOST_FIXTURE_TEST_SUITE(parseWorkspace,parseWorkspaceFixture)
+BOOST_AUTO_TEST_CASE(gate_extension)
+{
+
+	myTest.filename="../wsTestSuite/gate_extension/02-15-2013 ICS.xml";
+	myTest.wsType = WS_MAC_3;
+	myTest.samples["8"]="9148_Neg1.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/gate_extension/nc_comp.nc";
+	myTest.colfile="../output/gate_extension/colnames.txt";
+	myTest.archive="../output/gate_extension/gs";
+	myTest.tolerance = 0.1;
+//	g_loglevel = GATE_LEVEL;
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 {
 

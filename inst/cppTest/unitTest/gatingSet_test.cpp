@@ -324,12 +324,8 @@ void parser_test(testCase & myTest){
 			gh.transforming(1);
 			gh.gating(0, true);
 			gh.unloadData();
-#ifdef PRT
 			delete res.data;
 			string filename = "timelog2";
-#else
-			string filename = "timelog1";
-#endif
 			double runtime = (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000);
 			ofstream timelog;
 			timelog.open(filename.c_str(), ios_base::app);
