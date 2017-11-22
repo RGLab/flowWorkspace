@@ -584,7 +584,7 @@ PACKAGE_STRING='flowWorkspace 1.5.58'
 PACKAGE_BUGREPORT='wjiang2@fhcrc.org'
 PACKAGE_URL=''
 
-ac_unique_file="src/flowJoWorkspace.cpp"
+ac_unique_file="src/R_GatingSet.cpp"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 PKG_LIBS

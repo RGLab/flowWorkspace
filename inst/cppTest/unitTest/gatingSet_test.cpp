@@ -279,7 +279,7 @@ void parser_test(testCase & myTest){
 			if(!isLoadArchive)
 			{
 				workspace * ws = openWorkspace(myTest.filename, myTest.sampNloc,myTest.xmlParserOption, wsType);
-				gs.reset(ws2gs(ws,sampleIDs,isParseGate,sampleNames));
+				gs.reset(ws->ws2gs(sampleIDs,isParseGate,sampleNames));
 				delete ws;
 			}
 

@@ -13,7 +13,7 @@
 #include <fstream>
 #include <string>
 #include <boost/algorithm/string.hpp>
-#include "flowWorkspace/ws2gs.hpp"
+#include "flowWorkspace/openWorkspace.hpp"
 #include "flowWorkspace/flowJoWorkspace.hpp"
 #include "cytolib/GatingSet.hpp"
 #include "cytolib/GatingHierarchy.hpp"
