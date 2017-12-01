@@ -7,9 +7,11 @@
  *      Author: wjiang2
  */
 
-#include "flowWorkspace/ws2gs.hpp"
+#include "flowWorkspace/openWorkspace.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
+bool my_throw_on_error = true;
+unsigned short g_loglevel = 0;
 GatingSet * getGsPtr(SEXP _gsPtr){
 
 	if(R_ExternalPtrAddr(_gsPtr)==0)
@@ -34,7 +36,7 @@ XPtr<GatingSet> parseWorkspace(string fileName,StringVec sampleIDs
                             , unsigned short wsType) 
 {
 		workspace * ws = openWorkspace(fileName, sampNloc,xmlParserOption, wsType);
-		GatingSet * gs = ws2gs(ws, sampleIDs,isParseGate,sampleNames);
+		GatingSet * gs = ws->ws2gs(sampleIDs,isParseGate,sampleNames);
 		delete ws;
 		return XPtr<GatingSet>(gs);
 
@@ -58,7 +60,7 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
                ,StringVec newSampleNames) 
   {
 
-		GatingHierarchy* gh=gsPtr->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=gsPtr->getGatingHierarchy(sampleName);
 
 		/*
 		 * used gh as the template to clone multiple ghs in the new gs

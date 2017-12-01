@@ -61,7 +61,7 @@ NumericMatrix getSingleCellExpressionByGate(XPtr<GatingSet> gs,string sampleName
                                         , CharacterVector markers //used for output mat colnames,may have other markers
                                         , bool threshold) {
   
-  GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+  GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
   
   //get indices for each marker
   unsigned nMarkers = markers_pops.size();
@@ -73,8 +73,8 @@ NumericMatrix getSingleCellExpressionByGate(XPtr<GatingSet> gs,string sampleName
     for(unsigned j = 0; j < pops.size(); ++j){
       // Rcpp::Rcout << "pop: " << j << endl;
       string pop = Rcpp::as<std::string>(pops(j));
-      VertexID u = gh->getNodeID(pop);
-      BoolVec ind = gh->getNodeProperty(u).getIndices();
+      VertexID u = gh.getNodeID(pop);
+      BoolVec ind = gh.getNodeProperty(u).getIndices();
       if(j == 0)
         indexList.at(i) = ind;  
       else{
@@ -102,14 +102,14 @@ NumericMatrix getSingleCellExpression(XPtr<GatingSet> gs,string sampleName
                                         , CharacterVector markers, bool threshold) {
   
   //get indices from each node
-  GatingHierarchy* gh=gs->getGatingHierarchy(sampleName);
+  GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
   
   unsigned nNodes = pops.size();
   vector<BoolVec> indexList(nNodes);
   for(unsigned i =0; i < nNodes; i++){
     string pop = pops.at(i);
-    VertexID u = gh->getNodeID(pop);
-    indexList.at(i)=gh->getNodeProperty(u).getIndices();
+    VertexID u = gh.getNodeID(pop);
+    indexList.at(i)=gh.getNodeProperty(u).getIndices();
   }
   
   NumericMatrix output = maskMatrix(indexList, data, threshold);

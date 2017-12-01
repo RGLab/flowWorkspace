@@ -24,23 +24,23 @@ hdfFlow attachData(string fileName,vector<string> sampleNames,vector<string> par
 	 */
 
 
-void plotGraph(GatingHierarchy* gh){
+void plotGraph(GatingHierarchy& gh){
 
-			gh->drawGraph("../output/test.dot");
+			gh.drawGraph("../output/test.dot");
 			system("dot2gxl ../output/test.dot -o ../output/test.gxl");
 }
 
-void gh_accessor_test(GatingHierarchy* gh){
+void gh_accessor_test(GatingHierarchy& gh){
 	/*
 		 * getNodes by the T order
 		 */
 
 		cout<<endl<<"tsorted node list"<<endl;
 		VertexID_vec vertices;
-		vertices=gh->getVertices(TSORT);
+		vertices=gh.getVertices(TSORT);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
-			nodeProperties &node=gh->getNodeProperty(*it);
+			nodeProperties &node=gh.getNodeProperty(*it);
 			cout<<*it<<"."<<node.getName()<<endl;
 		}
 
@@ -49,16 +49,16 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 */
 		cout<<endl<<"bfs node list"<<endl;
 
-		vertices=gh->getVertices(BFS);
+		vertices=gh.getVertices(BFS);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
-			nodeProperties &node=gh->getNodeProperty(*it);
+			nodeProperties &node=gh.getNodeProperty(*it);
 			cout<<*it<<"."<<node.getName()<<endl;
 		}
 
 
 		cout<<endl<<"compensation info"<<endl;
-		compensation comp=gh->getCompensation();
+		compensation comp=gh.getCompensation();
 		cout<<"cid:"<<comp.cid<<endl;
 		cout<<"comment:"<<comp.comment<<endl;
 		/*
@@ -67,11 +67,11 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 */
 
 		cout<<endl<<"node list in regular order and stats,gate"<<endl;
-		vertices=gh->getVertices(REGULAR);
+		vertices=gh.getVertices(REGULAR);
 		for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 		{
 			VertexID u=*it;
-			nodeProperties &node=gh->getNodeProperty(u);
+			nodeProperties &node=gh.getNodeProperty(u);
 			cout<<u<<"."<<node.getName()<<":";
 			cout<<node.getStats(false)["count"]<<endl;
 			if(u!=ROOTNODE)
@@ -87,10 +87,10 @@ void gh_accessor_test(GatingHierarchy* gh){
 		 * getPopNames with full path
 		 */
 		cout<<endl<<"node list with/without full path:"<<endl;
-		vector<string> popNames=gh->getPopPaths(REGULAR,true,true);
+		vector<string> popNames=gh.getPopPaths(REGULAR,true,true);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
-		popNames=gh->getPopPaths(REGULAR,false,true);
+		popNames=gh.getPopPaths(REGULAR,false,true);
 		for(vector<string>::iterator it=popNames.begin();it!=popNames.end();it++)
 			cout<<*it<<endl;
 
@@ -104,7 +104,7 @@ void gh_accessor_test(GatingHierarchy* gh){
 		{
 			if(i!=0)
 			{
-				VertexID parent=gh->getParent(i);
+				VertexID parent=gh.getParent(i);
 				cout<<i<<"<--"<<parent<<" ";
 				cout<<endl;
 			}
@@ -115,7 +115,7 @@ void gh_accessor_test(GatingHierarchy* gh){
 		cout<<endl<<"check children node"<<endl;
 		for(size_t i=0;i<vertices.size();i++)
 		{
-			VertexID_vec children=gh->getChildren(i);
+			VertexID_vec children=gh.getChildren(i);
 			cout<<i<<"-->";
 			for(VertexID_vec::iterator it=children.begin();it!=children.end();it++)
 						cout<<*it<<",";
@@ -158,9 +158,9 @@ void gs_gating(GatingSet &gs,string curSample, hdfFlow nc, map<string,float> &ga
 	cout<<endl<<"do the gating after the parsing"<<endl;
 
 	//read transformed data once for all nodes
-	GatingHierarchy* gh=gs.getGatingHierarchy(curSample);
+	GatingHierarchy & gh=gs.getGatingHierarchy(curSample);
 
-//	gh->loadData(curSample);//get flow data from cdf
+//	gh.loadData(curSample);//get flow data from cdf
 
 	/*
 	 * read flow data from cdf into memory first (mimic the R code)
@@ -170,27 +170,27 @@ void gs_gating(GatingSet &gs,string curSample, hdfFlow nc, map<string,float> &ga
 	/*
 	 * then load data from memory (as it(res) is passed from R routine
 	 */
-	gh->loadData(res);//
+	gh.loadData(res);//
 
-	gh->adjustGate(gains);
-	gh->transformGate();
-	gh->transforming(1);
-	gh->extendGate(0);
+	gh.adjustGate(gains);
+	gh.transformGate();
+	gh.transforming(1);
+	gh.extendGate(0);
 
-	gh->gating(0,false);
-	gh->unloadData();
+	gh.gating(0,false);
+	gh.unloadData();
 
 }
-void gh_counts(GatingHierarchy* gh,vector<bool> &isEqual, const float tolerance, const vector<VertexID> skipPops){
+void gh_counts(GatingHierarchy & gh,vector<bool> &isEqual, const float tolerance, const vector<VertexID> skipPops){
 	cout<<endl<<"flowJo(flowcore) counts after gating"<<endl;
-	VertexID_vec vertices=gh->getVertices(0);
+	VertexID_vec vertices=gh.getVertices(0);
 	for(VertexID_vec::iterator it=vertices.begin();it!=vertices.end();it++)
 	{
 		VertexID u=*it;
 		if(find(skipPops.begin(), skipPops.end(), u) == skipPops.end())//skip some pops that flowJo records the wrong counts
 		{
 			if(u!=ROOTNODE){
-				nodeProperties &node=gh->getNodeProperty(u);
+				nodeProperties &node=gh.getNodeProperty(u);
 				int flowJoCount = node.getStats(false)["count"];
 				if(flowJoCount != -1) //skip the unrecorded flowJo counts
 				{
@@ -230,8 +230,8 @@ void gh_counts(GatingHierarchy* gh,vector<bool> &isEqual, const float tolerance,
 	}
 }
 
-void gh_removeGate(GatingHierarchy* gh){
-	gh->removeNode(5);
+void gh_removeGate(GatingHierarchy& gh){
+	gh.removeNode(5);
 
 }
 void clone_test(testCase myTest){
@@ -279,7 +279,7 @@ void parser_test(testCase & myTest){
 			if(!isLoadArchive)
 			{
 				workspace * ws = openWorkspace(myTest.filename, myTest.sampNloc,myTest.xmlParserOption, wsType);
-				gs.reset(ws2gs(ws,sampleIDs,isParseGate,sampleNames));
+				gs.reset(ws->ws2gs(sampleIDs,isParseGate,sampleNames));
 				delete ws;
 			}
 
@@ -294,7 +294,7 @@ void parser_test(testCase & myTest){
 		for(vector<string>::iterator it=samples.begin();it!=samples.end();it++)
 			cout<<*it<<endl;
 
-		GatingHierarchy* gh;
+
 
 		string curSample=samples.at(0);
 		/*
@@ -304,7 +304,7 @@ void parser_test(testCase & myTest){
 		 */
 		hdfFlow nc = gs_attachCDF(*gs,myTest);
 
-		gh=gs->getGatingHierarchy(curSample);
+		GatingHierarchy& gh=gs->getGatingHierarchy(curSample);
 
 //		gh_accessor_test(gh);
 
@@ -320,16 +320,12 @@ void parser_test(testCase & myTest){
 
 			 start = std::clock();
 			flowData res=nc.readflowData(curSample);
-			gh->loadData(res);//
-			gh->transforming(1);
-			gh->gating(0, true);
-			gh->unloadData();
-#ifdef PRT
+			gh.loadData(res);//
+			gh.transforming(1);
+			gh.gating(0, true);
+			gh.unloadData();
 			delete res.data;
 			string filename = "timelog2";
-#else
-			string filename = "timelog1";
-#endif
 			double runtime = (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000);
 			ofstream timelog;
 			timelog.open(filename.c_str(), ios_base::app);
@@ -340,7 +336,7 @@ void parser_test(testCase & myTest){
 		}
 
 		gh_counts(gh, myTest.isEqual, myTest.tolerance, myTest.skipPops);
-//		nodeProperties * np = gh->getNodeProperty(102);
+//		nodeProperties * np = gh.getNodeProperty(102);
 //		vector<bool> thisInd = np->getIndices();
 //		vector<bool> thisInd1(1024);
 //		char thisInd[128];
@@ -412,7 +408,7 @@ void parser_test(testCase & myTest){
 //		if(!isLoadArchive)
 //			nc =gs_attachCDF(*gs,myTest);
 //		gh=gs->getGatingHierarchy(curSample);
-////		gh->printLocalTrans();
+////		gh.printLocalTrans();
 //		gh_accessor_test(gh);
 ////		plotGraph(gh);
 //
@@ -447,7 +443,7 @@ void parser_test(testCase & myTest){
 //			/*
 //			 * clone the previous parsed gating hierarchy:gh
 //			 */
-//	//		gh->printLocalTrans();
+//	//		gh.printLocalTrans();
 //			GatingSet * newGS=new GatingSet(gh,newSamples);
 //			hdfFlow nc = gs_attachCDF(*newGS,myTest);
 //

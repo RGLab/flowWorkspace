@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.65])
 AC_INIT([flowWorkspace], [1.5.58], [wjiang2@fhcrc.org])
-AC_CONFIG_SRCDIR([src/flowJoWorkspace.cpp])
+AC_CONFIG_SRCDIR([src/R_GatingSet.cpp])
 #AC_CONFIG_HEADERS([config.h])
 AC_ARG_WITH(xml2,
            [AS_HELP_STRING([--with-xml2=DIR],

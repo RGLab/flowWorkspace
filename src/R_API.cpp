@@ -9,11 +9,7 @@
 #include "cytolib/GatingSet.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
-#ifdef PRT
-	#define ARRAY_TYPE vector<double>
-#else
-	#define ARRAY_TYPE valarray<double>
-#endif
+#define ARRAY_TYPE vector<double>
 //[[Rcpp::plugins(temp)]]
 
 //' grab vectors of pop counts and the parent counts along with their paths and FCS filenames
@@ -43,24 +39,24 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, Stri
 	unsigned counter = 0;
 	for(unsigned i = 0; i < nSample; i++){
 		std::string sn = sampleNames.at(i);
-		GatingHierarchy * gh = gsPtr->getGatingHierarchy(sn);
+		GatingHierarchy & gh = gsPtr->getGatingHierarchy(sn);
 		//we are confident that allNodes is ordered by its nodeIds(ie. vertexID)
-		StringVec allNodes = gsPtr->getGatingHierarchy(sampleNames.at(i))->getPopPaths(REGULAR, isFullPath, true);
+		StringVec allNodes = gsPtr->getGatingHierarchy(sampleNames.at(i)).getPopPaths(REGULAR, isFullPath, true);
 		for(unsigned j = 0; j < nPop; j++){
 			 	std::string pop = subpopulation.at(j);
 				sampleVec(counter) = sn;
 				popVec(counter) = pop;
 
 //				get count of this pop
-				VertexID u = gh->getNodeID(pop);
-				countVec(counter) = gh->getNodeProperty(u).getStats(isFlowCore)["count"];
+				VertexID u = gh.getNodeID(pop);
+				countVec(counter) = gh.getNodeProperty(u).getStats(isFlowCore)["count"];
 
 //				 get parent name
-				VertexID pid = gh->getParent(u);
+				VertexID pid = gh.getParent(u);
 				parentVec(counter) = allNodes.at(pid);
 
 //				get parent count
-				parentCountVec(counter) = gh->getNodeProperty(pid).getStats(isFlowCore)["count"];
+				parentCountVec(counter) = gh.getNodeProperty(pid).getStats(isFlowCore)["count"];
 
 				//increment counter
 				counter++;
@@ -178,8 +174,8 @@ void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList){
 	 */
 	StringVec sn = gsPtr->getSamples();
 	for(StringVec::iterator it = sn.begin(); it != sn.end(); it++){
-		GatingHierarchy * gh = gsPtr->getGatingHierarchy(*it);
-		gh->addTransMap(tm);
+		GatingHierarchy & gh = gsPtr->getGatingHierarchy(*it);
+		gh.addTransMap(tm);
 	}
 
 }

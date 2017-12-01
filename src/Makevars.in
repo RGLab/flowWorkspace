@@ -8,7 +8,7 @@ endif
 	
 CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@
-PKG_LIBS =`${R_HOME}/bin/Rscript -e "cytolib:::LdFlags();cat(' ');RProtoBufLib:::LdFlags()"` @PKG_LIBS@ 
+PKG_LIBS =`${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags()"` @PKG_LIBS@ 
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a

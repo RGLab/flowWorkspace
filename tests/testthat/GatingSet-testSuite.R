@@ -95,7 +95,7 @@ test_that("sampleNames",{
       expect_equal(new_sn, c("newSample", "CytoTrol_CytoTrol_2.fcs"))
       #check if sample name is also updated in cpp data structure
       name_stored_in_cpp <- flowWorkspace:::.cpp_getSamples(gs@pointer)
-      expect_equal(new_sn, rev(name_stored_in_cpp))
+      expect_equal(sort(new_sn), sort(name_stored_in_cpp))
       #restore the original name
       sampleNames(gs) <- sn
     })
