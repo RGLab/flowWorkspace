@@ -316,16 +316,17 @@ test_that("keyword",{
             thisResult[["FILENAME"]] <- basename(thisResult[["FILENAME"]])
             #fix this due to the difference generated from the constructor GatingSet(gh, files)
             thisResult[["ORIGINALGUID"]] <-thisResult[["GUID"]] <- basename(thisResult[["FILENAME"]])
-             
-            thisResult
+            #skip flowCore_R keys due to the historical archived results do not have this info up to date
+            ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
+            thisResult[ind]
           })
       thisRes <- lapply(thisRes, function(thisResult){
             thisResult[["FILENAME"]] <- basename(thisResult[["FILENAME"]])
             thisResult[["ORIGINALGUID"]] <-thisResult[["GUID"]] <- basename(thisResult[["FILENAME"]])
-            thisResult
+            ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
+            thisResult[ind]
           })
        
-      
       expect_equal(thisRes,expectRes)
       
       thisRes <- keyword(gs, "$P1N")

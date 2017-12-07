@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with the gated cytometry
-Version: 3.27.5
+Version: 3.27.6
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -55,7 +55,7 @@ Collate:
     'utils.R'
     'zzz.R'
 Depends:
-    R (>= 2.16.0),flowCore(>= 1.39.9),ncdfFlow(>= 2.19.5)
+    R (>= 2.16.0),flowCore(>= 1.45.2),ncdfFlow(>= 2.19.5)
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,

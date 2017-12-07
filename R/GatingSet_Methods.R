@@ -847,8 +847,8 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
  comp<-.cpp_getCompensation(G@pointer,sampleName)
  prefix <- comp$prefix
  suffix <- comp$suffix
-
-	rawRange <- range(get(sampleName,frmEnv))
+  fr <- frmEnv[[sampleName]]
+	rawRange <- range(fr)
     oldnames <- names(rawRange)
 
     if(wsType == "vX"&&!is.null(slash_loc)){
@@ -920,10 +920,9 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 
 
 	datarange <- t(rbind(datarange[2,]-datarange[1,],datarange))
-	datapar <- parameters(get(sampleName,frmEnv))
-	pData(datapar)[,c("range","minRange","maxRange")] <- datarange
-
-	eval(substitute(frmEnv$s@parameters<-datapar,list(s=sampleName)))
+	pData(parameters(fr))[,c("range","minRange","maxRange")] <- datarange
+	description(fr) <- flowCore:::updateTransformKeywords(fr)
+	frmEnv[[sampleName]] <- fr
 
     tempenv$axis.labels
 }
