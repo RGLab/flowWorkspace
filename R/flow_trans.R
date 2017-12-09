@@ -1,3 +1,84 @@
+#' Gating-ML 2.0 Log transformation.
+#'
+#' Used to construct flog transformer object.
+#' (which uses a specilized \link{flowJo.flog})
+#' 
+#'
+#' @inheritParams flow_breaks
+#' @param M number of decades
+#' @param T top scale value
+#' @return logtGml2 transformation object
+#' @examples
+#' trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
+#' data <- 1:1e3
+#' brks.func <- trans.obj[["breaks"]]
+#' brks <- brks.func(data)
+#' brks # fasinh space displayed at raw data scale
+#'
+#' #transform it to verify it is equal-spaced at transformed scale
+#' trans.func <- trans.obj[["transform"]]
+#' brks.trans <- trans.func(brks)
+#' brks.trans
+#' @export  
+logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
+{
+  
+  trans <- flowJo.flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = FALSE)
+  inv <- flowJo.flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = TRUE)
+  flow_trans(name = "logtGml2", trans.fun = trans, inverse.fun = inv,
+             n = n, equal.space = equal.space)
+}
+
+#' flog transform function
+#'
+#' flog transform function constructor. It is different from flowCore version of \link{logtGml2}
+#' in the way that it reset negative input so that no NAN will be returned.
+#'
+#' @rdname flowJo.flog
+#' @param decade number of decades
+#' @param offset offset to the orignal input
+#' @param max_val top of scale value
+#' @param min_val lower bound of scaled value (where negative raw value gets truncated at)
+#' @param inverse whether return the inverse function
+#' @return flog(or its inverse) transform function
+#' @examples
+#' trans <- flowJo.flog()
+#' data.raw <- c(1,1e2,1e3)
+#' data.trans <- trans(data.raw)
+#' data.trans
+#'
+#' inverse.trans <- flowJo.flog(inverse = T)
+#' inverse.trans(data.trans)
+#'
+#'#negative input
+#' data.raw <- c(-10,1e2,1e3)
+#' data.trans <- trans(data.raw)
+#' data.trans
+#' inverse.trans(data.trans)#we lose the original value at lower end since flog can't restore negative value
+#' 
+#' #different
+#' trans <- flowJo.flog(decade = 3, max_val = 1e3)
+#' data.trans <- trans(data.raw)
+#' data.trans
+#' inverse.trans <- flowJo.flog(decade = 3, max_val = 1e3, inverse = T)
+#' inverse.trans(data.trans)
+#' 
+#' @export
+flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, inverse = FALSE){
+  if(inverse){
+    function(x)
+    {
+      10 ^ ((x - offset) * decade) * max_val
+    }
+    
+  }else{
+    function(x){
+      sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
+    }
+    
+  }
+}
+
 #' wrap the calibration table into transformation function using stats:::splinefun
 #'
 #' @param coef the coefficients returned by the calibration table from flowJo
