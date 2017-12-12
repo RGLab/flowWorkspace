@@ -350,6 +350,7 @@ updateChannels <- function(gs, map, all = TRUE){
 #' 
 #' Is is useful trick to make the tree structure of GatingSet same with other so that
 #' they can be combined into a 'GatingSetList' object.
+#' (deprecated by 'moveNode')
 #' 
 #' @param gs \code{GatingSet} to work with
 #' @param gate \code{filter} a dummy gate to be inserted, its 'filterId' will be used as the population name
@@ -365,6 +366,7 @@ updateChannels <- function(gs, map, all = TRUE){
 #' }
 #' @export 
 insertGate <- function(gs, gate, parent, children){
+  .Deprecated("moveNode", msg = "'moveNode' does the gate grafting in place and thus is more efficient way of inserting a gate!")
   dummyNode <- gate@filterId
   nodes <- getNodes(gs)
   dummyPath <- file.path(parent, dummyNode)
