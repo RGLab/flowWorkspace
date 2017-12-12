@@ -1,5 +1,5 @@
 context("moveNode")
-test_that("group and merge the GatingSet object", {
+test_that("moveNode", {
   
   gs <- load_gs(file.path(dataDir,"gs_manual"))
   gh <- gs[[1]]
