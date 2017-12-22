@@ -47,7 +47,7 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 #' data.trans <- trans(data.raw)
 #' data.trans
 #'
-#' inverse.trans <- flowJo.flog(inverse = T)
+#' inverse.trans <- flowJo.flog(inverse = TRUE)
 #' inverse.trans(data.trans)
 #'
 #'#negative input
