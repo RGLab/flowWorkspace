@@ -21,6 +21,7 @@ a new \code{GatingSet} object with the new gate added but share the same flow da
 \description{
 Is is useful trick to make the tree structure of GatingSet same with other so that
 they can be combined into a 'GatingSetList' object.
+(deprecated by 'moveNode')
 }
 \examples{
 \dontrun{

@@ -31,7 +31,7 @@ data.raw <- c(1,1e2,1e3)
 data.trans <- trans(data.raw)
 data.trans
 
-inverse.trans <- flowJo.flog(inverse = T)
+inverse.trans <- flowJo.flog(inverse = TRUE)
 inverse.trans(data.trans)
 
 #negative input
@@ -44,7 +44,7 @@ inverse.trans(data.trans)#we lose the original value at lower end since flog can
 trans <- flowJo.flog(decade = 3, max_val = 1e3)
 data.trans <- trans(data.raw)
 data.trans
-inverse.trans <- flowJo.flog(decade = 3, max_val = 1e3, inverse = T)
+inverse.trans <- flowJo.flog(decade = 3, max_val = 1e3, inverse = TRUE)
 inverse.trans(data.trans)
 
 }

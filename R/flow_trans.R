@@ -47,7 +47,7 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 #' data.trans <- trans(data.raw)
 #' data.trans
 #'
-#' inverse.trans <- flowJo.flog(inverse = T)
+#' inverse.trans <- flowJo.flog(inverse = TRUE)
 #' inverse.trans(data.trans)
 #'
 #'#negative input
@@ -60,7 +60,7 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 #' trans <- flowJo.flog(decade = 3, max_val = 1e3)
 #' data.trans <- trans(data.raw)
 #' data.trans
-#' inverse.trans <- flowJo.flog(decade = 3, max_val = 1e3, inverse = T)
+#' inverse.trans <- flowJo.flog(decade = 3, max_val = 1e3, inverse = TRUE)
 #' inverse.trans(data.trans)
 #' 
 #' @export
