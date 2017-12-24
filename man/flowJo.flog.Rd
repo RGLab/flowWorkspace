@@ -31,7 +31,7 @@ data.raw <- c(1,1e2,1e3)
 data.trans <- trans(data.raw)
 data.trans
 
-inverse.trans <- flowJo.flog(inverse = T)
+inverse.trans <- flowJo.flog(inverse = TRUE)
 inverse.trans(data.trans)
 
 #negative input
