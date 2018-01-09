@@ -443,22 +443,22 @@ BOOST_AUTO_TEST_CASE(curlyquad2)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-//BOOST_AUTO_TEST_CASE(gs2flowjo)
-//{
-//	myTest.filename="/loc/no-backup/mike/test/ws/temp.wsp";
-//	myTest.wsType = WS_VX;
-//	myTest.samples["1"] = "CytoTrol_CytoTrol_1.fcs";
-//	myTest.sampNloc=1;
-//	myTest.ncfile="../output/gs2flowjo/comp.nc";
-//	myTest.colfile="../output/gs2flowjo/colnames.txt";
-//	myTest.archive="../output/gs2flowjo/gs";
-//
-//	parser_test(myTest);
-//
-//	vector<bool> isTrue(myTest.isEqual.size(), true);
-//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-//
-//}
+BOOST_AUTO_TEST_CASE(searchRefNode)
+{
+	myTest.filename="../wsTestSuite/searchRefNode/2583-Y-MAL067-FJ.xml";
+	myTest.wsType = WS_MAC_3;
+	myTest.samples["728"] = "1379326.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/searchRefNode/comp.nc";
+	myTest.colfile="../output/searchRefNode/colnames.txt";
+	myTest.archive="../output/searchRefNode/gs";
+
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 //BOOST_AUTO_TEST_CASE(invalid_biexp_parameter)
 //{
 //
