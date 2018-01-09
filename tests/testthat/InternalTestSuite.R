@@ -1,5 +1,5 @@
 context("parse workspaces of various flowJo versions ")
-
+library(data.table)
 path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
