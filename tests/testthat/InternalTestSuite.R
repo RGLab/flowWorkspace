@@ -4,6 +4,24 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+test_that("search reference node for boolean gate ",{
+  thisPath <- file.path(path, "searchRefNode")
+  wsFile <- file.path(thisPath, "2583-Y-MAL067-FJ.xml")
+  ws <- openWorkspace(wsFile)
+  gs <- suppressWarnings(parseWorkspace(ws, name="Samples", subset = "1379326.fcs"))
+  res <- getPopStats(gs[[1]])
+  expect_equal(nrow(res), 235)
+  expect_equal(res[-10, xml.freq], res[-10, openCyto.freq], tol = 0.006)
+  expect_equal(res[10, openCyto.count], 164)
+  
+  #skip leaf bool
+  gs <- suppressWarnings(parseWorkspace(ws, name="Samples", subset = "1379326.fcs", leaf.bool = F))
+  gh <- gs[[1]]
+  leaf.bool <- which(sapply(getNodes(gs), function(node)length(getChildren(gh, node))==0&&flowWorkspace:::.isBoolGate(gh,node)))
+  res <- getPopStats(gh)
+  expect_true(all(is.na(res[leaf.bool,  openCyto.count])))
+  expect_equal(res[-leaf.bool, xml.freq], res[-leaf.bool, openCyto.freq], tol = 0.006)
+  })
 
 test_that("vertical ellipsoidGate for vX ",{
   thisPath <- file.path(path, "ellipsoid_vertical")

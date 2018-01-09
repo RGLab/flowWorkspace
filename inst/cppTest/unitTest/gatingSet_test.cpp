@@ -177,7 +177,7 @@ void gs_gating(GatingSet &gs,string curSample, hdfFlow nc, map<string,float> &ga
 	gh.transforming(1);
 	gh.extendGate(0);
 
-	gh.gating(0,false);
+	gh.gating(0,false, true);
 	gh.unloadData();
 
 }
