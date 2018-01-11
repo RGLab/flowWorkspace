@@ -1624,17 +1624,18 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' It is usually used immediately after \link{add} or \link{setGate} calls.
 #'
 #' @param x \code{GatingSet}
-#' @param ... other arguments
 #' @param y \code{character} node name or node path. Default "root". Optional.
 #' @param alwaysLoadData \code{logical}. Specifies whether to load the flow raw data for gating boolean gates. Default 'FALSE'. Optional. Sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gated. 'FALSE' will check the parent node and reference to determine whether to load the data.
 #' This check may not be sufficient since  the further upstream ancestor nodes may not be gated yet.
 #' In that case, we allow the gating to fail and prompt user to recompute those nodes explictily.
 #'  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted at the cost of unnecessary data IO.
+#' @param ... other arguments
+#'              leaf.bool whether to compute the leaf boolean gate, default is TRUE
 #' @aliases recompute
 #' @rdname recompute
 #' @export
-setMethod("recompute",c("GatingSet"),function(x, ...,y="root",alwaysLoadData=FALSE){
-			.recompute(x, ...,y=y,alwaysLoadData=alwaysLoadData)
+setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, ...){
+			.recompute(x,y=y,alwaysLoadData=alwaysLoadData, ...)
 
 		})
 
