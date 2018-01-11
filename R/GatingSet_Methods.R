@@ -1616,7 +1616,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 
 
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
-#' Compute the cell events by the gates stored within the gating tree
+#' Compute the cell events by the gates stored within the gating tree.
 #'
 #' Compute each cell event to see if it falls into the gate stored within the gating tree
 #' and store the result as cell count.
@@ -1625,20 +1625,16 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #'
 #' @param x \code{GatingSet}
 #' @param ... other arguments
-#'          y \code{character} node name or node path
-#'          alwaysLoadData \code{logical}
-#'                  specifies whether to load the flow raw data for gating
-#'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
-#'                  Default 'FALSE' will check the parent node and reference to determine whether to load the data
-#'                  but this check may not be sufficient since  the further upstream ancestor nodes may not be gated yet
-#'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
-#'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
-#'                  , yet may at the cost of unnecessary data IO
+#' @param y \code{character} node name or node path. Default "root". Optional.
+#' @param alwaysLoadData \code{logical}. Specifies whether to load the flow raw data for gating boolean gates. Default 'FALSE'. Optional. Sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gated. 'FALSE' will check the parent node and reference to determine whether to load the data.
+#' This check may not be sufficient since  the further upstream ancestor nodes may not be gated yet.
+#' In that case, we allow the gating to fail and prompt user to recompute those nodes explictily.
+#'  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted at the cost of unnecessary data IO.
 #' @aliases recompute
 #' @rdname recompute
 #' @export
-setMethod("recompute",c("GatingSet"),function(x, ...){
-			.recompute(x, ...)
+setMethod("recompute",c("GatingSet"),function(x, ...,y="root",alwaysLoadData=FALSE){
+			.recompute(x, ...,y=y,alwaysLoadData=alwaysLoadData)
 
 		})
 
