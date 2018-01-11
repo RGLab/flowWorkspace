@@ -1329,7 +1329,7 @@ fix_y_axis <- function(gs, x, y){
                       , strip.text = c("parent", "gate")
                       , path = "auto"
                       , xlim = flowWorkspace.par.get("plotGate")[["xlim"]]
-                      , ylim = flowWorkspace.par.get("plotGate")[["xlim"]]
+                      , ylim = flowWorkspace.par.get("plotGate")[["ylim"]]
                       , ...){
 
 
