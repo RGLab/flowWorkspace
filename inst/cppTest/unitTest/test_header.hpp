@@ -42,7 +42,6 @@ struct testCase{
 	bool archiveType;// boost or google
 	map<string,float> gains;
 	vector<VertexID> skipPops;
-	unsigned short g_loglevel;
 //	vector<double> times;//global variable to collect run time
 
 } ;

@@ -5,6 +5,8 @@
 
 #include "test_header.hpp"
 float gTol = 0.05;
+bool my_throw_on_error = true;
+unsigned short g_loglevel = 0;
 //unsigned short myTestPolymorphism(){
 //	gate * g= NULL;
 //
@@ -88,7 +90,7 @@ struct parseWorkspaceFixture{
 		myTest.isSaveArchive = it==arg_map.end()?false:boost::lexical_cast<bool>(it->second);
 
 		it = arg_map.find("g_loglevel");
-		myTest.g_loglevel = it==arg_map.end()?false:boost::lexical_cast<unsigned>(it->second);
+		g_loglevel = it==arg_map.end()?false:boost::lexical_cast<unsigned>(it->second);
 
 	};
 

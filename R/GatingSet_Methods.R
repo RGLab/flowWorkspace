@@ -1985,8 +1985,8 @@ setMethod("setNode"
 #' @return a character that represents the internal log level
 #' @rdname loglevel
 #' @export
-getLoglevel <- function(gs){
-  level <- .cpp_getLogLevel(gs@pointer)
+getLoglevel <- function(){
+  level <- .cpp_getLogLevel()
   c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")[level + 1]
 }
 
@@ -2002,10 +2002,10 @@ getLoglevel <- function(gs){
 #'
 #' @rdname loglevel
 #' @export
-setLoglevel <- function(gs, level = "none"){
+setLoglevel <- function(level = "none"){
   valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
   level <- match.arg(level, valid_levels)
-  .cpp_setLogLevel(gs@pointer, as.integer(match(level, valid_levels) - 1))
+  .cpp_setLogLevel( as.integer(match(level, valid_levels) - 1))
   level
 }
 

@@ -400,8 +400,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // parseWorkspace
-XPtr<GatingSet> parseWorkspace(string fileName, StringVec sampleIDs, StringVec sampleNames, bool isParseGate, unsigned short sampNloc, int xmlParserOption, unsigned short wsType, unsigned short loglevel, bool throw_on_error);
-RcppExport SEXP _flowWorkspace_parseWorkspace(SEXP fileNameSEXP, SEXP sampleIDsSEXP, SEXP sampleNamesSEXP, SEXP isParseGateSEXP, SEXP sampNlocSEXP, SEXP xmlParserOptionSEXP, SEXP wsTypeSEXP, SEXP loglevelSEXP, SEXP throw_on_errorSEXP) {
+XPtr<GatingSet> parseWorkspace(string fileName, StringVec sampleIDs, StringVec sampleNames, bool isParseGate, unsigned short sampNloc, int xmlParserOption, unsigned short wsType);
+RcppExport SEXP _flowWorkspace_parseWorkspace(SEXP fileNameSEXP, SEXP sampleIDsSEXP, SEXP sampleNamesSEXP, SEXP isParseGateSEXP, SEXP sampNlocSEXP, SEXP xmlParserOptionSEXP, SEXP wsTypeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -412,9 +412,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned short >::type sampNloc(sampNlocSEXP);
     Rcpp::traits::input_parameter< int >::type xmlParserOption(xmlParserOptionSEXP);
     Rcpp::traits::input_parameter< unsigned short >::type wsType(wsTypeSEXP);
-    Rcpp::traits::input_parameter< unsigned short >::type loglevel(loglevelSEXP);
-    Rcpp::traits::input_parameter< bool >::type throw_on_error(throw_on_errorSEXP);
-    rcpp_result_gen = Rcpp::wrap(parseWorkspace(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType, loglevel, throw_on_error));
+    rcpp_result_gen = Rcpp::wrap(parseWorkspace(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -512,24 +510,31 @@ BEGIN_RCPP
 END_RCPP
 }
 // getLogLevel
-unsigned short getLogLevel(XPtr<GatingSet> gs);
-RcppExport SEXP _flowWorkspace_getLogLevel(SEXP gsSEXP) {
+unsigned short getLogLevel();
+RcppExport SEXP _flowWorkspace_getLogLevel() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
-    rcpp_result_gen = Rcpp::wrap(getLogLevel(gs));
+    rcpp_result_gen = Rcpp::wrap(getLogLevel());
     return rcpp_result_gen;
 END_RCPP
 }
 // setLogLevel
-void setLogLevel(XPtr<GatingSet> gs, unsigned short loglevel);
-RcppExport SEXP _flowWorkspace_setLogLevel(SEXP gsSEXP, SEXP loglevelSEXP) {
+void setLogLevel(unsigned short loglevel);
+RcppExport SEXP _flowWorkspace_setLogLevel(SEXP loglevelSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< unsigned short >::type loglevel(loglevelSEXP);
-    setLogLevel(gs, loglevel);
+    setLogLevel(loglevel);
+    return R_NilValue;
+END_RCPP
+}
+// toggleErrorFlag
+void toggleErrorFlag();
+RcppExport SEXP _flowWorkspace_toggleErrorFlag() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    toggleErrorFlag();
     return R_NilValue;
 END_RCPP
 }
@@ -577,7 +582,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
-    {"_flowWorkspace_parseWorkspace", (DL_FUNC) &_flowWorkspace_parseWorkspace, 9},
+    {"_flowWorkspace_parseWorkspace", (DL_FUNC) &_flowWorkspace_parseWorkspace, 7},
     {"_flowWorkspace_getSamples", (DL_FUNC) &_flowWorkspace_getSamples, 1},
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 3},
     {"_flowWorkspace_NewGatingSet_rootOnly", (DL_FUNC) &_flowWorkspace_NewGatingSet_rootOnly, 1},
@@ -586,8 +591,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 2},
     {"_flowWorkspace_combineGatingSet", (DL_FUNC) &_flowWorkspace_combineGatingSet, 2},
     {"_flowWorkspace_setSample", (DL_FUNC) &_flowWorkspace_setSample, 3},
-    {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 1},
-    {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 2},
+    {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
+    {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
+    {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
     {"_flowWorkspace_setCounts", (DL_FUNC) &_flowWorkspace_setCounts, 4},
     {NULL, NULL, 0}
 };
