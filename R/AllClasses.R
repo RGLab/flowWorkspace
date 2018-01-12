@@ -1,7 +1,7 @@
 #' @include AllGenerics.R
 NULL
 
-#' @useDynLib flowWorkspace
+#' @useDynLib flowWorkspace .registration = TRUE
 NULL
 
 #' @name flowWorkspace-package
@@ -195,8 +195,15 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' @rdname GatingSet-methods
 #' @aliases GatingSet
 #' @export 
-setMethod("GatingSet",c("character","character"),function(x,y, guids, includeGates=FALSE, sampNloc="keyword",xmlParserOption, wsType){
-      
+setMethod("GatingSet",c("character","character"),function(x,y, guids
+                                                        , includeGates=FALSE
+                                                        , sampNloc="keyword"
+                                                          ,xmlParserOption
+                                                          , wsType
+                                                          , loglevel
+                                                          , throw_on_error){
+      valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
+      loglevel <- match.arg(loglevel, valid_levels)
       xmlFileName<-x
       sampleIDs<-y
 #			browser()
@@ -212,7 +219,16 @@ setMethod("GatingSet",c("character","character"),function(x,y, guids, includeGat
       if(!file.exists(xmlFileName))
         stop(xmlFileName," not found!")
       Object<-new("GatingSet")
-      Object@pointer<-.cpp_parseWorkspace(xmlFileName,sampleIDs,guids,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType))
+      Object@pointer<-.cpp_parseWorkspace(xmlFileName
+                                          ,sampleIDs
+                                          ,guids
+                                          ,includeGates
+                                          ,as.integer(sampNloc)
+                                          ,as.integer(xmlParserOption)
+                                           ,as.integer(wsType)
+                                            , loglevel - 1
+                                            , throw_on_error
+                                        )
       Object@guid <- .uuid_gen()
       Object@flag <- FALSE
 

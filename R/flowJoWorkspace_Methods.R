@@ -125,7 +125,9 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'                                                          to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
 #'          \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 #'          \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
-#'          \item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.    
+#'          \item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.
+#'          \item loglevel control the level of verbose message. Can be "none", "GatingSet", "GatingHierarchy", "Population" or "Gate". Default is "none"
+#'          \itme throw_on_error When set to FALSE, it allows the parser to skip the gates that can't be parsed correctly to generate a partially parsed gating tree. (Mainly for troubleshooting)    
 #'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 #'      	}
 #' @details
@@ -499,7 +501,10 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
   return(pd)
 }
 .parseWorkspace <- function(xmlFileName, execute, isNcdf = TRUE, includeGates = TRUE
-                            ,sampNloc="keyword",xmlParserOption, wsType, ws, pd, ...){
+                            ,sampNloc="keyword",xmlParserOption, wsType, ws, pd
+                            , loglevel = "none"
+                            , throw_on_error = TRUE
+                            , ...){
   
   
 #	message("calling c++ parser...")
@@ -512,6 +517,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
       , sampNloc = sampNloc
       , xmlParserOption = xmlParserOption
       , wsType = wsType
+      , loglevel = loglevel
+      , throw_on_error = throw_on_error
   )
   
 #	message("c++ parsing done!")

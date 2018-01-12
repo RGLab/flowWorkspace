@@ -62,6 +62,10 @@ struct xpath{
 
 
 class workspace{
+protected:
+	unsigned short g_loglevel;// debug print is turned off by default
+	bool my_throw_on_error;//can be toggle off to get a partially parsed gating tree for debugging purpose
+
 public:
 	 xpath nodePath;
 //protected:
@@ -69,7 +73,7 @@ public:
 	 xmlDoc * doc;
 
 public:
-	 workspace(){doc=NULL;};
+	 workspace():g_loglevel(NO_LOG),my_throw_on_error(true){doc=NULL;};
 	 virtual ~workspace()
 	 {
 			if(doc!=NULL)
@@ -86,6 +90,8 @@ public:
 					COUT<<"xml freed!"<<endl;
 			}
 	 }
+	 void set_loglevel(unsigned short _g_loglevel){g_loglevel = _g_loglevel;};
+	 void set_throw_on_error(bool flag){my_throw_on_error = flag;};
 	 virtual string xPathSample(string sampleID)=0;
 	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode)=0;
 	 virtual trans_local getTransformation(wsRootNode,const compensation &,PARAM_VEC &,trans_global_vec *, biexpTrans * _globalBiExpTrans, linTrans * _globalLinTrans, bool prefixed)=0;
@@ -240,6 +246,7 @@ public:
 	 GatingSet * ws2gs(vector<string> sampleIDs,bool isParseGate, StringVec sampleNames)
 	 {
 	 	GatingSet * gs=new GatingSet();
+	 	gs->set_loglevel(g_loglevel);
 	 	 /*
 	 	  * parsing global calibration tables
 	 	  */
@@ -265,6 +272,7 @@ public:
 	 		wsSampleNode curSampleNode=getSample(sampleID);
 
 	 		GatingHierarchy & gh = gs->addGatingHierarchy(sampleName);
+	 		gh.set_loglevel(g_loglevel);
 	 		ws2gh(gh,curSampleNode,isParseGate,&gTrans,gs->get_globalBiExpTrans(),gs->get_globalLinTrans());
 
 	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)

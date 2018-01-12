@@ -164,8 +164,8 @@
     invisible(.Call('_flowWorkspace_setNodeFlag', PACKAGE = 'flowWorkspace', gs, sampleName, gatePath, hidden))
 }
 
-.cpp_parseWorkspace <- function(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType) {
-    .Call('_flowWorkspace_parseWorkspace', PACKAGE = 'flowWorkspace', fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType)
+.cpp_parseWorkspace <- function(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType, loglevel = 0L, throw_on_error = TRUE) {
+    .Call('_flowWorkspace_parseWorkspace', PACKAGE = 'flowWorkspace', fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType, loglevel, throw_on_error)
 }
 
 .cpp_getSamples <- function(gsPtr) {
@@ -200,16 +200,12 @@
     invisible(.Call('_flowWorkspace_setSample', PACKAGE = 'flowWorkspace', gs, oldName, newName))
 }
 
-.cpp_getLogLevel <- function() {
-    .Call('_flowWorkspace_getLogLevel', PACKAGE = 'flowWorkspace')
+.cpp_getLogLevel <- function(gs) {
+    .Call('_flowWorkspace_getLogLevel', PACKAGE = 'flowWorkspace', gs)
 }
 
-.cpp_setLogLevel <- function(loglevel) {
-    invisible(.Call('_flowWorkspace_setLogLevel', PACKAGE = 'flowWorkspace', loglevel))
-}
-
-.cpp_togleErrorFlag <- function() {
-    invisible(.Call('_flowWorkspace_toggleErrorFlag', PACKAGE = 'flowWorkspace'))
+.cpp_setLogLevel <- function(gs, loglevel) {
+    invisible(.Call('_flowWorkspace_setLogLevel', PACKAGE = 'flowWorkspace', gs, loglevel))
 }
 
 #' set the event counts for a given node

@@ -10,8 +10,8 @@
 #include "flowWorkspace/openWorkspace.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
-bool my_throw_on_error = true;
-unsigned short g_loglevel = 0;
+//;
+//;
 GatingSet * getGsPtr(SEXP _gsPtr){
 
 	if(R_ExternalPtrAddr(_gsPtr)==0)
@@ -33,9 +33,12 @@ GatingSet * getGsPtr(SEXP _gsPtr){
 XPtr<GatingSet> parseWorkspace(string fileName,StringVec sampleIDs
                             ,StringVec sampleNames,bool isParseGate
                             ,unsigned short sampNloc,int xmlParserOption
-                            , unsigned short wsType) 
+                            , unsigned short wsType
+							, unsigned short loglevel = 0, bool throw_on_error = true)
 {
 		workspace * ws = openWorkspace(fileName, sampNloc,xmlParserOption, wsType);
+		ws->set_loglevel(loglevel);
+		ws->set_throw_on_error(throw_on_error);
 		GatingSet * gs = ws->ws2gs(sampleIDs,isParseGate,sampleNames);
 		delete ws;
 		return XPtr<GatingSet>(gs);
@@ -142,20 +145,15 @@ void setSample(XPtr<GatingSet> gs,string oldName, string newName) {
 }
 
 //[[Rcpp::export(name=".cpp_getLogLevel")]]
-unsigned short getLogLevel() {
+unsigned short getLogLevel(XPtr<GatingSet> gs) {
 
-		return(g_loglevel);
+		return(gs->get_loglevel());
 
 }
 
 //[[Rcpp::export(name=".cpp_setLogLevel")]]
-void setLogLevel(unsigned short loglevel) {
+void setLogLevel(XPtr<GatingSet> gs, unsigned short loglevel) {
 
-		g_loglevel = loglevel;
+		gs->set_loglevel(loglevel);
 
-}
-
-//[[Rcpp::export(name=".cpp_togleErrorFlag")]]
-void toggleErrorFlag(){
-	my_throw_on_error = !my_throw_on_error;
 }

@@ -55,11 +55,10 @@ inline workspace * openWorkspace(string sFileName,unsigned short sampNloc,int xm
 		 }
 
 
-
 		 wsPtr->nodePath.sampNloc=sampNloc;
 
-		 if(g_loglevel>=GATING_SET_LEVEL)
-			 COUT<<"internal gating set created from "<<sFileName<<endl;
+//		 if(g_loglevel>=GATING_SET_LEVEL)
+//			 COUT<<"internal gating set created from "<<sFileName<<endl;
 
 		 wsPtr->parseVersionList();
 		 return wsPtr;
