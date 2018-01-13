@@ -1,7 +1,7 @@
 #' @include AllGenerics.R
 NULL
 
-#' @useDynLib flowWorkspace
+#' @useDynLib flowWorkspace,.registration = TRUE
 NULL
 
 #' @name flowWorkspace-package
