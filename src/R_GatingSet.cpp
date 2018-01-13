@@ -10,8 +10,9 @@
 #include "flowWorkspace/openWorkspace.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
-bool my_throw_on_error = true;
-unsigned short g_loglevel = 0;
+CYTOLIB_INIT()
+
+
 GatingSet * getGsPtr(SEXP _gsPtr){
 
 	if(R_ExternalPtrAddr(_gsPtr)==0)
