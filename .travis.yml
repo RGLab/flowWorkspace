@@ -20,7 +20,8 @@ before_install:
 install:
   - R -e 'devtools::install_deps(dep = T,type="binary")'
   - R -e 'devtools::install_github("RGLab/flowCore",ref="trunk")'
-
+  - R -e 'devtools::install_github("RGLab/cytolib",ref="trunk")'
+  
 env:
  global:
    - CRAN: http://cran.rstudio.com
