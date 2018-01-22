@@ -70,7 +70,7 @@ test_that("getCompensationMatrices ",{
 test_that(".isBoolGate ",{
       expect_false(flowWorkspace:::.isBoolGate(gh, "singlets"))
       
-      bf <- booleanFilter("CD4/38- DR+|CD4/CCR7- 45RA+", filterId = "myBoolFilter")
+      bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
       suppressWarnings(id <- add(gh, bf))
       expect_true(flowWorkspace:::.isBoolGate(gh, "myBoolFilter"))
       invisible(Rm("myBoolFilter", gh))
@@ -334,12 +334,12 @@ test_that("getGate",{
       invisible(Rm("myRectGate", gh))
       
       #add a bool gate to test
-      bf <- booleanFilter("CD4/38- DR+|CD4/CCR7- 45RA+", filterId = "myBoolFilter")
+      bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
       suppressWarnings(id <- add(gh, bf))
       thisRes <- getGate(gh, "myBoolFilter")
       expect_is(thisRes, "booleanFilter")
       
-      expect_equal(gsub("[`\"]", "", as.character(thisRes@expr)), as.character(bf@expr))
+      expect_equal(as.character(thisRes@expr), as.character(bf@expr))
       invisible(Rm("myBoolFilter", gh))
      
       ##TODO: test rangeGate (no R API to add it, have to parse it from xml )

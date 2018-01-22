@@ -112,3 +112,32 @@ test_that("add factor vector", {
   
   Rm("Q5", gs)
   })
+
+test_that("add boolean filter", {
+  #relative ref path
+  or_node <- "test_or"
+  bf <- booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC-CD45 PE-`)
+  add(gs, bf, name = or_node, parent = "/rectangle")
+  recompute(gs)
+  expect_equal(getTotal(gs[[1]], or_node), 561)
+  Rm(or_node, gs)
+  
+  #abs path
+  bf <- booleanFilter(`/rectangle/CD15 FITC-CD45 PE+|/rectangle/CD15 FITC-CD45 PE-`)
+  add(gs, bf, name = or_node, parent = "/rectangle")
+  recompute(gs)
+  expect_equal(getTotal(gs[[1]], or_node), 561)
+  Rm(or_node, gs)
+  
+  #abs path
+  setNode(gs, "CD15 FITC-CD45 PE+", "Q1")
+  setNode(gs, "CD15 FITC-CD45 PE-", "Q4")
+  bf <- booleanFilter(Q1|rectangle/Q4)
+  add(gs, bf, name = or_node, parent = "/rectangle")
+  recompute(gs)
+  expect_equal(getTotal(gs[[1]], or_node), 561)
+  
+  
+  #abs path
+  expect_error(bf <- booleanFilter("/rectangle/CD15 FITC-CD45 PE+|/rectangle/CD15 FITC-CD45 PE-"), "character")
+  })
