@@ -487,7 +487,7 @@ setClass("booleanFilter"
 )
 
 #' \code{booleanFilter} is a constructor from an expression
-#' @param expr \code{expression} or \code{character}
+#' @param expr \code{expression}
 #' @param ... further arguments to the expression
 #' @param filterId \code{character} identifier
 #' @rdname booleanFilter-class
@@ -505,7 +505,10 @@ setClass("booleanFilter"
 #' eval(call)
 booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter")
 {
+  
 	subs <- substitute(expr)
+	if(is(subs, "character"))
+	  stop("booleanFilter constructor doesn't take character!Please use the experssion (enclosed by backticks if the special characters are present.)")
 	if(missing(filterId)){
 		filterId <- deparse(subs)
 		if(length(filterId)>1)
