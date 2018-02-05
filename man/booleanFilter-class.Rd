@@ -16,7 +16,7 @@ char2booleanFilter(expr, ..., filterId = "defaultBooleanFilter")
 \S4method{show}{booleanFilter}(object)
 }
 \arguments{
-\item{expr}{\code{expression} or \code{character}}
+\item{expr}{\code{expression}}
 
 \item{...}{further arguments to the expression}
 

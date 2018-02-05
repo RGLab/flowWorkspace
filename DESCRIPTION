@@ -37,7 +37,7 @@ Imports:
     stringr,
     scales,
     flowViz
-Collate:
+Collate: 
     'AllGenerics.R'
     'AllClasses.R'
     'GatingHierarchy_Methods.R'
@@ -52,6 +52,7 @@ Collate:
     'merge_GatingSet.R'
     'moveNode.R'
     'setGate_Methods.R'
+    'updateIndices.R'
     'utils.R'
     'zzz.R'
 Depends:
