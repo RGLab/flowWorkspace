@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with the gated cytometry
-Version: 3.27.14
+Version: 3.27.15
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -37,7 +37,7 @@ Imports:
     stringr,
     scales,
     flowViz
-Collate:
+Collate: 
     'AllGenerics.R'
     'AllClasses.R'
     'GatingHierarchy_Methods.R'
@@ -52,6 +52,7 @@ Collate:
     'merge_GatingSet.R'
     'moveNode.R'
     'setGate_Methods.R'
+    'updateIndices.R'
     'utils.R'
     'zzz.R'
 Depends:
