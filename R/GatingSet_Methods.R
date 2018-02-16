@@ -894,7 +894,8 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 						base10raw <- unlist(lapply(2:6,function(e)10^e))
 						base10raw <- c(0,base10raw)
 						raw <- base10raw[base10raw>=min(rw)&base10raw<max(rw)]
-
+            if(length(raw) == 0)
+              raw <- base10raw #hack to prevent it from error in the new line below
 						pos <- signif(thisTrans(raw))
 
 
