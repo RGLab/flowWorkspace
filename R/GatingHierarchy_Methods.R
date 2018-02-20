@@ -228,7 +228,10 @@ NULL
 
 #' @importMethodsFrom graph nodeData removeNode edges inEdges edgeData edgeData<- edgeDataDefaults<-
 #' @importFrom graph edgeRenderInfo<- nodeRenderInfo<-
-.layoutGraph <- function(g,layout="dot",width=3,height=2,fontsize=14,labelfontsize=14,fixedsize=FALSE,boolean=FALSE,showHidden = FALSE){
+.layoutGraph <- function(g,layout="dot"
+                        ,fixedsize=FALSE, shape = "ellipse"
+                         ,boolean=FALSE,showHidden = FALSE
+                         , ...){
 
   edgeDataDefaults(g, "virtual") <- FALSE
   ##remove bool gates if necessary
@@ -290,6 +293,13 @@ NULL
       {
         ifelse(as.logical(as.integer(thisBool)),"blue","black")
       })
+  
+  #pass plot parameters to node attributes (some of parameters won't work via passing to layoutGraph directly)
+  nAttrs[["fixedsize"]] <- sapply(nodes, function(i)fixedsize)
+  nAttrs[["shape"]] <- sapply(nodes, function(i)shape)
+  params <- list(...)
+  for(pname in names(params))
+    nAttrs[[pname]] <- sapply(nodes, function(i)params[[pname]])
   nodeRenderInfo(g) <- nAttrs
 
   eData <- edgeData(g, attr = "virtual")
@@ -312,11 +322,11 @@ NULL
                               ,nodeAttrs = nAttrs
                               , edgeAttrs = eAttrs
                             ,attrs=list(graph=list(rankdir="LR",page=c(8.5,11))
-                                        ,node=list(fixedsize=FALSE
-                              #              ,fillcolor="gray"
-                                            ,fontsize=fontsize
-                                            ,shape="ellipse"
-                                        )
+                              #           ,node=list(fixedsize=fixedsize
+                              # #              ,fillcolor="gray"
+                              #               # ,fontsize = fontsize
+                              #               ,shape = shape
+                              #           )
                             )
                         )
 }
