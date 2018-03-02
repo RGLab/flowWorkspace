@@ -738,7 +738,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 
 				}else if(g$type==2)
 					rectangleGate(.gate=matrix(g$range,dimnames=list(NULL,g$parameters)),filterId=filterId)
-				else if(g$type %in% c(3,6))
+				else if(g$type ==3)
 				{
 
 					refPaths<-unlist(lapply(g$ref,function(curPath){
@@ -747,20 +747,24 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 									})
 								)
 
-                    #get rid of the first op
-                    g$v2[1] <- ""
-                    boolExpr <- paste(g$v2, g$v,refPaths,sep="")
-                    boolExpr <- paste(boolExpr,collapse="")
-                    if(nchar(boolExpr) > 0)
-                    boolExpr <- as.symbol(boolExpr)
+          #get rid of the first op
+          g$v2[1] <- ""
+          boolExpr <- paste(g$v2, g$v,refPaths,sep="")
+          boolExpr <- paste(boolExpr,collapse="")
+          if(nchar(boolExpr) == 0)
+            stop("Empty boolean expression from :", filterId)
+          boolExpr <- as.symbol(boolExpr)
 
-                    g <- eval(substitute(booleanFilter(xx, filterId=filterId),list(xx=boolExpr)))
+          g <- eval(substitute(booleanFilter(xx, filterId=filterId),list(xx=boolExpr)))
 					g
-				}else if (g$type == 4){
-                    cov.mat <- g$cov
-                    dimnames(cov.mat) <- list(g$parameters, g$parameters)
-                    ellipsoidGate(.gate = cov.mat, mean = g$mu, distance = g$dist, filterId = filterId)
-                }else
+				}else if (g$type == 4)
+			  {
+              cov.mat <- g$cov
+              dimnames(cov.mat) <- list(g$parameters, g$parameters)
+              ellipsoidGate(.gate = cov.mat, mean = g$mu, distance = g$dist, filterId = filterId)
+        }else if (g$type == 6){#logicalGate
+          booleanFilter(filterId=filterId)#return dummy boolean filter
+				}else
 					stop("not supported gate type",g$type)
 
 

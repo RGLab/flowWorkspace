@@ -505,17 +505,23 @@ setClass("booleanFilter"
 #' eval(call)
 booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter")
 {
-  
-	subs <- substitute(expr)
-	if(is(subs, "character"))
-	  stop("booleanFilter constructor doesn't take character!Please use the experssion (enclosed by backticks if the special characters are present.)")
-	if(missing(filterId)){
+  if(missing(filterId)){
 		filterId <- deparse(subs)
 		if(length(filterId)>1)
 			filterId <- paste(gsub("^ *", "", filterId[2]), "...", sep="")
 	}else flowCore:::checkClass(filterId, "character", 1)
-	new("booleanFilter", filterId=filterId, expr=as.expression(subs),
-			args=list(...), deparse=deparse(subs))
+	
+  if(missing(expr))
+    new("booleanFilter", filterId=filterId)
+  else
+  {
+    subs <- substitute(expr)
+    if(is(subs, "character"))
+      stop("booleanFilter constructor doesn't take character!Please use the experssion (enclosed by backticks if the special characters are present.)")
+    new("booleanFilter", filterId=filterId, expr=as.expression(subs),
+        args=list(...), deparse=deparse(subs))
+  }
+    
 }
 
 #' \code{char2booleanFilter} is a constructor from a character string
