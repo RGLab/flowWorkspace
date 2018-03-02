@@ -70,6 +70,7 @@ test_that("add logical vector", {
 #global indice (relative to root)  
   ind <- lapply(gs, function(gh)getIndices(gh, "CD15 FITC-CD45 PE+"))
   add(gs, ind, name = "g1", parent = "rectangle")
+  expect_is(getGate(gs[[1]], "g1"), "booleanFilter")
   expect_equal(getNodes(gs)[7], "/rectangle/g1")
   expect_equal(getTotal(gs[[1]], "g1"), 155)
   Rm("g1", gs)
