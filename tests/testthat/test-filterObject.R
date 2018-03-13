@@ -58,16 +58,21 @@ test_that("filterObject from polygonGate", {
     })
 
 test_that("filterObject from booleanFilter", {
-      
-      bf <- booleanFilter(IL2&TNFa&!IFNg , filterId = "myBoolFilter")
       expectRes <- list(type = 3L
                         , refs = c("IL2", "TNFa", "IFNg")
                         , isNot = c(FALSE, FALSE, TRUE)
                         , op = c("&", "&", "&")
-                        , filterId = bf@filterId
                       ) 
       
+      bf <- booleanFilter(IL2&TNFa&!IFNg)#without filterId
+      expectRes[["filterId"]] <- bf@filterId
       expect_equal(filterObject(bf), expectRes)
+      
+      
+      bf <- booleanFilter(IL2&TNFa&!IFNg , filterId = "myBoolFilter")
+      expectRes[["filterId"]] <- bf@filterId
+      expect_equal(filterObject(bf), expectRes)
+      
       
       #with node path
       bf <- booleanFilter(cd4/IL2&cd4/TNFa&!cd4/IFNg , filterId = "myBoolFilter")
