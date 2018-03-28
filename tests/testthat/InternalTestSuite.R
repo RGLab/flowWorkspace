@@ -4,6 +4,18 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+test_that("skip ManuallyIncludedSamples",{
+      
+      wsFile <- file.path(path, "ManuallyIncludedSamples.wsp")
+      
+      ws <- openWorkspace(wsFile)
+      expect_true(setequal(subset(getSampleGroups(ws), groupName == "Sample")[["sampleID"]], c(1:5, 21:25)))
+      gs <- parseWorkspace(ws, name = 3, path = file.path(path), execute = FALSE)
+      
+      expect_is(gs, "GatingSet")
+      
+    })
+
 test_that("search reference node for boolean gate ",{
   thisPath <- file.path(path, "searchRefNode")
   wsFile <- file.path(thisPath, "2583-Y-MAL067-FJ.xml")
