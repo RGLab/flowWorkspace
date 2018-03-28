@@ -13,7 +13,7 @@ flowWorkspace.par.init <- function(){
                 )
                           
    mac_II_path <- list(group = "/Workspace/Groups/GroupNode"# abs path
-                    , sampleRef = ".//SampleRef"#relative GroupNode
+                    , sampleRef = ".//SampleRefs/SampleRef"#relative GroupNode
                     , sample = "/Workspace/SampleList/Sample"#abs path
                     , sampleNode = "./SampleNode"#relative to sample
                     , popNode = "./Population"#relative to sampleNode
