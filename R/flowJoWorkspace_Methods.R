@@ -61,9 +61,11 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 		cat("Workspace is open.","\n");
 		cat("\nGroups in Workspace\n");
         
-        sg <- getSampleGroups(object)
-		tbl<-table(Name=sg$groupName,GroupID=sg$groupID)
-		print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
+    sg <- getSampleGroups(object)
+    sg <- data.table(sg)
+    sg <- sg[, .(Num.Samples = .N), by = groupName]
+		setnames(sg, "groupName", "Name")
+	  print(sg)
 	}else{	
 		cat("Workspace is closed.","\n")
 	}
