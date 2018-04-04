@@ -65,7 +65,7 @@ setMethod("show",c("flowJoWorkspace"),function(object){
     sg <- data.table(sg)
     sg <- sg[, .(Num.Samples = .N), by = groupName]
 		setnames(sg, "groupName", "Name")
-	  print(sg)
+	  print(data.frame(sg))
 	}else{	
 		cat("Workspace is closed.","\n")
 	}
