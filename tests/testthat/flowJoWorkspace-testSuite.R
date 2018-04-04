@@ -1,11 +1,11 @@
 context("workspace")
-
+# resultDir <- "tests/testthat/expect_result/"
 fjRes <- readRDS(file.path(resultDir, "flowJoWorkspace_expect.rds"))
 
 test_that("show workspace",
     {
-      thisRes <- paste(capture.output(show(ws))[-2], collapse = "")
-      expectRes <- paste(fjRes[["ws_show"]][-2], collapse = "")
+      thisRes <- capture.output(show(ws))[-2]
+      expectRes <- fjRes[["ws_show"]][-2]
       expect_equal(thisRes, expectRes)
       
     })
