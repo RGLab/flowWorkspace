@@ -22,7 +22,7 @@
 #' gInd <- seq_len(total.cd3) #create integer index for cd3
 #' gInd <- sample.int(total.cd3, size = total.cd3 * 0.3) #randomly select 30%
 #' #convert it to logicle index
-#' gInd.logical <- rep(F, total.cd3)
+#' gInd.logical <- rep(FALSE, total.cd3)
 #' gInd.logical[gInd] <- TRUE
 #' #replace the original index stored at GatingHierarchy
 #' updateIndices(gh, "CD3+", gInd.logical)
