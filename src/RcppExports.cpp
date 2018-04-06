@@ -6,6 +6,19 @@
 
 using namespace Rcpp;
 
+// getDescendants
+VertexID_vec getDescendants(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node);
+RcppExport SEXP _flowWorkspace_getDescendants(SEXP gsPtrSEXP, SEXP sampleNameSEXP, SEXP nodeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< string >::type node(nodeSEXP);
+    rcpp_result_gen = Rcpp::wrap(getDescendants(gsPtr, sampleName, node));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getSingleCellExpressionByGate
 NumericMatrix getSingleCellExpressionByGate(XPtr<GatingSet> gs, string sampleName, List markers_pops, NumericMatrix data, CharacterVector markers, bool threshold);
 RcppExport SEXP _flowWorkspace_getSingleCellExpressionByGate(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP markers_popsSEXP, SEXP dataSEXP, SEXP markersSEXP, SEXP thresholdSEXP) {
@@ -553,6 +566,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_flowWorkspace_getDescendants", (DL_FUNC) &_flowWorkspace_getDescendants, 3},
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},
     {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 5},
