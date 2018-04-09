@@ -611,6 +611,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           ##################################
           #transforming and gating
           ##################################
+        gains <- numeric()#gain is no longer relevant
+        names(gains) <- character()
           if(execute)
           {
 
@@ -643,8 +645,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             # 
             # names(gains) <- this_pd$name
             # gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
-            gains <- numeric()#gain is no longer relevant
-            names(gains) <- character()
+        
             #update colnames in order for the gating to find right dims
             if(!is.null(prefixColNames)){
               dimnames(mat) <- list(NULL, prefixColNames)
@@ -704,32 +705,32 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           #once we have confirmed that ws is a reliable source of keyword
           #EDIT: Acutally we've already found one workspace from PROVIDE study
           #that does not contain the gain keyword for all channels. So the ws is not reliable source of keyword
+          #EDIT: gain is no longer needed #213
 
-
-          gains <- rep(1,length(cnd))#init with default 1
-
-          #get gains from keywords
-          kw_gains <- grep("P[0-9]{1,}G", names(kw))
-
-          if(length(kw_gains) > 0){
-            key_names <- unique(names(kw[kw_gains]))
-            kw_gains <- kw[key_names]
-
-            # Sometimes the keywords where the gain is not set, the gain value is NULL.
-            # We replace these instances with the default of 1.
-            kw_gains[sapply(kw_gains, is.null)] <- 1
-
-            #update the default gain values
-            #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)
-            found_gain_chnl_ind <-  as.numeric(gsub('G$', "", gsub('^\\$P', "", key_names)))
-            gains[found_gain_chnl_ind] <- as.numeric(kw_gains)
-          }
-
-
-
-
-          names(gains) <- prefixColNames
-          gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
+          # gains <- rep(1,length(cnd))#init with default 1
+          # 
+          # #get gains from keywords
+          # kw_gains <- grep("P[0-9]{1,}G", names(kw))
+          # 
+          # if(length(kw_gains) > 0){
+          #   key_names <- unique(names(kw[kw_gains]))
+          #   kw_gains <- kw[key_names]
+          # 
+          #   # Sometimes the keywords where the gain is not set, the gain value is NULL.
+          #   # We replace these instances with the default of 1.
+          #   kw_gains[sapply(kw_gains, is.null)] <- 1
+          # 
+          #   #update the default gain values
+          #   #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)
+          #   found_gain_chnl_ind <-  as.numeric(gsub('G$', "", gsub('^\\$P', "", key_names)))
+          #   gains[found_gain_chnl_ind] <- as.numeric(kw_gains)
+          # }
+          # 
+          # 
+          # 
+          # 
+          # names(gains) <- prefixColNames
+          # gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
           #transform and adjust the gates without gating
           if(transform)
             .cpp_computeGates(gs@pointer, guid, gains, extend_val, extend_to)
