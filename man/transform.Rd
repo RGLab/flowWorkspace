@@ -13,7 +13,7 @@
 \arguments{
 \item{_data}{\code{GatingSet} or \code{GatingSetList}}
 
-\item{translist}{expect a \code{transformList} object}
+\item{translist}{expect a \code{transformList} object or a list of \code{transformList} objects(with names matched to sample names)}
 
 \item{...}{other arguments passed to 'transform' method for 'ncdfFlowSet'.(e.g. 'ncdfFile')}
 }

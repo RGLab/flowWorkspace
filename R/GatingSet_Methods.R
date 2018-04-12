@@ -304,8 +304,15 @@ load_gs<-function(path){
         }
          
       }
-       
-
+      trans <- gs@transformation
+      if(length(trans)!=0)
+      {
+        if(is(trans , "transformerList")){
+          gs@transformation <- sapply(sampleNames(gs), function(sn)trans, simplify = FALSE)
+        }
+        
+      }
+      
       message("Done")
       list(gs=gs,files=c(dat.file,rds.file))
 }
@@ -1935,6 +1942,7 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
             #copy the R structure
             clone <- x
             clone@axis <- clone@axis[i]
+            clone@transformation <- clone@transformation[i]
             #subsetting data
 			fs <- flowData(clone)[i]
 
@@ -2045,7 +2053,7 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
                             , flag = x@flag
                             , axis = x@axis
                             , guid = x@guid
-                            , transformation = x@transformation
+                            , transformation = x@transformation[[i]]
                             , compensation = x@compensation
                             , name = i)
 
@@ -2251,7 +2259,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' is supported.
 #'
 #' @param _data \code{GatingSet} or \code{GatingSetList}
-#' @param translist expect a \code{transformList} object
+#' @param translist expect a \code{transformList} object or a list of \code{transformList} objects(with names matched to sample names)
 #' @param ... other arguments passed to 'transform' method for 'ncdfFlowSet'.(e.g. 'ncdfFile')
 #' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
 #' @examples
@@ -2279,13 +2287,29 @@ setMethod("transform",
     {
       
       gs <- `_data`
-      if(missing(translist)||!is(translist, "transformerList"))
-        stop("expect the second argument as a 'transformerList' object!")
+      
+      if(missing(translist))
+        stop("Missing the second argument 'translist'!")
+      else if(is(translist, "transformerList"))
+      {
+        translist <- sapply(sampleNames(gs), function(obj)translist, simplify = FALSE)
+      }
+      
+      if(is(translist, "list"))
+      {
+        tList <- lapply(translist, function(trans){
+          if(!is(trans, "transformerList"))
+            stop("All the elements of 'translist' must be 'transformerList' objects!")
+          
+          res <- lapply(trans, function(obj)obj[["transform"]])
+          transformList(names(trans), res)  
+        })
+      }else
+        stop("expect the second argument as a 'transformerList' object or a list of 'transformerList' objects!")
       gs@transformation <- translist
 
       fs <- getData(gs)
-      tList <- lapply(translist, function(obj)obj[["transform"]])
-      tList <- transformList(names(translist), tList)
+      
       suppressMessages(fs_trans <- transform(fs, tList, ...))
       flowData(gs) <- fs_trans
       gs
