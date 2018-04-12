@@ -209,11 +209,12 @@ test_that("keyword",{
       #skip flowCore_R keys due to the historical archived results do not have this info up to date
       thisRes <- thisRes[!grepl("(flowCore_\\$P)|(transformation)",names(thisRes))]
       expectRes <- expectRes[!grepl("(flowCore_\\$P)|(transformation)",names(expectRes))]
+      #fix legacy result
+      expectRes[paste0("$P",5:11, "N")] <- paste0("<", expectRes[paste0("$P",5:11, "N")], ">")
       expect_equal(thisRes, expectRes)
-      
       expect_equal(keyword(gh, 'P11DISPLAY'), "LOG")
       
-      expect_equal(keyword(gh, '$P8N'), "V450-A")
+      expect_equal(keyword(gh, '$P8N'), "<V450-A>")
     })
 
 test_that("getParent",{

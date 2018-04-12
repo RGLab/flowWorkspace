@@ -318,7 +318,12 @@ test_that("keyword",{
             thisResult[["ORIGINALGUID"]] <-thisResult[["GUID"]] <- basename(thisResult[["FILENAME"]])
             #skip flowCore_R keys due to the historical archived results do not have this info up to date
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
-            thisResult[ind]
+            thisResult <- thisResult[ind]
+            
+            #fix legacy result
+            if(!islegacyArchivedGS)
+              thisResult[paste0("$P",5:11, "N")] <- paste0("<", thisResult[paste0("$P",5:11, "N")], ">")
+            thisResult
           })
       thisRes <- lapply(thisRes, function(thisResult){
             thisResult[["FILENAME"]] <- basename(thisResult[["FILENAME"]])
@@ -326,7 +331,6 @@ test_that("keyword",{
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
           })
-       
       expect_equal(thisRes,expectRes)
       
       thisRes <- keyword(gs, "$P1N")
