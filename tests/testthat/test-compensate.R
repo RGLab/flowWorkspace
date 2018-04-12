@@ -64,11 +64,13 @@ test_that("compensate & transform a GatingSet", {
       
       transObj <- estimateLogicle(gs[[1]], c("FL1-H", "FL2-H"))
       
-      expect_error(gs.trans <- transform(gs), regexp = "transformerList")
+      expect_error(gs.trans <- transform(gs), "Missing the second argument")
       expect_error(gs.trans <- transform(gs, translist), regexp = "transformerList")
       
       suppressMessages(gs.trans <- transform(gs, transObj))
-      expect_equal(gs.trans@transformation, transObj)
+      transObj.list <- sapply(sampleNames(gs), function(obj)transObj, simplify = FALSE)
+      
+      expect_equal(gs.trans@transformation, transObj.list)
       fs.trans.gs <- getData(gs.trans)
       expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
       

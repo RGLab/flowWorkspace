@@ -59,7 +59,7 @@ Collate:
     'utils.R'
     'zzz.R'
 Depends:
-    R (>= 2.16.0),flowCore(>= 1.45.2),ncdfFlow(>= 2.19.5)
+    R (>= 2.16.0),flowCore(>= 1.45.14),ncdfFlow(>= 2.25.4)
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
