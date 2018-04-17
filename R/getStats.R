@@ -61,8 +61,8 @@ getStats.GatingSet <- function(x, ...){
 #'          when character, it is expected to be either "count" or "percent". Default is "count" (total number of events in the populations).
 #'          when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.
 #' @param inverse.transform logical flag . Whether inverse transform the data before computing the stats.
-
-getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, ...){
+#' @param stats.fun.arg a list of arguments passed to `type` when 'type' is a function.
+getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, stats.fun.arg = list(), ...){
   gh <- x
   if(is.null(nodes))
     nodes <- getNodes(gh, ...)
@@ -90,7 +90,10 @@ getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.tr
         trans <- transformList(names(trans), trans)
         fr <- transform(fr, trans)
       }
-      res <- type(fr)
+      thisCall <- quote(type(fr))
+      thisCall <- as.call(c(as.list(thisCall), stats.fun.arg))
+      
+      res <- eval(thisCall)
     }
 
     as.data.table(t(res))

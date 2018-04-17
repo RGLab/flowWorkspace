@@ -14,7 +14,7 @@ getStats(x, ...)
 \method{getStats}{GatingSet}(x, ...)
 
 \method{getStats}{GatingHierarchy}(x, nodes = NULL, type = "count",
-  inverse.transform = FALSE, ...)
+  inverse.transform = FALSE, stats.fun.arg = list(), ...)
 }
 \arguments{
 \item{x}{a GatingSet or GatingHierarchy}
@@ -29,6 +29,8 @@ when character, it is expected to be either "count" or "percent". Default is "co
 when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.}
 
 \item{inverse.transform}{logical flag . Whether inverse transform the data before computing the stats.}
+
+\item{stats.fun.arg}{a list of arguments passed to `type` when 'type' is a function.}
 }
 \value{
 a data.table that contains MFI values for each marker per column along with 'pop' column and 'sample' column (when used on a 'GatingSet')
