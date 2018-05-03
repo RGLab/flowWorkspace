@@ -285,9 +285,13 @@ updateChannels <- function(gs, map, all = TRUE){
   }
   
   if(!is.null(gs@transformation)){
-    cols <- names(gs@transformation)
-    new <- .matchCols(cols, map)
-    names(gs@transformation) <- new
+    gs@transformation <- sapply(gs@transformation, function(trans){
+      cols <- names(trans)
+      new <- .matchCols(cols, map)
+      names(trans) <- new 
+      trans
+    }, simplify = FALSE)
+    
   }
   
   #update flow data
