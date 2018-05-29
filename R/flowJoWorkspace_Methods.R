@@ -942,7 +942,7 @@ setMethod("getSampleGroups","flowJoWorkspace",function(x){
           })
       
       if(length(sn) == 0)
-        stop("sample name is not found in 'keyword' node!Please try 'sampleName' node by setting sampNloc = 'sampleName")
+        stop("sample name is not found in 'keyword' node!Please try 'sampleName' node by setting sampNloc = 'sampleNode'")
       s[, "name"] <- unlist(sn)   
     }
     
