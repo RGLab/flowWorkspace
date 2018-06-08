@@ -35,6 +35,7 @@
 #'    res
 #'    }
 #' getStats(gs, nodes, type = pop.quantiles)
+#' }
 getStats <- function(x, ...)UseMethod("getStats")
 
 #' @export

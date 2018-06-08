@@ -38,3 +38,30 @@ a data.table that contains MFI values for each marker per column along with 'pop
 \description{
 It calculates the MFI for each marker.
 }
+\examples{
+\dontrun{
+dataDir <- system.file("extdata",package="flowWorkspaceData")
+suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
+
+# get stats all nodes
+dt <- getStats(gs) #default is "count"
+
+nodes <- c("CD4", "CD8")
+getStats(gs, nodes, "percent")
+
+# pass a build-in function
+getStats(gs, nodes, type = pop.MFI)
+
+# compute the stats based on the raw data scale
+getStats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
+
+# supply user-defined stats fun
+pop.quantiles <- function(fr){
+   chnls <- colnames(fr)
+   res <- matrixStats::colQuantiles(exprs(fr), probs = 0.75)
+   names(res) <- chnls
+   res
+   }
+getStats(gs, nodes, type = pop.quantiles)
+}
+}
