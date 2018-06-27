@@ -751,7 +751,30 @@ public:
 				pname="*";
 
 			string transType=(const char*)transNode.getNodePtr()->name;
-			if(transType.compare("biex")==0)
+			if(transType.compare("logicle")==0)
+			{
+
+				if(g_loglevel>=GATING_SET_LEVEL)
+					COUT<<"logicle func:"<<pname<<endl;
+				biexpTrans *curTran=new biexpTrans();
+				curTran->setName("");
+				curTran->setChannel(pname);
+				curTran->pos=atof(transNode.getProperty("M").c_str());
+				curTran->neg=atof(transNode.getProperty("A").c_str());
+				float w = atof(transNode.getProperty("W").c_str());
+				curTran->widthBasis= -pow(10, 2*w);
+				curTran->maxValue=atof(transNode.getProperty("T").c_str());
+				unsigned short thisLen=atoi(transNode.getProperty("length").c_str());
+				curTran->channelRange = thisLen;
+	//			if(thisLen!=256)
+	//				throw(domain_error("length is not 256 for biex transformation!"));
+				/*
+				 * do the lazy calibration table calculation and interpolation
+				 * when it gets saved in gh
+				 */
+				curTp[curTran->getChannel()]=curTran;
+			}
+			else if(transType.compare("biex")==0)
 			{
 
 				if(g_loglevel>=GATING_SET_LEVEL)
