@@ -488,7 +488,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       #record the locations where '/' character is detected and will be used to restore it accurately
       slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
       if(wsType == "vX"){
-        new_cnd <- .fix_channel_slash(cnd, slash_loc)
+        new_cnd <- fix_channel_slash(cnd, slash_loc)
           if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
             cnd <- new_cnd
             colnames(data) <- cnd
@@ -663,7 +663,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
             if(any(time.ind)){
               time.range <- range(mat[, time.ind])
-              timestep <- compute.timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds
+              timestep <- compute_timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds
             }else
               timestep <- 1
 
@@ -676,7 +676,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               #restore the orig colnames(replace "_" with "/") for flowJo X
               if(wsType == "vX"){
                 #use slash locations to avoid tamper the original '_' character in channel names
-                old_cnd <- .fix_channel_slash(cnd, slash_loc)
+                old_cnd <- fix_channel_slash(cnd, slash_loc)
 
                 if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
                   cnd <- old_cnd
@@ -786,8 +786,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 	gs
 }
 
-# prefer to $TIMESTEP keyword when it is non NULL
-compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "BTIM")){
+#' compute time step from fcs keyword
+#' 
+#' @param kw list of keywords
+#' @param unit.range the actual measured time unit range
+#' @param timestep.source either "TIMESTEP" or "BTIM". prefer to $TIMESTEP keyword when it is non NULL
+#' @export  
+compute_timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "BTIM")){
   timestep.source  <- match.arg(timestep.source )
   #check if $TIMESTEP is available
   kw.ts <- kw[["$TIMESTEP"]]
@@ -828,7 +833,8 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
 #'                  so that when restoring slash it won't tamper the the original '_' character.
 #' @return the toggled channel names
 #' @importFrom stringr str_sub str_sub<-
-.fix_channel_slash <- function(chnls, slash_loc = NULL){
+#' @export
+fix_channel_slash <- function(chnls, slash_loc = NULL){
   mapply(chnls, slash_loc, FUN = function(thisCol, this_slash){
         toggleTo <- ifelse(grepl("/", thisCol), "_", "/")
         #replace each individual /|_ based on their detected location
@@ -864,7 +870,7 @@ compute.timestep <- function(kw, unit.range, timestep.source  = c("TIMESTEP", "B
     oldnames <- names(rawRange)
 
     if(wsType == "vX"&&!is.null(slash_loc)){
-      names(rawRange) <- .fix_channel_slash(oldnames, slash_loc)
+      names(rawRange) <- fix_channel_slash(oldnames, slash_loc)
 
     }
 	tempenv<-new.env()

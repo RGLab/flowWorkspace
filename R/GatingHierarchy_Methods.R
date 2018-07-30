@@ -10,6 +10,14 @@ NULL
   xmlEventParse(contents, .graph_handler(), asText = TRUE, saxVersion = 2)$asGraphNEL()
 }
 
+#' extract compensation object from GatingSet
+#' @param gs GatingSet
+#' @param sampleName sample name
+#' @export 
+getCompensationObj <- function(gs, sampleName) {
+  .cpp_getCompensation(gs, sampleName)
+}
+
 #This legacy routine is currently not used
 #Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
 .isCompensated<-function(x){
@@ -812,8 +820,19 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 
 		})
 
-
+#' The flags of gate nodes
+#' isGated checks if a node is already gated
+#' isNegated checks if a node is negated.
+#' isHidden checks if a node is hidden.
+#' 
+#' @param obj GatingHierarchy
+#' @param y node/gating path
+#' @param ... not used
+#' @rdname nodeflags
+#' @export 
 setGeneric("isGated",function(obj, y, ...)standardGeneric("isGated"))
+#' @rdname nodeflags
+#' @export 
 setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 
 #			browser()
@@ -822,8 +841,11 @@ setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,
 
     })
 
-
+#' @rdname nodeflags
+#' @export 
 setGeneric("isNegated",function(obj, y, ...)standardGeneric("isNegated"))
+#' @rdname nodeflags
+#' @export 
 setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
 
       .cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
@@ -831,7 +853,11 @@ setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(ob
 
     })
 
+#' @rdname nodeflags
+#' @export 
 setGeneric("isHidden",function(obj, y, ...)standardGeneric("isHidden"))
+#' @rdname nodeflags
+#' @export 
 setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj,y){
       
       .cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
