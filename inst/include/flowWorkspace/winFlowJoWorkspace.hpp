@@ -801,6 +801,8 @@ public:
 					COUT<<"flin func:"<<pname<<endl;
 				double minRange=atof(transNode.getProperty("minRange").c_str());
 				double maxRange=atof(transNode.getProperty("maxRange").c_str());
+				if(maxRange==0)
+					maxRange = 1;
 				scaleTrans *curTran=new scaleTrans(maxRange,maxRange);
 				curTran->setName("");
 				curTran->setChannel(pname);

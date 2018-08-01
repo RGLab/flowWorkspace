@@ -4,6 +4,19 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+test_that("handle the linear transform with maxRange = 0",{
+  
+  wsFile <- file.path(path, "faultylinearTransform/FlowJo Test.wsp")
+  
+  ws <- openWorkspace(wsFile)
+  gs <- parseWorkspace(ws, name = 1)
+  
+  res <- getPopStats(gs[[1]])
+  expect_equal(res[, xml.freq], res[, openCyto.freq])
+  
+  
+})
+
 test_that("skip ManuallyIncludedSamples",{
   
   wsFile <- file.path(path, "logicle.wsp")
