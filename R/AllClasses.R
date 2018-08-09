@@ -60,14 +60,7 @@ setOldClass("XMLInternalDocument")
 #' @exportClass flowJoWorkspace
 #' @aliases 
 #' show,flowJoWorkspace-method
-setClass("flowJoWorkspace"
-          ,representation(version="character"
-                          , file="character"
-                          , .cache="environment"
-                          , path="character"
-                          , doc="XMLInternalDocument"
-                          , options="integer")
-                        )
+setClass("flowJoWorkspace",representation(doc="externalptr"))
                         
 .uuid_gen<-function(){
 #  system("uuidgen",intern = TRUE)
