@@ -2,10 +2,13 @@
 #define BOOST_TEST_MODULE Suites
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
-
+#include <chrono>
 #include "test_header.hpp"
-float gTol = 0.05;
+
 CYTOLIB_INIT()
+
+WS_INIT()
+
 //unsigned short myTestPolymorphism(){
 //	gate * g= NULL;
 //
@@ -39,9 +42,6 @@ CYTOLIB_INIT()
 //BOOST_AUTO_TEST_SUITE_END()
 struct globalFixture{
 	globalFixture(){
-		cout << "Enter tolerance (e.g. 0.08):" << endl;
-//		cin >> gTol;
-		gTol = 0.08;
 
 	};
 	~globalFixture(){};
@@ -70,13 +70,6 @@ struct parseWorkspaceFixture{
 			}
 		}
 		map<string, string>::iterator it;
-		myTest.tolerance = gTol;
-		myTest.isParseGate = true;
-		myTest.xmlParserOption = 1;
-		myTest.isTemplate = false;
-
-		myTest.archiveFormat = ARCHIVE_TYPE_BINARY;
-		myTest.isSaveArchive = false;
 
 		it = arg_map.find("archiveType");
 		myTest.archiveType = it==arg_map.end()?true:it->second == "PB";
@@ -109,14 +102,11 @@ BOOST_AUTO_TEST_CASE(gate_extension)
 {
 
 	myTest.filename="../wsTestSuite/gate_extension/02-15-2013 ICS.xml";
-	myTest.wsType = WS_MAC_3;
-	myTest.samples["8"]="9148_Neg1.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/gate_extension/nc_comp.nc";
-	myTest.colfile="../output/gate_extension/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_MAC_3;
+	myTest.config.sample_filters["name"]={"9148_Neg1.fcs"};
 	myTest.archive="../output/gate_extension/gs";
 	myTest.tolerance = 0.1;
-//	g_loglevel = GATE_LEVEL;
+	myTest.skipPops = {15};
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -127,12 +117,8 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 {
 
 	myTest.filename="../wsTestSuite/PBMC/HIPC_trial/data/HIPC_trial.xml";
-	myTest.wsType = WS_MAC;
-	myTest.samples["1"]="004_A1_A01.fcs";
-	myTest.samples["2"]="004_B1_B01.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/HIPC_trial/nc_comp.nc";
-	myTest.colfile="../output/HIPC_trial/colnames.txt";
+	myTest.config.sample_filters["name"]={"004_A1_A01.fcs","004_B1_B01.fcs"};
+	myTest.config.keywords_for_uid = {};
 	myTest.archive="../output/HIPC_trial/gs";
 //	g_loglevel = GATE_LEVEL;
 	parser_test(myTest);
@@ -144,12 +130,11 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 {
 	myTest.filename="../wsTestSuite/PBMC/Blomberg/Exp2_Tcell.wsp";
-	myTest.wsType = WS_WIN;
-	myTest.samples["12"]="Exp2_Sp004_1_Tcell.fcs";
-	myTest.samples["13"]="Exp2_Sp004_2_Tcell.fcs";
-	myTest.sampNloc=2;
-	myTest.ncfile="../output/Blomberg/nc1_comp.nc";
-	myTest.colfile="../output/Blomberg/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_WIN;
+	myTest.config.sample_filters["name"]={"Exp2_Sp004_1_Tcell.fcs", "Exp2_Sp004_2_Tcell.fcs"};
+	myTest.sample_name_location=SAMPLE_NAME_LOCATION::SAMPLE_NODE;
+
+
 	myTest.archive="../output/Blomberg/gs";
 	parser_test(myTest);
 
@@ -160,14 +145,10 @@ BOOST_AUTO_TEST_CASE(PBMC_Blomberg)
 BOOST_AUTO_TEST_CASE(ITN029ST)
 {
 	myTest.filename="../fjWsExamples/QA_template.xml";
-	myTest.wsType = WS_MAC;
-	myTest.samples["74161"]="01107122_F11_I003.fcs";
-	myTest.samples["74162"]="01177007_F02_I016.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/ITN/nc1.nc";
-	myTest.colfile="../output/ITN/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_MAC;
+	myTest.config.sample_filters["name"]={"01107122_F11_I003.fcs", "01177007_F02_I016.fcs"};
 	myTest.archive="../output//ITN/gs";
-
+	myTest.config.data_dir = "../wsTestSuite/ITN029ST";
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -177,11 +158,10 @@ BOOST_AUTO_TEST_CASE(ITN029ST)
 BOOST_AUTO_TEST_CASE(Cytotrol_NHLBI)
 {
 	myTest.filename="../wsTestSuite/Cytotrol/NHLBI/flowJo/NHLBI.xml";
-	myTest.wsType = WS_MAC;
-	myTest.samples["1"]="CytoTrol_CytoTrol_1.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/NHLBI/nc1_comp.nc";
-	myTest.colfile="../output/NHLBI/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_MAC;
+	myTest.config.sample_filters["name"]={"CytoTrol_CytoTrol_1.fcs"};
+	myTest.config.data_dir = "../wsTestSuite/Cytotrol/NHLBI/Tcell";
+	myTest.group_id = 3;
 	myTest.archive="../output/NHLBI/gs/gs";
 //	g_loglevel = GATE_LEVEL;
 
@@ -191,47 +171,45 @@ BOOST_AUTO_TEST_CASE(Cytotrol_NHLBI)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-BOOST_AUTO_TEST_CASE(HVTN080_batch_1057)
-{
-	myTest.filename="../fjWsExamples/080 Batch 1057 M.xml";
-	myTest.wsType = WS_MAC;
-	myTest.samples["28"]="517614.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/HVTN080/nc_comp.nc";
-	myTest.colfile="../output/HVTN080/colnames.txt";
-	myTest.archive="../output/HVTN080/gs/gs";
-
-
-	parser_test(myTest);
-
-	vector<bool> isTrue(myTest.isEqual.size(), true);
-	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-
-}
-BOOST_AUTO_TEST_CASE(HVTN080_batch_0939)
-{
-	myTest.filename="../fjWsExamples/080 batch 0939.xml";
-	myTest.wsType = WS_MAC;
-	myTest.samples["18"]="461648.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/NormalizationData/nc_comp.nc";
-	myTest.colfile="../output/NormalizationData/colnames.txt";
-	myTest.archive="../output/NormalizationData/gs/gs";
-
-	parser_test(myTest);
-
-	vector<bool> isTrue(myTest.isEqual.size(), true);
-	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
-
-}
+//BOOST_AUTO_TEST_CASE(HVTN080_batch_1057) //missing fcs
+//{
+//	myTest.filename="../fjWsExamples/080 Batch 1057 M.xml";
+//	//myTest.wsType = WS_TYPE::WS_MAC;
+//	myTest.config.sample_filters["name"]={"517614.fcs"};
+//	myTest.config.data_dir = "../wsTestSuite/HVTN/080";
+//	myTest.archive="../output/HVTN080/gs";
+//
+//
+//	parser_test(myTest);
+//
+//	vector<bool> isTrue(myTest.isEqual.size(), true);
+//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+//
+//}
+//BOOST_AUTO_TEST_CASE(HVTN080_batch_0939)//missing fcs
+//{
+//	myTest.filename="../fjWsExamples/080 batch 0939.xml";
+//	//myTest.wsType = WS_TYPE::WS_MAC;
+//	myTest.config.sample_filters["name"]={"461648.fcs"};
+//
+//	myTest.config.data_dir = "../wsTestSuite/HVTN/080";
+//
+//	myTest.archive="../output/NormalizationData/gs";
+//
+//	parser_test(myTest);
+//
+//	vector<bool> isTrue(myTest.isEqual.size(), true);
+//	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+//
+//}
 BOOST_AUTO_TEST_CASE(Lesson_8_vX_A)
 {
 	myTest.filename="../wsTestSuite/vX/Lesson_8_vX.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["1"]="A1.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/vX/A1/nc_comp.nc";
-	myTest.colfile="../output/vX/A1/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_VX;
+	myTest.config.sample_filters["name"]={"A1.fcs"};
+
+
+
 	myTest.archive="../output/vX/A1/gs/gs";
 
 	parser_test(myTest);
@@ -243,11 +221,11 @@ BOOST_AUTO_TEST_CASE(Lesson_8_vX_A)
 BOOST_AUTO_TEST_CASE(Lesson_8_vX_B)
 {
 	myTest.filename="../wsTestSuite/vX/Lesson_8_vX.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["10"]="B1 .fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/vX/B1/nc_comp.nc";
-	myTest.colfile="../output/vX/B1/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_VX;
+	myTest.config.sample_filters["name"]={"B1 .fcs"};
+
+
+
 	myTest.archive="../output/vX/B1/gs/gs";
 
 	parser_test(myTest);
@@ -266,11 +244,11 @@ BOOST_AUTO_TEST_CASE(bioaster)
 {
 
 	myTest.filename="../wsTestSuite/bioaster_ellipsoidGate/Matrice 1.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["8"]="PANEL 1_Matrice 1.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/bioaster/nc_comp.nc";
-	myTest.colfile="../output/bioaster/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_VX;
+	myTest.config.sample_filters["name"]={"PANEL 1_Matrice 1.fcs"};
+
+
+
 	myTest.archive="../output/bioaster/gs/gs";
 
 
@@ -283,15 +261,12 @@ BOOST_AUTO_TEST_CASE(bioaster)
 BOOST_AUTO_TEST_CASE(ragon)
 {
 	myTest.filename="../wsTestSuite/Ragon/neut v non neut v9.xml";
-	myTest.wsType = WS_MAC_3;
-	myTest.samples["28"]="477889_env_cct_norm_concatenated.txt";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/Ragon/nc_comp.nc";
-	myTest.colfile="../output/Ragon/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_MAC_3;
+	myTest.config.sample_filters["name"]={"477889_env_cct_norm_concatenated.txt"};
+
+	myTest.config.fcs_file_extension = ".txt";
 	myTest.archive="../output/Ragon/gs";
 
-//	myTest.isSaveArchive = true;
-//	myTest.isLoadArhive = true;
 
 
 
@@ -304,19 +279,19 @@ BOOST_AUTO_TEST_CASE(ragon)
 BOOST_AUTO_TEST_CASE(JJ)
 {
 	myTest.filename="../wsTestSuite/JJ/JJ_FlowJo_.xml";
-	myTest.wsType = WS_MAC;
-	myTest.samples["221"] = "Panel 2_A9001.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/JJ/data.nc";
-	myTest.colfile="../output/JJ/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_MAC;
+	myTest.config.sample_filters["name"]= {"Panel 2_A9001.fcs"};
+
+
+//
 	myTest.archive="../output/JJ/gs";
 
 	myTest.tolerance = 0.5;
 
 
-	map<string,float> gains;
-	gains["Time"] = 0.01;
-	myTest.gains = gains;
+//	map<string,float> gains;
+//	gains["Time"] = 0.01;
+//	myTest.gains = gains;
 	vector<VertexID> skip;
 	skip.push_back(174);
 	myTest.skipPops = skip;
@@ -332,13 +307,9 @@ BOOST_AUTO_TEST_CASE(JJ)
 BOOST_AUTO_TEST_CASE(treg)
 {
 	myTest.filename="../wsTestSuite/McGill/Treg/20131206_Treg.1.ellipseidGate.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["9"] = "samples_F4.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/McGill/Treg/data.nc";
-	myTest.colfile="../output/McGill/Treg/colnames.txt";
 	myTest.archive="../output/McGill/Treg/gs";
-
+	myTest.group_id = 3;
+	myTest.config.h5_dir = "../output/McGill/Treg";
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -348,11 +319,11 @@ BOOST_AUTO_TEST_CASE(treg)
 //BOOST_AUTO_TEST_CASE(EllipsoidGate_10)
 //{
 //	myTest.filename="../wsTestSuite/EllipsoidGate_10.2/mA J21 for HT.wsp";
-//	myTest.wsType = WS_VX;
-//	myTest.samples["33"] = "MarquageA_Lung_IN_001.fcs";
-//	myTest.sampNloc=1;
-//	myTest.ncfile="../output/EllipsoidGate_10.2/data.nc";
-//	myTest.colfile="../output/EllipsoidGate_10.2/colnames.txt";
+//	//myTest.wsType = WS_TYPE::WS_VX;
+//	myTest.config.sample_filters["name"]= {"MarquageA_Lung_IN_001.fcs"};
+//
+//
+//
 //	myTest.archive="../output/EllipsoidGate_10.2/gs";
 //
 //	parser_test(myTest);
@@ -367,19 +338,14 @@ BOOST_AUTO_TEST_CASE(treg)
 BOOST_AUTO_TEST_CASE(provide)
 {
 	myTest.filename="../wsTestSuite/PROVIDE/batch1 local and week 53.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["5"] = "1097pi_cells_found_normalized.fcs";
-	myTest.sampNloc=2;
-	myTest.ncfile="../output/PROVIDE/data.nc";
-	myTest.colfile="../output/PROVIDE/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_VX;
+	myTest.config.sample_filters["name"]= {"1097pi_cells_found_normalized.fcs"};
+	myTest.sample_name_location=SAMPLE_NAME_LOCATION::SAMPLE_NODE;
+	myTest.config.keywords_for_uid={};
+
 	myTest.archive="../output/PROVIDE/gs";
 
 	myTest.tolerance = 0.2;
-
-
-//	map<string,float> gains;
-//	gains["Time"] = 0.01;
-//	myTest.gains = gains;
 	vector<VertexID> skip;
 //	skip.push_back(16);
 //	skip.push_back(99);
@@ -393,11 +359,11 @@ BOOST_AUTO_TEST_CASE(provide)
 BOOST_AUTO_TEST_CASE(curlyquad1)
 {
 	myTest.filename="../wsTestSuite/curlyQuad/example1/20151208_TBNK_DS.xml";
-	myTest.wsType = WS_VX;
-	myTest.samples["78"] = "A1001.001.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/curlyQuad1/comp.nc";
-	myTest.colfile="../output/curlyQuad1/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_VX;
+	myTest.config.sample_filters["name"]= {"A1001.001.fcs"};
+
+
+//
 	myTest.archive="../output/curlyQuad1/gs";
 
 	myTest.tolerance = 0.15;
@@ -419,11 +385,11 @@ BOOST_AUTO_TEST_CASE(curlyquad1)
 BOOST_AUTO_TEST_CASE(curlyquad2)
 {
 	myTest.filename="../wsTestSuite/curlyQuad/example2/20-Apr-2016.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["1"] = "CytoTrol_CytoTrol_1.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/curlyQuad2/comp.nc";
-	myTest.colfile="../output/curlyQuad2/colnames.txt";
+	//myTest.wsType = WS_TYPE::WS_VX;
+	myTest.config.sample_filters["name"]= {"CytoTrol_CytoTrol_1.fcs"};
+
+
+
 	myTest.archive="../output/curlyQuad2/gs";
 
 //	myTest.tolerance = 0.2;
@@ -442,44 +408,44 @@ BOOST_AUTO_TEST_CASE(curlyquad2)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
-
-BOOST_AUTO_TEST_CASE(quadgate)
+BOOST_AUTO_TEST_CASE(faultylinearTransform)
 {
-	myTest.filename="../wsTestSuite/quadgate/FlowJo Test.wsp";
-	myTest.wsType = WS_VX;
-	myTest.samples["1"] = "P1_1_concatenated.txt_340.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/quadgate/comp.nc";
-	myTest.colfile="../output/quadgate/colnames.txt";
-	myTest.archive="../output/quadgate/gs";
+    myTest.filename="../wsTestSuite/faultylinearTransform/FlowJo Test.wsp";
+	myTest.config.sample_filters["name"]= {"P1_1_concatenated.txt_340.fcs"};
 
-//	myTest.tolerance = 0.2;
+//    myTest.sampNloc=1;
+    myTest.archive="../output/faultylinearTransform/gs";
+
+//  myTest.tolerance = 0.2;
 
 
-//	map<string,float> gains;
-//	gains["Time"] = 0.01;
-//	myTest.gains = gains;
-	vector<VertexID> skip;
-//	skip.push_back(16);
-//	skip.push_back(99);
-//	myTest.skipPops = skip;
-	parser_test(myTest);
+//  map<string,float> gains;
+//  gains["Time"] = 0.01;
+//  myTest.gains = gains;
+    vector<VertexID> skip;
+//  skip.push_back(16);
+//  skip.push_back(99);
+//  myTest.skipPops = skip;
+    parser_test(myTest);
 
-	vector<bool> isTrue(myTest.isEqual.size(), true);
-	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+    vector<bool> isTrue(myTest.isEqual.size(), true);
+    BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
 
 BOOST_AUTO_TEST_CASE(searchRefNode)
 {
 	myTest.filename="../wsTestSuite/searchRefNode/2583-Y-MAL067-FJ.xml";
-	myTest.wsType = WS_MAC_3;
-	myTest.samples["728"] = "1379326.fcs";
-	myTest.sampNloc=1;
-	myTest.ncfile="../output/searchRefNode/comp.nc";
-	myTest.colfile="../output/searchRefNode/colnames.txt";
-	myTest.archive="../output/searchRefNode/gs";
+	//myTest.wsType = WS_TYPE::WS_MAC_3;
+	myTest.config.sample_filters["name"]= {"1379326.fcs"};
 
+
+
+	myTest.archive="../output/searchRefNode/gs";
+	vector<VertexID> skip;
+	  skip.push_back(9);
+	//  skip.push_back(99);
+	  myTest.skipPops = skip;
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);
@@ -490,11 +456,11 @@ BOOST_AUTO_TEST_CASE(searchRefNode)
 //{
 //
 //	myTest.filename="/home/wjiang2/R/x86_64-pc-linux-gnu-library/3.4/flowWorkspaceData/extdata/A2004Analysis.xml";
-//	myTest.wsType = WS_MAC;
-//	myTest.samples["1"]="a2004_O1T2pb05i_A1_A01.fcs";
-//	myTest.sampNloc=1;
-//	myTest.ncfile="../output/invalid_biexp_parameter/nc_comp.nc";
-//	myTest.colfile="../output/invalid_biexp_parameter/colnames.txt";
+//	//myTest.wsType = WS_TYPE::WS_MAC;
+//	myTest.config.sample_filters["name"]={"a2004_O1T2pb05i_A1_A01.fcs"};
+//
+//
+//
 //	myTest.archive="../output/invalid_biexp_parameter/gs";
 ////	g_loglevel = GATE_LEVEL;
 //	parser_test(myTest);
@@ -506,11 +472,11 @@ BOOST_AUTO_TEST_CASE(searchRefNode)
 //BOOST_AUTO_TEST_CASE(mssm)
 //{
 //	myTest.filename="../data/mssm/CFSP_Analysis14.wsp";
-//	myTest.wsType = WS_VX;
-//	myTest.samples["35"]="35120.fcs";
-//	myTest.sampNloc=1;
-//	myTest.ncfile="../output/mssm/data.nc";
-//	myTest.colfile="../output/mssm/colnames.txt";
+//	//myTest.wsType = WS_TYPE::WS_VX;
+//	myTest.config.sample_filters["name"]={"35120.fcs"};
+//
+//
+//
 //	myTest.archive="../data/mssm/gs";
 //
 //	parser_test(myTest);
@@ -522,11 +488,11 @@ BOOST_AUTO_TEST_CASE(searchRefNode)
 //BOOST_AUTO_TEST_CASE(RV144) //workspace missing (original  .xml is not valid xml)
 //{
 //	myTest.filename="../fjWsExamples/Batch 1264 RV144.wsp";
-//	myTest.wsType = WS_WIN;
-//	myTest.samples["85"]="977531.fcs";
-//	myTest.sampNloc=1;
-//	myTest.ncfile="../output/RV144/nc_comp.nc";
-//	myTest.colfile="../output/RV144/colnames.txt";
+//	//myTest.wsType = WS_TYPE::WS_WIN;
+//	myTest.config.sample_filters["name"]={"977531.fcs"};
+//
+//
+//
 //	myTest.archive="../output/RV144/gs/gs";
 //
 //

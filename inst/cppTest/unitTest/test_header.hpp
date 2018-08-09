@@ -9,45 +9,49 @@
 #define TEST_HEADER_HPP_
 
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <boost/algorithm/string.hpp>
+
 #include "flowWorkspace/openWorkspace.hpp"
 #include "flowWorkspace/flowJoWorkspace.hpp"
 #include "cytolib/GatingSet.hpp"
 #include "cytolib/GatingHierarchy.hpp"
 #include "cytolib/transformation.hpp"
 #include "cytolib/spline.hpp"
-#include "ncdfFlow.hpp"
 using namespace std;
-
+using namespace cytolib;
+using namespace flowWorkspace;
 
 struct testCase{
 	string filename; //xml file name
-	unsigned short wsType; //workspace type
-	string colfile; // text file that records the compensated channel names
-	string ncfile; // raw data stored in hdf format
-	map<string,string> samples; // fcs file name vs sampleID
-	unsigned short sampNloc; // the location where the sample name to be parsed
 	string archive; // archived gating set dat file
 	vector<bool> isEqual; // the bool vector records the counts discrepancy (using cv) between flowJo and flowCore
 	float tolerance; // the threshold for cv value
-	bool isParseGate; //whether to parse gate from xml
-	int xmlParserOption;//xml parser option passed down to libxml2
 	bool isTemplate;// whether test the template copying feature
 	bool isLoadArhive;// whether to load archived gs
 	bool isSaveArchive;
 	unsigned archiveFormat;
 	bool archiveType;// boost or google
-	map<string,float> gains;
 	vector<VertexID> skipPops;
-//	vector<double> times;//global variable to collect run time
-
+	SAMPLE_NAME_LOCATION sample_name_location;
+	int xmlParserOption;
+	int group_id;
+	ParseWorkspaceParameters config;
+	testCase()
+	{
+		tolerance = 0.08;
+		archiveFormat = ARCHIVE_TYPE_BINARY;
+		archiveType = PB;
+		isTemplate = false;
+		isLoadArhive = false;
+		isSaveArchive = false;
+		sample_name_location = SAMPLE_NAME_LOCATION::KEY_WORD;
+		xmlParserOption = 1;
+		group_id = 0;
+	}
 } ;
-hdfFlow gs_attachCDF(GatingSet & gs,testCase myTest);
-void gs_gating(GatingSet &gs,string curSample, hdfFlow nc);
-void gh_counts(GatingHierarchy* gh,vector<bool> &isEqual, const float tolerance);
+
+
+void gh_gating(GatingHierarchy & gh,bool is_fix_slash_in_channel_name, bool isH5, string h5_path,  compensation comp);
+void gh_counts(GatingHierarchy& gh,vector<bool> &isEqual, const float tolerance);
 void clone_test(testCase myTest);
 //void gs_parse(testCase,unsigned short,bool,bool);
 void parser_test(testCase &);

@@ -758,7 +758,8 @@ public:
 
 					if(g_loglevel>=GATING_SET_LEVEL)
 							COUT<<"logicle func:"<<pname<<endl;
-					biexpTrans *curTran=new biexpTrans();
+					shared_ptr<biexpTrans> curTran(new biexpTrans());
+
 					curTran->setName("");
 					curTran->setChannel(pname);
 					curTran->pos=atof(transNode.getProperty("M").c_str());
