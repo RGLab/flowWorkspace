@@ -9,6 +9,8 @@
 #define WINFLOWJOWORKSPACE_HPP_
 #include "flowJoWorkspace.hpp"
 
+namespace flowWorkspace
+{
 class winFlowJoWorkspace:public flowJoWorkspace{
 public:
 
@@ -36,7 +38,7 @@ public:
 	  /*
 	   * choose the trans from global trans vector to attach to current sample
 	   */
-	  trans_local getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
+	  trans_local getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag, const trans_global_vec & gTrans, bool prefixed){
 
 	  	trans_local res;
 	  	unsigned sampleID=atoi(root.getProperty("sampleID").c_str());
@@ -47,7 +49,7 @@ public:
 	  	 */
 
 	  	trans_map tp=res.getTransMap();
-	  	for(trans_global_vec::iterator it=gTrans->begin();it!=gTrans->end();it++)
+	  	for(trans_global_vec::const_iterator it=gTrans.begin();it!=gTrans.end();it++)
 	  	{
 	  		vector<int> sampleVec=it->getSampleIDs();
 	  		vector<int>::iterator sampleRes=find(sampleVec.begin(),sampleVec.end(),sampleID);
@@ -72,14 +74,14 @@ public:
 	  					//try generic version if channel-specific is not found
 	  					if(resIt==curtp.end())
 	  						resIt = curtp.find("*");
-	  					transformation * curTrans;
+	  					shared_ptr<transformation> curTrans;
 	  					if(resIt!=curtp.end())
 	  						curTrans=resIt->second;
 	  					else{
 	  						/*
 	  						 * use default biexp trans if nothing matched
 	  						 */
-	  						curTrans = _globalBiExpTrans;
+	  						curTrans.reset(new biexpTrans());
 
 	  					}
 
@@ -197,7 +199,7 @@ public:
 
 	  				if(g_loglevel>=GATING_SET_LEVEL)
 	  					COUT<<"logicle func:"<<pname<<endl;
-	  				biexpTrans *curTran=new biexpTrans();
+	  				shared_ptr<biexpTrans> curTran (new biexpTrans());
 	  				curTran->setName(compName);
 
 
@@ -698,7 +700,7 @@ public:
 	trans_global_vec getGlobalTrans(){trans_global_vec res;
 										return res;
 										};
-	trans_local getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
+	trans_local getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag, const trans_global_vec & gTrans, bool prefixed){
 
 		trans_local res;
 
@@ -751,35 +753,35 @@ public:
 				pname="*";
 
 			string transType=(const char*)transNode.getNodePtr()->name;
-			if(transType.compare("logicle")==0)
+		    if(transType.compare("logicle")==0)
 			{
 
-				if(g_loglevel>=GATING_SET_LEVEL)
-					COUT<<"logicle func:"<<pname<<endl;
-				biexpTrans *curTran=new biexpTrans();
-				curTran->setName("");
-				curTran->setChannel(pname);
-				curTran->pos=atof(transNode.getProperty("M").c_str());
-				curTran->neg=atof(transNode.getProperty("A").c_str());
-				float w = atof(transNode.getProperty("W").c_str());
-				curTran->widthBasis= -pow(10, 2*w);
-				curTran->maxValue=atof(transNode.getProperty("T").c_str());
-				unsigned short thisLen=atoi(transNode.getProperty("length").c_str());
-				curTran->channelRange = thisLen;
-	//			if(thisLen!=256)
-	//				throw(domain_error("length is not 256 for biex transformation!"));
-				/*
-				 * do the lazy calibration table calculation and interpolation
-				 * when it gets saved in gh
-				 */
-				curTp[curTran->getChannel()]=curTran;
+					if(g_loglevel>=GATING_SET_LEVEL)
+							COUT<<"logicle func:"<<pname<<endl;
+					biexpTrans *curTran=new biexpTrans();
+					curTran->setName("");
+					curTran->setChannel(pname);
+					curTran->pos=atof(transNode.getProperty("M").c_str());
+					curTran->neg=atof(transNode.getProperty("A").c_str());
+					float w = atof(transNode.getProperty("W").c_str());
+					curTran->widthBasis= -pow(10, 2*w);
+					curTran->maxValue=atof(transNode.getProperty("T").c_str());
+					unsigned short thisLen=atoi(transNode.getProperty("length").c_str());
+					curTran->channelRange = thisLen;
+//                      if(thisLen!=256)
+//                              throw(domain_error("length is not 256 for biex transformation!"));
+					/*
+					 * do the lazy calibration table calculation and interpolation
+					 * when it gets saved in gh
+					 */
+					curTp[curTran->getChannel()]=curTran;
 			}
 			else if(transType.compare("biex")==0)
 			{
 
 				if(g_loglevel>=GATING_SET_LEVEL)
 					COUT<<"biex func:"<<pname<<endl;
-				biexpTrans *curTran=new biexpTrans();
+				shared_ptr<biexpTrans> curTran(new biexpTrans());
 				curTran->setName("");
 				curTran->setChannel(pname);
 				curTran->pos=atof(transNode.getProperty("pos").c_str());
@@ -799,11 +801,13 @@ public:
 				//only meaningful for scaling ellipsoidGate from 256 back to raw
 				if(g_loglevel>=GATING_SET_LEVEL)
 					COUT<<"flin func:"<<pname<<endl;
-				double minRange=atof(transNode.getProperty("minRange").c_str());
+//				double minRange=atof(transNode.getProperty("minRange").c_str());
 				double maxRange=atof(transNode.getProperty("maxRange").c_str());
 				if(maxRange==0)
 					maxRange = 1;
-				scaleTrans *curTran=new scaleTrans(maxRange,maxRange);
+
+				shared_ptr<scaleTrans> curTran(new scaleTrans(maxRange,maxRange));
+
 				curTran->setName("");
 				curTran->setChannel(pname);
 
@@ -818,7 +822,8 @@ public:
 				PARAM_VEC::const_iterator pit = findTransFlag(transFlag, pname, comp.prefix, comp.suffix);
 				if(pit==transFlag.end())
 					throw(domain_error(pname + " does not exist in transFlag vector!"));
-				logTrans *curTran=new logTrans(offset,decade,1,pit->range);
+				shared_ptr<logTrans> curTran(new logTrans(offset,decade,1,pit->range));
+
 				curTran->setName("");
 				curTran->setChannel(pname);
 
@@ -831,7 +836,8 @@ public:
 				double M=atof(transNode.getProperty("M").c_str());
 				double T=atof(transNode.getProperty("T").c_str());
 				double A=atof(transNode.getProperty("A").c_str());
-				fasinhTrans *curTran=new fasinhTrans(maxRange,length, T,A,M);
+				shared_ptr<fasinhTrans> curTran(new fasinhTrans(maxRange,length, T,A,M));
+
 				curTran->setName("");
 				curTran->setChannel(pname);
 
@@ -846,14 +852,9 @@ public:
 
 		res.setTransMap(curTp);
 
-		//store another cp in trans_global_vec since it is up to GatingSet to clean up these trans pointers
-		trans_global tg;
-		tg.setTransMap(curTp);
-		gTrans->push_back(tg);
-
 		return res;
 	}
-
+	bool is_fix_slash_in_channel_name(){return true;};
 };
-
+};
 #endif /* WINFLOWJOWORKSPACE_HPP_ */

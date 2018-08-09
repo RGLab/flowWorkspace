@@ -9,6 +9,8 @@
 #define MACFLOWJOWORKSPACE_HPP_
 #include "flowJoWorkspace.hpp"
 
+namespace flowWorkspace
+{
 class macFlowJoWorkspace:public flowJoWorkspace{
 public:
 
@@ -29,8 +31,8 @@ public:
 
 	}
 
-	trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name){
-		trans_global_vec::iterator it;
+	trans_global_vec::const_iterator findTransGroup(const trans_global_vec & tGVec, string name) const{
+		trans_global_vec::const_iterator it;
 		for(it=tGVec.begin();it!=tGVec.end();it++)
 		{
 	//		COUT<<it->groupName<<it->trans.size()<<endl;
@@ -39,7 +41,16 @@ public:
 		}
 		return it;
 	}
-
+	trans_global_vec::iterator findTransGroup(trans_global_vec & tGVec, string name){
+			trans_global_vec::iterator it;
+			for(it=tGVec.begin();it!=tGVec.end();it++)
+			{
+		//		COUT<<it->groupName<<it->trans.size()<<endl;
+				if(it->getGroupName().find(name)!=string::npos)
+					break;
+			}
+			return it;
+		}
 	/*
 	 * we overwrite getTransFlag function for mac version to  use parameter nodes for log flags
 	 * and keywords may not contain the $PnDISPLAY in some cases
@@ -109,7 +120,7 @@ public:
 	 * also need to double check the use case :cid==-2 && version<9
 	 * since the current c logic may not be consistent with R code
 	 */
-	trans_local getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,trans_global_vec * gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans, bool prefixed){
+	trans_local getTransformation(wsRootNode root,const compensation & comp, PARAM_VEC & transFlag,const trans_global_vec & gTrans, bool prefixed){
 
 
 		trans_local res;
@@ -123,10 +134,10 @@ public:
 
 		string tGName;
 
-		trans_global_vec::iterator genericTgIt = findTransGroup(*gTrans, "Generic");
-		trans_global_vec::iterator tgIt;
+		trans_global_vec::const_iterator genericTgIt = findTransGroup(gTrans, "Generic");
+		trans_global_vec::const_iterator tgIt;
 		if(cid.compare("-2")==0)
-			tgIt=gTrans->end();//does not do the trans group name match at all
+			tgIt=gTrans.end();//does not do the trans group name match at all
 		else
 		{
 			/*
@@ -138,9 +149,9 @@ public:
 	//		else
 				tGName=comp.name;
 
-			tgIt=findTransGroup(*gTrans,tGName);
+			tgIt=findTransGroup(gTrans,tGName);
 		}
-		bool isTransGropuFound=(tgIt!=gTrans->end());
+		bool isTransGropuFound=(tgIt!=gTrans.end());
 		if(isTransGropuFound)//no matched trans group
 		{
 			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
@@ -159,7 +170,7 @@ public:
 			unsigned calInd = it->calibrationIndex;
 			string sCalInd = boost::lexical_cast<string>(calInd);
 			string transChName;
-			transformation * curTran=0;
+			shared_ptr<transformation> curTran;
 
 			if(it->log)
 			{
@@ -177,7 +188,7 @@ public:
 					/*
 					 * try to search by channel name within the source map
 					 */
-					trans_map::iterator resIt=trans.find(transChName);
+					trans_map::const_iterator resIt=trans.find(transChName);
 					if(resIt!=trans.end())
 					{
 						/*
@@ -214,7 +225,7 @@ public:
 								 * use bioexp trans instead of logTrans
 								 * since log doesn't handle the negative value well
 								 */
-								curTran=_globalBiExpTrans;
+								curTran.reset(new biexpTrans());
 							}
 						}
 
@@ -250,50 +261,16 @@ public:
 							if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 								COUT<<"apply the biexpTrans transformation:"<<curChnl<<endl;
 
-							curTran=_globalBiExpTrans;
+							curTran.reset(new biexpTrans());
 						}
 
 
 					}
 					else
 					{
-						/*
-						 * for those has range>4096,try to generic cal tables from flowJo
-						 */
-	//					if(!gTrans->empty())
-	//						trans=gTrans->at(0).getTransMap();
-	//					/*
-	//					 * try to search by channel name within the source map
-	//					 */
-	//					trans_map::iterator resIt=trans.find(transChName);
-	//
-	//					/*
-	//					 * if no channel name matched,continue to try "Generic" group
-	//					 */
-	//					if(resIt==trans.end())
-	//					{
-	//					if(calInd > 0)
-	//					{
-	//						curTran = genericTgIt->getTran(sCalInd);
-	//						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-	//							COUT<<"apply transformation by calibrationIndex "<<sCalInd<<": "<<curChnl<<endl;
-	//					}
-	//
-	//					if(resIt!=trans.end())
-	//					{
-	//						/*
-	//						 * found the appropriate trans for this particular channel
-	//						 */
-	//						curTran=resIt->second;
-	//						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-	//							COUT<<transChName<<":"<<curTran->getName()<<" "<<curTran->getChannel()<<endl;
-	//					}
-	//					else
-	//					{
 							string err="no valid global trans found for:";
 							err.append(curChnl);
 							throw(domain_error(err));
-	//					}
 
 					}
 
@@ -326,11 +303,12 @@ public:
 								break;
 							}
 						if(!isSC)
-							curTran=_globalLinTrans;
+							curTran.reset(new linTrans());
+
 					}
 				}
 			}
-			if(curTran!=NULL)
+			if(curTran.use_count()>0)
 			{
 				/*
 				 * assign matched global trans to the local map
@@ -382,7 +360,7 @@ public:
 			wsNode calTblNode(result->nodesetval->nodeTab[i]);
 
 
-			biexpTrans *bt=new biexpTrans();
+			shared_ptr<biexpTrans> bt(new biexpTrans());
 
 			string tname=calTblNode.getProperty("name");
 			if(tname.empty())
@@ -442,7 +420,7 @@ public:
 			bt->maxValue = caltbl.getX()[nX-1];
 			bt->channelRange = caltbl.getY()[nX-1];
 
-			transformation * curTran = bt;
+			shared_ptr<transformation>  curTran = bt;
 			/*
 			 * sometime, the biexp parameters may not be stored properly
 			 * then we have to fall back to caltbl version
@@ -454,8 +432,8 @@ public:
 
 				COUT << e.what() << std::endl;
 				COUT << "caused by the invalid biexp parameters!Downcast the biexp to Calibration table instead!"<< std::endl;
-				delete bt;
-				curTran = new transformation();
+
+				curTran.reset(new transformation());
 				curTran->setType(CALTBL);
 				curTran->setCalTbl(caltbl);
 			}
@@ -839,6 +817,6 @@ public:
 };
 
 
-
+};
 
 #endif /* MACFLOWJOWORKSPACE_HPP_ */

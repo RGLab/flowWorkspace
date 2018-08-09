@@ -7,25 +7,19 @@
 
 #ifndef WORKSPACE_HPP_
 #define WORKSPACE_HPP_
+#include "workspace_type.hpp"
 #include <vector>
 #include <string>
-#include <libxml/xpath.h>
-#include <libxml/parser.h>
-#include "wsNode.hpp"
+
 #include <cytolib/GatingSet.hpp>
 #include "cytolib/transformation.hpp"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
 
-#define WS_WIN 1
-#define WS_MAC 2
-#define WS_VX 3
-#define WS_MAC_3 4
 
-
-using namespace std;
-
+namespace flowWorkspace
+{
 /*TODO: so far I have seen the major difference between win and mac workspace is the xpath(like xpath of sample node)
  * if this is the case eventually we can try to use one template class (eliminate two derived classes )
  * with T structure that stores different versions of xpaths for win/mac,for example:
@@ -56,18 +50,17 @@ struct xpath{
 	string compMatName;
 	string compMatChName;
 	string compMatVal;
-	unsigned short sampNloc;//get FCS filename(or sampleName) from either $FIL keyword or name attribute of sampleNode
+	SAMPLE_NAME_LOCATION sample_name_location;//get FCS filename(or sampleName) from either $FIL keyword or name attribute of sampleNode
 };
-
 
 
 class workspace{
 public:
 	 xpath nodePath;
-//protected:
+
 
 	 xmlDoc * doc;
-
+	 wsNode doc_root;
 public:
 	 workspace(){doc=NULL;};
 	 virtual ~workspace()
@@ -88,21 +81,20 @@ public:
 	 }
 	 virtual string xPathSample(string sampleID)=0;
 	 virtual PARAM_VEC getTransFlag(wsSampleNode sampleNode)=0;
-	 virtual trans_local getTransformation(wsRootNode,const compensation &,PARAM_VEC &,trans_global_vec *, biexpTrans * _globalBiExpTrans, linTrans * _globalLinTrans, bool prefixed)=0;
+	 virtual trans_local getTransformation(wsRootNode,const compensation &,PARAM_VEC &,const trans_global_vec &, bool prefixed)=0;
 	 virtual compensation getCompensation(wsSampleNode)=0;
 	 virtual trans_global_vec getGlobalTrans()=0;
-	 virtual vector <string> getSampleID(unsigned short)=0;
-	 virtual string getSampleName(wsSampleNode &)=0;
 	 virtual wsRootNode getRoot(wsSampleNode sampleNode)=0;
 	 virtual wsPopNodeSet getSubPop(wsNode *)=0;
 	 virtual gate * getGate(wsPopNode &)=0;//gate is dynamically allocated within this function,it is currently freed within gate pointer owner object nodeProperties
 	 virtual void to_popNode(wsRootNode &, nodeProperties &)=0;
 	 virtual void to_popNode(wsPopNode &,nodeProperties &,bool isGating)=0;
+	 virtual bool is_fix_slash_in_channel_name(){return false;}
 	 void toArray(string sCalTable, vector<double> &x, vector<double> &y)
 	 {
 		 vector<string> stringVec;
 		 	boost::split(stringVec,sCalTable,boost::is_any_of(","));
-		 	int nLen = stringVec.size()/2;
+		 	unsigned nLen = stringVec.size()/2;
 		 	x.resize(nLen);
 		 	y.resize(nLen);
 		 	for(unsigned i=0;i<nLen;i++)
@@ -112,7 +104,8 @@ public:
 		 //		COUT<<res[i]<<",";
 		 	}
 	 }
-	 virtual void parseVersionList(){};
+
+
 	 /*
 	  * add root node first before recursively add the other nodes
 	  * since root node does not have gates as the others do
@@ -185,97 +178,11 @@ public:
 
 
 	 }
-	 /*
-	  * Constructor that starts from a particular sampleNode from workspace to build a tree
-	  */
-	 void ws2gh(GatingHierarchy & gh, wsSampleNode curSampleNode,bool isParseGate,trans_global_vec * _gTrans,biexpTrans * _globalBiExpTrans,linTrans * _globalLinTrans)
-	 {
-
-	 	wsRootNode root=getRoot(curSampleNode);
-	 	if(isParseGate)
-	 	{
-
-	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-	 			COUT<<endl<<"parsing compensation..."<<endl;
-	 		compensation comp=getCompensation(curSampleNode);
-
-	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-	 			COUT<<endl<<"parsing trans flags..."<<endl;
-	 		PARAM_VEC transFlag=getTransFlag(curSampleNode);
-
-	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-	 			COUT<<endl<<"parsing transformation..."<<endl;
-	 		//prefixed version
-	 		trans_local trans = getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans, true);
-
-	 		/*
-	 		 * unprefixed version. Both version of trans are added (sometime they are identical)
-	 		 * so that the trans defined on uncompensated channel (e.g. SSC-A) can still be valid
-	 		 * without being necessarily adding comp prefix.
-	 		 * It is mainly to patch the legacy workspace of mac or win where the implicit trans is added for channel
-	 		 * when its 'log' keyword is 1.
-	 		 * vX doesn't have this issue since trans for each parameter/channel
-	 		 * is explicitly defined in transform node.
-	 		 */
-	 		trans_local trans_raw=getTransformation(root,comp,transFlag,_gTrans,_globalBiExpTrans,_globalLinTrans, false);
-	 		//merge raw version of trans map to theprefixed version
-	 		trans_map tp = trans_raw.getTransMap();
-	 		for(trans_map::iterator it=tp.begin();it!=tp.end();it++)
-	 		{
-	 			trans.addTrans(it->first, it->second);
-	 		}
-	 		gh = GatingHierarchy(comp, transFlag, trans);
-
-	 	}
-
-	 	if(g_loglevel>=POPULATION_LEVEL)
-	 		COUT<<endl<<"parsing populations..."<<endl;
-
-	 	populationTree &tree = gh.getTree();
-	 	VertexID pVerID=addRoot(tree, root);
-	 	addPopulation(tree, pVerID,&root,isParseGate);
-
-	 }
-
-	 GatingSet * ws2gs(vector<string> sampleIDs,bool isParseGate, StringVec sampleNames)
-	 {
-	 	GatingSet * gs=new GatingSet();
-	 	 /*
-	 	  * parsing global calibration tables
-	 	  */
-	 	trans_global_vec gTrans;
-	 	 if(isParseGate)
-	 	 {
-	 		 if(g_loglevel>=GATING_SET_LEVEL)
-	 			 COUT<<"... start parsing global transformations... "<<endl;
-	 		 gTrans=getGlobalTrans();
-
-	 	 }
-
-	 	unsigned nSample = sampleNames.size();
-	 	if(nSample!=sampleIDs.size())
-	 		throw(domain_error("Sizes of sampleIDs and sampleNames are not equal!"));
-	 	//contruct gating hiearchy for each sampleID
-	 	for(unsigned i = 0; i < nSample; i++)
-	 	{
-	 		string sampleID = sampleIDs.at(i);
-	 		string sampleName = sampleNames.at(i);
-	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-	 			COUT<<endl<<"... start parsing sample: "<< sampleID <<"... "<<endl;
-	 		wsSampleNode curSampleNode=getSample(sampleID);
-
-	 		GatingHierarchy & gh = gs->addGatingHierarchy(sampleName);
-	 		ws2gh(gh,curSampleNode,isParseGate,&gTrans,gs->get_globalBiExpTrans(),gs->get_globalLinTrans());
-
-	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-	 			COUT<<"Gating hierarchy created: "<<sampleName<<endl;
-	 	}
-	 	gs->set_gTrans(gTrans);
-	 	return gs;
-	 }
 
 
-	 wsSampleNode getSample(string sampleID){
+
+
+	 wsSampleNode get_sample_node(string sampleID){
 
 	 		string xpath=xPathSample(sampleID);
 
@@ -295,6 +202,6 @@ public:
 	 }
 };
 
-
+};
 #endif /* WORKSPACE_HPP_ */
 

@@ -7,9 +7,11 @@
 
 #ifndef WSNODE_HPP_
 #define WSNODE_HPP_
-#include "cytolib/nodeProperties.hpp"
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include "cytolib/nodeProperties.hpp"
+using namespace std;
 
 #ifdef ROUT
 #include <Rcpp.h>
@@ -22,7 +24,8 @@
 #endif
 
 
-
+namespace flowWorkspace
+{
 class wsNode{
 
 	xmlNodePtr thisNode;
@@ -32,7 +35,7 @@ public:
 	 * @param ptr
 	 * @param path
 	 */
-	void check_xmlXPathObjectPtr(const xmlXPathObjectPtr ptr, const string & xpath){
+	void check_xmlXPathObjectPtr(const xmlXPathObjectPtr ptr, const string & xpath) const{
 		string err = xpath + " not found!";
 		if(ptr==NULL)
 			throw(domain_error(err));
@@ -48,7 +51,7 @@ public:
 	* it is up to user to call xmlXPathFreeObject to free it
 	*/
 
-	xmlXPathObjectPtr xpathInNode(string xpath)
+	xmlXPathObjectPtr xpathInNode(const string & xpath) const
 	{
 		xmlXPathContextPtr ctxt=xmlXPathNewContext(thisNode->doc);
 		ctxt->node=thisNode;
@@ -62,12 +65,13 @@ public:
 	 * Note: need to be cautious that  the result from xmlXPathEval call is not freed within  this API
 	 * it is up to user to call xmlXPathFreeObject to free it
 	 */
-	xmlXPathObjectPtr xpath(string xpath)
+	xmlXPathObjectPtr xpath(const string & xpath, bool is_validity_check = true)
 	{
 		xmlXPathContextPtr ctxt=xmlXPathNewContext(thisNode->doc);
 		xmlXPathObjectPtr res=xmlXPathEval((xmlChar *)xpath.c_str(),ctxt);
 		xmlXPathFreeContext(ctxt);
-		check_xmlXPathObjectPtr(res, xpath);
+		if(is_validity_check)
+			check_xmlXPathObjectPtr(res, xpath);
 		return res;
 	}
 
@@ -82,7 +86,7 @@ public:
 
 	}
 
-	string getProperty(string propName){
+	string getProperty(string propName) const{
 
 		xmlChar * name= xmlGetProp(this->thisNode,(xmlChar *)propName.c_str());
 		string sName;
@@ -116,11 +120,18 @@ public:
 	wsNode(){};
 };
 
+class wsGroupNode:public wsNode{
+public:
+	wsGroupNode(){};
+	wsGroupNode(xmlNodePtr node){setNodePtr(node);};
+
+
+};
 
 
 class wsSampleNode:public wsNode{
 public:
-//	wsSampleNode();
+	wsSampleNode(){};
 	wsSampleNode(xmlNodePtr node){setNodePtr(node);};
 
 
@@ -172,6 +183,6 @@ public:
 
 typedef vector<wsPopNode> wsPopNodeSet;
 
-
+};
 #endif /* WSNODE_HPP_ */
 
