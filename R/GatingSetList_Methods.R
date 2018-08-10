@@ -10,43 +10,13 @@ setMethod("rbind2",
     definition=function(x,y="missing",...)
     {
 #           browser()
-      isNcdfList<-lapply(x,isNcdf, level = 1)
-      if(all(duplicated(unlist(isNcdfList))[-1])){
-#               browser()
-        #combine flowset/ncdfFlowSet
-        fsList <- lapply(x, getData, level =1)
-        if(isNcdfList[[1]])
-          fs<-rbind2(ncdfFlowList(fsList), ...)
-        else
-        {
-          ##using original flowCore::rbind2 for flowSet
-          fs<-fsList[[1]]
-          for(i in 2:length(fsList))
-            fs<-rbind2(fs,fsList[[i]])
-        }
-        
-        #combine tree structure
-        ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
-        sampleList <- lapply(x, sampleNames, level =1)
-        pointer <- .cpp_combineGatingSet(ptrlist,sampleList)
-        G <- new("GatingSet")
-        G@pointer <- pointer
-        G@guid <- .uuid_gen()
-        G@flag <- TRUE
-        G@axis <- unlist(lapply(x,slot,"axis",level = 1),recursive = FALSE)
-        #TODO: to waring about losing trans and comp info when they are different across gs
-        G@transformation <- x@data[[1]]@transformation
-        G@compensation <- x@data[[1]]@compensation
-        #combine R objects
-        
-        flowData(G) <- fs
-        
-      }else{
-        stop("Can't combine gating sets. They should all use the same storage method. (Netcdf, or not..)")
-      }
-      return(G);  
       
+      #combine tree structure
+      ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
+      sampleList <- lapply(x, sampleNames, level =1)
+      new("GatingSet", pointer = .cpp_combineGatingSet(ptrlist,sampleList))
     })
+
 
 
 

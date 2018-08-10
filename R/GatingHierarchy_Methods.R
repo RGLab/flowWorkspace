@@ -902,29 +902,18 @@ setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj
 #' @rdname getData-methods
 #' @export
 setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y, ...){
-      if(!obj@flag){
-        stop("Must gate the data before fetching data");
-      }
-
-      fs <- flowData(obj)
-      fs[[sampleNames(obj),...]]
-
-})
+      
+      fs <- callNextMethod()
+      fs[[1]]
+      
+    })
 
 #' @rdname getData-methods
 #' @export
 setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
-
-        this_data <- getData(obj, ...)
-        if(y == "root"){
-          return (this_data)
-        }else{
-
-          this_indice <- getIndices(obj,y)
-          return (this_data[this_indice,])
-        }
-})
-
+      fs <- callNextMethod()
+      fs[[1]]
+    })
 
 .isBoolGate<-function(x,y){
 	return (class(getGate(x,y))=="booleanFilter")

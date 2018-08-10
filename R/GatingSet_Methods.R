@@ -1,18 +1,6 @@
 #' @include GatingHierarchy_Methods.R
 NULL
 
-#' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
-#'
-#' @param x \code{GatingHiearchy} object
-#' @return \code{logical}
-#' @export
-isNcdf <- function(x){
-#			browser()
-
-  return (class(flowData(x))=="ncdfFlowSet")
-
-}
-
 #' @title save/load a GatingSet/GatingSetList to/from disk.
 #'
 #' @description
@@ -49,88 +37,15 @@ isNcdf <- function(x){
 #' @rdname save_gs
 #' @export
 #' @aliases save_gs load_gs save_gslist load_gslist
-save_gs<-function(G,path,overwrite = FALSE
-                    , cdf = c("copy","move","skip","symlink","link")
-                    , ...){
+save_gs<-function(gs, path, overwrite = FALSE
+    , cdf = c("copy","move","skip","symlink","link")
+    , ...){
 #  browser()
   cdf <- match.arg(cdf)
-  fileext <- 'pb'
-
-
-  guid <- G@guid
-  if(length(guid) == 0){
-    G@guid <- .uuid_gen()
-    guid <- G@guid
-  }
-  rds_toSave <- paste(guid,"rds",sep=".")
-  dat_toSave <- paste(guid,fileext,sep=".")
-
-  if(file.exists(path)){
-    path <- normalizePath(path,mustWork = TRUE)
-    if(overwrite){
-      this_files <- list.files(path)
-      #validity check for non-empty folder
-      if(length(this_files)!=0)
-      {
-        rds_ind <- grep("\\.rds$",this_files)
-        dat_ind <- grep(paste0("\\.",fileext,"$"),this_files)
-
-        if(length(rds_ind)!=1||length(dat_ind)!=1){
-          stop("Not a valid GatingSet archiving folder! ", path)
-        }else{
-          this_rds <- this_files[rds_ind]
-          this_dat <- this_files[dat_ind]
-
-          if(this_rds!=rds_toSave||this_dat!=dat_toSave){
-            stop("The GatingSet doesn't match the archived files in: ", path)
-          }
-        }
-      }
-
-      #validity check for cdf
-      if(isNcdf(G)){
-        if(length(this_files)!=0){
-          cdf_ind <- grep("\\.nc$",this_files)
-          if(length(cdf_ind) != 1){
-            stop("Not a valid GatingSet archiving folder! ", path)
-          }
-        }
-
-      }
-      if(length(this_files)!=0)
-      {
-        #start to delete the old files in path
-        file.remove(file.path(path,rds_toSave))
-        file.remove(file.path(path,dat_toSave))
-
-        if(isNcdf(G)){
-          #check if the target path is the same as current cdf path
-#            browser()
-          this_cdf <- file.path(path,this_files[cdf_ind])
-          if(normalizePath(getData(G)@file)==normalizePath(this_cdf)){
-            cdf <- "skip"
-          }
-          if(cdf != "skip"){
-            file.remove(this_cdf)
-          }
-        }
-      }
-
-    }else{
-      stop(path,"' already exists!")
-    }
-
-  }else{
-    dir.create(path = path)
-    #do the dir normalization again after it is created
-    path <- normalizePath(path,mustWork = TRUE)
-
-  }
-#  browser()
-  invisible(.save_gs(G=G,path = path, cdf = cdf, ...))
+  save_gatingset(gs, path = path, overwrite = overwrite, cdf = cdf)
   message("Done\nTo reload it, use 'load_gs' function\n")
-
-
+  
+  
 }
 
 
@@ -138,184 +53,11 @@ save_gs<-function(G,path,overwrite = FALSE
 #' @export
 #' @aliases load_gs load_gslist
 load_gs<-function(path){
-#  browser()
-  path <- normalizePath(path,mustWork = TRUE)
-  if(!file.exists(path))
-    stop(path,"' not found!")
-  files<-list.files(path)
-#   browser()
-  .load_gs(output = path, files = files)$gs
-
+  new("GatingSet", pointer = .cpp_loadGatingSet(path))
+  
 }
 
 
-
-
-#' serialization functions to be called by wrapper APIs
-.save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link")){
-
-#    browser()
-    cdf <- match.arg(cdf)
-    fileext <- 'pb'
-
-    if(!file.exists(path))
-      stop("Folder '",path, "' does not exist!")
-    #generate uuid for the legacy GatingSet Object
-    if(length(G@guid)==0){
-      G@guid <- .uuid_gen()
-    }
-    guid <- G@guid
-
-    rds.file<-file.path(path,paste(guid,"rds",sep="."))
-    dat.file<-file.path(path,paste(guid,fileext,sep="."))
-
-
-    filestoSave <- c(rds.file,dat.file)
-    #save ncdf file
-    if(cdf != "skip" && isNcdf(G))
-    {
-      from<-flowData(G)@file
-#      browser()
-      if(cdf == "move"){
-        message("moving ncdf...")
-        ncFile <- file.path(path,basename(from))
-        res <- file.rename(from,ncFile)
-        #reset the file path for ncdfFlowSet
-        flowData(G)@file <- ncFile
-      }else{
-
-        ncFile<-tempfile(tmpdir=path,fileext=".nc")
-
-        if(cdf == "copy"){
-          message("saving ncdf...")
-          res <- file.copy(from=from,to=ncFile)
-        }
-        else if(cdf == "symlink"){
-          message("creating the symbolic link to ncdf...")
-          res <- file.symlink(from=from,to=ncFile)
-        }else if(cdf == "link"){
-          message("creating the hard link to ncdf...")
-          res <- file.link(from=from,to=ncFile)
-        }
-      }
-      if(!res){
-        stop("failed to ",cdf," ",from,"!")
-      }
-      filestoSave<-c(filestoSave,ncFile)
-    }
-
-    message("saving tree object...")
-    #save external pointer object
-    .cpp_saveGatingSet(G@pointer, dat.file)
-
-    message("saving R object...")
-    saveRDS(G,rds.file)
-
-    filestoSave
-
-}
-#' unserialization functions to be called by wrapper APIs
-#' @importFrom tools file_ext
-.load_gs <- function(output,files){
-      dat.file <- file.path(output,files[grep(".pb$|.dat$|.txt$|.xml$",files)])
-      rds.file<-file.path(output,files[grep(".rds$",files)])
-
-      nc.file<-file.path(output,files[grep(".nc$|.nc.trans$",files)])
-    #   browser()
-      if(length(dat.file)==0)
-        stop(".dat file missing in ",output)
-      if(length(dat.file)>1)
-        stop("multiple .dat or .pb files found in ",output)
-      fileext <- file_ext(dat.file)
-      isPB <- fileext == "pb"
-      if(!isPB)
-        stop("Legacy 'Boost serialization' format is detected. Try to convert it with 'boost2protobuf' package!")
-      if(length(rds.file)==0)
-        stop(".rds file missing in ",output)
-      if(length(rds.file)>1)
-        stop("multiple .rds files found in ",output)
-
-      message("loading R object...")
-      gs <- readRDS(rds.file)
-
-      #deal with legacy archive
-      if(class(gs) == "GatingSetInternal")
-      {
-        thisSet <- attr(gs,"set")
-        thisGuid <- attr(gs,"guid")
-        if(is.null(thisGuid))
-          thisGuid <- .uuid_gen()
-#        browser()
-        thisGH <- thisSet[[1]]
-        thisTree <- attr(thisGH, "tree")
-        thisPath <- dirname(attr(thisGH, "dataPath"))
-        thisData <- graph::nodeDataDefaults(thisTree)[["data"]]
-        fs <- thisData[["data"]][["ncfs"]]
-
-        axis <- sapply(thisSet, function(gh){
-                            thisTree <- attr(thisGH, "tree")
-                            thisData <- graph::nodeDataDefaults(thisTree)[["data"]]
-#                            browser()
-                            thisSample <- attr(thisGH, "name")
-                            thisChnls <- colnames(fs@frames[[thisSample]])
-                            thisAxis <- thisData[["axis.labels"]]
-                            if(is.null(thisAxis))
-                              list()
-                            else{
-                              names(thisAxis) <- thisChnls
-                              thisAxis
-                            }
-
-                          }, simplify = FALSE)
-
-
-        gs <- new("GatingSet", flag = TRUE, guid = thisGuid, axis = axis, data = fs)
-      }
-
-      if(!.hasSlot(gs, "transformation"))
-        gs@transformation <- list()
-
-      if(!.hasSlot(gs, "compensation"))
-        gs@compensation <- NULL
-      
-      guid <- try(slot(gs,"guid"),silent=T)
-      if(class(guid)=="try-error"){
-        #generate the guid for the legacy archive
-        gs@guid <- .uuid_gen()
-      }
-
-      message("loading tree object...")
-      gs@pointer<-.cpp_loadGatingSet(dat.file)
-
-
-      if(isNcdf(gs))
-      {
-        if(length(nc.file)==0)
-          stop(".nc file missing in ",output)
-        flowData(gs)@file <- nc.file
-
-      }
-      #deal with legacy gs that stores single comp in compensation slot
-      comp <- gs@compensation
-      if(!is.null(comp))
-      {
-        if(!is.list(comp)||is.data.frame(comp)){
-          gs@compensation <- sapply(sampleNames(gs), function(sn)comp, simplify = FALSE)
-        }
-         
-      }
-      trans <- gs@transformation
-      if(length(trans)!=0)
-      {
-        if(is(trans , "transformerList")){
-          gs@transformation <- sapply(sampleNames(gs), function(sn)trans, simplify = FALSE)
-        }
-        
-      }
-      
-      message("Done")
-      list(gs=gs,files=c(dat.file,rds.file))
-}
 
 
 
@@ -327,53 +69,53 @@ load_gs<-function(path){
 #' @param ... other arguments. see \link{parseWorkspace}
 #' @rdname GatingSet-methods
 #' @export
-setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
-            
-			samples <- y
-			dataPaths <- vector("character")
-			excludefiles <- vector("logical")
-			for(file in samples){
-#				browser()
-				#########################################################
-				#get full path for each fcs and store in dataPath slot
-				#########################################################
-				##escape "illegal" characters
-				file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
-				absPath<-list.files(pattern=paste("^",file,"$",sep=""),path=path,recursive=TRUE,full.names=TRUE)
-
-				if(length(absPath)==0){
-					warning("Can't find ",file," in directory: ",path,"\n");
-					excludefiles<-c(excludefiles,TRUE);
-
-				}else{
-					dataPaths<-c(dataPaths,dirname(absPath[1]))
-					excludefiles<-c(excludefiles,FALSE);
-				}
-			}
-			#Remove samples where files don't exist.
-			if(length(which(excludefiles))>0){
-				message("Removing ",length(which(excludefiles))," samples from the analysis since we can't find their FCS files.");
-				samples<-samples[!excludefiles];
-			}
-
-
-			files<-file.path(dataPaths,samples)
-			Object<-new("GatingSet")
-			message("generating new GatingSet from the gating template...")
-			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
-      Object@guid <- .uuid_gen()
-
-      sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
-			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE,...)
-            #if the gating template is already gated, it needs to be recompute explicitly
-            #in order to update the counts
-            #otherwise, the counts should already have been updated during the copying
-            #and not need to do this step
-            if(x@flag)
-              recompute(Object)
-            message("done!")
-			return(Object)
-		})
+#setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
+#            
+#			samples <- y
+#			dataPaths <- vector("character")
+#			excludefiles <- vector("logical")
+#			for(file in samples){
+##				browser()
+#				#########################################################
+#				#get full path for each fcs and store in dataPath slot
+#				#########################################################
+#				##escape "illegal" characters
+#				file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
+#				absPath<-list.files(pattern=paste("^",file,"$",sep=""),path=path,recursive=TRUE,full.names=TRUE)
+#
+#				if(length(absPath)==0){
+#					warning("Can't find ",file," in directory: ",path,"\n");
+#					excludefiles<-c(excludefiles,TRUE);
+#
+#				}else{
+#					dataPaths<-c(dataPaths,dirname(absPath[1]))
+#					excludefiles<-c(excludefiles,FALSE);
+#				}
+#			}
+#			#Remove samples where files don't exist.
+#			if(length(which(excludefiles))>0){
+#				message("Removing ",length(which(excludefiles))," samples from the analysis since we can't find their FCS files.");
+#				samples<-samples[!excludefiles];
+#			}
+#
+#
+#			files<-file.path(dataPaths,samples)
+#			Object<-new("GatingSet")
+#			message("generating new GatingSet from the gating template...")
+#			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
+#      Object@guid <- .uuid_gen()
+#
+#      sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
+#			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE,...)
+#            #if the gating template is already gated, it needs to be recompute explicitly
+#            #in order to update the counts
+#            #otherwise, the counts should already have been updated during the copying
+#            #and not need to do this step
+#            if(x@flag)
+#              recompute(Object)
+#            message("done!")
+#			return(Object)
+#		})
 
 
 
@@ -1613,25 +1355,8 @@ fix_y_axis <- function(gs, x, y){
 setGeneric("clone", function(x,...)standardGeneric("clone"))
 setMethod("clone",c("GatingSet"),function(x,...){
 
-			clone <- x
-			#clone c structure
-			message("cloning tree structure...")
-			clone@pointer <- .cpp_CloneGatingSet(x@pointer,sampleNames(x))
-            clone@guid <- .uuid_gen()
-
-			#deep copying flow Data
-			message("cloning flow data...")
-			fs <- flowData(x)
-			if(isNcdf(x))
-				fs_clone<-clone.ncdfFlowSet(fs,...)
-			else
-				fs_clone<-flowCore:::copyFlowSet(fs)
-
-			flowData(clone) <- fs_clone
-
-			message("GatingSet cloned!")
-			clone
-		})
+      new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer))
+    })
 
 
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
@@ -1835,19 +1560,9 @@ setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y, ...){
 #' @export
 setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...){
 
-      this_data <- getData(obj, ...)
-      if(y == "root"){
-        this_data
-      }else{
-        #subset by indices
-        indices<-lapply(obj,getIndices,y)
-        if(class(this_data) == "ncdfFlowSet")
-          this_data <- Subset(this_data,indices, validityCheck = FALSE)
-        else
-          this_data <- Subset(this_data,indices)
-        this_data
-      }
-
+      cs <- new("cytoSet", pointer = get_cytoset_from_node(obj@pointer, y))
+      cs[,...]
+      
 
 		})
 
@@ -1866,7 +1581,7 @@ setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...
 #' @rdname flowData
 #' @export
 setMethod("flowData",signature("GatingSet"),function(x){
-        x@data
+      new("cytoSet", pointer = get_cytoset(x@pointer))
     })
 #' @name flowData
 #' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
@@ -1940,24 +1655,11 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 #' [,GatingSetList,ANY-method
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #            browser()
-            #convert non-character indices to character
-            if(extends(class(i), "numeric")||class(i) == "logical"){
-              i <- sampleNames(x)[i]
-            }
-
-            #copy the R structure
-            clone <- x
-            clone@axis <- clone@axis[i]
-            clone@transformation <- clone@transformation[i]
-            #subsetting data
-			fs <- flowData(clone)[i]
-
-
-            #update the data for clone
-            flowData(clone) <- fs
-            clone@guid <- .uuid_gen()
-			return(clone);
-		})
+      if(extends(class(i), "numeric")||class(i) == "logical"){
+        i <- sampleNames(x)[i]
+      }
+      new("GatingSet", pointer = subset_gs_by_sample(x@pointer, i))
+    })
 
 #' subset the GatingSet/GatingSetList based on 'pData'
 #'
@@ -2050,19 +1752,8 @@ setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
 
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
-      data <- x@data
-      if(is.null(data))
-        data <- new("flowSet")
-      #new takes less time than as method
-      new("GatingHierarchy", pointer = x@pointer
-                            , data = data
-                            , flag = x@flag
-                            , axis = x@axis
-                            , guid = x@guid
-                            , transformation = x@transformation[[i]]
-                            , compensation = x@compensation
-                            , name = i)
-
+      as(x[i], "GatingHierarchy")
+      
     })
 
 #' Methods to get the length of a GatingSet
