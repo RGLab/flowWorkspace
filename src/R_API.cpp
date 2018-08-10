@@ -9,6 +9,8 @@
 #include "cytolib/GatingSet.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
+using namespace cytolib;
+
 #define ARRAY_TYPE vector<double>
 //[[Rcpp::plugins(temp)]]
 
@@ -39,9 +41,9 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, Stri
 	unsigned counter = 0;
 	for(unsigned i = 0; i < nSample; i++){
 		std::string sn = sampleNames.at(i);
-		GatingHierarchy & gh = gsPtr->getGatingHierarchy(sn);
+		GatingHierarchy & gh = *(gsPtr->getGatingHierarchy(sn));
 		//we are confident that allNodes is ordered by its nodeIds(ie. vertexID)
-		StringVec allNodes = gsPtr->getGatingHierarchy(sampleNames.at(i)).getPopPaths(REGULAR, isFullPath, true);
+		StringVec allNodes = gsPtr->getGatingHierarchy(sampleNames.at(i))->getPopPaths(REGULAR, isFullPath, true);
 		for(unsigned j = 0; j < nPop; j++){
 			 	std::string pop = subpopulation.at(j);
 				sampleVec(counter) = sn;
@@ -147,7 +149,7 @@ void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList){
 				/*
 				 * create biexpTrans based on the parameters stored as function attribute
 				 */
-				biexpTrans * trans =  new biexpTrans();
+				shared_ptr<biexpTrans> trans(new biexpTrans());
 				trans->channelRange = Rcpp::as<int>(param["channelRange"]);
 				trans->maxValue = Rcpp::as<int>(param["maxValue"]);
 				trans->neg = Rcpp::as<double>(param["neg"]);
@@ -166,16 +168,12 @@ void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList){
 	}
 
 	/*
-	 * add the new trans map to the GatingSet
-	 */
-	gsPtr->addTransMap("autoGating", tm);
-	/*
 	 * propagate to each sample
 	 */
-	StringVec sn = gsPtr->getSamples();
+	StringVec sn = gsPtr->get_sample_uids();
 	for(StringVec::iterator it = sn.begin(); it != sn.end(); it++){
-		GatingHierarchy & gh = gsPtr->getGatingHierarchy(*it);
-		gh.addTransMap(tm);
+		GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(*it);
+		gh->addTransMap(tm);
 	}
 
 }
@@ -210,6 +208,6 @@ void updateChannels(Rcpp::S4 gs, Rcpp::DataFrame map){
 	for(unsigned i = 0; i < oldN.size(); i++){
 		stdmap[oldN.at(i)] = newN.at(i);
 	}
-	gsPtr->updateChannels(stdmap);
+	gsPtr->update_channels(stdmap);
 
 }

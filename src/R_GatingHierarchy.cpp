@@ -21,23 +21,11 @@
 #include "cytolib/transformation.hpp"
 using namespace std;
 
-#include "cytolib/flowData.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
+using namespace cytolib;
+using namespace flowWorkspace;
 
-flowData mat2flowData(NumericMatrix mat,unsigned _sampleID, bool _ignore_case){
-	flowData fd;
-	List dimnames=mat.attr("dimnames");
-	fd.params=as<vector<string> >(dimnames[1]);
-
-	fd.nEvents=mat.nrow();
-	fd.sampleID=_sampleID;
-	fd.ignore_case = _ignore_case;
-
-	fd.data = REAL(mat.get__());
-
-	return fd;
-}
 
 /*
  * only expose gating set pointer to R to avoid gc() by R
@@ -125,7 +113,7 @@ List getPopStats(XPtr<GatingSet> gs,string sampleName
 //[[Rcpp::export(name=".cpp_getCompensation")]]
 List getCompensation(XPtr<GatingSet> gs,string sampleName){
   GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
-  compensation comp=gh.getCompensation();
+  compensation comp=gh.get_compensation();
 	return(List::create(Named("cid",comp.cid)
 						,Named("prefix",comp.prefix)
 						,Named("suffix",comp.suffix)
@@ -261,69 +249,6 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 	return (res);
 }
 
-/*
- * compute gates(i.e. extending, adjust, transfroming) without doing the actual gating
- * mainly used for extacting gates from workspace only
- */
-//[[Rcpp::export(name=".cpp_computeGates")]]
-void computeGates(XPtr<GatingSet> gs,string sampleName
-                    ,NumericVector gainsVec
-                    , float extend_val, float extend_to){
-
-	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
-
-	map<string,float> gains;
-	vector<string> chnlNames = gainsVec.names();
-	for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
-		gains[*it]=gainsVec[*it];
-	}
-	gh.extendGate(extend_val, extend_to);
-	gh.adjustGate(gains);
-	gh.transformGate();
-
-}
-
-
-//[[Rcpp::export(name=".cpp_gating")]]
-void gating(XPtr<GatingSet> gs
-              , NumericMatrix orig
-              ,string sampleName
-              ,NumericVector gainsVec
-              , unsigned short nodeInd
-              ,bool recompute, float extend_val
-              , bool ignore_case, bool computeTerminalBool, float timestep){
-
- 
-	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
-
-//	Rcpp::NumericMatrix orig(mat);
-	unsigned sampleID=numeric_limits<unsigned>::max();//dummy sample index
-
-
-	gh.loadData(mat2flowData(orig,sampleID,ignore_case));
-	if(!recompute)
-	{
-	
-		map<string,float> gains;
-		vector<string> chnlNames = gainsVec.names();
-		for(vector<string>::iterator it=chnlNames.begin();it<chnlNames.end();it++){
-			gains[*it]=gainsVec[*it];
-		}
-
-		gh.adjustGate(gains);
-		gh.transformGate();
-		gh.transforming(timestep);
-		gh.extendGate(extend_val);
-	}
-
-	gh.gating(nodeInd,recompute, computeTerminalBool);
-
-	gh.unloadData();
-
-
-}
-
-
 //[[Rcpp::export(name=".cpp_getGate")]]
 List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
@@ -452,7 +377,16 @@ vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	nodeProperties & node = gh.getNodeProperty(u);
 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
 	if(u>0&&!node.isGated())
-		gh.gating(u);
+	{
+		if(node.getGate()->getType()==BOOLGATE)
+		{
+			MemCytoFrame fr;
+			gh.gating(fr, u);//pass dummy frame since boolgating doesn't need it once the initial gating was completed thus all the ref nodes are guaranteed to be gated
+		}
+
+
+	}
+
 	return node.getIndices();
 
 
@@ -714,7 +648,9 @@ void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID
 		//parse boolean expression from R data structure into c++
 		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
 		//perform bool gating
-		vector<bool> curIndices= gh.boolGating(boolOp, true);
+		MemCytoFrame fr;
+		vector<bool> curIndices= gh.boolGating(fr, boolOp, true);//pass dummy frame since boolgating doesn't need it in openCyto where all the ref nodes are guaranteed to be gated
+
 		//combine with parent indices
 		nodeProperties & parentNode=gh.getNodeProperty(gh.getParent(nodeID));
 		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());

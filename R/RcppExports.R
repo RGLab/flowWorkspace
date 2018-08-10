@@ -20,6 +20,46 @@
     .Call(`_flowWorkspace_getSingleCellExpression`, gs, sampleName, pops, data, markers, threshold)
 }
 
+open_workspace <- function(filename, sample_name_location, xmlParserOption) {
+    .Call(`_flowWorkspace_open_workspace`, filename, sample_name_location, xmlParserOption)
+}
+
+parse_workspace <- function(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, which_lines = as.integer( c()), transformation = "linearize", decades = 0, truncate_min_val = FALSE, min_limit = -111, truncate_max_range = TRUE, dataset = 1L, emptyValue = TRUE, ignoreTextOffset = TRUE, onlyTxt = FALSE, num_threads = 1L) {
+    .Call(`_flowWorkspace_parse_workspace`, ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, which_lines, transformation, decades, truncate_min_val, min_limit, truncate_max_range, dataset, emptyValue, ignoreTextOffset, onlyTxt, num_threads)
+}
+
+get_keywords_by_id <- function(ws, sample_id) {
+    .Call(`_flowWorkspace_get_keywords_by_id`, ws, sample_id)
+}
+
+get_keywords_by_name <- function(ws, sample_name) {
+    .Call(`_flowWorkspace_get_keywords_by_name`, ws, sample_name)
+}
+
+get_sample_groups <- function(ws) {
+    .Call(`_flowWorkspace_get_sample_groups`, ws)
+}
+
+get_samples <- function(ws) {
+    .Call(`_flowWorkspace_get_samples`, ws)
+}
+
+get_xml_file_path <- function(ws) {
+    .Call(`_flowWorkspace_get_xml_file_path`, ws)
+}
+
+.cpp_getLogLevel <- function() {
+    .Call(`_flowWorkspace_getLogLevel`)
+}
+
+.cpp_setLogLevel <- function(loglevel) {
+    invisible(.Call(`_flowWorkspace_setLogLevel`, loglevel))
+}
+
+.cpp_togleErrorFlag <- function() {
+    invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
+}
+
 #' grab vectors of pop counts and the parent counts along with their paths and FCS filenames
 #'
 #' This speeds up the process of getPopStats by putting the loop in c++ and avoiding copying while constructing vectors
@@ -173,10 +213,6 @@
 
 .cpp_setNodeFlag <- function(gs, sampleName, gatePath, hidden) {
     invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
-}
-
-.cpp_parseWorkspace <- function(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType) {
-    .Call(`_flowWorkspace_parseWorkspace`, fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType)
 }
 
 .cpp_getSamples <- function(gsPtr) {

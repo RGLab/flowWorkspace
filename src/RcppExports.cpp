@@ -2,6 +2,7 @@
 // Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #include "../inst/include/flowWorkspace.h"
+#include <RcppArmadillo.h>
 #include <Rcpp.h>
 
 using namespace Rcpp;
@@ -49,6 +50,141 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type threshold(thresholdSEXP);
     rcpp_result_gen = Rcpp::wrap(getSingleCellExpression(gs, sampleName, pops, data, markers, threshold));
     return rcpp_result_gen;
+END_RCPP
+}
+// open_workspace
+XPtr<flowJoWorkspace> open_workspace(string filename, int sample_name_location, int xmlParserOption);
+RcppExport SEXP _flowWorkspace_open_workspace(SEXP filenameSEXP, SEXP sample_name_locationSEXP, SEXP xmlParserOptionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< int >::type sample_name_location(sample_name_locationSEXP);
+    Rcpp::traits::input_parameter< int >::type xmlParserOption(xmlParserOptionSEXP);
+    rcpp_result_gen = Rcpp::wrap(open_workspace(filename, sample_name_location, xmlParserOption));
+    return rcpp_result_gen;
+END_RCPP
+}
+// parse_workspace
+XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws, int group_id, List subset, bool execute, string path, string h5_dir, bool includeGates, vector<string> additional_keys, vector<string> keywords, bool is_pheno_data_from_FCS, bool keyword_ignore_case, float extend_val, float extend_to, bool channel_ignore_case, bool leaf_bool, IntegerVector which_lines, string transformation, float decades, bool truncate_min_val, float min_limit, bool truncate_max_range, int dataset, bool emptyValue, bool ignoreTextOffset, bool onlyTxt, int num_threads);
+RcppExport SEXP _flowWorkspace_parse_workspace(SEXP wsSEXP, SEXP group_idSEXP, SEXP subsetSEXP, SEXP executeSEXP, SEXP pathSEXP, SEXP h5_dirSEXP, SEXP includeGatesSEXP, SEXP additional_keysSEXP, SEXP keywordsSEXP, SEXP is_pheno_data_from_FCSSEXP, SEXP keyword_ignore_caseSEXP, SEXP extend_valSEXP, SEXP extend_toSEXP, SEXP channel_ignore_caseSEXP, SEXP leaf_boolSEXP, SEXP which_linesSEXP, SEXP transformationSEXP, SEXP decadesSEXP, SEXP truncate_min_valSEXP, SEXP min_limitSEXP, SEXP truncate_max_rangeSEXP, SEXP datasetSEXP, SEXP emptyValueSEXP, SEXP ignoreTextOffsetSEXP, SEXP onlyTxtSEXP, SEXP num_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<flowJoWorkspace> >::type ws(wsSEXP);
+    Rcpp::traits::input_parameter< int >::type group_id(group_idSEXP);
+    Rcpp::traits::input_parameter< List >::type subset(subsetSEXP);
+    Rcpp::traits::input_parameter< bool >::type execute(executeSEXP);
+    Rcpp::traits::input_parameter< string >::type path(pathSEXP);
+    Rcpp::traits::input_parameter< string >::type h5_dir(h5_dirSEXP);
+    Rcpp::traits::input_parameter< bool >::type includeGates(includeGatesSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type additional_keys(additional_keysSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type keywords(keywordsSEXP);
+    Rcpp::traits::input_parameter< bool >::type is_pheno_data_from_FCS(is_pheno_data_from_FCSSEXP);
+    Rcpp::traits::input_parameter< bool >::type keyword_ignore_case(keyword_ignore_caseSEXP);
+    Rcpp::traits::input_parameter< float >::type extend_val(extend_valSEXP);
+    Rcpp::traits::input_parameter< float >::type extend_to(extend_toSEXP);
+    Rcpp::traits::input_parameter< bool >::type channel_ignore_case(channel_ignore_caseSEXP);
+    Rcpp::traits::input_parameter< bool >::type leaf_bool(leaf_boolSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type which_lines(which_linesSEXP);
+    Rcpp::traits::input_parameter< string >::type transformation(transformationSEXP);
+    Rcpp::traits::input_parameter< float >::type decades(decadesSEXP);
+    Rcpp::traits::input_parameter< bool >::type truncate_min_val(truncate_min_valSEXP);
+    Rcpp::traits::input_parameter< float >::type min_limit(min_limitSEXP);
+    Rcpp::traits::input_parameter< bool >::type truncate_max_range(truncate_max_rangeSEXP);
+    Rcpp::traits::input_parameter< int >::type dataset(datasetSEXP);
+    Rcpp::traits::input_parameter< bool >::type emptyValue(emptyValueSEXP);
+    Rcpp::traits::input_parameter< bool >::type ignoreTextOffset(ignoreTextOffsetSEXP);
+    Rcpp::traits::input_parameter< bool >::type onlyTxt(onlyTxtSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(parse_workspace(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, which_lines, transformation, decades, truncate_min_val, min_limit, truncate_max_range, dataset, emptyValue, ignoreTextOffset, onlyTxt, num_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_keywords_by_id
+KW_PAIR get_keywords_by_id(XPtr<flowJoWorkspace> ws, int sample_id);
+RcppExport SEXP _flowWorkspace_get_keywords_by_id(SEXP wsSEXP, SEXP sample_idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<flowJoWorkspace> >::type ws(wsSEXP);
+    Rcpp::traits::input_parameter< int >::type sample_id(sample_idSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_keywords_by_id(ws, sample_id));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_keywords_by_name
+KW_PAIR get_keywords_by_name(XPtr<flowJoWorkspace> ws, string sample_name);
+RcppExport SEXP _flowWorkspace_get_keywords_by_name(SEXP wsSEXP, SEXP sample_nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<flowJoWorkspace> >::type ws(wsSEXP);
+    Rcpp::traits::input_parameter< string >::type sample_name(sample_nameSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_keywords_by_name(ws, sample_name));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_sample_groups
+List get_sample_groups(XPtr<flowJoWorkspace> ws);
+RcppExport SEXP _flowWorkspace_get_sample_groups(SEXP wsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<flowJoWorkspace> >::type ws(wsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_sample_groups(ws));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_samples
+List get_samples(XPtr<flowJoWorkspace> ws);
+RcppExport SEXP _flowWorkspace_get_samples(SEXP wsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<flowJoWorkspace> >::type ws(wsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_samples(ws));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_xml_file_path
+string get_xml_file_path(XPtr<flowJoWorkspace> ws);
+RcppExport SEXP _flowWorkspace_get_xml_file_path(SEXP wsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<flowJoWorkspace> >::type ws(wsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_xml_file_path(ws));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getLogLevel
+unsigned short getLogLevel();
+RcppExport SEXP _flowWorkspace_getLogLevel() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getLogLevel());
+    return rcpp_result_gen;
+END_RCPP
+}
+// setLogLevel
+void setLogLevel(unsigned short loglevel);
+RcppExport SEXP _flowWorkspace_setLogLevel(SEXP loglevelSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned short >::type loglevel(loglevelSEXP);
+    setLogLevel(loglevel);
+    return R_NilValue;
+END_RCPP
+}
+// toggleErrorFlag
+void toggleErrorFlag();
+RcppExport SEXP _flowWorkspace_toggleErrorFlag() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    toggleErrorFlag();
+    return R_NilValue;
 END_RCPP
 }
 // getPopCounts
@@ -412,23 +548,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// parseWorkspace
-XPtr<GatingSet> parseWorkspace(string fileName, StringVec sampleIDs, StringVec sampleNames, bool isParseGate, unsigned short sampNloc, int xmlParserOption, unsigned short wsType);
-RcppExport SEXP _flowWorkspace_parseWorkspace(SEXP fileNameSEXP, SEXP sampleIDsSEXP, SEXP sampleNamesSEXP, SEXP isParseGateSEXP, SEXP sampNlocSEXP, SEXP xmlParserOptionSEXP, SEXP wsTypeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type fileName(fileNameSEXP);
-    Rcpp::traits::input_parameter< StringVec >::type sampleIDs(sampleIDsSEXP);
-    Rcpp::traits::input_parameter< StringVec >::type sampleNames(sampleNamesSEXP);
-    Rcpp::traits::input_parameter< bool >::type isParseGate(isParseGateSEXP);
-    Rcpp::traits::input_parameter< unsigned short >::type sampNloc(sampNlocSEXP);
-    Rcpp::traits::input_parameter< int >::type xmlParserOption(xmlParserOptionSEXP);
-    Rcpp::traits::input_parameter< unsigned short >::type wsType(wsTypeSEXP);
-    rcpp_result_gen = Rcpp::wrap(parseWorkspace(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType));
-    return rcpp_result_gen;
-END_RCPP
-}
 // getSamples
 StringVec getSamples(XPtr<GatingSet> gsPtr);
 RcppExport SEXP _flowWorkspace_getSamples(SEXP gsPtrSEXP) {
@@ -565,10 +684,22 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP _flowWorkspace_parseWorkspace(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
 static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getDescendants", (DL_FUNC) &_flowWorkspace_getDescendants, 3},
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},
+    {"_flowWorkspace_open_workspace", (DL_FUNC) &_flowWorkspace_open_workspace, 3},
+    {"_flowWorkspace_parse_workspace", (DL_FUNC) &_flowWorkspace_parse_workspace, 26},
+    {"_flowWorkspace_get_keywords_by_id", (DL_FUNC) &_flowWorkspace_get_keywords_by_id, 2},
+    {"_flowWorkspace_get_keywords_by_name", (DL_FUNC) &_flowWorkspace_get_keywords_by_name, 2},
+    {"_flowWorkspace_get_sample_groups", (DL_FUNC) &_flowWorkspace_get_sample_groups, 1},
+    {"_flowWorkspace_get_samples", (DL_FUNC) &_flowWorkspace_get_samples, 1},
+    {"_flowWorkspace_get_xml_file_path", (DL_FUNC) &_flowWorkspace_get_xml_file_path, 1},
+    {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
+    {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
+    {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
     {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 5},
     {"_flowWorkspace_getSplineCoefs", (DL_FUNC) &_flowWorkspace_getSplineCoefs, 6},
     {"_flowWorkspace_addTrans", (DL_FUNC) &_flowWorkspace_addTrans, 2},
@@ -596,7 +727,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
-    {"_flowWorkspace_parseWorkspace", (DL_FUNC) &_flowWorkspace_parseWorkspace, 7},
     {"_flowWorkspace_getSamples", (DL_FUNC) &_flowWorkspace_getSamples, 1},
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 3},
     {"_flowWorkspace_NewGatingSet_rootOnly", (DL_FUNC) &_flowWorkspace_NewGatingSet_rootOnly, 1},
@@ -609,6 +739,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
     {"_flowWorkspace_setCounts", (DL_FUNC) &_flowWorkspace_setCounts, 4},
+    {"_flowWorkspace_parseWorkspace",                (DL_FUNC) &_flowWorkspace_parseWorkspace,                 7},
     {NULL, NULL, 0}
 };
 

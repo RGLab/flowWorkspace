@@ -1833,7 +1833,7 @@ setMethod("getPopStats", "GatingSet",
         if(is.null(subpopulations))
           subpopulations <- getNodes(x, path = path, ...)[-1]
 
-        pop_stats <- .getPopCounts(x@pointer, sampleNames(x), subpopulations, xml, path == "full")
+        pop_stats <- .getPopCounts(x@pointer, subpopulations, xml, path == "full")
         pop_stats <- data.table(name = pop_stats[["name"]]
                               , Population = pop_stats[["Population"]]
                               , Parent = pop_stats[["Parent"]]

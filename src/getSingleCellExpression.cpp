@@ -1,11 +1,12 @@
+include "cytolib/GatingSet.hpp"
 #include <Rcpp.h>
-#include "cytolib/GatingHierarchy.hpp"
-#include "cytolib/GatingSet.hpp"
+
 #include <stdexcept>
 // #include "include/gate.hpp"
 // #include "include/transformation.hpp"
 using namespace std;
 using namespace Rcpp;
+using namespace cytolib;
 
 //[[Rcpp::plugins(temp)]] 
 

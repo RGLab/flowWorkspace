@@ -1,7 +1,7 @@
 #' @include AllClasses.R
 NULL
 
-#' Open/Close a flowJo workspace
+#' Open a flowJo workspace
 #'
 #' Open a flowJo workspace and return a \code{flowJoWorkspace} object.
 #' Close a flowJoWorkspace, destroying the internal representation of the XML document, and freeing the associated memory.
@@ -17,14 +17,14 @@ NULL
 #' @examples
 #' \dontrun{
 #' 	file<-"myworkspace.xml"
-#' 	ws<-open_flowjo_workspace(file);
+#' 	ws<-openWorkspace(file);
 #' 	ws
 #' }
 #'
 #' @importFrom XML xmlTreeParse xmlAttrs xmlGetAttr xmlTreeParse xmlRoot xmlValue xpathApply
 #' @import flowCore ncdfFlow
 #' @export
-open_flowjo_workspace <- function(file,options = 0, sampNloc = "keyword"){
+openWorkspace <- function(file,options = 0, sampNloc = "keyword"){
   valid_values <- c("keyword", "sampleNode")
   sampNloc <- match.arg(sampNloc, valid_values)
   

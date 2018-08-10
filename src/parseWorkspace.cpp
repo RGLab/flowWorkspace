@@ -7,7 +7,7 @@
  *      Author: wjiang2
  */
 #include "cytoCore/pairVectorRcppWrap.h"
-#include "CytoML/openWorkspace.hpp"
+#include "flowWorkspace/openWorkspace.hpp"
 using namespace Rcpp;
 using namespace cytolib;
 using namespace flowWorkspace;
