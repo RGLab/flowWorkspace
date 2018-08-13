@@ -7,15 +7,15 @@
  *      Author: wjiang2
  */
 
-#include "cytolib/GatingSet.hpp"
-#include <Rcpp.h>
+#include "flowWorkspace.h"
+
 using namespace Rcpp;
 using namespace cytolib;
 
 //[[Rcpp::export]]
 XPtr<CytoSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples) {
 
-  return XPtr<CytoSet>(new CytoSet(gsPtr->get_cytoset(node)));
+  return XPtr<CytoSet>(new CytoSet(gsPtr->get_cytoset().sub_samples(samples)));
 }
 
 //[[Rcpp::export]]
@@ -37,13 +37,6 @@ StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
 }
 
 
-//[[Rcpp::export(name=".cpp_getSamples")]]
-StringVec getSamples(XPtr<GatingSet> gsPtr) {
-
-	return gsPtr->getSamples();
-
-}
-
 /*
  * constructing GatingSet from existing gating hierarchy and new data
  */
@@ -53,7 +46,7 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
                ,StringVec new_sample_uids)
   {
 
-		GatingHierarchy & gh=gsPtr->getGatingHierarchy(src_sample_uid);
+		GatingHierarchy & gh=*gsPtr->getGatingHierarchy(src_sample_uid);
 
 		/*
 		 * used gh as the template to clone multiple ghs in the new gs
@@ -100,9 +93,9 @@ XPtr<GatingSet> load_gatingset(string path) {
 //[[Rcpp::export(name=".cpp_CloneGatingSet")]]
 XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs,StringVec new_sample_uids) {
 
-		GatingSet * gs_new=gs->clone(new_sample_uids);
 
-		return XPtr<GatingSet>(gs_new);
+
+		return XPtr<GatingSet>(new GatingSet(gs->sub_samples(new_sample_uids).copy()));
 
 }
 
@@ -115,7 +108,8 @@ XPtr<GatingSet> combineGatingSet(Rcpp::List gsList,Rcpp::List sampleList) {
 		{
 			GatingSet *	gs=getGsPtr((SEXP)gsList[i]);
 			StringVec samples=as<StringVec>(sampleList[i]);
-			newGS->add(*gs,samples);
+			for(auto sn : samples)
+				newGS->add_GatingHierarchy(gs->getGatingHierarchy(sn),sn);
 		}
 
 
