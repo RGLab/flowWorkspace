@@ -3,7 +3,9 @@
 #define __flowWorkspace_h__
 
 #include "cytolib/GatingSet.hpp"
+#include "cytoCore/pairVectorRcppWrap.h"
+#include "flowWorkspace/openWorkspace.hpp"
 using namespace cytolib;
-#include <Rcpp.h>
-GatingSet * getGsPtr(SEXP _gsPtr);
+using namespace flowWorkspace;
+
 #endif // __flowWorkspace_h__

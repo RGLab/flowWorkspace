@@ -1,6 +1,7 @@
-#include <Rcpp.h>
 #include <cytolib/GatingSet.hpp>
+#include <Rcpp.h>
 using namespace Rcpp;
+using namespace cytolib;
 /*
  * the routine that deals with the core c++ class and its member functions
  */
@@ -31,7 +32,7 @@ void getDescendants_gh(GatingHierarchy & gh, VertexID u, VertexID_vec & output){
 //[[Rcpp::export(".getDescendants")]]
 VertexID_vec getDescendants(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node){
   // Rcpp::Rcout << sampleName << std::endl;
-  GatingHierarchy &gh = gsPtr->getGatingHierarchy(sampleName);
+  GatingHierarchy &gh = *gsPtr->getGatingHierarchy(sampleName);
   VertexID_vec output;
 
 

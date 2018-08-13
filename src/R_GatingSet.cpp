@@ -8,9 +8,11 @@
  */
 
 #include "flowWorkspace.h"
-
+#include <Rcpp.h>
 using namespace Rcpp;
-using namespace cytolib;
+
+GatingSet * getGsPtr(SEXP _gsPtr);
+
 
 //[[Rcpp::export]]
 XPtr<CytoSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples) {

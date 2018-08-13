@@ -14,7 +14,7 @@
 using namespace std;
 
 #ifdef ROUT
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #define COUT Rcpp::Rcout //flowWorkspace is still using Rcpp, so we don't bother replace COUT with PRINT yet
 #endif
 

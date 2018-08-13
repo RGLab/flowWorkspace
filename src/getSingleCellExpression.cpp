@@ -1,4 +1,4 @@
-include "cytolib/GatingSet.hpp"
+#include "cytolib/GatingSet.hpp"
 #include <Rcpp.h>
 
 #include <stdexcept>
@@ -62,7 +62,7 @@ NumericMatrix getSingleCellExpressionByGate(XPtr<GatingSet> gs,string sampleName
                                         , CharacterVector markers //used for output mat colnames,may have other markers
                                         , bool threshold) {
   
-  GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+  GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
   
   //get indices for each marker
   unsigned nMarkers = markers_pops.size();
@@ -103,7 +103,7 @@ NumericMatrix getSingleCellExpression(XPtr<GatingSet> gs,string sampleName
                                         , CharacterVector markers, bool threshold) {
   
   //get indices from each node
-  GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+  GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
   
   unsigned nNodes = pops.size();
   vector<BoolVec> indexList(nNodes);
