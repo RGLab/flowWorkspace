@@ -156,7 +156,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' construct a gatingset with empty trees (just root node)
 #' 
 #' @rdname GatingSet-methods
-#' @importClassesFrom flowCore cytoSet
+#' @importClassesFrom cytoCore cytoSet
 #' @export 
 #' @examples 
 #' \dontrun{

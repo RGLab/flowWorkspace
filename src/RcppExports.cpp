@@ -648,14 +648,6 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP _flowWorkspace_computeGates(SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP _flowWorkspace_gating(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP _flowWorkspace_getSamples(SEXP);
-RcppExport SEXP _flowWorkspace_loadGatingSet(SEXP);
-RcppExport SEXP _flowWorkspace_NewGatingSet_rootOnly(SEXP);
-RcppExport SEXP _flowWorkspace_saveGatingSet(SEXP, SEXP);
-RcppExport SEXP _flowWorkspace_setSample(SEXP, SEXP, SEXP);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getDescendants", (DL_FUNC) &_flowWorkspace_getDescendants, 3},
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
@@ -706,13 +698,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
     {"_flowWorkspace_setCounts", (DL_FUNC) &_flowWorkspace_setCounts, 4},
-    {"_flowWorkspace_computeGates",                  (DL_FUNC) &_flowWorkspace_computeGates,                   5},
-    {"_flowWorkspace_gating",                        (DL_FUNC) &_flowWorkspace_gating,                        10},
-    {"_flowWorkspace_getSamples",                    (DL_FUNC) &_flowWorkspace_getSamples,                     1},
-    {"_flowWorkspace_loadGatingSet",                 (DL_FUNC) &_flowWorkspace_loadGatingSet,                  1},
-    {"_flowWorkspace_NewGatingSet_rootOnly",         (DL_FUNC) &_flowWorkspace_NewGatingSet_rootOnly,          1},
-    {"_flowWorkspace_saveGatingSet",                 (DL_FUNC) &_flowWorkspace_saveGatingSet,                  2},
-    {"_flowWorkspace_setSample",                     (DL_FUNC) &_flowWorkspace_setSample,                      3},
     {NULL, NULL, 0}
 };
 

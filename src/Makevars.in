@@ -8,7 +8,7 @@ endif
 	
 CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@
-PKG_LIBS =`${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags()"` @PKG_LIBS@ 
+PKG_LIBS =`${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags();cat(' ');Rhdf5lib::pkgconfig('PKG_CXX_LIBS')"` @PKG_LIBS@ -lstdc++fs 
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a
