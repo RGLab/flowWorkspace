@@ -11,7 +11,7 @@
 \alias{load_gslist}
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
-save_gs(G, path, overwrite = FALSE, cdf = c("copy", "move", "skip",
+save_gs(gs, path, overwrite = FALSE, cdf = c("copy", "move", "skip",
   "symlink", "link"), ...)
 
 load_gs(path)
@@ -21,8 +21,6 @@ save_gslist(gslist, path, ...)
 load_gslist(path)
 }
 \arguments{
-\item{G}{A \code{GatingSet}}
-
 \item{path}{A character scalar giving the path to save/load the GatingSet to/from.}
 
 \item{overwrite}{A logical scalar specifying whether to overwrite the existing folder.}
@@ -34,6 +32,8 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.}
 \item{...}{other arguments: not used.}
 
 \item{gslist}{A \code{GatingSetList}}
+
+\item{G}{A \code{GatingSet}}
 }
 \value{
 \code{load_gs} returns a GatingSet object
