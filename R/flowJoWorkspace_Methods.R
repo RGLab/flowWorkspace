@@ -27,7 +27,7 @@ NULL
 openWorkspace <- function(file,options = 0, sampNloc = "keyword"){
   valid_values <- c("keyword", "sampleNode")
   sampNloc <- match.arg(sampNloc, valid_values)
-  
+  file <- path.expand(file)
   new("flowJoWorkspace", doc = open_workspace(file, sample_name_location = match(sampNloc,valid_values), xmlParserOption = options))
   
 }
@@ -133,7 +133,7 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 #' @rdname parseWorkspace
 #' @export 
 #' @importFrom utils menu
-flowjo_to_gatingset <- function(ws, name = NULL
+parseWorkspace <- function(ws, name = NULL
     , subset = list()
     , execute = TRUE
     , path = ""
@@ -302,10 +302,13 @@ getSamples <- function(x, group_id = NULL)
 getSampleGroups <- function(x){
   res <- get_sample_groups(x@doc)
   df <- do.call(rbind, mapply(res[["groupID"]], res[["groupName"]], res[["sampleID"]]
-          , FUN = function(x, y, z){
-            cbind(x,y,z)
-          })
-  )
+                        , FUN = function(x, y, z){
+                          if(length(z)>0)
+                            cbind(x,y,z)
+                          else
+                            NULL
+                        })
+                )
   colnames(df) <-  names(res)
   as.data.frame(df)
 }
