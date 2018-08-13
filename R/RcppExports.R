@@ -48,18 +48,6 @@ get_xml_file_path <- function(ws) {
     .Call(`_flowWorkspace_get_xml_file_path`, ws)
 }
 
-.cpp_getLogLevel <- function() {
-    .Call(`_flowWorkspace_getLogLevel`)
-}
-
-.cpp_setLogLevel <- function(loglevel) {
-    invisible(.Call(`_flowWorkspace_setLogLevel`, loglevel))
-}
-
-.cpp_togleErrorFlag <- function() {
-    invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
-}
-
 #' grab vectors of pop counts and the parent counts along with their paths and FCS filenames
 #'
 #' This speeds up the process of getPopStats by putting the loop in c++ and avoiding copying while constructing vectors
@@ -147,14 +135,6 @@ get_xml_file_path <- function(ws) {
     .Call(`_flowWorkspace_getTransformations`, gs, sampleName, inverse)
 }
 
-.cpp_computeGates <- function(gs, sampleName, gainsVec, extend_val, extend_to) {
-    invisible(.Call(`_flowWorkspace_computeGates`, gs, sampleName, gainsVec, extend_val, extend_to))
-}
-
-.cpp_gating <- function(gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep) {
-    invisible(.Call(`_flowWorkspace_gating`, gs, orig, sampleName, gainsVec, nodeInd, recompute, extend_val, ignore_case, computeTerminalBool, timestep))
-}
-
 .cpp_getGate <- function(gs, sampleName, gatePath) {
     .Call(`_flowWorkspace_getGate`, gs, sampleName, gatePath)
 }
@@ -215,28 +195,36 @@ get_xml_file_path <- function(ws) {
     invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
 }
 
+subset_gs_by_sample <- function(gsPtr, samples) {
+    .Call(`_flowWorkspace_subset_gs_by_sample`, gsPtr, samples)
+}
+
+get_cytoset <- function(gsPtr) {
+    .Call(`_flowWorkspace_get_cytoset`, gsPtr)
+}
+
+get_cytoset_from_node <- function(gsPtr, node) {
+    .Call(`_flowWorkspace_get_cytoset_from_node`, gsPtr, node)
+}
+
 .cpp_getSamples <- function(gsPtr) {
-    .Call(`_flowWorkspace_getSamples`, gsPtr)
+    .Call(`_flowWorkspace_get_sample_uids`, gsPtr)
 }
 
-.cpp_NewGatingSet <- function(gsPtr, sampleName, newSampleNames) {
-    .Call(`_flowWorkspace_NewGatingSet`, gsPtr, sampleName, newSampleNames)
+.cpp_NewGatingSet <- function(gsPtr, src_sample_uid, new_sample_uids) {
+    .Call(`_flowWorkspace_NewGatingSet`, gsPtr, src_sample_uid, new_sample_uids)
 }
 
-.cpp_NewGatingSet_rootOnly <- function(sampleNames) {
-    .Call(`_flowWorkspace_NewGatingSet_rootOnly`, sampleNames)
+.cpp_saveGatingSet <- function(gs, path, overwrite, cdf) {
+    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, overwrite, cdf))
 }
 
-.cpp_saveGatingSet <- function(gs, fileName) {
-    invisible(.Call(`_flowWorkspace_saveGatingSet`, gs, fileName))
+.cpp_loadGatingSet <- function(path) {
+    .Call(`_flowWorkspace_load_gatingset`, path)
 }
 
-.cpp_loadGatingSet <- function(fileName) {
-    .Call(`_flowWorkspace_loadGatingSet`, fileName)
-}
-
-.cpp_CloneGatingSet <- function(gs, samples) {
-    .Call(`_flowWorkspace_CloneGatingSet`, gs, samples)
+.cpp_CloneGatingSet <- function(gs, new_sample_uids) {
+    .Call(`_flowWorkspace_CloneGatingSet`, gs, new_sample_uids)
 }
 
 .cpp_combineGatingSet <- function(gsList, sampleList) {
@@ -244,7 +232,7 @@ get_xml_file_path <- function(ws) {
 }
 
 .cpp_setSample <- function(gs, oldName, newName) {
-    invisible(.Call(`_flowWorkspace_setSample`, gs, oldName, newName))
+    invisible(.Call(`_flowWorkspace_set_sample_uid`, gs, oldName, newName))
 }
 
 .cpp_getLogLevel <- function() {

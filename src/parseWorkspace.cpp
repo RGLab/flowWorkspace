@@ -195,22 +195,3 @@ string get_xml_file_path(XPtr<flowJoWorkspace> ws)
 }
 
 
-
-//[[Rcpp::export(name=".cpp_getLogLevel")]]
-unsigned short getLogLevel() {
-
-		return(g_loglevel);
-
-}
-
-//[[Rcpp::export(name=".cpp_setLogLevel")]]
-void setLogLevel(unsigned short loglevel) {
-
-		g_loglevel = loglevel;
-
-}
-
-//[[Rcpp::export(name=".cpp_togleErrorFlag")]]
-void toggleErrorFlag(){
-	my_throw_on_error = !my_throw_on_error;
-}
