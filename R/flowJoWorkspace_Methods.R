@@ -39,6 +39,7 @@ setMethod("show",c("flowJoWorkspace"),function(object){
       
       sg <- getSampleGroups(object)
       tbl<-table(Name=sg$groupName,GroupID=sg$groupID)
+      browser()
       print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
       
     })
@@ -280,7 +281,8 @@ getSamples <- function(x, group_id = NULL)
     res <- res[group_id]
   res <- unlist(res, recursive = FALSE)
   res <- lapply(res, as.data.frame)
-  do.call(rbind, res)
+  res <- do.call(rbind, res)
+  unique(res)
 }
 
 #' Get a table of sample groups from a flowJo workspace
@@ -311,7 +313,7 @@ getSampleGroups <- function(x){
                    NULL
                }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
   df <- do.call(rbind, df)
-  colnames(df) <-  names(res)
+  colnames(df) <-  c("groupName", "groupID", "sampleID")
   df
 }
 

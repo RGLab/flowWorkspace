@@ -50,7 +50,10 @@ test_that("getKeywords workspace",
 
 test_that(".getSamples workspace",
     {
-      expect_equal(getSamples(ws), fjRes[[".getSamples"]])
+      thisRes <- getSamples(ws)
+      thisExpect <- fjRes[[".getSamples"]]
+      
+      expect_equivalent(thisRes, thisExpect)
     })
 
 test_that(".getSampleGroups workspace",

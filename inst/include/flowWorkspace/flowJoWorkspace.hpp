@@ -793,7 +793,7 @@ public:
 	int get_population_count(const wsSampleNode & node)
 	{
 		//libxml doesn't seem to support count() function in xpath
-		xmlXPathObjectPtr res = node.xpathInNode("//Population");
+		xmlXPathObjectPtr res = node.xpathInNode(".//Population");
 		int n = res->nodesetval->nodeNr;
 		xmlXPathFreeObject(res);
 		return n;
