@@ -185,22 +185,23 @@ parseWorkspace <- function(ws, name = NULL
     additional.keys <- character(0)
   if(is.null(path))
     path <- ""
-  p <- parse_workspace(ws@doc, groupInd - 1
-      , subset
-      , execute
-      , path
-      , h5_dir
-      , includeGates
-      , additional.keys
-      , keywords
-      , keywords.source == "FCS"
-      , keyword.ignore.case
-      , extend_val = extend_val
-      , extend_to = extend_to
-      , channel_ignore_case = channel.ignore.case
-      , leaf_bool = leaf.bool
-      , ...
-  )
+  p <- parse_workspace(ws = ws@doc
+                        , group_id = groupInd - 1
+                        , subset = subset
+                        , execute = execute
+                        , path = path
+                        , h5_dir = h5_dir
+                        , includeGates = includeGates
+                        , additional_keys = additional.keys
+                        , keywords = keywords
+                        , is_pheno_data_from_FCS = keywords.source == "FCS"
+                        , keyword_ignore_case = keyword.ignore.case
+                        , extend_val = extend_val
+                        , extend_to = extend_to
+                        , channel_ignore_case = channel.ignore.case
+                        , leaf_bool = leaf.bool
+                        , ...
+                    )
   new("GatingSet", pointer = p)
 }
 

@@ -80,11 +80,16 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
   config.channel_ignore_case = channel_ignore_case;
   config.compute_leaf_bool_node = leaf_bool;
 
-  StringVector filter_names = subset.names();
-  for(unsigned i = 0; i < filter_names.size(); i++)
+  SEXP nm = subset.names();
+  if(!Rf_isNull(nm))//without NULL checking, the following line will fail
   {
-    string filter_name = as<string>(filter_names[i]);
-    config.sample_filters[filter_name] = as<vector<string>>(subset[filter_name]);
+	  vector<string> filter_names = as<vector<string> >(nm);
+
+	  for(unsigned i = 0; i < filter_names.size(); i++)
+	  {
+		string filter_name = filter_names[i];
+		config.sample_filters[filter_name] = as<vector<string>>(subset[filter_name]);
+	  }
   }
   //fcs parser config
   config.fcs_read_param.header.ignoreTextOffset = ignoreTextOffset;
