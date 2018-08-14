@@ -1457,12 +1457,6 @@ setMethod("setNode"
       .cpp_setNodeFlag(x@pointer,sampleNames(x), y, hidden)
     })
 
-#' @rdname sampleNames
-#' @export
-setMethod("sampleNames","GatingHierarchy",function(object){
-      object@name
-    })
-
 
 #' @export
 #' @rdname pData-methods

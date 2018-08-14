@@ -15,9 +15,9 @@ GatingSet * getGsPtr(SEXP _gsPtr);
 
 
 //[[Rcpp::export]]
-XPtr<CytoSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples) {
+XPtr<GatingSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples) {
 
-  return XPtr<CytoSet>(new CytoSet(gsPtr->get_cytoset().sub_samples(samples)));
+  return XPtr<GatingSet>(new GatingSet(gsPtr->sub_samples(samples)));
 }
 
 //[[Rcpp::export]]
