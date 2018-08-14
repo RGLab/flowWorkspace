@@ -62,7 +62,7 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x){
       #get the position of logical operators
       op_ind <- unlist(gregexpr(pattern=pattern,expr))
       #extract these operators
-      op <- flowWorkspace:::trimWhiteSpace(substring(expr,op_ind,op_ind))
+      op <- trimws(substring(expr,op_ind,op_ind))
       ##append & for the first node element(as C parser convention requires)
       if(length(op)==1){
         if(nchar(op)==0){
@@ -76,7 +76,7 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x){
 
       #split into node elements by operators
       refs <- unlist(strsplit(expr,split=pattern)) 
-      refs <- trimWhiteSpace(refs)
+      refs <- trimws(refs)
       #extract the leading ! operator from each ref
       isNot <- as.logical(regexpr("!",refs) + 1) 
       #strip ! symbol from node elements

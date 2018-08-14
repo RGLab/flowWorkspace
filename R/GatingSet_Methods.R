@@ -618,7 +618,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
-    trans_names <-trimWhiteSpace(names(trans))
+    trans_names <-trimws(names(trans))
 
 	datarange <- sapply(1:dim(rawRange)[2],function(i){
                thisRange <- rawRange[i]

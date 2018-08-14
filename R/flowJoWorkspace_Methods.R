@@ -302,16 +302,17 @@ getSamples <- function(x, group_id = NULL)
 #' @export
 getSampleGroups <- function(x){
   res <- get_sample_groups(x@doc)
-  df <- do.call(rbind, mapply(res[["groupID"]], res[["groupName"]], res[["sampleID"]]
-                        , FUN = function(x, y, z){
-                          if(length(z)>0)
-                            cbind(x,y,z)
-                          else
-                            NULL
-                        })
-                )
+  df <- mapply(res[["groupName"]], res[["groupID"]], res[["sampleID"]]
+               , FUN = function(x, y, z){
+                 if(length(z)>0)
+                 {
+                   data.frame(x,y,z)                            
+                 }else
+                   NULL
+               }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  df <- do.call(rbind, df)
   colnames(df) <-  names(res)
-  as.data.frame(df)
+  df
 }
 
 

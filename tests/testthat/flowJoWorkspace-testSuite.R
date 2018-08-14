@@ -4,8 +4,8 @@ fjRes <- readRDS(file.path(resultDir, "flowJoWorkspace_expect.rds"))
 
 test_that("show workspace",
     {
-      thisRes <- capture.output(show(ws))[-2]
-      expectRes <- fjRes[["ws_show"]][-2]
+      thisRes <- capture.output(show(ws))[-(1:2)]
+      expectRes <- fjRes[["ws_show"]][-(1:5)]
       expect_equal(thisRes, expectRes)
       
     })
@@ -29,58 +29,33 @@ test_that("getWorkspaceType",
       expect_error(.getWorkspaceType("1.63"), "Unsupported version")
     })
 
-test_that("getFileNames workspace",
-    {
-      expect_equal(.getFileNames(ws@doc, wsType = "macII"), fjRes[["getFn_ws"]])
-      expect_equal(getFileNames(ws), fjRes[["getFn_ws"]])
-      
-    })
-
 test_that("getKeywordsBySampleID workspace",
     {
       thisExpectRes <- fjRes[["getkwByID_ws"]]
-      thisExpectRes <- lapply(fjRes[["getkwByID_ws"]], function(kw)flowWorkspace:::trimWhiteSpace(kw[["value"]]))
+      thisExpectRes <- lapply(fjRes[["getkwByID_ws"]], function(kw)trimws(kw[["value"]]))
       names(thisExpectRes) <- lapply(fjRes[["getkwByID_ws"]], "[[", "name")
       
-      expect_equal(flowWorkspace:::.getKeywordsBySampleID(ws@doc, sid = 1, sampleIDPath = "/Workspace/SampleList/Sample"), thisExpectRes)
+      expect_equal(getKeywords(ws, 1), thisExpectRes)
       
     })
 
 test_that("getKeywords workspace",
     {
-      expect_error(getKeywords(ws, "CytoTrol_CytoTrol_1.fcs"), "Character 'CytoTrol_CytoTrol_1.fcs' can't uniquely identify")
-      thisExpectRes <- lapply(fjRes[["getkw_ws"]], flowWorkspace:::trimWhiteSpace)
+      expect_error(getKeywords(ws, "CytoTrol_CytoTrol_1.fcs"), "Multiple sample nodes found")
+      thisExpectRes <- lapply(fjRes[["getkw_ws"]], trimws)
       expect_equal(getKeywords(ws, 1), thisExpectRes)
     })
 
-test_that(".getKeyword workspace",
-    {
-      expect_equal(.getKeyword(ws, "$FIL", samplePath = "/Workspace/SampleList/Sample"), fjRes[[".getkw_ws"]])
-    })
 
-
-test_that("getFJWSubsetIndices workspace",
-    {
-      expect_equal(getFJWSubsetIndices(ws, group = 2, requiregates = TRUE), fjRes[["getFJWSubsetIndices_2"]])
-      expect_equal(getFJWSubsetIndices(ws, group = 4, requiregates = TRUE), fjRes[["getFJWSubsetIndices_4"]])
-      
-      expect_equal(getFJWSubsetIndices(ws, group = 4
-                                      , key = "TUBE NAME"
-                                      , value = "CytoTrol"
-                                      , requiregates = TRUE
-                                      )
-                  , integer(0))
-              
-    })
 
 test_that(".getSamples workspace",
     {
-      expect_equal(.getSamples(ws@doc, wsType = "macII"), fjRes[[".getSamples"]])
       expect_equal(getSamples(ws), fjRes[[".getSamples"]])
     })
 
 test_that(".getSampleGroups workspace",
     {
-      expect_equal(.getSampleGroups(ws@doc, wsType = "macII"), fjRes[[".getSampleGroups"]])
-      expect_equal(getSampleGroups(ws), fjRes[[".getSampleGroups"]])
+      thisRes <- getSampleGroups(ws)
+      thisExpect <- fjRes[[".getSampleGroups"]]
+      expect_equivalent(thisRes, thisExpect)
     })
