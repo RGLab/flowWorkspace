@@ -24,11 +24,12 @@ using namespace cytolib;
 //' @param flowJo logical flag to specify whether flowCore or flowJo counts to return
 //' @param isFullPath logical flag to specify whether return the full path or partial path of populations
 //[[Rcpp::export(".getPopCounts")]]
-Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, StringVec subpopulation, bool flowJo, bool isFullPath){
+Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bool flowJo, bool isFullPath){
 
 	bool isFlowCore = !flowJo;
 
 	unsigned nPop = subpopulation.size();
+	StringVec sampleNames = gsPtr->get_sample_uids();
 	unsigned nSample = sampleNames.size();
 	unsigned nVec = nPop * nSample;
 	Rcpp::CharacterVector sampleVec(nVec);

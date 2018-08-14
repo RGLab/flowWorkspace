@@ -904,7 +904,7 @@ setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj
 setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y, ...){
       
       fs <- callNextMethod()
-      fs[[1]]
+      fs[[1, ...]]
       
     })
 
@@ -912,7 +912,7 @@ setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y,
 #' @export
 setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
       fs <- callNextMethod()
-      fs[[1]]
+      fs[[1, ...]]
     })
 
 .isBoolGate<-function(x,y){
@@ -1217,12 +1217,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                             , projections = list()
                             , ...){
 
-			if(!x@flag){
-				message("Can't plot until you gate the data \n");
-				return();
-			}
-
-
+                          .Defunct("ggcyto::autoplot")
             par.settings <- lattice:::updateList(flowWorkspace.par.get("theme.novpadding"), par.settings)
 
             #convert popname to id

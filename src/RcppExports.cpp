@@ -159,17 +159,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // getPopCounts
-Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec sampleNames, StringVec subpopulation, bool flowJo, bool isFullPath);
-RcppExport SEXP _flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP sampleNamesSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
+Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bool flowJo, bool isFullPath);
+RcppExport SEXP _flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
-    Rcpp::traits::input_parameter< StringVec >::type sampleNames(sampleNamesSEXP);
     Rcpp::traits::input_parameter< StringVec >::type subpopulation(subpopulationSEXP);
     Rcpp::traits::input_parameter< bool >::type flowJo(flowJoSEXP);
     Rcpp::traits::input_parameter< bool >::type isFullPath(isFullPathSEXP);
-    rcpp_result_gen = Rcpp::wrap(getPopCounts(gsPtr, sampleNames, subpopulation, flowJo, isFullPath));
+    rcpp_result_gen = Rcpp::wrap(getPopCounts(gsPtr, subpopulation, flowJo, isFullPath));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -487,7 +486,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // subset_gs_by_sample
-XPtr<CytoSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples);
+XPtr<GatingSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples);
 RcppExport SEXP _flowWorkspace_subset_gs_by_sample(SEXP gsPtrSEXP, SEXP samplesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -659,7 +658,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_sample_groups", (DL_FUNC) &_flowWorkspace_get_sample_groups, 1},
     {"_flowWorkspace_get_samples", (DL_FUNC) &_flowWorkspace_get_samples, 1},
     {"_flowWorkspace_get_xml_file_path", (DL_FUNC) &_flowWorkspace_get_xml_file_path, 1},
-    {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 5},
+    {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 4},
     {"_flowWorkspace_getSplineCoefs", (DL_FUNC) &_flowWorkspace_getSplineCoefs, 6},
     {"_flowWorkspace_addTrans", (DL_FUNC) &_flowWorkspace_addTrans, 2},
     {"_flowWorkspace_updateChannels", (DL_FUNC) &_flowWorkspace_updateChannels, 2},

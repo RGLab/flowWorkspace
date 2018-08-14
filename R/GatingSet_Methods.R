@@ -1093,20 +1093,13 @@ fix_y_axis <- function(gs, x, y){
                       , ylim = flowWorkspace.par.get("plotGate")[["ylim"]]
                       , ...){
 
-
+  .Defunct("ggcyto::autoplot")
 	type <- match.arg(type, c("xyplot","densityplot", "histogram"))
 	strip.text <- match.arg(strip.text)
     #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
     is.gh <- class(x) == "GatingHierarchy"
     if(is.gh){
-      x <- new("GatingSet", pointer = x@pointer
-                          , data = x@data
-                          , flag = x@flag
-                          , axis = x@axis
-                          , guid = x@guid
-                          , transformation = x@transformation
-                          , compensation = x@compensation
-                          )[x@name]
+      x <- as(x, "GatingSet")
     }
 
     gh <- x[[1]]
@@ -1518,7 +1511,7 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 #' @rdname sampleNames
 #' @export
 setMethod("sampleNames","GatingSet",function(object){
-      sampleNames(flowData(object))
+      .cpp_getSamples(object@pointer)
     })
 #' @name sampleNames
 #' @param value \code{character} new sample names
@@ -1540,11 +1533,7 @@ setReplaceMethod("sampleNames",
             .cpp_setSample( object@pointer, oldName, newName)
       })
 
-      #update data
-      fs <- flowData(object)
-      sampleNames(fs) <- value
-      flowData(object) <- fs
-
+      
       object
     })
 

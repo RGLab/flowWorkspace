@@ -57,8 +57,8 @@ get_xml_file_path <- function(ws) {
 #' @param subpopulation population vector that specify the subset of pops to query
 #' @param flowJo logical flag to specify whether flowCore or flowJo counts to return
 #' @param isFullPath logical flag to specify whether return the full path or partial path of populations
-.getPopCounts <- function(gsPtr, sampleNames, subpopulation, flowJo, isFullPath) {
-    .Call(`_flowWorkspace_getPopCounts`, gsPtr, sampleNames, subpopulation, flowJo, isFullPath)
+.getPopCounts <- function(gsPtr, subpopulation, flowJo, isFullPath) {
+    .Call(`_flowWorkspace_getPopCounts`, gsPtr, subpopulation, flowJo, isFullPath)
 }
 
 #' construct the biexpTrans c++ object on the fly
