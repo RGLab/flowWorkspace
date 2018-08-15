@@ -51,7 +51,6 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 #'      \itemize{
 #'      	\item name \code{numeric} or \code{character}. The name or index of the group of samples to be imported. If \code{NULL}, the groups are printed to the screen and one can be selected interactively. Usually, multiple groups are defined in the flowJo workspace file.
 #'      	\item execute \code{TRUE|FALSE} a logical specifying if the gates, transformations, and compensation should be immediately calculated after the flowJo workspace have been imported. TRUE by default. 
-#'      	\item isNcdf \code{TRUE|FALSE} logical specifying if you would like to use netcdf to store the data, or if you would like to keep all the flowFrames in memory. For a small data set, you can safely set this to FALSE, but for larger data, we suggest using netcdf. You will need the netcdf C library installed.
 #'      	\item subset \code{numeric} vector specifying the subset of samples in a group to import.
 #'                        Or a \code{character} specifying the FCS filenames to be imported.
 #'                        Or an \code{expression} to be passed to 'subset' function to filter samples by 'pData' (Note that the columns referred by the expression must also be explicitly specified in 'keywords' argument)  
@@ -92,8 +91,7 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 #'  
 #'  gs <- parseWorkspace(ws, name = 4
 #'                         , path = dataDir     #specify the FCS path 
-#'                         , subset = "CytoTrol_CytoTrol_1.fcs"     #subset the parsing by FCS filename
-#'                         , isNcdf = FALSE)#turn off cdf storage mode (normally you don't want to do this for parsing large dataset)
+#'                         , subset = "CytoTrol_CytoTrol_1.fcs")     #subset the parsing by FCS filename
 #' 
 #'  
 #' 
@@ -168,23 +166,29 @@ parseWorkspace <- function(ws, name = NULL
     additional.keys <- character(0)
   if(is.null(path))
     path <- ""
-  p <- parse_workspace(ws = ws@doc
-                        , group_id = groupInd - 1
-                        , subset = subset
-                        , execute = execute
-                        , path = path
-                        , h5_dir = h5_dir
-                        , includeGates = includeGates
-                        , additional_keys = additional.keys
-                        , keywords = keywords
-                        , is_pheno_data_from_FCS = keywords.source == "FCS"
-                        , keyword_ignore_case = keyword.ignore.case
-                        , extend_val = extend_val
-                        , extend_to = extend_to
-                        , channel_ignore_case = channel.ignore.case
-                        , leaf_bool = leaf.bool
-                        , ...
-                    )
+  args <- list(...)
+  if(!is.null(args[["isNcdf"]]))
+  {
+    warning("'isNcdf' argument is deprecated!Data is always stored in h5 format by default!")
+    args[["isNcdf"]] <- NULL
+  }
+  args <- c(list(ws = ws@doc
+                 , group_id = groupInd - 1
+                 , subset = subset
+                 , execute = execute
+                 , path = path
+                 , h5_dir = h5_dir
+                 , includeGates = includeGates
+                 , additional_keys = additional.keys
+                 , keywords = keywords
+                 , is_pheno_data_from_FCS = keywords.source == "FCS"
+                 , keyword_ignore_case = keyword.ignore.case
+                 , extend_val = extend_val
+                 , extend_to = extend_to
+                 , channel_ignore_case = channel.ignore.case
+                 , leaf_bool = leaf.bool)
+              , args)
+  p <- do.call(parse_workspace, args)
   new("GatingSet", pointer = p)
 }
 
