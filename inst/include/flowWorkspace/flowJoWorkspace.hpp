@@ -204,14 +204,15 @@ public:
 
 			auto it = cytoset.find(uid);
 
-
+			//proceed gate parsing when data is available or gate-parsing only
 			if(it!= cytoset.end() || !config.is_gating)
 			{
 
-				CytoFrameView frv = it->second;
+				CytoFrameView frv;
 
 				if(config.is_gating)
 				{
+					frv = it->second;
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						cout<<endl<<"Extracting pheno data from keywords for sample: " + uid<<endl;
 
