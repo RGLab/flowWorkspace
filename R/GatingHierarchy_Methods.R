@@ -1143,9 +1143,9 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
 #' @rdname getCompensationMatrices
 setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 
-      compobj <- x@compensation
+#      compobj <- x@compensation
       sn <- sampleNames(x)
-      if(is.null(compobj)){
+#      if(is.null(compobj)){
         comp<-.cpp_getCompensation(x@pointer, sn)
         cid<-comp$cid
         #			browser()
@@ -1173,9 +1173,9 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
           }
 
         }
-      }else{
-        compobj <- compobj[[sn]]
-      }
+#      }else{
+#        compobj <- compobj[[sn]]
+#      }
 
 			compobj
 

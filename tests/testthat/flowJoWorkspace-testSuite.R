@@ -1,5 +1,5 @@
 context("workspace")
-resultDir <- "tests/testthat/expect_result/"
+# resultDir <- "tests/testthat/expect_result/"
 fjRes <- readRDS(file.path(resultDir, "flowJoWorkspace_expect.rds"))
 
 test_that("show workspace",
