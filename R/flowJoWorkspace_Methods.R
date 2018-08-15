@@ -39,27 +39,9 @@ setMethod("show",c("flowJoWorkspace"),function(object){
       
       sg <- getSampleGroups(object)
       tbl<-table(Name=sg$groupName,GroupID=sg$groupID)
-      browser()
       print(data.frame(Name=rownames(tbl),"Num.Samples"=diag(tbl)))
       
     })
-
-
-#' match version string to the support list
-#' 
-#' @param wsversion version string to match
-#' 
-#' @return the macthed workspace type
-.getWorkspaceType <- function(wsversion){
-  curSupport <- unlist(flowWorkspace.par.get("flowJo_versions"))
-  ver_ind <- match(wsversion, curSupport)
-  if(is.na(ver_ind))
-    stop("Unsupported version: ", wsversion)
-  else{
-    wsType <- names(curSupport[ver_ind])  
-  }
-  gsub("[0-9]", "", wsType)
-}
 
 #' Parse a flowJo Workspace
 #' 
@@ -258,13 +240,14 @@ setMethod("getKeywords",c("flowJoWorkspace","numeric"),function(obj,y, ...){
 #'
 #' Return  a data frame of samples contained in a flowJo workspace
 #' @param x A \code{flowJoWorkspace}
-#' @param sampNloc \code{character} either "keyword" or "sampleNode". see \link{parseWorkspace}
+#' @param group_id \code{integer} specifies the group from which samples are returned
 #' @details
+#' The samples with 0 populations are excluded.
 #' Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including their
-#' \code{sampleID}, \code{name}, and \code{compID} (compensation matrix ID).
+#' \code{sampleID}, \code{name}
 #'
 #' @return
-#' A \code{data.frame} with columns \code{sampleID}, \code{name}, and \code{compID} if \code{x} is a \code{flowJoWorkspace}.
+#' A \code{data.frame} with columns \code{sampleID}, \code{name}
 #'
 #' @examples
 #'       \dontrun{
@@ -280,7 +263,7 @@ getSamples <- function(x, group_id = NULL)
   if(!is.null(group_id))
     res <- res[group_id]
   res <- unlist(res, recursive = FALSE)
-  res <- lapply(res, as.data.frame)
+  res <- lapply(res, as.data.frame, stringsAsFactors = FALSE)
   res <- do.call(rbind, res)
   unique(res)
 }
@@ -289,7 +272,9 @@ getSamples <- function(x, group_id = NULL)
 #'
 #'   Return a data frame of sample group information from a flowJo workspace
 #' @param x A \code{flowJoWorkspace} object.
-#' @details Returns a table of samples and groups defined in the flowJo workspace
+#' @details 
+#' The samples with 0 populations are excluded.
+#' Returns a table of samples and groups defined in the flowJo workspace
 #' @return
 #'   A \code{data.frame} containing the \code{groupName}, \code{groupID}, and \code{sampleID} for each sample in the workspace. Each sample may be associated with multiple groups.
 #' @seealso \code{\link{flowJoWorkspace-class}} \code{\link{openWorkspace}}

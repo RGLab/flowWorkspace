@@ -9,17 +9,18 @@ getSamples(x, group_id = NULL)
 \arguments{
 \item{x}{A \code{flowJoWorkspace}}
 
-\item{sampNloc}{\code{character} either "keyword" or "sampleNode". see \link{parseWorkspace}}
+\item{group_id}{\code{integer} specifies the group from which samples are returned}
 }
 \value{
-A \code{data.frame} with columns \code{sampleID}, \code{name}, and \code{compID} if \code{x} is a \code{flowJoWorkspace}.
+A \code{data.frame} with columns \code{sampleID}, \code{name}
 }
 \description{
 Return  a data frame of samples contained in a flowJo workspace
 }
 \details{
+The samples with 0 populations are excluded.
 Returns a \code{data.frame} of samples in the \code{flowJoWorkspace}, including their
-\code{sampleID}, \code{name}, and \code{compID} (compensation matrix ID).
+\code{sampleID}, \code{name}
 }
 \examples{
       \dontrun{

@@ -60,12 +60,6 @@ setGeneric("getProp",function(x,y,...)standardGeneric("getProp"))
 setGeneric("getTotal",function(x,y,...)standardGeneric("getTotal"))
 
 #' @export
-setGeneric("getSamples",function(x,...)standardGeneric("getSamples"))
-
-#' @export
-setGeneric("getSampleGroups",function(x)standardGeneric("getSampleGroups"))
-
-#' @export
 setGeneric("getCompensationMatrices",function(x)standardGeneric("getCompensationMatrices"))
 
 #' @export

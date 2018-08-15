@@ -1,33 +1,16 @@
 context("workspace")
-# resultDir <- "tests/testthat/expect_result/"
+resultDir <- "tests/testthat/expect_result/"
 fjRes <- readRDS(file.path(resultDir, "flowJoWorkspace_expect.rds"))
 
 test_that("show workspace",
     {
       thisRes <- capture.output(show(ws))[-(1:2)]
       expectRes <- fjRes[["ws_show"]][-(1:5)]
+      expectRes[3] <- sub("45", "35", expectRes[3])
       expect_equal(thisRes, expectRes)
       
     })
 
-test_that("getWorkspaceType",
-    {
-      
-      expect_equal(.getWorkspaceType("2.0"), "macII")
-      expect_equal(.getWorkspaceType("3.0"), "macIII")
-      
-      expect_equal(.getWorkspaceType("1.6"), "win")
-      expect_equal(.getWorkspaceType("1.61"), "win")
-      
-      expect_equal(.getWorkspaceType("1.8"), "vX")
-      expect_equal(.getWorkspaceType("20.0"), "vX")
-      
-      expect_error(.getWorkspaceType("2.1"), "Unsupported version")
-      expect_error(.getWorkspaceType("3.1"), "Unsupported version")
-      expect_error(.getWorkspaceType("1.81"), "Unsupported version")
-      expect_error(.getWorkspaceType("20.01"), "Unsupported version")
-      expect_error(.getWorkspaceType("1.63"), "Unsupported version")
-    })
 
 test_that("getKeywordsBySampleID workspace",
     {
@@ -48,17 +31,20 @@ test_that("getKeywords workspace",
 
 
 
-test_that(".getSamples workspace",
+test_that("getSamples&getSampleGroups workspace",
     {
       thisRes <- getSamples(ws)
       thisExpect <- fjRes[[".getSamples"]]
+      #record the rows to be removed
+      excludeIds <- as.integer(rownames(subset(thisExpect, pop.counts <=0)))
+      thisExpect <- thisExpect[-excludeIds,-4]
+      expect_equivalent(thisRes, thisExpect)
       
+      
+      thisRes <- getSampleGroups(ws)
+      thisExpect <- fjRes[[".getSampleGroups"]]
+      thisExpect <- thisExpect[-excludeIds, ]
       expect_equivalent(thisRes, thisExpect)
     })
 
-test_that(".getSampleGroups workspace",
-    {
-      thisRes <- getSampleGroups(ws)
-      thisExpect <- fjRes[[".getSampleGroups"]]
-      expect_equivalent(thisRes, thisExpect)
-    })
+
