@@ -207,6 +207,10 @@ get_cytoset_from_node <- function(gsPtr, node) {
     .Call(`_flowWorkspace_get_cytoset_from_node`, gsPtr, node)
 }
 
+set_cytoset <- function(gsPtr, cs) {
+    invisible(.Call(`_flowWorkspace_set_cytoset`, gsPtr, cs))
+}
+
 .cpp_getSamples <- function(gsPtr) {
     .Call(`_flowWorkspace_get_sample_uids`, gsPtr)
 }

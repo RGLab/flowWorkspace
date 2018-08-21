@@ -1,11 +1,5 @@
 context("GatingSet Accessors")
 
-test_that("isNcdf ",{
-      
-        
-	expect_equal(isNcdf(gs), TRUE);
-    
-})
 test_that("length ",{
       expect_equal(length(gs), 1)
       
@@ -17,7 +11,7 @@ test_that("show ",{
 test_that("getData ",{
       
       ncfs <- getData(gs)
-      expect_is(ncfs, "ncdfFlowSet");
+      expect_is(ncfs, "cytoSet");
       expect_equal(nrow(ncfs[[1]]), 119531)
       ncfs <- getData(gs, "root")
       expect_equal(nrow(ncfs[[1]]), 119531)
@@ -33,16 +27,16 @@ test_that("getData ",{
 test_that("flowData ",{
       
       ncfs <- flowData(gs)
-      expect_is(ncfs, "ncdfFlowSet");
+      expect_is(ncfs, "cytoSet");
       expect_equal(nrow(ncfs[[1]]), 119531)
       
-      fs <- as(ncfs, "flowSet")
-      flowData(gs) <- fs 
-      expect_is(flowData(gs), "flowSet");
+      # fs <- as(ncfs, "flowSet")
+      # flowData(gs) <- fs 
+      # expect_is(flowData(gs), "flowSet");
       
       #restore data
       flowData(gs) <- ncfs
-      expect_is(flowData(gs), "ncdfFlowSet");
+      expect_is(flowData(gs), "cytoSet");
     })
 
 

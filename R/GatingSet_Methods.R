@@ -1580,9 +1580,8 @@ setMethod("flowData",signature("GatingSet"),function(x){
 #' flowData<-,GatingSet-method
 #' @rdname flowData
 #' @export
-setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
-
-      x@data <- value
+setReplaceMethod("flowData",signature(x="GatingSet", value = "cytoSet"),function(x,value){
+      set_cytoset(x@pointer, value@pointer)
       x
     })
 

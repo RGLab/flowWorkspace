@@ -32,6 +32,11 @@ XPtr<CytoSet> get_cytoset_from_node(XPtr<GatingSet> gsPtr, string node) {
   return XPtr<CytoSet>(new CytoSet(gsPtr->get_cytoset(node)));
 }
 
+//[[Rcpp::export]]
+void set_cytoset(XPtr<GatingSet> gsPtr, XPtr<CytoSet> cs) {
+
+  gsPtr->set_cytoset(*cs);
+}
 //[[Rcpp::export(name=".cpp_getSamples")]]
 StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
 
