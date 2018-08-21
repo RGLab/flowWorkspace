@@ -7,7 +7,7 @@ This makefile requires GNU Make.
 endif
 	
 CXX_STD = CXX11
-PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@
+PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@ -DBOOST_NO_AUTO_PTR
 PKG_LIBS =`${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags();cat(' ');Rhdf5lib::pkgconfig('PKG_CXX_LIBS')"` @PKG_LIBS@ -lstdc++fs 
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
