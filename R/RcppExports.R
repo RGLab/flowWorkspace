@@ -227,8 +227,8 @@ set_cytoset <- function(gsPtr, cs) {
     .Call(`_flowWorkspace_load_gatingset`, path)
 }
 
-.cpp_CloneGatingSet <- function(gs, new_sample_uids) {
-    .Call(`_flowWorkspace_CloneGatingSet`, gs, new_sample_uids)
+.cpp_CloneGatingSet <- function(gs) {
+    .Call(`_flowWorkspace_CloneGatingSet`, gs)
 }
 
 .cpp_combineGatingSet <- function(gsList, sampleList) {
