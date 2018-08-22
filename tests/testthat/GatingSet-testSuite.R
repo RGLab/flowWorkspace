@@ -42,35 +42,54 @@ test_that("flowData ",{
 
 test_that("clone & rbind2",{
       
-      expect_message(gs_clone <- clone(gs), "copying data")
-      expect_is(gs_clone, "GatingSet");
+      gs1 <- gs_clone(gs)
+      expect_is(gs1, "GatingSet");
       
       #check data consistency
       fs1 <- getData(gs)
-      fs2 <- getData(gs_clone)
+      fs2 <- getData(gs1)
       expect_equal(fs1[[1]], fs2[[1]], tol = 1e-05)
       
+      expect_false(fr_get_h5_file_path(fs1[[1, returnType = "cytoFrame"]])
+                            == fr_get_h5_file_path(fs2[[1, returnType = "cytoFrame"]])
+                            )
+      
+      
       orig_sn <- sampleNames(gs)
-      clone_sn <- sampleNames(gs_clone)
+      clone_sn <- sampleNames(gs1)
       expect_identical(orig_sn, clone_sn)
       
       #check tree consistentcy
-      expect_identical(getNodes(gs[[1]]), getNodes(gs_clone[[1]]))
+      expect_identical(getNodes(gs[[1]]), getNodes(gs1[[1]]))
       
       #check if trans is preserved
-      expect_equal(getTransformations(gs[[1]]), getTransformations(gs_clone[[1]]))
+      expect_equal(getTransformations(gs[[1]]), getTransformations(gs1[[1]]))
       
-      expect_equal(getPopStats(gs), getPopStats(gs_clone))
-      expect_equal(getPopStats(gs[[1]]), getPopStats(gs_clone[[1]]))
+      expect_equal(getPopStats(gs), getPopStats(gs1))
+      expect_equal(getPopStats(gs[[1]]), getPopStats(gs1[[1]]))
       
       #clone without copying hdf data
-      expect_message(gs_clone1 <- clone(gs, isNew = FALSE), "cloned")
-      expect_equal(getData(gs_clone1)@file, fs1@file)
+      gs2 <- gs_copy_tree_only(gs)
+      #check data consistency
+      fs2 <- getData(gs2)
+      expect_equal(fs1[[1]], fs2[[1]], tol = 1e-05)
+      
+      expect_true(fr_get_h5_file_path(fs1[[1, returnType = "cytoFrame"]])
+                   == fr_get_h5_file_path(fs2[[1, returnType = "cytoFrame"]])
+                  )
+      #check tree consistentcy
+      expect_identical(getNodes(gs[[1]]), getNodes(gs2[[1]]))
+      
+      #check if trans is preserved
+      expect_equal(getTransformations(gs[[1]]), getTransformations(gs2[[1]]))
+      
+      expect_equal(getPopStats(gs), getPopStats(gs2))
+      expect_equal(getPopStats(gs[[1]]), getPopStats(gs2[[1]]))
       
       #construct gslist to rbind2
-      sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
-      clone_sn <- sampleNames(gs_clone)
-      gslist <- GatingSetList(list(gs, gs_clone))
+      sampleNames(gs1) <- "CytoTrol_CytoTrol_2.fcs"
+      clone_sn <- sampleNames(gs1)
+      gslist <- GatingSetList(list(gs, gs1))
       expect_is(gslist, "GatingSetList");
       suppressMessages(gs <<- rbind2(gslist))
       

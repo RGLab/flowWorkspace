@@ -98,11 +98,11 @@ XPtr<GatingSet> load_gatingset(string path) {
 }
 
 //[[Rcpp::export(name=".cpp_CloneGatingSet")]]
-XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs) {
+XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs, string h5_dir, bool is_copy_data) {
 
 
 
-		return XPtr<GatingSet>(new GatingSet(gs->copy()));
+		return XPtr<GatingSet>(new GatingSet(gs->copy(is_copy_data, h5_dir)));
 
 }
 

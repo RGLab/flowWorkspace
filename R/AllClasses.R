@@ -157,6 +157,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' 
 #' @rdname GatingSet-methods
 #' @importClassesFrom cytoCore cytoSet
+#' @importFrom cytoCore fr_get_h5_file_path
 #' @export 
 #' @examples 
 #' \dontrun{

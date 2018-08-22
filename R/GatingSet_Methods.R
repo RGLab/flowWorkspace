@@ -1331,7 +1331,7 @@ fix_y_axis <- function(gs, x, y){
 #'   clone a GatingSet
 #' @param x A \code{GatingSet}
 #' @param ...
-#'     ncdfFile = NULL: see \code{\link{clone.ncdfFlowSet}}
+#'     h5_dir = tempdir() the directory to store the h5-based flow data matrix
 #' @details
 #'   Note that the regular R assignment operation on a \code{GatingSet} object does not return the copy as
 #'   one would normally expect because the \code{GatingSet} contains environment slots (and external pointer for \code{GatingSet}),
@@ -1339,18 +1339,30 @@ fix_y_axis <- function(gs, x, y){
 #' @return A copy of a given \code{GatingSet}.
 #' @examples
 #'   \dontrun{
-#'     #G is  a GatingSet
-#'     G1<-clone(G)
-#'
+#'     #gs is  a GatingSet
+#'     gs2 <-gs_clone(gs) #gs2 is independent from gs and have its own copy of both gating trees and flow data
+#'     gs3 <- gs_copy_tree_only(gs) #gs3 has its own copy of gating trees but share the same flow data with original gs
 #'   }
 #' @aliases clone clone-methods clone,GatingSet-method
 #' @exportMethod clone
+#' @rdname gs_clone
 setGeneric("clone", function(x,...)standardGeneric("clone"))
-setMethod("clone",c("GatingSet"),function(x,...){
-
-      new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer))
+setMethod("clone",c("GatingSet"),function(x, ...){
+      .Deprecated("gs_clone")
+      gs_clone(x, ...)
     })
 
+#' @rdname gs_clone
+gs_clone <- function(x, h5_dir = tempdir()){
+  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir, is_copy_data = TRUE))
+  
+}
+
+#' @rdname gs_clone
+gs_copy_tree_only <- function(x){
+  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
+  
+}
 
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' Compute the cell events by the gates stored within the gating tree.
