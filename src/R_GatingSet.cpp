@@ -109,18 +109,23 @@ XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs, string h5_dir, bool is_copy_d
 //[[Rcpp::export(name=".cpp_combineGatingSet")]]
 XPtr<GatingSet> combineGatingSet(Rcpp::List gsList,Rcpp::List sampleList) {
 
-		GatingSet * newGS=new GatingSet();
+	XPtr<GatingSet> newGS(new GatingSet());
+	CytoSet newCS;
 
 		for(int i=0;i<gsList.size();i++)
 		{
 			GatingSet *	gs=getGsPtr((SEXP)gsList[i]);
 			StringVec samples=as<StringVec>(sampleList[i]);
+			const CytoSet & cs = gs->get_cytoset();
 			for(auto sn : samples)
+			{
+				newCS.add_cytoframe_view(sn, cs.get_cytoframe_view(sn));
 				newGS->add_GatingHierarchy(gs->getGatingHierarchy(sn),sn);
+			}
 		}
 
 
-		return XPtr<GatingSet>(newGS);
+		return newGS;
 
 }
 

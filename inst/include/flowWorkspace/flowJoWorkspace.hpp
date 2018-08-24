@@ -332,12 +332,12 @@ public:
 			for(const string & file_path : all_file_paths)
 			{
 
-				unique_ptr<MemCytoFrame> fr (new MemCytoFrame(file_path, fcs_read_param));
+				shared_ptr<MemCytoFrame> fr (new MemCytoFrame(file_path, fcs_read_param));
 				fr->read_fcs_header();
 				if(fr->get_keyword("$FIL") == sample_info.sample_name &&
 						ws_key_seq == concatenate_keywords(fr->get_keywords(), config.keywords_for_uid))
 				{
-					cytoset.add_cytoframe(uid, move(fr));
+					cytoset.add_cytoframe_view(uid, CytoFrameView(fr));
 					return;//to avoid scanning entire folder, terminate the search immediately on the first hit assuming the uid is unique
 				}
 			}
@@ -349,7 +349,7 @@ public:
 
 			for(const string & file_path : file_paths)
 			{
-				unique_ptr<MemCytoFrame> fr (new MemCytoFrame(file_path, fcs_read_param));
+				shared_ptr<MemCytoFrame> fr (new MemCytoFrame(file_path, fcs_read_param));
 				fr->read_fcs_header();
 				string fcs_key_seq = concatenate_keywords(fr->get_keywords(), config.keywords_for_uid);
 
@@ -358,7 +358,7 @@ public:
 					if(cytoset.find(uid)!=cytoset.end())
 						throw(domain_error("Duplicated FCS found for sample " + uid));
 
-					cytoset.add_cytoframe(uid, move(fr));
+					cytoset.add_cytoframe_view(uid, CytoFrameView(fr));
 				}
 			}
 
