@@ -770,14 +770,67 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
               cov.mat <- g$cov
               dimnames(cov.mat) <- list(g$parameters, g$parameters)
               ellipsoidGate(.gate = cov.mat, mean = g$mu, distance = g$dist, filterId = filterId)
-        }else if (g$type == 6){#logicalGate
+        }else if (g$type %in% c(6,8)){#logicalGate
           booleanFilter(filterId=filterId)#return dummy boolean filter
 				}else
 					stop("not supported gate type",g$type)
 
 
 		})
-
+        
+#' Retrieve the cluster labels from the cluster nodes
+#' 
+#' Clustering results are stored as individual gated nodes. This helper function
+#' collect all the gating indices from the same clustering run (identified by 'parent'
+#' node and 'cluster_method_name" and merge them as a single factor.
+#' 
+#' @param gh GatingHierarchy
+#' @param parent the parent population/node name or path
+#' @param cluster_method_name the name of the clustering method
+#' @export
+gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
+  nodes <- getChildren(gh, parent)
+  res <- rep(NA, getTotal(gh, "root"))
+  empty_pops <- NULL
+  isFound <- FALSE
+  for(node in nodes)
+  {
+      g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+      if(g[["type"]] == 8)
+      {
+        if(g[["cluster_method_name"]] == cluster_method_name)
+        {
+          isFound <- TRUE
+          ind <- which(getIndices(gh, node))
+          if(all(is.na(res[ind])))
+          {
+            pop <- basename(node)
+            pop <- sub(paste0(cluster_method_name, "_"), "", pop) #strip cluster name prefix
+            if(length(ind) == 0)
+              empty_pops <- c(empty_pops, pop)
+            else
+              res[ind] <- pop
+          }
+          else
+            stop(node, " has overlapped memberships with other cluster nodes!")
+          
+        }
+          
+      }
+    }
+  if(!isFound)
+     stop("No clustering results for ", cluster_method_name)
+  else
+  {
+    res <- as.factor(res)
+    
+    #add empty pop by adding levels
+    levels(res) <- c(levels(res) , empty_pops)
+    res
+  }
+    
+  
+}
 #' @export
 .getNodeInd <- function(obj,y, ...){
 

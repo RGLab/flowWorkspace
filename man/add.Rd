@@ -53,7 +53,7 @@
 \S4method{add}{GatingHierarchy,quadGate}(wf, action, names = NULL, ...)
 
 \S4method{add}{GatingHierarchy,logical}(wf, action, parent, name, recompute,
-  ...)
+  cluster_method_name = NULL, ...)
 
 \S4method{add}{GatingHierarchy,factor}(wf, action, name = NULL, ...)
 
