@@ -100,18 +100,37 @@ test_that("add factor vector", {
   })
   
   
-  add(gs, fac.list, parent = "rectangle")
+  expect_error(add(gs, fac.list, parent = "rectangle"), "Must specify the name of the cluster method through 'name' argument")
+  add(gs, fac.list, parent = "rectangle", name = "clusterA")
   
-  expect_equal(getNodes(gs)[7:10], c("/rectangle/Q1", "/rectangle/Q2", "/rectangle/Q3", "/rectangle/Q5"))
-  expect_equal(getTotal(gs[[1]], "Q1"), getTotal(gs[[1]], "CD15 FITC-CD45 PE+"))
-  expect_equal(getTotal(gs[[1]], "Q2"), getTotal(gs[[1]], "CD15 FITC+CD45 PE+"))
-  expect_equal(getTotal(gs[[1]], "Q3"), getTotal(gs[[1]], "CD15 FITC+CD45 PE-"))
-  expect_equal(getTotal(gs[[1]], "Q5"),0)
-  Rm("Q1", gs)
-  Rm("Q2", gs)
-  Rm("Q3", gs)
+  expect_equal(getNodes(gs)[7:10], c("/rectangle/clusterA_Q1", "/rectangle/clusterA_Q2"
+                                     , "/rectangle/clusterA_Q3", "/rectangle/clusterA_Q5"))
+  expect_equal(getTotal(gs[[1]], "clusterA_Q1"), getTotal(gs[[1]], "CD15 FITC-CD45 PE+"))
+  expect_equal(getTotal(gs[[1]], "clusterA_Q2"), getTotal(gs[[1]], "CD15 FITC+CD45 PE+"))
+  expect_equal(getTotal(gs[[1]], "clusterA_Q3"), getTotal(gs[[1]], "CD15 FITC+CD45 PE-"))
+  expect_equal(getTotal(gs[[1]], "clusterA_Q5"),0)
   
-  Rm("Q5", gs)
+  expect_error(add(gs, fac.list, parent = "rectangle", name = "clusterA")
+               , "exist")
+  
+  #retrieve clustering results
+  expect_error(gh_get_cluster_labels(gs[[1]], "rectangle", "cluster"), "No clustering results")
+  labels <- gh_get_cluster_labels(gs[[1]], "rectangle", "clusterA")
+  
+  pind <- getIndices(gs[[1]], "rectangle")
+  expect_true(all(is.na(labels[!pind])))
+  
+  labels <- labels[pind]#convert to local
+  
+  expect_equal(labels, fac.list[[1]])
+  
+  Rm("clusterA_Q1", gs)
+  Rm("clusterA_Q2", gs)
+  Rm("clusterA_Q3", gs)
+  
+  Rm("clusterA_Q5", gs)
+  
+  
   })
 
 test_that("add boolean filter", {

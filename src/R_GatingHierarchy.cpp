@@ -353,6 +353,30 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 		  return ret;
 
 		}
+		case CLUSTERGATE:
+		{
+		  clusterGate * cg=dynamic_cast<clusterGate*>(g);
+		  vector<BOOL_GATE_OP> boolOpSpec=cg->getBoolSpec();
+		  vector<string> v;
+		  vector<char>v2;
+		  vector<vector<string> >ref;
+		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+		  {
+			  v.push_back(it->isNot?"!":"");
+			  v2.push_back(it->op);
+			  ref.push_back(it->path);
+		  }
+
+		  List ret=List::create(Named("v",v)
+								 ,Named("v2",v2)
+								 ,Named("ref",ref)
+								 ,Named("type",CLUSTERGATE)
+								 , Named("filterId", nodeName)
+								 , Named("cluster_method_name", cg->get_cluster_method_name())
+								 );
+		  return ret;
+
+		}
 		default:
 		{
 //			COUT<<g->getType()<<endl;
@@ -568,6 +592,13 @@ gate * newGate(List filter){
 			logicalGate * lg = new logicalGate();
 			lg->setNegate(isNeg);
 			g = lg;
+			break;
+		}
+		case CLUSTERGATE:
+		{
+			clusterGate * cg = new clusterGate(as<string>(filter["cluster_method_name"]));
+			cg->setNegate(isNeg);
+			g = cg;
 			break;
 		}
 		case ELLIPSEGATE:

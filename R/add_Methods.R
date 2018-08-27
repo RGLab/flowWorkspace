@@ -352,7 +352,7 @@ setMethod("add",
 #' @rdname add
 setMethod("add",
           signature=c("GatingHierarchy", "logical"),
-          definition=function(wf, action, parent, name, recompute, ... )
+          definition=function(wf, action, parent, name, recompute, cluster_method_name = NULL, ... )
           {
             
             
@@ -371,8 +371,15 @@ setMethod("add",
               ind <- pInd.logical
             }
               
+            fb <- filterObject(ind)
+            #update object when it is a clusterGate
+            if(!is.null(cluster_method_name))
+            {
+              fb[["type"]] <- 8
+              fb[["cluster_method_name"]] <- cluster_method_name
+            }
             #skip gating by ignoring recompute      
-            nodeID <- flowWorkspace:::.addGate(wf, filterObject(ind), name = name, parent = parent, recompute = FALSE, ...)
+            nodeID <- flowWorkspace:::.addGate(wf, fb, name = name, parent = parent, recompute = FALSE, ...)
             
             #added it to gating tree
             sn <- sampleNames(wf)
@@ -387,24 +394,24 @@ setMethod("add",
           definition=function(wf, action, name = NULL, ...)
           {
             popNames <- levels(action)
-            if(!is.null(name)){
-              if(length(name) != length(popNames))
-                stop("name must be of the same length as the number of levels in factor!")
+            if(is.null(name))
+              stop("Must specify the name of the cluster method through 'name' argument")
+            else
+            {
+              if(length(name) != 1)
+                stop("'name' can't use multiple!")
             }
             for(i in seq_along(popNames)){
               
-              thisName <- name[i]
               thisPop <- popNames[i]
-              if(is.null(thisName)){
-                pop <- thisPop
-              }else{
-                pop <- thisName
-              }
+              
+              pop <- paste(name, thisPop, sep = "_")
+              
               # browser()
               #convert it to logical
               ind <- action == thisPop
               ind[is.na(ind)] <- FALSE#in case there are some NA values in factor
-              add(wf, ind, name = pop, ...)
+              add(wf, ind, name = pop, cluster_method_name = name, ...)
             }
           })
 
