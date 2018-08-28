@@ -442,6 +442,34 @@ BOOST_AUTO_TEST_CASE(curlyquad2)
 	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
 
 }
+
+BOOST_AUTO_TEST_CASE(quadgate)
+{
+	myTest.filename="../wsTestSuite/quadgate/FlowJo Test.wsp";
+	myTest.wsType = WS_VX;
+	myTest.samples["1"] = "P1_1_concatenated.txt_340.fcs";
+	myTest.sampNloc=1;
+	myTest.ncfile="../output/quadgate/comp.nc";
+	myTest.colfile="../output/quadgate/colnames.txt";
+	myTest.archive="../output/quadgate/gs";
+
+//	myTest.tolerance = 0.2;
+
+
+//	map<string,float> gains;
+//	gains["Time"] = 0.01;
+//	myTest.gains = gains;
+	vector<VertexID> skip;
+//	skip.push_back(16);
+//	skip.push_back(99);
+//	myTest.skipPops = skip;
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
+
 BOOST_AUTO_TEST_CASE(searchRefNode)
 {
 	myTest.filename="../wsTestSuite/searchRefNode/2583-Y-MAL067-FJ.xml";

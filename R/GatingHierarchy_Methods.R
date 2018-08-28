@@ -770,15 +770,97 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
               cov.mat <- g$cov
               dimnames(cov.mat) <- list(g$parameters, g$parameters)
               ellipsoidGate(.gate = cov.mat, mean = g$mu, distance = g$dist, filterId = filterId)
-        }else if (g$type == 6){#logicalGate
+        }else if (g$type %in% c(6,8)){#logicalGate
           booleanFilter(filterId=filterId)#return dummy boolean filter
 				}else
 					stop("not supported gate type",g$type)
 
 
 		})
+        
+#' Retrieve the cluster labels from the cluster nodes
+#' 
+#' Clustering results are stored as individual gated nodes. This helper function
+#' collect all the gating indices from the same clustering run (identified by 'parent'
+#' node and 'cluster_method_name" and merge them as a single factor.
+#' 
+#' @param gh GatingHierarchy
+#' @param parent the parent population/node name or path
+#' @param cluster_method_name the name of the clustering method
+#' @export
+gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
+  nodes <- getChildren(gh, parent)
+  res <- rep(NA, getTotal(gh, "root"))
+  empty_pops <- NULL
+  isFound <- FALSE
+  for(node in nodes)
+  {
+      g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+      if(g[["type"]] == 8)
+      {
+        if(g[["cluster_method_name"]] == cluster_method_name)
+        {
+          isFound <- TRUE
+          ind <- which(getIndices(gh, node))
+          if(all(is.na(res[ind])))
+          {
+            pop <- extract_cluster_pop_name_from_node(node, cluster_method_name)
+            if(length(ind) == 0)
+              empty_pops <- c(empty_pops, pop)
+            else
+              res[ind] <- pop
+          }
+          else
+            stop(node, " has overlapped memberships with other cluster nodes!")
+          
+        }
+          
+      }
+    }
+  if(!isFound)
+     stop("No clustering results for ", cluster_method_name)
+  else
+  {
+    res <- as.factor(res)
+    
+    #add empty pop by adding levels
+    levels(res) <- c(levels(res) , empty_pops)
+    res
+  }
+    
+  
+}
+
+#' Extract the population name from the node path
+#' It strips the parent path and cluster method name.
+#' @param node population node path
+#' @param cluster_method_name the name of the clustering method
+#' @export 
+#' @examples 
+#' extract_cluster_pop_name_from_node("cd3/flowClust_pop1", "flowClust")
+#' #returns "pop1"
+extract_cluster_pop_name_from_node <- function(node, cluster_method_name)
+{
+  pop <- basename(node)
+  sub(paste0(cluster_method_name, "_"), "", pop) #strip cluster name prefix
+  
+}
+
+#' check if a node is clustering node
+#' @param gh GatingHierarchy
+#' @param node the population/node name or path
+#' @return the name of the clustering method. If it is not cluster node, returns NULL
+#' @export
+gh_check_cluster_node <- function(gh, node){
+  g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+  if(g[["type"]] == 8)
+    g[["cluster_method_name"]]
+  else
+    NULL
+}
 
 #' @export
+
 .getNodeInd <- function(obj,y, ...){
 
     ind <- .cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
