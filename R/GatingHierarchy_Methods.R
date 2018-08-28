@@ -804,8 +804,7 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
           ind <- which(getIndices(gh, node))
           if(all(is.na(res[ind])))
           {
-            pop <- basename(node)
-            pop <- sub(paste0(cluster_method_name, "_"), "", pop) #strip cluster name prefix
+            pop <- extract_cluster_pop_name_from_node(node, cluster_method_name)
             if(length(ind) == 0)
               empty_pops <- c(empty_pops, pop)
             else
@@ -832,6 +831,21 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
   
 }
 
+#' Extract the population name from the node path
+#' It strips the parent path and cluster method name.
+#' @param node population node path
+#' @param cluster_method_name the name of the clustering method
+#' @export 
+#' @examples 
+#' extract_cluster_pop_name_from_node("cd3/flowClust_pop1", "flowClust")
+#' #returns "pop1"
+extract_cluster_pop_name_from_node <- function(node, cluster_method_name)
+{
+  pop <- basename(node)
+  sub(paste0(cluster_method_name, "_"), "", pop) #strip cluster name prefix
+  
+}
+
 #' check if a node is clustering node
 #' @param gh GatingHierarchy
 #' @param node the population/node name or path
@@ -844,7 +858,9 @@ gh_check_cluster_node <- function(gh, node){
   else
     NULL
 }
+
 #' @export
+
 .getNodeInd <- function(obj,y, ...){
 
     ind <- .cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
