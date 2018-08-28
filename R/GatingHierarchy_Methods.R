@@ -831,6 +831,19 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
     
   
 }
+
+#' check if a node is clustering node
+#' @param gh GatingHierarchy
+#' @param node the population/node name or path
+#' @return the name of the clustering method. If it is not cluster node, returns NULL
+#' @export
+gh_check_cluster_node <- function(gh, node){
+  g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+  if(g[["type"]] == 8)
+    g[["cluster_method_name"]]
+  else
+    NULL
+}
 #' @export
 .getNodeInd <- function(obj,y, ...){
 
