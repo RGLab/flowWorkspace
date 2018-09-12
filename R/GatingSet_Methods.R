@@ -511,7 +511,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                   
                   ## try to match marker from comp with flow data in case flowJo is not consistent with data
                   if(channel.ignore.case)
-                    tolower(markerInd) <- tolower(match(marker, cnd))
+                    markerInd <- match(tolower(marker), tolower(cnd))
                   else
                     markerInd <- match(marker, cnd)
                   
