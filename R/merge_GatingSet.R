@@ -103,6 +103,156 @@ groupByChannels <- function(x){
 }
 .groupByChannels <- groupByChannels
 
+#' visualize the tree structure differnece among the GatingSets
+#' 
+#' @param x \code{list} of groups(each group is a list of 'GatingSet`). it is usually the outcome from \link{groupByTree}.
+#' @examples 
+#' \dontrun{
+#' gslist <- list(gs1, gs2, gs3, gs4, gs5)
+#' gs_groups <- groupByTree(gslist)
+#' plot_diff_tree(gs_groups)
+#' }
+#' @export 
+plot_diff_tree <- function(x, path = "auto", ...){
+  nodeSet <- lapply(x,function(thisObj){
+    
+    if(class(thisObj) == "list")
+    {
+      gh <- thisObj[[1]][[1]]
+    }else if(class(thisObj) == "GatingSet")
+    {
+      gh <- thisObj[[1]]
+    }else if(class(thisObj) == "GatingHierarchy")
+    {
+      gh <- thisObj
+    }else{
+      stop("invalid x!")
+    }
+    
+    getNodes(gh, path = path, ...)
+  })
+  
+  message("Comparing the tree structures")
+  commonNodes <- Reduce(intersect, nodeSet)
+  
+  nGrps <- length(x)
+  # par(mfrow = c(1,nGrps))
+  
+  for(grpid in seq_len(nGrps))
+  {
+    message("processing group: ", grpid)
+    thisNodeSet <- nodeSet[[grpid]]
+    thisObj <- x[[grpid]]
+    if(class(thisObj) == "list")
+    {
+      gh <- thisObj[[1]][[1]]
+    }else if(class(thisObj) == "GatingSet")
+    {
+      gh <- thisObj[[1]]
+    }else if(class(thisObj) == "GatingHierarchy")
+    {
+      gh <- thisObj
+    }else{
+      stop("invalid x!")
+    }
+    
+    message("Searching for uncommon nodes ..")
+    nodes.uncommon <- setdiff(thisNodeSet,commonNodes)
+    
+    g <- .getGraph(gh)
+    
+    nodeDataDefaults(g, "common") <- FALSE
+   
+    message("hide/tag the common nodes ...")
+    node.path2 <- getNodes(gh, showHidden = TRUE, path = 3)
+    for(node in commonNodes)
+    {
+      nodeID <- .getNodeInd(gh, node) - 1
+      
+      node.label <- paste0("N_", nodeID)
+      nodeData(g, node.label, attr = "common") <- TRUE
+      children <- getChildren(gh, node, path = path)
+      #keep the direct parent of uncommon node
+      if(!any(children%in%nodes.uncommon)||node=="root")
+        nodeData(g, node.label, attr = "hidden") <- "1"
+      else
+      {
+        nodeData(g, node.label, attr = "label") <- node.path2[nodeID+1]
+      }
+    }
+    
+    
+    #filter out hidden node
+    nodes.hidden <- nodeData(g,attr="hidden")
+    for(i in 1:length(nodes.hidden))
+    {
+      if(as.logical(as.integer(nodes.hidden[[i]]))){
+        
+        nodeID <- names(nodes.hidden[i])
+        
+        g <- removeNode(nodeID, g)
+      }
+      
+    }
+    message("Rendering the substree ...")
+    graphAttr <- list(rankdir="LR",page=c(8.5,11))
+    nAttrs <- list()
+    nodes <- nodes(g)
+    if(length(nodes) == 0)
+    {
+      g <- addNode("Root", g)
+      g <- addNode("Common nodes", g)
+      g <- addEdge("Root", "Common nodes", g)
+      nodes <- nodes(g)
+      nLabel <- nodes
+      names(nLabel) <- nodes
+      plot(g
+           , nodeAttrs = list(label = nLabel)
+           ,attrs = list(graph = graphAttr
+                         ,node = list(fixedsize = FALSE
+                                      , fillcolor = "gray"
+                                      , shape = "rectangle"
+                                      )
+                         # ,edge = list(col = "transparent")
+                         )
+           , main = paste0("Group ", grpid))
+      # plot.new()
+      next
+    }
+    
+    common.flags <- nodeData(g,attr="common")
+    nAttrs$label <- unlist(nodeData(g,attr="label"))
+    nAttrs$fillcolor <- sapply(common.flags
+                             ,function(iscommon)
+                             {
+                               ifelse(iscommon,"gray","red")
+                             })
+    nAttrs$lty <- sapply(common.flags
+                         ,function(iscommon)
+                         {
+                           ifelse(!iscommon,"dotted","solid")
+                         })
+    
+    #pass plot parameters to node attributes (some of parameters won't work via passing to layoutGraph directly)
+    nAttrs[["fixedsize"]] <- sapply(common.flags, function(i)FALSE)
+    nAttrs[["shape"]] <- sapply(common.flags
+                                ,function(iscommon)
+                                {
+                                  ifelse(iscommon,"rectangle","ellipse")
+                                })
+    # params <- list(...)
+    # for(pname in names(params))
+    #   nAttrs[[pname]] <- sapply(nodes, function(i)params[[pname]])
+    nodeRenderInfo(g) <- nAttrs
+   
+    plot(g,nodeAttrs = nAttrs,attrs=list(graph=graphAttr)
+         , main = paste0("Group ", grpid)
+    )
+    
+  }
+
+}
+
 #' try to determine the redundant terminal(or leaf) nodes that can be removed
 #' 
 #' THese leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
