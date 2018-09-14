@@ -172,6 +172,12 @@ Based on this, these groups can be consolidated by dropping
 * `CCR7+ 45RA+` and `CCR7+ 45RA-` from `group 1`.
 * `DNT` and `DPT` from `group 2`.
 
+Sometime it could be difficult to inspect and distinguish tree difference by simply plotting the enire gating tree or looking at this simple flat list of nodes (especially when the entire subtree is missing from cerntain groups). It is helpful to visualize and highlight only the tree hierarchy difference with the helper function `plot_diff_tree`
+
+```{r, message=FALSE}
+plot_diff_tree(gs_groups)
+```
+
 To proceed the deletion of these nodes, `.dropRedundantNodes` can be used instead of doing it manually
 ```{r results='hide'}
 dropRedundantNodes(gs_groups, toRm)
