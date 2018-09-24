@@ -42,7 +42,7 @@ save_gs<-function(gs, path, overwrite = FALSE
     , ...){
 #  browser()
   cdf <- match.arg(cdf)
-  save_gatingset(gs, path = path, overwrite = overwrite, cdf = cdf)
+  .cpp_saveGatingSet(gs@pointer, path = path, overwrite = overwrite, cdf = cdf)
   message("Done\nTo reload it, use 'load_gs' function\n")
   
   
