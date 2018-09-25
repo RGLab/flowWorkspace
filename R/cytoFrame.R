@@ -95,7 +95,7 @@ setMethod("exprs",
     signature=signature(object="cytoFrame"),
     definition=function(object){
       if(object@use.exprs)
-        getData(object@pointer)
+        cf_getData(object@pointer)
       else
       {
         cn <- colnames(object)
@@ -180,7 +180,7 @@ setMethod("keyword",
     signature=signature(object="cytoFrame",
         keyword="character"),
     function(object, keyword){
-      val <- getKeyword(object@pointer,keyword)
+      val <- cf_getKeyword(object@pointer,keyword)
       if(val=="")
         val <- NULL
       desc <- structure(list(val), names=keyword)
@@ -196,7 +196,7 @@ setMethod("keyword",
     function(object, compact = FALSE)
     {           
       
-      desc <- getKeywords(object@pointer)
+      desc <- cf_getKeywords(object@pointer)
 
       if(compact)
         desc <- kwfilter(desc)

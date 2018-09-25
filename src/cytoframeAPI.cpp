@@ -114,7 +114,7 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 }
 
 // [[Rcpp::export]] 
-NumericVector getData(Rcpp::XPtr<CytoFrameView> fr){
+NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
   // int nrow = fr->n_rows();
   int ncol = fr->n_cols();
   // int ntotal = ncol * nrow;
@@ -134,14 +134,14 @@ NumericVector getData(Rcpp::XPtr<CytoFrameView> fr){
 }
 
 // [[Rcpp::export]] 
-string getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key){
+string cf_getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key){
   
   string res = fr->get_keyword(key);
   return res;
 }
 
 // [[Rcpp::export]] 
-KW_PAIR getKeywords(Rcpp::XPtr<CytoFrameView> fr){
+KW_PAIR cf_getKeywords(Rcpp::XPtr<CytoFrameView> fr){
   // return fr->getKeywords().getPairs();
   return fr->get_keywords().getPairs();
 }

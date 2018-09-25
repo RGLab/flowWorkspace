@@ -145,37 +145,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// getData
-NumericVector getData(Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_getData(SEXP frSEXP) {
+// cf_getData
+NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cf_getData(SEXP frSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    rcpp_result_gen = Rcpp::wrap(getData(fr));
+    rcpp_result_gen = Rcpp::wrap(cf_getData(fr));
     return rcpp_result_gen;
 END_RCPP
 }
-// getKeyword
-string getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key);
-RcppExport SEXP _flowWorkspace_getKeyword(SEXP frSEXP, SEXP keySEXP) {
+// cf_getKeyword
+string cf_getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key);
+RcppExport SEXP _flowWorkspace_cf_getKeyword(SEXP frSEXP, SEXP keySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
     Rcpp::traits::input_parameter< string >::type key(keySEXP);
-    rcpp_result_gen = Rcpp::wrap(getKeyword(fr, key));
+    rcpp_result_gen = Rcpp::wrap(cf_getKeyword(fr, key));
     return rcpp_result_gen;
 END_RCPP
 }
-// getKeywords
-KW_PAIR getKeywords(Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_getKeywords(SEXP frSEXP) {
+// cf_getKeywords
+KW_PAIR cf_getKeywords(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cf_getKeywords(SEXP frSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    rcpp_result_gen = Rcpp::wrap(getKeywords(fr));
+    rcpp_result_gen = Rcpp::wrap(cf_getKeywords(fr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -984,9 +984,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
     {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 3},
-    {"_flowWorkspace_getData", (DL_FUNC) &_flowWorkspace_getData, 1},
-    {"_flowWorkspace_getKeyword", (DL_FUNC) &_flowWorkspace_getKeyword, 2},
-    {"_flowWorkspace_getKeywords", (DL_FUNC) &_flowWorkspace_getKeywords, 1},
+    {"_flowWorkspace_cf_getData", (DL_FUNC) &_flowWorkspace_cf_getData, 1},
+    {"_flowWorkspace_cf_getKeyword", (DL_FUNC) &_flowWorkspace_cf_getKeyword, 2},
+    {"_flowWorkspace_cf_getKeywords", (DL_FUNC) &_flowWorkspace_cf_getKeywords, 1},
     {"_flowWorkspace_setKeywords", (DL_FUNC) &_flowWorkspace_setKeywords, 2},
     {"_flowWorkspace_getncol", (DL_FUNC) &_flowWorkspace_getncol, 1},
     {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},

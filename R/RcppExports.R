@@ -49,16 +49,16 @@ parseFCS <- function(filename, config, text_only = FALSE) {
     .Call(`_flowWorkspace_parseFCS`, filename, config, text_only)
 }
 
-getData <- function(fr) {
-    .Call(`_flowWorkspace_getData`, fr)
+cf_getData <- function(fr) {
+    .Call(`_flowWorkspace_cf_getData`, fr)
 }
 
-getKeyword <- function(fr, key) {
-    .Call(`_flowWorkspace_getKeyword`, fr, key)
+cf_getKeyword <- function(fr, key) {
+    .Call(`_flowWorkspace_cf_getKeyword`, fr, key)
 }
 
-getKeywords <- function(fr) {
-    .Call(`_flowWorkspace_getKeywords`, fr)
+cf_getKeywords <- function(fr) {
+    .Call(`_flowWorkspace_cf_getKeywords`, fr)
 }
 
 setKeywords <- function(fr, keys) {

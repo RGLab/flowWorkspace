@@ -18,7 +18,7 @@ setMethod("colnames",
 setMethod("markernames",
     signature=signature(object = "cytoSet"),
     definition=function(object)
-      get_markernames(object[[1, returnType = "cytoFrame", use.exprs = FALSE]]))
+      markernames(object[[1, returnType = "cytoFrame", use.exprs = FALSE]]))
 
 setMethod("show",
           signature=signature(object="cytoSet"),
