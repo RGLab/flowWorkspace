@@ -1,4 +1,5 @@
 #' @include AllGenerics.R
+#' @include cytoSet.R
 NULL
 
 #' @useDynLib flowWorkspace,.registration = TRUE
@@ -156,8 +157,6 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' construct a gatingset with empty trees (just root node)
 #' 
 #' @rdname GatingSet-methods
-#' @importClassesFrom cytoCore cytoSet
-#' @importFrom cytoCore fr_get_h5_file_path
 #' @export 
 #' @examples 
 #' \dontrun{

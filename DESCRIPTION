@@ -39,11 +39,14 @@ Imports:
     flowViz,
     matrixStats
 Collate: 
+    'cytoFrame.R'
+    'cytoSet.R'
     'AllGenerics.R'
     'AllClasses.R'
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'
     'GatingSetList_Methods.R'
+    'IO.R'
     'RcppExports.R'
     'filterObject_Methods.R'
     'add_Methods.R'
@@ -67,7 +70,7 @@ Suggests:
     knitr,
     ggcyto,
     parallel
-LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib, cytolib(>= 1.1.3),Rhdf5lib, RcppArmadillo, cytoCore
+LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib, cytolib(>= 1.1.3),Rhdf5lib, RcppArmadillo
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
 RoxygenNote: 6.0.1

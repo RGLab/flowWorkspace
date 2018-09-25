@@ -6,7 +6,7 @@
  *  Created on: Mar 30, 2012
  *      Author: wjiang2
  */
-#include "cytoCore/pairVectorRcppWrap.h"
+#include "flowWorkspace/pairVectorRcppWrap.h"
 #include "flowWorkspace/openWorkspace.hpp"
 using namespace Rcpp;
 using namespace cytolib;

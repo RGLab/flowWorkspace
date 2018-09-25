@@ -4,14 +4,20 @@
 \alias{clone}
 \alias{clone-methods}
 \alias{clone,GatingSet-method}
+\alias{gs_clone}
+\alias{gs_copy_tree_only}
 \title{clone a GatingSet}
 \usage{
 clone(x, ...)
+
+gs_clone(x, h5_dir = tempdir())
+
+gs_copy_tree_only(x)
 }
 \arguments{
 \item{x}{A \code{GatingSet}}
 
-\item{...}{ncdfFile = NULL: see \code{\link{clone.ncdfFlowSet}}}
+\item{...}{h5_dir = tempdir() the directory to store the h5-based flow data matrix}
 }
 \value{
 A copy of a given \code{GatingSet}.
@@ -26,8 +32,8 @@ Note that the regular R assignment operation on a \code{GatingSet} object does n
 }
 \examples{
   \dontrun{
-    #G is  a GatingSet
-    G1<-clone(G)
-
+    #gs is  a GatingSet
+    gs2 <-gs_clone(gs) #gs2 is independent from gs and have its own copy of both gating trees and flow data
+    gs3 <- gs_copy_tree_only(gs) #gs3 has its own copy of gating trees but share the same flow data with original gs
   }
 }

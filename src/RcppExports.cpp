@@ -7,6 +7,318 @@
 
 using namespace Rcpp;
 
+// get_h5_file_path
+string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_get_h5_file_path(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_h5_file_path(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// deep_copy_cytoframe
+Rcpp::XPtr<CytoFrameView> deep_copy_cytoframe(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_deep_copy_cytoframe(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(deep_copy_cytoframe(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// shallow_copy_cytoframe
+Rcpp::XPtr<CytoFrameView> shallow_copy_cytoframe(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_shallow_copy_cytoframe(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(shallow_copy_cytoframe(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// subset_cytoframe_by_rows
+void subset_cytoframe_by_rows(Rcpp::XPtr<CytoFrameView> fr, vector<unsigned> idx);
+RcppExport SEXP _flowWorkspace_subset_cytoframe_by_rows(SEXP frSEXP, SEXP idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< vector<unsigned> >::type idx(idxSEXP);
+    subset_cytoframe_by_rows(fr, idx);
+    return R_NilValue;
+END_RCPP
+}
+// subset_cytoframe_by_cols
+void subset_cytoframe_by_cols(Rcpp::XPtr<CytoFrameView> fr, vector<unsigned> idx);
+RcppExport SEXP _flowWorkspace_subset_cytoframe_by_cols(SEXP frSEXP, SEXP idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< vector<unsigned> >::type idx(idxSEXP);
+    subset_cytoframe_by_cols(fr, idx);
+    return R_NilValue;
+END_RCPP
+}
+// frm_compensate
+void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover);
+RcppExport SEXP _flowWorkspace_frm_compensate(SEXP frSEXP, SEXP spilloverSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type spillover(spilloverSEXP);
+    frm_compensate(fr, spillover);
+    return R_NilValue;
+END_RCPP
+}
+// get_spillover
+NumericMatrix get_spillover(Rcpp::XPtr<CytoFrameView> fr, string key);
+RcppExport SEXP _flowWorkspace_get_spillover(SEXP frSEXP, SEXP keySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< string >::type key(keySEXP);
+    rcpp_result_gen = Rcpp::wrap(get_spillover(fr, key));
+    return rcpp_result_gen;
+END_RCPP
+}
+// writeH5
+void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename);
+RcppExport SEXP _flowWorkspace_writeH5(SEXP frSEXP, SEXP filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    writeH5(fr, filename);
+    return R_NilValue;
+END_RCPP
+}
+// load_cf_from_h5
+XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk);
+RcppExport SEXP _flowWorkspace_load_cf_from_h5(SEXP filenameSEXP, SEXP on_diskSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_cf_from_h5(filename, on_disk));
+    return rcpp_result_gen;
+END_RCPP
+}
+// setMarker
+void setMarker(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name);
+RcppExport SEXP _flowWorkspace_setMarker(SEXP frSEXP, SEXP oldSEXP, SEXP new_nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< string >::type old(oldSEXP);
+    Rcpp::traits::input_parameter< string >::type new_name(new_nameSEXP);
+    setMarker(fr, old, new_name);
+    return R_NilValue;
+END_RCPP
+}
+// setChannel
+void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name);
+RcppExport SEXP _flowWorkspace_setChannel(SEXP frSEXP, SEXP oldSEXP, SEXP new_nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< string >::type old(oldSEXP);
+    Rcpp::traits::input_parameter< string >::type new_name(new_nameSEXP);
+    setChannel(fr, old, new_name);
+    return R_NilValue;
+END_RCPP
+}
+// parseFCS
+Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only);
+RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< FCS_READ_PARAM >::type config(configSEXP);
+    Rcpp::traits::input_parameter< bool >::type text_only(text_onlySEXP);
+    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getData
+NumericVector getData(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_getData(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(getData(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getKeyword
+string getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key);
+RcppExport SEXP _flowWorkspace_getKeyword(SEXP frSEXP, SEXP keySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< string >::type key(keySEXP);
+    rcpp_result_gen = Rcpp::wrap(getKeyword(fr, key));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getKeywords
+KW_PAIR getKeywords(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_getKeywords(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(getKeywords(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// setKeywords
+void setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys);
+RcppExport SEXP _flowWorkspace_setKeywords(SEXP frSEXP, SEXP keysSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< List >::type keys(keysSEXP);
+    setKeywords(fr, keys);
+    return R_NilValue;
+END_RCPP
+}
+// getncol
+int getncol(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_getncol(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(getncol(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getnrow
+int getnrow(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_getnrow(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(getnrow(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getpdata
+Rcpp::DataFrame getpdata(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_getpdata(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(getpdata(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fcs_to_cytoset
+Rcpp::XPtr<CytoSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM& config, bool is_h5, string h5_dir);
+RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP is_h5SEXP, SEXP h5_dirSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< vector<pair<string,string>> >::type sample_uid_vs_file_path(sample_uid_vs_file_pathSEXP);
+    Rcpp::traits::input_parameter< const FCS_READ_PARAM& >::type config(configSEXP);
+    Rcpp::traits::input_parameter< bool >::type is_h5(is_h5SEXP);
+    Rcpp::traits::input_parameter< string >::type h5_dir(h5_dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(fcs_to_cytoset(sample_uid_vs_file_path, config, is_h5, h5_dir));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_colnames
+vector<string> get_colnames(Rcpp::XPtr<CytoSet> cs);
+RcppExport SEXP _flowWorkspace_get_colnames(SEXP csSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_colnames(cs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// copy_cytoset
+Rcpp::XPtr<CytoSet> copy_cytoset(Rcpp::XPtr<CytoSet> cs);
+RcppExport SEXP _flowWorkspace_copy_cytoset(SEXP csSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(copy_cytoset(cs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// subset_cytoset_by_rows
+void subset_cytoset_by_rows(Rcpp::XPtr<CytoSet> cs, string sn, vector<unsigned> idx);
+RcppExport SEXP _flowWorkspace_subset_cytoset_by_rows(SEXP csSEXP, SEXP snSEXP, SEXP idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< string >::type sn(snSEXP);
+    Rcpp::traits::input_parameter< vector<unsigned> >::type idx(idxSEXP);
+    subset_cytoset_by_rows(cs, sn, idx);
+    return R_NilValue;
+END_RCPP
+}
+// subset_cytoset
+Rcpp::XPtr<CytoSet> subset_cytoset(Rcpp::XPtr<CytoSet> cs, SEXP i_obj, SEXP j_obj);
+RcppExport SEXP _flowWorkspace_subset_cytoset(SEXP csSEXP, SEXP i_objSEXP, SEXP j_objSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type i_obj(i_objSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type j_obj(j_objSEXP);
+    rcpp_result_gen = Rcpp::wrap(subset_cytoset(cs, i_obj, j_obj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_cytoFrame
+Rcpp::XPtr<CytoFrameView> get_cytoFrame(Rcpp::XPtr<CytoSet> cs, Rcpp::RObject i_obj, Rcpp::RObject j_obj);
+RcppExport SEXP _flowWorkspace_get_cytoFrame(SEXP csSEXP, SEXP i_objSEXP, SEXP j_objSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type i_obj(i_objSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type j_obj(j_objSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_cytoFrame(cs, i_obj, j_obj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// set_pheno_data
+void set_pheno_data(Rcpp::XPtr<CytoSet> cs, DataFrame value);
+RcppExport SEXP _flowWorkspace_set_pheno_data(SEXP csSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type value(valueSEXP);
+    set_pheno_data(cs, value);
+    return R_NilValue;
+END_RCPP
+}
+// get_pheno_data
+List get_pheno_data(Rcpp::XPtr<CytoSet> cs);
+RcppExport SEXP _flowWorkspace_get_pheno_data(SEXP csSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_pheno_data(cs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getDescendants
 VertexID_vec getDescendants(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node);
 RcppExport SEXP _flowWorkspace_getDescendants(SEXP gsPtrSEXP, SEXP sampleNameSEXP, SEXP nodeSEXP) {
@@ -660,6 +972,33 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_flowWorkspace_get_h5_file_path", (DL_FUNC) &_flowWorkspace_get_h5_file_path, 1},
+    {"_flowWorkspace_deep_copy_cytoframe", (DL_FUNC) &_flowWorkspace_deep_copy_cytoframe, 1},
+    {"_flowWorkspace_shallow_copy_cytoframe", (DL_FUNC) &_flowWorkspace_shallow_copy_cytoframe, 1},
+    {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
+    {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
+    {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
+    {"_flowWorkspace_get_spillover", (DL_FUNC) &_flowWorkspace_get_spillover, 2},
+    {"_flowWorkspace_writeH5", (DL_FUNC) &_flowWorkspace_writeH5, 2},
+    {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 2},
+    {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
+    {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
+    {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 3},
+    {"_flowWorkspace_getData", (DL_FUNC) &_flowWorkspace_getData, 1},
+    {"_flowWorkspace_getKeyword", (DL_FUNC) &_flowWorkspace_getKeyword, 2},
+    {"_flowWorkspace_getKeywords", (DL_FUNC) &_flowWorkspace_getKeywords, 1},
+    {"_flowWorkspace_setKeywords", (DL_FUNC) &_flowWorkspace_setKeywords, 2},
+    {"_flowWorkspace_getncol", (DL_FUNC) &_flowWorkspace_getncol, 1},
+    {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},
+    {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
+    {"_flowWorkspace_fcs_to_cytoset", (DL_FUNC) &_flowWorkspace_fcs_to_cytoset, 4},
+    {"_flowWorkspace_get_colnames", (DL_FUNC) &_flowWorkspace_get_colnames, 1},
+    {"_flowWorkspace_copy_cytoset", (DL_FUNC) &_flowWorkspace_copy_cytoset, 1},
+    {"_flowWorkspace_subset_cytoset_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoset_by_rows, 3},
+    {"_flowWorkspace_subset_cytoset", (DL_FUNC) &_flowWorkspace_subset_cytoset, 3},
+    {"_flowWorkspace_get_cytoFrame", (DL_FUNC) &_flowWorkspace_get_cytoFrame, 3},
+    {"_flowWorkspace_set_pheno_data", (DL_FUNC) &_flowWorkspace_set_pheno_data, 2},
+    {"_flowWorkspace_get_pheno_data", (DL_FUNC) &_flowWorkspace_get_pheno_data, 1},
     {"_flowWorkspace_getDescendants", (DL_FUNC) &_flowWorkspace_getDescendants, 3},
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},

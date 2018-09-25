@@ -3,7 +3,7 @@
 #define __flowWorkspace_h__
 
 #include "cytolib/GatingSet.hpp"
-#include "cytoCore/pairVectorRcppWrap.h"
+#include "flowWorkspace/pairVectorRcppWrap.h"
 #include "flowWorkspace/openWorkspace.hpp"
 using namespace cytolib;
 using namespace flowWorkspace;
