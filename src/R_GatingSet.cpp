@@ -122,6 +122,7 @@ XPtr<GatingSet> combineGatingSet(Rcpp::List gsList,Rcpp::List sampleList) {
 				newCS.add_cytoframe_view(sn, cs.get_cytoframe_view(sn));
 				newGS->add_GatingHierarchy(gs->getGatingHierarchy(sn),sn);
 			}
+			newGS->set_cytoset(newCS);
 		}
 
 

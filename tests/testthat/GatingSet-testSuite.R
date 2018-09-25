@@ -48,7 +48,7 @@ test_that("clone & rbind2",{
       #check data consistency
       fs1 <- getData(gs)
       fs2 <- getData(gs1)
-      expect_equal(fs1[[1]], fs2[[1]], tol = 1e-05)
+      expect_equal(fs1[[1]], fs2[[1]])
       
       expect_false(fr_get_h5_file_path(fs1[[1, returnType = "cytoFrame"]])
                             == fr_get_h5_file_path(fs2[[1, returnType = "cytoFrame"]])
@@ -72,7 +72,7 @@ test_that("clone & rbind2",{
       gs2 <- gs_copy_tree_only(gs)
       #check data consistency
       fs2 <- getData(gs2)
-      expect_equal(fs1[[1]], fs2[[1]], tol = 1e-05)
+      expect_equal(fs1[[1]], fs2[[1]])
       
       expect_true(fr_get_h5_file_path(fs1[[1, returnType = "cytoFrame"]])
                    == fr_get_h5_file_path(fs2[[1, returnType = "cytoFrame"]])
