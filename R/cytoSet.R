@@ -10,15 +10,58 @@ setMethod("pData",
           signature=signature(object="cytoSet"),
           definition=function(object) get_pheno_data(object@pointer))
 
+#' @export 
+setReplaceMethod("pData",
+                 signature=signature(object="cytoSet",
+                                     value="data.frame"),
+                 definition=function(object,value)
+                 {
+                   for(i in seq_along(value))
+                     value[[i]] <- as.character(value[[i]])
+                   set_pheno_data(object@pointer, value)
+                   object
+                 })
+
 setMethod("colnames",
           signature=signature(x="cytoSet"),
           definition=function(x, do.NULL="missing", prefix="missing")
             get_colnames(x@pointer))
-      
+  
+setReplaceMethod("colnames",
+	signature=signature(x="cytoSet",
+			value="ANY"),
+	definition=function(x, value)
+	{
+		         for(i in sampleNames(x))
+                           colnames(x[[i, returnType = "cytoFrame"]]) <- value
+		x
+	})
+
+
+
 setMethod("markernames",
     signature=signature(object = "cytoSet"),
-    definition=function(object)
-      markernames(object[[1, returnType = "cytoFrame", use.exprs = FALSE]]))
+    definition=function(object){
+      res <- lapply(sampleNames(object), function(sn){
+        markernames(object[[sn, returnType = "cytoFrame", use.exprs = FALSE]])
+      })
+      
+      res <- unique(res)
+      if(length(res) > 1)
+        warning("marker names are not consistent across samples within flowSet")
+      else
+        res <- res[[1]]
+      res
+    })
+      
+
+#' @export
+setReplaceMethod("markernames",
+                 signature=signature(object="cytoSet", value="ANY"), function(object, value){
+                   for(i in sampleNames(object))
+                     markernames(object[[i, returnType = "cytoFrame", use.exprs = FALSE]]) <- value
+                   object
+                 })
 
 setMethod("show",
           signature=signature(object="cytoSet"),
@@ -144,29 +187,8 @@ copyCytoSet <- function(x){
 
 
 
-#setReplaceMethod("colnames",
-#		signature=signature(x="cytoSet",
-#				value="ANY"),
-#		definition=function(x, value)
-#		{
-#			         for(i in sampleNames(x))
-#                            colnames(x@frames[[i]]) <- value
-#			x
-#		})
-#
-#
 
-#' @export 
-setReplaceMethod("pData",
-	signature=signature(object="cytoSet",
-			value="data.frame"),
-	definition=function(object,value)
-	{
-	  for(i in seq_along(value))
-	    value[[i]] <- as.character(value[[i]])
-	  set_pheno_data(object@pointer, value)
-	  object
-	  })
+
 #
 #
 #

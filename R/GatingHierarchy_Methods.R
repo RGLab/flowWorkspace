@@ -1565,7 +1565,7 @@ setMethod("markernames",
           signature=signature(object="GatingHierarchy"),
           definition=function(object){
 
-            markernames(getData(object))
+            markernames(getData(object, returnType = "cytoFrame", use.exprs = FALSE))
 
           })
 
@@ -1576,7 +1576,8 @@ setReplaceMethod("markernames",
                  signature=signature(object="GatingHierarchy", value="ANY"), function(object, value){
 
                    sn <- sampleNames(object)
-                   markernames(flowData(object)@frames[[sn]]) <- value
+                   cs <- flowData(object)[sn]
+                   markernames(cs) <- value
 
                    object
                  })
@@ -1589,7 +1590,7 @@ setMethod("colnames",
           signature=signature(x="GatingHierarchy"),
           definition=function(x, do.NULL="missing", prefix="missing"){
 
-            colnames(getData(x))
+            colnames(getData(x, returnType = "cytoFrame", use.exprs = FALSE))
 
           })
 
