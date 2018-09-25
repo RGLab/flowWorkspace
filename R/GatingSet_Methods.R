@@ -1633,10 +1633,7 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 
 			pData(fs) <- value
 
-			varM <- varMetadata(phenoData(fs))
-			varM[-1,] <- rownames(varM)[-1]
-			varMetadata(phenoData(fs)) <- varM
-			flowData(object) <- fs
+			
 			return (object)
 		})
 

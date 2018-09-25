@@ -94,18 +94,18 @@ test_that("clone & rbind2",{
       suppressMessages(gs <<- rbind2(gslist))
       
       new_samples <- sampleNames(gs) 
-      expect_identical(new_samples, c(orig_sn, clone_sn))
+      expect_setequal(new_samples, c(orig_sn, clone_sn))
       
     })
 test_that("sampleNames",{
       
       sn <- sampleNames(gs)
-      expect_equal(sn, c("CytoTrol_CytoTrol_1.fcs", "CytoTrol_CytoTrol_2.fcs"))
+      expect_equal(sn, c("CytoTrol_CytoTrol_2.fcs", "CytoTrol_CytoTrol_1.fcs"))
       
       #update name
       sampleNames(gs)[1] <- "newSample"
       new_sn <- sampleNames(gs)
-      expect_equal(new_sn, c("newSample", "CytoTrol_CytoTrol_2.fcs"))
+      expect_equal(new_sn, c("newSample", "CytoTrol_CytoTrol_1.fcs"))
       #check if sample name is also updated in cpp data structure
       name_stored_in_cpp <- flowWorkspace:::.cpp_getSamples(gs@pointer)
       expect_equal(sort(new_sn), sort(name_stored_in_cpp))
@@ -145,124 +145,32 @@ test_that("pData ",{
 
 test_that("[ subsetting",{
       
-      gs_sub <- gs[2]
-      expect_is(gs_sub, "GatingSet");
-      gs_sub <- gs["CytoTrol_CytoTrol_2.fcs"]
-      expect_is(gs_sub, "GatingSet");
-      #c data structure does not change     
-      expect_true(identical(gs@pointer,gs_sub@pointer));
-      expect_false(identical(gs_sub@guid, gs@guid))
-      expect_equal(length(gs_sub), 1)
+      gs_sub1 <- gs[1]
+      expect_is(gs_sub1, "GatingSet");
+      gs_sub2 <- gs["CytoTrol_CytoTrol_2.fcs"]
+      expect_is(gs_sub2, "GatingSet");
+      expect_equal(pData(gs_sub1), pData(gs_sub2))
+      expect_equal(length(gs_sub1), 1)
+      
+      expect_equal(fr_get_h5_file_path(getData(gs_sub1)[[1, returnType = "cytoFrame"]])
+                   ,fr_get_h5_file_path(getData(gs_sub2)[[1, returnType = "cytoFrame"]])
+      )
+      
+      
     })
 
 test_that("getGate for gs",{
       
       thisRes <- getGate(gs, "CD3+")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_ellipse.rds"))
-      expect_equal(thisRes, expectRes, tol = 5e-04)
+      expect_equal(thisRes, rev(expectRes), tol = 5e-04)
       
       thisRes <- getGate(gs, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_polygon.rds"))
-      expect_equal(thisRes, expectRes, tol = 2e-08)
+      expect_equal(thisRes, rev(expectRes), tol = 2e-08)
     })
 
-test_that("preporcess the gating tree to prepare for the plotGate",{
-      
-      #no formula
-      stats <- 0.99
-      xParam <- "<B710-A>"
-      yParam <- "<R780-A>"
-      expect_value <- list(gates = getGate(gs, "CD4")
-                            , xParam = xParam
-                            , yParam = yParam
-                            , stats = stats
-                            , isBool = FALSE
-                        )
-      
-      myValue <- flowWorkspace:::.preplot(gs, "CD4", "xyplot", stats = stats, formula = NULL, default.y = "SSC-A")
-      expect_equal(myValue, expect_value)
-      
-            
-      #with formula override the gate x,y
-      f1 <- `FSC-A` ~ `SSC-A` | PTID + VISITNO + STIM
-      
-      expect_value["xParam"] <- "SSC-A" 
-      expect_value["yParam"] <- "FSC-A"
-      myValue <- flowWorkspace:::.preplot(gs, "CD4", "xyplot", stats = stats, formula = f1, default.y = "SSC-A")
-      expect_equal(myValue, expect_value)
-      
-      samples <- sampleNames(gs)
-      
-      #miss stats argument
-      expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], getNodes(gs[[sn]])[5]), simplify = FALSE)
-      myValue <- flowWorkspace:::.preplot(x = gs, y = "CD4", type = "xyplot", formula = f1, default.y = "SSC-A")
-      expect_equal(myValue, expect_value)
 
-      #y is a list
-      expect_value[["stats"]] <- sapply(samples,function(thisSample){
-                                          lapply(7:8,function(thisY){
-                                                curGh <- gs[[thisSample]]
-                                                getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],xml = F)
-                                              })
-                                        },simplify = FALSE)
-      curGates <- sapply(samples,function(curSample){
-            
-            filters(lapply(getNodes(gs)[7:8],function(y)getGate(gs[[curSample]],y)))
-          },simplify=F)
-      xParam <- "<R660-A>"
-      yParam <- "<V545-A>"
-      expect_value[["gates"]] <- as(curGates,"filtersList")
-      expect_value[["xParam"]] <- xParam
-      expect_value[["yParam"]] <- yParam
-      
-      myValue <- flowWorkspace:::.preplot(x = gs, y = list(popIds=getNodes(gs)[7:8]), type = "xyplot", formula = NULL, default.y = "SSC-A")
-
-      expect_identical(myValue, expect_value)
-      
-
-    })
-
-    
-#test_that("getOverlay",{
-#      
-#      nodeInd <- "CD8/38- DR+"
-#      samples <- sampleNames(gs)
-#      chnls <- c("SSC-A", "FSC-A")
-#      #by one gate index
-#      thisRes <- .getOverlay(gs, overlay = nodeInd, params = chnls)
-#      expect_is(thisRes[[1]], "ncdfFlowSet")
-#      expect_equal(names(thisRes), nodeInd)
-#      expect_equal(sampleNames(thisRes[[1]]), samples)
-#      expect_equal(colnames(thisRes), chnls)
-#      expect_equivalent(nrow(thisRes[[1]]), 1309)
-#      
-#      #by one event indice
-#      eInd <- getIndices(gs[[1]], nodeInd)
-#      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
-#      expect_is(thisRes, "flowSet")
-#      expect_equal(sampleNames(thisRes), samples)
-#      expect_equivalent(as.vector(fsApply(thisRes,nrow)), c(1309, 1309))
-#      
-#      #by a list of event indices
-#      eInd <- lapply(gs, getIndices, y = nodeInd)
-#      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
-#      expect_is(thisRes, "list")
-#      expect_equal(names(thisRes), samples)
-#      expect_equivalent(sapply(thisRes,class), c("flowFrame", "flowFrame"))
-#      expect_equivalent(sapply(thisRes,nrow), c(1309, 1309))
-#      
-#      #by a list of gate/event indices
-#      nodeInd <- list("CD8/38- DR+", "CD8/38- DR-")
-#      expect_error(.getOverlay(gs, overlay = nodeInd, params = chnls), "names of overlay list does not agree with sampleNames in GatingSet")
-#      names(nodeInd) <- samples
-#      thisRes <- .getOverlay(gs, overlay = nodeInd, params = chnls)
-#      expect_is(thisRes, "list")
-#      expect_equal(names(thisRes), samples)
-#      expect_equivalent(sapply(thisRes,class), c("flowFrame", "flowFrame"))
-#      expect_equivalent(as.vector(sapply(thisRes,nrow)), c(1309, 7473))
-#      
-#    })
-    
 test_that("setNode",{
     
     nodeName <- getNodes(gs[[1]])[3]
@@ -284,7 +192,7 @@ test_that("getPopStats",{
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
       expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames
       
-      expect_equal(as.data.table(thisRes), expectRes[,-1, with = F], tol = 2e-3)
+      expect_equal(as.data.table(thisRes[,2:1]), expectRes[,-1, with = F], tol = 2e-3)
       
       #use auto path
       stats_wide <- getPopStats(gs, format = "wide", path = "auto")
@@ -313,7 +221,7 @@ test_that("compute CV from gs",{
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "cv_gs.csv"))
-      expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames
+      expect_setequal(rownames(thisRes),expectRes[["V1"]])#check rownames
       tol <- ifelse(isCpStaticGate, 2e-2, 1.5e-8)
       expect_equal(as.data.table(thisRes), expectRes[,-1, with = F], tol = tol)
       
@@ -336,6 +244,13 @@ test_that("keyword",{
             #fix legacy result
             if(!islegacyArchivedGS)
               thisResult[paste0("$P",5:11, "N")] <- paste0("<", thisResult[paste0("$P",5:11, "N")], ">")
+            
+            thisResult <- sapply(thisResult, function(i)
+              {
+                if(is(i, "character"))
+                   i <- trimws(i)
+                 i
+              }, simplify = FALSE)
             thisResult
           })
       thisRes <- lapply(thisRes, function(thisResult){
@@ -344,7 +259,7 @@ test_that("keyword",{
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
           })
-      expect_equal(thisRes,expectRes)
+      expect_equal(thisRes,rev(expectRes))
       
       thisRes <- keyword(gs, "$P1N")
       
@@ -356,8 +271,8 @@ test_that("getIndices for COMPASS",{
       thisRes <- getIndices(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`)) 
       expectRes <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
       tol <- ifelse(isCpStaticGate, 1e-2, 1.5e-8)
-      expect_equal(sum(thisRes[[1]]), sum(expectRes[[1]]), tol = tol)
-      expect_equal(sum(thisRes[[2]]), sum(expectRes[[2]]), tol = tol)
+      expect_equal(sum(thisRes[[1]]), sum(expectRes[[2]]), tol = tol)
+      expect_equal(sum(thisRes[[2]]), sum(expectRes[[1]]), tol = tol)
     })
 
 test_that("add", {
@@ -406,7 +321,7 @@ if(!isCpStaticGate)
     expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
     #      browser()
     
-    expect_equal(thisRes,expectRes,tol = 1e-07)
+    expect_equal(thisRes,rev(expectRes),tol = 1e-07)
     
     #test other.markers (redundant marker should be merged automatically)
     thisRes <- getSingleCellExpression(gs, nodes
