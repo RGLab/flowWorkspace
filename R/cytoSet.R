@@ -6,6 +6,23 @@ NULL
 setClass("cytoSet", contains = "flowSet"
           ,representation=representation(pointer = "externalptr"))
 
+#' @export 
+cytoSet_to_flowSet <- function(cs){
+  fs <- as(fsApply(cs, function(fr)fr), "flowSet")
+  pData(fs) <- pData(cs)
+  fs
+}
+
+#' @export 
+flowSet_to_cytoSet <- function(fs){
+  tmp <- tempfile()
+  write.flowSet(fs, tmp)
+  cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
+                              , path = tmp
+                              # , files = list.files(tmp, pattern = ".fcs", full.names = TRUE)
+                              , is_h5 = TRUE)
+  cs
+}
 setMethod("pData",
           signature=signature(object="cytoSet"),
           definition=function(object) get_pheno_data(object@pointer))
@@ -84,19 +101,23 @@ setMethod("sampleNames",
 
 setMethod("[[",
           signature=signature(x="cytoSet"),
-          definition=function(x, i, j, use.exprs = TRUE, returnType = c("flowFrame", "cytoFrame"), ...)
+          definition=function(x, ..., returnType = c("flowFrame", "cytoFrame"))
           {
             returnType <- match.arg(returnType)
-            if(missing(j))
-              j <- NULL
+           
             
-            fr <- new("cytoFrame", pointer = get_cytoFrame(x@pointer, i, j), use.exprs = use.exprs)
+            fr <- get_cytoFrame_from_cs(x, ...)
             if(returnType == "flowFrame")
-              fr <- as.flowFrame(fr)
+              fr <- cytoFrame_to_flowFrame(fr)
             fr
             
           })
-
+#' @export
+get_cytoFrame_from_cs <- function(x, i, j, use.exprs = TRUE){
+  if(missing(j))
+    j <- NULL
+  new("cytoFrame", pointer = get_cytoFrame(x@pointer, i, j), use.exprs = use.exprs)
+}
 setMethod("[",
 	signature=signature(x="cytoSet"),
 	definition=function(x, i, j, ..., drop=FALSE)

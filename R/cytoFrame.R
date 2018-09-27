@@ -221,7 +221,7 @@ setReplaceMethod("keyword",
 
 # coerce cytoFrame to flowFrame
 #' @export
-as.flowFrame <- function(fr){
+cytoFrame_to_flowFrame <- function(fr){
   fr@exprs <- exprs(fr)
   fr@description = keyword(fr)
   fr@parameters <- parameters(fr)

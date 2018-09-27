@@ -160,7 +160,16 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
                                           , is_h5 = is_h5
                                           , h5_dir = h5_dir
                                   )
-    return (new("cytoSet", pointer = cs))
+    cs <- new("cytoSet", pointer = cs)
+    
+    if(!is.null(phenoFrame))
+    {
+      pd <- pData(phenoFrame)
+      pd[["FCS_File"]] <- NULL
+      pData(cs) <- pd
+    }
+    
+    cs
     
 }
 
