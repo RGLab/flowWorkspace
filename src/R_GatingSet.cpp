@@ -43,7 +43,11 @@ StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
 	return gsPtr->get_sample_uids();
 }
 
-
+//[[Rcpp::export]]
+XPtr<GatingSet> GatingSet_from_CytoSet(XPtr<CytoSet> cs)
+{
+	return XPtr<GatingSet>(new GatingSet(*cs));
+}
 /*
  * constructing GatingSet from existing gating hierarchy and new data
  */

@@ -854,6 +854,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// GatingSet_from_CytoSet
+XPtr<GatingSet> GatingSet_from_CytoSet(XPtr<CytoSet> cs);
+RcppExport SEXP _flowWorkspace_GatingSet_from_CytoSet(SEXP csSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<CytoSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(GatingSet_from_CytoSet(cs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // NewGatingSet
 XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr, string src_sample_uid, StringVec new_sample_uids);
 RcppExport SEXP _flowWorkspace_NewGatingSet(SEXP gsPtrSEXP, SEXP src_sample_uidSEXP, SEXP new_sample_uidsSEXP) {
@@ -1039,6 +1050,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_cytoset_from_node", (DL_FUNC) &_flowWorkspace_get_cytoset_from_node, 2},
     {"_flowWorkspace_set_cytoset", (DL_FUNC) &_flowWorkspace_set_cytoset, 2},
     {"_flowWorkspace_get_sample_uids", (DL_FUNC) &_flowWorkspace_get_sample_uids, 1},
+    {"_flowWorkspace_GatingSet_from_CytoSet", (DL_FUNC) &_flowWorkspace_GatingSet_from_CytoSet, 1},
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 3},
     {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
     {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 1},

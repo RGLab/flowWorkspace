@@ -165,10 +165,14 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' }
 setMethod("GatingSet",c("cytoSet"),function(x){
       
-      new("GatingSet", pointer = x@pointer)
+      new("GatingSet", pointer = GatingSet_from_CytoSet(x@pointer))
       
     })
-
+setMethod("GatingSet",c("flowSet"),function(x){
+      
+      GatingSet(flowSet_to_cytoSet(x))
+      
+    })
 #' Class \code{"GatingSetList"}
 #' 
 #'   A list of of \code{GatingSet} objects. This class exists for method dispatching.
