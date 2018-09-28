@@ -1404,78 +1404,9 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
 #'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
 #'                  , yet may at the cost of unnecessary data IO
 .recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE){
+  cpp_gating(x@pointer, y, alwaysLoadData, verbose, leaf.bool)
+  
 
-  if(y == "root")
-    alwaysLoadData <- TRUE #skip the checking to save time when start from root
-
-  extend_val <- 0
-  ignore_case <- FALSE
-  gains <- numeric(0)
-  lapply(x,function(gh){
-
-
-        sampleName<-sampleNames(gh)
-        if(verbose)
-          message(paste("gating",sampleName,"..."))
-        else
-          message(".", appendLF = FALSE)
-
-
-        # Ideally, we want to track back to all ancesters and references to check if they are already gated
-        # in order to determine whether the raw data is needed
-        # but for the sake of speed, we only check the parent and reference node
-        # of the boolGate at the moment
-        # if the further upstream ancester nodes are not gated yet, which will fail the gating
-        # since we are passing the empty dummy data, we will simply throw the error and prompt user
-        # to recompute these upstream gates explicitly
-        if(alwaysLoadData)
-          isloadData <- TRUE
-        else{
-          isAllBoolGate <- all(sapply(y,.isBoolGate, x = gh))
-          if(isAllBoolGate){
-            isloadData <- all(sapply(y, function(i){
-
-                      pid <- getParent(gh, i)
-                      isParentGated <- isGated(gh, pid)
-                      bf <- getGate(gh, i)
-                      refNodes <- filterObject(bf)$refs
-                      isRefGated <- all(sapply(refNodes, isGated, obj = gh))
-                      !(isParentGated&&isRefGated)
-                    }))
-
-
-          }else
-            isloadData <- TRUE
-        }
-
-
-        if(isloadData){
-          data <- getData(gh)
-          mat <- exprs(data)
-        }else{
-          mat <- matrix(nrow = 0, ncol = 1, dimnames = list(NULL, "dummy"))
-        }
-
-
-        lapply(y,function(i){
-              nodeID <- .getNodeInd(gh, i)
-              nodeInd <- as.integer(nodeID)-1
-              recompute <- TRUE
-              timestep <- 1
-#              browser()
-              res <- try(.cpp_gating(gh@pointer,mat,sampleName,gains,nodeInd,recompute,extend_val, ignore_case, leaf.bool, timestep), silent = TRUE)
-              if(class(res) == "try-error"){
-                if(!isloadData&&grepl("not found in flowData", res))
-                  stop("Found ungated upstream population. Set 'alwaysLoadData = TRUE' for 'recompute' method, and try again!")
-                else
-                  stop(res)
-              }
-
-            })
-
-
-
-      })
   message("done!")
   invisible()
 }

@@ -303,6 +303,10 @@ get_xml_file_path <- function(ws) {
     invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
 }
 
+cpp_gating <- function(gsPtr, nodes, alwaysLoadData, verbose, leafbool) {
+    invisible(.Call(`_flowWorkspace_cpp_gating`, gsPtr, nodes, alwaysLoadData, verbose, leafbool))
+}
+
 subset_gs_by_sample <- function(gsPtr, samples) {
     .Call(`_flowWorkspace_subset_gs_by_sample`, gsPtr, samples)
 }

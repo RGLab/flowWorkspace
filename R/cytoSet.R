@@ -101,21 +101,21 @@ setMethod("sampleNames",
 
 setMethod("[[",
           signature=signature(x="cytoSet"),
-          definition=function(x, ..., returnType = c("flowFrame", "cytoFrame"))
+          definition=function(x, i, j,  use.exprs = TRUE, returnType = c("flowFrame", "cytoFrame"))
           {
             returnType <- match.arg(returnType)
-           
+            if(missing(j))
+              j <- NULL
             
-            fr <- get_cytoFrame_from_cs(x, ...)
+            fr <- get_cytoFrame_from_cs(x, i, j, use.exprs)
             if(returnType == "flowFrame")
               fr <- cytoFrame_to_flowFrame(fr)
             fr
             
           })
 #' @export
-get_cytoFrame_from_cs <- function(x, i, j, use.exprs = TRUE){
-  if(missing(j))
-    j <- NULL
+get_cytoFrame_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
+  
   new("cytoFrame", pointer = get_cytoFrame(x@pointer, i, j), use.exprs = use.exprs)
 }
 setMethod("[",

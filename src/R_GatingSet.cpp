@@ -15,6 +15,102 @@ GatingSet * getGsPtr(SEXP _gsPtr);
 
 
 //[[Rcpp::export]]
+void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool) {
+  if(nodes[0] == "root")
+    alwaysLoadData = true; //skip the checking to save time when start from root
+
+  VertexID_vec nodeIDs(nodes.size());
+  CytoSet cs = gsPtr->get_cytoset();
+  for(const string & sid : gsPtr->get_sample_uids())
+  {
+    if(verbose)
+      Rcout << "gating " << sid << endl;
+    GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(sid);
+    for(unsigned i = 0; i < nodes.size(); i++)
+      nodeIDs[i] = gh->getNodeID(nodes[i]);
+  
+    // Ideally, we want to track back to all ancesters and references to check if they are already gated
+    //   in order to determine whether the raw data is needed
+    //   but for the sake of speed, we only check the parent and reference node
+    //     of the boolGate at the moment
+    //     if the further upstream ancester nodes are not gated yet, which will fail the gating
+    //       since we are passing the empty dummy data, we will simply throw the error and prompt user
+    //       to recompute these upstream gates explicitly
+    bool isloadData;
+    if(alwaysLoadData)
+      isloadData = true;
+    else
+    {
+      bool isAllBoolGate = true;
+      for(auto i : nodeIDs)
+      {
+        auto type = gh->getNodeProperty(i).getGate()->getType();
+        if(type!=BOOLGATE&&type!=LOGICALGATE&&type!=CLUSTERGATE)
+        {
+          isAllBoolGate = false;
+          break;
+        }
+      }
+      if(isAllBoolGate)
+      {
+        isloadData = false;
+        for(auto i : nodeIDs)
+        {
+          //check if parent is gated
+          if(!gh->getNodeProperty(gh->getParent(i)).isGated())
+          {
+            isloadData = true;
+            break;
+          }
+          
+          //if check if reference is gated
+          bool allrefgated = true;
+          boolGate * g = dynamic_cast<boolGate *>(gh->getNodeProperty(i).getGate());
+          for(auto j : g->getBoolSpec())
+          {
+            if(!gh->getNodeProperty(gh->getParent(gh->getNodeID(j.path))).isGated())
+            {
+              allrefgated = false;
+              break;
+            }
+          }
+          if(!allrefgated)
+          {
+            isloadData = true;
+            break;
+          }
+        }
+        
+      }
+      else
+        isloadData = true;
+    }
+    
+    //actual gating
+    unique_ptr<MemCytoFrame> fr (new MemCytoFrame());
+    if(isloadData)
+      fr.reset(new MemCytoFrame(*cs.get_cytoframe_view(sid).get_cytoframe_ptr()));
+    for(auto nodeID : nodeIDs)
+    {
+      try{
+        gh->gating(*fr, nodeID, true, leafbool);  
+      }
+      catch(const std::exception & e)
+      {
+        string strerr = e.what();
+        if(!isloadData&&strerr.find("not found")!=string::npos)
+         throw(domain_error("Found ungated upstream population. Set 'alwaysLoadData = TRUE' for 'recompute' method, and try again!"));
+        else
+          throw(domain_error(strerr));
+        
+      }
+      
+    }
+      
+  }
+}
+
+//[[Rcpp::export]]
 XPtr<GatingSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples) {
 
   return XPtr<GatingSet>(new GatingSet(gsPtr->sub_samples(samples)));
