@@ -14,13 +14,13 @@ cytoSet_to_flowSet <- function(cs){
 }
 
 #' @export 
-flowSet_to_cytoSet <- function(fs){
+flowSet_to_cytoSet <- function(fs, path = tempdir()){
   tmp <- tempfile()
-  write.flowSet(fs, tmp)
+  write.flowSet(fs, tmp, filename = sampleNames(fs))
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
                               , path = tmp
-                              # , files = list.files(tmp, pattern = ".fcs", full.names = TRUE)
-                              , is_h5 = TRUE)
+                              , is_h5 = TRUE
+                              , h5_dir = path)
   cs
 }
 setMethod("pData",

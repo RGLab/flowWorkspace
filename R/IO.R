@@ -70,7 +70,8 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
 {
     ## A frame of phenoData information
     phenoFrame <- NULL
-
+    if(!dir.exists(h5_dir))
+      dir.create(h5_dir)
     ## deal with the case that the phenoData is provided, either as
     ## character vector or as AnnotatedDataFrame.
     if(!missing(phenoData)) {
@@ -158,7 +159,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
                                             , ignoreTextOffset = ignore.text.offset
                                           )
                                           , is_h5 = is_h5
-                                          , h5_dir = h5_dir
+                                          , h5_dir = normalizePath(h5_dir)
                                   )
     cs <- new("cytoSet", pointer = cs)
     

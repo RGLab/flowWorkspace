@@ -55,6 +55,7 @@ Collate:
     'getDescendants.R'
     'getSingleCellExpression.R'
     'getStats.R'
+    'load_gs.R'
     'merge_GatingSet.R'
     'moveNode.R'
     'setGate_Methods.R'

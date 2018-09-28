@@ -192,8 +192,13 @@ void save_gatingset(XPtr<GatingSet> gs, string path, bool overwrite, string cdf)
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
 XPtr<GatingSet> load_gatingset(string path) {
-		GatingSet * gs=new GatingSet(path);
-		return XPtr<GatingSet>(gs);
+		return XPtr<GatingSet>(new GatingSet(path));
+
+}
+
+//[[Rcpp::export]]
+XPtr<GatingSet> load_legacy_gs(string pbfile, XPtr<CytoSet> cs) {
+		return XPtr<GatingSet>(new GatingSet(pbfile, *cs));
 
 }
 

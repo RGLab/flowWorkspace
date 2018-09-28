@@ -124,61 +124,6 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
     })
 
 
-#' @rdname save_gs
-#' @export
-save_gslist<-function(gslist,path,...){
-  
-  if(file.exists(path)){
-    expect <- unlist(lapply(gslist, slot, name = "guid", level = 1))
-    expect <- c(expect, "samples.rds")
-    if(!setequal(list.files(path), expect))
-      stop("The existing target path '", path, "' does not seem to match the source 'GatingSetList'!")
-  }else{
-    dir.create(path = path)
-  }
-    
-  #do the dir normalization again after it is created
-  path <- normalizePath(path,mustWork = TRUE)
-  
-  lapply(gslist,function(gs){
-#        this_dir <- tempfile(pattern="gs",tmpdir=path)
-#        dir.create(path = this_dir)
-#        browser()
-        guid <- gs@guid
-        if(length(guid)==0){
-          gs@guid <- .uuid_gen()
-          guid <- gs@guid
-        }
-        this_dir <- file.path(path,guid) 
-
-#        invisible(.save_gs(gs,path = this_dir, ...))
-        suppressMessages(save_gs(gs,path = this_dir, ...))
-      }, level =1)
-#  browser()
-  #save sample vector
-  saveRDS(names(gslist@samples),file=file.path(path,"samples.rds"))
-  message("Done\nTo reload it, use 'load_gslist' function\n")
-  
-  
-}
-
-#' @rdname save_gs
-#' @export
-load_gslist<-function(path){
-#  browser()
-  path <- normalizePath(path,mustWork = TRUE)
-  if(!file.exists(path))
-    stop(path,"' not found!")
-  dirs<-list.dirs(path,full.names = TRUE, recursive = FALSE)
-#   browser()
-  res <- lapply(dirs,function(this_dir){
-#        browser()
-        .load_gs(output = this_dir, files = list.files(this_dir))$gs      
-      })
-  samples <- readRDS(file.path(path,"samples.rds"))
-  GatingSetList(res, samples = samples)
-  
-}
 
 #' Replace a single marker name with another
 #' Scan through a gating set list and rename all flowFrames with marker \code{match}

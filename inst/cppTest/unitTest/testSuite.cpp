@@ -161,6 +161,7 @@ BOOST_AUTO_TEST_CASE(Cytotrol_NHLBI)
 	//myTest.wsType = WS_TYPE::WS_MAC;
 	myTest.config.sample_filters["name"]={"CytoTrol_CytoTrol_1.fcs"};
 	myTest.config.data_dir = "../wsTestSuite/Cytotrol/NHLBI/Tcell";
+	myTest.config.keywords_for_uid={};
 	myTest.group_id = 3;
 	myTest.archive="../output/NHLBI/gs/gs";
 //	g_loglevel = GATE_LEVEL;

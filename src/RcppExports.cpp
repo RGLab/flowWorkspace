@@ -916,6 +916,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// load_legacy_gs
+XPtr<GatingSet> load_legacy_gs(string pbfile, XPtr<CytoSet> cs);
+RcppExport SEXP _flowWorkspace_load_legacy_gs(SEXP pbfileSEXP, SEXP csSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< string >::type pbfile(pbfileSEXP);
+    Rcpp::traits::input_parameter< XPtr<CytoSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_legacy_gs(pbfile, cs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // CloneGatingSet
 XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs, string h5_dir, bool is_copy_data);
 RcppExport SEXP _flowWorkspace_CloneGatingSet(SEXP gsSEXP, SEXP h5_dirSEXP, SEXP is_copy_dataSEXP) {
@@ -1069,6 +1081,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 3},
     {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
     {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 1},
+    {"_flowWorkspace_load_legacy_gs", (DL_FUNC) &_flowWorkspace_load_legacy_gs, 2},
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 3},
     {"_flowWorkspace_combineGatingSet", (DL_FUNC) &_flowWorkspace_combineGatingSet, 2},
     {"_flowWorkspace_set_sample_uid", (DL_FUNC) &_flowWorkspace_set_sample_uid, 3},

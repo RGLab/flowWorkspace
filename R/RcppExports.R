@@ -343,6 +343,10 @@ GatingSet_from_CytoSet <- function(cs) {
     .Call(`_flowWorkspace_load_gatingset`, path)
 }
 
+load_legacy_gs <- function(pbfile, cs) {
+    .Call(`_flowWorkspace_load_legacy_gs`, pbfile, cs)
+}
+
 .cpp_CloneGatingSet <- function(gs, h5_dir, is_copy_data) {
     .Call(`_flowWorkspace_CloneGatingSet`, gs, h5_dir, is_copy_data)
 }

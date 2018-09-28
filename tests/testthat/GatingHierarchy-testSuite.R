@@ -51,13 +51,6 @@ test_that("getIndices ",{
       
     })
 
-# test_that("getAxisLabels ",{
-#       
-#       thisRes <- flowWorkspace:::getAxisLabels(gh)
-#       expectRes <- readRDS(file.path(resultDir, "getAxisLabels_gh.rds"))
-#       expect_equal(thisRes,expectRes, tol = 0.017)
-#       
-#     })
 
 test_that("getCompensationMatrices ",{
       
