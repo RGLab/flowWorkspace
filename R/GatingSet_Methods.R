@@ -57,7 +57,20 @@ NULL
 #		})
 
 
+setMethod("identifier",
+          signature=signature(object="GatingSet"),
+          definition=function (object)
+          {
+            get_gatingset_id(object@pointer)
+          })
 
+setReplaceMethod("identifier",
+                 signature=signature(object="GatingSet"),
+                 definition=function (object, value) 
+                 {
+                   set_gatingset_id(object@pointer, value)
+                   object
+                 })
 #' 1. loads the raw data (when execute == TRUE)
 #' 2. compensate and transform the data (when execute == TRUE)
 #' 3. transform gates(extend and apply gains when applicable)

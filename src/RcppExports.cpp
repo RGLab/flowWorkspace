@@ -892,16 +892,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_gatingset_id
+string get_gatingset_id(XPtr<GatingSet> gsPtr);
+RcppExport SEXP _flowWorkspace_get_gatingset_id(SEXP gsPtrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_gatingset_id(gsPtr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// set_gatingset_id
+void set_gatingset_id(XPtr<GatingSet> gsPtr, string id);
+RcppExport SEXP _flowWorkspace_set_gatingset_id(SEXP gsPtrSEXP, SEXP idSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< string >::type id(idSEXP);
+    set_gatingset_id(gsPtr, id);
+    return R_NilValue;
+END_RCPP
+}
 // save_gatingset
-void save_gatingset(XPtr<GatingSet> gs, string path, bool overwrite, string cdf);
-RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP overwriteSEXP, SEXP cdfSEXP) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string cdf);
+RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP cdfSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< string >::type path(pathSEXP);
-    Rcpp::traits::input_parameter< bool >::type overwrite(overwriteSEXP);
     Rcpp::traits::input_parameter< string >::type cdf(cdfSEXP);
-    save_gatingset(gs, path, overwrite, cdf);
+    save_gatingset(gs, path, cdf);
     return R_NilValue;
 END_RCPP
 }
@@ -1079,7 +1100,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_sample_uids", (DL_FUNC) &_flowWorkspace_get_sample_uids, 1},
     {"_flowWorkspace_GatingSet_from_CytoSet", (DL_FUNC) &_flowWorkspace_GatingSet_from_CytoSet, 1},
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 3},
-    {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
+    {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
+    {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
+    {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 3},
     {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 1},
     {"_flowWorkspace_load_legacy_gs", (DL_FUNC) &_flowWorkspace_load_legacy_gs, 2},
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 3},

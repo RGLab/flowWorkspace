@@ -7,7 +7,6 @@
 #' @param G A \code{GatingSet}
 #' @param gslist A \code{GatingSetList}
 #' @param path A character scalar giving the path to save/load the GatingSet to/from.
-#' @param overwrite A logical scalar specifying whether to overwrite the existing folder.
 #' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file.
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
@@ -34,12 +33,12 @@
 #' @rdname save_gs
 #' @export
 #' @aliases save_gs load_gs save_gslist load_gslist
-save_gs<-function(gs, path, overwrite = FALSE
+save_gs<-function(gs, path
                   , cdf = c("copy","move","skip","symlink","link")
                   , ...){
   #  browser()
   cdf <- match.arg(cdf)
-  .cpp_saveGatingSet(gs@pointer, path = path, overwrite = overwrite, cdf = cdf)
+  .cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf)
   message("Done\nTo reload it, use 'load_gs' function\n")
   
   

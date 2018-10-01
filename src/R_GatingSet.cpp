@@ -169,11 +169,22 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
 
 }
 
+//[[Rcpp::export]]
+string get_gatingset_id(XPtr<GatingSet> gsPtr) {
+
+	return gsPtr->get_gatingset_id();
+}
+//[[Rcpp::export]]
+void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
+
+	 gsPtr->set_gatingset_id(id);
+}
+
 /*
  * save/load GatingSet
  */
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void save_gatingset(XPtr<GatingSet> gs, string path, bool overwrite, string cdf) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
       H5Option h5_opt;
       if(cdf == "copy")
         h5_opt = H5Option::copy;
@@ -187,7 +198,7 @@ void save_gatingset(XPtr<GatingSet> gs, string path, bool overwrite, string cdf)
         h5_opt = H5Option::skip;
       else
         stop("invalid cdf option!");
-			gs->serialize_pb(path, overwrite, h5_opt);
+			gs->serialize_pb(path, h5_opt);
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]

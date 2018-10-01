@@ -335,8 +335,16 @@ GatingSet_from_CytoSet <- function(cs) {
     .Call(`_flowWorkspace_NewGatingSet`, gsPtr, src_sample_uid, new_sample_uids)
 }
 
-.cpp_saveGatingSet <- function(gs, path, overwrite, cdf) {
-    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, overwrite, cdf))
+get_gatingset_id <- function(gsPtr) {
+    .Call(`_flowWorkspace_get_gatingset_id`, gsPtr)
+}
+
+set_gatingset_id <- function(gsPtr, id) {
+    invisible(.Call(`_flowWorkspace_set_gatingset_id`, gsPtr, id))
+}
+
+.cpp_saveGatingSet <- function(gs, path, cdf) {
+    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, cdf))
 }
 
 .cpp_loadGatingSet <- function(path) {
