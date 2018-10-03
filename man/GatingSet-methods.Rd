@@ -3,32 +3,17 @@
 \docType{methods}
 \name{GatingSet,cytoSet-method}
 \alias{GatingSet,cytoSet-method}
-\alias{.addGatingHierarchies}
+\alias{identifier,GatingSet-method}
 \title{constructors for GatingSet}
 \usage{
 \S4method{GatingSet}{cytoSet}(x)
 
-.addGatingHierarchies(gs, samples, execute, isNcdf = TRUE,
-  compensation = NULL, wsType = "", extend_val = 0, extend_to = -4000,
-  prefix = TRUE, channel.ignore.case = FALSE, ws = NULL,
-  leaf.bool = TRUE, sampNloc = "keyword", transform = TRUE,
-  timestep.source = c("TIMESTEP", "BTIM"), ...)
+\S4method{identifier}{GatingSet}(object)
 }
 \arguments{
-\item{extend_val}{\code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.}
-
-\item{extend_to}{\code{numeric} the value that gate coordinates are extended to. Default is -4000. Usually this value will be automatically detected according to the real data range.
-But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.}
-
-\item{prefix}{a \code{logical} flag indicates whether the colnames needs to be updated with prefix(e.g. "<>" or "comp") specified by compensations}
-
-\item{channel.ignore.case}{a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)}
-
-\item{transform}{\code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.}
+\item{path}{\code{character} specifies the path to the flow data (FCS files)}
 
 \item{...}{other arguments. see \link{parseWorkspace}}
-
-\item{path}{\code{character} specifies the path to the flow data (FCS files)}
 }
 \description{
 construct a gatingset with empty trees (just root node)

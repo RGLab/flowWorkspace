@@ -18,14 +18,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// deep_copy_cytoframe
-Rcpp::XPtr<CytoFrameView> deep_copy_cytoframe(Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_deep_copy_cytoframe(SEXP frSEXP) {
+// realize_view_cytoframe
+Rcpp::XPtr<CytoFrameView> realize_view_cytoframe(Rcpp::XPtr<CytoFrameView> fr, string filename);
+RcppExport SEXP _flowWorkspace_realize_view_cytoframe(SEXP frSEXP, SEXP filenameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    rcpp_result_gen = Rcpp::wrap(deep_copy_cytoframe(fr));
+    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(realize_view_cytoframe(fr, filename));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -248,14 +249,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// copy_cytoset
-Rcpp::XPtr<CytoSet> copy_cytoset(Rcpp::XPtr<CytoSet> cs);
-RcppExport SEXP _flowWorkspace_copy_cytoset(SEXP csSEXP) {
+// realize_view_cytoset
+Rcpp::XPtr<CytoSet> realize_view_cytoset(Rcpp::XPtr<CytoSet> cs, string path);
+RcppExport SEXP _flowWorkspace_realize_view_cytoset(SEXP csSEXP, SEXP pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
-    rcpp_result_gen = Rcpp::wrap(copy_cytoset(cs));
+    Rcpp::traits::input_parameter< string >::type path(pathSEXP);
+    rcpp_result_gen = Rcpp::wrap(realize_view_cytoset(cs, path));
+    return rcpp_result_gen;
+END_RCPP
+}
+// shallow_copy_cytoset
+Rcpp::XPtr<CytoSet> shallow_copy_cytoset(Rcpp::XPtr<CytoSet> cs);
+RcppExport SEXP _flowWorkspace_shallow_copy_cytoset(SEXP csSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(shallow_copy_cytoset(cs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -272,16 +285,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // subset_cytoset
-Rcpp::XPtr<CytoSet> subset_cytoset(Rcpp::XPtr<CytoSet> cs, SEXP i_obj, SEXP j_obj);
+void subset_cytoset(Rcpp::XPtr<CytoSet> cs, SEXP i_obj, SEXP j_obj);
 RcppExport SEXP _flowWorkspace_subset_cytoset(SEXP csSEXP, SEXP i_objSEXP, SEXP j_objSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< SEXP >::type i_obj(i_objSEXP);
     Rcpp::traits::input_parameter< SEXP >::type j_obj(j_objSEXP);
-    rcpp_result_gen = Rcpp::wrap(subset_cytoset(cs, i_obj, j_obj));
-    return rcpp_result_gen;
+    subset_cytoset(cs, i_obj, j_obj);
+    return R_NilValue;
 END_RCPP
 }
 // get_cytoFrame
@@ -1031,7 +1043,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_h5_file_path", (DL_FUNC) &_flowWorkspace_get_h5_file_path, 1},
-    {"_flowWorkspace_deep_copy_cytoframe", (DL_FUNC) &_flowWorkspace_deep_copy_cytoframe, 1},
+    {"_flowWorkspace_realize_view_cytoframe", (DL_FUNC) &_flowWorkspace_realize_view_cytoframe, 2},
     {"_flowWorkspace_shallow_copy_cytoframe", (DL_FUNC) &_flowWorkspace_shallow_copy_cytoframe, 1},
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
     {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
@@ -1051,7 +1063,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
     {"_flowWorkspace_fcs_to_cytoset", (DL_FUNC) &_flowWorkspace_fcs_to_cytoset, 4},
     {"_flowWorkspace_get_colnames", (DL_FUNC) &_flowWorkspace_get_colnames, 1},
-    {"_flowWorkspace_copy_cytoset", (DL_FUNC) &_flowWorkspace_copy_cytoset, 1},
+    {"_flowWorkspace_realize_view_cytoset", (DL_FUNC) &_flowWorkspace_realize_view_cytoset, 2},
+    {"_flowWorkspace_shallow_copy_cytoset", (DL_FUNC) &_flowWorkspace_shallow_copy_cytoset, 1},
     {"_flowWorkspace_subset_cytoset_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoset_by_rows, 3},
     {"_flowWorkspace_subset_cytoset", (DL_FUNC) &_flowWorkspace_subset_cytoset, 3},
     {"_flowWorkspace_get_cytoFrame", (DL_FUNC) &_flowWorkspace_get_cytoFrame, 3},

@@ -67,7 +67,7 @@ Depends:
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
-    flowWorkspaceData,
+    flowWorkspaceData (>= 3.17.0),
     knitr,
     ggcyto,
     parallel

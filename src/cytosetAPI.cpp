@@ -22,9 +22,15 @@ vector<string> get_colnames(Rcpp::XPtr<CytoSet> cs){
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoSet> copy_cytoset(Rcpp::XPtr<CytoSet> cs)
+Rcpp::XPtr<CytoSet> realize_view_cytoset(Rcpp::XPtr<CytoSet> cs, string path)
 {
-  return XPtr<CytoSet>(new CytoSet(cs->copy()));
+  return XPtr<CytoSet>(new CytoSet(cs->copy_realized(path)));
+}
+
+// [[Rcpp::export]]
+Rcpp::XPtr<CytoSet> shallow_copy_cytoset(Rcpp::XPtr<CytoSet> cs)
+{
+  return XPtr<CytoSet>(new CytoSet(*cs));
 }
 
 // [[Rcpp::export]]
@@ -38,7 +44,7 @@ void subset_cytoset_by_rows(Rcpp::XPtr<CytoSet> cs
 }
   
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoSet> subset_cytoset(Rcpp::XPtr<CytoSet> cs
+void subset_cytoset(Rcpp::XPtr<CytoSet> cs
                                      , SEXP i_obj
                                      , SEXP j_obj
                                       )
@@ -47,7 +53,6 @@ Rcpp::XPtr<CytoSet> subset_cytoset(Rcpp::XPtr<CytoSet> cs
   /*
   * parse i index (sample name)
   */
-  XPtr<CytoSet> cs_new(new CytoSet(*cs));
   unsigned short i_type = TYPEOF(i_obj);
   // Rcout << "i_type:" << i_type << endl;
   if(i_type != NILSXP)
@@ -60,7 +65,7 @@ Rcpp::XPtr<CytoSet> subset_cytoset(Rcpp::XPtr<CytoSet> cs
       
       sample_uids = convert_to_str_idx(wrap(cs->get_sample_uids()), i_obj);
     }
-    cs_new->sub_samples_(as<vector<string>>(sample_uids));
+    cs->sub_samples_(as<vector<string>>(sample_uids));
   }
   
   /*
@@ -77,10 +82,9 @@ Rcpp::XPtr<CytoSet> subset_cytoset(Rcpp::XPtr<CytoSet> cs
       ch_selected = as<vector<string>>(as<StringVector>(j_obj));
     else
       ch_selected = as<vector<string>>(convert_to_str_idx(wrap(cs->get_channels()), j_obj));
-    cs_new->cols_(ch_selected, ColType::channel);
+    cs->cols_(ch_selected, ColType::channel);
   }
   
-  return cs_new;
 }
 
 // [[Rcpp::export]]

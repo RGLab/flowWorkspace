@@ -10,9 +10,9 @@ string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr)
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoFrameView> deep_copy_cytoframe(Rcpp::XPtr<CytoFrameView> fr)
+Rcpp::XPtr<CytoFrameView> realize_view_cytoframe(Rcpp::XPtr<CytoFrameView> fr, string filename)
 {
- return XPtr<CytoFrameView>(new CytoFrameView(fr->copy()));
+ return XPtr<CytoFrameView>(new CytoFrameView(fr->copy_realized(filename)));
 }
 
 // [[Rcpp::export]]

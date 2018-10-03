@@ -127,8 +127,8 @@ setMethod("[",
 		  i <- NULL
     if(missing(j))
       j <- NULL
-   
-		new("cytoSet", pointer = subset_cytoset(x@pointer, i, j))
+    x <- shallow_copy(x)
+    subset_cytoset(x@pointer, i, j)
 	})
 
 # Dispatching to the flowSet-version of fsApply by changing simplify default value from TRUE from FALSE
@@ -185,7 +185,7 @@ setMethod("Subset",
               used <- nn
             
             
-            cs = copyCytoSet(x)
+            cs = shallow_copy(x)
             for(sn in used)
             {
               
@@ -201,14 +201,17 @@ setMethod("Subset",
               
             cs         
         })
+        
 #' @export 
-copyCytoSet <- function(x){
-  new("cytoSet", pointer = copy_cytoset(x@pointer))
+shallow_copy.cytoSet <- function(x){
+  new("cytoSet", pointer = shallow_copy_cytoset(x@pointer))
 }
-
-
-
-
+#' @export 
+realize_view.cytoSet <- function(x, filepath = tempfile()){
+  if(!dir.exists(filepath))
+    dir.create(filepath)
+  new("cytoSet", pointer = realize_view_cytoset(x@pointer, filepath))
+}
 
 #
 #

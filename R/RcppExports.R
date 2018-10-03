@@ -5,8 +5,8 @@ get_h5_file_path <- function(fr) {
     .Call(`_flowWorkspace_get_h5_file_path`, fr)
 }
 
-deep_copy_cytoframe <- function(fr) {
-    .Call(`_flowWorkspace_deep_copy_cytoframe`, fr)
+realize_view_cytoframe <- function(fr, filename) {
+    .Call(`_flowWorkspace_realize_view_cytoframe`, fr, filename)
 }
 
 shallow_copy_cytoframe <- function(fr) {
@@ -85,8 +85,12 @@ get_colnames <- function(cs) {
     .Call(`_flowWorkspace_get_colnames`, cs)
 }
 
-copy_cytoset <- function(cs) {
-    .Call(`_flowWorkspace_copy_cytoset`, cs)
+realize_view_cytoset <- function(cs, path) {
+    .Call(`_flowWorkspace_realize_view_cytoset`, cs, path)
+}
+
+shallow_copy_cytoset <- function(cs) {
+    .Call(`_flowWorkspace_shallow_copy_cytoset`, cs)
 }
 
 subset_cytoset_by_rows <- function(cs, sn, idx) {
@@ -94,7 +98,7 @@ subset_cytoset_by_rows <- function(cs, sn, idx) {
 }
 
 subset_cytoset <- function(cs, i_obj, j_obj) {
-    .Call(`_flowWorkspace_subset_cytoset`, cs, i_obj, j_obj)
+    invisible(.Call(`_flowWorkspace_subset_cytoset`, cs, i_obj, j_obj))
 }
 
 get_cytoFrame <- function(cs, i_obj, j_obj) {

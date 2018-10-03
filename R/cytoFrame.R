@@ -39,11 +39,11 @@ setMethod("ncol",
 )
 
 #' @export
-deep_copy <- function(x, ...)UseMethod("deep_copy")
+realize_view <- function(x, ...)UseMethod("realize_view")
 
 #' @export 
-deep_copy.cytoFrame <- function(x){
-  new("cytoFrame", pointer = deep_copy_cytoframe(x@pointer))
+realize_view.cytoFrame <- function(x, filepath = tempfile(fileext = ".h5")){
+  new("cytoFrame", pointer = realize_view_cytoframe(x@pointer, filepath))
 }
 
 #' @export
