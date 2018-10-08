@@ -15,6 +15,8 @@ test_that("GatingSetList constructor", {
       #different colnames
       chnnls <- colnames(flowData(gs_clone))
       chnnls[1] <- "FSC-H" 
+      expect_error(colnames(flowData(gs_clone)) <- chnnls, "already")
+      chnnls[1] <- "F" 
       colnames(flowData(gs_clone)) <- chnnls
       expect_error(GatingSetList(list(gs, gs_clone)), "colnames of flowSets don't match")
             
@@ -22,7 +24,7 @@ test_that("GatingSetList constructor", {
       invisible(Rm("CD8", gs_clone))
       expect_error(GatingSetList(list(gs, gs_clone)), "gating structure doesn't match: CytoTrol_CytoTrol_2.fcs CytoTrol_CytoTrol_1.fcs")
       
-      suppressMessages(gs_clone <- clone(gs))
+      suppressMessages(gs_clone <- gs_clone(gs))
       sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
       #reorder by samples argument
       samp <- c("CytoTrol_CytoTrol_2.fcs", "CytoTrol_CytoTrol_1.fcs")

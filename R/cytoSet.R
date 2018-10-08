@@ -129,6 +129,7 @@ setMethod("[",
       j <- NULL
     x <- shallow_copy(x)
     subset_cytoset(x@pointer, i, j)
+    x
 	})
 
 # Dispatching to the flowSet-version of fsApply by changing simplify default value from TRUE from FALSE

@@ -1,7 +1,6 @@
 library(data.table)
 library(utils)
 library(dplyr)
-library(cytoCore)
 
 library(Biobase)
 dataDir <- system.file("extdata",package="flowWorkspaceData")
