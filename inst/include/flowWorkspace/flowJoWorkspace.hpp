@@ -224,10 +224,34 @@ public:
 			wsNode curRNode(parR->nodesetval->nodeTab[0]);
 			xmlXPathFreeObject(parR);
 			string curR=curRNode.getProperty("value");
-
+			/*
+			 * check if data is already stored in log scale
+			 * so that pnR may need to be calculated by PnE
+			 */
+			float f1 = 0, f2 = 0;//init with default values in case PnE is missing
+			stringstream ss3(stringstream::in | stringstream::out);
+			ss3 << "Keywords/*[@name='$P"<<i<<"E']";
+			path=ss3.str();
+			xmlXPathObjectPtr parE=sampleNode.xpathInNode(path);
+			if(parE->nodesetval->nodeNr > 0)
+			{
+				wsNode curENode(parE->nodesetval->nodeTab[0]);
+				xmlXPathFreeObject(parE);
+				string curE=curENode.getProperty("value");
+				vector<string> tokens;
+				boost::split(tokens, curE, boost::is_any_of(","));
+				f1 = stof(tokens[0]);
+				f2 = stof(tokens[1]);
+				if(f1 > 0 && f2 == 0)//correct f2 for legacy FCS 2.0
+					f2 = 1;
+			}
+			if(f1 > 0)
+				curParam.range = pow(10, f1) * f2;
+			else
+				curParam.range=atoi(curR.c_str());
 			curParam.param=pName;
 			curParam.log=curFlag.compare("LOG")==0;
-			curParam.range=atoi(curR.c_str());
+
 
 			if(g_loglevel>=GATING_SET_LEVEL)
 				COUT<<pName<<":"<<curFlag;
