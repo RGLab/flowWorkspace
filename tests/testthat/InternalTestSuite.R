@@ -4,6 +4,20 @@ path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
 sink("/dev/null")
 
+test_that("set T value properly through PnE instead of PnR for flog transform when FCS data is log scale",{
+  
+  wsFile <- file.path(path, "flog_PnE/Liver.wsp")
+  
+  ws <- openWorkspace(wsFile)
+  gs <- parseWorkspace(ws, name = 2, sampNloc = 'sampleNode')
+  
+  res <- getPopStats(gs[[1]])
+  expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 0.015)
+  
+  
+})
+
+
 test_that("handle the linear transform with maxRange = 0",{
   
   wsFile <- file.path(path, "faultylinearTransform/FlowJo Test.wsp")
