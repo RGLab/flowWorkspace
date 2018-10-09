@@ -120,13 +120,24 @@ public:
 	 	return(u);
 	 }
 
+	 unordered_set<string> get_derivedparameters(wsSampleNode sampleNode){
+		 unordered_set<string> derived;
+		 xmlXPathObjectPtr res=sampleNode.xpathInNode("*/DerivedParameter");
+		 for(int i = 0; i < res->nodesetval->nodeNr; i++)
+		 {
+			 wsNode curP(res->nodesetval->nodeTab[i]);
+			 derived.insert(curP.getProperty("name"));
+		 }
+		xmlXPathFreeObject(res);
+		return derived;
+	 }
 	 /*
 	  * recursively append the populations to the tree
 	  * when the boolean gates are encountered before its reference nodes
 	  * we still can add it as it is because gating path is stored as population names instead of actual VertexID.
 	  * Thus we will deal with the the boolean gate in the actual gating process
 	  */
-	 void addPopulation(populationTree &tree, VertexID parentID ,wsNode * parentNode,bool isParseGate)
+	 void addPopulation(populationTree &tree, VertexID parentID ,wsNode * parentNode,bool isParseGate, const unordered_set<string> & derived_params)
 	 {
 
 
@@ -160,26 +171,43 @@ public:
 	 			if(g_loglevel>=POPULATION_LEVEL)
 	 				COUT<<"node created:"<<curChild.getName()<<endl;
 
-	 //			//interpolate curlyquad gate here since it needs the access to comp
-	 //			gate * g = curChild.getGate();
-	 //			if(g->getType() == CURLYQUADGATE)
-	 //			{
-	 //				CurlyGuadGate * curlyGate = dynamic_cast<CurlyGuadGate *>(g);
-	 //				curlyGate->interpolate(comp);
-	 //			}
+	 			/*
+	 			 * check if the pop uses derived parameters
+	 			 */
+	 			bool is_use_derived = false;
+	 			gate * g = curChild.getGate();
+	 			int gtype = g->getType();
+	 			if(gtype!=LOGICALGATE&&gtype!=BOOLGATE&&gtype!=CLUSTERGATE)
+	 			{
+	 				for(const auto & p : g->getParamNames())
+	 				{
+	 					if(derived_params.find(p)!=derived_params.end())
+	 					{
+	 						is_use_derived = true;
+	 						break;
+	 					}
+	 				}
+	 			}
+	 			if(is_use_derived)//skip the node that uses derived parameters
+	 			{
+	 				if(g_loglevel>=GATING_SET_LEVEL)
+						COUT<<"skip the node that uses derived parameters:"<<curChild.getName()<<endl;
+	 				boost::remove_vertex(curChildID, tree);
+	 			}
+	 			else
+	 			{
+	 				//add relation between current node and parent node
+					boost::add_edge(parentID,curChildID,tree);
+					//update the node map for the easy query by pop name
 
-	 			//add relation between current node and parent node
-	 			boost::add_edge(parentID,curChildID,tree);
-	 			//update the node map for the easy query by pop name
+					//recursively add its descendants
+					addPopulation(tree, curChildID,&curChildNode,isParseGate, derived_params);
 
-	 			//recursively add its descendants
-	 			addPopulation(tree, curChildID,&curChildNode,isParseGate);
-	 		}
+	 			}
+			}
 
 
 	 }
-
-
 
 
 	 wsSampleNode get_sample_node(string sampleID){

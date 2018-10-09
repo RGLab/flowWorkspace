@@ -135,13 +135,16 @@ public:
 	 		gh.reset(new GatingHierarchy(comp, transFlag, trans));
 
 	 	}
+	 	if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+			COUT<<endl<<"parsing DerivedParameters..."<<endl;
+	 	unordered_set<string> derived_params = get_derivedparameters(curSampleNode);
 
 	 	if(g_loglevel>=POPULATION_LEVEL)
 	 		COUT<<endl<<"parsing populations..."<<endl;
 
 	 	populationTree &tree = gh->getTree();
 	 	VertexID pVerID=addRoot(tree, root);
-	 	addPopulation(tree, pVerID,&root,is_parse_gate);
+	 	addPopulation(tree, pVerID,&root,isParseGate, derived_params);
 	 	return gh;
 	 }
 
@@ -768,7 +771,7 @@ public:
 			if(parE->nodesetval->nodeNr > 0)
 			{
 				wsNode curENode(parE->nodesetval->nodeTab[0]);
-				xmlXPathFreeObject(parE);
+
 				string curE=curENode.getProperty("value");
 				vector<string> tokens;
 				boost::split(tokens, curE, boost::is_any_of(","));
@@ -777,6 +780,7 @@ public:
 				if(f1 > 0 && f2 == 0)//correct f2 for legacy FCS 2.0
 					f2 = 1;
 			}
+			xmlXPathFreeObject(parE);
 			if(f1 > 0)
 				curParam.range = pow(10, f1) * f2;
 			else
