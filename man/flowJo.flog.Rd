@@ -5,7 +5,7 @@
 \title{flog transform function}
 \usage{
 flowJo.flog(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
-  inverse = FALSE)
+  scale = 1, inverse = FALSE)
 }
 \arguments{
 \item{decade}{number of decades}
@@ -15,6 +15,8 @@ flowJo.flog(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
 \item{max_val}{top of scale value}
 
 \item{min_val}{lower bound of scaled value (where negative raw value gets truncated at)}
+
+\item{scale}{the linear scale factor}
 
 \item{inverse}{whether return the inverse function}
 }

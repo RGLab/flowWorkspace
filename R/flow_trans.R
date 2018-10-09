@@ -39,6 +39,7 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 #' @param offset offset to the orignal input
 #' @param max_val top of scale value
 #' @param min_val lower bound of scaled value (where negative raw value gets truncated at)
+#' @param scale the linear scale factor
 #' @param inverse whether return the inverse function
 #' @return flog(or its inverse) transform function
 #' @examples
@@ -64,16 +65,16 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 #' inverse.trans(data.trans)
 #' 
 #' @export
-flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, inverse = FALSE){
+flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){
   if(inverse){
     function(x)
     {
-      10 ^ ((x - offset) * decade) * max_val
+      10 ^ ((x/scale - offset) * decade) * max_val
     }
     
   }else{
     function(x){
-      sapply(x, function(i)ifelse(i>0,log10((i)/max_val)/decade+offset,min_val))
+      sapply(x, function(i)ifelse(i>0,(log10((i)/max_val)/decade+offset)*scale,min_val))
     }
     
   }
