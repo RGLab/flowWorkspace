@@ -20,7 +20,7 @@ void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData
     alwaysLoadData = true; //skip the checking to save time when start from root
 
   VertexID_vec nodeIDs(nodes.size());
-  CytoSet cs = gsPtr->get_cytoset();
+  GatingSet cs = gsPtr->get_cytoset();
   for(const string & sid : gsPtr->get_sample_uids())
   {
     if(verbose)
@@ -117,19 +117,19 @@ XPtr<GatingSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> sample
 }
 
 //[[Rcpp::export]]
-XPtr<CytoSet> get_cytoset(XPtr<GatingSet> gsPtr) {
+XPtr<GatingSet> get_cytoset(XPtr<GatingSet> gsPtr) {
 
-  return XPtr<CytoSet>(new CytoSet(gsPtr->get_cytoset()));
+  return XPtr<GatingSet>(new GatingSet(gsPtr->get_cytoset()));
 }
 
 //[[Rcpp::export]]
-XPtr<CytoSet> get_cytoset_from_node(XPtr<GatingSet> gsPtr, string node) {
+XPtr<GatingSet> get_cytoset_from_node(XPtr<GatingSet> gsPtr, string node) {
 
-  return XPtr<CytoSet>(new CytoSet(gsPtr->get_cytoset(node)));
+  return XPtr<GatingSet>(new GatingSet(gsPtr->get_cytoset(node)));
 }
 
 //[[Rcpp::export]]
-void set_cytoset(XPtr<GatingSet> gsPtr, XPtr<CytoSet> cs) {
+void set_cytoset(XPtr<GatingSet> gsPtr, XPtr<GatingSet> cs) {
 
   gsPtr->set_cytoset(*cs);
 }
@@ -139,11 +139,6 @@ StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
 	return gsPtr->get_sample_uids();
 }
 
-//[[Rcpp::export]]
-XPtr<GatingSet> GatingSet_from_CytoSet(XPtr<CytoSet> cs)
-{
-	return XPtr<GatingSet>(new GatingSet(*cs));
-}
 /*
  * constructing GatingSet from existing gating hierarchy and new data
  */
@@ -172,12 +167,12 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
 //[[Rcpp::export]]
 string get_gatingset_id(XPtr<GatingSet> gsPtr) {
 
-	return gsPtr->get_gatingset_id();
+	return gsPtr->get_uid();
 }
 //[[Rcpp::export]]
 void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
 
-	 gsPtr->set_gatingset_id(id);
+	 gsPtr->set_uid(id);
 }
 
 /*
@@ -208,7 +203,7 @@ XPtr<GatingSet> load_gatingset(string path) {
 }
 
 //[[Rcpp::export]]
-XPtr<GatingSet> load_legacy_gs(string pbfile, XPtr<CytoSet> cs) {
+XPtr<GatingSet> load_legacy_gs(string pbfile, XPtr<GatingSet> cs) {
 		return XPtr<GatingSet>(new GatingSet(pbfile, *cs));
 
 }
@@ -218,7 +213,7 @@ XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs, string h5_dir, bool is_copy_d
 
 
 
-		return XPtr<GatingSet>(new GatingSet(gs->copy(is_copy_data, h5_dir)));
+		return XPtr<GatingSet>(new GatingSet(gs->copy(is_copy_data, true, h5_dir)));
 
 }
 
@@ -226,13 +221,13 @@ XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs, string h5_dir, bool is_copy_d
 XPtr<GatingSet> combineGatingSet(Rcpp::List gsList,Rcpp::List sampleList) {
 
 	XPtr<GatingSet> newGS(new GatingSet());
-	CytoSet newCS;
+	GatingSet newCS;
 
 		for(int i=0;i<gsList.size();i++)
 		{
 			GatingSet *	gs=getGsPtr((SEXP)gsList[i]);
 			StringVec samples=as<StringVec>(sampleList[i]);
-			const CytoSet & cs = gs->get_cytoset();
+			const GatingSet & cs = gs->get_cytoset();
 			for(auto sn : samples)
 			{
 				newCS.add_cytoframe_view(sn, cs.get_cytoframe_view(sn));

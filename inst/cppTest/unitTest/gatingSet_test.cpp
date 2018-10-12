@@ -237,7 +237,7 @@ void parser_test(testCase & myTest){
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			cout<<endl<<"Gating ..."<<endl;
 
-		CytoSet cs = gs->get_cytoset();
+		GatingSet cs = gs->get_cytoset();
 		CytoFrameView fr = cs.get_cytoframe_view(samples[0]);
 		CytoFramePtr frptr = fr.get_cytoframe_ptr();
 		MemCytoFrame fr1(*frptr);
@@ -248,7 +248,7 @@ void parser_test(testCase & myTest){
 	gh_counts(gh, myTest.isEqual, myTest.tolerance, myTest.skipPops);
 
 	if(isSaveArchive){
-		gs->serialize_pb(archiveName, true, H5Option::copy);
+		gs->serialize_pb(archiveName, H5Option::copy);
 
 	}
 

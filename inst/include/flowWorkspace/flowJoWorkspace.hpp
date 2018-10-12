@@ -144,7 +144,7 @@ public:
 
 	 	populationTree &tree = gh->getTree();
 	 	VertexID pVerID=addRoot(tree, root);
-	 	addPopulation(tree, pVerID,&root,isParseGate, derived_params);
+	 	addPopulation(tree, pVerID,&root,is_parse_gate, derived_params);
 	 	return gh;
 	 }
 
@@ -185,7 +185,7 @@ public:
 			h5_dir = gs->generate_h5_folder(h5_dir);
 		 }
 
-		 CytoSet cytoset;
+		 GatingSet cytoset;
 		/*
 		 * try to parse each sample
 		 */
@@ -215,7 +215,7 @@ public:
 
 				if(config.is_gating)
 				{
-					frv = it->second;
+					frv = it->second->get_cytoframe_view();
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						cout<<endl<<"Extracting pheno data from keywords for sample: " + uid<<endl;
 
@@ -286,7 +286,7 @@ public:
 					{
 						string h5_filename = (h5_dir/uid).string() + ".h5";
 						fr.write_h5(h5_filename);
-						it->second = CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename)));
+						gh->set_cytoFrame_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename))));
 					}
 
 				}
@@ -303,7 +303,7 @@ public:
 		if(gs->size() == 0)
 			throw(domain_error("No samples in this workspace to parse!"));
 
-		gs->set_cytoset(cytoset);
+
 		return gs;
 	}
 	/**
@@ -311,7 +311,7 @@ public:
 	 * First try to search by file name, if failed, use FCS keyword $FIL + additional keywords for further searching and pruning
 	 * cytoframe is preloaded with header-only.
 	 */
-	void search_for_fcs(const string & data_dir, const SampleInfo  & sample_info, const ParseWorkspaceParameters & config, CytoSet & cytoset)
+	void search_for_fcs(const string & data_dir, const SampleInfo  & sample_info, const ParseWorkspaceParameters & config, GatingSet & cytoset)
 	{
 		FCS_READ_PARAM fcs_read_param = config.fcs_read_param;
 		fcs_read_param.header.is_fix_slash_in_channel_name = is_fix_slash_in_channel_name();

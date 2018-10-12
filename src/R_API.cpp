@@ -209,6 +209,6 @@ void updateChannels(Rcpp::S4 gs, Rcpp::DataFrame map){
 	for(unsigned i = 0; i < oldN.size(); i++){
 		stdmap[oldN.at(i)] = newN.at(i);
 	}
-	gsPtr->update_channels(stdmap);
+	gsPtr->set_channels(stdmap);
 
 }

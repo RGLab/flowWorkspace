@@ -184,7 +184,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' }
 setMethod("GatingSet",c("cytoSet"),function(x){
       
-      new("GatingSet", pointer = GatingSet_from_CytoSet(x@pointer))
+      new("GatingSet", pointer = x@pointer)
       
     })
 setMethod("GatingSet",c("flowSet"),function(x){

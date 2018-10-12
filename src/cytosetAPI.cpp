@@ -6,10 +6,10 @@ using namespace cytolib;
 //[[Rcpp::plugins("temp")]]
 
 // [[Rcpp::export]] 
-Rcpp::XPtr<CytoSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM & config, bool is_h5, string h5_dir)
+Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM & config, bool is_h5, string h5_dir)
 {
 
-  Rcpp::XPtr<CytoSet> cs(new CytoSet(sample_uid_vs_file_path, config, is_h5, h5_dir));
+  Rcpp::XPtr<GatingSet> cs(new GatingSet(sample_uid_vs_file_path, config, is_h5, h5_dir));
   
   return cs;
   
@@ -17,24 +17,24 @@ Rcpp::XPtr<CytoSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_fil
 
 
 // [[Rcpp::export]] 
-vector<string> get_colnames(Rcpp::XPtr<CytoSet> cs){
+vector<string> get_colnames(Rcpp::XPtr<GatingSet> cs){
   return cs->get_channels();
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoSet> realize_view_cytoset(Rcpp::XPtr<CytoSet> cs, string path)
+Rcpp::XPtr<GatingSet> realize_view_cytoset(Rcpp::XPtr<GatingSet> cs, string path)
 {
-  return XPtr<CytoSet>(new CytoSet(cs->copy_realized(path)));
+  return XPtr<GatingSet>(new GatingSet(cs->copy(true, true, path)));
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoSet> shallow_copy_cytoset(Rcpp::XPtr<CytoSet> cs)
+Rcpp::XPtr<GatingSet> shallow_copy_cytoset(Rcpp::XPtr<GatingSet> cs)
 {
-  return XPtr<CytoSet>(new CytoSet(*cs));
+  return XPtr<GatingSet>(new GatingSet(*cs));
 }
 
 // [[Rcpp::export]]
-void subset_cytoset_by_rows(Rcpp::XPtr<CytoSet> cs
+void subset_cytoset_by_rows(Rcpp::XPtr<GatingSet> cs
                                              , string sn
                                              , vector<unsigned> idx
                                             )
@@ -44,7 +44,7 @@ void subset_cytoset_by_rows(Rcpp::XPtr<CytoSet> cs
 }
   
 // [[Rcpp::export]]
-void subset_cytoset(Rcpp::XPtr<CytoSet> cs
+void subset_cytoset(Rcpp::XPtr<GatingSet> cs
                                      , SEXP i_obj
                                      , SEXP j_obj
                                       )
@@ -88,7 +88,7 @@ void subset_cytoset(Rcpp::XPtr<CytoSet> cs
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoFrameView> get_cytoFrame(Rcpp::XPtr<CytoSet> cs
+Rcpp::XPtr<CytoFrameView> get_cytoFrame(Rcpp::XPtr<GatingSet> cs
                 , Rcpp::RObject i_obj
                 , Rcpp::RObject j_obj
                 )
@@ -170,7 +170,7 @@ Rcpp::XPtr<CytoFrameView> get_cytoFrame(Rcpp::XPtr<CytoSet> cs
 }
 
 // [[Rcpp::export]] 
-void set_pheno_data(Rcpp::XPtr<CytoSet> cs, DataFrame value)
+void set_pheno_data(Rcpp::XPtr<GatingSet> cs, DataFrame value)
 {
   
   vector<string> sample_uids = as<vector<string>>(value.attr("row.names"));
@@ -191,7 +191,7 @@ void set_pheno_data(Rcpp::XPtr<CytoSet> cs, DataFrame value)
 }
 
 // [[Rcpp::export]] 
-List get_pheno_data(Rcpp::XPtr<CytoSet> cs)
+List get_pheno_data(Rcpp::XPtr<GatingSet> cs)
 {
   unordered_map<string, vector<string>> pd;
   unsigned nSample = cs->size();
@@ -201,7 +201,7 @@ List get_pheno_data(Rcpp::XPtr<CytoSet> cs)
   for(const auto & it_cs : *cs)
   {
     sample_uids[i] = it_cs.first;
-    const CytoFrameView & fr = it_cs.second;
+    const GatingHierarchy & fr = *(it_cs.second);
     //assuming pdata is already homogenious across ghs
     for(const auto & j: fr.get_pheno_data())
     {

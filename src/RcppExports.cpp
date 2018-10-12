@@ -225,7 +225,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // fcs_to_cytoset
-Rcpp::XPtr<CytoSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM& config, bool is_h5, string h5_dir);
+Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM& config, bool is_h5, string h5_dir);
 RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP is_h5SEXP, SEXP h5_dirSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -239,45 +239,45 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_colnames
-vector<string> get_colnames(Rcpp::XPtr<CytoSet> cs);
+vector<string> get_colnames(Rcpp::XPtr<GatingSet> cs);
 RcppExport SEXP _flowWorkspace_get_colnames(SEXP csSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     rcpp_result_gen = Rcpp::wrap(get_colnames(cs));
     return rcpp_result_gen;
 END_RCPP
 }
 // realize_view_cytoset
-Rcpp::XPtr<CytoSet> realize_view_cytoset(Rcpp::XPtr<CytoSet> cs, string path);
+Rcpp::XPtr<GatingSet> realize_view_cytoset(Rcpp::XPtr<GatingSet> cs, string path);
 RcppExport SEXP _flowWorkspace_realize_view_cytoset(SEXP csSEXP, SEXP pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< string >::type path(pathSEXP);
     rcpp_result_gen = Rcpp::wrap(realize_view_cytoset(cs, path));
     return rcpp_result_gen;
 END_RCPP
 }
 // shallow_copy_cytoset
-Rcpp::XPtr<CytoSet> shallow_copy_cytoset(Rcpp::XPtr<CytoSet> cs);
+Rcpp::XPtr<GatingSet> shallow_copy_cytoset(Rcpp::XPtr<GatingSet> cs);
 RcppExport SEXP _flowWorkspace_shallow_copy_cytoset(SEXP csSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     rcpp_result_gen = Rcpp::wrap(shallow_copy_cytoset(cs));
     return rcpp_result_gen;
 END_RCPP
 }
 // subset_cytoset_by_rows
-void subset_cytoset_by_rows(Rcpp::XPtr<CytoSet> cs, string sn, vector<unsigned> idx);
+void subset_cytoset_by_rows(Rcpp::XPtr<GatingSet> cs, string sn, vector<unsigned> idx);
 RcppExport SEXP _flowWorkspace_subset_cytoset_by_rows(SEXP csSEXP, SEXP snSEXP, SEXP idxSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< string >::type sn(snSEXP);
     Rcpp::traits::input_parameter< vector<unsigned> >::type idx(idxSEXP);
     subset_cytoset_by_rows(cs, sn, idx);
@@ -285,11 +285,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // subset_cytoset
-void subset_cytoset(Rcpp::XPtr<CytoSet> cs, SEXP i_obj, SEXP j_obj);
+void subset_cytoset(Rcpp::XPtr<GatingSet> cs, SEXP i_obj, SEXP j_obj);
 RcppExport SEXP _flowWorkspace_subset_cytoset(SEXP csSEXP, SEXP i_objSEXP, SEXP j_objSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< SEXP >::type i_obj(i_objSEXP);
     Rcpp::traits::input_parameter< SEXP >::type j_obj(j_objSEXP);
     subset_cytoset(cs, i_obj, j_obj);
@@ -297,12 +297,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_cytoFrame
-Rcpp::XPtr<CytoFrameView> get_cytoFrame(Rcpp::XPtr<CytoSet> cs, Rcpp::RObject i_obj, Rcpp::RObject j_obj);
+Rcpp::XPtr<CytoFrameView> get_cytoFrame(Rcpp::XPtr<GatingSet> cs, Rcpp::RObject i_obj, Rcpp::RObject j_obj);
 RcppExport SEXP _flowWorkspace_get_cytoFrame(SEXP csSEXP, SEXP i_objSEXP, SEXP j_objSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type i_obj(i_objSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type j_obj(j_objSEXP);
     rcpp_result_gen = Rcpp::wrap(get_cytoFrame(cs, i_obj, j_obj));
@@ -310,23 +310,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_pheno_data
-void set_pheno_data(Rcpp::XPtr<CytoSet> cs, DataFrame value);
+void set_pheno_data(Rcpp::XPtr<GatingSet> cs, DataFrame value);
 RcppExport SEXP _flowWorkspace_set_pheno_data(SEXP csSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type value(valueSEXP);
     set_pheno_data(cs, value);
     return R_NilValue;
 END_RCPP
 }
 // get_pheno_data
-List get_pheno_data(Rcpp::XPtr<CytoSet> cs);
+List get_pheno_data(Rcpp::XPtr<GatingSet> cs);
 RcppExport SEXP _flowWorkspace_get_pheno_data(SEXP csSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     rcpp_result_gen = Rcpp::wrap(get_pheno_data(cs));
     return rcpp_result_gen;
 END_RCPP
@@ -836,7 +836,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_cytoset
-XPtr<CytoSet> get_cytoset(XPtr<GatingSet> gsPtr);
+XPtr<GatingSet> get_cytoset(XPtr<GatingSet> gsPtr);
 RcppExport SEXP _flowWorkspace_get_cytoset(SEXP gsPtrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -847,7 +847,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_cytoset_from_node
-XPtr<CytoSet> get_cytoset_from_node(XPtr<GatingSet> gsPtr, string node);
+XPtr<GatingSet> get_cytoset_from_node(XPtr<GatingSet> gsPtr, string node);
 RcppExport SEXP _flowWorkspace_get_cytoset_from_node(SEXP gsPtrSEXP, SEXP nodeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -859,12 +859,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_cytoset
-void set_cytoset(XPtr<GatingSet> gsPtr, XPtr<CytoSet> cs);
+void set_cytoset(XPtr<GatingSet> gsPtr, XPtr<GatingSet> cs);
 RcppExport SEXP _flowWorkspace_set_cytoset(SEXP gsPtrSEXP, SEXP csSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
-    Rcpp::traits::input_parameter< XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type cs(csSEXP);
     set_cytoset(gsPtr, cs);
     return R_NilValue;
 END_RCPP
@@ -877,17 +877,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
     rcpp_result_gen = Rcpp::wrap(get_sample_uids(gsPtr));
-    return rcpp_result_gen;
-END_RCPP
-}
-// GatingSet_from_CytoSet
-XPtr<GatingSet> GatingSet_from_CytoSet(XPtr<CytoSet> cs);
-RcppExport SEXP _flowWorkspace_GatingSet_from_CytoSet(SEXP csSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< XPtr<CytoSet> >::type cs(csSEXP);
-    rcpp_result_gen = Rcpp::wrap(GatingSet_from_CytoSet(cs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -950,13 +939,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // load_legacy_gs
-XPtr<GatingSet> load_legacy_gs(string pbfile, XPtr<CytoSet> cs);
+XPtr<GatingSet> load_legacy_gs(string pbfile, XPtr<GatingSet> cs);
 RcppExport SEXP _flowWorkspace_load_legacy_gs(SEXP pbfileSEXP, SEXP csSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< string >::type pbfile(pbfileSEXP);
-    Rcpp::traits::input_parameter< XPtr<CytoSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type cs(csSEXP);
     rcpp_result_gen = Rcpp::wrap(load_legacy_gs(pbfile, cs));
     return rcpp_result_gen;
 END_RCPP
@@ -1111,7 +1100,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_cytoset_from_node", (DL_FUNC) &_flowWorkspace_get_cytoset_from_node, 2},
     {"_flowWorkspace_set_cytoset", (DL_FUNC) &_flowWorkspace_set_cytoset, 2},
     {"_flowWorkspace_get_sample_uids", (DL_FUNC) &_flowWorkspace_get_sample_uids, 1},
-    {"_flowWorkspace_GatingSet_from_CytoSet", (DL_FUNC) &_flowWorkspace_GatingSet_from_CytoSet, 1},
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 3},
     {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
     {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
