@@ -63,9 +63,9 @@ setOldClass("XMLInternalDocument")
 #' show,flowJoWorkspace-method
 setClass("flowJoWorkspace",representation(doc="externalptr"))
                         
-.uuid_gen<-function(){
+.uuid_gen<-function(len = 20){
 #  system("uuidgen",intern = TRUE)
-  flowCore:::guid()
+  flowCore:::guid(len)
 }    
 
 #' Class \code{"GatingSet"}

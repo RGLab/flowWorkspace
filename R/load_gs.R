@@ -150,7 +150,7 @@ convert_gs_legacy <- function(from, to){
 save_gslist<-function(gslist,path,...){
   
   if(file.exists(path)){
-    expect <- unlist(lapply(gslist, slot, name = "guid", level = 1))
+    expect <- unlist(lapply(gslist, function(gs)get_gatingset_id(gs@pointer), level = 1))
     expect <- c(expect, "samples.rds")
     if(!setequal(list.files(path), expect))
       stop("The existing target path '", path, "' does not seem to match the source 'GatingSetList'!")
@@ -165,10 +165,11 @@ save_gslist<-function(gslist,path,...){
     #        this_dir <- tempfile(pattern="gs",tmpdir=path)
     #        dir.create(path = this_dir)
     #        browser()
-    guid <- gs@guid
+    guid <- get_gatingset_id(gs@pointer)
     if(length(guid)==0){
-      gs@guid <- .uuid_gen()
-      guid <- gs@guid
+      guid <- .uuid_gen()
+      set_gatingset_id(gs@pointer, guid)
+      
     }
     this_dir <- file.path(path,guid) 
     
@@ -194,7 +195,7 @@ load_gslist<-function(path){
   #   browser()
   res <- lapply(dirs,function(this_dir){
     #        browser()
-    .load_gs(from = this_dir, files = list.files(this_dir))$gs      
+    load_gs(this_dir)
   })
   samples <- readRDS(file.path(path,"samples.rds"))
   GatingSetList(res, samples = samples)

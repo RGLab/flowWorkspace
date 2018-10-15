@@ -153,7 +153,7 @@ test_that("colnames", {
   
   expect_error(colnames(gslist) <- chnls.new, "not safe")
   
-  #test the different order
+  #TODO:test the different order
   colnames(gslist@data[[1]]) <- sort(chnls)
   expect_warning(colnames(gslist), "different orders")
   
@@ -166,13 +166,10 @@ test_that("colnames", {
 test_that("save_gslist /load_gslist", {
       tmp <- tempfile()
       expect_message(save_gslist(gslist, tmp), regexp = "Done")
-      expectRes <- unlist(lapply(gslist, slot, name = "guid", level = 1))
+      expectRes <- unlist(lapply(gslist, function(gs)get_gatingset_id(gs@pointer), level = 1))
       expectRes <- c("samples.rds", expectRes)
       expect_true(setequal(list.files(tmp), expectRes))
       
-      ncfiles <- list.files(tmp, recursive = TRUE, pattern = ".nc")
-      
-      expect_error(save_gslist(gslist, tmp), regexp = "already exists")
       
       expect_message(save_gslist(gslist, tmp, overwrite = TRUE), regexp = "Done")
       expect_true(setequal(list.files(tmp), expectRes))
@@ -180,7 +177,7 @@ test_that("save_gslist /load_gslist", {
       expect_error(save_gslist(gslist[1], tmp), regexp = "does not seem to match")
       expect_error(save_gslist(gslist[1:2], tmp), regexp = "does not seem to match")
       
-      expect_message(gslist1 <- load_gslist(tmp), regexp = "Done")
+      expect_silent(gslist1 <- load_gslist(tmp))
       
     })
  
