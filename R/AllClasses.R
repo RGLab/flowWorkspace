@@ -350,7 +350,7 @@ setValidity("GatingSetList", validGatingSetListObject)
     msg <- paste("colnames of flowSets don't match!")
     return (msg)
   }
-  if(!identical(colnames(pData(fs1)),colnames(pData(fs2)))){
+  if(!setequal(colnames(pData(fs1)),colnames(pData(fs2)))){
     return ("pData of flow data doesn't match!")
   }
   return  (TRUE)

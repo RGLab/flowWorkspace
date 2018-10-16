@@ -100,12 +100,12 @@ test_that("clone & rbind2",{
 test_that("sampleNames",{
       
       sn <- sampleNames(gs)
-      expect_equal(sn, c("CytoTrol_CytoTrol_2.fcs", "CytoTrol_CytoTrol_1.fcs"))
+      expect_equal(sn, c("CytoTrol_CytoTrol_1.fcs", "CytoTrol_CytoTrol_2.fcs"))
       
       #update name
       sampleNames(gs)[1] <- "newSample"
       new_sn <- sampleNames(gs)
-      expect_equal(new_sn, c("newSample", "CytoTrol_CytoTrol_1.fcs"))
+      expect_equal(new_sn, c("newSample", "CytoTrol_CytoTrol_2.fcs"))
       #check if sample name is also updated in cpp data structure
       name_stored_in_cpp <- flowWorkspace:::.cpp_getSamples(gs@pointer)
       expect_equal(sort(new_sn), sort(name_stored_in_cpp))
@@ -147,7 +147,7 @@ test_that("[ subsetting",{
       
       gs_sub1 <- gs[1]
       expect_is(gs_sub1, "GatingSet");
-      gs_sub2 <- gs["CytoTrol_CytoTrol_2.fcs"]
+      gs_sub2 <- gs["CytoTrol_CytoTrol_1.fcs"]
       expect_is(gs_sub2, "GatingSet");
       expect_equal(pData(gs_sub1), pData(gs_sub2))
       expect_equal(length(gs_sub1), 1)
@@ -163,11 +163,11 @@ test_that("getGate for gs",{
       
       thisRes <- getGate(gs, "CD3+")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_ellipse.rds"))
-      expect_equal(thisRes, rev(expectRes), tol = 5e-04)
+      expect_equal(thisRes, expectRes, tol = 5e-04)
       
       thisRes <- getGate(gs, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_polygon.rds"))
-      expect_equal(thisRes, rev(expectRes), tol = 2e-08)
+      expect_equal(thisRes, expectRes, tol = 2e-08)
     })
 
 
@@ -192,7 +192,7 @@ test_that("getPopStats",{
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
       expect_equal(rownames(thisRes),expectRes[["V1"]])#check rownames
       
-      expect_equal(as.data.table(thisRes[,2:1]), expectRes[,-1, with = F], tol = 2e-3)
+      expect_equal(as.data.table(thisRes[,1:2]), expectRes[,-1, with = F], tol = 2e-3)
       
       #use auto path
       stats_wide <- getPopStats(gs, format = "wide", path = "auto")
@@ -271,8 +271,8 @@ test_that("getIndices for COMPASS",{
       thisRes <- getIndices(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`)) 
       expectRes <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
       tol <- ifelse(isCpStaticGate, 1e-2, 1.5e-8)
-      expect_equal(sum(thisRes[[1]]), sum(expectRes[[2]]), tol = tol)
-      expect_equal(sum(thisRes[[2]]), sum(expectRes[[1]]), tol = tol)
+      expect_equal(sum(thisRes[[1]]), sum(expectRes[[1]]), tol = tol)
+      expect_equal(sum(thisRes[[2]]), sum(expectRes[[2]]), tol = tol)
     })
 
 test_that("add", {
@@ -420,3 +420,4 @@ test_that("colnames", {
   expect_equal(colnames(gs[[2]]), chnls)
   
 })
+

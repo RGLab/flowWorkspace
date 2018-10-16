@@ -170,8 +170,10 @@ test_that("save_gslist /load_gslist", {
       expectRes <- c("samples.rds", expectRes)
       expect_true(setequal(list.files(tmp), expectRes))
       
-      
-      expect_message(save_gslist(gslist, tmp, overwrite = TRUE), regexp = "Done")
+      # can't cp the h5 file to the dest tmp since it is already present
+      expect_error(save_gslist(gslist, tmp), regexp = "cannot copy: File exists ")
+      # set cdf flag to skip h5
+      expect_message(save_gslist(gslist, tmp, cdf = "skip"), regexp = "Done")
       expect_true(setequal(list.files(tmp), expectRes))
       
       expect_error(save_gslist(gslist[1], tmp), regexp = "does not seem to match")
