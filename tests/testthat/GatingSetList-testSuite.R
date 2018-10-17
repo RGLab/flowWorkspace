@@ -152,13 +152,16 @@ test_that("colnames", {
   expect_error(colnames(gslist), "not unique")
   
   expect_error(colnames(gslist) <- chnls.new, "not safe")
+  #restore original chnls
+  colnames(gslist@data[[1]]) <- chnls
   
-  #TODO:test the different order
-  colnames(gslist@data[[1]]) <- sort(chnls)
+  #test the different order
+  cs <- flowData(gslist@data[[1]])
+  flowData(gslist@data[[1]]) <- cs[, sort(chnls)]
   expect_warning(colnames(gslist), "different orders")
   
   #restore original chnls
-  colnames(gslist@data[[1]]) <- chnls
+  flowData(gslist@data[[1]]) <- cs[, chnls]
   expect_equal(colnames(gslist), chnls)
   
 })

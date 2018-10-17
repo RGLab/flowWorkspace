@@ -198,10 +198,10 @@ List get_pheno_data(Rcpp::XPtr<GatingSet> cs)
   vector<string> sample_uids(nSample);
   unsigned i = 0;
   //row-major to col-major
-  for(const auto & it_cs : *cs)
+  for(const auto & sn : cs->get_sample_uids())
   {
-    sample_uids[i] = it_cs.first;
-    const GatingHierarchy & fr = *(it_cs.second);
+    sample_uids[i] = sn;
+    const GatingHierarchy & fr = *cs->getGatingHierarchy(sn);
     //assuming pdata is already homogenious across ghs
     for(const auto & j: fr.get_pheno_data())
     {

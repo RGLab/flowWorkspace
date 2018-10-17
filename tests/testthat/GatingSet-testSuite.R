@@ -311,7 +311,7 @@ test_that("add", {
       Rm("CD4_demo", gs)
       Rm("CD8_demo", gs)
     })
-#TODO:write test cases for save_gs /load_gs 
+
 if(!isCpStaticGate)
 {
   test_that("getSingleCellExpression for COMPASS",{
