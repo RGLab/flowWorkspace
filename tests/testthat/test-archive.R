@@ -5,9 +5,6 @@ isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",
 {
   suppressWarnings(suppressMessages(gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
-  #update the gating results
-  # since the gating results stored in achive was not accurate due to the ellipse gates
-  suppressMessages(recompute(gs))
   expect_that(gs, is_a("GatingSet"))
 })
 
@@ -73,7 +70,6 @@ test_that("getTransformations",{
     })
 
 
-islegacyArchivedGS <<- TRUE
 
 source("GatingSetList-testSuite.R", local = TRUE)
 
@@ -108,7 +104,6 @@ test_that("Construct new GatingSet based on the existing gating hierarchy",
      expect_that(gs, is_a("GatingSet"))
    })
 isCpStaticGate <<- TRUE
-islegacyArchivedGS <<- FALSE
 source("GatingSet-testSuite.R", local = TRUE)
 
 gh <- NULL

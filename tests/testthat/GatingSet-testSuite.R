@@ -242,8 +242,7 @@ test_that("keyword",{
             thisResult <- thisResult[ind]
             
             #fix legacy result
-            if(!islegacyArchivedGS)
-              thisResult[paste0("$P",5:11, "N")] <- paste0("<", thisResult[paste0("$P",5:11, "N")], ">")
+            thisResult[paste0("$P",5:11, "N")] <- paste0("<", thisResult[paste0("$P",5:11, "N")], ">")
             
             thisResult <- sapply(thisResult, function(i)
               {
@@ -259,7 +258,12 @@ test_that("keyword",{
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
           })
-      expect_equal(thisRes,rev(expectRes))
+      
+      #reorder thisRes since now keywords were stored in hash map
+      expect_setequal(names(thisRes[[1]]), names(expectRes[[1]]))
+      for(i in seq_along(thisRes))
+        thisRes[[i]] <- thisRes[[i]][names(expectRes[[i]])]
+      expect_equal(thisRes,expectRes)
       
       thisRes <- keyword(gs, "$P1N")
       

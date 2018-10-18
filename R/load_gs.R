@@ -60,6 +60,10 @@ load_gs<-function(path){
 
 
 #' convert the legacy(mixed with R and C++ files) GatingSet archive to the new format(C++ only)
+#' 
+#' Note that it is likely some of the keyword values (mainly offsets e.g. BEGINDATA) may change slightly after the converting due to the rewriting data
+#' to FCS files through write.FCS.
+#' 
 #' @param from the old archive path
 #' @param to the new archive path
 #' @export 

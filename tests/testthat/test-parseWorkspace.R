@@ -132,7 +132,6 @@ test_that("getTransformations ",{
       
     })
 isCpStaticGate <<- TRUE
-islegacyArchivedGS <<- FALSE
 source("GatingHierarchy-testSuite.R", local = TRUE)
 source("GatingSet-testSuite.R", local = TRUE)
 
