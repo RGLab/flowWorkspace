@@ -115,6 +115,7 @@ setReplaceMethod("colnames",
       
       for(i in seq_along(value))
         setChannel(x@pointer, old.names[i], value[i])
+      
       return(x)
     })
 

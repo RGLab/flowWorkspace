@@ -49,9 +49,14 @@ setReplaceMethod("colnames",
 			value="ANY"),
 	definition=function(x, value)
 	{
-		         for(i in sampleNames(x))
-                           colnames(x[[i, returnType = "cytoFrame"]]) <- value
-		x
+       for(i in sampleNames(x))
+	   {
+         fr <- x[[i, returnType = "cytoFrame"]]
+		     colnames(fr) <- value
+	   }
+         
+				
+	   x
 	})
 
 
@@ -76,7 +81,10 @@ setMethod("markernames",
 setReplaceMethod("markernames",
                  signature=signature(object="cytoSet", value="ANY"), function(object, value){
                    for(i in sampleNames(object))
-                     markernames(object[[i, returnType = "cytoFrame", use.exprs = FALSE]]) <- value
+                   {
+                     fr <- object[[i, returnType = "cytoFrame", use.exprs = FALSE]]
+                     markernames(fr) <- value
+                   }
                    object
                  })
 
@@ -113,6 +121,26 @@ setMethod("[[",
             fr
             
           })
+#TODO:
+#setReplaceMethod("[[",
+#	  signature=signature(x="cytoSet",
+#			  value="cytoFrame"),
+#	  definition=function(x, i, j, ..., value)
+#	  {
+#		  if(length(i) != 1)
+#			  stop("subscript out of bounds (index must have ",
+#					  "length 1)")
+#		  cnx <- colnames(x)
+#		  cnv <- colnames(value)
+#		  if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
+#		  stop("The colnames of this flowFrame don't match ",
+#				  "the colnames of the flowSet.")
+#			  
+#			  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
+#			  x@frames[[sel]] <- value
+#			  return(x)
+#		  })
+  
 #' @export
 get_cytoFrame_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
   
