@@ -194,23 +194,21 @@ void set_pheno_data(Rcpp::XPtr<GatingSet> cs, DataFrame value)
 List get_pheno_data(Rcpp::XPtr<GatingSet> cs)
 {
   unordered_map<string, vector<string>> pd;
-  unsigned nSample = cs->size();
-  vector<string> sample_uids(nSample);
-  unsigned i = 0;
+  vector<string> sample_uids = cs->get_sample_uids();
+  unsigned nSample = sample_uids.size();
   //row-major to col-major
-  for(const auto & sn : cs->get_sample_uids())
+  for(unsigned i = 0; i < nSample; i++)
   {
-    sample_uids[i] = sn;
-    const GatingHierarchy & fr = *cs->getGatingHierarchy(sn);
-    //assuming pdata is already homogenious across ghs
-    for(const auto & j: fr.get_pheno_data())
-    {
-      if(i==0)
-        pd[j.first] = vector<string>(nSample);
-        
-      pd[j.first][i] = j.second;
-    }
-    i++;
+	string sn = sample_uids[i];
+	const GatingHierarchy & fr = *(cs->getGatingHierarchy(sn));
+	//assuming pdata is already homogenious across ghs
+	for(const auto & j: fr.get_pheno_data())
+	{
+	  if(i==0)
+		pd[j.first] = vector<string>(nSample);
+
+	  pd[j.first][i] = j.second;
+	}
   }
   //construct and assign DataFrame directly seems to
   //not preserving DataFrame class info at return
