@@ -145,7 +145,7 @@ StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
 //[[Rcpp::export(name=".cpp_NewGatingSet")]]
 XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
                ,string src_sample_uid
-               ,StringVec new_sample_uids)
+			   , XPtr<GatingSet> cs)
   {
 
 		GatingHierarchy & gh=*gsPtr->getGatingHierarchy(src_sample_uid);
@@ -153,7 +153,7 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
 		/*
 		 * used gh as the template to clone multiple ghs in the new gs
 		 */
-		GatingSet * newGS=new GatingSet(gh,new_sample_uids);
+		GatingSet * newGS=new GatingSet(gh, *cs);
 
 		/*
 		 * using default finalizer to delete gs,which is triggered by gc() when

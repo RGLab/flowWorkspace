@@ -82,11 +82,9 @@ test_that("extract GatingHierarchy from GatingSet",{
     gh <<- gs[[1]]
     gh2 <- gs[["CytoTrol_CytoTrol_1.fcs"]]
     expect_is(gh, "GatingHierarchy")
-    expect_true(identical(gh2@guid, gh@guid))
-    expect_true(identical(gh@pointer, gh2@pointer))
-    expect_equal(gh@data, gh2@data)
-    expect_equal(gh@axis, gh2@axis)
-    expect_equal(gh@flag, gh2@flag)
+    expect_true(!identical(get_gatingset_id(gh2@pointer), get_gatingset_id(gh@pointer)))
+    expect_true(!identical(gh@pointer, gh2@pointer))
+    expect_equal(getData(gh), getData(gh2))
     
 })
 
@@ -98,10 +96,11 @@ source("GatingHierarchy-testSuite.R", local = TRUE)
 test_that("Construct new GatingSet based on the existing gating hierarchy",
    {
      #re-load the gs since the trans get lost during clone
-     suppressWarnings(suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
-     gh <- gs[[1]]
-     suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE))
+     suppressWarnings(suppressMessages(gs1 <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
+     gh <- gs1[[1]]
+     suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir))
      expect_that(gs, is_a("GatingSet"))
+     expect_equal(getNodes(gs), getNodes(gs1))
    })
 isCpStaticGate <<- TRUE
 source("GatingSet-testSuite.R", local = TRUE)

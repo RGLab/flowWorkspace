@@ -881,15 +881,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // NewGatingSet
-XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr, string src_sample_uid, StringVec new_sample_uids);
-RcppExport SEXP _flowWorkspace_NewGatingSet(SEXP gsPtrSEXP, SEXP src_sample_uidSEXP, SEXP new_sample_uidsSEXP) {
+XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr, string src_sample_uid, XPtr<GatingSet> cs);
+RcppExport SEXP _flowWorkspace_NewGatingSet(SEXP gsPtrSEXP, SEXP src_sample_uidSEXP, SEXP csSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
     Rcpp::traits::input_parameter< string >::type src_sample_uid(src_sample_uidSEXP);
-    Rcpp::traits::input_parameter< StringVec >::type new_sample_uids(new_sample_uidsSEXP);
-    rcpp_result_gen = Rcpp::wrap(NewGatingSet(gsPtr, src_sample_uid, new_sample_uids));
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(NewGatingSet(gsPtr, src_sample_uid, cs));
     return rcpp_result_gen;
 END_RCPP
 }

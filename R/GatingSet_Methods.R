@@ -8,53 +8,48 @@ NULL
 #' @param ... other arguments. see \link{parseWorkspace}
 #' @rdname GatingSet-methods
 #' @export
-#setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
-#            
-#			samples <- y
-#			dataPaths <- vector("character")
-#			excludefiles <- vector("logical")
-#			for(file in samples){
-##				browser()
-#				#########################################################
-#				#get full path for each fcs and store in dataPath slot
-#				#########################################################
-#				##escape "illegal" characters
-#				file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
-#				absPath<-list.files(pattern=paste("^",file,"$",sep=""),path=path,recursive=TRUE,full.names=TRUE)
-#
-#				if(length(absPath)==0){
-#					warning("Can't find ",file," in directory: ",path,"\n");
-#					excludefiles<-c(excludefiles,TRUE);
-#
-#				}else{
-#					dataPaths<-c(dataPaths,dirname(absPath[1]))
-#					excludefiles<-c(excludefiles,FALSE);
-#				}
-#			}
-#			#Remove samples where files don't exist.
-#			if(length(which(excludefiles))>0){
-#				message("Removing ",length(which(excludefiles))," samples from the analysis since we can't find their FCS files.");
-#				samples<-samples[!excludefiles];
-#			}
-#
-#
-#			files<-file.path(dataPaths,samples)
-#			Object<-new("GatingSet")
-#			message("generating new GatingSet from the gating template...")
-#			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
-#      Object@guid <- .uuid_gen()
-#
-#      sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
-#			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE,...)
-#            #if the gating template is already gated, it needs to be recompute explicitly
-#            #in order to update the counts
-#            #otherwise, the counts should already have been updated during the copying
-#            #and not need to do this step
-#            if(x@flag)
-#              recompute(Object)
-#            message("done!")
-#			return(Object)
-#		})
+setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
+            
+			samples <- y
+			dataPaths <- vector("character")
+			excludefiles <- vector("logical")
+			for(file in samples){
+#				browser()
+				#########################################################
+				#get full path for each fcs and store in dataPath slot
+				#########################################################
+				##escape "illegal" characters
+				file<-gsub("\\)","\\\\)",gsub("\\(","\\\\(",file))
+				absPath<-list.files(pattern=paste("^",file,"$",sep=""),path=path,recursive=TRUE,full.names=TRUE)
+
+				if(length(absPath)==0){
+					warning("Can't find ",file," in directory: ",path,"\n");
+					excludefiles<-c(excludefiles,TRUE);
+
+				}else{
+					dataPaths<-c(dataPaths,dirname(absPath[1]))
+					excludefiles<-c(excludefiles,FALSE);
+				}
+			}
+			#Remove samples where files don't exist.
+			if(length(which(excludefiles))>0){
+				message("Removing ",length(which(excludefiles))," samples from the analysis since we can't find their FCS files.");
+				samples<-samples[!excludefiles];
+			}
+
+
+			files<-file.path(dataPaths,samples)
+			
+			message("generating new GatingSet from the gating template...")
+			
+			#load new data
+      		cs <- load_cytoset_from_fcs(files, is_h5 = TRUE, ...)
+			
+			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer))
+			
+            message("done!")
+			return(gs)
+		})
 
 
 setMethod("identifier",
