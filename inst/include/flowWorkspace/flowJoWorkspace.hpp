@@ -48,6 +48,7 @@ struct ParseWorkspaceParameters
 	 string h5_dir = generate_unique_dir(fs::temp_directory_path(), "gs");// output path for generating the h5 files
 	 FCS_READ_PARAM fcs_read_param;
 	 unordered_map<string, compensation> compensation_map;//optional customized sample-specific compensations
+	 compensation global_comp;
 	 string fcs_file_extension = ".fcs";
 //	ParseWorkspaceParameters()
 //	 {
@@ -268,13 +269,22 @@ public:
 					//load the data into the header-only version of cytoframe
 					fr.read_fcs_data();
 
-					auto it_comp = config.compensation_map.find(uid);
-					if(it_comp != config.compensation_map.end())
+					compensation comp;
+					if(!config.global_comp.empty())
 					{
-						compensation comp = it_comp->second;
-						comp.cid = "1";
-						gh->set_compensation(comp, true);
+						comp = config.global_comp;
 					}
+					else
+					{
+						auto it_comp = config.compensation_map.find(uid);
+						if(it_comp != config.compensation_map.end())
+						{
+							comp = it_comp->second;
+
+						}
+					}
+					comp.cid = "1";
+					gh->set_compensation(comp, true);
 					gh->compensate(fr);
 					gh->transform_gate();
 					gh->transform_data(fr);

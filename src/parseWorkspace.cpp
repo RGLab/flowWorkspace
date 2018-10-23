@@ -35,7 +35,23 @@ XPtr<flowJoWorkspace> open_workspace(string filename, int sample_name_location, 
 
   return XPtr<flowJoWorkspace>(ws.release());
 }
-
+compensation mat_to_comp(NumericMatrix rmat)
+{
+	vector<string> chnls = as<vector<string>>(rmat.attr("colnames"));
+	arma::mat mat = as<arma::mat>(rmat);
+	compensation comp = compensation(mat, chnls);
+	comp.cid = "1";
+	return comp;
+}
+unordered_map<string, compensation> list_to_comps(List comps){
+	unordered_map<string, compensation> res;
+	for(auto sn : as<vector<string>>(comps.names()))
+		{
+			NumericMatrix rmat = as<NumericMatrix>(comps[sn]);
+			res[sn] = mat_to_comp(rmat);
+		}
+	return res;
+}
 //[[Rcpp::export]]
 XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
                                   , int group_id
@@ -52,6 +68,7 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
                                   , float extend_to
                                   , bool channel_ignore_case
                                   , bool leaf_bool
+								  , List comps
                                   , IntegerVector which_lines = IntegerVector::create() //argument from this line and below are for fcs parser
                                   , string transformation="linearize"
                                   , float decades=0
@@ -112,6 +129,10 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
     config.fcs_read_param.data.transform = TransformType::scale;
   else
     stop("unkown transformation type :" + transformation);
+  if(comps.size()==1&&as<vector<string>>(comps.names()).size()==0)
+	  config.global_comp = mat_to_comp(as<NumericMatrix>(comps[0]));
+  else
+	  config.compensation_map = list_to_comps(comps);
 
   unique_ptr<GatingSet> gs = ws->to_GatingSet(group_id, config);
   return XPtr<GatingSet>(gs.release());

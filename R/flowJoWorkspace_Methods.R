@@ -128,6 +128,7 @@ parseWorkspace <- function(ws, name = NULL
     , extend_to = -4000
     , channel.ignore.case = FALSE
     , leaf.bool = TRUE
+    , compensation = NULL
     , ...)
 {
   
@@ -172,6 +173,23 @@ parseWorkspace <- function(ws, name = NULL
     warning("'isNcdf' argument is deprecated!Data is always stored in h5 format by default!")
     args[["isNcdf"]] <- NULL
   }
+  if(is.null(compensation))
+  {
+    compensation <- list()
+  }else
+  {
+    #replicate the single comp 
+    if(is(compensation, "compensation")){
+      compensation <- compensation@spillover
+    }else if(is.data.frame(compensation)){
+      compensation <- as.matrix(compensation)
+    }
+    if(is.matrix(compensation))
+      compensation <- list(compensation)
+    else if(!is.list(compensation))
+      stop("'compensation' should be either a compensation object of a list of compensation objects!")
+    
+  }
   args <- c(list(ws = ws@doc
                  , group_id = groupInd - 1
                  , subset = subset
@@ -186,7 +204,8 @@ parseWorkspace <- function(ws, name = NULL
                  , extend_val = extend_val
                  , extend_to = extend_to
                  , channel_ignore_case = channel.ignore.case
-                 , leaf_bool = leaf.bool)
+                 , leaf_bool = leaf.bool
+                 , comps = compensation)
               , args)
   p <- do.call(parse_workspace, args)
   new("GatingSet", pointer = p)

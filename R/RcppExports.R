@@ -77,6 +77,10 @@ getpdata <- function(fr) {
     .Call(`_flowWorkspace_getpdata`, fr)
 }
 
+cs_compensate <- function(cs, comps) {
+    invisible(.Call(`_flowWorkspace_cs_compensate`, cs, comps))
+}
+
 fcs_to_cytoset <- function(sample_uid_vs_file_path, config, is_h5, h5_dir) {
     .Call(`_flowWorkspace_fcs_to_cytoset`, sample_uid_vs_file_path, config, is_h5, h5_dir)
 }
@@ -136,8 +140,8 @@ open_workspace <- function(filename, sample_name_location, xmlParserOption) {
     .Call(`_flowWorkspace_open_workspace`, filename, sample_name_location, xmlParserOption)
 }
 
-parse_workspace <- function(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, which_lines = as.integer( c()), transformation = "linearize", decades = 0, truncate_min_val = FALSE, min_limit = -111, truncate_max_range = TRUE, dataset = 1L, emptyValue = TRUE, ignoreTextOffset = TRUE, onlyTxt = FALSE, num_threads = 1L) {
-    .Call(`_flowWorkspace_parse_workspace`, ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, which_lines, transformation, decades, truncate_min_val, min_limit, truncate_max_range, dataset, emptyValue, ignoreTextOffset, onlyTxt, num_threads)
+parse_workspace <- function(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, which_lines = as.integer( c()), transformation = "linearize", decades = 0, truncate_min_val = FALSE, min_limit = -111, truncate_max_range = TRUE, dataset = 1L, emptyValue = TRUE, ignoreTextOffset = TRUE, onlyTxt = FALSE, num_threads = 1L) {
+    .Call(`_flowWorkspace_parse_workspace`, ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, which_lines, transformation, decades, truncate_min_val, min_limit, truncate_max_range, dataset, emptyValue, ignoreTextOffset, onlyTxt, num_threads)
 }
 
 get_keywords_by_id <- function(ws, sample_id) {

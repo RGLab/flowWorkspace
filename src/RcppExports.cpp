@@ -224,6 +224,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cs_compensate
+void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps);
+RcppExport SEXP _flowWorkspace_cs_compensate(SEXP csSEXP, SEXP compsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< List >::type comps(compsSEXP);
+    cs_compensate(cs, comps);
+    return R_NilValue;
+END_RCPP
+}
 // fcs_to_cytoset
 Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM& config, bool is_h5, string h5_dir);
 RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP is_h5SEXP, SEXP h5_dirSEXP) {
@@ -390,8 +401,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // parse_workspace
-XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws, int group_id, List subset, bool execute, string path, string h5_dir, bool includeGates, vector<string> additional_keys, vector<string> keywords, bool is_pheno_data_from_FCS, bool keyword_ignore_case, float extend_val, float extend_to, bool channel_ignore_case, bool leaf_bool, IntegerVector which_lines, string transformation, float decades, bool truncate_min_val, float min_limit, bool truncate_max_range, int dataset, bool emptyValue, bool ignoreTextOffset, bool onlyTxt, int num_threads);
-RcppExport SEXP _flowWorkspace_parse_workspace(SEXP wsSEXP, SEXP group_idSEXP, SEXP subsetSEXP, SEXP executeSEXP, SEXP pathSEXP, SEXP h5_dirSEXP, SEXP includeGatesSEXP, SEXP additional_keysSEXP, SEXP keywordsSEXP, SEXP is_pheno_data_from_FCSSEXP, SEXP keyword_ignore_caseSEXP, SEXP extend_valSEXP, SEXP extend_toSEXP, SEXP channel_ignore_caseSEXP, SEXP leaf_boolSEXP, SEXP which_linesSEXP, SEXP transformationSEXP, SEXP decadesSEXP, SEXP truncate_min_valSEXP, SEXP min_limitSEXP, SEXP truncate_max_rangeSEXP, SEXP datasetSEXP, SEXP emptyValueSEXP, SEXP ignoreTextOffsetSEXP, SEXP onlyTxtSEXP, SEXP num_threadsSEXP) {
+XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws, int group_id, List subset, bool execute, string path, string h5_dir, bool includeGates, vector<string> additional_keys, vector<string> keywords, bool is_pheno_data_from_FCS, bool keyword_ignore_case, float extend_val, float extend_to, bool channel_ignore_case, bool leaf_bool, List comps, IntegerVector which_lines, string transformation, float decades, bool truncate_min_val, float min_limit, bool truncate_max_range, int dataset, bool emptyValue, bool ignoreTextOffset, bool onlyTxt, int num_threads);
+RcppExport SEXP _flowWorkspace_parse_workspace(SEXP wsSEXP, SEXP group_idSEXP, SEXP subsetSEXP, SEXP executeSEXP, SEXP pathSEXP, SEXP h5_dirSEXP, SEXP includeGatesSEXP, SEXP additional_keysSEXP, SEXP keywordsSEXP, SEXP is_pheno_data_from_FCSSEXP, SEXP keyword_ignore_caseSEXP, SEXP extend_valSEXP, SEXP extend_toSEXP, SEXP channel_ignore_caseSEXP, SEXP leaf_boolSEXP, SEXP compsSEXP, SEXP which_linesSEXP, SEXP transformationSEXP, SEXP decadesSEXP, SEXP truncate_min_valSEXP, SEXP min_limitSEXP, SEXP truncate_max_rangeSEXP, SEXP datasetSEXP, SEXP emptyValueSEXP, SEXP ignoreTextOffsetSEXP, SEXP onlyTxtSEXP, SEXP num_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -410,6 +421,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type extend_to(extend_toSEXP);
     Rcpp::traits::input_parameter< bool >::type channel_ignore_case(channel_ignore_caseSEXP);
     Rcpp::traits::input_parameter< bool >::type leaf_bool(leaf_boolSEXP);
+    Rcpp::traits::input_parameter< List >::type comps(compsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type which_lines(which_linesSEXP);
     Rcpp::traits::input_parameter< string >::type transformation(transformationSEXP);
     Rcpp::traits::input_parameter< float >::type decades(decadesSEXP);
@@ -421,7 +433,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type ignoreTextOffset(ignoreTextOffsetSEXP);
     Rcpp::traits::input_parameter< bool >::type onlyTxt(onlyTxtSEXP);
     Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(parse_workspace(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, which_lines, transformation, decades, truncate_min_val, min_limit, truncate_max_range, dataset, emptyValue, ignoreTextOffset, onlyTxt, num_threads));
+    rcpp_result_gen = Rcpp::wrap(parse_workspace(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, which_lines, transformation, decades, truncate_min_val, min_limit, truncate_max_range, dataset, emptyValue, ignoreTextOffset, onlyTxt, num_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1050,6 +1062,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getncol", (DL_FUNC) &_flowWorkspace_getncol, 1},
     {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},
     {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
+    {"_flowWorkspace_cs_compensate", (DL_FUNC) &_flowWorkspace_cs_compensate, 2},
     {"_flowWorkspace_fcs_to_cytoset", (DL_FUNC) &_flowWorkspace_fcs_to_cytoset, 4},
     {"_flowWorkspace_get_colnames", (DL_FUNC) &_flowWorkspace_get_colnames, 1},
     {"_flowWorkspace_realize_view_cytoset", (DL_FUNC) &_flowWorkspace_realize_view_cytoset, 2},
@@ -1063,7 +1076,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},
     {"_flowWorkspace_open_workspace", (DL_FUNC) &_flowWorkspace_open_workspace, 3},
-    {"_flowWorkspace_parse_workspace", (DL_FUNC) &_flowWorkspace_parse_workspace, 26},
+    {"_flowWorkspace_parse_workspace", (DL_FUNC) &_flowWorkspace_parse_workspace, 27},
     {"_flowWorkspace_get_keywords_by_id", (DL_FUNC) &_flowWorkspace_get_keywords_by_id, 2},
     {"_flowWorkspace_get_keywords_by_name", (DL_FUNC) &_flowWorkspace_get_keywords_by_name, 2},
     {"_flowWorkspace_get_sample_groups", (DL_FUNC) &_flowWorkspace_get_sample_groups, 1},

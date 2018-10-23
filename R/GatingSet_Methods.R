@@ -1982,10 +1982,8 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
       if(!is.list(spillover)||is.data.frame(spillover)){
         spillover <- sapply(samples, function(guid)spillover, simplify = FALSE)
       }
-      x@compensation <- spillover[samples]
       fs <- getData(x)
-      suppressMessages(fs_comp <- compensate(fs, spillover))
-      flowData(x) <- fs_comp
+      suppressMessages(compensate(fs, spillover))
       x
     })
 

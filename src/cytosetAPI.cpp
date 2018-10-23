@@ -5,7 +5,32 @@ using namespace cytolib;
 
 //[[Rcpp::plugins("temp")]]
 
+//convert from list of R matrix to compensations
+unordered_map<string, compensation> list_to_comps(List comps);
+
 // [[Rcpp::export]] 
+void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
+
+	unordered_map<string, compensation> comp_objs = list_to_comps(comps);
+	string dir = generate_unique_dir(fs::temp_directory_path(), "gs");
+	for(auto sn : cs->get_sample_uids())
+	{
+		GatingHierarchyPtr gh = cs->getGatingHierarchy(sn);
+		auto it = comp_objs.find(sn);
+		if(it==comp_objs.end())
+			throw(domain_error("compensation not found for: " + sn));
+		compensation comp = it->second;
+		gh->set_compensation(comp, false);
+		MemCytoFrame fr(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
+		gh->compensate(fr);
+		string h5file = dir + "/" + sn = ".h5";
+		fr.write_h5(h5file);
+		gh->set_cytoFrame_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5file))));
+
+
+	}
+}
+// [[Rcpp::export]]
 Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM & config, bool is_h5, string h5_dir)
 {
 

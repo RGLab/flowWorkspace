@@ -121,6 +121,18 @@ setMethod("[[",
             fr
             
           })
+
+#' @export
+#' @rdname compensate
+setMethod("compensate", signature=signature(x="cytoSet", spillover="ANY"),
+  definition=function(x, spillover){
+	  samples <- sampleNames(x)
+	  if(!is.list(spillover)||is.data.frame(spillover)){
+		  spillover <- sapply(samples, function(guid)spillover, simplify = FALSE)
+	  }
+	  suppressMessages(cs_compensate(x, spillover))
+	  x
+  })
 #TODO:
 #setReplaceMethod("[[",
 #	  signature=signature(x="cytoSet",

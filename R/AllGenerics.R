@@ -9,9 +9,6 @@ setGeneric("summary",function(object,...)standardGeneric("summary"))
 setGeneric("openWorkspace", function(file,...)standardGeneric("openWorkspace"))
 
 #' @export
-setGeneric("parseWorkspace",function(obj,...)standardGeneric("parseWorkspace"))
-
-#' @export
 setGeneric("getNodes",function(x,...)standardGeneric("getNodes"))
 
 #' @export
