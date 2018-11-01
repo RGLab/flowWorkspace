@@ -364,7 +364,15 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       Object@guid <- .uuid_gen()
 
       sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
-			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE, compensation = x@compensation[[1]],...)
+	  		comp <- x@compensation[[1]]
+			if(length(x@transformation) > 0)
+			{
+				trans <- x@transformation
+				
+			}	
+			else
+				trans <- NULL
+			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE, compensation = comp, transformation = trans, ...)
             #if the gating template is already gated, it needs to be recompute explicitly
             #in order to update the counts
             #otherwise, the counts should already have been updated during the copying
@@ -390,7 +398,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
 #' @importFrom Biobase AnnotatedDataFrame
 .addGatingHierarchies <- function(gs, samples, execute,isNcdf = TRUE
-                                      ,compensation=NULL,wsType = ""
+                                      ,compensation=NULL
+							  		, transformation = NULL
+							  			,wsType = ""
                                       , extend_val = 0, extend_to = -4000
                                       , prefix = TRUE, channel.ignore.case = FALSE
                                       , ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
@@ -415,6 +425,17 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
         stop("'compensation' should be either a compensation object of a list of compensation objects!")
     }
      
+  }
+  if(!is.null(transformation))
+  {
+  
+	  if(is(transformation, "transformerList"))
+	  	transformation <- sapply(guids, function(guid)transformation, simplify = FALSE)
+	
+	  if(!is.list(transformation))
+		  stop("'transformation' should be either a transformerList object of a list of transformerList objects!")
+	  if(!all(guids %in% names(transformation)))
+		  stop("names of the transformation list must match the 'guids' of samples!")
   }
   
 
@@ -500,7 +521,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       }
 
       compensation <- compensation[[guid]]
-
+	  transformation <- transformation[[guid]]
+	  
+	  
 			if(cid=="")
 				cid <- ifelse(is.null(compensation), "-2", "1")
 				
@@ -626,6 +649,14 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
           if(execute)
           {
 
+			  #transform with external trans when applicable
+			  if(!is.null(transformation))
+			  {
+				  message(paste("transform the data with supplied transformations ..."))
+				  transformation <- transformList(names(transformation), lapply(transformation, function(x)x[["transform"]]))
+				  data <- transform(data, transformation)
+			  }
+				    
             message(paste("gating ..."))
             #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
             mat <- data@exprs #using @ is faster than exprs()
@@ -670,7 +701,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
             }else
               timestep <- 1
 
-
+			
             .cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool, timestep)
 #            browser()
             #restore the non-prefixed colnames for updating data in fs with [[<-
@@ -786,6 +817,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
     flowData(gs) <- fs
     if(!is.null(compensation))
       gs@compensation <- compensation[guids] #append the customized compensations provided outside of xml
+  	if(!is.null(transformation))
+	  gs@transformation <- transformation[guids]
 	gs
 }
 
