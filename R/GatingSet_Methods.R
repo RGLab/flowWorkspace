@@ -364,7 +364,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       Object@guid <- .uuid_gen()
 
       sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
-			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE,...)
+			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE, compensation = gh@compensation...)
             #if the gating template is already gated, it needs to be recompute explicitly
             #in order to update the counts
             #otherwise, the counts should already have been updated during the copying
