@@ -364,7 +364,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       Object@guid <- .uuid_gen()
 
       sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
-			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE, compensation = gh@compensation...)
+			Object <- .addGatingHierarchies(Object,samples = sampletbl,execute=TRUE, compensation = x@compensation[[1]],...)
             #if the gating template is already gated, it needs to be recompute explicitly
             #in order to update the counts
             #otherwise, the counts should already have been updated during the copying
@@ -402,6 +402,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
   guids <- samples[["guid"]]
   
   if(!is.null(compensation)){
+	  if(is(compensation, "matrix"))
+		  compensation <- compensation(compensation)
     #replicate the single comp 
     if(is(compensation, "compensation")){
       compensation <- sapply(guids, function(guid)compensation, simplify = FALSE)   
@@ -500,7 +502,8 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
       compensation <- compensation[[guid]]
 
 			if(cid=="")
-				cid=-2
+				cid <- ifelse(is.null(compensation), "-2", "1")
+				
 
 			if(cid!="-1" && cid!="-2"){
 				message("Compensating");
