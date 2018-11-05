@@ -3,6 +3,7 @@ NULL
 
 #' modify graph::fromGXL by using customized handler
 #' (deprecated by using Rgraphviz::agread)
+#' @noRd 
 .fromGXL <- function (con)
 {
   contents <- paste(readLines(con), collapse = "")
@@ -34,6 +35,7 @@ getCompensationObj <- function(gs, sampleName) {
 #' (deprecated by using Rgraphviz::agread)
 #'
 #' @importFrom graph graphNEL addEdge
+#' @noRd 
 .graph_handler <- function()
 {
 
@@ -191,6 +193,7 @@ getCompensationObj <- function(gs, sampleName) {
 #' @importFrom graph graphNEL
 #' @importFrom Rgraphviz agread
 #' @param x a \code{GatingHierarchy}
+#' @noRd 
 #return a graphNEL object that only contans the node Name and isBool flags
 .getGraph <- function(x){
   DotFile <- tempfile(fileext=".dot")
@@ -236,6 +239,7 @@ getCompensationObj <- function(gs, sampleName) {
 
 #' @importMethodsFrom graph nodeData removeNode edges inEdges edgeData edgeData<- edgeDataDefaults<-
 #' @importFrom graph edgeRenderInfo<- nodeRenderInfo<-
+#' @noRd 
 .layoutGraph <- function(g,layout="dot"
                         ,fixedsize=FALSE, shape = "ellipse"
                          ,boolean=FALSE,showHidden = FALSE
@@ -860,7 +864,7 @@ gh_check_cluster_node <- function(gh, node){
 }
 
 #' @export
-
+#' @noRd 
 .getNodeInd <- function(obj,y, ...){
 
     ind <- .cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
@@ -1187,6 +1191,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
 
 }
 #' extract trans from c++
+#' @noRd 
 .getTransformations <- function(pointer,sampleName, equal.space = FALSE, ...){
     trans.func <- .cpp_getTransformations(pointer,sampleName, inverse = FALSE)
     inv.func <- .cpp_getTransformations(pointer,sampleName, inverse = TRUE)
@@ -1455,6 +1460,7 @@ pretty10exp <-function (x, drop.1 = FALSE, digits.fuzz = 7)
 
 #' @param x a gatingHierarchy
 #' @param data a flowFrame
+#' @noRd 
 .formatAxis <- function(x, data, xParam, yParam
                           , scales=list()
                           , raw.scale = flowWorkspace.par.get("plotGate")[["raw.scale"]]

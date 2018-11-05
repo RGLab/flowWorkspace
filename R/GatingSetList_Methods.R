@@ -129,6 +129,7 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
 #' Scan through a gating set list and rename all flowFrames with marker \code{match}
 #' to marker \code{replace}
 #'@return a \code{GatingSetList}
+#' @noRd 
 .renameMarker<-function(g=NA,match=NA,replace=NA){
   if(!inherits(g,"GatingSetList"))
     stop("g must be a GatingSetList")

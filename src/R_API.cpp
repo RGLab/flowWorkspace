@@ -23,6 +23,7 @@ using namespace cytolib;
 //' @param subpopulation population vector that specify the subset of pops to query
 //' @param flowJo logical flag to specify whether flowCore or flowJo counts to return
 //' @param isFullPath logical flag to specify whether return the full path or partial path of populations
+//' @noRd
 //[[Rcpp::export(".getPopCounts")]]
 Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bool flowJo, bool isFullPath){
 
@@ -85,6 +86,7 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bo
 //' It is used to extract the spline coefficient vectors from the calibration table
 //' which is computed by biexpTrans class and then return to R for constructing flowJo transformation function within R.
 //' Mainly used for openCyto autoGating process where no xml workspace is needed to create flowJo transformation.
+//' @noRd
 //[[Rcpp::export(".getSplineCoefs")]]
 Rcpp::List getSplineCoefs(int channelRange=4096, double maxValue=262144, double pos = 4.5, double neg = 0, double widthBasis = -10, bool inverse = false){
 
@@ -126,6 +128,7 @@ Rcpp::List getSplineCoefs(int channelRange=4096, double maxValue=262144, double 
 //' @param gsPtr external pointer that points to the C data structure of GatingSet
 //' @param transformList a transformList that constains a list of transformation functions.
 //'         Each of these functions carries the attributes to be used to convert to c++ transformation
+//' @noRd
 //[[Rcpp::export(".addTrans")]]
 void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList){
 
@@ -198,6 +201,7 @@ void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList){
 //'                                          )
 //'                        , nodes = "14-")  
 //'}
+//' @noRd
 //[[Rcpp::export(.updateChannels)]]
 void updateChannels(Rcpp::S4 gs, Rcpp::DataFrame map){
 
