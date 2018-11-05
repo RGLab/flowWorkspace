@@ -15,8 +15,6 @@ flowWorkspace.par.get(name = NULL)
 \item{value}{A named list of values to set for category name or a list of such lists if name is missing.}
 }
 \description{
-flowWorkspace.par.set sets a set of parameters in the flowWorkspace package namespace.
-
 flowWorkspace.par.get gets a set of parameters in the flowWorkspace package namespace.
 }
 \details{

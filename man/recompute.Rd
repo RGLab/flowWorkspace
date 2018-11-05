@@ -7,7 +7,8 @@
 \alias{recompute,GatingSetList-method}
 \title{Compute the cell events by the gates stored within the gating tree.}
 \usage{
-\S4method{recompute}{GatingSet}(x, y = "root", alwaysLoadData = FALSE, ...)
+\S4method{recompute}{GatingSet}(x, y = "root", alwaysLoadData = FALSE,
+  ...)
 
 \S4method{recompute}{GatingSetList}(x, ...)
 }

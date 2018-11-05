@@ -8,8 +8,8 @@
 \alias{GatingSet,GatingHierarchy,character-method}
 \title{constructors for GatingSet}
 \usage{
-\S4method{GatingSet}{character,character}(x, y, guids, includeGates = FALSE,
-  sampNloc = "keyword", xmlParserOption, wsType)
+\S4method{GatingSet}{character,character}(x, y, guids,
+  includeGates = FALSE, sampNloc = "keyword", xmlParserOption, wsType)
 
 \S4method{GatingSet}{flowSet,ANY}(x)
 

@@ -4,8 +4,8 @@
 \alias{flowJo.flog}
 \title{flog transform function}
 \usage{
-flowJo.flog(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
-  scale = 1, inverse = FALSE)
+flowJo.flog(decade = 4.5, offset = 1, max_val = 262144,
+  min_val = 0, scale = 1, inverse = FALSE)
 }
 \arguments{
 \item{decade}{number of decades}

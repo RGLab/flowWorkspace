@@ -8,7 +8,8 @@
 \alias{plotPopCV}
 \title{Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy.}
 \usage{
-\S4method{plotPopCV}{GatingHierarchy}(x, m = 2, n = 2, path = "auto", ...)
+\S4method{plotPopCV}{GatingHierarchy}(x, m = 2, n = 2, path = "auto",
+  ...)
 
 \S4method{plotPopCV}{GatingSet}(x, scales = list(x = list(rot = 90)),
   path = "auto", ...)

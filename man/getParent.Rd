@@ -10,7 +10,8 @@
 \usage{
 \S4method{getParent}{GatingSet,character}(obj, y, ...)
 
-\S4method{getChildren}{GatingSet,character}(obj, y, showHidden = TRUE, ...)
+\S4method{getChildren}{GatingSet,character}(obj, y, showHidden = TRUE,
+  ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy}}

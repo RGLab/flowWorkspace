@@ -152,6 +152,7 @@ load_gs<-function(path){
 
 
 #' serialization functions to be called by wrapper APIs
+#' @noRd 
 .save_gs <- function(G,path, cdf = c("copy","move","skip","symlink","link")){
 
 #    browser()
@@ -216,6 +217,7 @@ load_gs<-function(path){
 }
 #' unserialization functions to be called by wrapper APIs
 #' @importFrom tools file_ext
+#' @noRd 
 .load_gs <- function(output,files){
       dat.file <- file.path(output,files[grep(".pb$|.dat$|.txt$|.xml$",files)])
       rds.file<-file.path(output,files[grep(".rds$",files)])
@@ -383,7 +385,49 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			return(Object)
 		})
 
-
+#' Swap the colnames
+#' Perform some validity checks before returning the updated colnames
+#'  
+#' @param cols the original colname vector
+#' @param swap_cols a named list specifying the pairs to be swapped
+#' @return the new colname vector that has some colnames swapped
+#' @export 
+#' @examples 
+#' data(GvHD)
+#' fr <- GvHD[[1]]
+#' colnames(fr)
+#' new <- swap_data_cols(colnames(fr), list(`FSC-H` = "SSC-H", `FL2-H` = "FL2-A"))
+#' colnames(fr) <- new
+swap_data_cols <- function(cols, swap_cols)
+{
+	if(!is.null(swap_cols))
+		if(!isFALSE(swap_cols) && length(swap_cols) > 0) 
+		{
+			left <- names(swap_cols)
+			right <- as.vector(unlist(swap_cols))
+			
+			update <- FALSE
+			for(left in names(swap_cols))
+			{
+				right <- swap_cols[[left]]
+				
+				lidx <- match(left, cols)
+				ridx <- match(right, cols)
+				
+				if(!is.na(lidx) && !is.na(ridx))
+				{
+					if(length(lidx) > 1) 
+						stop("Multiple cols matched to ", left)
+					if(length(ridx) > 1)
+						stop("Multiple cols matched to ", right)
+					message("swap cols: ", left, ":", right)  
+					
+					cols[c(lidx, ridx)]  <- c(right, left)
+				}
+			}
+		}
+	cols
+}
 
 #' 1. loads the raw data (when execute == TRUE)
 #' 2. compensate and transform the data (when execute == TRUE)
@@ -397,6 +441,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 #' @param transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
 #' @importFrom Biobase AnnotatedDataFrame
+#' @noRd 
 .addGatingHierarchies <- function(gs, samples, execute,isNcdf = TRUE
                                       ,compensation=NULL
 							  		, transformation = NULL
@@ -404,7 +449,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
                                       , extend_val = 0, extend_to = -4000
                                       , prefix = TRUE, channel.ignore.case = FALSE
                                       , ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
-                                      ,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM"), ...){
+                                      ,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM")
+									  , swap_cols = FALSE #for diva parsing
+							  , ...){
   timestep.source  <- match.arg(timestep.source )
   if(nrow(samples)==0)
     stop("no sample to be added to GatingSet!")
@@ -506,7 +553,10 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 				data <- read.FCS(file, ...)[, cnd]
 			else
 				data <- fs[[guid]]
-
+			
+		cols <- swap_data_cols(colnames(data), swap_cols)
+		if(!all(cols==colnames(data)))
+			colnames(data) <- cols
       #alter colnames(replace "/" with "_") for flowJo X
       #record the locations where '/' character is detected and will be used to restore it accurately
       slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
@@ -894,6 +944,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #'
 #' @return
 #' a \code{list} of axis labels and positions. Also, the \code{range} slot of \code{flowFrame} stored in \code{frmEnv} are transformed as an side effect.
+#' @noRd 
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL, compChnlInd){
 
 
@@ -1089,6 +1140,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     })
 
 ##recursively parsing conditional variables
+#' @noRd 
 .parseCond<-function(cond){
 #			browser()
   groupBy<-NULL
@@ -1177,6 +1229,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 #' @param type \code{character} either 'xyplot' or 'densityplot'
 #' @param stats \code{numeric} proportions of cell population. If \code{missing} then extract it from \code{gatingHiearchy}
 #' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
+#' @noRd 
 .preplot <- function(x, y, type, stats, formula, default.x = "FSC-A", default.y = "SSC-A"){
   samples <- sampleNames(x)
 
@@ -1302,6 +1355,7 @@ fix_y_axis <- function(gs, x, y){
 #' @param ... other arguments
 #'      params channel names for subsetting the result
 #' @return either a list of flowFrame for a flowSet/ncdfFlowSet or NULL
+#' @noRd 
 .getOverlay <- function(x, overlay, ...){
   .Defunct(msg = "getOverlay is defunct!")
   myfunc <- function(x, overlay, params){
@@ -1341,6 +1395,7 @@ fix_y_axis <- function(gs, x, y){
 #' @param fs \code{flowSet} or \code{ncdfFlowSet}
 #' @param channel \code{character} channel name
 #' @return a numerical range
+#' @noRd 
 .getRange <- function(fs, channel) {
 
   thisMin <- .Machine$double.xmax
@@ -1367,6 +1422,7 @@ fix_y_axis <- function(gs, x, y){
 #' @param ... other arguments passed to .formAxis and flowViz
 #' @importMethodsFrom flowViz xyplot densityplot
 #' @importFrom RColorBrewer brewer.pal
+#' @noRd 
 .plotGate <- function(x, y, formula=NULL, cond=NULL
                       , smooth=FALSE ,type = flowWorkspace.par.get("plotGate")[["type"]]
                       , main = NULL
@@ -1709,6 +1765,7 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
 #'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
 #'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
 #'                  , yet may at the cost of unnecessary data IO
+#' @noRd 
 .recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE){
 
   if(y == "root")
@@ -2220,6 +2277,7 @@ setMethod("getPopStats", "GatingSet",
 })
 
 #' calculate the coefficient of variation
+#' @noRd 
 .computeCV <- function(x, ...){
 
   #columns are populations

@@ -6,7 +6,6 @@
 \alias{show,booleanFilter-method}
 \alias{booleanFilter}
 \alias{char2booleanFilter}
-\alias{show,booleanFilter-method}
 \title{A class describing logical operation (& or |) of the reference populations}
 \usage{
 booleanFilter(expr, ..., filterId = "defaultBooleanFilter")
@@ -26,10 +25,6 @@ char2booleanFilter(expr, ..., filterId = "defaultBooleanFilter")
 }
 \description{
 \code{booleanFilter} class inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
-
-\code{booleanFilter} is a constructor from an expression
-
-\code{char2booleanFilter} is a constructor from a character string
 }
 \examples{
 # "4+/TNFa+" and "4+/IL2+" are two existing gates
