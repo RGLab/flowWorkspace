@@ -796,6 +796,7 @@ void removeNode(XPtr<GatingSet> gs,string sampleName
 //' @param gsPtr external pointer that points to the C data structure of GatingSet
 //' @param sampleName sample name
 //' @param node node name
+//' @noRd
 //[[Rcpp::export(".moveNode")]]
 void moveNode(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, string parent){
 
