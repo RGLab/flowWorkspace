@@ -26,7 +26,8 @@
 
 \S4method{markernames}{GatingSet}(object) <- value
 
-\S4method{colnames}{GatingSet}(x, do.NULL = "missing", prefix = "missing")
+\S4method{colnames}{GatingSet}(x, do.NULL = "missing",
+  prefix = "missing")
 
 \S4method{colnames}{GatingSet}(x) <- value
 }

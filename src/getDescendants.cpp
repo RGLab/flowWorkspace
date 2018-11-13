@@ -28,6 +28,7 @@ void getDescendants_gh(GatingHierarchy & gh, VertexID u, VertexID_vec & output){
 //' @param gsPtr external pointer that points to the C data structure of GatingSet
 //' @param sampleName sample name
 //' @param node node name
+//' @noRd
 //[[Rcpp::export(".getDescendants")]]
 VertexID_vec getDescendants(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node){
   // Rcpp::Rcout << sampleName << std::endl;

@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
-Version: 3.31.0
+Version: 3.31.2
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -70,4 +70,4 @@ Suggests:
 LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.3.7), cytolib(>= 1.3.2)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

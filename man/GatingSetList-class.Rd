@@ -4,7 +4,6 @@
 \name{GatingSetList-class}
 \alias{GatingSetList-class}
 \alias{GatingSetList}
-\alias{GatingSetList}
 \alias{rbind2,GatingSetList,missing-method}
 \title{Class \code{"GatingSetList"}}
 \usage{

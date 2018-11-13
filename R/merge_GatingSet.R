@@ -465,6 +465,7 @@ updateChannels <- function(gs, map, all = TRUE){
 
 
 #' validity check and add prefixed entries when applicable
+#' @noRd 
 .preprocessMap <- function(gs, map){
   if(!is.data.frame(map))
     stop("'map' must be a data.frame!")

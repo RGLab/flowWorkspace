@@ -8,6 +8,7 @@
 #' @param gsPtr external pointer that points to the C data structure of GatingSet
 #' @param sampleName sample name
 #' @param node node name
+#' @noRd
 .getDescendants <- function(gsPtr, sampleName, node) {
     .Call(`_flowWorkspace_getDescendants`, gsPtr, sampleName, node)
 }
@@ -29,6 +30,7 @@
 #' @param subpopulation population vector that specify the subset of pops to query
 #' @param flowJo logical flag to specify whether flowCore or flowJo counts to return
 #' @param isFullPath logical flag to specify whether return the full path or partial path of populations
+#' @noRd
 .getPopCounts <- function(gsPtr, sampleNames, subpopulation, flowJo, isFullPath) {
     .Call(`_flowWorkspace_getPopCounts`, gsPtr, sampleNames, subpopulation, flowJo, isFullPath)
 }
@@ -40,6 +42,7 @@
 #' It is used to extract the spline coefficient vectors from the calibration table
 #' which is computed by biexpTrans class and then return to R for constructing flowJo transformation function within R.
 #' Mainly used for openCyto autoGating process where no xml workspace is needed to create flowJo transformation.
+#' @noRd
 .getSplineCoefs <- function(channelRange = 4096L, maxValue = 262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE) {
     .Call(`_flowWorkspace_getSplineCoefs`, channelRange, maxValue, pos, neg, widthBasis, inverse)
 }
@@ -49,6 +52,7 @@
 #' @param gsPtr external pointer that points to the C data structure of GatingSet
 #' @param transformList a transformList that constains a list of transformation functions.
 #'         Each of these functions carries the attributes to be used to convert to c++ transformation
+#' @noRd
 .addTrans <- function(gsPtr, transformList) {
     invisible(.Call(`_flowWorkspace_addTrans`, gsPtr, transformList))
 }
@@ -71,6 +75,7 @@
 #'                                          )
 #'                        , nodes = "14-")  
 #'}
+#' @noRd
 .updateChannels <- function(gs, map) {
     invisible(.Call(`_flowWorkspace_updateChannels`, gs, map))
 }
@@ -163,6 +168,7 @@
 #' @param gsPtr external pointer that points to the C data structure of GatingSet
 #' @param sampleName sample name
 #' @param node node name
+#' @noRd
 .moveNode <- function(gsPtr, sampleName, node, parent) {
     invisible(.Call(`_flowWorkspace_moveNode`, gsPtr, sampleName, node, parent))
 }
@@ -230,6 +236,7 @@
 #' @param sampleName sample name
 #' @param node node name
 #' @param count the event count to be stored
+#' @noRd
 .set.count.xml <- function(gsPtr, sampleName, node, count) {
     invisible(.Call(`_flowWorkspace_setCounts`, gsPtr, sampleName, node, count))
 }

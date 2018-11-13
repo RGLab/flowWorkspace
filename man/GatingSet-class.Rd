@@ -9,7 +9,6 @@
 \alias{[[,GatingSet,numeric-method}
 \alias{[[,GatingSet,logical-method}
 \alias{[[,GatingSet,character-method}
-\alias{[,GatingSetList,ANY-method}
 \title{Class \code{"GatingSet"}}
 \usage{
 \S4method{[}{GatingSet,ANY}(x, i, j, ..., drop = TRUE)

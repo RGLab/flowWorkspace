@@ -75,6 +75,7 @@ getIndiceMat <- function(gh,y){
 #' @param map \code{list} contains the node-to-marker mapping explicitly specified user
 #'
 #' @importFrom dplyr mutate
+#' @noRd 
 .getPopChnlMapping <- function(this_pd, popNames, map =  NULL, swap = FALSE, ignore.case = FALSE){
   
   datSrc <- ifelse(swap, "name", "desc")

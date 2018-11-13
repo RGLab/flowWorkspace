@@ -83,6 +83,7 @@ flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
 #' wrap the calibration table into transformation function using stats:::splinefun
 #'
 #' @param coef the coefficients returned by the calibration table from flowJo
+#' @noRd 
 .flowJoTrans <- function(coef){
   #define the dummy spline function(simplied version of the one from stats package)
   f <- function (x, deriv = 0)

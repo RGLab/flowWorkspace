@@ -86,6 +86,7 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #' @param wsversion version string to match
 #' 
 #' @return the macthed workspace type
+#' @noRd 
 .getWorkspaceType <- function(wsversion){
   curSupport <- unlist(flowWorkspace.par.get("flowJo_versions"))
   ver_ind <- match(wsversion, curSupport)
@@ -174,6 +175,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
       .preprocessor(obj, ...)
     })
 #' @importFrom dplyr group_by do %>%
+#' @noRd 
 .preprocessor <- function(obj, name = NULL
                               , subset = NULL
                               , requiregates = TRUE
