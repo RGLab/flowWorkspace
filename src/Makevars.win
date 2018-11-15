@@ -2,7 +2,7 @@
 CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT -I../inst/include/ -I$(LIB_XML2)/$(R_ARCH)/include/libxml2 -DLIBXML_STATIC
 
-PKG_LIBS += $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a `${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags()"` -lws2_32
+PKG_LIBS += $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a `${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags()"` -lws2_32
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a
