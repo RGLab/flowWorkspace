@@ -212,7 +212,16 @@ parseWorkspace <- function(ws, name = NULL
 }
 
 
-
+check_comp <- function(compensation){
+	if(is(compensation, "compensation")){
+		compensation <- compensation@spillover
+	}else if(is.data.frame(compensation)){
+		compensation <- as.matrix(compensation)
+	}
+	if(!is.matrix(compensation))
+		stop("'compensation' should be either a compensation object, matrix or data.frame!")
+	compensation
+}
 
 
 

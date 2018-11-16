@@ -64,11 +64,10 @@ test_that("external comp", {
       #single comp
       dd <- capture.output(suppressWarnings(suppressMessages(
                           gs1 <- try(parseWorkspace(ws, name = 4
-                                      , compensation = comp
+                                      , compensation = comp@spillover
                                       , execute = TRUE)))))
       expect_that(gs1, is_a("GatingSet"));
-      expect_is(gs1@compensation, "list")
-      
+
       gh1 <- gs1[[1]]
       expect_equal(comp, getCompensationMatrices(gh1))
       
@@ -77,7 +76,12 @@ test_that("external comp", {
       expect_equal(thisStats, expectStats)
       
       #a list of comp
-      comp <- gs1@compensation
+      comp <- lapply(gs1, getCompensationMatrices)
+      expect_error(parseWorkspace(ws, name = 4
+                                             , compensation = comp
+                                             , execute = TRUE)
+                              , "NumericMatrix")
+      comp <- sapply(comp, slot, "spillover", simplify = FALSE)
       dd <- capture.output(suppressWarnings(suppressMessages(
               gs1 <- try(parseWorkspace(ws, name = 4
                       , compensation = comp

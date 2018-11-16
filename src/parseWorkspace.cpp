@@ -45,11 +45,21 @@ compensation mat_to_comp(NumericMatrix rmat)
 }
 unordered_map<string, compensation> list_to_comps(List comps){
 	unordered_map<string, compensation> res;
-	for(auto sn : as<vector<string>>(comps.names()))
+
+	if(!Rf_isNull(comps.names()))
+	{
+		vector<string> names = as<vector<string>>(comps.names());
+		for(auto sn : names)
 		{
-			NumericMatrix rmat = as<NumericMatrix>(comps[sn]);
-			res[sn] = mat_to_comp(rmat);
+			if(sn.size()>0)
+			{
+				if(!Rf_isMatrix(comps[sn]))
+					stop("compensation must be of the type of NumericMatrix, ", sn);
+				NumericMatrix rmat = as<NumericMatrix>(comps[sn]);
+				res[sn] = mat_to_comp(rmat);
+			}
 		}
+	}
 	return res;
 }
 //[[Rcpp::export]]
@@ -129,8 +139,13 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
     config.fcs_read_param.data.transform = TransformType::scale;
   else
     stop("unkown transformation type :" + transformation);
-  if(comps.size()==1&&as<vector<string>>(comps.names()).size()==0)
+  if(comps.size()==1&&Rf_isNull(comps.names()))
+  {
+	  if(!Rf_isMatrix(comps[0]))
+		stop("compensation must be of the type of NumericMatrix, ");
+
 	  config.global_comp = mat_to_comp(as<NumericMatrix>(comps[0]));
+  }
   else
 	  config.compensation_map = list_to_comps(comps);
 

@@ -268,7 +268,7 @@ public:
 
 					//load the data into the header-only version of cytoframe
 					fr.read_fcs_data();
-
+					//check if external comps are provided
 					compensation comp;
 					if(!config.global_comp.empty())
 					{
@@ -283,8 +283,12 @@ public:
 
 						}
 					}
-					comp.cid = "1";
-					gh->set_compensation(comp, true);
+					if(!comp.empty())
+					{
+						comp.cid = "1";
+						gh->set_compensation(comp, false);
+					}
+
 					gh->compensate(fr);
 					gh->transform_gate();
 					gh->transform_data(fr);
