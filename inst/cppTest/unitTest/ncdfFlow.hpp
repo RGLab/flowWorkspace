@@ -10,7 +10,6 @@
 //#include <R.h>
 #include <stdlib.h>
 #define DATASETNAME "/exprsMat"
-#include <netcdf.h>
 #include "cytolib/flowData.hpp"
 using namespace std;
 
