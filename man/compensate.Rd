@@ -4,11 +4,14 @@
 \docType{methods}
 \name{compensate,cytoSet,ANY-method}
 \alias{compensate,cytoSet,ANY-method}
+\alias{compensate,cytoSet,list-method}
 \alias{compensate,GatingSet,ANY-method}
 \alias{compensate,GatingSetList,ANY-method}
 \title{compensate the flow data asssociated with the GatingSet}
 \usage{
 \S4method{compensate}{cytoSet,ANY}(x, spillover)
+
+\S4method{compensate}{cytoSet,list}(x, spillover)
 
 \S4method{compensate}{GatingSet,ANY}(x, spillover)
 
