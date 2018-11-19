@@ -77,8 +77,10 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
     if(!missing(phenoData)) {
         if(is.character(phenoData) && length(phenoData) == 1){
             phenoData <- read.AnnotatedDataFrame(file.path(path, phenoData),
-                                                 header = TRUE, sep=sep,
-                                                 as.is=as.is, ...)
+                                                 header = TRUE, sep=sep
+                                                 , as.is=as.is
+                                                 , colClasses = c(FCS_File = "character") #avoid coersing filename to numbers that  accidentally tampers the filename by stripping leading zeros
+                                                 , ...)
             ## the sampleNames of the Annotated data frame must match the
             ## file names and we try to guess them from the input
             fnams <- grep("file|filename", varLabels(phenoData),

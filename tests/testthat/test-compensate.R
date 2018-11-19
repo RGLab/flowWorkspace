@@ -1,7 +1,6 @@
 test_that("compensate & transform a GatingSet", {
       fs <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore"))
       gs <- GatingSet(fs)
-      
       comp.mat <- as.matrix(read.table(system.file("extdata","compdata","compmatrix",package="flowCore"),header=TRUE,skip=2,check.names=FALSE))
       
       

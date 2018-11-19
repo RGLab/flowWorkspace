@@ -1987,7 +1987,7 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
       x
     })
 
-
+            
 #' @rdname markernames
 #' @export
 setMethod("markernames",
