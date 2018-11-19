@@ -23,7 +23,7 @@ void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
 		gh->set_compensation(comp, false);
 		MemCytoFrame fr(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
 		gh->compensate(fr);
-		string h5file = dir + "/" + sn = ".h5";
+		string h5file = dir + "/" + sn + ".h5";
 		fr.write_h5(h5file);
 		gh->set_cytoFrame_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5file))));
 
