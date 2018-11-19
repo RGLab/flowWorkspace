@@ -76,13 +76,13 @@ test_that("external comp", {
       expect_equal(thisStats, expectStats)
       
       #a list of comp
-      comp <- lapply(gs1, getCompensationMatrices)
+      comp <- getCompensationMatrices(gs1)
       dd <- capture.output(suppressWarnings(suppressMessages(
               gs1 <- try(parseWorkspace(ws, name = 4
                       , compensation = comp
                       , execute = TRUE)))))
       expect_that(gs1, is_a("GatingSet"));
-      expect_equal(comp,  lapply(gs1, getCompensationMatrices))
+      expect_equal(comp,  getCompensationMatrices(gs1))
       gh1 <- gs1[[1]]
       thisStats <- getPopStats(gh1)
       expect_equal(thisStats, expectStats)
@@ -93,7 +93,7 @@ test_that("external comp", {
       names(comp)[3] <- "dd"
       dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp))))
       expect_that(gs1, is_a("GatingSet"));
-      expect_equal(comp[1:2],  lapply(gs1, getCompensationMatrices))
+      expect_equal(comp[1:2],  getCompensationMatrices(gs1))
       
       
     })

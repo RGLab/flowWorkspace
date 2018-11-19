@@ -9,37 +9,25 @@ test_that("compensate & transform a GatingSet", {
       expectRes <- fsApply(compensate(fs, comp.mat), colMeans, use.exprs = TRUE)
       
       gs1 <- compensate(gs, comp.mat)
-      fs1 <- getData(gs1)
       #the flowset has been cloned
-      expect_failure(expect_equal(gs1@data@frames, gs@data@frames))
+      expect_failure(expect_equal(
+                                  fr_get_h5_file_path(get_cytoFrame_from_cs(getData(gs),1))
+                                  , fr_get_h5_file_path(get_cytoFrame_from_cs(getData(gs1) ,1))
+                                  ))
       
-      #cdf version
-      suppressMessages(fs <- ncdfFlowSet(fs))
-      gs <- GatingSet(fs)
-      gs1 <- compensate(gs, comp.mat)
-      fs1 <- getData(gs1)
-      #ncdfFlowSet is not cloned
-      expect_equal(gs1@data@frames, gs@data@frames)
+      comp <- getCompensationMatrices(gs1)
+      expect_is(comp, "list")
+      expect_equal(names(comp), sampleNames(gs))
+      expect_equal(fsApply(getData(gs1), colMeans, use.exprs = TRUE), expectRes)
       
-      expect_is(gs1@compensation, "list")
-      expect_equal(names(gs1@compensation), sampleNames(gs))
-      expect_equal(fsApply(fs1, colMeans, use.exprs = TRUE), expectRes)
-      
-      # list
-      comp <- sapply(sampleNames(fs), function(sn)comp.mat, simplify = FALSE)
-      gs2 <- compensate(gs, comp)
-      
-      expect_is(gs2@compensation, "list")
-      expect_equal(names(gs2@compensation), sampleNames(gs))
-      expect_equal(fsApply(getData(gs2), colMeans, use.exprs = TRUE), expectRes)
       
       # unmatched names
       names(comp)[1] <- "dd"
-      expect_error(compensate(gs, comp), regexp = "must match")
+      expect_error(compensate(gs, comp), regexp = "compensation not found")
       
       #unmatched length
       comp <- comp[1:3]
-      expect_error(compensate(gs, comp), regexp = "must match")
+      expect_error(compensate(gs, comp), regexp = "compensation not found ")
       
       #modify comp[5]
       comp <- sapply(sampleNames(gs), function(sn)comp.mat, simplify = FALSE)
@@ -51,9 +39,11 @@ test_that("compensate & transform a GatingSet", {
       #extra comp element
       comp <- sapply(sampleNames(fs), function(sn)comp.mat, simplify = FALSE)
       comp[["dd"]] <- 1:10
+      expect_error(gs4 <- compensate(gs, comp), "should be a compensation object")
+      comp[["dd"]] <- comp[[1]]
       gs4 <- compensate(gs, comp)
-      expect_is(gs4@compensation, "list")
-      expect_equal(names(gs4@compensation), sampleNames(gs))
+      comp <- getCompensationMatrices(gs4)
+      expect_equal(names(comp), sampleNames(gs))
       expect_equal(fsApply(getData(gs4), colMeans, use.exprs = TRUE), expectRes)
     
       #trans

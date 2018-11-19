@@ -66,7 +66,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          num_threads = 1,
                          ignore.text.offset = FALSE,
                          sep="\t", as.is=TRUE, name
-                        , h5_dir = tempdir()
+                        , h5_dir = tempfile()
                          , ...)
 {
     ## A frame of phenoData information

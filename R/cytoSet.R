@@ -14,7 +14,7 @@ cytoSet_to_flowSet <- function(cs){
 }
 
 #' @export 
-flowSet_to_cytoSet <- function(fs, path = tempdir()){
+flowSet_to_cytoSet <- function(fs, path = tempfile()){
   tmp <- tempfile()
   write.flowSet(fs, tmp, filename = sampleNames(fs))
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
@@ -131,7 +131,8 @@ setMethod("compensate", signature=signature(x="cytoSet", spillover="ANY"),
 	  if(!is.list(spillover)||is.data.frame(spillover)){
 		  spillover <- sapply(samples, function(guid)spillover, simplify = FALSE)
 	  }
-	  NextMethod()
+	  #can't use NextMethod() for x could be gs due to manual dispatching S4 from compensate method
+	  selectMethod("compensate", signature=c(x="cytoSet", spillover="list"))(x, spillover)
 	  
   })
 
@@ -139,6 +140,8 @@ setMethod("compensate", signature=signature(x="cytoSet", spillover="ANY"),
 #' @rdname compensate
 setMethod("compensate", signature=signature(x="cytoSet", spillover="list"),#explicitly define this to avoid dispatching (cs, list) to (flowSet,list)
           definition=function(x, spillover){
+            spillover <- sapply(spillover, check_comp, simplify = FALSE)
+            
             suppressMessages(cs_compensate(x@pointer, spillover))
             x
           })

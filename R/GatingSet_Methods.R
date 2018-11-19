@@ -2355,15 +2355,14 @@ estimateLogicle.GatingHierarchy <- function(x, channels, ...){
 #' @rdname compensate
 setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
     definition=function(x, spillover){
-      samples <- sampleNames(x)
-      if(!is.list(spillover)||is.data.frame(spillover)){
-        spillover <- sapply(samples, function(guid)spillover, simplify = FALSE)
-      }
-      fs <- getData(x)
-      suppressMessages(compensate(fs, spillover))
+      x <- gs_copy_tree_only(x)#the reason of clone is to keep API backward compatible
+      selectMethod("compensate", signature=c(x="cytoSet", spillover="ANY"))(x, spillover)
       x
     })
-
+#' @export 
+setMethod("getCompensationMatrices","GatingSet",function(x){
+			lapply(x, getCompensationMatrices)
+		})
             
 #' @rdname markernames
 #' @export
