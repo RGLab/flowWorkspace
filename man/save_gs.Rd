@@ -5,13 +5,10 @@
 \alias{load_gs}
 \alias{save_gslist}
 \alias{load_gslist}
-\alias{load_gs}
-\alias{load_gslist}
-\alias{save_gslist}
-\alias{load_gslist}
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
-save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"), ...)
+save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"),
+  ...)
 
 load_gs(path)
 

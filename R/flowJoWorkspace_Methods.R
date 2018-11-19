@@ -60,7 +60,9 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 #'                                                          When it is a \code{data.frame}, it is expected to contain two columns:'sampleID' and 'file', which is used as the mapping between 'sampleID' and FCS file (absolute) path. When such mapping is provided, the file system searching is avoided.
 #'      	\item sampNloc a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
 
-#'      	\item compensation=NULL: a \code{compensation} or a list of \code{compensation}s that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
+#'      	\item compensation=NULL: a \code{compensation} object, matrix or data.frame or a list of these objects that allow the customized compensation () to be used instead of the one specified in flowJo workspace or FCS file.    
+#'                                 When it is a list, its names is supposed to be matched to sample guids (Default is the fcs filename suffixed by $TOT. See "additional.keys" arguments for details of guids)
+#'                                 When some of the samples don't have the external compensations matched, it will fall back to the flowJo xml or FCS looking for the compensation matrix.
 #'      	\item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
 #'          \item channel.ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 #'          \item extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
@@ -178,17 +180,12 @@ parseWorkspace <- function(ws, name = NULL
     compensation <- list()
   }else
   {
-    #replicate the single comp 
-    if(is(compensation, "compensation")){
-      compensation <- compensation@spillover
-    }else if(is.data.frame(compensation)){
-      compensation <- as.matrix(compensation)
-    }
-    if(is.matrix(compensation))
-      compensation <- list(compensation)
-    else if(!is.list(compensation))
-      stop("'compensation' should be either a compensation object of a list of compensation objects!")
-    
+    if(is.list(compensation)&&!is.data.frame(compensation))
+    {
+      compensation <- sapply(compensation, check_comp, simplify = FALSE)
+    }else
+      compensation <- check_comp(compensation)
+      
   }
   args <- c(list(ws = ws@doc
                  , group_id = groupInd - 1
@@ -219,7 +216,7 @@ check_comp <- function(compensation){
 		compensation <- as.matrix(compensation)
 	}
 	if(!is.matrix(compensation))
-		stop("'compensation' should be either a compensation object, matrix or data.frame!")
+		stop("'compensation' should be a compensation object, matrix or data.frame!")
 	compensation
 }
 

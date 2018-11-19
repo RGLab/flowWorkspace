@@ -6,10 +6,8 @@
 \alias{pData,GatingHierarchy-method}
 \alias{pData,GatingSet-method}
 \alias{pData}
-\alias{pData}
 \alias{pData<-}
 \alias{pData<-,GatingSet,data.frame-method}
-\alias{pData}
 \alias{pData<-,GatingSetList,data.frame-method}
 \title{read/set pData of flow data associated with \code{GatingSet} or \code{GatingSetList}}
 \usage{

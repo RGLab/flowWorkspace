@@ -37,7 +37,7 @@ XPtr<flowJoWorkspace> open_workspace(string filename, int sample_name_location, 
 }
 compensation mat_to_comp(NumericMatrix rmat)
 {
-	vector<string> chnls = as<vector<string>>(rmat.attr("colnames"));
+	vector<string> chnls = as<vector<string>>(colnames(rmat));
 	arma::mat mat = as<arma::mat>(rmat);
 	compensation comp = compensation(mat, chnls);
 	comp.cid = "1";
@@ -53,8 +53,6 @@ unordered_map<string, compensation> list_to_comps(List comps){
 		{
 			if(sn.size()>0)
 			{
-				if(!Rf_isMatrix(comps[sn]))
-					stop("compensation must be of the type of NumericMatrix, ", sn);
 				NumericMatrix rmat = as<NumericMatrix>(comps[sn]);
 				res[sn] = mat_to_comp(rmat);
 			}

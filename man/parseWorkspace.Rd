@@ -7,8 +7,9 @@
 parseWorkspace(ws, name = NULL, subset = list(), execute = TRUE,
   path = "", h5_dir = tempdir(), includeGates = TRUE,
   additional.keys = "$TOT", keywords = character(),
-  keywords.source = "XML", keyword.ignore.case = FALSE, extend_val = 0,
-  extend_to = -4000, channel.ignore.case = FALSE, leaf.bool = TRUE, ...)
+  keywords.source = "XML", keyword.ignore.case = FALSE,
+  extend_val = 0, extend_to = -4000, channel.ignore.case = FALSE,
+  leaf.bool = TRUE, compensation = NULL, ...)
 }
 \arguments{
 \item{...}{\itemize{
@@ -22,7 +23,9 @@ parseWorkspace(ws, name = NULL, subset = list(), execute = TRUE,
 \item path either a \code{character} scalar or \code{data.frame}. When \code{character}, it is a path to the fcs files that are to be imported. The code will search recursively, so you can point it to a location above the files. 
                                                 When it is a \code{data.frame}, it is expected to contain two columns:'sampleID' and 'file', which is used as the mapping between 'sampleID' and FCS file (absolute) path. When such mapping is provided, the file system searching is avoided.
 \item sampNloc a \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode". 
-\item compensation=NULL: a \code{compensation} or a list of \code{compensation}s that allow the customized compensation matrix to be used instead of the one specified in flowJo workspace.    
+\item compensation=NULL: a \code{compensation} object, matrix or data.frame or a list of these objects that allow the customized compensation () to be used instead of the one specified in flowJo workspace or FCS file.    
+                       When it is a list, its names is supposed to be matched to sample guids (Default is the fcs filename suffixed by $TOT. See "additional.keys" arguments for details of guids)
+                       When some of the samples don't have the external compensations matched, it will fall back to the flowJo xml or FCS looking for the compensation matrix.
 \item options=0: a \code{integer} option passed to \code{\link{xmlTreeParse}}
 \item channel.ignore.case a \code{logical} flag indicates whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 \item extend_val \code{numeric} the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.

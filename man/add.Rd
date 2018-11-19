@@ -32,7 +32,8 @@
 
 \S4method{add}{GatingSet,filtersList}(wf, action, ...)
 
-\S4method{add}{GatingSet,filterList}(wf, action, validityCheck = TRUE, ...)
+\S4method{add}{GatingSet,filterList}(wf, action, validityCheck = TRUE,
+  ...)
 
 \S4method{add}{GatingSetList,filterList}(wf, action, ...)
 
@@ -52,22 +53,23 @@
 
 \S4method{add}{GatingHierarchy,quadGate}(wf, action, names = NULL, ...)
 
-\S4method{add}{GatingHierarchy,logical}(wf, action, parent, name, recompute,
-  cluster_method_name = NULL, ...)
+\S4method{add}{GatingHierarchy,logical}(wf, action, parent, name,
+  recompute, cluster_method_name = NULL, ...)
 
 \S4method{add}{GatingHierarchy,factor}(wf, action, name = NULL, ...)
 
 \S4method{add}{GatingHierarchy,logicalFilterResult}(wf, action, ...)
 
-\S4method{add}{GatingHierarchy,multipleFilterResult}(wf, action, name = NULL,
-  ...)
+\S4method{add}{GatingHierarchy,multipleFilterResult}(wf, action,
+  name = NULL, ...)
 
 \S4method{Rm}{character,GatingSet,character}(symbol, envir, subSymbol, ...)
 
-\S4method{Rm}{character,GatingSetList,character}(symbol, envir, subSymbol, ...)
-
-\S4method{Rm}{character,GatingHierarchy,character}(symbol, envir, subSymbol,
+\S4method{Rm}{character,GatingSetList,character}(symbol, envir, subSymbol,
   ...)
+
+\S4method{Rm}{character,GatingHierarchy,character}(symbol, envir,
+  subSymbol, ...)
 }
 \arguments{
 \item{wf}{A \code{GatingHierrarchy} or \code{GatingSet}}

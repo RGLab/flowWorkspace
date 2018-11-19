@@ -4,7 +4,6 @@
 \name{sampleNames,GatingSet-method}
 \alias{sampleNames,GatingSet-method}
 \alias{sampleNames}
-\alias{sampleNames}
 \alias{sampleNames<-}
 \alias{sampleNames<-,GatingSet-method}
 \alias{sampleNames<-,GatingSet,ANY-method}

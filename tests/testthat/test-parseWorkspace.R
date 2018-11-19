@@ -64,7 +64,7 @@ test_that("external comp", {
       #single comp
       dd <- capture.output(suppressWarnings(suppressMessages(
                           gs1 <- try(parseWorkspace(ws, name = 4
-                                      , compensation = comp@spillover
+                                      , compensation = comp
                                       , execute = TRUE)))))
       expect_that(gs1, is_a("GatingSet"));
 
@@ -77,18 +77,12 @@ test_that("external comp", {
       
       #a list of comp
       comp <- lapply(gs1, getCompensationMatrices)
-      expect_error(parseWorkspace(ws, name = 4
-                                             , compensation = comp
-                                             , execute = TRUE)
-                              , "NumericMatrix")
-      comp <- sapply(comp, slot, "spillover", simplify = FALSE)
       dd <- capture.output(suppressWarnings(suppressMessages(
               gs1 <- try(parseWorkspace(ws, name = 4
                       , compensation = comp
                       , execute = TRUE)))))
       expect_that(gs1, is_a("GatingSet"));
-      expect_is(gs1@compensation, "list")
-      expect_equal(comp, gs1@compensation)
+      expect_equal(comp,  lapply(gs1, getCompensationMatrices))
       gh1 <- gs1[[1]]
       thisStats <- getPopStats(gh1)
       expect_equal(thisStats, expectStats)
@@ -97,21 +91,11 @@ test_that("external comp", {
       #extra elements
       comp[3] <- comp[1]
       names(comp)[3] <- "dd"
-      dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE))))
+      dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp))))
       expect_that(gs1, is_a("GatingSet"));
-      expect_is(gs1@compensation, "list")
-      expect_equal(comp[1:2], gs1@compensation)
+      expect_equal(comp[1:2],  lapply(gs1, getCompensationMatrices))
       
-      #inconsistent names of list
-      comp[[3]] <- NULL
-      names(comp)[2] <- "dd"
-      expect_error(dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE))))
-          , regexp = "must match the 'guids'")
       
-      comp <- comp[[1]]
-      comp <- comp@spillover
-      expect_error(dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE))))
-          , regexp = "'compensation' should be")
     })
 
 # make sure this test is invoked before GatingSet-testSuite since the trans is gonna be lost

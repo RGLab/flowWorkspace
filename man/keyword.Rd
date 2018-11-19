@@ -14,13 +14,15 @@
 \usage{
 \S4method{keyword}{GatingHierarchy,character}(object, keyword)
 
-\S4method{keyword}{GatingHierarchy,missing}(object, keyword = "missing", ...)
+\S4method{keyword}{GatingHierarchy,missing}(object, keyword = "missing",
+  ...)
 
 \S4method{keyword}{GatingSet,missing}(object, keyword = "missing", ...)
 
 \S4method{keyword}{GatingSet,character}(object, keyword)
 
-\S4method{keyword}{GatingSetList,missing}(object, keyword = "missing", ...)
+\S4method{keyword}{GatingSetList,missing}(object, keyword = "missing",
+  ...)
 
 \S4method{keyword}{GatingSetList,character}(object, keyword)
 }

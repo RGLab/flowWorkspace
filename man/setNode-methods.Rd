@@ -24,8 +24,6 @@
 }
 \description{
 \code{setNode} update the name of one node in a gating hierarchy/GatingSet.
-
-hide/unhide a node
 }
 \examples{
   \dontrun{
