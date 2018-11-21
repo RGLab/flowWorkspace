@@ -163,10 +163,14 @@ setMethod("transform",
 		  {
 			  translist <- sapply(sampleNames(gs), function(obj)translist, simplify = FALSE)
 		  }
-		  
-		  if(is(translist, "transformList"))
-			  csApply(`_data`,transform, translist = translist, ...)
-		  else
+	    if(is(translist, "list"))
+	    {
+	      tList <- lapply(translist, function(trans){
+	        if(!is(trans, "transformList"))
+	          stop("All the elements of 'translist' must be 'transformList' objects!")
+	        })
+	        csApply(`_data`,transform, translist = translist, ...)
+	    }else
 			  stop("expect the second argument as a 'transformList' object or a list of 'transformList' objects!")
 		  
 
@@ -205,7 +209,7 @@ csApply <- function(x,FUN,..., new = TRUE)
 				x
 		}
 cs_add_sample <- function(cs, sn, fr){
-	cs_add_cytoframe(cs@pointer, sn, fr)
+	cs_add_cytoframe(cs@pointer, sn, fr@pointer)
 }
 
 #TODO: how to clean up on-disk h5 after replacement with new cf

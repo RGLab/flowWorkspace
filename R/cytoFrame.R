@@ -230,10 +230,10 @@ cytoFrame_to_flowFrame <- function(fr){
 }
 
 #' @export
-flowFrame_to_cytoframe <- function(fr){
+flowFrame_to_cytoframe <- function(fr, h5 = TRUE){
 	tmp <- tempfile()
-	fr_write_h5(fr, tmp)
-	load_cytoframe_from_h5(tmp)
+	write.FCS(fr, tmp)
+	load_cytoframe_from_fcs(tmp, ncdf = h5)
 }
 
 #' save the cytoFrame as h5 format
