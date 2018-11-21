@@ -15,6 +15,22 @@ GatingSet * getGsPtr(SEXP _gsPtr);
 
 
 //[[Rcpp::export]]
+void gs_transform_data(XPtr<GatingSet> gsPtr) {
+	for(auto sn : gsPtr->get_sample_uids())
+	{
+		GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(sn);
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+			COUT<<"transforming: "<<sn<<endl;
+		CytoFrameView cv = gh->get_cytoframe_view();
+
+		MemCytoFrame fr(*(cv.get_cytoframe_ptr()));
+
+		gh->transform_data(fr);
+		cv.close_h5();
+		fr.write_h5(cv.get_h5_file_path());
+	}
+}
+//[[Rcpp::export]]
 void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool) {
   if(nodes[0] == "root")
     alwaysLoadData = true; //skip the checking to save time when start from root

@@ -151,6 +151,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// set_transformations
+void set_transformations(XPtr<GatingSet> gs, string sampleName, List translist);
+RcppExport SEXP _flowWorkspace_set_transformations(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP translistSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< List >::type translist(translistSEXP);
+    set_transformations(gs, sampleName, translist);
+    return R_NilValue;
+END_RCPP
+}
 // getTransformations
 List getTransformations(XPtr<GatingSet> gs, string sampleName, bool inverse);
 RcppExport SEXP _flowWorkspace_getTransformations(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP inverseSEXP) {
@@ -331,6 +343,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< string >::type gatePath(gatePathSEXP);
     Rcpp::traits::input_parameter< bool >::type hidden(hiddenSEXP);
     setNodeFlag(gs, sampleName, gatePath, hidden);
+    return R_NilValue;
+END_RCPP
+}
+// gs_transform_data
+void gs_transform_data(XPtr<GatingSet> gsPtr);
+RcppExport SEXP _flowWorkspace_gs_transform_data(SEXP gsPtrSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    gs_transform_data(gsPtr);
     return R_NilValue;
 END_RCPP
 }
@@ -769,6 +791,40 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// cs_set_cytoframe
+void cs_set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cs_set_cytoframe(SEXP csSEXP, SEXP snSEXP, SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< string >::type sn(snSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    cs_set_cytoframe(cs, sn, fr);
+    return R_NilValue;
+END_RCPP
+}
+// cs_add_cytoframe
+void cs_add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cs_add_cytoframe(SEXP csSEXP, SEXP snSEXP, SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
+    Rcpp::traits::input_parameter< string >::type sn(snSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    cs_add_cytoframe(cs, sn, fr);
+    return R_NilValue;
+END_RCPP
+}
+// new_cytoset
+Rcpp::XPtr<GatingSet> new_cytoset();
+RcppExport SEXP _flowWorkspace_new_cytoset() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(new_cytoset());
+    return rcpp_result_gen;
+END_RCPP
+}
 // fcs_to_cytoset
 Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM& config, bool is_h5, string h5_dir);
 RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP is_h5SEXP, SEXP h5_dirSEXP) {
@@ -1054,6 +1110,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getChildren", (DL_FUNC) &_flowWorkspace_getChildren, 4},
     {"_flowWorkspace_getPopStats", (DL_FUNC) &_flowWorkspace_getPopStats, 3},
     {"_flowWorkspace_getCompensation", (DL_FUNC) &_flowWorkspace_getCompensation, 2},
+    {"_flowWorkspace_set_transformations", (DL_FUNC) &_flowWorkspace_set_transformations, 3},
     {"_flowWorkspace_getTransformations", (DL_FUNC) &_flowWorkspace_getTransformations, 3},
     {"_flowWorkspace_getGate", (DL_FUNC) &_flowWorkspace_getGate, 3},
     {"_flowWorkspace_getIndices", (DL_FUNC) &_flowWorkspace_getIndices, 3},
@@ -1068,6 +1125,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
+    {"_flowWorkspace_gs_transform_data", (DL_FUNC) &_flowWorkspace_gs_transform_data, 1},
     {"_flowWorkspace_cpp_gating", (DL_FUNC) &_flowWorkspace_cpp_gating, 5},
     {"_flowWorkspace_subset_gs_by_sample", (DL_FUNC) &_flowWorkspace_subset_gs_by_sample, 2},
     {"_flowWorkspace_get_cytoset", (DL_FUNC) &_flowWorkspace_get_cytoset, 1},
@@ -1106,6 +1164,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},
     {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
     {"_flowWorkspace_cs_compensate", (DL_FUNC) &_flowWorkspace_cs_compensate, 2},
+    {"_flowWorkspace_cs_set_cytoframe", (DL_FUNC) &_flowWorkspace_cs_set_cytoframe, 3},
+    {"_flowWorkspace_cs_add_cytoframe", (DL_FUNC) &_flowWorkspace_cs_add_cytoframe, 3},
+    {"_flowWorkspace_new_cytoset", (DL_FUNC) &_flowWorkspace_new_cytoset, 0},
     {"_flowWorkspace_fcs_to_cytoset", (DL_FUNC) &_flowWorkspace_fcs_to_cytoset, 4},
     {"_flowWorkspace_get_colnames", (DL_FUNC) &_flowWorkspace_get_colnames, 1},
     {"_flowWorkspace_realize_view_cytoset", (DL_FUNC) &_flowWorkspace_realize_view_cytoset, 2},

@@ -123,7 +123,41 @@ List getCompensation(XPtr<GatingSet> gs,string sampleName){
 
 }
 
+//[[Rcpp::export]]
+void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 
+
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	trans_map trans;
+	List res;
+  if(Rf_isNull(translist.names()))
+      stop("empty names for translist!");
+  vector<string> chnls = as<vector<string>>(translist.names());
+	for (string chnl : chnls)
+	{
+	  TransPtr thisTrans;
+	  List x = translist[chnl];
+    string type = as<string>(x["type"]);
+			if(type == "logtGml2")
+			{
+
+			  thisTrans.reset(new logTrans(as<EVENT_DATA_TYPE>(x["offset"]), as<EVENT_DATA_TYPE>(x["decade"]), as<unsigned>(x["scale"]), as<unsigned>(x["max_val"])));
+			}
+			else if(type == "logicle")
+			  thisTrans.reset(new logicleTrans(as<double>(x["t"]), as<double>(x["w"]), as<double>(x["m"]), as<double>(x["a"])));
+			else if(type == "flowJo_biexp")
+			  thisTrans.reset(new biexpTrans(as<int>(x["channelRange"]), as<EVENT_DATA_TYPE>(x["pos"]), as<EVENT_DATA_TYPE>(x["neg"]), as<EVENT_DATA_TYPE>(x["widthBasis"]), as<EVENT_DATA_TYPE>(x["maxValue"])));
+			else if(type == "asinhtGml2")
+			  thisTrans.reset(new fasinhTrans(as<EVENT_DATA_TYPE>(x["t"]), as<EVENT_DATA_TYPE>(x["length"]), as<EVENT_DATA_TYPE>(x["t"]), as<EVENT_DATA_TYPE>(x["a"]), as<EVENT_DATA_TYPE>(x["m"])));
+			else if(type == "logicleGml2")
+			  thisTrans.reset(new logicleTrans(as<double>(x["T"]), as<double>(x["W"]), 1, as<double>(x["A"])));
+			else
+			  stop("unknown transformation in set_transformations!");
+			
+			trans[chnl] = thisTrans;
+	}
+	gh.addTransMap(trans);
+}
 
 //[[Rcpp::export(name=".cpp_getTransformations")]]
 List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){

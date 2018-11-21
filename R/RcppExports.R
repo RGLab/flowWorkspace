@@ -88,6 +88,10 @@
     .Call(`_flowWorkspace_getCompensation`, gs, sampleName)
 }
 
+set_transformations <- function(gs, sampleName, translist) {
+    invisible(.Call(`_flowWorkspace_set_transformations`, gs, sampleName, translist))
+}
+
 .cpp_getTransformations <- function(gs, sampleName, inverse) {
     .Call(`_flowWorkspace_getTransformations`, gs, sampleName, inverse)
 }
@@ -151,6 +155,10 @@
 
 .cpp_setNodeFlag <- function(gs, sampleName, gatePath, hidden) {
     invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
+}
+
+gs_transform_data <- function(gsPtr) {
+    invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }
 
 cpp_gating <- function(gsPtr, nodes, alwaysLoadData, verbose, leafbool) {
@@ -303,6 +311,18 @@ getpdata <- function(fr) {
 
 cs_compensate <- function(cs, comps) {
     invisible(.Call(`_flowWorkspace_cs_compensate`, cs, comps))
+}
+
+cs_set_cytoframe <- function(cs, sn, fr) {
+    invisible(.Call(`_flowWorkspace_cs_set_cytoframe`, cs, sn, fr))
+}
+
+cs_add_cytoframe <- function(cs, sn, fr) {
+    invisible(.Call(`_flowWorkspace_cs_add_cytoframe`, cs, sn, fr))
+}
+
+new_cytoset <- function() {
+    .Call(`_flowWorkspace_new_cytoset`)
 }
 
 fcs_to_cytoset <- function(sample_uid_vs_file_path, config, is_h5, h5_dir) {

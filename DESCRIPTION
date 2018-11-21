@@ -58,6 +58,7 @@ Collate:
     'load_gs.R'
     'merge_GatingSet.R'
     'moveNode.R'
+    'parse_transformer.R'
     'setGate_Methods.R'
     'updateIndices.R'
     'utils.R'

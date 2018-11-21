@@ -2255,13 +2255,40 @@ setMethod("transform",
         })
       }else
         stop("expect the second argument as a 'transformerList' object or a list of 'transformerList' objects!")
-      gs@transformation <- translist
-
-      fs <- getData(gs)
-      
-      suppressMessages(fs_trans <- transform(fs, tList, ...))
-      flowData(gs) <- fs_trans
-      gs
+  	
+	#check if all trans are supported by Rcpp
+	for(sn in names(translist))
+	{
+		
+		for(trans in translist[[sn]])
+		transobj <- parse_transformer(trans)
+		if(length(transobj)==0)
+		{
+			unrecognized <- TRUE
+			break
+		}
+	}
+	if(unrecognized)#transform in R
+	{
+		gs@transformation <- translist
+		
+		fs <- getData(gs)
+		
+		suppressMessages(fs_trans <- transform(fs, tList, ...))
+		flowData(gs) <- fs_trans
+		
+	}else
+	{ #transform data and store trans in c++
+		for(sn in names(translist))
+		{
+			trans <- translist[[sn]]
+			transobj <- parse_transformer(trans)
+			set_transformations(gs@pointer, sn, transobj)
+			
+		}
+		gs_transform_data()
+	}
+	gs
     })
 
 #' Constructor for transformerList object

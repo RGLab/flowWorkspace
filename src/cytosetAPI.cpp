@@ -30,6 +30,33 @@ void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
 
 	}
 }
+
+
+// [[Rcpp::export]]
+void cs_set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
+{
+	cs->update_cytoframe_view(sn, *fr);
+
+}
+
+// [[Rcpp::export]]
+void cs_add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
+{
+	cs->add_cytoframe_view(sn, *fr);
+
+}
+
+
+// [[Rcpp::export]]
+Rcpp::XPtr<GatingSet> new_cytoset()
+{
+
+  Rcpp::XPtr<GatingSet> cs(new GatingSet());
+
+  return cs;
+
+}
+
 // [[Rcpp::export]]
 Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, const FCS_READ_PARAM & config, bool is_h5, string h5_dir)
 {

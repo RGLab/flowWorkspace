@@ -7,6 +7,12 @@ setClass("cytoSet", contains = "flowSet"
           ,representation=representation(pointer = "externalptr"))
 
 #' @export 
+cytoSet <- function(){
+	new("cytoSet", pointer = new_cytoset())
+	
+}
+
+#' @export 
 cytoSet_to_flowSet <- function(cs){
   fs <- as(fsApply(cs, function(fr)fr), "flowSet")
   pData(fs) <- pData(cs)
@@ -146,25 +152,81 @@ setMethod("compensate", signature=signature(x="cytoSet", spillover="list"),#expl
             x
           })
 
-#TODO:
-#setReplaceMethod("[[",
-#	  signature=signature(x="cytoSet",
-#			  value="cytoFrame"),
-#	  definition=function(x, i, j, ..., value)
-#	  {
-#		  if(length(i) != 1)
-#			  stop("subscript out of bounds (index must have ",
-#					  "length 1)")
-#		  cnx <- colnames(x)
-#		  cnv <- colnames(value)
-#		  if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
-#		  stop("The colnames of this flowFrame don't match ",
-#				  "the colnames of the flowSet.")
-#			  
-#			  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
-#			  x@frames[[sel]] <- value
-#			  return(x)
-#		  })
+#' @export
+setMethod("transform",
+	  signature=signature(`_data`="cytoSet"),
+	  definition=function(`_data`, translist,...)
+	  {
+		  if(missing(translist))
+			  stop("Missing the second argument 'translist'!")
+		  else if(is(translist, "transformList"))
+		  {
+			  translist <- sapply(sampleNames(gs), function(obj)translist, simplify = FALSE)
+		  }
+		  
+		  if(is(translist, "transformList"))
+			  csApply(`_data`,transform, translist = translist, ...)
+		  else
+			  stop("expect the second argument as a 'transformList' object or a list of 'transformList' objects!")
+		  
+
+		  
+		  `_data`
+	  })
+csApply <- function(x,FUN,..., new = TRUE)
+		{
+			
+			if(missing(FUN))
+				stop("csApply function missing")
+			FUN <- match.fun(FUN)
+			if(!is.function(FUN))
+				stop("This is not a function!")
+			cs.new <- cytoSet()
+			
+			for(n in sampleNames(x))
+			{
+				fr <- x[[n]]
+				fr <- try(
+						FUN(fr,...)
+				)
+				if(is(fr, "try-error"))
+					stop("failed on sample: ", n)
+				else if(!is(fr, "cytoFrame"))
+					fr <- flowFrame_to_cytoframe(fr)
+				
+				if(new)
+					cs_add_sample(cs.new, n, fr)
+				else
+					x[[n]]<- fr
+			}           
+			if(new)
+				cs.new
+			else
+				x
+		}
+cs_add_sample <- function(cs, sn, fr){
+	cs_add_cytoframe(cs@pointer, sn, fr)
+}
+
+#TODO: how to clean up on-disk h5 after replacement with new cf
+setReplaceMethod("[[",
+	  signature=signature(x="cytoSet",
+			  value="cytoFrame"),
+	  definition=function(x, i, j, ..., value)
+	  {
+		  if(length(i) != 1)
+			  stop("subscript out of bounds (index must have ",
+					  "length 1)")
+		  cnx <- colnames(x)
+		  cnv <- colnames(value)
+		  if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
+		  stop("The colnames of this cytoFrame don't match ",
+				  "the colnames of the cytoSet.")
+			  
+			  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
+			  cs_set_cytoframe(x@pointer, sel, value)
+			  return(x)
+		  })
   
 #' @export
 get_cytoFrame_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
@@ -296,31 +358,3 @@ realize_view.cytoSet <- function(x, filepath = tempfile()){
 #
 #
 #
-# setMethod("fsApply",
-# 	signature=signature(x="cytoSet",
-# 			FUN="ANY"),
-# 	definition=function(x,FUN,...,simplify=TRUE, use.exprs=FALSE)
-# 	{
-# 		if(missing(FUN))
-# 			stop("fsApply function missing")
-# 		FUN <- match.fun(FUN)
-# 		if(!is.function(FUN))
-# 			stop("This is not a function!")
-# 
-# 		res <- structure(lapply(sampleNames(x),function(n) {
-# 							y <- x[[n]]
-# 							FUN(if(use.exprs) exprs(y) else y,...)
-# 						}),names=sampleNames(x))
-# 		if(simplify) {
-# 			if(all(sapply(res,is,"cytoFrame"))) {
-# 				res <- as(res,"cytoSet")
-# 
-# 			} else if(all(sapply(res,is.numeric)) || all(sapply(res,is.character)) &&
-# 					diff(range(sapply(res,length))) == 0) {
-# 				res <- do.call(rbind,res)
-# 			}
-# 		}
-# 		res
-# 	})
-
-
