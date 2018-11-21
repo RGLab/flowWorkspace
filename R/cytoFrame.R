@@ -229,6 +229,13 @@ cytoFrame_to_flowFrame <- function(fr){
   as(fr, "flowFrame")
 }
 
+#' @export
+flowFrame_to_cytoframe <- function(fr){
+	tmp <- tempfile()
+	fr_write_h5(fr, tmp)
+	load_cytoframe_from_h5(tmp)
+}
+
 #' save the cytoFrame as h5 format
 #' @param fr cytoFrame object
 #' @param filename the full path of the output h5 file
