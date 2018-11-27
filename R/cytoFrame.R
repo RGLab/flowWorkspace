@@ -191,6 +191,7 @@ setMethod("keyword",
 
 
 ## this is equivalent to the description method
+#' @importFrom flowCore filter_keywords
 setMethod("keyword",
     signature=signature(object="cytoFrame",
         keyword="missing"),
@@ -202,6 +203,10 @@ setMethod("keyword",
       if(compact)
         desc <- kwfilter(desc)
       desc <- as.list(desc) 
+	  pdata <- getpdata(object@pointer)
+	  pid <- as.integer(gsub("\\$P", "", rownames(pdata)))
+	  # browser()
+	  desc <- filter_keywords(desc, pid)
       FCSversion <- desc[["FCSversion"]]
       desc[["FCSversion"]] <- NULL
       desc <- c(FCSversion = FCSversion, desc)  
