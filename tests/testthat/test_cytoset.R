@@ -1,6 +1,8 @@
 context("cytoset accessors")
-fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]
-suppressMessages(cs <- flowSet_to_cytoSet(fs))
+# fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]#can't use it due to its malformated FCS TEXT making test difficult
+fcs_files <- list.files(dataDir, "Cyto", full.names = TRUE)
+fs <- read.flowSet(fcs_files)
+suppressMessages(cs <- load_cytoset_from_fcs(fcs_files))
 samples <- sampleNames(cs)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
@@ -10,26 +12,27 @@ test_that("[[", {
       fr <- cs[[sn]]
       expect_is(fr, "flowFrame")
       fr1 <- fs[[sn]]
-      expect_equivalent(fr, fr1, tol = 1e-07)
+      is_equal_flowFrame(fr, fr1)
       fr <- cs[[1]]
-      expect_equal(fr, fr1, tol = 1e-07)
+      is_equal_flowFrame(fr, fr1)
       
       #without reading data
       fr <- cs[[sn, use.exprs = FALSE]]
-      fr1@exprs <- matrix(0, nrow = 0, ncol= 0)
-      expect_equal(fr, fr1)
+      cn <- colnames(fr1)
+      fr1@exprs <- matrix(nrow = 0, ncol = length(cn), dimnames = list(NULL, cn))
+      is_equal_flowFrame(fr, fr1)
       
       #subset by channel
-      chnls <- c("FSC-H", "FL2-H")
+      chnls <- cn[c(1,3)]
       fr <- cs[[sn, chnls]]
       fr1 <- fs[[sn, chnls]]
-      is_equal_flowFrame(fr1, fr)
+      is_equal_flowFrame(fr, fr1)
       
       #subset by int
       chnls <- c(3,5,1)
       fr <- cs[[sn, chnls]]
       fr1 <- fs[[sn, chnls]]
-      is_equal_flowFrame(fr1, fr)
+      is_equal_flowFrame(fr, fr1)
       
       #subset by single channel 
       chnls <- c(3)

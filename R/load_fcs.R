@@ -16,7 +16,8 @@ load_cytoframe_from_fcs <- function(filename,
                      ignore.text.offset = FALSE,
                      text.only = FALSE)
 {
-
+	if(ncdf)
+		warning("ncdf is not supported for loading single FCS into cytoFrame!")
     fr <- new("cytoFrame")
     if(is.null(dataset))
       dataset <- 1

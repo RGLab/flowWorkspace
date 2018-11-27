@@ -176,9 +176,10 @@ Rcpp::DataFrame getpdata(Rcpp::XPtr<CytoFrameView> fr){
   NumericVector maxRange(ncol);
   vector<string> chnl = fr->get_channels();
   vector<string> marker = fr->get_markers();
+  vector<unsigned> orig_rowid = fr->get_original_col_ids();
   for(int i = 0; i < ncol; i++)
   {
-    rowid[i] = "$P" + to_string(i+1);
+    rowid[i] = "$P" + to_string(orig_rowid[i]+1);
     names[i] = chnl[i];
     if(marker[i].empty())
       desc[i] = StringVector::get_na();
