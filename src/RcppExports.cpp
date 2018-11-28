@@ -690,15 +690,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // parseFCS
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only);
-RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP) {
+Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only, bool is_h5, string h5_filename);
+RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP is_h5SEXP, SEXP h5_filenameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< FCS_READ_PARAM >::type config(configSEXP);
     Rcpp::traits::input_parameter< bool >::type text_only(text_onlySEXP);
-    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only));
+    Rcpp::traits::input_parameter< bool >::type is_h5(is_h5SEXP);
+    Rcpp::traits::input_parameter< string >::type h5_filename(h5_filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only, is_h5, h5_filename));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1155,7 +1157,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 2},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
-    {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 3},
+    {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 5},
     {"_flowWorkspace_cf_getData", (DL_FUNC) &_flowWorkspace_cf_getData, 1},
     {"_flowWorkspace_cf_getKeyword", (DL_FUNC) &_flowWorkspace_cf_getKeyword, 2},
     {"_flowWorkspace_cf_getKeywords", (DL_FUNC) &_flowWorkspace_cf_getKeywords, 1},

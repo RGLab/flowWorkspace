@@ -212,7 +212,7 @@ setMethod("transform",
 		  
 		  `_data`
 	  })
-csApply <- function(x,FUN,..., new = TRUE)
+csApply <- function(x,FUN,..., new = FALSE)
 		{
 			
 			if(missing(FUN))
@@ -221,7 +221,18 @@ csApply <- function(x,FUN,..., new = TRUE)
 			if(!is.function(FUN))
 				stop("This is not a function!")
 			cs.new <- cytoSet()
-			
+			if(new)
+			{
+				h5_dir <- tempfile()
+				dir.create(h5_dir)
+			}else
+			{
+				h5_dir <- cs_get_h5_file_path(x)
+				if(h5_dir=="")
+					stop("in-memory version of cytoSet is not supported!")
+				
+			}
+				
 			for(n in sampleNames(x))
 			{
 				fr <- x[[n]]
@@ -231,7 +242,11 @@ csApply <- function(x,FUN,..., new = TRUE)
 				if(is(fr, "try-error"))
 					stop("failed on sample: ", n)
 				else if(!is(fr, "cytoFrame"))
-					fr <- flowFrame_to_cytoframe(fr)
+				{
+					
+					fr <- flowFrame_to_cytoframe(fr, is_h5 = TRUE, h5_filename = file.path(h5_dir, n))
+				}
+					
 				
 				if(new)
 					cs_add_sample(cs.new, n, fr)
@@ -267,6 +282,31 @@ setReplaceMethod("[[",
 			  return(x)
 		  })
   
+setReplaceMethod("[[",
+	  signature=signature(x="cytoSet",
+			  value="flowFrame"),
+	  definition=function(x, i, j, ..., value)
+	  {
+		  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
+		  
+		  cf <- get_cytoFrame_from_cs(x, sel)
+		  h5file <- fr_get_h5_file_path(cf)
+		  if(h5file=="")
+			  stop("in-memory version of cytoFrame is not supported!")
+		  
+		  
+		  fr <- flowFrame_to_cytoframe(value, is_h5 = TRUE, h5_filename = h5file)
+		  x[[sel]] <- fr
+		  x
+	  })
+
+#' @export 
+cs_get_h5_file_path <- function(x){
+	cf <- get_cytoFrame_from_cs(x, 1)
+	h5file <- fr_get_h5_file_path(cf)
+	dirname(h5file)
+	
+}
 #' @export
 get_cytoFrame_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
   

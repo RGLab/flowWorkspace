@@ -101,16 +101,23 @@ void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
 }                                      
                                       
 // [[Rcpp::export]] 
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false)
+Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false, bool is_h5 = false, string h5_filename = "")
 {
-
-    unique_ptr<MemCytoFrame> fr(new MemCytoFrame(filename.c_str(), config));
-    if(text_only)
-      fr->read_fcs_header();
-    else
-      fr->read_fcs();
-    return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(fr.release())));
-
+	if(is_h5)
+	{
+		if(text_only)
+			warning("text_only is ignored when is_h5 is set to TRUE!");
+		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new H5CytoFrame(filename, config, h5_filename))));
+	}
+	else
+	{
+		unique_ptr<MemCytoFrame> fr(new MemCytoFrame(filename.c_str(), config));
+		if(text_only)
+		  fr->read_fcs_header();
+		else
+		  fr->read_fcs();
+		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(fr.release())));
+	}
 }
 
 // [[Rcpp::export]] 

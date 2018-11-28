@@ -59,9 +59,9 @@ test_that("cytoSet_to_flowSet", {
 })
 
 
-test_that("fr_get_h5_file_path", {
-      h5file <- fr_get_h5_file_path(get_cytoFrame_from_cs(cs, 1))
-      expect_true(file.exists(h5file))
+test_that("cs_get_h5_file_path", {
+      h5file <- cs_get_h5_file_path(cs)
+      expect_true(dir.exists(h5file))
       
     })
 
@@ -74,7 +74,7 @@ test_that("[", {
       is_equal_flowSet(fs[sn], nc1)
 
       #nc1 and nc share the cdf file
-      expect_equal(fr_get_h5_file_path(get_cytoFrame_from_cs(nc1, 2)), fr_get_h5_file_path(get_cytoFrame_from_cs(cs, 1)))
+      expect_equal(cs_get_h5_file_path(nc1), cs_get_h5_file_path(cs))
 
     })
 
@@ -151,9 +151,11 @@ test_that("[[<-", {
 
 test_that("csApply", {
       sn <- samples[1]
+      fs1 <- GvHD[1:2]
+      cs1 <- flowSet_to_cytoSet((fs1))
       #use csApply when FUN returns a flowFrame
       translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
-      suppressMessages(nc1 <- csApply(cs, transform, translist))
+      suppressMessages(nc1 <- csApply(cs1, transform, translist))
       expect_is(nc1, "cytoSet")
       expect_equal(sampleNames(cs), sampleNames(nc1))
       expect_equal(colnames(cs), colnames(nc1))
@@ -163,7 +165,7 @@ test_that("csApply", {
       trans_range <- apply(exprs(nc1[[sn]]), 2, range)
       expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
       expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
-      expect_false(fr_get_h5_file_path(get_cytoFrame_from_cs(nc1,sn)) == fr_get_h5_file_path(get_cytoFrame_from_cs(cs ,sn)))
+      expect_true(cs_get_h5_file_path(nc1) == cs_get_h5_file_path(cs))
       
     })    
 

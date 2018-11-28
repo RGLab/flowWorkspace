@@ -6,7 +6,8 @@ load_cytoframe_from_fcs <- function(filename,
                      column.pattern=NULL,
                      invert.pattern = FALSE,
                      decades=0,
-                     ncdf=FALSE,
+					 is_h5=FALSE,
+					 h5_filename = tempfile(fileext = ".h5"),
                      min.limit=NULL,
                      truncate_max_range = TRUE,
                      dataset=NULL,
@@ -16,8 +17,6 @@ load_cytoframe_from_fcs <- function(filename,
                      ignore.text.offset = FALSE,
                      text.only = FALSE)
 {
-	if(ncdf)
-		warning("ncdf is not supported for loading single FCS into cytoFrame!")
     fr <- new("cytoFrame")
     if(is.null(dataset))
       dataset <- 1
@@ -42,6 +41,8 @@ load_cytoframe_from_fcs <- function(filename,
                                                          , ignoreTextOffset = ignore.text.offset
                                                          )
                                                      , text_only = text.only
+											 		 , is_h5 = is_h5
+											 		 , h5_filename = h5_filename
                             )
      fr@use.exprs <- !text.only
 

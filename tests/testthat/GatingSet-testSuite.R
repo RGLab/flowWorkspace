@@ -50,8 +50,8 @@ test_that("clone & rbind2",{
       fs2 <- getData(gs1)
       expect_equal(fs1[[1]], fs2[[1]])
       
-      expect_false(fr_get_h5_file_path(fs1[[1, returnType = "cytoFrame"]])
-                            == fr_get_h5_file_path(fs2[[1, returnType = "cytoFrame"]])
+      expect_false(cs_get_h5_file_path(fs1)
+                            == cs_get_h5_file_path(fs2)
                             )
       
       
@@ -74,8 +74,8 @@ test_that("clone & rbind2",{
       fs2 <- getData(gs2)
       expect_equal(fs1[[1]], fs2[[1]])
       
-      expect_true(fr_get_h5_file_path(fs1[[1, returnType = "cytoFrame"]])
-                   == fr_get_h5_file_path(fs2[[1, returnType = "cytoFrame"]])
+      expect_true(cs_get_h5_file_path(fs1)
+                   == cs_get_h5_file_path(fs2)
                   )
       #check tree consistentcy
       expect_identical(getNodes(gs[[1]]), getNodes(gs2[[1]]))
@@ -152,8 +152,8 @@ test_that("[ subsetting",{
       expect_equal(pData(gs_sub1), pData(gs_sub2))
       expect_equal(length(gs_sub1), 1)
       
-      expect_equal(fr_get_h5_file_path(getData(gs_sub1)[[1, returnType = "cytoFrame"]])
-                   ,fr_get_h5_file_path(getData(gs_sub2)[[1, returnType = "cytoFrame"]])
+      expect_equal(cs_get_h5_file_path(getData(gs_sub1))
+                   ,cs_get_h5_file_path(getData(gs_sub2))
       )
       
       

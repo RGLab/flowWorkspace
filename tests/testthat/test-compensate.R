@@ -11,8 +11,8 @@ test_that("compensate & transform a GatingSet", {
       gs1 <- compensate(gs, comp.mat)
       #the flowset has been cloned
       expect_failure(expect_equal(
-                                  fr_get_h5_file_path(get_cytoFrame_from_cs(getData(gs),1))
-                                  , fr_get_h5_file_path(get_cytoFrame_from_cs(getData(gs1) ,1))
+                                  cs_get_h5_file_path(getData(gs))
+                                  , cs_get_h5_file_path(getData(gs1))
                                   ))
       
       comp <- getCompensationMatrices(gs1)
