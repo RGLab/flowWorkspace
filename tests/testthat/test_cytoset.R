@@ -2,7 +2,7 @@ context("cytoset accessors")
 # fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]#can't use it due to its malformated FCS TEXT making test difficult
 fcs_files <- list.files(dataDir, "Cyto", full.names = TRUE)
 fs <- read.flowSet(fcs_files)
-suppressMessages(cs <- load_cytoset_from_fcs(fcs_files))
+suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, is_h5 = TRUE))
 samples <- sampleNames(cs)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
@@ -41,32 +41,31 @@ test_that("[[", {
       is_equal_flowFrame(fr1, fr)
       
     })
-# test_that("Subset", {
-#       #Subset by gate
-#       is_equal_flowSet(Subset(cs, rectGate), Subset(fs, rectGate))
-#       
-#     })      
-# test_that("cytoSet_to_flowSet", {
-#   fs1 <- cytoSet_to_flowSet(cs)
-#   expect_is(fs1, "flowSet")
-#   expect_equal(colnames(fs1), colnames(cs))
-#   expect_equal(pData(fs1), pData(cs))
-#   
-#   is_equal_flowSet(cs, fs1)
-#   
-# })
+rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+
+test_that("Subset", {
+      #Subset by gate
+      is_equal_flowSet(Subset(cs, rectGate), Subset(fs, rectGate))
+
+    })
+test_that("cytoSet_to_flowSet", {
+  fs1 <- cytoSet_to_flowSet(cs)
+  expect_is(fs1, "flowSet")
+  expect_equal(colnames(fs1), colnames(cs))
+  expect_equal(pData(fs1), pData(cs))
+
+  is_equal_flowSet(cs, fs1)
+
+})
 
 
-# test_that("unlink", {
-#       suppressMessages(nc1 <- ncdfFlowSet(GvHD[1]))
-#       cdfFile <- getFileName(nc1)
-#       expect_true(file.exists(cdfFile))
-#       unlink(nc1)
-#       expect_false(file.exists(cdfFile))
-#       
-#     })
-# 
-# 
+test_that("fr_get_h5_file_path", {
+      h5file <- fr_get_h5_file_path(get_cytoFrame_from_cs(cs, 1))
+      expect_true(file.exists(h5file))
+      
+    })
+
+
 # test_that("getIndices & Subset", {
 #       sn <- samples[1]
 #       

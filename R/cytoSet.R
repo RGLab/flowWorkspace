@@ -29,6 +29,41 @@ flowSet_to_cytoSet <- function(fs, path = tempfile()){
                               , h5_dir = path)
   cs
 }
+#' @export
+setMethod("phenoData",
+		signature=signature(object="cytoSet"),
+		definition=function(object){
+			df <- pData(object)
+			new("AnnotatedDataFrame",
+					data=df,
+					varMetadata=data.frame(labelDescription="Name",
+							row.names="name"))
+		})
+
+#' @export
+setMethod("phenoData<-",
+		signature=signature(object="cytoSet",
+				value="ANY"),
+		definition=function(object, value)
+		{
+			current <- phenoData(object)
+			## Sanity checking
+			if(nrow(current) != nrow(value))
+				stop("phenoData must have the same number of rows as ",
+						"flow files")
+			## Make sure all of the original frames appear in the new one.
+			if(!all(sampleNames(current)%in%sampleNames(value)))
+				stop("The sample names no longer match.")
+			#validity check for 'name' column
+			df <- pData(value)
+			if(!"name" %in% colnames(df))
+				pData(value)[["name"]] = rownames(df)
+			
+			
+			pData(object) <- df
+			object
+		})
+#' @export 
 setMethod("pData",
           signature=signature(object="cytoSet"),
           definition=function(object) get_pheno_data(object@pointer))
