@@ -66,53 +66,26 @@ test_that("fr_get_h5_file_path", {
     })
 
 
-# test_that("getIndices & Subset", {
-#       sn <- samples[1]
-#       
-#       #initial index is NA
-#       expect_equal(getIndices(cs, sn), NA) 
-#       
-#       #subset with filter
-#       nc1 <- Subset(cs, morphGate)
-#       ind <- getIndices(nc1, sn)
-#       expect_equal(sum(ind), nrow(nc1[[sn]]))
-#       expect_equal(length(ind), nrow(cs[[sn]]))
-#       
-#       #reset indices
-#       initIndices(nc1)
-#       expect_equal(getIndices(nc1, sn), NA)
-#       
-#       #update ind
-#       updateIndices(nc1, sn, ind)
-#       expect_equal(ind, getIndices(nc1, sn))
-#     })
-# 
-# test_that("[", {
-#       sn <- samples[1:2]
-#       nc1 <- cs[sn]
-#       expect_is(nc1, "ncdfFlowSet")
-#       expect_equal(length(nc1), 2)
-#       is_equal_flowSet(fs[sn], nc1)
-#       
-#       #nc1 and nc share the cdf file
-#       all.equal(getFileName(nc1), getFileName(cs))
-#       
-#     })
-# 
-# test_that("subset", {
-#       
-#       nc_sub <- subset(cs, as.integer(Visit) <= 3)
-#       is_equal_flowSet(nc_sub, fs[1:3])
-#       
-#       nc_sub <- subset(cs, as.integer(Visit) <= 3 & Days >=0)
-#       is_equal_flowSet(nc_sub, fs[2:3])
-#       
-#       nc_sub <- subset(cs, as.integer(Visit) < 3 | Days == 12)
-#       is_equal_flowSet(nc_sub, fs[c(1,2,4)])
-#       
-#     })
-# 
-# 
+test_that("[", {
+      sn <- samples[2:1]
+      nc1 <- cs[sn]
+      expect_is(nc1, "cytoSet")
+      expect_equal(length(nc1), 2)
+      is_equal_flowSet(fs[sn], nc1)
+
+      #nc1 and nc share the cdf file
+      expect_equal(fr_get_h5_file_path(get_cytoFrame_from_cs(nc1, 2)), fr_get_h5_file_path(get_cytoFrame_from_cs(cs, 1)))
+
+    })
+
+test_that("subset", {
+
+      nc_sub <- subset(cs, name == samples[2])
+      is_equal_flowSet(nc_sub, fs[2])
+
+    })
+
+
 
 test_that("[[<-", {
 

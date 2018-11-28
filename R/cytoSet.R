@@ -358,6 +358,11 @@ setMethod("Subset",
         })
         
 #' @export 
+subset.cytoSet <- function (x, ...) 
+{
+	getS3method("subset", "ncdfFlowSet")(x, ...)
+}
+#' @export 
 shallow_copy.cytoSet <- function(x){
   new("cytoSet", pointer = shallow_copy_cytoset(x@pointer))
 }
