@@ -97,7 +97,7 @@ test_that("copy", {
 test_that("[[<-", {
   cs1 <- realize_view(cs)
   cf <- get_cytoFrame_from_cs(cs1, 1)
-  
+  fr <- cytoFrame_to_flowFrame(cf)
   #write flowFrame
   
   

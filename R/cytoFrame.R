@@ -43,7 +43,7 @@ realize_view <- function(x, ...)UseMethod("realize_view")
 
 #' @export 
 realize_view.cytoFrame <- function(x, filepath = tempfile(fileext = ".h5")){
-  new("cytoFrame", pointer = realize_view_cytoframe(x@pointer, filepath))
+  new("cytoFrame", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
 }
 
 #' @export
@@ -51,7 +51,7 @@ shallow_copy <- function(x, ...)UseMethod("shallow_copy")
 
 #' @export 
 shallow_copy.cytoFrame <- function(x){
-  new("cytoFrame", pointer = shallow_copy_cytoframe(x@pointer))
+  new("cytoFrame", pointer = shallow_copy_cytoframe(x@pointer), use.exprs = TRUE)
 }
 
 setMethod("[",
@@ -105,12 +105,13 @@ setMethod("exprs",
 
 setReplaceMethod("exprs",
 		signature=signature(object="cytoFrame",
-				value="ANY"),
+				value="matrix"),
 		definition=function(object, value)
 		{
 			cf_setData(object@pointer, value)
 			object
 		})
+
 setReplaceMethod("colnames",
     signature=signature(x="cytoFrame",
         value="ANY"),
@@ -250,10 +251,10 @@ flowFrame_to_cytoframe <- function(fr, ...){
 }
 
 #' save the cytoFrame as h5 format
-#' @param fr cytoFrame object
+#' @param cf cytoFrame object
 #' @param filename the full path of the output h5 file
 #' @export
-fr_write_h5 <- function(fr, filename){
+cf_write_h5 <- function(cf, filename){
   writeH5(fr@pointer,filename)
 }
 
@@ -266,9 +267,9 @@ load_cytoframe_from_h5 <- function(filename, on_disk = TRUE){
 }
 #' return the file path of underlying h5 file
 #' For the in-memory version of cytoFrame, it returns empty string.Thus can be used to check whether it is on-disk format.
-#' @param fr cytoFrame object
+#' @param cf cytoFrame object
 #' @export 
-fr_get_h5_file_path <- function(fr){
-  get_h5_file_path(fr@pointer)
+cf_get_h5_file_path <- function(cf){
+  get_h5_file_path(cf@pointer)
   
 }

@@ -4,17 +4,17 @@
 is_equal_flowFrame <- function(orig, new, exprs = TRUE, description = TRUE){
   
   if(exprs){
-    expect_equal(orig@exprs, new@exprs, tol = 1e-07, check.attributes = FALSE)
+    expect_equal(exprs(orig), exprs(new), tol = 1e-07, check.attributes = FALSE)
   }
   
   
-  expect_equal(orig@parameters, new@parameters, tol = 1e-07, check.attributes = FALSE)
+  expect_equal(parameters(orig), parameters(new), tol = 1e-07, check.attributes = FALSE)
   
   #keyword may have minor change
   if(description)
   {
-    kw1 <- orig@description
-    kw2 <- new@description
+    kw1 <- description(orig)
+    kw2 <- description(new)
     #clean up ws from legacy parser
     kw1 <- sapply(kw1, function(kw){
       trimws(kw)
