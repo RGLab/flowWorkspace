@@ -162,7 +162,45 @@ setMethod("[[",
             fr
             
           })
-
+#TODO: how to clean up on-disk h5 after replacement with new cf
+setReplaceMethod("[[",
+	  signature=signature(x="cytoSet",
+			  value="cytoFrame"),
+	  definition=function(x, i, j, ..., value)
+	  {
+		  if(length(i) != 1)
+			  stop("subscript out of bounds (index must have ",
+					  "length 1)")
+		  cnx <- colnames(x)
+		  cnv <- colnames(value)
+		  if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
+			  stop("The colnames of this cytoFrame don't match ",
+					  "the colnames of the cytoSet.")
+			  
+			  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
+			  cs_set_cytoframe(x@pointer, sel, value)
+			  return(x)
+		  })
+  
+ setReplaceMethod("[[",
+	  signature=signature(x="cytoSet",
+			  value="flowFrame"),
+	  definition=function(x, i, j, ..., value)
+	  {
+		  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
+		  
+		  cf <- get_cytoFrame_from_cs(x, sel)
+		  h5file <- fr_get_h5_file_path(cf)
+		  if(h5file=="")
+			  stop("in-memory version of cytoFrame is not supported!")
+			  
+			  
+			  fr <- flowFrame_to_cytoframe(value, is_h5 = TRUE, h5_filename = h5file)
+			  x[[sel]] <- fr
+			  x
+		  })
+  
+  
 #' @export
 #' @rdname compensate
 setMethod("compensate", signature=signature(x="cytoSet", spillover="ANY"),
@@ -267,44 +305,6 @@ csApply <- function(x,FUN,..., new = FALSE)
 cs_add_sample <- function(cs, sn, fr){
 	cs_add_cytoframe(cs@pointer, sn, fr@pointer)
 }
-
-#TODO: how to clean up on-disk h5 after replacement with new cf
-setReplaceMethod("[[",
-	  signature=signature(x="cytoSet",
-			  value="cytoFrame"),
-	  definition=function(x, i, j, ..., value)
-	  {
-		  if(length(i) != 1)
-			  stop("subscript out of bounds (index must have ",
-					  "length 1)")
-		  cnx <- colnames(x)
-		  cnv <- colnames(value)
-		  if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
-		  stop("The colnames of this cytoFrame don't match ",
-				  "the colnames of the cytoSet.")
-			  
-			  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
-			  cs_set_cytoframe(x@pointer, sel, value)
-			  return(x)
-		  })
-  
-setReplaceMethod("[[",
-	  signature=signature(x="cytoSet",
-			  value="flowFrame"),
-	  definition=function(x, i, j, ..., value)
-	  {
-		  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
-		  
-		  cf <- get_cytoFrame_from_cs(x, sel)
-		  h5file <- fr_get_h5_file_path(cf)
-		  if(h5file=="")
-			  stop("in-memory version of cytoFrame is not supported!")
-		  
-		  
-		  fr <- flowFrame_to_cytoframe(value, is_h5 = TRUE, h5_filename = h5file)
-		  x[[sel]] <- fr
-		  x
-	  })
 
 #' @export 
 cs_get_h5_file_path <- function(x){

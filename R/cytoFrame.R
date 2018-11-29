@@ -103,6 +103,14 @@ setMethod("exprs",
       }
     })
 
+setReplaceMethod("exprs",
+		signature=signature(object="cytoFrame",
+				value="ANY"),
+		definition=function(object, value)
+		{
+			cf_setData(object@pointer, value)
+			object
+		})
 setReplaceMethod("colnames",
     signature=signature(x="cytoFrame",
         value="ANY"),

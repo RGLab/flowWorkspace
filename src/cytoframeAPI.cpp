@@ -139,6 +139,10 @@ NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
   mat.attr("dimnames") = List::create(R_NilValue, chnl);
   return mat;
 }
+// [[Rcpp::export]]
+void cf_setData(Rcpp::XPtr<CytoFrameView> fr, EVENT_DATA_VEC data){
+ fr->set_data(data);
+}
 
 // [[Rcpp::export]] 
 string cf_getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key){
