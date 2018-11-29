@@ -85,89 +85,17 @@ test_that("subset", {
 
     })
 
-
+test_that("copy", {
+  cs1 <- shallow_copy(cs)
+  expect_equal(cs_get_h5_file_path(cs1), cs_get_h5_file_path(cs))
+  
+  cs1 <- realize_view(cs)
+  expect_false(identical(cs_get_h5_file_path(cs1), cs_get_h5_file_path(cs)))
+  is_equal_flowSet(cs1,cs)
+})
 
 test_that("[[<-", {
-
-      sn <- samples[1]
-      suppressMessages(nc <- flowSet_to_cytoSet(fs[sn]))
-      
-      #return the entire flowFrame
-      fr <- nc[[sn]]
-      
-      #transform the data
-      #construct transformList first instead of 
-      # trransform(fr, `FL1-H` = lgcl(`FL1-H`), `FL2-H` = lgcl(`FL2-H`))
-      # because the latter only works in console mode (global envir)
-      translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
-      
-      #list of transformList
-      trans.list <- sapply(sampleNames(nc), function(sn)translist)
-      trans.fs1 <- transform(nc, trans.list)
-      trans_range <- range(trans.fs1[[sn]], "data")
-      expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
-      expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
-      
-      trans.list[[1]] <- logicleTransform()
-      expect_error(trans.fs1 <- transform(nc, trans.list), "a valid 'transformList'")
-      
-      trans.list[[1]] <- translist
-      names(trans.list)[1] <- "d"
-      expect_error(trans.fs1 <- transform(nc, trans.list), "consistent with flow data")
-      
-      fr_trans <- transform(fr, translist)
-      
-      #update the data
-      suppressMessages(nc[[sn]] <- fr_trans)
-      trans_range <- apply(exprs(nc[[sn]]), 2, range)
-      expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
-      expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
-      
-      #subset on channels
-      suppressMessages(nc <- ncdfFlowSet(fs[sn]))
-      expect_error(nc[[sn]] <- fr_trans[,c("FL1-H")], "colnames of the input are not consistent")
-      nc1 <- nc[,c("FL1-H")]
-      #only write the channels of interest (reduce disk IO)
-      suppressMessages(nc1[[sn]] <- fr_trans[,c("FL1-H")])
-      trans_range <- apply(exprs(nc[[sn]]), 2, range)
-      #transformed channel
-      expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
-      #untransformed channel
-      expect_equal(trans_range[, c("FL2-H")], c(1.000, 1637.104), tol = 8e-08)
-      
-      #update chanel colnames
-      suppressMessages(nc <- ncdfFlowSet(fs[sn]))
-      colnames(fr_trans)[3:4] <- c("<FL1-H>", "<FL2-H>")
-      #write data without matching up the colnames
-      suppressMessages(nc[[sn, only.exprs = TRUE]] <- fr_trans)
-      trans_range <- apply(exprs(nc[[sn]]), 2, range)
-      expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
-      expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
-      #colnames remain unchanged
-      expect_equal(colnames(nc), colnames(cs))
-      expect_error(nc[[sn]] <- fr_trans, "colnames of the input are not consistent")
-      
-    })
-
-test_that("csApply", {
-      sn <- samples[1]
-      fs1 <- GvHD[1:2]
-      cs1 <- flowSet_to_cytoSet((fs1))
-      #use csApply when FUN returns a flowFrame
-      translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
-      suppressMessages(nc1 <- csApply(cs1, transform, translist))
-      expect_is(nc1, "cytoSet")
-      expect_equal(sampleNames(cs), sampleNames(nc1))
-      expect_equal(colnames(cs), colnames(nc1))
-      #the other channels remain the same
-      # is_equal_flowSet(cs[, -c(3:4)], nc1[, -c(3:4)], description = FALSE)
-      #tow channels are tranformed
-      trans_range <- apply(exprs(nc1[[sn]]), 2, range)
-      expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
-      expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
-      expect_true(cs_get_h5_file_path(nc1) == cs_get_h5_file_path(cs))
-      
-    })    
+})
 
 # test_that("sampleNames<-", {
 #       sn <- samples[1:2]
@@ -273,3 +201,84 @@ test_that("csApply", {
 #   
 #   unlink(nc2)
 # })
+test_that("transform", {
+  
+  sn <- samples[1]
+  suppressMessages(nc <- flowSet_to_cytoSet(fs[sn]))
+  
+  #return the entire flowFrame
+  fr <- nc[[sn]]
+  
+  #transform the data
+  #construct transformList first instead of 
+  # trransform(fr, `FL1-H` = lgcl(`FL1-H`), `FL2-H` = lgcl(`FL2-H`))
+  # because the latter only works in console mode (global envir)
+  translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
+  
+  #list of transformList
+  trans.list <- sapply(sampleNames(nc), function(sn)translist)
+  trans.fs1 <- transform(nc, trans.list)
+  trans_range <- range(trans.fs1[[sn]], "data")
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
+  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  
+  trans.list[[1]] <- logicleTransform()
+  expect_error(trans.fs1 <- transform(nc, trans.list), "a valid 'transformList'")
+  
+  trans.list[[1]] <- translist
+  names(trans.list)[1] <- "d"
+  expect_error(trans.fs1 <- transform(nc, trans.list), "consistent with flow data")
+  
+  fr_trans <- transform(fr, translist)
+  
+  #update the data
+  suppressMessages(nc[[sn]] <- fr_trans)
+  trans_range <- apply(exprs(nc[[sn]]), 2, range)
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
+  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  
+  #subset on channels
+  suppressMessages(nc <- ncdfFlowSet(fs[sn]))
+  expect_error(nc[[sn]] <- fr_trans[,c("FL1-H")], "colnames of the input are not consistent")
+  nc1 <- nc[,c("FL1-H")]
+  #only write the channels of interest (reduce disk IO)
+  suppressMessages(nc1[[sn]] <- fr_trans[,c("FL1-H")])
+  trans_range <- apply(exprs(nc[[sn]]), 2, range)
+  #transformed channel
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
+  #untransformed channel
+  expect_equal(trans_range[, c("FL2-H")], c(1.000, 1637.104), tol = 8e-08)
+  
+  #update chanel colnames
+  suppressMessages(nc <- ncdfFlowSet(fs[sn]))
+  colnames(fr_trans)[3:4] <- c("<FL1-H>", "<FL2-H>")
+  #write data without matching up the colnames
+  suppressMessages(nc[[sn, only.exprs = TRUE]] <- fr_trans)
+  trans_range <- apply(exprs(nc[[sn]]), 2, range)
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
+  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  #colnames remain unchanged
+  expect_equal(colnames(nc), colnames(cs))
+  expect_error(nc[[sn]] <- fr_trans, "colnames of the input are not consistent")
+  
+})
+
+test_that("csApply", {
+  sn <- samples[1]
+  fs1 <- GvHD[1:2]
+  cs1 <- flowSet_to_cytoSet((fs1))
+  #use csApply when FUN returns a flowFrame
+  translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
+  suppressMessages(nc1 <- csApply(cs1, transform, translist))
+  expect_is(nc1, "cytoSet")
+  expect_equal(sampleNames(cs), sampleNames(nc1))
+  expect_equal(colnames(cs), colnames(nc1))
+  #the other channels remain the same
+  # is_equal_flowSet(cs[, -c(3:4)], nc1[, -c(3:4)], description = FALSE)
+  #tow channels are tranformed
+  trans_range <- apply(exprs(nc1[[sn]]), 2, range)
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226)) 
+  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  expect_true(cs_get_h5_file_path(nc1) == cs_get_h5_file_path(cs))
+  
+})    

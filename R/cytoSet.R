@@ -212,6 +212,12 @@ setMethod("transform",
 		  
 		  `_data`
 	  })
+setMethod("identifier",
+		signature=signature(object="cytoSet"),
+		definition=function (object)
+		{
+			get_gatingset_id(object@pointer)
+		})
 csApply <- function(x,FUN,..., new = FALSE)
 		{
 			
@@ -223,7 +229,7 @@ csApply <- function(x,FUN,..., new = FALSE)
 			cs.new <- cytoSet()
 			if(new)
 			{
-				h5_dir <- tempfile()
+				h5_dir <- identifier(x)
 				dir.create(h5_dir)
 			}else
 			{
@@ -407,7 +413,7 @@ shallow_copy.cytoSet <- function(x){
   new("cytoSet", pointer = shallow_copy_cytoset(x@pointer))
 }
 #' @export 
-realize_view.cytoSet <- function(x, filepath = tempfile()){
+realize_view.cytoSet <- function(x, filepath = tempdir()){
   if(!dir.exists(filepath))
     dir.create(filepath)
   new("cytoSet", pointer = realize_view_cytoset(x@pointer, filepath))
