@@ -240,6 +240,9 @@ setMethod("keyword",
       process_spill_keyword(desc)
     })
 
+#Note: its behavior is different from flowFrame. The latter only does keyword update or addition
+#But this replace the entire keyword section with the new list.
+#' @importFrom flowCore collapse_desc
 setReplaceMethod("keyword",
     signature=signature(object="cytoFrame",
         value="list"),
@@ -248,6 +251,9 @@ setReplaceMethod("keyword",
       n <- names(value)
       if(length(n) == 0)
         stop(kwdError, call.=FALSE)
+	delimiter <- "|"
+	# browser()
+	  value <- collapse_desc(value) #flattern and coerce any R object to string
       setKeywords(object@pointer, value)
       return(object)
     })

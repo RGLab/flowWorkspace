@@ -165,9 +165,10 @@ setMethod("[[",
 #TODO: how to clean up on-disk h5 after replacement with new cf
 setReplaceMethod("[[",
 	  signature=signature(x="cytoSet",
-			  value="cytoFrame"),
+			  value="flowFrame"),
 	  definition=function(x, i, j, ..., value)
 	  {
+	    
 		  if(length(i) != 1)
 			  stop("subscript out of bounds (index must have ",
 					  "length 1)")

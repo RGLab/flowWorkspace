@@ -160,8 +160,10 @@ KW_PAIR cf_getKeywords(Rcpp::XPtr<CytoFrameView> fr){
 // [[Rcpp::export]] 
 void setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys){
     vector<string> names = keys.names();
+    KEY_WORDS kws;
     for(int i = 0; i < keys.size(); i++) 
-      fr->set_keyword(names[i], keys[i]);
+      kws[names[i]] = as<string>(keys[i]);
+    fr->set_keywords(kws);
 }
 // [[Rcpp::export]] 
 int getncol(Rcpp::XPtr<CytoFrameView> fr){

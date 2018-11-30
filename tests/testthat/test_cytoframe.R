@@ -81,3 +81,15 @@ test_that("parameters<-", {
   expect_equal(pData(parameters(cf1)), pd)
   
 })
+
+test_that("keyword<-", {
+  cf1 <- realize_view(cf)
+  kw <- keyword(cf1)
+  kw[["$P5S"]] <- "cd4"#update
+  kw[["$P6S"]] <- NULL #delete
+  kw[["testkw"]] <- 11 #add new
+  keyword(cf1) <- kw
+  kw <- collapse_desc(kw, collapse.spill = FALSE)
+  expect_equal(keyword(cf1)[names(kw)], kw)
+  
+})
