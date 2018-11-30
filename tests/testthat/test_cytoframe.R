@@ -71,3 +71,13 @@ test_that("colnames<-", {
       # colnames(cf2) <- newColNames
       # expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N")]), rev(newColNames))
     })
+
+test_that("parameters<-", {
+  cf1 <- realize_view(cf)
+  pd <- pData(parameters(cf1))
+  pd[, "desc"][5] <- "cd4"
+  pd[, "minRange"][2] <- 1
+  pData(parameters(cf1)) <- pd
+  expect_equal(pData(parameters(cf1)), pd)
+  
+})

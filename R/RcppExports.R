@@ -309,6 +309,10 @@ getnrow <- function(fr) {
     .Call(`_flowWorkspace_getnrow`, fr)
 }
 
+setpdata <- function(fr, df) {
+    invisible(.Call(`_flowWorkspace_setpdata`, fr, df))
+}
+
 getpdata <- function(fr) {
     .Call(`_flowWorkspace_getpdata`, fr)
 }

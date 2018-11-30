@@ -96,11 +96,26 @@ test_that("copy", {
 
 test_that("[[<-", {
   cs1 <- realize_view(cs)
-  cf <- get_cytoFrame_from_cs(cs1, 1)
+  sn <- samples[1]
+  
+  cf <- get_cytoFrame_from_cs(cs1, sn)
+  h5 <- cf_get_h5_file_path(cf)
+  
   fr <- cytoFrame_to_flowFrame(cf)
-  #write flowFrame
+  exprs(fr)[1:10, 1:10] <- 0
+  markernames(fr) <- c("B710-A" = "test")
+  
+  expect_identical(file.path(cs_get_h5_file_path(cs1),sn), h5)
   
   
+  exprs(cf)[1:10, 1:10] <- 0
+  markernames(cf) <- c("B710-A" = "test")
+  
+  
+  e
+  
+  
+  cs1[[sn]] <- fr
 })
 
 # test_that("sampleNames<-", {

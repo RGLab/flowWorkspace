@@ -178,27 +178,14 @@ setReplaceMethod("[[",
 					  "the colnames of the cytoSet.")
 			  
 			  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
-			  cs_set_cytoframe(x@pointer, sel, value)
+			  cf <- get_cytoFrame_from_cs(x, sel)
+			  parameters(cf) <- parameters(value)
+			  keyword(cf) <- keyword(value)
+			  exprs(cf) <- exprs(value)
 			  return(x)
 		  })
   
- setReplaceMethod("[[",
-	  signature=signature(x="cytoSet",
-			  value="flowFrame"),
-	  definition=function(x, i, j, ..., value)
-	  {
-		  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
-		  
-		  cf <- get_cytoFrame_from_cs(x, sel)
-		  h5file <- fr_get_h5_file_path(cf)
-		  if(h5file=="")
-			  stop("in-memory version of cytoFrame is not supported!")
-			  
-			  
-			  fr <- flowFrame_to_cytoframe(value, is_h5 = TRUE, h5_filename = h5file)
-			  x[[sel]] <- fr
-			  x
-		  })
+
   
   
 #' @export
@@ -309,7 +296,7 @@ cs_add_sample <- function(cs, sn, fr){
 #' @export 
 cs_get_h5_file_path <- function(x){
 	cf <- get_cytoFrame_from_cs(x, 1)
-	h5file <- fr_get_h5_file_path(cf)
+	h5file <- cf_get_h5_file_path(cf)
 	dirname(h5file)
 	
 }

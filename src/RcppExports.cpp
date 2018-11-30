@@ -782,6 +782,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// setpdata
+void setpdata(Rcpp::XPtr<CytoFrameView> fr, Rcpp::DataFrame df);
+RcppExport SEXP _flowWorkspace_setpdata(SEXP frSEXP, SEXP dfSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type df(dfSEXP);
+    setpdata(fr, df);
+    return R_NilValue;
+END_RCPP
+}
 // getpdata
 Rcpp::DataFrame getpdata(Rcpp::XPtr<CytoFrameView> fr);
 RcppExport SEXP _flowWorkspace_getpdata(SEXP frSEXP) {
@@ -1176,6 +1187,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setKeywords", (DL_FUNC) &_flowWorkspace_setKeywords, 2},
     {"_flowWorkspace_getncol", (DL_FUNC) &_flowWorkspace_getncol, 1},
     {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},
+    {"_flowWorkspace_setpdata", (DL_FUNC) &_flowWorkspace_setpdata, 2},
     {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
     {"_flowWorkspace_cs_compensate", (DL_FUNC) &_flowWorkspace_cs_compensate, 2},
     {"_flowWorkspace_cs_set_cytoframe", (DL_FUNC) &_flowWorkspace_cs_set_cytoframe, 3},

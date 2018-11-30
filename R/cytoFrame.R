@@ -176,6 +176,24 @@ setMethod("parameters",
         as.character(parameters(object)[["name"]])
     })
 
+setReplaceMethod("parameters",
+		signature=signature(object="cytoFrame",
+				value="AnnotatedDataFrame"),
+		definition=function(object, value){
+			if(!all(c("name", "desc", "range", "minRange",
+							"maxRange") %in% varLabels(value)))
+				stop("varLabels of this AnnotatedDataFrame don't ",
+						"match the specifications", call.=FALSE)
+			if(!all(colnames(exprs(object)) ==  value$name))
+				stop("parameter names don't match colnames of the ",
+						"exprs matrix", call.=FALSE)
+			pd <- pData(value)
+			pd[["desc"]][is.na(pd[["desc"]])] <- ""#we currently don't handle NA in Rcpp (for the sake of simplicity of c code)
+			setpdata(object@pointer, pd)
+			return(object)
+		})
+
+
 process_spill_keyword <- function(desc){
   ## the spillover matrix
   for(sn in flowCore:::.spillover_pattern){

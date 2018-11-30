@@ -176,6 +176,24 @@ int getnrow(Rcpp::XPtr<CytoFrameView> fr){
 }
 
 // [[Rcpp::export]] 
+void setpdata(Rcpp::XPtr<CytoFrameView> fr, Rcpp::DataFrame df){
+	int nChnls = df.nrows();
+	//assume channels are consistent between fr and df
+	vector<string> chnls = df["name"];
+	vector<string> markers = df["desc"];
+	vector<float> minRange = df["minRange"];
+	vector<float> maxRange = df["maxRange"];
+	for(int i = 0; i < nChnls; i++)
+	{
+		string chnl = chnls[i];
+		string old_marker = fr->get_marker(chnl);
+		fr->set_marker(old_marker, markers[i]);
+		fr->set_range(chnl, ColType::channel, pair<float, float>(minRange[i], maxRange[i]));
+	}
+	//no need to update $Pn keyword based on rownames of df assuming it is done through keyword setter separately
+}
+
+// [[Rcpp::export]]
 Rcpp::DataFrame getpdata(Rcpp::XPtr<CytoFrameView> fr){
   
   int ncol = fr->n_cols();
