@@ -111,8 +111,8 @@ test_that("external comp", {
       
       comp <- comp[[1]]
       comp <- comp@spillover
-      expect_error(dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE))))
-          , regexp = "'compensation' should be")
+      expect_message(dd <- capture.output(suppressWarnings(gs1 <- parseWorkspace(ws, name = 4, compensation = comp, execute = TRUE)))
+          , regexp = "done")
     })
 
 # make sure this test is invoked before GatingSet-testSuite since the trans is gonna be lost
