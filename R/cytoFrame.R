@@ -285,9 +285,10 @@ cf_write_h5 <- function(cf, filename){
 #' Load the cytoframe from h5 format
 #' @param filename the full path of the output h5 file
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
+#' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #' @export
-load_cytoframe_from_h5 <- function(filename, on_disk = TRUE){
-  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk), use.exprs = TRUE)
+load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE){
+  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk, as.integer(!readonly)), use.exprs = TRUE)
 }
 #' return the file path of underlying h5 file
 #' For the in-memory version of cytoframe, it returns empty string.Thus can be used to check whether it is on-disk format.

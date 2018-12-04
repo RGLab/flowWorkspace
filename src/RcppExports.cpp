@@ -654,14 +654,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // load_cf_from_h5
-XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk);
-RcppExport SEXP _flowWorkspace_load_cf_from_h5(SEXP filenameSEXP, SEXP on_diskSEXP) {
+XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, unsigned int flags);
+RcppExport SEXP _flowWorkspace_load_cf_from_h5(SEXP filenameSEXP, SEXP on_diskSEXP, SEXP flagsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_cf_from_h5(filename, on_disk));
+    Rcpp::traits::input_parameter< unsigned int >::type flags(flagsSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_cf_from_h5(filename, on_disk, flags));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1176,7 +1177,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
     {"_flowWorkspace_get_spillover", (DL_FUNC) &_flowWorkspace_get_spillover, 2},
     {"_flowWorkspace_writeH5", (DL_FUNC) &_flowWorkspace_writeH5, 2},
-    {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 2},
+    {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 3},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
     {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 5},

@@ -22,8 +22,40 @@ test_that("get_h5_file_path", {
       h5file <- cf_get_h5_file_path(cf)
       expect_true(file.exists(h5file))
       
+      cf1 <- load_cytoframe_from_fcs(fcs_file)
+      expect_true(cf_get_h5_file_path(cf1)=="")
     })
-
+test_that("write permission", {
+  #newly created from fcs: writable
+  cf1 <- load_cytoframe_from_fcs(fcs_file, is_h5 = TRUE, which.lines = 1:10)
+  exprs(cf1)[1,1] <- 1
+  expect_equivalent(exprs(cf1)[1,1], 1)
+  
+  #loaded from h5: default readonly
+  h5file <- cf_get_h5_file_path(cf1)
+  rm(cf1)
+  gc()
+  cf2 <- load_cytoframe_from_h5(h5file)
+  expect_error(exprs(cf2)[1,1] <- 2)#TODO:suppress or capture H5 error print
+  expect_equivalent(exprs(cf2)[1,1], 1)
+  
+  #loaded from h5: explicitly set write mode
+  expect_error(cf2 <- load_cytoframe_from_h5(h5file, readonly = FALSE))
+  rm(cf1)
+  gc()
+  cf2 <- load_cytoframe_from_h5(h5file, readonly = FALSE)
+  exprs(cf2)[1,1] <- 2
+  expect_equivalent(exprs(cf2)[1,1], 2)
+  
+  #fresh deep cp: writable
+  rm(cf2)
+  gc()
+  cf2 <- load_cytoframe_from_h5(h5file)
+  cf3 <- realize_view(cf2)
+  exprs(cf3)[1,1] <- 3
+  expect_equivalent(exprs(cf3)[1,1], 3)
+  
+})
 
 test_that("[", {
       cf1 <- cf[1:100, 2:3]

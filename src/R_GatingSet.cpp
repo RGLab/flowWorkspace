@@ -21,13 +21,13 @@ void gs_transform_data(XPtr<GatingSet> gsPtr) {
 		GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(sn);
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<"transforming: "<<sn<<endl;
-		CytoFrameView cv = gh->get_cytoframe_view();
+		CytoFramePtr cf = gh->get_cytoframe_view().get_cytoframe_ptr();
 
-		MemCytoFrame fr(*(cv.get_cytoframe_ptr()));
+		MemCytoFrame fr(*cf);
 
 		gh->transform_data(fr);
-		cv.close_h5();
-		fr.write_h5(cv.get_h5_file_path());
+		cf->set_data(fr.get_data());
+		cf->set_params(fr.get_params());
 	}
 }
 //[[Rcpp::export]]
