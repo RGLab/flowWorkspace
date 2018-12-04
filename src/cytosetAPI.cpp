@@ -25,7 +25,7 @@ void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
 		gh->compensate(fr);
 		string h5file = dir + "/" + sn + ".h5";
 		fr.write_h5(h5file);
-		gh->set_cytoFrame_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5file))));
+		gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5file))));
 
 
 	}
@@ -140,7 +140,7 @@ void subset_cytoset(Rcpp::XPtr<GatingSet> cs
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoFrameView> get_cytoFrame(Rcpp::XPtr<GatingSet> cs
+Rcpp::XPtr<CytoFrameView> get_cytoframe(Rcpp::XPtr<GatingSet> cs
                 , Rcpp::RObject i_obj
                 , Rcpp::RObject j_obj
                 )

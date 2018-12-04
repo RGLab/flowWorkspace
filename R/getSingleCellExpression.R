@@ -251,7 +251,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
             
             
             
-            data <- fs[[sample, unique(chnls), returnType = "cytoFrame"]]
+            data <- fs[[sample, unique(chnls), returnType = "cytoframe"]]
             data <- exprs(data)
             if(marginal)
               data <- .cpp_getSingleCellExpression(x@pointer, sample, pops, data, markers, threshold)

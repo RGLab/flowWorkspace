@@ -1,26 +1,26 @@
-#' @include cytoFrame.R
+#' @include cytoframe.R
 NULL
 
 #' @importClassesFrom flowCore flowSet
 #' @export 
-setClass("cytoSet", contains = "flowSet"
+setClass("cytoset", contains = "flowSet"
           ,representation=representation(pointer = "externalptr"))
 
 #' @export 
-cytoSet <- function(){
-	new("cytoSet", pointer = new_cytoset())
+cytoset <- function(){
+	new("cytoset", pointer = new_cytoset())
 	
 }
 
 #' @export 
-cytoSet_to_flowSet <- function(cs){
+cytoset_to_flowSet <- function(cs){
   fs <- as(fsApply(cs, function(fr)fr), "flowSet")
   pData(fs) <- pData(cs)
   fs
 }
 
 #' @export 
-flowSet_to_cytoSet <- function(fs, path = tempfile()){
+flowSet_to_cytoset <- function(fs, path = tempfile()){
   tmp <- tempfile()
   write.flowSet(fs, tmp, filename = sampleNames(fs))
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
@@ -31,7 +31,7 @@ flowSet_to_cytoSet <- function(fs, path = tempfile()){
 }
 #' @export
 setMethod("phenoData",
-		signature=signature(object="cytoSet"),
+		signature=signature(object="cytoset"),
 		definition=function(object){
 			df <- pData(object)
 			new("AnnotatedDataFrame",
@@ -42,7 +42,7 @@ setMethod("phenoData",
 
 #' @export
 setMethod("phenoData<-",
-		signature=signature(object="cytoSet",
+		signature=signature(object="cytoset",
 				value="ANY"),
 		definition=function(object, value)
 		{
@@ -65,12 +65,12 @@ setMethod("phenoData<-",
 		})
 #' @export 
 setMethod("pData",
-          signature=signature(object="cytoSet"),
+          signature=signature(object="cytoset"),
           definition=function(object) get_pheno_data(object@pointer))
 
 #' @export 
 setReplaceMethod("pData",
-                 signature=signature(object="cytoSet",
+                 signature=signature(object="cytoset",
                                      value="data.frame"),
                  definition=function(object,value)
                  {
@@ -81,18 +81,18 @@ setReplaceMethod("pData",
                  })
 
 setMethod("colnames",
-          signature=signature(x="cytoSet"),
+          signature=signature(x="cytoset"),
           definition=function(x, do.NULL="missing", prefix="missing")
             get_colnames(x@pointer))
   
 setReplaceMethod("colnames",
-	signature=signature(x="cytoSet",
+	signature=signature(x="cytoset",
 			value="ANY"),
 	definition=function(x, value)
 	{
        for(i in sampleNames(x))
 	   {
-         fr <- x[[i, returnType = "cytoFrame"]]
+         fr <- x[[i, returnType = "cytoframe"]]
 		     colnames(fr) <- value
 	   }
          
@@ -103,10 +103,10 @@ setReplaceMethod("colnames",
 
 
 setMethod("markernames",
-    signature=signature(object = "cytoSet"),
+    signature=signature(object = "cytoset"),
     definition=function(object){
       res <- lapply(sampleNames(object), function(sn){
-        markernames(object[[sn, returnType = "cytoFrame", use.exprs = FALSE]])
+        markernames(object[[sn, returnType = "cytoframe", use.exprs = FALSE]])
       })
       
       res <- unique(res)
@@ -120,20 +120,20 @@ setMethod("markernames",
 
 #' @export
 setReplaceMethod("markernames",
-                 signature=signature(object="cytoSet", value="ANY"), function(object, value){
+                 signature=signature(object="cytoset", value="ANY"), function(object, value){
                    for(i in sampleNames(object))
                    {
-                     fr <- object[[i, returnType = "cytoFrame", use.exprs = FALSE]]
+                     fr <- object[[i, returnType = "cytoframe", use.exprs = FALSE]]
                      markernames(fr) <- value
                    }
                    object
                  })
 
 setMethod("show",
-          signature=signature(object="cytoSet"),
+          signature=signature(object="cytoset"),
           definition=function(object)
           { 
-            cat("A cytoSet with", length(object),"samples.\n")
+            cat("A cytoset with", length(object),"samples.\n")
             
             cat("\n")
             #			}
@@ -144,27 +144,27 @@ setMethod("show",
             
           })
 setMethod("sampleNames",
-          signature=signature(object="cytoSet"),
+          signature=signature(object="cytoset"),
           definition=function(object) 
             rownames(pData(object)))
 
 setMethod("[[",
-          signature=signature(x="cytoSet"),
-          definition=function(x, i, j,  use.exprs = TRUE, returnType = c("flowFrame", "cytoFrame"))
+          signature=signature(x="cytoset"),
+          definition=function(x, i, j,  use.exprs = TRUE, returnType = c("flowFrame", "cytoframe"))
           {
             returnType <- match.arg(returnType)
             if(missing(j))
               j <- NULL
             
-            fr <- get_cytoFrame_from_cs(x, i, j, use.exprs)
+            fr <- get_cytoframe_from_cs(x, i, j, use.exprs)
             if(returnType == "flowFrame")
-              fr <- cytoFrame_to_flowFrame(fr)
+              fr <- cytoframe_to_flowFrame(fr)
             fr
             
           })
 #TODO: how to clean up on-disk h5 after replacement with new cf
 setReplaceMethod("[[",
-	  signature=signature(x="cytoSet",
+	  signature=signature(x="cytoset",
 			  value="flowFrame"),
 	  definition=function(x, i, j, ..., value)
 	  {
@@ -175,11 +175,11 @@ setReplaceMethod("[[",
 		  cnx <- colnames(x)
 		  cnv <- colnames(value)
 		  if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
-			  stop("The colnames of this cytoFrame don't match ",
-					  "the colnames of the cytoSet.")
+			  stop("The colnames of this cytoframe don't match ",
+					  "the colnames of the cytoset.")
 			  
 			  sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
-			  cf <- get_cytoFrame_from_cs(x, sel)
+			  cf <- get_cytoframe_from_cs(x, sel)
 			  parameters(cf) <- parameters(value)
 			  keyword(cf) <- keyword(value)
 			  exprs(cf) <- exprs(value)
@@ -191,7 +191,7 @@ setReplaceMethod("[[",
   
 #' @export
 #' @rdname compensate
-setMethod("compensate", signature=signature(x="cytoSet", spillover="ANY"),
+setMethod("compensate", signature=signature(x="cytoset", spillover="ANY"),
   definition=function(x, spillover){
 	  samples <- sampleNames(x)
 	  
@@ -199,13 +199,13 @@ setMethod("compensate", signature=signature(x="cytoSet", spillover="ANY"),
 		  spillover <- sapply(samples, function(guid)spillover, simplify = FALSE)
 	  }
 	  #can't use NextMethod() for x could be gs due to manual dispatching S4 from compensate method
-	  selectMethod("compensate", signature=c(x="cytoSet", spillover="list"))(x, spillover)
+	  selectMethod("compensate", signature=c(x="cytoset", spillover="list"))(x, spillover)
 	  
   })
 
 #' @export
 #' @rdname compensate
-setMethod("compensate", signature=signature(x="cytoSet", spillover="list"),#explicitly define this to avoid dispatching (cs, list) to (flowSet,list)
+setMethod("compensate", signature=signature(x="cytoset", spillover="list"),#explicitly define this to avoid dispatching (cs, list) to (flowSet,list)
           definition=function(x, spillover){
             spillover <- sapply(spillover, check_comp, simplify = FALSE)
             
@@ -215,7 +215,7 @@ setMethod("compensate", signature=signature(x="cytoSet", spillover="list"),#expl
 
 #' @export
 setMethod("transform",
-	  signature=signature(`_data`="cytoSet"),
+	  signature=signature(`_data`="cytoset"),
 	  definition=function(`_data`, translist,...)
 	  {
 		  if(missing(translist))
@@ -235,7 +235,7 @@ setMethod("transform",
 	        stop("names of 'translist' must be consistent with flow data!")
 	      for(sn in sampleNames(`_data`))
 	      {
-	        cf <- get_cytoFrame_from_cs(`_data`, sn)
+	        cf <- get_cytoframe_from_cs(`_data`, sn)
 	        transform(cf, translist[[sn]], ...)
 	      }
       }else
@@ -246,7 +246,7 @@ setMethod("transform",
 		  `_data`
 	  })
 setMethod("identifier",
-		signature=signature(object="cytoSet"),
+		signature=signature(object="cytoset"),
 		definition=function (object)
 		{
 			get_gatingset_id(object@pointer)
@@ -261,7 +261,7 @@ setMethod("identifier",
 # 			FUN <- match.fun(FUN)
 # 			if(!is.function(FUN))
 # 				stop("This is not a function!")
-# 			cs.new <- cytoSet()
+# 			cs.new <- cytoset()
 # 			if(new)
 # 			{
 # 				h5_dir <- identifier(x)
@@ -270,7 +270,7 @@ setMethod("identifier",
 # 			{
 # 				h5_dir <- cs_get_h5_file_path(x)
 # 				if(h5_dir=="")
-# 					stop("in-memory version of cytoSet is not supported!")
+# 					stop("in-memory version of cytoset is not supported!")
 # 				
 # 			}
 # 				
@@ -282,7 +282,7 @@ setMethod("identifier",
 # 				)
 # 				if(is(fr, "try-error"))
 # 					stop("failed on sample: ", n)
-# 				else if(!is(fr, "cytoFrame"))
+# 				else if(!is(fr, "cytoframe"))
 # 				{
 # 					
 # 					fr <- flowFrame_to_cytoframe(fr, is_h5 = TRUE, h5_filename = file.path(h5_dir, n))
@@ -305,18 +305,18 @@ cs_add_sample <- function(cs, sn, fr){
 
 #' @export 
 cs_get_h5_file_path <- function(x){
-	cf <- get_cytoFrame_from_cs(x, 1)
+	cf <- get_cytoframe_from_cs(x, 1)
 	h5file <- cf_get_h5_file_path(cf)
 	dirname(h5file)
 	
 }
 #' @export
-get_cytoFrame_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
+get_cytoframe_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
   
-  new("cytoFrame", pointer = get_cytoFrame(x@pointer, i, j), use.exprs = use.exprs)
+  new("cytoframe", pointer = get_cytoframe(x@pointer, i, j), use.exprs = use.exprs)
 }
 setMethod("[",
-	signature=signature(x="cytoSet"),
+	signature=signature(x="cytoset"),
 	definition=function(x, i, j, ..., drop=FALSE)
 	{
   
@@ -331,14 +331,14 @@ setMethod("[",
 
 # Dispatching to the flowSet-version of fsApply by changing simplify default value from TRUE from FALSE
 setMethod("fsApply",
-    signature=signature(x="cytoSet",
+    signature=signature(x="cytoset",
         FUN="ANY"),
     definition=function(x,FUN,...,simplify=FALSE, use.exprs=FALSE)
     {
       callNextMethod()
     })
 setMethod("Subset",
-          signature=signature(x="cytoSet",
+          signature=signature(x="cytoset",
                               subset="filterResultList"),
           definition=function(x, subset, ...)
           {
@@ -346,7 +346,7 @@ setMethod("Subset",
             Subset(x, sapply(subset, function(i)as(i, "logical"), simplify = FALSE))
           })
 setMethod("Subset",
-          signature=signature(x="cytoSet",
+          signature=signature(x="cytoset",
                               subset="filter"),
           definition=function(x, subset, ...)
           {
@@ -355,7 +355,7 @@ setMethod("Subset",
           })
 
 setMethod("Subset",
-          signature=signature(x="cytoSet",
+          signature=signature(x="cytoset",
                               subset="list"),
           definition=function(x, subset, select, validityCheck = TRUE, ...)
           {
@@ -401,19 +401,19 @@ setMethod("Subset",
         })
         
 #' @export 
-subset.cytoSet <- function (x, ...) 
+subset.cytoset <- function (x, ...) 
 {
 	getS3method("subset", "ncdfFlowSet")(x, ...)
 }
 #' @export 
-shallow_copy.cytoSet <- function(x){
-  new("cytoSet", pointer = shallow_copy_cytoset(x@pointer))
+shallow_copy.cytoset <- function(x){
+  new("cytoset", pointer = shallow_copy_cytoset(x@pointer))
 }
 #' @export 
-realize_view.cytoSet <- function(x, filepath = tempdir()){
+realize_view.cytoset <- function(x, filepath = tempdir()){
   if(!dir.exists(filepath))
     dir.create(filepath)
-  new("cytoSet", pointer = realize_view_cytoset(x@pointer, filepath))
+  new("cytoset", pointer = realize_view_cytoset(x@pointer, filepath))
 }
 
 
@@ -421,7 +421,7 @@ realize_view.cytoSet <- function(x, filepath = tempdir()){
 
 ## Note that the replacement method also replaces the GUID for each flowFrame
 setReplaceMethod("sampleNames",
-	signature=signature(object="cytoSet"),
+	signature=signature(object="cytoset"),
 	definition=function(object, value)
 	{
 		selectMethod("sampleNames<-", signature = "GatingSet")(object, value)

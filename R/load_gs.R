@@ -123,7 +123,7 @@ convert_gs_legacy <- function(from, to){
   if(length(nc.file)==0)
     stop(".nc file missing in ",from)
   fs@file <- nc.file
-  cs <- flowSet_to_cytoSet(fs, to)
+  cs <- flowSet_to_cytoset(fs, to)
   
   gs <-  new("GatingSet", pointer = load_legacy_gs(dat.file, cs@pointer))
   

@@ -11,7 +11,7 @@ test_that("show ",{
 test_that("getData ",{
       
       ncfs <- getData(gs)
-      expect_is(ncfs, "cytoSet");
+      expect_is(ncfs, "cytoset");
       expect_equal(nrow(ncfs[[1]]), 119531)
       ncfs <- getData(gs, "root")
       expect_equal(nrow(ncfs[[1]]), 119531)
@@ -27,7 +27,7 @@ test_that("getData ",{
 test_that("flowData ",{
       
       ncfs <- flowData(gs)
-      expect_is(ncfs, "cytoSet");
+      expect_is(ncfs, "cytoset");
       expect_equal(nrow(ncfs[[1]]), 119531)
       
       # fs <- as(ncfs, "flowSet")
@@ -36,7 +36,7 @@ test_that("flowData ",{
       
       #restore data
       flowData(gs) <- ncfs
-      expect_is(flowData(gs), "cytoSet");
+      expect_is(flowData(gs), "cytoset");
     })
 
 

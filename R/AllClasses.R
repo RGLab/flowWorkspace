@@ -1,5 +1,5 @@
 #' @include AllGenerics.R
-#' @include cytoSet.R
+#' @include cytoset.R
 NULL
 
 #' @useDynLib flowWorkspace,.registration = TRUE
@@ -182,14 +182,14 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' #fdata could be a flowSet or ncdfFlowSet
 #' gs <- GatingSet(fdata)
 #' }
-setMethod("GatingSet",c("cytoSet"),function(x){
+setMethod("GatingSet",c("cytoset"),function(x){
       
       new("GatingSet", pointer = x@pointer)
       
     })
 setMethod("GatingSet",c("flowSet"),function(x){
       
-      GatingSet(flowSet_to_cytoSet(x))
+      GatingSet(flowSet_to_cytoset(x))
       
     })
 #' Class \code{"GatingSetList"}

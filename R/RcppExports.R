@@ -357,8 +357,8 @@ subset_cytoset <- function(cs, i_obj, j_obj) {
     invisible(.Call(`_flowWorkspace_subset_cytoset`, cs, i_obj, j_obj))
 }
 
-get_cytoFrame <- function(cs, i_obj, j_obj) {
-    .Call(`_flowWorkspace_get_cytoFrame`, cs, i_obj, j_obj)
+get_cytoframe <- function(cs, i_obj, j_obj) {
+    .Call(`_flowWorkspace_get_cytoframe`, cs, i_obj, j_obj)
 }
 
 set_pheno_data <- function(cs, value) {

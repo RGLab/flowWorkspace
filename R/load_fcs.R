@@ -17,7 +17,7 @@ load_cytoframe_from_fcs <- function(filename,
                      ignore.text.offset = FALSE,
                      text.only = FALSE)
 {
-    fr <- new("cytoFrame")
+    fr <- new("cytoframe")
     if(is.null(dataset))
       dataset <- 1
     if(is.null(min.limit)){
@@ -166,7 +166,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
                                           , is_h5 = is_h5
                                           , h5_dir = normalizePath(h5_dir)
                                   )
-    cs <- new("cytoSet", pointer = cs)
+    cs <- new("cytoset", pointer = cs)
     
     if(!is.null(phenoFrame))
     {

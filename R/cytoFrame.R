@@ -1,6 +1,6 @@
 #' @importClassesFrom flowCore flowFrame
 #' @export 
-setClass("cytoFrame", contains = "flowFrame" ,               
+setClass("cytoframe", contains = "flowFrame" ,               
     representation=representation(pointer = "externalptr"
                                   , use.exprs = "logical" #for the purpose  of backward compatible (e.g. fs[[1, use.exprs = F]]
                                   ),
@@ -9,7 +9,7 @@ setClass("cytoFrame", contains = "flowFrame" ,
 
 #' @import flowCore 
 setMethod("spillover",
-    signature=signature(x="cytoFrame"),
+    signature=signature(x="cytoframe"),
     definition=function(x, key = "SPILL")
     {
       
@@ -17,7 +17,7 @@ setMethod("spillover",
     })
 #' compensate the data in place
 setMethod("compensate",
-    signature=signature(x="cytoFrame",
+    signature=signature(x="cytoframe",
         spillover="matrix"),
     definition=function(x, spillover)
     {
@@ -27,13 +27,13 @@ setMethod("compensate",
 
 
 setMethod("nrow",
-    signature=signature(x="cytoFrame"),
+    signature=signature(x="cytoframe"),
     definition=function(x)
       getnrow(x@pointer)
 )
 
 setMethod("ncol",
-    signature=signature(x="cytoFrame"),
+    signature=signature(x="cytoframe"),
     definition=function(x)
       getncol(x@pointer)
 )
@@ -42,20 +42,20 @@ setMethod("ncol",
 realize_view <- function(x, ...)UseMethod("realize_view")
 
 #' @export 
-realize_view.cytoFrame <- function(x, filepath = tempfile(fileext = ".h5")){
-  new("cytoFrame", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
+realize_view.cytoframe <- function(x, filepath = tempfile(fileext = ".h5")){
+  new("cytoframe", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
 }
 
 #' @export
 shallow_copy <- function(x, ...)UseMethod("shallow_copy")
 
 #' @export 
-shallow_copy.cytoFrame <- function(x){
-  new("cytoFrame", pointer = shallow_copy_cytoframe(x@pointer), use.exprs = TRUE)
+shallow_copy.cytoframe <- function(x){
+  new("cytoframe", pointer = shallow_copy_cytoframe(x@pointer), use.exprs = TRUE)
 }
 
 setMethod("[",
-    signature=signature(x="cytoFrame"),
+    signature=signature(x="cytoframe"),
     definition=function(x, i, j, ..., drop=FALSE)
     {
       fr <- shallow_copy(x)
@@ -92,7 +92,7 @@ setMethod("[",
     })
 
 setMethod("exprs",
-    signature=signature(object="cytoFrame"),
+    signature=signature(object="cytoframe"),
     definition=function(object){
       if(object@use.exprs)
         cf_getData(object@pointer)
@@ -104,7 +104,7 @@ setMethod("exprs",
     })
 
 setReplaceMethod("exprs",
-		signature=signature(object="cytoFrame",
+		signature=signature(object="cytoframe",
 				value="matrix"),
 		definition=function(object, value)
 		{
@@ -113,7 +113,7 @@ setReplaceMethod("exprs",
 		})
 
 setReplaceMethod("colnames",
-    signature=signature(x="cytoFrame",
+    signature=signature(x="cytoframe",
         value="ANY"),
     definition=function(x, value)
     {
@@ -129,7 +129,7 @@ setReplaceMethod("colnames",
     })
 
 setReplaceMethod("markernames",
-    signature=signature(object="cytoFrame", value="ANY"), function(object, value){
+    signature=signature(object="cytoframe", value="ANY"), function(object, value){
       old.names <- parameters(object)[["desc"]]
       if(!is.character(value)){
         stop("value must be a named character vector!")
@@ -157,7 +157,7 @@ setReplaceMethod("markernames",
     })
 
 setMethod("parameters",
-    signature=signature(object="cytoFrame"),
+    signature=signature(object="cytoframe"),
     definition=function(object, names=FALSE)
     {
       if(!names)
@@ -177,7 +177,7 @@ setMethod("parameters",
     })
 
 setReplaceMethod("parameters",
-		signature=signature(object="cytoFrame",
+		signature=signature(object="cytoframe",
 				value="AnnotatedDataFrame"),
 		definition=function(object, value){
 			if(!all(c("name", "desc", "range", "minRange",
@@ -205,7 +205,7 @@ process_spill_keyword <- function(desc){
   desc
 }
 setMethod("keyword",
-    signature=signature(object="cytoFrame",
+    signature=signature(object="cytoframe",
         keyword="character"),
     function(object, keyword){
       val <- cf_getKeyword(object@pointer,keyword)
@@ -220,7 +220,7 @@ setMethod("keyword",
 ## this is equivalent to the description method
 #' @importFrom flowCore filter_keywords
 setMethod("keyword",
-    signature=signature(object="cytoFrame",
+    signature=signature(object="cytoframe",
         keyword="missing"),
     function(object, compact = FALSE)
     {           
@@ -244,7 +244,7 @@ setMethod("keyword",
 #But this replace the entire keyword section with the new list.
 #' @importFrom flowCore collapse_desc
 setReplaceMethod("keyword",
-    signature=signature(object="cytoFrame",
+    signature=signature(object="cytoframe",
         value="list"),
     definition=function(object, value)
     {
@@ -258,9 +258,9 @@ setReplaceMethod("keyword",
       return(object)
     })
 
-# coerce cytoFrame to flowFrame
+# coerce cytoframe to flowFrame
 #' @export
-cytoFrame_to_flowFrame <- function(fr){
+cytoframe_to_flowFrame <- function(fr){
   fr@exprs <- exprs(fr)
   fr@description = keyword(fr)
   fr@parameters <- parameters(fr)
@@ -274,24 +274,24 @@ flowFrame_to_cytoframe <- function(fr, ...){
 	load_cytoframe_from_fcs(tmp, ...)
 }
 
-#' save the cytoFrame as h5 format
-#' @param cf cytoFrame object
+#' save the cytoframe as h5 format
+#' @param cf cytoframe object
 #' @param filename the full path of the output h5 file
 #' @export
 cf_write_h5 <- function(cf, filename){
   writeH5(fr@pointer,filename)
 }
 
-#' Load the cytoFrame from h5 format
+#' Load the cytoframe from h5 format
 #' @param filename the full path of the output h5 file
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @export
 load_cytoframe_from_h5 <- function(filename, on_disk = TRUE){
-  new("cytoFrame", pointer = load_cf_from_h5(filename, on_disk), use.exprs = TRUE)
+  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk), use.exprs = TRUE)
 }
 #' return the file path of underlying h5 file
-#' For the in-memory version of cytoFrame, it returns empty string.Thus can be used to check whether it is on-disk format.
-#' @param cf cytoFrame object
+#' For the in-memory version of cytoframe, it returns empty string.Thus can be used to check whether it is on-disk format.
+#' @param cf cytoframe object
 #' @export 
 cf_get_h5_file_path <- function(cf){
   get_h5_file_path(cf@pointer)

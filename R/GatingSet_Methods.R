@@ -1815,7 +1815,7 @@ setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y, ...){
 #' @export
 setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...){
 
-      cs <- new("cytoSet", pointer = get_cytoset_from_node(obj@pointer, y))
+      cs <- new("cytoset", pointer = get_cytoset_from_node(obj@pointer, y))
       cs[,...]
       
 
@@ -1836,7 +1836,7 @@ setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...
 #' @rdname flowData
 #' @export
 setMethod("flowData",signature("GatingSet"),function(x){
-      new("cytoSet", pointer = get_cytoset(x@pointer))
+      new("cytoset", pointer = get_cytoset(x@pointer))
     })
 #' @name flowData
 #' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
@@ -1846,7 +1846,7 @@ setMethod("flowData",signature("GatingSet"),function(x){
 #' flowData<-,GatingSet-method
 #' @rdname flowData
 #' @export
-setReplaceMethod("flowData",signature(x="GatingSet", value = "cytoSet"),function(x,value){
+setReplaceMethod("flowData",signature(x="GatingSet", value = "cytoset"),function(x,value){
       set_cytoset(x@pointer, value@pointer)
       x
     })
@@ -2383,7 +2383,7 @@ estimateLogicle.GatingHierarchy <- function(x, channels, ...){
 setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
     definition=function(x, spillover){
       x <- gs_copy_tree_only(x)#the reason of clone is to keep API backward compatible
-      selectMethod("compensate", signature=c(x="cytoSet", spillover="ANY"))(x, spillover)
+      selectMethod("compensate", signature=c(x="cytoset", spillover="ANY"))(x, spillover)
       x
     })
 #' @export 

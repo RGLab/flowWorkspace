@@ -11,8 +11,8 @@ test_that("Subset", {
       is_equal_flowFrame(Subset(cf, rectGate), Subset(fr, rectGate))
 
     })
-test_that("cytoSet_to_flowframe", {
-  fr1 <- cytoFrame_to_flowFrame(cf)
+test_that("cytoset_to_flowframe", {
+  fr1 <- cytoframe_to_flowFrame(cf)
   is_equal_flowFrame(cf, fr1)
 
 })

@@ -1571,7 +1571,7 @@ setMethod("markernames",
           signature=signature(object="GatingHierarchy"),
           definition=function(object){
 
-            markernames(getData(object, returnType = "cytoFrame", use.exprs = FALSE))
+            markernames(getData(object, returnType = "cytoframe", use.exprs = FALSE))
 
           })
 
@@ -1596,7 +1596,7 @@ setMethod("colnames",
           signature=signature(x="GatingHierarchy"),
           definition=function(x, do.NULL="missing", prefix="missing"){
 
-            colnames(getData(x, returnType = "cytoFrame", use.exprs = FALSE))
+            colnames(getData(x, returnType = "cytoframe", use.exprs = FALSE))
 
           })
 

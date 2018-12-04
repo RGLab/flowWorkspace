@@ -48,8 +48,8 @@ test_that("Subset", {
       is_equal_flowSet(Subset(cs, rectGate), Subset(fs, rectGate))
 
     })
-test_that("cytoSet_to_flowSet", {
-  fs1 <- cytoSet_to_flowSet(cs)
+test_that("cytoset_to_flowSet", {
+  fs1 <- cytoset_to_flowSet(cs)
   expect_is(fs1, "flowSet")
   expect_equal(colnames(fs1), colnames(cs))
   expect_equal(pData(fs1), pData(cs))
@@ -69,7 +69,7 @@ test_that("cs_get_h5_file_path", {
 test_that("[", {
       sn <- samples[2:1]
       nc1 <- cs[sn]
-      expect_is(nc1, "cytoSet")
+      expect_is(nc1, "cytoset")
       expect_equal(length(nc1), 2)
       is_equal_flowSet(fs[sn], nc1)
 
@@ -98,10 +98,10 @@ test_that("[[<-", {
   cs1 <- realize_view(Subset(cs, sampleFilter(1e3)))#TODO:dowsize the data because somehow [[<- is abnormally slow, which needs to be investigated later
   sn <- samples[1]
   
-  cf <- get_cytoFrame_from_cs(cs1, sn)
+  cf <- get_cytoframe_from_cs(cs1, sn)
   h5 <- cf_get_h5_file_path(cf)
   
-  fr <- cytoFrame_to_flowFrame(cf)
+  fr <- cytoframe_to_flowFrame(cf)
   exprs(fr)[1:10, 1:10] <- 0
   markernames(fr) <- c("B710-A" = "test")
   
@@ -115,7 +115,7 @@ test_that("[[<-", {
 })
 
 fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]
-cs <- flowSet_to_cytoSet((fs1))
+cs <- flowSet_to_cytoset(fs)
 samples <- sampleNames(cs)
 test_that("sampleNames<-", {
       sn <- samples[1:2]
@@ -259,7 +259,7 @@ test_that("transform", {
 #   #use csApply when FUN returns a flowFrame
 #   translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
 #   suppressMessages(nc1 <- csApply(cs1, transform, translist))
-#   expect_is(nc1, "cytoSet")
+#   expect_is(nc1, "cytoset")
 #   expect_equal(sampleNames(cs), sampleNames(nc1))
 #   expect_equal(colnames(cs), colnames(nc1))
 #   #the other channels remain the same

@@ -261,7 +261,7 @@ public:
 				{
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						cout<<endl<<"Gating ..."<<endl;
-					//we know we created Mem version of cytoFrame during the parsing
+					//we know we created Mem version of cytoframe during the parsing
 					//thus it is valid cast
 					CytoFramePtr frptr = frv.get_cytoframe_ptr();
 					MemCytoFrame & fr = dynamic_cast<MemCytoFrame &>(*frptr);
@@ -300,7 +300,7 @@ public:
 					{
 						string h5_filename = (h5_dir/uid).string() + ".h5";
 						fr.write_h5(h5_filename);
-						gh->set_cytoFrame_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename))));
+						gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename))));
 					}
 
 				}
