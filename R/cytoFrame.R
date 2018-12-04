@@ -15,7 +15,7 @@ setMethod("spillover",
       
       get_spillover(x@pointer, key)
     })
-
+#' compensate the data in place
 setMethod("compensate",
     signature=signature(x="cytoFrame",
         spillover="matrix"),

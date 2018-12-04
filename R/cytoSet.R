@@ -230,8 +230,15 @@ setMethod("transform",
 	        if(!is(trans, "transformList"))
 	          stop("All the elements of 'translist' must be 'transformList' objects!")
 	        })
-	        csApply(`_data`,transform, translist = translist, ...)
-	    }else
+	      sns <- sampleNames(`_data`)
+	      if(!setequal(sns, names(translist)))
+	        stop("names of 'translist' must be consistent with flow data!")
+	      for(sn in sampleNames(`_data`))
+	      {
+	        cf <- get_cytoFrame_from_cs(`_data`, sn)
+	        transform(cf, translist[[sn]], ...)
+	      }
+      }else
 			  stop("expect the second argument as a 'transformList' object or a list of 'transformList' objects!")
 		  
 
@@ -244,52 +251,54 @@ setMethod("identifier",
 		{
 			get_gatingset_id(object@pointer)
 		})
-csApply <- function(x,FUN,..., new = FALSE)
-		{
-			
-			if(missing(FUN))
-				stop("csApply function missing")
-			FUN <- match.fun(FUN)
-			if(!is.function(FUN))
-				stop("This is not a function!")
-			cs.new <- cytoSet()
-			if(new)
-			{
-				h5_dir <- identifier(x)
-				dir.create(h5_dir)
-			}else
-			{
-				h5_dir <- cs_get_h5_file_path(x)
-				if(h5_dir=="")
-					stop("in-memory version of cytoSet is not supported!")
-				
-			}
-				
-			for(n in sampleNames(x))
-			{
-				fr <- x[[n]]
-				fr <- try(
-						FUN(fr,...)
-				)
-				if(is(fr, "try-error"))
-					stop("failed on sample: ", n)
-				else if(!is(fr, "cytoFrame"))
-				{
-					
-					fr <- flowFrame_to_cytoframe(fr, is_h5 = TRUE, h5_filename = file.path(h5_dir, n))
-				}
-					
-				
-				if(new)
-					cs_add_sample(cs.new, n, fr)
-				else
-					x[[n]]<- fr
-			}           
-			if(new)
-				cs.new
-			else
-				x
-		}
+
+# TODO: define its behavior and handle the h5 issue of "unable to truncate a file which is already open"
+# csApply <- function(x,FUN,..., new = FALSE)
+# 		{
+# 			
+# 			if(missing(FUN))
+# 				stop("csApply function missing")
+# 			FUN <- match.fun(FUN)
+# 			if(!is.function(FUN))
+# 				stop("This is not a function!")
+# 			cs.new <- cytoSet()
+# 			if(new)
+# 			{
+# 				h5_dir <- identifier(x)
+# 				dir.create(h5_dir)
+# 			}else
+# 			{
+# 				h5_dir <- cs_get_h5_file_path(x)
+# 				if(h5_dir=="")
+# 					stop("in-memory version of cytoSet is not supported!")
+# 				
+# 			}
+# 				
+# 			for(n in sampleNames(x))
+# 			{
+# 				fr <- x[[n]]
+# 				fr <- try(
+# 						FUN(fr,...)
+# 				)
+# 				if(is(fr, "try-error"))
+# 					stop("failed on sample: ", n)
+# 				else if(!is(fr, "cytoFrame"))
+# 				{
+# 					
+# 					fr <- flowFrame_to_cytoframe(fr, is_h5 = TRUE, h5_filename = file.path(h5_dir, n))
+# 				}
+# 					
+# 				
+# 				if(new)
+# 					cs_add_sample(cs.new, n, fr)
+# 				else
+# 					x[[n]]<- fr
+# 			}           
+# 			if(new)
+# 				cs.new
+# 			else
+# 				x
+# 		}
 cs_add_sample <- function(cs, sn, fr){
 	cs_add_cytoframe(cs@pointer, sn, fr@pointer)
 }
@@ -407,32 +416,17 @@ realize_view.cytoSet <- function(x, filepath = tempdir()){
   new("cytoSet", pointer = realize_view_cytoset(x@pointer, filepath))
 }
 
-#
-#
-#
-### Note that the replacement method also replaces the GUID for each flowFrame
-#setReplaceMethod("sampleNames",
-#		signature=signature(object="cytoSet"),
-#		definition=function(object, value)
-#		{
-#			oldNames <- sampleNames(object)
-#			value <- as.character(value)
-#			if(length(oldNames)!=length(value) ||
-#					!is.character(value))
-#				stop(" replacement values must be character vector ",
-#						"of length equal to number of frames in the set'",
-#						call.=FALSE)
-#			if(any(duplicated(value)))
-#				stop("Replacement values are not unique.", call.=FALSE)
-#			env <- new.env(hash=TRUE,parent=emptyenv())
-#			for(f in seq_along(oldNames)){
-#				tmp <- get(oldNames[f], object@frames)
-#				identifier(tmp) <- value[f]
-#				assign(value[f], tmp, env)
-#			}
-#			object@frames <- env
-#			return(object)
-#		})
-#
-#
-#
+
+
+
+## Note that the replacement method also replaces the GUID for each flowFrame
+setReplaceMethod("sampleNames",
+	signature=signature(object="cytoSet"),
+	definition=function(object, value)
+	{
+		selectMethod("sampleNames<-", signature = "GatingSet")(object, value)
+		return(object)
+	})
+
+
+

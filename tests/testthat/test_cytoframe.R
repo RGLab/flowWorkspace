@@ -93,3 +93,58 @@ test_that("keyword<-", {
   expect_equal(keyword(cf1)[names(kw)], kw)
   
 })
+
+
+
+# test_that("range", {
+# cf <- flowFrame_to_cytoframe(GvHD[[1]], is_h5 = TRUE)
+#   rng1 <- data.frame("FSC-H" = c(0,1023)
+#                      ,"SSC-H" = c(0,1023)
+#                      ,"FL1-H" = c(1,10000)
+#                      ,"FL2-H" = c(1,10000)
+#                      ,"FL3-H" = c(1,10000)
+#                      ,"FL2-A" = c(0,1023)
+#                      ,"FL4-H" = c(1,10000)
+#                      ,"Time" = c(0,1023)
+#                      , row.names = c("min", "max")
+#                      , check.names = FALSE
+#   )
+#   expect_equal(range(cf), rng1)
+#   
+#   expect_equal(range(fr, "instrument"), rng1)
+#   
+#   expect_equal(range(fr, type = "instrument"), rng1)
+#   
+#   expect_error(range(fr, "FSC-H"), "only accept two")
+#   
+#   rng2 <- data.frame("FSC-H" = c(59,1023)
+#                      ,"SSC-H" = c(6,1023)
+#                      ,"FL1-H" = c(1,10000)
+#                      ,"FL2-H" = c(1.000,9221.666)
+#                      ,"FL3-H" = c(1.000,1131.784)
+#                      ,"FL2-A" = c(0,1023)
+#                      ,"FL4-H" = c(1,1162.77)
+#                      ,"Time" = c(1, 755)
+#                      , row.names = c("min", "max")
+#                      , check.names = FALSE
+#   )
+#   expect_equal(range(fr, type = "data")  ,rng2, tolerance = 4e-7)
+#   expect_equal(range(fr, "data")  ,rng2, tolerance = 4e-7)
+#   expect_error(range(fr, "FSC-H", type = "data"), "only accept two")
+#   
+# })
+# 
+test_that("transform", {
+  
+  fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
+  cf <- flowFrame_to_cytoframe(fr, is_h5 = TRUE)
+  h5 <- cf_get_h5_file_path(cf)
+  translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
+  
+  #in place transform
+  transform(cf, translist)
+  expect_equal(h5, cf_get_h5_file_path(cf))
+  trans_range <- range(cf, "data")
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
+  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+})
