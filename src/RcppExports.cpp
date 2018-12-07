@@ -1002,6 +1002,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// h5_set_error_handler
+void h5_set_error_handler();
+RcppExport SEXP _flowWorkspace_h5_set_error_handler() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    h5_set_error_handler();
+    return R_NilValue;
+END_RCPP
+}
 // open_workspace
 XPtr<flowJoWorkspace> open_workspace(string filename, int sample_name_location, int xmlParserOption);
 RcppExport SEXP _flowWorkspace_open_workspace(SEXP filenameSEXP, SEXP sample_name_locationSEXP, SEXP xmlParserOptionSEXP) {
@@ -1206,6 +1215,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getDescendants", (DL_FUNC) &_flowWorkspace_getDescendants, 3},
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},
+    {"_flowWorkspace_h5_set_error_handler", (DL_FUNC) &_flowWorkspace_h5_set_error_handler, 0},
     {"_flowWorkspace_open_workspace", (DL_FUNC) &_flowWorkspace_open_workspace, 3},
     {"_flowWorkspace_parse_workspace", (DL_FUNC) &_flowWorkspace_parse_workspace, 27},
     {"_flowWorkspace_get_keywords_by_id", (DL_FUNC) &_flowWorkspace_get_keywords_by_id, 2},

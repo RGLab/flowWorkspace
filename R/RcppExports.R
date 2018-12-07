@@ -389,6 +389,10 @@ get_pheno_data <- function(cs) {
     .Call(`_flowWorkspace_getSingleCellExpression`, gs, sampleName, pops, data, markers, threshold)
 }
 
+h5_set_error_handler <- function() {
+    invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
+}
+
 open_workspace <- function(filename, sample_name_location, xmlParserOption) {
     .Call(`_flowWorkspace_open_workspace`, filename, sample_name_location, xmlParserOption)
 }

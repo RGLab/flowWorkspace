@@ -133,3 +133,6 @@ flowWorkspace.par.get <- function (name = NULL)
   else NULL
 }
 
+.onLoad <- function(libname, pkgname){
+  h5_set_error_handler()#set R stderr as output stream for error handler of libhdf5
+  }

@@ -34,22 +34,23 @@ test_that("write permission", {
   #loaded from h5: default readonly
   h5file <- cf_get_h5_file_path(cf1)
   rm(cf1)
-  gc()
+  invisible(gc())
   cf2 <- load_cytoframe_from_h5(h5file)
-  expect_error(exprs(cf2)[1,1] <- 2)#TODO:suppress or capture H5 error print
+  expect_true(grepl( "Write failed", capture.output(expect_error(exprs(cf2)[1,1] <- 2), type = "message")[3]))
   expect_equivalent(exprs(cf2)[1,1], 1)
   
   #loaded from h5: explicitly set write mode
-  expect_error(cf2 <- load_cytoframe_from_h5(h5file, readonly = FALSE))
-  rm(cf1)
-  gc()
+  expect_true(grepl( "Unable to open file", capture.output(expect_error(cf2 <- load_cytoframe_from_h5(h5file, readonly = FALSE)), type = "message")[3]))
+  
+  rm(cf2)
+  invisible(gc())
   cf2 <- load_cytoframe_from_h5(h5file, readonly = FALSE)
   exprs(cf2)[1,1] <- 2
   expect_equivalent(exprs(cf2)[1,1], 2)
   
   #fresh deep cp: writable
   rm(cf2)
-  gc()
+  invisible(gc())
   cf2 <- load_cytoframe_from_h5(h5file)
   cf3 <- realize_view(cf2)
   exprs(cf3)[1,1] <- 3
