@@ -205,6 +205,9 @@ public:
 				search_for_fcs(data_dir, p, config, cytoset);
 
 			}
+			else
+				cytoset.add_cytoframe_view(uid, CytoFrameView(CytoFramePtr(new MemCytoFrame())));//add dummy frame to hold pData
+
 
 			auto it = cytoset.find(uid);
 
@@ -214,42 +217,46 @@ public:
 
 				CytoFrameView frv;
 
-				if(config.is_gating)
+
+				frv = it->second->get_cytoframe_view();
+				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+					cout<<endl<<"Extracting pheno data from keywords for sample: " + uid<<endl;
+
+
+				//set pdata
+				frv.set_pheno_data("name", p.sample_name);
+
+				KEY_WORDS & keys = p.keywords;
+				if(!config.is_gating&&config.is_pheno_data_from_FCS)
+					throw(domain_error("Can't parse phenodata from FCS when 'is_gating' is set to false!"));
+
+				if(config.is_pheno_data_from_FCS)
+					keys = frv.get_keywords();
+				else
+					keys = p.keywords;
+
+				for(const string & k : config.keywords_for_pheno_data)
 				{
-					frv = it->second->get_cytoframe_view();
-					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-						cout<<endl<<"Extracting pheno data from keywords for sample: " + uid<<endl;
+					//todo::case insensitive search
+					if(config.keyword_ignore_case)
+						throw(domain_error("keyword_ignore_case not supported yet!"));
+					auto it_k = keys.find(k);
+					if(it_k == keys.end())
+						throw(domain_error("keyword '" + k + "' not found in sample: " + uid));
 
-
-					//set pdata
-					frv.set_pheno_data("name", p.sample_name);
-
-					KEY_WORDS & keys = p.keywords;
-					if(config.is_pheno_data_from_FCS)
-						keys = frv.get_keywords();
-
-					for(const string & k : config.keywords_for_pheno_data)
-					{
-						//todo::case insensitive search
-						if(config.keyword_ignore_case)
-							throw(domain_error("keyword_ignore_case not supported yet!"));
-						auto it_k = keys.find(k);
-						if(it_k == keys.end())
-							throw(domain_error("keyword '" + k + "' not found in sample: " + uid));
-
-						frv.set_pheno_data(it_k->first, it_k->second);
-					}
-
-					//filter sample by FCS keyword
-					if(config.is_pheno_data_from_FCS && !check_sample_filter(config.sample_filters, frv.get_pheno_data()))//skip parsing this sample if not passed filter
-					{
-						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-
-						cout<<endl<<"Skipping sample: " + uid + " by filter"<<endl;
-
-						continue;
-					}
+					frv.set_pheno_data(it_k->first, it_k->second);
 				}
+
+				//filter sample by FCS keyword
+				if(config.is_pheno_data_from_FCS && !check_sample_filter(config.sample_filters, frv.get_pheno_data()))//skip parsing this sample if not passed filter
+				{
+					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+
+					cout<<endl<<"Skipping sample: " + uid + " by filter"<<endl;
+
+					continue;
+				}
+
 
 				//parse gating tree
 				GatingHierarchyPtr gh = to_GatingHierarchy(p.sample_node,config.is_parse_gate,gTrans);
@@ -257,14 +264,15 @@ public:
 				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					COUT<<"Gating hierarchy created: "<<uid<<endl;
 
+				//we know we created Mem version of cytoframe during the parsing
+				//thus it is valid cast
+				CytoFramePtr frptr = frv.get_cytoframe_ptr();
+				MemCytoFrame & fr = dynamic_cast<MemCytoFrame &>(*frptr);
+
 				if(config.is_gating)
 				{
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						cout<<endl<<"Gating ..."<<endl;
-					//we know we created Mem version of cytoframe during the parsing
-					//thus it is valid cast
-					CytoFramePtr frptr = frv.get_cytoframe_ptr();
-					MemCytoFrame & fr = dynamic_cast<MemCytoFrame &>(*frptr);
 
 					//load the data into the header-only version of cytoframe
 					fr.read_fcs_data();
@@ -295,13 +303,6 @@ public:
 					gh->extendGate(fr, config.gate_extend_trigger_value);
 					gh->gating(fr, 0,false, config.compute_leaf_bool_node);
 
-					unique_ptr<CytoFrame> frame_ptr;
-					if(config.is_h5)
-					{
-						string h5_filename = (h5_dir/uid).string() + ".h5";
-						fr.write_h5(h5_filename);
-						gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename))));
-					}
 
 				}
 				else
@@ -310,6 +311,17 @@ public:
 					gh->extendGate(config.gate_extend_trigger_value, config.gate_extend_to);
 
 				}
+
+
+				if(config.is_gating&&config.is_h5)
+				{
+					string h5_filename = (h5_dir/uid).string() + ".h5";
+					fr.write_h5(h5_filename);
+					gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename))));
+				}
+				else
+					gh->set_cytoframe_view(frv);
+
 				gs->add_GatingHierarchy(gh, uid);
 			}
 
@@ -497,19 +509,18 @@ public:
 
 					if(g_loglevel>=GATING_SET_LEVEL)
 						cout<<endl<<"filter by sample name: " + sample_info.sample_name <<endl;
-					if(!check_sample_filter<PDATA>(*it_filter,{{"name",sample_info.sample_name}}))
-					{
-						// remove name filter from filters
-						sample_filter.erase(it_filter);
+					bool pass_name_filter = check_sample_filter<PDATA>(*it_filter,{{"name",sample_info.sample_name}});
+					// remove name filter from filters
+					sample_filter.erase(it_filter);
+					if(!pass_name_filter)
 						continue;
-					}
 
 				}
 
 				//pre-parse and cache the keywords from ws to avoid parsing it multiple times later
 				sample_info.keywords = get_keywords(sample_info.sample_node);
 				//filter by other pheno data
-				if(config.is_pheno_data_from_FCS)
+				if(!config.is_pheno_data_from_FCS)
 				{
 					if(g_loglevel>=GATING_SET_LEVEL)
 						cout<<endl<<"filter by workspace keyword: " <<endl;

@@ -151,6 +151,9 @@ parseWorkspace <- function(ws, name = NULL
   }
   
   #parse the filter
+  subset <- try(eval(substitute(subset)), silent = TRUE)
+  if(class(subset) == "try-error")
+    stop("invalid 'subset' argument!")
   if(is(subset, "numeric"))#convert numeric index to sample names
   {
     subset <- as.character(getSamples(ws, groupInd)[subset, "name"])
