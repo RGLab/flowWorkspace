@@ -9,11 +9,9 @@ test_that("compensate & transform a GatingSet", {
       expectRes <- fsApply(compensate(fs, comp.mat), colMeans, use.exprs = TRUE)
       
       gs1 <- compensate(gs, comp.mat)
-      #the flowset has been cloned
-      expect_failure(expect_equal(
-                                  cs_get_h5_file_path(getData(gs))
-                                  , cs_get_h5_file_path(getData(gs1))
-                                  ))
+      expect_equal(cs_get_h5_file_path(gs)
+                  , cs_get_h5_file_path(gs1)
+                  )
       
       comp <- getCompensationMatrices(gs1)
       expect_is(comp, "list")

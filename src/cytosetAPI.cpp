@@ -12,7 +12,7 @@ unordered_map<string, compensation> list_to_comps(List comps);
 void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
 
 	unordered_map<string, compensation> comp_objs = list_to_comps(comps);
-	string dir = generate_unique_dir(fs::temp_directory_path(), "gs");
+//	string dir = generate_unique_dir(fs::temp_directory_path(), "gs");
 	for(auto sn : cs->get_sample_uids())
 	{
 		GatingHierarchyPtr gh = cs->getGatingHierarchy(sn);
@@ -21,12 +21,14 @@ void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
 			throw(domain_error("compensation not found for: " + sn));
 		compensation comp = it->second;
 		gh->set_compensation(comp, false);
-		MemCytoFrame fr(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
+		//assume always dealing with h5 based gs
+		auto &frref = static_cast<H5CytoFrame &>(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
+		MemCytoFrame fr(frref);
 		gh->compensate(fr);
-		string h5file = dir + "/" + sn + ".h5";
+		string h5file = frref.get_h5_file_path();//dir + "/" + sn + ".h5";
 		fr.write_h5(h5file);
-		gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5file))));
-
+//		gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5file))));
+		frref.load_meta();
 
 	}
 }

@@ -2382,9 +2382,8 @@ estimateLogicle.GatingHierarchy <- function(x, channels, ...){
 #' @rdname compensate
 setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
     definition=function(x, spillover){
-      x <- gs_copy_tree_only(x)#the reason of clone is to keep API backward compatible
       selectMethod("compensate", signature=c(x="cytoset", spillover="ANY"))(x, spillover)
-      x
+      
     })
 #' @export 
 setMethod("getCompensationMatrices","GatingSet",function(x){
