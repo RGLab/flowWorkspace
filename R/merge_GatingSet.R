@@ -416,23 +416,12 @@ dropRedundantChannels <- function(gs, ...){
 #' @importFrom flowCore colnames<-
 #' @importFrom ncdfFlow colnames<-
 updateChannels <- function(gs, map, all = TRUE){
-  
+  stopifnot(all)
   map <- .preprocessMap(gs, map)
   
   #update gates and comps ,trans(c++ part)
   .updateChannels(gs, map)
   
-  #update the externally stored comps,trans (R part)
-  if(!is.null(gs@compensation)){
-    gs@compensation <- lapply(gs@compensation, function(comp){
-          mat <- comp@spillover
-          cols <- colnames(mat)
-          new <- .matchCols(cols, map)
-          
-          colnames(mat) <- new
-          compensation(mat)
-        })
-  }
   
   if(!is.null(gs@transformation)){
     gs@transformation <- sapply(gs@transformation, function(trans){
@@ -443,16 +432,7 @@ updateChannels <- function(gs, map, all = TRUE){
     }, simplify = FALSE)
     
   }
-  
-  #update flow data
-  if(all){
-    fs <- flowData(gs)
-    cols <- colnames(fs)
-    newCols <- .matchCols(cols, map)
-    colnames(fs) <- newCols
-    flowData(gs) <- fs
-    gs
-  }
+  gs
   
 }
 

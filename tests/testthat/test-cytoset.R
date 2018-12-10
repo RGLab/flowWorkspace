@@ -79,7 +79,7 @@ test_that("[", {
     })
 
 test_that("subset", {
-browser()
+# browser()
       nc_sub <- subset(cs, name == samples[2])
       is_equal_flowSet(nc_sub, fs[2])
 
