@@ -5,7 +5,7 @@ gslist <- NULL
 test_that("GatingSetList constructor", {
 
       suppressMessages(gs_clone <- gs_clone(gs))
-      
+
       #duplicated sample names
       expect_error(GatingSetList(list(gs, gs_clone)), "There are overlapping samples across GatingSets")
       

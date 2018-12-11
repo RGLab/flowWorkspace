@@ -213,8 +213,8 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
-XPtr<GatingSet> load_gatingset(string path) {
-		return XPtr<GatingSet>(new GatingSet(path));
+XPtr<GatingSet> load_gatingset(string path, unsigned int h5_acc_flags) {
+		return XPtr<GatingSet>(new GatingSet(path, false, h5_acc_flags));
 
 }
 
@@ -237,19 +237,19 @@ XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs, string h5_dir, bool is_copy_d
 XPtr<GatingSet> combineGatingSet(Rcpp::List gsList,Rcpp::List sampleList) {
 
 	XPtr<GatingSet> newGS(new GatingSet());
-	GatingSet newCS;
+//	GatingSet newCS;
 
 		for(int i=0;i<gsList.size();i++)
 		{
 			GatingSet *	gs=getGsPtr((SEXP)gsList[i]);
 			StringVec samples=as<StringVec>(sampleList[i]);
-			const GatingSet & cs = gs->get_cytoset();
+//			const GatingSet & cs = gs->get_cytoset();
 			for(auto sn : samples)
 			{
-				newCS.add_cytoframe_view(sn, cs.get_cytoframe_view(sn));
+//				newCS.add_cytoframe_view(sn, gss.get_cytoframe_view(sn));
 				newGS->add_GatingHierarchy(gs->getGatingHierarchy(sn),sn);
 			}
-			newGS->set_cytoset(newCS);
+//			newGS->set_cytoset(newCS);
 		}
 
 

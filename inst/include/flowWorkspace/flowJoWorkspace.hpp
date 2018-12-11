@@ -317,7 +317,7 @@ public:
 				{
 					string h5_filename = (h5_dir/uid).string() + ".h5";
 					fr.write_h5(h5_filename);
-					gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename))));
+					gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename, H5F_ACC_RDWR))));
 				}
 				else
 					gh->set_cytoframe_view(frv);

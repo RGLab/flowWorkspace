@@ -7,6 +7,7 @@
 #' @param G A \code{GatingSet}
 #' @param gslist A \code{GatingSetList}
 #' @param path A character scalar giving the path to save/load the GatingSet to/from.
+#' @param h5_readonly whether to open h5 data as read-only. Default is TRUE
 #' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file.
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
@@ -48,13 +49,13 @@ save_gs<-function(gs, path
 #' @rdname save_gs
 #' @export
 #' @aliases load_gs load_gslist
-load_gs<-function(path){
+load_gs<-function(path, h5_readonly = TRUE){
   if(length(list.files(path = path, pattern = ".rds")) >0)
   {
     stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_gs_legacy()' to convert it to the new format.")
   }
-  
-  new("GatingSet", pointer = .cpp_loadGatingSet(path))
+  h5_acc_flags <- as.integer(!h5_readonly)
+  new("GatingSet", pointer = .cpp_loadGatingSet(path, h5_acc_flags))
   
 }
 

@@ -43,6 +43,7 @@ test_that("flowData ",{
 test_that("clone & rbind2",{
       
       gs1 <- gs_clone(gs)
+      
       expect_is(gs1, "GatingSet");
       
       #check data consistency

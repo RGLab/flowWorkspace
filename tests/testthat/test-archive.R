@@ -1,11 +1,12 @@
 context("GatingSet archive")
 
 gs <- NULL
-isCpStaticGate <<- TRUE
+isCpStaticGate <<- FALSE
 test_that("load GatingSet from archive",
 {
   suppressWarnings(suppressMessages(gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
   expect_that(gs, is_a("GatingSet"))
+  gs <<- gs_clone(gs)#make it writable
 })
 
 test_that("save GatingSet to archive",
@@ -13,7 +14,7 @@ test_that("save GatingSet to archive",
       tmp <- tempfile()
       save_gs(gs, path = tmp)
       
-      gs <<- load_gs(tmp)
+      gs <- load_gs(tmp)
       expect_that(gs, is_a("GatingSet"))
       
       expect_message(save_gs(gs, path = tmp), "Done")
@@ -22,6 +23,9 @@ test_that("save GatingSet to archive",
       cdf <- list.files(tmp, ".h5", full.names = TRUE)
       file.copy(cdf, file.path(tmp, "redundant.nc"))
       expect_error(save_gs(gs, path = tmp), "Not a valid")
+      
+      expect_error(colnames(flowData(gs))[1] <- "dd" , "read-only")
+      expect_error(capture.output(exprs(get_cytoframe_from_cs(flowData(gs), 1))[1,1] <- 0, type = "message") , "hdf")
     
     })
 ## it is placed here because trans may get cleared later on by cloning process
