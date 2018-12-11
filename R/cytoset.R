@@ -399,11 +399,22 @@ setMethod("Subset",
               
             cs         
         })
-        
+# copied from subset.gatingSet        
 #' @export 
-subset.cytoset <- function (x, ...) 
+subset.cytoset <- function (x, subset, ...) 
 {
-	getS3method("subset", "ncdfFlowSet")(x, ...)
+	pd <- pData(x)
+	r <- if (missing(subset))
+				rep_len(TRUE, nrow(x))
+			else {
+				e <- substitute(subset)
+				r <- eval(e, pd, parent.frame())
+				if (!is.logical(r))
+					stop("'subset' must be logical")
+				r & !is.na(r)
+			}
+	
+	x[as.character(rownames(pd[r, ]))]
 }
 #' @export 
 shallow_copy.cytoset <- function(x){
