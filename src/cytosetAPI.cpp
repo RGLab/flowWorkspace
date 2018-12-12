@@ -22,13 +22,8 @@ void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
 		compensation comp = it->second;
 		gh->set_compensation(comp, false);
 		//assume always dealing with h5 based gs
-		auto &frref = static_cast<H5CytoFrame &>(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
-		MemCytoFrame fr(frref);
+		auto &fr = static_cast<H5CytoFrame &>(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
 		gh->compensate(fr);
-		string h5file = frref.get_h5_file_path();//dir + "/" + sn + ".h5";
-		fr.write_h5(h5file);
-//		gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5file))));
-		frref.load_meta();
 
 	}
 }

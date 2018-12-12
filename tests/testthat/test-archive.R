@@ -1,7 +1,7 @@
 context("GatingSet archive")
 
 gs <- NULL
-isCpStaticGate <<- FALSE
+isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",
 {
   suppressWarnings(suppressMessages(gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
