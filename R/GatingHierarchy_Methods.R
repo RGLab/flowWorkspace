@@ -834,6 +834,34 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
     
   
 }
+#' Compute logicle transformation from the flowData associated with a GatingHierarchy
+#' 
+#' See details in \link[flowCore]{estimateLogicle}
+#' 
+#' @param x a GatingHierarchy
+#' @param channels channels or markers for which the logicle transformation is to be estimated.
+#' @param ... other arguments
+#' @return transformerList object
+#'  
+#' @examples
+#' \dontrun{
+#'  # gs is a GatingSet
+#'  trans.list <- estimateLogicle(gs[[1]], c("CD3", "CD4", "CD8")) 
+#'  # trans.list is a transformerList that can be directly applied to GatinigSet
+#'  gs <- transform(gs, trans.list)
+#' }
+#' @export 
+estimateLogicle.GatingHierarchy <- function(x, channels, ...){
+	fr <- getData(x)
+	trans <- flowCore:::.estimateLogicle(fr, channels, ...)
+	
+	trans <- lapply(trans, function(t){
+				inv <- inverseLogicleTransform(trans = t)
+				flow_trans("logicle", t@.Data, inv@.Data)
+			})
+	channels <- names(trans)
+	transformerList(channels, trans)
+}
 
 #' Extract the population name from the node path
 #' It strips the parent path and cluster method name.
@@ -1183,6 +1211,12 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
           }
 
 
+        }else if(curTrans$type=="logicle"){
+          f <- logicleTransform(t = curTrans$T, m = curTrans$M, a = curTrans$A, w = curTrans$W)
+          if(inverse)
+            f <- inverseLogicleTransform(f)
+          f <- f@.Data
+          attr(f,"type")<-"logicle"
         }
 
         return (f)

@@ -6,7 +6,8 @@ test_that("compensate & transform a GatingSet", {
       
       # Compensate with single comp
       row.names(comp.mat) <- colnames(comp.mat)
-      expectRes <- fsApply(compensate(fs, comp.mat), colMeans, use.exprs = TRUE)
+      fs <- compensate(fs, comp.mat)
+      expectRes <- fsApply(fs, colMeans, use.exprs = TRUE)
       
       gs1 <- compensate(gs, comp.mat)
       expect_equal(cs_get_h5_file_path(gs)
@@ -30,7 +31,7 @@ test_that("compensate & transform a GatingSet", {
       #modify comp[5]
       comp <- sapply(sampleNames(gs), function(sn)comp.mat, simplify = FALSE)
       comp[[5]][2] <- 0.001
-      gs3 <- compensate(gs, comp)
+      gs3 <- compensate(gs_clone(gs), comp)
       expect_failure(expect_equal(fsApply(getData(gs3), colMeans, use.exprs = TRUE)
               , expectRes), regexp = "8.399298e-06")
       
@@ -39,32 +40,48 @@ test_that("compensate & transform a GatingSet", {
       comp[["dd"]] <- 1:10
       expect_error(gs4 <- compensate(gs, comp), "should be a compensation object")
       comp[["dd"]] <- comp[[1]]
-      gs4 <- compensate(gs, comp)
+      gs4 <- compensate(gs_clone(gs), comp)
       comp <- getCompensationMatrices(gs4)
       expect_equal(names(comp), sampleNames(gs))
       expect_equal(fsApply(getData(gs4), colMeans, use.exprs = TRUE), expectRes)
     
       #trans
-      translist <- estimateLogicle(fs[[1]], c("FL1-H", "FL2-H"))
+      chnls <- c("FL1-H", "FL2-H")
+      #can't use fs to estimate since range is inconsistent between fs and gs
+      #due to the undetermined behavior of setting range from flowCore_Rmax during parsing FCS
+      #which will cause the logical parameter to be different
+      translist <- estimateLogicle(getData(gs)[[1]], chnls)
       fs.trans <- transform(fs, translist)  
       expectRes <- fsApply(fs.trans, colMeans, use.exprs = TRUE)
       
-      transObj <- estimateLogicle(gs[[1]], c("FL1-H", "FL2-H"))
+      transObj <- estimateLogicle(gs[[1]], chnls)
       
       expect_error(gs.trans <- transform(gs), "Missing the second argument")
       expect_error(gs.trans <- transform(gs, translist), regexp = "transformerList")
       
       suppressMessages(gs.trans <- transform(gs, transObj))
+      fs.trans.gs <- getData(gs.trans)
+      expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
+      
       transObj.list <- sapply(sampleNames(gs), function(obj)transObj, simplify = FALSE)
       
-      expect_equal(lapply(gs.trans, getTransformations), transObj.list)
-      fs.trans.gs <- getData(gs.trans)
-      expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
+      # res <- lapply(gs.trans, function(gh){
+      #   tl <- getTransformations(gh, only = FALSE)
+      #   transformerList(names(tl), tl)
+      #   })
+      params <- c("m", "t", "a", "w")
+      for(sn in sampleNames(gs))
+        for(chnl in chnls)
+        {
+              
+          res <- getTransformations(gs[[sn]])[[chnl]]
+          expect_equal(attr(res, "type"), "logicle")
+          res <- mget(params, environment(res))
+          expectRes.trans <- mget(params, environment(transObj.list[[sn]][[chnl]][[2]]))
+          expect_equal(res, expectRes.trans)
+          
+        }
       
-      #customerize cdf path
-      tmp <- tempfile(fileext = ".cdf")
-      suppressMessages(gs.trans <- transform(gs, transObj, ncdfFile = tmp))
-      fs.trans.gs <- getData(gs.trans)
-      expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
-      expect_equal(fs.trans.gs@file, tmp)
+      
+      
     })

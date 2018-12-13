@@ -181,3 +181,17 @@ test_that("transform", {
   expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
   expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
 })
+
+test_that("load_fcs", {
+  fr <- read.FCS(list.files(system.file("extdata","compdata","data",package="flowCore"), full.names = TRUE)[1])
+  #write to carry flowCore_Rmax keywords
+  tmp <- tempfile()
+  write.FCS(fr, tmp)
+  fr <- read.FCS(tmp)
+  cf <- load_cytoframe_from_fcs(tmp)
+  #check if pickup the new keyword for range
+  is_equal_flowFrame(fr, cf)
+  #TODO: yet to determine whether the original FCS R parser is correct on
+  # setting range from flowCore_Rmax in makeFCSparameters call without checking condition of x[["transformation"]] == "custom"
+  #expect_equal(range(fr)[2,], range(cf)[2,] + 1)
+})

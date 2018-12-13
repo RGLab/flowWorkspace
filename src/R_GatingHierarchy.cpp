@@ -271,6 +271,21 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 
 					break;
 				}
+				case LOGICLE:
+				{
+					shared_ptr<logicleTrans> thisTrans = dynamic_pointer_cast<logicleTrans>(curTrans);
+					logicle_params p = thisTrans->get_params();
+					res.push_back(List::create(Named("type","logicle")
+												, Named("A", p.A)
+												, Named("M", p.M)
+												, Named("T", p.T)
+												, Named("W", p.W)
+												)
+												,chnl
+								);
+
+					break;
+				}
 				default:
 					throw(domain_error("unknown transformation in R_getTransformations!"));
 			}
