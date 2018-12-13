@@ -2236,7 +2236,7 @@ setMethod("transform",
     {
       
       gs <- `_data`
-      
+      # browser()
       if(missing(translist))
         stop("Missing the second argument 'translist'!")
       else if(is(translist, "transformerList"))
@@ -2257,36 +2257,44 @@ setMethod("transform",
         stop("expect the second argument as a 'transformerList' object or a list of 'transformerList' objects!")
   	
 	#check if all trans are supported by Rcpp
+  unrecognized <- FALSE
 	for(sn in names(translist))
 	{
-		
+	  
 		for(trans in translist[[sn]])
-		transobj <- parse_transformer(trans)
-		if(length(transobj)==0)
 		{
-			unrecognized <- TRUE
-			break
+  		  
+  		transobj <- parse_transformer(trans)
+  		if(length(transobj)==0)
+  		{
+  			unrecognized <- TRUE
+  			break
+  		}
+  		
 		}
+	  
+	  if(unrecognized)
+	    break
 	}
+
 	if(unrecognized)#transform in R
 	{
 		gs@transformation <- translist
-		
+
 		fs <- getData(gs)
-		
+
 		suppressMessages(fs_trans <- transform(fs, tList, ...))
 		flowData(gs) <- fs_trans
-		
+
 	}else
 	{ #transform data and store trans in c++
 		for(sn in names(translist))
 		{
-			trans <- translist[[sn]]
-			transobj <- parse_transformer(trans)
-			set_transformations(gs@pointer, sn, transobj)
-			
+			transobjs <- sapply(translist[[sn]], parse_transformer, simplify = FALSE)
+			set_transformations(gs@pointer, sn, transobjs)
+
 		}
-		gs_transform_data()
+		gs_transform_data(gs@pointer)
 	}
 	gs
     })

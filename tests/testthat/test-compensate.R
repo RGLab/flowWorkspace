@@ -57,7 +57,7 @@ test_that("compensate & transform a GatingSet", {
       suppressMessages(gs.trans <- transform(gs, transObj))
       transObj.list <- sapply(sampleNames(gs), function(obj)transObj, simplify = FALSE)
       
-      expect_equal(gs.trans@transformation, transObj.list)
+      expect_equal(lapply(gs.trans, getTransformations), transObj.list)
       fs.trans.gs <- getData(gs.trans)
       expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
       
