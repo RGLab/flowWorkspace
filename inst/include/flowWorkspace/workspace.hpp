@@ -106,19 +106,6 @@ public:
 	 }
 
 
-	 /*
-	  * add root node first before recursively add the other nodes
-	  * since root node does not have gates as the others do
-	  */
-	 VertexID addRoot(populationTree &tree, wsRootNode root)
-	 {
-	 	// Create  vertices in that graph
-	 	VertexID u = boost::add_vertex(tree);
-	 	nodeProperties& rootNode=tree[u];
-	 	to_popNode(root,rootNode);
-
-	 	return(u);
-	 }
 
 	 unordered_set<string> get_derivedparameters(wsSampleNode sampleNode){
 		 unordered_set<string> derived;

@@ -143,8 +143,15 @@ public:
 	 	if(g_loglevel>=POPULATION_LEVEL)
 	 		COUT<<endl<<"parsing populations..."<<endl;
 
+
+	 	/*
+		  * set root node first before recursively add the other nodes
+		  * since root node does not have gates as the others do
+		  */
 	 	populationTree &tree = gh->getTree();
-	 	VertexID pVerID=addRoot(tree, root);
+	 	VertexID pVerID=0;
+	 	nodeProperties & np = tree[0];
+	 	to_popNode(root, np);
 	 	addPopulation(tree, pVerID,&root,is_parse_gate, derived_params);
 	 	return gh;
 	 }

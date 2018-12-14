@@ -2291,6 +2291,7 @@ setMethod("transform",
 		for(sn in names(translist))
 		{
 			transobjs <- sapply(translist[[sn]], parse_transformer, simplify = FALSE)
+			# browser()
 			set_transformations(gs@pointer, sn, transobjs)
 
 		}
