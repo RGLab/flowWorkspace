@@ -77,6 +77,13 @@ convert_gs_legacy <- function(from, to){
   if(length(subdir) == 0){
     message("loading legacy archive...")
     suppressMessages(gs <- .load_legacy(from, to))
+    
+    #TODO:optional skip generate_h5_folder in add_fcs api to be able to directly write to the target path
+    #without needing to do this hack below
+    h5dir <- cs_get_h5_file_path(gs)
+    system(paste0("mv ", h5dir, "/* ", to))#mv h5 files to dest
+    #clean the auto generated dir
+    system(paste0("rmdir ", h5dir))
     message("saving to new archive...")
     suppressMessages(save_gs(gs, to, cdf = "skip"))
     message("GatingSet is now saved in new format and can be loaded with 'load_gs'")

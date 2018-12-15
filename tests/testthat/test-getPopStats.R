@@ -18,3 +18,4 @@ test_that("group and merge the GatingSet object", {
   expect_equal(stats, stats.new)
   
 })
+
