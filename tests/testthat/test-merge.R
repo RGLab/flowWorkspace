@@ -1,7 +1,7 @@
 context("merg/standardize GatingSets")
 
 suppressMessages(gs0 <- load_gs(file.path(dataDir,"gs_manual")))
-suppressMessages(gs1 <- clone(gs0))
+suppressMessages(gs1 <- gs_clone(gs0))
 sampleNames(gs1) <- "1.fcs"
 
 # simply the tree
@@ -10,33 +10,25 @@ for(toRm in nodes[grepl("CCR", nodes)])
   Rm(toRm, gs1)
 
 # remove two terminal nodes
-suppressMessages(gs2 <- clone(gs1))
+suppressMessages(gs2 <- gs_clone(gs1))
 sampleNames(gs2) <- "2.fcs"
-#create a merged gs
-suppressMessages(gs6 <- rbind2(GatingSetList(list(gs1, gs2))))
+#craft a  gs with tree discrepancy
+suppressMessages(gs6 <- gs_clone(rbind2(GatingSetList(list(gs1, gs2)))))
 Rm("DPT", gs6[[1]])
 Rm("DNT", gs6[[1]])
+
 
 Rm("DPT", gs2)
 Rm("DNT", gs2)
 
 # remove singlets gate
-suppressMessages(gs3 <- clone(gs2))
+suppressMessages(gs3 <- gs_clone(gs2))
+moveNode(gs3, "CD3+", "not debris")
 Rm("singlets", gs3)
-suppressMessages(add(gs3, getGate(gs2, "CD3+"), parent = "not debris"))
-for(tsub in c("CD4", "CD8"))
-{
-  suppressMessages(add(gs3, getGate(gs2, tsub), parent = "CD3+"))
-  for(toAdd in getChildren(gs2, tsub))
-  {
-    thisParent <- getParent(gs2[[1]], toAdd, path = "auto")
-    suppressMessages(add(gs3, getGate(gs2, toAdd), parent = thisParent))
-  }
-}
 sampleNames(gs3) <- "3.fcs"
 
 # spin the branch to make it isomorphic
-suppressMessages(gs4 <- clone(gs3))
+suppressMessages(gs4 <- gs_clone(gs3))
 # rm cd4 branch first
 Rm("CD4", gs4)
 # add it back
@@ -49,7 +41,7 @@ for(toAdd in getChildren(gs3, "CD4"))
 }
 sampleNames(gs4) <- "4.fcs"
 
-suppressMessages(gs5 <- clone(gs4))
+suppressMessages(gs5 <- gs_clone(gs4))
 # add another redundant node
 suppressMessages(add(gs5, getGate(gs0, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4"))
 suppressMessages(add(gs5, getGate(gs0, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4"))
@@ -93,6 +85,7 @@ test_that("dropRedundantChannels", {
 
 test_that("group and merge the GatingSet object", {
   #test gs version
+  
   gs_groups <- groupByTree(gs6)
   expect_equal(length(gs_groups), 2)
   toRm <- checkRedundantNodes(gs_groups)
