@@ -41,13 +41,7 @@ test_that("[[", {
       is_equal_flowFrame(fr1, fr)
       
     })
-rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 
-test_that("Subset", {
-      #Subset by gate
-      is_equal_flowSet(Subset(cs, rectGate), Subset(fs, rectGate))
-
-    })
 test_that("cytoset_to_flowSet", {
   fs1 <- cytoset_to_flowSet(cs)
   expect_is(fs1, "flowSet")
@@ -67,6 +61,7 @@ test_that("cs_get_h5_file_path", {
 
 
 test_that("[", {
+      #index by samples
       sn <- samples[2:1]
       nc1 <- cs[sn]
       expect_is(nc1, "cytoset")
@@ -75,7 +70,12 @@ test_that("[", {
 
       #nc1 and nc share the cdf file
       expect_equal(cs_get_h5_file_path(nc1), cs_get_h5_file_path(cs))
-
+      
+      #index by cols
+      chnls <- colnames(cs)
+      cs1 <- cs[, 1:2]
+      expect_equal(colnames(cs1), chnls[1:2])
+      expect_equal(colnames(cs), chnls)
     })
 
 test_that("subset", {
@@ -117,6 +117,16 @@ test_that("[[<-", {
 fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]
 cs <- flowSet_to_cytoset(fs)
 samples <- sampleNames(cs)
+sampleNames(fs) <- samples
+rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+
+test_that("Subset", {
+  
+  #Subset by gate
+  expect_equivalent(fsApply(Subset(cs, rectGate), nrow), fsApply(Subset(fs, rectGate), nrow))
+  #ensure the original cs is intact
+  expect_equivalent(fsApply(cs, nrow), fsApply(fs, nrow))
+})
 test_that("sampleNames<-", {
       sn <- samples[1:2]
       nc <- cs[sn]

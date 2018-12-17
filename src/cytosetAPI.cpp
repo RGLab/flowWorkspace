@@ -79,7 +79,8 @@ Rcpp::XPtr<GatingSet> realize_view_cytoset(Rcpp::XPtr<GatingSet> cs, string path
 // [[Rcpp::export]]
 Rcpp::XPtr<GatingSet> shallow_copy_cytoset(Rcpp::XPtr<GatingSet> cs)
 {
-  return XPtr<GatingSet>(new GatingSet(*cs));
+  return XPtr<GatingSet>(new GatingSet(cs->copy(false, true, "")));
+
 }
 
 // [[Rcpp::export]]

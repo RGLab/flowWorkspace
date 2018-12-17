@@ -1049,8 +1049,8 @@ prettyAxis <- function(gh, channel){
 
 
 
-        res <- getAxisLabels(gh)[[channel]] #this call is to be deprecated once we figure out how to preserve trans when cloning GatingSet
-        if(is.null(res)){
+        # res <- getAxisLabels(gh)[[channel]] #this call is to be deprecated once we figure out how to preserve trans when cloning GatingSet
+        # if(is.null(res)){
           #try to grab trans and do inverse trans for axis label on the fly
             trans <- getTransformations(gh, channel, only.function = FALSE)
             if(is.null(trans)){
@@ -1071,19 +1071,19 @@ prettyAxis <- function(gh, channel){
 
               res <- list(label = label, at = pos)
             }
-
-        }else{
-          #use the stored axis label if exists
-          res$label <- pretty10exp(as.numeric(res$label),drop.1=TRUE)
-        }
+# 
+#         }else{
+#           #use the stored axis label if exists
+#           res$label <- pretty10exp(as.numeric(res$label),drop.1=TRUE)
+#         }
 
         res
 }
 
-#to be deprecated
-getAxisLabels <- function(obj,...){
-  obj@axis[[sampleNames(obj)]]
-}
+##to be deprecated
+#getAxisLabels <- function(obj,...){
+#  obj@axis[[sampleNames(obj)]]
+#}
 
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'

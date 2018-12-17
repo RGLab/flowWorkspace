@@ -134,10 +134,11 @@ getPopStats(gs)[1:10,]
 ```
 We can plot individual gates: note the scale of the transformed axes.
 Second argument is the node path of any depths as long as it is uniquely identifieable.
-```{r plotGate-nodeName}
-plotGate(gs, "pDC")
+```{r autoplot-nodeName}
+library(ggcyto)
+autoplot(gs, "pDC")
 ```
-More details about gate visualization can be found [here](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/plotGate.html).
+More details about gate visualization can be found [here](http://bioconductor.org/packages/release/bioc/html/ggcyto.html).
 
 If we have  metadata associated with the experiment, it can be attached to the `GatingSet`.
 ```{r annotate}
@@ -182,9 +183,9 @@ Here `getPopStats` returns both the stats directly stored in `flowJo` xml worksp
 plotPopCV(gh)
 ```
 
-`plotGate` method without specifying any node will layout all the gates in the same plot
+`autoplot` method without specifying any node will layout all the gates in the same plot
 ```{r}
-plotGate(gh)
+autoplot(gh)
 ```
 
 We can retrieve the indices specifying if an event is included inside or outside a gate using:
@@ -311,17 +312,17 @@ This is done by calling `recompute` method explictily:
 ```{r recompute}
 recompute(gs)
 ```
-After gating is finished,gating results can be visualized by `plotGate` method:
-```{r plotGate-rect}
-plotGate(gs,"rectangle") #plot one Gate
+After gating is finished,gating results can be visualized by `autoplot` method:
+```{r autoplot-rect}
+autoplot(gs,"rectangle") #plot one Gate
 ```
 Multiple gates can be plotted on the same pannel:
-```{r plotGate-multiple}
-plotGate(gs,getChildren(gs[[1]], "rectangle")) 
+```{r autoplot-multiple}
+autoplot(gs,getChildren(gs[[1]], "rectangle")) 
 ```
 We may also want to plot all the gates without specifying the gate index:
-```{r plotGate-gh-bool,eval=FALSE}
-plotGate(gs[[1]], bool=TRUE)
+```{r autoplot-gh-bool,eval=FALSE}
+autoplot(gs[[1]], bool=TRUE)
 ```
 
 If we want to remove one node, simply:
