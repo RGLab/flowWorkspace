@@ -245,6 +245,8 @@ test_that("keyword",{
             #fix legacy result
             thisResult[paste0("$P",5:11, "N")] <- paste0("<", thisResult[paste0("$P",5:11, "N")], ">")
             
+            thisResult[["$BEGINDATA"]] <- NULL
+            thisResult[["$ENDDATA"]] <- NULL
             thisResult <- sapply(thisResult, function(i)
               {
                 if(is(i, "character"))
@@ -256,6 +258,8 @@ test_that("keyword",{
       thisRes <- lapply(thisRes, function(thisResult){
             thisResult[["FILENAME"]] <- basename(thisResult[["FILENAME"]])
             thisResult[["ORIGINALGUID"]] <-thisResult[["GUID"]] <- basename(thisResult[["FILENAME"]])
+            thisResult[["$BEGINDATA"]] <- NULL
+            thisResult[["$ENDDATA"]] <- NULL
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
           })
@@ -264,6 +268,7 @@ test_that("keyword",{
       expect_setequal(names(thisRes[[1]]), names(expectRes[[1]]))
       for(i in seq_along(thisRes))
         thisRes[[i]] <- thisRes[[i]][names(expectRes[[i]])]
+      
       expect_equal(thisRes,expectRes)
       
       thisRes <- keyword(gs, "$P1N")

@@ -194,7 +194,8 @@ test_that("show ",{
 test_that("keyword",{
       thisRes <- keyword(gh)
       expectRes <- readRDS(file.path(resultDir, "kw_gh.rds"))
-      kw_fn <- "flowWorkspaceData/extdata/CytoTrol_CytoTrol_1.fcs"
+      kw_fn <- "CytoTrol_CytoTrol_1.fcs"
+      
       expect_true(grepl(kw_fn, thisRes$FILENAME))
       expect_true(grepl(kw_fn, expectRes$FILENAME))
       expectRes$FILENAME <- NULL
@@ -210,8 +211,10 @@ test_that("keyword",{
                                       else
                                         i
                                          })
+      expectRes[["$BEGINDATA"]] <- NULL
+      expectRes[["$ENDDATA"]] <- NULL
       expectRes[["GUID"]] <- "CytoTrol_CytoTrol_1.fcs"
-      expect_equal(thisRes, expectRes)
+      expect_equal(thisRes[names(expectRes)], expectRes)
       expect_equal(keyword(gh, 'P11DISPLAY'), "LOG")
       
       expect_equal(keyword(gh, '$P8N'), "<V450-A>")

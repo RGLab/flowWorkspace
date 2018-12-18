@@ -131,6 +131,15 @@ convert_gs_legacy <- function(from, to){
   if(length(nc.file)==0)
     stop(".nc file missing in ",from)
   fs@file <- nc.file
+  #modify/add flowCore_PnR to reflect the transformation (for the legacy gs archive)
+  #(should have been taken care of automatically when data was transformed)
+  for(sn in sampleNames(fs))
+  {
+    fr <- fs@frames[[sn]]
+    fr@description <- flowCore:::updateTransformKeywords(fr)
+    fs@frames[[sn]] <- fr
+  }
+  
   cs <- flowSet_to_cytoset(fs, to)
   
   gs <-  new("GatingSet", pointer = load_legacy_gs(dat.file, cs@pointer))
