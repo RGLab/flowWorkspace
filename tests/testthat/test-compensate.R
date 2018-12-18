@@ -62,6 +62,9 @@ test_that("compensate & transform a GatingSet", {
       suppressMessages(gs.trans <- transform(gs, transObj))
       fs.trans.gs <- getData(gs.trans)
       expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
+      #check range in params and keywords
+      expect_equal(range(fs.trans.gs[[1]])[, chnls[1]], c(0, 4.5))
+      expect_equal(keyword(fs.trans.gs[[1]])[["flowCore_$P3Rmax"]], "4.5")
       
       transObj.list <- sapply(sampleNames(gs), function(obj)transObj, simplify = FALSE)
       

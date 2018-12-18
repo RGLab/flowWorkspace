@@ -28,6 +28,7 @@ void gs_transform_data(XPtr<GatingSet> gsPtr) {
 		gh->transform_data(fr);
 		cf->set_data(fr.get_data());
 		cf->set_params(fr.get_params());
+		cf->set_keywords(fr.get_keywords());
 	}
 }
 //[[Rcpp::export]]
