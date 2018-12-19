@@ -131,6 +131,7 @@ parseWorkspace <- function(ws, name = NULL
     , channel.ignore.case = FALSE
     , leaf.bool = TRUE
     , compensation = NULL
+	, mc.cores = 1
     , ...)
 {
   
@@ -205,7 +206,8 @@ parseWorkspace <- function(ws, name = NULL
                  , extend_to = extend_to
                  , channel_ignore_case = channel.ignore.case
                  , leaf_bool = leaf.bool
-                 , comps = compensation)
+                 , comps = compensation
+				 , num_threads = mc.cores)
               , args)
   p <- do.call(parse_workspace, args)
   new("GatingSet", pointer = p)

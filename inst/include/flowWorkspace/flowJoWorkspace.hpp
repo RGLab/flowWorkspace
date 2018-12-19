@@ -50,6 +50,7 @@ struct ParseWorkspaceParameters
 	 unordered_map<string, compensation> compensation_map;//optional customized sample-specific compensations
 	 compensation global_comp;
 	 string fcs_file_extension = ".fcs";
+	 int num_threads = 1;
 //	ParseWorkspaceParameters()
 //	 {
 //		is_gating = true;
@@ -193,13 +194,21 @@ public:
 			h5_dir = gs->generate_h5_folder(h5_dir);
 		 }
 
-		 GatingSet cytoset;
+		 GatingSet cytoset;//purely served as validity check facility through hashtable to avoid duplications of samples
 		/*
 		 * try to parse each sample
 		 */
-		for(auto & p : sample_infos)
-		{
+	#ifdef _OPENMP
+		omp_set_num_threads(config.num_threads);
+		omp_lock_t gslock;
 
+		omp_init_lock(&gslock);
+	#endif
+
+		#pragma omp parallel for
+		for(auto i = 0; i < sample_infos.size(); i++)//can't use fancy c++11 loop since omp dosn't support it yet
+		{
+			auto &p = sample_infos[i];
 			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 				COUT<<endl<<"... start parsing sample: "<< p.sample_name <<"... "<<endl;
 			//generate uid
@@ -328,11 +337,19 @@ public:
 				}
 				else
 					gh->set_cytoframe_view(frv);
-
+#ifdef _OPENMP
+				omp_set_lock(&gslock);
+#endif
 				gs->add_GatingHierarchy(gh, uid);
+#ifdef _OPENMP
+				omp_unset_lock(&gslock);
+#endif
 			}
 
 		}
+#ifdef _OPENMP
+		omp_destroy_lock(&gslock);
+#endif
 		if(gs->size() == 0)
 			throw(domain_error("No samples in this workspace to parse!"));
 

@@ -119,6 +119,7 @@ BOOST_AUTO_TEST_CASE(PBMC_HIPC_trial)
 	myTest.filename="../wsTestSuite/PBMC/HIPC_trial/data/HIPC_trial.xml";
 	myTest.config.sample_filters["name"]={"004_A1_A01.fcs","004_B1_B01.fcs"};
 	myTest.config.keywords_for_uid = {};
+	myTest.config.num_threads = 1;
 	myTest.archive="../output/HIPC_trial/gs";
 //	g_loglevel = GATE_LEVEL;
 	parser_test(myTest);

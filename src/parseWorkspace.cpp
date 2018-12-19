@@ -126,7 +126,8 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
   config.fcs_read_param.data.truncate_min_val = truncate_min_val;
   config.fcs_read_param.data.min_limit = min_limit;
   config.fcs_read_param.data.truncate_max_range = truncate_max_range;
-  config.fcs_read_param.data.num_threads = num_threads;
+//  config.fcs_read_param.data.num_threads = num_threads;
+  config.num_threads = num_threads;
   if(transformation=="linearize")
     config.fcs_read_param.data.transform = TransformType::linearize;
   else if(transformation=="none")
