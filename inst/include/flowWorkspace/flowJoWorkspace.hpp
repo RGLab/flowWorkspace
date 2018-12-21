@@ -194,7 +194,6 @@ public:
 			h5_dir = gs->generate_h5_folder(h5_dir);
 		 }
 
-		 GatingSet cytoset;//purely served as validity check facility through hashtable to avoid duplications of samples
 		/*
 		 * try to parse each sample
 		 */
@@ -212,42 +211,39 @@ public:
 			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 				COUT<<endl<<"... start parsing sample: "<< p.sample_name <<"... "<<endl;
 			//generate uid
-			string uid = p.sample_name + concatenate_keywords(p.keywords, config.keywords_for_uid);
+			string ws_key_seq = concatenate_keywords(p.keywords, config.keywords_for_uid);
 
-
+			shared_ptr<MemCytoFrame> frptr;
+			bool isfound = false;
 			if(config.is_gating)
 			{
 				//match FCS
-				search_for_fcs(data_dir, p, config, cytoset);
+				isfound = search_for_fcs(data_dir, p.sample_name, ws_key_seq, config, frptr);
 
 			}
 			else
-				cytoset.add_cytoframe_view(uid, CytoFrameView(CytoFramePtr(new MemCytoFrame())));//add dummy frame to hold pData
+				frptr.reset(new MemCytoFrame());//add dummy frame to hold pData
 
+			string uid = p.sample_name + ws_key_seq;
 
-			auto it = cytoset.find(uid);
 
 			//proceed gate parsing when data is available or gate-parsing only
-			if(it!= cytoset.end() || !config.is_gating)
+			if(isfound || !config.is_gating)
 			{
 
-				CytoFrameView frv;
-
-
-				frv = it->second->get_cytoframe_view();
 				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					cout<<endl<<"Extracting pheno data from keywords for sample: " + uid<<endl;
 
 
 				//set pdata
-				frv.set_pheno_data("name", p.sample_name);
+				frptr->set_pheno_data("name", p.sample_name);
 
 				KEY_WORDS & keys = p.keywords;
 				if(!config.is_gating&&config.is_pheno_data_from_FCS)
 					throw(domain_error("Can't parse phenodata from FCS when 'is_gating' is set to false!"));
 
 				if(config.is_pheno_data_from_FCS)
-					keys = frv.get_keywords();
+					keys = frptr->get_keywords();
 				else
 					keys = p.keywords;
 
@@ -260,11 +256,11 @@ public:
 					if(it_k == keys.end())
 						throw(domain_error("keyword '" + k + "' not found in sample: " + uid));
 
-					frv.set_pheno_data(it_k->first, it_k->second);
+					frptr->set_pheno_data(it_k->first, it_k->second);
 				}
 
 				//filter sample by FCS keyword
-				if(config.is_pheno_data_from_FCS && !check_sample_filter(config.sample_filters, frv.get_pheno_data()))//skip parsing this sample if not passed filter
+				if(config.is_pheno_data_from_FCS && !check_sample_filter(config.sample_filters, frptr->get_pheno_data()))//skip parsing this sample if not passed filter
 				{
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 
@@ -280,16 +276,11 @@ public:
 				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					COUT<<"Gating hierarchy created: "<<uid<<endl;
 
-				//we know we created Mem version of cytoframe during the parsing
-				//thus it is valid cast
-				CytoFramePtr frptr = frv.get_cytoframe_ptr();
-				MemCytoFrame & fr = dynamic_cast<MemCytoFrame &>(*frptr);
-
 				if(config.is_gating)
 				{
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						cout<<endl<<"Gating ..."<<endl;
-
+					MemCytoFrame & fr = *frptr;
 					//load the data into the header-only version of cytoframe
 					fr.read_fcs_data();
 					//check if external comps are provided
@@ -332,11 +323,11 @@ public:
 				if(config.is_gating&&config.is_h5)
 				{
 					string h5_filename = (h5_dir/uid).string() + ".h5";
-					fr.write_h5(h5_filename);
+					frptr->write_h5(h5_filename);
 					gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename, H5F_ACC_RDWR))));
 				}
 				else
-					gh->set_cytoframe_view(frv);
+					gh->set_cytoframe_view(CytoFrameView(frptr));
 #ifdef _OPENMP
 				omp_set_lock(&gslock);
 #endif
@@ -361,37 +352,36 @@ public:
 	 * First try to search by file name, if failed, use FCS keyword $FIL + additional keywords for further searching and pruning
 	 * cytoframe is preloaded with header-only.
 	 */
-	void search_for_fcs(const string & data_dir, const SampleInfo  & sample_info, const ParseWorkspaceParameters & config, GatingSet & cytoset)
+	bool search_for_fcs(const string & data_dir, const string & sample_name, const string & ws_key_seq, const ParseWorkspaceParameters & config, shared_ptr<MemCytoFrame> &fr)
 	{
 		FCS_READ_PARAM fcs_read_param = config.fcs_read_param;
 		fcs_read_param.header.is_fix_slash_in_channel_name = is_fix_slash_in_channel_name();
-
-		string ws_key_seq = concatenate_keywords(sample_info.keywords, config.keywords_for_uid);
-		string uid = sample_info.sample_name + ws_key_seq;
-
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-			COUT<<endl<<"searching for FCS for sample: " + uid <<endl;
+			COUT<<endl<<"searching for FCS for sample: " + sample_name <<endl;
 		//try to search by file name first
 		vector<string> all_file_paths = list_files(data_dir, config.fcs_file_extension);
 		vector<string> file_paths;
 		for(auto i : all_file_paths)
 		{
-			if(path_base_name(i) == sample_info.sample_name)
+			if(path_base_name(i) == sample_name)
 				file_paths.push_back(i);
 		}
+		bool isfound = false;
 		if(file_paths.size() == 0)
 		{
 			//search by keyword by traversing the data dir recursively until the target is found
 			for(const string & file_path : all_file_paths)
 			{
 
-				shared_ptr<MemCytoFrame> fr (new MemCytoFrame(file_path, fcs_read_param));
+				fr.reset(new MemCytoFrame(file_path, fcs_read_param));
 				fr->read_fcs_header();
-				if(fr->get_keyword("$FIL") == sample_info.sample_name &&
+				if(fr->get_keyword("$FIL") == sample_name &&
 						ws_key_seq == concatenate_keywords(fr->get_keywords(), config.keywords_for_uid))
 				{
-					cytoset.add_cytoframe_view(uid, CytoFrameView(fr));
-					return;//to avoid scanning entire folder, terminate the search immediately on the first hit assuming the uid is unique
+
+					isfound = true;
+					break;//to avoid scanning entire folder, terminate the search immediately on the first hit assuming the uid is unique
+
 				}
 			}
 
@@ -402,22 +392,22 @@ public:
 
 			for(const string & file_path : file_paths)
 			{
-				shared_ptr<MemCytoFrame> fr (new MemCytoFrame(file_path, fcs_read_param));
+				fr.reset(new MemCytoFrame(file_path, fcs_read_param));
 				fr->read_fcs_header();
 				string fcs_key_seq = concatenate_keywords(fr->get_keywords(), config.keywords_for_uid);
 
 				if(fcs_key_seq == ws_key_seq)//found matched one
 				{
-					if(cytoset.find(uid)!=cytoset.end())
-						throw(domain_error("Duplicated FCS found for sample " + uid));
-
-					cytoset.add_cytoframe_view(uid, CytoFrameView(fr));
+					if(isfound)
+						throw(domain_error("Duplicated FCS found for sample " + sample_name + ws_key_seq));
+					else
+						isfound = true;
 				}
 			}
 
 		}
-		if(cytoset.find(uid) == cytoset.end())
-			PRINT("FCS not found for sample " + uid + "\n");
+		return isfound;
+
 
 	}
 	/**
