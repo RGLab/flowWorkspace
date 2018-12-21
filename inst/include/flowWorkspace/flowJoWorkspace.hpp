@@ -98,7 +98,7 @@ public:
 	/*
 	  * Constructor that starts from a particular sampleNode from workspace to build a tree
 	  */
-	GatingHierarchyPtr to_GatingHierarchy(wsSampleNode curSampleNode,bool is_parse_gate,const trans_global_vec & _gTrans)
+	GatingHierarchyPtr to_GatingHierarchy(const wsSampleNode curSampleNode,bool is_parse_gate,const trans_global_vec & _gTrans)
 	 {
 		GatingHierarchyPtr gh(new GatingHierarchy());
 	 	wsRootNode root=getRoot(curSampleNode);
@@ -199,9 +199,6 @@ public:
 		 */
 	#ifdef _OPENMP
 		omp_set_num_threads(config.num_threads);
-		omp_lock_t gslock;
-
-		omp_init_lock(&gslock);
 	#endif
 
 		#pragma omp parallel for
@@ -328,19 +325,13 @@ public:
 				}
 				else
 					gh->set_cytoframe_view(CytoFrameView(frptr));
-#ifdef _OPENMP
-				omp_set_lock(&gslock);
-#endif
+
+				#pragma omp critical
 				gs->add_GatingHierarchy(gh, uid);
-#ifdef _OPENMP
-				omp_unset_lock(&gslock);
-#endif
+
 			}
 
 		}
-#ifdef _OPENMP
-		omp_destroy_lock(&gslock);
-#endif
 		if(gs->size() == 0)
 			throw(domain_error("No samples in this workspace to parse!"));
 
