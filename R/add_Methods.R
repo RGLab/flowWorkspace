@@ -233,7 +233,8 @@ setMethod("add",
 
 #' @param recompute \code{logical} whether to recompute the event indices right after gate is added. 
 #'                                  Oftentimes it is more efficient to let user to determining how and when the flow data is loaded
-#'                                  Thus default it FALSE.                      
+#'                                  Thus default it FALSE.
+#' @rdname add                                                       
 .addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE, recompute = FALSE){
   
 	if(is.null(name))

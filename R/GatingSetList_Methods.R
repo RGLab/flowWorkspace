@@ -77,9 +77,9 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y)
     })
 
 #' @export 
-#' @rdname plotGate-methods
+#' @rdname plotGate-methods-defunct
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
-      selectMethod("plotGate",signature = c(x="GatingSet",y="character"))(x=x, y=y, ...)
+          .Defunct("ggcyto::autoplot", "flowWorkspace")
     })
 #' @rdname getPopStats
 #' @export

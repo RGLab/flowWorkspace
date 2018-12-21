@@ -511,10 +511,10 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G, path = 1])#return node names (without prefix)
-#'     getNodes(G,path = "full")#return the full path
-#'     getNodes(G,path = 2)#return the path as length of two
-#'     getNodes(G,path = "auto)#automatically determine the length of path
+#'     getNodes(G, path = 1]) #return node names (without prefix)
+#'     getNodes(G,path = "full") #return the full path
+#'     getNodes(G,path = 2) #return the path as length of two
+#'     getNodes(G,path = "auto") #automatically determine the length of path
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases getNodes
@@ -700,12 +700,37 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
     rownames(cv) <- as.character(rownames(x))
     cv
 }
-#' @importFrom lattice barchart
+
 #' @export
 #' @rdname plotPopCV
 setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2, path = "auto", ...){
       cv <- .computeCV_gh(x, path = path)
-      return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
+      cv <- data.frame(pop=rownames(cv), cv=cv[,1])
+      return(ggplot2::ggplot(cv, aes(x=pop, y=cv)) +
+               geom_col() +
+               ylab("Coefficient of Variation") +
+               xlab(NULL) +
+               scale_y_continuous() +
+               scale_x_discrete(limits = cv$pop) +
+               coord_flip())
+      
+      # In case we ever want to mimic the old lattice barchart
+      # myTheme <- theme(axis.title = element_text(color = gray(0.3), size = 12, face = "bold"),
+      #                  axis.text  = element_text(color = gray(0.3), size = 10),
+      #                  strip.text = element_text(size = 10),
+      #                  plot.margin = unit(c(0,0,0,0), "cm"),
+      #                  panel.spacing = unit(0, "cm"),
+      #                  panel.grid = element_blank()
+      # )
+      # return(ggplot(cv, aes(x=pop, y=cv)) +
+      #          geom_col( fill = "#FF6666") +
+      #          ylab("Coefficient of Variation") +
+      #          xlab(NULL) +
+      #          scale_y_continuous() +
+      #          scale_x_discrete(limits=cv$pop) +
+      #          geom_hline(yintercept = 0, color = "white") +
+      #          coord_flip() +
+      #          myTheme)
     })
 
 
@@ -1306,15 +1331,11 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 
 #TODO: to inverse transform the range in order to display the raw scale
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
-      .plotGate.gh(x,y, ...)
+  .Defunct("ggcyto::autoplot", "flowWorkspace")
 })
 setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
-
-        y <- getNodes(x)
-        y <- setdiff(y,"root")
-
-		plotGate(x,y,...)
-		})
+  .Defunct("ggcyto::autoplot", "flowWorkspace")
+})
 #' @examples \dontrun{
 #' projections <- list("cd3" = c(x = "cd3", y = "AViD")
 #'                     , "cd4" = c(x = "cd8", y = "cd4")
@@ -1324,60 +1345,12 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 #' plotGate(gh, c("cd3", "cd4", "cd4/IL2", "cd4/IFNg"), path = "auto", projections = projections, gpar = c(nrow = 2))
 #'
 #' }
-#' @importFrom gridExtra arrangeGrob
-#' @rdname plotGate-methods
+#' @rdname plotGate-methods-defunct
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
-                    , function(x, y, ...
-                                ){
-      plotGate(x, getNodes(x, path = "auto")[y], ...)
+                    , function(x, y, ...){
+                      .Defunct("ggcyto::autoplot", "flowWorkspace")
                     })
-.plotGate.gh <- function(x, y, bool=FALSE
-                            , arrange.main = sampleNames(x),arrange=TRUE,merge=TRUE
-                            , par.settings = list()
-                            , gpar = NULL
-                            , projections = list()
-                            , ...){
 
-                          .Defunct("ggcyto::autoplot")
-            par.settings <- lattice:::updateList(flowWorkspace.par.get("theme.novpadding"), par.settings)
-
-            #convert popname to id
-#            prjNodeInds <- try(sapply(names(projections),.getNodeInd, obj = x), silent = TRUE)
-#            if(class(prjNodeInds) == "try-error")
-#              stop("Invalid 'projections': ", geterrmessage())
-
-#            names(projections) <- prjNodeInds
-            #match given axis to channel names
-            fr <- getData(x, use.exprs = FALSE)
-            projections <- lapply(projections, function(thisPrj){
-                                  sapply(thisPrj, function(thisAxis)getChannelMarker(fr, thisAxis)[["name"]])
-                                })
-
-
-			plotList<-.mergeGates(x,y,bool,merge, projections = projections)
-			plotObjs<-lapply(plotList,function(y){
-
-                        if(is.list(y)){
-                          myPrj <- projections[[as.character(y[["popIds"]][1])]]
-                        }else{
-                          myPrj <- projections[[as.character(y)]]
-                        }
-                        if(is.null(myPrj)){
-                          formula <- NULL
-                        }else{
-                          formula <- mkformula(myPrj)
-                        }
-
-						#defaultCond is passed to flowViz::xyplot to disable lattice strip
-						return(.plotGate(x, y, par.settings = par.settings, formula = formula, ...))
-					})
-
-			if(flowWorkspace.par.get("plotGate")[["arrange"]]&&arrange)
-				plot(do.call(arrangeGrob, c(grobs = plotObjs, top = arrange.main, gpar)))
-			else
-				plotObjs
-
-}
 .mergeGates<-function(gh,i,bool,merge, projections = list()){
 	##filter out boolean gates when bool==FALSE
 #	browser()
@@ -1490,49 +1463,6 @@ pretty10exp <-function (x, drop.1 = FALSE, digits.fuzz = 7)
                 				else substitute(A %*% 10^E, list(A = mT[i], E = eT[i]))
 	
 	do.call("expression", ss)
-}
-
-#' @param x a gatingHierarchy
-#' @param data a flowFrame
-#' @noRd 
-.formatAxis <- function(x, data, xParam, yParam
-                          , scales=list()
-                          , raw.scale = flowWorkspace.par.get("plotGate")[["raw.scale"]]
-                          , ...){
-
-
-        if(is.null(xParam)||!raw.scale){
-          x.labels <- NULL
-        }else{
-          x.labels <- prettyAxis(x, xParam)
-        }
-
-        if(is.null(yParam)||!raw.scale){
-          y.labels <- NULL
-        }else{
-		  y.labels <- prettyAxis(x, yParam)
-        }
-
-		#init the scales and x,y lim
-		#update axis when applicable
-		if(!is.null(x.labels))
-		{
-
-			xscales<-list(x=list(at=x.labels$at,labels=x.labels$label))
-			scales<-lattice:::updateList(xscales,scales)
-
-		}
-		if(!is.null(y.labels))
-		{
-
-			yscales<-list(y=list(at=y.labels$at,labels=y.labels$label))
-			scales<-lattice:::updateList(scales,yscales)
-
-		}
-
-
-
-	list(scales=scales)
 }
 
 #'  Update the name of one node in a gating hierarchy/GatingSet.
