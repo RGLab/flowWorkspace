@@ -24,7 +24,6 @@ Imports:
     stats,
     stats4,
     utils,
-    RBGL,
     XML,
     tools,
     Rgraphviz,
