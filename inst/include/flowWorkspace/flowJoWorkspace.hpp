@@ -197,31 +197,36 @@ public:
 		/*
 		 * try to parse each sample
 		 */
-	#ifdef _OPENMP
-		omp_set_num_threads(config.num_threads);
-	#endif
-
-		#pragma omp parallel for
 		for(auto i = 0; i < sample_infos.size(); i++)//can't use fancy c++11 loop since omp dosn't support it yet
 		{
-			auto &p = sample_infos[i];
+			parse_gh(sample_infos[i], config, data_dir, h5_dir, gTrans, *gs);
+		}
+		if(gs->size() == 0)
+			throw(domain_error("No samples in this workspace to parse!"));
+
+
+		return gs;
+	}
+	void parse_gh(const SampleInfo & sample_info, const ParseWorkspaceParameters & config, const string &data_dir, const fs::path &h5_dir, const trans_global_vec & gTrans, GatingSet & gs){
+
+
 			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-				COUT<<endl<<"... start parsing sample: "<< p.sample_name <<"... "<<endl;
+				COUT<<endl<<"... start parsing sample: "<< sample_info.sample_name <<"... "<<endl;
 			//generate uid
-			string ws_key_seq = concatenate_keywords(p.keywords, config.keywords_for_uid);
+			string ws_key_seq = concatenate_keywords(sample_info.keywords, config.keywords_for_uid);
 
 			shared_ptr<MemCytoFrame> frptr;
 			bool isfound = false;
 			if(config.is_gating)
 			{
 				//match FCS
-				isfound = search_for_fcs(data_dir, p.sample_name, ws_key_seq, config, frptr);
+				isfound = search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config, frptr);
 
 			}
 			else
 				frptr.reset(new MemCytoFrame());//add dummy frame to hold pData
 
-			string uid = p.sample_name + ws_key_seq;
+			string uid = sample_info.sample_name + ws_key_seq;
 
 
 			//proceed gate parsing when data is available or gate-parsing only
@@ -233,16 +238,16 @@ public:
 
 
 				//set pdata
-				frptr->set_pheno_data("name", p.sample_name);
+				frptr->set_pheno_data("name", sample_info.sample_name);
 
-				KEY_WORDS & keys = p.keywords;
+				KEY_WORDS keys = sample_info.keywords;
 				if(!config.is_gating&&config.is_pheno_data_from_FCS)
 					throw(domain_error("Can't parse phenodata from FCS when 'is_gating' is set to false!"));
 
 				if(config.is_pheno_data_from_FCS)
 					keys = frptr->get_keywords();
 				else
-					keys = p.keywords;
+					keys = sample_info.keywords;
 
 				for(const string & k : config.keywords_for_pheno_data)
 				{
@@ -263,12 +268,12 @@ public:
 
 					cout<<endl<<"Skipping sample: " + uid + " by filter"<<endl;
 
-					continue;
+					return;
 				}
 
 
 				//parse gating tree
-				GatingHierarchyPtr gh = to_GatingHierarchy(p.sample_node,config.is_parse_gate,gTrans);
+				GatingHierarchyPtr gh = to_GatingHierarchy(sample_info.sample_node,config.is_parse_gate,gTrans);
 
 				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					COUT<<"Gating hierarchy created: "<<uid<<endl;
@@ -326,17 +331,13 @@ public:
 				else
 					gh->set_cytoframe_view(CytoFrameView(frptr));
 
-				#pragma omp critical
-				gs->add_GatingHierarchy(gh, uid);
+
+				gs.add_GatingHierarchy(gh, uid);
 
 			}
 
-		}
-		if(gs->size() == 0)
-			throw(domain_error("No samples in this workspace to parse!"));
 
 
-		return gs;
 	}
 	/**
 	 * Search for the FCS file
