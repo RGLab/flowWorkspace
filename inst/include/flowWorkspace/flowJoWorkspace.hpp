@@ -13,7 +13,11 @@
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
-
+#include <tbb/tbb.h>
+#include <tbb/tbb.h>
+#include "tbb/task_scheduler_init.h"
+#include <tbb/spin_mutex.h>
+using namespace tbb;
 namespace flowWorkspace
 {
 
@@ -166,7 +170,7 @@ public:
 		if(it_filter != config.sample_filters.end())
 			config.sample_filters.erase(it_filter);								// remove name filter from filters
 
-		unique_ptr<GatingSet> gs(new GatingSet());
+		unique_ptr<GatingSet> gsPtr(new GatingSet());
 		 /*
 		  * parsing global calibration tables
 		  */
@@ -191,36 +195,33 @@ public:
 				string xml_filepath = get_xml_file_path();
 				data_dir = path_dir_name(xml_filepath);
 			}
-			h5_dir = gs->generate_h5_folder(h5_dir);
+			h5_dir = gsPtr->generate_h5_folder(h5_dir);
 		 }
 
 		/*
 		 * try to parse each sample
 		 */
-		for(auto i = 0; i < sample_infos.size(); i++)//can't use fancy c++11 loop since omp dosn't support it yet
-		{
-			parse_gh(sample_infos[i], config, data_dir, h5_dir, gTrans, *gs);
-		}
-		if(gs->size() == 0)
-			throw(domain_error("No samples in this workspace to parse!"));
+		 typedef tbb::spin_mutex FreeListMutexType;
+		 	FreeListMutexType FreeListMutex;
+		 	GatingSet & gs = *gsPtr;
+		 	tbb::task_scheduler_init init(config.num_threads);
+		 	const auto & config_const = config;
+		 	const auto & gTrans_const = gTrans;
+		 tbb::parallel_for<int>(0, sample_infos.size(), 1, [this, &sample_infos, &config_const, &data_dir, &h5_dir, &gTrans_const, &gs, &FreeListMutex](int i){
 
-
-		return gs;
-	}
-	void parse_gh(const SampleInfo & sample_info, const ParseWorkspaceParameters & config, const string &data_dir, const fs::path &h5_dir, const trans_global_vec & gTrans, GatingSet & gs){
-
+			 const auto &sample_info = sample_infos[i];
 
 			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 				COUT<<endl<<"... start parsing sample: "<< sample_info.sample_name <<"... "<<endl;
 			//generate uid
-			string ws_key_seq = concatenate_keywords(sample_info.keywords, config.keywords_for_uid);
+			string ws_key_seq = this->concatenate_keywords(sample_info.keywords, config_const.keywords_for_uid);
 
 			shared_ptr<MemCytoFrame> frptr;
 			bool isfound = false;
-			if(config.is_gating)
+			if(config_const.is_gating)
 			{
 				//match FCS
-				isfound = search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config, frptr);
+				isfound = this->search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config_const, frptr);
 
 			}
 			else
@@ -230,7 +231,7 @@ public:
 
 
 			//proceed gate parsing when data is available or gate-parsing only
-			if(isfound || !config.is_gating)
+			if(isfound || !config_const.is_gating)
 			{
 
 				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
@@ -241,18 +242,18 @@ public:
 				frptr->set_pheno_data("name", sample_info.sample_name);
 
 				KEY_WORDS keys = sample_info.keywords;
-				if(!config.is_gating&&config.is_pheno_data_from_FCS)
+				if(!config_const.is_gating&&config_const.is_pheno_data_from_FCS)
 					throw(domain_error("Can't parse phenodata from FCS when 'is_gating' is set to false!"));
 
-				if(config.is_pheno_data_from_FCS)
+				if(config_const.is_pheno_data_from_FCS)
 					keys = frptr->get_keywords();
 				else
 					keys = sample_info.keywords;
 
-				for(const string & k : config.keywords_for_pheno_data)
+				for(const string & k : config_const.keywords_for_pheno_data)
 				{
 					//todo::case insensitive search
-					if(config.keyword_ignore_case)
+					if(config_const.keyword_ignore_case)
 						throw(domain_error("keyword_ignore_case not supported yet!"));
 					auto it_k = keys.find(k);
 					if(it_k == keys.end())
@@ -262,7 +263,7 @@ public:
 				}
 
 				//filter sample by FCS keyword
-				if(config.is_pheno_data_from_FCS && !check_sample_filter(config.sample_filters, frptr->get_pheno_data()))//skip parsing this sample if not passed filter
+				if(config_const.is_pheno_data_from_FCS && !this->check_sample_filter(config_const.sample_filters, frptr->get_pheno_data()))//skip parsing this sample if not passed filter
 				{
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 
@@ -273,12 +274,12 @@ public:
 
 
 				//parse gating tree
-				GatingHierarchyPtr gh = to_GatingHierarchy(sample_info.sample_node,config.is_parse_gate,gTrans);
+				GatingHierarchyPtr gh = this->to_GatingHierarchy(sample_info.sample_node,config_const.is_parse_gate,gTrans_const);
 
 				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 					COUT<<"Gating hierarchy created: "<<uid<<endl;
 
-				if(config.is_gating)
+				if(config_const.is_gating)
 				{
 					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						cout<<endl<<"Gating ..."<<endl;
@@ -287,14 +288,14 @@ public:
 					fr.read_fcs_data();
 					//check if external comps are provided
 					compensation comp;
-					if(!config.global_comp.empty())
+					if(!config_const.global_comp.empty())
 					{
-						comp = config.global_comp;
+						comp = config_const.global_comp;
 					}
 					else
 					{
-						auto it_comp = config.compensation_map.find(uid);
-						if(it_comp != config.compensation_map.end())
+						auto it_comp = config_const.compensation_map.find(uid);
+						if(it_comp != config_const.compensation_map.end())
 						{
 							comp = it_comp->second;
 
@@ -309,20 +310,20 @@ public:
 					gh->compensate(fr);
 					gh->transform_gate();
 					gh->transform_data(fr);
-					gh->extendGate(fr, config.gate_extend_trigger_value);
-					gh->gating(fr, 0,false, config.compute_leaf_bool_node);
+					gh->extendGate(fr, config_const.gate_extend_trigger_value);
+					gh->gating(fr, 0,false, config_const.compute_leaf_bool_node);
 
 
 				}
 				else
 				{
 					gh->transform_gate();
-					gh->extendGate(config.gate_extend_trigger_value, config.gate_extend_to);
+					gh->extendGate(config_const.gate_extend_trigger_value, config_const.gate_extend_to);
 
 				}
 
 
-				if(config.is_gating&&config.is_h5)
+				if(config_const.is_gating&&config_const.is_h5)
 				{
 					string h5_filename = (h5_dir/uid).string() + ".h5";
 					frptr->write_h5(h5_filename);
@@ -331,14 +332,25 @@ public:
 				else
 					gh->set_cytoframe_view(CytoFrameView(frptr));
 
+				{
+					FreeListMutexType::scoped_lock lock(FreeListMutex);
+					gs.add_GatingHierarchy(gh, uid);
+				}
 
-				gs.add_GatingHierarchy(gh, uid);
 
 			}
 
 
 
+		 });
+
+		if(gsPtr->size() == 0)
+			throw(domain_error("No samples in this workspace to parse!"));
+
+
+		return gsPtr;
 	}
+
 	/**
 	 * Search for the FCS file
 	 * First try to search by file name, if failed, use FCS keyword $FIL + additional keywords for further searching and pruning

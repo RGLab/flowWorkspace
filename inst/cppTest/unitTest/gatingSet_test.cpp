@@ -145,7 +145,7 @@ void gh_counts(GatingHierarchy & gh,vector<bool> &isEqual, const float tolerance
 		VertexID u=*it;
 		if(find(skipPops.begin(), skipPops.end(), u) == skipPops.end())//skip some pops that flowJo records the wrong counts
 		{
-			if(u!=ROOTNODE){
+//			if(u!=ROOTNODE){
 				nodeProperties &node=gh.getNodeProperty(u);
 				int flowJoCount = node.getStats(false)["count"];
 				if(flowJoCount != -1) //skip the unrecorded flowJo counts
@@ -181,7 +181,7 @@ void gh_counts(GatingHierarchy & gh,vector<bool> &isEqual, const float tolerance
 					cout << thisCV << " tol = " << thisTol << endl;
 					isEqual.push_back(thisEqual);
 				}
-			}
+//			}
 		}
 	}
 }
