@@ -73,10 +73,13 @@ struct ParseWorkspaceParameters
 //
 //	 }
 };
+typedef tbb::spin_mutex GsMutexType;
 
 class flowJoWorkspace:public workspace{
 private:
 	string versionList;//used for legacy mac ws
+	GsMutexType GsMutex, TransMutex;
+
 public:
 
 	flowJoWorkspace(xmlDoc * doc){
@@ -104,10 +107,13 @@ public:
 	  */
 	GatingHierarchyPtr to_GatingHierarchy(const wsSampleNode curSampleNode,bool is_parse_gate,const trans_global_vec & _gTrans)
 	 {
+
+
 		GatingHierarchyPtr gh(new GatingHierarchy());
-	 	wsRootNode root=getRoot(curSampleNode);
+		wsRootNode root=getRoot(curSampleNode);
 	 	if(is_parse_gate)
 	 	{
+
 
 	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 	 			COUT<<endl<<"parsing compensation..."<<endl;
@@ -119,19 +125,27 @@ public:
 
 	 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 	 			COUT<<endl<<"parsing transformation..."<<endl;
-	 		//prefixed version
-	 		trans_local trans = getTransformation(root,comp,transFlag,_gTrans, true);
 
-	 		/*
-	 		 * unprefixed version. Both version of trans are added (sometime they are identical)
-	 		 * so that the trans defined on uncompensated channel (e.g. SSC-A) can still be valid
-	 		 * without being necessarily adding comp prefix.
-	 		 * It is mainly to patch the legacy workspace of mac or win where the implicit trans is added for channel
-	 		 * when its 'log' keyword is 1.
-	 		 * vX doesn't have this issue since trans for each parameter/channel
-	 		 * is explicitly defined in transform node.
-	 		 */
-	 		trans_local trans_raw=getTransformation(root,comp,transFlag,_gTrans, false);
+	 		trans_local trans, trans_raw;
+	 		{
+				GsMutexType::scoped_lock lock1(TransMutex);//biexp interpolation could be performed on the shared global trans object
+
+				//prefixed version
+				trans = getTransformation(root,comp,transFlag,_gTrans, true);
+
+				/*
+				 * unprefixed version. Both version of trans are added (sometime they are identical)
+				 * so that the trans defined on uncompensated channel (e.g. SSC-A) can still be valid
+				 * without being necessarily adding comp prefix.
+				 * It is mainly to patch the legacy workspace of mac or win where the implicit trans is added for channel
+				 * when its 'log' keyword is 1.
+				 * vX doesn't have this issue since trans for each parameter/channel
+				 * is explicitly defined in transform node.
+				 */
+
+
+				 trans_raw=getTransformation(root,comp,transFlag,_gTrans, false);
+	 		}
 	 		//merge raw version of trans map to theprefixed version
 	 		trans_map tp = trans_raw.getTransMap();
 	 		for(trans_map::iterator it=tp.begin();it!=tp.end();it++)
@@ -158,7 +172,9 @@ public:
 	 	nodeProperties & np = tree[0];
 	 	to_popNode(root, np);
 	 	addPopulation(tree, pVerID,&root,is_parse_gate, derived_params);
+
 	 	return gh;
+
 	 }
 
 	unique_ptr<GatingSet> to_GatingSet(unsigned group_id, ParseWorkspaceParameters config)
@@ -201,13 +217,11 @@ public:
 		/*
 		 * try to parse each sample
 		 */
-		 typedef tbb::spin_mutex FreeListMutexType;
-		 	FreeListMutexType FreeListMutex;
-		 	GatingSet & gs = *gsPtr;
-		 	tbb::task_scheduler_init init(config.num_threads);
-		 	const auto & config_const = config;
-		 	const auto & gTrans_const = gTrans;
-		 tbb::parallel_for<int>(0, sample_infos.size(), 1, [this, &sample_infos, &config_const, &data_dir, &h5_dir, &gTrans_const, &gs, &FreeListMutex](int i){
+		GatingSet & gs = *gsPtr;
+		tbb::task_scheduler_init init(config.num_threads);
+		const auto & config_const = config;
+		const auto & gTrans_const = gTrans;
+		tbb::parallel_for<int>(0, sample_infos.size(), 1, [this, &sample_infos, &config_const, &data_dir, &h5_dir, &gTrans_const, &gs](int i){
 
 			 const auto &sample_info = sample_infos[i];
 
@@ -333,7 +347,8 @@ public:
 					gh->set_cytoframe_view(CytoFrameView(frptr));
 
 				{
-					FreeListMutexType::scoped_lock lock(FreeListMutex);
+//					GsMutexType GsMutex;
+					GsMutexType::scoped_lock lock(GsMutex);
 					gs.add_GatingHierarchy(gh, uid);
 				}
 
