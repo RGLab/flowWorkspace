@@ -9,7 +9,7 @@ parseWorkspace(ws, name = NULL, subset = list(), execute = TRUE,
   additional.keys = "$TOT", keywords = character(),
   keywords.source = "XML", keyword.ignore.case = FALSE,
   extend_val = 0, extend_to = -4000, channel.ignore.case = FALSE,
-  leaf.bool = TRUE, compensation = NULL, ...)
+  leaf.bool = TRUE, compensation = NULL, mc.cores = 1, ...)
 }
 \arguments{
 \item{...}{\itemize{

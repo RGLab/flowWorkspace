@@ -37,7 +37,8 @@ Imports:
     stringr,
     scales,
     flowViz,
-    matrixStats
+    matrixStats,
+    RcppParallel
 Depends:
     R (>= 2.16.0),flowCore(>= 1.49.4),ncdfFlow(>= 2.25.4)
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation

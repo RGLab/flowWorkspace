@@ -116,6 +116,7 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 #' @rdname parseWorkspace
 #' @export 
 #' @importFrom utils menu
+#' @importFrom RcppParallel RcppParallelLibs
 parseWorkspace <- function(ws, name = NULL
     , subset = list()
     , execute = TRUE
