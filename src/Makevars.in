@@ -8,7 +8,7 @@ endif
 	
 CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@ -DBOOST_NO_AUTO_PTR -Wno-unknown-pragmas -Wno-comment -fpermissive 
-PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags();cat(' ');Rhdf5lib::pkgconfig('PKG_CXX_LIBS')"` @PKG_LIBS@ -lstdc++fs  
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags();cat(' ');Rhdf5lib::pkgconfig('PKG_CXX_LIBS');cat(' ');cat(paste0('-Wl,-rpath=', dirname(RcppParallel:::tbbLibPath()), ' -L', dirname(RcppParallel:::tbbLibPath())))"` @PKG_LIBS@ -lstdc++fs -ltbb  
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a
