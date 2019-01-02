@@ -78,7 +78,7 @@ typedef tbb::spin_mutex GsMutexType;
 class flowJoWorkspace:public workspace{
 private:
 	string versionList;//used for legacy mac ws
-	GsMutexType GsMutex, TransMutex;
+	GsMutexType GsMutex, TransMutex, h5Mutex;
 
 public:
 
@@ -340,14 +340,16 @@ public:
 				if(config_const.is_gating&&config_const.is_h5)
 				{
 					string h5_filename = (h5_dir/uid).string() + ".h5";
-					frptr->write_h5(h5_filename);
-					gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename, H5F_ACC_RDWR))));
+					{
+						GsMutexType::scoped_lock lock(h5Mutex);
+						frptr->write_h5(h5_filename);
+						gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename, H5F_ACC_RDWR))));
+					}
 				}
 				else
 					gh->set_cytoframe_view(CytoFrameView(frptr));
 
 				{
-//					GsMutexType GsMutex;
 					GsMutexType::scoped_lock lock(GsMutex);
 					gs.add_GatingHierarchy(gh, uid);
 				}
