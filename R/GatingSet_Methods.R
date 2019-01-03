@@ -1007,6 +1007,9 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 
 #' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
 #'
+#' \strong{Important}: The \code{plotGate} methods are now defunct and gates should instead be plotted using the 
+#' \code{\link[ggcyto]{autoplot}} method from the \code{ggcyto} package. The \code{plotGate} documentation has been 
+#' left here to ease the transition. \cr\cr
 #' When applied to a \code{GatingHierarchy},\code{arrange} is set as TRUE, then all the gates associated with it are plotted as different panel on the same page.
 #' If \code{arrange} is FALSE, then it plots one gate at a time.
 #' By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
@@ -1084,32 +1087,19 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #' plotGate,GatingSet,character-method
 #' plotGate,GatingSet,missing-method
 #'
-#' @rdname plotGate-methods
+#' @rdname plotGate-methods-defunct
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
-        stop("y is missing!")
-		})
+  .Defunct("ggcyto::autoplot", "flowWorkspace")
+})
 
 
 setMethod("plotGate",signature(x="GatingSet",y="numeric"),function(x,y,...){
-
-      stop(" 'numeric` indexing is no longer safe. Please use node name instead!")
-
-
-		})
+  .Defunct("ggcyto::autoplot", "flowWorkspace")
+})
 
 setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice=TRUE,bool=FALSE,merge=TRUE,...){
-
-
-      plotList <- .mergeGates(x[[1]],y,bool,merge)
-      if(length(plotList) > 1)
-        stop("Too many populations specified in 'y'!Only one panel per sample is supported!")
-#				lapply(plotList,function(y){
-      y <- plotList[[1]]
-      return(.plotGate(x,y,...))
-#						})
-
-
-    })
+  .Defunct("ggcyto::autoplot", "flowWorkspace")
+})
 
 ##recursively parsing conditional variables
 #' @noRd 
@@ -1194,117 +1184,6 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
   list(xTerm=xTerm,yTerm=yTerm,xfunc=xfunc,yfunc=yfunc,groupBy=groupBy)
 }
-#' preporcess the gating tree to prepare for the plotGate
-#'
-#' @param x a \code{GatingSet}
-#' @param y node name
-#' @param type \code{character} either 'xyplot' or 'densityplot'
-#' @param stats \code{numeric} proportions of cell population. If \code{missing} then extract it from \code{gatingHiearchy}
-#' @return a \code{list} containing 'gates', 'xParam','yParam', and 'stats'
-#' @noRd 
-.preplot <- function(x, y, type, stats, formula, default.x = "FSC-A", default.y = "SSC-A"){
-  samples <- sampleNames(x)
-
-  isBool <- FALSE
-  if(is.list(y))
-  {
-
-    curGates<-sapply(samples,function(curSample){
-
-          filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
-        },simplify=F)
-    curGates<-as(curGates,"filtersList")
-
-    if(missing(stats)){
-
-      stats <- sapply(samples,function(thisSample){
-            lapply(y$popIds,function(thisY){
-                  curGh <- x[[thisSample]]
-                  getProp(curGh, thisY, xml = F)
-                })
-          },simplify = FALSE)
-    }
-
-  }else
-  {
-    curGates<-getGate(x,y)
-
-    if(suppressWarnings(any(is.na(curGates)))){
-      message("Can't plot. There is no gate defined for node ",getNodes(x[[1]],,showHidden=TRUE)[y]);
-      invisible();
-      return(NULL)
-    }
-    if(missing(stats)){
-      stats <- sapply(samples,function(thisSample){
-            curGh <- x[[thisSample]]
-            getProp(curGh, y,xml = F)
-          },simplify = FALSE)
-    }else
-      stats = stats
-
-  }
-
-  if(class(curGates[[1]])=="booleanFilter")
-  {
-    parent <- getParent(x[[1]],y)
-    if(parent == "root"){
-      params <- c(default.y, default.x)
-    }else{
-      params<-rev(parameters(getGate(x[[1]],parent)))
-    }
-
-    overlay <- sapply(samples,function(curSample)getIndices(x[[curSample]],y), simplify = FALSE)
-    curGates <- NULL
-    isBool <- TRUE
-  }else
-  {
-    if(class(curGates[[1]])=="filters")
-      params<-rev(parameters(curGates[[1]][[1]]))
-    else
-      params<-rev(parameters(curGates[[1]]))
-
-  }
-
-  if(type == "xyplot")
-  {
-    if(length(params) == 1)
-    {
-
-      if(is.null(formula)){
-        xParam <- params
-        yParam <- fix_y_axis(gs = x, x = xParam, y = default.y)
-      }else{
-        forRes <- .formulaParser(formula)
-        yParam <- as.character(forRes[["yTerm"]])
-        xParam <- as.character(forRes[["xTerm"]])
-
-      }
-
-
-    }else
-    {
-      if(is.null(formula)){
-        yParam=params[1]
-        xParam=params[2]
-      }else{
-        forRes <- .formulaParser(formula)
-        yParam <- as.character(forRes[["yTerm"]])
-        xParam <- as.character(forRes[["xTerm"]])
-      }
-
-
-    }
-
-  }else{
-    if(length(params) > 1)
-      stop("Can't plot 2d gate on densityplot!")
-    xParam <- params
-    yParam <- NULL
-  }
-
-
-  list(gates = curGates, xParam = as.vector(xParam), yParam = as.vector(yParam), stats = stats, isBool = isBool)
-}
 
 fix_y_axis <- function(gs, x, y){
   chnls <- colnames(getData(gs))
@@ -1322,6 +1201,7 @@ fix_y_axis <- function(gs, x, y){
   }
   return(yParam)
 }
+
 #' @param x a \code{GatingSet}
 #' @param overlay a list of gate indices or event indices (named by sampleNames(x))
 #' @param ... other arguments
@@ -1381,272 +1261,6 @@ fix_y_axis <- function(gs, x, y){
 
   return(c(thisMin, thisMax))
 }
-#' the actual plotGate engine
-#'
-#' @param fitGate used to disable behavior of plotting the gate region in 1d densityplot
-#' @param overlay either the gate indice list or event indices list
-#' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}
-#' @param strip.text either "parent" (the parent population name) or "gate "(the gate name).
-#' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
-#' @param path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method
-#' @param xlim, ylim \code{character} can be either "instrument" or "data" which determines the x, y axis scale either by instrument measurement range or the actual data range.
-#'          or \code{numeric} which specifies customized range.
-#' @param ... other arguments passed to .formAxis and flowViz
-#' @importMethodsFrom flowViz xyplot densityplot
-#' @importFrom RColorBrewer brewer.pal
-#' @noRd 
-.plotGate <- function(x, y, formula=NULL, cond=NULL
-                      , smooth=FALSE ,type = flowWorkspace.par.get("plotGate")[["type"]]
-                      , main = NULL
-                      , fitGate = flowWorkspace.par.get("plotGate")[["fitGate"]]
-                      , overlay = NULL
-                      , overlay.symbol = NULL
-                      , key = "auto"
-                      , stack = FALSE
-                      , xbin = 32
-                      , stats
-                      , default.y = flowWorkspace.par.get("plotGate")[["default.y"]]
-                      , default.x = flowWorkspace.par.get("plotGate")[["default.x"]]
-                      , scales
-                      , strip = TRUE
-                      , strip.text = c("parent", "gate")
-                      , path = "auto"
-                      , xlim = flowWorkspace.par.get("plotGate")[["xlim"]]
-                      , ylim = flowWorkspace.par.get("plotGate")[["ylim"]]
-                      , ...){
-
-  .Defunct("ggcyto::autoplot")
-	type <- match.arg(type, c("xyplot","densityplot", "histogram"))
-	strip.text <- match.arg(strip.text)
-    #x is either gs or gh, force it to be gs to be compatible with this plotGate engine
-    is.gh <- class(x) == "GatingHierarchy"
-    if(is.gh){
-      x <- as(x, "GatingSet")
-    }
-
-    gh <- x[[1]]
-
-	if(is.list(y))
-	  parent<-y$parentId
-	else
-	  parent<-getParent(gh, y, path = path)
-    
-  if(strip.text == "parent"){
-    popName <- parent
-  }else{
-    popName <- y
-  }
-    #set default title
-#    popName <- getNodes(gh, path = path, showHidden = TRUE)[pid]
-
-    default_main <- list(label = popName)
-    if(is.gh && strip)
-        default_main <- list()
-    #update default main if non-null main are specified
-    if(is.list(main))
-      main <- lattice:::updateList(default_main, main)
-
-
-
-	#################################
-	# setup axis labels and scales
-	################################
-    parseRes <- .preplot (x, y, type, stats, formula, default.x, default.y)
-
-    curGates <- parseRes$gates
-    xParam <- parseRes$xParam
-    yParam <- parseRes$yParam
-    params <- c(yParam,xParam)
-    stats <- parseRes$stats
-
-    if(parseRes$isBool){
-      if(is.null(overlay))
-        overlay <- y
-      else
-        overlay <- c(overlay, y)
-    }
-
-
-#    browser()
-        #get data
-    #subset on channels to speed up loading data from disk
-    parentData <- getData(x, parent, j = params)
-    defaultCond <- "name"
-    if(is.gh){
-      if(strip){
-        #rename sample name with popName in order to display it in strip
-        sampleNames(parentData) <- popName
-        pData(parentData)[["name"]] <- popName
-        if(!is.null(curGates))
-          names(curGates) <- popName
-        if(!is.null(stats))
-          names(stats) <- popName
-      }else
-        defaultCond <- NULL #hide strip
-    }
-    parentFrame <- parentData[[1]]
-    #set the smoothing option
-#    smooth <- as.logical(ifelse(nrow(parentFrame)<100,TRUE,smooth))
-
-
-    axisObject <- .formatAxis(gh,parentFrame, xParam, yParam,...)
-
-    #set the formula
-    if(is.null(formula))
-    {
-      formula<-mkformula(params,isChar=TRUE)
-      if(!is.null(cond))
-        formula<-paste(formula,cond,sep="|")
-      formula<-as.formula(formula)
-    }
-
-    #use default scales stored in gs if it is not given
-    if(missing(scales)){
-      scales <- axisObject$scales
-    }else
-    {
-      if(!is.null(scales)){
-        scales <- lattice:::updateList(axisObject$scales, scales) #update default lab if non-null lab are specified
-      }
-    }
-
-
-
-
-    thisCall<-quote(plot(x=formula
-                          ,data=parentData
-                          ,filter=curGates
-                          ,main=main
-                          ,...
-                          )
-                      )
-#                      browser()
-    #try to customize the x, y limits if requested
-    if(!is.numeric(xlim))
-    {
-      xlim <- match.arg(xlim, c("instrument", "data"))
-      if(xlim == "data")
-      {
-        xlim <- .getRange(parentData, xParam)
-      }
-    }
-      # instrument range is calculated within xyplot::prepanel.xyplot.flowset
-      # so there is no need to do it here
-    if(is.numeric(xlim)){
-      scales$x <- NULL
-      thisCall <- as.call(c(as.list(thisCall),list(xlim = xlim)))
-    }
-
-
-
-    if(!is.numeric(ylim))
-    {
-      ylim <- match.arg(ylim, c("instrument", "data"))
-      if(ylim == "data")
-      {
-        ylim <- .getRange(parentData, yParam)
-      }
-    }
-    if(is.numeric(ylim)){
-      scales$y <- NULL
-      thisCall <- as.call(c(as.list(thisCall),list(ylim = ylim)))
-    }
-
-
-    if(!is.null(stats)){
-      thisCall <- as.call(c(as.list(thisCall),list(stats = stats)))
-    }
-
-    thisCall <- as.call(c(as.list(thisCall),list(scales = scales)))
-
-	if(type=="xyplot")
-	{
-
-		#################################
-		# calcuate overlay frames
-		################################
-        if(!is.null(overlay)){
-          if(is.null(overlay.symbol)){
-#            browser()
-            # set symbol color automatically if not given
-            nOverlay <- length(overlay)
-            overlay.fill <- brewer.pal(9,"Set1")[1:nOverlay]
-            names(overlay.fill) <- overlay
-            overlay.symbol <- sapply(overlay.fill, function(col)list(fill = col), simplify = FALSE)
-          }
-          #set legend automatically if it is not given
-          if(isTRUE(key == "auto")){
-
-             key = list(text = list(names(overlay.symbol), cex = 0.6)
-                                , points = list(col = sapply(overlay.symbol, "[[", "fill")
-                                                , pch = 19
-                                                , cex = 0.5)
-                          , columns = length(overlay.symbol)
-                          , between = 0.3
-                          , space = "bottom"
-                          , padding.text = 5)
-          }
-          overlay <- sapply(overlay, function(thisOverlay)getData(x,thisOverlay)[,params])
-
-          if(is.gh){
-            if(strip){
-#              browser()
-              #rename sample name with popName in order to display it in strip
-            overlay <- sapply(overlay, function(thisOverlay){
-                            sampleNames(thisOverlay) <- popName
-                            thisOverlay
-                      })
-           names(overlay.symbol) <- names(overlay)
-          }
-        }
-      }
-
-
-		#################################
-		# the actual plotting
-		################################
-#        browser()
-        thisCall <- as.call(c(as.list(thisCall)
-                            ,list(smooth = smooth
-                                  ,overlay = overlay
-                                  ,overlay.symbol = overlay.symbol
-                                  , defaultCond = defaultCond
-                                  , xbin = xbin
-                                  )
-                            )
-                          )
-        thisCall[[1]]<-quote(xyplot)
-        if(is.list(key))
-          thisCall[["key"]] <- key
-
-	}else if(type == "densityplot")
-	{
-		if(length(params)==1)
-		{
-
-          thisCall<-as.call(c(as.list(thisCall)
-                               , fitGate = fitGate
-                               , stack = stack
-                              )
-                           )
-          thisCall[[1]]<-quote(densityplot)
-		}
-	}else{
-      if(length(params)==1)
-      {
-
-        thisCall<-as.call(c(as.list(thisCall)
-
-                        , stack = FALSE
-                    )
-        )
-        thisCall[[1]]<-quote(histogram)
-      }
-    }
-	return(eval(thisCall))
-}
-
-
 
 #'  clone a GatingSet
 #'
@@ -2126,32 +1740,32 @@ setMethod("getPopStats", "GatingSet",
 })
 
 #' calculate the coefficient of variation
+#' 
+#' This builds matrix with all node labels for all GH's
+#' so expect many NAs if the GH's don't have matching trees
+#' 
 #' @noRd 
 .computeCV <- function(x, ...){
-
   #columns are populations
   #rows are samples
-
   statList <- lapply(x,function(gh){
-        thisStat <- getPopStats(gh, ...)
-        thisStat
-      })
-
-  cv <- do.call(rbind
-              ,lapply(statList,function(x){
-
-                    res <- apply(x[,list(xml.count,openCyto.count)],1,function(x){
-                          cv <- IQR(x)/median(x)
-                          ifelse(is.nan(cv),0,cv)
-                        })
-                    names(res) <- rownames(x)
-                    res
-                  })
-             )
-
-  cv
-
+    thisStat <- getPopStats(gh, ...)
+    thisStat
+  })
+  all_pops <- unique(unlist(lapply(statList, function(x) x$node)))
+  cvs <- lapply(statList,function(x){
+    res <- apply(x[,list(xml.count,openCyto.count)],1,function(x){
+      cv <- IQR(x)/median(x)
+      ifelse(is.nan(cv),0,cv)
+    })
+    names(res) <- rownames(x)
+    res
+  })
+  cvs <- do.call(rbind, lapply(cvs, function(x) x[match(all_pops, names(x))]))
+  colnames(cvs) <- all_pops
+  cvs
 }
+
 #' Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy.
 #'
 #' This function plots the coefficient of variation calculated between the xml population statistics and the openCyto population statistics for each population in a gating hierarchy extracted from a xml Workspace.
@@ -2172,18 +1786,25 @@ setMethod("getPopStats", "GatingSet",
 #' @aliases plotPopCV
 #' @export
 #' @rdname plotPopCV
-#' @importFrom latticeExtra ggplot2like
+#' @import ggplot2
 setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)), path = "auto",...){
       cv <- .computeCV(x, path = path)
       #flatten, generate levels for samples.
       nr<-nrow(cv)
       nc<-ncol(cv)
-      populations<-gl(nc,nr,labels=as.character(colnames(cv)))
+      populations<-gl(nc,nr,labels=as.character(colnames(cv)), ordered = TRUE)
       samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
       cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-
-      return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
-    })
+      return(ggplot2::ggplot(na.omit(cv), aes(x=populations, y=cv)) +
+               # free_x to let each plot individually clip out NA bars
+               facet_wrap(~samples, scales="free_x") + 
+               geom_col() +
+               ylab("Coefficient of Variation") +
+               xlab(NULL) +
+               scale_y_continuous() +
+               scale_x_discrete() +
+               theme(axis.text.x= element_text(angle = 90, hjust=1, vjust = 0.5)))
+      })
 
 #' @rdname keyword
 #' @export

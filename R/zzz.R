@@ -95,7 +95,7 @@ flowWorkspace.par.set <- function (name, value)
 {
     old <- flowWorkspace.state[["par"]]
     if(name%in%names(old)){
-      flowWorkspace.state[["par"]][[name]] <- lattice:::updateList(old[[name]], value)  
+      flowWorkspace.state[["par"]][[name]] <- modifyList(old[[name]], value)  
     }else
       stop(name, " is not a valid flowWorkspace parameters!")
     

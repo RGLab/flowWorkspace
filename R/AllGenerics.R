@@ -29,7 +29,7 @@ setGeneric("filterObject",function(x,...)standardGeneric("filterObject"))
 
 #' @export
 #' @docType methods
-#' @rdname plotGate-methods
+#' @rdname plotGate-methods-defunct
 setGeneric("plotGate",function(x,y,...)standardGeneric("plotGate"))
 
 #' @export

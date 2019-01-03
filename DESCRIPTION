@@ -16,27 +16,22 @@ LazyLoad: yes
 Imports:
     Biobase,
     BiocGenerics,
+    ggplot2,
     graph,
     graphics,
     grDevices,
-    lattice,
     methods,
     stats,
     stats4,
     utils,
-    RBGL,
     XML,
     tools,
-    gridExtra,
     Rgraphviz,
     data.table,
     dplyr,
-    latticeExtra,
     Rcpp,
-    RColorBrewer,
     stringr,
     scales,
-    flowViz,
     matrixStats,
     RcppParallel
 Depends:
@@ -77,3 +72,4 @@ Collate:
     'updateIndices.R'
     'utils.R'
     'zzz.R'
+Encoding: UTF-8

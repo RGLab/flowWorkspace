@@ -84,6 +84,9 @@ Nodes can be accessed with \code{\link{getNodes}}.}
 a \code{trellis} object if \code{arrange} is \code{FALSE},
 }
 \description{
+\strong{Important}: The \code{plotGate} methods are now defunct and gates should instead be plotted using the 
+\code{\link[ggcyto]{autoplot}} method from the \code{ggcyto} package. The \code{plotGate} documentation has been 
+left here to ease the transition. \cr\cr
 When applied to a \code{GatingHierarchy},\code{arrange} is set as TRUE, then all the gates associated with it are plotted as different panel on the same page.
 If \code{arrange} is FALSE, then it plots one gate at a time.
 By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
