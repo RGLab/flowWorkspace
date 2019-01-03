@@ -13,7 +13,8 @@
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
-#include <tbb/tbb.h>
+
+#define TBB_PREVIEW_SERIAL_SUBSET 1
 #include <tbb/tbb.h>
 #include "tbb/task_scheduler_init.h"
 #include <tbb/spin_mutex.h>
@@ -219,156 +220,162 @@ public:
 		 */
 		GatingSet & gs = *gsPtr;
 		tbb::task_scheduler_init init(config.num_threads);
-		const auto & config_const = config;
-		const auto & gTrans_const = gTrans;
-		tbb::parallel_for<int>(0, sample_infos.size(), 1, [this, &sample_infos, &config_const, &data_dir, &h5_dir, &gTrans_const, &gs](int i){
-
-			 const auto &sample_info = sample_infos[i];
-
-			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-				COUT<<endl<<"... start parsing sample: "<< sample_info.sample_name <<"... "<<endl;
-			//generate uid
-			string ws_key_seq = this->concatenate_keywords(sample_info.keywords, config_const.keywords_for_uid);
-			string uid = sample_info.sample_name + ws_key_seq;
-			shared_ptr<MemCytoFrame> frptr;
-			bool isfound = false;
-			if(config_const.is_gating)
-			{
-				//match FCS
-				isfound = this->search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config_const, frptr);
-				if(!isfound)
-					PRINT("FCS not found for sample " + uid + "\n");
-
-			}
-			else
-				frptr.reset(new MemCytoFrame());//add dummy frame to hold pData
 
 
-
-
-			//proceed gate parsing when data is available or gate-parsing only
-			if(isfound || !config_const.is_gating)
-			{
-
-				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-					cout<<endl<<"Extracting pheno data from keywords for sample: " + uid<<endl;
-
-
-				//set pdata
-				frptr->set_pheno_data("name", sample_info.sample_name);
-
-				KEY_WORDS keys = sample_info.keywords;
-				if(!config_const.is_gating&&config_const.is_pheno_data_from_FCS)
-					throw(domain_error("Can't parse phenodata from FCS when 'is_gating' is set to false!"));
-
-				if(config_const.is_pheno_data_from_FCS)
-					keys = frptr->get_keywords();
-				else
-					keys = sample_info.keywords;
-
-				for(const string & k : config_const.keywords_for_pheno_data)
-				{
-					//todo::case insensitive search
-					if(config_const.keyword_ignore_case)
-						throw(domain_error("keyword_ignore_case not supported yet!"));
-					auto it_k = keys.find(k);
-					if(it_k == keys.end())
-						throw(domain_error("keyword '" + k + "' not found in sample: " + uid));
-
-					frptr->set_pheno_data(it_k->first, it_k->second);
-				}
-
-				//filter sample by FCS keyword
-				if(config_const.is_pheno_data_from_FCS && !this->check_sample_filter(config_const.sample_filters, frptr->get_pheno_data()))//skip parsing this sample if not passed filter
-				{
-					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-
-					cout<<endl<<"Skipping sample: " + uid + " by filter"<<endl;
-
-					return;
-				}
-
-
-				//parse gating tree
-				GatingHierarchyPtr gh = this->to_GatingHierarchy(sample_info.sample_node,config_const.is_parse_gate,gTrans_const);
-
-				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-					COUT<<"Gating hierarchy created: "<<uid<<endl;
-
-				if(config_const.is_gating)
-				{
-					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-						cout<<endl<<"Gating ..."<<endl;
-					MemCytoFrame & fr = *frptr;
-					//load the data into the header-only version of cytoframe
-					fr.read_fcs_data();
-					//check if external comps are provided
-					compensation comp;
-					if(!config_const.global_comp.empty())
-					{
-						comp = config_const.global_comp;
-					}
-					else
-					{
-						auto it_comp = config_const.compensation_map.find(uid);
-						if(it_comp != config_const.compensation_map.end())
-						{
-							comp = it_comp->second;
-
-						}
-					}
-					if(!comp.empty())
-					{
-						comp.cid = "1";
-						gh->set_compensation(comp, false);
-					}
-
-					gh->compensate(fr);
-					gh->transform_gate();
-					gh->transform_data(fr);
-					gh->extendGate(fr, config_const.gate_extend_trigger_value);
-					gh->gating(fr, 0,false, config_const.compute_leaf_bool_node);
-
-
-				}
-				else
-				{
-					gh->transform_gate();
-					gh->extendGate(config_const.gate_extend_trigger_value, config_const.gate_extend_to);
-
-				}
-
-
-				if(config_const.is_gating&&config_const.is_h5)
-				{
-					string h5_filename = (h5_dir/uid).string() + ".h5";
-					{
-						GsMutexType::scoped_lock lock(h5Mutex);
-						frptr->write_h5(h5_filename);
-						gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename, H5F_ACC_RDWR))));
-					}
-				}
-				else
-					gh->set_cytoframe_view(CytoFrameView(frptr));
-
-				{
-					GsMutexType::scoped_lock lock(GsMutex);
-					gs.add_GatingHierarchy(gh, uid);
-				}
-
-
-			}
-
-
-
-		 });
-
+		if(config.num_threads <=1)
+			tbb::serial::parallel_for<int>(0, sample_infos.size(), 1, [&, this](int i){
+				this->parse_sample(sample_infos[i], config, data_dir, h5_dir, gTrans, gs);
+			});
+		else
+			tbb::parallel_for<int>(0, sample_infos.size(), 1, [&, this](int i){
+							this->parse_sample(sample_infos[i], config, data_dir, h5_dir, gTrans, gs);
+						});
 		if(gsPtr->size() == 0)
 			throw(domain_error("No samples in this workspace to parse!"));
 
 
 		return gsPtr;
 	}
+	void parse_sample(const SampleInfo &sample_info, const ParseWorkspaceParameters & config_const, const string &data_dir, const fs::path &h5_dir, const trans_global_vec&gTrans_const, GatingSet &gs)
+	{
+
+		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+			COUT<<endl<<"... start parsing sample: "<< sample_info.sample_name <<"... "<<endl;
+		//generate uid
+		string ws_key_seq = concatenate_keywords(sample_info.keywords, config_const.keywords_for_uid);
+		string uid = sample_info.sample_name + ws_key_seq;
+		shared_ptr<MemCytoFrame> frptr;
+		bool isfound = false;
+		if(config_const.is_gating)
+		{
+			//match FCS
+			isfound = search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config_const, frptr);
+			if(!isfound)
+				PRINT("FCS not found for sample " + uid + "\n");
+
+		}
+		else
+			frptr.reset(new MemCytoFrame());//add dummy frame to hold pData
+
+
+
+
+		//proceed gate parsing when data is available or gate-parsing only
+		if(isfound || !config_const.is_gating)
+		{
+
+			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+				cout<<endl<<"Extracting pheno data from keywords for sample: " + uid<<endl;
+
+
+			//set pdata
+			frptr->set_pheno_data("name", sample_info.sample_name);
+
+			KEY_WORDS keys = sample_info.keywords;
+			if(!config_const.is_gating&&config_const.is_pheno_data_from_FCS)
+				throw(domain_error("Can't parse phenodata from FCS when 'is_gating' is set to false!"));
+
+			if(config_const.is_pheno_data_from_FCS)
+				keys = frptr->get_keywords();
+			else
+				keys = sample_info.keywords;
+
+			for(const string & k : config_const.keywords_for_pheno_data)
+			{
+				//todo::case insensitive search
+				if(config_const.keyword_ignore_case)
+					throw(domain_error("keyword_ignore_case not supported yet!"));
+				auto it_k = keys.find(k);
+				if(it_k == keys.end())
+					throw(domain_error("keyword '" + k + "' not found in sample: " + uid));
+
+				frptr->set_pheno_data(it_k->first, it_k->second);
+			}
+
+			//filter sample by FCS keyword
+			if(config_const.is_pheno_data_from_FCS && !check_sample_filter(config_const.sample_filters, frptr->get_pheno_data()))//skip parsing this sample if not passed filter
+			{
+				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+
+				cout<<endl<<"Skipping sample: " + uid + " by filter"<<endl;
+
+				return;
+			}
+
+
+			//parse gating tree
+			GatingHierarchyPtr gh = to_GatingHierarchy(sample_info.sample_node,config_const.is_parse_gate,gTrans_const);
+
+			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+				COUT<<"Gating hierarchy created: "<<uid<<endl;
+
+			if(config_const.is_gating)
+			{
+				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+					cout<<endl<<"Gating ..."<<endl;
+				MemCytoFrame & fr = *frptr;
+				//load the data into the header-only version of cytoframe
+				fr.read_fcs_data();
+				//check if external comps are provided
+				compensation comp;
+				if(!config_const.global_comp.empty())
+				{
+					comp = config_const.global_comp;
+				}
+				else
+				{
+					auto it_comp = config_const.compensation_map.find(uid);
+					if(it_comp != config_const.compensation_map.end())
+					{
+						comp = it_comp->second;
+
+					}
+				}
+				if(!comp.empty())
+				{
+					comp.cid = "1";
+					gh->set_compensation(comp, false);
+				}
+
+				gh->compensate(fr);
+				gh->transform_gate();
+				gh->transform_data(fr);
+				gh->extendGate(fr, config_const.gate_extend_trigger_value);
+				gh->gating(fr, 0,false, config_const.compute_leaf_bool_node);
+
+
+			}
+			else
+			{
+				gh->transform_gate();
+				gh->extendGate(config_const.gate_extend_trigger_value, config_const.gate_extend_to);
+
+			}
+
+
+			if(config_const.is_gating&&config_const.is_h5)
+			{
+				string h5_filename = (h5_dir/uid).string() + ".h5";
+				{
+					GsMutexType::scoped_lock lock(h5Mutex);
+					frptr->write_h5(h5_filename);
+					gh->set_cytoframe_view(CytoFrameView(CytoFramePtr(new H5CytoFrame(h5_filename, H5F_ACC_RDWR))));
+				}
+			}
+			else
+				gh->set_cytoframe_view(CytoFrameView(frptr));
+
+			{
+				GsMutexType::scoped_lock lock(GsMutex);
+				gs.add_GatingHierarchy(gh, uid);
+			}
+
+
+		}
+
+
+
+	 }
 
 	/**
 	 * Search for the FCS file
