@@ -229,19 +229,21 @@ public:
 				COUT<<endl<<"... start parsing sample: "<< sample_info.sample_name <<"... "<<endl;
 			//generate uid
 			string ws_key_seq = this->concatenate_keywords(sample_info.keywords, config_const.keywords_for_uid);
-
+			string uid = sample_info.sample_name + ws_key_seq;
 			shared_ptr<MemCytoFrame> frptr;
 			bool isfound = false;
 			if(config_const.is_gating)
 			{
 				//match FCS
 				isfound = this->search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config_const, frptr);
+				if(!isfound)
+					PRINT("FCS not found for sample " + uid + "\n");
 
 			}
 			else
 				frptr.reset(new MemCytoFrame());//add dummy frame to hold pData
 
-			string uid = sample_info.sample_name + ws_key_seq;
+
 
 
 			//proceed gate parsing when data is available or gate-parsing only
