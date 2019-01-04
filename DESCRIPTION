@@ -33,7 +33,8 @@ Imports:
     stringr,
     scales,
     matrixStats,
-    RcppParallel
+    RcppParallel,
+    RProtoBufLib
 Depends:
     R (>= 2.16.0),flowCore(>= 1.49.4),ncdfFlow(>= 2.25.4)
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
@@ -43,7 +44,7 @@ Suggests:
     knitr,
     ggcyto,
     parallel
-LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.4), cytolib(>= 2.1.3),Rhdf5lib, RcppArmadillo, RcppParallel
+LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.5), cytolib(>= 2.1.3),Rhdf5lib, RcppArmadillo, RcppParallel
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
 RoxygenNote: 6.1.1
