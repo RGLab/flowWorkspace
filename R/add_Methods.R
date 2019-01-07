@@ -231,11 +231,9 @@ setMethod("add",
       
     })
 
-#' @param recompute \code{logical} whether to recompute the event indices right after gate is added. 
-#'                                  Oftentimes it is more efficient to let user to determining how and when the flow data is loaded
-#'                                  Thus default it FALSE.
+
 #' @rdname add                                                       
-.addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE, recompute = FALSE){
+.addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE){
   
 	if(is.null(name))
 		name <- filterObject$filterId
@@ -255,17 +253,6 @@ setMethod("add",
     
     ptr <- gh@pointer
 	nodeID <- .cpp_addGate( ptr, sn, filterObject, parent, name)
-
-    if(recompute){
-      extend_val <- 0
-      ignore_case <- FALSE
-      gains <- numeric(0)
-      #this always load the raw data
-      #which may not be optimal for bool gate
-      data <- getData(gh)
-      mat <- exprs(data)
-      .cpp_gating( ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case, TRUE, 1)
-    }
         
 	nodeID+1
 }
@@ -380,7 +367,7 @@ setMethod("add",
               fb[["cluster_method_name"]] <- cluster_method_name
             }
             #skip gating by ignoring recompute      
-            nodeID <- flowWorkspace:::.addGate(wf, fb, name = name, parent = parent, recompute = FALSE, ...)
+            nodeID <- .addGate(wf, fb, name = name, parent = parent, ...)
             
             #added it to gating tree
             sn <- sampleNames(wf)
