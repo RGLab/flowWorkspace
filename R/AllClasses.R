@@ -185,8 +185,10 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' }
 setMethod("GatingSet",c("cytoset"),function(x){
       
-      new("GatingSet", pointer = x@pointer)
-      
+      gs <- new("GatingSet", pointer = x@pointer)
+	  suppressMessages(recompute(gs))
+	  gs
+	  
     })
 setMethod("GatingSet",c("flowSet"),function(x){
       
