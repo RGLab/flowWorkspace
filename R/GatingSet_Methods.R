@@ -1289,12 +1289,14 @@ setMethod("clone",c("GatingSet"),function(x, ...){
     })
 
 #' @rdname gs_clone
+#' @export 
 gs_clone <- function(x, h5_dir = tempdir()){
   new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir, is_copy_data = TRUE))
   
 }
 
 #' @rdname gs_clone
+#' @export 
 gs_copy_tree_only <- function(x){
   new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
   
