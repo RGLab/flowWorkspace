@@ -445,16 +445,7 @@ vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	if(u<0)throw(domain_error("not valid vertexID!"));
 	nodeProperties & node = gh.getNodeProperty(u);
 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
-	if(u>0&&!node.isGated())
-	{
-		if(node.getGate()->getType()==BOOLGATE)
-		{
-			MemCytoFrame fr;
-			gh.gating(fr, u);//pass dummy frame since boolgating doesn't need it once the initial gating was completed thus all the ref nodes are guaranteed to be gated
-		}
-
-
-	}
+	gh.check_ungated_bool_node(u);
 
 	return node.getIndices();
 
