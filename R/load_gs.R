@@ -128,9 +128,13 @@ convert_gs_legacy <- function(from, to){
     stop("Invalid legacy GatingSet object file: ", rds.file)
   #convert fs to cs
   fs <- gs.old@"data"
-  if(length(nc.file)==0)
-    stop(".nc file missing in ",from)
-  fs@file <- nc.file
+  if(is(fs, "ncdfFlowSet"))
+  {
+	  if(length(nc.file)==0)
+		  stop(".nc file missing in ",from)
+	  fs@file <- nc.file  
+  }
+  
   #modify/add flowCore_PnR to reflect the transformation (for the legacy gs archive)
   #(should have been taken care of automatically when data was transformed)
   for(sn in sampleNames(fs))
@@ -144,24 +148,46 @@ convert_gs_legacy <- function(from, to){
   
   gs <-  new("GatingSet", pointer = load_legacy_gs(dat.file, cs@pointer))
   
-  
-  comp <- gs.old@compensation
-  if(!is.null(comp))
+  if(.hasSlot(gs.old, "compensation"))
   {
-    if(!is.list(comp)||is.data.frame(comp)){
-      comp <- sapply(sampleNames(gs), function(sn)comp, simplify = FALSE)
-    }
-    gs_set_comp(gs@pointer, comp)
+	  comp <- gs.old@compensation
+	  if(!is.null(comp))
+	  {
+	    if(!is.list(comp)||is.data.frame(comp)){
+	      comp <- sapply(sampleNames(gs), function(sn)comp, simplify = FALSE)
+	    }
+		comp <- sapply(comp, check_comp, simplify = FALSE)
+		
+		cs_set_compensation(gs@pointer, comp, FALSE)
+	  }
   }
-  trans <- gs.old@transformation
-  if(length(trans)!=0)
+  if(.hasSlot(gs.old, "transformation"))
   {
-    if(is(trans , "transformerList")){
-      trans <- sapply(sampleNames(gs), function(sn)trans, simplify = FALSE)
-    }
-    gs_set_comp(gs@pointer, trans)
+	  translist <- gs.old@transformation
+	  if(length(translist)!=0)
+	  {
+	    if(is(translist , "transformerList")){
+			translist <- sapply(sampleNames(gs), function(sn)translist, simplify = FALSE)
+		  
+	    }else if(is(translist, "list"))
+		{
+			tList <- lapply(translist, function(trans){
+						if(!is(trans, "transformerList"))
+							stop("All the elements of 'transformation' slot must be 'transformerList' objects!")
+						
+					})
+		}else
+			stop("expect 'transformation' slot as a 'transformerList' object or a list of 'transformerList' objects!")
+		
+		for(sn in names(translist))
+		{
+			transobjs <- sapply(translist[[sn]], parse_transformer, simplify = FALSE)
+			# browser()
+			set_transformations(gs@pointer, sn, transobjs)
+			
+		}
+	  }
   }
-  
   message("Done")
   gs
 }

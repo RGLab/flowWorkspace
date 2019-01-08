@@ -317,8 +317,9 @@ getpdata <- function(fr) {
     .Call(`_flowWorkspace_getpdata`, fr)
 }
 
-cs_compensate <- function(cs, comps) {
-    invisible(.Call(`_flowWorkspace_cs_compensate`, cs, comps))
+#' @param compensate_data Typically we set it to true to compensate the data as we set comp, Only when we convert the legacy gs, do we skipping this part.
+cs_set_compensation <- function(cs, comps, compensate_data) {
+    invisible(.Call(`_flowWorkspace_cs_set_compensation`, cs, comps, compensate_data))
 }
 
 cs_set_cytoframe <- function(cs, sn, fr) {

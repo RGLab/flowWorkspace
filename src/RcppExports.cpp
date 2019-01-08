@@ -806,14 +806,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cs_compensate
-void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps);
-RcppExport SEXP _flowWorkspace_cs_compensate(SEXP csSEXP, SEXP compsSEXP) {
+// cs_set_compensation
+void cs_set_compensation(Rcpp::XPtr<GatingSet> cs, List comps, bool compensate_data);
+RcppExport SEXP _flowWorkspace_cs_set_compensation(SEXP csSEXP, SEXP compsSEXP, SEXP compensate_dataSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< List >::type comps(compsSEXP);
-    cs_compensate(cs, comps);
+    Rcpp::traits::input_parameter< bool >::type compensate_data(compensate_dataSEXP);
+    cs_set_compensation(cs, comps, compensate_data);
     return R_NilValue;
 END_RCPP
 }
@@ -1200,7 +1201,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},
     {"_flowWorkspace_setpdata", (DL_FUNC) &_flowWorkspace_setpdata, 2},
     {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
-    {"_flowWorkspace_cs_compensate", (DL_FUNC) &_flowWorkspace_cs_compensate, 2},
+    {"_flowWorkspace_cs_set_compensation", (DL_FUNC) &_flowWorkspace_cs_set_compensation, 3},
     {"_flowWorkspace_cs_set_cytoframe", (DL_FUNC) &_flowWorkspace_cs_set_cytoframe, 3},
     {"_flowWorkspace_cs_add_cytoframe", (DL_FUNC) &_flowWorkspace_cs_add_cytoframe, 3},
     {"_flowWorkspace_new_cytoset", (DL_FUNC) &_flowWorkspace_new_cytoset, 0},

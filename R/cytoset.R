@@ -209,7 +209,7 @@ setMethod("compensate", signature=signature(x="cytoset", spillover="list"),#expl
           definition=function(x, spillover){
             spillover <- sapply(spillover, check_comp, simplify = FALSE)
             
-            suppressMessages(cs_compensate(x@pointer, spillover))
+            suppressMessages(cs_set_compensation(x@pointer, spillover, TRUE))
             x
           })
 

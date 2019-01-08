@@ -8,8 +8,10 @@ using namespace cytolib;
 //convert from list of R matrix to compensations
 unordered_map<string, compensation> list_to_comps(List comps);
 
+//' @param comps a list of NumericMatrix
+//' @param compensate_data Typically we set it to true to compensate the data as we set comp, Only when we convert the legacy gs, do we skipping this part.
 // [[Rcpp::export]] 
-void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
+void cs_set_compensation(Rcpp::XPtr<GatingSet> cs, List comps, bool compensate_data){
 
 	unordered_map<string, compensation> comp_objs = list_to_comps(comps);
 //	string dir = generate_unique_dir(fs::temp_directory_path(), "gs");
@@ -21,10 +23,12 @@ void cs_compensate(Rcpp::XPtr<GatingSet> cs, List comps){
 			throw(domain_error("compensation not found for: " + sn));
 		compensation comp = it->second;
 		gh->set_compensation(comp, false);
-		//assume always dealing with h5 based gs
-		auto &fr = static_cast<H5CytoFrame &>(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
-		gh->compensate(fr);
-
+		if(compensate_data)
+		{
+			//assume always dealing with h5 based gs
+			auto &fr = static_cast<H5CytoFrame &>(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
+			gh->compensate(fr);
+		}
 	}
 }
 
