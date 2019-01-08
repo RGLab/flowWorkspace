@@ -74,7 +74,7 @@ getIndiceMat <- function(gh,y){
 #' @param popNames \code{character} node names in gating tree
 #' @param map \code{list} contains the node-to-marker mapping explicitly specified user
 #'
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate %>%
 #' @noRd 
 .getPopChnlMapping <- function(this_pd, popNames, map =  NULL, swap = FALSE, ignore.case = FALSE){
   
