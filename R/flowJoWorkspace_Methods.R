@@ -117,7 +117,7 @@ setMethod("show",c("flowJoWorkspace"),function(object){
 #' @export 
 #' @importFrom utils menu
 #' @importFrom RcppParallel RcppParallelLibs
-parseWorkspace <- function(ws, name = NULL
+parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
     , subset = list()
     , execute = TRUE
     , path = ""
@@ -212,6 +212,11 @@ parseWorkspace <- function(ws, name = NULL
               , args)
   p <- do.call(parse_workspace, args)
   new("GatingSet", pointer = p)
+}
+
+#' @export
+parseWorkspace.default <- function(ws, ...){
+  stop("Workspace object passed to parseWorkspace is of unsupported type")
 }
 
 
