@@ -279,7 +279,7 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @param filename the full path of the output h5 file
 #' @export
 cf_write_h5 <- function(cf, filename){
-  writeH5(fr@pointer,filename)
+  writeH5(cf@pointer,filename)
 }
 
 #' Load the cytoframe from h5 format
