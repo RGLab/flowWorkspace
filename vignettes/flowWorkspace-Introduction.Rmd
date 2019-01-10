@@ -1,17 +1,17 @@
 ---
-title: "flowWorkspace Introduction: A Package to store and maninpulate gated flow data"
-output: 
+title: 'flowWorkspace Introduction: A package to store and manipulate gated flow
+  data'
+author: "Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>"
+output:
+  pdf_document:
+    toc: yes
   html_document:
     number_sections: yes
     theme: united
     toc: yes
     toc_float: yes
-author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
-vignette: >    
-  %\VignetteKeywords{flow cytometry, single cell assay, import}
-  %\VignettePackage{flowWorkspace}  
-  %\VignetteIndexEntry{flowWorkspace Introduction: A Package to store and maninpulate gated flow data}
-  %\VignetteEngine{knitr}
+vignette: |
+  %\VignetteKeywords{flow cytometry, single cell assay, import} %\VignettePackage{flowWorkspace}   %\VignetteIndexEntry{flowWorkspace Introduction: A Package to store and maninpulate gated flow data} %\VignetteEngine{knitr}
 ---
 
 ```{r setup, include=FALSE}
@@ -20,11 +20,10 @@ knitr::opts_chunk$set(echo = TRUE, results = "markup", message = FALSE)
 
 
 ## Purpose
-The purpose of this package is to provide the infrastructure to store, represent and exchange the gated flow data. By this we mean, accessing the samples, groups, transformations, compensation matrices, gates, and population statistics in the gating tree, which is represented as `GatingSet` object in `R`.
+The purpose of this package is to provide the infrastructure to store, represent and exchange gated flow data. By this we mean accessing the samples, groups, transformations, compensation matrices, gates, and population statistics in the gating tree, which is represented as a `GatingSet` object in `R`.
 
 The `GatingSet` can be built from scratch within `R` or imported from `flowJo` XML workspaces (i.e. `.xml` or `.wsp` files) or `GatingML` files . 
 Note that we cannot import `.jo` files directly. You will have to save them in XML workspace format.
-
 
 ## Import flowJo workspace
 The following section walks through opening and importing a flowJo workspace.
@@ -34,7 +33,7 @@ We represent flowJo workspaces using `flowJoWorkspace` objects. We only need to 
 
 ```{r findxml}
 library(flowWorkspace)
-path <- system.file("extdata",package="flowWorkspaceData");
+path <- system.file("extdata",package="flowWorkspaceData")
 wsfile <- list.files(path, pattern="A2004Analysis.xml", full = TRUE)
 ```
 
@@ -44,9 +43,8 @@ ws <- openWorkspace(wsfile)
 ws
 ```
 
-We see that this a version 2.0 workspace file. It's location and filename are printed. Additionally, you are notified that the workspace file is open. This refers to the fact that the XML document is internally represented using 'C' data structures from the `XML` package. After importing the file, the workspace must be explicitly closed using `closeWorkspace()` in order to free up that memory.
+The location and filename of the workspace XML file are printed along with a summary of its groups of samples. With the workspace file opened, some basic sample information can be accessed through some helper methods.
 
-With the workspace file open,some basic sample information can be accessed through some helper methods.
 For example, the list of samples in a workspace can be accessed by:
 ```{r getsamples-ws}
 getSamples(ws)
@@ -59,47 +57,51 @@ And the groups can be accessed by:
 getSampleGroups(ws)
 ```
 
-Keywords stored in xml workspace can also retrieved by:
+Keywords stored in an XML workspace can also retrieved by:
 ```{r}
 sn <- "a2004_O1T2pb05i_A1_A01.fcs"
 getKeywords(ws, sn)[1:5]
 ```
 
 ### Parsing the Workspace
-These are all retrieved by directly querying xml file. In order to get more information about the gating tree, we need to actually parse the XML workspace into R data structures to represent some of the information therein. Specifically, by calling `parseWorkspace()` the user will be presented with a list of `groups` in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a `GatingHierarchy` for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a `GatingSet` object. Calling `parseWorkspace()` is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument `execute=T/F` specifies whether you want to load, compensate, transform the data and compute statistics immediately after parsing the XML tree. Argument `path` can be used to specify where the FCS files are stored.
+All of the above information is retrieved by directly querying the XML file. In order to get more information about the gating tree, we need to actually parse the XML workspace into R data structures to represent some of the information therein. Specifically, by calling `parseWorkspace()` the user will be presented with a list of `groups` in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a `GatingHierarchy` for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a `GatingSet` object. Calling `parseWorkspace()` is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument `execute=T/F` specifies whether you want to load, compensate, transform the data, and compute statistics immediately after parsing the XML tree. The `path` argument can be used to specify where the FCS files are stored.
 
-```{r parsews,message=FALSE}
+```{r parsews1,message=FALSE, warning=FALSE, error = FALSE, results='hide'}
 gs <- parseWorkspace(ws,name = 1); #import the first group
+```
+
+```{r parsews2,message=FALSE, warning=FALSE, error = FALSE}
 #Lots of output here suppressed for the vignette.
 gs
 ```
+
 We have generated a `GatingSet` with `r length(gs)` samples, each  of which has `r length(getNodes(gs))-1` associated gates.
 
 To list the samples stored in `GatingSet`:
 ```{r sampleNames}
 sampleNames(gs)
 ```
-Note that it is different from the previous call `getSamples` on `workspace` where the latter list all samples stored in `xml` file and here are the ones actually get parsed. Because sometime not all of samples in xml will be imported for various reason. Also we've seen an extra string `_xxx` is attached to the end of each sample name. It is due to the argument `additional.keys` has the default value set to `'$TOT'`. See more details on these parsing options from [How to parse a flowJo workspace](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseFlowJo.html).
+Note that this call to `sampleNames()` is different from the previous call to `getSamples()` on the workspace. The call to `getSamples()` on a `flowJoWorkspace` lists all samples stored in the XML file, while `sampleNames()` called on a `GatingSet` lists the ones actually getting parsed. Sometimes not all of samples in the `XML` will be imported for various reasons. Also we've seen an extra string `_xxx` is attached to the end of each sample name. It is due to the argument `additional.keys`, which has the default value set to `'$TOT'`. See more details on these parsing options from [How to parse a flowJo workspace](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseFlowJo.html).
 
 ## Import gatingML
-We currently support gatingML2.0 files exported from `Cytobank` system. It can be done with one convevient function `parse.gatingML` from `CytoML` package that simply takes file paths of `gatingML` and `FCS`.
+We currently support gatingML2.0 files exported from the `Cytobank` system. Parsing can be done with one convenient function, `parse.gatingML` from the `CytoML` package, that simply takes file paths of `gatingML` and `FCS`.
 
 ```{r parseGatingML, eval=FALSE}
 library(CytoML)
 xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "CytoML")
-fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
+fcsFiles <- list.files(pattern = "CytoTrol", 
+                       system.file("extdata", package = "flowWorkspaceData"), full = T)
 gs1 <- parse.gatingML(xmlfile, fcsFiles)
 ```
-If you want to dive into details and sub-steps of the parsing process, see vignette of [CytoML](https://github.com/RGLab/CytoML).
+If you want to dive into the details and sub-steps of the parsing process, see the vignette of [CytoML](https://github.com/RGLab/CytoML).
   
-
 ## Basics on GatingSet
 
-Subsets of `GatingSet` can be accessed using the standard R subset syntax `[`.
+Subsets of a `GatingSet` can be accessed using the standard R subset syntax `[`.
 ```{r subset}
 gs[1]
 ```
-At this point we have parsed the workspace file and generate the gating hierarchy associated with each sample imported from the file. The data have been loaded, compensated, and transformed in the workspace, and gating has been executed. The resulting `GatingSet` contains a replicated analysis of the original flowJo workspace.
+At this point we have parsed the workspace file and generated the gating hierarchy associated with each sample imported from the file. The data have been loaded, compensated, and transformed in the workspace, and gating has been executed. The resulting `GatingSet` contains a replicated analysis of the original flowJo workspace. It should be noted, however, that because `GatingSet` is a purely reference class, this sort of subsetting does not copy the underlying data but rather utilizes a view of it.
 
 We can plot the gating tree:
 ```{r plotTree}
@@ -110,12 +112,12 @@ We can list the nodes (populations) in the gating hierarchy:
 ```{r getNodes-path-1}
 getNodes(gs, path = 1)
 ```
-Note that `path` argument specifies the depth of the gating path for each population. 
+Note that the `path` argument specifies the depth of the gating path for each population. 
 As shown, `depth` of `1` (i.e. leaf or terminal node name) may not be sufficient to uniquely identify each population. The issue can be resolved by increasing the `path` or simply returning the full path of the node:
 ```{r getNodes-path-full}
 getNodes(gs, path = "full")
 ```
-But `full` path may not be neccessary and could be too long to be visualized. So we provide the `path = 'auto'` option to determine the shortest path that is still unique within the gating tree.
+But a `full` path may not be neccessary and could be too long to be visualized. So we provide the `path = 'auto'` option to determine the shortest path that is still unique within the gating tree.
 ```{r getNodes-path-auto}
 nodelist <- getNodes(gs, path = "auto")
 nodelist
@@ -132,8 +134,8 @@ We can retrieve the population statistics :
 ```{r getStats}
 getPopStats(gs)[1:10,]
 ```
-We can plot individual gates: note the scale of the transformed axes.
-Second argument is the node path of any depths as long as it is uniquely identifieable.
+We can plot individual gates. Note the scale of the transformed axes.
+The second argument is the node path of any depth as long as it is uniquely identifiable.
 ```{r autoplot-nodeName}
 library(ggcyto)
 autoplot(gs, "pDC")
@@ -148,42 +150,42 @@ pd <- cbind(pd,d)
 pData(gs) <- pd
 pData(gs)
 ```
-We cann subset the `GatingSet` by its `pData` directly:
+We can subset the `GatingSet` by its `pData` directly:
 ```{r}
 subset(gs, treatment == "control")
 ```
 
-The underling `flow data`(`flowSet` or `ncdfFlowSet` ) can be retrieved by:
+The underlying `flow data` can be retrieved by:
 ```{r}
-fs <- getData(gs)
-class(fs)
-nrow(fs[[1]])
+cs <- getData(gs)
+class(cs)
+nrow(cs[[1]])
 ```
-Note that the data is already compensated and transformed during the parsing.
+Because `GatingSet` is a purely reference class, the class type returned by `getData` is a `cytoset`, which is the purely reference class analog of a `flowSet` and will be discussed in more detail below. Also note that the data is already compensated and transformed during the parsing.
 
 We can retrieve the subset of data associated with a population node:
 ```{r getData-gh}
-fs <- getData(gs, node)
-nrow(fs[[1]])
+cs <- getData(gs, node)
+nrow(cs[[1]])
 ```
 ## GatingHierarchy
-We can retrieve a single gating hierarchical tree (corresponding to one sample) by `[[` operator
+We can retrieve a single gating hierarchical tree (corresponding to one sample) by using the `[[` extraction operator
 ```{r gh}
 gh <- gs[[1]]
 gh
 ```
-Note that the index can be either numeric or character (the `guid` returned by `sampleNames` method)
+Note that the index can be either numeric or character (the `guid` returned by the `sampleNames` method)
 
-We can do similar operations on this `GatingHierarchy` object and same methods behave differently from `GatingSet` 
+We can do similar operations on this `GatingHierarchy` object and the same methods behave differently from `GatingSet` 
 ```{r}
 head(getPopStats(gh))
 ```
-Here `getPopStats` returns both the stats directly stored in `flowJo` xml workspace and one calcuated by `GatingSet` through the gating. There are could be minor difference between the two due to the numerical errors. However the difference should not be significant. Therore this can be used as the validity check for the parsing accuracy.
+Here `getPopStats` returns both the stats directly stored in the `flowJo` XML workspace and the stats calcuated by `GatingSet` through the gating. There could be minor differences between the two due to the numerical errors. However the differences should not be significant. Therefore this can be used as a validity check for the parsing accuracy. The `plotPopCV()` method allows for easy examination of the coefficient of variation between the XML and openCyto population statistics:
 ```{r plotPopCV}
 plotPopCV(gh)
 ```
 
-`autoplot` method without specifying any node will layout all the gates in the same plot
+The `autoplot` method without specifying any node will lay out all the gates in the same plot
 ```{r}
 autoplot(gh)
 ```
@@ -209,22 +211,20 @@ names(T)
 T[[1]]
 ```
 
-`getTransformations` returns a list of functions to be
-applied to different dimensions of the data. 
-Above, the transformation is applied to this sample, the appropriate dimension
-is transformed using a channel--specific function from the list.
+`getTransformations()` returns a list of functions to be
+applied to different dimensions of the data. Dimensions of the data are appropriately transformed using the corresponding channel--specific functions from the list (like the one above).
 
 
 ## Build the gating hierarchy from scratch
-`GatingSet` provides methods to build a gating tree from raw FCS files and add or remove flowCore gates(or populations) to or from it.
+`GatingSet` provides methods to build a gating tree from raw FCS files and add or remove flowCore gates (or populations) to or from it.
 
-Firstly,we start from a flowSet that contains three ungated flow samples:
+We start from a `flowSet` that contains three ungated flow samples:
 ```{r create gs}
 data(GvHD)
 #select raw flow data
 fs <- GvHD[1:2]
 ```
-Then construct a \code{GatingSet} from \code{flowSet}:
+Then construct a `GatingSet` from the `flowSet`:
 ```{r GatingSet constructor}
 gs <- GatingSet(fs)
 ```
@@ -246,22 +246,22 @@ gs <- compensate(gs, comp.list)
 
 
 
-Then we can transform it with any transformation defined by user through `trans_new` function of `scales` package.
+Then we can transform it with any transformation defined by the user through `trans_new` function of `scales` package.
 ```{r user-transformation}
 require(scales)
 trans.func <- asinh
 inv.func <- sinh
 trans.obj <- trans_new("myAsinh", trans.func, inv.func)
 ```
-The `inverse` transformation is required so that the `gates` and data can be visualized in `transformed` scale with `axis` label still remains in the raw scale. Optionally `breaks` and `format` function can be supplied to further customize the appearance of axis labels.
+The `inverse` transformation is required so that the gates and data can be visualized in `transformed` scale while the axis label still remains in the raw scale. Optionally, the `breaks` and `format` functions can be supplied to further customize the appearance of axis labels.
 
-Besides doing all these by hand, we also provide some buildin transformations: `asinhtGml2_trans`, `flowJo_biexp_trans`, `flowJo_fasinh_trans` and `logicle_trans`. These are all very commonly used transformations in flow data analysis. User can construct the transform object by simply one-line of code. e.g.
+Besides allowing definition all of these transformations by hand, we also provide some builtin transformations: `asinhtGml2_trans`, `flowJo_biexp_trans`, `flowJo_fasinh_trans` and `logicle_trans`. These are all very commonly used transformations in flow data analysis. The user can construct the transform object with one line of code. e.g.
 ```{r transform-build-in}
 trans.obj <- asinhtGml2_trans()
 trans.obj
 ```
 
-Once `transformer` object is created, we must convert it to `transformerList` for `GatingSet` to use.
+Once a `transformer` object is created, we must convert it to `transformerList` for `GatingSet` to use.
 ```{r transformerList}
 chnls <- colnames(fs)[3:6] 
 transList <- transformerList(chnls, trans.obj)
@@ -271,29 +271,29 @@ Alternatively, the overloaded `estimateLogicle` method can be used directly on `
 estimateLogicle(gs[[1]], chnls)
 ```
 
-Now we can transform `GatingSet` with `transformerList` object. It will also store the transformation in the `GatingSet` and can be used to inverse-transform the data.
+Now we can transform our `GatingSet` with this `transformerList` object. It will also store the transformation in the `GatingSet` and can be used to inverse-transform the data.
 ```{r transform-gs}
 gs <- transform(gs, transList)
 getNodes(gs) 
 ```
-It now only contains the root node. We can add our first rectangleGate:
+It now only contains the root node. We can add our first `rectangleGate`:
 ```{r add-rectGate}
 rg <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangle")
 nodeID <- add(gs, rg)
 nodeID
 getNodes(gs)  
 ```
-Note that the gate is added to root node by default if parent is not specified.
-Then we add a quadGate to the new population generated by the rectangeGate which is named after filterId of the gate because the name is not specified when `add` method is called.
+Note that the gate is added to the root node by default if the parent is not specified.
+Then we add a `quadGate` to the new population generated by the `rectangleGate` which is named after the `filterId` of the gate because the name was not specified when the `add` method was called.
 ```{r add-quadGate}
 qg <- quadGate("FL1-H"= 0.2, "FL2-H"= 0.4)
 nodeIDs <- add(gs,qg,parent="rectangle")
 nodeIDs 
 getNodes(gs)
 ```
-Here quadGate produces four population nodes/populations whose names are named after dimensions of gate if not specified.
+Here `quadGate` produces four population nodes/populations named after the dimensions of the gate if names are not specified.
 
-Boolean Gate can also be defined and added to GatingSet:
+A Boolean gate can also be defined and added to GatingSet:
 ```{r add-boolGate}
 bg <- booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC+CD45 PE-`)
 bg
@@ -302,27 +302,27 @@ nodeID2
 getNodes(gs)
 ```
 The gating hierarchy is plotted by:
-```{r plot-gh,eval=FALSE}
+```{r plot-gh}
 plot(gs, bool=TRUE)
 ```
-Note that boolean gate is skipped by default and thus need to be enabled explictily.
+Note that Boolean gate is skipped by default and thus needs to be enabled explictily.
 
 Now all the gates are added to the gating tree but the actual data is not gated yet.
-This is done by calling `recompute` method explictily:
+This is done by calling the `recompute` method explictily:
 ```{r recompute}
 recompute(gs)
 ```
-After gating is finished,gating results can be visualized by `autoplot` method:
+After gating is finished, gating results can be visualized by the `autoplot` method:
 ```{r autoplot-rect}
 autoplot(gs,"rectangle") #plot one Gate
 ```
-Multiple gates can be plotted on the same pannel:
+Multiple gates can be plotted on the same panel:
 ```{r autoplot-multiple}
-autoplot(gs,getChildren(gs[[1]], "rectangle")) 
+autoplot(gs, getChildren(gs[[1]], "rectangle")[1:4])
 ```
 We may also want to plot all the gates without specifying the gate index:
-```{r autoplot-gh-bool,eval=FALSE}
-autoplot(gs[[1]], bool=TRUE)
+```{r autoplot-gh-bool}
+autoplot(gs[[1]])
 ```
 
 If we want to remove one node, simply:
@@ -330,10 +330,11 @@ If we want to remove one node, simply:
 Rm('rectangle', gs)
 getNodes(gs)
 ```
-As we see,removing one node causes all its descendants to be removed as well.
-### archive and clone
+As we see, removing one node causes all its descendants to be removed as well.
 
-Oftentime, we need to save a GatingSet including the gated flow data,gates and populations to disk and reload it later on. It can be done by:
+### Archive and Clone
+
+Oftentimes, we need to save a `GatingSet` including the gated flow data, gates, and populations to disk and reload it later on. This can be done by:
 ```{r archive,eval=FALSE}
 tmp <- tempdir()
 save_gs(gs,path = file.path(tmp,"my_gs"))
@@ -344,8 +345,160 @@ We also provide the `clone` method to make a full copy of an existing `GatingSet
 gs_cloned <- clone(gs)
 ```
 
-Note that the `GatingSet` contains environment slots and external pointer that point to the internal C data structure. So make sure to use these methods in order to save or make a copy of existing object.
-The regular R assignment (<-) or `save` routine doesn't work as expected for the `GatingSet` object.
+Note that the `GatingSet` is a purely reference class with an external pointer that points to the internal 'C' data structure. So make sure to use these methods in order to save or make a copy of an existing `GatingSet` object. The regular R assignment (<-) or `save` routine doesn't work as expected for `GatingSet` objects.
+
+## The cytoframe and cytoset classes
+
+The `GatingSet` class no longer uses `flowFrame` and `flowSet` objects for containing the underlying flow data, but rather now uses the analogous `cytoframe` and `cytoset` classes. `cytoframe` and `cytoset` are essentially reference classes with pointers to internal 'C' data structures and thus enable `GatingSet` operations to be performed more efficiently.
+
+While working with `GatingSet` objects will often entail working with `cytoframe` and `cytoset` objects implicitly, it is also possible to directly work with objects of both of these classes.
+
+### Reading a `cytoframe`
+
+Instead of `read.FCS()`, `cytoframe` objects can be created from FCS files with the `load_cytoframe_from_fcs()` method. The optional `num_threads` argument allows for parallelization of the read operation.
+```{r load_cf}
+files <- list.files(path, "Cyto", full.names = TRUE)
+cf <- load_cytoframe_from_fcs(files[1], num_threads = 4)
+cf
+```
+
+Instead of using `read.FCSheader()` to obtain only the header of the file, just use the `text.only` argument to `load_cytoframe_from_fcs()`.
+```{r load_cf_header}
+cfh <- load_cytoframe_from_fcs(files[1], text.only = TRUE)
+cfh
+```
+
+### `cytoframe` Accessors 
+
+The accessor methods function the same as they would for a `flowFrame`
+```{r dim_cf}
+dim(cf)
+```
+```{r colnames_cf}
+colnames(cf)
+```
+```{r exprs_cf}
+head(exprs(cf))
+```
+```{r spill_cf}
+spillover(cf)
+```
+```{r keys_cf}
+head(keyword(cf))
+```
+
+### Pass By Reference
+
+As `cytoframe` and `cytoset` are reference classes, copying objects of either class by the assignment operator (`<-`) will simply provide a copy of the external pointer and so changes made to the copy will also affect the original object. 
+
+```{r ref1_cf}
+cf1 <- cf # cf is a reference
+colnames(cf1)[1]
+```
+```{r ref2_cf}
+colnames(cf1)[1] <- "t"
+colnames(cf)[1] # The change affects the original cf object
+```
+
+### Views/Shallow Copy
+
+Extracting a subset of a `cytoframe` is not computationally intensive, as it merely constructs a view of the data of the original `cytoframe`. However, both objects still share the same underlying pointer to all of the data and thus changes to a view will affect the data of the original `cytoframe`.
+
+```{r view_cf}
+cf1 <- cf[1:10, 2:3]
+dim(cf1)
+exprs(cf)[2,3]
+exprs(cf1)[2,2] <- 0 # data change affects the orignal cf
+exprs(cf)[2,3]
+```
+To perform a shallow copy of an entire `cytoframe`, use the `shallow_copy` method rather than the `<-` operator. This will ensure that a new view is created to the full underlying dataset.
+```{r shallow_cf}
+cf1 <- shallow_copy(cf)
+```
+
+### Deep Copy
+
+It is also possible to perform a deep copy of a `cytoframe` or a view of it, resulting in two objects pointing to distinct C-level representations of the data. This is accomplished with the `realize_view` method.
+```{r deep_cf}
+cf <- load_cytoframe_from_fcs(files[1], num_threads = 4) # starting fresh
+cf1 <- realize_view(cf[1:10, 2:3])
+dim(cf1)
+exprs(cf)[2,3]
+exprs(cf1)[2,2] <- 0 # data change no longer affects the original cf
+exprs(cf)[2,3]
+exprs(cf1)[2,2] # but does affect the separate data of cf1
+```
+Similarly, if a deep copy of all of the data is desired (not a subset), simply call `realize_view` on the original `cytoframe`.
+
+### Interconversion between `cytoframe` and `flowFrame`
+
+Conversion of objects between the `cytoframe` and `flowFrame` classes is accomplished with a few coercion methods
+```{r coerce_cf}
+fr <- cytoframe_to_flowFrame(cf)
+class(fr)
+cf_back <- flowFrame_to_cytoframe(fr)
+class(cf_back)
+```
+Of course (as a side note), here `flowFrame_to_cytoframe()` had no knowledge of the `cytoframe` origin of `fr`, so `cf_back` points to a new copy of the underlying data.
+```{r pnt_cmp}
+identical(cf@pointer, cf_back@pointer) # These point to distinct copies of the data
+```
+
+### Saving/Loading a `cytoframe` in h5
+
+A couple of methods handle the task of writing or reading a `cytoframe` in the HDF5 format on disk
+```{r h5}
+tmpfile <- tempfile(fileext = ".h5")
+cf_write_h5(cf, tmpfile)
+loaded <- load_cytoframe_from_h5(tmpfile)
+```
+
+### `cytoset` methods
+
+Most of the above methods for `cytoframe` objects have `cytoset` analogs.
+
+For reading in a `cytoset` from FCS files, use `load_cytoset_from_fcs`
+```{r load_cs}
+files <- list.files(path, "Cyto", full.names = TRUE)
+cs <- load_cytoset_from_fcs(files, num_threads = 4)
+cs
+```
+
+The accessor methods function the same as they would for a `flowSet`
+```{r colnames_cs}
+colnames(cs)
+```
+
+Subsetting using `[` will work in a manner similar to that for a `flowSet`, but will result in another `cytoset` that is a view in to the data of the original `cytoset`. The `Subset()` method, when called on a `cytoset`, will also return a `cytoset` that is a view in to the orignal data rather than a deep copy.
+
+```{r subset_cs}
+sub_cs <- cs[1]
+```
+
+**Important:** Perhaps unexpectedly, extraction using `[[` on a `cytoset` will by default return a `flowFrame` instead of a `cytoframe` and so will represent a copy of the underlying data rather than a view. Thus, altering the result of the extraction **will not** alter the underlying data of the original `cytoset`. This is done for the sake of backwards compatibility with older user scripts.
+
+```{r extract1_cf}
+sub_fr <- cs[[1]]
+exprs(cs[[1]])[2,2]
+exprs(sub_fr)[2,2] <- 0 # This WILL NOT affect the original data
+exprs(cs[[1]])[2,2]
+```
+
+To circumvent this behavior and instead return a `cytoframe` that represents a view in to the data of the `original` cytoset, you need to use the `returnType` argument.
+
+```{r extract2_cf}
+sub_cf <- cs[[1, returnType = "cytoframe"]]
+exprs(cs[[1]])[2,2]
+exprs(sub_cf)[2,2] <- 0 # This WILL affect the original data
+exprs(cs[[1]])[2,2]
+```
+
+Alternatively, if it is easier to remember, `get_cytoframe_from_cs` will accomplish the same goal
+```{r extract3_cf}
+sub_cf <- get_cytoframe_from_cs(cs,1)
+```
+
+Finally, the `shallow_copy()` and `realize_view()` methods work in a similar manner for `cytoset` objects as `cytoframe` objects. `shallow_copy()` will return a view in to the original data while `realize_view()` will perform a deep copy.
 
 ## Troubleshooting and error reporting
 If this package is throwing errors when parsing your workspace, contact the package author by emails for post an issue on https://github.com/RGLab/flowWorkspace/issues. If you can send your workspace by email, we can test, debug, and fix the package so that it works for you. Our goal is to provide a tool that works, and that people find useful.
