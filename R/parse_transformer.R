@@ -6,7 +6,10 @@ parse_transformer <- function(x){
   stopifnot(is(x, "trans"))
   transobj <- as.list(environment(x[["transform"]]))
   transobj[["type"]] <- x[["name"]]
-  if(!(transobj[["type"]] %in% c("logicle", "logtGml2", "flowJo_biexp", "asinhtGml2", "logicleGml2")))
+  if(transobj[["type"]] == "flowJo_biexp")
+  {
+	  transobj <- c(transobj["type"], attr(x[["transform"]], "parameters"))
+  }else if(!(transobj[["type"]] %in% c("logicle", "logtGml2", "asinhtGml2", "logicleGml2")))
   {
     transobj <- list()
   }
