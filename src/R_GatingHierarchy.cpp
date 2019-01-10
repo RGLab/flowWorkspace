@@ -144,13 +144,28 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 			  thisTrans.reset(new logTrans(as<EVENT_DATA_TYPE>(x["offset"]), as<EVENT_DATA_TYPE>(x["decade"]), as<unsigned>(x["scale"]), as<unsigned>(x["max_val"])));
 			}
 			else if(type == "logicle")
-			  thisTrans.reset(new logicleTrans(as<double>(x["t"]), as<double>(x["w"]), as<double>(x["m"]), as<double>(x["a"])));
+			{
+			  try
+			  {
+				  thisTrans.reset(new logicleTrans(as<double>(x["t"]), as<double>(x["w"]), as<double>(x["m"]), as<double>(x["a"])));
+			  }catch(const domain_error &e)
+			  {
+				  throw(domain_error("logicle transformation error: " + chnl +"\n" + string(e.what())));
+			  }
+			}
 			else if(type == "flowJo_biexp")
 			  thisTrans.reset(new biexpTrans(as<int>(x["channelRange"]), as<EVENT_DATA_TYPE>(x["pos"]), as<EVENT_DATA_TYPE>(x["neg"]), as<EVENT_DATA_TYPE>(x["widthBasis"]), as<EVENT_DATA_TYPE>(x["maxValue"])));
 			else if(type == "asinhtGml2")
 			  thisTrans.reset(new fasinhTrans(as<EVENT_DATA_TYPE>(x["t"]), as<EVENT_DATA_TYPE>(x["length"]), as<EVENT_DATA_TYPE>(x["t"]), as<EVENT_DATA_TYPE>(x["a"]), as<EVENT_DATA_TYPE>(x["m"])));
 			else if(type == "logicleGml2")
-			  thisTrans.reset(new logicleTrans(as<double>(x["T"]), as<double>(x["W"]), 1, as<double>(x["A"])));
+			{
+				 try
+				  {
+					  thisTrans.reset(new logicleTrans(as<double>(x["T"]), as<double>(x["W"]), 1, as<double>(x["A"])));							  }catch(const domain_error &e)
+				  {
+					  throw(domain_error("logicle transformation error: " + chnl +"\n" + string(e.what())));
+				  }
+			}
 			else
 			  stop("unknown transformation in set_transformations!");
 			
