@@ -43,6 +43,10 @@ setMethod("show",c("flowJoWorkspace"),function(object){
       
     })
 
+#' @export
+parseWorkspace <- function (x, ...) {
+	UseMethod("parseWorkspace")
+}
 #' Parse a flowJo Workspace
 #' 
 #' Function to parse a flowJo Workspace, generate a \code{GatingHierarchy} or \code{GatingSet} object, and associated flowCore gates. The data are not loaded or acted upon until an explicit call to \code{recompute()} is made on the \code{GatingHierarchy} objects in the \code{GatingSet}.
@@ -276,6 +280,10 @@ setMethod("getKeywords",c("flowJoWorkspace","numeric"),function(obj,y, ...){
     })
 
 
+#' @export
+getSamples <- function (x, ...) {
+	UseMethod("getSamples")
+}
 #' Get a list of samples from a flowJo workspace
 #'
 #' Return  a data frame of samples contained in a flowJo workspace
@@ -297,7 +305,7 @@ setMethod("getKeywords",c("flowJoWorkspace","numeric"),function(obj,y, ...){
 #' @aliases getSamples
 #' @rdname getSamples
 #' @export
-getSamples <- function(x, group_id = NULL)
+getSamples.flowJoWorkspace <- function(x, group_id = NULL)
 {
   res <- get_samples(x@doc)
   if(!is.null(group_id))
@@ -308,6 +316,10 @@ getSamples <- function(x, group_id = NULL)
   unique(res)
 }
 
+#' @export
+getSampleGroups <- function (x, ...) {
+	UseMethod("getSampleGroups")
+}
 #' Get a table of sample groups from a flowJo workspace
 #'
 #'   Return a data frame of sample group information from a flowJo workspace
@@ -327,7 +339,7 @@ getSamples <- function(x, group_id = NULL)
 #' @aliases getSampleGroups
 #' @rdname getSampleGroups
 #' @export
-getSampleGroups <- function(x){
+getSampleGroups.flowJoWorkspace <- function(x){
   res <- get_sample_groups(x@doc)
   df <- mapply(res[["groupName"]], res[["groupID"]], res[["sampleID"]]
                , FUN = function(x, y, z){

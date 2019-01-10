@@ -68,7 +68,4 @@ setGeneric("getKeywords",function(obj,y, ...)standardGeneric("getKeywords"))
 #' @export
 setGeneric("getSingleCellExpression",function(x, nodes,...)standardGeneric("getSingleCellExpression"))
 
-#' @export
-parseWorkspace <- function (x, ...) {
-  UseMethod("parseWorkspace")
-}
+
