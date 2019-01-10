@@ -147,10 +147,10 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 			{
 			  try
 			  {
-				  thisTrans.reset(new logicleTrans(as<double>(x["t"]), as<double>(x["w"]), as<double>(x["m"]), as<double>(x["a"])));
+				  thisTrans.reset(new logicleTrans(as<double>(x["t"]), as<double>(x["w"]), as<double>(x["m"]), as<double>(x["a"]), false));
 			  }catch(const domain_error &e)
 			  {
-				  throw(domain_error("logicle transformation error: " + chnl +"\n" + string(e.what())));
+				  throw(domain_error("logicle transformation constructor error: " + chnl +"\n" + string(e.what())));
 			  }
 			}
 			else if(type == "flowJo_biexp")
@@ -161,9 +161,10 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 			{
 				 try
 				  {
-					  thisTrans.reset(new logicleTrans(as<double>(x["T"]), as<double>(x["W"]), 1, as<double>(x["A"])));							  }catch(const domain_error &e)
+					  thisTrans.reset(new logicleTrans(as<double>(x["T"]), as<double>(x["W"]), as<double>(x["M"]), as<double>(x["A"]), true));
+				  }catch(const domain_error &e)
 				  {
-					  throw(domain_error("logicle transformation error: " + chnl +"\n" + string(e.what())));
+					  throw(domain_error("logicle transformation constructor error: " + chnl +"\n" + string(e.what())));
 				  }
 			}
 			else
