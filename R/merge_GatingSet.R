@@ -445,6 +445,7 @@ updateChannels <- function(gs, map, all = TRUE){
 
 
 #' validity check and add prefixed entries when applicable
+#' @importFrom dplyr group_by do
 #' @noRd 
 .preprocessMap <- function(gs, map){
   if(!is.data.frame(map))
