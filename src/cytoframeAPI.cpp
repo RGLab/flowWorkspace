@@ -2,6 +2,21 @@
 using namespace Rcpp;
 using namespace cytolib;
  
+// [[Rcpp::export]]
+void cf_set_readonly(Rcpp::XPtr<CytoFrameView> fr, bool flag)
+{
+	fr->set_readonly(flag);
+}
+// [[Rcpp::export(name=".cf_flush_meta")]]
+void cf_flush_meta(Rcpp::XPtr<CytoFrameView> fr)
+{
+	fr->flush_meta();
+}
+// [[Rcpp::export(name=".cf_load_meta")]]
+void cf_load_meta(Rcpp::XPtr<CytoFrameView> fr)
+{
+	fr->load_meta();
+}
 
 // [[Rcpp::export]]
 string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr)

@@ -39,7 +39,8 @@ save_gs<-function(gs, path
                   , ...){
   #  browser()
   cdf <- match.arg(cdf)
-  .cpp_saveGatingSet(gs@pointer, path = normalizePath(path), cdf = cdf)
+  path <- suppressWarnings(normalizePath(path))
+  .cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf)
   message("Done\nTo reload it, use 'load_gs' function\n")
   
   

@@ -114,6 +114,12 @@ test_that("[[<-", {
   
 })
 
+test_that("lapply", {
+  cs1 <- realize_view(cs)
+  expect_true(all(unlist(lapply(cs1, is, "cytoframe"))))
+  expect_equal(lapply(cs1, nrow), sapply(sampleNames(cs1), function(sn)nrow(cs1[[sn]]), simplify = FALSE))
+})
+
 fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]
 cs <- flowSet_to_cytoset(fs)
 samples <- sampleNames(cs)

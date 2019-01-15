@@ -25,7 +25,7 @@ test_that("save GatingSet to archive",
       expect_error(save_gs(gs, path = tmp), "Not a valid")
       
       expect_error(colnames(flowData(gs))[1] <- "dd" , "read-only")
-      expect_error(capture.output(exprs(get_cytoframe_from_cs(flowData(gs), 1))[1,1] <- 0, type = "message") , "hdf")
+      expect_error(exprs(get_cytoframe_from_cs(flowData(gs), 1))[1,1] <- 0, "read-only")
     
     })
 ## it is placed here because trans may get cleared later on by cloning process

@@ -564,6 +564,37 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// cf_set_readonly
+void cf_set_readonly(Rcpp::XPtr<CytoFrameView> fr, bool flag);
+RcppExport SEXP _flowWorkspace_cf_set_readonly(SEXP frSEXP, SEXP flagSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< bool >::type flag(flagSEXP);
+    cf_set_readonly(fr, flag);
+    return R_NilValue;
+END_RCPP
+}
+// cf_flush_meta
+void cf_flush_meta(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cf_flush_meta(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    cf_flush_meta(fr);
+    return R_NilValue;
+END_RCPP
+}
+// cf_load_meta
+void cf_load_meta(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cf_load_meta(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    cf_load_meta(fr);
+    return R_NilValue;
+END_RCPP
+}
 // get_h5_file_path
 string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr);
 RcppExport SEXP _flowWorkspace_get_h5_file_path(SEXP frSEXP) {
@@ -1180,6 +1211,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
+    {"_flowWorkspace_cf_set_readonly", (DL_FUNC) &_flowWorkspace_cf_set_readonly, 2},
+    {"_flowWorkspace_cf_flush_meta", (DL_FUNC) &_flowWorkspace_cf_flush_meta, 1},
+    {"_flowWorkspace_cf_load_meta", (DL_FUNC) &_flowWorkspace_cf_load_meta, 1},
     {"_flowWorkspace_get_h5_file_path", (DL_FUNC) &_flowWorkspace_get_h5_file_path, 1},
     {"_flowWorkspace_realize_view_cytoframe", (DL_FUNC) &_flowWorkspace_realize_view_cytoframe, 2},
     {"_flowWorkspace_shallow_copy_cytoframe", (DL_FUNC) &_flowWorkspace_shallow_copy_cytoframe, 1},

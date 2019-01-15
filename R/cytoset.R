@@ -439,5 +439,45 @@ setReplaceMethod("sampleNames",
 		return(object)
 	})
 
+#' apply \code{FUN} to each sample (i.e. \code{cytoframe})
+#'
+#' sample names are used for names of the returned list
+#'
+#' @param X \code{cytoset}
+#' @param FUN \code{function} to be applied to each sample in 'cytoset'
+#' @param ... other arguments to be passed to 'FUN'
+#'
+#' @rdname lapply-methods
+#' @export
+setMethod("lapply","cytoset",function(X,FUN,...){
+  sapply(sampleNames(X),function(sn,...){
+    cf <- get_cytoframe_from_cs(X, sn)
+    FUN(cf, ...)
+  }, simplify = FALSE, ...)
+  
+  
+})
 
+#' @param cs cytoset object
+#' @export 
+#' @rdname lock
+cs_lock <- function(cs){
+  csApply(cs, cf_lock)
+  }
+#' @export 
+#' @rdname lock
+cs_unlock <- function(cs){
+  csApply(cs, cf_unlock)
+}
 
+#' @param cs cytoset object
+#' @export 
+#' @rdname load_meta
+cs_flush_meta <- function(cs){
+  csApply(cs, cf_flush_meta)
+}
+#' @export 
+#' @rdname load_meta
+cs_load_meta <- function(cs){
+  csApply(cs, cf_load_meta)
+}

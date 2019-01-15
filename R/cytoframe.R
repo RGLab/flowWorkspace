@@ -298,3 +298,30 @@ cf_get_h5_file_path <- function(cf){
   get_h5_file_path(cf@pointer)
   
 }
+
+#' Lock/Unlock the cytoset/cytoframe by turning on/off its read-only flag
+#' @param cf cytoframe object
+#' @export 
+#' @rdname lock
+cf_lock <- function(cf){
+	cf_set_readonly(cf@pointer, TRUE)
+}
+#' @export 
+#' @rdname lock
+cf_unlock <- function(cf){
+	cf_set_readonly(cf@pointer, FALSE)
+}
+
+#' Flush/load meta data (keywords, pData, channels/markers) to/from disk (only valid for on-disk cytoset/cytoframe)
+#' @aliases flush_meta
+#' @param cf cytoframe object
+#' @export 
+#' @rdname load_meta
+cf_flush_meta <- function(cf){
+	.cf_flush_meta(cf@pointer)
+}
+#' @export 
+#' @rdname load_meta
+cf_load_meta <- function(cf){
+	.cf_load_meta(cf@pointer)
+}

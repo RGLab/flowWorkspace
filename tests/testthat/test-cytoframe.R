@@ -6,6 +6,26 @@ lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
 rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 
+test_that("load_meta", {
+  cf1 <- realize_view(cf)
+  tmp <- cf_get_h5_file_path(cf1)
+  oldvalue <- keyword(cf1)[["TUBE NAME"]]
+  keyword(cf1)[["TUBE NAME"]] <- "dd"
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], "dd")
+  
+  #discard changes
+  cf_load_meta(cf1)
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], oldvalue)
+  keyword(cf1)[["TUBE NAME"]] <- "dd"
+  #flush the change
+  cf_flush_meta(cf1)
+  cf2 <- load_cytoframe_from_h5(tmp)
+  expect_equivalent(keyword(cf2)[["TUBE NAME"]], "dd")
+  
+  cf_load_meta(cf1)
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], "dd")  
+})
+
 test_that("Subset", {
       #Subset by gate
       is_equal_flowFrame(Subset(cf, rectGate), Subset(fr, rectGate))
@@ -36,6 +56,8 @@ test_that("write permission", {
   rm(cf1)
   invisible(gc())
   cf2 <- load_cytoframe_from_h5(h5file)
+  expect_error(exprs(cf2)[1,1] <- 2, "read-only")
+  cf_unlock(cf2)
   expect_true(grepl( "Write failed", capture.output(expect_error(exprs(cf2)[1,1] <- 2), type = "message")[3]))
   expect_equivalent(exprs(cf2)[1,1], 1)
   
@@ -57,6 +79,24 @@ test_that("write permission", {
   expect_equivalent(exprs(cf3)[1,1], 3)
   
 })
+
+test_that("lock", {
+  cf1 <- realize_view(cf)
+  #writable
+  exprs(cf1)[1,1] <- 3
+  expect_equivalent(exprs(cf1)[1,1], 3)
+  #lock it
+  cf_lock(cf1)
+  expect_error(exprs(cf1)[1,1] <- 4, "read-only")
+  expect_error(keyword(cf1)[["TUBE NAME"]] <- "dd", "read-only")
+  expect_equivalent(exprs(cf1)[1,1], 3)
+  cf_unlock(cf1)
+  exprs(cf1)[1,1] <- 4
+  expect_equivalent(exprs(cf1)[1,1], 4)
+  keyword(cf1)[["TUBE NAME"]] <- "dd"
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], "dd")
+})
+
 
 test_that("[", {
       cf1 <- cf[1:100, 2:3]
@@ -124,8 +164,14 @@ test_that("keyword<-", {
   keyword(cf1) <- kw
   kw <- collapse_desc(kw, collapse.spill = FALSE)
   expect_equal(keyword(cf1)[names(kw)], kw)
+  #check if flush to disk after destroy cf1
+  tmp <- cf_get_h5_file_path(cf1)
+  rm(cf1)
+  invisible(gc())
+  cf2 <- load_cytoframe_from_h5(tmp)
+  expect_equal(keyword(cf2)[names(kw)], kw)
   
-})
+  })
 
 
 

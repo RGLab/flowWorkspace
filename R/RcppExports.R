@@ -233,6 +233,18 @@ load_legacy_gs <- function(pbfile, cs) {
     invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
 }
 
+cf_set_readonly <- function(fr, flag) {
+    invisible(.Call(`_flowWorkspace_cf_set_readonly`, fr, flag))
+}
+
+.cf_flush_meta <- function(fr) {
+    invisible(.Call(`_flowWorkspace_cf_flush_meta`, fr))
+}
+
+.cf_load_meta <- function(fr) {
+    invisible(.Call(`_flowWorkspace_cf_load_meta`, fr))
+}
+
 get_h5_file_path <- function(fr) {
     .Call(`_flowWorkspace_get_h5_file_path`, fr)
 }
