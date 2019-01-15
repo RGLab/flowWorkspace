@@ -462,22 +462,22 @@ setMethod("lapply","cytoset",function(X,FUN,...){
 #' @export 
 #' @rdname lock
 cs_lock <- function(cs){
-  csApply(cs, cf_lock)
+	invisible(lapply(cs, cf_lock))
   }
 #' @export 
 #' @rdname lock
 cs_unlock <- function(cs){
-  csApply(cs, cf_unlock)
+	invisible(lapply(cs, cf_unlock))
 }
 
 #' @param cs cytoset object
 #' @export 
 #' @rdname load_meta
 cs_flush_meta <- function(cs){
-  csApply(cs, cf_flush_meta)
+	invisible(lapply(cs, cf_flush_meta))
 }
 #' @export 
 #' @rdname load_meta
 cs_load_meta <- function(cs){
-  csApply(cs, cf_load_meta)
+	invisible(lapply(cs, cf_load_meta))
 }
