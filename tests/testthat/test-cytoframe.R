@@ -237,6 +237,15 @@ test_that("load_fcs", {
   cf <- load_cytoframe_from_fcs(tmp)
   #check if pickup the new keyword for range
   is_equal_flowFrame(fr, cf)
+  #random select rows to read
+  #TODO: pass the seed from set.seed() R call
+  cf <- load_cytoframe_from_fcs(tmp, which.lines = 10)
+  expect_equal(nrow(cf), 10)
+  select <- sample(seq_len(nrow(fr)), 20)
+  cf <- load_cytoframe_from_fcs(tmp, which.lines = select)
+  fr <- read.FCS(tmp, which.lines = select)
+  is_equal_flowFrame(fr, cf)
+  
   #TODO: yet to determine whether the original FCS R parser is correct on
   # setting range from flowCore_Rmax in makeFCSparameters call without checking condition of x[["transformation"]] == "custom"
   #expect_equal(range(fr)[2,], range(cf)[2,] + 1)
