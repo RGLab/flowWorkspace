@@ -118,7 +118,12 @@ load_cytoframe_from_fcs <- function(filename,
     if(is.null(which.lines))
       which.lines <- vector()
     else
-      which.lines <- which.lines -1
+	{
+		# Verify that which.lines is positive and within file limit.
+		if (length(which.lines) > 1) {
+			which.lines <- which.lines -1
+		}
+	}
     fr@pointer <- parseFCS(normalizePath(filename), list(which_lines = which.lines
                                                          , transformation = transformation
                                                          , decades = decades
