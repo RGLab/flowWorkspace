@@ -16,3 +16,11 @@ load_cytoframe_from_h5(filename, readonly = TRUE, on_disk = TRUE)
 \description{
 Load the cytoframe from h5 format
 }
+\seealso{
+Other cytoframe/cytoset IO functions: \code{\link{cf_get_h5_file_path}},
+  \code{\link{cf_write_h5}},
+  \code{\link{cs_get_h5_file_path}},
+  \code{\link{load_cytoframe_from_fcs}},
+  \code{\link{load_cytoset_from_fcs}}
+}
+\concept{cytoframe/cytoset IO functions}

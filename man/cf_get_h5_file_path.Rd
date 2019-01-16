@@ -2,8 +2,7 @@
 % Please edit documentation in R/cytoframe.R
 \name{cf_get_h5_file_path}
 \alias{cf_get_h5_file_path}
-\title{return the file path of underlying h5 file
-For the in-memory version of cytoframe, it returns empty string.Thus can be used to check whether it is on-disk format.}
+\title{Return the file path of the underlying h5 file}
 \usage{
 cf_get_h5_file_path(cf)
 }
@@ -11,6 +10,16 @@ cf_get_h5_file_path(cf)
 \item{cf}{cytoframe object}
 }
 \description{
-return the file path of underlying h5 file
-For the in-memory version of cytoframe, it returns empty string.Thus can be used to check whether it is on-disk format.
+Return the file path of the underlying h5 file
 }
+\details{
+For the in-memory version of cytoframe, it returns an empty string. This can be used to check whether it is on-disk format.
+}
+\seealso{
+Other cytoframe/cytoset IO functions: \code{\link{cf_write_h5}},
+  \code{\link{cs_get_h5_file_path}},
+  \code{\link{load_cytoframe_from_fcs}},
+  \code{\link{load_cytoframe_from_h5}},
+  \code{\link{load_cytoset_from_fcs}}
+}
+\concept{cytoframe/cytoset IO functions}
