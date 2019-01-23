@@ -61,9 +61,6 @@ Rcpp::XPtr<GatingSet> new_cytoset()
 // [[Rcpp::export]]
 Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, FCS_READ_PARAM config, bool is_h5, string h5_dir)
 {
-  if(config.data.which_lines.size()==1)
-	  config.data.seed = Rf_runif(0, RAND_MAX);//set seed from R
-
   Rcpp::XPtr<GatingSet> cs(new GatingSet(sample_uid_vs_file_path, config, is_h5, h5_dir));
   
   return cs;

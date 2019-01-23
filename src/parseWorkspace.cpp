@@ -77,17 +77,8 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
                                   , bool channel_ignore_case
                                   , bool leaf_bool
 								  , List comps
-                                  , IntegerVector which_lines = IntegerVector::create() //argument from this line and below are for fcs parser
-                                  , string transformation="linearize"
-                                  , float decades=0
-                                  , bool truncate_min_val = false
-                                  , float min_limit=-111
-                                  , bool truncate_max_range = true
-                                  , int dataset = 1
-                                  , bool emptyValue= true
-                                  , bool ignoreTextOffset = true
-                                  , bool onlyTxt = false
-                                  , int num_threads = 1
+								 , FCS_READ_PARAM fcs_parse_arg
+                                 , int num_threads = 1
 )
 {
   ParseWorkspaceParameters config;
@@ -117,29 +108,9 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
 	  }
   }
   //fcs parser config
-  config.fcs_read_param.header.ignoreTextOffset = ignoreTextOffset;
-  config.fcs_read_param.header.nDataset = dataset;
-  config.fcs_read_param.header.isEmptyKeyValue = emptyValue;
-
-  config.fcs_read_param.data.which_lines = as<vector<int>>(which_lines);
-  if(config.fcs_read_param.data.which_lines.size()==1)
-	  config.fcs_read_param.data.seed = Rf_runif(0, RAND_MAX);//set seed from R
-  config.fcs_read_param.data.decades = decades;
-  config.fcs_read_param.data.truncate_min_val = truncate_min_val;
-  config.fcs_read_param.data.min_limit = min_limit;
-  config.fcs_read_param.data.truncate_max_range = truncate_max_range;
+  config.fcs_read_param = fcs_parse_arg;
 //  config.fcs_read_param.data.num_threads = num_threads;
   config.num_threads = num_threads;
-  if(transformation=="linearize")
-    config.fcs_read_param.data.transform = TransformType::linearize;
-  else if(transformation=="none")
-    config.fcs_read_param.data.transform = TransformType::none;
-  else if(transformation=="linearize_with_PnG_scaling")
-    config.fcs_read_param.data.transform = TransformType::linearize_with_PnG_scaling;
-  else if(transformation=="scale")
-    config.fcs_read_param.data.transform = TransformType::scale;
-  else
-    stop("unkown transformation type :" + transformation);
   if(comps.size()==1&&Rf_isNull(comps.names()))
   {
 	  if(!Rf_isMatrix(comps[0]))

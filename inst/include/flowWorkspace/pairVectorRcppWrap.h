@@ -53,43 +53,64 @@ namespace Rcpp {
 		//validity checks
 //		vector<string> arg_names = cfg.names();
 //		vector<string> expect_arg_names;
-
-		config.header.ignoreTextOffset = cfg["ignoreTextOffset"];
-		config.header.nDataset = cfg["dataset"];
-		config.header.isEmptyKeyValue = cfg["emptyValue"];
-
-		config.data.which_lines = as<vector<int>>(cfg["which_lines"]);
-		config.data.decades = cfg["decades"];
-		config.data.truncate_min_val = cfg["truncate_min_val"];
-		config.data.min_limit = cfg["min_limit"];
-		config.data.truncate_max_range = cfg["truncate_max_range"];
-		config.data.num_threads = cfg["num_threads"];
-    SEXP trans_sxp = cfg["transformation"];
-		unsigned short trans_type = TYPEOF(trans_sxp);
-		string transformation;
-		if(trans_type  == STRSXP)
-			transformation = as<string>(trans_sxp);
-		else if(trans_type == LGLSXP)
+    if(cfg.containsElementNamed("ignoreTextOffset"))
+		  config.header.ignoreTextOffset = cfg["ignoreTextOffset"];
+    
+    if(cfg.containsElementNamed("dataset"))
+      config.header.nDataset = cfg["dataset"];
+    
+    if(cfg.containsElementNamed("emptyValue"))
+      config.header.isEmptyKeyValue = cfg["emptyValue"];
+    
+    if(cfg.containsElementNamed("which_lines"))
+      config.data.which_lines = as<vector<long>>(cfg["which_lines"]);
+    
+		if(config.data.which_lines.size()==1)
+		  config.data.seed = Rf_runif(0, RAND_MAX);//set seed from R
+		
+		if(cfg.containsElementNamed("decades"))
+		  config.data.decades = cfg["decades"];
+		
+		if(cfg.containsElementNamed("truncate_min_val"))
+		  config.data.truncate_min_val = cfg["truncate_min_val"];
+		
+		if(cfg.containsElementNamed("min_limit"))
+		  config.data.min_limit = cfg["min_limit"];
+		
+		if(cfg.containsElementNamed("truncate_max_range"))
+		  config.data.truncate_max_range = cfg["truncate_max_range"];
+		
+		if(cfg.containsElementNamed("num_threads"))
+		  config.data.num_threads = cfg["num_threads"];
+		
+		if(cfg.containsElementNamed("transformation"))
 		{
-		  if(as<bool>(trans_sxp))
-		    transformation="linearize";
-		  else
-		    transformation="none";
+		  SEXP trans_sxp = cfg["transformation"];
+  		unsigned short trans_type = TYPEOF(trans_sxp);
+  		string transformation;
+  		if(trans_type  == STRSXP)
+  			transformation = as<string>(trans_sxp);
+  		else if(trans_type == LGLSXP)
+  		{
+  		  if(as<bool>(trans_sxp))
+  		    transformation="linearize";
+  		  else
+  		    transformation="none";
+  		}
+  		else
+  		  stop("invalid transformation argument!");
+  		  
+  		if(transformation=="linearize")
+  		  config.data.transform = TransformType::linearize;
+  		else if(transformation=="none")
+  		  config.data.transform = TransformType::none;
+  		else if(transformation=="linearize_with_PnG_scaling")
+  		  config.data.transform = TransformType::linearize_with_PnG_scaling;
+  		else if(transformation=="scale")
+  		  config.data.transform = TransformType::scale;
+  		else
+  		  stop("unkown transformation type :" + transformation);
 		}
-		else
-		  stop("invalid transformation argument!");
-		  
-		if(transformation=="linearize")
-		  config.data.transform = TransformType::linearize;
-		else if(transformation=="none")
-		  config.data.transform = TransformType::none;
-		else if(transformation=="linearize_with_PnG_scaling")
-		  config.data.transform = TransformType::linearize_with_PnG_scaling;
-		else if(transformation=="scale")
-		  config.data.transform = TransformType::scale;
-		else
-		  stop("unkown transformation type :" + transformation);
-
 		 return config;
 	 }
 	}

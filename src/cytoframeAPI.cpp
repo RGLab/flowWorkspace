@@ -126,9 +126,6 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 	}
 	else
 	{
-	  if(config.data.which_lines.size()==1)
-		  config.data.seed = Rf_runif(0, RAND_MAX);//set seed from R
-
 		unique_ptr<MemCytoFrame> fr(new MemCytoFrame(filename.c_str(), config));
 		if(text_only)
 		  fr->read_fcs_header();

@@ -196,7 +196,7 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
       compensation <- check_comp(compensation)
       
   }
-  args <- c(list(ws = ws@doc
+  args <- list(ws = ws@doc
                  , group_id = groupInd - 1
                  , subset = subset
                  , execute = execute
@@ -212,8 +212,9 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
                  , channel_ignore_case = channel.ignore.case
                  , leaf_bool = leaf.bool
                  , comps = compensation
-				 , num_threads = mc.cores)
-              , args)
+				 , fcs_parse_arg = args
+		 		 , num_threads = mc.cores
+              )
   p <- do.call(parse_workspace, args)
   new("GatingSet", pointer = p)
 }
