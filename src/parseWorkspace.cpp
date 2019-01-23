@@ -122,6 +122,8 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
   config.fcs_read_param.header.isEmptyKeyValue = emptyValue;
 
   config.fcs_read_param.data.which_lines = as<vector<int>>(which_lines);
+  if(config.fcs_read_param.data.which_lines.size()==1)
+	  config.fcs_read_param.data.seed = Rf_runif(0, RAND_MAX);//set seed from R
   config.fcs_read_param.data.decades = decades;
   config.fcs_read_param.data.truncate_min_val = truncate_min_val;
   config.fcs_read_param.data.min_limit = min_limit;

@@ -247,7 +247,7 @@ test_that("load_fcs", {
   expect_equal(exprs(cf), exprs(cf2))
   set.seed(2)
   cf2 <- load_cytoframe_from_fcs(tmp, which.lines = 10)
-  expect_false(all.equal(exprs(cf), exprs(cf2)))
+  expect_false(isTRUE(all.equal(exprs(cf), exprs(cf2))))
   #pass an existing row indices explicitly
   select <- sample(seq_len(nrow(fr)), 20)
   cf <- load_cytoframe_from_fcs(tmp, which.lines = select)
