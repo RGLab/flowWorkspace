@@ -159,27 +159,29 @@ test_that("sampleNames<-", {
 
       
       })
-# 
-# test_that("colnames<-", {
-#       sn <- samples[1:2]
-#       coln <- colnames(cs)
-#       
-#       nc <- cs[sn, coln[1:2]]
-#       newColNames <- c("c1", "c2")
-#       colnames(nc) <- newColNames
-#       expect_equal(colnames(nc), newColNames)
-#       expect_equal(nc@origColnames, c(newColNames,coln[-c(1:2)]))
-#       invisible(fsApply(nc, function(fr)expect_equal(colnames(fr), newColNames)))
-#       is_equal_flowSet(cs[sn, coln[1:2]], nc)
-#       expect_equivalent(unlist(keyword(nc[[1]])[c("$P1N", "$P2N")]), newColNames)
-#       
-#       #change the order of colnames
-#       nc <- cs[sn, coln[2:1]]
-#       colnames(nc) <- newColNames
-#       expect_equal(nc@origColnames, c(newColNames[2:1],coln[-c(1:2)]))
-#       is_equal_flowSet(cs[sn, coln[2:1]], nc)
-#       expect_equivalent(unlist(keyword(nc[[1]])[c("$P1N", "$P2N")]), rev(newColNames))
-#     })  
+
+test_that("colnames<-", {
+      sn <- samples[1:2]
+      coln <- colnames(cs)
+
+      nc <- realize_view(cs[sn, coln[1:2]])
+      newColNames <- c("c1", "c2")
+      colnames(nc) <- newColNames
+      expect_equal(colnames(nc), newColNames)
+      invisible(fsApply(nc, function(fr)expect_equal(colnames(fr), newColNames)))
+
+      expect_equivalent(unlist(keyword(nc[[1]])[c("$P1N", "$P2N")]), newColNames)
+
+      #change the order of colnames
+      nc <- realize_view(cs[sn, coln[2:1]])
+      colnames(nc) <- newColNames
+      newColNames <- rev(newColNames)
+      expect_equivalent(unlist(keyword(nc[[1]])[c("$P1N", "$P2N")]), newColNames)
+      expect_error(colnames(nc) <- newColNames, "colname already exists")
+      cs_swap_colnames(nc, "c1", "c2")
+      expect_equal(colnames(nc), newColNames)
+      
+    })
 # 
 # test_that("split", {
 #       

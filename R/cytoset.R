@@ -419,8 +419,11 @@ setReplaceMethod("colnames",
 	   x
 	})
 
-
-
+#' @export 
+cs_swap_colnames <- function(x, col1, col2){
+	invisible(lapply(x, cf_swap_colnames, col1, col2))
+	
+}
 setMethod("markernames",
     signature=signature(object = "cytoset"),
     definition=function(object){

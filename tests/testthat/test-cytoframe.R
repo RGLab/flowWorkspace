@@ -139,10 +139,11 @@ test_that("colnames<-", {
       expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N")]), newColNames)
 
       #TODO:change the order of colnames
-      # coln <- colnames(cf1)
-      # cf2 <- cf1[, coln[2:1]]
-      # colnames(cf2) <- newColNames
-      # expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N")]), rev(newColNames))
+      coln <- colnames(cf1)
+      cf2 <- cf1[, coln[2:1]]
+      expect_error(colnames(cf2) <- newColNames, "colname already exists")
+      cf_swap_colnames(cf2, "c1", "c2")
+      expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N")]), rev(newColNames))
     })
 
 test_that("parameters<-", {

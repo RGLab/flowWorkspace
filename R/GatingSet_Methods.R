@@ -329,7 +329,9 @@ isNcdf <- function(x){
 #' @param ... other arguments. see \link{parseWorkspace}
 #' @rdname GatingSet-methods
 #' @export
-setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
+setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path="."
+																	, swap_cols = FALSE #for diva parsing
+																	, ...){
             
 			samples <- y
 			dataPaths <- vector("character")
@@ -365,7 +367,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			
 			#load new data
       		cs <- load_cytoset_from_fcs(files, is_h5 = TRUE, ...)
-			
+			cols.old <- colnames(cs)
+			cols <- swap_data_cols(cols.old, swap_cols)#validity check
+			if(!all(cols==cols.old))
+			{
+				#can't assign cols directly due to the backend implemented as std::unordered_map
+				for(c1 in names(swap_cols))
+				{
+					c2 <- swap_cols[[c1]]
+					cs_swap_colnames(cs, c1, c2)					
+				}
+				
+			}
 			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer))
 			
             message("done!")

@@ -9,7 +9,8 @@
 \alias{load_gslist}
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
-\S4method{GatingSet}{GatingHierarchy,character}(x, y, path = ".", ...)
+\S4method{GatingSet}{GatingHierarchy,character}(x, y, path = ".",
+  swap_cols = FALSE, ...)
 
 save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"),
   ...)

@@ -491,7 +491,15 @@ setReplaceMethod("colnames",
       
       return(x)
     })
-
+#' @export 
+cf_swap_colnames <- function(x, col1, col2){
+	tmp <- "MagicStringUgly"
+	
+	setChannel(x@pointer, col1, tmp)
+	setChannel(x@pointer, col2, col1)
+	setChannel(x@pointer, tmp, col2)
+	
+}
 setReplaceMethod("markernames",
     signature=signature(object="cytoframe", value="ANY"), function(object, value){
       old.names <- parameters(object)[["desc"]]
