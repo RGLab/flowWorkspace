@@ -125,6 +125,7 @@ load_cytoframe_from_fcs <- function(filename,
 		}
 	}
     fr@pointer <- parseFCS(normalizePath(filename), list(which_lines = which.lines
+														 , seed = get_seed() 
                                                          , transformation = transformation
                                                          , decades = decades
                                                          , truncate_min_val = truncate_min_val
@@ -143,6 +144,12 @@ load_cytoframe_from_fcs <- function(filename,
 
     return(fr)
 }
+#This gets a positive number in the unsigned 32-bit integer range (which is always a safe bet for a seed) 
+#and it is completely determined by set.seed(). Therefore, it’s fine to use as a seed itself
+get_seed <- function() {
+	sample.int(.Machine$integer.max, 1)
+}
+
 #' Read one or several FCS files in to a cytoset
 #' 
 #' Similar to \code{\link[flowCore]{read.flowSet}}, this takes a list of FCS filenames

@@ -238,9 +238,16 @@ test_that("load_fcs", {
   #check if pickup the new keyword for range
   is_equal_flowFrame(fr, cf)
   #random select rows to read
-  #TODO: pass the seed from set.seed() R call
+  set.seed(1)
   cf <- load_cytoframe_from_fcs(tmp, which.lines = 10)
   expect_equal(nrow(cf), 10)
+  set.seed(1)
+  cf2 <- load_cytoframe_from_fcs(tmp, which.lines = 10)
+  expect_equal(exprs(cf), exprs(cf2))
+  set.seed(2)
+  cf2 <- load_cytoframe_from_fcs(tmp, which.lines = 10)
+  expect_false(all.equal(exprs(cf), exprs(cf2)))
+  #pass an existing row indices explicitly
   select <- sample(seq_len(nrow(fr)), 20)
   cf <- load_cytoframe_from_fcs(tmp, which.lines = select)
   fr <- read.FCS(tmp, which.lines = select)
