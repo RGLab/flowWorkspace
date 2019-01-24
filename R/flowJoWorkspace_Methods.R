@@ -136,6 +136,7 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
     , channel.ignore.case = FALSE
     , leaf.bool = TRUE
     , compensation = NULL
+	, fcs_file_extension = ".fcs"
 	, mc.cores = 1
     , ...)
 {
@@ -212,6 +213,7 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
                  , channel_ignore_case = channel.ignore.case
                  , leaf_bool = leaf.bool
                  , comps = compensation
+		 		 , fcs_file_extension = fcs_file_extension
 				 , fcs_parse_arg = args
 		 		 , num_threads = mc.cores
               )
