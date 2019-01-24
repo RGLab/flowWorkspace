@@ -6,7 +6,7 @@ test_that("show workspace",
     {
       thisRes <- capture.output(show(ws))[-(1:2)]
       expectRes <- fjRes[["ws_show"]][-(1:5)]
-      expectRes[3] <- sub("45", "35", expectRes[3])
+      # expectRes[3] <- sub("45", "35", expectRes[3])#now we getSampleGroups also include the samples with 0 populations
       expect_equal(thisRes, expectRes)
       
     })
@@ -43,7 +43,7 @@ test_that("getSamples&getSampleGroups workspace",
       
       thisRes <- getSampleGroups(ws)
       thisExpect <- fjRes[[".getSampleGroups"]]
-      thisExpect <- thisExpect[-excludeIds, ]
+      # thisExpect <- thisExpect[-excludeIds, ]#now we getSampleGroups also include the samples with 0 populations
       expect_equivalent(thisRes, thisExpect)
     })
 

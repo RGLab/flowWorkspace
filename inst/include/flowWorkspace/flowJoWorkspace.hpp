@@ -33,7 +33,7 @@ struct SampleInfo{
 };
 struct SampleGroup{
 	string group_name;
-	vector<SampleInfo> sample_info_vec;
+	vector<int> sample_ids;
 };
 struct ParseWorkspaceParameters
 {
@@ -180,8 +180,13 @@ public:
 
 	unique_ptr<GatingSet> to_GatingSet(unsigned group_id, ParseWorkspaceParameters config)
 	{
+		auto sg = get_sample_groups();
 
-		vector<SampleInfo> sample_infos = get_sample_info(group_id, config);
+		if(group_id >= sg.size()){
+			 throw(domain_error("Invalid group id: " + to_string(group_id) + "\n"));
+		}
+
+		vector<SampleInfo> sample_infos = get_sample_info(sg[group_id].sample_ids, config);
 
 		auto it_filter = config.sample_filters.find("name");
 		if(it_filter != config.sample_filters.end())
@@ -482,54 +487,69 @@ public:
 
 		return res;
 	}
-	vector<SampleGroup> get_sample_groups(const ParseWorkspaceParameters & config)
+	/**
+	 * It includes samples with 0 populations
+	 * @return
+	 */
+	vector<SampleGroup> get_sample_groups()
 	{
 
+		vector<SampleGroup> res;
 		vector<wsGroupNode> nodes = get_group_nodes();
 		unsigned nGroup = nodes.size();
-		vector<SampleGroup> res(nGroup);
+
 		for(unsigned i = 0; i < nGroup; i++)
 		{
-			res[i].group_name = nodes[i].getProperty("name");
-			res[i].sample_info_vec = get_sample_info(i, config);
+			SampleGroup sg;
+			wsGroupNode grp_node = nodes[i];
+			//parse sample ref node
+			xmlXPathObjectPtr sids=grp_node.xpathInNode(nodePath.sampleRef.c_str());
+			xmlNodeSetPtr nodeSet=sids->nodesetval;
+			int nSample = nodeSet->nodeNr;
+			//filter out empty groups to be consistent with historical behavior
+			if(nSample > 0)
+			{
+				sg.group_name = nodes[i].getProperty("name");
+				if(g_loglevel>=GATING_SET_LEVEL)
+						cout<<endl<<"Parsing " + to_string(nSample) + " sample refs for group: " + sg.group_name <<endl;
+
+				sg.sample_ids.resize(nSample);
+				for(int j = 0; j < nSample; j++)
+				{
+					wsNode cur_sample_ref_node(nodeSet->nodeTab[j]);
+					string sampleID=cur_sample_ref_node.getProperty("sampleID");
+					sg.sample_ids[j] = boost::lexical_cast<int>(sampleID);
+				}
+				res.push_back(sg);
+			}
+			xmlXPathFreeObject(sids);
+
 		}
 
 		return res;
 
 	}
-	vector<SampleInfo> get_sample_info(unsigned group_id, const ParseWorkspaceParameters & config)
+	/*
+	 * * It excludes samples with 0 populations
+	 */
+	vector<SampleInfo> get_sample_info(const vector<int> & sample_ids, const ParseWorkspaceParameters & config)
 	{
-		if(g_loglevel>=GATING_SET_LEVEL)
-				cout<<endl<<"Parsing sample information for group: " + to_string(group_id) <<endl;
-		vector<wsGroupNode> nodes = get_group_nodes();
-		unsigned nGroup = nodes.size();
 
-		if(group_id >= nGroup){
-			 throw(domain_error("Invalid group id: " + to_string(group_id) + "\n"));
-		}
-		wsGroupNode grp_node = nodes[group_id];
-		//parse sample ref node
-		xmlXPathObjectPtr sids=grp_node.xpathInNode(nodePath.sampleRef.c_str());
-		xmlNodeSetPtr nodeSet=sids->nodesetval;
-		int nSample = nodeSet->nodeNr;
 		vector<SampleInfo> sample_info_vec;
-		for(int j = 0; j < nSample; j++)
+		for(int j = 0; j < sample_ids.size(); j++)
 		{
-			wsNode cur_sample_ref_node(nodeSet->nodeTab[j]);
-			string sampleID=cur_sample_ref_node.getProperty("sampleID");
-			int sample_id = boost::lexical_cast<int>(sampleID);
 //			if(g_loglevel>=GATING_SET_LEVEL)
 //				cout<<endl<<"Search sample for sampleID: " + sampleID <<endl;
 			//parse sample node
-
+			int sample_id = sample_ids[j];
 			auto sample_vec = get_sample_node(sample_id);
 			if(sample_vec.size() > 0)
 			{
 				if(sample_vec.size() > 1)
-					throw(domain_error("multiple sample nodes matched to the sample id: " + sampleID + "!"));
+					throw(domain_error("multiple sample nodes matched to the sample id: " + to_string(sample_id) + "!"));
 
 				if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-					cout<<endl<<"Parsing sample information for sampleID: " + sampleID <<endl;
+					cout<<endl<<"Parsing sample information for sampleID: " + to_string(sample_id) <<endl;
 				SampleInfo sample_info;
 				sample_info.sample_node = sample_vec[0];
 				sample_info.sample_id = sample_id;
@@ -576,7 +596,6 @@ public:
 
 			}
 		}
-		xmlXPathFreeObject(sids);
 		return sample_info_vec;
 	}
 

@@ -17,7 +17,7 @@ A \code{data.frame} containing the \code{groupName}, \code{groupID}, and \code{s
 Return a data frame of sample group information from a flowJo workspace
 }
 \details{
-The samples with 0 populations are excluded.
+Note that the samples with 0 populations are also included (since count populations requires traversing xml for all samples thus can be expensive)
 Returns a table of samples and groups defined in the flowJo workspace
 }
 \examples{

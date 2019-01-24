@@ -14,5 +14,5 @@ test_check("flowWorkspace")
 # test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/test-parseWorkspace.R")
 # test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/test-add.R")
 # test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/test-compensate.R")
-#test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/InternalTestSuite.R")
+test_file("/home/wjiang2/rglab/workspace/flowWorkspace/tests/testthat/InternalTestSuite.R")
 

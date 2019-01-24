@@ -142,7 +142,7 @@ KW_PAIR get_keywords_by_name(XPtr<flowJoWorkspace> ws, string sample_name)
 List get_sample_groups(XPtr<flowJoWorkspace> ws)
 {
 
-  vector<SampleGroup> groups = ws->get_sample_groups(ParseWorkspaceParameters());
+  vector<SampleGroup> groups = ws->get_sample_groups();
   unsigned nGroup = groups.size();
   IntegerVector group_ids(nGroup);
   StringVector group_names(nGroup);
@@ -151,10 +151,10 @@ List get_sample_groups(XPtr<flowJoWorkspace> ws)
   {
     group_ids[i] = i;
     group_names[i] = groups[i].group_name;
-    unsigned nSample = groups[i].sample_info_vec.size();
+    unsigned nSample = groups[i].sample_ids.size();
     IntegerVector sample_id_vec(nSample);
     for(unsigned j = 0; j < nSample; j++)
-      sample_id_vec[j] = groups[i].sample_info_vec[j].sample_id;
+      sample_id_vec[j] = groups[i].sample_ids[j];
     sample_ids[i] = sample_id_vec;
   }
 
@@ -168,12 +168,12 @@ List get_sample_groups(XPtr<flowJoWorkspace> ws)
 List get_samples(XPtr<flowJoWorkspace> ws)
 {
 
-  vector<SampleGroup> groups = ws->get_sample_groups(ParseWorkspaceParameters());
+  vector<SampleGroup> groups = ws->get_sample_groups();
   unsigned nGroup = groups.size();
   List grouplist(nGroup);
   for(unsigned i = 0; i < nGroup; i++)
   {
-    const vector<SampleInfo> & sample_info_vec = groups[i].sample_info_vec;
+    const vector<SampleInfo> & sample_info_vec = ws->get_sample_info(groups[i].sample_ids, ParseWorkspaceParameters());
     unsigned nSample = sample_info_vec.size();
     List samples(nSample);
 

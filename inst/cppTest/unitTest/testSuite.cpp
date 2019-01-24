@@ -98,6 +98,21 @@ struct parseWorkspaceFixture{
 };
 
 BOOST_FIXTURE_TEST_SUITE(parseWorkspace,parseWorkspaceFixture)
+BOOST_AUTO_TEST_CASE(flog_PnE)
+{
+
+	myTest.filename="../wsTestSuite/flog_PnE/Liver.wsp";
+	myTest.sample_name_location = SAMPLE_NAME_LOCATION::SAMPLE_NODE;
+	myTest.config.sample_filters["name"]={"Tissues_Liver_001.fcs"};
+	myTest.archive="../output/flog_PnE/gs";
+	myTest.tolerance = 0.1;
+	myTest.skipPops = {18,19};
+	parser_test(myTest);
+
+	vector<bool> isTrue(myTest.isEqual.size(), true);
+	BOOST_CHECK_EQUAL_COLLECTIONS(myTest.isEqual.begin(), myTest.isEqual.end(),isTrue.begin(), isTrue.end());
+
+}
 BOOST_AUTO_TEST_CASE(gate_extension)
 {
 

@@ -326,7 +326,7 @@ getSampleGroups <- function (x, ...) {
 #'   Return a data frame of sample group information from a flowJo workspace
 #' @param x A \code{flowJoWorkspace} object.
 #' @details 
-#' The samples with 0 populations are excluded.
+#' Note that the samples with 0 populations are also included (since count populations requires traversing xml for all samples thus can be expensive)
 #' Returns a table of samples and groups defined in the flowJo workspace
 #' @return
 #'   A \code{data.frame} containing the \code{groupName}, \code{groupID}, and \code{sampleID} for each sample in the workspace. Each sample may be associated with multiple groups.
@@ -344,11 +344,7 @@ getSampleGroups.flowJoWorkspace <- function(x){
   res <- get_sample_groups(x@doc)
   df <- mapply(res[["groupName"]], res[["groupID"]], res[["sampleID"]]
                , FUN = function(x, y, z){
-                 if(length(z)>0)
-                 {
-                   data.frame(x,y,z)                            
-                 }else
-                   NULL
+                  data.frame(x,y,z)                            
                }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
   df <- do.call(rbind, df)
   colnames(df) <-  c("groupName", "groupID", "sampleID")
