@@ -88,21 +88,22 @@ public:
 
 	  					tp[curCmpChName]=curTrans;
 
-	  					COUT<<curCmpChName<<":"<<curTrans->getName()<<" "<<curTrans->getChannel()<<endl;
+	  					if(g_loglevel>=GATING_HIERARCHY_LEVEL)
+  							COUT<<curCmpChName<<":"<<curTrans->getName()<<" "<<curTrans->getChannel()<<endl;
 
 	  					/*
 	  					 * calculate calibration table from the function
 	  					 */
 	  					if(!curTrans->computed())
 	  					{
-	  						if(g_loglevel>=GATING_SET_LEVEL)
+	  						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 	  							COUT<<"computing calibration table..."<<endl;
 	  						curTrans->computCalTbl();
 	  					}
 
 	  					if(!curTrans->isInterpolated())
 	  					{
-	  						if(g_loglevel>=GATING_SET_LEVEL)
+	  						if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 	  							COUT<<"spline interpolating..."<<endl;
 	  						curTrans->interpolate();
 	  					}

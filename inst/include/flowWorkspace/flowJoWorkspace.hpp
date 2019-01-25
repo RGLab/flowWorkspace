@@ -877,7 +877,7 @@ public:
 			curParam.log=curFlag.compare("LOG")==0;
 
 
-			if(g_loglevel>=GATING_SET_LEVEL)
+			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 				COUT<<pName<<":"<<curFlag;
 			/*
 			 * We can't determine '$TIMESTEP' soly from workspace since the this keyword value in xml is not as reliable as the one in FCS TEXT
@@ -892,7 +892,7 @@ public:
 	//			if(g_loglevel>=GATING_SET_LEVEL)
 	//				COUT<<sTimestep;
 	//		}
-			if(g_loglevel>=GATING_SET_LEVEL)
+			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 						COUT<<endl;
 
 			res.push_back(curParam);
