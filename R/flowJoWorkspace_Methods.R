@@ -218,7 +218,12 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
 		 		 , num_threads = mc.cores
               )
   p <- do.call(parse_workspace, args)
-  new("GatingSet", pointer = p)
+  gs <- new("GatingSet", pointer = p)
+  #    # try to post process the GatingSet to split the GatingSets(based on different the gating trees) if needed                
+  gslist <- suppressMessages(groupByTree(gs))
+  if(length(gslist) > 1)
+	  warning("GatingSet contains different gating tree structures and must be cleaned before using it! ")
+  gs
 }
 
 #' @export
