@@ -256,7 +256,7 @@ public:
 			//match FCS
 			isfound = search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config_const, frptr);
 			if(!isfound)
-				PRINT("FCS not found for sample " + uid + " from searching the file extension: " + config.fcs_file_extension + "\n");
+				PRINT("FCS not found for sample " + uid + " from searching the file extension: " + config_const.fcs_file_extension + "\n");
 
 		}
 		else

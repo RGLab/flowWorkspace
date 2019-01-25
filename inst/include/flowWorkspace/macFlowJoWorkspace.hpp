@@ -15,7 +15,8 @@ class macFlowJoWorkspace:public flowJoWorkspace{
 public:
 
 	macFlowJoWorkspace(xmlDoc * doc):flowJoWorkspace(doc){
-		COUT<<"mac version of flowJo workspace recognized."<<endl;
+		if(g_loglevel>=GATING_SET_LEVEL)
+			COUT<<"mac version of flowJo workspace recognized."<<endl;
 
 		nodePath.popNode="./Population";
 

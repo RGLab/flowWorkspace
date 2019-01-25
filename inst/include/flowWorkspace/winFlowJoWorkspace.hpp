@@ -17,7 +17,8 @@ public:
 
 
 	  winFlowJoWorkspace(xmlDoc * doc):flowJoWorkspace(doc){
-	  	COUT<<"windows version of flowJo workspace recognized."<<endl;
+			if(g_loglevel>=GATING_SET_LEVEL)
+				COUT<<"windows version of flowJo workspace recognized."<<endl;
 	  	//(unfortunately libxml2 doesn't support union query e.g.('*/(Population|NotNode)')
 	  	nodePath.popNode="./*/*[name()='Population' or name()='NotNode' or name()='OrNode' or name()='AndNode']";//relative to sampleNode
 	  	nodePath.gateDim="*[local-name()='dimension']";//relative to gateNode
@@ -693,7 +694,8 @@ public:
 class xFlowJoWorkspace:public winFlowJoWorkspace{
 public:
 	xFlowJoWorkspace(xmlDoc * _doc):winFlowJoWorkspace(_doc){
-		COUT<<"version X"<<endl;
+		if(g_loglevel>=GATING_SET_LEVEL)
+			COUT<<"version X"<<endl;
 		nodePath.gateParam="*[local-name()='fcs-dimension']";
 	}
 
