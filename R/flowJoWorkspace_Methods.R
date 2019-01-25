@@ -79,6 +79,7 @@ parseWorkspace <- function (x, ...) {
 #'          \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 #'          \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
 #'          \item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.    
+#' 			\item transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
 #'      	\item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 #'      	}
 #' @details
@@ -136,6 +137,7 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
     , channel.ignore.case = FALSE
     , leaf.bool = TRUE
     , compensation = NULL
+    , transform = TRUE
 	, fcs_file_extension = ".fcs"
 	, mc.cores = 1
     , ...)
@@ -213,6 +215,7 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
                  , channel_ignore_case = channel.ignore.case
                  , leaf_bool = leaf.bool
                  , comps = compensation
+                , transform = transform
 		 		 , fcs_file_extension = fcs_file_extension
 				 , fcs_parse_arg = args
 		 		 , num_threads = mc.cores

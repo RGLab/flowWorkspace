@@ -1058,8 +1058,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // parse_workspace
-XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws, int group_id, List subset, bool execute, string path, string h5_dir, bool includeGates, vector<string> additional_keys, vector<string> keywords, bool is_pheno_data_from_FCS, bool keyword_ignore_case, float extend_val, float extend_to, bool channel_ignore_case, bool leaf_bool, List comps, string fcs_file_extension, FCS_READ_PARAM fcs_parse_arg, int num_threads);
-RcppExport SEXP _flowWorkspace_parse_workspace(SEXP wsSEXP, SEXP group_idSEXP, SEXP subsetSEXP, SEXP executeSEXP, SEXP pathSEXP, SEXP h5_dirSEXP, SEXP includeGatesSEXP, SEXP additional_keysSEXP, SEXP keywordsSEXP, SEXP is_pheno_data_from_FCSSEXP, SEXP keyword_ignore_caseSEXP, SEXP extend_valSEXP, SEXP extend_toSEXP, SEXP channel_ignore_caseSEXP, SEXP leaf_boolSEXP, SEXP compsSEXP, SEXP fcs_file_extensionSEXP, SEXP fcs_parse_argSEXP, SEXP num_threadsSEXP) {
+XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws, int group_id, List subset, bool execute, string path, string h5_dir, bool includeGates, vector<string> additional_keys, vector<string> keywords, bool is_pheno_data_from_FCS, bool keyword_ignore_case, float extend_val, float extend_to, bool channel_ignore_case, bool leaf_bool, List comps, bool transform, string fcs_file_extension, FCS_READ_PARAM fcs_parse_arg, int num_threads);
+RcppExport SEXP _flowWorkspace_parse_workspace(SEXP wsSEXP, SEXP group_idSEXP, SEXP subsetSEXP, SEXP executeSEXP, SEXP pathSEXP, SEXP h5_dirSEXP, SEXP includeGatesSEXP, SEXP additional_keysSEXP, SEXP keywordsSEXP, SEXP is_pheno_data_from_FCSSEXP, SEXP keyword_ignore_caseSEXP, SEXP extend_valSEXP, SEXP extend_toSEXP, SEXP channel_ignore_caseSEXP, SEXP leaf_boolSEXP, SEXP compsSEXP, SEXP transformSEXP, SEXP fcs_file_extensionSEXP, SEXP fcs_parse_argSEXP, SEXP num_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1079,10 +1079,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type channel_ignore_case(channel_ignore_caseSEXP);
     Rcpp::traits::input_parameter< bool >::type leaf_bool(leaf_boolSEXP);
     Rcpp::traits::input_parameter< List >::type comps(compsSEXP);
+    Rcpp::traits::input_parameter< bool >::type transform(transformSEXP);
     Rcpp::traits::input_parameter< string >::type fcs_file_extension(fcs_file_extensionSEXP);
     Rcpp::traits::input_parameter< FCS_READ_PARAM >::type fcs_parse_arg(fcs_parse_argSEXP);
     Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(parse_workspace(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, fcs_file_extension, fcs_parse_arg, num_threads));
+    rcpp_result_gen = Rcpp::wrap(parse_workspace(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, transform, fcs_file_extension, fcs_parse_arg, num_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1245,7 +1246,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},
     {"_flowWorkspace_h5_set_error_handler", (DL_FUNC) &_flowWorkspace_h5_set_error_handler, 0},
     {"_flowWorkspace_open_workspace", (DL_FUNC) &_flowWorkspace_open_workspace, 3},
-    {"_flowWorkspace_parse_workspace", (DL_FUNC) &_flowWorkspace_parse_workspace, 19},
+    {"_flowWorkspace_parse_workspace", (DL_FUNC) &_flowWorkspace_parse_workspace, 20},
     {"_flowWorkspace_get_keywords_by_id", (DL_FUNC) &_flowWorkspace_get_keywords_by_id, 2},
     {"_flowWorkspace_get_keywords_by_name", (DL_FUNC) &_flowWorkspace_get_keywords_by_name, 2},
     {"_flowWorkspace_get_sample_groups", (DL_FUNC) &_flowWorkspace_get_sample_groups, 1},

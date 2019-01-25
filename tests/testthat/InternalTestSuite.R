@@ -226,7 +226,7 @@ test_that("v 10.0.6 - vX 1.8",{
       expect_error(gs <- parseWorkspace(ws, name = "Bcell", subset = 1, path = tmp, emptyValue = T)
           , "Empty keyword name")#ncdfFlowSet
               
-      gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = T, path = tmp, emptyValue = F)#ncdf
+      gs <- parseWorkspace(ws, name = "Bcell", subset = 1, path = tmp, emptyValue = F)#ncdf
       gh <- gs[[1]]
       thisCounts <- getPopStats(gh)            
       expect_equal(thisCounts[-1, xml.count], thisCounts[-1, openCyto.count], tol = 3.7e-3)
@@ -247,7 +247,7 @@ test_that("v 10.0.7 - vX 20.0 (ellipsoidGate)",{
       gs <- parseWorkspace(ws, name = "Matrice", subset = 1, execute = FALSE)
       expect_is(gs, "GatingSet")
       
-      gs <- parseWorkspace(ws, name = "Matrice", subset = 1, isNcdf = TRUE)
+      gs <- parseWorkspace(ws, name = "Matrice", subset = 1)
       
       gh <- gs[[1]]
      
@@ -285,7 +285,7 @@ test_that("v 10.0.7 - vX 20.0 (missing_namespace and flin)",{
 #      ws <- openWorkspace(wsFile)
 #      gs <- parseWorkspace(ws, name = 3, subset = 1, execute = FALSE)
 #      expect_is(gs, "GatingSet")
-#      gs <- parseWorkspace(ws, name = 3, subset = 1, isNcdf = TRUE)
+#      gs <- parseWorkspace(ws, name = 3, subset = 1)
 #      
 #      gh <- gs[[1]]
 #      expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
@@ -496,7 +496,7 @@ test_that("v 7.6.5 - win 1.61 (sampNloc = 'sampleNode')",{
       gs <- parseWorkspace(ws, name = 1, subset = 1, path = file.path(thisPath,"Tcell"), sampNloc = "sampleNode", execute = FALSE)
       expect_is(gs, "GatingSet")
       
-      gs <- parseWorkspace(ws, name = 1, subset = 1, path = file.path(thisPath,"Tcell"), sampNloc = "sampleNode", isNcdf = TRUE)
+      gs <- parseWorkspace(ws, name = 1, subset = 1, path = file.path(thisPath,"Tcell"), sampNloc = "sampleNode")
       gh <- gs[[1]]
       thisCounts <- getPopStats(gh)
       expect_equal(thisCounts[, xml.freq], thisCounts[, openCyto.freq], tol = 2e-4)
@@ -514,7 +514,7 @@ test_that("v 7.6.5 - win 1.61 (sampNloc = 'sampleNode')",{
 #       gs <- parseWorkspace(ws, name = 4, subset = 1, execute = FALSE)
 #       expect_is(gs, "GatingSet")
 #       
-#       gs <- parseWorkspace(ws, name = 4, subset = 1, isNcdf = TRUE)
+#       gs <- parseWorkspace(ws, name = 4, subset = 1)
 #       gh <- gs[[1]]
 #       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
 #       thisCounts <- getPopStats(gh)[, list(xml.count,openCyto.count, node)]
@@ -566,7 +566,7 @@ test_that("v 9.4.2 - mac 2.0",{
       gs <- parseWorkspace(ws, name = 2, subset = 1, execute = FALSE)
       expect_is(gs, "GatingSet")
       
-      gs <- parseWorkspace(ws, name = 2, subset = 1, isNcdf = TRUE)
+      gs <- parseWorkspace(ws, name = 2, subset = 1)
       gh <- gs[[1]]
       thisCounts <- getPopStats(gh)
       expect_equal(thisCounts[, xml.freq], thisCounts[, openCyto.freq], tol = 5e-3)
@@ -602,7 +602,7 @@ test_that("v 9.5.2 - mac 2.0",{
       gs <- parseWorkspace(ws, name = 2, subset = 1, path = file.path(thisPath,"Bcell"), execute = FALSE)
       expect_is(gs, "GatingSet")
       
-      gs <- parseWorkspace(ws, name = 2, subset = 1, path = file.path(thisPath,"Bcell"), isNcdf = TRUE)
+      gs <- parseWorkspace(ws, name = 2, subset = 1, path = file.path(thisPath,"Bcell"))
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)

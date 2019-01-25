@@ -411,8 +411,8 @@ open_workspace <- function(filename, sample_name_location, xmlParserOption) {
     .Call(`_flowWorkspace_open_workspace`, filename, sample_name_location, xmlParserOption)
 }
 
-parse_workspace <- function(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, fcs_file_extension, fcs_parse_arg, num_threads = 1L) {
-    .Call(`_flowWorkspace_parse_workspace`, ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, fcs_file_extension, fcs_parse_arg, num_threads)
+parse_workspace <- function(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, transform, fcs_file_extension, fcs_parse_arg, num_threads = 1L) {
+    .Call(`_flowWorkspace_parse_workspace`, ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, transform, fcs_file_extension, fcs_parse_arg, num_threads)
 }
 
 get_keywords_by_id <- function(ws, sample_id) {

@@ -55,24 +55,8 @@ struct ParseWorkspaceParameters
 	 unordered_map<string, compensation> compensation_map;//optional customized sample-specific compensations
 	 compensation global_comp;
 	 string fcs_file_extension = ".fcs";
+	 bool transform = true;
 	 int num_threads = 1;
-//	ParseWorkspaceParameters()
-//	 {
-//		is_gating = true;
-//		is_parse_gate = true;
-//		is_pheno_data_from_FCS = false;
-//		keywords_for_pheno_data= {};
-//		keywords_for_uid = {"$TOT"};
-//		keyword_ignore_case = false;
-//		channel_ignore_case = false;
-//		gate_extend_trigger_value = 0;
-//		gate_extend_to = -4000;
-//		data_dir = "";
-//		is_h5 = true;
-//		compute_leaf_bool_node = true;
-//		h5_dir = fs::temp_directory_path().string();
-//
-//	 }
 };
 typedef tbb::spin_mutex GsMutexType;
 
@@ -180,6 +164,11 @@ public:
 
 	unique_ptr<GatingSet> to_GatingSet(unsigned group_id, ParseWorkspaceParameters config)
 	{
+		if(config.is_gating)
+		{
+			if(!config.transform)
+				COUT << "'transform = false' is ignored when 'is_gating' is set to true!" << endl;
+		}
 		auto sg = get_sample_groups();
 
 		if(group_id >= sg.size()){
@@ -352,8 +341,12 @@ public:
 			}
 			else
 			{
-				gh->transform_gate();
-				gh->extendGate(config_const.gate_extend_trigger_value, config_const.gate_extend_to);
+				if(config_const.transform)
+				{
+					gh->transform_gate();
+					gh->extendGate(config_const.gate_extend_trigger_value, config_const.gate_extend_to);
+				}
+
 
 			}
 

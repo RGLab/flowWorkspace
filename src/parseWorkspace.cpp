@@ -77,6 +77,7 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
                                   , bool channel_ignore_case
                                   , bool leaf_bool
 								  , List comps
+                  , bool transform
 								  , string fcs_file_extension
 								 , FCS_READ_PARAM fcs_parse_arg
                                  , int num_threads = 1
@@ -97,7 +98,8 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
   config.channel_ignore_case = channel_ignore_case;
   config.compute_leaf_bool_node = leaf_bool;
   config.fcs_file_extension = fcs_file_extension;
-
+  config.transform = transform;
+  
   SEXP nm = subset.names();
   if(!Rf_isNull(nm))//without NULL checking, the following line will fail
   {
