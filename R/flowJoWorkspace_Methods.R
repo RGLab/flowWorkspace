@@ -7,7 +7,7 @@ NULL
 #' Close a flowJoWorkspace, destroying the internal representation of the XML document, and freeing the associated memory.
 #'
 #' @param file Full path to the XML flowJo workspace file.
-#' @param options xml parsing options passed to \code{\link{xmlTreeParse}}
+#' @param options xml parsing options passed to \code{\link{xmlTreeParse}}. See http://xmlsoft.org/html/libxml-parser.html#xmlParserOption for details.
 #' @param ... other arguments passed to \code{\link{xmlTreeParse}}
 #' @param workspace A \code{flowJoWorkspace}
 #' @details

@@ -9,7 +9,7 @@ openWorkspace(file, options = 0, sampNloc = "keyword")
 \arguments{
 \item{file}{Full path to the XML flowJo workspace file.}
 
-\item{options}{xml parsing options passed to \code{\link{xmlTreeParse}}}
+\item{options}{xml parsing options passed to \code{\link{xmlTreeParse}}. See http://xmlsoft.org/html/libxml-parser.html#xmlParserOption for details.}
 
 \item{...}{other arguments passed to \code{\link{xmlTreeParse}}}
 

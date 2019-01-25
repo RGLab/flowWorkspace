@@ -2,7 +2,6 @@ context("parse workspaces of various flowJo versions ")
 library(data.table)
 path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
-sink("/dev/null")
 
 test_that("set T value properly through PnE instead of PnR for flog transform when FCS data is log scale",{
   
@@ -90,7 +89,7 @@ test_that("skip gains from FCS for vX ",{
   thisPath <- file.path(path, "no_gains_vX")
   wsFile <- file.path(thisPath, "10-Apr-2017.wsp")
   ws <- openWorkspace(wsFile)
-  gs <- suppressWarnings(parseWorkspace(ws, name=2))
+ capture.output( gs <- parseWorkspace(ws, name=2))
   
   res <- getPopStats(gs[[1]])
   
@@ -102,7 +101,7 @@ test_that("gate extension ",{
       thisPath <- file.path(path, "gate_extension")
       wsFile <- file.path(thisPath, "02-15-2013 ICS.xml")
       ws <- openWorkspace(wsFile)
-      gs <- suppressWarnings(parseWorkspace(ws, name=3))
+      capture.output(gs <- parseWorkspace(ws, name=3))
       
       res <- getPopStats(gs[[1]])[xml.count != -1, ]
       
@@ -114,7 +113,7 @@ test_that("curlyQuad gate1 ",{
       thisPath <- file.path(path, "gate_extension")
       wsFile <- file.path(thisPath, "VSVG OGH 14OCT15.wsp")
       ws <- openWorkspace(wsFile)
-      gs <- suppressWarnings(parseWorkspace(ws, name=2))
+      capture.output(gs <- parseWorkspace(ws, name=3))
       
       res <- getPopStats(gs[[1]])
       expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 2e-3)
@@ -124,7 +123,7 @@ test_that("curlyQuad gate1 ",{
       thisPath <- file.path(path, "curlyQuad/example1")
       wsFile <- file.path(thisPath, "20151208_TBNK_DS.xml")
       ws <- openWorkspace(wsFile)
-      gs <- suppressWarnings(parseWorkspace(ws, name=2))
+      capture.output(gs <- parseWorkspace(ws, name=2))
       
       res <- getPopStats(gs[[1]])
       expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 7e-3)
@@ -144,7 +143,7 @@ test_that("EllipsoidGate defined on log-transformed channels ",{
       thisPath <- file.path(path, "ellipsoid_log")
       wsFile <- file.path(thisPath, "xml_spillover2.xml")
       ws <- openWorkspace(wsFile, sampNloc = "sampleNode")
-      gs <- parseWorkspace(ws, name=1, execute = T, subset = "spillover_B2.fcs")
+      capture.output(gs <- parseWorkspace(ws, name=1, execute = T, subset = "spillover_B2.fcs"))
         
       res <- getPopStats(gs[[1]])
       expect_equal(res[, xml.count], res[, openCyto.count], tol = 4e-3)
@@ -176,7 +175,7 @@ test_that("Time gate2--when computed timestep is very different from $TIMESTEP "
       thisPath <- file.path(path, "timegate")
       wsFile <- file.path(thisPath, "MX1 Analysis VISC.xml")
       ws <- openWorkspace(wsFile)
-      gs <- parseWorkspace(ws,name="Group 1",subset=11)
+      gs <- parseWorkspace(ws,name="Group 1",subset=1)
       res <- getPopStats(gs[[1]])[xml.count!=-1,]
       expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 8e-3)
     })
@@ -185,7 +184,7 @@ test_that("Inverse function of flog ",{
       wsFile <- file.path(thisPath, "Small.xml")
       ws <- openWorkspace(wsFile)
       
-      gs <- parseWorkspace(ws, name=1, emptyValue=FALSE)
+      capture.output(gs <- parseWorkspace(ws, name=1, emptyValue=FALSE))
       
       gh <- gs[[1]]
       thisCounts <- getPopStats(gs)
@@ -210,7 +209,7 @@ test_that("v 10.0.6 - vX 1.8",{
       gs <- parseWorkspace(ws, name = "Bcell", subset = 1, execute = FALSE)
       expect_is(gs, "GatingSet")
       
-      gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = TRUE)
+      gs <- parseWorkspace(ws, name = "Bcell", subset = 1)
       
       gh <- gs[[1]]
             
@@ -223,9 +222,7 @@ test_that("v 10.0.6 - vX 1.8",{
       tmp <- tempdir()
       suppressWarnings(write.FCS(fr, filename = file.path(tmp, fcsname), delimiter = "/"))
       
-      expect_error(gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = F, path = tmp)
-                  , "Empty keyword name") #flowSet
-      expect_error(gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = T, path = tmp)
+      expect_error(gs <- parseWorkspace(ws, name = "Bcell", subset = 1, path = tmp, emptyValue = T)
           , "Empty keyword name")#ncdfFlowSet
               
       gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = T, path = tmp, emptyValue = F)#ncdf
@@ -233,10 +230,10 @@ test_that("v 10.0.6 - vX 1.8",{
       thisCounts <- getPopStats(gh)            
       expect_equal(thisCounts[-1, xml.count], thisCounts[-1, openCyto.count], tol = 3.7e-3)
       
-      gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = F, path = tmp, emptyValue = F)#flowSet
-      gh <- gs[[1]]
-      thisCounts <- getPopStats(gh)            
-      expect_equal(thisCounts[-1, xml.count], thisCounts[-1, openCyto.count], tol = 3.7e-3)
+      # gs <- parseWorkspace(ws, name = "Bcell", subset = 1, isNcdf = F, path = tmp, emptyValue = F)#flowSet
+      # gh <- gs[[1]]
+      # thisCounts <- getPopStats(gh)            
+      # expect_equal(thisCounts[-1, xml.count], thisCounts[-1, openCyto.count], tol = 3.7e-3)
     })
 
 
@@ -257,12 +254,13 @@ test_that("v 10.0.7 - vX 20.0 (ellipsoidGate)",{
       expect_equal(thisCounts[, xml.freq], thisCounts[, openCyto.freq], tol = 2e-2)
     })
 
+
+
 test_that("v 10.0.7 - vX 20.0 (missing_namespace and flin)",{
       
       thisPath <- file.path(path, "missing_namespace")
       wsFile <- file.path(thisPath, "BM_data.xml")
-      
-      ws <- openWorkspace(wsFile)
+      ws <- openWorkspace(wsFile, options = 32)#set option to suppress xml error
       expect_error(gs <- parseWorkspace(ws, name = 1, subset = 1, execute = FALSE)
                     , "*: unknown tranformation type!transforms:linear")
       
