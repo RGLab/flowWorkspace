@@ -98,6 +98,16 @@ struct parseWorkspaceFixture{
 };
 
 BOOST_FIXTURE_TEST_SUITE(parseWorkspace,parseWorkspaceFixture)
+BOOST_AUTO_TEST_CASE(ManuallyIncludedSamples)
+{
+
+	myTest.filename="../wsTestSuite/ManuallyIncludedSamples.wsp";
+	myTest.config.is_gating = false;
+	unique_ptr<flowJoWorkspace> ws = openWorkspace(myTest.filename, myTest.sample_name_location,myTest.xmlParserOption);
+	unique_ptr<GatingSet> gs = ws->to_GatingSet(2, myTest.config);
+	BOOST_CHECK_EQUAL(gs->size(), 10);
+
+}
 BOOST_AUTO_TEST_CASE(flog_PnE)
 {
 

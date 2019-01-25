@@ -86,7 +86,7 @@ public:
 	flowJoWorkspace(xmlDoc * doc){
 
 		nodePath.group="/Workspace/Groups/GroupNode";// abs path
-		nodePath.sampleRef=".//SampleRef";//relative GroupNode
+		nodePath.sampleRef=".//SampleRefs/SampleRef";//relative GroupNode
 		nodePath.sample="/Workspace/SampleList/Sample";//abs path
 		nodePath.sampleNode="./SampleNode";//relative to sample
 

@@ -143,8 +143,8 @@ test_that("curlyQuad gate ",{
 test_that("EllipsoidGate defined on log-transformed channels ",{
       thisPath <- file.path(path, "ellipsoid_log")
       wsFile <- file.path(thisPath, "xml_spillover2.xml")
-      ws <- openWorkspace(wsFile)
-      gs <- parseWorkspace(ws, name=1, execute = T, sampNloc = "sampleNode", subset = "spillover_B2.fcs")
+      ws <- openWorkspace(wsFile, sampNloc = "sampleNode")
+      gs <- parseWorkspace(ws, name=1, execute = T, subset = "spillover_B2.fcs")
         
       res <- getPopStats(gs[[1]])
       expect_equal(res[, xml.count], res[, openCyto.count], tol = 4e-3)
@@ -664,7 +664,7 @@ test_that("v 9.7.5 - mac 3.0 (no compensation and using calibrationIndex)",{
       gs <- parseWorkspace(ws, name = 5, subset = "477889_env_cct_norm_concatenated.txt", execute = FALSE)
       expect_is(gs, "GatingSet")
       
-      gs <- parseWorkspace(ws, name = 5, subset = "477889_env_cct_norm_concatenated.txt", isNcdf = TRUE)
+      gs <- parseWorkspace(ws, name = 5, subset = "477889_env_cct_norm_concatenated.txt", fcs_file_extension = ".txt")
       gh <- gs[[1]]
       expectCounts <- fread(file.path(thisPath, "expectCounts.csv"))      
       thisCounts <- getPopStats(gh)[, list(xml.count,openCyto.count, node)]
