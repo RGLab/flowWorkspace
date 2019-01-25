@@ -509,7 +509,7 @@ public:
 			//filter out empty groups to be consistent with historical behavior
 			if(nSample > 0)
 			{
-				sg.group_name = nodes[i].getProperty("name");
+				sg.group_name = nodes[i].getProperty(nodePath.attrName.c_str());
 				if(g_loglevel>=GATING_SET_LEVEL)
 						cout<<endl<<"Parsing " + to_string(nSample) + " sample refs for group: " + sg.group_name <<endl;
 
