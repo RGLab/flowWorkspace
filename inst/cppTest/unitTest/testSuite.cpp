@@ -114,9 +114,17 @@ BOOST_AUTO_TEST_CASE(flog_PnE)
 	myTest.filename="../wsTestSuite/flog_PnE/Liver.wsp";
 	myTest.sample_name_location = SAMPLE_NAME_LOCATION::SAMPLE_NODE;
 	myTest.config.sample_filters["name"]={"Tissues_Liver_001.fcs"};
+
+	myTest.config.fcs_read_param.data.which_lines = {1000};
+	unique_ptr<flowJoWorkspace> ws = openWorkspace(myTest.filename, myTest.sample_name_location,myTest.xmlParserOption);
+	unique_ptr<GatingSet> gs = ws->to_GatingSet(0, myTest.config);
+	BOOST_CHECK_EQUAL(gs->begin()->second->get_cytoframe_view().n_rows(), 1000);
+
 	myTest.archive="../output/flog_PnE/gs";
 	myTest.tolerance = 0.1;
 	myTest.skipPops = {18,19};
+	myTest.config.fcs_read_param.data.which_lines = {};
+
 	parser_test(myTest);
 
 	vector<bool> isTrue(myTest.isEqual.size(), true);

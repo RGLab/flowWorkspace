@@ -124,7 +124,7 @@ load_cytoframe_from_fcs <- function(filename,
 			which.lines <- which.lines -1
 		}
 	}
-    fr@pointer <- parseFCS(normalizePath(filename), list(which_lines = which.lines
+    fr@pointer <- parseFCS(normalizePath(filename), list(which.lines = which.lines
                                                          , transformation = transformation
                                                          , decades = decades
                                                          , truncate_min_val = truncate_min_val
