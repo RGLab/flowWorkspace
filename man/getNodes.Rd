@@ -34,3 +34,13 @@ getNodes returns a \code{character} vector of node/population names, ordered app
 integer indices of nodes are based on regular order,so whenver need to map from character node name to integer node ID,make sure
 to use default order which is regular.
 }
+\examples{
+  \dontrun{
+    #G is a gating hierarchy
+    getNodes(G, path = 1])#return node names (without prefix)
+    getNodes(G,path = "full")#return the full path
+    getNodes(G,path = 2)#return the path as length of two
+    getNodes(G,path = "auto")#automatically determine the length of path
+    setNode(G,"L","lymph")
+  }
+}

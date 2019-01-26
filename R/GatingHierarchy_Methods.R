@@ -514,7 +514,7 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #'     getNodes(G, path = 1])#return node names (without prefix)
 #'     getNodes(G,path = "full")#return the full path
 #'     getNodes(G,path = 2)#return the path as length of two
-#'     getNodes(G,path = "auto)#automatically determine the length of path
+#'     getNodes(G,path = "auto")#automatically determine the length of path
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases getNodes
