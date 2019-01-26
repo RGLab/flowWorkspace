@@ -73,4 +73,16 @@ Collate:
     'updateIndices.R'
     'utils.R'
     'zzz.R'
-Encoding: UTF-8
+Depends:
+    R (>= 2.16.0),flowCore(>= 1.49.5),ncdfFlow(>= 2.25.4)
+biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
+Suggests:
+    testthat,
+    flowWorkspaceData,
+    knitr,
+    ggcyto,
+    parallel
+LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.3.7), cytolib(>= 1.3.2)
+VignetteBuilder: knitr
+SystemRequirements: xml2, GNU make, C++11
+RoxygenNote: 6.1.1

@@ -37,10 +37,10 @@ to use default order which is regular.
 \examples{
   \dontrun{
     #G is a gating hierarchy
-    getNodes(G, path = 1]) #return node names (without prefix)
-    getNodes(G,path = "full") #return the full path
-    getNodes(G,path = 2) #return the path as length of two
-    getNodes(G,path = "auto") #automatically determine the length of path
+    getNodes(G, path = 1])#return node names (without prefix)
+    getNodes(G,path = "full")#return the full path
+    getNodes(G,path = 2)#return the path as length of two
+    getNodes(G,path = "auto")#automatically determine the length of path
     setNode(G,"L","lymph")
   }
 }
