@@ -53,7 +53,7 @@ save_gs<-function(gs, path
 load_gs<-function(path, h5_readonly = TRUE){
   if(length(list.files(path = path, pattern = ".rds")) >0)
   {
-    stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_gs_legacy()' to convert it to the new format.")
+    stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
   }
   h5_acc_flags <- as.integer(!h5_readonly)
   new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_acc_flags))
@@ -69,13 +69,12 @@ load_gs<-function(path, h5_readonly = TRUE){
 #' @param from the old archive path
 #' @param to the new archive path
 #' @export 
+#' @rdname convert_legacy
 #' @examples 
 #' \dontrun{
-#' convert_gs_legacy(old_gs_path, new_gs_path)
+#' convert_legacy_gs(old_gs_path, new_gs_path)
 #' }
-convert_gs_legacy <- function(from, to){
-  subdir <- list.dirs(from, recursive = FALSE)
-  if(length(subdir) == 0){
+convert_legacy_gs <- function(from, to){
     message("loading legacy archive...")
     suppressMessages(gs <- .load_legacy(from, to))
     
@@ -88,17 +87,33 @@ convert_gs_legacy <- function(from, to){
     message("saving to new archive...")
     suppressMessages(save_gs(gs, to, cdf = "skip"))
     message("GatingSet is now saved in new format and can be loaded with 'load_gs'")
-  }else{
-    message("loading legacy archive...")
-    suppressMessages(gs <- load_gslist_legacy(from, to))
-    message("saving to new archive...")
-    suppressMessages(save_gslist(gs, to, cdf = "skip"))
-    message("GatingSetList is now saved in new format and can be loaded with 'load_gslist'")
-  }
   
 }  
 
+#' @export
+#' @rdname convert_legacy
+convert_legacy_gslist <- function(from, to){
+  if(file.exists(to)){
+      stop("The existing target path '", to, ". Please specify a new destination path for saving the new 'GatingSetList'!")
+  }else{
+    dir.create(path = to)
+    to <- normalizePath(to,mustWork = TRUE)
+    
+  }
+  from <- normalizePath(from,mustWork = TRUE)
+  if(!file.exists(from))
+    stop(from,"' not found!")
+  dirs<-list.dirs(from,full.names = TRUE, recursive = FALSE)
+  res <- lapply(dirs,function(this_dir){
+    message("converting legacy archive: ", this_dir)
+    new_dir <- file.path(to, basename(this_dir)) 
+    suppressMessages(convert_legacy_gs(this_dir, new_dir))
+  })
+  file.copy(file.path(from,"samples.rds"), file.path(to,"samples.rds"))
 
+  message("GatingSetList is now saved in new format and can be loaded with 'load_gslist'")
+  
+}
 
 .load_legacy <- function(from, to){
   from <- normalizePath(from,mustWork = TRUE)
@@ -243,7 +258,20 @@ load_gslist<-function(path){
   #   browser()
   res <- lapply(dirs,function(this_dir){
     #        browser()
-    load_gs(this_dir)
+    gs <- try(load_gs(this_dir), silent = TRUE)
+    if(is(gs, "GatingSet"))
+      return(gs)
+    else
+    {
+      if(is(gs, "try-error"))
+      {
+        if(grepl("legacy GatingSet", gs))
+          stop("'", path, "' appears to be the legacy GatingSetList archive folder!\nPlease use 'convert_legacy_gslist()' to convert it to the new format.")
+        else
+          stop(gs)
+      }else
+        stop("How did you end up with a ", class(gs))
+    }
   })
   samples <- readRDS(file.path(path,"samples.rds"))
   GatingSetList(res, samples = samples)

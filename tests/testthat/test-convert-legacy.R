@@ -11,11 +11,25 @@ test_that(".load_legacy", {
                                 , row.names = c("min", "max"), class = "data.frame")
               )
   })
-test_that("convert_gs_legacy", {
+test_that("convert_legacy_gs", {
   legacy <- file.path(dataDir,"/legacy_gs/gs_bcell_auto")
-  expect_error(load_gs(legacy), "convert_gs_legacy")
+  expect_error(load_gs(legacy), "convert_legacy_gs")
   tmp <- tempfile()
-  expect_message(convert_gs_legacy(legacy, tmp), "saved")
+  expect_message(convert_legacy_gs(legacy, tmp), "saved")
   gs <- load_gs(tmp)
   expect_is(gs, "GatingSet")
   })
+
+
+test_that("convert_legacy_gslist", {
+  legacy <- "~/remote/fh_fast/lyoplate_out/gated_data/legacy/manual/gslist-tcell"
+  skip_if_not(dir.exists(legacy))
+  expect_error(load_gslist(legacy), "convert_legacy_gslist")
+  tmp <- tempfile()
+  expect_message(convert_legacy_gslist(legacy, tmp), "saved")
+  expect_error(convert_legacy_gslist(legacy, tmp), "existing")
+  gslist <- load_gslist(tmp)
+  expect_is(gslist, "GatingSetList")
+  expect_equal(length(gslist), 63)
+  expect_equal(length(gslist@data), 7)
+})

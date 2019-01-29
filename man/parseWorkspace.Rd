@@ -11,7 +11,7 @@
   keywords = character(), keywords.source = "XML",
   keyword.ignore.case = FALSE, extend_val = 0, extend_to = -4000,
   channel.ignore.case = FALSE, leaf.bool = TRUE, compensation = NULL,
-  fcs_file_extension = ".fcs", mc.cores = 1, ...)
+  transform = TRUE, fcs_file_extension = ".fcs", mc.cores = 1, ...)
 }
 \arguments{
 \item{...}{\itemize{
@@ -40,6 +40,7 @@
 \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
 \item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.    
+   \item transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
 \item ...: Additional arguments to be passed to \link{read.ncdfFlowSet} or \link{read.flowSet}.
 }}
 
