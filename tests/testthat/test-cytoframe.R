@@ -58,7 +58,7 @@ test_that("write permission", {
   cf2 <- load_cytoframe_from_h5(h5file)
   expect_error(exprs(cf2)[1,1] <- 2, "read-only")
   cf_unlock(cf2)
-  expect_true(grepl( "Write failed", capture.output(expect_error(exprs(cf2)[1,1] <- 2), type = "message")[3]))
+  expect_true(grepl( "Write failed", paste(capture.output(expect_error(exprs(cf2)[1,1] <- 2), type = "message"), collapse = " ")))
   expect_equivalent(exprs(cf2)[1,1], 1)
   
   #loaded from h5: explicitly set write mode

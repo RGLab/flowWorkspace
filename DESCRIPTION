@@ -40,11 +40,11 @@ Depends:
 biocViews: FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
-    flowWorkspaceData (>= 3.17.0),
+    flowWorkspaceData (>= 3.17.1),
     knitr,
     ggcyto,
     parallel
-LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.7), cytolib(>= 2.1.11),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
+LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.7), cytolib(>= 2.1.12),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
 RoxygenNote: 6.1.1

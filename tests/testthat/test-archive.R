@@ -11,12 +11,15 @@ test_that("load GatingSet from archive",
 
 test_that("save GatingSet to archive",
     {
+      pd <- pData(gs)
+      pd[["newCol"]] <- "A"
+      pData(gs) <- pd
       tmp <- tempfile()
       save_gs(gs, path = tmp)
       
       gs <- load_gs(tmp)
       expect_that(gs, is_a("GatingSet"))
-      
+      expect_setequal(colnames(pData(gs)), colnames(pd))
       expect_message(save_gs(gs, path = tmp), "Done")
       expect_error(save_gs(gs[1], path = tmp), "doesn't match")
 
