@@ -1,14 +1,15 @@
 test_that("compensate & transform a GatingSet", {
-      fs <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore"))
-      gs <- GatingSet(fs)
+      fs.raw <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore"))
+      gs.raw <- GatingSet(fs.raw)
       comp.mat <- as.matrix(read.table(system.file("extdata","compdata","compmatrix",package="flowCore"),header=TRUE,skip=2,check.names=FALSE))
       
       
       # Compensate with single comp
       row.names(comp.mat) <- colnames(comp.mat)
-      fs <- compensate(fs, comp.mat)
+      fs <- compensate(fs.raw, comp.mat)
       expectRes <- fsApply(fs, colMeans, use.exprs = TRUE)
       
+      gs <- gs_clone(gs.raw)
       gs1 <- compensate(gs, comp.mat)
       expect_equal(cs_get_h5_file_path(gs)
                   , cs_get_h5_file_path(gs1)
@@ -31,7 +32,7 @@ test_that("compensate & transform a GatingSet", {
       #modify comp[5]
       comp <- sapply(sampleNames(gs), function(sn)comp.mat, simplify = FALSE)
       comp[[5]][2] <- 0.001
-      gs3 <- compensate(gs_clone(gs), comp)
+      gs3 <- compensate(gs_clone(gs.raw), comp)
       expect_failure(expect_equal(fsApply(getData(gs3), colMeans, use.exprs = TRUE)
               , expectRes), regexp = "8.399298e-06")
       
@@ -40,7 +41,7 @@ test_that("compensate & transform a GatingSet", {
       comp[["dd"]] <- 1:10
       expect_error(gs4 <- compensate(gs, comp), "should be a compensation object")
       comp[["dd"]] <- comp[[1]]
-      gs4 <- compensate(gs_clone(gs), comp)
+      gs4 <- compensate(gs_clone(gs.raw), comp)
       comp <- getCompensationMatrices(gs4)
       expect_equal(names(comp), sampleNames(gs))
       expect_equal(fsApply(getData(gs4), colMeans, use.exprs = TRUE), expectRes)
