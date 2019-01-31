@@ -86,7 +86,12 @@ test_that("clone & rbind2",{
       
       expect_equal(getPopStats(gs), getPopStats(gs2))
       expect_equal(getPopStats(gs[[1]]), getPopStats(gs2[[1]]))
-      
+})
+test_that("rbind2",{
+      orig_sn <- sampleNames(gs)
+  
+      gs1 <- gs_clone(gs)
+  
       #construct gslist to rbind2
       sampleNames(gs1) <- "CytoTrol_CytoTrol_2.fcs"
       clone_sn <- sampleNames(gs1)
@@ -138,7 +143,9 @@ test_that("pData ",{
       new_pd[, "PTID"] <- c("001", "002")
       pData(gs) <- new_pd 
       expect_identical(pData(gs), new_pd);
-      
+      #ensure pdata is flushed to disk during gs_clone
+      expect_identical(pData(gs_clone(gs))[, colnames(new_pd)], new_pd)
+      expect_identical(pData(gs_copy_tree_only(gs)), new_pd)
       #restore pdata
       pData(gs) <- pd
       expect_identical(pData(gs), pd);
