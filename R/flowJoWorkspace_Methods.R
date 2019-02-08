@@ -428,12 +428,17 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
         do({
               if(keywords.source == "XML")
               {  #parse pData from workspace
-                kws <- getKeywords(obj, .[["sampleID"]]) #whitespace is already removed
+                #skip those non-unique matched samples
+                if(all(.[["nFound"]] == 1)){
+                  kws <- getKeywords(obj, .[["sampleID"]]) #whitespace is already removed
+                }else{
+                  kws <- NULL
+                }
               }else{
                 if(execute){
                   #skip those non-unique matched samples
-                  if(.[["nFound"]] == 1){
-                    #parse pData by reading the fcs headers
+                  if(all(.[["nFound"]] == 1)){
+                    #parse pData by reading the fcs headers 
                     kws <- read.FCSheader(.[["file"]], emptyValue = emptyValue)[[1]] %>% trimws %>% as.list 
                   }else
                     kws <- NULL
