@@ -52,6 +52,7 @@ Collate:
     'getDescendants.R'
     'getSingleCellExpression.R'
     'getStats.R'
+    'identifier.R'
     'merge_GatingSet.R'
     'moveNode.R'
     'setGate_Methods.R'
@@ -70,4 +71,5 @@ Suggests:
 LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.3.7), cytolib(>= 1.3.2)
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
+Encoding: UTF-8
 RoxygenNote: 6.1.1
