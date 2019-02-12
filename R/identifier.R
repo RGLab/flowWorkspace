@@ -5,10 +5,13 @@ setMethod("identifier",c("GatingSet"),function(object){
   object@guid
 })
 
+#' @importFrom digest digest
 #' @rdname GatingSet-methods
 #' @export 
 setMethod("identifier",c("GatingSetList"),function(object){
-  object@guid
+  gs.ids <- lapply(object, identifier, level = 1)
+  gs.ids <- paste(gs.ids, collapse = "")
+  digest(gs.ids)
 })
 
 #' @rdname GatingSet-methods
@@ -29,7 +32,5 @@ setReplaceMethod("identifier",
                                      value="character"),
                  definition=function(object, value)
                  {
-                   object@guid <- value
-                   return(object)
-                   return(object)
+                  stop("guid of GatingSetList is read-only!")
                  })

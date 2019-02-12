@@ -37,7 +37,8 @@ Imports:
     stringr,
     scales,
     flowViz,
-    matrixStats
+    matrixStats,
+    digest
 Collate: 
     'AllGenerics.R'
     'AllClasses.R'

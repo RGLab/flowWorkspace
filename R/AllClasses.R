@@ -331,7 +331,7 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #' @aliases 
 #' GatingSetList-class
 #' GatingSetList
-setClass("GatingSetList", contains = "ncdfFlowList", slots = c(guid = "character"))
+setClass("GatingSetList", contains = "ncdfFlowList")
 
 validGatingSetListObject <- function(object){
   
@@ -464,7 +464,6 @@ GatingSetList <- function(x,samples = NULL)
           gs
         })
     x@data <- gslist
-    identifier(x) <- .uuid_gen()
     x
   }
     
