@@ -31,7 +31,7 @@ setMethod("rbind2",
         pointer <- .cpp_combineGatingSet(ptrlist,sampleList)
         G <- new("GatingSet")
         G@pointer <- pointer
-        G@guid <- .uuid_gen()
+        identifier(G) <- .uuid_gen()
         G@flag <- TRUE
         G@axis <- unlist(lapply(x,slot,"axis",level = 1),recursive = FALSE)
         #TODO: to waring about losing trans and comp info when they are different across gs
@@ -174,10 +174,10 @@ save_gslist<-function(gslist,path,...){
 #        this_dir <- tempfile(pattern="gs",tmpdir=path)
 #        dir.create(path = this_dir)
 #        browser()
-        guid <- gs@guid
+        guid <- identifier(gs)
         if(length(guid)==0){
-          gs@guid <- .uuid_gen()
-          guid <- gs@guid
+          identifier(gs) <- .uuid_gen()
+          guid <- identifier(gs)
         }
         this_dir <- file.path(path,guid) 
 

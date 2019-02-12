@@ -57,10 +57,10 @@ save_gs<-function(G,path,overwrite = FALSE
   fileext <- 'pb'
 
 
-  guid <- G@guid
+  guid <- identifier(G)
   if(length(guid) == 0){
-    G@guid <- .uuid_gen()
-    guid <- G@guid
+    identifier(G) <- .uuid_gen()
+    guid <- identifier(G)
   }
   rds_toSave <- paste(guid,"rds",sep=".")
   dat_toSave <- paste(guid,fileext,sep=".")
@@ -162,10 +162,10 @@ load_gs<-function(path){
     if(!file.exists(path))
       stop("Folder '",path, "' does not exist!")
     #generate uuid for the legacy GatingSet Object
-    if(length(G@guid)==0){
-      G@guid <- .uuid_gen()
+    if(length(identifier(G))==0){
+      identifier(G) <- .uuid_gen()
     }
-    guid <- G@guid
+    guid <- identifier(G)
 
     rds.file<-file.path(path,paste(guid,"rds",sep="."))
     dat.file<-file.path(path,paste(guid,fileext,sep="."))
@@ -283,7 +283,7 @@ load_gs<-function(path){
       guid <- try(slot(gs,"guid"),silent=T)
       if(class(guid)=="try-error"){
         #generate the guid for the legacy archive
-        gs@guid <- .uuid_gen()
+        identifier(gs) <- .uuid_gen()
       }
 
       message("loading tree object...")
@@ -363,7 +363,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			Object<-new("GatingSet")
 			message("generating new GatingSet from the gating template...")
 			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
-      Object@guid <- .uuid_gen()
+			identifier(Object) <- .uuid_gen()
 
       sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
 	  		comp <- x@compensation[[1]]
@@ -1453,7 +1453,7 @@ fix_y_axis <- function(gs, x, y){
                           , data = x@data
                           , flag = x@flag
                           , axis = x@axis
-                          , guid = x@guid
+                          , guid = identifier(x)
                           , transformation = x@transformation
                           , compensation = x@compensation
                           )[x@name]
@@ -1709,7 +1709,7 @@ setMethod("clone",c("GatingSet"),function(x,...){
 			#clone c structure
 			message("cloning tree structure...")
 			clone@pointer <- .cpp_CloneGatingSet(x@pointer,sampleNames(x))
-            clone@guid <- .uuid_gen()
+			identifier(clone) <- .uuid_gen()
 
 			#deep copying flow Data
 			message("cloning flow data...")
@@ -2048,7 +2048,7 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 
             #update the data for clone
             flowData(clone) <- fs
-            clone@guid <- .uuid_gen()
+            identifier(clone) <- .uuid_gen()
 			return(clone);
 		})
 
@@ -2151,7 +2151,7 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
                             , data = data
                             , flag = x@flag
                             , axis = x@axis
-                            , guid = x@guid
+                            , guid = identifier(x)
                             , transformation = x@transformation[[i]]
                             , compensation = x@compensation
                             , name = i)

@@ -176,8 +176,6 @@ setClass("GatingHierarchy"
           , prototype(name = "")
         )
 
-
-
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
         
 #' constructors for GatingSet 
@@ -213,7 +211,7 @@ setMethod("GatingSet",c("character","character"),function(x,y, guids, includeGat
         stop(xmlFileName," not found!")
       Object<-new("GatingSet")
       Object@pointer<-.cpp_parseWorkspace(xmlFileName,sampleIDs,guids,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType))
-      Object@guid <- .uuid_gen()
+      identifier(Object) <- .uuid_gen()
       Object@flag <- FALSE
 
       return(Object)
@@ -237,7 +235,7 @@ setMethod("GatingSet",c("flowSet"),function(x){
       samples<-sampleNames(fs_clone)
       G<-new("GatingSet")
       G@pointer<-.cpp_NewGatingSet_rootOnly(samples)
-      G@guid <- .uuid_gen()
+      identifier(G) <- .uuid_gen()
       G@flag <- TRUE
           
       flowData(G) <- fs_clone
@@ -466,7 +464,7 @@ GatingSetList <- function(x,samples = NULL)
           gs
         })
     x@data <- gslist
-    x@guid <- .uuid_gen()
+    identifier(x) <- .uuid_gen()
     x
   }
     
