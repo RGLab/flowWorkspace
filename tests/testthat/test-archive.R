@@ -13,11 +13,19 @@ test_that("load GatingSet from archive",
 
 test_that("save GatingSet to archive",
     {
+      id <- identifier(gs)
+      expect_is(id, "character")
       tmp <- tempfile()
       save_gs(gs, path = tmp)
       
       gs <<- load_gs(tmp)
       expect_that(gs, is_a("GatingSet"))
+      expect_equal(identifier(gs), id)
+      id.new <- "test"
+      identifier(gs) <- id.new
+      expect_equal(identifier(gs), id.new)
+      #restore id
+      identifier(gs) <- id
       
       expect_error(save_gs(gs, path = tmp), "already exists")
       
