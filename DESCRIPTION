@@ -11,7 +11,8 @@ Description: This package is designed to facilitate comparison of automated
     gating from flowJo using the flowCore functionality. Gating hierarchies,
     groups of samples, compensation, and transformation are performed so that
     the output matches the flowJo analysis.
-License: Artistic-2.0
+License: file LICENSE
+License_restricts_use: yes
 LazyLoad: yes
 Imports:
     Biobase,
