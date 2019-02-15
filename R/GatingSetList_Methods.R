@@ -10,7 +10,6 @@ setMethod("rbind2",
     definition=function(x,y="missing",...)
     {
 #           browser()
-      
       #combine tree structure
       ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
       sampleList <- lapply(x, sampleNames, level =1)

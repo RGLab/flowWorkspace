@@ -14,6 +14,8 @@ test_that("save GatingSet to archive",
       pd <- pData(gs)
       pd[["newCol"]] <- "A"
       pData(gs) <- pd
+      id <- identifier(gs)
+      expect_is(id, "character")
       tmp <- tempfile()
       save_gs(gs, path = tmp)
       
@@ -24,6 +26,12 @@ test_that("save GatingSet to archive",
       expect_error(save_gs(gs[1], path = tmp), "doesn't match")
 
       cdf <- list.files(tmp, ".h5", full.names = TRUE)
+      expect_equal(identifier(gs), id)
+      id.new <- "test"
+      identifier(gs) <- id.new
+      expect_equal(identifier(gs), id.new)
+      #restore id
+      identifier(gs) <- id
       file.copy(cdf, file.path(tmp, "redundant.nc"))
       expect_error(save_gs(gs, path = tmp), "Not a valid")
       

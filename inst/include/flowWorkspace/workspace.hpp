@@ -106,7 +106,6 @@ public:
 	 }
 
 
-
 	 unordered_set<string> get_derivedparameters(wsSampleNode sampleNode){
 		 unordered_set<string> derived;
 		 xmlXPathObjectPtr res=sampleNode.xpathInNode("*/DerivedParameter");
@@ -186,7 +185,6 @@ public:
 	 				//add relation between current node and parent node
 					boost::add_edge(parentID,curChildID,tree);
 					//update the node map for the easy query by pop name
-
 					//recursively add its descendants
 					addPopulation(tree, curChildID,&curChildNode,isParseGate, derived_params);
 

@@ -168,8 +168,6 @@ setClass("GatingSet_legacy"
 #' show,GatingHierarchy-method
 setClass("GatingHierarchy", contains = "GatingSet")
 
-
-
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
         
 #' constructors for GatingSet

@@ -35,6 +35,13 @@ test_that("GatingSetList constructor", {
       
     })
 
+test_that("identifier", {
+  id <- identifier(gslist)
+  expect_equal(nchar(id), 32)
+  #make sure the generated id is consistent each time
+  expect_equal(id, identifier(gslist))
+  expect_error(identifier(gslist) <- "d", "read-only")
+})
 
 test_that("[", {
       thisRes <- gslist[1]

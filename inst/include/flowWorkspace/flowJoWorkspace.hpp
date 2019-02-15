@@ -869,7 +869,6 @@ public:
 			curParam.param=pName;
 			curParam.log=curFlag.compare("LOG")==0;
 
-
 			if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 				COUT<<pName<<":"<<curFlag;
 			/*

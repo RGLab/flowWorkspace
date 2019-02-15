@@ -35,7 +35,8 @@ Imports:
     scales,
     matrixStats,
     RcppParallel,
-    RProtoBufLib
+    RProtoBufLib,
+    digest
 Depends:
     R (>= 2.16.0),flowCore(>= 1.49.6),ncdfFlow(>= 2.25.4)
 Collate: 
@@ -54,6 +55,7 @@ Collate:
     'getDescendants.R'
     'getSingleCellExpression.R'
     'getStats.R'
+    'identifier.R'
     'load_fcs.R'
     'load_gs.R'
     'merge_GatingSet.R'
@@ -73,4 +75,5 @@ LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.7), cytolib(>= 2.1.12),Rhd
 VignetteBuilder: knitr
 SystemRequirements: xml2, GNU make, C++11
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
+Encoding: UTF-8
 RoxygenNote: 6.1.1
