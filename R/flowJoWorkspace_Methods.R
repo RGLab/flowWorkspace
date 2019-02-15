@@ -426,23 +426,21 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
     pd <- samples %>% 
         group_by(guid) %>% 
         do({
+              # Error if sample match is not unique
+              if(length(.[["nFound"]]) > 1){
+                stop("Duplicated FCS filename within workspace group: ", .[["name"]], collapse = " ")
+              }
               if(keywords.source == "XML")
               {  #parse pData from workspace
-                #skip those non-unique matched samples
-                if(all(.[["nFound"]] == 1)){
-                  kws <- getKeywords(obj, .[["sampleID"]]) #whitespace is already removed
-                }else{
-                  kws <- NULL
-                }
+                kws <- getKeywords(obj, .[["sampleID"]]) #whitespace is already removed
               }else{
                 if(execute){
-                  #skip those non-unique matched samples
-                  if(all(.[["nFound"]] == 1)){
+                  # Allows for file not found
+                  if(.[["nFound"]] == 1){
                     #parse pData by reading the fcs headers 
                     kws <- read.FCSheader(.[["file"]], emptyValue = emptyValue)[[1]] %>% trimws %>% as.list 
                   }else
                     kws <- NULL
-                  
                 }else
                   stop("Please set 'execute' to TRUE in order to parse pData from FCS file!")
               }
