@@ -428,7 +428,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
         do({
               # Error if sample match is not unique
               if(length(.[["nFound"]]) > 1){
-                stop("Duplicated FCS filename within workspace group: ", .[["name"]], collapse = " ")
+                stop("Duplicated FCS filename within workspace group: ", .[["name"]][[1]], collapse = " ")
               }
               if(keywords.source == "XML")
               {  #parse pData from workspace
