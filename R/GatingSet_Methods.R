@@ -1047,9 +1047,8 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
 		})
 
 #' @rdname recompute
-    setMethod("recompute",c("GatingSetList"),function(x, ...){
-          selectMethod("recompute", signature = c("GatingSet"))(x, ...)
-
+setMethod("recompute",c("GatingSetList"),function(x, ...){
+	invisible(lapply(x, recompute, ..., level = 1))
         })
 
 #' @param x \code{GatingSet}
