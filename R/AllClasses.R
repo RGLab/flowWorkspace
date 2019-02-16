@@ -84,14 +84,8 @@ setClass("flowJoWorkspace",representation(doc="externalptr"))
 #' @section Slots:
 #' 
 #' \describe{
-#'     \item{\code{FCSPath}:}{deprecated} 
-#'     \item{\code{data}:}{Object of class \code{"flowSet"}. flow data associated with this GatingSet }
-#'     \item{\code{flag}:}{Object of class \code{"logical"}. A flag indicating whether the gates, transformations, and compensation matrices have been applied to data, or simply imported.}
-#'     \item{\code{axis}:}{Object of class \code{"list"}. stores the axis information used for plotGate.}
 #'     \item{\code{pointer}:}{Object of class \code{"externalptr"}. points to the gating hierarchy stored in C data structure.}
-#'     \item{\code{guid}:}{Object of class \code{"character"}. the unique identifier for GatingSet object.}
 #'     \item{\code{transformation}:}{Object of class \code{"list"}. a list of transformation objects used by GatingSet.}
-#'    \item{\code{compensation}:}{Object of class \code{"ANY"}. compensation objects.}
 #'   }
 #' 
 #' @seealso
@@ -157,7 +151,8 @@ setClass("GatingSet_legacy"
 #' 	plotPopCV(gh)
 #'  nodes <- getNodes(gh)
 #'  thisNode <- nodes[4]
-#' 	plotGate(gh,thisNode);
+#'  require(ggcyto)
+#' 	autoplot(gh,thisNode);
 #' 	getGate(gh,thisNode);
 #' 	getData(gh,thisNode)
 #' 
@@ -252,8 +247,7 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     pData(gslist2[3:2])
 #' 
 #'     #plot the gate
-#'     plotGate(gslist2[1:2],5,smooth=T)
-#'     plotGate_labkey(gslist2[3:4],4,x="<APC Cy7-A>",y="<PE Tx RD-A>",smooth=T)
+#'     autoplot(gslist2[1:2],5)
 #'     
 #'     #remove cerntain gates by loop through GatingSets
 #'     getNodes(gslist2[[1]])
