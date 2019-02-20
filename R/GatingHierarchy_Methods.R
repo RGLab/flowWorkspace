@@ -566,7 +566,14 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 			nodeNames
 		})
 
-
+#' convert the partial gating path to the full path
+#' @param gh GatingHierarchy object
+#' @param path the partial gating path
+#' @return the full gating path
+#' @export 
+getFullNodePath <- function(gh, path){
+	getNodePath(gh@pointer, sampleNames(gh)[1], .getNodeInd(gh, path) - 1)
+}
 #' Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy
 #'
 #' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}

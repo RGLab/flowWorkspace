@@ -66,6 +66,11 @@ StringVec getNodes(XPtr<GatingSet> gs,string sampleName
 
 }
 
+//[[Rcpp::export]]
+string getNodePath(XPtr<GatingSet> gs,string sampleName,NODEID id){
+	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
+	return gh.getNodePath(id);
+}
 /*
  * query by path
  */
