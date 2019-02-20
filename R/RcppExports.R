@@ -68,6 +68,10 @@
     .Call(`_flowWorkspace_getNodes`, gs, sampleName, order, fullPath, showHidden)
 }
 
+getNodePath <- function(gs, sampleName, id) {
+    .Call(`_flowWorkspace_getNodePath`, gs, sampleName, id)
+}
+
 .cpp_getNodeID <- function(gs, sampleName, gatePath) {
     .Call(`_flowWorkspace_getNodeID`, gs, sampleName, gatePath)
 }
