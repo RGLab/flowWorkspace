@@ -13,26 +13,29 @@
 #' new.parent <- "singlets"
 #' copyNode(gh, "CD4", new.parent)
 copyNode <- function(gh, node, to){
-  all_paths <- getNodes(gh, showHidden = TRUE, path = "full")
-  to_path <- getFullNodePath(gh, to)
-  node_path <- getFullNodePath(gh, node)
-  if(to_path == node_path){
+  node <- getFullNodePath(gh, node)
+  to <- getFullNodePath(gh, to)
+  if(to == node){
     stop("Can't copy the node to itself!")
   }
-  if(to_path %in% getDescendants(gh, node_path, path = "full")){
+  if(to %in% getDescendants(gh, node, path = "full")){
     stop("Can't copy the node to its descendants!")
   }
-  children <- getChildren(gh, node, path = "full", showHidden = TRUE)
-  node_name <- basename(node_path)
-  add(gh, action = getGate(gh, node_path), negated = isNegated(gh, node_path), 
-      parent = to_path, name = node_name, recompute = TRUE)
-  added_path <- setdiff(getNodes(gh, showHidden = TRUE, path = "full"), all_paths)
-  if(length(children)){
-    lapply(children, function(x) copyNode(gh, x, added_path))
-  }
-  # Hide nodes appropriately on the way back up
-  if(isHidden(gh, node_path)){
-    setNode(gh, added_path, FALSE)
-  }
+  .copyNode(gh, node, to)
+  recompute(gh, to)
   invisible(node)
+}
+
+.copyNode <- function(gh, node, to){
+  children <- getChildren(gh, node, path = "full", showHidden = TRUE)
+  node_name <- basename(node)
+  add(gh, action = getGate(gh, node), negated = isNegated(gh, node), 
+      parent = to, name = node_name, recompute = FALSE)
+  added <- paste(to, node_name, sep = "/")
+  if(isHidden(gh, node)){
+    setNode(gh, added, FALSE)
+  }
+  if(length(children)){
+    lapply(children, function(x) .copyNode(gh, x, added))
+  }
 }
