@@ -69,12 +69,6 @@ setGeneric("getSamples",function(x,...)standardGeneric("getSamples"))
 setGeneric("getSampleGroups",function(x)standardGeneric("getSampleGroups"))
 
 #' @export
-setGeneric("getCompensationMatrices",function(x)standardGeneric("getCompensationMatrices"))
-
-#' @export
-setGeneric("getTransformations",function(x, ...)standardGeneric("getTransformations"))
-
-#' @export
 setGeneric("getKeywords",function(obj,y, ...)standardGeneric("getKeywords"))
 
 #' @export

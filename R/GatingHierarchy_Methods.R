@@ -1075,6 +1075,9 @@ getAxisLabels <- function(obj,...){
   obj@axis[[sampleNames(obj)]]
 }
 
+#' @rdname getTransformations
+#' @export 
+getTransformations <- function(x, ...)useMethod("getTransformations")
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
@@ -1107,7 +1110,9 @@ getAxisLabels <- function(obj,...){
 #' }
 #' @aliases getTransformations
 #' @rdname getTransformations
-setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
+#' @export 
+#' @method getTransformations GatingHierarchy
+getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
       trans.objects <- x@transformation
       if(length(trans.objects) == 0){
         trans.objects <- .getTransformations(x@pointer,sampleNames(x), ...)
@@ -1157,7 +1162,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
        
       }
         
-})
+}
 
 
 .convertTrans <- function(trans, inverse = FALSE){
@@ -1228,7 +1233,10 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
   }
 
 
-
+#' @rdname getCompensationMatrices
+#' @export 
+ getCompensationMatrices <- function(x)useMethod("getCompensationMatrices")
+  
 #'  Retrieve the compensation matrices from a GatingHierarchy
 #'
 #'  Retrieve the compensation matrices from a GatingHierarchy.
@@ -1245,8 +1253,9 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
 #' }
 #' @aliases getCompensationMatrices
 #' @export
+#' @method getCompensationMatrices GatingHierarchy
 #' @rdname getCompensationMatrices
-setMethod("getCompensationMatrices","GatingHierarchy",function(x){
+getCompensationMatrices.GatingHierarchy <- function(x){
 
       compobj <- x@compensation
       sn <- sampleNames(x)
@@ -1284,7 +1293,7 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 
 			compobj
 
-})
+}
 
 
 
