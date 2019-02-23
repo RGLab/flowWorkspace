@@ -1077,7 +1077,7 @@ getAxisLabels <- function(obj,...){
 
 #' @rdname getTransformations
 #' @export 
-getTransformations <- function(x, ...)useMethod("getTransformations")
+getTransformations <- function(x, ...)UseMethod("getTransformations")
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
@@ -1235,7 +1235,7 @@ getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALS
 
 #' @rdname getCompensationMatrices
 #' @export 
- getCompensationMatrices <- function(x)useMethod("getCompensationMatrices")
+ getCompensationMatrices <- function(x)UseMethod("getCompensationMatrices")
   
 #'  Retrieve the compensation matrices from a GatingHierarchy
 #'
