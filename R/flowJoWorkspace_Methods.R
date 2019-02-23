@@ -126,6 +126,8 @@ setMethod("closeWorkspace","flowJoWorkspace",function(workspace){
 #'                                           If needed, they can be calculated by calling \code{recompute} method at later stage.
 #'          \item additional.keys \code{character} vector:  The keywords (parsed from FCS header) to be combined(concatenated with "_") with FCS filename
 #'                                                          to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
+#'          \item additional.sampleID \code{boolean}: A boolean specifying whether to include the flowJo sample ID in a GUID to uniquely identify samples. This can be helpful when the
+#'                                                    filename or other keywords are not enough to differentiate between samples. Default is FALSE.                                                
 #'          \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 #'          \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
 #'          \item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.    
@@ -181,11 +183,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                               , requiregates = TRUE
                               , sampNloc = "keyword"
                               , additional.keys = "$TOT"
+                              , additional.sampleID = FALSE
                               , keywords = NULL, keywords.source = "XML"
                               , execute = TRUE
                               , path = obj@path
                               , keyword.ignore.case = FALSE
-                              , use.sampleID = FALSE
                               , ...)
 {	
     
@@ -243,10 +245,10 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                       , keywords.source = keywords.source
                       , execute = execute
                       , additional.keys = additional.keys
+                      , additional.sampleID = additional.sampleID
                       , path = path
                       , keyword.ignore.case = keyword.ignore.case
                       , subset = subset
-                      , use.sampleID = use.sampleID
                       , ... #arguments for read.FCSheader
                       )
     
@@ -261,8 +263,9 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
 		
 }
 
-.parse.pData <- function(obj, keywords, sg, keywords.source, execute, additional.keys, path, keyword.ignore.case, subset, emptyValue = TRUE
-                          , use.sampleID, ... #other arguments ignored
+.parse.pData <- function(obj, keywords, sg, keywords.source, execute, additional.keys, additional.sampleID
+                          , path, keyword.ignore.case, subset, emptyValue = TRUE
+                          , ... #other arguments ignored
                          )
 {
   
@@ -304,10 +307,10 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
               sampleID <- as.numeric(row[["sampleID"]])
               sn <- row[["name"]]
               kw <- unlist(getKeywords(obj, sampleID)[additional.keys])
-              ifelse(use.sampleID,  paste(c(sampleID,sn,kw), collapse = "_"), paste(c(sn,kw), collapse = "_"))
+              ifelse(additional.sampleID,  paste(c(sampleID,sn,kw), collapse = "_"), paste(c(sn,kw), collapse = "_"))
             }))  
   }else{
-    if(use.sampleID){
+    if(additional.sampleID){
       sg[["guid"]] <- as.vector(paste(c(sg[["sampleID"]],sg[["name"]]), collapse = "_"))
     }else{
       sg[["guid"]] <- sg[["name"]]
@@ -317,12 +320,15 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
   #check duplicated sample keys
   isDup <- duplicated(sg[["guid"]])
   if(any(isDup))
-    stop("Duplicated sampleID's detected within group: ", paste(sg[["guid"]][isDup], collapse = " "), "\n Please check if the appropriate group is selected.")
+    stop("Duplicated GUIDs detected within group: ", paste(sg[["guid"]][isDup], collapse = " "), 
+         '\n Consider setting argument "additional.sampleID = TRUE" to disambiguate samples further.')
   
-  # Warn user about duplicate analyses of same FCS
-  isDup <- duplicated(sg[["name"]])
+  # Warn user about duplicate analyses of same FCS filename with same event counts
+  isDup <- duplicated(paste(sg[["name"]], sg[["count"]], sep = "_"))
   if(any(isDup))
-    warning("Duplicated FCS filenames detected within group: ", paste(sg[["name"]][isDup], collapse = " "), "\n Parsing duplicate analyses of same FCS file.")
+    warning("Duplicated FCS filenames with duplicated event counts detected within group: \n",
+            paste(sg[["name"]][isDup], sg[["count"]][isDup], sep = "_", collapse = "\n"), 
+            "\n Duplicate analyses of same FCS file will be parsed.")
   
   samples <- sg[,c("name", "sampleID", "guid")]
   
@@ -409,7 +415,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                           kw <- trimws(unlist(kws[additional.keys]))
                           # construct guids
                           thisFile <- ifelse(isFileNameSearchFailed, kws["$FIL"], basename(thisPath))
-                          ifelse(use.sampleID, paste(c(sampleID, thisFile, as.vector(kw)), collapse = "_"),
+                          ifelse(additional.sampleID, paste(c(sampleID, thisFile, as.vector(kw)), collapse = "_"),
                                  paste(c(thisFile, as.vector(kw)), collapse = "_"))
                         }, USE.NAMES = F)  
                     matchInd <- which(guid == guids.fcs) #do strict matching instead grep due to the special characters
