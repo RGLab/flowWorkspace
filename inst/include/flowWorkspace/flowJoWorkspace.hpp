@@ -206,6 +206,7 @@ public:
 				//use xml dir
 				string xml_filepath = get_xml_file_path();
 				data_dir = path_dir_name(xml_filepath);
+				data_dir = data_dir.empty() ? "." : data_dir; 
 			}
 			h5_dir = gsPtr->generate_h5_folder(h5_dir);
 		 }

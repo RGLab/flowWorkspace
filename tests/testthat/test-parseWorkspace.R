@@ -14,6 +14,15 @@ source("flowJoWorkspace-testSuite.R", local = TRUE)
 
 gs <- NULL
 
+test_that("Can parse workspace in current working dir without path",{
+  wd <- getwd()
+  setwd(dataDir)
+  ws_wd <- openWorkspace("manual.xml")
+  dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws_wd, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))))
+  expect_that(gs, is_a("GatingSet"))
+  setwd(wd)
+})
+
 test_that("Can parse workspace",{
     dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))))
 	  expect_that(gs, is_a("GatingSet"));
