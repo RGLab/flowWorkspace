@@ -69,6 +69,7 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
                                   , string h5_dir
                                   , bool includeGates
                                   , vector<string> additional_keys
+                                  , bool additional_sampleID
                                   , vector<string> keywords
                                   , bool is_pheno_data_from_FCS
                                   , bool keyword_ignore_case
@@ -93,6 +94,7 @@ XPtr<GatingSet> parse_workspace(XPtr<flowJoWorkspace> ws
   config.keyword_ignore_case = keyword_ignore_case;
   config.keywords_for_pheno_data = keywords;
   config.keywords_for_uid = additional_keys;
+  config.keywords_for_uid_sampleID = additional_sampleID;
   config.gate_extend_trigger_value = extend_val;
   config.gate_extend_to = extend_to;
   config.channel_ignore_case = channel_ignore_case;

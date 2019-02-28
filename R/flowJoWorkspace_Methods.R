@@ -76,6 +76,8 @@ parseWorkspace <- function (x, ...) {
 #'                                           If needed, they can be calculated by calling \code{recompute} method at later stage.
 #'          \item additional.keys \code{character} vector:  The keywords (parsed from FCS header) to be combined(concatenated with "_") with FCS filename
 #'                                                          to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
+#'          \item additional.sampleID \code{boolean}: A boolean specifying whether to include the flowJo sample ID in a GUID to uniquely identify samples. This can be helpful when the
+#'                                                    filename or other keywords are not enough to differentiate between samples. Default is FALSE.     
 #'          \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 #'          \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
 #'          \item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.    
@@ -129,6 +131,7 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
     , h5_dir = tempdir()
     , includeGates = TRUE
     , additional.keys = "$TOT"
+    , additional.sampleID = FALSE
     , keywords = character()
     , keywords.source = "XML"
     , keyword.ignore.case = FALSE
@@ -207,6 +210,7 @@ parseWorkspace.flowJoWorkspace <- function(ws, name = NULL
                  , h5_dir = suppressWarnings(normalizePath(h5_dir))
                  , includeGates = includeGates
                  , additional_keys = additional.keys
+                 , additional_sampleID = additional.sampleID
                  , keywords = keywords
                  , is_pheno_data_from_FCS = keywords.source == "FCS"
                  , keyword_ignore_case = keyword.ignore.case

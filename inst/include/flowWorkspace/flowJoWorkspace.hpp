@@ -42,6 +42,7 @@ struct ParseWorkspaceParameters
 	 bool is_pheno_data_from_FCS = false;; // whether to extract keywords for pdata from FCS or workspace
 	 vector<string> keywords_for_pheno_data = {}; // the keywords to be extracted as pdata for cytoframe
 	 vector<string> keywords_for_uid= {"$TOT"};  // keywords to be used along with sample name for constructing sample uid
+	 bool keywords_for_uid_sampleID = false;
 	 bool keyword_ignore_case = false;; // whether to ignore letter case when extract keywords for pdata (can be turned off when the letter case are not consistent across samples)
 	 bool channel_ignore_case = false;; //  whether the colnames(channel names) matching needs to be case sensitive (e.g. compensation, gating..)
 	 float gate_extend_trigger_value = 0; //the threshold that determine wether the gates need to be extended. default is 0. It is triggered when gate coordinates are below this value.
@@ -236,14 +237,14 @@ public:
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
 			COUT<<endl<<"... start parsing sample: "<< sample_info.sample_name <<"... "<<endl;
 		//generate uid
-		string ws_key_seq = concatenate_keywords(sample_info.keywords, config_const.keywords_for_uid);
-		string uid = sample_info.sample_name + ws_key_seq;
+		string ws_key_seq = concatenate_keywords(sample_info.keywords, config_const.keywords_for_uid, config_const.keywords_for_uid_sampleID, sample_info.sample_id);
+		string uid = config_const.keywords_for_uid_sampleID ? (std::to_string(sample_info.sample_id) + sample_info.sample_name + ws_key_seq): (sample_info.sample_name + ws_key_seq);
 		shared_ptr<MemCytoFrame> frptr;
 		bool isfound = false;
 		if(config_const.is_gating)
 		{
 			//match FCS
-			isfound = search_for_fcs(data_dir, sample_info.sample_name, ws_key_seq, config_const, frptr);
+			isfound = search_for_fcs(data_dir, sample_info.sample_id, sample_info.sample_name, ws_key_seq, config_const, frptr);
 			if(!isfound)
 				PRINT("FCS not found for sample " + uid + " from searching the file extension: " + config_const.fcs_file_extension + "\n");
 
@@ -380,7 +381,7 @@ public:
 	 * First try to search by file name, if failed, use FCS keyword $FIL + additional keywords for further searching and pruning
 	 * cytoframe is preloaded with header-only.
 	 */
-	bool search_for_fcs(const string & data_dir, const string & sample_name, const string & ws_key_seq, const ParseWorkspaceParameters & config, shared_ptr<MemCytoFrame> &fr)
+	bool search_for_fcs(const string & data_dir, const int sample_id, const string & sample_name, const string & ws_key_seq, const ParseWorkspaceParameters & config, shared_ptr<MemCytoFrame> &fr)
 	{
 		FCS_READ_PARAM fcs_read_param = config.fcs_read_param;
 		fcs_read_param.header.is_fix_slash_in_channel_name = is_fix_slash_in_channel_name();
@@ -404,7 +405,7 @@ public:
 				fr.reset(new MemCytoFrame(file_path, fcs_read_param));
 				fr->read_fcs_header();
 				if(fr->get_keyword("$FIL") == sample_name &&
-						ws_key_seq == concatenate_keywords(fr->get_keywords(), config.keywords_for_uid))
+						ws_key_seq == concatenate_keywords(fr->get_keywords(), config.keywords_for_uid, config.keywords_for_uid_sampleID, sample_id))
 				{
 
 					isfound = true;
@@ -422,7 +423,7 @@ public:
 			{
 				fr.reset(new MemCytoFrame(file_path, fcs_read_param));
 				fr->read_fcs_header();
-				string fcs_key_seq = concatenate_keywords(fr->get_keywords(), config.keywords_for_uid);
+				string fcs_key_seq = concatenate_keywords(fr->get_keywords(), config.keywords_for_uid, config.keywords_for_uid_sampleID, sample_id);
 
 				if(fcs_key_seq == ws_key_seq)//found matched one
 				{
@@ -445,7 +446,7 @@ public:
 	 * @param keywords_for_uid
 	 * @return
 	 */
-	string concatenate_keywords(const KEY_WORDS & keywords, const vector<string> & keywords_for_uid)
+	string concatenate_keywords(const KEY_WORDS & keywords, const vector<string> & keywords_for_uid, bool keywords_for_uid_sampleID, int sample_id)
 	{
 		string uid = "";
 		for(const string & key : keywords_for_uid)
@@ -455,6 +456,7 @@ public:
 				throw(domain_error("Keyword not found in workspace: " + key + " for sample " + uid));
 			uid += "_" + it->second;
 		}
+		uid = keywords_for_uid_sampleID ? (std::to_string(sample_id) + "_" + uid) : uid; 
 		return uid;
 	}
 
