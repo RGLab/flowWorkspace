@@ -210,7 +210,28 @@ public:
 			}
 			h5_dir = gsPtr->generate_h5_folder(h5_dir);
 		 }
-
+  
+    // Check for duplicate guids before parsing to get more
+    // helpful error message. Mirror uid construction of concatenate_keywords.
+    unordered_set<string> uids;
+		for(auto const& s:sample_infos){
+      string uid = "";
+		  for(const string & key : config.keywords_for_uid)
+		  {
+		    auto it = s.keywords.find(key);
+		    if(it == s.keywords.end())
+		      throw(domain_error("Keyword not found in workspace: " + key + " for sample " + uid));
+		    uid += "_" + it->second;
+		  }
+		  uid = s.sample_name + (config.keywords_for_uid_sampleID ? ("_" + std::to_string(s.sample_id) + uid) : uid);
+		  if(uids.find(uid) == uids.end()){
+		    uids.insert(uid);
+		  }else{
+		    throw(domain_error("Duplicated GUIDs detected within group: " + uid
+                           + "\n Consider setting argument \"additional.sampleID = TRUE\" to disambiguate samples further."));
+		  }
+		}
+		
 		/*
 		 * try to parse each sample
 		 */
