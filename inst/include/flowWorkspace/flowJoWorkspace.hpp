@@ -239,7 +239,7 @@ public:
 			COUT<<endl<<"... start parsing sample: "<< sample_info.sample_name <<"... "<<endl;
 		//generate uid
 		string ws_key_seq = concatenate_keywords(sample_info.keywords, config_const.keywords_for_uid, config_const.keywords_for_uid_sampleID, sample_info.sample_id);
-		string uid = config_const.keywords_for_uid_sampleID ? (std::to_string(sample_info.sample_id) + sample_info.sample_name + ws_key_seq): (sample_info.sample_name + ws_key_seq);
+		string uid = sample_info.sample_name + ws_key_seq;
 		shared_ptr<MemCytoFrame> frptr;
 		bool isfound = false;
 		if(config_const.is_gating)
@@ -379,7 +379,7 @@ public:
 
 	/**
 	 * Search for the FCS file
-	 * First try to search by file name, if failed, use FCS keyword $FIL + additional keywords for further searching and pruning
+	 * First try to search by file name, if failed, use FCS keyword $FIL + additional keywords + sampleID for further searching and pruning
 	 * cytoframe is preloaded with header-only.
 	 */
 	bool search_for_fcs(const string & data_dir, const int sample_id, const string & sample_name, const string & ws_key_seq, const ParseWorkspaceParameters & config, shared_ptr<MemCytoFrame> &fr)
@@ -442,10 +442,13 @@ public:
 	}
 	/**
 	 * Generate the uniquely identifiable id for each sample
-	 * by concatenate sample name with some other keywords
+	 * by concatenating sample name with some other keywords and
+	 * the sampleID if desired
 	 * @param node
 	 * @param keywords_for_uid
-	 * @return
+	 * @param keywords_for_uid_sampleID Whether sampleID should be included in guid
+	 * @param sample_id The sampleID to be used if keywords_for_uid_sampleID is true 
+	 * @return 
 	 */
 	string concatenate_keywords(const KEY_WORDS & keywords, const vector<string> & keywords_for_uid, bool keywords_for_uid_sampleID, int sample_id)
 	{
@@ -457,7 +460,7 @@ public:
 				throw(domain_error("Keyword not found in workspace: " + key + " for sample " + uid));
 			uid += "_" + it->second;
 		}
-		uid = keywords_for_uid_sampleID ? (std::to_string(sample_id) + "_" + uid) : uid; 
+		uid = keywords_for_uid_sampleID ? ("_" + std::to_string(sample_id) + uid) : uid; 
 		return uid;
 	}
 
