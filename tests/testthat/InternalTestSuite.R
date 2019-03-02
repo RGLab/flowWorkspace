@@ -69,6 +69,14 @@ test_that("skip ManuallyIncludedSamples",{
       
     })
 
+test_that("Handle duplicate sample names",{
+  wsFile <- file.path(path, "SDY416", "Ustekin_G26_sas_IMMPORT2.495809.xml")
+  ws <- openWorkspace(wsFile)
+  expect_error(parseWorkspace(ws, name = 1, subset = 429:440), "Duplicated")
+  gs <- suppressWarnings(parseWorkspace(ws, name = 1, subset = 429:440, additional.sampleID = TRUE))
+  expect_is(gs, "GatingSet")
+})
+
 test_that("search reference node for boolean gate ",{
   thisPath <- file.path(path, "searchRefNode")
   wsFile <- file.path(thisPath, "2583-Y-MAL067-FJ.xml")
