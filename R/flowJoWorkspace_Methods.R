@@ -307,11 +307,11 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
               sampleID <- as.numeric(row[["sampleID"]])
               sn <- row[["name"]]
               kw <- unlist(getKeywords(obj, sampleID)[additional.keys])
-              ifelse(additional.sampleID,  paste(c(sampleID,sn,kw), collapse = "_"), paste(c(sn,kw), collapse = "_"))
+              ifelse(additional.sampleID,  paste(c(sn,sampleID,kw), collapse = "_"), paste(c(sn,kw), collapse = "_"))
             }))  
   }else{
     if(additional.sampleID){
-      sg[["guid"]] <- as.vector(paste(c(sg[["sampleID"]],sg[["name"]]), collapse = "_"))
+      sg[["guid"]] <- as.vector(paste(c(sg[["name"]]), sg[["sampleID"]], collapse = "_"))
     }else{
       sg[["guid"]] <- sg[["name"]]
     }
@@ -321,7 +321,8 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
   isDup <- duplicated(sg[["guid"]])
   if(any(isDup))
     stop("Duplicated GUIDs detected within group: ", paste(sg[["guid"]][isDup], collapse = " "), 
-         '\n Consider setting argument "additional.sampleID = TRUE" to disambiguate samples further.')
+         '"\n Consider adding additional keywords to the GUID with argument "additional.keys"
+         or setting argument "additional.sampleID = TRUE" to disambiguate samples further.' )
   
   # Warn user about duplicate analyses of same FCS filename with same event counts
   isDup <- duplicated(paste(sg[["name"]], sg[["count"]], sep = "_"))
@@ -415,7 +416,7 @@ setMethod("parseWorkspace",signature("flowJoWorkspace"),function(obj, ...){
                           kw <- trimws(unlist(kws[additional.keys]))
                           # construct guids
                           thisFile <- ifelse(isFileNameSearchFailed, kws["$FIL"], basename(thisPath))
-                          ifelse(additional.sampleID, paste(c(sampleID, thisFile, as.vector(kw)), collapse = "_"),
+                          ifelse(additional.sampleID, paste(c(thisFile, sampleID, as.vector(kw)), collapse = "_"),
                                  paste(c(thisFile, as.vector(kw)), collapse = "_"))
                         }, USE.NAMES = F)  
                     matchInd <- which(guid == guids.fcs) #do strict matching instead grep due to the special characters
