@@ -2222,7 +2222,7 @@ setMethod("show","GatingSet",function(object){
 #' @export
 #' @import data.table
 setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "auto", ...) {
+    function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
 
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
