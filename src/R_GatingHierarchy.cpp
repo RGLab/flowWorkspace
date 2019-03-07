@@ -62,7 +62,7 @@ StringVec getNodes(XPtr<GatingSet> gs,string sampleName
 
 	GatingHierarchy & gh=gs->getGatingHierarchy(sampleName);
 
-	return gh.getPopPaths(order,fullPath,showHidden);
+	return gh.getNodePaths(order,fullPath,showHidden);
 
 }
 

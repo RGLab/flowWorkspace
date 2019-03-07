@@ -43,8 +43,6 @@ using namespace RcppParallel;
       {
         std::string sn = sampleNames.at(i);
         GatingHierarchy & gh = gs->getGatingHierarchy(sn);
-        //we are confident that allNodes is ordered by its nodeIds(ie. vertexID)
-        StringVec allNodes = gh.getPopPaths(REGULAR, isFullPath, true);
         for(unsigned j = 0; j < nPop; j++){
           std::string pop = subpopulation.at(j);
           auto counter = i * nPop + j;
@@ -57,7 +55,7 @@ using namespace RcppParallel;
           
           //				 get parent name
           VertexID pid = gh.getParent(u);
-          parentVec(counter) = allNodes.at(pid);
+          parentVec(counter) = gh.getNodePath(pid, isFullPath);
           
           //				get parent count
           parentCountVec(counter) = gh.getNodeProperty(pid).getStats(isFlowCore)["count"];
