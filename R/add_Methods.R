@@ -233,8 +233,9 @@ setMethod("add",
 
 
 #' @rdname add                                                       
-.addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE){
-  
+.addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE, recompute = FALSE){
+  if(recompute)
+	  stop("'recompute = TRUE' is no longer supported by addGate!")
 	if(is.null(name))
 		name <- filterObject$filterId
     #replace the slash with colon 
