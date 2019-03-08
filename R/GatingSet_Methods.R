@@ -1709,10 +1709,12 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
       selectMethod("compensate", signature=c(x="cytoset", spillover="ANY"))(x, spillover)
       
     })
-#' @export 
-setMethod("getCompensationMatrices","GatingSet",function(x){
+#' @export
+#' @method getCompensationMatrices GatingSet
+#' @rdname getCompensationMatrices
+getCompensationMatrices.GatingSet <- function(x){
 			lapply(x, getCompensationMatrices)
-		})
+		}
             
 #' @rdname markernames
 #' @export
