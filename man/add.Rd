@@ -154,14 +154,14 @@ They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \
     recompute(gs)
     
 #plot one gate for one sample
-    plotGate(gs[[1]],"rectangle")
-    plotGate(gs[[1]],nodeIDs) #may be smoothed automatically if there are not enough events after gating
+    autoplot(gs[[1]],"rectangle")
+    autoplot(gs[[1]],nodeIDs) #may be smoothed automatically if there are not enough events after gating
     
 #plot gates across samples using lattice plot
-    plotGate(gs,nodeID)
+    autoplot(gs,nodeID)
 #plot all gates for one sample
-    plotGate(gs[[1]])#boolean gate is skipped by default 
-    plotGate(gs[[1]],bool=TRUE)
+    autoplot(gs[[1]])#boolean gate is skipped by default 
+    autoplot(gs[[1]],bool=TRUE)
     
 #plot the gating hierarchy
     require(Rgraphviz)

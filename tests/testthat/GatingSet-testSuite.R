@@ -207,7 +207,7 @@ test_that("getPopStats",{
       stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
       stats_wide <- as.data.frame(stats_wide)
       #get long format
-      stats_long <- getPopStats(gs, format = "long")
+      stats_long <- getPopStats(gs, format = "long", path = "auto")
       
       #convert it to wide to do the comparsion
       stats_long[, value := Count/ParentCount]

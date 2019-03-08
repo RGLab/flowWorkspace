@@ -8,10 +8,11 @@
 \method{parseWorkspace}{flowJoWorkspace}(ws, name = NULL,
   subset = list(), execute = TRUE, path = "", h5_dir = tempdir(),
   includeGates = TRUE, additional.keys = "$TOT",
-  keywords = character(), keywords.source = "XML",
-  keyword.ignore.case = FALSE, extend_val = 0, extend_to = -4000,
-  channel.ignore.case = FALSE, leaf.bool = TRUE, compensation = NULL,
-  transform = TRUE, fcs_file_extension = ".fcs", mc.cores = 1, ...)
+  additional.sampleID = FALSE, keywords = character(),
+  keywords.source = "XML", keyword.ignore.case = FALSE,
+  extend_val = 0, extend_to = -4000, channel.ignore.case = FALSE,
+  leaf.bool = TRUE, compensation = NULL, transform = TRUE,
+  fcs_file_extension = ".fcs", mc.cores = 1, ...)
 }
 \arguments{
 \item{...}{\itemize{
@@ -37,6 +38,8 @@
                                  If needed, they can be calculated by calling \code{recompute} method at later stage.
 \item additional.keys \code{character} vector:  The keywords (parsed from FCS header) to be combined(concatenated with "_") with FCS filename
                                                 to uniquely identify samples. Default is '$TOT' (total number of cells) and more keywords can be added to make this GUID.
+\item additional.sampleID \code{boolean}: A boolean specifying whether to include the flowJo sample ID in a GUID to uniquely identify samples. This can be helpful when the
+                                          filename or other keywords are not enough to differentiate between samples. Default is FALSE.                                                
 \item keywords \code{character} vector specifying the keywords to be extracted as pData of GatingSet
 \item keywords.source \code{character} the place where the keywords are extracted from, can be either "XML" or "FCS"
 \item keyword.ignore.case a \code{logical} flag indicates whether the keywords matching needs to be case sensitive.    

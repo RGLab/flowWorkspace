@@ -48,10 +48,15 @@ StringVec getNodes(XPtr<GatingSet> gs,string sampleName
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-	return gh.getPopPaths(order,fullPath,showHidden);
+	return gh.getNodePaths(order,fullPath,showHidden);
 
 }
 
+//[[Rcpp::export]]
+string getNodePath(XPtr<GatingSet> gs,string sampleName,NODEID id){
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	return gh.getNodePath(id);
+}
 /*
  * query by path
  */
@@ -378,7 +383,7 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 			  vector<BOOL_GATE_OP> boolOpSpec=bg->getBoolSpec();
 			  vector<string> v;
 			  vector<char>v2;
-			  vector<vector<string> >ref;
+			  vector<deque<string> >ref;
 			  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
 			  {
 				  v.push_back(it->isNot?"!":"");
@@ -401,7 +406,7 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 		  vector<BOOL_GATE_OP> boolOpSpec=bg->getBoolSpec();
 		  vector<string> v;
 		  vector<char>v2;
-		  vector<vector<string> >ref;
+		  vector<deque<string> >ref;
 		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
 		  {
 			  v.push_back(it->isNot?"!":"");
@@ -424,7 +429,7 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 		  vector<BOOL_GATE_OP> boolOpSpec=cg->getBoolSpec();
 		  vector<string> v;
 		  vector<char>v2;
-		  vector<vector<string> >ref;
+		  vector<deque<string> >ref;
 		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
 		  {
 			  v.push_back(it->isNot?"!":"");

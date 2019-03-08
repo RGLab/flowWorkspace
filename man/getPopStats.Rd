@@ -22,7 +22,7 @@
 
 \S4method{getPopStats}{GatingSet}(x, statistic = c("freq", "count"),
   xml = FALSE, subpopulations = NULL, format = c("long", "wide"),
-  path = "auto", ...)
+  path = "full", ...)
 
 \S4method{getPopStats}{GatingSetList}(x, format = c("long", "wide"), ...)
 }

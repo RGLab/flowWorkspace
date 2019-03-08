@@ -57,12 +57,6 @@ setGeneric("getProp",function(x,y,...)standardGeneric("getProp"))
 setGeneric("getTotal",function(x,y,...)standardGeneric("getTotal"))
 
 #' @export
-setGeneric("getCompensationMatrices",function(x)standardGeneric("getCompensationMatrices"))
-
-#' @export
-setGeneric("getTransformations",function(x, ...)standardGeneric("getTransformations"))
-
-#' @export
 setGeneric("getKeywords",function(obj,y, ...)standardGeneric("getKeywords"))
 
 #' @export

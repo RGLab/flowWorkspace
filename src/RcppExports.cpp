@@ -7,20 +7,6 @@
 
 using namespace Rcpp;
 
-// getPopCounts
-Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bool flowJo, bool isFullPath);
-RcppExport SEXP _flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
-    Rcpp::traits::input_parameter< StringVec >::type subpopulation(subpopulationSEXP);
-    Rcpp::traits::input_parameter< bool >::type flowJo(flowJoSEXP);
-    Rcpp::traits::input_parameter< bool >::type isFullPath(isFullPathSEXP);
-    rcpp_result_gen = Rcpp::wrap(getPopCounts(gsPtr, subpopulation, flowJo, isFullPath));
-    return rcpp_result_gen;
-END_RCPP
-}
 // getSplineCoefs
 Rcpp::List getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis, bool inverse);
 RcppExport SEXP _flowWorkspace_getSplineCoefs(SEXP channelRangeSEXP, SEXP maxValueSEXP, SEXP posSEXP, SEXP negSEXP, SEXP widthBasisSEXP, SEXP inverseSEXP) {
@@ -83,6 +69,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type fullPath(fullPathSEXP);
     Rcpp::traits::input_parameter< bool >::type showHidden(showHiddenSEXP);
     rcpp_result_gen = Rcpp::wrap(getNodes(gs, sampleName, order, fullPath, showHidden));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getNodePath
+string getNodePath(XPtr<GatingSet> gs, string sampleName, NODEID id);
+RcppExport SEXP _flowWorkspace_getNodePath(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< NODEID >::type id(idSEXP);
+    rcpp_result_gen = Rcpp::wrap(getNodePath(gs, sampleName, id));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1003,6 +1002,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getPopCounts
+Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bool flowJo, bool isFullPath);
+RcppExport SEXP _flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< StringVec >::type subpopulation(subpopulationSEXP);
+    Rcpp::traits::input_parameter< bool >::type flowJo(flowJoSEXP);
+    Rcpp::traits::input_parameter< bool >::type isFullPath(isFullPathSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPopCounts(gsPtr, subpopulation, flowJo, isFullPath));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getSingleCellExpressionByGate
 NumericMatrix getSingleCellExpressionByGate(XPtr<GatingSet> gs, string sampleName, List markers_pops, NumericMatrix data, CharacterVector markers, bool threshold);
 RcppExport SEXP _flowWorkspace_getSingleCellExpressionByGate(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP markers_popsSEXP, SEXP dataSEXP, SEXP markersSEXP, SEXP thresholdSEXP) {
@@ -1160,12 +1173,12 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 4},
     {"_flowWorkspace_getSplineCoefs", (DL_FUNC) &_flowWorkspace_getSplineCoefs, 6},
     {"_flowWorkspace_addTrans", (DL_FUNC) &_flowWorkspace_addTrans, 2},
     {"_flowWorkspace_updateChannels", (DL_FUNC) &_flowWorkspace_updateChannels, 2},
     {"_flowWorkspace_plotGh", (DL_FUNC) &_flowWorkspace_plotGh, 3},
     {"_flowWorkspace_getNodes", (DL_FUNC) &_flowWorkspace_getNodes, 5},
+    {"_flowWorkspace_getNodePath", (DL_FUNC) &_flowWorkspace_getNodePath, 3},
     {"_flowWorkspace_getNodeID", (DL_FUNC) &_flowWorkspace_getNodeID, 3},
     {"_flowWorkspace_getParent", (DL_FUNC) &_flowWorkspace_getParent, 3},
     {"_flowWorkspace_getChildren", (DL_FUNC) &_flowWorkspace_getChildren, 4},
@@ -1243,6 +1256,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_set_pheno_data", (DL_FUNC) &_flowWorkspace_set_pheno_data, 2},
     {"_flowWorkspace_get_pheno_data", (DL_FUNC) &_flowWorkspace_get_pheno_data, 1},
     {"_flowWorkspace_getDescendants", (DL_FUNC) &_flowWorkspace_getDescendants, 3},
+    {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 4},
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},
     {"_flowWorkspace_h5_set_error_handler", (DL_FUNC) &_flowWorkspace_h5_set_error_handler, 0},

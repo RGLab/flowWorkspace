@@ -15,6 +15,7 @@ bioc_required: true
 
 before_install:
   - R -e 'install.packages("devtools")'
+  - R -e 'devtools::install_github("Bioconductor/BiocGenerics", ref = "master")'
 
 
 install:

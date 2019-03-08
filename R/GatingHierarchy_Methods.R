@@ -566,7 +566,14 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 			nodeNames
 		})
 
-
+#' convert the partial gating path to the full path
+#' @param gh GatingHierarchy object
+#' @param path the partial gating path
+#' @return the full gating path
+#' @export 
+getFullNodePath <- function(gh, path){
+	getNodePath(gh@pointer, sampleNames(gh)[1], .getNodeInd(gh, path) - 1)
+}
 #' Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy
 #'
 #' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
@@ -1110,6 +1117,9 @@ prettyAxis <- function(gh, channel){
 #  obj@axis[[sampleNames(obj)]]
 #}
 
+#' @rdname getTransformations
+#' @export 
+getTransformations <- function(x, ...)UseMethod("getTransformations")
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
@@ -1142,7 +1152,9 @@ prettyAxis <- function(gh, channel){
 #' }
 #' @aliases getTransformations
 #' @rdname getTransformations
-setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
+#' @export 
+#' @method getTransformations GatingHierarchy
+getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
       trans.objects <- x@transformation
       if(length(trans.objects) == 0){
         trans.objects <- .getTransformations(x@pointer,sampleNames(x), ...)
@@ -1192,7 +1204,7 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
        
       }
         
-})
+}
 
 
 .convertTrans <- function(trans, inverse = FALSE){
@@ -1269,7 +1281,10 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
   }
 
 
-
+#' @rdname getCompensationMatrices
+#' @export 
+ getCompensationMatrices <- function(x)UseMethod("getCompensationMatrices")
+  
 #'  Retrieve the compensation matrices from a GatingHierarchy
 #'
 #'  Retrieve the compensation matrices from a GatingHierarchy.
@@ -1286,8 +1301,9 @@ setMethod("getTransformations","GatingHierarchy",function(x, channel = NULL, inv
 #' }
 #' @aliases getCompensationMatrices
 #' @export
+#' @method getCompensationMatrices GatingHierarchy
 #' @rdname getCompensationMatrices
-setMethod("getCompensationMatrices","GatingHierarchy",function(x){
+getCompensationMatrices.GatingHierarchy <- function(x){
 
 #      compobj <- x@compensation
       sn <- sampleNames(x)
@@ -1325,7 +1341,7 @@ setMethod("getCompensationMatrices","GatingHierarchy",function(x){
 
 			compobj
 
-})
+}
 
 
 

@@ -25,7 +25,8 @@ Given a GatingHierarchy, one can extract the data associated with any subpopulat
 	plotPopCV(gh)
  nodes <- getNodes(gh)
  thisNode <- nodes[4]
-	plotGate(gh,thisNode);
+ require(ggcyto)
+	autoplot(gh,thisNode);
 	getGate(gh,thisNode);
 	getData(gh,thisNode)
 

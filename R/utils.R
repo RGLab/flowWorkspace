@@ -1,3 +1,15 @@
+#' get all the leaf nodes
+#' @param x GatingHierarchy/GatingSet object
+#' @param ... arguments passed to 'getNodes" method
+#' @return the leaf nodes
+#' @export 
+get_leaf_nodes <- function(x, ...){
+  res <- getNodes(x, ...)
+  ind <- sapply(res, function(i)length(.cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
+  res[ind]
+}
+
+
 # copied from plyr to avoid the dependency on plyr
 compact <- function (l)
   Filter(Negate(is.null), l)

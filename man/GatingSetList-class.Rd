@@ -77,8 +77,7 @@ Objects store a collection of GatingSets,which usually has the same gating trees
     pData(gslist2[3:2])
 
     #plot the gate
-    plotGate(gslist2[1:2],5,smooth=T)
-    plotGate_labkey(gslist2[3:4],4,x="<APC Cy7-A>",y="<PE Tx RD-A>",smooth=T)
+    autoplot(gslist2[1:2],5)
     
     #remove cerntain gates by loop through GatingSets
     getNodes(gslist2[[1]])
