@@ -109,7 +109,7 @@ load_cytoframe_from_fcs <- function(filename,
 {
     fr <- new("cytoframe")
     if(is.null(dataset))
-      dataset <- 1
+      dataset <- 0
     if(is.null(min.limit)){
       truncate_min_val <- FALSE
       min.limit <- -111
