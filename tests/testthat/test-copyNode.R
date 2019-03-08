@@ -3,9 +3,10 @@ test_that("copyNode", {
   
   gs <- load_gs(file.path(dataDir,"gs_manual"))
   gh <- gs[[1]]
-  gh1 <- clone(gh)
-  gh2 <- clone(gh)
-  
+  gs1 <- clone(gs)
+  gs2 <- clone(gs)
+  gh1<- gs1[[1]]
+  gh2<- gs2[[1]]
   # Add in a few more nodes to test recursive depth
   rg1 <- rectangleGate(filterId="HLA+", "<V545-A>"=c(2400, Inf))
   rg2 <- rectangleGate(filterId="HLA-", "<V545-A>"=c(2400, Inf))
@@ -82,10 +83,10 @@ test_that("copyNode", {
   path2_1 <- getFullNodePath(gh2, "HLA+")
   path2_2 <- getFullNodePath(gh2, "HLA-")
     
-  lapply(gh1_bc1, function(x) copyNode(gh1, path1_1, x))
-  lapply(gh1_bc2, function(x) copyNode(gh1, path1_2, x))
-  lapply(gh2_bc1, function(x) copyNode(gh2, path2_1, x))
-  lapply(gh2_bc2, function(x) copyNode(gh2, path2_2, x))
+  lapply(gh1_bc1, function(x) copyNode(gh1[[1]], path1_1, x))
+  lapply(gh1_bc2, function(x) copyNode(gh1[[1]], path1_2, x))
+  lapply(gh2_bc1, function(x) copyNode(gh2[[1]], path2_1, x))
+  lapply(gh2_bc2, function(x) copyNode(gh2[[1]], path2_2, x))
   
   # Verify that the results are the same for different broadcast sources
   stats1 <- getPopStats(gh1, path = "full")[order(node),]
