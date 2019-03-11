@@ -7,5 +7,9 @@
 #include "flowWorkspace/openWorkspace.hpp"
 using namespace cytolib;
 using namespace flowWorkspace;
+//header included somewhere(not sure where exactly) defines FALSE,which interferes RcppExports.cpp
+#ifdef FALSE
+  #undef FALSE
+#endif
 
 #endif // __flowWorkspace_h__
