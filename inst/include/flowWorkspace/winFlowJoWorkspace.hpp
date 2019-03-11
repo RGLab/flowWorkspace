@@ -420,6 +420,8 @@ public:
 	  		quad = Q3;
 	  	else if(quadPattern == "--")
 	  		quad = Q4;
+	  	else
+	  		throw(domain_error("unrecognized quadPattern: " + quadPattern));
 	  	//save it to param of polygonGate
 	  	paramPoly pp;
 	  	vector<coordinate> vert;
