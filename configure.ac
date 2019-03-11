@@ -21,23 +21,6 @@ AC_ARG_WITH(xml2,
 #AC_HEADER_STDBOOL
 #AC_TYPE_SIZE_T
 
-# Check the compiler configured with R
-: ${R_HOME=`R RHOME`}
-if test -z "${R_HOME}"; then
-  echo "could not determine R_HOME"
-  exit 1
-fi
-COMPILER=`"${R_HOME}/bin/R" CMD config CC`
-CXX11=`"${R_HOME}/bin/R" CMD config CXX11`
-CXX11STD=`"${R_HOME}/bin/R" CMD config CXX11STD`
-CXX="${CXX11} ${CXX11STD}"
-CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXX11FLAGS`
-AC_LANG(C++)
-
-CC=`"${R_HOME}/bin/R" CMD config CC`
-CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
-MAKE=`${R_HOME}/bin/R CMD config MAKE`
-
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
