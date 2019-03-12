@@ -10,15 +10,16 @@ CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@ -DBOOST_NO_AUTO_PTR -Wno-unknown-pragmas -Wno-comment 
 
 #somehow the implicit $CC isn't available/accurate, so we have to re-fetch it
-CC:=$(shell echo `R CMD config CC`)	
-
-ifeq ($(CC),clang)
+compilerinfo = ${shell R CMD config CXX}
+compiler = $(findstring clang++, $(compilerinfo))
+#$(info "$(compiler)")
+ifneq (,$(compiler))
 	fslib = c++experimental
 else
 	fslib = stdc++fs
 endif
 	
-#$(info $(CC))
+
 
 PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags();cat(' ');Rhdf5lib::pkgconfig('PKG_CXX_LIBS');cat(' ');RcppParallel::RcppParallelLibs()"` @PKG_LIBS@ -l$(fslib)  
 
