@@ -20,10 +20,11 @@ before_install:
 
 install:
   - R -e 'devtools::install_deps(dep = T)'
-  - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref = "trunk")'
+  - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref="cytoset")'
+  - R -e 'devtools::install_github("FredHutch/cytolib", ref="cytoset")'
   - R -e 'devtools::install_github("RGLab/flowCore",ref="trunk")'
   - R -e 'devtools::install_github("RGLab/ncdfFlow",ref="trunk")'
-  - R -e 'devtools::install_github("RGLab/cytolib",ref="trunk")'
+  - R -e 'devtools::install_github("RGLab/flowWorkspaceData", ref="cytoset")'
   
 env:
  global:
