@@ -61,7 +61,7 @@ test_that("pData<-", {
       pd <- pData(gslist)
       pd$group <- letters[1:2]
       pData(gslist) <- pd
-      expect_equal(pData(gslist), pd, check.attributes = FALSE)
+      expect_equal(pData(gslist)[, colnames(pd)], pd, check.attributes = FALSE)
       
     })
 
@@ -181,7 +181,7 @@ test_that("save_gslist /load_gslist", {
       expect_true(setequal(list.files(tmp), expectRes))
       
       # can't cp the h5 file to the dest tmp since it is already present
-      expect_error(save_gslist(gslist, tmp), regexp = "cannot copy: File exists ")
+      expect_error(save_gslist(gslist, tmp), regexp = "File exists")
       # set cdf flag to skip h5
       expect_message(save_gslist(gslist, tmp, cdf = "skip"), regexp = "Done")
       expect_true(setequal(list.files(tmp), expectRes))
