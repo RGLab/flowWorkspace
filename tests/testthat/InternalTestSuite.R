@@ -2,7 +2,7 @@ context("parse workspaces of various flowJo versions ")
 library(data.table)
 path <- "~/rglab/workspace/flowWorkspace/wsTestSuite"
 
-test_that("set T value properly through PnE instead of PnR for flog transform when FCS data is log scale",{
+test_that("which.lines",{
   
   wsFile <- file.path(path, "flog_PnE/Liver.wsp")
   
@@ -185,6 +185,14 @@ test_that("No gate extension ",{
       expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 4e-3)
     })
 
+test_that("FCS searching path with symlink ",{
+  thisPath <- file.path(path, "flin_symlink")
+  wsFile <- file.path(thisPath, "A01.wsp")
+  ws <- openWorkspace(wsFile)
+  gs <- parseWorkspace(ws, name = 1, subset = 1)
+  res <- getPopStats(gs[[1]])
+  expect_equal(res[, xml.freq], res[, openCyto.freq], tol = 9e-4)
+})
 
 test_that("Time gate ",{
   thisPath <- file.path(path, "flin")

@@ -142,13 +142,13 @@ test_that("pData ",{
       new_pd <- pd
       new_pd[, "PTID"] <- c("001", "002")
       pData(gs) <- new_pd 
-      expect_identical(pData(gs)[, colnames(new_pd)], new_pd);
+      expect_identical(pData(gs), new_pd);
       #ensure pdata is flushed to disk during gs_clone
       expect_identical(pData(gs_clone(gs))[, colnames(new_pd)], new_pd)
-      expect_identical(pData(gs_copy_tree_only(gs))[, colnames(new_pd)], new_pd)
+      expect_identical(pData(gs_copy_tree_only(gs)), new_pd)
       #restore pdata
       pData(gs) <- pd
-      expect_identical(pData(gs)[, colnames(pd), drop = FALSE], pd);
+      expect_identical(pData(gs), pd);
     })
 
 test_that("[ subsetting",{

@@ -62,7 +62,7 @@ namespace flowWorkspace
 	{
 		vector<string> paths;
 
-        for(const fs::directory_entry & i: fs::recursive_directory_iterator(fs::path(data_dir)))
+        for(const fs::directory_entry & i: fs::recursive_directory_iterator(fs::path(data_dir), fs::directory_options::follow_directory_symlink))
         {
         	if(i.path().extension().string() == ext)
         		paths.push_back(i.path().string());
