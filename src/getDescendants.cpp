@@ -1,5 +1,5 @@
-#include <Rcpp.h>
 #include <cytolib/GatingSet.hpp>
+#include <Rcpp.h>
 using namespace Rcpp;
 /*
  * the routine that deals with the core c++ class and its member functions
