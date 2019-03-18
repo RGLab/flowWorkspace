@@ -14,7 +14,7 @@ compilerinfo = ${shell R CMD config CXX}
 compiler = $(findstring clang++, $(compilerinfo))
 #$(info "$(compiler)")
 ifneq (,$(compiler))
-	fslib = c++experimental
+	fslib = c++fs
 else
 	fslib = stdc++fs
 endif
