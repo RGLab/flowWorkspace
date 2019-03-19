@@ -7,7 +7,7 @@
  *      Author: wjiang2
  */
 
-#include "flowWorkspace/openWorkspace.hpp"
+#include "cytolib/GatingSet.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
 CYTOLIB_INIT()
@@ -25,24 +25,6 @@ GatingSet * getGsPtr(SEXP _gsPtr){
  * can't use module for exposing overloaded methods
  */
 
-
-/*
- * constructing GatingSet from xml file
- * _sampleNames should be provided since the additional keys besides sample name may be necessary to uniquely tag each sample
- */
-//[[Rcpp::export(name=".cpp_parseWorkspace")]]
-XPtr<GatingSet> parseWorkspace(string fileName,StringVec sampleIDs
-                            ,StringVec sampleNames,bool isParseGate
-                            ,unsigned short sampNloc,int xmlParserOption
-                            , unsigned short wsType) 
-{
-		workspace * ws = openWorkspace(fileName, sampNloc,xmlParserOption, wsType);
-		GatingSet * gs = ws->ws2gs(sampleIDs,isParseGate,sampleNames);
-		delete ws;
-		return XPtr<GatingSet>(gs);
-
-
-}
 
 
 //[[Rcpp::export(name=".cpp_getSamples")]]

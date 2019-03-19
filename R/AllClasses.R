@@ -25,49 +25,6 @@ NULL
 #' @author Greg Finak, Mike Jiang
 #' @references \url{http://www.rglab.org/}
 NULL
-
-#' @importClassesFrom XML XMLInternalDocument
-setOldClass("XMLInternalDocument")
-
-#' An R representation of a flowJo workspace.
-#' 
-#' Objects can be created by calls of the form \code{new("flowJoWorkspace.xml", ...)}.
-#'
-#' @section Slots: 
-#' \describe{
-#'   \item{\code{version}:}{Object of class \code{"character"}. The version of the XML workspace. }
-#'   \item{\code{file}:}{Object of class \code{"character"}. The file name. }
-#'   \item{\code{.cache}:}{Object of class \code{"environment"}. An environment for internal use.  }
-#' 	\item{\code{path}:}{Object of class \code{"character"}. The path to the file. }
-#'   \item{\code{doc}:}{Object of class \code{"XMLInternalDocument"}. The XML document object. }
-#'   \item{\code{options}:}{Object of class \code{"integer"}. The XML parsing options passed to \code{\link{xmlTreeParse}}. }
-#'   }
-#' 
-#' @seealso 
-#'   \code{\linkS4class{GatingSet}} 
-#'   \code{\linkS4class{GatingHierarchy}}
-#' 
-#' @examples
-#'   require(flowWorkspaceData)
-#'   d<-system.file("extdata",package="flowWorkspaceData")
-#'   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
-#'   ws <- openWorkspace(wsfile);
-#'   ws
-#'   getSamples(ws)
-#' 
-#' @name flowJoWorkspace-class
-#' @rdname flowJoWorkspace-class
-#' @exportClass flowJoWorkspace
-#' @aliases 
-#' show,flowJoWorkspace-method
-setClass("flowJoWorkspace"
-          ,representation(version="character"
-                          , file="character"
-                          , .cache="environment"
-                          , path="character"
-                          , doc="XMLInternalDocument"
-                          , options="integer")
-                        )
                         
 .uuid_gen<-function(){
 #  system("uuidgen",intern = TRUE)
@@ -178,45 +135,6 @@ setClass("GatingHierarchy"
 
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
         
-#' constructors for GatingSet 
-#' 
-#' construct object from xml workspace file and a list of sampleIDs (not intended to be called by user.)
-#' 
-#' @param x \code{character} or \code{flowSet} or \code{GatingHierarchy}
-#' @param y \code{character} or\code{missing}
-#' @param guids \code{character} vectors to uniquely identify each sample (Sometime FCS file names alone may not be unique)
-#' @param includeGates \code{logical} whether to parse the gates or just simply extract the flowJo stats
-#' @param sampNloc \code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".
-#' @param xmlParserOption \code{integer} option passed to \code{\link{xmlTreeParse}} 
-#' @param wsType \code{character} workspace type, can be value of "win", "macII", "vX", "macIII".
-#'  
-#' @rdname GatingSet-methods
-#' @aliases GatingSet
-#' @export 
-setMethod("GatingSet",c("character","character"),function(x,y, guids, includeGates=FALSE, sampNloc="keyword",xmlParserOption, wsType){
-      
-      xmlFileName<-x
-      sampleIDs<-y
-#			browser()
-      sampNloc<-match(sampNloc,c("keyword","sampleNode"))
-      if(is.na(sampNloc))
-        sampNloc<-0
-      stopifnot(!missing(xmlFileName))
-      
-      wsType <- match(wsType, c("win", "macII", "vX", "macIII"))
-      if(is.na(wsType))
-        stop("unrecognized workspace type: ", wsType)
-      
-      if(!file.exists(xmlFileName))
-        stop(xmlFileName," not found!")
-      Object<-new("GatingSet")
-      Object@pointer<-.cpp_parseWorkspace(xmlFileName,sampleIDs,guids,includeGates,as.integer(sampNloc),as.integer(xmlParserOption),as.integer(wsType))
-      identifier(Object) <- .uuid_gen()
-      Object@flag <- FALSE
-
-      return(Object)
-    })
-
 
 #' constructors for GatingSet
 #' 
