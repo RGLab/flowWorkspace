@@ -1,6 +1,36 @@
 #' @include GatingHierarchy_Methods.R
 NULL
 
+#' make a formula from a character vector
+#' 
+#' construct a valid formula to be used by flowViz::xyplot 
+#' 
+#' @param dims a \code{character} vector that contains y , x axis, if it is unnamed, then treated as the order of c(y,x)
+#' @param isChar \code{logical} flag indicating whehter to return a formula or a pasted string
+#' @return when \code{isChar} is TRUE, return a character, otherwise coerce it as a \code{formula}
+#' @examples 
+#' all.equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)#unamed vecotr
+#' all.equal(mkformula(c(x = "SSC-A", y = "FSC-A")),`FSC-A` ~ `SSC-A`)#named vector
+#' @export 
+mkformula<-function(dims,isChar=FALSE){
+	if(length(dims)==1){
+		form<-paste(c("",sapply((dims), function(x) paste("`",x, "`", sep = ""))), collapse = "~")
+	}else{
+		
+		dnames <- names(dims)
+		if(!is.null(dnames)){
+			if(isTRUE(all.equal(sort(dnames), c("x", "y"))))
+				dims <-  dims[rev(order(names(dims)))]
+			else
+				warning("invalid axis names: ", paste(dnames, collapse = ","), "(expect 'x' or 'y')")
+		}
+		form <- paste(sapply((dims),function(x)paste("`",x,"`",sep="")),collapse="~")
+	}
+	if(!isChar)
+		form<-as.formula(form)	
+	return(form)
+}
+
 #' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
 #'
 #' @param x \code{GatingHiearchy} object
@@ -443,432 +473,432 @@ swap_data_cols <- function(cols, swap_cols)
 #' @importFrom Biobase AnnotatedDataFrame
 #' @noRd 
 .addGatingHierarchies <- function(gs, samples, execute,isNcdf = TRUE
-                                      ,compensation=NULL
-							  		, transformation = NULL
-							  			,wsType = ""
-                                      , extend_val = 0, extend_to = -4000
-                                      , prefix = TRUE, channel.ignore.case = FALSE
-                                      , ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
-                                      ,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM")
-									  , swap_cols = FALSE #for diva parsing
-							  , ...){
-  timestep.source  <- match.arg(timestep.source )
-  if(nrow(samples)==0)
-    stop("no sample to be added to GatingSet!")
-  
-  guids <- samples[["guid"]]
-  
-  if(!is.null(compensation)){
-	  if(is(compensation, "matrix"))
-		  compensation <- compensation(compensation)
-    #replicate the single comp 
-    if(is(compensation, "compensation")){
-      compensation <- sapply(guids, function(guid)compensation, simplify = FALSE)   
-    }else{
-      if(is.list(compensation)){
-        if(!all(guids %in% names(compensation)))
-          stop("names of the compensation list must match the 'guids' of samples!")
-      }else
-        stop("'compensation' should be either a compensation object of a list of compensation objects!")
-    }
-     
-  }
-  if(!is.null(transformation))
-  {
-  
-	  if(is(transformation, "transformerList"))
-	  	transformation <- sapply(guids, function(guid)transformation, simplify = FALSE)
+		,compensation=NULL
+		, transformation = NULL
+		,wsType = ""
+		, extend_val = 0, extend_to = -4000
+		, prefix = TRUE, channel.ignore.case = FALSE
+		, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
+		,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM")
+		, swap_cols = FALSE #for diva parsing
+		, ...){
+	timestep.source  <- match.arg(timestep.source )
+	if(nrow(samples)==0)
+		stop("no sample to be added to GatingSet!")
 	
-	  if(!is.list(transformation))
-		  stop("'transformation' should be either a transformerList object of a list of transformerList objects!")
-	  if(!all(guids %in% names(transformation)))
-		  stop("names of the transformation list must match the 'guids' of samples!")
-  }
-  
-
-  #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
-  pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
-                                             ,row.names = guids
-                                             ,stringsAsFactors=FALSE
-                                            )
-                          ,varMetadata = data.frame(labelDescription="Name",row.names="name")
-                          )
-
-  #load the raw data from FCS
+	guids <- samples[["guid"]]
+	
+	if(!is.null(compensation)){
+		if(is(compensation, "matrix"))
+			compensation <- compensation(compensation)
+		#replicate the single comp 
+		if(is(compensation, "compensation")){
+			compensation <- sapply(guids, function(guid)compensation, simplify = FALSE)   
+		}else{
+			if(is.list(compensation)){
+				if(!all(guids %in% names(compensation)))
+					stop("names of the compensation list must match the 'guids' of samples!")
+			}else
+				stop("'compensation' should be either a compensation object of a list of compensation objects!")
+		}
+		
+	}
+	if(!is.null(transformation))
+	{
+		
+		if(is(transformation, "transformerList"))
+			transformation <- sapply(guids, function(guid)transformation, simplify = FALSE)
+		
+		if(!is.list(transformation))
+			stop("'transformation' should be either a transformerList object of a list of transformerList objects!")
+		if(!all(guids %in% names(transformation)))
+			stop("names of the transformation list must match the 'guids' of samples!")
+	}
+	
+	
+	#sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
+	pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
+					,row.names = guids
+					,stringsAsFactors=FALSE
+			)
+			,varMetadata = data.frame(labelDescription="Name",row.names="name")
+	)
+	
+	#load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
-
+			
 			fs <- read.ncdfFlowSet(samples[["file"]],isWriteSlice=FALSE, phenoData = pd, ...)
 		}else{
 			message("Creating flowSet...")
-
-      #read.flowSet would ignore given file names and use sampleNames(pd) if phenoData is given
-      #so we have to modify pd afterwards
+			
+			#read.flowSet would ignore given file names and use sampleNames(pd) if phenoData is given
+			#so we have to modify pd afterwards
 			fs <- read.flowSet(samples[["file"]], ...)
 			sampleNames(fs) <- guids
 		}
 	}else{
-      #create dummy flowSet
-      frList <- sapply(guids, function(thisSample){
-                        mat <- matrix(data = numeric(0))
-                        colnames(mat) <- "FSC-A"
-                        fr <- suppressWarnings(flowFrame(exprs = mat))
-
-                      })
-      fs <- flowSet(frList)
-    }
-
+		#create dummy flowSet
+		frList <- sapply(guids, function(thisSample){
+					mat <- matrix(data = numeric(0))
+					colnames(mat) <- "FSC-A"
+					fr <- suppressWarnings(flowFrame(exprs = mat))
+					
+				})
+		fs <- flowSet(frList)
+	}
+	
 	#global variable storing prefixed colnames
-    tempenv<-new.env(parent = emptyenv())
-    prefixColNames <- NULL
-    assign("prefixColNames",NULL,tempenv)
-
+	tempenv<-new.env(parent = emptyenv())
+	prefixColNames <- NULL
+	assign("prefixColNames",NULL,tempenv)
+	
 	axis <- apply(samples,1,function(row,tempenv){
-
-        sampleID <- as.numeric(row[["sampleID"]])
-        guid <- row[["guid"]]
-        #get global variable
-        prefixColNames <- tempenv$prefixColNames
-        comp_param_ind <- tempenv$comp_param_ind
-
-
-        # get comp
-        comp <- .cpp_getCompensation( gs@pointer, guid)
-        cid <- comp$cid
-
-
-        ##################################
-    #Compensating the data
-    ##################################
-    if(execute)
-		{
-      file <- row[["file"]]
-      cnd <- colnames(fs)
-			message("loading data: ",file);
-
-			if(isNcdf)
-				data <- read.FCS(file, ...)[, cnd]
-			else
-				data <- fs[[guid]]
-			
-		cols <- swap_data_cols(colnames(data), swap_cols)
-		if(!all(cols==colnames(data)))
-			colnames(data) <- cols
-      #alter colnames(replace "/" with "_") for flowJo X
-      #record the locations where '/' character is detected and will be used to restore it accurately
-      slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
-      if(wsType == "vX"){
-        new_cnd <- fix_channel_slash(cnd, slash_loc)
-          if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
-            cnd <- new_cnd
-            colnames(data) <- cnd
-
-          }
-
-      }
-
-      compensation <- compensation[[guid]]
-	  transformation <- transformation[[guid]]
-	  
-	  
-			if(cid=="")
-				cid <- ifelse(is.null(compensation), "-2", "1")
 				
-
-			if(cid!="-1" && cid!="-2"){
-				message("Compensating");
-
-				marker <- comp$parameters
-
-				if(is.null(compensation)){
-                  
-                  ## try to match marker from comp with flow data in case flowJo is not consistent with data
-                  if(channel.ignore.case)
-                    markerInd <- match(tolower(marker), tolower(cnd))
-                  else
-                    markerInd <- match(marker, cnd)
-                  
-                  if(any(is.na(markerInd)))
-                    stop("channels mismatched between compensation and flow data!") 
-
-                  marker <- cnd[markerInd]
-
-                  compobj <- compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
-                }else
-					compobj <- compensation#TODO: to update compensation information in C part
-				#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
-				#I need to handle this case properly.
-
-                res <- try(compensate(data,compobj),silent=TRUE)
-				if(inherits(res,"try-error")){
-					message("Data is probably already compensated");
+				sampleID <- as.numeric(row[["sampleID"]])
+				guid <- row[["guid"]]
+				#get global variable
+				prefixColNames <- tempenv$prefixColNames
+				comp_param_ind <- tempenv$comp_param_ind
+				
+				
+				# get comp
+				comp <- .cpp_getCompensation( gs@pointer, guid)
+				cid <- comp$cid
+				
+				
+				##################################
+				#Compensating the data
+				##################################
+				if(execute)
+				{
+					file <- row[["file"]]
+					cnd <- colnames(fs)
+					message("loading data: ",file);
+					
+					if(isNcdf)
+						data <- read.FCS(file, ...)[, cnd]
+					else
+						data <- fs[[guid]]
+					
+					cols <- swap_data_cols(colnames(data), swap_cols)
+					if(!all(cols==colnames(data)))
+						colnames(data) <- cols
+					#alter colnames(replace "/" with "_") for flowJo X
+					#record the locations where '/' character is detected and will be used to restore it accurately
+					slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
+					if(wsType == "vX"){
+						new_cnd <- fix_channel_slash(cnd, slash_loc)
+						if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+							cnd <- new_cnd
+							colnames(data) <- cnd
+							
+						}
+						
+					}
+					
+					compensation <- compensation[[guid]]
+					transformation <- transformation[[guid]]
+					
+					
+					if(cid=="")
+						cid <- ifelse(is.null(compensation), "-2", "1")
+					
+					
+					if(cid!="-1" && cid!="-2"){
+						message("Compensating");
+						
+						marker <- comp$parameters
+						
+						if(is.null(compensation)){
+							
+							## try to match marker from comp with flow data in case flowJo is not consistent with data
+							if(channel.ignore.case)
+								markerInd <- match(tolower(marker), tolower(cnd))
+							else
+								markerInd <- match(marker, cnd)
+							
+							if(any(is.na(markerInd)))
+								stop("channels mismatched between compensation and flow data!") 
+							
+							marker <- cnd[markerInd]
+							
+							compobj <- compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+						}else
+							compobj <- compensation#TODO: to update compensation information in C part
+						#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
+						#I need to handle this case properly.
+						
+						res <- try(compensate(data,compobj),silent=TRUE)
+						if(inherits(res,"try-error")){
+							message("Data is probably already compensated");
+						}else{
+							data <- res
+							rm(res);
+						}
+						
+					}
+					else if(cid=="-2"){
+						#TODO the matrix may be acquisition defined.
+						message("No compensation");
+					}
+					else if(cid=="-1")
+					{
+						##Acquisition defined compensation.
+						nm <- comp$comment
+						
+						
+						if(grepl("Acquisition-defined",nm)){
+							###Code to compensate the sample using the acquisition defined compensation matrices.
+							message("Compensating with Acquisition defined compensation matrix");
+							#browser()
+							if(is.null(compensation))
+							{
+								compobj <- compensation(spillover(data)$SPILL)
+								
+							}else
+							{
+								compobj <- compensation
+								
+							}
+							
+							res <- try(compensate(data,compobj),silent=TRUE)
+							
+							if(inherits(res,"try-error")){
+								message("Data is probably already compensated");
+							}else{
+								data<-res
+								rm(res);
+								
+							}
+							
+						}
+						
+					}
 				}else{
-					data <- res
-					rm(res);
+					# get kw from ws (We are not sure yet if this R API will always
+					# return keywords from workspace successfully, thus it is currently
+					# only used when execute = FALSE
+					if(!is.null(ws))
+						kw <- getKeywords(ws, sampleID)
+					#use $PnB to determine the number of parameters since {N,R,S) could be
+					#redundant in some workspaces
+					key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
+					key_names <- gsub("B", "N", key_names, fixed = TRUE)
+					cnd <- as.vector(unlist(kw[key_names]))
+					
 				}
-
-			}
-			else if(cid=="-2"){
-				#TODO the matrix may be acquisition defined.
-				message("No compensation");
-			}
-			else if(cid=="-1")
-			{
-				##Acquisition defined compensation.
-				nm <- comp$comment
-
-
-				if(grepl("Acquisition-defined",nm)){
-					###Code to compensate the sample using the acquisition defined compensation matrices.
-					message("Compensating with Acquisition defined compensation matrix");
-					#browser()
-					if(is.null(compensation))
+				
+				##################################
+				#alter the colnames
+				##################################
+				if(cid!="-2")
+				{
+					
+					#get prefix if it is not set yet
+					if(is.null(prefixColNames)&&prefix){
+						
+						if(is.null(cnd)){
+							cnd <- as.vector(parameters(data)@data$name)
+						}
+						prefixColNames <- cnd
+						if(execute)
+							comp_param <- parameters(compobj)
+						else
+							comp_param <- comp$parameters
+						
+						comp_param_ind <- match(comp_param, prefixColNames)
+						
+						prefixColNames[comp_param_ind] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
+						
+						
+						
+					}
+				}else{
+					prefixColNames <- cnd
+					comp_param_ind <- seq_along(cnd)
+				}
+				##################################
+				#transforming and gating
+				##################################
+				gains <- numeric()#gain is no longer relevant
+				names(gains) <- character()
+				if(execute)
+				{
+					
+					#transform with external trans when applicable
+					if(!is.null(transformation))
 					{
-						compobj <- compensation(spillover(data)$SPILL)
-
+						message(paste("transform the data with supplied transformations ..."))
+						transformation <- transformList(names(transformation), lapply(transformation, function(x)x[["transform"]]))
+						data <- transform(data, transformation)
+					}
+					
+					message(paste("gating ..."))
+					#stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
+					mat <- data@exprs #using @ is faster than exprs()
+					
+					#get gains from keywords
+					# # for now we still parse it from data
+					# # once confirmed that workspace is a reliable source for this info
+					# # we can parse it from ws as well
+					this_pd <- pData(parameters(data))
+					# #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
+					time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)
+					# this_pd <- subset(this_pd, !time.ind)
+					# paramIDs <- rownames(this_pd)
+					# key_names <- paste(paramIDs,"G",sep="")
+					kw <- keyword(data)
+					# if(as.numeric(kw[["FCSversion"]])>=3&&wsType!="vX"){
+					#   kw_gains <- kw[key_names]
+					# 
+					#   # For keywords where the gain is not set, the gain is NULL.
+					#   # We replace these instances with the default of 1.
+					#   kw_gains[sapply(kw_gains, is.null)] <- 1
+					# 
+					#   gains <- as.numeric(kw_gains)
+					# }else{
+					#   gains <- rep(1,length(paramIDs))
+					# }
+					# 
+					# names(gains) <- this_pd$name
+					# gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
+					
+					#update colnames in order for the gating to find right dims
+					if(!is.null(prefixColNames)){
+						dimnames(mat) <- list(NULL, prefixColNames)
+					}
+					
+					recompute <- !transform #recompute flag controls whether gates and data need to be transformed
+					nodeInd <- 0
+					
+					if(any(time.ind)){
+						time.range <- range(mat[, time.ind])
+						timestep <- compute_timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds
 					}else
-					{
-						compobj <- compensation
-
-					}
-
-					res <- try(compensate(data,compobj),silent=TRUE)
-
-					if(inherits(res,"try-error")){
-						message("Data is probably already compensated");
-					}else{
-						data<-res
-						rm(res);
-
-					}
-
-				}
-
-			}
-       }else{
-         # get kw from ws (We are not sure yet if this R API will always
-         # return keywords from workspace successfully, thus it is currently
-         # only used when execute = FALSE
-         if(!is.null(ws))
-           kw <- getKeywords(ws, sampleID)
-         #use $PnB to determine the number of parameters since {N,R,S) could be
-         #redundant in some workspaces
-         key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
-         key_names <- gsub("B", "N", key_names, fixed = TRUE)
-         cnd <- as.vector(unlist(kw[key_names]))
-
-       }
-
-       ##################################
-       #alter the colnames
-       ##################################
-  		if(cid!="-2")
-  		{
-
-            #get prefix if it is not set yet
-            if(is.null(prefixColNames)&&prefix){
-
-              if(is.null(cnd)){
-                cnd <- as.vector(parameters(data)@data$name)
-              }
-              prefixColNames <- cnd
-              if(execute)
-                comp_param <- parameters(compobj)
-              else
-                comp_param <- comp$parameters
-
-              comp_param_ind <- match(comp_param, prefixColNames)
-
-              prefixColNames[comp_param_ind] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
-
-
-
-            }
-        }else{
-          prefixColNames <- cnd
-          comp_param_ind <- seq_along(cnd)
-        }
-          ##################################
-          #transforming and gating
-          ##################################
-        gains <- numeric()#gain is no longer relevant
-        names(gains) <- character()
-          if(execute)
-          {
-
-			  #transform with external trans when applicable
-			  if(!is.null(transformation))
-			  {
-				  message(paste("transform the data with supplied transformations ..."))
-				  transformation <- transformList(names(transformation), lapply(transformation, function(x)x[["transform"]]))
-				  data <- transform(data, transformation)
-			  }
-				    
-            message(paste("gating ..."))
-            #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
-            mat <- data@exprs #using @ is faster than exprs()
-            
-            #get gains from keywords
-            # # for now we still parse it from data
-            # # once confirmed that workspace is a reliable source for this info
-            # # we can parse it from ws as well
-            this_pd <- pData(parameters(data))
-            # #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
-            time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)
-            # this_pd <- subset(this_pd, !time.ind)
-            # paramIDs <- rownames(this_pd)
-            # key_names <- paste(paramIDs,"G",sep="")
-            kw <- keyword(data)
-            # if(as.numeric(kw[["FCSversion"]])>=3&&wsType!="vX"){
-            #   kw_gains <- kw[key_names]
-            # 
-            #   # For keywords where the gain is not set, the gain is NULL.
-            #   # We replace these instances with the default of 1.
-            #   kw_gains[sapply(kw_gains, is.null)] <- 1
-            # 
-            #   gains <- as.numeric(kw_gains)
-            # }else{
-            #   gains <- rep(1,length(paramIDs))
-            # }
-            # 
-            # names(gains) <- this_pd$name
-            # gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
-        
-            #update colnames in order for the gating to find right dims
-            if(!is.null(prefixColNames)){
-              dimnames(mat) <- list(NULL, prefixColNames)
-            }
-
-            recompute <- !transform #recompute flag controls whether gates and data need to be transformed
-            nodeInd <- 0
-
-            if(any(time.ind)){
-              time.range <- range(mat[, time.ind])
-              timestep <- compute_timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds
-            }else
-              timestep <- 1
-
-			
-            .cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool, timestep)
+						timestep <- 1
+					
+					
+					.cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool, timestep)
 #            browser()
-            #restore the non-prefixed colnames for updating data in fs with [[<-
-            #since colnames(fs) is not udpated yet.
-            if(!is.null(prefixColNames)){
-              #restore the orig colnames(replace "_" with "/") for flowJo X
-              if(wsType == "vX"){
-                #use slash locations to avoid tamper the original '_' character in channel names
-                old_cnd <- fix_channel_slash(cnd, slash_loc)
-
-                if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
-                  cnd <- old_cnd
-                  colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX
-                }
-
-              }
-              dimnames(mat) <- list(NULL, cnd)
-            }
-
-            data@exprs <- mat #circumvent the validity check of exprs<- to speed up
-
-            if(isNcdf){
-              fs[[guid]] <- data
-
-            }else{
-              assign(guid,data,fs@frames)
-            }
-            #range info within parameter object is not always the same as the real data range
-            #it is used to display the data.
-            #so we need update this range info by transforming it
-            tInd <- grepl("[Tt]ime",cnd)
-            if(any(tInd))
-              tRg  <- range(mat[,tInd])
-            else
-              tRg <- NULL
-            axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc, compChnlInd = comp_param_ind)
-
-		}else{
-          #extract gains from keyword of ws
-          #currently it is only used for extracting gates without gating
-          #In future we want to use it for gating as well
-          #once we have confirmed that ws is a reliable source of keyword
-          #EDIT: Acutally we've already found one workspace from PROVIDE study
-          #that does not contain the gain keyword for all channels. So the ws is not reliable source of keyword
-          #EDIT: gain is no longer needed #213
-
-          # gains <- rep(1,length(cnd))#init with default 1
-          # 
-          # #get gains from keywords
-          # kw_gains <- grep("P[0-9]{1,}G", names(kw))
-          # 
-          # if(length(kw_gains) > 0){
-          #   key_names <- unique(names(kw[kw_gains]))
-          #   kw_gains <- kw[key_names]
-          # 
-          #   # Sometimes the keywords where the gain is not set, the gain value is NULL.
-          #   # We replace these instances with the default of 1.
-          #   kw_gains[sapply(kw_gains, is.null)] <- 1
-          # 
-          #   #update the default gain values
-          #   #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)
-          #   found_gain_chnl_ind <-  as.numeric(gsub('G$', "", gsub('^\\$P', "", key_names)))
-          #   gains[found_gain_chnl_ind] <- as.numeric(kw_gains)
-          # }
-          # 
-          # 
-          # 
-          # 
-          # names(gains) <- prefixColNames
-          # gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
-          #transform and adjust the gates without gating
-          if(transform)
-            .cpp_computeGates(gs@pointer, guid, gains, extend_val, extend_to)
-          axis.labels <- list()
-        }
-
-        #set global variable
-        tempenv$prefixColNames <- prefixColNames
-        tempenv$comp_param_ind <- comp_param_ind
-
-        #return axis.labels
-        axis.labels
-	},tempenv)
-
-    names(axis) <- guids
-    gs@axis <- axis
-    gs@flag <- execute #assume the excution would succeed if the entire G gets returned finally
-
+					#restore the non-prefixed colnames for updating data in fs with [[<-
+					#since colnames(fs) is not udpated yet.
+					if(!is.null(prefixColNames)){
+						#restore the orig colnames(replace "_" with "/") for flowJo X
+						if(wsType == "vX"){
+							#use slash locations to avoid tamper the original '_' character in channel names
+							old_cnd <- fix_channel_slash(cnd, slash_loc)
+							
+							if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+								cnd <- old_cnd
+								colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX
+							}
+							
+						}
+						dimnames(mat) <- list(NULL, cnd)
+					}
+					
+					data@exprs <- mat #circumvent the validity check of exprs<- to speed up
+					
+					if(isNcdf){
+						fs[[guid]] <- data
+						
+					}else{
+						assign(guid,data,fs@frames)
+					}
+					#range info within parameter object is not always the same as the real data range
+					#it is used to display the data.
+					#so we need update this range info by transforming it
+					tInd <- grepl("[Tt]ime",cnd)
+					if(any(tInd))
+						tRg  <- range(mat[,tInd])
+					else
+						tRg <- NULL
+					axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc, compChnlInd = comp_param_ind)
+					
+				}else{
+					#extract gains from keyword of ws
+					#currently it is only used for extracting gates without gating
+					#In future we want to use it for gating as well
+					#once we have confirmed that ws is a reliable source of keyword
+					#EDIT: Acutally we've already found one workspace from PROVIDE study
+					#that does not contain the gain keyword for all channels. So the ws is not reliable source of keyword
+					#EDIT: gain is no longer needed #213
+					
+					# gains <- rep(1,length(cnd))#init with default 1
+					# 
+					# #get gains from keywords
+					# kw_gains <- grep("P[0-9]{1,}G", names(kw))
+					# 
+					# if(length(kw_gains) > 0){
+					#   key_names <- unique(names(kw[kw_gains]))
+					#   kw_gains <- kw[key_names]
+					# 
+					#   # Sometimes the keywords where the gain is not set, the gain value is NULL.
+					#   # We replace these instances with the default of 1.
+					#   kw_gains[sapply(kw_gains, is.null)] <- 1
+					# 
+					#   #update the default gain values
+					#   #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)
+					#   found_gain_chnl_ind <-  as.numeric(gsub('G$', "", gsub('^\\$P', "", key_names)))
+					#   gains[found_gain_chnl_ind] <- as.numeric(kw_gains)
+					# }
+					# 
+					# 
+					# 
+					# 
+					# names(gains) <- prefixColNames
+					# gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
+					#transform and adjust the gates without gating
+					if(transform)
+						.cpp_computeGates(gs@pointer, guid, gains, extend_val, extend_to)
+					axis.labels <- list()
+				}
+				
+				#set global variable
+				tempenv$prefixColNames <- prefixColNames
+				tempenv$comp_param_ind <- comp_param_ind
+				
+				#return axis.labels
+				axis.labels
+			},tempenv)
+	
+	names(axis) <- guids
+	gs@axis <- axis
+	gs@flag <- execute #assume the excution would succeed if the entire G gets returned finally
+	
 	if(execute)
 	{
 #		browser()
-        #sync channel info for gates and comps ,trans
-        if(channel.ignore.case){
-          #get non-prefixed channel names
-          raw.cols <- colnames(fs)
-          #since updateChannels does case insensitive matching
-          #so we simply set both old and new columns with raw.cols
-          map <- data.frame(old = raw.cols, new = raw.cols)
-          updateChannels(gs, map, all = FALSE)
-        }
-
+		#sync channel info for gates and comps ,trans
+		if(channel.ignore.case){
+			#get non-prefixed channel names
+			raw.cols <- colnames(fs)
+			#since updateChannels does case insensitive matching
+			#so we simply set both old and new columns with raw.cols
+			map <- data.frame(old = raw.cols, new = raw.cols)
+			updateChannels(gs, map, all = FALSE)
+		}
+		
 		#update data with prefixed columns
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
 		if(!is.null(tempenv$prefixColNames))
-          colnames(fs) <- tempenv$prefixColNames
-
-
+			colnames(fs) <- tempenv$prefixColNames
+		
+		
 		#attach filename and colnames to internal stucture for gating
 #		browser()
 	}
-
-    flowData(gs) <- fs
-    if(!is.null(compensation))
-      gs@compensation <- compensation[guids] #append the customized compensations provided outside of xml
-  	if(!is.null(transformation))
-	  gs@transformation <- transformation[guids]
+	
+	flowData(gs) <- fs
+	if(!is.null(compensation))
+		gs@compensation <- compensation[guids] #append the customized compensations provided outside of xml
+	if(!is.null(transformation))
+		gs@transformation <- transformation[guids]
 	gs
 }
 
@@ -963,7 +993,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 	tempenv<-new.env()
 	assign("axis.labels",list(),envir=tempenv);
 
-    trans_names <-trimWhiteSpace(names(trans))
+    trans_names <-trimws(names(trans))
 
 	datarange <- sapply(1:dim(rawRange)[2],function(i){
                thisRange <- rawRange[i]
