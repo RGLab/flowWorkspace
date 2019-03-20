@@ -2,9 +2,7 @@
 % Please edit documentation in R/AllClasses.R, R/GatingSet_Methods.R,
 %   R/identifier.R
 \docType{methods}
-\name{GatingSet,character,character-method}
-\alias{GatingSet,character,character-method}
-\alias{GatingSet}
+\name{GatingSet,flowSet,ANY-method}
 \alias{GatingSet,flowSet,ANY-method}
 \alias{GatingSet,GatingHierarchy,character-method}
 \alias{identifier,GatingSet-method}
@@ -13,9 +11,6 @@
 \alias{identifier<-,GatingSetList,character-method}
 \title{constructors for GatingSet}
 \usage{
-\S4method{GatingSet}{character,character}(x, y, guids,
-  includeGates = FALSE, sampNloc = "keyword", xmlParserOption, wsType)
-
 \S4method{GatingSet}{flowSet,ANY}(x)
 
 \S4method{GatingSet}{GatingHierarchy,character}(x, y, path = ".", ...)
@@ -29,27 +24,11 @@
 \S4method{identifier}{GatingSetList,character}(object) <- value
 }
 \arguments{
-\item{x}{\code{character} or \code{flowSet} or \code{GatingHierarchy}}
-
-\item{y}{\code{character} or\code{missing}}
-
-\item{guids}{\code{character} vectors to uniquely identify each sample (Sometime FCS file names alone may not be unique)}
-
-\item{includeGates}{\code{logical} whether to parse the gates or just simply extract the flowJo stats}
-
-\item{sampNloc}{\code{character} scalar indicating where to get sampleName(or FCS filename) within xml workspace. It is either from "keyword" or "sampleNode".}
-
-\item{xmlParserOption}{\code{integer} option passed to \code{\link{xmlTreeParse}}}
-
-\item{wsType}{\code{character} workspace type, can be value of "win", "macII", "vX", "macIII".}
-
 \item{path}{\code{character} specifies the path to the flow data (FCS files)}
 
 \item{...}{other arguments. see \link{parseWorkspace}}
 }
 \description{
-construct object from xml workspace file and a list of sampleIDs (not intended to be called by user.)
-
 construct a gatingset with empty trees (just root node)
 
 construct object from existing gating hierarchy(gating template) and flow data

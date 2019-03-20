@@ -365,23 +365,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// parseWorkspace
-XPtr<GatingSet> parseWorkspace(string fileName, StringVec sampleIDs, StringVec sampleNames, bool isParseGate, unsigned short sampNloc, int xmlParserOption, unsigned short wsType);
-RcppExport SEXP _flowWorkspace_parseWorkspace(SEXP fileNameSEXP, SEXP sampleIDsSEXP, SEXP sampleNamesSEXP, SEXP isParseGateSEXP, SEXP sampNlocSEXP, SEXP xmlParserOptionSEXP, SEXP wsTypeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type fileName(fileNameSEXP);
-    Rcpp::traits::input_parameter< StringVec >::type sampleIDs(sampleIDsSEXP);
-    Rcpp::traits::input_parameter< StringVec >::type sampleNames(sampleNamesSEXP);
-    Rcpp::traits::input_parameter< bool >::type isParseGate(isParseGateSEXP);
-    Rcpp::traits::input_parameter< unsigned short >::type sampNloc(sampNlocSEXP);
-    Rcpp::traits::input_parameter< int >::type xmlParserOption(xmlParserOptionSEXP);
-    Rcpp::traits::input_parameter< unsigned short >::type wsType(wsTypeSEXP);
-    rcpp_result_gen = Rcpp::wrap(parseWorkspace(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType));
-    return rcpp_result_gen;
-END_RCPP
-}
 // getSamples
 StringVec getSamples(XPtr<GatingSet> gsPtr);
 RcppExport SEXP _flowWorkspace_getSamples(SEXP gsPtrSEXP) {
@@ -606,7 +589,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
-    {"_flowWorkspace_parseWorkspace", (DL_FUNC) &_flowWorkspace_parseWorkspace, 7},
     {"_flowWorkspace_getSamples", (DL_FUNC) &_flowWorkspace_getSamples, 1},
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 3},
     {"_flowWorkspace_NewGatingSet_rootOnly", (DL_FUNC) &_flowWorkspace_NewGatingSet_rootOnly, 1},
