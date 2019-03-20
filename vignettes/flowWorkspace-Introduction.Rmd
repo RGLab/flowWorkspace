@@ -38,8 +38,9 @@ path <- system.file("extdata",package="flowWorkspaceData");
 wsfile <- list.files(path, pattern="A2004Analysis.xml", full = TRUE)
 ```
 
-In order to open this workspace we call:
+In order to open this workspace we need `CytoML` package:
 ```{r openws,results='markup'}
+library(CytoML)
 ws <- openWorkspace(wsfile)
 ws
 ```
@@ -85,7 +86,6 @@ Note that it is different from the previous call `getSamples` on `workspace` whe
 We currently support gatingML2.0 files exported from `Cytobank` system. It can be done with one convevient function `parse.gatingML` from `CytoML` package that simply takes file paths of `gatingML` and `FCS`.
 
 ```{r parseGatingML, eval=FALSE}
-library(CytoML)
 xmlfile <- system.file("extdata/cytotrol_tcell_cytobank.xml", package = "CytoML")
 fcsFiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = T)
 gs1 <- parse.gatingML(xmlfile, fcsFiles)
