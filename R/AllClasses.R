@@ -58,17 +58,17 @@ NULL
 #' 
 #' @seealso
 #'   \code{\linkS4class{GatingHierarchy}}
-#'   \code{\linkS4class{flowJoWorkspace}}
-#'   \code{\link{parseWorkspace}}
 #'  
 #' @examples
+#' \dontrun{
 #'   require(flowWorkspaceData)
 #'   d<-system.file("extdata",package="flowWorkspaceData")
 #'   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
+#' 	library(CytoML)
 #'   ws <- openWorkspace(wsfile);
 #'   G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
 #'   plotPopCV(G);
-#' 
+#' }
 #' @name GatingSet-class
 #' @rdname GatingSet-class
 #' @exportClass GatingSet
@@ -108,9 +108,11 @@ setClass("GatingSet"
 #' \code{\linkS4class{GatingSet}}
 #' 
 #' @examples
+#' \dontrun{
 #' 	require(flowWorkspaceData)
 #' 	d<-system.file("extdata",package="flowWorkspaceData")
 #' 	wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
+#' library(CytoML)
 #' 	ws <- openWorkspace(wsfile);
 #' 	G<-try(parseWorkspace(ws,path=d,name=1));
 #'  gh <- G[[1]]
@@ -121,7 +123,7 @@ setClass("GatingSet"
 #' 	plotGate(gh,thisNode);
 #' 	getGate(gh,thisNode);
 #' 	getData(gh,thisNode)
-#' 
+#' }
 #' @name GatingHierarchy-class
 #' @rdname GatingHierarchy-class
 #' @exportClass GatingHierarchy
