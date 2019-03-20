@@ -25,7 +25,6 @@ Imports:
     stats4,
     utils,
     RBGL,
-    XML,
     tools,
     gridExtra,
     Rgraphviz,
@@ -50,7 +49,6 @@ Collate:
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
-    'flowJoWorkspace_Methods.R'
     'flow_trans.R'
     'getDescendants.R'
     'getSingleCellExpression.R'
@@ -73,6 +71,6 @@ Suggests:
     parallel
 LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.3.7), cytolib(>= 1.3.3), RcppParallel
 VignetteBuilder: knitr
-SystemRequirements: xml2, GNU make, C++11
+SystemRequirements: GNU make, C++11
 Encoding: UTF-8
 RoxygenNote: 6.1.1
