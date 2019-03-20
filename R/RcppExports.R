@@ -151,10 +151,6 @@ getNodePath <- function(gs, sampleName, id) {
     invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
 }
 
-.cpp_parseWorkspace <- function(fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType) {
-    .Call(`_flowWorkspace_parseWorkspace`, fileName, sampleIDs, sampleNames, isParseGate, sampNloc, xmlParserOption, wsType)
-}
-
 .cpp_getSamples <- function(gsPtr) {
     .Call(`_flowWorkspace_getSamples`, gsPtr)
 }
