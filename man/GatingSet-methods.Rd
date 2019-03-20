@@ -26,7 +26,7 @@
 \arguments{
 \item{path}{\code{character} specifies the path to the flow data (FCS files)}
 
-\item{...}{other arguments. see \link{parseWorkspace}}
+\item{...}{other arguments.}
 }
 \description{
 construct a gatingset with empty trees (just root node)
