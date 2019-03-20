@@ -7,8 +7,8 @@ This makefile requires GNU Make.
 endif
 	
 CXX_STD = CXX11
-PKG_CPPFLAGS =-DROUT -I../inst/include/ @PKG_CPPFLAGS@
-PKG_LIBS =`${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags();cat(' ');RcppParallel::RcppParallelLibs()"` @PKG_LIBS@ 
+PKG_CPPFLAGS =-DROUT
+PKG_LIBS =`${R_HOME}/bin/Rscript -e "RProtoBufLib:::LdFlags();cat(' ');RcppParallel::RcppParallelLibs()"`
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a
