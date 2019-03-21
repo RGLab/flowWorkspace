@@ -2103,7 +2103,7 @@ subset.GatingSet <- function (x, subset, ...)
         r & !is.na(r)
       }
 
-  x[as.character(rownames(pd[r, ]))]
+  x[as.character(rownames(pd)[r])]
 }
 #' @rdname getGate
 #' @export
