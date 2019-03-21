@@ -15,9 +15,11 @@ Each sample (FCS file) is associated with it's own GatingHierarchy. It is also m
 Given a GatingHierarchy, one can extract the data associated with any subpopulation, extract gates, plot gates, and extract population proportions. This facilitates the comparison of manual gating methods with automated gating algorithms.
 }
 \examples{
+\dontrun{
 	require(flowWorkspaceData)
 	d<-system.file("extdata",package="flowWorkspaceData")
 	wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
+library(CytoML)
 	ws <- openWorkspace(wsfile);
 	G<-try(parseWorkspace(ws,path=d,name=1));
  gh <- G[[1]]
@@ -29,7 +31,7 @@ Given a GatingHierarchy, one can extract the data associated with any subpopulat
 	autoplot(gh,thisNode);
 	getGate(gh,thisNode);
 	getData(gh,thisNode)
-
+}
 }
 \seealso{
 \code{\linkS4class{GatingSet}}

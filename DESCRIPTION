@@ -25,7 +25,7 @@ Imports:
     stats,
     stats4,
     utils,
-    XML,
+    RBGL,
     tools,
     Rgraphviz,
     data.table,
@@ -51,7 +51,7 @@ Collate:
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
-    'flowJoWorkspace_Methods.R'
+    'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'
     'getSingleCellExpression.R'
@@ -74,7 +74,7 @@ Suggests:
     parallel
 LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.8), cytolib(>= 2.1.12),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
 VignetteBuilder: knitr
-SystemRequirements: xml2, GNU make, C++11
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
+SystemRequirements: GNU make, C++11
 Encoding: UTF-8
 RoxygenNote: 6.1.1

@@ -1,12 +1,12 @@
 #include <flowWorkspace/pairVectorRcppWrap.h>
 #include <flowWorkspace/convert_to_str_idx.h>
+#include <flowWorkspace/list_to_comp.h>
+
 using namespace Rcpp;
 using namespace cytolib;
 
 //[[Rcpp::plugins("temp")]]
 
-//convert from list of R matrix to compensations
-unordered_map<string, compensation> list_to_comps(List comps);
 
 //' @param comps a list of NumericMatrix
 //' @param compensate_data Typically we set it to true to compensate the data as we set comp, Only when we convert the legacy gs, do we skipping this part.

@@ -1,7 +1,7 @@
 context("parseWorkspace")
 
 wsfile <- list.files(dataDir, pattern="manual.xml",full=TRUE)
-
+library(CytoML)
 ws <- openWorkspace(wsfile);
 test_that("can load xml workspace",
 {
@@ -9,20 +9,8 @@ test_that("can load xml workspace",
   expect_that(ws, is_a("flowJoWorkspace"))
 })
 
-source("flowJoWorkspace-testSuite.R", local = TRUE)
-
 
 gs <- NULL
-
-test_that("Can parse workspace in current working dir without path",{
-  wd <- getwd()
-  setwd(dataDir)
-  ws_wd <- openWorkspace("manual.xml")
-  dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws_wd, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))))
-  expect_that(gs, is_a("GatingSet"))
-  setwd(wd)
-})
-
 test_that("Can parse workspace",{
     dd <- capture.output(suppressMessages(gs <<- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))))
 	  expect_that(gs, is_a("GatingSet"));
@@ -41,71 +29,7 @@ test_that("Can parse workspace",{
 })
 
 
-gh <- NULL
-test_that("extract GatingHierarchy from GatingSet",{
-      gh <<- gs[[1]]
-      expect_that(gh, is_a("GatingHierarchy"));  
-    })
-
-
-test_that("parse without gating",{
-      
-      dd <- capture.output(suppressMessages(gs1 <- try(parseWorkspace(ws, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", execute = FALSE))))
-      expect_that(gs1, is_a("GatingSet"));
-      gh1 <- gs1[[1]]
-      
-      thisStats <- getPopStats(gh1)[, list(xml.freq,xml.count, node)]
-      expectStats <- getPopStats(gh)[, list(xml.freq,xml.count, node)]
-      expect_equal(thisStats, expectStats)
-      
-      #exclude the gates that require extension since the extend_to are different 
-      # based on whether data is loaded
-      nodes <- getNodes(gh)[ -c(6:13, 15:22)]
-      thisGates <- sapply(nodes[-1], getGate, obj = gh1)
-      expectGates <- sapply(nodes[-1], getGate, obj = gh)
-      expect_equal(thisGates, expectGates)
-      
-      
-    })
-
-test_that("external comp", {
-      comp <- getCompensationMatrices(gh)
-      #single comp
-      dd <- capture.output(suppressWarnings(suppressMessages(
-                          gs1 <- try(parseWorkspace(ws, name = 4
-                                      , compensation = comp
-                                      , execute = TRUE)))))
-      expect_that(gs1, is_a("GatingSet"));
-
-      gh1 <- gs1[[1]]
-      expect_equal(comp, getCompensationMatrices(gh1))
-      
-      thisStats <- getPopStats(gh1)
-      expectStats <- getPopStats(gh)
-      expect_equal(thisStats, expectStats)
-      
-      #a list of comp
-      comp <- getCompensationMatrices(gs1)
-      dd <- capture.output(suppressWarnings(suppressMessages(
-              gs1 <- try(parseWorkspace(ws, name = 4
-                      , compensation = comp
-                      , execute = TRUE)))))
-      expect_that(gs1, is_a("GatingSet"));
-      expect_equal(comp,  getCompensationMatrices(gs1))
-      gh1 <- gs1[[1]]
-      thisStats <- getPopStats(gh1)
-      expect_equal(thisStats, expectStats)
-      
-      
-      #extra elements
-      comp[3] <- comp[1]
-      names(comp)[3] <- "dd"
-      dd <- capture.output(suppressWarnings(suppressMessages(gs1 <- parseWorkspace(ws, name = 4, compensation = comp))))
-      expect_that(gs1, is_a("GatingSet"));
-      expect_equal(comp[1:2],  getCompensationMatrices(gs1))
-      
-      
-    })
+gh <- gs[[1]]
 
 # make sure this test is invoked before GatingSet-testSuite since the trans is gonna be lost
 # during clone and rbind2 test
@@ -131,93 +55,6 @@ test_that("getTransformations ",{
 isCpStaticGate <<- TRUE
 source("GatingHierarchy-testSuite.R", local = TRUE)
 source("GatingSet-testSuite.R", local = TRUE)
-
-test_that("use additional keywords for guid",{
-      dd <- capture.output(suppressMessages(gs2 <- try(parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = "$TOT"))))
-      expect_equal(sampleNames(gs2[[1]]), paste(sampleNames(gh), trimws(keyword(gh)[["$TOT"]]), sep = "_"))
-      expect_equal(getPopStats(gs2[[1]]), getPopStats(gh))
-        
-    })
-#TODO:fix failure
-# test_that("supply sampleID--file mapping through 'path'",{
-#       mapping <- data.frame(sampleID1 = '1', file = file.path(dataDir, "CytoTrol_CytoTrol_11.fcs"))
-#       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
-#                   , "When 'path' is a data.frame, it must contain columns")
-#       colnames(mapping)[1] <- "sampleID"
-#       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
-#           , "must be numeric")
-#       mapping[["sampleID"]] <- 1
-#       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
-#           , "No sample")
-#       mapping[["sampleID"]] <- 19
-#       expect_error(dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
-#           , "not a valid file")
-#       mapping[["file"]] <- file.path(dataDir, "CytoTrol_CytoTrol_1.fcs")
-#       dd <- capture.output(suppressMessages(gs3 <- parseWorkspace(ws, path = mapping, name = 4, subset = "CytoTrol_CytoTrol_1.fcs")))
-#       expect_equal(getPopStats(gs3[[1]]), getPopStats(gh))
-#       
-#     })
-
-test_that("parse pData from keyword", {
-    keys <- c("PATIENT ID", "SAMPLE ID", "$TOT", "EXPERIMENT NAME")
-    #parse pData from xml
-    expect_error(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, execute = F, keywords.source="FCS"), "Can't parse phenodata")
-    dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, execute = F)))
-    pd1 <- pData(gs1)
-    expect_equal(nrow(pd1), 4)
-    
-    #parse pData from FCS
-    dd <- capture.output(suppressWarnings(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, keywords.source = "FCS"))))
-    pd2 <- pData(gs2)
-    expect_equal(nrow(pd2), 2)
-        
-    expect_equivalent(pd1[1:2, names(pd2)], pd2)
-    
-    #case insensitive
-    keys <- tolower(keys)
-    expect_error(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, execute = F)
-                   , regexp = "not found")
-    # pd2 <- pData(gs1)
-    # expect_true(all(is.na(pd2[[2]])))
-    
-    #TODO:ignore case for keyword
-    # dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, keywords = keys, execute = F, keyword.ignore.case = T)))
-    # pd2 <- pData(gs1)
-    # colnames(pd1)[-1] <- keys
-    # expect_equal(pd1, pd2)
-    # 
-    })
-
-
-test_that("subset", {
-
-    #TODO:subset by keyword  
-    expect_error(gs1 <- parseWorkspace(ws, path = dataDir, name = 4
-                                                                , subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2")
-                                                                , keywords = "TUBE NAME", execute = F), "invalid")
-    #subset by sample names
-    dd <- capture.output(suppressMessages(gs2 <- parseWorkspace(ws, path = dataDir, name = 4
-                                                                , subset = c("CytoTrol_CytoTrol_1.fcs", "CytoTrol_CytoTrol_2.fcs")
-                                                                , keywords = "TUBE NAME"
-                                                                , execute = F)))
-    # expect_equivalent(pData(gs1), pData(gs2))
-    
-    #subset by numeric index
-    dd <- capture.output(suppressMessages((gs3 <- parseWorkspace(ws, path = dataDir, name = 4
-                                                                 , subset = 1:2
-                                                                 , keywords = "TUBE NAME"
-                                                                 , execute = F))))
-    expect_equivalent(pData(gs2), pData(gs3))
-    
-    expect_error(gs4 <- parseWorkspace(ws, path = dataDir, name = 4
-                                       , subset = 1:2
-                                       , keywords = "TUBE NAME", execute = F
-                                       , keywords.source = "FCS"
-                                       )
-                , "Can't parse phenodata from FCS")
-    
-            
-    })
 
 
 # we need test trans so have to put this test here since the legacy archived gs doesn't have trans

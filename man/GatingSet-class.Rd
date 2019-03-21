@@ -53,16 +53,16 @@ It allows the use to load a workspace and subset desired samples before proceedi
 }
 
 \examples{
+\dontrun{
   require(flowWorkspaceData)
   d<-system.file("extdata",package="flowWorkspaceData")
   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
+	library(CytoML)
   ws <- openWorkspace(wsfile);
   G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
   plotPopCV(G);
-
+}
 }
 \seealso{
 \code{\linkS4class{GatingHierarchy}}
-  \code{\linkS4class{flowJoWorkspace}}
-  \code{\link{parseWorkspace}}
 }

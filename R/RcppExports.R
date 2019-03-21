@@ -412,34 +412,6 @@ h5_set_error_handler <- function() {
     invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
 }
 
-open_workspace <- function(filename, sample_name_location, xmlParserOption) {
-    .Call(`_flowWorkspace_open_workspace`, filename, sample_name_location, xmlParserOption)
-}
-
-parse_workspace <- function(ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, additional_sampleID, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, transform, fcs_file_extension, fcs_parse_arg, num_threads = 1L) {
-    .Call(`_flowWorkspace_parse_workspace`, ws, group_id, subset, execute, path, h5_dir, includeGates, additional_keys, additional_sampleID, keywords, is_pheno_data_from_FCS, keyword_ignore_case, extend_val, extend_to, channel_ignore_case, leaf_bool, comps, transform, fcs_file_extension, fcs_parse_arg, num_threads)
-}
-
-get_keywords_by_id <- function(ws, sample_id) {
-    .Call(`_flowWorkspace_get_keywords_by_id`, ws, sample_id)
-}
-
-get_keywords_by_name <- function(ws, sample_name) {
-    .Call(`_flowWorkspace_get_keywords_by_name`, ws, sample_name)
-}
-
-get_sample_groups <- function(ws) {
-    .Call(`_flowWorkspace_get_sample_groups`, ws)
-}
-
-get_samples <- function(ws) {
-    .Call(`_flowWorkspace_get_samples`, ws)
-}
-
-get_xml_file_path <- function(ws) {
-    .Call(`_flowWorkspace_get_xml_file_path`, ws)
-}
-
 #' set the event counts for a given node
 #'
 #'

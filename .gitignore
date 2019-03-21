@@ -26,5 +26,4 @@ inst/lib
 config.log
 config.status
 flowWorkspace.Rproj
-src/Makevars
 

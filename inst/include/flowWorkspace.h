@@ -4,9 +4,10 @@
 
 #include "cytolib/GatingSet.hpp"
 #include "flowWorkspace/pairVectorRcppWrap.h"
-#include "flowWorkspace/openWorkspace.hpp"
+#include "flowWorkspace/list_to_comp.h"
+#include "flowWorkspace/convert_to_str_idx.h"
+
 using namespace cytolib;
-using namespace flowWorkspace;
 //header included somewhere(not sure where exactly) defines FALSE,which interferes RcppExports.cpp
 #ifdef FALSE
   #undef FALSE

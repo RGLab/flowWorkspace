@@ -10,8 +10,15 @@
 #include "flowWorkspace.h"
 #include <Rcpp.h>
 using namespace Rcpp;
+CYTOLIB_INIT()
+GatingSet * getGsPtr(SEXP _gsPtr){
 
-GatingSet * getGsPtr(SEXP _gsPtr);
+        if(R_ExternalPtrAddr(_gsPtr)==0)
+                        throw(domain_error("Null GatingSet pointer!"));
+        XPtr<GatingSet>gs(_gsPtr);
+
+        return gs;
+}
 
 
 //[[Rcpp::export]]
@@ -20,7 +27,7 @@ void gs_transform_data(XPtr<GatingSet> gsPtr) {
 	{
 		GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(sn);
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-			COUT<<"transforming: "<<sn<<endl;
+			Rcout<<"transforming: "<<sn<<endl;
 		CytoFramePtr cf = gh->get_cytoframe_view().get_cytoframe_ptr();
 
 		MemCytoFrame fr(*cf);

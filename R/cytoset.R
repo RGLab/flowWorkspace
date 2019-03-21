@@ -525,6 +525,17 @@ setMethod("compensate", signature=signature(x="cytoset", spillover="ANY"),
 	  
   })
 
+check_comp <- function(compensation){
+	if(is(compensation, "compensation")){
+		compensation <- compensation@spillover
+	}else if(is.data.frame(compensation)){
+		compensation <- as.matrix(compensation)
+	}
+	if(!is.matrix(compensation))
+		stop("'compensation' should be a compensation object, matrix or data.frame!")
+	compensation
+}
+
 #' @export
 #' @rdname compensate
 setMethod("compensate", signature=signature(x="cytoset", spillover="list"),#explicitly define this to avoid dispatching (cs, list) to (flowSet,list)
