@@ -167,6 +167,13 @@ test_that("[ subsetting",{
       
     })
 
+test_that("subset.GatingSet",{
+  # GvHD has more samples for this test
+  gs_full <- GatingSet(GvHD)
+  gs_sub <- subset(gs_full, Visit == 2)
+  expect_equal(length(gs_sub), 5)
+})
+
 test_that("getGate for gs",{
       
       thisRes <- getGate(gs, "CD3+")
