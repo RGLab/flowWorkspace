@@ -2,7 +2,7 @@
 
 language: r
 r: bioc-devel
-dist: trusty
+dist: xenial
 
 cache: packages
 
@@ -21,10 +21,17 @@ before_install:
 
 install:
   - R -e 'devtools::install_github("FredHutch/cytolib", ref="cytoset", auth_token=Sys.getenv("CI_USER_TOKEN"))'
+  - R -e 'install.packages("Rcpp")'
+  - R -e 'install.packages("BH")'
+  - R -e 'install.packages("knitr")'
+  - R -e 'BiocManager::install("Rhdf5lib")'
+  - R -e 'install.packages("RcppArmadillo")'
+  - R -e 'devtools::install_github("RcppCore/RcppParallel", ref="master")'
   - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref="cytoset")'
   - R -e 'devtools::install_github("RGLab/flowCore",ref="trunk")'
   - R -e 'devtools::install_github("RGLab/ncdfFlow",ref="trunk")'
   - R -e 'devtools::install_github("RGLab/flowWorkspaceData", ref="cytoset")'
+  - R -e 'devtools::install_deps(dependencies=c("Depends", "Imports"))'
   
 env:
  global:
