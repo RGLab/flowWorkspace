@@ -21,7 +21,6 @@ before_install:
 
 install:
   - R -e 'devtools::install_github("FredHutch/cytolib", ref="cytoset", auth_token=Sys.getenv("CI_USER_TOKEN"))'
-  - R -e 'devtools::install_deps(dep = T)'
   - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref="cytoset")'
   - R -e 'devtools::install_github("RGLab/flowCore",ref="trunk")'
   - R -e 'devtools::install_github("RGLab/ncdfFlow",ref="trunk")'
