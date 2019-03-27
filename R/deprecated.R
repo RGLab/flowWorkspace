@@ -1,3 +1,7 @@
+#' @templateVar old openWorkspace
+#' @templateVar new open_workspace
+#' @template template-depr_pkg
+NULL
 #' @export openWorkspace
 #' @rdname openWorkspace
 openWorkspace <- function(file, ...)UseMethod("openWorkspace")

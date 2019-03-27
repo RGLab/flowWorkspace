@@ -1,3 +1,7 @@
+#' @templateVar old moveNode
+#' @templateVar new gh_move_node
+#' @template template-depr_pkg
+NULL
 #' move a node along with all of its descendant nodes to the given ancester
 #'
 #' @param gh GatingHierarchy

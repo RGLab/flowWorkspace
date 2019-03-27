@@ -566,6 +566,10 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 			nodeNames
 		})
 
+#' @templateVar old getFullNodePath
+#' @templateVar new gh_get_full_path
+#' @template template-depr_pkg
+NULL
 #' convert the partial gating path to the full path
 #' @param gh GatingHierarchy object
 #' @param path the partial gating path
@@ -881,6 +885,10 @@ gh_check_cluster_node <- function(gh, node){
 }
 
 
+#' @templateVar old openWorkspace
+#' @templateVar new open_workspace
+#' @template template-depr_pkg
+NULL
 #'  Get the membership indices for each event with respect to a particular gate in a GatingHierarchy
 #'
 #'  Returns a logical vector that describes whether each event in a sample is included or excluded by this gate.
@@ -913,6 +921,10 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 
 		})
 
+#' @templateVar old isGated
+#' @templateVar new gh_is_gated
+#' @template template-depr_pkg
+NULL
 #' The flags of gate nodes
 #' isGated checks if a node is already gated
 #' isNegated checks if a node is negated.
@@ -934,6 +946,10 @@ setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,
 
     })
 
+#' @templateVar old isNegated
+#' @templateVar new gh_is_negated
+#' @template template-depr_pkg
+NULL
 #' @rdname nodeflags
 #' @export 
 setGeneric("isNegated",function(obj, y, ...)standardGeneric("isNegated"))
@@ -946,6 +962,10 @@ setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(ob
 
     })
 
+#' @templateVar old isHidden
+#' @templateVar new gh_is_hidden
+#' @template template-depr_pkg
+NULL
 #' @rdname nodeflags
 #' @export 
 setGeneric("isHidden",function(obj, y, ...)standardGeneric("isHidden"))
@@ -1023,6 +1043,10 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
 	return (class(getGate(x,y))=="booleanFilter")
 }
 
+#' @templateVar old openWorkspace
+#' @templateVar new open_workspace
+#' @template template-depr_pkg
+NULL
 #' Determine tick mark locations and labels for a given channel axis
 #'
 #' @param gh \code{GatingHiearchy}
@@ -1075,6 +1099,10 @@ getAxisLabels <- function(obj,...){
   obj@axis[[sampleNames(obj)]]
 }
 
+#' @templateVar old getTransformations
+#' @templateVar new gh_get_transformations
+#' @template template-depr_pkg
+NULL
 #' @rdname getTransformations
 #' @export 
 getTransformations <- function(x, ...)UseMethod("getTransformations")
@@ -1233,6 +1261,10 @@ getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALS
   }
 
 
+#' @templateVar old getCompensationMatrices
+#' @templateVar new gh_get_compensations
+#' @template template-depr_pkg
+NULL
 #' @rdname getCompensationMatrices
 #' @export 
  getCompensationMatrices <- function(x)UseMethod("getCompensationMatrices")

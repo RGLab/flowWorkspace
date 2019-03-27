@@ -1,3 +1,7 @@
+#' @templateVar old getStats
+#' @templateVar new gs(/gh)_get_stats
+#' @template template-depr_pkg
+NULL
 #' Exact MFI from populations(or nodes) for all the markers
 #'
 #' It calculates the MFI for each marker.

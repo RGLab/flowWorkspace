@@ -1,6 +1,10 @@
 #' @include GatingSet_Methods.R
 NULL
 
+#' @templateVar old rbind2
+#' @templateVar new gslist_to_gs
+#' @template template-depr_pkg
+NULL
 #' @param y \code{missing} not used.
 #' @param ... other arguments passed to \code{rbind2} method for \code{ncdfFlowList}
 #' @rdname GatingSetList-class 

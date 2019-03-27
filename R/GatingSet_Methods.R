@@ -31,6 +31,10 @@ mkformula<-function(dims,isChar=FALSE){
 	return(form)
 }
 
+#' @templateVar old isNcdf
+#' @templateVar new gs_is_h5
+#' @template template-depr_pkg
+NULL
 #' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
 #'
 #' @param x \code{GatingHiearchy} object
@@ -1713,6 +1717,10 @@ fix_y_axis <- function(gs, x, y){
 
 
 
+#' @templateVar old clone
+#' @templateVar new gs_clone
+#' @template template-depr_pkg
+NULL
 #'  clone a GatingSet
 #'
 #'   clone a GatingSet
@@ -1756,6 +1764,10 @@ setMethod("clone",c("GatingSet"),function(x,...){
 		})
 
 
+#' @templateVar old recompute
+#' @templateVar new gs_recompute
+#' @template template-depr_pkg
+NULL
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' Compute the cell events by the gates stored within the gating tree.
 #'
@@ -2121,6 +2133,10 @@ setMethod("setNode"
           })
     })
 
+#' @templateVar old getLoglevel
+#' @templateVar new get_log_level
+#' @template template-depr_pkg
+NULL
 #' get/set the log level
 #'
 #' It is helpful sometime to get more detailed print out for the purpose of trouble shooting
@@ -2134,6 +2150,10 @@ getLoglevel <- function(){
 }
 
 
+#' @templateVar old setLoglevel
+#' @templateVar new set_log_level
+#' @template template-depr_pkg
+NULL
 #' @param level a \code{character} that represents the log level
 #'                              , can be value of c("none", "GatingSet", "GatingHierarchy", "Population", "gate")
 #'                                 default is "none" , which does not print any information from C parser.

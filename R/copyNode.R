@@ -1,3 +1,7 @@
+#' @templateVar old copyNode
+#' @templateVar new gh_copy_gate
+#' @template template-depr_pkg
+NULL
 #' Copy a node along with all of its descendant nodes to the given ancestor
 #'
 #' @param gh GatingHierarchy

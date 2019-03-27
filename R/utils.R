@@ -24,6 +24,10 @@ LdFlags <- function(){
 }
 
 
+#' @templateVar old getMergedStats
+#' @templateVar new gs_get_merged_stats
+#' @template template-depr_pkg
+NULL
 #' Get Cell Population Statistics and Sample Metadata
 #'
 #' @param object a \code{GatingSet} or \code{GatingSetList}
@@ -53,6 +57,10 @@ getMergedStats = function(object,...){
 	return(ret)
 }
 
+#' @templateVar old set.count.xml
+#' @templateVar new gh_set_xml_count
+#' @template template-depr_pkg
+NULL
 #' save the event counts parsed from xml into c++ tree structure
 #'
 #' It is for internal use by the diva parser

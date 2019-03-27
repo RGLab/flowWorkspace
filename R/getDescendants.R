@@ -1,3 +1,7 @@
+#' @templateVar old getDescendants
+#' @templateVar new gh_get_descendants
+#' @template template-depr_pkg
+NULL
 #' get all the descendant nodes for the given ancester
 #'
 #' @param gh GatingHierarchy

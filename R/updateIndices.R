@@ -1,3 +1,7 @@
+#' @templateVar old updateIndices
+#' @templateVar new gh_set_pop_indices
+#' @template template-depr_pkg
+NULL
 #' directly update event indices without changing gates
 #'
 #' It is useful when we want to alter the popluation at events level yet

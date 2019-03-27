@@ -1,6 +1,10 @@
 #' @include filterObject_Methods.R
 NULL
 
+#' @templateVar old add
+#' @templateVar new gs(/gh)_add_gate
+#' @template template-depr_pkg
+NULL
 
 #' Create a GatingSet and add/remove the flowCore gate(or population) to/from a GatingHierarchy/GatingSet.
 #' 
@@ -452,6 +456,11 @@ setMethod("add",
             }
           })
 
+#' @templateVar old Rm
+#' @templateVar new gs(/gh)_remove_gate
+#' @template template-depr_pkg
+NULL
+  
 #' @export 
 #' @rdname add
 setMethod("Rm",

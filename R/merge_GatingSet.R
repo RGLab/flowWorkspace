@@ -45,6 +45,10 @@
 #' 
 NULL
 
+#' @templateVar old groupByTree
+#' @templateVar new gs_group_by_tree
+#' @template template-depr_pkg
+NULL
 #' split GatingSets into groups based on their gating schemes
 #' Be careful that the splitted resluts still points to the original data set!!
 #' 
@@ -75,6 +79,10 @@ groupByTree <- function(x){
 }
 .groupByTree <- groupByTree
 
+#' @templateVar old groupByChannels
+#' @templateVar new gs_group_by_channels
+#' @template template-depr_pkg
+NULL
 #' split GatingSets into groups based on their flow channels
 #' 
 #' Sometime it is gates are defined on the different dimensions
@@ -253,6 +261,10 @@ plot_diff_tree <- function(x, path = "auto", ...){
 
 }
 
+#' @templateVar old checkRedundantNodes
+#' @templateVar new gs_check_redundant_nodes
+#' @template template-depr_pkg
+NULL
 #' try to determine the redundant terminal(or leaf) nodes that can be removed
 #' 
 #' THese leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
@@ -316,6 +328,10 @@ checkRedundantNodes <- function(x, path = "auto", ...){
     toRemove       
 }
 .checkRedundantNodes <- checkRedundantNodes
+#' @templateVar old dropRedundantNodes
+#' @templateVar new gs_drop_redundant_nodes
+#' @template template-depr_pkg
+NULL
 #' Remove the terminal leaf nodes that make the gating trees to be different from one another.
 #' 
 #' It is usually called after \link{groupByTree} and \link{checkRedundantNodes}. The operation is done in place through external pointers which means
@@ -355,6 +371,10 @@ dropRedundantNodes <- function(x,toRemove){
   
 }
 .dropRedundantNodes <- dropRedundantNodes
+#' @templateVar old dropRedundantChannels
+#' @templateVar new gs_drop_redundant_channels
+#' @template template-depr_pkg
+NULL
 #' Remove the channels from flow data that are not used by gates
 #' 
 #' Removing these redundant channels can help standardize the channels across different GatingSet objects and make them mergable.
@@ -391,6 +411,10 @@ dropRedundantChannels <- function(gs, ...){
   
 }
 .dropRedundantChannels <- dropRedundantChannels
+#' @templateVar old updateChannels
+#' @templateVar new gs_update_channels
+#' @template template-depr_pkg
+NULL
 #' Update the channel information of a GatingSet (c++ part)
 #' 
 #' It updates the channels stored in gates,compensations and transformations

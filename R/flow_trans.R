@@ -29,6 +29,11 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
              n = n, equal.space = equal.space)
 }
 
+#' @templateVar old flowJo.flog
+#' @templateVar new flowjo_flog
+#' @template template-depr_pkg
+NULL
+
 #' flog transform function
 #'
 #' flog transform function constructor. It is different from flowCore version of \link{logtGml2}
@@ -124,7 +129,10 @@ flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
   return (f)
 
 }
-
+#' @templateVar old flowJoTrans
+#' @templateVar new flowjo_biexp
+#' @template template-depr_pkg
+NULL
 #' construct the flowJo-type biexponentioal transformation function
 #'
 #' Normally it was parsed from flowJo xml workspace. This function provides the alternate
@@ -252,6 +260,10 @@ flowJo_biexp_trans <- function(..., n = 6, equal.space = FALSE){
 
 }
 
+#' @templateVar old flowJo.fasinh
+#' @templateVar new flowjo_fasinh
+#' @template template-depr_pkg
+NULL
 #' inverse hyperbolic sine transform function
 #'
 #'  hyperbolic sine/inverse hyperbolic sine (flowJo-version) transform function constructor
@@ -279,6 +291,10 @@ flowJo.fasinh <- function (m = 4.0, t = 12000, a =  0.7, length = 256)
   }
 }
 
+#' @templateVar old flowJo.fsinh
+#' @templateVar new flowjo_fsinh
+#' @template template-depr_pkg
+NULL
 #' @rdname flowJo.fasinh
 #' @export
 flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
@@ -289,6 +305,10 @@ flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
 
 
 
+#' @templateVar old flowJo_fasinh_trans
+#' @templateVar new flowjo_fasinh_trans
+#' @template template-depr_pkg
+NULL
 #' flowJo inverse hyperbolic sine transformation.
 #'
 #' Used to construct the inverse hyperbolic sine transform object.
