@@ -78,7 +78,7 @@ plotGate(gs[[1]], "CD4/38+ DR+", sample.ratio = 0.4, main = "sample.ratio = 0.4"
 ### Change strip text
   **strip** specifies whether to show pop name in strip box,only valid when x is GatingHierarchy
   
-  **path** A character or numeric scalar passed to getNodes method (used to control how the gating/node path is displayed)
+  **path** A character or numeric scalar passed to gs_get_pop_paths method (used to control how the gating/node path is displayed)
 ```{r}
 # hide the strip
 plotGate(gs[[1]], "CD4/38+ DR+", strip = FALSE, main = "strip = FALSE")       

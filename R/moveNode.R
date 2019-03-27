@@ -13,10 +13,10 @@ NULL
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
 #' suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 #' gh <- gs[[1]]
-#' old.parent <- getParent(gh, "CD4")
+#' old.parent <- gs_get_parent(gh, "CD4")
 #' new.parent <- "singlets"
 #' moveNode(gh, "CD4", new.parent)
-#' getParent(gh, "CD4")
+#' gs_get_parent(gh, "CD4")
 moveNode <- function(gh, node, to){
 
   .moveNode(gh@pointer, sampleNames(gh), node, to)

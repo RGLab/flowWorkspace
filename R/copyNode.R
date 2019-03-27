@@ -8,17 +8,24 @@ NULL
 #' @param node the node to be copied
 #' @param to the new parent node under which the \code{node} will be copied
 #' @export
+#' @rdname copyNode
 #' @examples
 #' library(flowWorkspace)
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
 #' suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 #' gh <- gs[[1]]
-#' old.parent <- getParent(gh, "CD4")
+#' old.parent <- gs_get_parent(gh, "CD4")
 #' new.parent <- "singlets"
 #' copyNode(gh, "CD4", new.parent)
+#' gs_get_pop_paths(gh)
 copyNode <- function(gh, node, to){
-  node <- getFullNodePath(gh, node)
-  to <- getFullNodePath(gh, to)
+  .Defunct("gh_copy_gate")
+}
+#' @export
+#' @rdname copyNode
+gh_copy_gate<- function(gh, node, to){
+  node <- gh_convert_node_full_path(gh, node)
+  to <- gh_convert_node_full_path(gh, to)
   if(to == node){
     stop("Can't copy the node to itself!")
   }
@@ -31,9 +38,9 @@ copyNode <- function(gh, node, to){
 }
 
 .copyNode <- function(gh, node, to){
-  children <- getChildren(gh, node, path = "full", showHidden = TRUE)
+  children <- gs_get_children(gh, node, path = "full", showHidden = TRUE)
   node_name <- basename(node)
-  add(gh, action = getGate(gh, node), negated = isNegated(gh, node), 
+  gh_add_gate(gh, action = getGate(gh, node), negated = isNegated(gh, node), 
       parent = to, name = node_name, recompute = FALSE)
   added <- paste(to, node_name, sep = "/")
   if(isHidden(gh, node)){

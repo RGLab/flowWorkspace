@@ -9,7 +9,7 @@ getMergedStats(object, ...)
 \arguments{
 \item{object}{a \code{GatingSet} or \code{GatingSetList}}
 
-\item{...}{additional arguments passed to \code{getPopStats}}
+\item{...}{additional arguments passed to \code{gs_get_pop_stats}}
 }
 \value{
 a \code{data.table} of merged population statistics with sample metadata.

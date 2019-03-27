@@ -2,7 +2,7 @@
 NULL
 
 #' @templateVar old add
-#' @templateVar new gs(/gh)_add_gate
+#' @templateVar new gs_add_gate
 #' @template template-depr_pkg
 NULL
 
@@ -46,28 +46,28 @@ NULL
 #' #add transformed data to a gatingset
 #'     gs <- GatingSet(fs_trans)
 #'     gs
-#'     getNodes(gs[[1]]) #only contains root node
+#'     gs_get_pop_paths(gs[[1]]) #only contains root node
 #'     
 #' #add one gate
 #'     rg <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400),
 #'         filterId="rectangle")
 #'     
-#'     nodeID<-add(gs, rg)#it is added to root node by default if parent is not specified
+#'     nodeID<-gs_add_gate(gs, rg)#it is added to root node by default if parent is not specified
 #'     nodeID
-#'     getNodes(gs[[1]]) #the second population is named after filterId of the gate 
+#'     gs_get_pop_paths(gs[[1]]) #the second population is named after filterId of the gate 
 #'     
 #' #add a quadGate
 #'     qg <- quadGate("FL1-H"=2, "FL2-H"=4)
-#'     nodeIDs<-add(gs,qg,parent="rectangle")
+#'     nodeIDs<-gs_add_gate(gs,qg,parent="rectangle")
 #'     nodeIDs #quadGate produces four population nodes
-#'     getNodes(gs[[1]]) #population names are named after dimensions of gate if not specified
+#'     gs_get_pop_paths(gs[[1]]) #population names are named after dimensions of gate if not specified
 #'     
 #' #add a boolean Gate
 #'     bg<-booleanFilter(`CD15 FITC-CD45 PE+`|`CD15 FITC+CD45 PE-`)
 #'     bg
-#'     nodeID2<-add(gs,bg,parent="rectangle")
+#'     nodeID2<-gs_add_gate(gs,bg,parent="rectangle")
 #'     nodeID2
-#'     getNodes(gs[[1]])
+#'     gs_get_pop_paths(gs[[1]])
 #' #do the actual gating
 #'     recompute(gs)
 #'     
@@ -82,159 +82,62 @@ NULL
 #'     plotGate(gs[[1]],bool=TRUE)
 #'     
 #' #plot the gating hierarchy
-#'     require(Rgraphviz)
 #'     plot(gs[[1]])
 #' #remove one node causing the removal of all the descendants 
-#'     Rm('rectangle', gs)
-#'     getNodes(gs[[1]])
+#'     gs_remove_gate('rectangle', gs)
+#'     gs_get_pop_paths(gs[[1]])
 #'  }
 #' @export 
 #' @rdname add
 #' @aliases
 #' add
 #' Rm
-setMethod("add",
-		signature=c(wf="GatingSet", "list"),
-		definition=function(wf, action, ...)
-		{
-
-            # if(all(sapply(action, function(i)extends(class(i), "filterResult")))){
-              #dispatch right away to avoid the overhead 
-              #since filterResult is expensive to be passed around
-              id <- selectMethod("add", signature = c("GatingSet", "filterList"))(wf, action, ...)
-              return(id)
-#             }else if(all(sapply(action, function(i)extends(class(i), "filter"))))
-# 			  flist <- filterList(action)
-#             else if(all(sapply(action, function(i)extends(class(i), "filters"))))
-#               flist <- filtersList(action)
-#             else
-#               stop ("the gate list doesn't constain valid 'filter', 'filters' or 'filterResult' objects!")
-#             
-			# add(wf,flist,...)
-			
-		})
-
-#' @export 
-#' @rdname add
-setMethod("add",
-    signature=c(wf="GatingSetList", "list"),
-    definition=function(wf, action, ...)
-    {
-      
-      selectMethod("add",signature = c(wf="GatingSet", action="list"))(wf, action, ...)
-      
-    })    
-#' @export 
-#' @rdname add
-setMethod("add",
-    signature=c("GatingSet", "filtersList"),
-    definition=function(wf, action, ...)
-    {
-      selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
-      
-    })
-    
 #' @param validityCheck \code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.
+add <- function(wf, action,...)UseMethod("add")
 #' @export 
 #' @rdname add
-setMethod("add",
-		signature=c("GatingSet", "filterList"),
-		definition=function(wf, action, validityCheck = TRUE,...)
+add.default <- function(wf, action,...)
 		{
-			samples<-sampleNames(wf)
+			.Deprecated("gs_add_gate")
+			gs_add_gate(wf, action, ...)
 			
-			if(!setequal(names(action),samples))
-				stop("names of gate list do not match with the sample names in the gating set!")			
-			
-			nodeIDs <- lapply(samples,function(sample){
-								curFilter <- action[[sample]]
-								gh <- wf[[sample]]
-#								browser()
-								add(wf = gh, action = curFilter, ...)
-							})
-					
-			nodeID <- nodeIDs[[1]]
-            
-        if(validityCheck){
-          if(!all(sapply(nodeIDs[-1],function(x)isTRUE(all.equal(x, nodeID, check.attributes = FALSE))))){
-            #restore the gatingset by removing added nodes
-            mapply(samples, nodeIDs, FUN = function(sample, nodeID){
-                  gh <- wf[[sample]]
-                  nodes <- getNodes(gh)[nodeID]
-                  lapply(nodes, Rm, envir = gh)
-                })
-            stop("nodeID are not identical across samples!")
-          }
-          
-        }
-		nodeID
-			
-		})
+		}
+#' @export 
+#' @rdname add
+gs_add_gate <- function(wf, action, validityCheck = TRUE, ...){
+  
+  samples <- sampleNames(wf)
+  if((is(action, "filter")||is(action, "filters")) && !is(action, "filterResultList"))
+    action <- sapply(samples,function(x)return(action))
+  
+  if(!setequal(names(action),samples))
+    stop("names of gate list do not match with the sample names in the gating set!")			
+  
+  nodeIDs <- lapply(samples,function(sample){
+    curFilter <- action[[sample]]
+    gh <- wf[[sample]]
+    #								browser()
+    gh_add_gate(wf = gh, action = curFilter, ...)
+  })
+  
+  nodeID <- nodeIDs[[1]]
+  
+  if(validityCheck){
+    if(!all(sapply(nodeIDs[-1],function(x)isTRUE(all.equal(x, nodeID, check.attributes = FALSE))))){
+      #restore the gatingset by removing added nodes
+      mapply(samples, nodeIDs, FUN = function(sample, nodeID){
+        gh <- wf[[sample]]
+        nodes <- gs_get_pop_paths(gh)[nodeID]
+        lapply(nodes, gh_remove_gate, envir = gh)
+      })
+      stop("nodeID are not identical across samples!")
+    }
     
-#' @export 
-#' @rdname add
-setMethod("add",
-        signature=c("GatingSetList", "filterList"),
-        definition=function(wf, action, ...)
-        {
-          selectMethod("add",signature = c(wf="GatingSet", action="filterList"))(wf, action, ...)
-        })
-    
-#' @export 
-#' @rdname add
-setMethod("add",
-    signature=c("GatingSetList", "filtersList"),
-    definition=function(wf, action, ...)
-    {
-      selectMethod("add",signature = c(wf="GatingSet", action="filtersList"))(wf, action, ...)
-    })
-#' @export 
-#' @rdname add
-setMethod("add",
-		signature=c("GatingSet", "filter"),
-		definition=function(wf, action, ...)
-		{
-			
-			message("replicating filter '",identifier(action),"' across samples!")
-			
-			actions<-sapply(sampleNames(wf),function(x)return(action))
-			add(wf,actions,...)
-			
-		})
-#' @export 
-#' @rdname add    
-setMethod("add",
-    signature=c("GatingSet", "filters"),
-    definition=function(wf, action, ...)
-    {
-      
-      message("replicating filters '",identifier(action),"' across samples!")
-      
-      actions <- sapply(sampleNames(wf),function(x)return(action))
-      add(wf,actions,...)
-      
-    })    
-#' @export 
-#' @rdname add
-setMethod("add",
-    signature=c("GatingSetList", "filter"),
-    definition=function(wf, action, ...)
-    {
-      
-      selectMethod("add",signature = c(wf="GatingSet", action="filter"))(wf, action, ...)
-      
-    })
-#' @export 
-#' @rdname add
-setMethod("add",
-    signature=c("GatingSetList", "filters"),
-    definition=function(wf, action, ...)
-    {
-      
-      selectMethod("add",signature = c(wf="GatingSet", action="filters"))(wf, action, ...)
-      
-    })
+  }
+  nodeID
+}
 
+ 
 #' @param recompute \code{logical} whether to recompute the event indices right after gate is added. 
 #'                                  Oftentimes it is more efficient to let user to determining how and when the flow data is loaded
 #'                                  Thus default it FALSE.                      
@@ -273,21 +176,31 @@ setMethod("add",
 	nodeID+1
 }
 
-#' @export 
-#' @rdname add
-setMethod("add",
-		signature=c("GatingHierarchy", "filter"),
-		definition=function(wf, action,... )
+gh_add_gate <- function(wf, action, ... ){
+  if(is(action, "quadGate"))
+    gh_add_quadGate(wf, action, ...)
+  else if(is(action, "filters"))
+    gh_add_filters(wf, action, ...)
+  else if(is(action, "logical"))
+    gh_add_logical(wf, action, ...)
+  else if(is(action, "factor"))
+    gh_add_factor(wf, action, ...)
+  else if(is(action, "logicalFilterResult"))
+    gh_add_logicalFilterResult(wf, action, ...)
+  else if(is(action, "multipleFilterResult"))
+    gh_add_multipleFilterResult(wf, action, ...)
+  else if(is(action, "filter"))
+    gh_add_filter(wf, action, ...)
+  else
+    stop("can't add ", class(action))
+}
+
+gh_add_filter <- function(wf, action,... )
 		{
-			
-			.addGate(wf,filterObject(action),...)
-		})
+			.addGate(wf,filter_to_list(action),...)
+		}
     
-#' @export 
-#' @rdname add
-setMethod("add",
-    signature=c("GatingHierarchy", "filters"),
-    definition=function(wf, action, names = NULL, ... )
+gh_add_filters <- function(wf, action, names = NULL, ... )
     {
       if(!is.null(names))
       {
@@ -297,18 +210,15 @@ setMethod("add",
           stop("number of population names (given by 'name' argument) does not agree with the number of filter objects in 'filters'!")
         
         unlist(mapply(action, names, FUN = function(thisFilter, thisName){
-                  add(wf,thisFilter, name = thisName, ...)
+          gh_add_filter(wf,thisFilter, name = thisName, ...)
                 })
         )
       }else
-        unlist(lapply(action, function(thisFilter)add(wf, thisFilter,...)))
+        unlist(lapply(action, function(thisFilter)gh_add_filter(wf, thisFilter,...)))
       
-    })
-#' @export 
-#' @rdname add
-setMethod("add",
-		signature=c("GatingHierarchy", "quadGate"),
-		definition=function(wf, action, names = NULL, ... )
+    }
+
+gh_add_quadGate <- function(wf, action, names = NULL, ... )
 		{
 			
 			#convert to four recgates			
@@ -340,23 +250,19 @@ setMethod("add",
 							rg <- rectangleGate(.gate=matrix(mat[i,], ncol=2,
 											dimnames=list(c("min", "max"), params))
 											,filterId=names[i])
-							add(wf,rg,...)
+							gh_add_filter(wf,rg,...)
 						})
 					)
 			
 			
 			
-		})
+		}
 
 
 ## it just contains the logical vector as indices generated by clustering algrorithm 
 ## like flowClust
 
-#' @export 
-#' @rdname add
-setMethod("add",
-          signature=c("GatingHierarchy", "logical"),
-          definition=function(wf, action, parent, name, recompute, cluster_method_name = NULL, ... )
+gh_add_logical <- function(wf, action, parent, name, recompute, cluster_method_name = NULL, ... )
           {
             
             
@@ -375,7 +281,7 @@ setMethod("add",
               ind <- pInd.logical
             }
               
-            fb <- filterObject(ind)
+            fb <- filter_to_list(ind)
             #update object when it is a clusterGate
             if(!is.null(cluster_method_name))
             {
@@ -389,13 +295,9 @@ setMethod("add",
             sn <- sampleNames(wf)
             ptr <- wf@pointer
             flowWorkspace:::.cpp_setIndices(ptr, sn, nodeID-1, ind)
-          })
+          }
 
-#' @export 
-#' @rdname add
-setMethod("add",
-          signature=c("GatingHierarchy", "factor"),
-          definition=function(wf, action, name = NULL, ...)
+gh_add_factor <- function(wf, action, name = NULL, ...)
           {
             popNames <- levels(action)
             if(is.null(name))
@@ -415,28 +317,20 @@ setMethod("add",
               #convert it to logical
               ind <- action == thisPop
               ind[is.na(ind)] <- FALSE#in case there are some NA values in factor
-              add(wf, ind, name = pop, cluster_method_name = name, ...)
+              gh_add_logical(wf, ind, name = pop, cluster_method_name = name, ...)
             }
-          })
+          }
 
-#' @export 
-#' @rdname add
-setMethod("add",
-          signature=c("GatingHierarchy", "logicalFilterResult"),
-          definition=function(wf, action, ... )
+gh_add_logicalFilterResult <- function(wf, action, ... )
           {
             
             #fetch the indices from the fitler result
             action <- action@subSet
-            selectMethod("add",signature = c(wf="GatingHierarchy", action="logical"))(wf, action, ...)
+            gh_add_logical(wf, action, ...)
             
-          })
+          }
 
-#' @export 
-#' @rdname add
-setMethod("add",
-          signature=c("GatingHierarchy", "multipleFilterResult"),
-          definition=function(wf, action, name = NULL, ...)
+gh_add_multipleFilterResult <- function(wf, action, name = NULL, ...)
           {
             popNames <- names(action)
             if(!is.null(name)){
@@ -452,27 +346,31 @@ setMethod("add",
               }else{
                 pop <- thisName
               }
-              add(wf, action[[pop]], name = pop, ...)
+              gh_add_logicalFilterResult(wf, action[[pop]], name = pop, ...)
             }
-          })
+          }
 
 #' @templateVar old Rm
-#' @templateVar new gs(/gh)_remove_gate
+#' @templateVar new gs_remove_gate
 #' @template template-depr_pkg
 NULL
-  
+#' @export 
+#' @rdname add
+gs_remove_gate <- function(symbol, envir, ...){
+  invisible(lapply(envir,function(gh){
+    #								browser()
+    gh_remove_gate(symbol,gh,...)
+  }))
+}
 #' @export 
 #' @rdname add
 setMethod("Rm",
 		signature=c(symbol="character",
-				envir="GatingSet",
-				subSymbol="character"),
-		definition=function(symbol, envir, subSymbol, ...)
+				envir="GatingSet"),
+		definition=function(symbol, envir, ...)
 		{
-			invisible(lapply(envir,function(gh){
-#								browser()
-								Rm(symbol,gh,subSymbol,...)
-							}))
+			.Deprecated("gs_remove_gate")
+		  gs_remove_gate(symbol, envir, ...)
 		})
 #' @export 
 #' @rdname add    
@@ -487,22 +385,16 @@ setMethod("Rm",
     })
     
 
-#' @export 
-#' @rdname add
-setMethod("Rm",
-		signature=c(symbol="character",
-				envir="GatingHierarchy",
-				subSymbol="character"),
-		definition=function(symbol, envir, subSymbol, ...)
+gh_remove_gate <- function(symbol, envir, ...)
 		{
             ##remove all children nodes as well
-			childrenNodes <- getChildren(envir,symbol)
+			childrenNodes <- gs_get_children(envir,symbol)
             #use path instead of unqiue name since the prefix of unique name
             #will change during deletion
-			lapply(childrenNodes,function(child)Rm(child,envir))
+			lapply(childrenNodes,function(child)gs_remove_gate(child,envir))
             
 			.cpp_removeNode(envir@pointer,sampleNames(envir), symbol)
-		})
+		}
 
 
     

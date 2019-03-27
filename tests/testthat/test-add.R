@@ -15,10 +15,10 @@ gs <- transform(gs, transList)
 test_that("add rectangleGate", {
   node <- "rectangle"
   rg <- rectangleGate("FSC-H"=c(500,300), "SSC-H"=c(0, 400), filterId=node)
-  add(gs, rg)
+  gs_add_gate(gs, rg)
   recompute(gs)
   
-  expect_equal(getNodes(gs), c("root", "/rectangle"))
+  expect_equal(gs_get_pop_paths(gs), c("root", "/rectangle"))
   expect_equal(getTotal(gs[[1]], node), 649)
   expect_equivalent(getGate(gs[[1]], node), rg)
 })
@@ -26,8 +26,8 @@ test_that("add rectangleGate", {
 
 test_that("add quadGate", {
   qg <- quadGate("FL1-H"= 2, "FL2-H"= 3)
-  add(gs,qg,parent="rectangle")
-  expect_equal(getNodes(gs), c("root", "/rectangle"
+  gs_add_gate(gs,qg,parent="rectangle")
+  expect_equal(gs_get_pop_paths(gs), c("root", "/rectangle"
                                , "/rectangle/CD15 FITC-CD45 PE+"
                                , "/rectangle/CD15 FITC+CD45 PE+"
                                , "/rectangle/CD15 FITC+CD45 PE-"
@@ -43,14 +43,14 @@ test_that("add filterResult", {
   g <- getGate(gs, "CD15 FITC-CD45 PE+")
   fs <- getData(gs, "rectangle")
   fres <- filter(fs, g)
-  expect_error(add(gs, fres, name = "g1", parent = "root"), "does not match to the parent")
+  expect_error(gs_add_gate(gs, fres, name = "g1", parent = "root"), "does not match to the parent")
   
   #local ind (relative to parent)
-  add(gs, fres, name = "g1", parent = "rectangle")
+  gs_add_gate(gs, fres, name = "g1", parent = "rectangle")
   
-  expect_equal(getNodes(gs)[7], "/rectangle/g1")
+  expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
   expect_equal(getTotal(gs[[1]], "g1"), 155)
-  Rm("g1", gs)
+  gs_remove_gate("g1", gs)
   
 })
 
@@ -60,20 +60,20 @@ test_that("add logical vector", {
   fs <- getData(gs, "rectangle")
   fres <- filter(fs, g)
   ind <- lapply(fres, slot, "subSet")
-  expect_error(add(gs, ind, name = "g1", parent = "root"), "does not match to the parent")
-  add(gs, ind, name = "g1", parent = "rectangle")
+  expect_error(gs_add_gate(gs, ind, name = "g1", parent = "root"), "does not match to the parent")
+  gs_add_gate(gs, ind, name = "g1", parent = "rectangle")
   
-  expect_equal(getNodes(gs)[7], "/rectangle/g1")
+  expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
   expect_equal(getTotal(gs[[1]], "g1"), 155)
-  Rm("g1", gs)
+  gs_remove_gate("g1", gs)
   
 #global indice (relative to root)  
   ind <- lapply(gs, function(gh)getIndices(gh, "CD15 FITC-CD45 PE+"))
-  add(gs, ind, name = "g1", parent = "rectangle")
+  gs_add_gate(gs, ind, name = "g1", parent = "rectangle")
   expect_is(getGate(gs[[1]], "g1"), "booleanFilter")
-  expect_equal(getNodes(gs)[7], "/rectangle/g1")
+  expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
   expect_equal(getTotal(gs[[1]], "g1"), 155)
-  Rm("g1", gs)
+  gs_remove_gate("g1", gs)
 })
 
 test_that("add factor vector", {
@@ -100,17 +100,17 @@ test_that("add factor vector", {
   })
   
   
-  expect_error(add(gs, fac.list, parent = "rectangle"), "Must specify the name of the cluster method through 'name' argument")
-  add(gs, fac.list, parent = "rectangle", name = "clusterA")
+  expect_error(gs_add_gate(gs, fac.list, parent = "rectangle"), "Must specify the name of the cluster method through 'name' argument")
+  gs_add_gate(gs, fac.list, parent = "rectangle", name = "clusterA")
   
-  expect_equal(getNodes(gs)[7:10], c("/rectangle/clusterA_Q1", "/rectangle/clusterA_Q2"
+  expect_equal(gs_get_pop_paths(gs)[7:10], c("/rectangle/clusterA_Q1", "/rectangle/clusterA_Q2"
                                      , "/rectangle/clusterA_Q3", "/rectangle/clusterA_Q5"))
   expect_equal(getTotal(gs[[1]], "clusterA_Q1"), getTotal(gs[[1]], "CD15 FITC-CD45 PE+"))
   expect_equal(getTotal(gs[[1]], "clusterA_Q2"), getTotal(gs[[1]], "CD15 FITC+CD45 PE+"))
   expect_equal(getTotal(gs[[1]], "clusterA_Q3"), getTotal(gs[[1]], "CD15 FITC+CD45 PE-"))
   expect_equal(getTotal(gs[[1]], "clusterA_Q5"),0)
   
-  expect_error(add(gs, fac.list, parent = "rectangle", name = "clusterA")
+  expect_error(gs_add_gate(gs, fac.list, parent = "rectangle", name = "clusterA")
                , "exist")
   
   #retrieve clustering results
@@ -124,11 +124,11 @@ test_that("add factor vector", {
   
   expect_equal(labels, fac.list[[1]])
   
-  Rm("clusterA_Q1", gs)
-  Rm("clusterA_Q2", gs)
-  Rm("clusterA_Q3", gs)
+  gs_remove_gate("clusterA_Q1", gs)
+  gs_remove_gate("clusterA_Q2", gs)
+  gs_remove_gate("clusterA_Q3", gs)
   
-  Rm("clusterA_Q5", gs)
+  gs_remove_gate("clusterA_Q5", gs)
   
   
   })
@@ -137,23 +137,23 @@ test_that("add boolean filter", {
   #relative ref path
   or_node <- "test_or"
   bf <- booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC-CD45 PE-`)
-  add(gs, bf, name = or_node, parent = "/rectangle")
+  gs_add_gate(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
   expect_equal(getTotal(gs[[1]], or_node), 561)
-  Rm(or_node, gs)
+  gs_remove_gate(or_node, gs)
   
   #abs path
   bf <- booleanFilter(`/rectangle/CD15 FITC-CD45 PE+|/rectangle/CD15 FITC-CD45 PE-`)
-  add(gs, bf, name = or_node, parent = "/rectangle")
+  gs_add_gate(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
   expect_equal(getTotal(gs[[1]], or_node), 561)
-  Rm(or_node, gs)
+  gs_remove_gate(or_node, gs)
   
   #abs path
   setNode(gs, "CD15 FITC-CD45 PE+", "Q1")
   setNode(gs, "CD15 FITC-CD45 PE-", "Q4")
   bf <- booleanFilter(Q1|rectangle/Q4)
-  add(gs, bf, name = or_node, parent = "/rectangle")
+  gs_add_gate(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
   expect_equal(getTotal(gs[[1]], or_node), 561)
   

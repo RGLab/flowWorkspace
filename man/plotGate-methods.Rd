@@ -28,7 +28,7 @@ plotGate(x, y, ...)
 \item{y}{\code{character} the node name or full(/partial) gating path
 or \code{numeric} representing the node index in the \code{GatingHierarchy}.
 or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
-Nodes can be accessed with \code{\link{getNodes}}.}
+Nodes can be accessed with \code{\link{gs_get_pop_paths}}.}
 
 \item{...}{\itemize{
  \item{bool}{ \code{logical} specifying whether to plot boolean gates.}
@@ -74,7 +74,7 @@ Nodes can be accessed with \code{\link{getNodes}}.}
 
  \item{...}{
 
-         path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method (used to control how the gating/node path is displayed)
+         path A \code{character} or \code{numeric} scalar passed to \link{gs_get_pop_paths} method (used to control how the gating/node path is displayed)
 
          ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
          }
@@ -101,7 +101,7 @@ plotGate(gh, c("cd3", "cd4", "cd4/IL2", "cd4/IFNg"), path = "auto", projections 
 }
 \dontrun{
 	#G is a GatingHierarchy
-	plotGate(G,getNodes(G)[5]);#plot the gate for the  fifth node
+	plotGate(G,gs_get_pop_paths(G)[5]);#plot the gate for the  fifth node
 }
 }
 \references{

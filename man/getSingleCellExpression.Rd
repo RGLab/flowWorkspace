@@ -67,7 +67,7 @@ Returns a list of matrix containing the events that expressed in any one of the 
 }
 }
 \seealso{
-\code{\link{getIndices}}  \code{\link{getPopStats}}
+\code{\link{getIndices}}  \code{\link{gs_get_pop_stats}}
 }
 \author{
 Mike Jiang \email{wjiang2@fhcrc.org}

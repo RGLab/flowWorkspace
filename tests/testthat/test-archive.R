@@ -73,8 +73,8 @@ test_that("getTransformations",{
       all.equal(raw, raw1, tolerance = 2e-3)
       
       #test flowJoTrans
-      trans <- flowJoTrans()
-      inverseTrans <- flowJoTrans(inverse = TRUE)
+      trans <- flowjo_biexp()
+      inverseTrans <- flowjo_biexp(inverse = TRUE)
       
       transformed <- trans(raw)
       raw1 <- inverseTrans(transformed)

@@ -23,17 +23,17 @@ Returns a logical vector that describes whether each event in a sample is includ
 Returns a logical vector that describes whether each event in the data file is included in the given gate of this \code{GatingHierarchy}. The indices are for all events in the file, and do not reflect the population counts relative to the parent but relative to the root. To get population frequencies relative to the parent one cross-tabulate the  indices of \code{y} with the indices of its parent.
 }
 \note{
-Generally you should not need to use \code{getIndices} but the more convenient methods \code{getProp} and \code{getPopStats} which return population frequencies relative to the parent node.
+Generally you should not need to use \code{getIndices} but the more convenient methods \code{getProp} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
 The indices returned reference all events in the file and are not directly suitable for computing population statistics, unless subsets are taken with respect to the parent populations.
 }
 \examples{
   \dontrun{
     #G is a gating hierarchy
     #Return the indices for population 5 (topological sort)
-    getIndices(G,getNodes(G,tsort=TRUE)[5]);
+    getIndices(G,gs_get_pop_paths(G,tsort=TRUE)[5]);
 }
 
 }
 \seealso{
-\code{\link{getPopStats}}
+\code{\link{gh_get_pop_stats}}
 }

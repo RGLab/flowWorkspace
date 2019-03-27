@@ -3,9 +3,9 @@ test_that("moveNode", {
   
   gs <- load_gs(file.path(dataDir,"gs_manual"))
   gh <- gs[[1]]
-  stats <- getPopStats(gh)
+  stats <- gh_get_pop_stats(gh)
   
-  old.parent <- getParent(gh, "CD4")
+  old.parent <- gs_get_parent(gh, "CD4")
   
   new.parent <- "CD4"
   expect_error(moveNode(gh, "CD4", new.parent), "itself")
@@ -15,11 +15,11 @@ test_that("moveNode", {
   
   new.parent <- "singlets"
   suppressMessages(moveNode(gh, "CD4", new.parent))
-  expect_equal(getParent(gh, "CD4", path = "auto"), new.parent)
+  expect_equal(gs_get_parent(gh, "CD4", path = "auto"), new.parent)
   
   #mv back to original parent
   suppressMessages(moveNode(gh, "CD4", old.parent))
-  expect_equal(getParent(gh, "CD4"), old.parent)
-  expect_equal(getPopStats(gh), stats)
+  expect_equal(gs_get_parent(gh, "CD4"), old.parent)
+  expect_equal(gh_get_pop_stats(gh), stats)
   
 })

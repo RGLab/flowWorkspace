@@ -16,6 +16,6 @@ NULL
 #' getDescendants(gs[[1]], "CD8", path = "auto")
 getDescendants <- function(gh, node, ...){
  descendants.id <- .getDescendants(gh@pointer, sampleNames(gh), node)
- getNodes(gh, showHidden = T, ...)[descendants.id+1]
+ gs_get_pop_paths(gh, showHidden = T, ...)[descendants.id+1]
 
 }

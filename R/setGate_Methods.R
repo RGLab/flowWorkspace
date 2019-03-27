@@ -31,7 +31,7 @@ setMethod("setGate"
     ,signature(obj="GatingHierarchy",y="character",value="filter")
     ,function(obj,y,value, negated = FALSE,...){
       
-      this_fobj <- filterObject(value)
+      this_fobj <- filter_to_list(value)
       this_fobj$negated<-negated
       .cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
       

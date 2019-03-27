@@ -61,13 +61,13 @@ test_that("clone & rbind2",{
       expect_identical(orig_sn, clone_sn)
       
       #check tree consistentcy
-      expect_identical(getNodes(gs[[1]]), getNodes(gs_clone[[1]]))
+      expect_identical(gs_get_pop_paths(gs[[1]]), gs_get_pop_paths(gs_clone[[1]]))
       
       #check if trans is preserved
       expect_equal(getTransformations(gs[[1]]), getTransformations(gs_clone[[1]]))
       
-      expect_equal(getPopStats(gs), getPopStats(gs_clone))
-      expect_equal(getPopStats(gs[[1]]), getPopStats(gs_clone[[1]]))
+      expect_equal(gs_get_pop_stats(gs), gs_get_pop_stats(gs_clone))
+      expect_equal(gs_get_pop_stats(gs[[1]]), gs_get_pop_stats(gs_clone[[1]]))
       
       #clone without copying hdf data
       expect_message(gs_clone1 <- clone(gs, isNew = FALSE), "cloned")
@@ -188,7 +188,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       samples <- sampleNames(gs)
       
       #miss stats argument
-      expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], getNodes(gs[[sn]])[5]), simplify = FALSE)
+      expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], gs_get_pop_paths(gs[[sn]])[5]), simplify = FALSE)
       myValue <- flowWorkspace:::.preplot(x = gs, y = "CD4", type = "xyplot", formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
 
@@ -196,12 +196,12 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_value[["stats"]] <- sapply(samples,function(thisSample){
                                           lapply(7:8,function(thisY){
                                                 curGh <- gs[[thisSample]]
-                                                getProp(curGh,getNodes(curGh,showHidden=TRUE)[thisY],xml = F)
+                                                getProp(curGh,gs_get_pop_paths(curGh,showHidden=TRUE)[thisY],xml = F)
                                               })
                                         },simplify = FALSE)
       curGates <- sapply(samples,function(curSample){
             
-            filters(lapply(getNodes(gs)[7:8],function(y)getGate(gs[[curSample]],y)))
+            filters(lapply(gs_get_pop_paths(gs)[7:8],function(y)getGate(gs[[curSample]],y)))
           },simplify=F)
       xParam <- "<R660-A>"
       yParam <- "<V545-A>"
@@ -209,7 +209,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_value[["xParam"]] <- xParam
       expect_value[["yParam"]] <- yParam
       
-      myValue <- flowWorkspace:::.preplot(x = gs, y = list(popIds=getNodes(gs)[7:8]), type = "xyplot", formula = NULL, default.y = "SSC-A")
+      myValue <- flowWorkspace:::.preplot(x = gs, y = list(popIds=gs_get_pop_paths(gs)[7:8]), type = "xyplot", formula = NULL, default.y = "SSC-A")
 
       expect_identical(myValue, expect_value)
       
@@ -259,10 +259,10 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
     
 test_that("setNode",{
     
-    nodeName <- getNodes(gs[[1]])[3]
+    nodeName <- gs_get_pop_paths(gs[[1]])[3]
     setNode(gs, "singlets", "S")
     lapply(gs, function(gh){
-          expect_equal(getNodes(gh)[3], "/not debris/S")
+          expect_equal(gs_get_pop_paths(gh)[3], "/not debris/S")
         }) 
     setNode(gs, "S", "singlets")
     invisible()
@@ -270,9 +270,9 @@ test_that("setNode",{
     
   })
 
-test_that("getPopStats",{
+test_that("gs_get_pop_stats",{
   
-      thisRes <- getPopStats(gs, path = "full", format = "wide")
+      thisRes <- gs_get_pop_stats(gs, path = "full", format = "wide")
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
@@ -281,11 +281,11 @@ test_that("getPopStats",{
       expect_equal(as.data.table(thisRes), expectRes[,-1, with = F], tol = 2e-3)
       
       #use auto path
-      stats_wide <- getPopStats(gs, format = "wide", path = "auto")
+      stats_wide <- gs_get_pop_stats(gs, format = "wide", path = "auto")
       stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
       stats_wide <- as.data.frame(stats_wide)
       #get long format
-      stats_long <- getPopStats(gs, format = "long", path = "auto")
+      stats_long <- gs_get_pop_stats(gs, format = "long", path = "auto")
       
       #convert it to wide to do the comparsion
       stats_long[, value := Count/ParentCount]
@@ -364,7 +364,7 @@ test_that("add", {
           })
       
       #add without name
-      Ids <- add(gs, filterslist1)
+      Ids <- gs_add_gate(gs, filterslist1)
       expect_equal(Ids, c(25,26))
       cd4_gate  <- getGate(gs, "CD4")
       cd4_gate <- lapply(cd4_gate, function(g){
@@ -372,14 +372,14 @@ test_that("add", {
             g
           })
       expect_equal(getGate(gs, "CD4_test"), cd4_gate) 
-      Rm("CD4_test", gs)
-      Rm("CD8_test", gs)
+      gs_remove_gate("CD4_test", gs)
+      gs_remove_gate("CD8_test", gs)
       
       #customize names
-      expect_error(add(gs, filterslist1, names = c("CD4_demo")), "number of population names ")
-      expect_error(add(gs, filterslist1, names = c("CD4_demo", "CD4_demo")), "not unqiue")
+      expect_error(gs_add_gate(gs, filterslist1, names = c("CD4_demo")), "number of population names ")
+      expect_error(gs_add_gate(gs, filterslist1, names = c("CD4_demo", "CD4_demo")), "not unqiue")
       
-      Ids <- add(gs, filterslist1, names = c("CD4_demo", "CD8_demo"))
+      Ids <- gs_add_gate(gs, filterslist1, names = c("CD4_demo", "CD8_demo"))
       expect_equal(Ids, c(25,26))
       cd4_gate  <- getGate(gs, "CD4")
       cd4_gate <- lapply(cd4_gate, function(g){
@@ -387,8 +387,8 @@ test_that("add", {
             g
           })
       expect_equal(getGate(gs, "CD4_demo"), cd4_gate) 
-      Rm("CD4_demo", gs)
-      Rm("CD8_demo", gs)
+      gs_remove_gate("CD4_demo", gs)
+      gs_remove_gate("CD8_demo", gs)
     })
 #TODO:write test cases for save_gs /load_gs 
 if(!isCpStaticGate)

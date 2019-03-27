@@ -115,12 +115,10 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y)
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
       selectMethod("plotGate",signature = c(x="GatingSet",y="character"))(x=x, y=y, ...)
     })
-#' @rdname getPopStats
-#' @export
-setMethod("getPopStats","GatingSetList",function(x, format = c("long", "wide"), ...){
+gslist_get_pop_stats <- function(x, format = c("long", "wide"), ...){
       
       format <- match.arg(format)
-      res <- lapply(x,getPopStats, level =1, format = format,...)
+      res <- lapply(x,gs_get_pop_stats, level =1, format = format,...)
       
       if(format == "long"){
 #        browser()
@@ -144,7 +142,7 @@ setMethod("getPopStats","GatingSetList",function(x, format = c("long", "wide"), 
         rownames(res)<-rn
       }
       res
-    })
+    }
 #' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing", ...){

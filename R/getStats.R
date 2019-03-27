@@ -7,7 +7,7 @@ NULL
 #' It calculates the MFI for each marker.
 #'
 #' @param x a GatingSet or GatingHierarchy
-#' @param ... arguments passed to \link{getNodes} method.
+#' @param ... arguments passed to \link{gs_get_pop_paths} method.
 #' @return a data.table that contains MFI values for each marker per column along with 'pop' column and 'sample' column (when used on a 'GatingSet')
 #' @import flowCore
 #' @import ncdfFlow
@@ -70,7 +70,7 @@ getStats.GatingSet <- function(x, ...){
 getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, stats.fun.arg = list(), ...){
   gh <- x
   if(is.null(nodes))
-    nodes <- getNodes(gh, ...)
+    nodes <- gs_get_pop_paths(gh, ...)
   res <- sapply(nodes, function(node){
     if(is.character(type))
     {

@@ -7,7 +7,7 @@
 flowJo_fasinh_trans(..., n = 6, equal.space = FALSE)
 }
 \arguments{
-\item{...}{parameters passed to flowJo.fasinh}
+\item{...}{parameters passed to flowjo_fasinh}
 
 \item{n}{desired number of breaks (the actual number will be different depending on the data range)}
 
@@ -20,7 +20,7 @@ fasinh transformation object
 Used to construct the inverse hyperbolic sine transform object.
 }
 \examples{
-trans.obj <- flowJo_fasinh_trans(equal.space = TRUE)
+trans.obj <- flowjo_fasinh_trans(equal.space = TRUE)
 data <- 1:1e3
 brks.func <- trans.obj[["breaks"]]
 brks <- brks.func(data)

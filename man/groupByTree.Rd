@@ -17,7 +17,7 @@ When x is a list of GatingSets, it returns a list of list, each list itself is a
 \description{
 It allows isomorphism in Gating tree and ignore difference in hidden nodes
 i.e. tree is considered to be the same
-as long as getNodes(gh, path = "auto", showHidden = F) returns the same set
+as long as gs_get_pop_paths(gh, path = "auto", showHidden = F) returns the same set
 }
 \examples{
 \dontrun{

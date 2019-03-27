@@ -9,9 +9,9 @@ checkRedundantNodes(x, path = "auto", ...)
 \arguments{
 \item{x}{\code{GatingSet} or \code{list} of groups(each group is a list of 'GatingSet`). When it is a list, it is usually the outcome from \link{groupByTree}.}
 
-\item{path}{argumented passed to \link{getNodes}. The default value is "auto".}
+\item{path}{argumented passed to \link{gs_get_pop_paths}. The default value is "auto".}
 
-\item{...}{other arguments passed to \link{getNodes}.}
+\item{...}{other arguments passed to \link{gs_get_pop_paths}.}
 }
 \value{
 a list of the character vectors inicating the nodes that are considered to be redundant for each group of GatingSets.

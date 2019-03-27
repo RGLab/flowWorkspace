@@ -54,7 +54,7 @@ NULL
 #' 
 #' It allows isomorphism in Gating tree and ignore difference in hidden nodes
 #' i.e. tree is considered to be the same
-#' as long as getNodes(gh, path = "auto", showHidden = F) returns the same set
+#' as long as gs_get_pop_paths(gh, path = "auto", showHidden = F) returns the same set
 #' 
 #' @param x a list of GatingSets or one GatingSet
 #' @return 
@@ -70,7 +70,7 @@ groupByTree <- function(x){
   message("Grouping by Gating tree...")
   node_seq <-unlist(lapply(x,function(this_gs){
             this_gh <- this_gs[[1]]
-            this_nodes <- getNodes(this_gh, path = "auto")
+            this_nodes <- gs_get_pop_paths(this_gh, path = "auto")
             #sort it alphabetically
             this_nodes <- sort(this_nodes)
             paste0(this_nodes, collapse = "|")
@@ -137,7 +137,7 @@ plot_diff_tree <- function(x, path = "auto", ...){
       stop("invalid x!")
     }
     
-    getNodes(gh, path = path, ...)
+    gs_get_pop_paths(gh, path = path, ...)
   })
   
   message("Comparing the tree structures")
@@ -172,14 +172,14 @@ plot_diff_tree <- function(x, path = "auto", ...){
     nodeDataDefaults(g, "common") <- FALSE
    
     message("hide/tag the common nodes ...")
-    node.path2 <- getNodes(gh, showHidden = TRUE, path = 3)
+    node.path2 <- gs_get_pop_paths(gh, showHidden = TRUE, path = 3)
     for(node in commonNodes)
     {
       nodeID <- .getNodeInd(gh, node) - 1
       
       node.label <- paste0("N_", nodeID)
       nodeData(g, node.label, attr = "common") <- TRUE
-      children <- getChildren(gh, node, path = path)
+      children <- gs_get_children(gh, node, path = path)
       #keep the direct parent of uncommon node
       if(!any(children%in%nodes.uncommon)||node=="root")
         nodeData(g, node.label, attr = "hidden") <- "1"
@@ -271,8 +271,8 @@ NULL
 #' \link{dropRedundantNodes}.
 #' 
 #' @param x \code{GatingSet} or \code{list} of groups(each group is a list of 'GatingSet`). When it is a list, it is usually the outcome from \link{groupByTree}.
-#' @param path argumented passed to \link{getNodes}. The default value is "auto".
-#' @param ... other arguments passed to \link{getNodes}.
+#' @param path argumented passed to \link{gs_get_pop_paths}. The default value is "auto".
+#' @param ... other arguments passed to \link{gs_get_pop_paths}.
 #' @return a list of the character vectors inicating the nodes that are considered to be redundant for each group of GatingSets.
 #' @examples 
 #' \dontrun{
@@ -298,7 +298,7 @@ checkRedundantNodes <- function(x, path = "auto", ...){
                 stop("invalid x!")
               }
               
-              getNodes(gh, path = path, ...)
+              gs_get_pop_paths(gh, path = path, ...)
             })
   commonNodes <- Reduce(intersect, nodeSet)
   toRemove <- mapply(nodeSet,x,FUN=function(thisNodeSet,thisObj){
@@ -317,7 +317,7 @@ checkRedundantNodes <- function(x, path = "auto", ...){
                   nodesToRm <- setdiff(thisNodeSet,commonNodes)
                   #check if those nodes are terminal
                   isTerminal <- sapply(nodesToRm,function(thisNode){
-                            length(getChildren(gh,thisNode))==0
+                            length(gs_get_children(gh,thisNode))==0
                           })
 #                  browser()
                   if(!all(isTerminal)){
@@ -359,11 +359,11 @@ dropRedundantNodes <- function(x,toRemove){
 #                browser()
                 message("Removing ", thisNode)
                 if(is(thisObj, "GatingSet"))
-                    Rm(thisNode,thisObj)
+                    gs_remove_gate(thisNode,thisObj)
                 else if(class(thisObj) == "list")
                   for(this_gs in thisObj)
                   {
-                        Rm(thisNode,this_gs)
+                        gs_remove_gate(thisNode,this_gs)
                   }
           }
         }
@@ -380,7 +380,7 @@ NULL
 #' Removing these redundant channels can help standardize the channels across different GatingSet objects and make them mergable.
 #'
 #' @param gs a \code{GatingSet} 
-#' @param ... other arugments passed to getNodes method
+#' @param ... other arugments passed to gs_get_pop_paths method
 #' @return a new \code{GatingSet} object that has redundant channels removed. Please note that this new object shares the same reference (or external pointers) with the original GatingSets.
 #' @examples 
 #' \dontrun{
@@ -388,7 +388,7 @@ NULL
 #' }
 #' @export 
 dropRedundantChannels <- function(gs, ...){
-  nodes <- getNodes(gs, ...)[-1]
+  nodes <- gs_get_pop_paths(gs, ...)[-1]
   gh <- gs[[1]]
   params <- unlist(lapply(nodes, function(node){
         g <- getGate(gh, node)
@@ -525,66 +525,3 @@ updateChannels <- function(gs, map, all = TRUE){
   
 }
 
-#' insert a dummy gate to the GatingSet
-#' 
-#' Is is useful trick to make the tree structure of GatingSet same with other so that
-#' they can be combined into a 'GatingSetList' object.
-#' (deprecated by 'moveNode')
-#' 
-#' @param gs \code{GatingSet} to work with
-#' @param gate \code{filter} a dummy gate to be inserted, its 'filterId' will be used as the population name
-#' @param parent \code{character} full path of parent node where the new dummy gate to be added to
-#' @param children \code{character} full path of chidlren nodes that the new dummy gate to be parent of
-#' @return  a new \code{GatingSet} object with the new gate added but share the same flow data with the input 'GatingSet'
-#' @examples 
-#' \dontrun{
-#' #construct a dummy singlet gate 
-#'  dummyGate <- rectangleGate("FSC-A" = c(-Inf, Inf), "FSC-H" = c(-Inf, Inf), filterId = "singlets")
-#' #insert it between the 'not debris" node and "lymph" node
-#'  gs_clone <- insertGate(gs, dummyGate, "not debris", "lymph") 
-#' }
-#' @export 
-insertGate <- function(gs, gate, parent, children){
-  .Deprecated("moveNode", msg = "'moveNode' does the gate grafting in place and thus is more efficient way of inserting a gate!")
-  dummyNode <- gate@filterId
-  nodes <- getNodes(gs)
-  dummyPath <- file.path(parent, dummyNode)
-  if(any(grepl(dummyPath, nodes)))
-    stop(dummyPath, " already exists!")
-  
-  #copy the entire tree structure
-  message("cloning tree structure...")
-  clone <- gs
-  clone@pointer <- .cpp_CloneGatingSet(gs@pointer,sampleNames(gs))
-  #remove the old children
-  lapply(children, function(child)Rm(child, clone))
-  
-  # add the new node
-  add(clone, gate, parent = parent)
-  #copy children
-  ancester <- getNodes(clone)
-  nodesToadd <- nodes[!nodes%in%ancester]
-  
-  lapply(nodesToadd, function(node){
-        
-        if(node%in%children)
-          thisParent <- dummyNode #add the old direct children to the new dummy node
-        else{
-          #copy the other nodes to its parent
-          oldParent <- getParent(gs, node)
-          #match to the new parent
-          thisNodes <- getNodes(clone)
-          thisParent <- thisNodes[match(oldParent, gsub(paste0("/", dummyNode), "", thisNodes))] 
-        }
-        popName <- basename(node)
-        lapply(sampleNames(gs),function(sn){
-              gh <- gs[[sn]]
-              gate <- getGate(gh, node)
-              negated <- isNegated(gh, node)
-              add(clone[[sn]], gate, name = popName, parent = thisParent, negated = negated)      
-            })  
-        
-      })
-  recompute(clone)
-  clone
-}

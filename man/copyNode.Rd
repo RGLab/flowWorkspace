@@ -2,9 +2,12 @@
 % Please edit documentation in R/copyNode.R
 \name{copyNode}
 \alias{copyNode}
+\alias{gh_copy_gate}
 \title{Copy a node along with all of its descendant nodes to the given ancestor}
 \usage{
 copyNode(gh, node, to)
+
+gh_copy_gate(gh, node, to)
 }
 \arguments{
 \item{gh}{GatingHierarchy}
@@ -21,7 +24,8 @@ library(flowWorkspace)
 dataDir <- system.file("extdata",package="flowWorkspaceData")
 suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 gh <- gs[[1]]
-old.parent <- getParent(gh, "CD4")
+old.parent <- gs_get_parent(gh, "CD4")
 new.parent <- "singlets"
 copyNode(gh, "CD4", new.parent)
+gs_get_pop_paths(gh)
 }

@@ -1,6 +1,25 @@
 #' @include GatingSet_Methods.R
 NULL
 
+#' @templateVar old filterObject
+#' @templateVar new filter_to_list
+#' @template template-depr_pkg
+NULL
+#' @rdname filterObject
+#' @export 
+filterObject <- function(x,...)UseMethod("filterObject")
+
+#' @rdname filterObject
+#' @export 
+filterObject.default <- function(x, ...){
+  .Deprecated("filter_to_list")
+  filter_to_list(x, ...)
+}
+
+#' @rdname filterObject
+#' @export 
+filter_to_list <- function(x,...)UseMethod("filter_to_list")
+
 #' convert flowCore filter to a list 
 #'  
 #' It convert the flowCore gate to a list whose structure can be understood by 
@@ -13,7 +32,7 @@ NULL
 #' filterObject
 #' @rdname filterObject
 #' @export 
-setMethod("filterObject",signature=c("rectangleGate"),function(x){
+filter_to_list.rectangleGate <- function(x){
       params<-parameters(x)
       nDim <- length(params)
       if(nDim==1)
@@ -36,22 +55,22 @@ setMethod("filterObject",signature=c("rectangleGate"),function(x){
       }else
         stop(nDim, "D rectangleGate is not supported by GatingSet!")
       filterObject
-    })
+    }
 
 #' @rdname filterObject
 #' @export
-setMethod("filterObject",signature=c("polygonGate"),function(x){
+filter_to_list.polygonGate <- function(x){
       params<-parameters(x)
       
       list(type=as.integer(1)
           ,params=params
           ,boundaries=x@boundaries
           ,filterId=x@filterId)  
-    })
+    }
 
 #' @rdname filterObject
 #' @export
-setMethod("filterObject",signature=c("booleanFilter"),function(x){
+filter_to_list.booleanFilter <- function(x){
       expr <- x@deparse
       
       pattern <- "&&|\\|\\|"
@@ -93,11 +112,11 @@ setMethod("filterObject",signature=c("booleanFilter"),function(x){
           ,isNot=isNot
           ,op=op
           ,filterId=x@filterId)  
-    })
+    }
     
 #' @rdname filterObject
 #' @export
-setMethod("filterObject",signature=c("ellipsoidGate"),function(x){
+filter_to_list.ellipsoidGate <- function(x){
       params<-parameters(x)
       
       list(type=as.integer(4)
@@ -106,21 +125,15 @@ setMethod("filterObject",signature=c("ellipsoidGate"),function(x){
           , cov = x@cov
           , dist = x@distance
           ,filterId=x@filterId)  
-    })
+    }
 
 
 #' @rdname filterObject
 #' @export
-setMethod("filterObject",signature=c("logical"),function(x){
+filter_to_list.logical <- function(x){
   
   list(type=as.integer(6)
        , negated = FALSE
        ,filterId = "dummy_logicalGate") 
-})
+}
 
-#' #' @rdname filterObject
-#' #' @export
-#' setMethod("filterObject",signature=c("logicalFilterResult"),function(x){
-#'   
-#'   selectMethod("filterObject",signature = c("logical"))(x)
-#' })

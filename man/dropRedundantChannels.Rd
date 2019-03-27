@@ -9,7 +9,7 @@ dropRedundantChannels(gs, ...)
 \arguments{
 \item{gs}{a \code{GatingSet}}
 
-\item{...}{other arugments passed to getNodes method}
+\item{...}{other arugments passed to gs_get_pop_paths method}
 }
 \value{
 a new \code{GatingSet} object that has redundant channels removed. Please note that this new object shares the same reference (or external pointers) with the original GatingSets.

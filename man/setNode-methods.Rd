@@ -28,7 +28,7 @@
 \examples{
   \dontrun{
     #G is a gating hierarchy
-    getNodes(G[[1]])#return node names
+    gs_get_pop_paths(G[[1]])#return node names
     setNode(G,"L","lymph")
   }
 \dontrun{

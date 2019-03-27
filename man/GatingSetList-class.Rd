@@ -81,11 +81,11 @@ Objects store a collection of GatingSets,which usually has the same gating trees
     plotGate_labkey(gslist2[3:4],4,x="<APC Cy7-A>",y="<PE Tx RD-A>",smooth=T)
     
     #remove cerntain gates by loop through GatingSets
-    getNodes(gslist2[[1]])
-    lapply(gslist2,function(gs)Rm("Excl",gs))
+    gs_get_pop_paths(gslist2[[1]])
+    lapply(gslist2,function(gs)gs_remove_gate("Excl",gs))
     
     #extract the stats
-    getPopStats(gslist2)
+    gs_get_pop_stats(gslist2)
     #extract statistics by using getQAStats defined in QUALIFIER package
     res<-getQAStats(gslist2[c(4,2)],isMFI=F,isSpike=F,nslaves=1)
     

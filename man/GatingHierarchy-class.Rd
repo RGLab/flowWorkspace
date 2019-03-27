@@ -23,9 +23,9 @@ library(CytoML)
 	ws <- openWorkspace(wsfile);
 	G<-try(parseWorkspace(ws,path=d,name=1));
  gh <- G[[1]]
-	getPopStats(gh);
-	plotPopCV(gh)
- nodes <- getNodes(gh)
+	gh_get_pop_stats(gh);
+	gh_plot_pop_count_cv(gh)
+ nodes <- gs_get_pop_paths(gh)
  thisNode <- nodes[4]
 	plotGate(gh,thisNode);
 	getGate(gh,thisNode);

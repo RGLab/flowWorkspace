@@ -1078,7 +1078,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #' @param y \code{character} the node name or full(/partial) gating path
 #'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
 #'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
-#'          Nodes can be accessed with \code{\link{getNodes}}.
+#'          Nodes can be accessed with \code{\link{gs_get_pop_paths}}.
 #' @param ...
 #' \itemize{
 #'  \item{bool}{ \code{logical} specifying whether to plot boolean gates.}
@@ -1124,7 +1124,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #'
 #'  \item{...}{
 #'
-#'          path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method (used to control how the gating/node path is displayed)
+#'          path A \code{character} or \code{numeric} scalar passed to \link{gs_get_pop_paths} method (used to control how the gating/node path is displayed)
 #'
 #'          ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
 #'          }
@@ -1134,7 +1134,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #' @references \url{http://www.rglab.org/}
 #' @examples \dontrun{
 #' 	#G is a GatingHierarchy
-#' 	plotGate(G,getNodes(G)[5]);#plot the gate for the  fifth node
+#' 	plotGate(G,gs_get_pop_paths(G)[5]);#plot the gate for the  fifth node
 #' }
 #' @aliases
 #' plotGate
@@ -1292,7 +1292,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     curGates<-getGate(x,y)
 
     if(suppressWarnings(any(is.na(curGates)))){
-      message("Can't plot. There is no gate defined for node ",getNodes(x[[1]],,showHidden=TRUE)[y]);
+      message("Can't plot. There is no gate defined for node ",gs_get_pop_paths(x[[1]],,showHidden=TRUE)[y]);
       invisible();
       return(NULL)
     }
@@ -1308,7 +1308,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
   if(class(curGates[[1]])=="booleanFilter")
   {
-    parent <- getParent(x[[1]],y)
+    parent <- gs_get_parent(x[[1]],y)
     if(parent == "root"){
       params <- c(default.y, default.x)
     }else{
@@ -1450,7 +1450,7 @@ fix_y_axis <- function(gs, x, y){
 #' @param strip \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}
 #' @param strip.text either "parent" (the parent population name) or "gate "(the gate name).
 #' @param marker.only \code{ligcal} specifies whether to show both channel and marker names
-#' @param path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method
+#' @param path A \code{character} or \code{numeric} scalar passed to \link{gs_get_pop_paths} method
 #' @param xlim, ylim \code{character} can be either "instrument" or "data" which determines the x, y axis scale either by instrument measurement range or the actual data range.
 #'          or \code{numeric} which specifies customized range.
 #' @param ... other arguments passed to .formAxis and flowViz
@@ -1498,7 +1498,7 @@ fix_y_axis <- function(gs, x, y){
 	if(is.list(y))
 	  parent<-y$parentId
 	else
-	  parent<-getParent(gh, y, path = path)
+	  parent<-gs_get_parent(gh, y, path = path)
     
   if(strip.text == "parent"){
     popName <- parent
@@ -1506,7 +1506,7 @@ fix_y_axis <- function(gs, x, y){
     popName <- y
   }
     #set default title
-#    popName <- getNodes(gh, path = path, showHidden = TRUE)[pid]
+#    popName <- gs_get_pop_paths(gh, path = path, showHidden = TRUE)[pid]
 
     default_main <- list(label = popName)
     if(is.gh && strip)
@@ -1840,10 +1840,10 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
           if(isAllBoolGate){
             isloadData <- all(sapply(y, function(i){
 
-                      pid <- getParent(gh, i)
+                      pid <- gs_get_parent(gh, i)
                       isParentGated <- isGated(gh, pid)
                       bf <- getGate(gh, i)
-                      refNodes <- filterObject(bf)$refs
+                      refNodes <- filter_to_list(bf)$refs
                       isRefGated <- all(sapply(refNodes, isGated, obj = gh))
                       !(isParentGated&&isRefGated)
                     }))
@@ -2232,48 +2232,54 @@ setMethod("show","GatingSet",function(object){
 #'   or the population proportions or the total number of events of a node (population) in a GatingHierarchy
 #'
 #' getProp calculates the population proportion (events in the gate / events in the parent population) associated with a node in the \code{GatingHierarchy}.
-#' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
+#' gs_get_pop_stats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
 #' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param xml \code{logical} indicating whether the statistics come from xml (if parsed from xml workspace) or from openCyto.
-#' @param path \code{character} see \link{getNodes}
+#' @param path \code{character} see \link{gs_get_pop_paths}
 #' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format
 #' @param subpopulations \code{character} vector to specify a subset of populations to return. (only valid when format is "long")
-#' @param ... Additional arguments passed to \link{getNodes}
+#' @param ... Additional arguments passed to \link{gs_get_pop_paths}
 #'
 #' @details
-#' getPopStats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
+#' gs_get_pop_stats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
 #' getProp returns the proportion of cells in the gate, relative to its parent.
 #' getTotal returns the total number of events included in this gate. The contents of "thisTot" variable in the "metadata" environment of the \code{nodeData} element associated with the gating tree and gate / population.
 #'
 #' @return
-#' getPopStats returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
+#' gs_get_pop_stats returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
 #' getProp returns  a population frequency \code{numeric}.
 #' getTotal returns a \code{numeric} value of the total number of elements in the population.
-#' @seealso \code{\link{getNodes}}
+#' @seealso \code{\link{gs_get_pop_paths}}
 #' @examples
 #'         \dontrun{
 #'         #gh is a GatingHierarchy
-#'         getPopStats(gh);
+#'         gs_get_pop_stats(gh);
 #'         #proportion for the fifth population
-#'         getProp(gh,getNodes(gh)[5])
-#'         getTotal(gh,getNodes(gh,tsort=T)[5])
+#'         getProp(gh,gs_get_pop_paths(gh)[5])
+#'         getTotal(gh,gs_get_pop_paths(gh,tsort=T)[5])
 #'
 #'         #gs is a GatingSet
-#'         getPopStats(gs)
+#'         gs_get_pop_stats(gs)
 #'         #optionally output in long format as a data.table
-#'         getPopStats(gs, format = "long", path = "auto")
+#'         gs_get_pop_stats(gs, format = "long", path = "auto")
 #'         #only get stats for a subset of populations
-#'         getPopStats(gs, format = "long", subpopulations = getNodes(gs)[4:6])
+#'         gs_get_pop_stats(gs, format = "long", subpopulations = gs_get_pop_paths(gs)[4:6])
 #'         }
-#' @aliases getPopStats
-#' @rdname getPopStats
+#' @aliases gs_get_pop_stats
+#' @rdname gs_get_pop_stats
 #' @export
 #' @import data.table
-setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
-
+setMethod("getPopStats", "GatingSet", function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
+.Deprecated("gs_get_pop_stats")
+gs_get_pop_stats(x, statistic, xml, subpopulations, format, path, ...)
+})
+#' @rdname gs_get_pop_stats
+#' @export
+gs_get_pop_stats <- function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
+	 if(is(x, "GatingSetList"))
+		 return(gslist_get_pop_stats(x, format, statistic, xml, subpopulations, path, ...))
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
@@ -2283,7 +2289,7 @@ setMethod("getPopStats", "GatingSet",
       if(format == "long"){
 
         if(is.null(subpopulations))
-          subpopulations <- getNodes(x, path = path, ...)[-1]
+          subpopulations <- gs_get_pop_paths(x, path = path, ...)[-1]
 
         pop_stats <- .getPopCounts(x@pointer, sampleNames(x), subpopulations, xml, path == "full")
         pop_stats <- data.table(name = pop_stats[["name"]]
@@ -2305,7 +2311,7 @@ setMethod("getPopStats", "GatingSet",
         }
 
         stats <- lapply(x,function(y){
-                d<-getPopStats(y, path = path,...)
+                d<-gh_get_pop_stats(y, path = path,...)
                 d$key<-rownames(d)
                 setkeyv(d,"key")
                 d<-d[,list(key,get(statistic))]
@@ -2324,7 +2330,7 @@ setMethod("getPopStats", "GatingSet",
 
     }
     pop_stats
-})
+}
 
 #' calculate the coefficient of variation
 #' @noRd 
@@ -2334,7 +2340,7 @@ setMethod("getPopStats", "GatingSet",
   #rows are samples
 
   statList <- lapply(x,function(gh){
-        thisStat <- getPopStats(gh, ...)
+        thisStat <- gh_get_pop_stats(gh, ...)
         thisStat
       })
 
@@ -2360,21 +2366,21 @@ setMethod("getPopStats", "GatingSet",
 #' @param m \code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.
 #' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.
 #' @param scales \code{list} see \link{barchart}
-#' @param path \code{character} see \link{getNodes}
+#' @param path \code{character} see \link{gs_get_pop_paths}
 #' @param \dots Additional arguments to the \code{barplot} methods.
 #' @details The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.
 #' @return Nothing is returned.
-#' @seealso \code{\link{getPopStats}}
+#' @seealso \code{\link{gs_get_pop_stats}}
 #' @examples
 #'   \dontrun{
 #'     #G is a GatingHierarchy
-#'     plotPopCV(G,4,4);
+#'     gs_plot_pop_count_cv(G,4,4);
 #'   }
-#' @aliases plotPopCV
+#' @aliases gs_plot_pop_count_cv
 #' @export
-#' @rdname plotPopCV
+#' @rdname gs_plot_pop_count_cv
 #' @importFrom latticeExtra ggplot2like
-setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)), path = "auto",...){
+gs_plot_pop_count_cv <- function(x, scales = list(x = list(rot = 90)), path = "auto",...){
       cv <- .computeCV(x, path = path)
       #flatten, generate levels for samples.
       nr<-nrow(cv)
@@ -2384,7 +2390,7 @@ setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)),
       cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
 
       return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
-    })
+    }
 
 #' @rdname keyword
 #' @export

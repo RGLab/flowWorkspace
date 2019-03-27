@@ -40,7 +40,7 @@ get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 \details{
 Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}.
 Subset membership can be obtained using \code{getIndices}.
-Population statistics can be obtained using \code{getPop} and \code{getPopStats}.
+Population statistics can be obtained using \code{getPop} and \code{gh_get_pop_stats}.
 When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
 To update the data, use \code{flowData} method.
 }
@@ -55,5 +55,5 @@ To update the data, use \code{flowData} method.
 }
 }
 \seealso{
-\code{\link{flowData}} \code{\link{getIndices}} \code{\link{getPopStats}}
+\code{\link{flowData}} \code{\link{getIndices}} \code{\link{gh_get_pop_stats}}
 }

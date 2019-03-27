@@ -19,7 +19,7 @@ getStats(x, ...)
 \arguments{
 \item{x}{a GatingSet or GatingHierarchy}
 
-\item{...}{arguments passed to \link{getNodes} method.}
+\item{...}{arguments passed to \link{gs_get_pop_paths} method.}
 
 \item{nodes}{the character vector specifies the populations of interest. default is all available nodes}
 

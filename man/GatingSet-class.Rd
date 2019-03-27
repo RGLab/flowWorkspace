@@ -66,7 +66,7 @@ It allows the use to load a workspace and subset desired samples before proceedi
 	library(CytoML)
   ws <- openWorkspace(wsfile);
   G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
-  plotPopCV(G);
+  gs_plot_pop_count_cv(G);
 }
 }
 \seealso{

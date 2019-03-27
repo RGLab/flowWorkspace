@@ -71,9 +71,9 @@ test_that(".isBoolGate ",{
       expect_false(flowWorkspace:::.isBoolGate(gh, "singlets"))
       
       bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
-      suppressWarnings(id <- add(gh, bf))
+      suppressWarnings(id <- gh_add_gate(gh, bf))
       expect_true(flowWorkspace:::.isBoolGate(gh, "myBoolFilter"))
-      invisible(Rm("myBoolFilter", gh))
+      invisible(gh_remove_gate("myBoolFilter", gh))
     })
 
 
@@ -99,45 +99,45 @@ test_that("sampleNames",{
       
     })
 
-test_that("getNodes & setNode",{
+test_that("gs_get_pop_paths & setNode",{
 
       expectRes <- readRDS(file.path(resultDir, "getNodes_gh.rds"))
 
       #full path
-      expect_equal(getNodes(gh), expectRes[["full_path"]])
-      expect_equal(getNodes(gh, path = "full"), expectRes[["full_path"]])
+      expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
+      expect_equal(gs_get_pop_paths(gh, path = "full"), expectRes[["full_path"]])
       
             
-      expect_equal(getNodes(gh, path = 1), expectRes[["terminal"]])
+      expect_equal(gs_get_pop_paths(gh, path = 1), expectRes[["terminal"]])
       
       #fixed partial path
-      expect_equal(getNodes(gh, path = 2), expectRes[["path_two"]])
-      expect_equal(getNodes(gh, path = 3), expectRes[["path_three"]])
+      expect_equal(gs_get_pop_paths(gh, path = 2), expectRes[["path_two"]])
+      expect_equal(gs_get_pop_paths(gh, path = 3), expectRes[["path_three"]])
       
       #auto partial path
-      expect_equal(getNodes(gh, path = "auto"), expectRes[["path_auto"]])
+      expect_equal(gs_get_pop_paths(gh, path = "auto"), expectRes[["path_auto"]])
       
       #full path (bfs)
-      expect_equal(getNodes(gh, order = "bfs"), expectRes[["full_path_bfs"]])
-      expect_equal(getNodes(gh, order = "tsort"), expectRes[["full_path_tsort"]])
+      expect_equal(gs_get_pop_paths(gh, order = "bfs"), expectRes[["full_path_bfs"]])
+      expect_equal(gs_get_pop_paths(gh, order = "tsort"), expectRes[["full_path_tsort"]])
       
       #change node name
       invisible(setNode(gh, "singlets", "S"))
-      expect_equal(getNodes(gh), gsub("singlets", "S", expectRes[["full_path"]]))
+      expect_equal(gs_get_pop_paths(gh), gsub("singlets", "S", expectRes[["full_path"]]))
       invisible(setNode(gh, "S", "singlets"))
-      expect_equal(getNodes(gh), expectRes[["full_path"]])
+      expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
       
       #hide node(terminal)
       invisible(setNode(gh, "DNT", FALSE))
-      expect_equal(getNodes(gh), expectRes[["full_path"]][-23])
+      expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]][-23])
       invisible(setNode(gh, "DNT", TRUE))
-      expect_equal(getNodes(gh), expectRes[["full_path"]])
+      expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
       
       #hide node(non-terminal)
       invisible(setNode(gh, "singlets", FALSE))
-      expect_equal(getNodes(gh), expectRes[["full_path"]][-3])
+      expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]][-3])
       invisible(setNode(gh, "singlets", TRUE))
-      expect_equal(getNodes(gh), expectRes[["full_path"]])
+      expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
     })
 
 test_that("setGate", {
@@ -169,7 +169,7 @@ test_that(".getGraph",{
 
 test_that(".getAllDescendants",{
       nodelist <- new.env(parent=emptyenv())
-      allNodes <- getNodes(gh, showHidden = TRUE)
+      allNodes <- gs_get_pop_paths(gh, showHidden = TRUE)
       nodelist$v <-integer()
       flowWorkspace:::.getAllDescendants(gh, "CD3+", nodelist)
       thisRes <- nodelist$v
@@ -217,34 +217,34 @@ test_that("keyword",{
       expect_equal(keyword(gh, '$P8N'), "<V450-A>")
     })
 
-test_that("getParent",{
+test_that("gs_get_parent",{
       
       
-      expect_equal(getParent(gh, "singlets"), "/not debris")
+      expect_equal(gs_get_parent(gh, "singlets"), "/not debris")
       
-      expect_equal(getParent(gh, "not debris/singlets"), "/not debris")
+      expect_equal(gs_get_parent(gh, "not debris/singlets"), "/not debris")
       
-      expect_error(getParent(gh, "singlet"), "singlet not found")
+      expect_error(gs_get_parent(gh, "singlet"), "singlet not found")
       
-      expect_error(getParent(gh, "root"), "0 :parent not found!")
+      expect_error(gs_get_parent(gh, "root"), "0 :parent not found!")
       
     })
 
-test_that("getChildren",{
+test_that("gs_get_children",{
       
       
-      expect_equal(getChildren(gh, "not debris/singlets"), "/not debris/singlets/CD3+")
+      expect_equal(gs_get_children(gh, "not debris/singlets"), "/not debris/singlets/CD3+")
       
-      expect_equal(getChildren(gh, "singlets"), "/not debris/singlets/CD3+")
+      expect_equal(gs_get_children(gh, "singlets"), "/not debris/singlets/CD3+")
       
       
-      expect_error(getChildren(gh, "singlet"), "singlet not found")
+      expect_error(gs_get_children(gh, "singlet"), "singlet not found")
       
-      expect_error(getChildren(gh, "38- DR+"), "ambiguous")
+      expect_error(gs_get_children(gh, "38- DR+"), "ambiguous")
       
-      expect_equal(getChildren(gh, "CD4/38- DR+"), character(0))
+      expect_equal(gs_get_children(gh, "CD4/38- DR+"), character(0))
       
-      expect_equal(getChildren(gh, "CD3+"), c("/not debris/singlets/CD3+/CD4"
+      expect_equal(gs_get_children(gh, "CD3+"), c("/not debris/singlets/CD3+/CD4"
                                               , "/not debris/singlets/CD3+/CD8"
                                               , "/not debris/singlets/CD3+/DNT"
                                               , "/not debris/singlets/CD3+/DPT")
@@ -295,10 +295,10 @@ test_that("getTotal",{
     })      
 
 
-test_that("getPopStats",{
+test_that("gh_get_pop_stats",{
       
       
-      thisRes <- getPopStats(gh, path = "full")
+      thisRes <- gh_get_pop_stats(gh, path = "full")
       expect_is(thisRes, "data.table")
      
       expectRes <- fread(file.path(resultDir, "getPopStats_gh.csv"))
@@ -326,29 +326,29 @@ test_that("getGate",{
       
       #add a rectangleGate to test 
       rg <- rectangleGate(filterId="myRectGate", list("FSC-A"=c(200, 600),"SSC-A"=c(0, 400)))      
-      id <- add(gh, rg)
+      id <- gh_add_gate(gh, rg)
       thisRes <- getGate(gh, "myRectGate")
       expect_is(thisRes, "rectangleGate")
       expect_equal(thisRes@min, rg@min)
       expect_equal(thisRes@max, rg@max)
       expect_equivalent(parameters(thisRes), parameters(rg))
-      invisible(Rm("myRectGate", gh))
+      invisible(gh_remove_gate("myRectGate", gh))
       
       #add a bool gate to test
       bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
-      suppressWarnings(id <- add(gh, bf))
+      suppressWarnings(id <- gh_add_gate(gh, bf))
       thisRes <- getGate(gh, "myBoolFilter")
       expect_is(thisRes, "booleanFilter")
       
       expect_equal(as.character(thisRes@expr), as.character(bf@expr))
-      invisible(Rm("myBoolFilter", gh))
+      invisible(gh_remove_gate("myBoolFilter", gh))
      
       ##TODO: test rangeGate (no R API to add it, have to parse it from xml )
       
     })
 
 test_that(".mergeGates",{
-      nodes <- getNodes(gh, path = "auto")
+      nodes <- gs_get_pop_paths(gh, path = "auto")
       #with customized x,y (incorrect prj)
       projections <- list("singlets" = c("FSC-H", "FSC-A")
                         , "CD3+" = c("CD3", "FSC-A")

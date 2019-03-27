@@ -9,7 +9,7 @@ get_leaf_nodes(x, ...)
 \arguments{
 \item{x}{GatingHierarchy/GatingSet object}
 
-\item{...}{arguments passed to 'getNodes" method}
+\item{...}{arguments passed to 'gs_get_pop_paths" method}
 }
 \value{
 the leaf nodes

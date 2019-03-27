@@ -1,10 +1,10 @@
 #' get all the leaf nodes
 #' @param x GatingHierarchy/GatingSet object
-#' @param ... arguments passed to 'getNodes" method
+#' @param ... arguments passed to 'gs_get_pop_paths" method
 #' @return the leaf nodes
 #' @export 
 get_leaf_nodes <- function(x, ...){
-  res <- getNodes(x, ...)
+  res <- gs_get_pop_paths(x, ...)
   ind <- sapply(res, function(i)length(.cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
   res[ind]
 }
@@ -31,7 +31,7 @@ NULL
 #' Get Cell Population Statistics and Sample Metadata
 #'
 #' @param object a \code{GatingSet} or \code{GatingSetList}
-#' @param ... additional arguments passed to \code{getPopStats}
+#' @param ... additional arguments passed to \code{gs_get_pop_stats}
 #'
 #' @return a \code{data.table} of merged population statistics with sample metadata.
 #' @export
@@ -45,7 +45,7 @@ getMergedStats = function(object,...){
 	if(!inherits(object,"GatingSet")&!inherits(object,"GatingSetList")){
 		stop("object must be a GatingSet or GatingSetList")
 	}
-	stats = getPopStats(object,...)
+	stats = gs_get_pop_stats(object,...)
 	#process name column so that it contains XXX.fcs
 	message("Processing sample names..")
 	stats[, sampleName:=name]

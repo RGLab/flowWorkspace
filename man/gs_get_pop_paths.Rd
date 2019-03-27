@@ -3,11 +3,14 @@
 \docType{methods}
 \name{getNodes,GatingSet-method}
 \alias{getNodes,GatingSet-method}
-\alias{getNodes}
+\alias{gs_get_pop_paths}
 \title{Get the names of all nodes from a gating hierarchy.}
 \usage{
 \S4method{getNodes}{GatingSet}(x, y = NULL, order = "regular",
   path = "full", showHidden = FALSE, ...)
+
+gs_get_pop_paths(x, y = NULL, order = "regular", path = "full",
+  showHidden = FALSE, ...)
 }
 \arguments{
 \item{x}{A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.}
@@ -25,10 +28,10 @@ When \code{character}, it can be either 'full' (full path, which is default) or 
 \item{...}{Additional arguments.}
 }
 \value{
-getNodes returns a \code{character} vector of node/population names, ordered appropriately.
+gs_get_pop_paths returns a \code{character} vector of node/population names, ordered appropriately.
 }
 \description{
-\code{getNodes} returns a character vector of names of the nodes (populations) in the \code{GatingSet}.
+\code{gs_get_pop_paths} returns a character vector of names of the nodes (populations) in the \code{GatingSet}.
 }
 \details{
 integer indices of nodes are based on regular order,so whenver need to map from character node name to integer node ID,make sure
@@ -37,10 +40,10 @@ to use default order which is regular.
 \examples{
   \dontrun{
     #G is a gating hierarchy
-    getNodes(G, path = 1])#return node names (without prefix)
-    getNodes(G,path = "full")#return the full path
-    getNodes(G,path = 2)#return the path as length of two
-    getNodes(G,path = "auto")#automatically determine the length of path
+    gs_get_pop_paths(G, path = 1])#return node names (without prefix)
+    gs_get_pop_paths(G,path = "full")#return the full path
+    gs_get_pop_paths(G,path = 2)#return the path as length of two
+    gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
     setNode(G,"L","lymph")
   }
 }

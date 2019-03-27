@@ -22,10 +22,10 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y){
       
       suppressMessages({
             suppressWarnings(
-                id <- add(obj,bf)
+                id <- gs_add_gate(obj,bf)
             )
             
-            allNodes <- getNodes(gh, showHidden = TRUE)
+            allNodes <- gs_get_pop_paths(gh, showHidden = TRUE)
             this_node <- allNodes[id]
             
             
@@ -34,11 +34,11 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y){
       
       
       if(class(res)=="try-error"){
-        Rm(this_node,obj)
+        gs_remove_gate(this_node,obj)
         stop(res)
       }else{
         this_ind <- lapply(obj,function(this_gh)getIndices(this_gh,this_node))
-        Rm(this_node,obj)
+        gs_remove_gate(this_node,obj)
         this_ind
       }
       
@@ -162,7 +162,7 @@ getIndiceMat <- function(gh,y){
 #' @return A \code{list} of \code{numerci matrices}
 #' @aliases getSingleCellExpression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
-#' @seealso \code{\link{getIndices}}  \code{\link{getPopStats}}
+#' @seealso \code{\link{getIndices}}  \code{\link{gs_get_pop_stats}}
 #' @examples \dontrun{
 #'   #G is a GatingSet
 #' 	nodes <- c("4+/TNFa+", "4+/IL2+")

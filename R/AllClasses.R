@@ -67,7 +67,7 @@ NULL
 #' 	library(CytoML)
 #'   ws <- openWorkspace(wsfile);
 #'   G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
-#'   plotPopCV(G);
+#'   gs_plot_pop_count_cv(G);
 #' }
 #' @name GatingSet-class
 #' @rdname GatingSet-class
@@ -116,9 +116,9 @@ setClass("GatingSet"
 #' 	ws <- openWorkspace(wsfile);
 #' 	G<-try(parseWorkspace(ws,path=d,name=1));
 #'  gh <- G[[1]]
-#' 	getPopStats(gh);
-#' 	plotPopCV(gh)
-#'  nodes <- getNodes(gh)
+#' 	gh_get_pop_stats(gh);
+#' 	gh_plot_pop_count_cv(gh)
+#'  nodes <- gs_get_pop_paths(gh)
 #'  thisNode <- nodes[4]
 #' 	plotGate(gh,thisNode);
 #' 	getGate(gh,thisNode);
@@ -228,11 +228,11 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     plotGate_labkey(gslist2[3:4],4,x="<APC Cy7-A>",y="<PE Tx RD-A>",smooth=T)
 #'     
 #'     #remove cerntain gates by loop through GatingSets
-#'     getNodes(gslist2[[1]])
-#'     lapply(gslist2,function(gs)Rm("Excl",gs))
+#'     gs_get_pop_paths(gslist2[[1]])
+#'     lapply(gslist2,function(gs)gs_remove_gate("Excl",gs))
 #'     
 #'     #extract the stats
-#'     getPopStats(gslist2)
+#'     gs_get_pop_stats(gslist2)
 #'     #extract statistics by using getQAStats defined in QUALIFIER package
 #'     res<-getQAStats(gslist2[c(4,2)],isMFI=F,isSpike=F,nslaves=1)
 #'     
@@ -291,14 +291,14 @@ validGatingSetListObject <- function(object){
 setValidity("GatingSetList", validGatingSetListObject)     
 
 .getNodes_removeHidden <- function(gh){
-  complete <- getNodes(gh, showHidden = TRUE)
-  sub <- getNodes(gh, showHidden = FALSE)
+  complete <- gs_get_pop_paths(gh, showHidden = TRUE)
+  sub <- gs_get_pop_paths(gh, showHidden = FALSE)
   hiddenInd <- which(!complete%in%sub)
   #remove hidden node from paths
   for(i in hiddenInd){
     thisHidden <- complete[i]
     hiddenPopName <- basename(thisHidden)
-    parent <- getParent(gh, thisHidden)
+    parent <- gs_get_parent(gh, thisHidden)
     sub <- gsub(thisHidden, parent, sub)
   }
   sub

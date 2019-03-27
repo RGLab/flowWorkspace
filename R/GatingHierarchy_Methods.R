@@ -15,7 +15,7 @@ NULL
 #' @param gs GatingSet
 #' @param sampleName sample name
 #' @export 
-getCompensationObj <- function(gs, sampleName) {
+gs_get_compensation_internal <- function(gs, sampleName) {
   .cpp_getCompensation(gs, sampleName)
 }
 
@@ -396,7 +396,7 @@ setMethod("plot",c("GatingSet","missing"),function(x,y,...){
 
 .getAllDescendants <- function(gh,startNode,nodelist){
 
-  children_nodes <- getChildren(gh,startNode)
+  children_nodes <- gs_get_children(gh,startNode)
   if(length(children_nodes)>0){
     for(this_parent in children_nodes){
       nodelist$v <- c(nodelist$v, .getNodeInd(gh, this_parent))
@@ -447,7 +447,7 @@ setMethod("plot",c("GatingSet","character"),function(x,y,...){
 
 setMethod("show","GatingHierarchy",function(object){
 			cat("Sample: ",sampleNames(object),"\n");
-			cat("GatingHierarchy with ",length(getNodes(object))," gates\n");
+			cat("GatingHierarchy with ",length(gs_get_pop_paths(object))," gates\n");
 			cat("\n")
 		})
 
@@ -490,9 +490,17 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
       flowCore::keyword(fr, ...)
     })
 
+#' @title Deprecated functions in package \pkg{flowWorkspace}.
+#' @templateVar old getNodes
+#' @templateVar new gs_get_pop_paths
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getNodes",function(x,...)standardGeneric("getNodes"))
+
 #'  Get the names of all nodes from a gating hierarchy.
 #'
-#'  \code{getNodes} returns a character vector of names of the nodes (populations) in the \code{GatingSet}.
+#'  \code{gs_get_pop_paths} returns a character vector of names of the nodes (populations) in the \code{GatingSet}.
 #' @param x A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.
 #' @param y A \code{character} not used.
 #' @param order \code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
@@ -506,22 +514,28 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' integer indices of nodes are based on regular order,so whenver need to map from character node name to integer node ID,make sure
 #' to use default order which is regular.
 #' @return
-#' getNodes returns a \code{character} vector of node/population names, ordered appropriately.
+#' gs_get_pop_paths returns a \code{character} vector of node/population names, ordered appropriately.
 #'
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G, path = 1])#return node names (without prefix)
-#'     getNodes(G,path = "full")#return the full path
-#'     getNodes(G,path = 2)#return the path as length of two
-#'     getNodes(G,path = "auto")#automatically determine the length of path
+#'     gs_get_pop_paths(G, path = 1])#return node names (without prefix)
+#'     gs_get_pop_paths(G,path = "full")#return the full path
+#'     gs_get_pop_paths(G,path = 2)#return the path as length of two
+#'     gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
 #'     setNode(G,"L","lymph")
 #'   }
-#' @aliases getNodes
-#' @rdname getNodes
+#' @aliases gs_get_pop_paths
+#' @rdname gs_get_pop_paths
 #' @export
 #' @importFrom BiocGenerics duplicated
 setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
+  .Deprecated("gs_get_pop_paths")
+  gs_get_pop_paths(x, y, order, path, showHidden, ...)
+})
+#' @rdname gs_get_pop_paths
+#' @export
+gs_get_pop_paths <- function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
 
             order <- match.arg(order,c("regular","tsort","bfs"))
             orderInd <- match(order,c("regular","tsort","bfs"))
@@ -564,60 +578,88 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 
 
 			nodeNames
-		})
+		}
 
-#' @templateVar old getFullNodePath
-#' @templateVar new gh_get_full_path
-#' @template template-depr_pkg
-NULL
 #' convert the partial gating path to the full path
 #' @param gh GatingHierarchy object
 #' @param path the partial gating path
 #' @return the full gating path
 #' @export 
-getFullNodePath <- function(gh, path){
+gh_convert_node_full_path <- function(gh, path){
 	getNodePath(gh@pointer, sampleNames(gh)[1], .getNodeInd(gh, path) - 1)
 }
+#' @templateVar old getParent
+#' @templateVar new gs_get_parent
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getParent",function(obj,y,...)standardGeneric("getParent"))
+
 #' Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy
 #'
 #' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
 #' @param obj A \code{GatingHierarchy}
 #' @param y a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.
 #' @param showHidden \code{logical} whether to include the hidden children nodes.
-#' @param ... other arguments passed to \link{getNodes} methods
+#' @param ... other arguments passed to \link{gs_get_pop_paths} methods
 #' @return
-#'   \code{getParent} returns a \code{character} vector, the name of the parent population.
-#'   \code{getChildren} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
-#' @seealso \code{\link{getNodes}}
+#'   \code{gs_get_parent} returns a \code{character} vector, the name of the parent population.
+#'   \code{gs_get_children} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
+#' @seealso \code{\link{gs_get_pop_paths}}
 #'
 #' @examples
 #'   \dontrun{
 #'     #G is a gatinghierarchy
 #'     #return the name of the parent of the fifth node in the hierarchy.
-#'     getParent(G,getNodes(G[[1)[5])
-#'     n<-getNodes(G,tsort=T)[4];
-#'     getChildren(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
-#'     getChildren(G,4);#Get the ids of the child nodes
+#'     gs_get_parent(G,gs_get_pop_paths(G[[1)[5])
+#'     n<-gs_get_pop_paths(G,tsort=T)[4];
+#'     gs_get_children(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
+#'     gs_get_children(G,4);#Get the ids of the child nodes
 #'   }
-#' @aliases getParent
-#' @rdname getParent
+#' @aliases gs_get_parent
+#' @rdname gs_get_parent
 #' @export
 setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, ...){
+  .Deprecated("gs_get_parent")
+  gs_get_parent(obj, y, ...)
+})
+#' @rdname gs_get_parent
+#' @export
+gs_get_parent <- function(obj,y, ...){
             pind <- .cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
             pind <- pind +1
-			getNodes(obj, showHidden = TRUE, ...)[pind]
-		})
-#' @rdname getParent
+			gs_get_pop_paths(obj, showHidden = TRUE, ...)[pind]
+		}
+#' @templateVar old getChildren
+#' @templateVar new gs_get_children
+#' @template template-depr_pkg
+		NULL
 #' @export
-#' @aliases getChildren
+setGeneric("getChildren",function(obj,y,...)standardGeneric("getChildren"))
+#' @rdname gs_get_children
+#' @export
+#' @aliases gs_get_children
 setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y, showHidden = TRUE, ...){
-
-            cind <- .cpp_getChildren(obj@pointer,sampleNames(obj), y, showHidden)
-            cind <- cind + 1
-			getNodes(obj, showHidden = TRUE, ...)[cind]
+  .Deprecated("gs_get_children")
+  gs_get_children(obj, y, showHidden, ...)
 })
+#' @rdname gs_get_children
+#' @export
+gs_get_children <- function(obj,y, showHidden = TRUE, ...){
+      cind <- .cpp_getChildren(obj@pointer,sampleNames(obj), y, showHidden)
+      cind <- cind + 1
+			gs_get_pop_paths(obj, showHidden = TRUE, ...)[cind]
+}
+
+#' @templateVar old getProp
+#' @templateVar new gh_get_proportion
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getProp",function(x,y,...)standardGeneric("getProp"))
+
 #' @param y \code{character} node name or path
-#' @rdname getPopStats
+#' @rdname gh_get_pop_stats
 #' @export
 #' @aliases getProp
 setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,xml = FALSE){
@@ -631,7 +673,14 @@ setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,xm
 				unname(stats$openCyto["proportion"])
 
 		})
-#' @rdname getPopStats
+#' @templateVar old getTotal
+#' @templateVar new gs(/gh)_get_count
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getTotal",function(x,y,...)standardGeneric("getTotal"))
+
+#' @rdname gh_get_pop_stats
 #' @export
 #' @aliases getTotal
 setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,xml = FALSE){
@@ -652,7 +701,7 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,x
 	stats<-.cpp_getPopStats(x@pointer,sampleNames(x), y)
 
 
-	parent<-try(getParent(x, y),silent=T)
+	parent<-try(gs_get_parent(x, y),silent=T)
 
 
 	if(class(parent)=="try-error")#if parent exist
@@ -677,12 +726,23 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,x
 					,count=as.numeric(stats$FlowJo["count"]))
 		)
 }
-#' @rdname getPopStats
+#' @templateVar old getPopStats
+#' @templateVar new gs(/gh)_get_pop_stats
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getPopStats",function(x,...)standardGeneric("getPopStats"))
+#' @rdname gh_get_pop_stats
 #' @export
 setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
+  .Deprecated("gh_get_pop_stats")
+  gh_get_pop_stats(x, path, ...)
+})
+#' @rdname gh_get_pop_stats
+#' @export
+gh_get_pop_stats <- function(x, path = "auto", ...){
 
-
-        nodePath <- getNodes(x, path = path, ...)
+        nodePath <- gs_get_pop_paths(x, path = path, ...)
         stats <- rbindlist(lapply(nodePath, function(thisPath){
               		          			curStats <- .getPopStat(x,thisPath)
                                   data.table(openCyto.freq = curStats$openCyto["proportion"]
@@ -697,11 +757,11 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 
         rownames(stats) <- stats[, node]
         stats
-		})
+		}
 
 .computeCV_gh <- function(gh, ...){
 
-    x<-getPopStats(gh, ...)
+    x<-gh_get_pop_stats(gh, ...)
     rn<-rownames(x)
     x<-as.data.frame(x)
     rownames(x)<-rn
@@ -711,13 +771,14 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
     rownames(cv) <- as.character(rownames(x))
     cv
 }
+
 #' @importFrom lattice barchart
 #' @export
-#' @rdname plotPopCV
-setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2, path = "auto", ...){
+#' @rdname gh_plot_pop_count_cv
+gh_plot_pop_count_cv <- function(x,m=2,n=2, path = "auto", ...){
       cv <- .computeCV_gh(x, path = path)
       return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
-    })
+    }
 
 
 #'  Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.
@@ -729,7 +790,7 @@ setMethod("plotPopCV","GatingHierarchy",function(x,m=2,n=2, path = "auto", ...){
 #'
 #' @return  A gate object from \code{flowCore}. Usually a \code{polygonGate}, but may be a \code{rectangleGate}. Boolean gates are represented by a \code{"BooleanGate"} S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If \code{obj} is a \code{GatingSet}, assuming the trees associated with each \code{GatingHierarchy} are identical, then this method will return a list of gates, one for each sample in the \code{GatingSet} corresponding to the same population indexed by \code{y}.
 #'
-#' @seealso \code{\link{getData}} \code{\link{getNodes}}
+#' @seealso \code{\link{getData}} \code{\link{gs_get_pop_paths}}
 #' @examples
 #'   \dontrun{	#gh is a GatingHierarchy
 #'     getGate(gh, "CD3") #return the gate for the fifth node in the tree, but fetch it by name.
@@ -804,7 +865,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #' @param cluster_method_name the name of the clustering method
 #' @export
 gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
-  nodes <- getChildren(gh, parent)
+  nodes <- gs_get_children(gh, parent)
   res <- rep(NA, getTotal(gh, "root"))
   empty_pops <- NULL
   isFound <- FALSE
@@ -900,16 +961,16 @@ NULL
 #'
 #' @return  A logical vector of length equal to the number of events in the FCS file that determines whether each event is or is not included in the current gate.
 #'
-#' @note Generally you should not need to use \code{getIndices} but the more convenient methods \code{getProp} and \code{getPopStats} which return population frequencies relative to the parent node.
+#' @note Generally you should not need to use \code{getIndices} but the more convenient methods \code{getProp} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
 #' The indices returned reference all events in the file and are not directly suitable for computing population statistics, unless subsets are taken with respect to the parent populations.
 #'
-#' @seealso \code{\link{getPopStats}}
+#' @seealso \code{\link{gh_get_pop_stats}}
 #'
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
 #'     #Return the indices for population 5 (topological sort)
-#'     getIndices(G,getNodes(G,tsort=TRUE)[5]);
+#'     getIndices(G,gs_get_pop_paths(G,tsort=TRUE)[5]);
 #' }
 #'
 #' @aliases getIndices
@@ -986,7 +1047,7 @@ setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj
 #' @details
 #' Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}.
 #' Subset membership can be obtained using \code{getIndices}.
-#' Population statistics can be obtained using \code{getPop} and \code{getPopStats}.
+#' Population statistics can be obtained using \code{getPop} and \code{gh_get_pop_stats}.
 #' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
 #' To update the data, use \code{flowData} method.
 
@@ -1000,7 +1061,7 @@ setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
 #' A \code{ncdfFlowList} if a \code{GatingSetList}.
 #' @seealso
-#'   \code{\link{flowData}} \code{\link{getIndices}} \code{\link{getPopStats}}
+#'   \code{\link{flowData}} \code{\link{getIndices}} \code{\link{gh_get_pop_stats}}
 #'
 #' @examples
 #'   \dontrun{
@@ -1198,7 +1259,7 @@ getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALS
 #						browser()
         if(curTrans$type=="log")
         {
-          f <- flowJo.flog(min_val = 0
+          f <- flowjo_flog(min_val = 0
               , max_val = curTrans$T
               , decade = curTrans$decade
               , offset = curTrans$offset
@@ -1226,10 +1287,10 @@ getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALS
           # attr(f,"type")<-"biexp"
         }else if(curTrans$type=="fasinh"){
           if(inverse){
-            f <- flowJo.fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)#in flowJo curTrans$length is not used
+            f <- flowjo_fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)#in flowJo curTrans$length is not used
             attr(f,"type")<-"fsinh"
           }else{
-            f <- flowJo.fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)
+            f <- flowjo_fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)
             attr(f,"type")<-"fasinh"
           }
 
@@ -1335,7 +1396,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,.
 })
 setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
 
-        y <- getNodes(x)
+        y <- gs_get_pop_paths(x)
         y <- setdiff(y,"root")
 
 		plotGate(x,y,...)
@@ -1354,7 +1415,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                     , function(x, y, ...
                                 ){
-      plotGate(x, getNodes(x, path = "auto")[y], ...)
+      plotGate(x, gs_get_pop_paths(x, path = "auto")[y], ...)
                     })
 .plotGate.gh <- function(x, y, bool=FALSE
                             , arrange.main = sampleNames(x),arrange=TRUE,merge=TRUE
@@ -1430,7 +1491,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 
 	if(merge)
 	{
-	  allNodes <- getNodes(gh, showHidden = TRUE, path = "auto")
+	  allNodes <- gs_get_pop_paths(gh, showHidden = TRUE, path = "auto")
 	  sn <- sampleNames(gh)
 		#check if they have same parents and parameters
 		keylist <- sapply(plotList,function(y){
@@ -1572,7 +1633,7 @@ pretty10exp <-function (x, drop.1 = FALSE, digits.fuzz = 7)
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
-#'     getNodes(G[[1]])#return node names
+#'     gs_get_pop_paths(G[[1]])#return node names
 #'     setNode(G,"L","lymph")
 #'   }
 #' @aliases setNode
