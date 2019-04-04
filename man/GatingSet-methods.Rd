@@ -24,9 +24,17 @@
 \S4method{identifier}{GatingSetList,character}(object) <- value
 }
 \arguments{
+\item{x}{GatingSet}
+
+\item{y}{GatingHierarchy}
+
 \item{path}{\code{character} specifies the path to the flow data (FCS files)}
 
 \item{...}{other arguments.}
+
+\item{object}{GatingSet}
+
+\item{value}{string}
 }
 \description{
 construct a gatingset with empty trees (just root node)

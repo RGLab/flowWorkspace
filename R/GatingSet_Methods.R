@@ -355,6 +355,8 @@ load_gs<-function(path){
 #'
 #' construct object from existing gating hierarchy(gating template) and flow data 
 #'
+#' @param x GatingSet
+#' @param y GatingHierarchy
 #' @param path \code{character} specifies the path to the flow data (FCS files)
 #' @param ... other arguments. 
 #' @rdname GatingSet-methods
@@ -2103,7 +2105,7 @@ subset.GatingSet <- function (x, subset, ...)
         r & !is.na(r)
       }
 
-  x[as.character(rownames(pd[r, ]))]
+  x[as.character(rownames(pd)[r])]
 }
 #' @rdname getGate
 #' @export

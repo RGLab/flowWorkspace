@@ -3,12 +3,17 @@
 \name{shift_gate}
 \alias{shift_gate}
 \alias{shift_gate.GatingHierarchy}
+\alias{shift_gate.GatingSet}
 \title{Simplified geometric translation of gates associated with nodes}
 \usage{
-shift_gate(obj, y, dx, dy, center)
+\method{shift_gate}{GatingHierarchy}(obj, y, dx = NULL, dy = NULL,
+  center = NULL, ...)
+
+\method{shift_gate}{GatingSet}(obj, y, dx = NULL, dy = NULL,
+  center = NULL, ...)
 }
 \arguments{
-\item{obj}{A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object}
+\item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}
 
 \item{y}{A character specifying the node whose gate should be modified}
 
@@ -21,10 +26,12 @@ in more than 2 dimensions.}
 
 \item{center}{A numeric vector specifying where the center or centroid should be moved (rather than specifiying \code{dx} 
 and/or \code{dy})}
+
+\item{...}{not used}
 }
 \description{
-Shift the location of a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
-\code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
+Shift the location of a gate associated with a node of a \code{GatingHierarchy} or
+\code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
 updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
  
 \code{shift_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 

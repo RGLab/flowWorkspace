@@ -93,6 +93,8 @@
 \item{recompute}{a \code{logical} flag
 The order of the names is clock-wise starting from the top left quadrant population.}
 
+\item{cluster_method_name}{when adding the logical vectors as the gates, the name of the cluster method can be used to tag the populations as the extra meta information associated with the gates.}
+
 \item{symbol}{A \code{character} identifies the population node in a \code{GatingHierrarchy} or \code{GatingSet} to remove}
 
 \item{envir}{A \code{GatingHierrarchy} or \code{GatingSet}}

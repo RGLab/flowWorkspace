@@ -349,6 +349,7 @@ setMethod("add",
 ## like flowClust
 
 #' @export 
+#' @param cluster_method_name when adding the logical vectors as the gates, the name of the cluster method can be used to tag the populations as the extra meta information associated with the gates.  
 #' @rdname add
 setMethod("add",
           signature=c("GatingHierarchy", "logical"),
