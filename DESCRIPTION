@@ -62,14 +62,15 @@ Collate:
     'utils.R'
     'zzz.R'
 Depends:
-    R (>= 2.16.0),flowCore(>= 1.49.6),ncdfFlow(>= 2.25.4)
+    R (>= 2.16.0),flowCore(>= 1.49.10),ncdfFlow(>= 2.25.4)
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,
     flowWorkspaceData,
     knitr,
     ggcyto,
-    parallel
+    parallel,
+    CytoML
 LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.3.7), cytolib(>= 1.3.3), RcppParallel
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11

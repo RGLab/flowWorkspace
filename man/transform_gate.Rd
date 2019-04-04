@@ -5,10 +5,12 @@
 \alias{transform_gate.GatingHierarchy}
 \title{Simplified geometric transformations of gates associated with nodes}
 \usage{
-transform_gate(obj, y, scale, deg, rot_center, dx, dy, center, ...)
+\method{transform_gate}{GatingHierarchy}(obj, y, scale = NULL,
+  deg = NULL, rot_center = NULL, dx = NULL, dy = NULL,
+  center = NULL, ...)
 }
 \arguments{
-\item{obj}{A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object}
+\item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}
 
 \item{y}{A character specifying the node whose gate should be modified}
 
