@@ -74,6 +74,7 @@ NULL
 #' @exportClass GatingSet
 #' @aliases 
 #' GatingSet-class
+#' GatingSet
 setClass("GatingSet"
           ,representation(pointer = "externalptr"
                           ,FCSPath = "character"

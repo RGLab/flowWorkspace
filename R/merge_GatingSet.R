@@ -114,6 +114,8 @@ groupByChannels <- function(x){
 #' visualize the tree structure differnece among the GatingSets
 #' 
 #' @param x \code{list} of groups(each group is a list of 'GatingSet`). it is usually the outcome from \link{groupByTree}.
+#' @param path passed to \code{getNodes}
+#' @param ... passed to \code{getNodes}
 #' @examples 
 #' \dontrun{
 #' gslist <- list(gs1, gs2, gs3, gs4, gs5)

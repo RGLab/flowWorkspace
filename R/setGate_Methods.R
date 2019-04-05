@@ -106,10 +106,8 @@ setMethod("setGate",
 #' }
 #' 
 #' @name transform_gate
-#' @usage 
-#' transform_gate(obj, y, scale, deg, rot_center, dx, dy, center, ...)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
 #' which each dimension of the gate should be expanded (absolute value > 1) or contracted (absolute value < 1). Negative values 
@@ -169,7 +167,7 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 
 #' Simplified geometric scaling of gates associated with nodes
 #' 
-#' Scale a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
+#' Scale a gate associated with a node of a \code{GatingHierarchy}} or
 #' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{scale_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
@@ -199,16 +197,14 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' will result in a reflection in the corresponding dimension.
 #' 
 #' @name scale_gate
-#' @usage 
-#' scale_gate(obj, y, scale)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
 #' which each dimension of the gate should be expanded (absolute value > 1) or contracted (absolute value < 1). Negative values 
 #' will result in a reflection in that dimension. 
-#' 
+#' @param ... not used
 #' @examples
 #' \dontrun{
 #' # Scales both dimensions by a factor of 5
@@ -220,17 +216,17 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' }
 #' 
 #' @seealso transform_gate \code{\link[flowCore:scale_gate]{flowCore::scale_gate}}
-#' 
+#' @rdname scale_gate
 #' @export
-scale_gate.GatingHierarchy <- function(obj, y, scale = NULL){
+scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
   gate <- getGate(obj, y)
   gate <- scale_gate(gate, scale = scale)
   setGate(obj, y, gate)
 }
 
-#' @noRd
+#' @rdname scale_gate
 #' @export
-scale_gate.GatingSet <- function(obj, y, scale = NULL){
+scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
   gates <- getGate(obj, y)
   gates <- lapply(gates, function(gate) scale_gate(gate, scale = scale)) 
   setGate(obj, y, gates)
@@ -238,8 +234,8 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL){
 
 #' Simplified geometric rotation of gates associated with nodes
 #' 
-#' Rotate a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
-#' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
+#' Rotate a gate associated with a node of a \code{GatingHierarchy} or
+#' \code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
 #' \code{rotate_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
@@ -261,17 +257,15 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL){
 #' the composition as a rotation around a shifted center.
 #' 
 #' @name rotate_gate
-#' @usage 
-#' rotate_gate(obj, y, deg, rot_center)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
 #' @param deg An angle in degrees by which the gate should be rotated in the counter-clockwise direction
 #' @param rot_center A separate 2-dimensional center of rotation for the gate, if desired. By default, this will
 #' be the center for \code{ellipsoidGate} objects or the centroid for \code{polygonGate} objects. The \code{rot_center} argument 
 #' is currently only supported for \code{polygonGate} objects.
-#' 
+#' @param ... not used
 #' @examples
 #' \dontrun{
 #' #' # Rotates the original gate 15 degrees counter-clockwise
@@ -282,16 +276,17 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL){
 #' 
 #' @seealso transform_gate \code{\link[flowCore:rotate_gate]{flowCore::rotate_gate}}
 #' 
+#' @rdname rotate_gate
 #' @export
-rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL){
+rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, ...){
   gate <- getGate(obj, y)
   gate <- rotate_gate(gate, deg = deg, rot_center = rot_center)
   setGate(obj, y, gate)
 }
 
-#' @noRd
+#' @rdname rotate_gate
 #' @export
-rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
+rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
   gates <- getGate(obj, y)
   gates <- lapply(gates, function(gate) rotate_gate(gate, deg = deg, rot_center = rot_center)) 
   setGate(obj, y, gates)
@@ -299,8 +294,8 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
 
 #' Simplified geometric translation of gates associated with nodes
 #' 
-#' Shift the location of a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
-#' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
+#' Shift the location of a gate associated with a node of a \code{GatingHierarchy} or
+#' \code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
 #' \code{shift_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
@@ -328,10 +323,8 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
 #' location provided by \code{center} and all other points on the polygon will be shifted by relation to the centroid.
 #' 
 #' @name shift_gate
-#' @usage 
-#' shift_gate(obj, y, dx, dy, center)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
 #' @param dx Either a numeric scalar or numeric vector. If it is scalar, this is just the desired shift of the gate in 
@@ -341,7 +334,7 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
 #' @param dy A numeric scalar specifying the desired shift of the gate in its second dimension.
 #' @param center A numeric vector specifying where the center or centroid should be moved (rather than specifiying \code{dx} 
 #' and/or \code{dy})
-#' 
+#' @param ... not used
 #' @examples
 #' \dontrun{
 #' # Moves the entire gate +500 in its first dimension and 0 in its second dimension
@@ -358,17 +351,17 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
 #' }
 #' 
 #' @seealso transform_gate \code{\link[flowCore:shift_gate]{flowCore::shift_gate}}
-#' 
+#' @rdname shift_gate
 #' @export
-shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL){
+shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
   gate <- getGate(obj, y)
   gate <- shift_gate(gate, dx = dx, dy = dy, center = center)
   setGate(obj, y, gate)
 }
 
-#' @noRd
+#' @rdname shift_gate
 #' @export
-shift_gate.GatingSet <- function(obj, y, dx=NULL, dy=NULL, center=NULL){
+shift_gate.GatingSet <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
   gates <- getGate(obj, y)
   gates <- lapply(gates, function(gate) shift_gate(gate, dx = dx, dy = dy, center = center)) 
   setGate(obj, y, gates)
