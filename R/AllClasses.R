@@ -122,7 +122,7 @@ setClass("GatingSet"
 #'  nodes <- gs_get_pop_paths(gh)
 #'  thisNode <- nodes[4]
 #' 	plotGate(gh,thisNode);
-#' 	getGate(gh,thisNode);
+#' 	gh_get_gate(gh,thisNode);
 #' 	getData(gh,thisNode)
 #' }
 #' @name GatingHierarchy-class
@@ -213,8 +213,8 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     getData(gslist2, "3+")
 #'     
 #'     #extract the gates associated with one popoulation
-#'     getGate(gslist2,"3+")
-#'     getGate(gslist2,5)
+#'     gs_get_gate(gslist2,"3+")
+#'     gs_get_gate(gslist2,5)
 #'     
 #'     #extract the pheno data
 #'     pData(gslist2[3:1])

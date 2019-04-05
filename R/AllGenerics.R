@@ -43,12 +43,6 @@ NULL
 #' @export
 setGeneric("plotGate",function(x,y,...)standardGeneric("plotGate"))
 
-#' @templateVar old getGate
-#' @templateVar new gs(/gh)_get_gate
-#' @template template-depr_pkg
-NULL
-#' @export
-setGeneric("getGate",function(obj,y,...)standardGeneric("getGate"))
 
 #' @templateVar old setGate
 #' @templateVar new gs(/gh)_set_gate

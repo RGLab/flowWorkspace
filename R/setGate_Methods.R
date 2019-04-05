@@ -148,7 +148,7 @@ setMethod("setGate",
 #'
 #' @export
 transform_gate.GatingHierarchy <- function(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
-  gate <- getGate(obj, y)
+  gate <- gh_get_gate(obj, y)
   gate <- transform_gate(gate, scale = scale, deg = deg, 
                          rot_center = rot_center, dx = dx,
                          dy = dy, center = center, ...)
@@ -158,7 +158,7 @@ transform_gate.GatingHierarchy <- function(obj, y, scale = NULL, deg = NULL, rot
 #' @noRd
 #' @export
 transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
-  gates <- getGate(obj, y)
+  gates <- gs_get_gate(obj, y)
   gates <- lapply(gates, function(gate) transform_gate(gate, scale = scale, deg = deg, 
                                                        rot_center = rot_center, dx = dx,
                                                        dy = dy, center = center, ...)) 
@@ -219,7 +219,7 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' @rdname scale_gate
 #' @export
 scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
-  gate <- getGate(obj, y)
+  gate <- gh_get_gate(obj, y)
   gate <- scale_gate(gate, scale = scale)
   setGate(obj, y, gate)
 }
@@ -227,7 +227,7 @@ scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
 #' @rdname scale_gate
 #' @export
 scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
-  gates <- getGate(obj, y)
+  gates <- gs_get_gate(obj, y)
   gates <- lapply(gates, function(gate) scale_gate(gate, scale = scale)) 
   setGate(obj, y, gates)
 }
@@ -279,7 +279,7 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
 #' @rdname rotate_gate
 #' @export
 rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, ...){
-  gate <- getGate(obj, y)
+  gate <- gh_get_gate(obj, y)
   gate <- rotate_gate(gate, deg = deg, rot_center = rot_center)
   setGate(obj, y, gate)
 }
@@ -287,7 +287,7 @@ rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, .
 #' @rdname rotate_gate
 #' @export
 rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
-  gates <- getGate(obj, y)
+  gates <- gs_get_gate(obj, y)
   gates <- lapply(gates, function(gate) rotate_gate(gate, deg = deg, rot_center = rot_center)) 
   setGate(obj, y, gates)
 }
@@ -354,7 +354,7 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
 #' @rdname shift_gate
 #' @export
 shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
-  gate <- getGate(obj, y)
+  gate <- gh_get_gate(obj, y)
   gate <- shift_gate(gate, dx = dx, dy = dy, center = center)
   setGate(obj, y, gate)
 }
@@ -362,7 +362,7 @@ shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ..
 #' @rdname shift_gate
 #' @export
 shift_gate.GatingSet <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
-  gates <- getGate(obj, y)
+  gates <- gs_get_gate(obj, y)
   gates <- lapply(gates, function(gate) shift_gate(gate, dx = dx, dy = dy, center = center)) 
   setGate(obj, y, gates)
 }

@@ -75,8 +75,8 @@ test_that("getData", {
       
     })
 
-test_that("getGate", {
-      thisRes <- getGate(gslist, "CD4")
+test_that("gs_get_gate", {
+      thisRes <- gs_get_gate(gslist, "CD4")
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), sampleNames(gslist))
       

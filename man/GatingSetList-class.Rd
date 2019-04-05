@@ -65,8 +65,8 @@ Objects store a collection of GatingSets,which usually has the same gating trees
     getData(gslist2, "3+")
     
     #extract the gates associated with one popoulation
-    getGate(gslist2,"3+")
-    getGate(gslist2,5)
+    gs_get_gate(gslist2,"3+")
+    gs_get_gate(gslist2,5)
     
     #extract the pheno data
     pData(gslist2[3:1])

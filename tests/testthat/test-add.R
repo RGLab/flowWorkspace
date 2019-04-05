@@ -20,7 +20,7 @@ test_that("add rectangleGate", {
   
   expect_equal(gs_get_pop_paths(gs), c("root", "/rectangle"))
   expect_equal(getTotal(gs[[1]], node), 649)
-  expect_equivalent(getGate(gs[[1]], node), rg)
+  expect_equivalent(gh_get_gate(gs[[1]], node), rg)
 })
 
 
@@ -40,7 +40,7 @@ test_that("add quadGate", {
 
 test_that("add filterResult", {
   
-  g <- getGate(gs, "CD15 FITC-CD45 PE+")
+  g <- gs_get_gate(gs, "CD15 FITC-CD45 PE+")
   fs <- getData(gs, "rectangle")
   fres <- filter(fs, g)
   expect_error(gs_add_gate(gs, fres, name = "g1", parent = "root"), "does not match to the parent")
@@ -56,7 +56,7 @@ test_that("add filterResult", {
 
 test_that("add logical vector", {
   #local indice (relative to parent)
-  g <- getGate(gs, "CD15 FITC-CD45 PE+")
+  g <- gs_get_gate(gs, "CD15 FITC-CD45 PE+")
   fs <- getData(gs, "rectangle")
   fres <- filter(fs, g)
   ind <- lapply(fres, slot, "subSet")
@@ -70,7 +70,7 @@ test_that("add logical vector", {
 #global indice (relative to root)  
   ind <- lapply(gs, function(gh)getIndices(gh, "CD15 FITC-CD45 PE+"))
   gs_add_gate(gs, ind, name = "g1", parent = "rectangle")
-  expect_is(getGate(gs[[1]], "g1"), "booleanFilter")
+  expect_is(gh_get_gate(gs[[1]], "g1"), "booleanFilter")
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
   expect_equal(getTotal(gs[[1]], "g1"), 155)
   gs_remove_gate("g1", gs)

@@ -149,13 +149,13 @@ test_that("subset.GatingSet",{
   expect_equal(length(gs_sub), 5)
 })
 
-test_that("getGate for gs",{
+test_that("gs_get_gate for gs",{
       
-      thisRes <- getGate(gs, "CD3+")
+      thisRes <- gs_get_gate(gs, "CD3+")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_ellipse.rds"))
       expect_equal(thisRes, expectRes, tol = 5e-04)
       
-      thisRes <- getGate(gs, "singlets")
+      thisRes <- gs_get_gate(gs, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_polygon.rds"))
       expect_equal(thisRes, expectRes, tol = 2e-08)
     })
@@ -166,7 +166,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       stats <- 0.99
       xParam <- "<B710-A>"
       yParam <- "<R780-A>"
-      expect_value <- list(gates = getGate(gs, "CD4")
+      expect_value <- list(gates = gs_get_gate(gs, "CD4")
                             , xParam = xParam
                             , yParam = yParam
                             , stats = stats
@@ -201,7 +201,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
                                         },simplify = FALSE)
       curGates <- sapply(samples,function(curSample){
             
-            filters(lapply(gs_get_pop_paths(gs)[7:8],function(y)getGate(gs[[curSample]],y)))
+            filters(lapply(gs_get_pop_paths(gs)[7:8],function(y)gh_get_gate(gs[[curSample]],y)))
           },simplify=F)
       xParam <- "<R660-A>"
       yParam <- "<V545-A>"
@@ -356,9 +356,9 @@ test_that("getIndices for COMPASS",{
 
 test_that("add", {
       filterslist1 <- lapply(gs, function(gh){
-            cd4_gate  <- getGate(gh, "CD4")
+            cd4_gate  <- gh_get_gate(gh, "CD4")
             cd4_gate@filterId <- "CD4_test"
-            cd8_gate  <- getGate(gh, "CD8")
+            cd8_gate  <- gh_get_gate(gh, "CD8")
             cd8_gate@filterId <- "CD8_test"
             filters(list(cd4_gate,cd8_gate))
           })
@@ -366,12 +366,12 @@ test_that("add", {
       #add without name
       Ids <- gs_add_gate(gs, filterslist1)
       expect_equal(Ids, c(25,26))
-      cd4_gate  <- getGate(gs, "CD4")
+      cd4_gate  <- gs_get_gate(gs, "CD4")
       cd4_gate <- lapply(cd4_gate, function(g){
             g@filterId <- "CD4_test"
             g
           })
-      expect_equal(getGate(gs, "CD4_test"), cd4_gate) 
+      expect_equal(gs_get_gate(gs, "CD4_test"), cd4_gate) 
       gs_remove_gate("CD4_test", gs)
       gs_remove_gate("CD8_test", gs)
       
@@ -381,12 +381,12 @@ test_that("add", {
       
       Ids <- gs_add_gate(gs, filterslist1, names = c("CD4_demo", "CD8_demo"))
       expect_equal(Ids, c(25,26))
-      cd4_gate  <- getGate(gs, "CD4")
+      cd4_gate  <- gs_get_gate(gs, "CD4")
       cd4_gate <- lapply(cd4_gate, function(g){
             g@filterId <- "CD4_demo"
             g
           })
-      expect_equal(getGate(gs, "CD4_demo"), cd4_gate) 
+      expect_equal(gs_get_gate(gs, "CD4_demo"), cd4_gate) 
       gs_remove_gate("CD4_demo", gs)
       gs_remove_gate("CD8_demo", gs)
     })

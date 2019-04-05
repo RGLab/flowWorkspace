@@ -213,7 +213,7 @@ setMethod("getSingleCellExpression",signature=c("GatingSet","character"),functio
               markers <- as.character(pop_chnl[[datSrc]])
             }else{#parse markers from gates
               chnls <- lapply(nodes, function(node){
-                    gate <- getGate(x[[sample]], node)
+                    gate <- gh_get_gate(x[[sample]], node)
                     if(is(gate, "booleanFilter"))
                       stop("can't operate on boolean gates: ", node)
                     dim <- parameters(gate)

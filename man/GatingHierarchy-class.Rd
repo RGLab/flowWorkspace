@@ -28,7 +28,7 @@ library(CytoML)
  nodes <- gs_get_pop_paths(gh)
  thisNode <- nodes[4]
 	plotGate(gh,thisNode);
-	getGate(gh,thisNode);
+	gh_get_gate(gh,thisNode);
 	getData(gh,thisNode)
 }
 }

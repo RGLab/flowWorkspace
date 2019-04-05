@@ -4,6 +4,7 @@
 \docType{class}
 \name{GatingSet-class}
 \alias{GatingSet-class}
+\alias{GatingSet}
 \alias{[,GatingSet,ANY-method}
 \alias{[,GatingSetList,ANY-method}
 \alias{[[,GatingSet,numeric-method}

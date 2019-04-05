@@ -1275,7 +1275,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
     curGates<-sapply(samples,function(curSample){
 
-          filters(lapply(y$popIds,function(y)getGate(x[[curSample]],y)))
+          filters(lapply(y$popIds,function(y)gh_get_gate(x[[curSample]],y)))
         },simplify=F)
     curGates<-as(curGates,"filtersList")
 
@@ -1291,7 +1291,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
   }else
   {
-    curGates<-getGate(x,y)
+    curGates<-gs_get_gate(x,y)
 
     if(suppressWarnings(any(is.na(curGates)))){
       message("Can't plot. There is no gate defined for node ",gs_get_pop_paths(x[[1]],,showHidden=TRUE)[y]);
@@ -1314,7 +1314,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     if(parent == "root"){
       params <- c(default.y, default.x)
     }else{
-      params<-rev(parameters(getGate(x[[1]],parent)))
+      params<-rev(parameters(gh_get_gate(x[[1]],parent)))
     }
 
     overlay <- sapply(samples,function(curSample)getIndices(x[[curSample]],y), simplify = FALSE)
@@ -1844,7 +1844,7 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
 
                       pid <- gs_get_parent(gh, i)
                       isParentGated <- isGated(gh, pid)
-                      bf <- getGate(gh, i)
+                      bf <- gh_get_gate(gh, i)
                       refNodes <- filter_to_list(bf)$refs
                       isRefGated <- all(sapply(refNodes, isGated, obj = gh))
                       !(isParentGated&&isRefGated)
@@ -2119,11 +2119,18 @@ subset.GatingSet <- function (x, subset, ...)
 
   x[as.character(rownames(pd)[r])]
 }
-#' @rdname getGate
+#' @rdname gh_get_gate
 #' @export
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
-			lapply(obj,function(x)getGate(x,y))
+			.Deprecated("gs_get_gate")
+			gs_get_gate(obj, y)
 		})
+
+#' @rdname gh_get_gate
+#' @export
+gs_get_gate <- function(obj,y){
+			lapply(obj,function(x)gh_get_gate(x,y))
+		}
 
 #' @rdname setNode-methods
 #' @export

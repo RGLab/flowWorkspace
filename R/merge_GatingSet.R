@@ -393,7 +393,7 @@ dropRedundantChannels <- function(gs, ...){
   nodes <- gs_get_pop_paths(gs, ...)[-1]
   gh <- gs[[1]]
   params <- unlist(lapply(nodes, function(node){
-        g <- getGate(gh, node)
+        g <- gh_get_gate(gh, node)
         if(class(g) != "booleanFilter"){
          as.vector(parameters(g))  
         }

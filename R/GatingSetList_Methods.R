@@ -98,17 +98,22 @@ setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
 
 
 
-
-#' @rdname getGate
+#' @rdname gh_get_gate
 #' @export
 setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y){
-      
-      res <- lapply(obj,function(gs){
-            getGate(gs,y)      
-          }, level =1)
-      unlist(res,recur=FALSE)
-      
-    })
+			.Deprecated("gs_get_gate")
+			gs_get_gate(obj, y)
+		})
+##' @rdname gh_get_gate
+##' @export
+#setMethod("gh_get_gate",signature(obj="GatingSetList",y="character"),function(obj,y){
+#      
+#      res <- lapply(obj,function(gs){
+#            gh_get_gate(gs,y)      
+#          }, level =1)
+#      unlist(res,recur=FALSE)
+#      
+#    })
 
 #' @export 
 #' @rdname plotGate-methods

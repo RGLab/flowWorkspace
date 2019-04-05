@@ -123,9 +123,9 @@ nodelist
 
 We can get the gate associated with the specific population:
 
-```{r getGate}
+```{r gh_get_gate}
 node <- nodelist[3]
-g <- getGate(gs, node)
+g <- gs_get_gate(gs, node)
 g
 ```
 We can retrieve the population statistics :

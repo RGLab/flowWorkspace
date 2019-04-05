@@ -780,7 +780,18 @@ gh_plot_pop_count_cv <- function(x,m=2,n=2, path = "auto", ...){
       return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
     }
 
-
+#' @templateVar old getGate
+#' @templateVar new gs(/gh)_get_gate
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getGate",function(obj,y,...)standardGeneric("getGate"))
+#' @rdname gh_get_gate
+#' @export
+setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+      .Deprecated("gh_get_gate")
+			gh_get_gate(obj, y)
+		})
 #'  Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.
 #'
 #'  Return the flowCore gate definition object associated with a node in a \code{GatingHierarchy} or \code{GatingSet} object.
@@ -793,16 +804,15 @@ gh_plot_pop_count_cv <- function(x,m=2,n=2, path = "auto", ...){
 #' @seealso \code{\link{getData}} \code{\link{gs_get_pop_paths}}
 #' @examples
 #'   \dontrun{	#gh is a GatingHierarchy
-#'     getGate(gh, "CD3") #return the gate for the fifth node in the tree, but fetch it by name.
+#'     gh_get_gate(gh, "CD3") #return the gate for the fifth node in the tree, but fetch it by name.
 #'     #G is a GatingSet
-#'     getGate(G, "CD3") #return a list of gates for the fifth node in each tree
+#'     gs_get_gate(G, "CD3") #return a list of gates for the fifth node in each tree
 #'   }
 #' @aliases
-#' getGate
-#' @rdname getGate
+#' gh_get_gate
+#' @rdname gh_get_gate
 #' @export
-setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-
+gh_get_gate <- function(obj,y){
 
 				g<-.cpp_getGate(obj@pointer,sampleNames(obj), y)
 				filterId <- g$filterId
@@ -852,7 +862,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 					stop("not supported gate type",g$type)
 
 
-		})
+		}
         
 #' Retrieve the cluster labels from the cluster nodes
 #' 
@@ -1101,7 +1111,7 @@ setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,
 
 
 .isBoolGate<-function(x,y){
-	return (class(getGate(x,y))=="booleanFilter")
+	return (class(gh_get_gate(x,y))=="booleanFilter")
 }
 
 #' @templateVar old openWorkspace
@@ -1498,7 +1508,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 
 					if(!.isBoolGate(gh,y))
 					{
-						curGate<-getGate(gh,y)
+						curGate<-gh_get_gate(gh,y)
                         thisParam <- parameters(curGate)
 						if(extends(class(curGate),"filter"))
 						{

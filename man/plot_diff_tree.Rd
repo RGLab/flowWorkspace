@@ -8,6 +8,10 @@ plot_diff_tree(x, path = "auto", ...)
 }
 \arguments{
 \item{x}{\code{list} of groups(each group is a list of 'GatingSet`). it is usually the outcome from \link{groupByTree}.}
+
+\item{path}{passed to \code{getNodes}}
+
+\item{...}{passed to \code{getNodes}}
 }
 \description{
 visualize the tree structure differnece among the GatingSets

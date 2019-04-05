@@ -59,9 +59,9 @@ test_that("updateChannles",{
   expect_equal(oldCols, cols)
   
   #check gates
-  expect_equivalent(unique(lapply(getGate(gs1, "singlets"), parameters))[[1]], c("fsc", "FSC-H"))
-  expect_equivalent(unique(lapply(getGate(gs1, "CD3+"), parameters))[[1]], c("<v450-a>", "SSC-A"))
-  expect_equivalent(unique(lapply(getGate(gs1, "CD4"), parameters))[[1]], c("<b710>", "<R780-A>"))
+  expect_equivalent(unique(lapply(gs_get_gate(gs1, "singlets"), parameters))[[1]], c("fsc", "FSC-H"))
+  expect_equivalent(unique(lapply(gs_get_gate(gs1, "CD3+"), parameters))[[1]], c("<v450-a>", "SSC-A"))
+  expect_equivalent(unique(lapply(gs_get_gate(gs1, "CD4"), parameters))[[1]], c("<b710>", "<R780-A>"))
   
   #check comps
   comp <- unique(lapply(gs1, getCompensationMatrices))[[1]]

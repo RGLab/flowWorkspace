@@ -142,10 +142,10 @@ test_that("gs_get_pop_paths & setNode",{
 
 test_that("setGate", {
       
-      gate_cd4 <- getGate(gh, "CD4")
-      gate_cd8 <- getGate(gh, "CD8")
+      gate_cd4 <- gh_get_gate(gh, "CD4")
+      gate_cd8 <- gh_get_gate(gh, "CD8")
       invisible(setGate(gh, "CD4", gate_cd8))
-      expect_equal(getGate(gh, "CD4")@cov, gate_cd8@cov)
+      expect_equal(gh_get_gate(gh, "CD4")@cov, gate_cd8@cov)
       suppressMessages(recompute(gh, "CD4"))
       expect_equal(getTotal(gh, "CD4"), getTotal(gh, "CD8"))
       
@@ -319,15 +319,15 @@ test_that("compute CV from gh",{
       
     })
 
-test_that("getGate",{
+test_that("gh_get_gate",{
       
-      thisRes <- getGate(gh, "singlets")
+      thisRes <- gh_get_gate(gh, "singlets")
       expect_is(thisRes, "polygonGate")
       
       #add a rectangleGate to test 
       rg <- rectangleGate(filterId="myRectGate", list("FSC-A"=c(200, 600),"SSC-A"=c(0, 400)))      
       id <- gh_add_gate(gh, rg)
-      thisRes <- getGate(gh, "myRectGate")
+      thisRes <- gh_get_gate(gh, "myRectGate")
       expect_is(thisRes, "rectangleGate")
       expect_equal(thisRes@min, rg@min)
       expect_equal(thisRes@max, rg@max)
@@ -337,7 +337,7 @@ test_that("getGate",{
       #add a bool gate to test
       bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
       suppressWarnings(id <- gh_add_gate(gh, bf))
-      thisRes <- getGate(gh, "myBoolFilter")
+      thisRes <- gh_get_gate(gh, "myBoolFilter")
       expect_is(thisRes, "booleanFilter")
       
       expect_equal(as.character(thisRes@expr), as.character(bf@expr))

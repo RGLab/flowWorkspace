@@ -23,14 +23,14 @@ gs_remove_gate("DNT", gs2)
 # remove singlets gate
 suppressMessages(gs3 <- clone(gs2))
 gs_remove_gate("singlets", gs3)
-suppressMessages(gs_add_gate(gs3, getGate(gs2, "CD3+"), parent = "not debris"))
+suppressMessages(gs_add_gate(gs3, gs_get_gate(gs2, "CD3+"), parent = "not debris"))
 for(tsub in c("CD4", "CD8"))
 {
-  suppressMessages(gs_add_gate(gs3, getGate(gs2, tsub), parent = "CD3+"))
+  suppressMessages(gs_add_gate(gs3, gs_get_gate(gs2, tsub), parent = "CD3+"))
   for(toAdd in gs_get_children(gs2, tsub))
   {
     thisParent <- gs_get_parent(gs2[[1]], toAdd, path = "auto")
-    suppressMessages(gs_add_gate(gs3, getGate(gs2, toAdd), parent = thisParent))
+    suppressMessages(gs_add_gate(gs3, gs_get_gate(gs2, toAdd), parent = thisParent))
   }
 }
 sampleNames(gs3) <- "3.fcs"
@@ -40,19 +40,19 @@ suppressMessages(gs4 <- clone(gs3))
 # rm cd4 branch first
 gs_remove_gate("CD4", gs4)
 # add it back
-suppressMessages(gs_add_gate(gs4, getGate(gs3, "CD4"), parent = "CD3+"))
+suppressMessages(gs_add_gate(gs4, gs_get_gate(gs3, "CD4"), parent = "CD3+"))
 # add all the chilren back
 for(toAdd in gs_get_children(gs3, "CD4"))
 {
   thisParent <- gs_get_parent(gs3[[1]], toAdd)
-  suppressMessages(gs_add_gate(gs4, getGate(gs3, toAdd), parent = thisParent))
+  suppressMessages(gs_add_gate(gs4, gs_get_gate(gs3, toAdd), parent = thisParent))
 }
 sampleNames(gs4) <- "4.fcs"
 
 suppressMessages(gs5 <- clone(gs4))
 # add another redundant node
-suppressMessages(gs_add_gate(gs5, getGate(gs0, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4"))
-suppressMessages(gs_add_gate(gs5, getGate(gs0, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4"))
+suppressMessages(gs_add_gate(gs5, gs_get_gate(gs0, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4"))
+suppressMessages(gs_add_gate(gs5, gs_get_gate(gs0, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4"))
 sampleNames(gs5) <- "5.fcs"
 
 

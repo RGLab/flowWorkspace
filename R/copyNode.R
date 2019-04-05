@@ -40,7 +40,7 @@ gh_copy_gate<- function(gh, node, to){
 .copyNode <- function(gh, node, to){
   children <- gs_get_children(gh, node, path = "full", showHidden = TRUE)
   node_name <- basename(node)
-  gh_add_gate(gh, action = getGate(gh, node), negated = isNegated(gh, node), 
+  gh_add_gate(gh, action = gh_get_gate(gh, node), negated = isNegated(gh, node), 
       parent = to, name = node_name, recompute = FALSE)
   added <- paste(to, node_name, sep = "/")
   if(isHidden(gh, node)){

@@ -18,8 +18,6 @@
 
 \code{plotGate} --> \code{\link{autoplot}}
 
-\code{getGate} --> \code{\link{gs(/gh)_get_gate}}
-
 \code{setGate} --> \code{\link{gs(/gh)_set_gate}}
 
 \code{getSingleCellExpression} --> \code{\link{gs_get_singlecell_expression}}
@@ -35,6 +33,8 @@
 \code{getTotal} --> \code{\link{gs(/gh)_get_count}}
 
 \code{getPopStats} --> \code{\link{gs(/gh)_get_pop_stats}}
+
+\code{getGate} --> \code{\link{gs(/gh)_get_gate}}
 
 \code{openWorkspace} --> \code{\link{open_workspace}}
 

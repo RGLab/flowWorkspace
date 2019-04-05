@@ -5,7 +5,7 @@ test_that("group and merge the GatingSet object", {
   stats <- gs_get_pop_stats(gs)
   
   #change the order of nodes by removing and adding it back
-  g <- getGate(gs[[1]], "CD19")
+  g <- gh_get_gate(gs[[1]], "CD19")
   gh_remove_gate("CD19", gs[[1]])
   gh_add_gate(gs[[1]], g, parent = "Live")
   recompute(gs)
