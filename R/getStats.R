@@ -77,11 +77,11 @@ getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.tr
       type <- match.arg(type, c("count", "percent"))
       if(type == "count")
       {
-        res <- getTotal(gh, node)
+        res <- gh_get_count(gh, node)
         names(res) <- "count"
       }else if(type == "percent")
       {
-        res <- getProp(gh, node)
+        res <- gh_get_proportion(gh, node)
         names(res) <- "percent"
       }else
         stop("unsupported stats type: ", type)

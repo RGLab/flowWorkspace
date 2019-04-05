@@ -188,7 +188,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       samples <- sampleNames(gs)
       
       #miss stats argument
-      expect_value[["stats"]] <- sapply(samples, function(sn)getProp(gs[[sn]], gs_get_pop_paths(gs[[sn]])[5]), simplify = FALSE)
+      expect_value[["stats"]] <- sapply(samples, function(sn)gh_get_proportion(gs[[sn]], gs_get_pop_paths(gs[[sn]])[5]), simplify = FALSE)
       myValue <- flowWorkspace:::.preplot(x = gs, y = "CD4", type = "xyplot", formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
 
@@ -196,7 +196,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_value[["stats"]] <- sapply(samples,function(thisSample){
                                           lapply(7:8,function(thisY){
                                                 curGh <- gs[[thisSample]]
-                                                getProp(curGh,gs_get_pop_paths(curGh,showHidden=TRUE)[thisY],xml = F)
+                                                gh_get_proportion(curGh,gs_get_pop_paths(curGh,showHidden=TRUE)[thisY],xml = F)
                                               })
                                         },simplify = FALSE)
       curGates <- sapply(samples,function(curSample){

@@ -1284,7 +1284,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       stats <- sapply(samples,function(thisSample){
             lapply(y$popIds,function(thisY){
                   curGh <- x[[thisSample]]
-                  getProp(curGh, thisY, xml = F)
+                  gh_get_proportion(curGh, thisY, xml = F)
                 })
           },simplify = FALSE)
     }
@@ -1301,7 +1301,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     if(missing(stats)){
       stats <- sapply(samples,function(thisSample){
             curGh <- x[[thisSample]]
-            getProp(curGh, y,xml = F)
+            gh_get_proportion(curGh, y,xml = F)
           },simplify = FALSE)
     }else
       stats = stats
@@ -2240,9 +2240,9 @@ setMethod("show","GatingSet",function(object){
 #' Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
 #'   or the population proportions or the total number of events of a node (population) in a GatingHierarchy
 #'
-#' getProp calculates the population proportion (events in the gate / events in the parent population) associated with a node in the \code{GatingHierarchy}.
+#' gh_get_proportion calculates the population proportion (events in the gate / events in the parent population) associated with a node in the \code{GatingHierarchy}.
 #' gs_get_pop_stats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
-#' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
+#' gh_get_count returns the total number of events in the gate defined in the GatingHierarchy object
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param xml \code{logical} indicating whether the statistics come from xml (if parsed from xml workspace) or from openCyto.
@@ -2253,21 +2253,21 @@ setMethod("show","GatingSet",function(object){
 #'
 #' @details
 #' gs_get_pop_stats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
-#' getProp returns the proportion of cells in the gate, relative to its parent.
-#' getTotal returns the total number of events included in this gate. The contents of "thisTot" variable in the "metadata" environment of the \code{nodeData} element associated with the gating tree and gate / population.
+#' gh_get_proportion returns the proportion of cells in the gate, relative to its parent.
+#' gh_get_count returns the total number of events included in this gate. The contents of "thisTot" variable in the "metadata" environment of the \code{nodeData} element associated with the gating tree and gate / population.
 #'
 #' @return
 #' gs_get_pop_stats returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
-#' getProp returns  a population frequency \code{numeric}.
-#' getTotal returns a \code{numeric} value of the total number of elements in the population.
+#' gh_get_proportion returns  a population frequency \code{numeric}.
+#' gh_get_count returns a \code{numeric} value of the total number of elements in the population.
 #' @seealso \code{\link{gs_get_pop_paths}}
 #' @examples
 #'         \dontrun{
 #'         #gh is a GatingHierarchy
 #'         gs_get_pop_stats(gh);
 #'         #proportion for the fifth population
-#'         getProp(gh,gs_get_pop_paths(gh)[5])
-#'         getTotal(gh,gs_get_pop_paths(gh,tsort=T)[5])
+#'         gh_get_proportion(gh,gs_get_pop_paths(gh)[5])
+#'         gh_get_count(gh,gs_get_pop_paths(gh,tsort=T)[5])
 #'
 #'         #gs is a GatingSet
 #'         gs_get_pop_stats(gs)

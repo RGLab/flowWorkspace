@@ -147,7 +147,7 @@ test_that("setGate", {
       invisible(setGate(gh, "CD4", gate_cd8))
       expect_equal(gh_get_gate(gh, "CD4")@cov, gate_cd8@cov)
       suppressMessages(recompute(gh, "CD4"))
-      expect_equal(getTotal(gh, "CD4"), getTotal(gh, "CD8"))
+      expect_equal(gh_get_count(gh, "CD4"), gh_get_count(gh, "CD8"))
       
       #restore the gate
       invisible(setGate(gh, "CD4", gate_cd4))
@@ -272,26 +272,26 @@ test_that(".getPopStat",{
     })      
 
 
-test_that("getProp",{
+test_that("gh_get_proportion",{
       
-      expect_equal(getProp(gh, "singlets"), 0.9487789)
+      expect_equal(gh_get_proportion(gh, "singlets"), 0.9487789)
       
-      expect_equal(getProp(gh, "singlets", xml = FALSE), 0.9487789)
+      expect_equal(gh_get_proportion(gh, "singlets", xml = FALSE), 0.9487789)
       
-      expect_equal(getProp(gh, "singlets", xml = TRUE), 0.9488988, tol = 1e-7)
+      expect_equal(gh_get_proportion(gh, "singlets", xml = TRUE), 0.9488988, tol = 1e-7)
       
-      expect_error(getProp(gh, "singlet"), "singlet not found")
+      expect_error(gh_get_proportion(gh, "singlet"), "singlet not found")
     })      
 
-test_that("getTotal",{
+test_that("gh_get_count",{
       
-      expect_equal(getTotal(gh, "singlets"), 87022)
+      expect_equal(gh_get_count(gh, "singlets"), 87022)
       
-      expect_equal(getTotal(gh, "singlets", xml = FALSE), 87022)
+      expect_equal(gh_get_count(gh, "singlets", xml = FALSE), 87022)
       
-      expect_equal(getTotal(gh, "singlets", xml = TRUE), 87033)
+      expect_equal(gh_get_count(gh, "singlets", xml = TRUE), 87033)
       
-      expect_error(getTotal(gh, "singlet"), "singlet not found")
+      expect_error(gh_get_count(gh, "singlet"), "singlet not found")
     })      
 
 

@@ -19,7 +19,7 @@ test_that("add rectangleGate", {
   recompute(gs)
   
   expect_equal(gs_get_pop_paths(gs), c("root", "/rectangle"))
-  expect_equal(getTotal(gs[[1]], node), 649)
+  expect_equal(gh_get_count(gs[[1]], node), 649)
   expect_equivalent(gh_get_gate(gs[[1]], node), rg)
 })
 
@@ -34,7 +34,7 @@ test_that("add quadGate", {
                                , "/rectangle/CD15 FITC-CD45 PE-"
                                ))
   recompute(gs)
-  expect_equal(getTotal(gs[[1]], "CD15 FITC-CD45 PE+"), 155)
+  expect_equal(gh_get_count(gs[[1]], "CD15 FITC-CD45 PE+"), 155)
 })
 
 
@@ -49,7 +49,7 @@ test_that("add filterResult", {
   gs_add_gate(gs, fres, name = "g1", parent = "rectangle")
   
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
-  expect_equal(getTotal(gs[[1]], "g1"), 155)
+  expect_equal(gh_get_count(gs[[1]], "g1"), 155)
   gs_remove_gate("g1", gs)
   
 })
@@ -64,7 +64,7 @@ test_that("add logical vector", {
   gs_add_gate(gs, ind, name = "g1", parent = "rectangle")
   
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
-  expect_equal(getTotal(gs[[1]], "g1"), 155)
+  expect_equal(gh_get_count(gs[[1]], "g1"), 155)
   gs_remove_gate("g1", gs)
   
 #global indice (relative to root)  
@@ -72,7 +72,7 @@ test_that("add logical vector", {
   gs_add_gate(gs, ind, name = "g1", parent = "rectangle")
   expect_is(gh_get_gate(gs[[1]], "g1"), "booleanFilter")
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
-  expect_equal(getTotal(gs[[1]], "g1"), 155)
+  expect_equal(gh_get_count(gs[[1]], "g1"), 155)
   gs_remove_gate("g1", gs)
 })
 
@@ -105,10 +105,10 @@ test_that("add factor vector", {
   
   expect_equal(gs_get_pop_paths(gs)[7:10], c("/rectangle/clusterA_Q1", "/rectangle/clusterA_Q2"
                                      , "/rectangle/clusterA_Q3", "/rectangle/clusterA_Q5"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q1"), getTotal(gs[[1]], "CD15 FITC-CD45 PE+"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q2"), getTotal(gs[[1]], "CD15 FITC+CD45 PE+"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q3"), getTotal(gs[[1]], "CD15 FITC+CD45 PE-"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q5"),0)
+  expect_equal(gh_get_count(gs[[1]], "clusterA_Q1"), gh_get_count(gs[[1]], "CD15 FITC-CD45 PE+"))
+  expect_equal(gh_get_count(gs[[1]], "clusterA_Q2"), gh_get_count(gs[[1]], "CD15 FITC+CD45 PE+"))
+  expect_equal(gh_get_count(gs[[1]], "clusterA_Q3"), gh_get_count(gs[[1]], "CD15 FITC+CD45 PE-"))
+  expect_equal(gh_get_count(gs[[1]], "clusterA_Q5"),0)
   
   expect_error(gs_add_gate(gs, fac.list, parent = "rectangle", name = "clusterA")
                , "exist")
@@ -139,14 +139,14 @@ test_that("add boolean filter", {
   bf <- booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC-CD45 PE-`)
   gs_add_gate(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
-  expect_equal(getTotal(gs[[1]], or_node), 561)
+  expect_equal(gh_get_count(gs[[1]], or_node), 561)
   gs_remove_gate(or_node, gs)
   
   #abs path
   bf <- booleanFilter(`/rectangle/CD15 FITC-CD45 PE+|/rectangle/CD15 FITC-CD45 PE-`)
   gs_add_gate(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
-  expect_equal(getTotal(gs[[1]], or_node), 561)
+  expect_equal(gh_get_count(gs[[1]], or_node), 561)
   gs_remove_gate(or_node, gs)
   
   #abs path
@@ -155,7 +155,7 @@ test_that("add boolean filter", {
   bf <- booleanFilter(Q1|rectangle/Q4)
   gs_add_gate(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
-  expect_equal(getTotal(gs[[1]], or_node), 561)
+  expect_equal(gh_get_count(gs[[1]], or_node), 561)
   
   
   #abs path

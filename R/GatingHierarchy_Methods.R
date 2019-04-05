@@ -655,14 +655,17 @@ gs_get_children <- function(obj,y, showHidden = TRUE, ...){
 #' @templateVar new gh_get_proportion
 #' @template template-depr_pkg
 NULL
+#' @rdname gh_get_pop_stats
 #' @export
-setGeneric("getProp",function(x,y,...)standardGeneric("getProp"))
-
+getProp <- function(x,y,xml = FALSE){
+	.Deprecated("gh_get_proportion")
+	gh_get_proportion(x, y, xml)
+}
 #' @param y \code{character} node name or path
 #' @rdname gh_get_pop_stats
 #' @export
-#' @aliases getProp
-setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,xml = FALSE){
+#' @aliases gh_get_proportion
+gh_get_proportion <- function(x,y,xml = FALSE){
 			#Return the proportion of the population relative to the parent and relative to the total.
 			#y is nodename
 
@@ -672,18 +675,22 @@ setMethod("getProp",signature(x="GatingHierarchy",y="character"),function(x,y,xm
 			else
 				unname(stats$openCyto["proportion"])
 
-		})
+		}
 #' @templateVar old getTotal
 #' @templateVar new gs(/gh)_get_count
 #' @template template-depr_pkg
 NULL
+#' @rdname gh_get_pop_stats
 #' @export
-setGeneric("getTotal",function(x,y,...)standardGeneric("getTotal"))
+getTotal <- function(x,y,xml = FALSE){
+	.Deprecated("gh_get_count")
+	gh_get_count(x, y, xml)
+}
 
 #' @rdname gh_get_pop_stats
 #' @export
-#' @aliases getTotal
-setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,xml = FALSE){
+#' @aliases gh_get_count
+gh_get_count <- function(x,y,xml = FALSE){
             stats<-.getPopStat(x,y)
 			if(xml)
 				unname(stats$xml["count"])
@@ -691,7 +698,7 @@ setMethod("getTotal",signature(x="GatingHierarchy",y="character"),function(x,y,x
 				unname(stats$openCyto["count"])
 #			browser()
 
-		})
+		}
 
 
 .getPopStat<-function(x,y){
@@ -876,7 +883,7 @@ gh_get_gate <- function(obj,y){
 #' @export
 gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
   nodes <- gs_get_children(gh, parent)
-  res <- rep(NA, getTotal(gh, "root"))
+  res <- rep(NA, gh_get_count(gh, "root"))
   empty_pops <- NULL
   isFound <- FALSE
   for(node in nodes)
@@ -971,7 +978,7 @@ NULL
 #'
 #' @return  A logical vector of length equal to the number of events in the FCS file that determines whether each event is or is not included in the current gate.
 #'
-#' @note Generally you should not need to use \code{getIndices} but the more convenient methods \code{getProp} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
+#' @note Generally you should not need to use \code{getIndices} but the more convenient methods \code{gh_get_proportion} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
 #' The indices returned reference all events in the file and are not directly suitable for computing population statistics, unless subsets are taken with respect to the parent populations.
 #'
 #' @seealso \code{\link{gh_get_pop_stats}}
