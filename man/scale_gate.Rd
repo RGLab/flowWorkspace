@@ -29,7 +29,7 @@ This method allows uniform or non-uniform geometric scaling of filter types defi
 (\code{\linkS4class{quadGate}}, \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, and 
 \code{\linkS4class{polygonGate}}) Note that these methods are for manually altering
 the geometric definition of a gate. To easily transform the definition of a gate with an accompanyging scale 
-transformation applied to its underlying data, see \code{\link[ggcyto]{rescale_gate}}.
+transformation applied to its underlying data, see ?ggcyto::rescale_gate.
 
 The \code{scale} argument passed to \code{scale_gate} should be either a scalar or a vector of the same length
 as the number of dimensions of the gate. If it is scalar, all dimensions will be multiplicatively scaled uniformly

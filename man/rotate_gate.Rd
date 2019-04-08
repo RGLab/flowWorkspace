@@ -33,7 +33,7 @@ updating of the gate associated with a node of a \code{GatingHierarchy} or \code
 \code{rotate_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
-object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+object of type \code{flowCore:filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
 object with an additional character argument for specifying the node whose gate should be transformed. 
 The rest of the details below are taken from the \code{flowCore} documentation.
 }
