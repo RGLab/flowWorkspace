@@ -2489,7 +2489,7 @@ transformerList <- function (from, trans)
 
 #' Compute logicle transformation from the flowData associated with a GatingHierarchy
 #' 
-#' See details in \link[flowCore]{estimateLogicle}
+#' See details in ?flowCore::estimateLogicle
 #' 
 #' @param x a GatingHierarchy
 #' @param channels channels or markers for which the logicle transformation is to be estimated.

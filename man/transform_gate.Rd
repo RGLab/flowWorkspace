@@ -51,7 +51,7 @@ updating of the gate associated with a node of a \code{GatingHierarchy} or \code
 \code{transform_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
-object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+object of type \code{flowCore::filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
 object with an additional character argument for specifying the node whose gate should be transformed. 
 The rest of the details below are taken from the \code{flowCore} documentation.
 }
@@ -61,7 +61,7 @@ This method allows changes to the four filter types defined by simple geometric 
 equally simple geometric transformations (shifting/translation, scaling/dilation, and rotation). The method also
 allows for directly re-setting the slots of each Gate-type object. Note that these methods are for manually altering
 the geometric definition of a gate. To easily transform the definition of a gate with an accompanyging scale 
-transformation applied to its underlying data, see \code{\link[ggcyto]{rescale_gate}}.
+transformation applied to its underlying data, see ?ggcyto::rescale_gate.
 
 First, \code{transform_gate} will apply any direct alterations to the slots of the supplied Gate-type filter object.
 For example, if "\code{mean = c(1,3)}" is present in the argument list when \code{transform_gate} is called on a

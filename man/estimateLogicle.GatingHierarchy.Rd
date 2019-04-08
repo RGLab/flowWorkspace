@@ -17,7 +17,7 @@
 transformerList object
 }
 \description{
-See details in \link[flowCore]{estimateLogicle}
+See details in ?flowCore::estimateLogicle
 }
 \examples{
 \dontrun{
