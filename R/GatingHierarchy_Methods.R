@@ -23,7 +23,7 @@ gs_get_compensation_internal <- function(gs, sampleName) {
 #Bug here when the GatingSet has a mix of compensated and uncompensated data.. maybe need a isCompensated method..
 .isCompensated<-function(x){
   flowCore:::checkClass(x,"GatingHierarchy")
-  comp<-getCompensationMatrices(x)@spillover
+  comp<-gh_get_compensations(x)@spillover
 
   !(is.null(rownames(comp))&identical(comp%*%comp,comp))
 }
@@ -486,7 +486,7 @@ setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 #' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing", ...){
-      fr <- getData(object, use.exprs = FALSE)
+      fr <- gh_get_data(object, use.exprs = FALSE)
       flowCore::keyword(fr, ...)
     })
 
@@ -523,7 +523,7 @@ setGeneric("getNodes",function(x,...)standardGeneric("getNodes"))
 #'     gs_get_pop_paths(G,path = "full")#return the full path
 #'     gs_get_pop_paths(G,path = 2)#return the path as length of two
 #'     gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
-#'     setNode(G,"L","lymph")
+#'     gs_set_node_name(G,"L","lymph")
 #'   }
 #' @aliases gs_get_pop_paths
 #' @rdname gs_get_pop_paths
@@ -808,7 +808,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #'
 #' @return  A gate object from \code{flowCore}. Usually a \code{polygonGate}, but may be a \code{rectangleGate}. Boolean gates are represented by a \code{"BooleanGate"} S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If \code{obj} is a \code{GatingSet}, assuming the trees associated with each \code{GatingHierarchy} are identical, then this method will return a list of gates, one for each sample in the \code{GatingSet} corresponding to the same population indexed by \code{y}.
 #'
-#' @seealso \code{\link{getData}} \code{\link{gs_get_pop_paths}}
+#' @seealso \code{\link{gh_get_data}} \code{\link{gs_get_pop_paths}}
 #' @examples
 #'   \dontrun{	#gh is a GatingHierarchy
 #'     gh_get_gate(gh, "CD3") #return the gate for the fifth node in the tree, but fetch it by name.
@@ -894,7 +894,7 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
         if(g[["cluster_method_name"]] == cluster_method_name)
         {
           isFound <- TRUE
-          ind <- which(getIndices(gh, node))
+          ind <- which(gh_get_indices(gh, node))
           if(all(is.na(res[ind])))
           {
             pop <- extract_cluster_pop_name_from_node(node, cluster_method_name)
@@ -963,8 +963,8 @@ gh_check_cluster_node <- function(gh, node){
 }
 
 
-#' @templateVar old openWorkspace
-#' @templateVar new open_workspace
+#' @templateVar old getIndices
+#' @templateVar new gh_get_indices
 #' @template template-depr_pkg
 NULL
 #'  Get the membership indices for each event with respect to a particular gate in a GatingHierarchy
@@ -978,7 +978,7 @@ NULL
 #'
 #' @return  A logical vector of length equal to the number of events in the FCS file that determines whether each event is or is not included in the current gate.
 #'
-#' @note Generally you should not need to use \code{getIndices} but the more convenient methods \code{gh_get_proportion} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
+#' @note Generally you should not need to use \code{gh_get_indices} but the more convenient methods \code{gh_get_proportion} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
 #' The indices returned reference all events in the file and are not directly suitable for computing population statistics, unless subsets are taken with respect to the parent populations.
 #'
 #' @seealso \code{\link{gh_get_pop_stats}}
@@ -987,42 +987,46 @@ NULL
 #'   \dontrun{
 #'     #G is a gating hierarchy
 #'     #Return the indices for population 5 (topological sort)
-#'     getIndices(G,gs_get_pop_paths(G,tsort=TRUE)[5]);
+#'     gh_get_indices(G,gs_get_pop_paths(G,tsort=TRUE)[5]);
 #' }
 #'
-#' @aliases getIndices
-#' @rdname getIndices
+#' @aliases gh_get_indices
+#' @rdname gh_get_indices
 #' @export
 setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-
-            .cpp_getIndices(obj@pointer,sampleNames(obj), y)
-
+			.Deprecated("gh_get_indices")
+			gh_get_indices(obj, y)
+ 
 		})
-
+#' @rdname gh_get_indices
+#' @export
+gh_get_indices <- function(obj,y){
+	.cpp_getIndices(obj@pointer,sampleNames(obj), y)
+}
 #' @templateVar old isGated
 #' @templateVar new gh_is_gated
 #' @template template-depr_pkg
 NULL
 #' The flags of gate nodes
-#' isGated checks if a node is already gated
-#' isNegated checks if a node is negated.
-#' isHidden checks if a node is hidden.
+#' gh_is_gated checks if a node is already gated
+#' gh_is_negated checks if a node is negated.
+#' gh_is_hidden checks if a node is hidden.
 #' 
 #' @param obj GatingHierarchy
 #' @param y node/gating path
 #' @param ... not used
 #' @rdname nodeflags
 #' @export 
-setGeneric("isGated",function(obj, y, ...)standardGeneric("isGated"))
-#' @rdname nodeflags
-#' @export 
-setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+isGated <- function(obj,y){
+			.Deprecated("gh_is_gated")
+			gh_is_gated(obj, y)
+			
+		}
 
-#			browser()
-
+gh_is_gated <- function(obj,y){
       .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
 
-    })
+    }
 
 #' @templateVar old isNegated
 #' @templateVar new gh_is_negated
@@ -1030,15 +1034,15 @@ setMethod("isGated",signature(obj="GatingHierarchy",y="character"),function(obj,
 NULL
 #' @rdname nodeflags
 #' @export 
-setGeneric("isNegated",function(obj, y, ...)standardGeneric("isNegated"))
-#' @rdname nodeflags
-#' @export 
-setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-
+isNegated <- function(obj,y){
+			.Deprecated("gh_is_negated")
+			gh_is_negated(obj, y)
+			
+		}
+gh_is_negated <- function(obj,y){
       .cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
 
-
-    })
+    }
 
 #' @templateVar old isHidden
 #' @templateVar new gh_is_hidden
@@ -1046,28 +1050,32 @@ setMethod("isNegated",signature(obj="GatingHierarchy",y="character"),function(ob
 NULL
 #' @rdname nodeflags
 #' @export 
-setGeneric("isHidden",function(obj, y, ...)standardGeneric("isHidden"))
-#' @rdname nodeflags
-#' @export 
-setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-      
+isHidden <- function(obj,y){
+			.Deprecated("gh_is_hidden")
+			gh_is_hidden(obj, y)
+			
+		}
+gh_is_hidden  <- function(obj,y){		
       .cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
-      
-      
-    })
+    }
 
 
+#' @templateVar old getData
+#' @templateVar new gs(/gh)_get_data
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #'
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #'
 #' @details
 #' Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}.
-#' Subset membership can be obtained using \code{getIndices}.
+#' Subset membership can be obtained using \code{gh_get_indices}.
 #' Population statistics can be obtained using \code{getPop} and \code{gh_get_pop_stats}.
-#' When calling \code{getData} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
-#' To update the data, use \code{flowData} method.
-
+#' When calling \code{gh_get_data} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
+#' To update the data, use \code{gs_cyto_data} method.
 #' @param obj A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.
 #' @param  y \code{character}  the node name or full(/partial) gating path.
 #'                             	If not specified, will return the complete flowFrame/flowSet at the root node.
@@ -1078,7 +1086,7 @@ setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj
 #' A \code{flowSet} or \code{ncdfFlowSet} if a \code{GatingSet}.
 #' A \code{ncdfFlowList} if a \code{GatingSetList}.
 #' @seealso
-#'   \code{\link{flowData}} \code{\link{getIndices}} \code{\link{gh_get_pop_stats}}
+#'   \code{\link{gs_cyto_data}} \code{\link{gh_get_indices}} \code{\link{gh_get_pop_stats}}
 #'
 #' @examples
 #'   \dontrun{
@@ -1087,34 +1095,36 @@ setMethod("isHidden",signature(obj="GatingHierarchy",y="character"),function(obj
 #'     geData(G,"cd4")
 #'
 #'     #gh is a GatingHierarchy
-#'     getData(gh)
+#'     gh_get_data(gh)
 #' }
-#' @aliases getData
-#' @rdname getData-methods
+#' @aliases gh_get_data
+#' @rdname gh_get_data-methods
 #' @export
-setMethod("getData",signature(obj="GatingHierarchy",y="missing"),function(obj,y, ...){
-      if(!obj@flag){
-        stop("Must gate the data before fetching data");
-      }
-
-      fs <- flowData(obj)
-      fs[[sampleNames(obj),...]]
-
+setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...){
+  .Deprecated("gh_get_data")
+  gh_get_data(obj, y)
+  
 })
-
-#' @rdname getData-methods
+      
+#' @rdname gh_get_data-methods
 #' @export
-setMethod("getData",signature(obj="GatingHierarchy",y="character"),function(obj,y, ...){
-
-        this_data <- getData(obj, ...)
+gh_get_data <- function(obj, y = "root", ...){
+      
+        if(!obj@flag){
+          stop("Must gate the data before fetching data");
+        }
+        
+        fs <- gs_cyto_data(obj)
+        this_data <- fs[[sampleNames(obj),...]]
+        
         if(y == "root"){
           return (this_data)
         }else{
 
-          this_indice <- getIndices(obj,y)
+          this_indice <- gh_get_indices(obj,y)
           return (this_data[this_indice,])
         }
-})
+}
 
 
 .isBoolGate<-function(x,y){
@@ -1144,7 +1154,7 @@ prettyAxis <- function(gh, channel){
         res <- getAxisLabels(gh)[[channel]] #this call is to be deprecated once we figure out how to preserve trans when cloning GatingSet
         if(is.null(res)){
           #try to grab trans and do inverse trans for axis label on the fly
-            trans <- getTransformations(gh, channel, only.function = FALSE)
+            trans <- gh_get_transformations(gh, channel, only.function = FALSE)
             if(is.null(trans)){
               res <- NULL
             }else{
@@ -1152,7 +1162,7 @@ prettyAxis <- function(gh, channel){
               trans.func <- trans[["transform"]]
               brk.func <- trans[["breaks"]]
 
-              fr <- getData(gh, use.exprs = FALSE)
+              fr <- gh_get_data(gh, use.exprs = FALSE)
               r <- as.vector(range(fr)[,channel])#range
               raw <- inv.func(r)
               brks <- brk.func(raw)
@@ -1181,7 +1191,7 @@ getAxisLabels <- function(obj,...){
 #' @templateVar new gh_get_transformations
 #' @template template-depr_pkg
 NULL
-#' @rdname getTransformations
+#' @rdname gh_get_transformations
 #' @export 
 getTransformations <- function(x, ...)UseMethod("getTransformations")
 #' Return a list of transformations or a transformation in a GatingHierarchy
@@ -1209,16 +1219,22 @@ getTransformations <- function(x, ...)UseMethod("getTransformations")
 #' @examples
 #' \dontrun{
 #' 	#Assume gh is a GatingHierarchy
-#' 	getTransformations(gh); # return a list transformation functions
-#'  getTransformations(gh, inverse = TRUE); # return a list inverse transformation functions
-#'  getTransformations(gh, channel = "FL1-H") # only return the transfromation associated with given channel
-#'  getTransformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
+#' 	gh_get_transformations(gh); # return a list transformation functions
+#'  gh_get_transformations(gh, inverse = TRUE); # return a list inverse transformation functions
+#'  gh_get_transformations(gh, channel = "FL1-H") # only return the transfromation associated with given channel
+#'  gh_get_transformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
 #' }
-#' @aliases getTransformations
-#' @rdname getTransformations
+#' @aliases gh_get_transformations
+#' @rdname gh_get_transformations
 #' @export 
 #' @method getTransformations GatingHierarchy
-getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
+getTransformations.GatingHierarchy <- function(...){
+	.Deprecated("gh_get_transformations")
+  gh_get_transformations(...)
+}
+#' @rdname gh_get_transformations
+#' @export 
+gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
       trans.objects <- x@transformation
       if(length(trans.objects) == 0){
         trans.objects <- .getTransformations(x@pointer,sampleNames(x), ...)
@@ -1343,7 +1359,7 @@ getTransformations.GatingHierarchy <- function(x, channel = NULL, inverse = FALS
 #' @templateVar new gh_get_compensations
 #' @template template-depr_pkg
 NULL
-#' @rdname getCompensationMatrices
+#' @rdname gh_get_compensations
 #' @export 
  getCompensationMatrices <- function(x)UseMethod("getCompensationMatrices")
   
@@ -1359,15 +1375,22 @@ NULL
 #' @examples
 #'   \dontrun{
 #' 	#Assume gh is a GatingHierarchy
-#'   getCompensationMatrices(gh);
+#'   gh_get_compensations(gh);
 #' }
-#' @aliases getCompensationMatrices
+#' @aliases gh_get_compensations
 #' @export
 #' @method getCompensationMatrices GatingHierarchy
-#' @rdname getCompensationMatrices
+#' @rdname gh_get_compensations
 getCompensationMatrices.GatingHierarchy <- function(x){
+  .Deprecated("gh_get_compensations")
+  gh_get_compensations(x)
+}
 
-      compobj <- x@compensation
+#' @export
+#' @rdname gh_get_compensations
+gh_get_compensations <- function(x){
+  
+  compobj <- x@compensation
       sn <- sampleNames(x)
       if(is.null(compobj)){
         comp<-.cpp_getCompensation(x@pointer, sn)
@@ -1392,7 +1415,7 @@ getCompensationMatrices.GatingHierarchy <- function(x){
             ###Code to compensate the sample using the acquisition defined compensation matrices.
             #					message("Compensating with Acquisition defined compensation matrix");
             #browser()
-            compobj<-compensation(spillover(getData(x))$SPILL)
+            compobj<-compensation(spillover(gh_get_data(x))$SPILL)
 
           }
 
@@ -1407,7 +1430,15 @@ getCompensationMatrices.GatingHierarchy <- function(x){
 
 
 
-#TODO: to inverse transform the range in order to display the raw scale
+#' @templateVar old plotGate
+#' @templateVar new autoplot
+#' @template template-depr_pkg
+NULL
+#' @docType methods
+#' @rdname plotGate-methods
+#' @export
+setGeneric("plotGate",function(x,y,...)standardGeneric("plotGate"))
+
 setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
       .plotGate.gh(x,y, ...)
 })
@@ -1456,7 +1487,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 
 #            names(projections) <- prjNodeInds
             #match given axis to channel names
-            fr <- getData(x, use.exprs = FALSE)
+            fr <- gh_get_data(x, use.exprs = FALSE)
             projections <- lapply(projections, function(thisPrj){
                                   sapply(thisPrj, function(thisAxis)getChannelMarker(fr, thisAxis)[["name"]])
                                 })
@@ -1643,45 +1674,61 @@ pretty10exp <-function (x, drop.1 = FALSE, digits.fuzz = 7)
 	list(scales=scales)
 }
 
+#' @templateVar old setNode
+#' @templateVar new gs(/gh)_set_node_name/gs(/gh)_set_node_visible
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("setNode",function(x,y,value,...)standardGeneric("setNode"))
 #'  Update the name of one node in a gating hierarchy/GatingSet.
 #'
-#'  \code{setNode} update the name of one node in a gating hierarchy/GatingSet.
+#'  \code{gs_set_node_name/gs_set_node_name} update the name of one node in a gating hierarchy/GatingSet.
 #' @param value A \code{character} the name of the node. or \code{logical} to indicate whether to hide a node
 #' @examples
 #'   \dontrun{
 #'     #G is a gating hierarchy
 #'     gs_get_pop_paths(G[[1]])#return node names
-#'     setNode(G,"L","lymph")
+#'     gh_set_node_name(G,"L","lymph")
 #'   }
 #' @aliases setNode
-#' @rdname setNode-methods
+#' @rdname gs_set_node_name
 #' @export
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="character")
     ,function(x,y,value){
-
-      .cpp_setNodeName(x@pointer,sampleNames(x), y,value)
-    })
-
+      .Deprecated("gh_set_node_name")
+	  gh_set_node_name(x, y, value)
+      })
+#' @rdname gs_set_node_name
+#' @export
+gh_set_node_name <- function(x,y,value){
+  .cpp_setNodeName(x@pointer,sampleNames(x), y,value)
+}
 #' hide/unhide a node
 #'
 #' @param x \code{GatingHierarchy} object
 #' @param y \code{character} node name or path
 #' @examples
 #' \dontrun{
-#'      setNode(gh, 4, FALSE) # hide a node
-#'      setNode(gh, 4, TRUE) # unhide a node
+#'      gh_set_node_visible(gh, 4, FALSE) # hide a node
+#'      gh_set_node_visible(gh, 4, TRUE) # unhide a node
 #' }
 #' @export
-#' @rdname setNode-methods
+#' @rdname gs_set_node_visible
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="logical")
     ,function(x,y,value){
+      .Deprecated("gh_set_node_visible")
+      gh_set_node_visible(x, y, value)
+      })
 
-      hidden = !value
-      .cpp_setNodeFlag(x@pointer,sampleNames(x), y, hidden)
-    })
-
+#' @export
+#' @rdname gs_set_node_visible
+gh_set_node_visible <- function(x,y,value){
+            
+            hidden = !value
+            .cpp_setNodeFlag(x@pointer,sampleNames(x), y, hidden)
+          }
 #' @rdname sampleNames
 #' @export
 setMethod("sampleNames","GatingHierarchy",function(object){
@@ -1692,7 +1739,7 @@ setMethod("sampleNames","GatingHierarchy",function(object){
 #' @export
 #' @rdname pData-methods
 setMethod("pData","GatingHierarchy",function(object){
-      pData(flowData(object))[sampleNames(object), , drop = FALSE]
+      pData(gs_cyto_data(object))[sampleNames(object), , drop = FALSE]
     })
 
 #' Get/set the column(channel) or marker names
@@ -1719,7 +1766,7 @@ setMethod("markernames",
           signature=signature(object="GatingHierarchy"),
           definition=function(object){
 
-            markernames(getData(object))
+            markernames(gh_get_data(object))
 
           })
 
@@ -1730,7 +1777,7 @@ setReplaceMethod("markernames",
                  signature=signature(object="GatingHierarchy", value="ANY"), function(object, value){
 
                    sn <- sampleNames(object)
-                   markernames(flowData(object)@frames[[sn]]) <- value
+                   markernames(gs_cyto_data(object)@frames[[sn]]) <- value
 
                    object
                  })
@@ -1743,7 +1790,7 @@ setMethod("colnames",
           signature=signature(x="GatingHierarchy"),
           definition=function(x, do.NULL="missing", prefix="missing"){
 
-            colnames(getData(x))
+            colnames(gh_get_data(x))
 
           })
 
@@ -1753,7 +1800,7 @@ setReplaceMethod("colnames",
                  signature=signature(x="GatingHierarchy", value="ANY"), function(x, value){
                   stop("Can't change colnames for the individual sample. Please call colnames<- on the whole GatingSet instead!")
 #                    sn <- sampleNames(x)
-#                    colnames(flowData(x)@frames[[sn]]) <- value
+#                    colnames(gs_cyto_data(x)@frames[[sn]]) <- value
 
                    # x
                  })

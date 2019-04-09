@@ -21,8 +21,8 @@
 a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
 }
 \description{
-The transformation functions are saved in the GatingSet and can be retrieved by \link{getTransformations}.
-Currently only flowJo-type biexponential transformation(either returned by \link{getTransformations} or constructed by \link{flowJoTrans})
+The transformation functions are saved in the GatingSet and can be retrieved by \link{gh_get_transformations}.
+Currently only flowJo-type biexponential transformation(either returned by \link{gh_get_transformations} or constructed by \link{flowJoTrans})
 is supported.
 }
 \examples{

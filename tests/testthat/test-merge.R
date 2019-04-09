@@ -1,7 +1,7 @@
 context("merg/standardize GatingSets")
 
 suppressMessages(gs0 <- load_gs(file.path(dataDir,"gs_manual")))
-suppressMessages(gs1 <- clone(gs0))
+suppressMessages(gs1 <- gs_clone(gs0))
 sampleNames(gs1) <- "1.fcs"
 
 # simply the tree
@@ -10,10 +10,10 @@ for(toRm in nodes[grepl("CCR", nodes)])
   gs_remove_gate(toRm, gs1)
 
 # remove two terminal nodes
-suppressMessages(gs2 <- clone(gs1))
+suppressMessages(gs2 <- gs_clone(gs1))
 sampleNames(gs2) <- "2.fcs"
 #create a merged gs
-suppressMessages(gs6 <- rbind2(GatingSetList(list(gs1, gs2))))
+suppressMessages(gs6 <- gslist_to_gs(GatingSetList(list(gs1, gs2))))
 gh_remove_gate("DPT", gs6[[1]])
 gh_remove_gate("DNT", gs6[[1]])
 
@@ -21,7 +21,7 @@ gs_remove_gate("DPT", gs2)
 gs_remove_gate("DNT", gs2)
 
 # remove singlets gate
-suppressMessages(gs3 <- clone(gs2))
+suppressMessages(gs3 <- gs_clone(gs2))
 gs_remove_gate("singlets", gs3)
 suppressMessages(gs_add_gate(gs3, gs_get_gate(gs2, "CD3+"), parent = "not debris"))
 for(tsub in c("CD4", "CD8"))
@@ -36,7 +36,7 @@ for(tsub in c("CD4", "CD8"))
 sampleNames(gs3) <- "3.fcs"
 
 # spin the branch to make it isomorphic
-suppressMessages(gs4 <- clone(gs3))
+suppressMessages(gs4 <- gs_clone(gs3))
 # rm cd4 branch first
 gs_remove_gate("CD4", gs4)
 # add it back
@@ -49,7 +49,7 @@ for(toAdd in gs_get_children(gs3, "CD4"))
 }
 sampleNames(gs4) <- "4.fcs"
 
-suppressMessages(gs5 <- clone(gs4))
+suppressMessages(gs5 <- gs_clone(gs4))
 # add another redundant node
 suppressMessages(gs_add_gate(gs5, gs_get_gate(gs0, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4"))
 suppressMessages(gs_add_gate(gs5, gs_get_gate(gs0, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4"))
@@ -70,7 +70,7 @@ test_that("checkRedundantNodes", {
   expect_error(checkRedundantNodes(gs_groups), "Can't drop the non-terminal nodes: singlets")
   for(i in c(2,4))
     for(gs in gs_groups[[i]])
-      invisible(setNode(gs, "singlets", FALSE))
+      invisible(gs_set_node_visible(gs, "singlets", FALSE))
   toRm <<- checkRedundantNodes(gs_groups)
   expect_equal(toRm, list(c("CCR7+ 45RA+", "CCR7+ 45RA-")
                           , c("DNT", "DPT")

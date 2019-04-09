@@ -29,7 +29,7 @@ gs <- load_gs(file.path(flowDataPath,"gs_manual"))
 # change the CD3 gate as 1d gate
 g <- rectangleGate(`<V450-A>` = c(2000, Inf), filterId = "CD3+")
 g <- sapply(sampleNames(gs), function(sn)g)
-setGate(gs, "CD3+", g)
+gs_set_gate(gs, "CD3+", g)
 recompute(gs, "CD3+")
 
 #preset lattice option
@@ -223,23 +223,23 @@ pData(gs)$PTID <- c("P001", "P001", "P002", "P002")
 set.seed(1)
 # add noise to CD3 pop of P002
 for(i in c(1,2)){
-  cd3_ind <- getIndices(gs[[i]], "CD3+")
+  cd3_ind <- gh_get_indices(gs[[i]], "CD3+")
   nTcell <- length(which(cd3_ind))
   toNoiseInd <- which(cd3_ind)[sort(sample.int(nTcell, 0.8 * nTcell))]
-  cd3_sub_sig <- exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<V450-A>"] 
+  cd3_sub_sig <- exprs(gs_cyto_data(gs@data[[i]])[[1]])[toNoiseInd, "<V450-A>"] 
   noise <- cd3_sub_sig - 1000 * pnorm(1:length(toNoiseInd))
-  exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<V450-A>"] <- noise
+  exprs(gs_cyto_data(gs@data[[i]])[[1]])[toNoiseInd, "<V450-A>"] <- noise
   recompute(gs[[i]], "CD3+")
 }
 
 # decrease active Tcells signals from Placebo groups
 for(i in c(2,4)){
-  act_ind <- getIndices(gs[[i]], "CD4/38+ DR+")
+  act_ind <- gh_get_indices(gs[[i]], "CD4/38+ DR+")
   nActTcell <- length(which(act_ind))
   toNoiseInd <- which(act_ind)[sort(sample.int(nActTcell, 0.5 * nActTcell))]
-  sub_sig <- exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<R660-A>"] 
+  sub_sig <- exprs(gs_cyto_data(gs@data[[i]])[[1]])[toNoiseInd, "<R660-A>"] 
   noise <- sub_sig - 3000 * pnorm(1:length(toNoiseInd))
-  exprs(flowData(gs@data[[i]])[[1]])[toNoiseInd, "<R660-A>"] <- noise
+  exprs(gs_cyto_data(gs@data[[i]])[[1]])[toNoiseInd, "<R660-A>"] <- noise
   recompute(gs[[i]], "CD4/38+ DR+")
 }
 ```

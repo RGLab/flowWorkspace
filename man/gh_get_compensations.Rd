@@ -3,11 +3,14 @@
 \name{getCompensationMatrices}
 \alias{getCompensationMatrices}
 \alias{getCompensationMatrices.GatingHierarchy}
+\alias{gh_get_compensations}
 \title{Retrieve the compensation matrices from a GatingHierarchy}
 \usage{
 getCompensationMatrices(x)
 
 \method{getCompensationMatrices}{GatingHierarchy}(x)
+
+gh_get_compensations(x)
 }
 \arguments{
 \item{x}{A \code{GatingHierarchy} object.}
@@ -24,6 +27,6 @@ Return all the compensation matrices in a GatingHierarchy.
 \examples{
   \dontrun{
 	#Assume gh is a GatingHierarchy
-  getCompensationMatrices(gh);
+  gh_get_compensations(gh);
 }
 }

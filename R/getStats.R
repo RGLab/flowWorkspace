@@ -86,10 +86,10 @@ getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.tr
       }else
         stop("unsupported stats type: ", type)
     }else{
-      fr <- getData(gh, y = node)
+      fr <- gh_get_data(gh, y = node)
       if(inverse.transform)
       {
-        trans <- getTransformations(gh, inverse = TRUE)
+        trans <- gh_get_transformations(gh, inverse = TRUE)
         if(length(trans)==0)
           stop("No inverse transformation is found from the GatingSet!")
         trans <- transformList(names(trans), trans)

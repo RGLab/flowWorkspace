@@ -3,14 +3,20 @@
 \docType{methods}
 \name{flowData,GatingSet-method}
 \alias{flowData,GatingSet-method}
-\alias{flowData}
-\alias{flowData<-}
-\alias{flowData<-,GatingSet-method}
+\alias{gs_cyto_data}
+\alias{gs_cyto_data,GatingSet-method}
+\alias{gs_cyto_data<-,GatingSet-method}
 \title{Fetch or replace the flowData object associated with a GatingSet .}
 \usage{
 \S4method{flowData}{GatingSet}(x)
 
-\S4method{flowData}{GatingSet}(x) <- value
+gs_cyto_data(x, ...)
+
+\S4method{gs_cyto_data}{GatingSet}(x)
+
+\S4method{gs_cyto_data}{GatingSet}(x) <- value
+
+\S4method{gs_cyto_data}{GatingSet}(x) <- value
 }
 \arguments{
 \item{x}{A \code{GatingSet}}

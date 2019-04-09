@@ -4,7 +4,7 @@ context("GatingSetList Accessors")
 gslist <- NULL
 test_that("GatingSetList constructor", {
 
-      suppressMessages(gs_clone <- clone(gs))
+      suppressMessages(gs_clone <- gs_clone(gs))
       
       #duplicated sample names
       expect_error(GatingSetList(list(gs, gs_clone)), "There are overlapping samples across GatingSets")
@@ -13,16 +13,16 @@ test_that("GatingSetList constructor", {
       expect_error(GatingSetList(list(gs, gs_clone), samples = c("a", "b")), "'samples' slot is not consisitent with sample names from GatingSets!")
       
       #different colnames
-      chnnls <- colnames(flowData(gs_clone))
+      chnnls <- colnames(gs_cyto_data(gs_clone))
       chnnls[1] <- "FSC-H" 
-      colnames(flowData(gs_clone)) <- chnnls
+      colnames(gs_cyto_data(gs_clone)) <- chnnls
       expect_error(GatingSetList(list(gs, gs_clone)), "colnames of flowSets don't match")
             
       #different tree structure
       invisible(gs_remove_gate("CD8", gs_clone))
       expect_error(GatingSetList(list(gs, gs_clone)), "gating structure doesn't match: CytoTrol_CytoTrol_2.fcs CytoTrol_CytoTrol_1.fcs")
       
-      suppressMessages(gs_clone <- clone(gs))
+      suppressMessages(gs_clone <- gs_clone(gs))
       sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
       #reorder by samples argument
       samp <- c("CytoTrol_CytoTrol_2.fcs", "CytoTrol_CytoTrol_1.fcs")
@@ -48,8 +48,8 @@ test_that("[", {
       
     })
 
-test_that("rbind2", {
-      suppressMessages(thisRes <- rbind2(gslist))
+test_that("gslist_to_gs", {
+      suppressMessages(thisRes <- gslist_to_gs(gslist))
       expect_is(thisRes, "GatingSet")
       expect_equal(sampleNames(thisRes), sampleNames(gslist))
       expect_equal(pData(thisRes), pData(gslist))
@@ -63,13 +63,13 @@ test_that("pData<-", {
       
     })
 
-test_that("getData", {
-      thisRes <- getData(gslist)
+test_that("gs_get_data", {
+      thisRes <- gs_get_data(gslist)
       expect_is(thisRes, "ncdfFlowList")
       expect_equal(sampleNames(thisRes), sampleNames(gslist))
       expect_equal(nrow(thisRes[[1]]),  119531)
       
-      thisRes <- getData(gslist, "CD8")
+      thisRes <- gs_get_data(gslist, "CD8")
       expect_is(thisRes, "ncdfFlowList")
       expect_equal(nrow(thisRes[[1]]),  14564)
       
@@ -100,17 +100,17 @@ test_that("keyword", {
       
     })
 
-test_that("getSingleCellExpression for COMPASS",{
+test_that("gs_get_singlecell_expression for COMPASS",{
       
-      thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
+      thisRes <- gs_get_singlecell_expression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
       expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
       expect_equivalent(thisRes,expectRes)
 
       #perserve the intensity that belows the gate threhold
-      thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE"), threshold = F) 
+      thisRes <- gs_get_singlecell_expression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE"), threshold = F) 
       
       #return more markers
-      thisRes1 <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+')
+      thisRes1 <- gs_get_singlecell_expression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+')
                                          , map = list("CD8/38- DR+" = "CD38 APC"
                                                       , "CD8/CCR7- 45RA+" = "CCR7 PE")
                                          , threshold = F

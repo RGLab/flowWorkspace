@@ -15,10 +15,10 @@ gh <- gs[[1]]
 
 
 # make sure this test is invoked before GatingSet-testSuite since the trans is gonna be lost
-# during clone and rbind2 test
-test_that("getTransformations ",{
+# during gs_clone and gslist_to_gs test
+test_that("gh_get_transformations ",{
       
-      thisRes <- getTransformations(gh)
+      thisRes <- gh_get_transformations(gh)
       expectRes <- readRDS(file.path(resultDir, "getTransformations_gh.rds"))
       expectRes <- sapply(expectRes, function(f){
                                 attr(f, "type") <- "biexp"
@@ -46,16 +46,16 @@ source("GatingSet-testSuite.R", local = TRUE)
 test_that("updateChannles",{
   
   dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2"), keywords = "TUBE NAME")))
-  oldCols <- colnames(getData(gs1)[[1, use.exprs = F]])
-  comp_cols <- parameters(getCompensationMatrices(gs1[[1]]))
-  trans_names <- names(getTransformations(gs1[[1]]))
+  oldCols <- colnames(gs_get_data(gs1)[[1, use.exprs = F]])
+  comp_cols <- parameters(gh_get_compensations(gs1[[1]]))
+  trans_names <- names(gh_get_transformations(gs1[[1]]))
   map <- data.frame(old = c("FSC-A", "V450-A", "non-exist", "B710-A")
                     , new = c("fsc", "v450-a", "newchnl", "b710"))
   
   #without updating flow data
   res <- updateChannels(gs1, map, all = FALSE)
   expect_null(res)
-  cols <- colnames(getData(gs1)[[1, use.exprs = F]])
+  cols <- colnames(gs_get_data(gs1)[[1, use.exprs = F]])
   expect_equal(oldCols, cols)
   
   #check gates
@@ -64,7 +64,7 @@ test_that("updateChannles",{
   expect_equivalent(unique(lapply(gs_get_gate(gs1, "CD4"), parameters))[[1]], c("<b710>", "<R780-A>"))
   
   #check comps
-  comp <- unique(lapply(gs1, getCompensationMatrices))[[1]]
+  comp <- unique(lapply(gs1, gh_get_compensations))[[1]]
   expect_is(comp, "compensation")  
   expect_equivalent(parameters(comp), comp_cols %>% 
                                         gsub("V450-A", "v450-a", .) %>%
@@ -73,13 +73,13 @@ test_that("updateChannles",{
                   )
   
   #check trans
-  trans <- getTransformations(gs1[[1]], channel = "all")
+  trans <- gh_get_transformations(gs1[[1]], channel = "all")
   expect_equal(names(trans)[1:7], trans_names %>% gsub("B710-A", "b710", .) %>% gsub("V450-A", "v450-a", .))
   
   #update flow data
   gs1 <- updateChannels(gs1, map)
   expect_is(gs1, "GatingSet")
-  cols <- colnames(getData(gs1))
+  cols <- colnames(gs_get_data(gs1))
   expect_equal(cols, oldCols %>% 
                        gsub("V450-A", "v450-a", .) %>%
                        gsub("FSC-A", "fsc", .) %>%

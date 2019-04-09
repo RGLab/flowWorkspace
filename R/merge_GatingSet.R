@@ -18,7 +18,7 @@
 #' 
 #' insertGate(gs, gate, parent, children)
 #' 
-#' setNode(x, y, FALSE)
+#' gs_set_node_visible(x, y, FALSE)
 #' 
 #' @details 
 #' In order to merge multiple GatingSets into single \link{GatingSetList}, the gating trees and channel names must be
@@ -38,7 +38,7 @@
 #' 
 #' \link{insertGate} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{dropRedundantNodes}
 #' 
-#' \link{setNode} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
+#' \link{gs_set_node_visible} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
 #' 
 #' @rdname standardize-GatingSet
 #' @aliases merge-GatingSet
@@ -102,7 +102,7 @@ groupByChannels <- function(x){
   message("Grouping by channels...")
   key <- unlist(lapply(x,function(this_gs){
             this_gh <- this_gs[[1]]
-            cols <- flowCore::colnames(getData(this_gs))
+            cols <- flowCore::colnames(gs_get_data(this_gs))
             #reorder it alphabetically
             cols <- sort(cols)
             paste0(cols, collapse = "|")
@@ -400,14 +400,14 @@ dropRedundantChannels <- function(gs, ...){
         
       }))
   params <- unique(params)
-  fs <- flowData(gs)
+  fs <- gs_cyto_data(gs)
   cols <- flowCore::colnames(fs)
   toDrop <- setdiff(cols, params)
   if(length(toDrop) >0){
     message("drop ", paste0(toDrop, collapse = ", "))
     ind <- match(toDrop, cols)
     cols <- cols[-ind]
-    flowData(gs) <- fs[, cols]
+    gs_cyto_data(gs) <- fs[, cols]
   }
   gs  
   
@@ -472,11 +472,11 @@ updateChannels <- function(gs, map, all = TRUE){
   
   #update flow data
   if(all){
-    fs <- flowData(gs)
+    fs <- gs_cyto_data(gs)
     cols <- colnames(fs)
     newCols <- .matchCols(cols, map)
     colnames(fs) <- newCols
-    flowData(gs) <- fs
+    gs_cyto_data(gs) <- fs
     gs
   }
   

@@ -1,5 +1,11 @@
 #' @include filterObject_Methods.R
 NULL
+#' @templateVar old setGate
+#' @templateVar new gs(/gh)_set_gate
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
 
 #' update the gate
 #' 
@@ -20,52 +26,63 @@ NULL
 #' rg2 <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangle")
 #' flist <- list(rg1,rg2)
 #' names(flist) <- sampleNames(gs[1:2])
-#' setGate(gs[1:2], "lymph", flist)
+#' gs_set_gate(gs[1:2], "lymph", flist)
 #' recompute(gs[1:2], "lymph") 
 #' }
 #' @aliases 
-#' setGate
-#' @rdname setGate
+#' gs_set_gate
+#' @rdname gs_set_gate
 #' @export
 setMethod("setGate"
     ,signature(obj="GatingHierarchy",y="character",value="filter")
-    ,function(obj,y,value, negated = FALSE,...){
-      
-      this_fobj <- filter_to_list(value)
-      this_fobj$negated<-negated
-      .cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
-      
+    ,function(obj,y,value,...){
+      .Deprecate("gh_set_gate")
+	  gh_set_gate(obj,y,value,...)
+	   
     })
-#' @rdname setGate
+#' @rdname gs_set_gate
+#' @export
+gh_set_gate <- function(obj,y,value, negated = FALSE,...){
+			
+			this_fobj <- filter_to_list(value)
+			this_fobj$negated<-negated
+			.cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
+			
+		}
+#' @rdname gh_set_gate
 #' @export 
 setMethod("setGate",
-    signature=c(obj="GatingSet",y="character", value = "list"),
+    signature=c(obj="GatingSet",y="character", value = "ANY"),
     definition=function(obj, y, value,...)
     {
-      
-      flist<-filterList(value)
-      setGate(obj,y,flist,...)
+		.Deprecate("gs_set_gate")
+		 gs_set_gate(obj, y, value)
       
     })
-#' @rdname setGate
+#' @rdname gs_set_gate
 #' @export
-setMethod("setGate",
-    signature=c(obj="GatingSet",y="character", value = "filterList"),
-    definition=function(obj, y, value,...)
+gs_set_gate <- function(obj, y, value,...)
     {
-      samples<-sampleNames(obj)
+		if(is(value, "filterList"))
+		{
+	      samples<-sampleNames(obj)
+	      
+	      if(!setequal(names(value),samples))
+	        stop("names of filterList do not match with the sample names in the gating set!")           
+	      
+	      lapply(samples,function(sample){
+	            curFilter<-value[[sample]]
+	            gh<-obj[[sample]]
+	            gh_set_gate(obj=gh,y,value=curFilter,...)
+	          })
+  		}else if(is(value, "list")){
+			flist<-filterList(value)
+			gs_set_gate(obj,y,flist,...)
+			
+		}else
+			stop(class(value), " not supported!")
       
-      if(!setequal(names(value),samples))
-        stop("names of filterList do not match with the sample names in the gating set!")           
-      
-      lapply(samples,function(sample){
-            curFilter<-value[[sample]]
-            gh<-obj[[sample]]
-            setGate(obj=gh,y,value=curFilter,...)
-          })
-      
-      
-    })
+    }
 
 #' Simplified geometric transformations of gates associated with nodes
 #' 
@@ -73,7 +90,7 @@ setMethod("setGate",
 #' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{transform_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{transform_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{transform_gate} calls \code{\link{gs_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
 #' object of type \code{flowCore::filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
@@ -152,7 +169,7 @@ transform_gate.GatingHierarchy <- function(obj, y, scale = NULL, deg = NULL, rot
   gate <- transform_gate(gate, scale = scale, deg = deg, 
                          rot_center = rot_center, dx = dx,
                          dy = dy, center = center, ...)
-  setGate(obj, y, gate)
+  gh_set_gate(obj, y, gate)
 }
 
 #' @noRd
@@ -162,7 +179,7 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
   gates <- lapply(gates, function(gate) transform_gate(gate, scale = scale, deg = deg, 
                                                        rot_center = rot_center, dx = dx,
                                                        dy = dy, center = center, ...)) 
-  setGate(obj, y, gates)
+  gs_set_gate(obj, y, gates)
 }
 
 #' Simplified geometric scaling of gates associated with nodes
@@ -171,7 +188,7 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{scale_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{scale_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{scale_gate} calls \code{\link{gs_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
 #' object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
@@ -221,7 +238,7 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
   gate <- gh_get_gate(obj, y)
   gate <- scale_gate(gate, scale = scale)
-  setGate(obj, y, gate)
+  gh_set_gate(obj, y, gate)
 }
 
 #' @rdname scale_gate
@@ -229,7 +246,7 @@ scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
 scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
   gates <- gs_get_gate(obj, y)
   gates <- lapply(gates, function(gate) scale_gate(gate, scale = scale)) 
-  setGate(obj, y, gates)
+  gs_set_gate(obj, y, gates)
 }
 
 #' Simplified geometric rotation of gates associated with nodes
@@ -238,7 +255,7 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
 #' \code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{rotate_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{rotate_gate} calls \code{\link{gs_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
 #' object of type \code{flowCore:filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
@@ -281,7 +298,7 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
 rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, ...){
   gate <- gh_get_gate(obj, y)
   gate <- rotate_gate(gate, deg = deg, rot_center = rot_center)
-  setGate(obj, y, gate)
+  gh_set_gate(obj, y, gate)
 }
 
 #' @rdname rotate_gate
@@ -289,7 +306,7 @@ rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, .
 rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
   gates <- gs_get_gate(obj, y)
   gates <- lapply(gates, function(gate) rotate_gate(gate, deg = deg, rot_center = rot_center)) 
-  setGate(obj, y, gates)
+  gs_set_gate(obj, y, gates)
 }
 
 #' Simplified geometric translation of gates associated with nodes
@@ -298,7 +315,7 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
 #' \code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{shift_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{shift_gate} calls \code{\link{gs_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
 #' object of type \code{flowCore::filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
@@ -356,7 +373,7 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
 shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
   gate <- gh_get_gate(obj, y)
   gate <- shift_gate(gate, dx = dx, dy = dy, center = center)
-  setGate(obj, y, gate)
+  gh_set_gate(obj, y, gate)
 }
 
 #' @rdname shift_gate
@@ -364,7 +381,7 @@ shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ..
 shift_gate.GatingSet <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
   gates <- gs_get_gate(obj, y)
   gates <- lapply(gates, function(gate) shift_gate(gate, dx = dx, dy = dy, center = center)) 
-  setGate(obj, y, gates)
+  gs_set_gate(obj, y, gates)
 }
   
   

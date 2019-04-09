@@ -3,12 +3,15 @@
 \name{getTransformations}
 \alias{getTransformations}
 \alias{getTransformations.GatingHierarchy}
+\alias{gh_get_transformations}
 \title{Return a list of transformations or a transformation in a GatingHierarchy}
 \usage{
 getTransformations(x, ...)
 
-\method{getTransformations}{GatingHierarchy}(x, channel = NULL,
-  inverse = FALSE, only.function = TRUE, ...)
+\method{getTransformations}{GatingHierarchy}(...)
+
+gh_get_transformations(x, channel = NULL, inverse = FALSE,
+  only.function = TRUE, ...)
 }
 \arguments{
 \item{x}{A \code{GatingHierarchy} object}
@@ -42,9 +45,9 @@ to channel-space used by flowJo.
 \examples{
 \dontrun{
 	#Assume gh is a GatingHierarchy
-	getTransformations(gh); # return a list transformation functions
- getTransformations(gh, inverse = TRUE); # return a list inverse transformation functions
- getTransformations(gh, channel = "FL1-H") # only return the transfromation associated with given channel
- getTransformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
+	gh_get_transformations(gh); # return a list transformation functions
+ gh_get_transformations(gh, inverse = TRUE); # return a list inverse transformation functions
+ gh_get_transformations(gh, channel = "FL1-H") # only return the transfromation associated with given channel
+ gh_get_transformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
 }
 }

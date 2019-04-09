@@ -59,7 +59,7 @@ The order of the names is clock-wise starting from the top left quadrant populat
 \description{
 \code{GatingSet} method creates a gatingset from a flowSet with the ungated data as the root node.
 \code{add} method add the flowCore gate to a GatingHierarchy/GatingSet.
-\code{setGate} method update the gate of one population node in GatingHierarchy/GatingSet.
+\code{gs_set_gate} method update the gate of one population node in GatingHierarchy/GatingSet.
 \code{Rm} method Remove the population node from a GatingHierarchy/GatingSet. 
 They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \code{flowCore} package. 
 \code{recompute} method does the actual gating after the gate is added,i.e. calculating the event indices according to the gate definition.

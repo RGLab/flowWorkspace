@@ -3,17 +3,15 @@
 \docType{methods}
 \name{setGate,GatingHierarchy,character,filter-method}
 \alias{setGate,GatingHierarchy,character,filter-method}
-\alias{setGate}
-\alias{setGate,GatingSet,character,list-method}
-\alias{setGate,GatingSet,character,filterList-method}
+\alias{gs_set_gate}
+\alias{gh_set_gate}
 \title{update the gate}
 \usage{
-\S4method{setGate}{GatingHierarchy,character,filter}(obj, y, value,
-  negated = FALSE, ...)
+\S4method{setGate}{GatingHierarchy,character,filter}(obj, y, value, ...)
 
-\S4method{setGate}{GatingSet,character,list}(obj, y, value, ...)
+gh_set_gate(obj, y, value, negated = FALSE, ...)
 
-\S4method{setGate}{GatingSet,character,filterList}(obj, y, value, ...)
+gs_set_gate(obj, y, value, ...)
 }
 \arguments{
 \item{obj}{\code{GatingHierarchy} or \code{GatingSet}}
@@ -22,9 +20,9 @@
 
 \item{value}{\code{filter} or \code{filterList} or \code{list} of \code{filter} objects}
 
-\item{negated}{\code{logical} see \link{add}}
-
 \item{...}{other aguments}
+
+\item{negated}{\code{logical} see \link{add}}
 }
 \description{
 update the population node with a flowCore-compatible gate object
@@ -40,7 +38,7 @@ rg1 <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangl
 rg2 <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangle")
 flist <- list(rg1,rg2)
 names(flist) <- sampleNames(gs[1:2])
-setGate(gs[1:2], "lymph", flist)
+gs_set_gate(gs[1:2], "lymph", flist)
 recompute(gs[1:2], "lymph") 
 }
 }

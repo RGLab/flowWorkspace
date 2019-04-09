@@ -43,7 +43,7 @@ setMethod("updateIndices",
 
             nodeID <- flowWorkspace:::.getNodeInd(obj, y)
             #get original indices
-            pInd <- getIndices(obj, y)
+            pInd <- gh_get_indices(obj, y)
             #update it with the new one
             #convert to global one by combining it with parent indice
             pInd[which(pInd)] <- z

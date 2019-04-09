@@ -30,5 +30,5 @@ Compute each cell event to see if it falls into the gate stored within the gatin
 and store the result as cell count.
 }
 \details{
-It is usually used immediately after \link{add} or \link{setGate} calls.
+It is usually used immediately after \link{add} or \link{gs_set_gate} calls.
 }

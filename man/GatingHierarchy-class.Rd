@@ -29,7 +29,7 @@ library(CytoML)
  thisNode <- nodes[4]
 	plotGate(gh,thisNode);
 	gh_get_gate(gh,thisNode);
-	getData(gh,thisNode)
+	gh_get_data(gh,thisNode)
 }
 }
 \seealso{

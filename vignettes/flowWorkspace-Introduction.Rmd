@@ -154,15 +154,15 @@ subset(gs, treatment == "control")
 
 The underling `flow data`(`flowSet` or `ncdfFlowSet` ) can be retrieved by:
 ```{r}
-fs <- getData(gs)
+fs <- gs_get_data(gs)
 class(fs)
 nrow(fs[[1]])
 ```
 Note that the data is already compensated and transformed during the parsing.
 
 We can retrieve the subset of data associated with a population node:
-```{r getData-gh}
-fs <- getData(gs, node)
+```{r gh_get_data-gh}
+fs <- gh_get_data(gs, node)
 nrow(fs[[1]])
 ```
 ## GatingHierarchy
@@ -189,26 +189,26 @@ plotGate(gh)
 
 We can retrieve the indices specifying if an event is included inside or outside a gate using:
 ```{r getInd}
-table(getIndices(gh,node))
+table(gh_get_indices(gh,node))
 ```
 The indices returned are relative to the parent population (member of parent AND member of current gate), so they reflect the true hierarchical gating structure.
 
 We can retrieve all the compensation matrices from the `GatingHierarchy` in case we wish to use the compensation or transformation for the new data, 
 
 ```{r getCMAT}
-C <- getCompensationMatrices(gh);
+C <- gh_get_compensations(gh);
 C
 ```
 
 Or we can retrieve transformations:
 
 ```{r getTrans,results='markup'}
-T <- getTransformations(gh)
+T <- gh_get_transformations(gh)
 names(T)
 T[[1]]
 ```
 
-`getTransformations` returns a list of functions to be
+`gh_get_transformations` returns a list of functions to be
 applied to different dimensions of the data. 
 Above, the transformation is applied to this sample, the appropriate dimension
 is transformed using a channel--specific function from the list.
@@ -340,7 +340,7 @@ gs <- load_gs(file.path(tmp,"my_gs"))
 ``` 
 We also provide the `clone` method to make a full copy of an existing `GatingSet`:
 ```{r clone,eval=FALSE}
-gs_cloned <- clone(gs)
+gs_gs_cloned <- clone(gs)
 ```
 
 Note that the `GatingSet` contains environment slots and external pointer that point to the internal C data structure. So make sure to use these methods in order to save or make a copy of existing object.

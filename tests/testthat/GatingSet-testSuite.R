@@ -14,15 +14,15 @@ test_that("show ",{
       expect_output(show(gs), "A GatingSet with 1 samples")
       
     })
-test_that("getData ",{
+test_that("gs_get_data ",{
       
-      ncfs <- getData(gs)
+      ncfs <- gs_get_data(gs)
       expect_is(ncfs, "ncdfFlowSet");
       expect_equal(nrow(ncfs[[1]]), 119531)
-      ncfs <- getData(gs, "root")
+      ncfs <- gs_get_data(gs, "root")
       expect_equal(nrow(ncfs[[1]]), 119531)
       
-      ncfs <- getData(gs, "singlets")
+      ncfs <- gs_get_data(gs, "singlets")
       expect_equal(nrow(ncfs[[1]]), 87022)
       expect_is(gs[[1]], "GatingHierarchy");
       
@@ -30,55 +30,55 @@ test_that("getData ",{
     })
 
 
-test_that("flowData ",{
+test_that("gs_cyto_data ",{
       
-      ncfs <- flowData(gs)
+      ncfs <- gs_cyto_data(gs)
       expect_is(ncfs, "ncdfFlowSet");
       expect_equal(nrow(ncfs[[1]]), 119531)
       
       fs <- as(ncfs, "flowSet")
-      flowData(gs) <- fs 
-      expect_is(flowData(gs), "flowSet");
+      gs_cyto_data(gs) <- fs 
+      expect_is(gs_cyto_data(gs), "flowSet");
       
       #restore data
-      flowData(gs) <- ncfs
-      expect_is(flowData(gs), "ncdfFlowSet");
+      gs_cyto_data(gs) <- ncfs
+      expect_is(gs_cyto_data(gs), "ncdfFlowSet");
     })
 
 
-test_that("clone & rbind2",{
+test_that("gs_clone & gslist_to_gs",{
       
-      expect_message(gs_clone <- clone(gs), "copying data")
-      expect_is(gs_clone, "GatingSet");
+      expect_message(gs_cloned <- gs_clone(gs), "copying data")
+      expect_is(gs_cloned, "GatingSet");
       
       #check data consistency
-      fs1 <- getData(gs)
-      fs2 <- getData(gs_clone)
+      fs1 <- gs_get_data(gs)
+      fs2 <- gs_get_data(gs_cloned)
       expect_equal(fs1[[1]], fs2[[1]], tol = 1e-05)
       
       orig_sn <- sampleNames(gs)
-      clone_sn <- sampleNames(gs_clone)
+      clone_sn <- sampleNames(gs_cloned)
       expect_identical(orig_sn, clone_sn)
       
       #check tree consistentcy
-      expect_identical(gs_get_pop_paths(gs[[1]]), gs_get_pop_paths(gs_clone[[1]]))
+      expect_identical(gs_get_pop_paths(gs[[1]]), gs_get_pop_paths(gs_cloned[[1]]))
       
       #check if trans is preserved
-      expect_equal(getTransformations(gs[[1]]), getTransformations(gs_clone[[1]]))
+      expect_equal(gh_get_transformations(gs[[1]]), gh_get_transformations(gs_cloned[[1]]))
       
-      expect_equal(gs_get_pop_stats(gs), gs_get_pop_stats(gs_clone))
-      expect_equal(gs_get_pop_stats(gs[[1]]), gs_get_pop_stats(gs_clone[[1]]))
+      expect_equal(gs_get_pop_stats(gs), gs_get_pop_stats(gs_cloned))
+      expect_equal(gs_get_pop_stats(gs[[1]]), gs_get_pop_stats(gs_cloned[[1]]))
       
       #clone without copying hdf data
-      expect_message(gs_clone1 <- clone(gs, isNew = FALSE), "cloned")
-      expect_equal(getData(gs_clone1)@file, fs1@file)
+      expect_message(gs_clone1 <- gs_clone(gs, isNew = FALSE), "cloned")
+      expect_equal(gs_get_data(gs_clone1)@file, fs1@file)
       
-      #construct gslist to rbind2
-      sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
-      clone_sn <- sampleNames(gs_clone)
-      gslist <- GatingSetList(list(gs, gs_clone))
+      #construct gslist to gslist_to_gs
+      sampleNames(gs_cloned) <- "CytoTrol_CytoTrol_2.fcs"
+      clone_sn <- sampleNames(gs_cloned)
+      gslist <- GatingSetList(list(gs, gs_cloned))
       expect_is(gslist, "GatingSetList");
-      suppressMessages(gs <<- rbind2(gslist))
+      suppressMessages(gs <<- gslist_to_gs(gslist))
       
       new_samples <- sampleNames(gs) 
       expect_identical(new_samples, c(orig_sn, clone_sn))
@@ -231,14 +231,14 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
 #      expect_equivalent(nrow(thisRes[[1]]), 1309)
 #      
 #      #by one event indice
-#      eInd <- getIndices(gs[[1]], nodeInd)
+#      eInd <- gh_get_indices(gs[[1]], nodeInd)
 #      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
 #      expect_is(thisRes, "flowSet")
 #      expect_equal(sampleNames(thisRes), samples)
 #      expect_equivalent(as.vector(fsApply(thisRes,nrow)), c(1309, 1309))
 #      
 #      #by a list of event indices
-#      eInd <- lapply(gs, getIndices, y = nodeInd)
+#      eInd <- lapply(gs, gh_get_indices, y = nodeInd)
 #      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
 #      expect_is(thisRes, "list")
 #      expect_equal(names(thisRes), samples)
@@ -257,14 +257,14 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
 #      
 #    })
     
-test_that("setNode",{
+test_that("gs_set_node_name",{
     
     nodeName <- gs_get_pop_paths(gs[[1]])[3]
-    setNode(gs, "singlets", "S")
+	gs_set_node_name(gs, "singlets", "S")
     lapply(gs, function(gh){
           expect_equal(gs_get_pop_paths(gh)[3], "/not debris/S")
         }) 
-    setNode(gs, "S", "singlets")
+	gs_set_node_name(gs, "S", "singlets")
     invisible()
     
     
@@ -345,14 +345,14 @@ test_that("keyword",{
       expect_equal(thisRes, data.frame(`$P1N` = c("FSC-A", "FSC-A"), check.names = FALSE))
     })
 
-test_that("getIndices for COMPASS",{
-      
-      thisRes <- getIndices(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`)) 
-      expectRes <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
-      tol <- ifelse(isCpStaticGate, 1e-2, 1.5e-8)
-      expect_equal(sum(thisRes[[1]]), sum(expectRes[[1]]), tol = tol)
-      expect_equal(sum(thisRes[[2]]), sum(expectRes[[2]]), tol = tol)
-    })
+#test_that("getIndices for COMPASS",{
+#      
+#      thisRes <- getIndices(gs,quote(`CD8/38- DR+|CD8/CCR7- 45RA+`)) 
+#      expectRes <- readRDS(file.path(resultDir, "getIndices_gs.rds"))
+#      tol <- ifelse(isCpStaticGate, 1e-2, 1.5e-8)
+#      expect_equal(sum(thisRes[[1]]), sum(expectRes[[1]]), tol = tol)
+#      expect_equal(sum(thisRes[[2]]), sum(expectRes[[2]]), tol = tol)
+#    })
 
 test_that("add", {
       filterslist1 <- lapply(gs, function(gh){
@@ -393,17 +393,17 @@ test_that("add", {
 #TODO:write test cases for save_gs /load_gs 
 if(!isCpStaticGate)
 {
-  test_that("getSingleCellExpression for COMPASS",{
+  test_that("gs_get_singlecell_expression for COMPASS",{
     nodes <- c('CD8/38- DR+', 'CD8/CCR7- 45RA+')
     
-    thisRes <- getSingleCellExpression(gs,  nodes, map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
+    thisRes <- gs_get_singlecell_expression(gs,  nodes, map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
     expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
     #      browser()
     
     expect_equal(thisRes,expectRes,tol = 1e-07)
     
     #test other.markers (redundant marker should be merged automatically)
-    thisRes <- getSingleCellExpression(gs, nodes
+    thisRes <- gs_get_singlecell_expression(gs, nodes
                                        , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")
                                        , other.markers = c("CD4", "CD38 APC")
                                        , threshold = FALSE
@@ -411,7 +411,7 @@ if(!isCpStaticGate)
     expect_equal(colnames(thisRes[[1]]), c("CD38 APC", "CCR7 PE", "CD4 PcpCy55"))
     
     #swap
-    expect_warning(thisRes2 <- getSingleCellExpression(gs, nodes
+    expect_warning(thisRes2 <- gs_get_singlecell_expression(gs, nodes
                                                        , map = list("CD8/38- DR+" = "R660", "CD8/CCR7- 45RA+" = "G560")
                                                        , other.markers = c("B710", "R660")
                                                        , threshold = FALSE
@@ -421,18 +421,18 @@ if(!isCpStaticGate)
     expect_equal(colnames(thisRes2[[1]]), c("<R660-A>", "<G560-A>", "<B710-A>"))
     
     #error
-    expect_error(getSingleCellExpression(gs, nodes
+    expect_error(gs_get_singlecell_expression(gs, nodes
                                          , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")
                                          , other.markers = c("CD4", "CD38 APC")
     ), "number of markers")
     #marginal = FALSE
-    thisRes <- getSingleCellExpression(gs, nodes, marginal = FALSE)
+    thisRes <- gs_get_singlecell_expression(gs, nodes, marginal = FALSE)
     expect_equal(thisRes[[1]][,c("CD38 APC", "CCR7 PE")],expectRes[[1]],tol = 1e-07)
     expect_equal(thisRes[[1]][,1] == 0, thisRes[[1]][,2] == 0)
     
     #gates share the same marker
     nodes <- c('CD8/38- DR+', "CD8/38+ DR-", 'CD8/CCR7- 45RA+')
-    thisRes <- getSingleCellExpression(gs, nodes, marginal = FALSE)
+    thisRes <- gs_get_singlecell_expression(gs, nodes, marginal = FALSE)
     #verify the results by calling R routines
     nodes.expr <- quote(`CD8/38- DR+|CD8/38+ DR-|CD8/CCR7- 45RA+`)
     ind.total <- getIndices(gs[1], nodes.expr)[[1]]
@@ -441,7 +441,7 @@ if(!isCpStaticGate)
     ind.DR <- ind.38 <- ind.mat[,1] | ind.mat[,2]
     ind.CCR <- ind.45 <- ind.mat[,3]
     #masking
-    mat <- exprs(getData(gs[[1]]))[,c(6, 9, 10, 11)]
+    mat <- exprs(gh_get_data(gs[[1]]))[,c(6, 9, 10, 11)]
     mat <- mat * c(ind.38, ind.DR, ind.CCR, ind.45)
     mat <- mat[ind.total, ]
     expect_equal(thisRes[[1]], mat, check.attributes = FALSE)

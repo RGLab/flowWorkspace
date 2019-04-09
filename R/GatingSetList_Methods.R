@@ -6,19 +6,25 @@ NULL
 #' @template template-depr_pkg
 NULL
 #' @param y \code{missing} not used.
-#' @param ... other arguments passed to \code{rbind2} method for \code{ncdfFlowList}
-#' @rdname GatingSetList-class 
+#' @param ... other arguments passed to \code{gslist_to_gs} method for \code{ncdfFlowList}
+#' @rdname gslist_to_gs 
 #' @export 
 setMethod("rbind2",
     signature=signature("GatingSetList","missing"),
     definition=function(x,y="missing",...)
     {
+		.Deprecated("gslist_to_gs")
+		gslist_to_gs(x, y, ...)
+	})
+#' @rdname gslist_to_gs 
+#' @export 
+gslist_to_gs <- function(x,y="missing",...){
 #           browser()
       isNcdfList<-lapply(x,isNcdf, level = 1)
       if(all(duplicated(unlist(isNcdfList))[-1])){
 #               browser()
         #combine flowset/ncdfFlowSet
-        fsList <- lapply(x, getData, level =1)
+        fsList <- lapply(x, gs_get_data, level =1)
         if(isNcdfList[[1]])
           fs<-rbind2(ncdfFlowList(fsList), ...)
         else
@@ -43,14 +49,14 @@ setMethod("rbind2",
         G@compensation <- x@data[[1]]@compensation
         #combine R objects
         
-        flowData(G) <- fs
+        gs_cyto_data(G) <- fs
         
       }else{
         stop("Can't combine gating sets. They should all use the same storage method. (Netcdf, or not..)")
       }
       return(G);  
       
-    })
+    }
 
 
 
@@ -75,26 +81,14 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
 
 
 
-#' @rdname getData-methods
+#' @rdname gs_get_data-methods
 #' @export
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
+			.Deprecated("gs_get_data")
+			gs_get_data(obj, y)
+			
+		})
       
-      samples_orig <- obj@samples
-      if(missing(y))
-        y <- NULL
-      else if(!is.character(y))
-        stop(" 'numeric` indexing is no longer safe . Please use node name instead!")        
-      res <- lapply(obj,function(gs){
-            
-            if(is.null(y))
-              ncfs <- getData(gs, ...)
-            else
-              ncfs <- getData(gs,y, ...)
-            ncfs
-          }, level =1)
-      ncdfFlowList(res, samples_orig)
-      
-    })
 
 
 
@@ -226,8 +220,8 @@ load_gslist<-function(path){
   if(!inherits(g,"GatingSetList"))
     stop("g must be a GatingSetList")
   listofgs<-lapply(g@data,function(x,m=match,r=replace){
-    samps<-sampleNames(flowData(x))
-    fd<-flowData(x)
+    samps<-sampleNames(gs_cyto_data(x))
+    fd<-gs_cyto_data(x)
     for(i in samps){
       f <- fd@frames[[i]]
       adf <- parameters(f)
@@ -240,21 +234,13 @@ load_gslist<-function(path){
         fd@frames[[i]]<-f
       }
     }
-    flowData(x)<-fd
+    gs_cyto_data(x)<-fd
     x
   })
   listofgs
   g@data<-listofgs
   g
 }
-#' @rdname getSingleCellExpression
-#' @export
-setMethod("getSingleCellExpression",signature=c("GatingSetList","character"),function(x, nodes, ...){
-      
-      res <- lapply(x, function(gs)getSingleCellExpression(gs, nodes, ...), level = 1)
-      unlist(res, recursive = FALSE)
-      
-    })
 
 #' @rdname transform
 setMethod("transform",

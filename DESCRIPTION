@@ -40,7 +40,6 @@ Imports:
     digest,
     RcppParallel
 Collate: 
-    'AllGenerics.R'
     'AllClasses.R'
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'

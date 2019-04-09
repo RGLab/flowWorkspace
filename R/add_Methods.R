@@ -10,7 +10,7 @@ NULL
 #' 
 #' \code{GatingSet} method creates a gatingset from a flowSet with the ungated data as the root node.
 #' \code{add} method add the flowCore gate to a GatingHierarchy/GatingSet.
-#' \code{setGate} method update the gate of one population node in GatingHierarchy/GatingSet.
+#' \code{gs_set_gate} method update the gate of one population node in GatingHierarchy/GatingSet.
 #' \code{Rm} method Remove the population node from a GatingHierarchy/GatingSet. 
 #' They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \code{flowCore} package. 
 #' \code{recompute} method does the actual gating after the gate is added,i.e. calculating the event indices according to the gate definition.   
@@ -168,7 +168,7 @@ gs_add_gate <- function(wf, action, validityCheck = TRUE, ...){
       gains <- numeric(0)
       #this always load the raw data
       #which may not be optimal for bool gate
-      data <- getData(gh)
+      data <- gh_get_data(gh)
       mat <- exprs(data)
       .cpp_gating( ptr, mat,sn,gains,nodeID,recompute,extend_val, ignore_case, TRUE, 1)
     }
@@ -223,7 +223,7 @@ gh_add_quadGate <- function(wf, action, names = NULL, ... )
 			
 			#convert to four recgates			
 			params<-parameters(action)
-			fr <- getData(wf, use.exprs = FALSE)
+			fr <- gh_get_data(wf, use.exprs = FALSE)
 			desc<-sapply(params,function(x)getChannelMarker(fr,x)$des)
 			
 			v <- action@boundary[params[1]]
@@ -271,7 +271,7 @@ gh_add_logical <- function(wf, action, parent, name, recompute, cluster_method_n
             ind <- action
             
             #convert to global one by combining it with parent indice
-            pInd.logical <- getIndices(wf, parent)
+            pInd.logical <- gh_get_indices(wf, parent)
             # browser()
             #convert it to  global ind 
             if(length(ind) < length(pInd.logical))

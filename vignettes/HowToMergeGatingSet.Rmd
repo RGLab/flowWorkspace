@@ -29,7 +29,7 @@ Arguments
 library(flowWorkspace)
 flowDataPath <- system.file("extdata", package = "flowWorkspaceData")
 gs <- load_gs(file.path(flowDataPath,"gs_manual"))
-gs1 <- clone(gs)
+gs1 <- gs_clone(gs)
 sampleNames(gs1) <- "1.fcs"
 
 # simply the tree
@@ -38,13 +38,13 @@ for(toRm in nodes[grepl("CCR", nodes)])
   Rm(toRm, gs1)
 
 # remove two terminal nodes
-gs2 <- clone(gs1)
+gs2 <- gs_clone(gs1)
 sampleNames(gs2) <- "2.fcs"
 Rm("DPT", gs2)
 Rm("DNT", gs2)
 
 # remove singlets gate
-gs3 <- clone(gs2)
+gs3 <- gs_clone(gs2)
 Rm("singlets", gs3)
 gs_add_gate(gs3, gs_get_gate(gs2, "CD3+"), parent = "not debris")
 for(tsub in c("CD4", "CD8"))
@@ -59,7 +59,7 @@ for(tsub in c("CD4", "CD8"))
 sampleNames(gs3) <- "3.fcs"
 
 # spin the branch to make it isomorphic
-gs4 <- clone(gs3)
+gs4 <- gs_clone(gs3)
 # rm cd4 branch first
 Rm("CD4", gs4)
 # add it back
@@ -72,7 +72,7 @@ for(toAdd in gs_get_children(gs3, "CD4"))
 }
 sampleNames(gs4) <- "4.fcs"
 
-gs5 <- clone(gs4)
+gs5 <- gs_clone(gs4)
 # add another redundant node
 gs_add_gate(gs5, gs_get_gate(gs, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4")
 gs_add_gate(gs5, gs_get_gate(gs, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4")
@@ -100,7 +100,7 @@ plot(gs3)
 **singlets** node is not present in the second tree. But we **can't** remove it because it will remove all its descendants. We can **hide** it instead.
 
 ```{r}
-invisible(setNode(gs2, "singlets", FALSE))
+invisible(gs_set_node_visible(gs2, "singlets", FALSE))
 plot(gs2)
 plot(gs3)
 ```
@@ -120,7 +120,7 @@ gs_get_pop_paths(gs3, path = "auto")[5]
 ## Isomorphism
 ```{r echo=FALSE}
 #restore gs2
-invisible(setNode(gs2, "singlets", TRUE))
+invisible(gs_set_node_visible(gs2, "singlets", TRUE))
 ```
 
 ```{r echo=FALSE}
@@ -159,7 +159,7 @@ Based on the tree structure of each group (usually there aren't as many groups a
 ```{r}
 for(i in c(2,4))
   for(gs in gs_groups[[i]])
-    invisible(setNode(gs, "singlets", FALSE))
+    invisible(gs_set_node_visible(gs, "singlets", FALSE))
 ```
 
 Now check again with `.checkRedundantNodes`

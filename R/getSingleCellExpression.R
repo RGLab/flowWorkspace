@@ -16,7 +16,7 @@
 #'}
 #' @export
 setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y){
-      
+	  .Defunct()      
       bf <- eval(substitute(booleanFilter(v),list(v=y)))
       gh <- obj[[1]]
       
@@ -37,7 +37,7 @@ setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y){
         gs_remove_gate(this_node,obj)
         stop(res)
       }else{
-        this_ind <- lapply(obj,function(this_gh)getIndices(this_gh,this_node))
+        this_ind <- lapply(obj,function(this_gh)gh_get_indices(this_gh,this_node))
         gs_remove_gate(this_node,obj)
         this_ind
       }
@@ -131,7 +131,10 @@ getIndiceMat <- function(gh,y){
   
   
 }
-
+#' @templateVar old getSingleCellExpression
+#' @templateVar new gs_get_singlecell_expression
+#' @template template-depr_pkg
+NULL
 #' Return the cell events data that express in any of the single populations defined in \code{y}
 #'
 #' Returns a list of matrix containing the events that expressed in any one of the populations defined in \code{y}
@@ -160,121 +163,138 @@ getIndiceMat <- function(gh,y){
 #'        mc.cores passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.
 #' 
 #' @return A \code{list} of \code{numerci matrices}
-#' @aliases getSingleCellExpression
+#' @aliases gs_get_singlecell_expression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
-#' @seealso \code{\link{getIndices}}  \code{\link{gs_get_pop_stats}}
+#' @seealso \code{\link{gh_get_indices}}  \code{\link{gs_get_pop_stats}}
 #' @examples \dontrun{
 #'   #G is a GatingSet
 #' 	nodes <- c("4+/TNFa+", "4+/IL2+")
-#' 	res <- getSingleCellExpression(gs, nodes)
+#' 	res <- gs_get_singlecell_expression(gs, nodes)
 #' 	res[[1]]
 #' 	
 #'  # if it fails to match the given nodes to the markers, then try to provide the mapping between node and marker explicitly
-#' 	res <- getSingleCellExpression(gs, nodes , map = list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
+#' 	res <- gs_get_singlecell_expression(gs, nodes , map = list("4+/TNFa+" = "TNFa", "4+/IL2+" = "IL2"))
 #' 	
 #' 	# It can also operate on the 2d gates by setting marginal to FALSE
 #' 	# The markers are no longer deduced from node names or supplied by map
 #' 	# Instead, it retrieves the markers that are associated with the gates
 #' 	nodes <- c("4+/TNFa+IFNg+", "4+/IL2+IL3+")
-#' 	res <- getSingleCellExpression(gs, nodes, marginal = FALSE)
+#' 	res <- gs_get_singlecell_expression(gs, nodes, marginal = FALSE)
 #' 	#or simply call convenient wrapper
-#' 	getSingleCellExpressionByGate(gs, nodes)
+#' 	gs_get_singlecell_expression_by_gate(gs, nodes)
 #' }
-#' @rdname getSingleCellExpression
+#' @rdname gs_get_singlecell_expression
 #' @importFrom dplyr bind_rows
 #' @export
-setMethod("getSingleCellExpression",signature=c("GatingSet","character"),function(x, nodes, ...){
-      .getSingleCellExpression(x, nodes, ...)
-    })
-.getSingleCellExpression <- function(x, nodes
-    , other.markers = NULL
-    , swap = FALSE
-    , threshold = TRUE
-    , marginal = TRUE
-    , mc.cores = getOption("mc.cores", 1L)
-    , ...){
-  datSrc <- ifelse(swap, "name", "desc")
-  fs <- getData(x)
-  sn <- sampleNames(x)
-  
-  names(sn) <- sn
-  
-  thisCall <- quote(lapply(sn,function(sample){
-            
-            message(".", appendLF = FALSE)
-            fr <- fs[[sample, use.exprs = FALSE]]
-            this_pd <- pData(parameters(fr))
-            
-            if(marginal){#parse marker info from node name or map argument
-              #get pop vs channel mapping
-              pop_chnl <- .getPopChnlMapping(this_pd, nodes, swap = swap, ...)  
-              chnls <- as.character(pop_chnl[["name"]])
-              pops <-  as.character(pop_chnl[["pop"]])
-              markers <- as.character(pop_chnl[[datSrc]])
-            }else{#parse markers from gates
-              chnls <- lapply(nodes, function(node){
-                    gate <- gh_get_gate(x[[sample]], node)
-                    if(is(gate, "booleanFilter"))
-                      stop("can't operate on boolean gates: ", node)
-                    dim <- parameters(gate)
-                    names(dim) <- rep(node, length(dim))
-                    dim
-                  })
-              chnls <- unlist(chnls)
-              
-              #pops will be repeated for 2d gate to keep its length consistent with the number of chnls
-              #so that the original c++ code still works without modification
-              pops <- names(chnls)
-              marker_chnl <- lapply(chnls, getChannelMarker, frm = fr)%>% bind_rows
-              markers <- marker_chnl[[datSrc]]
-              markers.unique <- unique(markers)
-              markers_pops <- sapply(markers.unique, function(marker){
-                                                    pops[markers == marker]
-                                            }, simplify = FALSE)
-              markers <- markers.unique
-              chnls <- unique(chnls)
-            }
-            
-            
-            
-            #append the extra markers
-            if(!is.null(other.markers)){
-              
-              other_marker_chnl <- lapply(other.markers, getChannelMarker, frm = fr)%>% bind_rows
-              
-              #remove the other_chnls that are already present in chnls
-              toKeep <- ! other_marker_chnl[["name"]] %in% chnls
-              other_marker_chnl <- other_marker_chnl[toKeep, ,drop = FALSE]
-              chnls <- c(chnls, other_marker_chnl[["name"]])
-              markers <- c(markers, other_marker_chnl[[datSrc]])
-            }
-            
-            
-            
-            data <- fs[[sample, unique(chnls)]]
-            data <- exprs(data)
-            if(marginal)
-              data <- .cpp_getSingleCellExpression(x@pointer, sample, pops, data, markers, threshold)
-            else#modify data in place
-              data <- .cpp_getSingleCellExpressionByGate(x@pointer, sample, markers_pops, data, markers, threshold)
-            
-            data
-            
-            
-          })
-  )
-  
-  if(mc.cores > 1){
-    requireNamespace(parallel)
-    thisCall[[1]] <- quote(mclapply)
-    thisCall[["mc.cores"]] <- mc.cores
-  }
-  eval(thisCall)
+getSingleCellExpression <- function(...){
+	.Deprecated("gs_get_singlecell_expression")
+	gs_get_singlecell_expression(...)
 }
+#' @rdname gs_get_singlecell_expression
+#' @export
+gs_get_singlecell_expression <- function(x, nodes
+											, other.markers = NULL
+											, swap = FALSE
+											, threshold = TRUE
+											, marginal = TRUE
+											, mc.cores = getOption("mc.cores", 1L)
+											, ...){
 
-#' @rdname getSingleCellExpression
+	if(is(x, "GatingSetList"))
+	{
+		res <- lapply(x, function(gs)gs_get_singlecell_expression(gs, nodes, other.markers, swap, threshold, marginal, mc.cores, ...), level = 1)
+		unlist(res, recursive = FALSE)	
+	}else{
+	
+		  datSrc <- ifelse(swap, "name", "desc")
+		  fs <- gs_get_data(x)
+		  sn <- sampleNames(x)
+		  
+		  names(sn) <- sn
+		  
+		  thisCall <- quote(lapply(sn,function(sample){
+		            
+		            message(".", appendLF = FALSE)
+		            fr <- fs[[sample, use.exprs = FALSE]]
+		            this_pd <- pData(parameters(fr))
+		            
+		            if(marginal){#parse marker info from node name or map argument
+		              #get pop vs channel mapping
+		              pop_chnl <- .getPopChnlMapping(this_pd, nodes, swap = swap, ...)  
+		              chnls <- as.character(pop_chnl[["name"]])
+		              pops <-  as.character(pop_chnl[["pop"]])
+		              markers <- as.character(pop_chnl[[datSrc]])
+		            }else{#parse markers from gates
+		              chnls <- lapply(nodes, function(node){
+		                    gate <- gh_get_gate(x[[sample]], node)
+		                    if(is(gate, "booleanFilter"))
+		                      stop("can't operate on boolean gates: ", node)
+		                    dim <- parameters(gate)
+		                    names(dim) <- rep(node, length(dim))
+		                    dim
+		                  })
+		              chnls <- unlist(chnls)
+		              
+		              #pops will be repeated for 2d gate to keep its length consistent with the number of chnls
+		              #so that the original c++ code still works without modification
+		              pops <- names(chnls)
+		              marker_chnl <- lapply(chnls, getChannelMarker, frm = fr)%>% bind_rows
+		              markers <- marker_chnl[[datSrc]]
+		              markers.unique <- unique(markers)
+		              markers_pops <- sapply(markers.unique, function(marker){
+		                                                    pops[markers == marker]
+		                                            }, simplify = FALSE)
+		              markers <- markers.unique
+		              chnls <- unique(chnls)
+		            }
+		            
+		            
+		            
+		            #append the extra markers
+		            if(!is.null(other.markers)){
+		              
+		              other_marker_chnl <- lapply(other.markers, getChannelMarker, frm = fr)%>% bind_rows
+		              
+		              #remove the other_chnls that are already present in chnls
+		              toKeep <- ! other_marker_chnl[["name"]] %in% chnls
+		              other_marker_chnl <- other_marker_chnl[toKeep, ,drop = FALSE]
+		              chnls <- c(chnls, other_marker_chnl[["name"]])
+		              markers <- c(markers, other_marker_chnl[[datSrc]])
+		            }
+		            
+		            
+		            
+		            data <- fs[[sample, unique(chnls)]]
+		            data <- exprs(data)
+		            if(marginal)
+		              data <- .cpp_getSingleCellExpression(x@pointer, sample, pops, data, markers, threshold)
+		            else#modify data in place
+		              data <- .cpp_getSingleCellExpressionByGate(x@pointer, sample, markers_pops, data, markers, threshold)
+		            
+		            data
+		            
+		            
+		          })
+		  )
+		  
+		  if(mc.cores > 1){
+		    requireNamespace(parallel)
+		    thisCall[[1]] <- quote(mclapply)
+		    thisCall[["mc.cores"]] <- mc.cores
+		  }
+		  eval(thisCall)
+	  }
+}
+#' @rdname gs_get_singlecell_expression
 #' @export
 getSingleCellExpressionByGate <- function(...){
-  getSingleCellExpression(..., marginal = FALSE)  
+	.Deprecated("gs_get_singlecell_expression_by_gate")
+	gs_get_singlecell_expression_by_gate(...)
+  gs_get_singlecell_expression(..., marginal = FALSE)  
+}
+#' @rdname gs_get_singlecell_expression
+#' @export
+gs_get_singlecell_expression_by_gate <- function(...){
+	gs_get_singlecell_expression(..., marginal = FALSE)  
 }
 

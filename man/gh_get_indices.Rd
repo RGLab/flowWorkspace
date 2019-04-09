@@ -3,10 +3,12 @@
 \docType{methods}
 \name{getIndices,GatingHierarchy,character-method}
 \alias{getIndices,GatingHierarchy,character-method}
-\alias{getIndices}
+\alias{gh_get_indices}
 \title{Get the membership indices for each event with respect to a particular gate in a GatingHierarchy}
 \usage{
 \S4method{getIndices}{GatingHierarchy,character}(obj, y)
+
+gh_get_indices(obj, y)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} representing a sample.}
@@ -23,14 +25,14 @@ Returns a logical vector that describes whether each event in a sample is includ
 Returns a logical vector that describes whether each event in the data file is included in the given gate of this \code{GatingHierarchy}. The indices are for all events in the file, and do not reflect the population counts relative to the parent but relative to the root. To get population frequencies relative to the parent one cross-tabulate the  indices of \code{y} with the indices of its parent.
 }
 \note{
-Generally you should not need to use \code{getIndices} but the more convenient methods \code{gh_get_proportion} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
+Generally you should not need to use \code{gh_get_indices} but the more convenient methods \code{gh_get_proportion} and \code{gh_get_pop_stats} which return population frequencies relative to the parent node.
 The indices returned reference all events in the file and are not directly suitable for computing population statistics, unless subsets are taken with respect to the parent populations.
 }
 \examples{
   \dontrun{
     #G is a gating hierarchy
     #Return the indices for population 5 (topological sort)
-    getIndices(G,gs_get_pop_paths(G,tsort=TRUE)[5]);
+    gh_get_indices(G,gs_get_pop_paths(G,tsort=TRUE)[5]);
 }
 
 }

@@ -1,6 +1,3 @@
-#' @include AllGenerics.R
-NULL
-
 #' @useDynLib flowWorkspace,.registration = TRUE
 NULL
 
@@ -123,7 +120,7 @@ setClass("GatingSet"
 #'  thisNode <- nodes[4]
 #' 	plotGate(gh,thisNode);
 #' 	gh_get_gate(gh,thisNode);
-#' 	getData(gh,thisNode)
+#' 	gh_get_data(gh,thisNode)
 #' }
 #' @name GatingHierarchy-class
 #' @rdname GatingHierarchy-class
@@ -159,7 +156,7 @@ setMethod("GatingSet",c("flowSet"),function(x){
       identifier(G) <- .uuid_gen()
       G@flag <- TRUE
           
-      flowData(G) <- fs_clone
+      gs_cyto_data(G) <- fs_clone
         
       recompute(G)
       G
@@ -208,9 +205,9 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     gslist2[c("30104.fcs")]
 #'     
 #'     #get flow data from it
-#'     getData(gslist2)
+#'     gs_get_data(gslist2)
 #'     #get gated flow data from a particular popoulation 
-#'     getData(gslist2, "3+")
+#'     gs_get_data(gslist2, "3+")
 #'     
 #'     #extract the gates associated with one popoulation
 #'     gs_get_gate(gslist2,"3+")
@@ -241,8 +238,8 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     save_gslist(gslist2, path ="~/rglab/workspace/flowIncubator/output/gslist",overwrite=T)
 #'     gslist2 <- load_gslist(path ="~/rglab/workspace/flowIncubator/output/gslist")
 #'     
-#'     #convert GatingSetList into one GatingSet by rbind2
-#'     gs_merged2 <- rbind2(gslist2,ncdfFile=path.expand(tempfile(tmpdir="~/rglab/workspace/flowIncubator/output/",fileext=".nc")))
+#'     #convert GatingSetList into one GatingSet by gslist_to_gs
+#'     gs_merged2 <- gslist_to_gs(gslist2,ncdfFile=path.expand(tempfile(tmpdir="~/rglab/workspace/flowIncubator/output/",fileext=".nc")))
 #'     gs_merged2
 #'   }
 #' 
@@ -337,8 +334,8 @@ setValidity("GatingSetList", validGatingSetListObject)
   if(class(res) == "character"){
     return (res)
   }
-  fs1 <- getData(gs1)
-  fs2 <- getData(gs2)
+  fs1 <- gs_get_data(gs1)
+  fs2 <- gs_get_data(gs2)
   .compareFlowData(fs1,fs2)
 }
 
@@ -379,9 +376,9 @@ GatingSetList <- function(x,samples = NULL)
   if(validObject(x)){
     gslist <- x@data
     # make sure the column names of flow data are in the same order
-    cols <- flowCore::colnames(getData(gslist[[1]]))
+    cols <- flowCore::colnames(gh_get_data(gslist[[1]]))
     gslist <- lapply(gslist, function(gs){
-          flowData(gs) <- flowData(gs)[,cols]
+          gs_cyto_data(gs) <- gs_cyto_data(gs)[,cols]
           gs
         })
     x@data <- gslist

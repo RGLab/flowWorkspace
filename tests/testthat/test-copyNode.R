@@ -3,8 +3,8 @@ test_that("copyNode", {
   
   gs <- load_gs(file.path(dataDir,"gs_manual"))
   gh <- gs[[1]]
-  gs1 <- clone(gs)
-  gs2 <- clone(gs)
+  gs1 <- gs_clone(gs)
+  gs2 <- gs_clone(gs)
   gh1<- gs1[[1]]
   gh2<- gs2[[1]]
   # Add in a few more nodes to test recursive depth
@@ -16,7 +16,7 @@ test_that("copyNode", {
   gh_add_gate(gh, rg2, parent = "/not debris/singlets/CD3+/CD4/38- DR-", negated = TRUE)
   recompute(gh)
   # Hide a node
-  setNode(gh, "/not debris/singlets/CD3+/CD4/38- DR-/HLA-", FALSE)
+  gh_set_node_visible(gh, "/not debris/singlets/CD3+/CD4/38- DR-/HLA-", FALSE)
   
   old.stats <- gh_get_pop_stats(gh, path = "full")
   old.parent <- gs_get_parent(gh, "CD4", path="full")
@@ -35,14 +35,14 @@ test_that("copyNode", {
   expect_equal(gs_get_children(gh, "/not debris/singlets/CD4", path = 1), old.children)
   new.descendants <- sub("^.*CD4", "", getDescendants(gh, "/not debris/singlets/CD4", path = "full"))
   expect_equal(new.descendants, old.descendants)
-  expect_true(isHidden(gh, "/not debris/singlets/CD4/38- DR-/HLA-"))
+  expect_true(gh_is_hidden(gh, "/not debris/singlets/CD4/38- DR-/HLA-"))
   
   # Make sure everything is still unchanged in its original location in the tree
   expect_equal(gs_get_parent(gh, "/not debris/singlets/CD3+/CD4", path = "full"), old.parent)
   expect_equal(gs_get_children(gh, "/not debris/singlets/CD3+/CD4", path = 1), old.children)
   new.descendants <- sub("^.*CD4", "", getDescendants(gh, "/not debris/singlets/CD3+/CD4", path = "full"))
   expect_equal(new.descendants, old.descendants)
-  expect_true(isHidden(gh, "/not debris/singlets/CD3+/CD4/38- DR-/HLA-"))
+  expect_true(gh_is_hidden(gh, "/not debris/singlets/CD3+/CD4/38- DR-/HLA-"))
   
   # Make sure the calculations are unaltered on the original branch
   new.stats <- gh_get_pop_stats(gh, path = "full")

@@ -4,9 +4,12 @@
 \alias{clone}
 \alias{clone-methods}
 \alias{clone,GatingSet-method}
+\alias{gs_clone}
 \title{clone a GatingSet}
 \usage{
 clone(x, ...)
+
+gs_clone(x, ...)
 }
 \arguments{
 \item{x}{A \code{GatingSet}}
@@ -27,7 +30,7 @@ Note that the regular R assignment operation on a \code{GatingSet} object does n
 \examples{
   \dontrun{
     #G is  a GatingSet
-    G1<-clone(G)
+    G1<-gs_clone(G)
 
   }
 }

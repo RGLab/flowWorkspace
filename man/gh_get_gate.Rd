@@ -42,5 +42,5 @@ Return the flowCore gate definition object associated with a node in a \code{Gat
   }
 }
 \seealso{
-\code{\link{getData}} \code{\link{gs_get_pop_paths}}
+\code{\link{gh_get_data}} \code{\link{gs_get_pop_paths}}
 }

@@ -43,9 +43,9 @@ test_that("getNodeInd ",{
     })
 
 
-test_that("getIndices ",{
+test_that("gh_get_indices ",{
       
-      thisRes <- getIndices(gh, "singlets")
+      thisRes <- gh_get_indices(gh, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getIndice_singlet_gh.rds"))
       expect_equal(thisRes,expectRes)
       
@@ -59,9 +59,9 @@ test_that("getAxisLabels ",{
       
     })
 
-test_that("getCompensationMatrices ",{
+test_that("gh_get_compensations ",{
       
-      thisRes <- getCompensationMatrices(gh)
+      thisRes <- gh_get_compensations(gh)
       expectRes <- readRDS(file.path(resultDir, "getCompensationMatrices_gh.rds"))
       expect_equal(thisRes,expectRes, tolerance = 2e-08)
       
@@ -77,16 +77,16 @@ test_that(".isBoolGate ",{
     })
 
 
-test_that("getData ",{
+test_that("gh_get_data ",{
       
-      fr <- getData(gh)
+      fr <- gh_get_data(gh)
       expect_is(fr, "flowFrame");
       expect_equal(nrow(fr), 119531)
       
-      fr <- getData(gh, "CD8")
+      fr <- gh_get_data(gh, "CD8")
       expect_equal(nrow(fr), 14564)
       
-      fr <- getData(gh, use.exprs = FALSE)
+      fr <- gh_get_data(gh, use.exprs = FALSE)
       expect_equal(nrow(fr), 0)
     })
 
@@ -99,7 +99,7 @@ test_that("sampleNames",{
       
     })
 
-test_that("gs_get_pop_paths & setNode",{
+test_that("gs_get_pop_paths & gh_set_node_visible",{
 
       expectRes <- readRDS(file.path(resultDir, "getNodes_gh.rds"))
 
@@ -122,35 +122,35 @@ test_that("gs_get_pop_paths & setNode",{
       expect_equal(gs_get_pop_paths(gh, order = "tsort"), expectRes[["full_path_tsort"]])
       
       #change node name
-      invisible(setNode(gh, "singlets", "S"))
+      invisible(gh_set_node_name(gh, "singlets", "S"))
       expect_equal(gs_get_pop_paths(gh), gsub("singlets", "S", expectRes[["full_path"]]))
-      invisible(setNode(gh, "S", "singlets"))
+      invisible(gh_set_node_name(gh, "S", "singlets"))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
       
       #hide node(terminal)
-      invisible(setNode(gh, "DNT", FALSE))
+      invisible(gh_set_node_visible(gh, "DNT", FALSE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]][-23])
-      invisible(setNode(gh, "DNT", TRUE))
+      invisible(gh_set_node_visible(gh, "DNT", TRUE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
       
       #hide node(non-terminal)
-      invisible(setNode(gh, "singlets", FALSE))
+      invisible(gh_set_node_visible(gh, "singlets", FALSE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]][-3])
-      invisible(setNode(gh, "singlets", TRUE))
+      invisible(gh_set_node_visible(gh, "singlets", TRUE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
     })
 
-test_that("setGate", {
+test_that("gh_set_gate", {
       
       gate_cd4 <- gh_get_gate(gh, "CD4")
       gate_cd8 <- gh_get_gate(gh, "CD8")
-      invisible(setGate(gh, "CD4", gate_cd8))
+      invisible(gh_set_gate(gh, "CD4", gate_cd8))
       expect_equal(gh_get_gate(gh, "CD4")@cov, gate_cd8@cov)
       suppressMessages(recompute(gh, "CD4"))
       expect_equal(gh_get_count(gh, "CD4"), gh_get_count(gh, "CD8"))
       
       #restore the gate
-      invisible(setGate(gh, "CD4", gate_cd4))
+      invisible(gh_set_gate(gh, "CD4", gate_cd4))
       suppressMessages(recompute(gh, "CD4"))
     })    
 #the new results no longer compatible with archived results
@@ -425,7 +425,7 @@ if(!isCpStaticGate)
 
 test_that("getPopChnlMapping",{
       
-      fr <- getData(gh, use.exprs = FALSE) 
+      fr <- gh_get_data(gh, use.exprs = FALSE) 
       this_pd <- pData(parameters(fr))
       
       #'make up ICS markers

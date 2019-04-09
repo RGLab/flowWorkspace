@@ -5,34 +5,29 @@
 \name{setNode,GatingHierarchy,character,character-method}
 \alias{setNode,GatingHierarchy,character,character-method}
 \alias{setNode}
-\alias{setNode,GatingHierarchy,character,logical-method}
+\alias{gh_set_node_name}
 \alias{setNode,GatingSet,character,ANY-method}
+\alias{gs_set_node_name}
 \title{Update the name of one node in a gating hierarchy/GatingSet.}
 \usage{
 \S4method{setNode}{GatingHierarchy,character,character}(x, y, value)
 
-\S4method{setNode}{GatingHierarchy,character,logical}(x, y, value)
+gh_set_node_name(x, y, value)
 
 \S4method{setNode}{GatingSet,character,ANY}(x, y, value)
+
+gs_set_node_name(x, y, value)
 }
 \arguments{
-\item{x}{\code{GatingHierarchy} object}
-
-\item{y}{\code{character} node name or path}
-
 \item{value}{A \code{character} the name of the node. or \code{logical} to indicate whether to hide a node}
 }
 \description{
-\code{setNode} update the name of one node in a gating hierarchy/GatingSet.
+\code{gs_set_node_name/gs_set_node_name} update the name of one node in a gating hierarchy/GatingSet.
 }
 \examples{
   \dontrun{
     #G is a gating hierarchy
     gs_get_pop_paths(G[[1]])#return node names
-    setNode(G,"L","lymph")
+    gh_set_node_name(G,"L","lymph")
   }
-\dontrun{
-     setNode(gh, 4, FALSE) # hide a node
-     setNode(gh, 4, TRUE) # unhide a node
-}
 }

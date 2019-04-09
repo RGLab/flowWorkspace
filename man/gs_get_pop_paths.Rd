@@ -44,6 +44,6 @@ to use default order which is regular.
     gs_get_pop_paths(G,path = "full")#return the full path
     gs_get_pop_paths(G,path = 2)#return the path as length of two
     gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
-    setNode(G,"L","lymph")
+    gs_set_node_name(G,"L","lymph")
   }
 }

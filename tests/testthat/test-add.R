@@ -41,7 +41,7 @@ test_that("add quadGate", {
 test_that("add filterResult", {
   
   g <- gs_get_gate(gs, "CD15 FITC-CD45 PE+")
-  fs <- getData(gs, "rectangle")
+  fs <- gs_get_data(gs, "rectangle")
   fres <- filter(fs, g)
   expect_error(gs_add_gate(gs, fres, name = "g1", parent = "root"), "does not match to the parent")
   
@@ -57,7 +57,7 @@ test_that("add filterResult", {
 test_that("add logical vector", {
   #local indice (relative to parent)
   g <- gs_get_gate(gs, "CD15 FITC-CD45 PE+")
-  fs <- getData(gs, "rectangle")
+  fs <- gs_get_data(gs, "rectangle")
   fres <- filter(fs, g)
   ind <- lapply(fres, slot, "subSet")
   expect_error(gs_add_gate(gs, ind, name = "g1", parent = "root"), "does not match to the parent")
@@ -68,7 +68,7 @@ test_that("add logical vector", {
   gs_remove_gate("g1", gs)
   
 #global indice (relative to root)  
-  ind <- lapply(gs, function(gh)getIndices(gh, "CD15 FITC-CD45 PE+"))
+  ind <- lapply(gs, function(gh)gh_get_indices(gh, "CD15 FITC-CD45 PE+"))
   gs_add_gate(gs, ind, name = "g1", parent = "rectangle")
   expect_is(gh_get_gate(gs[[1]], "g1"), "booleanFilter")
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
@@ -79,10 +79,10 @@ test_that("add logical vector", {
 test_that("add factor vector", {
   
   fac.list <- lapply(gs, function(gh){
-    ind1 <- getIndices(gh, "CD15 FITC-CD45 PE+")
-    ind2 <- getIndices(gh, "CD15 FITC+CD45 PE+")
-    ind3 <- getIndices(gh, "CD15 FITC+CD45 PE-")  
-    ind4 <- getIndices(gh, "CD15 FITC-CD45 PE-") 
+    ind1 <- gh_get_indices(gh, "CD15 FITC-CD45 PE+")
+    ind2 <- gh_get_indices(gh, "CD15 FITC+CD45 PE+")
+    ind3 <- gh_get_indices(gh, "CD15 FITC+CD45 PE-")  
+    ind4 <- gh_get_indices(gh, "CD15 FITC-CD45 PE-") 
     #make a factor vector (mimic a clustering result)
     vec <- character(length(ind1))#global
     vec[ind1] <- "Q1"
@@ -117,7 +117,7 @@ test_that("add factor vector", {
   expect_error(gh_get_cluster_labels(gs[[1]], "rectangle", "cluster"), "No clustering results")
   labels <- gh_get_cluster_labels(gs[[1]], "rectangle", "clusterA")
   
-  pind <- getIndices(gs[[1]], "rectangle")
+  pind <- gh_get_indices(gs[[1]], "rectangle")
   expect_true(all(is.na(labels[!pind])))
   
   labels <- labels[pind]#convert to local
@@ -150,8 +150,8 @@ test_that("add boolean filter", {
   gs_remove_gate(or_node, gs)
   
   #abs path
-  setNode(gs, "CD15 FITC-CD45 PE+", "Q1")
-  setNode(gs, "CD15 FITC-CD45 PE-", "Q4")
+  gs_set_node_name(gs, "CD15 FITC-CD45 PE+", "Q1")
+  gs_set_node_name(gs, "CD15 FITC-CD45 PE-", "Q4")
   bf <- booleanFilter(Q1|rectangle/Q4)
   gs_add_gate(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)

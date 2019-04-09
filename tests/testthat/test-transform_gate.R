@@ -46,8 +46,8 @@ test_that("scale rectangleGate_gh", {
   # rid ofthe infinite bounds
   test_rectangleGate@min[1] <- 0
   test_rectangleGate@max[2] <- 3000
-  setGate(gs[[1]], test_rectangleGate_node, test_rectangleGate)
-  setGate(gs[[2]], test_rectangleGate_node, test_rectangleGate)
+  gh_set_gate(gs[[1]], test_rectangleGate_node, test_rectangleGate)
+  gh_set_gate(gs[[2]], test_rectangleGate_node, test_rectangleGate)
   
   test_rectangleGate <- gh_get_gate(gh, test_rectangleGate_node)
   scale_gate(gh, test_rectangleGate_node, test_scale_split)
@@ -154,8 +154,8 @@ test_that("scale rectangleGate_gs", {
   test_rectangleGate[[1]]@max[2] <- 3000
   test_rectangleGate[[2]]@min[1] <- 0
   test_rectangleGate[[2]]@max[2] <- 3000
-  setGate(gs[[1]], test_rectangleGate_node, test_rectangleGate[[1]])
-  setGate(gs[[2]], test_rectangleGate_node, test_rectangleGate[[2]])
+  gh_set_gate(gs[[1]], test_rectangleGate_node, test_rectangleGate[[1]])
+  gh_set_gate(gs[[2]], test_rectangleGate_node, test_rectangleGate[[2]])
   
   test_rectangleGate <- gs_get_gate(gs, test_rectangleGate_node)
   scale_gate(gs, test_rectangleGate_node, test_scale_split)
