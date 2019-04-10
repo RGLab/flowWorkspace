@@ -1022,7 +1022,8 @@ isGated <- function(obj,y){
 			gh_is_gated(obj, y)
 			
 		}
-
+#' @rdname nodeflags
+#' @export 
 gh_is_gated <- function(obj,y){
       .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
 
@@ -1039,6 +1040,8 @@ isNegated <- function(obj,y){
 			gh_is_negated(obj, y)
 			
 		}
+#' @rdname nodeflags
+#' @export 
 gh_is_negated <- function(obj,y){
       .cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
 
@@ -1055,6 +1058,8 @@ isHidden <- function(obj,y){
 			gh_is_hidden(obj, y)
 			
 		}
+#' @rdname nodeflags
+#' @export 
 gh_is_hidden  <- function(obj,y){		
       .cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
     }

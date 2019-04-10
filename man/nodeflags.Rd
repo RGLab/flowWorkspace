@@ -2,8 +2,11 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \name{isGated}
 \alias{isGated}
+\alias{gh_is_gated}
 \alias{isNegated}
+\alias{gh_is_negated}
 \alias{isHidden}
+\alias{gh_is_hidden}
 \title{The flags of gate nodes
 gh_is_gated checks if a node is already gated
 gh_is_negated checks if a node is negated.
@@ -11,9 +14,15 @@ gh_is_hidden checks if a node is hidden.}
 \usage{
 isGated(obj, y)
 
+gh_is_gated(obj, y)
+
 isNegated(obj, y)
 
+gh_is_negated(obj, y)
+
 isHidden(obj, y)
+
+gh_is_hidden(obj, y)
 }
 \arguments{
 \item{obj}{GatingHierarchy}
