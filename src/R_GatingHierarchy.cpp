@@ -478,7 +478,11 @@ vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	nodeProperties & node = gh.getNodeProperty(u);
 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
 	if(u>0&&!node.isGated())
+	{
+		if(node.getGate()->getType()!=BOOLGATE)
+			throw(domain_error("Event indicies are not available for the ungated non-boolean node: '" + gatePath + "'. \n Please recompute it first!"));
 		gh.gating(u);
+	}
 	return node.getIndices();
 
 
