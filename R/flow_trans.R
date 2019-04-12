@@ -346,7 +346,7 @@ NULL
 #' trans.func <- trans.obj[["transform"]]
 #' round(trans.func(brks))
 #' @export
-flowJo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
+flowjo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
   trans <- flowjo_fasinh(...)
   inv <- flowjo_fsinh(...)
   flow_trans(name = "flowJo_fasinh", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)

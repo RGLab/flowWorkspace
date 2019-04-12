@@ -1,5 +1,6 @@
 #' @include filterObject_Methods.R
 NULL
+
 #' @templateVar old setGate
 #' @templateVar new gs(/gh)_set_gate
 #' @template template-depr_pkg
