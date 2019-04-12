@@ -37,7 +37,7 @@ setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
 setMethod("setGate"
     ,signature(obj="GatingHierarchy",y="character",value="filter")
     ,function(obj,y,value,...){
-      .Deprecate("gh_set_gate")
+      .Deprecated("gh_set_gate")
 	  gh_set_gate(obj,y,value,...)
 	   
     })
@@ -56,7 +56,7 @@ setMethod("setGate",
     signature=c(obj="GatingSet",y="character", value = "ANY"),
     definition=function(obj, y, value,...)
     {
-		.Deprecate("gs_set_gate")
+		.Deprecated("gs_set_gate")
 		 gs_set_gate(obj, y, value)
       
     })
