@@ -2,12 +2,9 @@
 % Please edit documentation in R/deprecated.R
 \name{openWorkspace}
 \alias{openWorkspace}
-\alias{openWorkspace.default}
 \title{It is now moved along with entire flowJo parser to CytoML package}
 \usage{
 openWorkspace(file, ...)
-
-\method{openWorkspace}{default}(file, ...)
 }
 \arguments{
 \item{file}{xml file}

@@ -1,15 +1,15 @@
-context("parseWorkspace")
+context("flowjo_to_gatingset")
 
 wsfile <- list.files(dataDir, pattern="manual.xml",full=TRUE)
 library(CytoML)
-ws <- openWorkspace(wsfile);
+ws <- open_flowjo_xml(wsfile);
 test_that("can load xml workspace",
 {
   
-  expect_that(ws, is_a("flowJoWorkspace"))
+  expect_that(ws, is_a("flowjo_workspace"))
 })
 
-dd <- capture.output(gs <- parseWorkspace(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))
+dd <- capture.output(gs <- flowjo_to_gatingset(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))
 
 gh <- gs[[1]]
 
@@ -45,7 +45,7 @@ source("GatingSet-testSuite.R", local = TRUE)
 # we need test trans so have to put this test here since the legacy archived gs doesn't have trans
 test_that("updateChannles",{
   
-  dd <- capture.output(suppressMessages(gs1 <- parseWorkspace(ws, path = dataDir, name = 4, subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2"), keywords = "TUBE NAME")))
+  dd <- capture.output(suppressMessages(gs1 <- flowjo_to_gatingset(ws, path = dataDir, name = 4, subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2"), keywords = "TUBE NAME")))
   oldCols <- colnames(gs_get_data(gs1)[[1, use.exprs = F]])
   comp_cols <- parameters(gh_get_compensations(gs1[[1]]))
   trans_names <- names(gh_get_transformations(gs1[[1]]))

@@ -30,7 +30,7 @@ Note that we cannot import `.jo` files directly. You will have to save them in X
 The following section walks through opening and importing a flowJo workspace.
 
 ### Opening a Workspace
-We represent flowJo workspaces using `flowJoWorkspace` objects. We only need to know the path to, and filename of the flowJo workspace.
+We represent flowJo workspaces using `flowjo_workspace` objects. We only need to know the path to, and filename of the flowJo workspace.
 
 ```{r findxml}
 library(flowWorkspace)
@@ -41,36 +41,36 @@ wsfile <- list.files(path, pattern="A2004Analysis.xml", full = TRUE)
 In order to open this workspace we need `CytoML` package:
 ```{r openws,results='markup'}
 library(CytoML)
-ws <- openWorkspace(wsfile)
+ws <- open_flowjo_xml(wsfile)
 ws
 ```
 
-We see that this a version 2.0 workspace file. It's location and filename are printed. Additionally, you are notified that the workspace file is open. This refers to the fact that the XML document is internally represented using 'C' data structures from the `XML` package. After importing the file, the workspace must be explicitly closed using `closeWorkspace()` in order to free up that memory.
+We see that this a version 2.0 workspace file. It's location and filename are printed. Additionally, you are notified that the workspace file is open. This refers to the fact that the XML document is internally represented using 'C' data structures from the `XML` package. After importing the file, the workspace must be explicitly closed using `flowjo_ws_close()` in order to free up that memory.
 
 With the workspace file open,some basic sample information can be accessed through some helper methods.
 For example, the list of samples in a workspace can be accessed by:
 ```{r getsamples-ws}
-getSamples(ws)
+fj_ws_get_samples(ws)
 ```
 The `compID` column tells you which compensation matrix to apply to a group of files, and similarly, based on the name of the compensation matrix, which transformations to apply.
 
 
 And the groups can be accessed by:
 ```{r getgroups}
-getSampleGroups(ws)
+fj_ws_get_sample_groups(ws)
 ```
 
 Keywords stored in xml workspace can also retrieved by:
 ```{r}
 sn <- "a2004_O1T2pb05i_A1_A01.fcs"
-getKeywords(ws, sn)[1:5]
+fj_ws_get_keywords(ws, sn)[1:5]
 ```
 
 ### Parsing the Workspace
-These are all retrieved by directly querying xml file. In order to get more information about the gating tree, we need to actually parse the XML workspace into R data structures to represent some of the information therein. Specifically, by calling `parseWorkspace()` the user will be presented with a list of `groups` in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a `GatingHierarchy` for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a `GatingSet` object. Calling `parseWorkspace()` is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument `execute=T/F` specifies whether you want to load, compensate, transform the data and compute statistics immediately after parsing the XML tree. Argument `path` can be used to specify where the FCS files are stored.
+These are all retrieved by directly querying xml file. In order to get more information about the gating tree, we need to actually parse the XML workspace into R data structures to represent some of the information therein. Specifically, by calling `flowjo_to_gatingset()` the user will be presented with a list of `groups` in the workspace file and need to choose one group to import. Why only one? Because of the way flowJo handles data transformation and compensation. Each group of samples is associated with a compensation matrix and specific data transformation. These are applied to all samples in the group. When a particular group of samples is imported, the package generates a `GatingHierarchy` for each sample, describing the set of gates applied to the data (note: polygons, rectangles, quadrants, and ovals and boolean gates are supported). The set of GatingHierarchies for the group of samples is stored in a `GatingSet` object. Calling `flowjo_to_gatingset()` is quite verbose, informing the user as each gate is created. The parsing can also be done non--interactively by specifying which group to import directly in the function call (either an index or a group name). An additional optional argument `execute=T/F` specifies whether you want to load, compensate, transform the data and compute statistics immediately after parsing the XML tree. Argument `path` can be used to specify where the FCS files are stored.
 
 ```{r parsews,message=FALSE, warning=FALSE}
-gs <- parseWorkspace(ws,name = 1); #import the first group
+gs <- flowjo_to_gatingset(ws,name = 1); #import the first group
 #Lots of output here suppressed for the vignette.
 gs
 ```
@@ -80,7 +80,7 @@ To list the samples stored in `GatingSet`:
 ```{r sampleNames}
 sampleNames(gs)
 ```
-Note that it is different from the previous call `getSamples` on `workspace` where the latter list all samples stored in `xml` file and here are the ones actually get parsed. Because sometime not all of samples in xml will be imported for various reason. Also we've seen an extra string `_xxx` is attached to the end of each sample name. It is due to the argument `additional.keys` has the default value set to `'$TOT'`. See more details on these parsing options from [How to parse a flowJo workspace](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseFlowJo.html).
+Note that it is different from the previous call `fj_ws_get_samples` on `workspace` where the latter list all samples stored in `xml` file and here are the ones actually get parsed. Because sometime not all of samples in xml will be imported for various reason. Also we've seen an extra string `_xxx` is attached to the end of each sample name. It is due to the argument `additional.keys` has the default value set to `'$TOT'`. See more details on these parsing options from [How to parse a flowJo workspace](http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseFlowJo.html).
 
 ## Import gatingML
 We currently support gatingML2.0 files exported from `Cytobank` system. It can be done with one convevient function `parse.gatingML` from `CytoML` package that simply takes file paths of `gatingML` and `FCS`.

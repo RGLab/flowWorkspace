@@ -38,7 +38,7 @@ GatingSet holds a set of \code{GatingHierarchy} objects, representing a set of s
 }
 \details{
 Objects stores a collection of GatingHierarchies and represent a group in a flowJo workspace.
-A GatingSet can have two ``states''. After a call to parseWorkspace(...,execute=FALSE)
+A GatingSet can have two ``states''. After a call to flowjo_to_gatingset(...,execute=FALSE)
 , the workspace is imported but the data is not. Setting \code{execute} to \code{TRUE} is needed in order to load, 
 transform, compensate, and gate the associated data. Whether or not a GatingHierarchy has been applied to data is encoded in the \code{flag} slot. Some methods will warn the user, or may not function correctly if the GatingHierarchy has not been executed.
 This mechanism is in place, largely for the purpose of speed when working with larger workspaces. 
@@ -65,8 +65,8 @@ It allows the use to load a workspace and subset desired samples before proceedi
   d<-system.file("extdata",package="flowWorkspaceData")
   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
 	library(CytoML)
-  ws <- openWorkspace(wsfile);
-  G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
+  ws <- open_flowjo_xml(wsfile);
+  G<-try(flowjo_to_gatingset(ws,execute=TRUE,path=d,name=1));
   gs_plot_pop_count_cv(G);
 }
 }

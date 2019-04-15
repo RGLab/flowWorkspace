@@ -20,8 +20,8 @@ Given a GatingHierarchy, one can extract the data associated with any subpopulat
 	d<-system.file("extdata",package="flowWorkspaceData")
 	wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
 library(CytoML)
-	ws <- openWorkspace(wsfile);
-	G<-try(parseWorkspace(ws,path=d,name=1));
+	ws <- open_flowjo_xml(wsfile);
+	G<-try(flowjo_to_gatingset(ws,path=d,name=1));
  gh <- G[[1]]
 	gh_get_pop_stats(gh);
 	gh_plot_pop_count_cv(gh)

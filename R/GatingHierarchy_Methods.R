@@ -1136,10 +1136,6 @@ gh_get_data <- function(obj, y = "root", ...){
 	return (class(gh_get_gate(x,y))=="booleanFilter")
 }
 
-#' @templateVar old openWorkspace
-#' @templateVar new open_workspace
-#' @template template-depr_pkg
-NULL
 #' Determine tick mark locations and labels for a given channel axis
 #'
 #' @param gh \code{GatingHiearchy}
@@ -1212,9 +1208,9 @@ getTransformations <- function(x, ...)UseMethod("getTransformations")
 #' @details
 #' Returns a list of the transformations or a transformation in the flowJo workspace.
 #' The list is of length \code{L}, where \code{L} is the number of distinct transformations applied to samples
-#' in the \code{flowJoWorkspace}. Each element of \code{L} is itself a \code{list} of length \code{M},
+#' in the \code{flowjo_workspace}. Each element of \code{L} is itself a \code{list} of length \code{M},
 #' where \code{M} is the number of parameters that were transformed for a sample or group of samples
-#' in a \code{flowJoWorkspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis,
+#' in a \code{flowjo_workspace}. For example, if a sample has 10 parameters, and 5 are transformed during analysis,
 #' using two different sets of transformations, then L will be of length 2, and each element of L will be of length 5.
 #' The elements of \code{L} represent channel- or parameter-specific transformation functions that map from raw intensity values
 #' to channel-space used by flowJo.

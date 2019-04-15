@@ -33,8 +33,6 @@
 
 \code{getData} --> \code{\link{gs(/gh)_get_data}}
 
-\code{openWorkspace} --> \code{\link{open_workspace}}
-
 \code{getTransformations} --> \code{\link{gh_get_transformations}}
 
 \code{getCompensationMatrices} --> \code{\link{gh_get_compensations}}
@@ -67,7 +65,7 @@
 
 \code{copyNode} --> \code{\link{gh_copy_gate}}
 
-\code{openWorkspace} --> \code{\link{open_workspace}}
+\code{openWorkspace} --> \code{\link{open_flowjo_xml}}
 
 \code{flowJo.flog} --> \code{\link{flowjo_flog}}
 
