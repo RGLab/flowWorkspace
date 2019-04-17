@@ -189,7 +189,7 @@ gs_get_compensation_internal <- function(gs, sampleName) {
 }
 #' @importClassesFrom graph graphNEL
 #' @importMethodsFrom Rgraphviz AgNode AgEdge nodeDataDefaults name nodeData
-#' @importMethodsFrom graph nodeDataDefaults<-  nodeData<- addEdge addNode
+#' @importMethodsFrom graph nodeDataDefaults<-  nodeData<- addEdge addNode nodes
 #' @importFrom graph graphNEL
 #' @importFrom Rgraphviz agread
 #' @param x a \code{GatingHierarchy}
@@ -1109,8 +1109,11 @@ setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
 #' @export
 setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...){
   .Deprecated("gh_get_data")
-  gh_get_data(obj, y)
-  
+  if(missing(y)){
+    gh_get_data(obj, ...)
+  }else{
+    gh_get_data(obj, y, ...)
+  }
 })
       
 #' @rdname gh_get_data-methods
