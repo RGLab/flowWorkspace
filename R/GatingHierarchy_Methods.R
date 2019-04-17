@@ -189,7 +189,7 @@ gs_get_compensation_internal <- function(gs, sampleName) {
 }
 #' @importClassesFrom graph graphNEL
 #' @importMethodsFrom Rgraphviz AgNode AgEdge nodeDataDefaults name nodeData
-#' @importMethodsFrom graph nodeDataDefaults<-  nodeData<- addEdge addNode
+#' @importMethodsFrom graph nodeDataDefaults<-  nodeData<- addEdge addNode nodes
 #' @importFrom graph graphNEL
 #' @importFrom Rgraphviz agread
 #' @param x a \code{GatingHierarchy}
