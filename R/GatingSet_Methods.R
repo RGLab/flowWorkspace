@@ -1976,8 +1976,11 @@ setReplaceMethod("sampleNames",
 #' @export
 setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
   .Deprecated("gs_get_data")
-  gs_get_data(obj, y)
-  
+  if(missing(y)){
+    gs_get_data(obj, ...)
+  }else{
+    gs_get_data(obj, y, ...)
+  }
 })
       
 #' @rdname gs_get_data-methods

@@ -1107,8 +1107,11 @@ setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
 #' @export
 setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...){
   .Deprecated("gh_get_data")
-  gh_get_data(obj, y)
-  
+  if(missing(y)){
+    gh_get_data(obj, ...)
+  }else{
+    gh_get_data(obj, y, ...)
+  }
 })
       
 #' @rdname gh_get_data-methods
