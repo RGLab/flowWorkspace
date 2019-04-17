@@ -12,9 +12,9 @@ NULL
 #' library(flowWorkspace)
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
 #' suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
-#' getDescendants(gs[[1]], "CD4")
-#' getDescendants(gs[[1]], "CD8", path = "auto")
-getDescendants <- function(gh, node, ...){
+#' gh_get_descendants(gs[[1]], "CD4")
+#' gh_get_descendants(gs[[1]], "CD8", path = "auto")
+gh_get_descendants <- function(gh, node, ...){
  descendants.id <- .getDescendants(gh@pointer, sampleNames(gh), node)
  gs_get_pop_paths(gh, showHidden = T, ...)[descendants.id+1]
 

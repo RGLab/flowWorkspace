@@ -2,9 +2,12 @@
 % Please edit documentation in R/merge_GatingSet.R
 \name{groupByChannels}
 \alias{groupByChannels}
+\alias{gs_split_by_channels}
 \title{split GatingSets into groups based on their flow channels}
 \usage{
 groupByChannels(x)
+
+gs_split_by_channels(x)
 }
 \arguments{
 \item{x}{a list of GatingSets}
@@ -19,6 +22,6 @@ Thus we have to separate them if we want to visualize the gates.
 \examples{
 \dontrun{
 gslist <- list(gs1, gs2, gs3, gs4, gs5)
-gs_groups <- groupByChannels(gslist)
+gs_groups <- gs_split_by_channels(gslist)
 }
 }

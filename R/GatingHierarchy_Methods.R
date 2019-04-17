@@ -656,6 +656,7 @@ gs_get_children <- function(obj,y, showHidden = TRUE, ...){
 #' @template template-depr_pkg
 NULL
 #' @rdname gh_get_pop_stats
+#' @aliases getProp
 #' @export
 getProp <- function(x,y,xml = FALSE){
 	.Deprecated("gh_get_proportion")
@@ -682,6 +683,7 @@ gh_get_proportion <- function(x,y,xml = FALSE){
 NULL
 #' @rdname gh_get_pop_stats
 #' @export
+#' @aliases getProp
 getTotal <- function(x,y,xml = FALSE){
 	.Deprecated("gh_get_count")
 	gh_get_count(x, y, xml)

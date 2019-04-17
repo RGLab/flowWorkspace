@@ -2,28 +2,31 @@
 % Please edit documentation in R/merge_GatingSet.R
 \name{checkRedundantNodes}
 \alias{checkRedundantNodes}
+\alias{gs_check_redundant_nodes}
 \title{try to determine the redundant terminal(or leaf) nodes that can be removed}
 \usage{
-checkRedundantNodes(x, path = "auto", ...)
+checkRedundantNodes(...)
+
+gs_check_redundant_nodes(x, path = "auto", ...)
 }
 \arguments{
-\item{x}{\code{GatingSet} or \code{list} of groups(each group is a list of 'GatingSet`). When it is a list, it is usually the outcome from \link{groupByTree}.}
+\item{...}{other arguments passed to \link{gs_get_pop_paths}.}
+
+\item{x}{\code{GatingSet} or \code{list} of groups(each group is a list of 'GatingSet`). When it is a list, it is usually the outcome from \link{gs_split_by_tree}.}
 
 \item{path}{argumented passed to \link{gs_get_pop_paths}. The default value is "auto".}
-
-\item{...}{other arguments passed to \link{gs_get_pop_paths}.}
 }
 \value{
 a list of the character vectors inicating the nodes that are considered to be redundant for each group of GatingSets.
 }
 \description{
 THese leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
-\link{dropRedundantNodes}.
+\link{gs_remove_redundant_nodes}.
 }
 \examples{
 \dontrun{
 gslist <- list(gs1, gs2, gs3, gs4, gs5)
-gs_groups <- groupByTree(gslist)
-toRm <- checkRedundantNodes(gs_groups)
+gs_groups <- gs_split_by_tree(gslist)
+toRm <- gs_check_redundant_nodes(gs_groups)
 }
 }

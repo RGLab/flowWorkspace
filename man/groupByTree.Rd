@@ -22,6 +22,6 @@ as long as gs_get_pop_paths(gh, path = "auto", showHidden = F) returns the same 
 \examples{
 \dontrun{
 gslist <- list(gs1, gs2, gs3, gs4, gs5)
-gs_groups <- groupByTree(gslist)
+gs_groups <- gs_split_by_tree(gslist)
 }
 }

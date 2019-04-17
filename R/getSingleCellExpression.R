@@ -1,53 +1,9 @@
 ### Extract single-cell data by boooean expansion. For COMPASS
-
-#' routine to return the indices by specify boolean combination of reference nodes:
-#'
-#' It adds the boolean gates and does the gating on the fly, and
-#' return the indices associated with that bool gate, and remove the bool gate
-#' the typical use case would be extracting any-cytokine-expressed cells
-#'
-#' @param obj \code{GatingSet}
-#' @param y a quoted expression.
-#' @examples
-#' \dontrun{
-#'
-#'	getIndices(gs,quote(`4+/TNFa+|4+/IL2+`))
-#'
-#'}
-#' @export
-setMethod("getIndices",signature=c("GatingSet","name"),function(obj, y){
-	  .Defunct()      
-      bf <- eval(substitute(booleanFilter(v),list(v=y)))
-      gh <- obj[[1]]
-      
-      suppressMessages({
-            suppressWarnings(
-                id <- gs_add_gate(obj,bf)
-            )
-            
-            allNodes <- gs_get_pop_paths(gh, showHidden = TRUE)
-            this_node <- allNodes[id]
-            
-            
-            res <-try(recompute(obj,this_node),silent=T)
-          })
-      
-      
-      if(class(res)=="try-error"){
-        gs_remove_gate(this_node,obj)
-        stop(res)
-      }else{
-        this_ind <- lapply(obj,function(this_gh)gh_get_indices(this_gh,this_node))
-        gs_remove_gate(this_node,obj)
-        this_ind
-      }
-      
-    })
 #' Return the single-cell matrix of 1/0 dichotomized expression
 #' @param gh \code{GatingHierarchy} object
-#' @param y \code{character} node name
+#' @param y \code{character} string containing the boolean or of node names.e.g. 'cd4|cd8'
 #' @export
-getIndiceMat <- function(gh,y){
+gh_get_indices_mat <- function(gh,y){
   strExpr <- as.character(y)
   nodes <- strsplit(strExpr,split="\\|")[[1]]
   .getIndiceMat(gh, sampleNames(gh), nodes)

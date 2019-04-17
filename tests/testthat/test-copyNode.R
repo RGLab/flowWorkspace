@@ -21,7 +21,7 @@ test_that("copyNode", {
   old.stats <- gh_get_pop_stats(gh, path = "full")
   old.parent <- gs_get_parent(gh, "CD4", path="full")
   old.children <- gs_get_children(gh, "CD4", path = 1)
-  old.descendants <- sub("^.*CD4", "", getDescendants(gh, "CD4"))
+  old.descendants <- sub("^.*CD4", "", gh_get_descendants(gh, "CD4"))
   
   new.parent <- "CD4"
   expect_error(gh_copy_gate(gh, "CD4", new.parent), "itself")
@@ -33,14 +33,14 @@ test_that("copyNode", {
   # Make sure everything moved to the new location in the tree
   expect_equal(gs_get_parent(gh, "/not debris/singlets/CD4", path = "auto"), new.parent)
   expect_equal(gs_get_children(gh, "/not debris/singlets/CD4", path = 1), old.children)
-  new.descendants <- sub("^.*CD4", "", getDescendants(gh, "/not debris/singlets/CD4", path = "full"))
+  new.descendants <- sub("^.*CD4", "", gh_get_descendants(gh, "/not debris/singlets/CD4", path = "full"))
   expect_equal(new.descendants, old.descendants)
   expect_true(gh_is_hidden(gh, "/not debris/singlets/CD4/38- DR-/HLA-"))
   
   # Make sure everything is still unchanged in its original location in the tree
   expect_equal(gs_get_parent(gh, "/not debris/singlets/CD3+/CD4", path = "full"), old.parent)
   expect_equal(gs_get_children(gh, "/not debris/singlets/CD3+/CD4", path = 1), old.children)
-  new.descendants <- sub("^.*CD4", "", getDescendants(gh, "/not debris/singlets/CD3+/CD4", path = "full"))
+  new.descendants <- sub("^.*CD4", "", gh_get_descendants(gh, "/not debris/singlets/CD3+/CD4", path = "full"))
   expect_equal(new.descendants, old.descendants)
   expect_true(gh_is_hidden(gh, "/not debris/singlets/CD3+/CD4/38- DR-/HLA-"))
   

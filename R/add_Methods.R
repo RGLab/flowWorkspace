@@ -366,26 +366,12 @@ gs_remove_gate <- function(symbol, envir, ...){
 }
 #' @export 
 #' @rdname add
-setMethod("Rm",
-		signature=c(symbol="character",
-				envir="GatingSet"),
-		definition=function(symbol, envir, ...)
+Rm <- function(symbol, envir, ...)
 		{
 			.Deprecated("gs_remove_gate")
 		  gs_remove_gate(symbol, envir, ...)
-		})
-#' @export 
-#' @rdname add    
-setMethod("Rm",
-    signature=c(symbol="character",
-        envir="GatingSetList",
-        subSymbol="character"),
-    definition=function(symbol, envir, subSymbol, ...)
-    {
-      selectMethod("Rm"
-          ,signature = c(symbol="character", envir="GatingSet", subSymbol="character"))(symbol, envir, subSymbol, ...)
-    })
-    
+		}
+   
 
 gh_remove_gate <- function(symbol, envir, ...)
 		{

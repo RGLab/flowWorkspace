@@ -13,23 +13,23 @@ NULL
 #' @import ncdfFlow
 #' @import data.table
 #' @export
-#' @rdname getStats
+#' @rdname gh_get_stats
 #' @examples
 #' \dontrun{
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
 #' suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 #'
 #' # get stats all nodes
-#' dt <- getStats(gs) #default is "count"
+#' dt <- gs_get_stats(gs) #default is "count"
 #'
 #' nodes <- c("CD4", "CD8")
-#' getStats(gs, nodes, "percent")
+#' gs_get_stats(gs, nodes, "percent")
 #'
 #' # pass a build-in function
-#' getStats(gs, nodes, type = pop.MFI)
+#' gs_get_stats(gs, nodes, type = pop.MFI)
 #'
 #' # compute the stats based on the raw data scale
-#' getStats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
+#' gs_get_stats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
 #'
 #' # supply user-defined stats fun
 #' pop.quantiles <- function(fr){
@@ -38,7 +38,7 @@ NULL
 #'    names(res) <- chnls
 #'    res
 #'    }
-#' getStats(gs, nodes, type = pop.quantiles)
+#' gs_get_stats(gs, nodes, type = pop.quantiles)
 #' }
 getStats <- function(x, ...)UseMethod("getStats")
 
@@ -49,17 +49,23 @@ getStats.GatingSetList <- function(x, ...){
 }
 
 #' @export
-#' @rdname getStats
-getStats.GatingSet <- function(x, ...){
+#' @rdname gs_get_stats
+getStats.GatingSet <- function(...){
+	.Deprecated("gs_get_stats")
+  gs_get_stats(...)
+}
+#' @export
+#' @rdname gs_get_stats
+gs_get_stats <- function(x, ...){
   res <-  lapply(x, function(gh){
-    getStats(gh, ...)
+    gh_get_stats(gh, ...)
 
   })
   rbindlist(res, idcol = "sample")
 }
 
 #' @export
-#' @rdname getStats
+#' @rdname gs_get_stats
 #' @param nodes the character vector specifies the populations of interest. default is all available nodes
 #' @param type the character vector specifies the type of pop stats or
 #'          a function used to compute population stats.
@@ -67,7 +73,13 @@ getStats.GatingSet <- function(x, ...){
 #'          when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.
 #' @param inverse.transform logical flag . Whether inverse transform the data before computing the stats.
 #' @param stats.fun.arg a list of arguments passed to `type` when 'type' is a function.
-getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, stats.fun.arg = list(), ...){
+getStats.GatingHierarchy <- function(...){
+  .Deprecated("gh_get_stats")
+  gh_get_stats(...)
+}
+#' @export
+#' @rdname gs_get_stats
+gh_get_stats <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, stats.fun.arg = list(), ...){
   gh <- x
   if(is.null(nodes))
     nodes <- gs_get_pop_paths(gh, ...)
@@ -110,7 +122,7 @@ getStats.GatingHierarchy <- function(x, nodes = NULL, type = "count", inverse.tr
 #' built-in stats functions.
 #'
 #' pop.MFI computes and returns the median fluorescence intensity for each marker.
-#' They are typically used as the arguments passed to \code{getStats} method to perform the sample-wise population stats calculations.
+#' They are typically used as the arguments passed to \code{gh_get_stats} method to perform the sample-wise population stats calculations.
 #'
 #' @param fr a flowFrame represents a gated population
 #' @return a named numeric vector

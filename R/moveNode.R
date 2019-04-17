@@ -15,10 +15,18 @@ NULL
 #' gh <- gs[[1]]
 #' old.parent <- gs_get_parent(gh, "CD4")
 #' new.parent <- "singlets"
-#' moveNode(gh, "CD4", new.parent)
+#' gh_move_node(gh, "CD4", new.parent)
 #' gs_get_parent(gh, "CD4")
-moveNode <- function(gh, node, to){
-
+#' @rdname gh_move_node
+#' @export
+moveNode <- function(...){
+  .Deprecated("gh_move_node")
+  gh_move_node(...)
+}
+#' @rdname gh_move_node
+#' @export
+gh_move_node <- function(gh, node, to){
+  
   .moveNode(gh@pointer, sampleNames(gh), node, to)
   recompute(gh, to)
 

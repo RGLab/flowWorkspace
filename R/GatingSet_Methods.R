@@ -886,10 +886,10 @@ swap_data_cols <- function(cols, swap_cols)
 		if(channel.ignore.case){
 			#get non-prefixed channel names
 			raw.cols <- colnames(fs)
-			#since updateChannels does case insensitive matching
+			#since gs_update_channels does case insensitive matching
 			#so we simply set both old and new columns with raw.cols
 			map <- data.frame(old = raw.cols, new = raw.cols)
-			updateChannels(gs, map, all = FALSE)
+			gs_update_channels(gs, map, all = FALSE)
 		}
 		
 		#update data with prefixed columns

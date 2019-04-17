@@ -2,9 +2,12 @@
 % Please edit documentation in R/merge_GatingSet.R
 \name{updateChannels}
 \alias{updateChannels}
+\alias{gs_update_channels}
 \title{Update the channel information of a GatingSet (c++ part)}
 \usage{
-updateChannels(gs, map, all = TRUE)
+updateChannels(...)
+
+gs_update_channels(gs, map, all = TRUE)
 }
 \arguments{
 \item{gs}{a GatingSet object}
@@ -26,7 +29,7 @@ based on given mapping between the old and new channel names.
 \examples{
 \dontrun{
   ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
- gs <- updateChannels(gs, map = data.frame(old = c("Qdot 655-A")
+ gs <- gs_update_channels(gs, map = data.frame(old = c("Qdot 655-A")
                                          , new = c("QDot 655-A")
                                          )
                      )  

@@ -436,7 +436,7 @@ if(!isCpStaticGate)
     #verify the results by calling R routines
     nodes.expr <- quote(`CD8/38- DR+|CD8/38+ DR-|CD8/CCR7- 45RA+`)
     ind.total <- getIndices(gs[1], nodes.expr)[[1]]
-    ind.mat <- getIndiceMat(gs[[1]], nodes.expr)
+    ind.mat <- gh_get_indices_mat(gs[[1]], nodes.expr)
     #Or the ind for the same marker from nodes
     ind.DR <- ind.38 <- ind.mat[,1] | ind.mat[,2]
     ind.CCR <- ind.45 <- ind.mat[,3]

@@ -29,7 +29,7 @@ gh_copy_gate<- function(gh, node, to){
   if(to == node){
     stop("Can't copy the node to itself!")
   }
-  if(to %in% getDescendants(gh, node, path = "full")){
+  if(to %in% gh_get_descendants(gh, node, path = "full")){
     stop("Can't copy the node to its descendants!")
   }
   .copyNode(gh, node, to)

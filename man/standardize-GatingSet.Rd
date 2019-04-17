@@ -5,17 +5,17 @@
 \alias{merge-GatingSet}
 \title{The tools to standardize the tree structures and channel names.}
 \description{
-groupByTree(x)
+gs_split_by_tree(x)
 
-groupByChannels(x)
+gs_split_by_channels(x)
 
-checkRedundantNodes(x)
+gs_check_redundant_nodes(x)
 
-dropRedundantNodes(x, toRemove)
+gs_remove_redundant_nodes(x, toRemove)
 
-dropRedundantChannels(gs)
+gs_remove_redundant_channels(gs)
 
-updateChannels(gs, map, all = TRUE)
+gs_update_channels(gs, map, all = TRUE)
 
 insertGate(gs, gate, parent, children)
 
@@ -25,19 +25,19 @@ gs_set_node_visible(x, y, FALSE)
 In order to merge multiple GatingSets into single \link{GatingSetList}, the gating trees and channel names must be
 consistent. These functions help removing the discrepancies and standardize the GatingSets so that they are mergable.
 
-\link{groupByTree} splits the GatingSets into groups based on the gating tree structures.
+\link{gs_split_by_tree} splits the GatingSets into groups based on the gating tree structures.
 
-\link{groupByChannels} split GatingSets into groups based on their flow channels.
+\link{gs_split_by_channels} split GatingSets into groups based on their flow channels.
 
-\link{checkRedundantNodes} returns the terminal(or leaf) nodes that makes the gating trees to be different among GatingSets and thus can be considered to remove as redundant nodes.
+\link{gs_check_redundant_nodes} returns the terminal(or leaf) nodes that makes the gating trees to be different among GatingSets and thus can be considered to remove as redundant nodes.
 
-\link{dropRedundantNodes} removes the terminal(or leaf) nodes that are detected as redundant by \code{checkRedundantNodes}.
+\link{gs_remove_redundant_nodes} removes the terminal(or leaf) nodes that are detected as redundant by \code{gs_check_redundant_nodes}.
 
-\link{dropRedundantChannels} remove the redundant channels that are not used by any gate defined in the GatingSet.
+\link{gs_remove_redundant_channels} remove the redundant channels that are not used by any gate defined in the GatingSet.
 
-\link{updateChannels} modifies the channel names in place. (Usually used to standardize the channels among GatingSets due to the letter case discrepancies or typo).
+\link{gs_update_channels} modifies the channel names in place. (Usually used to standardize the channels among GatingSets due to the letter case discrepancies or typo).
 
-\link{insertGate} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{dropRedundantNodes}
+\link{insertGate} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{gs_remove_redundant_nodes}
 
 \link{gs_set_node_visible} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
 }

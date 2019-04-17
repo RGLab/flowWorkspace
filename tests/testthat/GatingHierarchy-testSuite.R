@@ -412,9 +412,9 @@ test_that("pretty10exp",{
 
 if(!isCpStaticGate)
 {
-  test_that("getIndiceMat for COMPASS",{
+  test_that("gh_get_indices_mat for COMPASS",{
     
-    thisRes <- getIndiceMat(gh, "CD8/38- DR+|CD8/CCR7- 45RA+")
+    thisRes <- gh_get_indices_mat(gh, "CD8/38- DR+|CD8/CCR7- 45RA+")
     expectRes <- readRDS(file.path(resultDir, "getIndiceMat_gh.rds"))
     expect_equal(thisRes,expectRes)
     

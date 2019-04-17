@@ -58,20 +58,20 @@ sampleNames(gs5) <- "5.fcs"
 
 gs_groups <- NULL
 gslist <- list(gs1, gs2, gs3, gs4, gs5)
-test_that("groupByTree", {
+test_that("gs_split_by_tree", {
   
-  gs_groups <<- groupByTree(gslist)
+  gs_groups <<- gs_split_by_tree(gslist)
   expect_equal(length(gs_groups), 4)
   
 })
 
 toRm <- NULL
-test_that("checkRedundantNodes", {
-  expect_error(checkRedundantNodes(gs_groups), "Can't drop the non-terminal nodes: singlets")
+test_that("gs_check_redundant_nodes", {
+  expect_error(gs_check_redundant_nodes(gs_groups), "Can't drop the non-terminal nodes: singlets")
   for(i in c(2,4))
     for(gs in gs_groups[[i]])
       invisible(gs_set_node_visible(gs, "singlets", FALSE))
-  toRm <<- checkRedundantNodes(gs_groups)
+  toRm <<- gs_check_redundant_nodes(gs_groups)
   expect_equal(toRm, list(c("CCR7+ 45RA+", "CCR7+ 45RA-")
                           , c("DNT", "DPT")
                           , character(0)
@@ -81,23 +81,23 @@ test_that("checkRedundantNodes", {
   
 })
 
-test_that("dropRedundantNodes", {
-  dropRedundantNodes(gs_groups, toRm)
-  expect_equal(length(groupByTree(gslist)), 1)
+test_that("gs_remove_redundant_nodes", {
+  gs_remove_redundant_nodes(gs_groups, toRm)
+  expect_equal(length(gs_split_by_tree(gslist)), 1)
 })
 
-test_that("dropRedundantChannels", {
-  gs1 <- dropRedundantChannels(gs1)
+test_that("gs_remove_redundant_channels", {
+  gs1 <- gs_remove_redundant_channels(gs1)
   expect_equal(setdiff(colnames(gs0), colnames(gs1)), c("FSC-H", "FSC-W", "<G560-A>", "<G780-A>", "Time"))
 })
 
 test_that("group and merge the GatingSet object", {
   #test gs version
-  gs_groups <- groupByTree(gs6)
+  gs_groups <- gs_split_by_tree(gs6)
   expect_equal(length(gs_groups), 2)
-  toRm <- checkRedundantNodes(gs_groups)
+  toRm <- gs_check_redundant_nodes(gs_groups)
   expect_equal(toRm, list(c("DNT", "DPT"), character(0)))
-  dropRedundantNodes(gs_groups, toRm)
-  expect_equal(length(groupByTree(gs6)), 1)
+  gs_remove_redundant_nodes(gs_groups, toRm)
+  expect_equal(length(gs_split_by_tree(gs6)), 1)
   
 })

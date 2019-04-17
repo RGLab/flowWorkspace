@@ -9,99 +9,99 @@
 \alias{flowWorkspace-deprecated}
 \title{Deprecated functions in package \pkg{flowWorkspace}.}
 \description{
-\code{getNodes} --> \code{\link{gs_get_pop_paths}}
+\code{getNodes} --> \code{gs_get_pop_paths}
 
-\code{getParent} --> \code{\link{gs_get_parent}}
+\code{getParent} --> \code{gs_get_parent}
 
-\code{getChildren} --> \code{\link{gs_get_children}}
+\code{getChildren} --> \code{gs_get_children}
 
-\code{getProp} --> \code{\link{gh_get_proportion}}
+\code{getProp} --> \code{gh_get_proportion}
 
-\code{getTotal} --> \code{\link{gs(/gh)_get_count}}
+\code{getTotal} --> \code{gs(/gh)_get_count}
 
-\code{getPopStats} --> \code{\link{gs(/gh)_get_pop_stats}}
+\code{getPopStats} --> \code{gs(/gh)_get_pop_stats}
 
-\code{getGate} --> \code{\link{gs(/gh)_get_gate}}
+\code{getGate} --> \code{gs(/gh)_get_gate}
 
-\code{getIndices} --> \code{\link{gh_get_indices}}
+\code{getIndices} --> \code{gh_get_indices}
 
-\code{isGated} --> \code{\link{gh_is_gated}}
+\code{isGated} --> \code{gh_is_gated}
 
-\code{isNegated} --> \code{\link{gh_is_negated}}
+\code{isNegated} --> \code{gh_is_negated}
 
-\code{isHidden} --> \code{\link{gh_is_hidden}}
+\code{isHidden} --> \code{gh_is_hidden}
 
-\code{getData} --> \code{\link{gs(/gh)_get_data}}
+\code{getData} --> \code{gs(/gh)_get_data}
 
-\code{getTransformations} --> \code{\link{gh_get_transformations}}
+\code{getTransformations} --> \code{gh_get_transformations}
 
-\code{getCompensationMatrices} --> \code{\link{gh_get_compensations}}
+\code{getCompensationMatrices} --> \code{gh_get_compensations}
 
-\code{plotGate} --> \code{\link{autoplot}}
+\code{plotGate} --> \code{autoplot}
 
-\code{setNode} --> \code{\link{gs(/gh)_set_node_name/gs(/gh)_set_node_visible}}
+\code{setNode} --> \code{gs(/gh)_set_node_name/gs(/gh)_set_node_visible}
 
-\code{isNcdf} --> \code{\link{gs_is_h5}}
+\code{isNcdf} --> \code{gs_is_h5}
 
-\code{clone} --> \code{\link{gs_clone}}
+\code{clone} --> \code{gs_clone}
 
-\code{recompute} --> \code{\link{gs_recompute}}
+\code{recompute} --> \code{gs_recompute}
 
-\code{flowData} --> \code{\link{gs_cyto_data}}
+\code{flowData} --> \code{gs_cyto_data}
 
-\code{flowData<-} --> \code{\link{gs_cyto_data<-}}
+\code{flowData<-} --> \code{gs_cyto_data<-}
 
-\code{getLoglevel} --> \code{\link{get_log_level}}
+\code{getLoglevel} --> \code{get_log_level}
 
-\code{setLoglevel} --> \code{\link{set_log_level}}
+\code{setLoglevel} --> \code{set_log_level}
 
-\code{rbind2} --> \code{\link{gslist_to_gs}}
+\code{rbind2} --> \code{gslist_to_gs}
 
-\code{filterObject} --> \code{\link{filter_to_list}}
+\code{filterObject} --> \code{filter_to_list}
 
-\code{add} --> \code{\link{gs_add_gate}}
+\code{add} --> \code{gs_add_gate}
 
-\code{Rm} --> \code{\link{gs_remove_gate}}
+\code{Rm} --> \code{gs_remove_gate}
 
-\code{copyNode} --> \code{\link{gh_copy_gate}}
+\code{copyNode} --> \code{gh_copy_gate}
 
-\code{openWorkspace} --> \code{\link{open_flowjo_xml}}
+\code{openWorkspace} --> \code{open_flowjo_xml}
 
-\code{flowJo.flog} --> \code{\link{flowjo_flog}}
+\code{flowJo.flog} --> \code{flowjo_flog}
 
-\code{flowJoTrans} --> \code{\link{flowjo_biexp}}
+\code{flowJoTrans} --> \code{flowjo_biexp}
 
-\code{flowJo.fasinh} --> \code{\link{flowjo_fasinh}}
+\code{flowJo.fasinh} --> \code{flowjo_fasinh}
 
-\code{flowJo.fsinh} --> \code{\link{flowjo_fsinh}}
+\code{flowJo.fsinh} --> \code{flowjo_fsinh}
 
-\code{flowJo_fasinh_trans} --> \code{\link{flowjo_fasinh_trans}}
+\code{flowJo_fasinh_trans} --> \code{flowjo_fasinh_trans}
 
-\code{getDescendants} --> \code{\link{gh_get_descendants}}
+\code{getDescendants} --> \code{gh_get_descendants}
 
-\code{getSingleCellExpression} --> \code{\link{gs_get_singlecell_expression}}
+\code{getSingleCellExpression} --> \code{gs_get_singlecell_expression}
 
-\code{getStats} --> \code{\link{gs(/gh)_get_stats}}
+\code{getStats} --> \code{gs(/gh)_get_stats}
 
-\code{groupByTree} --> \code{\link{gs_group_by_tree}}
+\code{groupByTree} --> \code{gs_split_by_tree}
 
-\code{groupByChannels} --> \code{\link{gs_group_by_channels}}
+\code{groupByChannels} --> \code{gs_split_by_channels}
 
-\code{checkRedundantNodes} --> \code{\link{gs_check_redundant_nodes}}
+\code{checkRedundantNodes} --> \code{gs_check_redundant_nodes}
 
-\code{dropRedundantNodes} --> \code{\link{gs_drop_redundant_nodes}}
+\code{dropRedundantNodes} --> \code{gs_remove_redundant_nodes}
 
-\code{dropRedundantChannels} --> \code{\link{gs_drop_redundant_channels}}
+\code{dropRedundantChannels} --> \code{gs_drop_redundant_channels}
 
-\code{updateChannels} --> \code{\link{gs_update_channels}}
+\code{updateChannels} --> \code{gs_update_channels}
 
-\code{moveNode} --> \code{\link{gh_move_node}}
+\code{moveNode} --> \code{gh_move_node}
 
-\code{setGate} --> \code{\link{gs(/gh)_set_gate}}
+\code{setGate} --> \code{gs(/gh)_set_gate}
 
-\code{updateIndices} --> \code{\link{gh_set_pop_indices}}
+\code{updateIndices} --> \code{gh_pop_set_indices}
 
-\code{getMergedStats} --> \code{\link{gs_get_merged_stats}}
+\code{getMergedStats} --> \code{gs_get_merged_stats}
 
-\code{set.count.xml} --> \code{\link{gh_set_xml_count}}
+\code{set.count.xml} --> \code{gh_set_xml_count}
 }

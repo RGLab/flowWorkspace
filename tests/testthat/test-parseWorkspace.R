@@ -53,7 +53,7 @@ test_that("updateChannles",{
                     , new = c("fsc", "v450-a", "newchnl", "b710"))
   
   #without updating flow data
-  res <- updateChannels(gs1, map, all = FALSE)
+  res <- gs_update_channels(gs1, map, all = FALSE)
   expect_null(res)
   cols <- colnames(gs_get_data(gs1)[[1, use.exprs = F]])
   expect_equal(oldCols, cols)
@@ -77,7 +77,7 @@ test_that("updateChannles",{
   expect_equal(names(trans)[1:7], trans_names %>% gsub("B710-A", "b710", .) %>% gsub("V450-A", "v450-a", .))
   
   #update flow data
-  gs1 <- updateChannels(gs1, map)
+  gs1 <- gs_update_channels(gs1, map)
   expect_is(gs1, "GatingSet")
   cols <- colnames(gs_get_data(gs1))
   expect_equal(cols, oldCols %>% 

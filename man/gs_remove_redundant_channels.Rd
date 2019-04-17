@@ -2,14 +2,17 @@
 % Please edit documentation in R/merge_GatingSet.R
 \name{dropRedundantChannels}
 \alias{dropRedundantChannels}
+\alias{gs_remove_redundant_channels}
 \title{Remove the channels from flow data that are not used by gates}
 \usage{
-dropRedundantChannels(gs, ...)
+dropRedundantChannels(...)
+
+gs_remove_redundant_channels(gs, ...)
 }
 \arguments{
-\item{gs}{a \code{GatingSet}}
-
 \item{...}{other arugments passed to gs_get_pop_paths method}
+
+\item{gs}{a \code{GatingSet}}
 }
 \value{
 a new \code{GatingSet} object that has redundant channels removed. Please note that this new object shares the same reference (or external pointers) with the original GatingSets.
@@ -19,6 +22,6 @@ Removing these redundant channels can help standardize the channels across diffe
 }
 \examples{
 \dontrun{
-gs_new <- dropRedundantChannels(gs)
+gs_new <- gs_remove_redundant_channels(gs)
 }
 }

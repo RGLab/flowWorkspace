@@ -2,9 +2,12 @@
 % Please edit documentation in R/moveNode.R
 \name{moveNode}
 \alias{moveNode}
+\alias{gh_move_node}
 \title{move a node along with all of its descendant nodes to the given ancester}
 \usage{
-moveNode(gh, node, to)
+moveNode(...)
+
+gh_move_node(gh, node, to)
 }
 \arguments{
 \item{gh}{GatingHierarchy}
@@ -23,6 +26,6 @@ suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = 
 gh <- gs[[1]]
 old.parent <- gs_get_parent(gh, "CD4")
 new.parent <- "singlets"
-moveNode(gh, "CD4", new.parent)
+gh_move_node(gh, "CD4", new.parent)
 gs_get_parent(gh, "CD4")
 }

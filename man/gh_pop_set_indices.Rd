@@ -3,9 +3,12 @@
 \docType{methods}
 \name{updateIndices,GatingHierarchy,character,logical-method}
 \alias{updateIndices,GatingHierarchy,character,logical-method}
+\alias{gh_pop_set_indices}
 \title{directly update event indices without changing gates}
 \usage{
 \S4method{updateIndices}{GatingHierarchy,character,logical}(obj, y, z)
+
+gh_pop_set_indices(obj, y, z)
 }
 \arguments{
 \item{obj}{\code{GatingHierarchy} object}
@@ -24,7 +27,7 @@ dataDir <- system.file("extdata",package="flowWorkspaceData")
 suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 gh <- gs[[1]]
 #get pop counts
-pop.stats <- getStats(gh, nodes = c("CD3+", "CD4", "CD8"))
+pop.stats <- gh_get_stats(gh, nodes = c("CD3+", "CD4", "CD8"))
 pop.stats
 
 # subsample 30\% cell events at CD3+ node
@@ -35,11 +38,11 @@ gInd <- sample.int(total.cd3, size = total.cd3 * 0.3) #randomly select 30\%
 gInd.logical <- rep(FALSE, total.cd3)
 gInd.logical[gInd] <- TRUE
 #replace the original index stored at GatingHierarchy
-updateIndices(gh, "CD3+", gInd.logical)
+gh_pop_set_indices(gh, "CD3+", gInd.logical)
 #check the updated pop counts
-getStats(gs[[1]], nodes = c("CD3+", "CD4", "CD8")) #note that CD4, CD8 are not updated
+gh_get_stats(gs[[1]], nodes = c("CD3+", "CD4", "CD8")) #note that CD4, CD8 are not updated
 #update all the descendants of CD3+
-nodes <- getDescendants(gh, "CD3+")
+nodes <- gh_get_descendants(gh, "CD3+")
 for (node in nodes) suppressMessages(recompute(gh, node))
-getStats(gs[[1]], nodes = c("CD3+", "CD4", "CD8")) #now all are update to date
+gh_get_stats(gs[[1]], nodes = c("CD3+", "CD4", "CD8")) #now all are update to date
 }

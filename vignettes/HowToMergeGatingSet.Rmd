@@ -9,10 +9,10 @@ How to merg/standardize GatingSets
 Usage
 ------------------------------------------------------
 ```{r eval=FALSE}
-groupByTree(x)
-checkRedundantNodes(x)
-dropRedundantNodes(x,toRemove)
-dropRedundantChannels(gs, ...)
+gs_split_by_tree(x)
+gs_check_redundant_nodes(x)
+gs_remove_redundant_nodes(x,toRemove)
+gs_remove_redundant_channels(gs, ...)
 ```
 
 Arguments
@@ -136,14 +136,14 @@ To ease the process of merging large number of batches of experiments, here is s
 ### Grouping by tree structures
 ```{r}
 gslist <- list(gs1, gs2, gs3, gs4, gs5)
-gs_groups <- groupByTree(gslist)
+gs_groups <- gs_split_by_tree(gslist)
 length(gs_groups)
 ```
 
 This divides all the `GatingSet`s into different groups, each group shares the same tree structure. Here we have `4` groups, 
 ## Check if the discrepancy can be resolved by dropping leaf nodes
 ```{r error=TRUE}
-res <- try(checkRedundantNodes(gs_groups), silent = TRUE)
+res <- try(gs_check_redundant_nodes(gs_groups), silent = TRUE)
 print(res[[1]])
 ```
 
@@ -162,9 +162,9 @@ for(i in c(2,4))
     invisible(gs_set_node_visible(gs, "singlets", FALSE))
 ```
 
-Now check again with `.checkRedundantNodes`
+Now check again with `.gs_check_redundant_nodes`
 ```{r}
-toRm <- checkRedundantNodes(gs_groups)
+toRm <- gs_check_redundant_nodes(gs_groups)
 toRm
 ```
 
@@ -172,15 +172,15 @@ Based on this, these groups can be consolidated by dropping
 * `CCR7+ 45RA+` and `CCR7+ 45RA-` from `group 1`.
 * `DNT` and `DPT` from `group 2`.
 
-Sometime it could be difficult to inspect and distinguish tree difference by simply plotting the enire gating tree or looking at this simple flat list of nodes (especially when the entire subtree is missing from cerntain groups). It is helpful to visualize and highlight only the tree hierarchy difference with the helper function `plot_diff_tree`
+Sometime it could be difficult to inspect and distinguish tree difference by simply plotting the enire gating tree or looking at this simple flat list of nodes (especially when the entire subtree is missing from cerntain groups). It is helpful to visualize and highlight only the tree hierarchy difference with the helper function `gs_plot_diff_tree`
 
 ```{r, message=FALSE}
-plot_diff_tree(gs_groups)
+gs_plot_diff_tree(gs_groups)
 ```
 
-To proceed the deletion of these nodes, `.dropRedundantNodes` can be used instead of doing it manually
+To proceed the deletion of these nodes, `.gs_remove_redundant_nodes` can be used instead of doing it manually
 ```{r results='hide'}
-dropRedundantNodes(gs_groups, toRm)
+gs_remove_redundant_nodes(gs_groups, toRm)
 ```
 
 Now they can be merged into a single `GatingSetList`.
@@ -192,5 +192,5 @@ Remove the redundant channels from `GatingSet`
 ------------------------------------------------------
 Sometime there may be the extra `channels` in one data set that prevents it from being merged with other. If these channels are not used by any gates, then they can be safely removed.
 ```{r}
-dropRedundantChannels(gs1)
+gs_remove_redundant_channels(gs1)
 ```
