@@ -4,24 +4,22 @@
 \alias{add}
 \alias{Rm}
 \alias{add.default}
-\alias{gs_add_gate}
-\alias{gs_remove_gate}
+\alias{gs_pop_add}
+\alias{gs_pop_remove}
 \title{Create a GatingSet and add/remove the flowCore gate(or population) to/from a GatingHierarchy/GatingSet.}
 \usage{
-add(wf, action, ...)
+add(gs, gate, ...)
 
-\method{add}{default}(wf, action, ...)
+\method{add}{default}(gs, gate, ...)
 
-gs_add_gate(wf, action, validityCheck = TRUE, ...)
+gs_pop_add(gs, gate, validityCheck = TRUE, ...)
 
-gs_remove_gate(symbol, envir, ...)
+gs_pop_remove(gs, node, ...)
 
-Rm(symbol, envir, ...)
+Rm(node, gs, ...)
 }
 \arguments{
-\item{wf}{A \code{GatingHierrarchy} or \code{GatingSet}}
-
-\item{action}{A \code{filter} or a list of \code{filter}s to be added to the  \code{GatingHierarchy} or \code{GatingSet}.}
+\item{gate}{A \code{filter} or a list of \code{filter}s to be added to the  \code{GatingHierarchy} or \code{GatingSet}.}
 
 \item{...}{some other arguments to specify how the gates are added to the gating tree.
 \itemize{
@@ -31,9 +29,9 @@ Rm(symbol, envir, ...)
 
 \item{validityCheck}{\code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.}
 
-\item{symbol}{A \code{character} identifies the population node in a \code{GatingHierrarchy} or \code{GatingSet} to remove}
+\item{node}{A \code{character} identifies the population node in a \code{GatingHierrarchy} or \code{GatingSet} to remove}
 
-\item{envir}{A \code{GatingHierrarchy} or \code{GatingSet}}
+\item{gh}{A \code{GatingHierrarchy} or \code{GatingSet}}
 
 \item{names}{a \code{character} vector of length four,which specifies the population names resulted by adding a \code{quadGate}.}
 
@@ -43,8 +41,6 @@ Rm(symbol, envir, ...)
 
 \item{recompute}{a \code{logical} flag
 The order of the names is clock-wise starting from the top left quadrant population.}
-
-\item{subSymbol}{Not used.}
 }
 \value{
 \code{GatingSet} method returns a \code{GatingSet} object with just root node.  
@@ -53,7 +49,7 @@ The order of the names is clock-wise starting from the top left quadrant populat
 \description{
 \code{GatingSet} method creates a gatingset from a flowSet with the ungated data as the root node.
 \code{add} method add the flowCore gate to a GatingHierarchy/GatingSet.
-\code{gs_set_gate} method update the gate of one population node in GatingHierarchy/GatingSet.
+\code{gs_pop_set_gate} method update the gate of one population node in GatingHierarchy/GatingSet.
 \code{Rm} method Remove the population node from a GatingHierarchy/GatingSet. 
 They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \code{flowCore} package. 
 \code{recompute} method does the actual gating after the gate is added,i.e. calculating the event indices according to the gate definition.
@@ -77,20 +73,20 @@ They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \
     rg <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400),
         filterId="rectangle")
     
-    nodeID<-gs_add_gate(gs, rg)#it is added to root node by default if parent is not specified
+    nodeID<-gs_pop_add(gs, rg)#it is added to root node by default if parent is not specified
     nodeID
     gs_get_pop_paths(gs[[1]]) #the second population is named after filterId of the gate 
     
 #add a quadGate
     qg <- quadGate("FL1-H"=2, "FL2-H"=4)
-    nodeIDs<-gs_add_gate(gs,qg,parent="rectangle")
+    nodeIDs<-gs_pop_add(gs,qg,parent="rectangle")
     nodeIDs #quadGate produces four population nodes
     gs_get_pop_paths(gs[[1]]) #population names are named after dimensions of gate if not specified
     
 #add a boolean Gate
     bg<-booleanFilter(`CD15 FITC-CD45 PE+`|`CD15 FITC+CD45 PE-`)
     bg
-    nodeID2<-gs_add_gate(gs,bg,parent="rectangle")
+    nodeID2<-gs_pop_add(gs,bg,parent="rectangle")
     nodeID2
     gs_get_pop_paths(gs[[1]])
 #do the actual gating
@@ -109,7 +105,7 @@ They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \
 #plot the gating hierarchy
     plot(gs[[1]])
 #remove one node causing the removal of all the descendants 
-    gs_remove_gate('rectangle', gs)
+    gs_pop_remove('rectangle', gs = gs)
     gs_get_pop_paths(gs[[1]])
  }
 }

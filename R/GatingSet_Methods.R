@@ -144,7 +144,7 @@ save_gs<-function(G,path,overwrite = FALSE
           #check if the target path is the same as current cdf path
 #            browser()
           this_cdf <- file.path(path,this_files[cdf_ind])
-          if(normalizePath(gs_get_data(G)@file)==normalizePath(this_cdf)){
+          if(normalizePath(gs_pop_get_data(G)@file)==normalizePath(this_cdf)){
             cdf <- "skip"
           }
           if(cdf != "skip"){
@@ -1278,7 +1278,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
     curGates<-sapply(samples,function(curSample){
 
-          filters(lapply(y$popIds,function(y)gh_get_gate(x[[curSample]],y)))
+          filters(lapply(y$popIds,function(y)gh_pop_get_gate(x[[curSample]],y)))
         },simplify=F)
     curGates<-as(curGates,"filtersList")
 
@@ -1287,14 +1287,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
       stats <- sapply(samples,function(thisSample){
             lapply(y$popIds,function(thisY){
                   curGh <- x[[thisSample]]
-                  gh_get_proportion(curGh, thisY, xml = F)
+                  gh_pop_get_proportion(curGh, thisY, xml = F)
                 })
           },simplify = FALSE)
     }
 
   }else
   {
-    curGates<-gs_get_gate(x,y)
+    curGates<-gs_pop_get_gate(x,y)
 
     if(suppressWarnings(any(is.na(curGates)))){
       message("Can't plot. There is no gate defined for node ",gs_get_pop_paths(x[[1]],,showHidden=TRUE)[y]);
@@ -1304,7 +1304,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
     if(missing(stats)){
       stats <- sapply(samples,function(thisSample){
             curGh <- x[[thisSample]]
-            gh_get_proportion(curGh, y,xml = F)
+            gh_pop_get_proportion(curGh, y,xml = F)
           },simplify = FALSE)
     }else
       stats = stats
@@ -1313,14 +1313,14 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 
   if(class(curGates[[1]])=="booleanFilter")
   {
-    parent <- gs_get_parent(x[[1]],y)
+    parent <- gs_pop_get_parent(x[[1]],y)
     if(parent == "root"){
       params <- c(default.y, default.x)
     }else{
-      params<-rev(parameters(gh_get_gate(x[[1]],parent)))
+      params<-rev(parameters(gh_pop_get_gate(x[[1]],parent)))
     }
 
-    overlay <- sapply(samples,function(curSample)gh_get_indices(x[[curSample]],y), simplify = FALSE)
+    overlay <- sapply(samples,function(curSample)gh_pop_get_indices(x[[curSample]],y), simplify = FALSE)
     curGates <- NULL
     isBool <- TRUE
   }else
@@ -1374,7 +1374,7 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
 }
 
 fix_y_axis <- function(gs, x, y){
-  chnls <- colnames(gs_get_data(gs))
+  chnls <- colnames(gs_pop_get_data(gs))
   y.candidates <- chnls[-match(x,chnls)]
 
   if(y%in%y.candidates)
@@ -1400,11 +1400,11 @@ fix_y_axis <- function(gs, x, y){
   myfunc <- function(x, overlay, params){
     #gate indices
     if(class(overlay)=="logical")
-      overlay<-Subset(gs_get_data(x),overlay)[,params]
+      overlay<-Subset(gs_pop_get_data(x),overlay)[,params]
     else{
 #      if(length(overlay)>1)
 #        stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
-      overlay <- sapply(overlay, function(thisOverlay)gs_get_data(x,thisOverlay)[,params])
+      overlay <- sapply(overlay, function(thisOverlay)gs_pop_get_data(x,thisOverlay)[,params])
     }
     overlay
   }
@@ -1503,7 +1503,7 @@ fix_y_axis <- function(gs, x, y){
 	if(is.list(y))
 	  parent<-y$parentId
 	else
-	  parent<-gs_get_parent(gh, y, path = path)
+	  parent<-gs_pop_get_parent(gh, y, path = path)
     
   if(strip.text == "parent"){
     popName <- parent
@@ -1544,7 +1544,7 @@ fix_y_axis <- function(gs, x, y){
 #    browser()
         #get data
     #subset on channels to speed up loading data from disk
-    parentData <- gs_get_data(x, parent, j = params)
+    parentData <- gs_pop_get_data(x, parent, j = params)
     defaultCond <- "name"
     if(is.gh){
       if(strip){
@@ -1660,7 +1660,7 @@ fix_y_axis <- function(gs, x, y){
                           , space = "bottom"
                           , padding.text = 5)
           }
-          overlay <- sapply(overlay, function(thisOverlay)gs_get_data(x,thisOverlay)[,params])
+          overlay <- sapply(overlay, function(thisOverlay)gs_pop_get_data(x,thisOverlay)[,params])
 
           if(is.gh){
             if(strip){
@@ -1786,7 +1786,7 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' Compute each cell event to see if it falls into the gate stored within the gating tree
 #' and store the result as cell count.
 #'
-#' It is usually used immediately after \link{add} or \link{gs_set_gate} calls.
+#' It is usually used immediately after \link{add} or \link{gs_pop_set_gate} calls.
 #'
 #' @param x \code{GatingSet}
 #' @param y \code{character} node name or node path. Default "root". Optional.
@@ -1852,11 +1852,11 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
           if(isAllBoolGate){
             isloadData <- all(sapply(y, function(i){
 
-                      pid <- gs_get_parent(gh, i)
-                      isParentGated <- gh_is_gated(gh, pid)
-                      bf <- gh_get_gate(gh, i)
+                      pid <- gs_pop_get_parent(gh, i)
+                      isParentGated <- gh_pop_is_gated(gh, pid)
+                      bf <- gh_pop_get_gate(gh, i)
                       refNodes <- filter_to_list(bf)$refs
-                      isRefGated <- all(sapply(refNodes, gh_is_gated, obj = gh))
+                      isRefGated <- all(sapply(refNodes, gh_pop_is_gated, obj = gh))
                       !(isParentGated&&isRefGated)
                     }))
 
@@ -1867,7 +1867,7 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
 
 
         if(isloadData){
-          data <- gh_get_data(gh)
+          data <- gh_pop_get_data(gh)
           mat <- exprs(data)
         }else{
           mat <- matrix(nrow = 0, ncol = 1, dimnames = list(NULL, "dummy"))
@@ -1972,20 +1972,20 @@ setReplaceMethod("sampleNames",
 
 # to speed up reading data from disk later on,
 # we can optionally pass j to ncdfFlow::[ to subset on channel
-#' @rdname gs_get_data-methods
+#' @rdname gs_pop_get_data-methods
 #' @export
 setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
-  .Deprecated("gs_get_data")
+  .Deprecated("gs_pop_get_data")
   if(missing(y)){
-    gs_get_data(obj, ...)
+    gs_pop_get_data(obj, ...)
   }else{
-    gs_get_data(obj, y, ...)
+    gs_pop_get_data(obj, y, ...)
   }
 })
       
-#' @rdname gs_get_data-methods
+#' @rdname gs_pop_get_data-methods
 #' @export
-gs_get_data <- function(obj, y = "root", ...){
+gs_pop_get_data <- function(obj, y = "root", ...){
 
 	if(class(obj) == "GatingSetList")
 	{
@@ -1997,9 +1997,9 @@ gs_get_data <- function(obj, y = "root", ...){
 		res <- lapply(obj,function(gs){
 					
 					if(is.null(y))
-						ncfs <- gs_get_data(gs, ...)
+						ncfs <- gs_pop_get_data(gs, ...)
 					else
-						ncfs <- gs_get_data(gs,y, ...)
+						ncfs <- gs_pop_get_data(gs,y, ...)
 					ncfs
 				}, level =1)
 		ncdfFlowList(res, samples_orig)
@@ -2011,7 +2011,7 @@ gs_get_data <- function(obj, y = "root", ...){
 	        this_data
 	      }else{
 	        #subset by indices
-	        indices<-lapply(obj,gh_get_indices,y)
+	        indices<-lapply(obj,gh_pop_get_indices,y)
 	        if(class(this_data) == "ncdfFlowSet")
 	          this_data <- Subset(this_data,indices, validityCheck = FALSE)
 	        else
@@ -2179,46 +2179,46 @@ subset.GatingSet <- function (x, subset, ...)
 
   x[as.character(rownames(pd)[r])]
 }
-#' @rdname gh_get_gate
+#' @rdname gh_pop_get_gate
 #' @export
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
-			.Deprecated("gs_get_gate")
-			gs_get_gate(obj, y)
+			.Deprecated("gs_pop_get_gate")
+			gs_pop_get_gate(obj, y)
 		})
 
-#' @rdname gh_get_gate
+#' @rdname gh_pop_get_gate
 #' @export
-gs_get_gate <- function(obj,y){
-			lapply(obj,function(x)gh_get_gate(x,y))
+gs_pop_get_gate <- function(obj,y){
+			lapply(obj,function(x)gh_pop_get_gate(x,y))
 		}
 
-#' @rdname gs_set_node_name
+#' @rdname gs_pop_set_name
 #' @export
 setMethod("setNode"
     ,signature(x="GatingSet",y="character",value="ANY")
     ,function(x,y,value){
     if(is(value, "character")){
-      .Deprecated("gs_set_node_name")
-      gs_set_node_name(x, y, value)
+      .Deprecated("gs_pop_set_name")
+      gs_pop_set_name(x, y, value)
     }else
     {
-      .Deprecated("gs_set_node_visible")
-      gs_set_node_visible(x, y, value)
+      .Deprecated("gs_pop_set_visibility")
+      gs_pop_set_visibility(x, y, value)
     }
 })
-#' @rdname gs_set_node_name
+#' @rdname gs_pop_set_name
 #' @export
-gs_set_node_name <- function(x,y,value){
+gs_pop_set_name <- function(x,y,value){
   lapply(x,function(gh){
-			  gh_set_node_name(gh,y,value)
+			  gh_pop_set_name(gh,y,value)
   })
   
 }
-#' @rdname gs_set_node_visible
+#' @rdname gs_pop_set_visibility
 #' @export
-gs_set_node_visible <- function(x,y,value){
+gs_pop_set_visibility <- function(x,y,value){
   lapply(x,function(gh){
-    gh_set_node_visible(gh,y,value)
+    gh_pop_set_visibility(gh,y,value)
   })
   
 }
@@ -2321,9 +2321,7 @@ setMethod("show","GatingSet",function(object){
 #' Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
 #'   or the population proportions or the total number of events of a node (population) in a GatingHierarchy
 #'
-#' gh_get_proportion calculates the population proportion (events in the gate / events in the parent population) associated with a node in the \code{GatingHierarchy}.
-#' gs_get_pop_stats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
-#' gh_get_count returns the total number of events in the gate defined in the GatingHierarchy object
+#' gs_pop_get_count_fast is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param xml \code{logical} indicating whether the statistics come from xml (if parsed from xml workspace) or from openCyto.
@@ -2333,43 +2331,37 @@ setMethod("show","GatingSet",function(object){
 #' @param ... Additional arguments passed to \link{gs_get_pop_paths}
 #'
 #' @details
-#' gs_get_pop_stats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
-#' gh_get_proportion returns the proportion of cells in the gate, relative to its parent.
-#' gh_get_count returns the total number of events included in this gate. The contents of "thisTot" variable in the "metadata" environment of the \code{nodeData} element associated with the gating tree and gate / population.
+#' gs_pop_get_count_fast returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
 #'
 #' @return
-#' gs_get_pop_stats returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
-#' gh_get_proportion returns  a population frequency \code{numeric}.
-#' gh_get_count returns a \code{numeric} value of the total number of elements in the population.
+#' gs_pop_get_count_fast returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
 #' @seealso \code{\link{gs_get_pop_paths}}
 #' @examples
 #'         \dontrun{
 #'         #gh is a GatingHierarchy
-#'         gs_get_pop_stats(gh);
-#'         #proportion for the fifth population
-#'         gh_get_proportion(gh,gs_get_pop_paths(gh)[5])
-#'         gh_get_count(gh,gs_get_pop_paths(gh,tsort=T)[5])
+#'         gs_pop_get_count_fast(gh);
+#'         gh_pop_get_stats(gh,gs_get_pop_paths(gh,tsort=T)[5])
 #'
 #'         #gs is a GatingSet
-#'         gs_get_pop_stats(gs)
+#'         gs_pop_get_count_fast(gs)
 #'         #optionally output in long format as a data.table
-#'         gs_get_pop_stats(gs, format = "long", path = "auto")
+#'         gs_pop_get_count_fast(gs, format = "long", path = "auto")
 #'         #only get stats for a subset of populations
-#'         gs_get_pop_stats(gs, format = "long", subpopulations = gs_get_pop_paths(gs)[4:6])
+#'         gs_pop_get_count_fast(gs, format = "long", subpopulations = gs_get_pop_paths(gs)[4:6])
 #'         }
-#' @aliases gs_get_pop_stats
-#' @rdname gs_get_pop_stats
+#' @aliases gs_pop_get_count_fast
+#' @rdname gs_pop_get_count_fast
 #' @export
 #' @import data.table
 setMethod("getPopStats", "GatingSet", function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
-.Deprecated("gs_get_pop_stats")
-gs_get_pop_stats(x, statistic, xml, subpopulations, format, path, ...)
+.Deprecated("gs_pop_get_count_fast")
+gs_pop_get_count_fast(x, statistic, xml, subpopulations, format, path, ...)
 })
-#' @rdname gs_get_pop_stats
+#' @rdname gs_pop_get_count_fast
 #' @export
-gs_get_pop_stats <- function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
+gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
 	 if(is(x, "GatingSetList"))
-		 return(gslist_get_pop_stats(x, format, statistic, xml, subpopulations, path, ...))
+		 return(.gslist_get_pop_stats(x, format, statistic, xml, subpopulations, path, ...))
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
@@ -2401,7 +2393,7 @@ gs_get_pop_stats <- function(x, statistic = c("freq", "count"), xml = FALSE, sub
         }
 
         stats <- lapply(x,function(y){
-                d<-gh_get_pop_stats(y, path = path,...)
+                d<-gh_pop_compare_stats(y, path = path,...)
                 d$key<-rownames(d)
                 setkeyv(d,"key")
                 d<-d[,list(key,get(statistic))]
@@ -2430,7 +2422,7 @@ gs_get_pop_stats <- function(x, statistic = c("freq", "count"), xml = FALSE, sub
   #rows are samples
 
   statList <- lapply(x,function(gh){
-        thisStat <- gh_get_pop_stats(gh, ...)
+        thisStat <- gh_pop_compare_stats(gh, ...)
         thisStat
       })
 
@@ -2460,7 +2452,7 @@ gs_get_pop_stats <- function(x, statistic = c("freq", "count"), xml = FALSE, sub
 #' @param \dots Additional arguments to the \code{barplot} methods.
 #' @details The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.
 #' @return Nothing is returned.
-#' @seealso \code{\link{gs_get_pop_stats}}
+#' @seealso \code{\link{gs_pop_get_count_fast}}
 #' @examples
 #'   \dontrun{
 #'     #G is a GatingHierarchy
@@ -2554,7 +2546,7 @@ setMethod("transform",
         stop("expect the second argument as a 'transformerList' object or a list of 'transformerList' objects!")
       gs@transformation <- translist
 
-      fs <- gs_get_data(gs)
+      fs <- gs_pop_get_data(gs)
       
       suppressMessages(fs_trans <- transform(fs, tList, ...))
       gs_cyto_data(gs) <- fs_trans
@@ -2619,7 +2611,7 @@ transformerList <- function (from, trans)
 #' }
 #' @export 
 estimateLogicle.GatingHierarchy <- function(x, channels, ...){
-  fr <- gh_get_data(x)
+  fr <- gh_pop_get_data(x)
   trans <- flowCore:::.estimateLogicle(fr, channels, ...)
   
   trans <- lapply(trans, function(t){
@@ -2657,7 +2649,7 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
         spillover <- sapply(samples, function(guid)spillover, simplify = FALSE)
       }
       x@compensation <- spillover[samples]
-      fs <- gs_get_data(x)
+      fs <- gs_pop_get_data(x)
       suppressMessages(fs_comp <- compensate(fs, spillover))
       gs_cyto_data(x) <- fs_comp
       x

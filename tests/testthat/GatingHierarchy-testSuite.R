@@ -43,9 +43,9 @@ test_that("getNodeInd ",{
     })
 
 
-test_that("gh_get_indices ",{
+test_that("gh_pop_get_indices ",{
       
-      thisRes <- gh_get_indices(gh, "singlets")
+      thisRes <- gh_pop_get_indices(gh, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getIndice_singlet_gh.rds"))
       expect_equal(thisRes,expectRes)
       
@@ -71,22 +71,22 @@ test_that(".isBoolGate ",{
       expect_false(flowWorkspace:::.isBoolGate(gh, "singlets"))
       
       bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
-      suppressWarnings(id <- gh_add_gate(gh, bf))
+      suppressWarnings(id <- pop_add(bf, gh))
       expect_true(flowWorkspace:::.isBoolGate(gh, "myBoolFilter"))
-      invisible(gh_remove_gate("myBoolFilter", gh))
+      invisible(gh_pop_remove(gh, "myBoolFilter"))
     })
 
 
-test_that("gh_get_data ",{
+test_that("gh_pop_get_data ",{
       
-      fr <- gh_get_data(gh)
+      fr <- gh_pop_get_data(gh)
       expect_is(fr, "flowFrame");
       expect_equal(nrow(fr), 119531)
       
-      fr <- gh_get_data(gh, "CD8")
+      fr <- gh_pop_get_data(gh, "CD8")
       expect_equal(nrow(fr), 14564)
       
-      fr <- gh_get_data(gh, use.exprs = FALSE)
+      fr <- gh_pop_get_data(gh, use.exprs = FALSE)
       expect_equal(nrow(fr), 0)
     })
 
@@ -99,7 +99,7 @@ test_that("sampleNames",{
       
     })
 
-test_that("gs_get_pop_paths & gh_set_node_visible",{
+test_that("gs_get_pop_paths & gh_pop_set_visibility",{
 
       expectRes <- readRDS(file.path(resultDir, "getNodes_gh.rds"))
 
@@ -122,35 +122,35 @@ test_that("gs_get_pop_paths & gh_set_node_visible",{
       expect_equal(gs_get_pop_paths(gh, order = "tsort"), expectRes[["full_path_tsort"]])
       
       #change node name
-      invisible(gh_set_node_name(gh, "singlets", "S"))
+      invisible(gh_pop_set_name(gh, "singlets", "S"))
       expect_equal(gs_get_pop_paths(gh), gsub("singlets", "S", expectRes[["full_path"]]))
-      invisible(gh_set_node_name(gh, "S", "singlets"))
+      invisible(gh_pop_set_name(gh, "S", "singlets"))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
       
       #hide node(terminal)
-      invisible(gh_set_node_visible(gh, "DNT", FALSE))
+      invisible(gh_pop_set_visibility(gh, "DNT", FALSE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]][-23])
-      invisible(gh_set_node_visible(gh, "DNT", TRUE))
+      invisible(gh_pop_set_visibility(gh, "DNT", TRUE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
       
       #hide node(non-terminal)
-      invisible(gh_set_node_visible(gh, "singlets", FALSE))
+      invisible(gh_pop_set_visibility(gh, "singlets", FALSE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]][-3])
-      invisible(gh_set_node_visible(gh, "singlets", TRUE))
+      invisible(gh_pop_set_visibility(gh, "singlets", TRUE))
       expect_equal(gs_get_pop_paths(gh), expectRes[["full_path"]])
     })
 
-test_that("gh_set_gate", {
+test_that("gh_pop_set_gate", {
       
-      gate_cd4 <- gh_get_gate(gh, "CD4")
-      gate_cd8 <- gh_get_gate(gh, "CD8")
-      invisible(gh_set_gate(gh, "CD4", gate_cd8))
-      expect_equal(gh_get_gate(gh, "CD4")@cov, gate_cd8@cov)
+      gate_cd4 <- gh_pop_get_gate(gh, "CD4")
+      gate_cd8 <- gh_pop_get_gate(gh, "CD8")
+      invisible(gh_pop_set_gate(gh, "CD4", gate_cd8))
+      expect_equal(gh_pop_get_gate(gh, "CD4")@cov, gate_cd8@cov)
       suppressMessages(recompute(gh, "CD4"))
-      expect_equal(gh_get_count(gh, "CD4"), gh_get_count(gh, "CD8"))
+      expect_equal(gh_pop_get_stats(gh, "CD4")[[2]], gh_pop_get_stats(gh, "CD8")[[2]])
       
       #restore the gate
-      invisible(gh_set_gate(gh, "CD4", gate_cd4))
+      invisible(gh_pop_set_gate(gh, "CD4", gate_cd4))
       suppressMessages(recompute(gh, "CD4"))
     })    
 #the new results no longer compatible with archived results
@@ -217,34 +217,34 @@ test_that("keyword",{
       expect_equal(keyword(gh, '$P8N'), "<V450-A>")
     })
 
-test_that("gs_get_parent",{
+test_that("gs_pop_get_parent",{
       
       
-      expect_equal(gs_get_parent(gh, "singlets"), "/not debris")
+      expect_equal(gs_pop_get_parent(gh, "singlets"), "/not debris")
       
-      expect_equal(gs_get_parent(gh, "not debris/singlets"), "/not debris")
+      expect_equal(gs_pop_get_parent(gh, "not debris/singlets"), "/not debris")
       
-      expect_error(gs_get_parent(gh, "singlet"), "singlet not found")
+      expect_error(gs_pop_get_parent(gh, "singlet"), "singlet not found")
       
-      expect_error(gs_get_parent(gh, "root"), "0 :parent not found!")
+      expect_error(gs_pop_get_parent(gh, "root"), "0 :parent not found!")
       
     })
 
-test_that("gs_get_children",{
+test_that("gs_pop_get_children",{
       
       
-      expect_equal(gs_get_children(gh, "not debris/singlets"), "/not debris/singlets/CD3+")
+      expect_equal(gs_pop_get_children(gh, "not debris/singlets"), "/not debris/singlets/CD3+")
       
-      expect_equal(gs_get_children(gh, "singlets"), "/not debris/singlets/CD3+")
+      expect_equal(gs_pop_get_children(gh, "singlets"), "/not debris/singlets/CD3+")
       
       
-      expect_error(gs_get_children(gh, "singlet"), "singlet not found")
+      expect_error(gs_pop_get_children(gh, "singlet"), "singlet not found")
       
-      expect_error(gs_get_children(gh, "38- DR+"), "ambiguous")
+      expect_error(gs_pop_get_children(gh, "38- DR+"), "ambiguous")
       
-      expect_equal(gs_get_children(gh, "CD4/38- DR+"), character(0))
+      expect_equal(gs_pop_get_children(gh, "CD4/38- DR+"), character(0))
       
-      expect_equal(gs_get_children(gh, "CD3+"), c("/not debris/singlets/CD3+/CD4"
+      expect_equal(gs_pop_get_children(gh, "CD3+"), c("/not debris/singlets/CD3+/CD4"
                                               , "/not debris/singlets/CD3+/CD8"
                                               , "/not debris/singlets/CD3+/DNT"
                                               , "/not debris/singlets/CD3+/DPT")
@@ -258,47 +258,47 @@ test_that(".getPopStat",{
       
       expect_error(flowWorkspace:::.getPopStat(gh, "singlet"), "not found")
       
-      expect_equal(flowWorkspace:::.getPopStat(gh, "singlets"), list(openCyto = c(proportion = 9.487789e-01, count = 8.702200e+04)
-                                            , xml = c(proportion = 9.488988e-01, count = 8.703300e+04)
+      expect_equal(flowWorkspace:::.getPopStat(gh, "singlets"), list(openCyto = c(percent = 9.487789e-01, count = 8.702200e+04)
+                                            , xml = c(percent = 9.488988e-01, count = 8.703300e+04)
                                             )
                       , tol = 1e-7 )
       
       
       
-      expect_equal(flowWorkspace:::.getPopStat(gh, "root"), list(openCyto = c(proportion = 1, count = 119531)
-                                            , xml = c(proportion = 1, count = 119531)
+      expect_equal(flowWorkspace:::.getPopStat(gh, "root"), list(openCyto = c(percent = 1, count = 119531)
+                                            , xml = c(percent = 1, count = 119531)
                                         )
                                 )
     })      
 
 
-test_that("gh_get_proportion",{
+test_that("gh_pop_get_proportion",{
       
-      expect_equal(gh_get_proportion(gh, "singlets"), 0.9487789)
+      expect_equal(gh_pop_get_proportion(gh, "singlets"), 0.9487789)
       
-      expect_equal(gh_get_proportion(gh, "singlets", xml = FALSE), 0.9487789)
+      expect_equal(gh_pop_get_proportion(gh, "singlets", xml = FALSE), 0.9487789)
       
-      expect_equal(gh_get_proportion(gh, "singlets", xml = TRUE), 0.9488988, tol = 1e-7)
+      expect_equal(gh_pop_get_proportion(gh, "singlets", xml = TRUE), 0.9488988, tol = 1e-7)
       
-      expect_error(gh_get_proportion(gh, "singlet"), "singlet not found")
+      expect_error(gh_pop_get_proportion(gh, "singlet"), "singlet not found")
     })      
 
-test_that("gh_get_count",{
+test_that("gh_pop_get_count",{
       
-      expect_equal(gh_get_count(gh, "singlets"), 87022)
+      expect_equal(gh_pop_get_stats(gh, "singlets")[[2]], 87022)
       
-      expect_equal(gh_get_count(gh, "singlets", xml = FALSE), 87022)
+      expect_equal(gh_pop_get_stats(gh, "singlets", xml = FALSE)[[2]], 87022)
       
-      expect_equal(gh_get_count(gh, "singlets", xml = TRUE), 87033)
+      expect_equal(gh_pop_get_stats(gh, "singlets", xml = TRUE)[[2]], 87033)
       
-      expect_error(gh_get_count(gh, "singlet"), "singlet not found")
+      expect_error(gh_pop_get_stats(gh, "singlet"), "singlet not found")
     })      
 
 
-test_that("gh_get_pop_stats",{
+test_that("gh_pop_compare_stats",{
       
       
-      thisRes <- gh_get_pop_stats(gh, path = "full")
+      thisRes <- gh_pop_compare_stats(gh, path = "full")
       expect_is(thisRes, "data.table")
      
       expectRes <- fread(file.path(resultDir, "getPopStats_gh.csv"))
@@ -319,29 +319,29 @@ test_that("compute CV from gh",{
       
     })
 
-test_that("gh_get_gate",{
+test_that("gh_pop_get_gate",{
       
-      thisRes <- gh_get_gate(gh, "singlets")
+      thisRes <- gh_pop_get_gate(gh, "singlets")
       expect_is(thisRes, "polygonGate")
       
       #add a rectangleGate to test 
       rg <- rectangleGate(filterId="myRectGate", list("FSC-A"=c(200, 600),"SSC-A"=c(0, 400)))      
-      id <- gh_add_gate(gh, rg)
-      thisRes <- gh_get_gate(gh, "myRectGate")
+      id <- pop_add(rg, gh)
+      thisRes <- gh_pop_get_gate(gh, "myRectGate")
       expect_is(thisRes, "rectangleGate")
       expect_equal(thisRes@min, rg@min)
       expect_equal(thisRes@max, rg@max)
       expect_equivalent(parameters(thisRes), parameters(rg))
-      invisible(gh_remove_gate("myRectGate", gh))
+      invisible(gh_pop_remove(gh, "myRectGate"))
       
       #add a bool gate to test
       bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
-      suppressWarnings(id <- gh_add_gate(gh, bf))
-      thisRes <- gh_get_gate(gh, "myBoolFilter")
+      suppressWarnings(id <- pop_add(bf, gh))
+      thisRes <- gh_pop_get_gate(gh, "myBoolFilter")
       expect_is(thisRes, "booleanFilter")
       
       expect_equal(as.character(thisRes@expr), as.character(bf@expr))
-      invisible(gh_remove_gate("myBoolFilter", gh))
+      invisible(gh_pop_remove(gh, "myBoolFilter"))
      
       ##TODO: test rangeGate (no R API to add it, have to parse it from xml )
       
@@ -412,9 +412,9 @@ test_that("pretty10exp",{
 
 if(!isCpStaticGate)
 {
-  test_that("gh_get_indices_mat for COMPASS",{
+  test_that("gh_pop_get_indices_mat for COMPASS",{
     
-    thisRes <- gh_get_indices_mat(gh, "CD8/38- DR+|CD8/CCR7- 45RA+")
+    thisRes <- gh_pop_get_indices_mat(gh, "CD8/38- DR+|CD8/CCR7- 45RA+")
     expectRes <- readRDS(file.path(resultDir, "getIndiceMat_gh.rds"))
     expect_equal(thisRes,expectRes)
     
@@ -425,7 +425,7 @@ if(!isCpStaticGate)
 
 test_that("getPopChnlMapping",{
       
-      fr <- gh_get_data(gh, use.exprs = FALSE) 
+      fr <- gh_pop_get_data(gh, use.exprs = FALSE) 
       this_pd <- pData(parameters(fr))
       
       #'make up ICS markers

@@ -3,15 +3,15 @@
 \docType{methods}
 \name{setGate,GatingHierarchy,character,filter-method}
 \alias{setGate,GatingHierarchy,character,filter-method}
-\alias{gs_set_gate}
-\alias{gh_set_gate}
+\alias{gs_pop_set_gate}
+\alias{gh_pop_set_gate}
 \title{update the gate}
 \usage{
 \S4method{setGate}{GatingHierarchy,character,filter}(obj, y, value, ...)
 
-gh_set_gate(obj, y, value, negated = FALSE, ...)
+gh_pop_set_gate(obj, y, value, negated = FALSE, ...)
 
-gs_set_gate(obj, y, value, ...)
+gs_pop_set_gate(obj, y, value, ...)
 }
 \arguments{
 \item{obj}{\code{GatingHierarchy} or \code{GatingSet}}
@@ -38,7 +38,7 @@ rg1 <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangl
 rg2 <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangle")
 flist <- list(rg1,rg2)
 names(flist) <- sampleNames(gs[1:2])
-gs_set_gate(gs[1:2], "lymph", flist)
+gs_pop_set_gate(gs[1:2], "lymph", flist)
 recompute(gs[1:2], "lymph") 
 }
 }

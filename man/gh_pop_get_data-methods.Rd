@@ -3,12 +3,12 @@
 \docType{methods}
 \name{getData,GatingHierarchy-method}
 \alias{getData,GatingHierarchy-method}
-\alias{gh_get_data}
+\alias{gh_pop_get_data}
 \title{get gated flow data from a GatingHierarchy/GatingSet/GatingSetList}
 \usage{
 \S4method{getData}{GatingHierarchy}(obj, y, ...)
 
-gh_get_data(obj, y = "root", ...)
+gh_pop_get_data(obj, y = "root", ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.}
@@ -28,9 +28,9 @@ get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 }
 \details{
 Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}.
-Subset membership can be obtained using \code{gh_get_indices}.
-Population statistics can be obtained using \code{getPop} and \code{gh_get_pop_stats}.
-When calling \code{gh_get_data} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
+Subset membership can be obtained using \code{gh_pop_get_indices}.
+Population statistics can be obtained using \code{getPop} and \code{gh_pop_compare_stats}.
+When calling \code{gh_pop_get_data} on a GatingSet,the trees representing the GatingHierarchy for each sample in the GaingSet are presumed to have the same structure.
 To update the data, use \code{gs_cyto_data} method.
 }
 \examples{
@@ -40,9 +40,9 @@ To update the data, use \code{gs_cyto_data} method.
     geData(G,"cd4")
 
     #gh is a GatingHierarchy
-    gh_get_data(gh)
+    gh_pop_get_data(gh)
 }
 }
 \seealso{
-\code{\link{gs_cyto_data}} \code{\link{gh_get_indices}} \code{\link{gh_get_pop_stats}}
+\code{\link{gs_cyto_data}} \code{\link{gh_pop_get_indices}} \code{\link{gh_pop_compare_stats}}
 }

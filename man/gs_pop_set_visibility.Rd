@@ -4,15 +4,15 @@
 \docType{methods}
 \name{setNode,GatingHierarchy,character,logical-method}
 \alias{setNode,GatingHierarchy,character,logical-method}
-\alias{gh_set_node_visible}
-\alias{gs_set_node_visible}
+\alias{gh_pop_set_visibility}
+\alias{gs_pop_set_visibility}
 \title{hide/unhide a node}
 \usage{
 \S4method{setNode}{GatingHierarchy,character,logical}(x, y, value)
 
-gh_set_node_visible(x, y, value)
+gh_pop_set_visibility(x, y, value)
 
-gs_set_node_visible(x, y, value)
+gs_pop_set_visibility(x, y, value)
 }
 \arguments{
 \item{x}{\code{GatingHierarchy} object}
@@ -24,7 +24,7 @@ hide/unhide a node
 }
 \examples{
 \dontrun{
-     gh_set_node_visible(gh, 4, FALSE) # hide a node
-     gh_set_node_visible(gh, 4, TRUE) # unhide a node
+     gh_pop_set_visibility(gh, 4, FALSE) # hide a node
+     gh_pop_set_visibility(gh, 4, TRUE) # unhide a node
 }
 }

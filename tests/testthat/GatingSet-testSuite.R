@@ -14,15 +14,15 @@ test_that("show ",{
       expect_output(show(gs), "A GatingSet with 1 samples")
       
     })
-test_that("gs_get_data ",{
+test_that("gs_pop_get_data ",{
       
-      ncfs <- gs_get_data(gs)
+      ncfs <- gs_pop_get_data(gs)
       expect_is(ncfs, "ncdfFlowSet");
       expect_equal(nrow(ncfs[[1]]), 119531)
-      ncfs <- gs_get_data(gs, "root")
+      ncfs <- gs_pop_get_data(gs, "root")
       expect_equal(nrow(ncfs[[1]]), 119531)
       
-      ncfs <- gs_get_data(gs, "singlets")
+      ncfs <- gs_pop_get_data(gs, "singlets")
       expect_equal(nrow(ncfs[[1]]), 87022)
       expect_is(gs[[1]], "GatingHierarchy");
       
@@ -52,8 +52,8 @@ test_that("gs_clone & gslist_to_gs",{
       expect_is(gs_cloned, "GatingSet");
       
       #check data consistency
-      fs1 <- gs_get_data(gs)
-      fs2 <- gs_get_data(gs_cloned)
+      fs1 <- gs_pop_get_data(gs)
+      fs2 <- gs_pop_get_data(gs_cloned)
       expect_equal(fs1[[1]], fs2[[1]], tol = 1e-05)
       
       orig_sn <- sampleNames(gs)
@@ -66,12 +66,12 @@ test_that("gs_clone & gslist_to_gs",{
       #check if trans is preserved
       expect_equal(gh_get_transformations(gs[[1]]), gh_get_transformations(gs_cloned[[1]]))
       
-      expect_equal(gs_get_pop_stats(gs), gs_get_pop_stats(gs_cloned))
-      expect_equal(gs_get_pop_stats(gs[[1]]), gs_get_pop_stats(gs_cloned[[1]]))
+      expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs_cloned))
+      expect_equal(gs_pop_get_count_fast(gs[[1]]), gs_pop_get_count_fast(gs_cloned[[1]]))
       
       #clone without copying hdf data
       expect_message(gs_clone1 <- gs_clone(gs, isNew = FALSE), "cloned")
-      expect_equal(gs_get_data(gs_clone1)@file, fs1@file)
+      expect_equal(gs_pop_get_data(gs_clone1)@file, fs1@file)
       
       #construct gslist to gslist_to_gs
       sampleNames(gs_cloned) <- "CytoTrol_CytoTrol_2.fcs"
@@ -149,13 +149,13 @@ test_that("subset.GatingSet",{
   expect_equal(length(gs_sub), 5)
 })
 
-test_that("gs_get_gate for gs",{
+test_that("gs_pop_get_gate for gs",{
       
-      thisRes <- gs_get_gate(gs, "CD3+")
+      thisRes <- gs_pop_get_gate(gs, "CD3+")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_ellipse.rds"))
       expect_equal(thisRes, expectRes, tol = 5e-04)
       
-      thisRes <- gs_get_gate(gs, "singlets")
+      thisRes <- gs_pop_get_gate(gs, "singlets")
       expectRes <- readRDS(file.path(resultDir, "getGate_gs_polygon.rds"))
       expect_equal(thisRes, expectRes, tol = 2e-08)
     })
@@ -166,7 +166,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       stats <- 0.99
       xParam <- "<B710-A>"
       yParam <- "<R780-A>"
-      expect_value <- list(gates = gs_get_gate(gs, "CD4")
+      expect_value <- list(gates = gs_pop_get_gate(gs, "CD4")
                             , xParam = xParam
                             , yParam = yParam
                             , stats = stats
@@ -188,7 +188,7 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       samples <- sampleNames(gs)
       
       #miss stats argument
-      expect_value[["stats"]] <- sapply(samples, function(sn)gh_get_proportion(gs[[sn]], gs_get_pop_paths(gs[[sn]])[5]), simplify = FALSE)
+      expect_value[["stats"]] <- sapply(samples, function(sn)gh_pop_get_proportion(gs[[sn]], gs_get_pop_paths(gs[[sn]])[5]), simplify = FALSE)
       myValue <- flowWorkspace:::.preplot(x = gs, y = "CD4", type = "xyplot", formula = f1, default.y = "SSC-A")
       expect_equal(myValue, expect_value)
 
@@ -196,12 +196,12 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
       expect_value[["stats"]] <- sapply(samples,function(thisSample){
                                           lapply(7:8,function(thisY){
                                                 curGh <- gs[[thisSample]]
-                                                gh_get_proportion(curGh,gs_get_pop_paths(curGh,showHidden=TRUE)[thisY],xml = F)
+                                                gh_pop_get_proportion(curGh,gs_get_pop_paths(curGh,showHidden=TRUE)[thisY],xml = F)
                                               })
                                         },simplify = FALSE)
       curGates <- sapply(samples,function(curSample){
             
-            filters(lapply(gs_get_pop_paths(gs)[7:8],function(y)gh_get_gate(gs[[curSample]],y)))
+            filters(lapply(gs_get_pop_paths(gs)[7:8],function(y)gh_pop_get_gate(gs[[curSample]],y)))
           },simplify=F)
       xParam <- "<R660-A>"
       yParam <- "<V545-A>"
@@ -231,14 +231,14 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
 #      expect_equivalent(nrow(thisRes[[1]]), 1309)
 #      
 #      #by one event indice
-#      eInd <- gh_get_indices(gs[[1]], nodeInd)
+#      eInd <- gh_pop_get_indices(gs[[1]], nodeInd)
 #      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
 #      expect_is(thisRes, "flowSet")
 #      expect_equal(sampleNames(thisRes), samples)
 #      expect_equivalent(as.vector(fsApply(thisRes,nrow)), c(1309, 1309))
 #      
 #      #by a list of event indices
-#      eInd <- lapply(gs, gh_get_indices, y = nodeInd)
+#      eInd <- lapply(gs, gh_pop_get_indices, y = nodeInd)
 #      thisRes <- .getOverlay(gs, overlay = eInd, params = chnls)
 #      expect_is(thisRes, "list")
 #      expect_equal(names(thisRes), samples)
@@ -257,22 +257,22 @@ test_that("preporcess the gating tree to prepare for the plotGate",{
 #      
 #    })
     
-test_that("gs_set_node_name",{
+test_that("gs_pop_set_name",{
     
     nodeName <- gs_get_pop_paths(gs[[1]])[3]
-	gs_set_node_name(gs, "singlets", "S")
+	gs_pop_set_name(gs, "singlets", "S")
     lapply(gs, function(gh){
           expect_equal(gs_get_pop_paths(gh)[3], "/not debris/S")
         }) 
-	gs_set_node_name(gs, "S", "singlets")
+	gs_pop_set_name(gs, "S", "singlets")
     invisible()
     
     
   })
 
-test_that("gs_get_pop_stats",{
+test_that("gs_pop_get_count_fast",{
   
-      thisRes <- gs_get_pop_stats(gs, path = "full", format = "wide")
+      thisRes <- gs_pop_get_count_fast(gs, path = "full", format = "wide")
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
@@ -281,11 +281,11 @@ test_that("gs_get_pop_stats",{
       expect_equal(as.data.table(thisRes), expectRes[,-1, with = F], tol = 2e-3)
       
       #use auto path
-      stats_wide <- gs_get_pop_stats(gs, format = "wide", path = "auto")
+      stats_wide <- gs_pop_get_count_fast(gs, format = "wide", path = "auto")
       stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
       stats_wide <- as.data.frame(stats_wide)
       #get long format
-      stats_long <- gs_get_pop_stats(gs, format = "long", path = "auto")
+      stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "auto")
       
       #convert it to wide to do the comparsion
       stats_long[, value := Count/ParentCount]
@@ -356,39 +356,39 @@ test_that("keyword",{
 
 test_that("add", {
       filterslist1 <- lapply(gs, function(gh){
-            cd4_gate  <- gh_get_gate(gh, "CD4")
+            cd4_gate  <- gh_pop_get_gate(gh, "CD4")
             cd4_gate@filterId <- "CD4_test"
-            cd8_gate  <- gh_get_gate(gh, "CD8")
+            cd8_gate  <- gh_pop_get_gate(gh, "CD8")
             cd8_gate@filterId <- "CD8_test"
             filters(list(cd4_gate,cd8_gate))
           })
       
       #add without name
-      Ids <- gs_add_gate(gs, filterslist1)
+      Ids <- gs_pop_add(gs, filterslist1)
       expect_equal(Ids, c(25,26))
-      cd4_gate  <- gs_get_gate(gs, "CD4")
+      cd4_gate  <- gs_pop_get_gate(gs, "CD4")
       cd4_gate <- lapply(cd4_gate, function(g){
             g@filterId <- "CD4_test"
             g
           })
-      expect_equal(gs_get_gate(gs, "CD4_test"), cd4_gate) 
-      gs_remove_gate("CD4_test", gs)
-      gs_remove_gate("CD8_test", gs)
+      expect_equal(gs_pop_get_gate(gs, "CD4_test"), cd4_gate) 
+      gs_pop_remove("CD4_test", gs = gs)
+      gs_pop_remove("CD8_test", gs = gs)
       
       #customize names
-      expect_error(gs_add_gate(gs, filterslist1, names = c("CD4_demo")), "number of population names ")
-      expect_error(gs_add_gate(gs, filterslist1, names = c("CD4_demo", "CD4_demo")), "not unqiue")
+      expect_error(gs_pop_add(gs, filterslist1, names = c("CD4_demo")), "number of population names ")
+      expect_error(gs_pop_add(gs, filterslist1, names = c("CD4_demo", "CD4_demo")), "not unqiue")
       
-      Ids <- gs_add_gate(gs, filterslist1, names = c("CD4_demo", "CD8_demo"))
+      Ids <- gs_pop_add(gs, filterslist1, names = c("CD4_demo", "CD8_demo"))
       expect_equal(Ids, c(25,26))
-      cd4_gate  <- gs_get_gate(gs, "CD4")
+      cd4_gate  <- gs_pop_get_gate(gs, "CD4")
       cd4_gate <- lapply(cd4_gate, function(g){
             g@filterId <- "CD4_demo"
             g
           })
-      expect_equal(gs_get_gate(gs, "CD4_demo"), cd4_gate) 
-      gs_remove_gate("CD4_demo", gs)
-      gs_remove_gate("CD8_demo", gs)
+      expect_equal(gs_pop_get_gate(gs, "CD4_demo"), cd4_gate) 
+      gs_pop_remove("CD4_demo", gs = gs)
+      gs_pop_remove("CD8_demo", gs = gs)
     })
 #TODO:write test cases for save_gs /load_gs 
 if(!isCpStaticGate)
@@ -436,12 +436,12 @@ if(!isCpStaticGate)
     #verify the results by calling R routines
     nodes.expr <- quote(`CD8/38- DR+|CD8/38+ DR-|CD8/CCR7- 45RA+`)
     ind.total <- getIndices(gs[1], nodes.expr)[[1]]
-    ind.mat <- gh_get_indices_mat(gs[[1]], nodes.expr)
+    ind.mat <- gh_pop_get_indices_mat(gs[[1]], nodes.expr)
     #Or the ind for the same marker from nodes
     ind.DR <- ind.38 <- ind.mat[,1] | ind.mat[,2]
     ind.CCR <- ind.45 <- ind.mat[,3]
     #masking
-    mat <- exprs(gh_get_data(gs[[1]]))[,c(6, 9, 10, 11)]
+    mat <- exprs(gh_pop_get_data(gs[[1]]))[,c(6, 9, 10, 11)]
     mat <- mat * c(ind.38, ind.DR, ind.CCR, ind.45)
     mat <- mat[ind.total, ]
     expect_equal(thisRes[[1]], mat, check.attributes = FALSE)

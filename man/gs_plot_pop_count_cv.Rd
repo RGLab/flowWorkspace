@@ -36,5 +36,5 @@ The CVs are plotted as barplots across panels on a grid of size \code{m} by \cod
   }
 }
 \seealso{
-\code{\link{gs_get_pop_stats}}
+\code{\link{gs_pop_get_count_fast}}
 }

@@ -2,12 +2,12 @@
 % Please edit documentation in R/moveNode.R
 \name{moveNode}
 \alias{moveNode}
-\alias{gh_move_node}
+\alias{gh_pop_move}
 \title{move a node along with all of its descendant nodes to the given ancester}
 \usage{
 moveNode(...)
 
-gh_move_node(gh, node, to)
+gh_pop_move(gh, node, to)
 }
 \arguments{
 \item{gh}{GatingHierarchy}
@@ -24,8 +24,8 @@ library(flowWorkspace)
 dataDir <- system.file("extdata",package="flowWorkspaceData")
 suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 gh <- gs[[1]]
-old.parent <- gs_get_parent(gh, "CD4")
+old.parent <- gs_pop_get_parent(gh, "CD4")
 new.parent <- "singlets"
-gh_move_node(gh, "CD4", new.parent)
-gs_get_parent(gh, "CD4")
+gh_pop_move(gh, "CD4", new.parent)
+gs_pop_get_parent(gh, "CD4")
 }

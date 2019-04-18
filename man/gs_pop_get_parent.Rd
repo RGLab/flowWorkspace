@@ -3,12 +3,12 @@
 \docType{methods}
 \name{getParent,GatingSet,character-method}
 \alias{getParent,GatingSet,character-method}
-\alias{gs_get_parent}
+\alias{gs_pop_get_parent}
 \title{Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy}
 \usage{
 \S4method{getParent}{GatingSet,character}(obj, y, ...)
 
-gs_get_parent(obj, y, ...)
+gs_pop_get_parent(obj, y, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy}}
@@ -20,8 +20,8 @@ gs_get_parent(obj, y, ...)
 \item{showHidden}{\code{logical} whether to include the hidden children nodes.}
 }
 \value{
-\code{gs_get_parent} returns a \code{character} vector, the name of the parent population.
-  \code{gs_get_children} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
+\code{gs_pop_get_parent} returns a \code{character} vector, the name of the parent population.
+  \code{gs_pop_get_children} returns a \code{character} or \code{numeric} vector of the node names or node indices of the child nodes of the current node. An empty vector if the node has no children.
 }
 \description{
 Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
@@ -30,10 +30,10 @@ Returns the name of the parent population or a character/numeric vector of all t
   \dontrun{
     #G is a gatinghierarchy
     #return the name of the parent of the fifth node in the hierarchy.
-    gs_get_parent(G,gs_get_pop_paths(G[[1)[5])
+    gs_pop_get_parent(G,gs_get_pop_paths(G[[1)[5])
     n<-gs_get_pop_paths(G,tsort=T)[4];
-    gs_get_children(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
-    gs_get_children(G,4);#Get the ids of the child nodes
+    gs_pop_get_children(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
+    gs_pop_get_children(G,4);#Get the ids of the child nodes
   }
 }
 \seealso{

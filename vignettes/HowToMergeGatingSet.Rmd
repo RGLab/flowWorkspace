@@ -46,14 +46,14 @@ Rm("DNT", gs2)
 # remove singlets gate
 gs3 <- gs_clone(gs2)
 Rm("singlets", gs3)
-gs_add_gate(gs3, gs_get_gate(gs2, "CD3+"), parent = "not debris")
+gs_pop_add(gs3, gs_pop_get_gate(gs2, "CD3+"), parent = "not debris")
 for(tsub in c("CD4", "CD8"))
   {
-    gs_add_gate(gs3, gs_get_gate(gs2, tsub), parent = "CD3+")
-    for(toAdd in gs_get_children(gs2, tsub))
+    gs_pop_add(gs3, gs_pop_get_gate(gs2, tsub), parent = "CD3+")
+    for(toAdd in gs_pop_get_children(gs2, tsub))
     {
-        thisParent <- gs_get_parent(gs2[[1]], toAdd,path="auto")
-        gs_add_gate(gs3, gs_get_gate(gs2, toAdd), parent = thisParent) 
+        thisParent <- gs_pop_get_parent(gs2[[1]], toAdd,path="auto")
+        gs_pop_add(gs3, gs_pop_get_gate(gs2, toAdd), parent = thisParent) 
     }
   }
 sampleNames(gs3) <- "3.fcs"
@@ -63,19 +63,19 @@ gs4 <- gs_clone(gs3)
 # rm cd4 branch first
 Rm("CD4", gs4)
 # add it back
-gs_add_gate(gs4, gs_get_gate(gs3, "CD4"), parent = "CD3+")
+gs_pop_add(gs4, gs_pop_get_gate(gs3, "CD4"), parent = "CD3+")
 # add all the chilren back
-for(toAdd in gs_get_children(gs3, "CD4"))
+for(toAdd in gs_pop_get_children(gs3, "CD4"))
 {
-    thisParent <- gs_get_parent(gs3[[1]], toAdd)
-    gs_add_gate(gs4, gs_get_gate(gs3, toAdd), parent = thisParent)
+    thisParent <- gs_pop_get_parent(gs3[[1]], toAdd)
+    gs_pop_add(gs4, gs_pop_get_gate(gs3, toAdd), parent = thisParent)
 }
 sampleNames(gs4) <- "4.fcs"
 
 gs5 <- gs_clone(gs4)
 # add another redundant node
-gs_add_gate(gs5, gs_get_gate(gs, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4")
-gs_add_gate(gs5, gs_get_gate(gs, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4")
+gs_pop_add(gs5, gs_pop_get_gate(gs, "CD4/CCR7+ 45RA+")[[1]], parent = "CD4")
+gs_pop_add(gs5, gs_pop_get_gate(gs, "CD4/CCR7+ 45RA-")[[1]], parent = "CD4")
 sampleNames(gs5) <- "5.fcs"
 
 library(knitr)
@@ -100,7 +100,7 @@ plot(gs3)
 **singlets** node is not present in the second tree. But we **can't** remove it because it will remove all its descendants. We can **hide** it instead.
 
 ```{r}
-invisible(gs_set_node_visible(gs2, "singlets", FALSE))
+invisible(gs_pop_set_visibility(gs2, "singlets", FALSE))
 plot(gs2)
 plot(gs3)
 ```
@@ -120,7 +120,7 @@ gs_get_pop_paths(gs3, path = "auto")[5]
 ## Isomorphism
 ```{r echo=FALSE}
 #restore gs2
-invisible(gs_set_node_visible(gs2, "singlets", TRUE))
+invisible(gs_pop_set_visibility(gs2, "singlets", TRUE))
 ```
 
 ```{r echo=FALSE}
@@ -159,7 +159,7 @@ Based on the tree structure of each group (usually there aren't as many groups a
 ```{r}
 for(i in c(2,4))
   for(gs in gs_groups[[i]])
-    invisible(gs_set_node_visible(gs, "singlets", FALSE))
+    invisible(gs_pop_set_visibility(gs, "singlets", FALSE))
 ```
 
 Now check again with `.gs_check_redundant_nodes`

@@ -46,7 +46,7 @@ source("GatingSet-testSuite.R", local = TRUE)
 test_that("updateChannles",{
   
   dd <- capture.output(suppressMessages(gs1 <- flowjo_to_gatingset(ws, path = dataDir, name = 4, subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2"), keywords = "TUBE NAME")))
-  oldCols <- colnames(gs_get_data(gs1)[[1, use.exprs = F]])
+  oldCols <- colnames(gs_pop_get_data(gs1)[[1, use.exprs = F]])
   comp_cols <- parameters(gh_get_compensations(gs1[[1]]))
   trans_names <- names(gh_get_transformations(gs1[[1]]))
   map <- data.frame(old = c("FSC-A", "V450-A", "non-exist", "B710-A")
@@ -55,13 +55,13 @@ test_that("updateChannles",{
   #without updating flow data
   res <- gs_update_channels(gs1, map, all = FALSE)
   expect_null(res)
-  cols <- colnames(gs_get_data(gs1)[[1, use.exprs = F]])
+  cols <- colnames(gs_pop_get_data(gs1)[[1, use.exprs = F]])
   expect_equal(oldCols, cols)
   
   #check gates
-  expect_equivalent(unique(lapply(gs_get_gate(gs1, "singlets"), parameters))[[1]], c("fsc", "FSC-H"))
-  expect_equivalent(unique(lapply(gs_get_gate(gs1, "CD3+"), parameters))[[1]], c("<v450-a>", "SSC-A"))
-  expect_equivalent(unique(lapply(gs_get_gate(gs1, "CD4"), parameters))[[1]], c("<b710>", "<R780-A>"))
+  expect_equivalent(unique(lapply(gs_pop_get_gate(gs1, "singlets"), parameters))[[1]], c("fsc", "FSC-H"))
+  expect_equivalent(unique(lapply(gs_pop_get_gate(gs1, "CD3+"), parameters))[[1]], c("<v450-a>", "SSC-A"))
+  expect_equivalent(unique(lapply(gs_pop_get_gate(gs1, "CD4"), parameters))[[1]], c("<b710>", "<R780-A>"))
   
   #check comps
   comp <- unique(lapply(gs1, gh_get_compensations))[[1]]
@@ -79,7 +79,7 @@ test_that("updateChannles",{
   #update flow data
   gs1 <- gs_update_channels(gs1, map)
   expect_is(gs1, "GatingSet")
-  cols <- colnames(gs_get_data(gs1))
+  cols <- colnames(gs_pop_get_data(gs1))
   expect_equal(cols, oldCols %>% 
                        gsub("V450-A", "v450-a", .) %>%
                        gsub("FSC-A", "fsc", .) %>%

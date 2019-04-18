@@ -3,7 +3,7 @@
 #' @param gh \code{GatingHierarchy} object
 #' @param y \code{character} string containing the boolean or of node names.e.g. 'cd4|cd8'
 #' @export
-gh_get_indices_mat <- function(gh,y){
+gh_pop_get_indices_mat <- function(gh,y){
   strExpr <- as.character(y)
   nodes <- strsplit(strExpr,split="\\|")[[1]]
   .getIndiceMat(gh, sampleNames(gh), nodes)
@@ -121,7 +121,7 @@ NULL
 #' @return A \code{list} of \code{numerci matrices}
 #' @aliases gs_get_singlecell_expression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
-#' @seealso \code{\link{gh_get_indices}}  \code{\link{gs_get_pop_stats}}
+#' @seealso \code{\link{gh_pop_get_indices}}  \code{\link{gs_pop_get_count_fast}}
 #' @examples \dontrun{
 #'   #G is a GatingSet
 #' 	nodes <- c("4+/TNFa+", "4+/IL2+")
@@ -163,7 +163,7 @@ gs_get_singlecell_expression <- function(x, nodes
 	}else{
 	
 		  datSrc <- ifelse(swap, "name", "desc")
-		  fs <- gs_get_data(x)
+		  fs <- gs_pop_get_data(x)
 		  sn <- sampleNames(x)
 		  
 		  names(sn) <- sn
@@ -182,7 +182,7 @@ gs_get_singlecell_expression <- function(x, nodes
 		              markers <- as.character(pop_chnl[[datSrc]])
 		            }else{#parse markers from gates
 		              chnls <- lapply(nodes, function(node){
-		                    gate <- gh_get_gate(x[[sample]], node)
+		                    gate <- gh_pop_get_gate(x[[sample]], node)
 		                    if(is(gate, "booleanFilter"))
 		                      stop("can't operate on boolean gates: ", node)
 		                    dim <- parameters(gate)

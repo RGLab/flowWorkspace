@@ -4,20 +4,20 @@
 \docType{methods}
 \name{getGate,GatingHierarchy,character-method}
 \alias{getGate,GatingHierarchy,character-method}
-\alias{gh_get_gate}
+\alias{gh_pop_get_gate}
 \alias{getGate,GatingSet,character-method}
-\alias{gs_get_gate}
+\alias{gs_pop_get_gate}
 \alias{getGate,GatingSetList,character-method}
 \alias{plotGate,GatingSetList,character-method}
 \title{Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.}
 \usage{
 \S4method{getGate}{GatingHierarchy,character}(obj, y)
 
-gh_get_gate(obj, y)
+gh_pop_get_gate(obj, y)
 
 \S4method{getGate}{GatingSet,character}(obj, y)
 
-gs_get_gate(obj, y)
+gs_pop_get_gate(obj, y)
 
 \S4method{getGate}{GatingSetList,character}(obj, y)
 
@@ -36,11 +36,11 @@ Return the flowCore gate definition object associated with a node in a \code{Gat
 }
 \examples{
   \dontrun{	#gh is a GatingHierarchy
-    gh_get_gate(gh, "CD3") #return the gate for the fifth node in the tree, but fetch it by name.
+    gh_pop_get_gate(gh, "CD3") #return the gate for the fifth node in the tree, but fetch it by name.
     #G is a GatingSet
-    gs_get_gate(G, "CD3") #return a list of gates for the fifth node in each tree
+    gs_pop_get_gate(G, "CD3") #return a list of gates for the fifth node in each tree
   }
 }
 \seealso{
-\code{\link{gh_get_data}} \code{\link{gs_get_pop_paths}}
+\code{\link{gh_pop_get_data}} \code{\link{gs_get_pop_paths}}
 }

@@ -85,7 +85,7 @@ test_that("gh_get_transformations",{
 
 test_that("formatAxis",{
       gh <- gs[[1]]
-      parent <- gh_get_data(gh, use.exprs = FALSE)
+      parent <- gh_pop_get_data(gh, use.exprs = FALSE)
       thisRes <- flowWorkspace:::.formatAxis(gh, parent, xParam = "SSC-A", yParam = "FSC-A")
       expectRes <- list(scales = list())
       expect_equal(thisRes, expectRes)

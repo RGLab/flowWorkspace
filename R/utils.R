@@ -31,7 +31,7 @@ NULL
 #' Get Cell Population Statistics and Sample Metadata
 #'
 #' @param object a \code{GatingSet} or \code{GatingSetList}
-#' @param ... additional arguments passed to \code{gs_get_pop_stats}
+#' @param ... additional arguments passed to \code{gs_pop_get_count_fast}
 #'
 #' @return a \code{data.table} of merged population statistics with sample metadata.
 #' @export
@@ -45,7 +45,7 @@ getMergedStats = function(object,...){
 	if(!inherits(object,"GatingSet")&!inherits(object,"GatingSetList")){
 		stop("object must be a GatingSet or GatingSetList")
 	}
-	stats = gs_get_pop_stats(object,...)
+	stats = gs_pop_get_count_fast(object,...)
 	#process name column so that it contains XXX.fcs
 	message("Processing sample names..")
 	stats[, sampleName:=name]

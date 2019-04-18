@@ -114,13 +114,13 @@ setClass("GatingSet"
 #' 	ws <- open_flowjo_xml(wsfile);
 #' 	G<-try(flowjo_to_gatingset(ws,path=d,name=1));
 #'  gh <- G[[1]]
-#' 	gh_get_pop_stats(gh);
+#' 	gh_pop_compare_stats(gh);
 #' 	gh_plot_pop_count_cv(gh)
 #'  nodes <- gs_get_pop_paths(gh)
 #'  thisNode <- nodes[4]
 #' 	plotGate(gh,thisNode);
-#' 	gh_get_gate(gh,thisNode);
-#' 	gh_get_data(gh,thisNode)
+#' 	gh_pop_get_gate(gh,thisNode);
+#' 	gh_pop_get_data(gh,thisNode)
 #' }
 #' @name GatingHierarchy-class
 #' @rdname GatingHierarchy-class
@@ -205,13 +205,13 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     gslist2[c("30104.fcs")]
 #'     
 #'     #get flow data from it
-#'     gs_get_data(gslist2)
+#'     gs_pop_get_data(gslist2)
 #'     #get gated flow data from a particular popoulation 
-#'     gs_get_data(gslist2, "3+")
+#'     gs_pop_get_data(gslist2, "3+")
 #'     
 #'     #extract the gates associated with one popoulation
-#'     gs_get_gate(gslist2,"3+")
-#'     gs_get_gate(gslist2,5)
+#'     gs_pop_get_gate(gslist2,"3+")
+#'     gs_pop_get_gate(gslist2,5)
 #'     
 #'     #extract the pheno data
 #'     pData(gslist2[3:1])
@@ -227,10 +227,10 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     
 #'     #remove cerntain gates by loop through GatingSets
 #'     gs_get_pop_paths(gslist2[[1]])
-#'     lapply(gslist2,function(gs)gs_remove_gate("Excl",gs))
+#'     lapply(gslist2,function(gs)gs_pop_remove("Excl",gs = gs))
 #'     
 #'     #extract the stats
-#'     gs_get_pop_stats(gslist2)
+#'     gs_pop_get_count_fast(gslist2)
 #'     #extract statistics by using getQAStats defined in QUALIFIER package
 #'     res<-getQAStats(gslist2[c(4,2)],isMFI=F,isSpike=F,nslaves=1)
 #'     
@@ -296,7 +296,7 @@ setValidity("GatingSetList", validGatingSetListObject)
   for(i in hiddenInd){
     thisHidden <- complete[i]
     hiddenPopName <- basename(thisHidden)
-    parent <- gs_get_parent(gh, thisHidden)
+    parent <- gs_pop_get_parent(gh, thisHidden)
     sub <- gsub(thisHidden, parent, sub)
   }
   sub
@@ -334,8 +334,8 @@ setValidity("GatingSetList", validGatingSetListObject)
   if(class(res) == "character"){
     return (res)
   }
-  fs1 <- gs_get_data(gs1)
-  fs2 <- gs_get_data(gs2)
+  fs1 <- gs_pop_get_data(gs1)
+  fs2 <- gs_pop_get_data(gs2)
   .compareFlowData(fs1,fs2)
 }
 
@@ -376,7 +376,7 @@ GatingSetList <- function(x,samples = NULL)
   if(validObject(x)){
     gslist <- x@data
     # make sure the column names of flow data are in the same order
-    cols <- flowCore::colnames(gh_get_data(gslist[[1]]))
+    cols <- flowCore::colnames(gh_pop_get_data(gslist[[1]]))
     gslist <- lapply(gslist, function(gs){
           gs_cyto_data(gs) <- gs_cyto_data(gs)[,cols]
           gs

@@ -18,7 +18,7 @@
 #' 
 #' insertGate(gs, gate, parent, children)
 #' 
-#' gs_set_node_visible(x, y, FALSE)
+#' gs_pop_set_visibility(x, y, FALSE)
 #' 
 #' @details 
 #' In order to merge multiple GatingSets into single \link{GatingSetList}, the gating trees and channel names must be
@@ -38,7 +38,7 @@
 #' 
 #' \link{insertGate} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{gs_remove_redundant_nodes}
 #' 
-#' \link{gs_set_node_visible} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
+#' \link{gs_pop_set_visibility} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
 #' 
 #' @rdname standardize-GatingSet
 #' @aliases merge-GatingSet
@@ -116,7 +116,7 @@ gs_split_by_channels <- function(x){
   message("Grouping by channels...")
   key <- unlist(lapply(x,function(this_gs){
             this_gh <- this_gs[[1]]
-            cols <- flowCore::colnames(gs_get_data(this_gs))
+            cols <- flowCore::colnames(gs_pop_get_data(this_gs))
             #reorder it alphabetically
             cols <- sort(cols)
             paste0(cols, collapse = "|")
@@ -194,7 +194,7 @@ gs_plot_diff_tree <- function(x, path = "auto", ...){
       
       node.label <- paste0("N_", nodeID)
       nodeData(g, node.label, attr = "common") <- TRUE
-      children <- gs_get_children(gh, node, path = path)
+      children <- gs_pop_get_children(gh, node, path = path)
       #keep the direct parent of uncommon node
       if(!any(children%in%nodes.uncommon)||node=="root")
         nodeData(g, node.label, attr = "hidden") <- "1"
@@ -339,7 +339,7 @@ gs_check_redundant_nodes <- function(x, path = "auto", ...){
                   nodesToRm <- setdiff(thisNodeSet,commonNodes)
                   #check if those nodes are terminal
                   isTerminal <- sapply(nodesToRm,function(thisNode){
-                            length(gs_get_children(gh,thisNode))==0
+                            length(gs_pop_get_children(gh,thisNode))==0
                           })
 #                  browser()
                   if(!all(isTerminal)){
@@ -388,11 +388,11 @@ gs_remove_redundant_nodes <- function(x,toRemove){
 #                browser()
                 message("Removing ", thisNode)
                 if(is(thisObj, "GatingSet"))
-                    gs_remove_gate(thisNode,thisObj)
+                    gs_pop_remove(thisNode,gs = thisObj)
                 else if(class(thisObj) == "list")
                   for(this_gs in thisObj)
                   {
-                        gs_remove_gate(thisNode,this_gs)
+                        gs_pop_remove(thisNode,gs = this_gs)
                   }
           }
         }
@@ -426,7 +426,7 @@ gs_remove_redundant_channels <- function(gs, ...){
   nodes <- gs_get_pop_paths(gs, ...)[-1]
   gh <- gs[[1]]
   params <- unlist(lapply(nodes, function(node){
-        g <- gh_get_gate(gh, node)
+        g <- gh_pop_get_gate(gh, node)
         if(class(g) != "booleanFilter"){
          as.vector(parameters(g))  
         }

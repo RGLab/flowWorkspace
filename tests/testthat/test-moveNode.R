@@ -1,25 +1,25 @@
-context("gh_move_node")
-test_that("gh_move_node", {
+context("gh_pop_move")
+test_that("gh_pop_move", {
   
   gs <- load_gs(file.path(dataDir,"gs_manual"))
   gh <- gs[[1]]
-  stats <- gh_get_pop_stats(gh)
+  stats <- gh_pop_compare_stats(gh)
   
-  old.parent <- gs_get_parent(gh, "CD4")
+  old.parent <- gs_pop_get_parent(gh, "CD4")
   
   new.parent <- "CD4"
-  expect_error(gh_move_node(gh, "CD4", new.parent), "itself")
+  expect_error(gh_pop_move(gh, "CD4", new.parent), "itself")
   
   new.parent <- "CD4/CCR7- 45RA+"
-  expect_error(gh_move_node(gh, "CD4", new.parent), "descendants")
+  expect_error(gh_pop_move(gh, "CD4", new.parent), "descendants")
   
   new.parent <- "singlets"
-  suppressMessages(gh_move_node(gh, "CD4", new.parent))
-  expect_equal(gs_get_parent(gh, "CD4", path = "auto"), new.parent)
+  suppressMessages(gh_pop_move(gh, "CD4", new.parent))
+  expect_equal(gs_pop_get_parent(gh, "CD4", path = "auto"), new.parent)
   
   #mv back to original parent
-  suppressMessages(gh_move_node(gh, "CD4", old.parent))
-  expect_equal(gs_get_parent(gh, "CD4"), old.parent)
-  expect_equal(gh_get_pop_stats(gh), stats)
+  suppressMessages(gh_pop_move(gh, "CD4", old.parent))
+  expect_equal(gs_pop_get_parent(gh, "CD4"), old.parent)
+  expect_equal(gh_pop_compare_stats(gh), stats)
   
 })

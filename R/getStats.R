@@ -1,5 +1,5 @@
 #' @templateVar old getStats
-#' @templateVar new gs(/gh)_get_stats
+#' @templateVar new gs(/gh)_pop_get_stats
 #' @template template-depr_pkg
 NULL
 #' Exact MFI from populations(or nodes) for all the markers
@@ -13,23 +13,23 @@ NULL
 #' @import ncdfFlow
 #' @import data.table
 #' @export
-#' @rdname gh_get_stats
+#' @rdname gh_pop_get_stats
 #' @examples
 #' \dontrun{
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
 #' suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 #'
 #' # get stats all nodes
-#' dt <- gs_get_stats(gs) #default is "count"
+#' dt <- gs_pop_get_stats(gs) #default is "count"
 #'
 #' nodes <- c("CD4", "CD8")
-#' gs_get_stats(gs, nodes, "percent")
+#' gs_pop_get_stats(gs, nodes, "percent")
 #'
 #' # pass a build-in function
-#' gs_get_stats(gs, nodes, type = pop.MFI)
+#' gs_pop_get_stats(gs, nodes, type = pop.MFI)
 #'
 #' # compute the stats based on the raw data scale
-#' gs_get_stats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
+#' gs_pop_get_stats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
 #'
 #' # supply user-defined stats fun
 #' pop.quantiles <- function(fr){
@@ -38,7 +38,7 @@ NULL
 #'    names(res) <- chnls
 #'    res
 #'    }
-#' gs_get_stats(gs, nodes, type = pop.quantiles)
+#' gs_pop_get_stats(gs, nodes, type = pop.quantiles)
 #' }
 getStats <- function(x, ...)UseMethod("getStats")
 
@@ -49,23 +49,23 @@ getStats.GatingSetList <- function(x, ...){
 }
 
 #' @export
-#' @rdname gs_get_stats
+#' @rdname gs_pop_get_stats
 getStats.GatingSet <- function(...){
-	.Deprecated("gs_get_stats")
-  gs_get_stats(...)
+	.Deprecated("gs_pop_get_stats")
+  gs_pop_get_stats(...)
 }
 #' @export
-#' @rdname gs_get_stats
-gs_get_stats <- function(x, ...){
+#' @rdname gs_pop_get_stats
+gs_pop_get_stats <- function(x, ...){
   res <-  lapply(x, function(gh){
-    gh_get_stats(gh, ...)
+    gh_pop_get_stats(gh, ...)
 
   })
   rbindlist(res, idcol = "sample")
 }
 
 #' @export
-#' @rdname gs_get_stats
+#' @rdname gs_pop_get_stats
 #' @param nodes the character vector specifies the populations of interest. default is all available nodes
 #' @param type the character vector specifies the type of pop stats or
 #'          a function used to compute population stats.
@@ -74,12 +74,12 @@ gs_get_stats <- function(x, ...){
 #' @param inverse.transform logical flag . Whether inverse transform the data before computing the stats.
 #' @param stats.fun.arg a list of arguments passed to `type` when 'type' is a function.
 getStats.GatingHierarchy <- function(...){
-  .Deprecated("gh_get_stats")
-  gh_get_stats(...)
+  .Deprecated("gh_pop_get_stats")
+  gh_pop_get_stats(...)
 }
 #' @export
-#' @rdname gs_get_stats
-gh_get_stats <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, stats.fun.arg = list(), ...){
+#' @rdname gs_pop_get_stats
+gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inverse.transform = FALSE, stats.fun.arg = list(), ...){
   gh <- x
   if(is.null(nodes))
     nodes <- gs_get_pop_paths(gh, ...)
@@ -87,18 +87,15 @@ gh_get_stats <- function(x, nodes = NULL, type = "count", inverse.transform = FA
     if(is.character(type))
     {
       type <- match.arg(type, c("count", "percent"))
-      if(type == "count")
-      {
-        res <- gh_get_count(gh, node)
-        names(res) <- "count"
-      }else if(type == "percent")
-      {
-        res <- gh_get_proportion(gh, node)
-        names(res) <- "percent"
-      }else
-        stop("unsupported stats type: ", type)
+	  stats<-.getPopStat(x,y = node)
+	  source <- ifelse(xml, "xml", "openCyto")
+	
+	  res <- stats[[source]][type]
+      
+        names(res) <- type
+      
     }else{
-      fr <- gh_get_data(gh, y = node)
+      fr <- gh_pop_get_data(gh, y = node)
       if(inverse.transform)
       {
         trans <- gh_get_transformations(gh, inverse = TRUE)
@@ -122,7 +119,7 @@ gh_get_stats <- function(x, nodes = NULL, type = "count", inverse.transform = FA
 #' built-in stats functions.
 #'
 #' pop.MFI computes and returns the median fluorescence intensity for each marker.
-#' They are typically used as the arguments passed to \code{gh_get_stats} method to perform the sample-wise population stats calculations.
+#' They are typically used as the arguments passed to \code{gh_pop_get_stats} method to perform the sample-wise population stats calculations.
 #'
 #' @param fr a flowFrame represents a gated population
 #' @return a named numeric vector
@@ -141,3 +138,129 @@ pop.MFI <- function(fr){
   names(res) <- markers
   res
 }
+
+#' @templateVar old getProp
+#' @templateVar new gh_pop_get_proportion
+#' @template template-depr_pkg
+NULL
+#' @param y \code{character} node name or path
+#' @rdname gh_pop_get_stats
+#' @aliases getProp
+#' @export
+getProp <- function(x,y,xml = FALSE){
+	.Deprecated("gh_pop_get_proportion")
+	gh_pop_get_proportion(x, y, xml)
+}
+#' @param y \code{character} node name or path
+#' @rdname gh_get_pop_stats
+#' @export
+gh_pop_get_proportion <- function(x,y,xml = FALSE){
+	gh_pop_get_stats(x, y, xml = xml, type = "percent")[, percent]
+}
+
+#' @templateVar old getTotal
+#' @templateVar new gh_pop_get_count
+#' @template template-depr_pkg
+NULL
+#' @rdname gh_pop_get_stats
+#' @export
+#' @aliases getProp
+getTotal <- function(x,y,xml = FALSE){
+	.Deprecated("gh_pop_get_count")
+	gh_pop_get_count(x, y, xml)
+}
+
+#' @rdname gh_get_pop_stats
+#' @export
+gh_pop_get_count <- function(x,y,xml = FALSE){
+	gh_pop_get_stats(x, y, xml = xml, type = "count")[, count]
+	
+}
+
+
+.getPopStat<-function(x,y){
+	stopifnot(!missing(y))
+	
+	
+	stats<-.cpp_getPopStats(x@pointer,sampleNames(x), y)
+	
+	
+	parent<-try(gs_pop_get_parent(x, y),silent=T)
+	
+	
+	if(class(parent)=="try-error")#if parent exist
+		pstats<-stats
+	else
+	{
+		
+		pstats<-.cpp_getPopStats(x@pointer,sampleNames(x), parent)
+	}
+	
+	
+#	browser()
+	list(openCyto=c(percent=as.numeric(ifelse(pstats$FlowCore["count"]==0
+									,0
+									,stats$FlowCore["count"]/pstats$FlowCore["count"]
+							))
+					,count=as.numeric(stats$FlowCore["count"]))
+			,xml=c(percent=as.numeric(ifelse(pstats$FlowJo["count"]==0
+									,0
+									,stats$FlowJo["count"]/pstats$FlowJo["count"]
+							))
+					,count=as.numeric(stats$FlowJo["count"]))
+	)
+}
+#' @templateVar old getPopStats
+#' @templateVar new gs(/gh)_pop_get_stats
+#' @template template-depr_pkg
+NULL
+#' @export
+setGeneric("getPopStats",function(x,...)standardGeneric("getPopStats"))
+#' @rdname gh_pop_get_stats
+#' @export
+setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
+			.Deprecated("gh_pop_compare_stats")
+			gh_pop_compare_stats(x, path, ...)
+		})
+#' @rdname gh_pop_get_stats
+#' @export
+gh_pop_compare_stats <- function(x, path = "auto", ...){
+	
+	nodePath <- gs_get_pop_paths(x, path = path, ...)
+	stats <- rbindlist(lapply(nodePath, function(thisPath){
+						curStats <- .getPopStat(x,thisPath)
+						data.table(openCyto.freq = curStats$openCyto["percent"]
+								,xml.freq = curStats$xml["percent"]
+								,openCyto.count = curStats$openCyto["count"]
+								,xml.count = curStats$xml["count"]
+								, node = thisPath
+						
+						)
+					})
+	)
+	
+	rownames(stats) <- stats[, node]
+	stats
+}
+
+.computeCV_gh <- function(gh, ...){
+	
+	x<-gh_pop_compare_stats(gh, ...)
+	rn<-rownames(x)
+	x<-as.data.frame(x)
+	rownames(x)<-rn
+	cv<-apply(as.matrix(x[,c("xml.count","openCyto.count")]),1,function(y)IQR(y)/median(y));
+	cv<-as.matrix(cv,nrow=length(cv))
+	cv[is.nan(cv)]<-0
+	rownames(cv) <- as.character(rownames(x))
+	cv
+}
+
+#' @importFrom lattice barchart
+#' @export
+#' @rdname gh_pop_get_stats
+gh_plot_pop_count_cv <- function(x,m=2,n=2, path = "auto", ...){
+	cv <- .computeCV_gh(x, path = path)
+	return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
+}
+

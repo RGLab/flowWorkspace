@@ -24,7 +24,7 @@ gslist_to_gs <- function(x,y="missing",...){
       if(all(duplicated(unlist(isNcdfList))[-1])){
 #               browser()
         #combine flowset/ncdfFlowSet
-        fsList <- lapply(x, gs_get_data, level =1)
+        fsList <- lapply(x, gs_pop_get_data, level =1)
         if(isNcdfList[[1]])
           fs<-rbind2(ncdfFlowList(fsList), ...)
         else
@@ -81,29 +81,29 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
 
 
 
-#' @rdname gs_get_data-methods
+#' @rdname gs_pop_get_data-methods
 #' @export
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
-			.Deprecated("gs_get_data")
-			gs_get_data(obj, y)
+			.Deprecated("gs_pop_get_data")
+			gs_pop_get_data(obj, y)
 			
 		})
       
 
 
 
-#' @rdname gh_get_gate
+#' @rdname gh_pop_get_gate
 #' @export
 setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y){
-			.Deprecated("gs_get_gate")
-			gs_get_gate(obj, y)
+			.Deprecated("gs_pop_get_gate")
+			gs_pop_get_gate(obj, y)
 		})
-##' @rdname gh_get_gate
+##' @rdname gh_pop_get_gate
 ##' @export
-#setMethod("gh_get_gate",signature(obj="GatingSetList",y="character"),function(obj,y){
+#setMethod("gh_pop_get_gate",signature(obj="GatingSetList",y="character"),function(obj,y){
 #      
 #      res <- lapply(obj,function(gs){
-#            gh_get_gate(gs,y)      
+#            gh_pop_get_gate(gs,y)      
 #          }, level =1)
 #      unlist(res,recur=FALSE)
 #      
@@ -114,10 +114,10 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y)
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
       selectMethod("plotGate",signature = c(x="GatingSet",y="character"))(x=x, y=y, ...)
     })
-gslist_get_pop_stats <- function(x, format = c("long", "wide"), ...){
+.gslist_get_pop_stats <- function(x, format = c("long", "wide"), ...){
       
       format <- match.arg(format)
-      res <- lapply(x,gs_get_pop_stats, level =1, format = format,...)
+      res <- lapply(x,gs_pop_get_count_fast, level =1, format = format,...)
       
       if(format == "long"){
 #        browser()

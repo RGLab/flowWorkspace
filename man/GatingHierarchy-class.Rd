@@ -23,13 +23,13 @@ library(CytoML)
 	ws <- open_flowjo_xml(wsfile);
 	G<-try(flowjo_to_gatingset(ws,path=d,name=1));
  gh <- G[[1]]
-	gh_get_pop_stats(gh);
+	gh_pop_compare_stats(gh);
 	gh_plot_pop_count_cv(gh)
  nodes <- gs_get_pop_paths(gh)
  thisNode <- nodes[4]
 	plotGate(gh,thisNode);
-	gh_get_gate(gh,thisNode);
-	gh_get_data(gh,thisNode)
+	gh_pop_get_gate(gh,thisNode);
+	gh_pop_get_data(gh,thisNode)
 }
 }
 \seealso{

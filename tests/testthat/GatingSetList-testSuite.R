@@ -19,7 +19,7 @@ test_that("GatingSetList constructor", {
       expect_error(GatingSetList(list(gs, gs_clone)), "colnames of flowSets don't match")
             
       #different tree structure
-      invisible(gs_remove_gate("CD8", gs_clone))
+      invisible(gs_pop_remove("CD8", gs = gs_clone))
       expect_error(GatingSetList(list(gs, gs_clone)), "gating structure doesn't match: CytoTrol_CytoTrol_2.fcs CytoTrol_CytoTrol_1.fcs")
       
       suppressMessages(gs_clone <- gs_clone(gs))
@@ -63,20 +63,20 @@ test_that("pData<-", {
       
     })
 
-test_that("gs_get_data", {
-      thisRes <- gs_get_data(gslist)
+test_that("gs_pop_get_data", {
+      thisRes <- gs_pop_get_data(gslist)
       expect_is(thisRes, "ncdfFlowList")
       expect_equal(sampleNames(thisRes), sampleNames(gslist))
       expect_equal(nrow(thisRes[[1]]),  119531)
       
-      thisRes <- gs_get_data(gslist, "CD8")
+      thisRes <- gs_pop_get_data(gslist, "CD8")
       expect_is(thisRes, "ncdfFlowList")
       expect_equal(nrow(thisRes[[1]]),  14564)
       
     })
 
-test_that("gs_get_gate", {
-      thisRes <- gs_get_gate(gslist, "CD4")
+test_that("gs_pop_get_gate", {
+      thisRes <- gs_pop_get_gate(gslist, "CD4")
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), sampleNames(gslist))
       
@@ -84,12 +84,12 @@ test_that("gs_get_gate", {
       
     })
 
-test_that("gs_get_pop_stats", {
+test_that("gs_pop_get_count_fast", {
   
-      thisRes <- gs_get_pop_stats(gslist, format = "wide")
+      thisRes <- gs_pop_get_count_fast(gslist, format = "wide")
       expect_is(thisRes, "matrix")
       expect_equal(colnames(thisRes), sampleNames(gslist))
-      expect_equal(thisRes[,1, drop = F], gs_get_pop_stats(gs, format = "wide"))
+      expect_equal(thisRes[,1, drop = F], gs_pop_get_count_fast(gs, format = "wide"))
       
     })
 

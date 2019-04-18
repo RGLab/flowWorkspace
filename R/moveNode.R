@@ -1,5 +1,5 @@
 #' @templateVar old moveNode
-#' @templateVar new gh_move_node
+#' @templateVar new gh_pop_move
 #' @template template-depr_pkg
 NULL
 #' move a node along with all of its descendant nodes to the given ancester
@@ -13,19 +13,19 @@ NULL
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
 #' suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 #' gh <- gs[[1]]
-#' old.parent <- gs_get_parent(gh, "CD4")
+#' old.parent <- gs_pop_get_parent(gh, "CD4")
 #' new.parent <- "singlets"
-#' gh_move_node(gh, "CD4", new.parent)
-#' gs_get_parent(gh, "CD4")
-#' @rdname gh_move_node
+#' gh_pop_move(gh, "CD4", new.parent)
+#' gs_pop_get_parent(gh, "CD4")
+#' @rdname gh_pop_move
 #' @export
 moveNode <- function(...){
-  .Deprecated("gh_move_node")
-  gh_move_node(...)
+  .Deprecated("gh_pop_move")
+  gh_pop_move(...)
 }
-#' @rdname gh_move_node
+#' @rdname gh_pop_move
 #' @export
-gh_move_node <- function(gh, node, to){
+gh_pop_move <- function(gh, node, to){
   
   .moveNode(gh@pointer, sampleNames(gh), node, to)
   recompute(gh, to)

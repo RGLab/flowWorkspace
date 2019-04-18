@@ -53,13 +53,13 @@ Objects store a collection of GatingSets,which usually has the same gating trees
     gslist2[c("30104.fcs")]
     
     #get flow data from it
-    gs_get_data(gslist2)
+    gs_pop_get_data(gslist2)
     #get gated flow data from a particular popoulation 
-    gs_get_data(gslist2, "3+")
+    gs_pop_get_data(gslist2, "3+")
     
     #extract the gates associated with one popoulation
-    gs_get_gate(gslist2,"3+")
-    gs_get_gate(gslist2,5)
+    gs_pop_get_gate(gslist2,"3+")
+    gs_pop_get_gate(gslist2,5)
     
     #extract the pheno data
     pData(gslist2[3:1])
@@ -75,10 +75,10 @@ Objects store a collection of GatingSets,which usually has the same gating trees
     
     #remove cerntain gates by loop through GatingSets
     gs_get_pop_paths(gslist2[[1]])
-    lapply(gslist2,function(gs)gs_remove_gate("Excl",gs))
+    lapply(gslist2,function(gs)gs_pop_remove("Excl",gs = gs))
     
     #extract the stats
-    gs_get_pop_stats(gslist2)
+    gs_pop_get_count_fast(gslist2)
     #extract statistics by using getQAStats defined in QUALIFIER package
     res<-getQAStats(gslist2[c(4,2)],isMFI=F,isSpike=F,nslaves=1)
     
