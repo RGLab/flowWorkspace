@@ -100,7 +100,7 @@
 
 \code{updateIndices} --> \code{gh_pop_set_indices}
 
-\code{getMergedStats} --> \code{gs_get_merged_stats}
+\code{getMergedStats} --> \code{gs_pop_get_count_with_meta}
 
-\code{set.count.xml} --> \code{gh_set_xml_count}
+\code{set.count.xml} --> \code{gh_pop_set_xml_count}
 }

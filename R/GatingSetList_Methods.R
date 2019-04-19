@@ -23,7 +23,7 @@ setMethod("rbind2",
 #' @export 
 gslist_to_gs <- function(x,...){
 #           browser()
-      isNcdfList<-lapply(x,isNcdf, level = 1)
+      isNcdfList<-lapply(x,gs_is_h5, level = 1)
       if(all(duplicated(unlist(isNcdfList))[-1])){
 #               browser()
         #combine flowset/ncdfFlowSet

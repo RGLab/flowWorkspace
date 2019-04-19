@@ -1,9 +1,9 @@
 context("GatingSet Accessors")
 
-test_that("isNcdf ",{
+test_that("gs_is_h5 ",{
       
         
-	expect_equal(isNcdf(gs), TRUE);
+	expect_equal(gs_is_h5(gs), TRUE);
     
 })
 test_that("length ",{

@@ -26,6 +26,6 @@ suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = 
 gh <- gs[[1]]
 old.parent <- gs_pop_get_parent(gh, "CD4")
 new.parent <- "singlets"
-copyNode(gh, "CD4", new.parent)
+gh_copy_gate(gh, "CD4", new.parent)
 gs_get_pop_paths(gh)
 }

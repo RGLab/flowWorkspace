@@ -43,13 +43,17 @@ NULL
 #' @param x \code{GatingHiearchy} object
 #' @return \code{logical}
 #' @export
-isNcdf <- function(x){
-#			browser()
-
+#' @rdname gs_is_h5
+gs_is_h5 <- function(x){
   return (class(gs_cyto_data(x))=="ncdfFlowSet")
 
 }
-
+#' @export
+#' @rdname gs_is_h5
+isNcdf <- function(x){
+  .Deprecated("gs_is_h5")
+  gs_is_h5(x)
+  }
 #' @title save/load a GatingSet/GatingSetList to/from disk.
 #'
 #' @description
@@ -125,7 +129,7 @@ save_gs<-function(G,path,overwrite = FALSE
       }
 
       #validity check for cdf
-      if(isNcdf(G)){
+      if(gs_is_h5(G)){
         if(length(this_files)!=0){
           cdf_ind <- grep("\\.nc$",this_files)
           if(length(cdf_ind) != 1){
@@ -140,7 +144,7 @@ save_gs<-function(G,path,overwrite = FALSE
         file.remove(file.path(path,rds_toSave))
         file.remove(file.path(path,dat_toSave))
 
-        if(isNcdf(G)){
+        if(gs_is_h5(G)){
           #check if the target path is the same as current cdf path
 #            browser()
           this_cdf <- file.path(path,this_files[cdf_ind])
@@ -210,7 +214,7 @@ load_gs<-function(path){
 
     filestoSave <- c(rds.file,dat.file)
     #save ncdf file
-    if(cdf != "skip" && isNcdf(G))
+    if(cdf != "skip" && gs_is_h5(G))
     {
       from<-gs_cyto_data(G)@file
 #      browser()
@@ -327,7 +331,7 @@ load_gs<-function(path){
       gs@pointer<-.cpp_loadGatingSet(dat.file)
 
 
-      if(isNcdf(gs))
+      if(gs_is_h5(gs))
       {
         if(length(nc.file)==0)
           stop(".nc file missing in ",output)
@@ -1764,7 +1768,7 @@ gs_clone <- function(x,...){
 			#deep copying flow Data
 			message("cloning flow data...")
 			fs <- gs_cyto_data(x)
-			if(isNcdf(x))
+			if(gs_is_h5(x))
 				fs_clone<-clone.ncdfFlowSet(fs,...)
 			else
 				fs_clone<-flowCore:::copyFlowSet(fs)

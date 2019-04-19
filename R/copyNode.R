@@ -8,7 +8,7 @@ NULL
 #' @param node the node to be copied
 #' @param to the new parent node under which the \code{node} will be copied
 #' @export
-#' @rdname copyNode
+#' @rdname gh_copy_gate
 #' @examples
 #' library(flowWorkspace)
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
@@ -16,13 +16,13 @@ NULL
 #' gh <- gs[[1]]
 #' old.parent <- gs_pop_get_parent(gh, "CD4")
 #' new.parent <- "singlets"
-#' copyNode(gh, "CD4", new.parent)
+#' gh_copy_gate(gh, "CD4", new.parent)
 #' gs_get_pop_paths(gh)
 copyNode <- function(gh, node, to){
   .Defunct("gh_copy_gate")
 }
 #' @export
-#' @rdname copyNode
+#' @rdname gh_copy_gate
 gh_copy_gate<- function(gh, node, to){
   node <- gh_pop_get_full_path(gh, node)
   to <- gh_pop_get_full_path(gh, to)
