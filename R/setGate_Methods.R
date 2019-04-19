@@ -6,6 +6,7 @@ NULL
 #' @template template-depr_pkg
 NULL
 #' @export
+#' @rdname gs_pop_set_gate
 setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
 
 #' update the gate
@@ -50,7 +51,7 @@ gh_pop_set_gate <- function(obj,y,value, negated = FALSE,...){
 			.cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
 			
 		}
-#' @rdname gh_pop_set_gate
+#' @rdname gs_pop_set_gate
 #' @export 
 setMethod("setGate",
     signature=c(obj="GatingSet",y="character", value = "ANY"),

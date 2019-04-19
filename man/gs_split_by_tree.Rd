@@ -2,10 +2,13 @@
 % Please edit documentation in R/merge_GatingSet.R
 \name{groupByTree}
 \alias{groupByTree}
+\alias{gs_split_by_tree}
 \title{split GatingSets into groups based on their gating schemes
 Be careful that the splitted resluts still points to the original data set!!}
 \usage{
 groupByTree(x)
+
+gs_split_by_tree(x)
 }
 \arguments{
 \item{x}{a list of GatingSets or one GatingSet}

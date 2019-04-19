@@ -1972,7 +1972,7 @@ setReplaceMethod("sampleNames",
 
 # to speed up reading data from disk later on,
 # we can optionally pass j to ncdfFlow::[ to subset on channel
-#' @rdname gs_pop_get_data-methods
+#' @rdname gs_pop_get_data
 #' @export
 setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
   .Deprecated("gs_pop_get_data")
@@ -1983,7 +1983,7 @@ setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
   }
 })
       
-#' @rdname gs_pop_get_data-methods
+#' @rdname gs_pop_get_data
 #' @export
 gs_pop_get_data <- function(obj, y = "root", ...){
 
@@ -2027,12 +2027,14 @@ gs_pop_get_data <- function(obj, y = "root", ...){
 #' @template template-depr_pkg
 NULL
 #' @export
-setGeneric("flowData", function(x,...) standardGeneric("flowData"))
+#' @rdname gs_cyto_data
+setGeneric("flowData", function(x) standardGeneric("flowData"))
 
 #' @templateVar old flowData<-
 #' @templateVar new gs_cyto_data<-
 #' @template template-depr_pkg
 NULL
+#' @rdname gs_cyto_data
 #' @export
 setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 
@@ -2056,7 +2058,7 @@ setMethod("flowData",signature("GatingSet"),function(x){
 })
 #' @rdname gs_cyto_data
 #' @export
-setGeneric("gs_cyto_data", function(x,...) standardGeneric("gs_cyto_data"))
+setGeneric("gs_cyto_data", function(x) standardGeneric("gs_cyto_data"))
 
 #' @rdname gs_cyto_data
 #' @export
@@ -2445,8 +2447,6 @@ gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE
 #'
 #' This function plots the coefficient of variation calculated between the xml population statistics and the openCyto population statistics for each population in a gating hierarchy extracted from a xml Workspace.
 #' @param x A \code{GatingHierarchy} from or a \code{GatingSet}.
-#' @param m \code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.
-#' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.
 #' @param scales \code{list} see \link{barchart}
 #' @param path \code{character} see \link{gs_get_pop_paths}
 #' @param \dots Additional arguments to the \code{barplot} methods.

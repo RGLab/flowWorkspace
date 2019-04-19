@@ -5,7 +5,7 @@
 \alias{gs_remove_redundant_nodes}
 \title{Remove the terminal leaf nodes that make the gating trees to be different from one another.}
 \usage{
-dropRedundantNodes(...)
+dropRedundantNodes(x, toRemove)
 
 gs_remove_redundant_nodes(x, toRemove)
 }

@@ -2,18 +2,18 @@
 #' @templateVar new gs(/gh)_pop_get_stats
 #' @template template-depr_pkg
 NULL
-#' Exact MFI from populations(or nodes) for all the markers
+#' Extract stats from populations(or nodes)
 #'
-#' It calculates the MFI for each marker.
 #'
 #' @param x a GatingSet or GatingHierarchy
 #' @param ... arguments passed to \link{gs_get_pop_paths} method.
-#' @return a data.table that contains MFI values for each marker per column along with 'pop' column and 'sample' column (when used on a 'GatingSet')
+#' @return a data.table that contains stats values (if MFI, for each marker per column)
+#'  along with 'pop' column and 'sample' column (when used on a 'GatingSet')
 #' @import flowCore
 #' @import ncdfFlow
 #' @import data.table
 #' @export
-#' @rdname gh_pop_get_stats
+#' @aliases gh_pop_get_stats
 #' @examples
 #' \dontrun{
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
@@ -40,10 +40,11 @@ NULL
 #'    }
 #' gs_pop_get_stats(gs, nodes, type = pop.quantiles)
 #' }
+#' @rdname gs_pop_get_stats
 getStats <- function(x, ...)UseMethod("getStats")
 
 #' @export
-#' @rdname getStats
+#' @rdname gs_pop_get_stats
 getStats.GatingSetList <- function(x, ...){
   getStats.GatingSet(x, ...)
 }
@@ -77,6 +78,7 @@ getStats.GatingHierarchy <- function(...){
   .Deprecated("gh_pop_get_stats")
   gh_pop_get_stats(...)
 }
+#' @param xml whether to extract xml stats or openCyto stats
 #' @export
 #' @rdname gs_pop_get_stats
 gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inverse.transform = FALSE, stats.fun.arg = list(), ...){
@@ -143,16 +145,18 @@ pop.MFI <- function(fr){
 #' @templateVar new gh_pop_get_proportion
 #' @template template-depr_pkg
 NULL
+#' Get count or proportion from populations
+#' @param x GatingHierarchy
 #' @param y \code{character} node name or path
-#' @rdname gh_pop_get_stats
+#' @rdname gh_pop_get_proportion
 #' @aliases getProp
 #' @export
 getProp <- function(x,y,xml = FALSE){
 	.Deprecated("gh_pop_get_proportion")
 	gh_pop_get_proportion(x, y, xml)
 }
-#' @param y \code{character} node name or path
-#' @rdname gh_get_pop_stats
+#' @param xml whether to extract xml stats or openCyto stats
+#' @rdname gh_pop_get_proportion
 #' @export
 gh_pop_get_proportion <- function(x,y,xml = FALSE){
 	gh_pop_get_stats(x, y, xml = xml, type = "percent")[, percent]
@@ -162,7 +166,7 @@ gh_pop_get_proportion <- function(x,y,xml = FALSE){
 #' @templateVar new gh_pop_get_count
 #' @template template-depr_pkg
 NULL
-#' @rdname gh_pop_get_stats
+#' @rdname gh_pop_get_proportion
 #' @export
 #' @aliases getProp
 getTotal <- function(x,y,xml = FALSE){
@@ -170,7 +174,7 @@ getTotal <- function(x,y,xml = FALSE){
 	gh_pop_get_count(x, y, xml)
 }
 
-#' @rdname gh_get_pop_stats
+#' @rdname gh_pop_get_proportion
 #' @export
 gh_pop_get_count <- function(x,y,xml = FALSE){
 	gh_pop_get_stats(x, y, xml = xml, type = "count")[, count]
@@ -216,13 +220,18 @@ gh_pop_get_count <- function(x,y,xml = FALSE){
 NULL
 #' @export
 setGeneric("getPopStats",function(x,...)standardGeneric("getPopStats"))
-#' @rdname gh_pop_get_stats
+#' @rdname gh_pop_compare_stats
 #' @export
 setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 			.Deprecated("gh_pop_compare_stats")
 			gh_pop_compare_stats(x, path, ...)
 		})
-#' @rdname gh_pop_get_stats
+#' Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R
+#'
+#' @param x GatingHierarchy
+#' @param path see \link{gs_get_pop_paths}
+#' @param ... not used
+#' @rdname gh_pop_compare_stats
 #' @export
 gh_pop_compare_stats <- function(x, path = "auto", ...){
 	
@@ -258,8 +267,9 @@ gh_pop_compare_stats <- function(x, path = "auto", ...){
 
 #' @importFrom lattice barchart
 #' @export
-#' @rdname gh_pop_get_stats
-gh_plot_pop_count_cv <- function(x,m=2,n=2, path = "auto", ...){
+#' @rdname gh_pop_compare_stats
+#' @aliases gh_plot_pop_count_cv
+gh_plot_pop_count_cv <- function(x, path = "auto", ...){
 	cv <- .computeCV_gh(x, path = path)
 	return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
 }

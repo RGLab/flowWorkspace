@@ -17,7 +17,7 @@ gs_remove_redundant_channels(gs)
 
 gs_update_channels(gs, map, all = TRUE)
 
-insertGate(gs, gate, parent, children)
+gh_pop_move(gh, node, to)
 
 gs_pop_set_visibility(x, y, FALSE)
 }
@@ -37,7 +37,7 @@ consistent. These functions help removing the discrepancies and standardize the 
 
 \link{gs_update_channels} modifies the channel names in place. (Usually used to standardize the channels among GatingSets due to the letter case discrepancies or typo).
 
-\link{insertGate} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{gs_remove_redundant_nodes}
+\link{gh_pop_move} inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by \code{gs_remove_redundant_nodes}
 
 \link{gs_pop_set_visibility} hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.
 }

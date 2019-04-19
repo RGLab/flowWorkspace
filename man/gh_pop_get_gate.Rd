@@ -8,7 +8,6 @@
 \alias{getGate,GatingSet,character-method}
 \alias{gs_pop_get_gate}
 \alias{getGate,GatingSetList,character-method}
-\alias{plotGate,GatingSetList,character-method}
 \title{Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.}
 \usage{
 \S4method{getGate}{GatingHierarchy,character}(obj, y)
@@ -20,8 +19,6 @@ gh_pop_get_gate(obj, y)
 gs_pop_get_gate(obj, y)
 
 \S4method{getGate}{GatingSetList,character}(obj, y)
-
-\S4method{plotGate}{GatingSetList,character}(x, y, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierrarchy} or \code{GatingSet}}

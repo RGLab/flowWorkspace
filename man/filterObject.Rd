@@ -14,11 +14,11 @@
 It convert the flowCore gate to a list whose structure can be understood by 
 underlying c++ data structure.}
 \usage{
-filterObject(x, ...)
+filterObject(x)
 
-\method{filterObject}{default}(x, ...)
+\method{filterObject}{default}(x)
 
-filter_to_list(x, ...)
+filter_to_list(x)
 
 \method{filter_to_list}{rectangleGate}(x)
 

@@ -19,6 +19,10 @@ gh_pop_set_name(x, y, value)
 gs_pop_set_name(x, y, value)
 }
 \arguments{
+\item{x}{GatingHierarchy}
+
+\item{y}{pop name/path}
+
 \item{value}{A \code{character} the name of the node. or \code{logical} to indicate whether to hide a node}
 }
 \description{

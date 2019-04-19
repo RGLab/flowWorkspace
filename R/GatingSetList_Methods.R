@@ -6,7 +6,6 @@ NULL
 #' @template template-depr_pkg
 NULL
 #' @param y \code{missing} not used.
-#' @param ... other arguments passed to \code{gslist_to_gs} method for \code{ncdfFlowList}
 #' @rdname gslist_to_gs 
 #' @export 
 setMethod("rbind2",
@@ -14,11 +13,15 @@ setMethod("rbind2",
     definition=function(x,y="missing",...)
     {
 		.Deprecated("gslist_to_gs")
-		gslist_to_gs(x, y, ...)
+		gslist_to_gs(x, ...)
 	})
+#' Merge a GatingSetList into a single GatingSet
+#' 
+#' @param x GatingSetList
+#' @param ... other arguments passed to \code{gslist_to_gs} method for \code{ncdfFlowList}
 #' @rdname gslist_to_gs 
 #' @export 
-gslist_to_gs <- function(x,y="missing",...){
+gslist_to_gs <- function(x,...){
 #           browser()
       isNcdfList<-lapply(x,isNcdf, level = 1)
       if(all(duplicated(unlist(isNcdfList))[-1])){
@@ -81,7 +84,7 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
 
 
 
-#' @rdname gs_pop_get_data-methods
+#' @rdname gs_pop_get_data
 #' @export
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
 			.Deprecated("gs_pop_get_data")
@@ -98,16 +101,7 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y)
 			.Deprecated("gs_pop_get_gate")
 			gs_pop_get_gate(obj, y)
 		})
-##' @rdname gh_pop_get_gate
-##' @export
-#setMethod("gh_pop_get_gate",signature(obj="GatingSetList",y="character"),function(obj,y){
-#      
-#      res <- lapply(obj,function(gs){
-#            gh_pop_get_gate(gs,y)      
-#          }, level =1)
-#      unlist(res,recur=FALSE)
-#      
-#    })
+
 
 #' @export 
 #' @rdname plotGate-methods

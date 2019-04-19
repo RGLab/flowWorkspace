@@ -4,11 +4,24 @@
 \name{getParent,GatingSet,character-method}
 \alias{getParent,GatingSet,character-method}
 \alias{gs_pop_get_parent}
+\alias{gh_pop_get_parent}
+\alias{getChildren,GatingSet,character-method}
+\alias{gs_pop_get_children}
+\alias{gh_pop_get_children}
 \title{Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy}
 \usage{
 \S4method{getParent}{GatingSet,character}(obj, y, ...)
 
 gs_pop_get_parent(obj, y, ...)
+
+gh_pop_get_parent(obj, y, ...)
+
+\S4method{getChildren}{GatingSet,character}(obj, y, showHidden = TRUE,
+  ...)
+
+gs_pop_get_children(obj, y, showHidden = TRUE, ...)
+
+gh_pop_get_children(obj, y, showHidden = TRUE, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy}}

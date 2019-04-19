@@ -581,6 +581,10 @@ gs_get_pop_paths <- function(x,y=NULL,order="regular", path = "full", showHidden
 			nodeNames
 		}
 
+#' @rdname gs_get_pop_paths
+#' @export
+gh_get_pop_paths <- gs_get_pop_paths
+			
 #' convert the partial gating path to the full path
 #' @param gh GatingHierarchy object
 #' @param path the partial gating path
@@ -618,19 +622,23 @@ setGeneric("getParent",function(obj,y,...)standardGeneric("getParent"))
 #'     gs_pop_get_children(G,4);#Get the ids of the child nodes
 #'   }
 #' @aliases gs_pop_get_parent
-#' @rdname gs_pop_get_parent
+#' @rdname gs_pop_get_children
 #' @export
 setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, ...){
   .Deprecated("gs_pop_get_parent")
   gs_pop_get_parent(obj, y, ...)
 })
-#' @rdname gs_pop_get_parent
+#' @rdname gs_pop_get_children
 #' @export
 gs_pop_get_parent <- function(obj,y, ...){
             pind <- .cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
             pind <- pind +1
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[pind]
 		}
+#' @rdname gs_pop_get_children
+#' @export
+gh_pop_get_parent <- gs_pop_get_parent
+			
 #' @templateVar old getChildren
 #' @templateVar new gs_pop_get_children
 #' @template template-depr_pkg
@@ -652,6 +660,10 @@ gs_pop_get_children <- function(obj,y, showHidden = TRUE, ...){
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[cind]
 }
 
+#' @rdname gs_pop_get_children
+#' @export
+gh_pop_get_children <- gs_pop_get_children
+	
 #' @templateVar old getGate
 #' @templateVar new gs(/gh)_get_gate
 #' @template template-depr_pkg
@@ -968,7 +980,7 @@ setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
 #'     gh_pop_get_data(gh)
 #' }
 #' @aliases gh_pop_get_data
-#' @rdname gh_pop_get_data-methods
+#' @rdname gs_pop_get_data
 #' @export
 setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...){
   .Deprecated("gh_pop_get_data")
@@ -979,7 +991,7 @@ setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...
   }
 })
       
-#' @rdname gh_pop_get_data-methods
+#' @rdname gs_pop_get_data
 #' @export
 gh_pop_get_data <- function(obj, y = "root", ...){
       
@@ -1569,6 +1581,8 @@ setMethod("setNode"
 	  gh_pop_set_name(x, y, value)
       })
 #' @rdname gs_pop_set_name
+#' @param x GatingHierarchy
+#' @param y pop name/path
 #' @export
 gh_pop_set_name <- function(x,y,value){
   .cpp_setNodeName(x@pointer,sampleNames(x), y,value)
@@ -1592,6 +1606,7 @@ setMethod("setNode"
       })
 
 #' @export
+#' @param value TRUE/FALSE
 #' @rdname gs_pop_set_visibility
 gh_pop_set_visibility <- function(x,y,value){
             

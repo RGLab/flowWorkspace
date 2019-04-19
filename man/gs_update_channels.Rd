@@ -5,7 +5,7 @@
 \alias{gs_update_channels}
 \title{Update the channel information of a GatingSet (c++ part)}
 \usage{
-updateChannels(...)
+updateChannels(gs, map, all = TRUE)
 
 gs_update_channels(gs, map, all = TRUE)
 }

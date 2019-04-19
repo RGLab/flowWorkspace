@@ -5,7 +5,7 @@
 \alias{gh_pop_move}
 \title{move a node along with all of its descendant nodes to the given ancester}
 \usage{
-moveNode(...)
+moveNode(gh, node, to)
 
 gh_pop_move(gh, node, to)
 }

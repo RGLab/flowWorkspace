@@ -4,12 +4,16 @@
 \name{getNodes,GatingSet-method}
 \alias{getNodes,GatingSet-method}
 \alias{gs_get_pop_paths}
+\alias{gh_get_pop_paths}
 \title{Get the names of all nodes from a gating hierarchy.}
 \usage{
 \S4method{getNodes}{GatingSet}(x, y = NULL, order = "regular",
   path = "full", showHidden = FALSE, ...)
 
 gs_get_pop_paths(x, y = NULL, order = "regular", path = "full",
+  showHidden = FALSE, ...)
+
+gh_get_pop_paths(x, y = NULL, order = "regular", path = "full",
   showHidden = FALSE, ...)
 }
 \arguments{

@@ -15,10 +15,6 @@ gs_plot_pop_count_cv(x, scales = list(x = list(rot = 90)),
 \item{path}{\code{character} see \link{gs_get_pop_paths}}
 
 \item{\dots}{Additional arguments to the \code{barplot} methods.}
-
-\item{m}{\code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.}
-
-\item{n}{\code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.}
 }
 \value{
 Nothing is returned.

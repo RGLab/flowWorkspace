@@ -19,9 +19,9 @@ NULL
 #' gs_pop_get_parent(gh, "CD4")
 #' @rdname gh_pop_move
 #' @export
-moveNode <- function(...){
+moveNode <- function(gh, node, to){
   .Deprecated("gh_pop_move")
-  gh_pop_move(...)
+  gh_pop_move(gh, node, to)
 }
 #' @rdname gh_pop_move
 #' @export

@@ -19,29 +19,28 @@ gs_get_singlecell_expression_by_gate(...)
 }
 \arguments{
 \item{...}{other arguments
-
-       other.markers \code{character} vector specifying the extra markers/channels to be returned besides the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.
-
-       swap \code{logical} indicates whether channels and markers of flow data are swapped.
-       
-       threshold \code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.
-       
-       marginal \code{logical} indicates whether to the gate is treaded as 1d marginal gate. Default is TRUE, which means markers are determined either
-                               by node name or by 'map' argument explained below. When FALSE, the markers are determined by the gate dimensions.
-                               and node name and 'map' argument are ignored.
-
-       map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
+        map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
                         names (as specified in either the \code{desc} or \code{name}
                          columns of the parameters of the associated \code{flowFrame}s
                          in the \code{GatingSet}). see examples.
 
-       ignore.case whether to ignore case when match the marker names. Default is FALSE.
-
-       mc.cores passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.}
+       ignore.case whether to ignore case when match the marker names. Default is FALSE.}
 
 \item{x}{A \code{GatingSet} or \code{GatingSetList} object .}
 
 \item{nodes}{\code{character} vector specifying different cell populations}
+
+\item{other.markers}{\code{character} vector specifying the extra markers/channels to be returned besides the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.}
+
+\item{swap}{\code{logical} indicates whether channels and markers of flow data are swapped.}
+
+\item{threshold}{\code{logical} indicates whether to threshold the flow data by setting intensity value to zero when it is below the gate threshold.}
+
+\item{marginal}{\code{logical} indicates whether to the gate is treaded as 1d marginal gate. Default is TRUE, which means markers are determined either
+by node name or by 'map' argument explained below. When FALSE, the markers are determined by the gate dimensions.
+and node name and 'map' argument are ignored.}
+
+\item{mc.cores}{passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.}
 }
 \value{
 A \code{list} of \code{numerci matrices}

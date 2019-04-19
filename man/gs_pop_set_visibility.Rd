@@ -18,6 +18,8 @@ gs_pop_set_visibility(x, y, value)
 \item{x}{\code{GatingHierarchy} object}
 
 \item{y}{\code{character} node name or path}
+
+\item{value}{TRUE/FALSE}
 }
 \description{
 hide/unhide a node

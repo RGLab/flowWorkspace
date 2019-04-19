@@ -7,18 +7,18 @@ NULL
 NULL
 #' @rdname filterObject
 #' @export 
-filterObject <- function(x,...)UseMethod("filterObject")
+filterObject <- function(x)UseMethod("filterObject")
 
 #' @rdname filterObject
 #' @export 
-filterObject.default <- function(x, ...){
+filterObject.default <- function(x){
   .Deprecated("filter_to_list")
-  filter_to_list(x, ...)
+  filter_to_list(x)
 }
 
 #' @rdname filterObject
 #' @export 
-filter_to_list <- function(x,...)UseMethod("filter_to_list")
+filter_to_list <- function(x)UseMethod("filter_to_list")
 
 #' convert flowCore filter to a list 
 #'  
