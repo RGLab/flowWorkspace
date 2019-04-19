@@ -161,8 +161,8 @@ nrow(fs[[1]])
 Note that the data is already compensated and transformed during the parsing.
 
 We can retrieve the subset of data associated with a population node:
-```{r gh_pop_get_data-gh}
-fs <- gh_pop_get_data(gs, node)
+```{r gh_pop_get_data-gs}
+fs <- gs_pop_get_data(gs, node)
 nrow(fs[[1]])
 ```
 ## GatingHierarchy
