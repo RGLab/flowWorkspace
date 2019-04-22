@@ -1011,9 +1011,10 @@ gh_pop_get_data <- function(obj, y = "root", ...){
         }
 }
 
-
-.isBoolGate<-function(x,y){
-	return (class(gh_pop_get_gate(x,y))=="booleanFilter")
+#' @export 
+#' @rdname nodeflags
+gh_pop_is_bool_gate<-function(obj,y){
+	return (class(gh_pop_get_gate(obj,y))=="booleanFilter")
 }
 
 #' Determine tick mark locations and labels for a given channel axis
@@ -1404,7 +1405,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 	if(!bool)
 	{
 
-		boolInd<-unlist(lapply(i,.isBoolGate,x=gh))
+		boolInd<-unlist(lapply(i,gh_pop_is_bool_gate,obj = gh))
 #		browser()
 		if(length(which(boolInd))>0)
 			message("skipping boolean gates!")
@@ -1425,7 +1426,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 		#check if they have same parents and parameters
 		keylist <- sapply(plotList,function(y){
 
-					if(!.isBoolGate(gh,y))
+					if(!gh_pop_is_bool_gate(gh,y))
 					{
 						curGate<-gh_pop_get_gate(gh,y)
                         thisParam <- parameters(curGate)

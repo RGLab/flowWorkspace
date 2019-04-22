@@ -1852,7 +1852,7 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
         if(alwaysLoadData)
           isloadData <- TRUE
         else{
-          isAllBoolGate <- all(sapply(y,.isBoolGate, x = gh))
+          isAllBoolGate <- all(sapply(y,gh_pop_is_bool_gate, obj = gh))
           if(isAllBoolGate){
             isloadData <- all(sapply(y, function(i){
 

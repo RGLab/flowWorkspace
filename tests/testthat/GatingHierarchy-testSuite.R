@@ -67,12 +67,12 @@ test_that("gh_get_compensations ",{
       
     })
 
-test_that(".isBoolGate ",{
-      expect_false(flowWorkspace:::.isBoolGate(gh, "singlets"))
+test_that("gh_pop_is_bool_gate ",{
+      expect_false(gh_pop_is_bool_gate(gh, "singlets"))
       
       bf <- booleanFilter(`CD4/38- DR+|CD4/CCR7- 45RA+`, filterId = "myBoolFilter")
       suppressWarnings(id <- pop_add(bf, gh))
-      expect_true(flowWorkspace:::.isBoolGate(gh, "myBoolFilter"))
+      expect_true(gh_pop_is_bool_gate(gh, "myBoolFilter"))
       invisible(gh_pop_remove(gh, "myBoolFilter"))
     })
 

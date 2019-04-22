@@ -7,6 +7,7 @@
 \alias{gh_pop_is_negated}
 \alias{isHidden}
 \alias{gh_pop_is_hidden}
+\alias{gh_pop_is_bool_gate}
 \title{The flags of gate nodes
 gh_pop_is_gated checks if a node is already gated
 gh_pop_is_negated checks if a node is negated.
@@ -23,6 +24,8 @@ gh_pop_is_negated(obj, y)
 isHidden(obj, y)
 
 gh_pop_is_hidden(obj, y)
+
+gh_pop_is_bool_gate(obj, y)
 }
 \arguments{
 \item{obj}{GatingHierarchy}
