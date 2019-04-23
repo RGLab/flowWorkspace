@@ -2057,7 +2057,7 @@ setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 #' @export
 setMethod("flowData",signature("GatingSet"),function(x){
   .Deprecated("gs_cyto_data")
-  gs_cyto_data(obj, y)
+  gs_cyto_data(obj)
   
 })
 #' @rdname gs_cyto_data
