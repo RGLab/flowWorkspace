@@ -18,7 +18,7 @@ before_install:
 
 
 install:
-  - R -e 'devtools::install_deps(dep = T)'
+  - R -e 'devtools::install_deps(dep = T, upgrade="always")'
   - R -e 'devtools::install_github("RGLab/cytolib",ref="trunk")'
   - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref = "trunk")'
   - R -e 'devtools::install_github("RGLab/flowCore",ref="trunk")'
