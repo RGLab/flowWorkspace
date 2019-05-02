@@ -1,7 +1,7 @@
 #' Gating-ML 2.0 Log transformation.
 #'
 #' Used to construct flog transformer object.
-#' (which uses a specilized \link{flowJo.flog})
+#' (which uses a specilized \link{flowjo_flog})
 #' 
 #'
 #' @inheritParams flow_breaks
@@ -23,18 +23,23 @@
 logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 {
   
-  trans <- flowJo.flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = FALSE)
-  inv <- flowJo.flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = TRUE)
+  trans <- flowjo_flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = FALSE)
+  inv <- flowjo_flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = TRUE)
   flow_trans(name = "logtGml2", trans.fun = trans, inverse.fun = inv,
              n = n, equal.space = equal.space)
 }
+
+#' @templateVar old flowJo.flog
+#' @templateVar new flowjo_flog
+#' @template template-depr_pkg
+NULL
 
 #' flog transform function
 #'
 #' flog transform function constructor. It is different from flowCore version of \link{logtGml2}
 #' in the way that it reset negative input so that no NAN will be returned.
 #'
-#' @rdname flowJo.flog
+#' @rdname flowJo_flog
 #' @param decade number of decades
 #' @param offset offset to the orignal input
 #' @param max_val top of scale value
@@ -43,12 +48,12 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 #' @param inverse whether return the inverse function
 #' @return flog(or its inverse) transform function
 #' @examples
-#' trans <- flowJo.flog()
+#' trans <- flowjo_flog()
 #' data.raw <- c(1,1e2,1e3)
 #' data.trans <- trans(data.raw)
 #' data.trans
 #'
-#' inverse.trans <- flowJo.flog(inverse = TRUE)
+#' inverse.trans <- flowjo_flog(inverse = TRUE)
 #' inverse.trans(data.trans)
 #'
 #'#negative input
@@ -58,14 +63,14 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 #' inverse.trans(data.trans)#we lose the original value at lower end since flog can't restore negative value
 #' 
 #' #different
-#' trans <- flowJo.flog(decade = 3, max_val = 1e3)
+#' trans <- flowjo_flog(decade = 3, max_val = 1e3)
 #' data.trans <- trans(data.raw)
 #' data.trans
-#' inverse.trans <- flowJo.flog(decade = 3, max_val = 1e3, inverse = TRUE)
+#' inverse.trans <- flowjo_flog(decade = 3, max_val = 1e3, inverse = TRUE)
 #' inverse.trans(data.trans)
 #' 
 #' @export
-flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){
+flowjo_flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){
   if(inverse){
     function(x)
     {
@@ -79,7 +84,11 @@ flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
     
   }
 }
-
+#' @rdname flowJo_flog
+#' @export
+flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){
+  .Defunct("flowjo_flog")
+  }
 #' wrap the calibration table into transformation function using stats:::splinefun
 #'
 #' @param coef the coefficients returned by the calibration table from flowJo
@@ -124,7 +133,10 @@ flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
   return (f)
 
 }
-
+#' @templateVar old flowJoTrans
+#' @templateVar new flowjo_biexp
+#' @template template-depr_pkg
+NULL
 #' construct the flowJo-type biexponentioal transformation function
 #'
 #' Normally it was parsed from flowJo xml workspace. This function provides the alternate
@@ -137,20 +149,26 @@ flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0,
 #' @param widthBasis \code{numeric} unkown.
 #' @param inverse \code{logical} whether to return the inverse transformation function.
 #' @export
+#' @rdname flowjo_biexp
 #' @examples
-#' trans <- flowJoTrans()
+#' trans <- flowjo_biexp()
 #' data.raw <- c(-1, 1e3, 1e5)
 #' data.trans <- trans(data.raw)
 #' round(data.trans)
-#' inv <- flowJoTrans(inverse = TRUE)
+#' inv <- flowjo_biexp(inverse = TRUE)
 #' round(inv(data.trans))
-flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
+flowjo_biexp <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
 
   coef <- .getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis, inverse = inverse)
   .flowJoTrans(coef)
 
 }
-
+#' @rdname flowjo_biexp
+#' @export
+flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
+  .Deprecated("flowjo_biexp")
+  flowjo_biexp(channelRange, maxValue, pos, neg, widthBasis, inverse)
+}
 #' Generate the breaks that makes sense for flow data visualization
 #'
 #' It is mainly used as helper function to construct breaks function used by 'trans_new'.
@@ -246,58 +264,79 @@ flow_trans <- function(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6)
 #' @return biexponential transformation object
 flowJo_biexp_trans <- function(..., n = 6, equal.space = FALSE){
 
-  trans <- flowJoTrans(...)
-  inv <- flowJoTrans(..., inverse = TRUE)
+  trans <- flowjo_biexp(...)
+  inv <- flowjo_biexp(..., inverse = TRUE)
   flow_trans(name = "flowJo_biexp", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 
 }
 
+#' @templateVar old flowJo.fasinh
+#' @templateVar new flowjo_fasinh
+#' @template template-depr_pkg
+NULL
 #' inverse hyperbolic sine transform function
 #'
 #'  hyperbolic sine/inverse hyperbolic sine (flowJo-version) transform function constructor
 #'
-#' @rdname flowJo.fasinh
+#' @rdname flowjo_fasinh
 #' @param m numeric the full width of the transformed display in asymptotic decades
 #' @param t numeric the maximum value of input data
 #' @param a numeric Additional negative range to be included in the display in asymptotic decades
 #' @param length numeric the maximum value of transformed data
 #' @return fasinh/fsinh transform function
 #' @examples
-#' trans <- flowJo.fasinh()
+#' trans <- flowjo_fasinh()
 #' data.raw <- c(1,1e2,1e3)
 #' data.trans <- trans(data.raw)
 #' data.trans
 #'
-#' inverse.trans <- flowJo.fsinh()
+#' inverse.trans <- flowjo_fsinh()
 #' inverse.trans(data.trans)
 #'
 #' @export
-flowJo.fasinh <- function (m = 4.0, t = 12000, a =  0.7, length = 256)
+flowjo_fasinh <- function (m = 4.0, t = 12000, a =  0.7, length = 256)
 {
   function(x){ #copied fom c++ code
     length * ((asinh(x * sinh(m * log(10)) / t) + a * log(10)) / ((m + a) * log(10)))
   }
 }
-
-#' @rdname flowJo.fasinh
+#' @rdname flowjo_fasinh
 #' @export
-flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
+flowJo.fasinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
+  .Defunct("flowjo_fasinh")
+}
+
+#' @templateVar old flowJo.fsinh
+#' @templateVar new flowjo_fsinh
+#' @template template-depr_pkg
+NULL
+#' @rdname flowjo_fasinh
+#' @export
+flowjo_fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
   function(x){
     sinh(((m + a) * log(10)) * x/length - a * log(10)) * t / sinh(m * log(10))
   }
 }
+#' @rdname flowjo_fasinh
+#' @export
+flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
+  .Defunct("flowjo_fsinh")
+  }
 
 
-
+#' @templateVar old flowJo_fasinh_trans
+#' @templateVar new flowjo_fasinh_trans
+#' @template template-depr_pkg
+NULL
 #' flowJo inverse hyperbolic sine transformation.
 #'
 #' Used to construct the inverse hyperbolic sine transform object.
 #'
 #' @inheritParams flow_breaks
-#' @param ... parameters passed to flowJo.fasinh
+#' @param ... parameters passed to flowjo_fasinh
 #' @return fasinh transformation object
 #' @examples
-#' trans.obj <- flowJo_fasinh_trans(equal.space = TRUE)
+#' trans.obj <- flowjo_fasinh_trans(equal.space = TRUE)
 #' data <- 1:1e3
 #' brks.func <- trans.obj[["breaks"]]
 #' brks <- brks.func(data)
@@ -307,16 +346,16 @@ flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
 #' trans.func <- trans.obj[["transform"]]
 #' round(trans.func(brks))
 #' @export
-flowJo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
-  trans <- flowJo.fasinh(...)
-  inv <- flowJo.fsinh(...)
+flowjo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
+  trans <- flowjo_fasinh(...)
+  inv <- flowjo_fsinh(...)
   flow_trans(name = "flowJo_fasinh", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
 
 #' inverse hyperbolic sine transform function generator (GatingML 2.0 version)
 #'
 #' hyperbolic sine/inverse hyperbolic sine transform function constructor.
-#' It is simply a special form of \code{flowJo.fasinh} with \code{length} set to 1
+#' It is simply a special form of \code{flowjo_fasinh} with \code{length} set to 1
 #' and different default values for parameters \code{t,m,a}.
 #'
 #' @rdname asinh_Gml2
@@ -340,10 +379,10 @@ asinh_Gml2 <- function(T = 262144,M = 4.5,A = 0, inverse = FALSE)
 
     if(inverse){
 
-      flowJo.fsinh(m = M, t = T, a = A, length = 1)
+      flowjo_fsinh(m = M, t = T, a = A, length = 1)
     }else{
 
-      flowJo.fasinh(m = M, t = T, a = A, length = 1)
+      flowjo_fasinh(m = M, t = T, a = A, length = 1)
     }
 
 

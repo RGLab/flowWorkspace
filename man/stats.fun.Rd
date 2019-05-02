@@ -14,5 +14,5 @@ a named numeric vector
 }
 \description{
 pop.MFI computes and returns the median fluorescence intensity for each marker.
-They are typically used as the arguments passed to \code{getStats} method to perform the sample-wise population stats calculations.
+They are typically used as the arguments passed to \code{gh_pop_get_stats} method to perform the sample-wise population stats calculations.
 }

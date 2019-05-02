@@ -1,14 +1,23 @@
 #' get all the leaf nodes
 #' @param x GatingHierarchy/GatingSet object
-#' @param ... arguments passed to 'getNodes" method
+#' @param ... arguments passed to 'gs_get_pop_paths" method
 #' @return the leaf nodes
 #' @export 
-get_leaf_nodes <- function(x, ...){
-  res <- getNodes(x, ...)
+#' @rdname gs_get_leaf_nodes
+gs_get_leaf_nodes <- function(x, ...){
+  res <- gs_get_pop_paths(x, ...)
   ind <- sapply(res, function(i)length(.cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
   res[ind]
 }
-
+#' @export 
+#' @rdname gs_get_leaf_nodes
+get_leaf_nodes <- function(...){
+  .Deprecated("gs_get_leaf_nodes")
+  gs_get_leaf_nodes(...)
+}
+#' @export 
+#' @rdname gs_get_leaf_nodes
+gh_get_leaf_nodes <- gs_get_leaf_nodes
 
 # copied from plyr to avoid the dependency on plyr
 compact <- function (l)
@@ -24,10 +33,14 @@ LdFlags <- function(){
 }
 
 
+#' @templateVar old getMergedStats
+#' @templateVar new gs_pop_get_count_with_meta
+#' @template template-depr_pkg
+NULL
 #' Get Cell Population Statistics and Sample Metadata
 #'
-#' @param object a \code{GatingSet} or \code{GatingSetList}
-#' @param ... additional arguments passed to \code{getPopStats}
+#' @param x a \code{GatingSet} or \code{GatingSetList}
+#' @param ... additional arguments passed to \code{gs_pop_get_count_fast}
 #'
 #' @return a \code{data.table} of merged population statistics with sample metadata.
 #' @export
@@ -35,24 +48,32 @@ LdFlags <- function(){
 #' @examples
 #'  \dontrun{
 #'     #G is a GatingSetList
-#'     stats = getMergedStats(G)
+#'     stats = gs_pop_get_count_with_meta(G)
 #'   }
-getMergedStats = function(object,...){
-	if(!inherits(object,"GatingSet")&!inherits(object,"GatingSetList")){
-		stop("object must be a GatingSet or GatingSetList")
+#' @rdname gs_pop_get_count_fast
+gs_pop_get_count_with_meta = function(x,...){
+	if(!inherits(x,"GatingSet")&!inherits(x,"GatingSetList")){
+		stop("x must be a GatingSet or GatingSetList")
 	}
-	stats = getPopStats(object,...)
+	stats = gs_pop_get_count_fast(x,...)
 	#process name column so that it contains XXX.fcs
 	message("Processing sample names..")
 	stats[, sampleName:=name]
 	stats[,name := gsub("(fcs).*","\\1",name)]
-	pd = pData(object)
+	pd = pData(x)
 	message("merging..")
 	ret = inner_join(stats,pd,by="name")
 	message("Done")
 	return(ret)
 }
-
+getMergedStats = function(...){
+  .Deprecated("gs_pop_get_count_with_meta")
+  gs_pop_get_count_with_meta(...)
+}
+#' @templateVar old set.count.xml
+#' @templateVar new gh_pop_set_xml_count
+#' @template template-depr_pkg
+NULL
 #' save the event counts parsed from xml into c++ tree structure
 #'
 #' It is for internal use by the diva parser
@@ -63,8 +84,8 @@ getMergedStats = function(object,...){
 #' @export
 #' @examples
 #' \dontrun{
-#' set.count.xml(gh, "CD3", 10000)
+#' gh_pop_set_xml_count(gh, "CD3", 10000)
 #' }
-set.count.xml <- function(gh, node, count){
+gh_pop_set_xml_count <- function(gh, node, count){
   .set.count.xml(gh@pointer, sampleNames(gh), node, count)
 }

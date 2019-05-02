@@ -8,14 +8,14 @@ test_that("filterObject from logical", {
                     , negated = FALSE
                     , filterId = "dummy_logicalGate"
   )
-  expect_equal(filterObject(lg), expectRes)
+  expect_equal(filter_to_list(lg), expectRes)
   
   #filterResult
   # rg <- rectangleGate(filterId="myRectGate", "FSC-H"=c(200, 600))
   # fr <- GvHD[[1]]
   # lg <- filter(fr, rg)
   # 
-  # expect_equal(filterObject(lg), expectRes)
+  # expect_equal(filter_to_list(lg), expectRes)
   
 })
 test_that("filterObject from rectangleGate", {
@@ -26,7 +26,7 @@ test_that("filterObject from rectangleGate", {
                         , boundaries = rbind(rg@min, rg@max)
                         , filterId = rg@filterId
                       )
-      expect_equal(filterObject(rg), expectRes)
+      expect_equal(filter_to_list(rg), expectRes)
       
       #1d gate
       rg <- rectangleGate(filterId="myRectGate", "FSC-H"=c(200, 600))
@@ -35,7 +35,7 @@ test_that("filterObject from rectangleGate", {
                         , range = c(rg@min, rg@max) 
                         , filterId = rg@filterId
                     )
-      expect_equal(filterObject(rg), expectRes)
+      expect_equal(filter_to_list(rg), expectRes)
       
     })
 
@@ -53,7 +53,7 @@ test_that("filterObject from polygonGate", {
                         ) 
           
           
-      expect_equal(filterObject(pg), expectRes)
+      expect_equal(filter_to_list(pg), expectRes)
       
     })
 
@@ -66,30 +66,30 @@ test_that("filterObject from booleanFilter", {
       
       bf <- booleanFilter(IL2&TNFa&!IFNg)#without filterId
       expectRes[["filterId"]] <- bf@filterId
-      expect_equal(filterObject(bf), expectRes)
+      expect_equal(filter_to_list(bf), expectRes)
       
       
       bf <- booleanFilter(IL2&TNFa&!IFNg , filterId = "myBoolFilter")
       expectRes[["filterId"]] <- bf@filterId
-      expect_equal(filterObject(bf), expectRes)
+      expect_equal(filter_to_list(bf), expectRes)
       
       
       #with node path
       bf <- booleanFilter(cd4/IL2&cd4/TNFa&!cd4/IFNg , filterId = "myBoolFilter")
       expectRes$refs <- file.path("cd4", expectRes$refs) 
-      expect_equal(filterObject(bf), expectRes)
+      expect_equal(filter_to_list(bf), expectRes)
       
       #extra ! symbol
       bf <- booleanFilter(!IL2&!!TNFa&!IFNg , filterId = "myBoolFilter")
-      expect_error(filterObject(bf), "extra '!' symbol found in the reference node names of boolean fitler")
+      expect_error(filter_to_list(bf), "extra '!' symbol found in the reference node names of boolean fitler")
       
       #extra & symbol
       bf <- booleanFilter(IL2&&TNFa&!IFNg , filterId = "myBoolFilter")
-      expect_error(filterObject(bf), "'&&' or '||' found in the expression of booleanFilter")
+      expect_error(filter_to_list(bf), "'&&' or '||' found in the expression of booleanFilter")
 
       #extra & symbol
       bf <- booleanFilter(IL2||TNFa&!IFNg , filterId = "myBoolFilter")
-      expect_error(filterObject(bf), "double operater")
+      expect_error(filter_to_list(bf), "double operater")
       
       
     })

@@ -30,7 +30,7 @@ Rotate a gate associated with a node of a \code{GatingHierarchy} or
 \code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
 updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
  
-\code{rotate_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+\code{rotate_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
 object of type \code{flowCore:filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 

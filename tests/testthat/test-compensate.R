@@ -10,7 +10,7 @@ test_that("compensate & transform a GatingSet", {
       expectRes <- fsApply(compensate(fs, comp.mat), colMeans, use.exprs = TRUE)
       
       gs1 <- compensate(gs, comp.mat)
-      fs1 <- getData(gs1)
+      fs1 <- gs_pop_get_data(gs1)
       #the flowset has been cloned
       expect_failure(expect_equal(gs1@data@frames, gs@data@frames))
       
@@ -18,7 +18,7 @@ test_that("compensate & transform a GatingSet", {
       suppressMessages(fs <- ncdfFlowSet(fs))
       gs <- GatingSet(fs)
       gs1 <- compensate(gs, comp.mat)
-      fs1 <- getData(gs1)
+      fs1 <- gs_pop_get_data(gs1)
       #ncdfFlowSet is not cloned
       expect_equal(gs1@data@frames, gs@data@frames)
       
@@ -32,7 +32,7 @@ test_that("compensate & transform a GatingSet", {
       
       expect_is(gs2@compensation, "list")
       expect_equal(names(gs2@compensation), sampleNames(gs))
-      expect_equal(fsApply(getData(gs2), colMeans, use.exprs = TRUE), expectRes)
+      expect_equal(fsApply(gs_pop_get_data(gs2), colMeans, use.exprs = TRUE), expectRes)
       
       # unmatched names
       names(comp)[1] <- "dd"
@@ -46,7 +46,7 @@ test_that("compensate & transform a GatingSet", {
       comp <- sapply(sampleNames(gs), function(sn)comp.mat, simplify = FALSE)
       comp[[5]][2] <- 0.001
       gs3 <- compensate(gs, comp)
-      expect_failure(expect_equal(fsApply(getData(gs3), colMeans, use.exprs = TRUE)
+      expect_failure(expect_equal(fsApply(gs_pop_get_data(gs3), colMeans, use.exprs = TRUE)
               , expectRes), regexp = "8.399298e-06")
       
       #extra comp element
@@ -55,7 +55,7 @@ test_that("compensate & transform a GatingSet", {
       gs4 <- compensate(gs, comp)
       expect_is(gs4@compensation, "list")
       expect_equal(names(gs4@compensation), sampleNames(gs))
-      expect_equal(fsApply(getData(gs4), colMeans, use.exprs = TRUE), expectRes)
+      expect_equal(fsApply(gs_pop_get_data(gs4), colMeans, use.exprs = TRUE), expectRes)
     
       #trans
       translist <- estimateLogicle(fs[[1]], c("FL1-H", "FL2-H"))
@@ -71,13 +71,13 @@ test_that("compensate & transform a GatingSet", {
       transObj.list <- sapply(sampleNames(gs), function(obj)transObj, simplify = FALSE)
       
       expect_equal(gs.trans@transformation, transObj.list)
-      fs.trans.gs <- getData(gs.trans)
+      fs.trans.gs <- gs_pop_get_data(gs.trans)
       expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
       
       #customerize cdf path
       tmp <- tempfile(fileext = ".cdf")
       suppressMessages(gs.trans <- transform(gs, transObj, ncdfFile = tmp))
-      fs.trans.gs <- getData(gs.trans)
+      fs.trans.gs <- gs_pop_get_data(gs.trans)
       expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
       expect_equal(fs.trans.gs@file, tmp)
     })
