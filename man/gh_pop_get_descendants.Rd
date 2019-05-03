@@ -2,9 +2,12 @@
 % Please edit documentation in R/getDescendants.R
 \name{gh_pop_get_descendants}
 \alias{gh_pop_get_descendants}
+\alias{getDescendants}
 \title{get all the descendant nodes for the given ancester}
 \usage{
 gh_pop_get_descendants(gh, node, ...)
+
+getDescendants(...)
 }
 \arguments{
 \item{gh}{GatingHierarchy}
