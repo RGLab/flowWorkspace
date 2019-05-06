@@ -72,6 +72,8 @@
 
 \code{flowJoTrans} --> \code{flowjo_biexp}
 
+\code{flowJo_biexp_trans} --> \code{flowjo_biexp_trans}
+
 \code{flowJo.fasinh} --> \code{flowjo_fasinh}
 
 \code{flowJo.fsinh} --> \code{flowjo_fsinh}
