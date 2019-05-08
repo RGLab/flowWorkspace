@@ -30,6 +30,7 @@ install:
   
 script:
   - R CMD build . --no-build-vignettes
+  - R -e 'install.packages(list.files(pattern="*tar.gz"), repos=NULL, type="source")'
   - R -e 'devtools::install_github("RGLab/CytoML", ref="trunk")'
   - R -e 'devtools::install_github("RGLab/ggcyto", ref="trunk")'
   - R CMD check *tar.gz
