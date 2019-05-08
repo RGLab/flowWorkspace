@@ -27,11 +27,11 @@ install:
   - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref = "trunk")'
   - R -e 'devtools::install_github("RGLab/flowCore", ref="trunk")'
   - R -e 'devtools::install_github("RGLab/ncdfFlow", ref="trunk")'
-  - R -e 'devtools::install_github("RGLab/ggcyto", ref="trunk")'
   
 script:
   - R CMD build .
   - R -e 'devtools::install_github("RGLab/CytoML", ref="trunk")'
+  - R -e 'devtools::install_github("RGLab/ggcyto", ref="trunk")'
   - R CMD check *tar.gz
 
 env:
