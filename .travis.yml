@@ -29,7 +29,7 @@ install:
   - R -e 'devtools::install_github("RGLab/ncdfFlow", ref="trunk")'
   
 script:
-  - R CMD build .
+  - R CMD build . --no-build-vignettes
   - R -e 'devtools::install_github("RGLab/CytoML", ref="trunk")'
   - R -e 'devtools::install_github("RGLab/ggcyto", ref="trunk")'
   - R CMD check *tar.gz
