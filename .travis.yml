@@ -18,11 +18,14 @@ before_install:
 
 
 install:
-  - R -e 'devtools::install_deps(dep = T, upgrade = "always")'
+  - R -e 'devtools::install_deps(upgrade = "always")'
+  - R -e 'install.packages("testthat")'
+  - R -e 'install.packages("knitr")'
+  - R -e 'install.packages("parallel")'
+  - R -e 'devtools::install_github("RGLab/flowWorkspaceData", ref="trunk")'
   - R -e 'devtools::install_github("RGLab/cytolib",ref="trunk")'
   - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref = "trunk")'
   - R -e 'devtools::install_github("RGLab/flowCore", ref="trunk")'
-  - R -e 'devtools::install_github("jspidlen/flowUtils", ref="master")'
   - R -e 'devtools::install_github("RGLab/ncdfFlow", ref="trunk")'
   - R -e 'devtools::install_github("RGLab/CytoML", ref="trunk")'
   - R -e 'devtools::install_github("RGLab/ggcyto", ref="trunk")'
