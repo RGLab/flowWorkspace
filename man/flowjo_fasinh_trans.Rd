@@ -2,9 +2,12 @@
 % Please edit documentation in R/flow_trans.R
 \name{flowjo_fasinh_trans}
 \alias{flowjo_fasinh_trans}
+\alias{flowJo_fasinh_trans}
 \title{flowJo inverse hyperbolic sine transformation.}
 \usage{
 flowjo_fasinh_trans(..., n = 6, equal.space = FALSE)
+
+flowJo_fasinh_trans(...)
 }
 \arguments{
 \item{...}{parameters passed to flowjo_fasinh}

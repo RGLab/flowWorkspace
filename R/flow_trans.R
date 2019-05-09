@@ -355,12 +355,21 @@ NULL
 #' #transform it to verify it is equal-spaced at transformed scale
 #' trans.func <- trans.obj[["transform"]]
 #' round(trans.func(brks))
+#' @rdname flowjo_fasinh_trans
 #' @export
 flowjo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
   trans <- flowjo_fasinh(...)
   inv <- flowjo_fsinh(...)
   flow_trans(name = "flowJo_fasinh", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
+
+#' @rdname flowjo_fasinh_trans
+#' @export
+flowJo_fasinh_trans <- function(...){
+  .Deprecated("flowjo_fasinh_trans")
+  flowjo_fasinh_trans(...)
+}
+
 
 #' inverse hyperbolic sine transform function generator (GatingML 2.0 version)
 #'
