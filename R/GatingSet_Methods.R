@@ -2511,7 +2511,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' gs <- GatingSet(fs)
 #'
 #' #construct biexponential transformation function
-#' biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+#' biexpTrans <- flowjo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
 #'
 #' #make a transformList object
 #' chnls <- c("FL1-H", "FL2-H")

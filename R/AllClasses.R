@@ -376,7 +376,7 @@ GatingSetList <- function(x,samples = NULL)
   if(validObject(x)){
     gslist <- x@data
     # make sure the column names of flow data are in the same order
-    cols <- flowCore::colnames(gh_pop_get_data(gslist[[1]]))
+    cols <- flowCore::colnames(gs_cyto_data(gslist[[1]]))
     gslist <- lapply(gslist, function(gs){
           gs_cyto_data(gs) <- gs_cyto_data(gs)[,cols]
           gs

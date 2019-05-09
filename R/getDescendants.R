@@ -8,6 +8,7 @@ NULL
 #' @param node the node path
 #' @param ... passed to \code{getNode} call
 #' @export
+#' @rdname gh_pop_get_descendants
 #' @examples
 #' library(flowWorkspace)
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
@@ -19,3 +20,10 @@ gh_pop_get_descendants <- function(gh, node, ...){
  gs_get_pop_paths(gh, showHidden = T, ...)[descendants.id+1]
 
 }
+
+#' @export
+#' @rdname gh_pop_get_descendants
+getDescendants <- function(...){
+  .Deprecated("gh_pop_get_descendants")
+  gh_pop_get_descendants(...)
+} 

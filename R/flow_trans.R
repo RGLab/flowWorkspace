@@ -239,7 +239,10 @@ flow_trans <- function(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6)
   trans_new(name, transform = trans.fun, inverse = inverse.fun, breaks = brk, format = fmt)
 }
 
-
+#' @templateVar old flowJo_biexp_trans
+#' @templateVar new flowjo_biexp_trans
+#' @template template-depr_pkg
+NULL
 #' flowJo biexponential transformation.
 #'
 #' Used for constructing biexponential transformation object.
@@ -252,7 +255,7 @@ flow_trans <- function(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6)
 #' data(GvHD)
 #' fr <- GvHD[[1]]
 #' data.raw <- exprs(fr)[, "FL1-H"]
-#' trans.obj <- flowJo_biexp_trans(equal.space = TRUE)
+#' trans.obj <- flowjo_biexp_trans(equal.space = TRUE)
 #' brks.func <- trans.obj[["breaks"]]
 #' brks <- brks.func(data.raw)
 #' brks # biexp space displayed at raw data scale
@@ -262,12 +265,19 @@ flow_trans <- function(name, trans.fun, inverse.fun, equal.space = FALSE, n = 6)
 #'
 #' print(trans.func(brks))
 #' @return biexponential transformation object
-flowJo_biexp_trans <- function(..., n = 6, equal.space = FALSE){
+flowjo_biexp_trans <- function(..., n = 6, equal.space = FALSE){
 
   trans <- flowjo_biexp(...)
   inv <- flowjo_biexp(..., inverse = TRUE)
   flow_trans(name = "flowJo_biexp", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 
+}
+
+#' @rdname flowjo_biexp_trans
+#' @export
+flowJo_biexp_trans <- function(...){
+  .Deprecated("flowjo_biexp_trans")
+  flowjo_biexp_trans(...)
 }
 
 #' @templateVar old flowJo.fasinh
@@ -345,12 +355,21 @@ NULL
 #' #transform it to verify it is equal-spaced at transformed scale
 #' trans.func <- trans.obj[["transform"]]
 #' round(trans.func(brks))
+#' @rdname flowjo_fasinh_trans
 #' @export
 flowjo_fasinh_trans <- function(..., n = 6, equal.space = FALSE){
   trans <- flowjo_fasinh(...)
   inv <- flowjo_fsinh(...)
   flow_trans(name = "flowJo_fasinh", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
+
+#' @rdname flowjo_fasinh_trans
+#' @export
+flowJo_fasinh_trans <- function(...){
+  .Deprecated("flowjo_fasinh_trans")
+  flowjo_fasinh_trans(...)
+}
+
 
 #' inverse hyperbolic sine transform function generator (GatingML 2.0 version)
 #'

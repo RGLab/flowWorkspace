@@ -254,7 +254,7 @@ trans.obj <- trans_new("myAsinh", trans.func, inv.func)
 ```
 The `inverse` transformation is required so that the `gates` and data can be visualized in `transformed` scale with `axis` label still remains in the raw scale. Optionally `breaks` and `format` function can be supplied to further customize the appearance of axis labels.
 
-Besides doing all these by hand, we also provide some buildin transformations: `asinhtGml2_trans`, `flowJo_biexp_trans`, `flowjo_fasinh_trans` and `logicle_trans`. These are all very commonly used transformations in flow data analysis. User can construct the transform object by simply one-line of code. e.g.
+Besides doing all these by hand, we also provide some buildin transformations: `asinhtGml2_trans`, `flowjo_biexp_trans`, `flowjo_fasinh_trans` and `logicle_trans`. These are all very commonly used transformations in flow data analysis. User can construct the transform object by simply one-line of code. e.g.
 ```{r transform-build-in}
 trans.obj <- asinhtGml2_trans()
 trans.obj
