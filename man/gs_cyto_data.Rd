@@ -16,9 +16,9 @@ flowData(x) <- value
 
 \S4method{flowData}{GatingSet}(x)
 
-gs_cyto_data(x)
+gs_cyto_data(x, ...)
 
-\S4method{gs_cyto_data}{GatingSet}(x)
+\S4method{gs_cyto_data}{GatingSet}(x, inverse.transform = FALSE)
 
 \S4method{gs_cyto_data}{GatingSet}(x) <- value
 
@@ -28,6 +28,8 @@ gs_cyto_data(x)
 \item{x}{A \code{GatingSet}}
 
 \item{value}{The replacement \code{flowSet} or \code{ncdfFlowSet} object}
+
+\item{inverse.transform}{logical flag indicating whether to inverse transform the data}
 }
 \value{
 the object with the new flowSet in place.

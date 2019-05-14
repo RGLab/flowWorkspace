@@ -12,11 +12,11 @@
 \usage{
 \S4method{getData}{GatingHierarchy}(obj, y, ...)
 
-gh_pop_get_data(obj, y = "root", ...)
+gh_pop_get_data(obj, y = "root", inverse.transform = FALSE, ...)
 
 \S4method{getData}{GatingSet}(obj, y, ...)
 
-gs_pop_get_data(obj, y = "root", ...)
+gs_pop_get_data(obj, y = "root", inverse.transform = FALSE, ...)
 
 \S4method{getData}{GatingSetList}(obj, y, ...)
 }
@@ -27,6 +27,8 @@ gs_pop_get_data(obj, y = "root", ...)
 If not specified, will return the complete flowFrame/flowSet at the root node.}
 
 \item{...}{arguments passed to ncdfFlow::[[}
+
+\item{inverse.transform}{logical flag indicating whether to inverse transform the data}
 }
 \value{
 A \code{flowFrame} object if \code{obj} is a GatingHierarchy.

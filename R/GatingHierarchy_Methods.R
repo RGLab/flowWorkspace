@@ -961,6 +961,7 @@ setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
 #' @param obj A \code{GatingHierarchy}, \code{GatingSet} or \code{GatingSetList} object.
 #' @param  y \code{character}  the node name or full(/partial) gating path.
 #'                             	If not specified, will return the complete flowFrame/flowSet at the root node.
+#' @param inverse.transform logical flag indicating whether to inverse transform the data
 #' @param ... arguments passed to ncdfFlow::[[
 #'
 #' @return
@@ -993,13 +994,13 @@ setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...
       
 #' @rdname gs_pop_get_data
 #' @export
-gh_pop_get_data <- function(obj, y = "root", ...){
+gh_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
       
         if(!obj@flag){
           stop("Must gate the data before fetching data");
         }
         
-        fs <- gs_cyto_data(obj)
+        fs <- gs_cyto_data(obj, inverse.transform)
         this_data <- fs[[sampleNames(obj),...]]
         
         if(y == "root"){

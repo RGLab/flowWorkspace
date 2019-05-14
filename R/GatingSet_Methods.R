@@ -1989,8 +1989,9 @@ setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
       
 #' @rdname gs_pop_get_data
 #' @export
-gs_pop_get_data <- function(obj, y = "root", ...){
+gs_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
 
+  
 	if(class(obj) == "GatingSetList")
 	{
 		samples_orig <- obj@samples
@@ -2001,16 +2002,16 @@ gs_pop_get_data <- function(obj, y = "root", ...){
 		res <- lapply(obj,function(gs){
 					
 					if(is.null(y))
-						ncfs <- gs_pop_get_data(gs, ...)
+						ncfs <- gs_pop_get_data(gs,inverse.transform=inverse.transform, ...)
 					else
-						ncfs <- gs_pop_get_data(gs,y, ...)
+						ncfs <- gs_pop_get_data(gs,y,inverse.transform=inverse.transform, ...)
 					ncfs
 				}, level =1)
 		ncdfFlowList(res, samples_orig)
 		
 	}else
 	{
-	      this_data <- gs_cyto_data(obj)[,...]
+	      this_data <- gs_cyto_data(obj, inverse.transform)[,...]
 	      if(y == "root"){
 	        this_data
 	      }else{
@@ -2047,6 +2048,7 @@ setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 #' Accessor method that gets or replaces the flowset/ncdfFlowSet object in a GatingSet or GatingHierarchy
 #'
 #' @param x A \code{GatingSet}
+#' @param inverse.transform logical flag indicating whether to inverse transform the data
 #'
 #' @details Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.
 #'
@@ -2062,12 +2064,29 @@ setMethod("flowData",signature("GatingSet"),function(x){
 })
 #' @rdname gs_cyto_data
 #' @export
-setGeneric("gs_cyto_data", function(x) standardGeneric("gs_cyto_data"))
+setGeneric("gs_cyto_data", function(x, ...) standardGeneric("gs_cyto_data"))
 
 #' @rdname gs_cyto_data
 #' @export
-setMethod("gs_cyto_data",signature("GatingSet"),function(x){
-    x@data
+setMethod("gs_cyto_data",signature("GatingSet"),function(x, inverse.transform=FALSE){
+  if(inverse.transform){
+    if(is(x, "GatingHierarchy")){
+      inv_trans <- gh_get_transformations(x, inverse=TRUE)
+      if(length(inv_trans)==0)
+        stop("No inverse transformation is found from the GatingSet!")
+      inv_trans <- transformList(names(inv_trans), inv_trans)
+    }else{
+      inv_trans <- lapply(x, function(gh){
+        invs <- gh_get_transformations(gh, inverse=TRUE)
+        if(length(invs)==0)
+          stop("No inverse transformation is found from the GatingSet!")
+        invs <- transformList(names(invs), invs)
+      })
+    }
+    transform(x@data, inv_trans)
+  }else{
+    x@data 
+  }
 })
 #' @export
 setGeneric("gs_cyto_data<-", function(x,value) standardGeneric("gs_cyto_data<-"))
