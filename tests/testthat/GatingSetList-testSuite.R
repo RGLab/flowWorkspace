@@ -5,23 +5,22 @@ gslist <- NULL
 test_that("GatingSetList constructor", {
 
       suppressMessages(gs_clone <- gs_clone(gs))
-
-      #duplicated sample names
+     #duplicated sample names
       expect_error(GatingSetList(list(gs, gs_clone)), "There are overlapping samples across GatingSets")
       
       sampleNames(gs_clone) <- "CytoTrol_CytoTrol_2.fcs"
       expect_error(GatingSetList(list(gs, gs_clone), samples = c("a", "b")), "'samples' slot is not consisitent with sample names from GatingSets!")
       
       #different colnames
-      chnnls <- colnames(flowData(gs_clone))
+      chnnls <- colnames(gs_cyto_data(gs_clone))
       chnnls[1] <- "FSC-H" 
       expect_error(colnames(flowData(gs_clone)) <- chnnls, "already")
       chnnls[1] <- "F" 
-      colnames(flowData(gs_clone)) <- chnnls
+      colnames(gs_cyto_data(gs_clone)) <- chnnls
       expect_error(GatingSetList(list(gs, gs_clone)), "colnames of flowSets don't match")
             
       #different tree structure
-      invisible(Rm("CD8", gs_clone))
+      invisible(gs_pop_remove("CD8", gs = gs_clone))
       expect_error(GatingSetList(list(gs, gs_clone)), "gating structure doesn't match: CytoTrol_CytoTrol_2.fcs CytoTrol_CytoTrol_1.fcs")
       
       suppressMessages(gs_clone <- gs_clone(gs))
@@ -50,8 +49,8 @@ test_that("[", {
       
     })
 
-test_that("rbind2", {
-      suppressMessages(thisRes <- rbind2(gslist))
+test_that("gslist_to_gs", {
+      suppressMessages(thisRes <- gslist_to_gs(gslist))
       expect_is(thisRes, "GatingSet")
       expect_equal(sampleNames(thisRes), sampleNames(gslist))
       expect_equal(pData(thisRes), pData(gslist))
@@ -65,20 +64,20 @@ test_that("pData<-", {
       
     })
 
-test_that("getData", {
-      thisRes <- getData(gslist)
+test_that("gs_pop_get_data", {
+      thisRes <- gs_pop_get_data(gslist)
       expect_is(thisRes, "ncdfFlowList")
       expect_equal(sampleNames(thisRes), sampleNames(gslist))
       expect_equal(nrow(thisRes[[1]]),  119531)
       
-      thisRes <- getData(gslist, "CD8")
+      thisRes <- gs_pop_get_data(gslist, "CD8")
       expect_is(thisRes, "ncdfFlowList")
       expect_equal(nrow(thisRes[[1]]),  14564)
       
     })
 
-test_that("getGate", {
-      thisRes <- getGate(gslist, "CD4")
+test_that("gs_pop_get_gate", {
+      thisRes <- gs_pop_get_gate(gslist, "CD4")
       expect_is(thisRes, "list")
       expect_equal(names(thisRes), sampleNames(gslist))
       
@@ -86,11 +85,12 @@ test_that("getGate", {
       
     })
 
-test_that("getPopStats", {
-      thisRes <- getPopStats(gslist, format = "wide")
+test_that("gs_pop_get_count_fast", {
+  
+      thisRes <- gs_pop_get_count_fast(gslist, format = "wide")
       expect_is(thisRes, "matrix")
       expect_equal(colnames(thisRes), sampleNames(gslist))
-      expect_equal(thisRes[,1, drop = F], getPopStats(gs, format = "wide"))
+      expect_equal(thisRes[,1, drop = F], gs_pop_get_count_fast(gs, format = "wide"))
       
     })
 
@@ -101,17 +101,17 @@ test_that("keyword", {
       
     })
 
-test_that("getSingleCellExpression for COMPASS",{
+test_that("gs_get_singlecell_expression for COMPASS",{
       
-      thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
+      thisRes <- gs_get_singlecell_expression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE")) 
       expectRes <- readRDS(file.path(resultDir, "getData_COMPASS_gs.rds"))
       expect_equivalent(thisRes,expectRes)
 
       #perserve the intensity that belows the gate threhold
-      thisRes <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE"), threshold = F) 
+      thisRes <- gs_get_singlecell_expression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+') , map = list("CD8/38- DR+" = "CD38 APC", "CD8/CCR7- 45RA+" = "CCR7 PE"), threshold = F) 
       
       #return more markers
-      thisRes1 <- getSingleCellExpression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+')
+      thisRes1 <- gs_get_singlecell_expression(gslist, c('CD8/38- DR+', 'CD8/CCR7- 45RA+')
                                          , map = list("CD8/38- DR+" = "CD38 APC"
                                                       , "CD8/CCR7- 45RA+" = "CCR7 PE")
                                          , threshold = F

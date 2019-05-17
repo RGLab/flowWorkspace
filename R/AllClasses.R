@@ -1,4 +1,3 @@
-#' @include AllGenerics.R
 #' @include cytoset.R
 NULL
 
@@ -75,7 +74,7 @@ setClass("flowJoWorkspace",representation(doc="externalptr"))
 #' 
 #' @details 
 #' Objects stores a collection of GatingHierarchies and represent a group in a flowJo workspace.
-#' A GatingSet can have two ``states''. After a call to parseWorkspace(...,execute=FALSE)
+#' A GatingSet can have two ``states''. After a call to flowjo_to_gatingset(...,execute=FALSE)
 #' , the workspace is imported but the data is not. Setting \code{execute} to \code{TRUE} is needed in order to load, 
 #' transform, compensate, and gate the associated data. Whether or not a GatingHierarchy has been applied to data is encoded in the \code{flag} slot. Some methods will warn the user, or may not function correctly if the GatingHierarchy has not been executed.
 #' This mechanism is in place, largely for the purpose of speed when working with larger workspaces. 
@@ -97,9 +96,9 @@ setClass("flowJoWorkspace",representation(doc="externalptr"))
 #'   d<-system.file("extdata",package="flowWorkspaceData")
 #'   wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
 #' 	library(CytoML)
-#'   ws <- openWorkspace(wsfile);
-#'   G<-try(parseWorkspace(ws,execute=TRUE,path=d,name=1));
-#'   plotPopCV(G);
+#'   ws <- open_flowjo_xml(wsfile);
+#'   G<-try(flowjo_to_gatingset(ws,execute=TRUE,path=d,name=1));
+#'   gs_plot_pop_count_cv(G);
 #' }
 #' @name GatingSet-class
 #' @rdname GatingSet-class
@@ -146,17 +145,17 @@ setClass("GatingSet_legacy"
 #' 	d<-system.file("extdata",package="flowWorkspaceData")
 #' 	wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
 #' library(CytoML)
-#' 	ws <- openWorkspace(wsfile);
-#' 	G<-try(parseWorkspace(ws,path=d,name=1));
+#' 	ws <- open_flowjo_xml(wsfile);
+#' 	G<-try(flowjo_to_gatingset(ws,path=d,name=1));
 #'  gh <- G[[1]]
-#' 	getPopStats(gh);
-#' 	plotPopCV(gh)
-#'  nodes <- getNodes(gh)
+#' 	gh_pop_compare_stats(gh);
+#' 	gh_plot_pop_count_cv(gh)
+#'  nodes <- gs_get_pop_paths(gh)
 #'  thisNode <- nodes[4]
 #'  require(ggcyto)
 #' 	autoplot(gh,thisNode);
-#' 	getGate(gh,thisNode);
-#' 	getData(gh,thisNode)
+#' 	gh_pop_get_gate(gh,thisNode);
+#' 	gh_pop_get_data(gh,thisNode)
 #' }
 #' @name GatingHierarchy-class
 #' @rdname GatingHierarchy-class
@@ -232,13 +231,13 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     gslist2[c("30104.fcs")]
 #'     
 #'     #get flow data from it
-#'     getData(gslist2)
+#'     gs_pop_get_data(gslist2)
 #'     #get gated flow data from a particular popoulation 
-#'     getData(gslist2, "3+")
+#'     gs_pop_get_data(gslist2, "3+")
 #'     
 #'     #extract the gates associated with one popoulation
-#'     getGate(gslist2,"3+")
-#'     getGate(gslist2,5)
+#'     gs_pop_get_gate(gslist2,"3+")
+#'     gs_pop_get_gate(gslist2,5)
 #'     
 #'     #extract the pheno data
 #'     pData(gslist2[3:1])
@@ -252,11 +251,11 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     autoplot(gslist2[1:2],5)
 #'     
 #'     #remove cerntain gates by loop through GatingSets
-#'     getNodes(gslist2[[1]])
-#'     lapply(gslist2,function(gs)Rm("Excl",gs))
+#'     gs_get_pop_paths(gslist2[[1]])
+#'     lapply(gslist2,function(gs)gs_pop_remove("Excl",gs = gs))
 #'     
 #'     #extract the stats
-#'     getPopStats(gslist2)
+#'     gs_pop_get_count_fast(gslist2)
 #'     #extract statistics by using getQAStats defined in QUALIFIER package
 #'     res<-getQAStats(gslist2[c(4,2)],isMFI=F,isSpike=F,nslaves=1)
 #'     
@@ -264,8 +263,8 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #'     save_gslist(gslist2, path ="~/rglab/workspace/flowIncubator/output/gslist",overwrite=T)
 #'     gslist2 <- load_gslist(path ="~/rglab/workspace/flowIncubator/output/gslist")
 #'     
-#'     #convert GatingSetList into one GatingSet by rbind2
-#'     gs_merged2 <- rbind2(gslist2,ncdfFile=path.expand(tempfile(tmpdir="~/rglab/workspace/flowIncubator/output/",fileext=".nc")))
+#'     #convert GatingSetList into one GatingSet by gslist_to_gs
+#'     gs_merged2 <- gslist_to_gs(gslist2,ncdfFile=path.expand(tempfile(tmpdir="~/rglab/workspace/flowIncubator/output/",fileext=".nc")))
 #'     gs_merged2
 #'   }
 #' 
@@ -315,14 +314,14 @@ validGatingSetListObject <- function(object){
 setValidity("GatingSetList", validGatingSetListObject)     
 
 .getNodes_removeHidden <- function(gh){
-  complete <- getNodes(gh, showHidden = TRUE)
-  sub <- getNodes(gh, showHidden = FALSE)
+  complete <- gs_get_pop_paths(gh, showHidden = TRUE)
+  sub <- gs_get_pop_paths(gh, showHidden = FALSE)
   hiddenInd <- which(!complete%in%sub)
   #remove hidden node from paths
   for(i in hiddenInd){
     thisHidden <- complete[i]
     hiddenPopName <- basename(thisHidden)
-    parent <- getParent(gh, thisHidden)
+    parent <- gs_pop_get_parent(gh, thisHidden)
     sub <- gsub(thisHidden, parent, sub)
   }
   sub
@@ -360,8 +359,8 @@ setValidity("GatingSetList", validGatingSetListObject)
   if(class(res) == "character"){
     return (res)
   }
-  fs1 <- getData(gs1)
-  fs2 <- getData(gs2)
+  fs1 <- gs_pop_get_data(gs1)
+  fs2 <- gs_pop_get_data(gs2)
   .compareFlowData(fs1,fs2)
 }
 
@@ -402,9 +401,9 @@ GatingSetList <- function(x,samples = NULL)
   if(validObject(x)){
     gslist <- x@data
     # make sure the column names of flow data are in the same order
-    cols <- flowCore::colnames(getData(gslist[[1]]))
+    cols <- flowCore::colnames(gs_cyto_data(gslist[[1]]))
     gslist <- lapply(gslist, function(gs){
-          flowData(gs) <- flowData(gs)[,cols]
+          gs_cyto_data(gs) <- gs_cyto_data(gs)[,cols]
           gs
         })
     x@data <- gslist

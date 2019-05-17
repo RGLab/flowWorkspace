@@ -1,24 +1,69 @@
 #' @include GatingHierarchy_Methods.R
 NULL
+#' @importClassesFrom methods ANY character data.frame environment list logical matrix missing numeric oldClass
+#' @importMethodsFrom methods coerce show
+NULL
 
+#' make a formula from a character vector
+#' 
+#' construct a valid formula to be used by flowViz::xyplot 
+#' 
+#' @param dims a \code{character} vector that contains y , x axis, if it is unnamed, then treated as the order of c(y,x)
+#' @param isChar \code{logical} flag indicating whehter to return a formula or a pasted string
+#' @return when \code{isChar} is TRUE, return a character, otherwise coerce it as a \code{formula}
+#' @examples 
+#' all.equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)#unamed vecotr
+#' all.equal(mkformula(c(x = "SSC-A", y = "FSC-A")),`FSC-A` ~ `SSC-A`)#named vector
+#' @export 
+mkformula<-function(dims,isChar=FALSE){
+	if(length(dims)==1){
+		form<-paste(c("",sapply((dims), function(x) paste("`",x, "`", sep = ""))), collapse = "~")
+	}else{
+		
+		dnames <- names(dims)
+		if(!is.null(dnames)){
+			if(isTRUE(all.equal(sort(dnames), c("x", "y"))))
+				dims <-  dims[rev(order(names(dims)))]
+			else
+				warning("invalid axis names: ", paste(dnames, collapse = ","), "(expect 'x' or 'y')")
+		}
+		form <- paste(sapply((dims),function(x)paste("`",x,"`",sep="")),collapse="~")
+	}
+	if(!isChar)
+		form<-as.formula(form)	
+	return(form)
+}
+
+#' @templateVar old isNcdf
+#' @templateVar new gs_is_h5
+#' @template template-depr_pkg
+NULL
 #' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
 #'
 #' @param x \code{GatingHiearchy} object
 #' @return \code{logical}
 #' @export
-isNcdf <- function(x){
-#			browser()
-
-  return (class(flowData(x))=="ncdfFlowSet")
+#' @rdname gs_is_h5
+gs_is_h5 <- function(x){
+  return (class(gs_cyto_data(x))=="ncdfFlowSet")
 
 }
+#' @export
+#' @rdname gs_is_h5
+isNcdf <- function(x){
+  .Deprecated("gs_is_h5")
+  gs_is_h5(x)
+  }
+
 
 #' constructors for GatingSet
 #'
 #' construct object from existing gating hierarchy(gating template) and flow data 
 #'
+#' @param x GatingSet
+#' @param y GatingHierarchy
 #' @param path \code{character} specifies the path to the flow data (FCS files)
-#' @param ... other arguments. see \link{parseWorkspace}
+#' @param ... other arguments. 
 #' @rdname GatingSet-methods
 #' @export
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path="."
@@ -135,432 +180,432 @@ swap_data_cols <- function(cols, swap_cols)
 #' @importFrom Biobase AnnotatedDataFrame
 #' @noRd 
 .addGatingHierarchies <- function(gs, samples, execute,isNcdf = TRUE
-                                      ,compensation=NULL
-							  		, transformation = NULL
-							  			,wsType = ""
-                                      , extend_val = 0, extend_to = -4000
-                                      , prefix = TRUE, channel.ignore.case = FALSE
-                                      , ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
-                                      ,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM")
-									  , swap_cols = FALSE #for diva parsing
-							  , ...){
-  timestep.source  <- match.arg(timestep.source )
-  if(nrow(samples)==0)
-    stop("no sample to be added to GatingSet!")
-  
-  guids <- samples[["guid"]]
-  
-  if(!is.null(compensation)){
-	  if(is(compensation, "matrix"))
-		  compensation <- compensation(compensation)
-    #replicate the single comp 
-    if(is(compensation, "compensation")){
-      compensation <- sapply(guids, function(guid)compensation, simplify = FALSE)   
-    }else{
-      if(is.list(compensation)){
-        if(!all(guids %in% names(compensation)))
-          stop("names of the compensation list must match the 'guids' of samples!")
-      }else
-        stop("'compensation' should be either a compensation object of a list of compensation objects!")
-    }
-     
-  }
-  if(!is.null(transformation))
-  {
-  
-	  if(is(transformation, "transformerList"))
-	  	transformation <- sapply(guids, function(guid)transformation, simplify = FALSE)
+		,compensation=NULL
+		, transformation = NULL
+		,wsType = ""
+		, extend_val = 0, extend_to = -4000
+		, prefix = TRUE, channel.ignore.case = FALSE
+		, ws = NULL, leaf.bool = TRUE, sampNloc = "keyword"
+		,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM")
+		, swap_cols = FALSE #for diva parsing
+		, ...){
+	timestep.source  <- match.arg(timestep.source )
+	if(nrow(samples)==0)
+		stop("no sample to be added to GatingSet!")
 	
-	  if(!is.list(transformation))
-		  stop("'transformation' should be either a transformerList object of a list of transformerList objects!")
-	  if(!all(guids %in% names(transformation)))
-		  stop("names of the transformation list must match the 'guids' of samples!")
-  }
-  
-
-  #sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
-  pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
-                                             ,row.names = guids
-                                             ,stringsAsFactors=FALSE
-                                            )
-                          ,varMetadata = data.frame(labelDescription="Name",row.names="name")
-                          )
-
-  #load the raw data from FCS
+	guids <- samples[["guid"]]
+	
+	if(!is.null(compensation)){
+		if(is(compensation, "matrix"))
+			compensation <- compensation(compensation)
+		#replicate the single comp 
+		if(is(compensation, "compensation")){
+			compensation <- sapply(guids, function(guid)compensation, simplify = FALSE)   
+		}else{
+			if(is.list(compensation)){
+				if(!all(guids %in% names(compensation)))
+					stop("names of the compensation list must match the 'guids' of samples!")
+			}else
+				stop("'compensation' should be either a compensation object of a list of compensation objects!")
+		}
+		
+	}
+	if(!is.null(transformation))
+	{
+		
+		if(is(transformation, "transformerList"))
+			transformation <- sapply(guids, function(guid)transformation, simplify = FALSE)
+		
+		if(!is.list(transformation))
+			stop("'transformation' should be either a transformerList object of a list of transformerList objects!")
+		if(!all(guids %in% names(transformation)))
+			stop("names of the transformation list must match the 'guids' of samples!")
+	}
+	
+	
+	#sample names are supplied explicitly through phenoData to optionally use the names other than the original file names
+	pd <- AnnotatedDataFrame(data = data.frame(name = samples[["name"]]
+					,row.names = guids
+					,stringsAsFactors=FALSE
+			)
+			,varMetadata = data.frame(labelDescription="Name",row.names="name")
+	)
+	
+	#load the raw data from FCS
 	if(execute)
 	{
 		if(isNcdf){
 			stopifnot(length(grep("ncdfFlow",loadedNamespaces()))!=0)
 			message("Creating ncdfFlowSet...")
-
+			
 			fs <- read.ncdfFlowSet(samples[["file"]],isWriteSlice=FALSE, phenoData = pd, ...)
 		}else{
 			message("Creating flowSet...")
-
-      #read.flowSet would ignore given file names and use sampleNames(pd) if phenoData is given
-      #so we have to modify pd afterwards
+			
+			#read.flowSet would ignore given file names and use sampleNames(pd) if phenoData is given
+			#so we have to modify pd afterwards
 			fs <- read.flowSet(samples[["file"]], ...)
 			sampleNames(fs) <- guids
 		}
 	}else{
-      #create dummy flowSet
-      frList <- sapply(guids, function(thisSample){
-                        mat <- matrix(data = numeric(0))
-                        colnames(mat) <- "FSC-A"
-                        fr <- suppressWarnings(flowFrame(exprs = mat))
-
-                      })
-      fs <- flowSet(frList)
-    }
-
+		#create dummy flowSet
+		frList <- sapply(guids, function(thisSample){
+					mat <- matrix(data = numeric(0))
+					colnames(mat) <- "FSC-A"
+					fr <- suppressWarnings(flowFrame(exprs = mat))
+					
+				})
+		fs <- flowSet(frList)
+	}
+	
 	#global variable storing prefixed colnames
-    tempenv<-new.env(parent = emptyenv())
-    prefixColNames <- NULL
-    assign("prefixColNames",NULL,tempenv)
-
+	tempenv<-new.env(parent = emptyenv())
+	prefixColNames <- NULL
+	assign("prefixColNames",NULL,tempenv)
+	
 	axis <- apply(samples,1,function(row,tempenv){
-
-        sampleID <- as.numeric(row[["sampleID"]])
-        guid <- row[["guid"]]
-        #get global variable
-        prefixColNames <- tempenv$prefixColNames
-        comp_param_ind <- tempenv$comp_param_ind
-
-
-        # get comp
-        comp <- .cpp_getCompensation( gs@pointer, guid)
-        cid <- comp$cid
-
-
-        ##################################
-    #Compensating the data
-    ##################################
-    if(execute)
-		{
-      file <- row[["file"]]
-      cnd <- colnames(fs)
-			message("loading data: ",file);
-
-			if(isNcdf)
-				data <- read.FCS(file, ...)[, cnd]
-			else
-				data <- fs[[guid]]
-			
-		cols <- swap_data_cols(colnames(data), swap_cols)
-		if(!all(cols==colnames(data)))
-			colnames(data) <- cols
-      #alter colnames(replace "/" with "_") for flowJo X
-      #record the locations where '/' character is detected and will be used to restore it accurately
-      slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
-      if(wsType == "vX"){
-        new_cnd <- fix_channel_slash(cnd, slash_loc)
-          if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
-            cnd <- new_cnd
-            colnames(data) <- cnd
-
-          }
-
-      }
-
-      compensation <- compensation[[guid]]
-	  transformation <- transformation[[guid]]
-	  
-	  
-			if(cid=="")
-				cid <- ifelse(is.null(compensation), "-2", "1")
 				
-
-			if(cid!="-1" && cid!="-2"){
-				message("Compensating");
-
-				marker <- comp$parameters
-
-				if(is.null(compensation)){
-                  
-                  ## try to match marker from comp with flow data in case flowJo is not consistent with data
-                  if(channel.ignore.case)
-                    markerInd <- match(tolower(marker), tolower(cnd))
-                  else
-                    markerInd <- match(marker, cnd)
-                  
-                  if(any(is.na(markerInd)))
-                    stop("channels mismatched between compensation and flow data!") 
-
-                  marker <- cnd[markerInd]
-
-                  compobj <- compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
-                }else
-					compobj <- compensation#TODO: to update compensation information in C part
-				#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
-				#I need to handle this case properly.
-
-                res <- try(compensate(data,compobj),silent=TRUE)
-				if(inherits(res,"try-error")){
-					message("Data is probably already compensated");
+				sampleID <- as.numeric(row[["sampleID"]])
+				guid <- row[["guid"]]
+				#get global variable
+				prefixColNames <- tempenv$prefixColNames
+				comp_param_ind <- tempenv$comp_param_ind
+				
+				
+				# get comp
+				comp <- .cpp_getCompensation( gs@pointer, guid)
+				cid <- comp$cid
+				
+				
+				##################################
+				#Compensating the data
+				##################################
+				if(execute)
+				{
+					file <- row[["file"]]
+					cnd <- colnames(fs)
+					message("loading data: ",file);
+					
+					if(isNcdf)
+						data <- read.FCS(file, ...)[, cnd]
+					else
+						data <- fs[[guid]]
+					
+					cols <- swap_data_cols(colnames(data), swap_cols)
+					if(!all(cols==colnames(data)))
+						colnames(data) <- cols
+					#alter colnames(replace "/" with "_") for flowJo X
+					#record the locations where '/' character is detected and will be used to restore it accurately
+					slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
+					if(wsType == "vX"){
+						new_cnd <- fix_channel_slash(cnd, slash_loc)
+						if(!all(new_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+							cnd <- new_cnd
+							colnames(data) <- cnd
+							
+						}
+						
+					}
+					
+					compensation <- compensation[[guid]]
+					transformation <- transformation[[guid]]
+					
+					
+					if(cid=="")
+						cid <- ifelse(is.null(compensation), "-2", "1")
+					
+					
+					if(cid!="-1" && cid!="-2"){
+						message("Compensating");
+						
+						marker <- comp$parameters
+						
+						if(is.null(compensation)){
+							
+							## try to match marker from comp with flow data in case flowJo is not consistent with data
+							if(channel.ignore.case)
+								markerInd <- match(tolower(marker), tolower(cnd))
+							else
+								markerInd <- match(marker, cnd)
+							
+							if(any(is.na(markerInd)))
+								stop("channels mismatched between compensation and flow data!") 
+							
+							marker <- cnd[markerInd]
+							
+							compobj <- compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+						}else
+							compobj <- compensation#TODO: to update compensation information in C part
+						#TODO this compensation will fail if the parameters have <> braces (meaning the data is stored compensated).
+						#I need to handle this case properly.
+						
+						res <- try(compensate(data,compobj),silent=TRUE)
+						if(inherits(res,"try-error")){
+							message("Data is probably already compensated");
+						}else{
+							data <- res
+							rm(res);
+						}
+						
+					}
+					else if(cid=="-2"){
+						#TODO the matrix may be acquisition defined.
+						message("No compensation");
+					}
+					else if(cid=="-1")
+					{
+						##Acquisition defined compensation.
+						nm <- comp$comment
+						
+						
+						if(grepl("Acquisition-defined",nm)){
+							###Code to compensate the sample using the acquisition defined compensation matrices.
+							message("Compensating with Acquisition defined compensation matrix");
+							#browser()
+							if(is.null(compensation))
+							{
+								compobj <- compensation(spillover(data)$SPILL)
+								
+							}else
+							{
+								compobj <- compensation
+								
+							}
+							
+							res <- try(compensate(data,compobj),silent=TRUE)
+							
+							if(inherits(res,"try-error")){
+								message("Data is probably already compensated");
+							}else{
+								data<-res
+								rm(res);
+								
+							}
+							
+						}
+						
+					}
 				}else{
-					data <- res
-					rm(res);
+					# get kw from ws (We are not sure yet if this R API will always
+					# return keywords from workspace successfully, thus it is currently
+					# only used when execute = FALSE
+					if(!is.null(ws))
+						kw <- fj_ws_get_keywords(ws, sampleID)
+					#use $PnB to determine the number of parameters since {N,R,S) could be
+					#redundant in some workspaces
+					key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
+					key_names <- gsub("B", "N", key_names, fixed = TRUE)
+					cnd <- as.vector(unlist(kw[key_names]))
+					
 				}
-
-			}
-			else if(cid=="-2"){
-				#TODO the matrix may be acquisition defined.
-				message("No compensation");
-			}
-			else if(cid=="-1")
-			{
-				##Acquisition defined compensation.
-				nm <- comp$comment
-
-
-				if(grepl("Acquisition-defined",nm)){
-					###Code to compensate the sample using the acquisition defined compensation matrices.
-					message("Compensating with Acquisition defined compensation matrix");
-					#browser()
-					if(is.null(compensation))
+				
+				##################################
+				#alter the colnames
+				##################################
+				if(cid!="-2")
+				{
+					
+					#get prefix if it is not set yet
+					if(is.null(prefixColNames)&&prefix){
+						
+						if(is.null(cnd)){
+							cnd <- as.vector(parameters(data)@data$name)
+						}
+						prefixColNames <- cnd
+						if(execute)
+							comp_param <- parameters(compobj)
+						else
+							comp_param <- comp$parameters
+						
+						comp_param_ind <- match(comp_param, prefixColNames)
+						
+						prefixColNames[comp_param_ind] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
+						
+						
+						
+					}
+				}else{
+					prefixColNames <- cnd
+					comp_param_ind <- seq_along(cnd)
+				}
+				##################################
+				#transforming and gating
+				##################################
+				gains <- numeric()#gain is no longer relevant
+				names(gains) <- character()
+				if(execute)
+				{
+					
+					#transform with external trans when applicable
+					if(!is.null(transformation))
 					{
-						compobj <- compensation(spillover(data)$SPILL)
-
+						message(paste("transform the data with supplied transformations ..."))
+						transformation <- transformList(names(transformation), lapply(transformation, function(x)x[["transform"]]))
+						data <- transform(data, transformation)
+					}
+					
+					message(paste("gating ..."))
+					#stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
+					mat <- data@exprs #using @ is faster than exprs()
+					
+					#get gains from keywords
+					# # for now we still parse it from data
+					# # once confirmed that workspace is a reliable source for this info
+					# # we can parse it from ws as well
+					this_pd <- pData(parameters(data))
+					# #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
+					time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)
+					# this_pd <- subset(this_pd, !time.ind)
+					# paramIDs <- rownames(this_pd)
+					# key_names <- paste(paramIDs,"G",sep="")
+					kw <- keyword(data)
+					# if(as.numeric(kw[["FCSversion"]])>=3&&wsType!="vX"){
+					#   kw_gains <- kw[key_names]
+					# 
+					#   # For keywords where the gain is not set, the gain is NULL.
+					#   # We replace these instances with the default of 1.
+					#   kw_gains[sapply(kw_gains, is.null)] <- 1
+					# 
+					#   gains <- as.numeric(kw_gains)
+					# }else{
+					#   gains <- rep(1,length(paramIDs))
+					# }
+					# 
+					# names(gains) <- this_pd$name
+					# gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
+					
+					#update colnames in order for the gating to find right dims
+					if(!is.null(prefixColNames)){
+						dimnames(mat) <- list(NULL, prefixColNames)
+					}
+					
+					recompute <- !transform #recompute flag controls whether gates and data need to be transformed
+					nodeInd <- 0
+					
+					if(any(time.ind)){
+						time.range <- range(mat[, time.ind])
+						timestep <- compute_timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds
 					}else
-					{
-						compobj <- compensation
-
-					}
-
-					res <- try(compensate(data,compobj),silent=TRUE)
-
-					if(inherits(res,"try-error")){
-						message("Data is probably already compensated");
-					}else{
-						data<-res
-						rm(res);
-
-					}
-
-				}
-
-			}
-       }else{
-         # get kw from ws (We are not sure yet if this R API will always
-         # return keywords from workspace successfully, thus it is currently
-         # only used when execute = FALSE
-         if(!is.null(ws))
-           kw <- getKeywords(ws, sampleID)
-         #use $PnB to determine the number of parameters since {N,R,S) could be
-         #redundant in some workspaces
-         key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
-         key_names <- gsub("B", "N", key_names, fixed = TRUE)
-         cnd <- as.vector(unlist(kw[key_names]))
-
-       }
-
-       ##################################
-       #alter the colnames
-       ##################################
-  		if(cid!="-2")
-  		{
-
-            #get prefix if it is not set yet
-            if(is.null(prefixColNames)&&prefix){
-
-              if(is.null(cnd)){
-                cnd <- as.vector(parameters(data)@data$name)
-              }
-              prefixColNames <- cnd
-              if(execute)
-                comp_param <- parameters(compobj)
-              else
-                comp_param <- comp$parameters
-
-              comp_param_ind <- match(comp_param, prefixColNames)
-
-              prefixColNames[comp_param_ind] <- paste(comp$prefix,comp_param,comp$suffix,sep="")
-
-
-
-            }
-        }else{
-          prefixColNames <- cnd
-          comp_param_ind <- seq_along(cnd)
-        }
-          ##################################
-          #transforming and gating
-          ##################################
-        gains <- numeric()#gain is no longer relevant
-        names(gains) <- character()
-          if(execute)
-          {
-
-			  #transform with external trans when applicable
-			  if(!is.null(transformation))
-			  {
-				  message(paste("transform the data with supplied transformations ..."))
-				  transformation <- transformList(names(transformation), lapply(transformation, function(x)x[["transform"]]))
-				  data <- transform(data, transformation)
-			  }
-				    
-            message(paste("gating ..."))
-            #stop using gating API of cdf-version because c++ doesn't store the view of ncdfFlowSet anymore
-            mat <- data@exprs #using @ is faster than exprs()
-            
-            #get gains from keywords
-            # # for now we still parse it from data
-            # # once confirmed that workspace is a reliable source for this info
-            # # we can parse it from ws as well
-            this_pd <- pData(parameters(data))
-            # #skip time channel since the time channel of gates are already stored at gained scale (instead of raw scale)
-            time.ind <- grepl("time", this_pd[["name"]], ignore.case = TRUE)
-            # this_pd <- subset(this_pd, !time.ind)
-            # paramIDs <- rownames(this_pd)
-            # key_names <- paste(paramIDs,"G",sep="")
-            kw <- keyword(data)
-            # if(as.numeric(kw[["FCSversion"]])>=3&&wsType!="vX"){
-            #   kw_gains <- kw[key_names]
-            # 
-            #   # For keywords where the gain is not set, the gain is NULL.
-            #   # We replace these instances with the default of 1.
-            #   kw_gains[sapply(kw_gains, is.null)] <- 1
-            # 
-            #   gains <- as.numeric(kw_gains)
-            # }else{
-            #   gains <- rep(1,length(paramIDs))
-            # }
-            # 
-            # names(gains) <- this_pd$name
-            # gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
-        
-            #update colnames in order for the gating to find right dims
-            if(!is.null(prefixColNames)){
-              dimnames(mat) <- list(NULL, prefixColNames)
-            }
-
-            recompute <- !transform #recompute flag controls whether gates and data need to be transformed
-            nodeInd <- 0
-
-            if(any(time.ind)){
-              time.range <- range(mat[, time.ind])
-              timestep <- compute_timestep(kw, time.range, timestep.source  = timestep.source) #timestep is used to convert time channel to seconds
-            }else
-              timestep <- 1
-
-			
-            .cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool, timestep)
+						timestep <- 1
+					
+					
+					.cpp_gating(gs@pointer, mat, guid, gains, nodeInd, recompute, extend_val, channel.ignore.case, leaf.bool, timestep)
 #            browser()
-            #restore the non-prefixed colnames for updating data in fs with [[<-
-            #since colnames(fs) is not udpated yet.
-            if(!is.null(prefixColNames)){
-              #restore the orig colnames(replace "_" with "/") for flowJo X
-              if(wsType == "vX"){
-                #use slash locations to avoid tamper the original '_' character in channel names
-                old_cnd <- fix_channel_slash(cnd, slash_loc)
-
-                if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
-                  cnd <- old_cnd
-                  colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX
-                }
-
-              }
-              dimnames(mat) <- list(NULL, cnd)
-            }
-
-            data@exprs <- mat #circumvent the validity check of exprs<- to speed up
-
-            if(isNcdf){
-              fs[[guid]] <- data
-
-            }else{
-              assign(guid,data,fs@frames)
-            }
-            #range info within parameter object is not always the same as the real data range
-            #it is used to display the data.
-            #so we need update this range info by transforming it
-            tInd <- grepl("[Tt]ime",cnd)
-            if(any(tInd))
-              tRg  <- range(mat[,tInd])
-            else
-              tRg <- NULL
-            axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc, compChnlInd = comp_param_ind)
-
-		}else{
-          #extract gains from keyword of ws
-          #currently it is only used for extracting gates without gating
-          #In future we want to use it for gating as well
-          #once we have confirmed that ws is a reliable source of keyword
-          #EDIT: Acutally we've already found one workspace from PROVIDE study
-          #that does not contain the gain keyword for all channels. So the ws is not reliable source of keyword
-          #EDIT: gain is no longer needed #213
-
-          # gains <- rep(1,length(cnd))#init with default 1
-          # 
-          # #get gains from keywords
-          # kw_gains <- grep("P[0-9]{1,}G", names(kw))
-          # 
-          # if(length(kw_gains) > 0){
-          #   key_names <- unique(names(kw[kw_gains]))
-          #   kw_gains <- kw[key_names]
-          # 
-          #   # Sometimes the keywords where the gain is not set, the gain value is NULL.
-          #   # We replace these instances with the default of 1.
-          #   kw_gains[sapply(kw_gains, is.null)] <- 1
-          # 
-          #   #update the default gain values
-          #   #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)
-          #   found_gain_chnl_ind <-  as.numeric(gsub('G$', "", gsub('^\\$P', "", key_names)))
-          #   gains[found_gain_chnl_ind] <- as.numeric(kw_gains)
-          # }
-          # 
-          # 
-          # 
-          # 
-          # names(gains) <- prefixColNames
-          # gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
-          #transform and adjust the gates without gating
-          if(transform)
-            .cpp_computeGates(gs@pointer, guid, gains, extend_val, extend_to)
-          axis.labels <- list()
-        }
-
-        #set global variable
-        tempenv$prefixColNames <- prefixColNames
-        tempenv$comp_param_ind <- comp_param_ind
-
-        #return axis.labels
-        axis.labels
-	},tempenv)
-
-    names(axis) <- guids
-    gs@axis <- axis
-    gs@flag <- execute #assume the excution would succeed if the entire G gets returned finally
-
+					#restore the non-prefixed colnames for updating data in fs with [[<-
+					#since colnames(fs) is not udpated yet.
+					if(!is.null(prefixColNames)){
+						#restore the orig colnames(replace "_" with "/") for flowJo X
+						if(wsType == "vX"){
+							#use slash locations to avoid tamper the original '_' character in channel names
+							old_cnd <- fix_channel_slash(cnd, slash_loc)
+							
+							if(!all(old_cnd == cnd)){ #check if needs to update colnames to avoid unneccessary expensive colnames<- call
+								cnd <- old_cnd
+								colnames(data) <- cnd #restore colnames for flowFrame as well for flowJo vX
+							}
+							
+						}
+						dimnames(mat) <- list(NULL, cnd)
+					}
+					
+					data@exprs <- mat #circumvent the validity check of exprs<- to speed up
+					
+					if(isNcdf){
+						fs[[guid]] <- data
+						
+					}else{
+						assign(guid,data,fs@frames)
+					}
+					#range info within parameter object is not always the same as the real data range
+					#it is used to display the data.
+					#so we need update this range info by transforming it
+					tInd <- grepl("[Tt]ime",cnd)
+					if(any(tInd))
+						tRg  <- range(mat[,tInd])
+					else
+						tRg <- NULL
+					axis.labels <- .transformRange(gs,guid,wsType,fs@frames,timeRange = tRg, slash_loc, compChnlInd = comp_param_ind)
+					
+				}else{
+					#extract gains from keyword of ws
+					#currently it is only used for extracting gates without gating
+					#In future we want to use it for gating as well
+					#once we have confirmed that ws is a reliable source of keyword
+					#EDIT: Acutally we've already found one workspace from PROVIDE study
+					#that does not contain the gain keyword for all channels. So the ws is not reliable source of keyword
+					#EDIT: gain is no longer needed #213
+					
+					# gains <- rep(1,length(cnd))#init with default 1
+					# 
+					# #get gains from keywords
+					# kw_gains <- grep("P[0-9]{1,}G", names(kw))
+					# 
+					# if(length(kw_gains) > 0){
+					#   key_names <- unique(names(kw[kw_gains]))
+					#   kw_gains <- kw[key_names]
+					# 
+					#   # Sometimes the keywords where the gain is not set, the gain value is NULL.
+					#   # We replace these instances with the default of 1.
+					#   kw_gains[sapply(kw_gains, is.null)] <- 1
+					# 
+					#   #update the default gain values
+					#   #extract numeric index from channels (Not every channel necessarily has its gain keyword stored in xml)
+					#   found_gain_chnl_ind <-  as.numeric(gsub('G$', "", gsub('^\\$P', "", key_names)))
+					#   gains[found_gain_chnl_ind] <- as.numeric(kw_gains)
+					# }
+					# 
+					# 
+					# 
+					# 
+					# names(gains) <- prefixColNames
+					# gains <- gains[gains != 1]#only pass the valid gains to save the unnecessary computing
+					#transform and adjust the gates without gating
+					if(transform)
+						.cpp_computeGates(gs@pointer, guid, gains, extend_val, extend_to)
+					axis.labels <- list()
+				}
+				
+				#set global variable
+				tempenv$prefixColNames <- prefixColNames
+				tempenv$comp_param_ind <- comp_param_ind
+				
+				#return axis.labels
+				axis.labels
+			},tempenv)
+	
+	names(axis) <- guids
+	gs@axis <- axis
+	gs@flag <- execute #assume the excution would succeed if the entire G gets returned finally
+	
 	if(execute)
 	{
 #		browser()
-        #sync channel info for gates and comps ,trans
-        if(channel.ignore.case){
-          #get non-prefixed channel names
-          raw.cols <- colnames(fs)
-          #since updateChannels does case insensitive matching
-          #so we simply set both old and new columns with raw.cols
-          map <- data.frame(old = raw.cols, new = raw.cols)
-          updateChannels(gs, map, all = FALSE)
-        }
-
+		#sync channel info for gates and comps ,trans
+		if(channel.ignore.case){
+			#get non-prefixed channel names
+			raw.cols <- colnames(fs)
+			#since gs_update_channels does case insensitive matching
+			#so we simply set both old and new columns with raw.cols
+			map <- data.frame(old = raw.cols, new = raw.cols)
+			gs_update_channels(gs, map, all = FALSE)
+		}
+		
 		#update data with prefixed columns
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
 		if(!is.null(tempenv$prefixColNames))
-          colnames(fs) <- tempenv$prefixColNames
-
-
+			colnames(fs) <- tempenv$prefixColNames
+		
+		
 		#attach filename and colnames to internal stucture for gating
 #		browser()
 	}
-
-    flowData(gs) <- fs
-    if(!is.null(compensation))
-      gs@compensation <- compensation[guids] #append the customized compensations provided outside of xml
-  	if(!is.null(transformation))
-	  gs@transformation <- transformation[guids]
+	
+	gs_cyto_data(gs) <- fs
+	if(!is.null(compensation))
+		gs@compensation <- compensation[guids] #append the customized compensations provided outside of xml
+	if(!is.null(transformation))
+		gs@transformation <- transformation[guids]
 	gs
 }
 
@@ -640,7 +685,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL, compChnlInd){
 
 
- trans <- getTransformations(G[[sampleName]], channel = "all")
+ trans <- gh_get_transformations(G[[sampleName]], channel = "all")
  comp<-.cpp_getCompensation(G@pointer,sampleName)
  prefix <- comp$prefix
  suffix <- comp$suffix
@@ -739,7 +784,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #' @param y \code{character} the node name or full(/partial) gating path
 #'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
 #'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
-#'          Nodes can be accessed with \code{\link{getNodes}}.
+#'          Nodes can be accessed with \code{\link{gs_get_pop_paths}}.
 #' @param ...
 #' \itemize{
 #'  \item{bool}{ \code{logical} specifying whether to plot boolean gates.}
@@ -785,7 +830,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #'
 #'  \item{...}{
 #'
-#'          path A \code{character} or \code{numeric} scalar passed to \link{getNodes} method (used to control how the gating/node path is displayed)
+#'          path A \code{character} or \code{numeric} scalar passed to \link{gs_get_pop_paths} method (used to control how the gating/node path is displayed)
 #'
 #'          ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
 #'          }
@@ -795,7 +840,7 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #' @references \url{http://www.rglab.org/}
 #' @examples \dontrun{
 #' 	#G is a GatingHierarchy
-#' 	plotGate(G,getNodes(G)[5]);#plot the gate for the  fifth node
+#' 	plotGate(G,gs_get_pop_paths(G)[5]);#plot the gate for the  fifth node
 #' }
 #' @aliases
 #' plotGate
@@ -905,63 +950,6 @@ setMethod("plotGate",signature(x="GatingSet",y="character"),function(x,y,lattice
   list(xTerm=xTerm,yTerm=yTerm,xfunc=xfunc,yfunc=yfunc,groupBy=groupBy)
 }
 
-fix_y_axis <- function(gs, x, y){
-  chnls <- colnames(getData(gs))
-  y.candidates <- chnls[-match(x,chnls)]
-
-  if(y%in%y.candidates)
-    yParam <- y
-  else{
-    if(!y %in% chnls)
-      stop("default y '", y, "' is not valid channel name!Try to reset it")
-    #pick other channel for y axis
-    y.candidates <- y.candidates[!grepl("[Tt]ime", y.candidates)]
-    yParam <- y.candidates[1]
-    warning("Y axis is set to '", yParam, "' because default y '", y, "' can not be used as y axis!\n To eliminate this warning, change the default y channel")
-  }
-  return(yParam)
-}
-
-#' @param x a \code{GatingSet}
-#' @param overlay a list of gate indices or event indices (named by sampleNames(x))
-#' @param ... other arguments
-#'      params channel names for subsetting the result
-#' @return either a list of flowFrame for a flowSet/ncdfFlowSet or NULL
-#' @noRd 
-.getOverlay <- function(x, overlay, ...){
-  .Defunct(msg = "getOverlay is defunct!")
-  myfunc <- function(x, overlay, params){
-    #gate indices
-    if(class(overlay)=="logical")
-      overlay<-Subset(getData(x),overlay)[,params]
-    else{
-#      if(length(overlay)>1)
-#        stop("only one overlay gate can be added!In order to visualize multiple overlays,try to add a booleanGate first.")
-      overlay <- sapply(overlay, function(thisOverlay)getData(x,thisOverlay)[,params])
-    }
-    overlay
-  }
-
-
-  if(!is.null(overlay))
-  {
-
-    if(is.list(overlay)){
-      #if overlay is a list, then extract overlay from each element
-      samples <- sampleNames(x)
-      if(isTRUE(all.equal(names(overlay), samples))){
-        overlay <-  sapply(samples, function(sn)myfunc(x[[sn]], overlay[[sn]], ...))
-      }else
-        stop("names of overlay list does not agree with sampleNames in GatingSet!")
-    }else{
-      overlay <-  myfunc(x, overlay, ...)
-    }
-
-
-  }
-  overlay
-}
-
 #' return the range of one channel of flowSet
 #'
 #' @param fs \code{flowSet} or \code{ncdfFlowSet}
@@ -982,6 +970,10 @@ fix_y_axis <- function(gs, x, y){
   return(c(thisMin, thisMax))
 }
 
+#' @templateVar old clone
+#' @templateVar new gs_clone
+#' @template template-depr_pkg
+NULL
 #'  clone a GatingSet
 #'
 #'   clone a GatingSet
@@ -1022,13 +1014,17 @@ gs_copy_tree_only <- function(x){
   
 }
 
+#' @templateVar old recompute
+#' @templateVar new gs_recompute
+#' @template template-depr_pkg
+NULL
 setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' Compute the cell events by the gates stored within the gating tree.
 #'
 #' Compute each cell event to see if it falls into the gate stored within the gating tree
 #' and store the result as cell count.
 #'
-#' It is usually used immediately after \link{add} or \link{setGate} calls.
+#' It is usually used immediately after \link{add} or \link{gs_pop_set_gate} calls.
 #'
 #' @param x \code{GatingSet}
 #' @param y \code{character} node name or node path. Default "root". Optional.
@@ -1063,8 +1059,6 @@ setMethod("recompute",c("GatingSetList"),function(x, ...){
 #' @noRd 
 .recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE){
   cpp_gating(x@pointer, y, alwaysLoadData, verbose, leaf.bool)
-  
-
   message("done!")
   invisible()
 }
@@ -1134,59 +1128,132 @@ setReplaceMethod("sampleNames",
             .cpp_setSample( object@pointer, oldName, newName)
       })
 
-      
       object
     })
 
 # to speed up reading data from disk later on,
 # we can optionally pass j to ncdfFlow::[ to subset on channel
-#' @rdname getData-methods
+#' @rdname gs_pop_get_data
 #' @export
-setMethod("getData",signature(obj="GatingSet",y="missing"),function(obj,y, ...){
-      flowData(obj)[,...]
-
-    })
-#' @rdname getData-methods
-#' @export
-setMethod("getData",signature(obj="GatingSet",y="character"),function(obj,y, ...){
-
-      cs <- new("cytoset", pointer = get_cytoset_from_node(obj@pointer, y))
-      cs[,...]
+setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
+  .Deprecated("gs_pop_get_data")
+  if(missing(y)){
+    gs_pop_get_data(obj, ...)
+  }else{
+    gs_pop_get_data(obj, y, ...)
+  }
+})
       
+#' @rdname gs_pop_get_data
+#' @export
+gs_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
 
-		})
+	if(class(obj) == "GatingSetList")
+	{
+		samples_orig <- obj@samples
+		if(missing(y))
+			y <- NULL
+		else if(!is.character(y))
+			stop(" 'numeric` indexing is no longer safe . Please use node name instead!")        
+		res <- lapply(obj,function(gs){
+					
+					if(is.null(y))
+						ncfs <- gs_pop_get_data(gs,inverse.transform=inverse.transform, ...)
+					else
+						ncfs <- gs_pop_get_data(gs,y,inverse.transform=inverse.transform, ...)
+					ncfs
+				}, level =1)
+		ncdfFlowList(res, samples_orig)
+		
+	}else
+	{
+		cs <- new("cytoset", pointer = get_cytoset_from_node(obj@pointer, y))
+		cs[,...]
+		
+	  }
 
+}
+
+#' @templateVar old flowData
+#' @templateVar new gs_cyto_data
+#' @template template-depr_pkg
+NULL
+#' @export
+#' @rdname gs_cyto_data
+setGeneric("flowData", function(x) standardGeneric("flowData"))
+
+#' @templateVar old flowData<-
+#' @templateVar new gs_cyto_data<-
+#' @template template-depr_pkg
+NULL
+#' @rdname gs_cyto_data
+#' @export
+setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 
 #' Fetch or replace the flowData object associated with a GatingSet .
 #'
 #' Accessor method that gets or replaces the flowset/ncdfFlowSet object in a GatingSet or GatingHierarchy
 #'
 #' @param x A \code{GatingSet}
+#' @param inverse.transform logical flag indicating whether to inverse transform the data
 #'
 #' @details Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.
 #'
 #' @return the object with the new flowSet in place.
 #'
-#' @aliases flowData
-#' @rdname flowData
+#' @aliases gs_cyto_data
+#' @rdname gs_cyto_data
 #' @export
 setMethod("flowData",signature("GatingSet"),function(x){
-      new("cytoset", pointer = get_cytoset(x@pointer))
-    })
-#' @name flowData
-#' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
-#' @usage \S4method{flowData}{GatingSet}(x) <- value
-#' @aliases
-#' flowData<-
-#' flowData<-,GatingSet-method
-#' @rdname flowData
+  .Deprecated("gs_cyto_data")
+  gs_cyto_data(obj)
+  
+})
+#' @rdname gs_cyto_data
 #' @export
-setReplaceMethod("flowData",signature(x="GatingSet", value = "cytoset"),function(x,value){
-      set_cytoset(x@pointer, value@pointer)
-      x
+setGeneric("gs_cyto_data", function(x, ...) standardGeneric("gs_cyto_data"))
+
+#' @rdname gs_cyto_data
+#' @export
+setMethod("gs_cyto_data",signature("GatingSet"),function(x, inverse.transform=FALSE){
+	data <- new("cytoset", pointer = get_cytoset(x@pointer))
+	
+	if(inverse.transform){
+    if(is(x, "GatingHierarchy")){
+      inv_trans <- gh_get_transformations(x, inverse=TRUE)
+      if(length(inv_trans)==0)
+        stop("No inverse transformation is found from the GatingSet!")
+      inv_trans <- transformList(names(inv_trans), inv_trans)
+    }else{
+      inv_trans <- lapply(x, function(gh){
+        invs <- gh_get_transformations(gh, inverse=TRUE)
+        if(length(invs)==0)
+          stop("No inverse transformation is found from the GatingSet!")
+        invs <- transformList(names(invs), invs)
+      })
+    }
+    transform(data, inv_trans)
+  }else{
+    data 
+  }
+})
+#' @export
+setGeneric("gs_cyto_data<-", function(x,value) standardGeneric("gs_cyto_data<-"))
+#' @name gs_cyto_data
+#' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
+#' @usage \S4method{gs_cyto_data}{GatingSet}(x) <- value
+#' @rdname gs_cyto_data
+#' @export
+setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
+    .Deprecated("gs_cyto_data<-")
+    `gs_cyto_data<-`(x,value)
     })
-
-
+#' @rdname gs_cyto_data
+#' @export
+setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
+			set_cytoset(x@pointer, value@pointer)
+			x
+		})
 #' read/set pData of flow data associated with \code{GatingSet} or \code{GatingSetList}
 #'
 #' Accessor method that gets or replaces the pData of the flowset/ncdfFlowSet object in a GatingSet or GatingSetList
@@ -1201,7 +1268,7 @@ setReplaceMethod("flowData",signature(x="GatingSet", value = "cytoset"),function
 #' @export
 #' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
-			pData(flowData(object))
+			pData(gs_cyto_data(object))
 		})
 #' @name pData
 #' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object
@@ -1213,7 +1280,7 @@ setMethod("pData","GatingSet",function(object){
 #' @rdname pData-methods
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 
-			fs <- flowData(object)
+			fs <- gs_cyto_data(object)
             new.rownames <- rownames(value)
             if(is.null(new.rownames))
               new.rownames <- value[["name"]] #use name column when rownames are absent
@@ -1222,7 +1289,6 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 
 			pData(fs) <- value
 
-			
 			return (object)
 		})
 
@@ -1247,6 +1313,7 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
       new("GatingSet", pointer = subset_gs_by_sample(x@pointer, i))
     })
 
+
 #' subset the GatingSet/GatingSetList based on 'pData'
 #'
 #' @param x \code{GatingSet} or \code{GatingSetList}
@@ -1270,22 +1337,54 @@ subset.GatingSet <- function (x, subset, ...)
 
   x[as.character(rownames(pd)[r])]
 }
-#' @rdname getGate
+#' @rdname gh_pop_get_gate
 #' @export
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
-			lapply(obj,function(x)getGate(x,y))
+			.Deprecated("gs_pop_get_gate")
+			gs_pop_get_gate(obj, y)
 		})
 
-#' @rdname setNode-methods
+#' @rdname gh_pop_get_gate
+#' @export
+gs_pop_get_gate <- function(obj,y){
+			lapply(obj,function(x)gh_pop_get_gate(x,y))
+		}
+
+#' @rdname gs_pop_set_name
 #' @export
 setMethod("setNode"
     ,signature(x="GatingSet",y="character",value="ANY")
     ,function(x,y,value){
-      lapply(x,function(gh){
-            setNode(gh,y,value)
-          })
-    })
+    if(is(value, "character")){
+      .Deprecated("gs_pop_set_name")
+      gs_pop_set_name(x, y, value)
+    }else
+    {
+      .Deprecated("gs_pop_set_visibility")
+      gs_pop_set_visibility(x, y, value)
+    }
+})
+#' @rdname gs_pop_set_name
+#' @export
+gs_pop_set_name <- function(x,y,value){
+  lapply(x,function(gh){
+			  gh_pop_set_name(gh,y,value)
+  })
+  
+}
+#' @rdname gs_pop_set_visibility
+#' @export
+gs_pop_set_visibility <- function(x,y,value){
+  lapply(x,function(gh){
+    gh_pop_set_visibility(gh,y,value)
+  })
+  
+}
 
+#' @templateVar old getLoglevel
+#' @templateVar new get_log_level
+#' @template template-depr_pkg
+NULL
 #' get/set the log level
 #'
 #' It is helpful sometime to get more detailed print out for the purpose of trouble shooting
@@ -1293,24 +1392,28 @@ setMethod("setNode"
 #' @return a character that represents the internal log level
 #' @rdname loglevel
 #' @export
-getLoglevel <- function(){
+get_log_level <- function(){
   level <- .cpp_getLogLevel()
   c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")[level + 1]
 }
 
 
+#' @templateVar old setLoglevel
+#' @templateVar new set_log_level
+#' @template template-depr_pkg
+NULL
 #' @param level a \code{character} that represents the log level
 #'                              , can be value of c("none", "GatingSet", "GatingHierarchy", "Population", "gate")
 #'                                 default is "none" , which does not print any information from C parser.
 #'
 #' @examples
-#' getLoglevel()
-#' setLoglevel("Population")
-#' getLoglevel()
+#' get_log_level()
+#' set_log_level("Population")
+#' get_log_level()
 #'
 #' @rdname loglevel
 #' @export
-setLoglevel <- function(level = "none"){
+set_log_level <- function(level = "none"){
   valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
   level <- match.arg(level, valid_levels)
   .cpp_setLogLevel( as.integer(match(level, valid_levels) - 1))
@@ -1352,7 +1455,7 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
 #' @rdname length
 #' @export
 setMethod("length","GatingSet",function(x){
-      length(flowData(x));
+      length(gs_cyto_data(x));
     })
 
 #' @rdname length
@@ -1365,49 +1468,47 @@ setMethod("show","GatingSet",function(object){
 #' Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
 #'   or the population proportions or the total number of events of a node (population) in a GatingHierarchy
 #'
-#' getProp calculates the population proportion (events in the gate / events in the parent population) associated with a node in the \code{GatingHierarchy}.
-#' getPopStats is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
-#' getTotal returns the total number of events in the gate defined in the GatingHierarchy object
+#' gs_pop_get_count_fast is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param xml \code{logical} indicating whether the statistics come from xml (if parsed from xml workspace) or from openCyto.
-#' @param path \code{character} see \link{getNodes}
+#' @param path \code{character} see \link{gs_get_pop_paths}
 #' @param format \code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format
 #' @param subpopulations \code{character} vector to specify a subset of populations to return. (only valid when format is "long")
-#' @param ... Additional arguments passed to \link{getNodes}
+#' @param ... Additional arguments passed to \link{gs_get_pop_paths}
 #'
 #' @details
-#' getPopStats returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
-#' getProp returns the proportion of cells in the gate, relative to its parent.
-#' getTotal returns the total number of events included in this gate. The contents of "thisTot" variable in the "metadata" environment of the \code{nodeData} element associated with the gating tree and gate / population.
+#' gs_pop_get_count_fast returns a table population statistics for all populations in the gating hierarchy. The output is useful for verifying that the import was successful, if the xml and openCyto derived counts don't differ much (i.e. if they have a small coefficient of variation.) for a GatingSet, returns a matrix of proportions for all populations and all samples
 #'
 #' @return
-#' getPopStats returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
-#' getProp returns  a population frequency \code{numeric}.
-#' getTotal returns a \code{numeric} value of the total number of elements in the population.
-#' @seealso \code{\link{getNodes}}
+#' gs_pop_get_count_fast returns a \code{data.frame} with columns for the population name, xml derived counts, openCyto derived counts, and the population proportions (relative to their parent pouplation).
+#' @seealso \code{\link{gs_get_pop_paths}}
 #' @examples
 #'         \dontrun{
 #'         #gh is a GatingHierarchy
-#'         getPopStats(gh);
-#'         #proportion for the fifth population
-#'         getProp(gh,getNodes(gh)[5])
-#'         getTotal(gh,getNodes(gh,tsort=T)[5])
+#'         gs_pop_get_count_fast(gh);
+#'         gh_pop_get_stats(gh,gs_get_pop_paths(gh,tsort=T)[5])
 #'
 #'         #gs is a GatingSet
-#'         getPopStats(gs)
+#'         gs_pop_get_count_fast(gs)
 #'         #optionally output in long format as a data.table
-#'         getPopStats(gs, format = "long", path = "auto")
+#'         gs_pop_get_count_fast(gs, format = "long", path = "auto")
 #'         #only get stats for a subset of populations
-#'         getPopStats(gs, format = "long", subpopulations = getNodes(gs)[4:6])
+#'         gs_pop_get_count_fast(gs, format = "long", subpopulations = gs_get_pop_paths(gs)[4:6])
 #'         }
-#' @aliases getPopStats
-#' @rdname getPopStats
+#' @aliases gs_pop_get_count_fast
+#' @rdname gs_pop_get_count_fast
 #' @export
 #' @import data.table
-setMethod("getPopStats", "GatingSet",
-    function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
-
+setMethod("getPopStats", "GatingSet", function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
+.Deprecated("gs_pop_get_count_fast")
+gs_pop_get_count_fast(x, statistic, xml, subpopulations, format, path, ...)
+})
+#' @rdname gs_pop_get_count_fast
+#' @export
+gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
+	 if(is(x, "GatingSetList"))
+		 return(.gslist_get_pop_stats(x, format, statistic, xml, subpopulations, path, ...))
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
       statistic <- match.arg(statistic)
@@ -1417,7 +1518,7 @@ setMethod("getPopStats", "GatingSet",
       if(format == "long"){
 
         if(is.null(subpopulations))
-          subpopulations <- getNodes(x, path = path, ...)[-1]
+          subpopulations <- gs_get_pop_paths(x, path = path, ...)[-1]
 
         pop_stats <- .getPopCounts(x@pointer, subpopulations, xml, path == "full")
         pop_stats <- data.table(name = pop_stats[["name"]]
@@ -1439,7 +1540,7 @@ setMethod("getPopStats", "GatingSet",
         }
 
         stats <- lapply(x,function(y){
-                d<-getPopStats(y, path = path,...)
+                d<-gh_pop_compare_stats(y, path = path,...)
                 d$key<-rownames(d)
                 setkeyv(d,"key")
                 d<-d[,list(key,get(statistic))]
@@ -1458,7 +1559,7 @@ setMethod("getPopStats", "GatingSet",
 
     }
     pop_stats
-})
+}
 
 #' calculate the coefficient of variation
 #' 
@@ -1470,45 +1571,47 @@ setMethod("getPopStats", "GatingSet",
   #columns are populations
   #rows are samples
   statList <- lapply(x,function(gh){
-    thisStat <- getPopStats(gh, ...)
-    thisStat
-  })
-  all_pops <- unique(unlist(lapply(statList, function(x) x$node)))
-  cvs <- lapply(statList,function(x){
-    res <- apply(x[,list(xml.count,openCyto.count)],1,function(x){
-      cv <- IQR(x)/median(x)
-      ifelse(is.nan(cv),0,cv)
-    })
-    names(res) <- rownames(x)
-    res
-  })
-  cvs <- do.call(rbind, lapply(cvs, function(x) x[match(all_pops, names(x))]))
-  colnames(cvs) <- all_pops
-  cvs
+
+        thisStat <- gh_pop_compare_stats(gh, ...)
+        thisStat
+      })
+
+  cv <- do.call(rbind
+              ,lapply(statList,function(x){
+
+                    res <- apply(x[,list(xml.count,openCyto.count)],1,function(x){
+                          cv <- IQR(x)/median(x)
+                          ifelse(is.nan(cv),0,cv)
+                        })
+                    names(res) <- rownames(x)
+                    res
+                  })
+             )
+
+  cv
+
 }
 
 #' Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy.
 #'
 #' This function plots the coefficient of variation calculated between the xml population statistics and the openCyto population statistics for each population in a gating hierarchy extracted from a xml Workspace.
 #' @param x A \code{GatingHierarchy} from or a \code{GatingSet}.
-#' @param m \code{numeric} The number of rows in the panel plot. Now deprecated, uses lattice.
-#' @param n \code{numeric} The number of columns in the panel plot. Now deprecated, uses lattice.
 #' @param scales \code{list} see \link{barchart}
-#' @param path \code{character} see \link{getNodes}
+#' @param path \code{character} see \link{gs_get_pop_paths}
 #' @param \dots Additional arguments to the \code{barplot} methods.
 #' @details The CVs are plotted as barplots across panels on a grid of size \code{m} by \code{n}.
 #' @return Nothing is returned.
-#' @seealso \code{\link{getPopStats}}
+#' @seealso \code{\link{gs_pop_get_count_fast}}
 #' @examples
 #'   \dontrun{
 #'     #G is a GatingHierarchy
-#'     plotPopCV(G,4,4);
+#'     gs_plot_pop_count_cv(G,4,4);
 #'   }
-#' @aliases plotPopCV
+#' @aliases gs_plot_pop_count_cv
 #' @export
-#' @rdname plotPopCV
-#' @import ggplot2
-setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)), path = "auto",...){
+#' @rdname gs_plot_pop_count_cv
+#' @importFrom latticeExtra ggplot2like
+gs_plot_pop_count_cv <- function(x, scales = list(x = list(rot = 90)), path = "auto",...){
       cv <- .computeCV(x, path = path)
       #flatten, generate levels for samples.
       nr<-nrow(cv)
@@ -1516,16 +1619,9 @@ setMethod("plotPopCV","GatingSet",function(x, scales = list(x = list(rot = 90)),
       populations<-gl(nc,nr,labels=as.character(colnames(cv)), ordered = TRUE)
       samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
       cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-      return(ggplot2::ggplot(na.omit(cv), aes(x=populations, y=cv)) +
-               # free_x to let each plot individually clip out NA bars
-               facet_wrap(~samples, scales="free_x") + 
-               geom_col() +
-               ylab("Coefficient of Variation") +
-               xlab(NULL) +
-               scale_y_continuous() +
-               scale_x_discrete() +
-               theme(axis.text.x= element_text(angle = 90, hjust=1, vjust = 0.5)))
-      })
+
+      return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
+    }
 
 #' @rdname keyword
 #' @export
@@ -1545,8 +1641,8 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 
 #' tranform the flow data asssociated with the GatingSet
 #'
-#' The transformation functions are saved in the GatingSet and can be retrieved by \link{getTransformations}.
-#' Currently only flowJo-type biexponential transformation(either returned by \link{getTransformations} or constructed by \link{flowJoTrans})
+#' The transformation functions are saved in the GatingSet and can be retrieved by \link{gh_get_transformations}.
+#' Currently only flowJo-type biexponential transformation(either returned by \link{gh_get_transformations} or constructed by \link{flowJoTrans})
 #' is supported.
 #'
 #' @param _data \code{GatingSet} or \code{GatingSetList}
@@ -1560,7 +1656,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' gs <- GatingSet(fs)
 #'
 #' #construct biexponential transformation function
-#' biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+#' biexpTrans <- flowjo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
 #'
 #' #make a transformList object
 #' chnls <- c("FL1-H", "FL2-H")
@@ -1623,7 +1719,7 @@ setMethod("transform",
 	{
 		gs@transformation <- translist
 
-		fs <- getData(gs)
+		fs <- gs_pop_get_data(gs)
 
 		suppressMessages(fs_trans <- transform(fs, tList, ...))
 		flowData(gs) <- fs_trans
@@ -1682,11 +1778,38 @@ transformerList <- function (from, trans)
   return(trans)
 }
 
-
+#' Compute logicle transformation from the flowData associated with a GatingHierarchy
+#' 
+#' See details in ?flowCore::estimateLogicle
+#' 
+#' @param x a GatingHierarchy
+#' @param channels channels or markers for which the logicle transformation is to be estimated.
+#' @param ... other arguments
+#' @return transformerList object
+#'  
+#' @examples
+#' \dontrun{
+#'  # gs is a GatingSet
+#'  trans.list <- estimateLogicle(gs[[1]], c("CD3", "CD4", "CD8")) 
+#'  # trans.list is a transformerList that can be directly applied to GatinigSet
+#'  gs <- transform(gs, trans.list)
+#' }
+#' @export 
+estimateLogicle.GatingHierarchy <- function(x, channels, ...){
+  fr <- gh_pop_get_data(x)
+  trans <- flowCore:::.estimateLogicle(fr, channels, ...)
+  
+  trans <- lapply(trans, function(t){
+                      inv <- inverseLogicleTransform(trans = t)
+                      flow_trans("logicle", t@.Data, inv@.Data)
+  })
+  channels <- names(trans)
+  transformerList(channels, trans)
+}
 
 #' compensate the flow data asssociated with the GatingSet
 #'
-#' The compensation is saved in the GatingSet and can be retrieved by \link{getCompensationMatrices}.
+#' The compensation is saved in the GatingSet and can be retrieved by \link{gh_get_compensations}.
 #'
 #' @param x \code{GatingSet} or \code{GatingSetList}
 #' @param spillover \code{compensation} object or a list of \code{compensation} objects
@@ -1722,7 +1845,7 @@ setMethod("markernames",
           signature=signature(object="GatingSet"),
           definition=function(object){
 
-            markernames(flowData(object))
+            markernames(gs_cyto_data(object))
 
           })
 
@@ -1731,7 +1854,7 @@ setMethod("markernames",
 setReplaceMethod("markernames",
                  signature=signature(object="GatingSet", value="ANY"), function(object, value){
 
-                   markernames(flowData(object)) <- value
+                   markernames(gs_cyto_data(object)) <- value
 
                    object
                  })
@@ -1742,7 +1865,7 @@ setMethod("colnames",
           signature=signature(x="GatingSet"),
           definition=function(x, do.NULL="missing", prefix="missing"){
 
-            colnames(flowData(x))
+            colnames(gs_cyto_data(x))
 
           })
 
@@ -1751,7 +1874,7 @@ setMethod("colnames",
 setReplaceMethod("colnames",
                  signature=signature(x="GatingSet", value="ANY"), function(x, value){
 
-                   colnames(flowData(x)) <- value
+                   colnames(gs_cyto_data(x)) <- value
 
                    x
                  })

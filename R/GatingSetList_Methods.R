@@ -1,24 +1,34 @@
 #' @include GatingSet_Methods.R
 NULL
 
+#' @templateVar old rbind2
+#' @templateVar new gslist_to_gs
+#' @template template-depr_pkg
+NULL
 #' @param y \code{missing} not used.
-#' @param ... other arguments passed to \code{rbind2} method for \code{ncdfFlowList}
-#' @rdname GatingSetList-class 
+#' @rdname gslist_to_gs 
 #' @export 
 setMethod("rbind2",
     signature=signature("GatingSetList","missing"),
     definition=function(x,y="missing",...)
     {
+		.Deprecated("gslist_to_gs")
+		gslist_to_gs(x, ...)
+	})
+#' Merge a GatingSetList into a single GatingSet
+#' 
+#' @param x GatingSetList
+#' @param ... other arguments passed to \code{gslist_to_gs} method for \code{ncdfFlowList}
+#' @rdname gslist_to_gs 
+#' @export 
+gslist_to_gs <- function(x,...){
 #           browser()
       #combine tree structure
       ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
       sampleList <- lapply(x, sampleNames, level =1)
       new("GatingSet", pointer = .cpp_combineGatingSet(ptrlist,sampleList))
-    })
-
-
-
-
+    }
+	
 #' @rdname GatingSet-class 
 #' @export
 setMethod("[",c(x="GatingSetList",i="ANY"),function(x,i,j,...){
@@ -40,52 +50,34 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
 
 
 
-#' @rdname getData-methods
+#' @rdname gs_pop_get_data
 #' @export
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
+			.Deprecated("gs_pop_get_data")
+			gs_pop_get_data(obj, y)
+			
+		})
       
-      samples_orig <- obj@samples
-      if(missing(y))
-        y <- NULL
-      else if(!is.character(y))
-        stop(" 'numeric` indexing is no longer safe . Please use node name instead!")        
-      res <- lapply(obj,function(gs){
-            
-            if(is.null(y))
-              ncfs <- getData(gs, ...)
-            else
-              ncfs <- getData(gs,y, ...)
-            ncfs
-          }, level =1)
-      ncdfFlowList(res, samples_orig)
-      
-    })
 
 
 
-
-#' @rdname getGate
+#' @rdname gh_pop_get_gate
 #' @export
 setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y){
-      
-      res <- lapply(obj,function(gs){
-            getGate(gs,y)      
-          }, level =1)
-      unlist(res,recur=FALSE)
-      
-    })
+			.Deprecated("gs_pop_get_gate")
+			gs_pop_get_gate(obj, y)
+		})
+
 
 #' @export 
 #' @rdname plotGate-methods-defunct
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
           .Defunct("ggcyto::autoplot", "flowWorkspace")
     })
-#' @rdname getPopStats
-#' @export
-setMethod("getPopStats","GatingSetList",function(x, format = c("long", "wide"), ...){
+.gslist_get_pop_stats <- function(x, format = c("long", "wide"), ...){
       
       format <- match.arg(format)
-      res <- lapply(x,getPopStats, level =1, format = format,...)
+      res <- lapply(x,gs_pop_get_count_fast, level =1, format = format,...)
       
       if(format == "long"){
 #        browser()
@@ -109,7 +101,7 @@ setMethod("getPopStats","GatingSetList",function(x, format = c("long", "wide"), 
         rownames(res)<-rn
       }
       res
-    })
+    }
 #' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing", ...){
@@ -133,8 +125,8 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
   if(!inherits(g,"GatingSetList"))
     stop("g must be a GatingSetList")
   listofgs<-lapply(g@data,function(x,m=match,r=replace){
-    samps<-sampleNames(flowData(x))
-    fd<-flowData(x)
+    samps<-sampleNames(gs_cyto_data(x))
+    fd<-gs_cyto_data(x)
     for(i in samps){
       f <- fd@frames[[i]]
       adf <- parameters(f)
@@ -147,21 +139,13 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
         fd@frames[[i]]<-f
       }
     }
-    flowData(x)<-fd
+    gs_cyto_data(x)<-fd
     x
   })
   listofgs
   g@data<-listofgs
   g
 }
-#' @rdname getSingleCellExpression
-#' @export
-setMethod("getSingleCellExpression",signature=c("GatingSetList","character"),function(x, nodes, ...){
-      
-      res <- lapply(x, function(gs)getSingleCellExpression(gs, nodes, ...), level = 1)
-      unlist(res, recursive = FALSE)
-      
-    })
 
 #' @rdname transform
 setMethod("transform",

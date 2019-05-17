@@ -1,6 +1,14 @@
 #' @include filterObject_Methods.R
 NULL
 
+#' @templateVar old setGate
+#' @templateVar new gs(/gh)_pop_set_gate
+#' @template template-depr_pkg
+NULL
+#' @export
+#' @rdname gs_pop_set_gate
+setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
+
 #' update the gate
 #' 
 #' update the population node with a flowCore-compatible gate object
@@ -20,52 +28,63 @@ NULL
 #' rg2 <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400), filterId="rectangle")
 #' flist <- list(rg1,rg2)
 #' names(flist) <- sampleNames(gs[1:2])
-#' setGate(gs[1:2], "lymph", flist)
+#' gs_pop_set_gate(gs[1:2], "lymph", flist)
 #' recompute(gs[1:2], "lymph") 
 #' }
 #' @aliases 
-#' setGate
-#' @rdname setGate
+#' gs_pop_set_gate
+#' @rdname gs_pop_set_gate
 #' @export
 setMethod("setGate"
     ,signature(obj="GatingHierarchy",y="character",value="filter")
-    ,function(obj,y,value, negated = FALSE,...){
-      
-      this_fobj <- filterObject(value)
-      this_fobj$negated<-negated
-      .cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
-      
+    ,function(obj,y,value,...){
+      .Deprecated("gh_pop_set_gate")
+	  gh_pop_set_gate(obj,y,value,...)
+	   
     })
-#' @rdname setGate
+#' @rdname gs_pop_set_gate
+#' @export
+gh_pop_set_gate <- function(obj,y,value, negated = FALSE,...){
+			
+			this_fobj <- filter_to_list(value)
+			this_fobj$negated<-negated
+			.cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
+			
+		}
+#' @rdname gs_pop_set_gate
 #' @export 
 setMethod("setGate",
-    signature=c(obj="GatingSet",y="character", value = "list"),
+    signature=c(obj="GatingSet",y="character", value = "ANY"),
     definition=function(obj, y, value,...)
     {
-      
-      flist<-filterList(value)
-      setGate(obj,y,flist,...)
+		.Deprecated("gs_pop_set_gate")
+		 gs_pop_set_gate(obj, y, value)
       
     })
-#' @rdname setGate
+#' @rdname gs_pop_set_gate
 #' @export
-setMethod("setGate",
-    signature=c(obj="GatingSet",y="character", value = "filterList"),
-    definition=function(obj, y, value,...)
+gs_pop_set_gate <- function(obj, y, value,...)
     {
-      samples<-sampleNames(obj)
+		if(is(value, "filterList"))
+		{
+	      samples<-sampleNames(obj)
+	      
+	      if(!setequal(names(value),samples))
+	        stop("names of filterList do not match with the sample names in the gating set!")           
+	      
+	      lapply(samples,function(sample){
+	            curFilter<-value[[sample]]
+	            gh<-obj[[sample]]
+	            gh_pop_set_gate(obj=gh,y,value=curFilter,...)
+	          })
+  		}else if(is(value, "list")){
+			flist<-filterList(value)
+			gs_pop_set_gate(obj,y,flist,...)
+			
+		}else
+			stop(class(value), " not supported!")
       
-      if(!setequal(names(value),samples))
-        stop("names of filterList do not match with the sample names in the gating set!")           
-      
-      lapply(samples,function(sample){
-            curFilter<-value[[sample]]
-            gh<-obj[[sample]]
-            setGate(obj=gh,y,value=curFilter,...)
-          })
-      
-      
-    })
+    }
 
 #' Simplified geometric transformations of gates associated with nodes
 #' 
@@ -73,10 +92,10 @@ setMethod("setGate",
 #' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{transform_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{transform_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{transform_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
-#' object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+#' object of type \code{flowCore::filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
 #' object with an additional character argument for specifying the node whose gate should be transformed. 
 #' The rest of the details below are taken from the \code{flowCore} documentation.
 #' 
@@ -85,7 +104,7 @@ setMethod("setGate",
 #' equally simple geometric transformations (shifting/translation, scaling/dilation, and rotation). The method also
 #' allows for directly re-setting the slots of each Gate-type object. Note that these methods are for manually altering
 #' the geometric definition of a gate. To easily transform the definition of a gate with an accompanyging scale 
-#' transformation applied to its underlying data, see \code{\link[ggcyto]{rescale_gate}}.
+#' transformation applied to its underlying data, see ?ggcyto::rescale_gate.
 #' 
 #' First, \code{transform_gate} will apply any direct alterations to the slots of the supplied Gate-type filter object.
 #' For example, if "\code{mean = c(1,3)}" is present in the argument list when \code{transform_gate} is called on a
@@ -106,10 +125,8 @@ setMethod("setGate",
 #' }
 #' 
 #' @name transform_gate
-#' @usage 
-#' transform_gate(obj, y, scale, deg, rot_center, dx, dy, center, ...)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
 #' which each dimension of the gate should be expanded (absolute value > 1) or contracted (absolute value < 1). Negative values 
@@ -150,30 +167,30 @@ setMethod("setGate",
 #'
 #' @export
 transform_gate.GatingHierarchy <- function(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
-  gate <- getGate(obj, y)
+  gate <- gh_pop_get_gate(obj, y)
   gate <- transform_gate(gate, scale = scale, deg = deg, 
                          rot_center = rot_center, dx = dx,
                          dy = dy, center = center, ...)
-  setGate(obj, y, gate)
+  gh_pop_set_gate(obj, y, gate)
 }
 
 #' @noRd
 #' @export
 transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
-  gates <- getGate(obj, y)
+  gates <- gs_pop_get_gate(obj, y)
   gates <- lapply(gates, function(gate) transform_gate(gate, scale = scale, deg = deg, 
                                                        rot_center = rot_center, dx = dx,
                                                        dy = dy, center = center, ...)) 
-  setGate(obj, y, gates)
+  gs_pop_set_gate(obj, y, gates)
 }
 
 #' Simplified geometric scaling of gates associated with nodes
 #' 
-#' Scale a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
+#' Scale a gate associated with a node of a \code{GatingHierarchy}} or
 #' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{scale_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{scale_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{scale_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
 #' object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
@@ -184,7 +201,7 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' (\code{\linkS4class{quadGate}}, \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, and 
 #' \code{\linkS4class{polygonGate}}) Note that these methods are for manually altering
 #' the geometric definition of a gate. To easily transform the definition of a gate with an accompanyging scale 
-#' transformation applied to its underlying data, see \code{\link[ggcyto]{rescale_gate}}.
+#' transformation applied to its underlying data, see ?ggcyto::rescale_gate.
 #' 
 #' The \code{scale} argument passed to \code{scale_gate} should be either a scalar or a vector of the same length
 #' as the number of dimensions of the gate. If it is scalar, all dimensions will be multiplicatively scaled uniformly
@@ -199,16 +216,14 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' will result in a reflection in the corresponding dimension.
 #' 
 #' @name scale_gate
-#' @usage 
-#' scale_gate(obj, y, scale)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
 #' which each dimension of the gate should be expanded (absolute value > 1) or contracted (absolute value < 1). Negative values 
 #' will result in a reflection in that dimension. 
-#' 
+#' @param ... not used
 #' @examples
 #' \dontrun{
 #' # Scales both dimensions by a factor of 5
@@ -220,32 +235,32 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' }
 #' 
 #' @seealso transform_gate \code{\link[flowCore:scale_gate]{flowCore::scale_gate}}
-#' 
+#' @rdname scale_gate
 #' @export
-scale_gate.GatingHierarchy <- function(obj, y, scale = NULL){
-  gate <- getGate(obj, y)
+scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
+  gate <- gh_pop_get_gate(obj, y)
   gate <- scale_gate(gate, scale = scale)
-  setGate(obj, y, gate)
+  gh_pop_set_gate(obj, y, gate)
 }
 
-#' @noRd
+#' @rdname scale_gate
 #' @export
-scale_gate.GatingSet <- function(obj, y, scale = NULL){
-  gates <- getGate(obj, y)
+scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
+  gates <- gs_pop_get_gate(obj, y)
   gates <- lapply(gates, function(gate) scale_gate(gate, scale = scale)) 
-  setGate(obj, y, gates)
+  gs_pop_set_gate(obj, y, gates)
 }
 
 #' Simplified geometric rotation of gates associated with nodes
 #' 
-#' Rotate a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
-#' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
+#' Rotate a gate associated with a node of a \code{GatingHierarchy} or
+#' \code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{rotate_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{rotate_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
-#' object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+#' object of type \code{flowCore:filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
 #' object with an additional character argument for specifying the node whose gate should be transformed. 
 #' The rest of the details below are taken from the \code{flowCore} documentation.
 #' 
@@ -261,17 +276,15 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL){
 #' the composition as a rotation around a shifted center.
 #' 
 #' @name rotate_gate
-#' @usage 
-#' rotate_gate(obj, y, deg, rot_center)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
 #' @param deg An angle in degrees by which the gate should be rotated in the counter-clockwise direction
 #' @param rot_center A separate 2-dimensional center of rotation for the gate, if desired. By default, this will
 #' be the center for \code{ellipsoidGate} objects or the centroid for \code{polygonGate} objects. The \code{rot_center} argument 
 #' is currently only supported for \code{polygonGate} objects.
-#' 
+#' @param ... not used
 #' @examples
 #' \dontrun{
 #' #' # Rotates the original gate 15 degrees counter-clockwise
@@ -282,31 +295,32 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL){
 #' 
 #' @seealso transform_gate \code{\link[flowCore:rotate_gate]{flowCore::rotate_gate}}
 #' 
+#' @rdname rotate_gate
 #' @export
-rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL){
-  gate <- getGate(obj, y)
+rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, ...){
+  gate <- gh_pop_get_gate(obj, y)
   gate <- rotate_gate(gate, deg = deg, rot_center = rot_center)
-  setGate(obj, y, gate)
+  gh_pop_set_gate(obj, y, gate)
 }
 
-#' @noRd
+#' @rdname rotate_gate
 #' @export
-rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
-  gates <- getGate(obj, y)
+rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
+  gates <- gs_pop_get_gate(obj, y)
   gates <- lapply(gates, function(gate) rotate_gate(gate, deg = deg, rot_center = rot_center)) 
-  setGate(obj, y, gates)
+  gs_pop_set_gate(obj, y, gates)
 }
 
 #' Simplified geometric translation of gates associated with nodes
 #' 
-#' Shift the location of a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
-#' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
+#' Shift the location of a gate associated with a node of a \code{GatingHierarchy} or
+#' \code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  
-#' \code{shift_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+#' \code{shift_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 #' directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 #' \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
-#' object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+#' object of type \code{flowCore::filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
 #' object with an additional character argument for specifying the node whose gate should be transformed. 
 #' The rest of the details below are taken from the \code{flowCore} documentation.
 #' 
@@ -328,10 +342,8 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
 #' location provided by \code{center} and all other points on the polygon will be shifted by relation to the centroid.
 #' 
 #' @name shift_gate
-#' @usage 
-#' shift_gate(obj, y, dx, dy, center)
 #' 
-#' @param obj A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object
+#' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
 #' @param dx Either a numeric scalar or numeric vector. If it is scalar, this is just the desired shift of the gate in 
@@ -341,7 +353,7 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
 #' @param dy A numeric scalar specifying the desired shift of the gate in its second dimension.
 #' @param center A numeric vector specifying where the center or centroid should be moved (rather than specifiying \code{dx} 
 #' and/or \code{dy})
-#' 
+#' @param ... not used
 #' @examples
 #' \dontrun{
 #' # Moves the entire gate +500 in its first dimension and 0 in its second dimension
@@ -358,20 +370,20 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL){
 #' }
 #' 
 #' @seealso transform_gate \code{\link[flowCore:shift_gate]{flowCore::shift_gate}}
-#' 
+#' @rdname shift_gate
 #' @export
-shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL){
-  gate <- getGate(obj, y)
+shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
+  gate <- gh_pop_get_gate(obj, y)
   gate <- shift_gate(gate, dx = dx, dy = dy, center = center)
-  setGate(obj, y, gate)
+  gh_pop_set_gate(obj, y, gate)
 }
 
-#' @noRd
+#' @rdname shift_gate
 #' @export
-shift_gate.GatingSet <- function(obj, y, dx=NULL, dy=NULL, center=NULL){
-  gates <- getGate(obj, y)
+shift_gate.GatingSet <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
+  gates <- gs_pop_get_gate(obj, y)
   gates <- lapply(gates, function(gate) shift_gate(gate, dx = dx, dy = dy, center = center)) 
-  setGate(obj, y, gates)
+  gs_pop_set_gate(obj, y, gates)
 }
   
   

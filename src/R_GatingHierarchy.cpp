@@ -320,8 +320,6 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
-	if(u<0)
-		throw(domain_error("not valid vertexID!"));
 	if(u==0)
 		throw(domain_error("no gate associated with root node."));
 	nodeProperties & node = gh.getNodeProperty(u);
@@ -463,11 +461,15 @@ vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
-	if(u<0)throw(domain_error("not valid vertexID!"));
 	nodeProperties & node = gh.getNodeProperty(u);
 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
-	gh.check_ungated_bool_node(u);
-
+	if(u>0&&!node.isGated())
+	{
+		if(node.getGate()->getType()!=BOOLGATE)
+			throw(domain_error("Event indicies are not available for the ungated non-boolean node: '" + gatePath + "'. \n Please recompute it first!"));
+		MemCytoFrame fr;
+		gh.gating(fr, u);
+	}
 	return node.getIndices();
 
 
@@ -493,7 +495,6 @@ bool getGateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
-	if(u<0)throw(domain_error("not valid vertexID!"));
 	return gh.getNodeProperty(u).isGated();
 
 
@@ -504,7 +505,6 @@ bool getNegateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
-	if(u<0)throw(domain_error("not valid vertexID!"));
 	return gh.getNodeProperty(u).getGate()->isNegate();
 
 }
@@ -513,7 +513,6 @@ bool getHiddenFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
-	if(u<0)throw(domain_error("not valid vertexID!"));
 	return gh.getNodeProperty(u).getHiddenFlag();
 
 }

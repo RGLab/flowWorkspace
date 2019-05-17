@@ -26,68 +26,68 @@ test_angle2 <- 63
 # Test GatingHierarchy methods
 
 test_that("scale polygonGate_gh", {
-  test_polygonGate <- getGate(gh, test_polygonGate_node)
+  test_polygonGate <- gh_pop_get_gate(gh, test_polygonGate_node)
   scale_gate(gh, test_polygonGate_node, test_scale_split)
   scaled_gate <- scale_gate(test_polygonGate, test_scale_split)
-  expect_equal(scaled_gate, getGate(gh, test_polygonGate_node))
+  expect_equal(scaled_gate, gh_pop_get_gate(gh, test_polygonGate_node))
 })
 
 test_that("scale ellipsoidGate_gh", {
-  test_ellipsoidGate <- getGate(gh, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gh_pop_get_gate(gh, test_ellipsoidGate_node)
   scale_gate(gh, test_ellipsoidGate_node, test_scale_split)
   scaled_gate <- scale_gate(test_ellipsoidGate, test_scale_split)
-  expect_equal(scaled_gate, getGate(gh, test_ellipsoidGate_node))
+  expect_equal(scaled_gate, gh_pop_get_gate(gh, test_ellipsoidGate_node))
 })
 
 test_that("scale rectangleGate_gh", {
-  test_rectangleGate <- getGate(gh, test_rectangleGate_node)
+  test_rectangleGate <- gh_pop_get_gate(gh, test_rectangleGate_node)
   expect_error(scale_gate(gh, test_rectangleGate_node, test_scale_split))
   # For the sake of actually testing scale_gate, need to get
   # rid ofthe infinite bounds
   test_rectangleGate@min[1] <- 0
   test_rectangleGate@max[2] <- 3000
-  setGate(gs[[1]], test_rectangleGate_node, test_rectangleGate)
-  setGate(gs[[2]], test_rectangleGate_node, test_rectangleGate)
+  gh_pop_set_gate(gs[[1]], test_rectangleGate_node, test_rectangleGate)
+  gh_pop_set_gate(gs[[2]], test_rectangleGate_node, test_rectangleGate)
   
-  test_rectangleGate <- getGate(gh, test_rectangleGate_node)
+  test_rectangleGate <- gh_pop_get_gate(gh, test_rectangleGate_node)
   scale_gate(gh, test_rectangleGate_node, test_scale_split)
   scaled_gate <- scale_gate(test_rectangleGate, test_scale_split)
-  expect_equal(scaled_gate, getGate(gh, test_rectangleGate_node))
+  expect_equal(scaled_gate, gh_pop_get_gate(gh, test_rectangleGate_node))
 })
 
 test_that("shift polygonGate_gh", {
-  test_polygonGate <- getGate(gh, test_polygonGate_node)
+  test_polygonGate <- gh_pop_get_gate(gh, test_polygonGate_node)
   shift_gate(gh, test_polygonGate_node, c(dx1, dy1))
   shifted_gate <- shift_gate(test_polygonGate, c(dx1, dy1))
-  expect_equal(shifted_gate, getGate(gh, test_polygonGate_node))
+  expect_equal(shifted_gate, gh_pop_get_gate(gh, test_polygonGate_node))
 })
 
 test_that("shift ellipsoidGate_gh", {
-  test_ellipsoidGate <- getGate(gh, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gh_pop_get_gate(gh, test_ellipsoidGate_node)
   shift_gate(gh, test_ellipsoidGate_node, c(dx1, dy1))
   shifted_gate <- shift_gate(test_ellipsoidGate, c(dx1, dy1))
-  expect_equal(shifted_gate, getGate(gh, test_ellipsoidGate_node))
+  expect_equal(shifted_gate, gh_pop_get_gate(gh, test_ellipsoidGate_node))
 })
 
 test_that("shift rectangleGate_gh", {
-  test_rectangleGate <- getGate(gh, test_rectangleGate_node)
+  test_rectangleGate <- gh_pop_get_gate(gh, test_rectangleGate_node)
   shift_gate(gh, test_rectangleGate_node, c(dx1, dy1))
   shifted_gate <- shift_gate(test_rectangleGate, c(dx1, dy1))
-  expect_equal(shifted_gate, getGate(gh, test_rectangleGate_node))
+  expect_equal(shifted_gate, gh_pop_get_gate(gh, test_rectangleGate_node))
 })
 
 test_that("rotate polygonGate_gh", {
-  test_polygonGate <- getGate(gh, test_polygonGate_node)
+  test_polygonGate <- gh_pop_get_gate(gh, test_polygonGate_node)
   rotate_gate(gh, test_polygonGate_node, deg = test_angle)
   rotated_gate <- rotate_gate(test_polygonGate, deg = test_angle)
-  expect_equal(rotated_gate, getGate(gh, test_polygonGate_node))
+  expect_equal(rotated_gate, gh_pop_get_gate(gh, test_polygonGate_node))
 })
 
 test_that("rotate ellipsoidGate_gh", {
-  test_ellipsoidGate <- getGate(gh, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gh_pop_get_gate(gh, test_ellipsoidGate_node)
   rotate_gate(gh, test_ellipsoidGate_node, deg = test_angle)
   rotated_gate <- rotate_gate(test_ellipsoidGate, deg = test_angle)
-  expect_equal(rotated_gate, getGate(gh, test_ellipsoidGate_node))
+  expect_equal(rotated_gate, gh_pop_get_gate(gh, test_ellipsoidGate_node))
 })
 
 test_that("rotate rectangleGate_gh", {
@@ -95,17 +95,17 @@ test_that("rotate rectangleGate_gh", {
 })
 
 test_that("transform polygonGate_gh", {
-  test_polygonGate <- getGate(gh, test_polygonGate_node)
+  test_polygonGate <- gh_pop_get_gate(gh, test_polygonGate_node)
   new_polygon <- sweep(test_polygonGate@boundaries, 2, -c(dx1, dy1))
   transform_gate(gh, test_polygonGate_node, scale = test_scale_split, boundaries = new_polygon, 
                                 dx = c(dx2, dy2), deg = test_angle)
   transformed_gate <- transform_gate(test_polygonGate, scale = test_scale_split, boundaries = new_polygon, 
                                      dx = c(dx2, dy2), deg = test_angle)
-  expect_equal(transformed_gate, getGate(gh, test_polygonGate_node))
+  expect_equal(transformed_gate, gh_pop_get_gate(gh, test_polygonGate_node))
 })
 
 test_that("transform ellipsoidGate_gh", {
-  test_ellipsoidGate <- getGate(gh, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gh_pop_get_gate(gh, test_ellipsoidGate_node)
   rad <- test_angle2*(pi/180)
   rot <- rbind(c(cos(rad), -sin(rad)), c(sin(rad), cos(rad)))
   new_cov <- rot%*%(test_ellipsoidGate@cov)%*%t(rot)
@@ -113,101 +113,101 @@ test_that("transform ellipsoidGate_gh", {
                  dx = c(dx2, dy2), cov = new_cov, deg = test_angle)
   transformed_gate <- transform_gate(test_ellipsoidGate, scale = test_scale_split, mean = new_center,
                                      dx = c(dx2, dy2), cov = new_cov, deg = test_angle)
-  expect_equal(transformed_gate, getGate(gh, test_ellipsoidGate_node))
+  expect_equal(transformed_gate, gh_pop_get_gate(gh, test_ellipsoidGate_node))
 })
 
 test_that("transform rectangleGate_gh", {
-  test_rectangleGate <- getGate(gh, test_rectangleGate_node)
+  test_rectangleGate <- gh_pop_get_gate(gh, test_rectangleGate_node)
   new_min <- test_rectangleGate@min + c(dx1, dy1)
   new_max <- test_rectangleGate@max + c(dx1, dy1)
   transform_gate(gh, test_rectangleGate_node, scale = test_scale_split, min = new_min, 
                  dx = c(dx2, dy2), max = new_max)
   transformed_gate <- transform_gate(test_rectangleGate, scale = test_scale_split, min = new_min, 
                                      dx = c(dx2, dy2), max = new_max)
-  expect_equal(transformed_gate, getGate(gh, test_rectangleGate_node))
+  expect_equal(transformed_gate, gh_pop_get_gate(gh, test_rectangleGate_node))
 })
 
 
 ## GatingSet methods
 
 test_that("scale polygonGate_gs", {
-  test_polygonGate <- getGate(gs, test_polygonGate_node)
+  test_polygonGate <- gs_pop_get_gate(gs, test_polygonGate_node)
   scale_gate(gs, test_polygonGate_node, test_scale_split)
   scaled_gate1 <- scale_gate(test_polygonGate[[1]], test_scale_split)
   scaled_gate2 <- scale_gate(test_polygonGate[[2]], test_scale_split)
-  expect_equal(scaled_gate1, getGate(gs, test_polygonGate_node)[[1]])
-  expect_equal(scaled_gate2, getGate(gs, test_polygonGate_node)[[2]])
+  expect_equal(scaled_gate1, gs_pop_get_gate(gs, test_polygonGate_node)[[1]])
+  expect_equal(scaled_gate2, gs_pop_get_gate(gs, test_polygonGate_node)[[2]])
 })
 
 test_that("scale ellipsoidGate_gs", {
-  test_ellipsoidGate <- getGate(gs, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gs_pop_get_gate(gs, test_ellipsoidGate_node)
   scale_gate(gs, test_ellipsoidGate_node, test_scale_split)
   scaled_gate1 <- scale_gate(test_ellipsoidGate[[1]], test_scale_split)
   scaled_gate2 <- scale_gate(test_ellipsoidGate[[2]], test_scale_split)
-  expect_equal(scaled_gate1, getGate(gs, test_ellipsoidGate_node)[[1]])
-  expect_equal(scaled_gate2, getGate(gs, test_ellipsoidGate_node)[[2]])
+  expect_equal(scaled_gate1, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[1]])
+  expect_equal(scaled_gate2, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[2]])
 })
 
 test_that("scale rectangleGate_gs", {
-  test_rectangleGate <- getGate(gs, test_rectangleGate_node)
+  test_rectangleGate <- gs_pop_get_gate(gs, test_rectangleGate_node)
   test_rectangleGate[[1]]@min[1] <- 0
   test_rectangleGate[[1]]@max[2] <- 3000
   test_rectangleGate[[2]]@min[1] <- 0
   test_rectangleGate[[2]]@max[2] <- 3000
-  setGate(gs[[1]], test_rectangleGate_node, test_rectangleGate[[1]])
-  setGate(gs[[2]], test_rectangleGate_node, test_rectangleGate[[2]])
+  gh_pop_set_gate(gs[[1]], test_rectangleGate_node, test_rectangleGate[[1]])
+  gh_pop_set_gate(gs[[2]], test_rectangleGate_node, test_rectangleGate[[2]])
   
-  test_rectangleGate <- getGate(gs, test_rectangleGate_node)
+  test_rectangleGate <- gs_pop_get_gate(gs, test_rectangleGate_node)
   scale_gate(gs, test_rectangleGate_node, test_scale_split)
   scaled_gate1 <- scale_gate(test_rectangleGate[[1]], test_scale_split)
   scaled_gate2 <- scale_gate(test_rectangleGate[[2]], test_scale_split)
-  expect_equal(scaled_gate1, getGate(gs, test_rectangleGate_node)[[1]])
-  expect_equal(scaled_gate2, getGate(gs, test_rectangleGate_node)[[2]])
+  expect_equal(scaled_gate1, gs_pop_get_gate(gs, test_rectangleGate_node)[[1]])
+  expect_equal(scaled_gate2, gs_pop_get_gate(gs, test_rectangleGate_node)[[2]])
 })
 
 test_that("shift polygonGate_gs", {
-  test_polygonGate <- getGate(gs, test_polygonGate_node)
+  test_polygonGate <- gs_pop_get_gate(gs, test_polygonGate_node)
   shift_gate(gs, test_polygonGate_node, c(dx1, dy1))
   shifted_gate1 <- shift_gate(test_polygonGate[[1]], c(dx1, dy1))
   shifted_gate2 <- shift_gate(test_polygonGate[[2]], c(dx1, dy1))
-  expect_equal(shifted_gate1, getGate(gs, test_polygonGate_node)[[1]])
-  expect_equal(shifted_gate2, getGate(gs, test_polygonGate_node)[[2]])
+  expect_equal(shifted_gate1, gs_pop_get_gate(gs, test_polygonGate_node)[[1]])
+  expect_equal(shifted_gate2, gs_pop_get_gate(gs, test_polygonGate_node)[[2]])
 })
 
 test_that("shift ellipsoidGate_gs", {
-  test_ellipsoidGate <- getGate(gs, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gs_pop_get_gate(gs, test_ellipsoidGate_node)
   shift_gate(gs, test_ellipsoidGate_node, c(dx1, dy1))
   shifted_gate1 <- shift_gate(test_ellipsoidGate[[1]], c(dx1, dy1))
   shifted_gate2 <- shift_gate(test_ellipsoidGate[[2]], c(dx1, dy1))
-  expect_equal(shifted_gate1, getGate(gs, test_ellipsoidGate_node)[[1]])
-  expect_equal(shifted_gate2, getGate(gs, test_ellipsoidGate_node)[[2]])
+  expect_equal(shifted_gate1, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[1]])
+  expect_equal(shifted_gate2, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[2]])
 })
 
 test_that("shift rectangleGate_gs", {
-  test_rectangleGate <- getGate(gs, test_rectangleGate_node)
+  test_rectangleGate <- gs_pop_get_gate(gs, test_rectangleGate_node)
   shift_gate(gs, test_rectangleGate_node, c(dx1, dy1))
   shifted_gate1 <- shift_gate(test_rectangleGate[[1]], c(dx1, dy1))
   shifted_gate2 <- shift_gate(test_rectangleGate[[2]], c(dx1, dy1))
-  expect_equal(shifted_gate1, getGate(gs, test_rectangleGate_node)[[1]])
-  expect_equal(shifted_gate2, getGate(gs, test_rectangleGate_node)[[2]])
+  expect_equal(shifted_gate1, gs_pop_get_gate(gs, test_rectangleGate_node)[[1]])
+  expect_equal(shifted_gate2, gs_pop_get_gate(gs, test_rectangleGate_node)[[2]])
 })
 
 test_that("rotate polygonGate_gs", {
-  test_polygonGate <- getGate(gs, test_polygonGate_node)
+  test_polygonGate <- gs_pop_get_gate(gs, test_polygonGate_node)
   rotate_gate(gs, test_polygonGate_node, deg = test_angle)
   rotated_gate1 <- rotate_gate(test_polygonGate[[1]], deg = test_angle)
   rotated_gate2 <- rotate_gate(test_polygonGate[[2]], deg = test_angle)
-  expect_equal(rotated_gate1, getGate(gs, test_polygonGate_node)[[1]])
-  expect_equal(rotated_gate2, getGate(gs, test_polygonGate_node)[[2]])
+  expect_equal(rotated_gate1, gs_pop_get_gate(gs, test_polygonGate_node)[[1]])
+  expect_equal(rotated_gate2, gs_pop_get_gate(gs, test_polygonGate_node)[[2]])
 })
 
 test_that("rotate ellipsoidGate_gs", {
-  test_ellipsoidGate <- getGate(gs, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gs_pop_get_gate(gs, test_ellipsoidGate_node)
   rotate_gate(gs, test_ellipsoidGate_node, deg = test_angle)
   rotated_gate1 <- rotate_gate(test_ellipsoidGate[[1]], deg = test_angle)
   rotated_gate2 <- rotate_gate(test_ellipsoidGate[[2]], deg = test_angle)
-  expect_equal(rotated_gate1, getGate(gs, test_ellipsoidGate_node)[[1]])
-  expect_equal(rotated_gate2, getGate(gs, test_ellipsoidGate_node)[[2]])
+  expect_equal(rotated_gate1, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[1]])
+  expect_equal(rotated_gate2, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[2]])
 })
 
 test_that("rotate rectangleGate_gs", {
@@ -215,7 +215,7 @@ test_that("rotate rectangleGate_gs", {
 })
 
 test_that("transform polygonGate_gs", {
-  test_polygonGate <- getGate(gs, test_polygonGate_node)
+  test_polygonGate <- gs_pop_get_gate(gs, test_polygonGate_node)
   new_polygon <- sweep(test_polygonGate[[1]]@boundaries, 2, -c(dx1, dy1))
   transform_gate(gs, test_polygonGate_node, scale = test_scale_split, boundaries = new_polygon, 
                  dx = c(dx2, dy2), deg = test_angle)
@@ -223,12 +223,12 @@ test_that("transform polygonGate_gs", {
                                      dx = c(dx2, dy2), deg = test_angle)
   transformed_gate2 <- transform_gate(test_polygonGate[[2]], scale = test_scale_split, boundaries = new_polygon, 
                                       dx = c(dx2, dy2), deg = test_angle)
-  expect_equal(transformed_gate1, getGate(gs, test_polygonGate_node)[[1]])
-  expect_equal(transformed_gate2, getGate(gs, test_polygonGate_node)[[2]])
+  expect_equal(transformed_gate1, gs_pop_get_gate(gs, test_polygonGate_node)[[1]])
+  expect_equal(transformed_gate2, gs_pop_get_gate(gs, test_polygonGate_node)[[2]])
 })
 
 test_that("transform ellipsoidGate_gs", {
-  test_ellipsoidGate <- getGate(gs, test_ellipsoidGate_node)
+  test_ellipsoidGate <- gs_pop_get_gate(gs, test_ellipsoidGate_node)
   rad <- test_angle2*(pi/180)
   rot <- rbind(c(cos(rad), -sin(rad)), c(sin(rad), cos(rad)))
   new_cov <- rot%*%(test_ellipsoidGate[[1]]@cov)%*%t(rot)
@@ -238,12 +238,12 @@ test_that("transform ellipsoidGate_gs", {
                                      dx = c(dx2, dy2), cov = new_cov, deg = test_angle)
   transformed_gate2 <- transform_gate(test_ellipsoidGate[[2]], scale = test_scale_split, mean = new_center,
                                       dx = c(dx2, dy2), cov = new_cov, deg = test_angle)
-  expect_equal(transformed_gate1, getGate(gs, test_ellipsoidGate_node)[[1]])
-  expect_equal(transformed_gate2, getGate(gs, test_ellipsoidGate_node)[[2]])
+  expect_equal(transformed_gate1, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[1]])
+  expect_equal(transformed_gate2, gs_pop_get_gate(gs, test_ellipsoidGate_node)[[2]])
 })
 
 test_that("transform rectangleGate_gs", {
-  test_rectangleGate <- getGate(gs, test_rectangleGate_node)
+  test_rectangleGate <- gs_pop_get_gate(gs, test_rectangleGate_node)
   new_min <- test_rectangleGate[[1]]@min + c(dx1, dy1)
   new_max <- test_rectangleGate[[1]]@max + c(dx1, dy1)
   transform_gate(gs, test_rectangleGate_node, scale = test_scale_split, min = new_min, 
@@ -252,6 +252,6 @@ test_that("transform rectangleGate_gs", {
                                      dx = c(dx2, dy2), max = new_max)
   transformed_gate2 <- transform_gate(test_rectangleGate[[2]], scale = test_scale_split, min = new_min, 
                                       dx = c(dx2, dy2), max = new_max)
-  expect_equal(transformed_gate1, getGate(gs, test_rectangleGate_node)[[1]])
-  expect_equal(transformed_gate2, getGate(gs, test_rectangleGate_node)[[2]])
+  expect_equal(transformed_gate1, gs_pop_get_gate(gs, test_rectangleGate_node)[[1]])
+  expect_equal(transformed_gate2, gs_pop_get_gate(gs, test_rectangleGate_node)[[2]])
 })

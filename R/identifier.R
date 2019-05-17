@@ -18,6 +18,8 @@ setMethod("identifier",c("GatingSetList"),function(object){
   digest(gs.ids)
 })
 
+#' @param object GatingSet
+#' @param value string
 #' @rdname GatingSet-methods
 #' @export 
 setReplaceMethod("identifier",

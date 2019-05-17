@@ -14,13 +14,12 @@ test_that("compensate & transform a GatingSet", {
       expect_equal(cs_get_h5_file_path(gs)
                   , cs_get_h5_file_path(gs1)
                   )
-      
-      comp <- getCompensationMatrices(gs1)
+	  comp <- getCompensationMatrices(gs1)
       expect_is(comp, "list")
       expect_equal(names(comp), sampleNames(gs))
       expect_equal(fsApply(getData(gs1), colMeans, use.exprs = TRUE), expectRes)
       
-      
+     
       # unmatched names
       names(comp)[1] <- "dd"
       expect_error(compensate(gs, comp), regexp = "compensation not found")
@@ -33,8 +32,8 @@ test_that("compensate & transform a GatingSet", {
       comp <- sapply(sampleNames(gs), function(sn)comp.mat, simplify = FALSE)
       comp[[5]][2] <- 0.001
       gs3 <- compensate(gs_clone(gs.raw), comp)
-      expect_failure(expect_equal(fsApply(getData(gs3), colMeans, use.exprs = TRUE)
-              , expectRes), regexp = "8.399298e-06")
+      expect_failure(expect_equal(fsApply(gs_pop_get_data(gs3), colMeans, use.exprs = TRUE)
+            , expectRes), regexp = "8.399298e-06")
       
       #extra comp element
       comp <- sapply(sampleNames(fs), function(sn)comp.mat, simplify = FALSE)
@@ -44,8 +43,8 @@ test_that("compensate & transform a GatingSet", {
       gs4 <- compensate(gs_clone(gs.raw), comp)
       comp <- getCompensationMatrices(gs4)
       expect_equal(names(comp), sampleNames(gs))
-      expect_equal(fsApply(getData(gs4), colMeans, use.exprs = TRUE), expectRes)
-    
+      expect_equal(fsApply(gs_pop_get_data(gs4), colMeans, use.exprs = TRUE), expectRes)
+
       #trans
       chnls <- c("FL1-H", "FL2-H")
       #can't use fs to estimate since range is inconsistent between fs and gs
@@ -61,7 +60,7 @@ test_that("compensate & transform a GatingSet", {
       expect_error(gs.trans <- transform(gs, translist), regexp = "transformerList")
       
       suppressMessages(gs.trans <- transform(gs, transObj))
-      fs.trans.gs <- getData(gs.trans)
+      fs.trans.gs <- gs_pop_get_data(gs.trans)
       expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
       #check range in params and keywords
       expect_equal(range(fs.trans.gs[[1]])[, chnls[1]], c(0, 4.5))
@@ -85,7 +84,6 @@ test_that("compensate & transform a GatingSet", {
           expect_equal(res, expectRes.trans)
           
         }
-      
       
       
     })

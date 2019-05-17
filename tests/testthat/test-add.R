@@ -16,21 +16,37 @@ gs <- transform(gs, transList)
 test_that("add rectangleGate", {
   node <- "rectangle"
   rg <- rectangleGate("FSC-H"=c(500,300), "SSC-H"=c(0, 400), filterId=node)
-  add(gs, rg)
+  gs_pop_add(gs, rg)
   recompute(gs)
   
-  expect_equal(getNodes(gs), c("root", "/rectangle"))
-  #TODO: somehow R method has less cells, which could be due to the edge cells and need to be investigated
-  cnt <- nrow(Subset(getData(gs[[1]], "root"), rg)) + 2
-  expect_equal(getTotal(gs[[1]], node), cnt)
-  expect_equivalent(getGate(gs[[1]], node), rg)
+  expect_equal(gs_get_pop_paths(gs), c("root", "/rectangle"))
+  expect_equal(gh_pop_get_stats(gs[[1]], node)[[2]], 649)
+  expect_equivalent(gh_pop_get_gate(gs[[1]], node), rg)
 })
 
+test_that("test get_data methods with inverse.transform=TRUE", {
+  expect_equal(exprs(compensate(fs[[1]], comp)), exprs(gs_cyto_data(gs, inverse.transform=TRUE)[[1]]))
+  expect_equal(exprs(compensate(fs[[2]], comp)), exprs(gs_cyto_data(gs, inverse.transform=TRUE)[[2]]))  
+  expect_equal(exprs(compensate(fs[[1]], comp)), exprs(gs_cyto_data(gs[[1]], inverse.transform=TRUE)[[1]]))
+  
+  fr_pre <- gh_pop_get_data(gs[[1]], inverse.transform = TRUE)
+  expect_equal(exprs(compensate(fs[[1]], comp)), exprs(fr_pre))
+  fr_pre1 <- gh_pop_get_data(gs[[1]], "rectangle", inverse.transform = TRUE)
+  fr_pre2 <- gh_pop_get_data(gs[[1]], "rectangle")
+  expect_condition(!all.equal(exprs(fr_pre1),exprs(fr_pre2)))
+  
+  fs_pre <- gs_pop_get_data(gs, inverse.transform = TRUE)
+  expect_equal(exprs(compensate(fs[[1]], comp)), exprs(fs_pre[[1]]))
+  expect_equal(exprs(compensate(fs[[2]], comp)), exprs(fs_pre[[2]]))
+  fs_pre1 <- gs_pop_get_data(gs, "rectangle", inverse.transform = TRUE)
+  fs_pre2 <- gs_pop_get_data(gs, "rectangle")
+  expect_condition(!all.equal(exprs(fs_pre1),exprs(fs_pre2)))
+})
 
 test_that("add quadGate", {
   qg <- quadGate("FL1-H"= 2, "FL2-H"= 3)
-  add(gs,qg,parent="rectangle")
-  expect_equal(getNodes(gs), c("root", "/rectangle"
+  gs_pop_add(gs,qg,parent="rectangle")
+  expect_equal(gs_get_pop_paths(gs), c("root", "/rectangle"
                                , "/rectangle/CD15 FITC-CD45 PE+"
                                , "/rectangle/CD15 FITC+CD45 PE+"
                                , "/rectangle/CD15 FITC+CD45 PE-"
@@ -38,7 +54,7 @@ test_that("add quadGate", {
                                ))
   recompute(gs)
   node <- "CD15 FITC-CD45 PE+"
-  expect_equal(getTotal(gs[[1]], node), sum((getData(gs[[1]], "rectangle")%in%qg) == node))
+  expect_equal(gh_pop_get_stats(gs[[1]], node), sum((gh_pop_get_data(gs[[1]], "rectangle")%in%qg) == node))
 })
 
 #restore filter method during debug mode
@@ -46,51 +62,50 @@ filter <- flowCore::filter#it is masked by dplyr during load_all()
 
 test_that("add filterResult", {
   
-  g <- getGate(gs, "CD15 FITC-CD45 PE+")
+  g <- gs_pop_get_gate(gs, "CD15 FITC-CD45 PE+")
   pnode <- "rectangle"
-  fs <- getData(gs, pnode)
+  fs <- gs_pop_get_data(gs, pnode)
   fres <- filter(fs, g)
-  expect_error(add(gs, fres, name = "g1", parent = "root"), "does not match to the parent")
+  expect_error(gs_pop_add(gs, fres, name = "g1", parent = "root"), "does not match to the parent")
   
     #local ind (relative to parent)
-  add(gs, fres, name = "g1", parent = pnode)
+	gs_pop_add(gs, fres, name = "g1", parent = pnode)
   
-  expect_equal(getNodes(gs)[7], "/rectangle/g1")
-  expect_equal(getTotal(gs[[1]], "g1"), nrow(Subset(getData(gs[[1]], pnode), fres[[1]])))
-  Rm("g1", gs)
+  expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
+  expect_equal(gh_pop_get_stats(gs[[1]], "g1"), nrow(Subset(gh_pop_get_data(gs[[1]], pnode), fres[[1]])))
+  gs_pop_remove(gs, "g1")
   
 })
 
 test_that("add logical vector", {
   #local indice (relative to parent)
-  g <- getGate(gs, "CD15 FITC-CD45 PE+")
-  pnode <- "rectangle"
-  fs <- getData(gs, pnode)
+  g <- gs_pop_get_gate(gs, "CD15 FITC-CD45 PE+")
+  fs <- gs_pop_get_data(gs, "rectangle")
   fres <- filter(fs, g)
   ind <- lapply(fres, slot, "subSet")
-  expect_error(add(gs, ind, name = "g1", parent = "root"), "does not match to the parent")
-  add(gs, ind, name = "g1", parent = pnode)
+  expect_error(gs_pop_add(gs, ind, name = "g1", parent = "root"), "does not match to the parent")
+  gs_pop_add(gs, ind, name = "g1", parent = "rectangle")
   
-  expect_equal(getNodes(gs)[7], "/rectangle/g1")
-  expect_equal(getTotal(gs[[1]], "g1"), nrow(Subset(getData(gs[[1]], pnode), fres[[1]])))
-  Rm("g1", gs)
+  expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
+  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[[2]], 155)
+  gs_pop_remove(gs, "g1")
   
 #global indice (relative to root)  
-  ind <- lapply(gs, function(gh)getIndices(gh, "CD15 FITC-CD45 PE+"))
-  add(gs, ind, name = "g1", parent = pnode)
-  expect_is(getGate(gs[[1]], "g1"), "booleanFilter")
-  expect_equal(getNodes(gs)[7], "/rectangle/g1")
-  expect_equal(getTotal(gs[[1]], "g1"), sum(ind[[1]]))
-  Rm("g1", gs)
+  ind <- lapply(gs, function(gh)gh_pop_get_indices(gh, "CD15 FITC-CD45 PE+"))
+  gs_pop_add(gs, ind, name = "g1", parent = "rectangle")
+  expect_is(gh_pop_get_gate(gs[[1]], "g1"), "booleanFilter")
+  expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
+  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[[2]], 155)
+  gs_pop_remove(gs, "g1")
 })
 
 test_that("add factor vector", {
   
   fac.list <- lapply(gs, function(gh){
-    ind1 <- getIndices(gh, "CD15 FITC-CD45 PE+")
-    ind2 <- getIndices(gh, "CD15 FITC+CD45 PE+")
-    ind3 <- getIndices(gh, "CD15 FITC+CD45 PE-")  
-    ind4 <- getIndices(gh, "CD15 FITC-CD45 PE-") 
+    ind1 <- gh_pop_get_indices(gh, "CD15 FITC-CD45 PE+")
+    ind2 <- gh_pop_get_indices(gh, "CD15 FITC+CD45 PE+")
+    ind3 <- gh_pop_get_indices(gh, "CD15 FITC+CD45 PE-")  
+    ind4 <- gh_pop_get_indices(gh, "CD15 FITC-CD45 PE-") 
     #make a factor vector (mimic a clustering result)
     vec <- character(length(ind1))#global
     vec[ind1] <- "Q1"
@@ -108,35 +123,35 @@ test_that("add factor vector", {
   })
   
   
-  expect_error(add(gs, fac.list, parent = "rectangle"), "Must specify the name of the cluster method through 'name' argument")
-  add(gs, fac.list, parent = "rectangle", name = "clusterA")
+  expect_error(gs_pop_add(gs, fac.list, parent = "rectangle"), "Must specify the name of the cluster method through 'name' argument")
+  gs_pop_add(gs, fac.list, parent = "rectangle", name = "clusterA")
   
-  expect_equal(getNodes(gs)[7:10], c("/rectangle/clusterA_Q1", "/rectangle/clusterA_Q2"
+  expect_equal(gs_get_pop_paths(gs)[7:10], c("/rectangle/clusterA_Q1", "/rectangle/clusterA_Q2"
                                      , "/rectangle/clusterA_Q3", "/rectangle/clusterA_Q5"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q1"), getTotal(gs[[1]], "CD15 FITC-CD45 PE+"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q2"), getTotal(gs[[1]], "CD15 FITC+CD45 PE+"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q3"), getTotal(gs[[1]], "CD15 FITC+CD45 PE-"))
-  expect_equal(getTotal(gs[[1]], "clusterA_Q5"),0)
+  expect_equal(gh_pop_get_count(gs[[1]], "clusterA_Q1"), gh_pop_get_count(gs[[1]], "CD15 FITC-CD45 PE+"))
+  expect_equal(gh_pop_get_count(gs[[1]], "clusterA_Q2"), gh_pop_get_count(gs[[1]], "CD15 FITC+CD45 PE+"))
+  expect_equal(gh_pop_get_count(gs[[1]], "clusterA_Q3"), gh_pop_get_count(gs[[1]], "CD15 FITC+CD45 PE-"))
+  expect_equal(gh_pop_get_count(gs[[1]], "clusterA_Q5"),0)
   
-  expect_error(add(gs, fac.list, parent = "rectangle", name = "clusterA")
+  expect_error(gs_pop_add(gs, fac.list, parent = "rectangle", name = "clusterA")
                , "exist")
   
   #retrieve clustering results
   expect_error(gh_get_cluster_labels(gs[[1]], "rectangle", "cluster"), "No clustering results")
   labels <- gh_get_cluster_labels(gs[[1]], "rectangle", "clusterA")
   
-  pind <- getIndices(gs[[1]], "rectangle")
+  pind <- gh_pop_get_indices(gs[[1]], "rectangle")
   expect_true(all(is.na(labels[!pind])))
   
   labels <- labels[pind]#convert to local
   
   expect_equal(labels, fac.list[[1]])
   
-  Rm("clusterA_Q1", gs)
-  Rm("clusterA_Q2", gs)
-  Rm("clusterA_Q3", gs)
+  gs_pop_remove(gs, "clusterA_Q1")
+  gs_pop_remove(gs, "clusterA_Q2")
+  gs_pop_remove(gs, "clusterA_Q3")
   
-  Rm("clusterA_Q5", gs)
+  gs_pop_remove(gs, "clusterA_Q5")
   
   
   })
@@ -146,26 +161,25 @@ test_that("add boolean filter", {
   or_node <- "test_or"
   pnode <- "/rectangle"
   bf <- booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC-CD45 PE-`)
-  add(gs, bf, name = or_node, parent = pnode)
+  gs_pop_add(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
-  cnt <- sum(getIndices(gs[[1]] , "CD15 FITC-CD45 PE+")|getIndices(gs[[1]] , "CD15 FITC-CD45 PE-"))
-  expect_equal(getTotal(gs[[1]], or_node), cnt)
-  Rm(or_node, gs)
+  expect_equal(gh_pop_get_count(gs[[1]], or_node), 561)
+  gs_pop_remove(gs, or_node)
   
   #abs path
   bf <- booleanFilter(`/rectangle/CD15 FITC-CD45 PE+|/rectangle/CD15 FITC-CD45 PE-`)
-  add(gs, bf, name = or_node, parent = pnode)
+  gs_pop_add(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
-  expect_equal(getTotal(gs[[1]], or_node), cnt)
-  Rm(or_node, gs)
+  expect_equal(gh_pop_get_count(gs[[1]], or_node), 561)
+  gs_pop_remove(or_node, gs = gs)
   
   #abs path
-  setNode(gs, "CD15 FITC-CD45 PE+", "Q1")
-  setNode(gs, "CD15 FITC-CD45 PE-", "Q4")
+  gs_pop_set_name(gs, "CD15 FITC-CD45 PE+", "Q1")
+  gs_pop_set_name(gs, "CD15 FITC-CD45 PE-", "Q4")
   bf <- booleanFilter(Q1|rectangle/Q4)
-  add(gs, bf, name = or_node, parent = pnode)
+  gs_pop_add(gs, bf, name = or_node, parent = "/rectangle")
   recompute(gs)
-  expect_equal(getTotal(gs[[1]], or_node), cnt)
+  expect_equal(gh_pop_get_count(gs[[1]], or_node), 561)
   
   
   #abs path
