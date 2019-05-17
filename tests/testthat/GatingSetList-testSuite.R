@@ -14,7 +14,7 @@ test_that("GatingSetList constructor", {
       #different colnames
       chnnls <- colnames(gs_cyto_data(gs_clone))
       chnnls[1] <- "FSC-H" 
-      expect_error(colnames(flowData(gs_clone)) <- chnnls, "already")
+      expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "already")
       chnnls[1] <- "F" 
       colnames(gs_cyto_data(gs_clone)) <- chnnls
       expect_error(GatingSetList(list(gs, gs_clone)), "colnames of flowSets don't match")
@@ -163,12 +163,12 @@ test_that("colnames", {
   colnames(gslist@data[[1]]) <- chnls
   
   #test the different order
-  cs <- flowData(gslist@data[[1]])
-  flowData(gslist@data[[1]]) <- cs[, sort(chnls)]
+  cs <- gs_cyto_data(gslist@data[[1]])
+  gs_cyto_data(gslist@data[[1]]) <- cs[, sort(chnls)]
   expect_warning(colnames(gslist), "different orders")
   
   #restore original chnls
-  flowData(gslist@data[[1]]) <- cs[, chnls]
+  gs_cyto_data(gslist@data[[1]]) <- cs[, chnls]
   expect_equal(colnames(gslist), chnls)
   
 })

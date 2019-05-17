@@ -14,10 +14,10 @@ test_that("compensate & transform a GatingSet", {
       expect_equal(cs_get_h5_file_path(gs)
                   , cs_get_h5_file_path(gs1)
                   )
-	  comp <- getCompensationMatrices(gs1)
+	    comp <- gs_get_compensations(gs1)
       expect_is(comp, "list")
       expect_equal(names(comp), sampleNames(gs))
-      expect_equal(fsApply(getData(gs1), colMeans, use.exprs = TRUE), expectRes)
+      expect_equal(fsApply(gs_pop_get_data(gs1), colMeans, use.exprs = TRUE), expectRes)
       
      
       # unmatched names
@@ -41,7 +41,7 @@ test_that("compensate & transform a GatingSet", {
       expect_error(gs4 <- compensate(gs, comp), "should be a compensation object")
       comp[["dd"]] <- comp[[1]]
       gs4 <- compensate(gs_clone(gs.raw), comp)
-      comp <- getCompensationMatrices(gs4)
+      comp <- gs_get_compensations(gs4)
       expect_equal(names(comp), sampleNames(gs))
       expect_equal(fsApply(gs_pop_get_data(gs4), colMeans, use.exprs = TRUE), expectRes)
 
@@ -50,7 +50,7 @@ test_that("compensate & transform a GatingSet", {
       #can't use fs to estimate since range is inconsistent between fs and gs
       #due to the undetermined behavior of setting range from flowCore_Rmax during parsing FCS
       #which will cause the logical parameter to be different
-      translist <- estimateLogicle(getData(gs)[[1]], chnls)
+      translist <- estimateLogicle(gs_pop_get_data(gs)[[1]], chnls)
       fs.trans <- transform(fs, translist)  
       expectRes <- fsApply(fs.trans, colMeans, use.exprs = TRUE)
       
@@ -77,7 +77,7 @@ test_that("compensate & transform a GatingSet", {
         for(chnl in chnls)
         {
               
-          res <- getTransformations(gs[[sn]])[[chnl]]
+          res <- gh_get_transformations(gs[[sn]])[[chnl]]
           expect_equal(attr(res, "type"), "logicle")
           res <- mget(params, environment(res))
           expectRes.trans <- mget(params, environment(transObj.list[[sn]][[chnl]][[2]]))

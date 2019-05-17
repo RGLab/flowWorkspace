@@ -26,7 +26,7 @@
 a \code{GatingSet} or \code{GatingSetList} object with the underling flow data compensated.
 }
 \description{
-The compensation is saved in the GatingSet and can be retrieved by \link{getCompensationMatrices}.
+The compensation is saved in the GatingSet and can be retrieved by \link{gh_get_compensations}.
 }
 \examples{
 \dontrun{

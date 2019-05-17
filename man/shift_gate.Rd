@@ -3,12 +3,17 @@
 \name{shift_gate}
 \alias{shift_gate}
 \alias{shift_gate.GatingHierarchy}
+\alias{shift_gate.GatingSet}
 \title{Simplified geometric translation of gates associated with nodes}
 \usage{
-shift_gate(obj, y, dx, dy, center)
+\method{shift_gate}{GatingHierarchy}(obj, y, dx = NULL, dy = NULL,
+  center = NULL, ...)
+
+\method{shift_gate}{GatingSet}(obj, y, dx = NULL, dy = NULL,
+  center = NULL, ...)
 }
 \arguments{
-\item{obj}{A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object}
+\item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}
 
 \item{y}{A character specifying the node whose gate should be modified}
 
@@ -21,16 +26,18 @@ in more than 2 dimensions.}
 
 \item{center}{A numeric vector specifying where the center or centroid should be moved (rather than specifiying \code{dx} 
 and/or \code{dy})}
+
+\item{...}{not used}
 }
 \description{
-Shift the location of a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
-\code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
+Shift the location of a gate associated with a node of a \code{GatingHierarchy} or
+\code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{shift_gate}} that enables 
 updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
  
-\code{shift_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+\code{shift_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
-object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+object of type \code{flowCore::filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
 object with an additional character argument for specifying the node whose gate should be transformed. 
 The rest of the details below are taken from the \code{flowCore} documentation.
 }

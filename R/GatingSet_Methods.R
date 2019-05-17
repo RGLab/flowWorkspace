@@ -4,36 +4,6 @@ NULL
 #' @importMethodsFrom methods coerce show
 NULL
 
-#' make a formula from a character vector
-#' 
-#' construct a valid formula to be used by flowViz::xyplot 
-#' 
-#' @param dims a \code{character} vector that contains y , x axis, if it is unnamed, then treated as the order of c(y,x)
-#' @param isChar \code{logical} flag indicating whehter to return a formula or a pasted string
-#' @return when \code{isChar} is TRUE, return a character, otherwise coerce it as a \code{formula}
-#' @examples 
-#' all.equal(mkformula(c("SSC-A", "FSC-A")),`SSC-A` ~ `FSC-A`)#unamed vecotr
-#' all.equal(mkformula(c(x = "SSC-A", y = "FSC-A")),`FSC-A` ~ `SSC-A`)#named vector
-#' @export 
-mkformula<-function(dims,isChar=FALSE){
-	if(length(dims)==1){
-		form<-paste(c("",sapply((dims), function(x) paste("`",x, "`", sep = ""))), collapse = "~")
-	}else{
-		
-		dnames <- names(dims)
-		if(!is.null(dnames)){
-			if(isTRUE(all.equal(sort(dnames), c("x", "y"))))
-				dims <-  dims[rev(order(names(dims)))]
-			else
-				warning("invalid axis names: ", paste(dnames, collapse = ","), "(expect 'x' or 'y')")
-		}
-		form <- paste(sapply((dims),function(x)paste("`",x,"`",sep="")),collapse="~")
-	}
-	if(!isChar)
-		form<-as.formula(form)	
-	return(form)
-}
-
 #' @templateVar old isNcdf
 #' @templateVar new gs_is_h5
 #' @template template-depr_pkg
@@ -45,7 +15,7 @@ NULL
 #' @export
 #' @rdname gs_is_h5
 gs_is_h5 <- function(x){
-  return (class(gs_cyto_data(x))=="ncdfFlowSet")
+  return (cs_get_h5_file_path(gs_cyto_data(x))!="")
 
 }
 #' @export
@@ -1168,6 +1138,9 @@ gs_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
 	}else
 	{
 		cs <- new("cytoset", pointer = get_cytoset_from_node(obj@pointer, y))
+		if(inverse.transform)
+		  cs <- transform(gs_cyto_data(gs_clone(cs)), gs_get_transformlists(obj, inverse = TRUE))
+		
 		cs[,...]
 		
 	  }
@@ -1218,25 +1191,21 @@ setGeneric("gs_cyto_data", function(x, ...) standardGeneric("gs_cyto_data"))
 setMethod("gs_cyto_data",signature("GatingSet"),function(x, inverse.transform=FALSE){
 	data <- new("cytoset", pointer = get_cytoset(x@pointer))
 	
-	if(inverse.transform){
-    if(is(x, "GatingHierarchy")){
-      inv_trans <- gh_get_transformations(x, inverse=TRUE)
-      if(length(inv_trans)==0)
-        stop("No inverse transformation is found from the GatingSet!")
-      inv_trans <- transformList(names(inv_trans), inv_trans)
-    }else{
-      inv_trans <- lapply(x, function(gh){
-        invs <- gh_get_transformations(gh, inverse=TRUE)
-        if(length(invs)==0)
-          stop("No inverse transformation is found from the GatingSet!")
-        invs <- transformList(names(invs), invs)
-      })
-    }
-    transform(data, inv_trans)
-  }else{
-    data 
-  }
+	if(inverse.transform)
+	  data <- transform(data, gs_get_transformlists(x, inverse = inverse.transform))
+	
+	data
 })
+
+gs_get_transformlists<- function(gs, inverse = FALSE){
+  lapply(gs, function(gh){
+    trans <- gh_get_transformations(gh, inverse=inverse)
+    if(length(trans)==0)
+      stop("No transformation is found from the GatingSet!")
+    transformList(names(trans), trans)
+  })
+  
+}
 #' @export
 setGeneric("gs_cyto_data<-", function(x,value) standardGeneric("gs_cyto_data<-"))
 #' @name gs_cyto_data
@@ -1833,10 +1802,8 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
       
     })
 #' @export
-#' @method getCompensationMatrices GatingSet
-#' @rdname getCompensationMatrices
-getCompensationMatrices.GatingSet <- function(x){
-			lapply(x, getCompensationMatrices)
+gs_get_compensations <- function(x){
+			lapply(x, gh_get_compensations)
 		}
             
 #' @rdname markernames

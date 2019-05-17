@@ -1024,20 +1024,8 @@ setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...
 #' @export
 gh_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
       
-        if(!obj@flag){
-          stop("Must gate the data before fetching data");
-        }
-        
-        fs <- gs_cyto_data(obj, inverse.transform)
-        this_data <- fs[[sampleNames(obj),...]]
-        
-        if(y == "root"){
-          return (this_data)
-        }else{
-
-          this_indice <- gh_pop_get_indices(obj,y)
-          return (this_data[this_indice,])
-        }
+	fs <- gs_pop_get_data(obj, y, inverse.transform)
+	fs[[1, ...]]
 }
 
 #' @export 

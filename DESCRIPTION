@@ -42,7 +42,6 @@ Depends:
 Collate: 
     'cytoframe.R'
     'cytoset.R'
-    'AllGenerics.R'
     'AllClasses.R'
     'getStats.R'
     'GatingHierarchy_Methods.R'

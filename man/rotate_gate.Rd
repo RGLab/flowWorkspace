@@ -3,12 +3,17 @@
 \name{rotate_gate}
 \alias{rotate_gate}
 \alias{rotate_gate.GatingHierarchy}
+\alias{rotate_gate.GatingSet}
 \title{Simplified geometric rotation of gates associated with nodes}
 \usage{
-rotate_gate(obj, y, deg, rot_center)
+\method{rotate_gate}{GatingHierarchy}(obj, y, deg = NULL,
+  rot_center = NULL, ...)
+
+\method{rotate_gate}{GatingSet}(obj, y, deg = NULL, rot_center = NULL,
+  ...)
 }
 \arguments{
-\item{obj}{A \code{\link{GatingHierarchy}} or \code{\link{GatingSet}} object}
+\item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}
 
 \item{y}{A character specifying the node whose gate should be modified}
 
@@ -17,16 +22,18 @@ rotate_gate(obj, y, deg, rot_center)
 \item{rot_center}{A separate 2-dimensional center of rotation for the gate, if desired. By default, this will
 be the center for \code{ellipsoidGate} objects or the centroid for \code{polygonGate} objects. The \code{rot_center} argument 
 is currently only supported for \code{polygonGate} objects.}
+
+\item{...}{not used}
 }
 \description{
-Rotate a gate associated with a node of a \code{\linkS4class{GatingHierarchy}} or
-\code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
+Rotate a gate associated with a node of a \code{GatingHierarchy} or
+\code{GatingSet}. This method is a wrapper for \code{\link[flowCore]{rotate_gate}} that enables 
 updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
  
-\code{rotate_gate} calls \code{\link{setGate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+\code{rotate_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
 directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
 \code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
-object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+object of type \code{flowCore:filter}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
 object with an additional character argument for specifying the node whose gate should be transformed. 
 The rest of the details below are taken from the \code{flowCore} documentation.
 }

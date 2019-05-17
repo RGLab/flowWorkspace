@@ -21,8 +21,8 @@
 a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
 }
 \description{
-The transformation functions are saved in the GatingSet and can be retrieved by \link{getTransformations}.
-Currently only flowJo-type biexponential transformation(either returned by \link{getTransformations} or constructed by \link{flowJoTrans})
+The transformation functions are saved in the GatingSet and can be retrieved by \link{gh_get_transformations}.
+Currently only flowJo-type biexponential transformation(either returned by \link{gh_get_transformations} or constructed by \link{flowJoTrans})
 is supported.
 }
 \examples{
@@ -32,7 +32,7 @@ fs <- GvHD[1:2]
 gs <- GatingSet(fs)
 
 #construct biexponential transformation function
-biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+biexpTrans <- flowjo_biexp_trans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
 
 #make a transformList object
 chnls <- c("FL1-H", "FL2-H")

@@ -20,7 +20,7 @@ fasinh/fsinh transform function
 }
 \description{
 hyperbolic sine/inverse hyperbolic sine transform function constructor.
-It is simply a special form of \code{flowJo.fasinh} with \code{length} set to 1
+It is simply a special form of \code{flowjo_fasinh} with \code{length} set to 1
 and different default values for parameters \code{t,m,a}.
 }
 \examples{
