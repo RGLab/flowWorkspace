@@ -42,18 +42,16 @@ source("GatingSet-testSuite.R", local = TRUE)
 # we need test trans so have to put this test here since the legacy archived gs doesn't have trans
 test_that("updateChannles",{
 
-  dd <- capture.output(suppressMessages(gs1 <- flowjo_to_gatingset(ws, path = dataDir, name = 4, subset = `TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2"), keywords = "TUBE NAME")))
+  dd <- capture.output(suppressMessages(gs1 <- flowjo_to_gatingset(ws, path = dataDir, name = 4
+                                                                   , subset = 1:2#`TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2")
+                                                                   , keywords = "TUBE NAME")))
   oldCols <- colnames(gs_pop_get_data(gs1)[[1, use.exprs = F]])
   comp_cols <- parameters(gh_get_compensations(gs1[[1]]))
   trans_names <- names(gh_get_transformations(gs1[[1]]))
   map <- data.frame(old = c("FSC-A", "V450-A", "non-exist", "B710-A")
                     , new = c("fsc", "v450-a", "newchnl", "b710"))
   
-  #without updating flow data
-  res <- gs_update_channels(gs1, map, all = FALSE)
-  expect_null(res)
-  cols <- colnames(gs_pop_get_data(gs1)[[1, use.exprs = F]])
-  expect_equal(oldCols, cols)
+  gs1 <- gs_update_channels(gs1, map)
   
   #check gates
   expect_equivalent(unique(lapply(gs_pop_get_gate(gs1, "singlets"), parameters))[[1]], c("fsc", "FSC-H"))
@@ -73,8 +71,6 @@ test_that("updateChannles",{
   trans <- gh_get_transformations(gs1[[1]], channel = "all")
   expect_equal(names(trans)[1:7], trans_names %>% gsub("B710-A", "b710", .) %>% gsub("V450-A", "v450-a", .))
   
-  #update flow data
-  gs1 <- gs_update_channels(gs1, map)
   expect_is(gs1, "GatingSet")
   cols <- colnames(gs_pop_get_data(gs1))
   expect_equal(cols, oldCols %>% 

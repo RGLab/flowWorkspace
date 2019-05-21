@@ -69,8 +69,8 @@ test_that("gs_clone & gslist_to_gs",{
       #check if trans is preserved
       expect_equal(gh_get_transformations(gs[[1]]), gh_get_transformations(gs1[[1]]))
       
-      expect_equal(getPopStats(gs), getPopStats(gs1))
-      expect_equal(getPopStats(gs[[1]]), getPopStats(gs1[[1]]))
+      expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs1))
+      expect_equal(gh_pop_compare_stats(gs[[1]]), gh_pop_compare_stats(gs1[[1]]))
       
       #clone without copying hdf data
       gs2 <- gs_copy_tree_only(gs)
@@ -87,8 +87,8 @@ test_that("gs_clone & gslist_to_gs",{
       #check if trans is preserved
       expect_equal(gh_get_transformations(gs[[1]]), gh_get_transformations(gs2[[1]]))
       
-      expect_equal(getPopStats(gs), getPopStats(gs2))
-      expect_equal(getPopStats(gs[[1]]), getPopStats(gs2[[1]]))
+      expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
+      expect_equal(gh_pop_compare_stats(gs[[1]]), gh_pop_compare_stats(gs2[[1]]))
 })
 test_that("rbind2",{
       orig_sn <- sampleNames(gs)
@@ -164,8 +164,8 @@ test_that("[ subsetting",{
       expect_equal(pData(gs_sub1), pData(gs_sub2))
       expect_equal(length(gs_sub1), 1)
       
-      expect_equal(cs_get_h5_file_path(getData(gs_sub1))
-                   ,cs_get_h5_file_path(getData(gs_sub2))
+      expect_equal(cs_get_h5_file_path(gs_pop_get_data(gs_sub1))
+                   ,cs_get_h5_file_path(gs_pop_get_data(gs_sub2))
       )
       
       

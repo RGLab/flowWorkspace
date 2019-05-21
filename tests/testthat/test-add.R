@@ -5,7 +5,7 @@ comp.mat <- read.table(cfile, header=TRUE, skip=2, check.names = FALSE)
 ## create a compensation object 
 comp <- compensation(comp.mat)
 chnls <- parameters(comp)
-
+#a hack to resolve the discrepancy between range slot and PnR keyword
 gs <- GatingSet(fs)
 #compensate GatingSet
 gs <- compensate(gs, comp)

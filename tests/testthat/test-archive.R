@@ -99,7 +99,7 @@ test_that("extract GatingHierarchy from GatingSet",{
     expect_is(gh, "GatingHierarchy")
     expect_true(!identical(get_gatingset_id(gh2@pointer), get_gatingset_id(gh@pointer)))
     expect_true(!identical(gh@pointer, gh2@pointer))
-    expect_equal(getData(gh), getData(gh2))
+    expect_equal(gh_pop_get_data(gh), gh_pop_get_data(gh2))
     
 })
 
@@ -115,7 +115,7 @@ test_that("Construct new GatingSet based on the existing gating hierarchy",
      gh <- gs1[[1]]
      suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir))
      expect_that(gs, is_a("GatingSet"))
-     expect_equal(getNodes(gs), getNodes(gs1))
+     expect_equal(gs_get_pop_paths(gs), gs_get_pop_paths(gs1))
    })
 isCpStaticGate <<- TRUE
 source("GatingSet-testSuite.R", local = TRUE)
