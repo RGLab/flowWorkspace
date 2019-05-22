@@ -600,6 +600,9 @@ swap_data_cols <- function(cols, swap_cols)
 					cols <- swap_data_cols(colnames(data), swap_cols)
 					if(!all(cols==colnames(data)))
 						colnames(data) <- cols
+					
+					cnd <- swap_data_cols(cnd, swap_cols)
+					
 					#alter colnames(replace "/" with "_") for flowJo X
 					#record the locations where '/' character is detected and will be used to restore it accurately
 					slash_loc <- sapply(cnd, function(thisCol)as.integer(gregexpr("/", thisCol)[[1]]), simplify = FALSE)
@@ -899,7 +902,8 @@ swap_data_cols <- function(cols, swap_cols)
 		#update data with prefixed columns
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
-		if(!is.null(tempenv$prefixColNames))
+		if(isFALSE(swap_cols))#can't reassign the colnames to fs when cols was swapped since new col order seems to mess up h5 data layout
+	  if(!is.null(tempenv$prefixColNames))
 			colnames(fs) <- tempenv$prefixColNames
 		
 		
@@ -990,7 +994,8 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
 #' @noRd 
 .transformRange <- function(G,sampleName, wsType,frmEnv, timeRange = NULL, slash_loc = NULL, compChnlInd){
 
-
+#if trans is null then it is externally supplied and data range has already been updated 
+#thus the following loop does nothing and the logic is still correct
  trans <- gh_get_transformations(G[[sampleName]], channel = "all")
  comp<-.cpp_getCompensation(G@pointer,sampleName)
  prefix <- comp$prefix
