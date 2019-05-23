@@ -495,6 +495,7 @@ swap_data_cols <- function(cols, swap_cols)
 		,  transform = TRUE, timestep.source = c("TIMESTEP", "BTIM")
 		, swap_cols = FALSE #for diva parsing
 		, ...){
+  
 	timestep.source  <- match.arg(timestep.source )
 	if(nrow(samples)==0)
 		stop("no sample to be added to GatingSet!")
@@ -563,6 +564,7 @@ swap_data_cols <- function(cols, swap_cols)
 				})
 		fs <- flowSet(frList)
 	}
+  #don't want to apply swap_col to fs since h5 col is already sorted during the initial read and thus may ordered differntly from FCS
 	
 	#global variable storing prefixed colnames
 	tempenv<-new.env(parent = emptyenv())
@@ -593,15 +595,17 @@ swap_data_cols <- function(cols, swap_cols)
 					message("loading data: ",file);
 					
 					if(isNcdf)
-						data <- read.FCS(file, ...)[, cnd]
+					{
+					  data <- read.FCS(file, ...)
+					  
+					}
 					else
-						data <- fs[[guid]]
+						data <- fs[[guid]]#flowSet is already swapped
 					
 					cols <- swap_data_cols(colnames(data), swap_cols)
 					if(!all(cols==colnames(data)))
 						colnames(data) <- cols
-					
-					cnd <- swap_data_cols(cnd, swap_cols)
+					data <- data[, cnd]#keep it ordered the same as h5 so that it can be written successfully
 					
 					#alter colnames(replace "/" with "_") for flowJo X
 					#record the locations where '/' character is detected and will be used to restore it accurately
@@ -902,7 +906,6 @@ swap_data_cols <- function(cols, swap_cols)
 		#update data with prefixed columns
 		#can't do it before fs fully compensated since
 		#compensate function check the consistency colnames between input flowFrame and fs
-		if(isFALSE(swap_cols))#can't reassign the colnames to fs when cols was swapped since new col order seems to mess up h5 data layout
 	  if(!is.null(tempenv$prefixColNames))
 			colnames(fs) <- tempenv$prefixColNames
 		
