@@ -1197,10 +1197,16 @@ setGeneric("gs_cyto_data", function(x, ...) standardGeneric("gs_cyto_data"))
 #' @rdname gs_cyto_data
 #' @export
 setMethod("gs_cyto_data",signature("GatingSet"),function(x, inverse.transform=FALSE){
-	data <- new("cytoset", pointer = get_cytoset(x@pointer))
 	
 	if(inverse.transform)
-	  data <- transform(data, gs_get_transformlists(x, inverse = inverse.transform))
+	{
+	  data <- gs_cyto_data(gs_clone(x))#make a copy before transform to keep the original data intact
+	  
+    transform(data, gs_get_transformlists(x, inverse = inverse.transform))
+	  
+	}else
+	  data <- new("cytoset", pointer = get_cytoset(x@pointer))
+	
 	
 	data
 })

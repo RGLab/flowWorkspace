@@ -6,6 +6,15 @@ comp.mat <- read.table(cfile, header=TRUE, skip=2, check.names = FALSE)
 comp <- compensation(comp.mat)
 chnls <- parameters(comp)
 #a hack to resolve the discrepancy between range slot and PnR keyword
+#so that the values in range slot are preserved during write.fcs/load_fcs
+for(i in seq_along(colnames(fs)))
+{  
+  rid <- paste("$P", i,"R",sep="")
+  # newr <- paste("flowCore_$P", i,"Rmax",sep="")
+  keyword(fs[[1]])[[rid]] <- range(fs[[1]])[2,i]
+}
+
+
 gs <- GatingSet(fs)
 #compensate GatingSet
 gs <- compensate(gs, comp)
@@ -25,19 +34,20 @@ test_that("add rectangleGate", {
 })
 
 test_that("test get_data methods with inverse.transform=TRUE", {
-  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(gs_cyto_data(gs, inverse.transform=TRUE)[[1]]))
-  expect_equivalent(exprs(compensate(fs[[2]], comp)), exprs(gs_cyto_data(gs, inverse.transform=TRUE)[[2]]))
-  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(gs_cyto_data(gs[[1]], inverse.transform=TRUE)[[1]]))
+  
+  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(gs_cyto_data(gs, inverse.transform=TRUE)[[1]]), tol = 6-4)
+  expect_equivalent(exprs(compensate(fs[[2]], comp)), exprs(gs_cyto_data(gs, inverse.transform=TRUE)[[2]]), tol = 6-4)
+  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(gs_cyto_data(gs[[1]], inverse.transform=TRUE)[[1]]), tol = 6-4)
 
   fr_pre <- gh_pop_get_data(gs[[1]], inverse.transform = TRUE)
-  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(fr_pre))
+  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(fr_pre), tol = 6-4)
   fr_pre1 <- gh_pop_get_data(gs[[1]], "rectangle", inverse.transform = TRUE)
   fr_pre2 <- gh_pop_get_data(gs[[1]], "rectangle")
   expect_condition(!all.equal(exprs(fr_pre1),exprs(fr_pre2)))
 
   fs_pre <- gs_pop_get_data(gs, inverse.transform = TRUE)
-  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(fs_pre[[1]]))
-  expect_equivalent(exprs(compensate(fs[[2]], comp)), exprs(fs_pre[[2]]))
+  expect_equivalent(exprs(compensate(fs[[1]], comp)), exprs(fs_pre[[1]]), tol = 6-4)
+  expect_equivalent(exprs(compensate(fs[[2]], comp)), exprs(fs_pre[[2]]), tol = 6-4)
   fs_pre1 <- gs_pop_get_data(gs, "rectangle", inverse.transform = TRUE)
   fs_pre2 <- gs_pop_get_data(gs, "rectangle")
   expect_condition(!all.equal(exprs(fs_pre1),exprs(fs_pre2)))
@@ -87,7 +97,7 @@ test_that("add logical vector", {
   gs_pop_add(gs, ind, name = "g1", parent = "rectangle")
   
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
-  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[[2]], 140)#TODO:why 155 in trunk
+  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[[2]], 155)
   gs_pop_remove(gs, "g1")
   
 #global indice (relative to root)  
@@ -95,7 +105,7 @@ test_that("add logical vector", {
   gs_pop_add(gs, ind, name = "g1", parent = "rectangle")
   expect_is(gh_pop_get_gate(gs[[1]], "g1"), "booleanFilter")
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
-  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[[2]], 140)#TODO:why 155 in trunk
+  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[[2]], 155)
   gs_pop_remove(gs, "g1")
 })
 
