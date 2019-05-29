@@ -116,6 +116,8 @@ test_that("Construct new GatingSet based on the existing gating hierarchy",
      suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir))
      expect_that(gs, is_a("GatingSet"))
      expect_equal(gs_get_pop_paths(gs), gs_get_pop_paths(gs1))
+     expect_equal(gs_pop_get_stats(gs), gs_pop_get_stats(gs1), tol = 2e-3)
+     
    })
 isCpStaticGate <<- TRUE
 source("GatingSet-testSuite.R", local = TRUE)
