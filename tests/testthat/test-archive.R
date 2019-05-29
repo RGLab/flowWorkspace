@@ -136,10 +136,13 @@ source("GatingHierarchy-testSuite.R", local = TRUE)
 test_that("Construct new GatingSet based on the existing gating hierarchy",
    {
      #re-load the gs since the trans get lost during clone
-     suppressWarnings(suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
-     gh <- gs[[1]]
+     suppressWarnings(suppressMessages(gs1 <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
+     gh <- gs1[[1]]
      suppressMessages(gs <<- GatingSet(gh, sampleNames(gh), path = dataDir, isNcdf = TRUE))
      expect_that(gs, is_a("GatingSet"))
+     expect_equal(gs_get_pop_paths(gs), gs_get_pop_paths(gs1))
+     expect_equal(gs_pop_get_stats(gs), gs_pop_get_stats(gs1), tol = 2e-3)
+     
    })
 isCpStaticGate <<- TRUE
 islegacyArchivedGS <<- FALSE
