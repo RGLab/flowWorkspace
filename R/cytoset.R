@@ -353,10 +353,11 @@ setMethod("phenoData",
 		signature=signature(object="cytoset"),
 		definition=function(object){
 			df <- pData(object)
+			cols <- colnames(df)
 			new("AnnotatedDataFrame",
 					data=df,
-					varMetadata=data.frame(labelDescription="Name",
-							row.names="name"))
+					varMetadata=data.frame(labelDescription=cols,
+							row.names=cols))
 		})
 
 #' @export
