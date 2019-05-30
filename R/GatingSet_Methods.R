@@ -94,14 +94,14 @@ gh_apply_to_new_fcs <- function(x, files
 				}
 				
 			}
-			if(length(x@transformation) > 1)#deal with the trans that are not stored in c++
+			if(length(x@transformation) > 0)#deal with the trans that are not stored in c++
 			{
 				gs_temp <- GatingSet(cs)
 				transform(gs_temp, x@transformation[[1]])
 				cs <- gs_cyto_data(gs_temp)
 			}
 			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer))
-			if(length(x@transformation) > 1)#copy over the R trans to new gs
+			if(length(x@transformation) > 0)#copy over the R trans to new gs
 				gs@transformation <- sapply(sampleNames(gs), function(obj)x@transformation[[1]], simplify = FALSE)
 			
             message("done!")
@@ -1324,7 +1324,11 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
       if(extends(class(i), "numeric")||class(i) == "logical"){
         i <- sampleNames(x)[i]
       }
-      new("GatingSet", pointer = subset_gs_by_sample(x@pointer, i))
+	  if(length(x@transformation) >0)
+	  	trans <- x@transformation[i]
+	  else
+		  trans <- list()
+      new("GatingSet", pointer = subset_gs_by_sample(x@pointer, i), transformation = trans)
     })
 
 
