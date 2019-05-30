@@ -101,6 +101,8 @@ gh_apply_to_new_fcs <- function(x, files
 				cs <- gs_cyto_data(gs_temp)
 			}
 			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer))
+			if(length(x@transformation) > 1)#copy over the R trans to new gs
+				gs@transformation <- sapply(sampleNames(gs), function(obj)x@transformation[[1]], simplify = FALSE)
 			
             message("done!")
 			return(gs)
@@ -1734,7 +1736,7 @@ setMethod("transform",
 		fs <- gs_pop_get_data(gs)
 
 		suppressMessages(fs_trans <- transform(fs, tList, ...))
-		flowData(gs) <- fs_trans
+		gs_cyto_data(gs) <- fs_trans
 
 	}else
 	{ #transform data and store trans in c++
