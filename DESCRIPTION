@@ -71,7 +71,8 @@ Suggests:
     knitr,
     ggcyto,
     parallel,
-    CytoML
+    CytoML,
+    openCyto
 LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.8), cytolib(>= 2.1.12),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
