@@ -5,18 +5,20 @@
 \name{GatingSet-class}
 \alias{GatingSet-class}
 \alias{GatingSet}
+\alias{[,GatingSet,ANY,ANY,ANY-method}
 \alias{[,GatingSet,ANY-method}
 \alias{[,GatingSetList,ANY-method}
 \alias{[[,GatingSet,numeric-method}
 \alias{[[,GatingSet,logical-method}
 \alias{[[,GatingSet,character-method}
+\alias{[,GatingSetList,ANY,ANY,ANY-method}
 \title{Class \code{"GatingSet"}}
 \usage{
-\S4method{[}{GatingSet,ANY}(x, i, j, ..., drop = TRUE)
+\S4method{[}{GatingSet,ANY,ANY,ANY}(x, i, j, ..., drop = TRUE)
 
 \S4method{[[}{GatingSet,numeric}(x, i, j, ...)
 
-\S4method{[}{GatingSetList,ANY}(x, i, j, ..., drop = TRUE)
+\S4method{[}{GatingSetList,ANY,ANY,ANY}(x, i, j, ..., drop = TRUE)
 }
 \arguments{
 \item{x}{\code{GatingSet} or \code{GatingSetList}}

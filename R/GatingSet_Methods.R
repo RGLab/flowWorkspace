@@ -366,14 +366,15 @@ load_gs<-function(path){
 #'
 #' construct object from existing gating hierarchy(gating template) and flow data 
 #'
-#' @param x GatingSet
-#' @param y GatingHierarchy
+#' @param x GatingHierarchy
+#' @param files fcs file paths
+#' @param y sample names
 #' @param path \code{character} specifies the path to the flow data (FCS files)
 #' @param ... other arguments. 
-#' @rdname GatingSet-methods
+#' @rdname gh_apply_to_new_fcs
 #' @export
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".", ...){
-            
+            .Deprecated("gh_apply_to_new_fcs")
 			samples <- y
 			dataPaths <- vector("character")
 			excludefiles <- vector("logical")
@@ -403,9 +404,17 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 
 
 			files<-file.path(dataPaths,samples)
-			Object<-new("GatingSet")
+			gh_apply_to_new_fcs(x, files, ...)	
+		})
+#' @rdname gh_apply_to_new_fcs
+#' @param swap_cols for internal usage
+#' @export
+gh_apply_to_new_fcs <- function(x, files
+									, swap_cols = FALSE #for diva parsing
+									, ...){	
+			
 			message("generating new GatingSet from the gating template...")
-			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
+			Object<-new("GatingSet")
 			identifier(Object) <- .uuid_gen()
 
       sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
@@ -426,7 +435,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
               recompute(Object)
             message("done!")
 			return(Object)
-		})
+		}
 
 #' Swap the colnames
 #' Perform some validity checks before returning the updated colnames
@@ -985,7 +994,22 @@ fix_channel_slash <- function(chnls, slash_loc = NULL){
       , USE.NAMES = FALSE)
 
 }
-
+fix_y_axis <- function(gs, x, y){
+	chnls <- colnames(gs_pop_get_data(gs))
+	y.candidates <- chnls[-match(x,chnls)]
+	
+	if(y%in%y.candidates)
+		yParam <- y
+	else{
+		if(!y %in% chnls)
+			stop("default y '", y, "' is not valid channel name!Try to reset it")
+		#pick other channel for y axis
+		y.candidates <- y.candidates[!grepl("[Tt]ime", y.candidates)]
+		yParam <- y.candidates[1]
+		warning("Y axis is set to '", yParam, "' because default y '", y, "' can not be used as y axis!\n To eliminate this warning, change the default y channel")
+	}
+	return(yParam)
+}
 #' transform the range slot and construct axis label and pos for the plotting
 #' @param G \code{GatingSet} It is an incomplete GatingSet object which does not have data slot assigned yet.
 #' @param wsType \code{character} flowJo workspace type

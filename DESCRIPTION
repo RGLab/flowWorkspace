@@ -69,7 +69,8 @@ Suggests:
     knitr,
     ggcyto,
     parallel,
-    CytoML
+    CytoML,
+    openCyto
 LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.3.7), cytolib(>= 1.3.3), RcppParallel
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11
