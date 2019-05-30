@@ -2202,7 +2202,11 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
             #copy the R structure
             clone <- x
             clone@axis <- clone@axis[i]
-            clone@transformation <- clone@transformation[i]
+			if(length(x@transformation) >0)
+				trans <- x@transformation[i]
+			else
+				trans <- list()
+			clone@transformation <- trans
             #subsetting data
 			fs <- gs_cyto_data(clone)[i]
 
