@@ -85,5 +85,22 @@ test_that("compensate & transform a GatingSet", {
           
         }
       
+      #add trans not supported by c++
+      ################################
+      gs <- gs_clone(gs.raw)
+      cs <- gs_cyto_data(gs)
+      translist <- list(flowjo_fasinh_trans(), logicle_trans(), flowjo_biexp_trans(), asinhtGml2_trans(), logicleGml2_trans())
+      trans <- transformerList(colnames(cs), translist)      
+      gs <- transform(gs, trans)
+      expect_equal(gs@transformation[[1]], trans)
+      #trans the cs directly
+      gs1 <- gs_clone(gs.raw)
+      cs1 <- gs_cyto_data(gs1)
+      translist <- lapply(translist, function(obj)obj[["transform"]])
+      trans <- transformList(colnames(cs), translist)      
+      transform(cs1, trans)
+      
+      expect_equal(range(cs[[1]], "data"), range(cs1[[1]], "data"))
+      expect_false(cs_get_h5_file_path(cs)==cs_get_h5_file_path(cs1))
       
     })
