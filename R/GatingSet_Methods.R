@@ -81,7 +81,7 @@ gh_apply_to_new_fcs <- function(x, files
 			message("generating new GatingSet from the gating template...")
 			
 			#load new data
-      		cs <- load_cytoset_from_fcs(files, is_h5 = TRUE, ...)
+  		cs <- load_cytoset_from_fcs(files, is_h5 = TRUE, ...)
 			cols.old <- colnames(cs)
 			cols <- swap_data_cols(cols.old, swap_cols)#validity check
 			if(!all(cols==cols.old))
@@ -94,10 +94,12 @@ gh_apply_to_new_fcs <- function(x, files
 				}
 				
 			}
-			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer))
+			execute_in_c <- length(x@transformation) == 0
+			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c))
 			#deal with the trans that are not stored in c++
-			if(length(x@transformation) > 0)
+			if(!execute_in_c)
 			{
+			  compensate(gs, gh_get_compensations(x))#setting comp is redundant(since it is already copied) but it is lightweight so should fine
 			  #post transform the data and copy over the R trans to new gs
 			  #because c++ code only compensate but doesn't transform data
 			  gs <- transform(gs, x@transformation[[1]])
@@ -1736,11 +1738,11 @@ setMethod("transform",
 	{
 		gs@transformation <- translist
 
-		fs <- gs_pop_get_data(gs)
+		cs <- gs_pop_get_data(gs)
 
-		suppressMessages(fs_trans <- transform(fs, tList, ...))
-		gs_cyto_data(gs) <- fs_trans
-
+		suppressMessages(transform(cs, tList, ...))
+		gs_transform_data(gs@pointer)#must run this to take care scaling of time channel
+		
 	}else
 	{ #transform data and store trans in c++
 		for(sn in names(translist))
