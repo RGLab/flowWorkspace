@@ -13,7 +13,7 @@ for(toRm in nodes[grepl("CCR", nodes)])
 suppressMessages(gs2 <- gs_clone(gs1))
 sampleNames(gs2) <- "2.fcs"
 #create a merged gs
-suppressMessages(gs6 <- gslist_to_gs(GatingSetList(list(gs1, gs2))))
+suppressMessages(gs6 <- gs_clone(gslist_to_gs(GatingSetList(list(gs1, gs2)))))
 gh_pop_remove("DPT", gh = gs6[[1]])
 gh_pop_remove("DNT", gh = gs6[[1]])
 
@@ -88,3 +88,4 @@ test_that("group and merge the GatingSet object", {
   expect_equal(length(gs_split_by_tree(gs6)), 1)
   
 })
+
