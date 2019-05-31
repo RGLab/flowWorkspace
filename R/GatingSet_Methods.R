@@ -94,17 +94,16 @@ gh_apply_to_new_fcs <- function(x, files
 				}
 				
 			}
-			if(length(x@transformation) > 0)#deal with the trans that are not stored in c++
-			{
-				gs_temp <- GatingSet(cs)
-				transform(gs_temp, x@transformation[[1]])
-				cs <- gs_cyto_data(gs_temp)
-			}
 			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer))
-			if(length(x@transformation) > 0)#copy over the R trans to new gs
-				gs@transformation <- sapply(sampleNames(gs), function(obj)x@transformation[[1]], simplify = FALSE)
+			#deal with the trans that are not stored in c++
+			if(length(x@transformation) > 0)
+			{
+			  #post transform the data and copy over the R trans to new gs
+			  #because c++ code only compensate but doesn't transform data
+			  gs <- transform(gs, x@transformation[[1]])
+			  recompute(gs)
+			}	
 			
-            message("done!")
 			return(gs)
 		}
 
