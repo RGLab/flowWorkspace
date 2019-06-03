@@ -11,7 +11,6 @@ NULL
 #' @param y \code{character} node name or path
 #' @param z \code{logical} vector as local event indices relative to node \code{y}
 #' @export
-#' @importFrom ncdfFlow updateIndices
 #' @examples
 #' library(flowWorkspace)
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")

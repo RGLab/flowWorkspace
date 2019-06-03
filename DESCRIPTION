@@ -38,7 +38,9 @@ Imports:
     flowViz,
     matrixStats,
     digest,
-    RcppParallel
+    RcppParallel,
+    flowCore(>= 1.51.4),
+	ncdfFlow(>= 2.31.1)
 Collate: 
     'AllClasses.R'
     'getStats.R'
@@ -60,8 +62,6 @@ Collate:
     'updateIndices.R'
     'utils.R'
     'zzz.R'
-Depends:
-    R (>= 2.16.0),flowCore(>= 1.51.4),ncdfFlow(>= 2.31.1)
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
 Suggests:
     testthat,

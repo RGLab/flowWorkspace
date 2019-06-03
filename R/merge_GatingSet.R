@@ -470,8 +470,6 @@ NULL
 #'                                          )
 #'                      )  
 #'}
-#' @importFrom flowCore colnames<-
-#' @importFrom ncdfFlow colnames<-
 #' @export 
 #' @rdname gs_update_channels
 updateChannels <- function(gs, map, all = TRUE){
