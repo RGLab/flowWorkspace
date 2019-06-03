@@ -415,9 +415,11 @@ gh_apply_to_new_fcs <- function(x, files
 			
 			message("generating new GatingSet from the gating template...")
 			Object<-new("GatingSet")
+			samples <- basename(files)
+			Object@pointer <- .cpp_NewGatingSet(x@pointer,sampleNames(x),samples)
 			identifier(Object) <- .uuid_gen()
 
-      sampletbl <- data.frame(sampleID = NA, name = basename(samples), file = files, guid = basename(samples), stringsAsFactors = FALSE)
+      sampletbl <- data.frame(sampleID = NA, name = samples, file = files, guid = samples, stringsAsFactors = FALSE)
 	  		comp <- x@compensation[[1]]
 			if(length(x@transformation) > 0)
 			{
@@ -2353,7 +2355,7 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
                             , flag = x@flag
                             , axis = x@axis
                             , guid = identifier(x)
-                            , transformation = x@transformation[[i]]
+                            , transformation = x@transformation[i]
                             , compensation = x@compensation
                             , name = i)
 
