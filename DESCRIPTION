@@ -36,9 +36,9 @@ Imports:
     matrixStats,
     RcppParallel,
     RProtoBufLib,
-    digest
-Depends:
-    R (>= 2.16.0),flowCore(>= 1.49.6),ncdfFlow(>= 2.25.4)
+    digest,
+    flowCore(>= 1.49.6),
+	ncdfFlow(>= 2.25.4)
 Collate: 
     'cytoframe.R'
     'cytoset.R'
