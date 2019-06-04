@@ -1,7 +1,7 @@
 library(data.table)
 library(utils)
 library(dplyr)
-
+library(flowCore)
 library(Biobase)
 dataDir <- system.file("extdata",package="flowWorkspaceData")
 resultDir <- "expect_result"

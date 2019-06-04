@@ -20,6 +20,7 @@ Swap the colnames
 Perform some validity checks before returning the updated colnames
 }
 \examples{
+library(flowCore)
 data(GvHD)
 fr <- GvHD[[1]]
 colnames(fr)

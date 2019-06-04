@@ -23,6 +23,7 @@ biexponential transformation object
 Used for constructing biexponential transformation object.
 }
 \examples{
+library(flowCore)
 data(GvHD)
 fr <- GvHD[[1]]
 data.raw <- exprs(fr)[, "FL1-H"]

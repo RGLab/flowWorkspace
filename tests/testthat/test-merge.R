@@ -22,31 +22,18 @@ gs_pop_remove("DNT", gs = gs2)
 
 # remove singlets gate
 suppressMessages(gs3 <- gs_clone(gs2))
+gh_pop_move(gs3[[1]], "CD3+", "not debris")
 gs_pop_remove("singlets", gs = gs3)
-suppressMessages(gs_pop_add(gs3, gs_pop_get_gate(gs2, "CD3+"), parent = "not debris"))
-for(tsub in c("CD4", "CD8"))
-{
-  suppressMessages(gs_pop_add(gs3, gs_pop_get_gate(gs2, tsub), parent = "CD3+"))
-  for(toAdd in gs_pop_get_children(gs2, tsub))
-  {
-    thisParent <- gs_pop_get_parent(gs2[[1]], toAdd, path = "auto")
-    suppressMessages(gs_pop_add(gs3, gs_pop_get_gate(gs2, toAdd), parent = thisParent))
-  }
-}
 sampleNames(gs3) <- "3.fcs"
 
 # spin the branch to make it isomorphic
 suppressMessages(gs4 <- gs_clone(gs3))
-# rm cd4 branch first
-gs_pop_remove("CD4", gs = gs4)
-# add it back
-suppressMessages(gs_pop_add(gs4, gs_pop_get_gate(gs3, "CD4"), parent = "CD3+"))
-# add all the chilren back
-for(toAdd in gs_pop_get_children(gs3, "CD4"))
-{
-  thisParent <- gs_pop_get_parent(gs3[[1]], toAdd)
-  suppressMessages(gs_pop_add(gs4, gs_pop_get_gate(gs3, toAdd), parent = thisParent))
-}
+# mv cd4 branch first
+gh_pop_move(gs4[[1]], "CD4", "root")
+# cp it back
+gh_copy_gate(gs4[[1]], "CD4", "CD3+")
+# rm cp
+gs_pop_remove("/CD4", gs = gs4)
 sampleNames(gs4) <- "4.fcs"
 
 suppressMessages(gs5 <- gs_clone(gs4))

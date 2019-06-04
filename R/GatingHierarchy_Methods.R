@@ -1121,7 +1121,8 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
       trans.objects <- x@transformation
       if(length(trans.objects) == 0){
         trans.objects <- .getTransformations(x@pointer,sampleNames(x), ...)
-      }
+      }else
+        trans.objects <- trans.objects[[1]]
       trans_names <- names(trans.objects)
       
       #this option is for backward compatibility

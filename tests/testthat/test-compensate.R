@@ -58,11 +58,12 @@ test_that("compensate & transform a GatingSet", {
       expect_equal(fsApply(gs_pop_get_data(gs4), colMeans, use.exprs = TRUE), expectRes)
     
       #trans
-      translist <- estimateLogicle(fs[[1]], c("FL1-H", "FL2-H"))
+      chnls <- c("FL1-H", "FL2-H")
+      translist <- estimateLogicle(fs[[1]], chnls)
       fs.trans <- transform(fs, translist)  
       expectRes <- fsApply(fs.trans, colMeans, use.exprs = TRUE)
       
-      transObj <- estimateLogicle(gs[[1]], c("FL1-H", "FL2-H"))
+      transObj <- estimateLogicle(gs[[1]], chnls)
       
       expect_error(gs.trans <- transform(gs), "Missing the second argument")
       expect_error(gs.trans <- transform(gs, translist), regexp = "transformerList")
@@ -73,6 +74,38 @@ test_that("compensate & transform a GatingSet", {
       expect_equal(gs.trans@transformation, transObj.list)
       fs.trans.gs <- gs_pop_get_data(gs.trans)
       expect_equal(fsApply(fs.trans.gs, colMeans, use.exprs = TRUE), expectRes)
+      # res <- lapply(gs.trans, function(gh){
+      #   tl <- getTransformations(gh, only = FALSE)
+      #   transformerList(names(tl), tl)
+      #   })
+      params <- c("m", "t", "a", "w")
+      for(sn in sampleNames(gs))
+        for(chnl in chnls)
+        {
+              
+          res <- gh_get_transformations(gs.trans[[sn]])[[chnl]]
+          res <- mget(params, environment(res))
+          expectRes.trans <- mget(params, environment(transObj.list[[sn]][[chnl]][[2]]))
+          expect_equal(res, expectRes.trans)
+          
+        }
+      
+      #add trans not supported by c++
+      ################################
+      gs <- gs_clone(gs)
+      cs <- gs_cyto_data(gs)
+      translist <- list(flowjo_fasinh_trans(), logicle_trans(), flowjo_biexp_trans(), asinhtGml2_trans(), logicleGml2_trans())
+      trans <- transformerList(colnames(cs), translist)      
+      gs1 <- transform(gs1, trans)
+      expect_equal(gs1@transformation[[1]], trans)
+      #trans the cs directly
+      gs1 <- gs_clone(gs)
+      cs1 <- gs_cyto_data(gs1)
+      translist <- lapply(translist, function(obj)obj[["transform"]])
+      trans <- transformList(colnames(cs), translist)      
+      transform(cs1, trans)
+      
+      expect_equal(range(cs[[1]], "data"), range(cs1[[1]], "data"))
       
       #customerize cdf path
       tmp <- tempfile(fileext = ".cdf")
