@@ -2349,13 +2349,16 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
       data <- x@data
       if(is.null(data))
         data <- new("flowSet")
+	trans <- x@transformation
+	if(length(trans)>0)
+		trans <- trans[i]
       #new takes less time than as method
       new("GatingHierarchy", pointer = x@pointer
                             , data = data
                             , flag = x@flag
                             , axis = x@axis
                             , guid = identifier(x)
-                            , transformation = x@transformation[i]
+                            , transformation = trans
                             , compensation = x@compensation
                             , name = i)
 
