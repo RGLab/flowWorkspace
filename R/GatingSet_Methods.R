@@ -117,6 +117,7 @@ gh_apply_to_new_fcs <- function(x, files
 #' @return the new colname vector that has some colnames swapped
 #' @export 
 #' @examples 
+#' library(flowCore)
 #' data(GvHD)
 #' fr <- GvHD[[1]]
 #' colnames(fr)

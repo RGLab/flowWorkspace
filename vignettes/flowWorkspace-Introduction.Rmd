@@ -218,6 +218,7 @@ is transformed using a channel--specific function from the list.
 
 We start from a `flowSet` that contains three ungated flow samples:
 ```{r create gs}
+library(flowCore)
 data(GvHD)
 #select raw flow data
 fs <- GvHD[1:2]

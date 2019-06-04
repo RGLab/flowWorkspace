@@ -24,6 +24,7 @@ either 10^n intervals or equal-spaced(after transformed) intervals in raw scale.
 It is mainly used as helper function to construct breaks function used by 'trans_new'.
 }
 \examples{
+library(flowCore)
 data(GvHD)
 fr <- GvHD[[1]]
 data.raw <- exprs(fr)[, "FL1-H"]

@@ -181,6 +181,7 @@ flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, 
 #' @param inverse.fun the inverse function (only needed when equal.space is TRUE)
 #' @export
 #' @examples
+#' library(flowCore)
 #' data(GvHD)
 #' fr <- GvHD[[1]]
 #' data.raw <- exprs(fr)[, "FL1-H"]
@@ -252,6 +253,7 @@ NULL
 #' @inheritParams flow_breaks
 #' @param ... parameters passed to \code{\link[flowWorkspace]{flowJoTrans}}
 #' @examples
+#' library(flowCore)
 #' data(GvHD)
 #' fr <- GvHD[[1]]
 #' data.raw <- exprs(fr)[, "FL1-H"]
