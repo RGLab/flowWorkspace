@@ -410,7 +410,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param swap_cols for internal usage
 #' @export
 gh_apply_to_new_fcs <- function(x, files
-									, swap_cols = FALSE #for diva parsing
 									, ...){	
 			
 			message("generating new GatingSet from the gating template...")
@@ -423,7 +422,7 @@ gh_apply_to_new_fcs <- function(x, files
 	  		comp <- x@compensation[[1]]
 			if(length(x@transformation) > 0)
 			{
-				trans <- x@transformation
+				trans <- x@transformation[[1]]
 				
 			}	
 			else
