@@ -341,11 +341,24 @@ cytoset_to_flowSet <- function(cs){
 #' @export 
 flowSet_to_cytoset <- function(fs, path = tempfile()){
   tmp <- tempfile()
+  # Set up mapping to ensure that the sampleNames 
+  # come back in without additional ".fcs" and in same order
+  sns <- sampleNames(fs)
+  filenames <- sns
+  # Filename logic pulled from write.flowSet
+  for(f in seq_along(filenames)){
+        if(!length(grep(".", filenames[f], fixed=TRUE)))
+            filenames[f] <- paste(filenames[f], "fcs", sep=".")
+  }
   write.flowSet(fs, tmp, filename = sampleNames(fs))
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
                               , path = tmp
                               , is_h5 = TRUE
                               , h5_dir = path)
+  # Fix any potential change or re-ordering of sampleNames
+  sns_matched <- sampleNames(cs)
+  sns_matched <- sns[match(sns_matched, filenames)]
+  sampleNames(cs) <- sns_matched
   cs
 }
 #' @export
