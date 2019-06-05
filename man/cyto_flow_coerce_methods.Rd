@@ -53,6 +53,7 @@ coerced from a \code{flowSet} object.}
 }
 
 \examples{
+library(flowCore)
 data("GvHD")
 fs <- GvHD[1]
 cs <- flowSet_to_cytoset(fs)

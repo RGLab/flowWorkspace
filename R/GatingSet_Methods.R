@@ -1671,6 +1671,7 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
 #' @examples
 #' \dontrun{
+#' library(flowCore)
 #' data(GvHD)
 #' fs <- GvHD[1:2]
 #' gs <- GatingSet(fs)

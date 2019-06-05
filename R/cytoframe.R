@@ -672,7 +672,8 @@ setReplaceMethod("keyword",
 #' @docType methods
 #' @keywords methods
 #' 
-#' @examples 
+#' @examples
+#' library(flowCore)
 #' data("GvHD")
 #' fs <- GvHD[1]
 #' cs <- flowSet_to_cytoset(fs)

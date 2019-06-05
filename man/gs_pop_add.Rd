@@ -52,6 +52,7 @@ They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \
 }
 \examples{
 \dontrun{
+    library(flowCore)
     data(GvHD)
 #select raw flow data
     fs<-GvHD[1:3]

@@ -342,7 +342,8 @@ cytoset_to_flowSet <- function(cs){
 flowSet_to_cytoset <- function(fs, path = tempfile()){
   tmp <- tempfile()
   # Set up mapping to ensure that the sampleNames 
-  # come back in without additional ".fcs" and in same order
+  # come back in without additional ".fcs" and allow
+  # for potential re-ordering
   sns <- sampleNames(fs)
   filenames <- sns
   # Filename logic pulled from write.flowSet

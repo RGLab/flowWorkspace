@@ -33,6 +33,7 @@ NULL
 #' @seealso \code{\link{GatingSet-class}}
 #' @examples
 #' \dontrun{
+#'     library(flowCore)
 #'     data(GvHD)
 #' #select raw flow data
 #'     fs<-GvHD[1:3]
