@@ -1766,6 +1766,7 @@ setMethod("transform",
 #' @param trans a \code{trans} object or a list of \code{trans} objects constructed by \code{trans_new} method.
 #' @export
 #' @examples
+#' library(flowCore)
 #' library(scales)
 #' #create tranformer object from scratch
 #' trans <- logicleTransform(w = 0.5, t = 262144, m = 4.5, a = 0)
