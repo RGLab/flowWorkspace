@@ -23,6 +23,7 @@ character the node name (in the form of full or partial gating path) or numeric 
 **...** other arguments	
 
 ```{r echo=FALSE, message=FALSE, results='hide'}
+library(flowCore)
 library(flowWorkspace)
 flowDataPath <- system.file("extdata", package = "flowWorkspaceData")
 gs <- load_gs(file.path(flowDataPath,"gs_manual"))
