@@ -1464,7 +1464,21 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
       as(x[i], "GatingHierarchy")
       
     })
-
+#' @rdname GatingSet-class
+#' @export
+setReplaceMethod("[[",
+		signature=signature(x="GatingSet",value="GatingHierarchy"),
+		definition=function(x, i, j = "missing", ..., value)
+			
+		{
+		  #dummy replacement method that only does some validity checking without doing the actual replacement 
+		  #since whatever changes (at least for the existing setter for gh) made directly to gh should already be synced to gs
+		  #gh is intended to be used as reference-type of object for any modification operations
+			stopifnot(identical(x@pointer, value@pointer))
+		  stopifnot(identical(sampleNames(x[[i]]), sampleNames(value)))
+		  #return gs as it is 
+		  x
+		})
 #' Methods to get the length of a GatingSet
 #'
 #' Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
