@@ -410,7 +410,6 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @param swap_cols for internal usage
 #' @export
 gh_apply_to_new_fcs <- function(x, files
-									, swap_cols = FALSE #for diva parsing
 									, ...){	
 			
 			message("generating new GatingSet from the gating template...")
@@ -423,7 +422,7 @@ gh_apply_to_new_fcs <- function(x, files
 	  		comp <- x@compensation[[1]]
 			if(length(x@transformation) > 0)
 			{
-				trans <- x@transformation
+				trans <- x@transformation[[1]]
 				
 			}	
 			else
@@ -2364,7 +2363,21 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
                             , name = i)
 
     })
-
+#' @rdname GatingSet-class
+#' @export
+setReplaceMethod("[[",
+		signature=signature(x="GatingSet",value="GatingHierarchy"),
+		definition=function(x, i, j = "missing", ..., value)
+			
+		{
+		  #dummy replacement method that only does some validity checking without doing the actual replacement 
+		  #since whatever changes (at least for the existing setter for gh) made directly to gh should already be synced to gs
+		  #gh is intended to be used as reference-type of object for any modification operations
+			stopifnot(identical(x@pointer, value@pointer))
+		  stopifnot(identical(sampleNames(x[[i]]), sampleNames(value)))
+		  #return gs as it is 
+		  x
+		})
 #' Methods to get the length of a GatingSet
 #'
 #' Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
@@ -2626,6 +2639,7 @@ setMethod("transform",
 #' @param trans a \code{trans} object or a list of \code{trans} objects constructed by \code{trans_new} method.
 #' @export
 #' @examples
+#' library(flowCore)
 #' library(scales)
 #' #create tranformer object from scratch
 #' trans <- logicleTransform(w = 0.5, t = 262144, m = 4.5, a = 0)

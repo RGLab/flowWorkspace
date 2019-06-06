@@ -16,6 +16,7 @@ Similar to \code{transformList} function, it constructs a list of transformer ob
 method from \code{scales} so that the inverse and breaks functions are also included.
 }
 \examples{
+library(flowCore)
 library(scales)
 #create tranformer object from scratch
 trans <- logicleTransform(w = 0.5, t = 262144, m = 4.5, a = 0)
