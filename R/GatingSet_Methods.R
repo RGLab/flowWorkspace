@@ -1474,7 +1474,7 @@ setReplaceMethod("[[",
 		  #dummy replacement method that only does some validity checking without doing the actual replacement 
 		  #since whatever changes (at least for the existing setter for gh) made directly to gh should already be synced to gs
 		  #gh is intended to be used as reference-type of object for any modification operations
-			stopifnot(identical(x@pointer, value@pointer))
+			## stopifnot(identical(x@pointer, value@pointer))
 		  stopifnot(identical(sampleNames(x[[i]]), sampleNames(value)))
 		  #return gs as it is 
 		  x
