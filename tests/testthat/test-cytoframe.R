@@ -93,8 +93,14 @@ test_that("lock", {
   cf_unlock(cf1)
   exprs(cf1)[1,1] <- 4
   expect_equivalent(exprs(cf1)[1,1], 4)
-  keyword(cf1)[["TUBE NAME"]] <- "dd"
-  expect_equivalent(keyword(cf1)[["TUBE NAME"]], "dd")
+  key.old <- keyword(cf1)[["TUBE NAME"]]
+  key.new <- "dd"
+  keyword(cf1)[["TUBE NAME"]] <- key.new
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
+  #test flush and load
+  cf_lock(cf1)
+  cf_load_meta(cf1)
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.old)
 })
 
 
