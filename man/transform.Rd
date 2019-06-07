@@ -27,6 +27,7 @@ is supported.
 }
 \examples{
 \dontrun{
+library(flowCore)
 data(GvHD)
 fs <- GvHD[1:2]
 gs <- GatingSet(fs)
