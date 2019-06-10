@@ -97,7 +97,7 @@ test_that("compensate & transform a GatingSet", {
       gs1 <- gs_clone(gs.raw)
       cs1 <- gs_cyto_data(gs1)
       translist <- lapply(translist, function(obj)obj[["transform"]])
-      trans <- transformList(colnames(cs), translist)      
+      trans <- transformList(colnames(cs), translist)   
       transform(cs1, trans)
       
       expect_equal(range(cs[[1]], "data"), range(cs1[[1]], "data"))

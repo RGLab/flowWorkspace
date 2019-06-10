@@ -570,7 +570,7 @@ setMethod("transform",
 			  stop("Missing the second argument 'translist'!")
 		  else if(is(translist, "transformList"))
 		  {
-			  translist <- sapply(sampleNames(gs), function(obj)translist, simplify = FALSE)
+			  translist <- sapply(sampleNames(`_data`), function(obj)translist, simplify = FALSE)
 		  }
 	    if(is(translist, "list"))
 	    {
