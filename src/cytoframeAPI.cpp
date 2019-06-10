@@ -1,7 +1,13 @@
 #include <flowWorkspace/pairVectorRcppWrap.h>
 using namespace Rcpp;
 using namespace cytolib;
- 
+
+
+// [[Rcpp::export(name=".cf_scale_time_channel")]]
+void cf_scale_time_channel(Rcpp::XPtr<CytoFrameView> fr)
+{
+	fr->scale_time_channel();
+}
 // [[Rcpp::export]]
 void cf_set_readonly(Rcpp::XPtr<CytoFrameView> fr, bool flag)
 {

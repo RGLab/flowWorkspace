@@ -6,6 +6,15 @@ lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
 rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 
+test_that("cf_scale_time_channel", {
+  cf1 <- realize_view(cf)
+  
+  rg <- range(cf1, "data")
+  cf_scale_time_channel(cf1)
+  rg1 <- range(cf1, "data")
+  rg[, "Time"] <- rg[, "Time"] * as.numeric(keyword(cf1, "$TIMESTEP")[[1]])
+  expect_equal(rg, rg1, tol = 3e-8)
+})
 test_that("load_meta", {
   cf1 <- realize_view(cf)
   tmp <- cf_get_h5_file_path(cf1)

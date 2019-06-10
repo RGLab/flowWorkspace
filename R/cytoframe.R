@@ -755,3 +755,7 @@ cf_flush_meta <- function(cf){
 cf_load_meta <- function(cf){
 	.cf_load_meta(cf@pointer)
 }
+
+cf_scale_time_channel <- function(cf){
+	.cf_scale_time_channel(cf@pointer)
+}
