@@ -1197,15 +1197,17 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
               , decade = curTrans$decade
               , offset = curTrans$offset
               , inverse = inverse
+	  		  , scale = curTrans$scale
           )
           
           if(inverse){
            
             attr(f,"type")<-"flog.inverse"
           }else{
-            
-            attr(f,"type")<-"flog"
-          }
+            #logtGml2 is a specialized flog
+#            attr(f,"type")<- ifelse(curTrans$scale == 1 && curTrans$offset == 1, "logtGml2", "flog")
+            attr(f,"type")<- "flog"
+			}
 
 
         }
