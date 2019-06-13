@@ -174,7 +174,7 @@ test_that("parameters<-", {
 
 test_that("keyword<-", {
   cf1 <- realize_view(cf)
-  kw <- keyword(cf1)
+  kw <- kw.old <- keyword(cf1)
   kw[["$P5S"]] <- "cd4"#update
   kw[["$P6S"]] <- NULL #delete
   kw[["testkw"]] <- 11 #add new
@@ -183,14 +183,20 @@ test_that("keyword<-", {
   expect_equal(keyword(cf1)[names(kw)], kw)
   skip_if_not(ish5)
   
-  #check if flush to disk after destroy cf1
+  #now meta won't be flushed to disk automatically after destroy cf1
   tmp <- cf_get_h5_file_path(cf1)
   rm(cf1)
   invisible(gc())
+  cf2 <- load_cytoframe_from_h5(tmp, readonly = FALSE)
+  expect_equal(keyword(cf2)[names(kw.old)], kw.old)
+  #explicit flush
+  keyword(cf2) <- kw
+  cf_flush_meta(cf2)
+  rm(cf2)
+  invisible(gc())
   cf2 <- load_cytoframe_from_h5(tmp)
   expect_equal(keyword(cf2)[names(kw)], kw)
-  
-  })
+})
 
 
 
