@@ -146,19 +146,6 @@ test_that("gh_pop_set_gate", {
       invisible(gh_pop_set_gate(gh, "CD4", gate_cd4))
       suppressMessages(recompute(gh, "CD4"))
     })    
-#the new results no longer compatible with archived results
-test_that(".getGraph",{
-      
-      #extract graph from gh
-      # thisRes <- .getGraph(gh)
-      # expectRes <- readRDS(file.path(resultDir, "getGraph_gh.rds"))
-      # expect_equal(thisRes,expectRes)
-      # 
-      # #annotate the graph
-      # thisRes <- .layoutGraph(expectRes)
-      # expectRes <- readRDS(file.path(resultDir, "layoutGraph_gh.rds"))
-      # expect_equal(thisRes,expectRes)
-    })   
 
 test_that(".getAllDescendants",{
       nodelist <- new.env(parent=emptyenv())
