@@ -186,9 +186,6 @@ load_gs<-function(path){
   files<-list.files(path)
 #   browser()
   gs <- .load_gs(output = path, files = files)$gs
-  if(!.hasSlot(gs, "name")){
-    gs@name <- ""
-  }
   gs
 }
 
@@ -318,6 +315,9 @@ load_gs<-function(path){
         gs <- new("GatingSet", flag = TRUE, guid = thisGuid, axis = axis, data = fs)
       }
 
+      if(!.hasSlot(gs, "name"))
+        gs@name <- ""
+      
       if(!.hasSlot(gs, "transformation"))
         gs@transformation <- list()
 
@@ -1983,7 +1983,7 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 setMethod("sampleNames","GatingSet",function(object){
       # If created by [] extraction, has non-empty name slot
       # that should agree with sampleNames(gs_pop_get_data(object))
-      if(.hasSlot(object, "name") && nchar(object@name) > 0){
+      if(nchar(object@name) > 0){
         object@name
       # Otherwise, use the sampleNames from the original fs
       }else{
@@ -2015,7 +2015,7 @@ setReplaceMethod("sampleNames",
       })
       #update data
       fs <- gs_cyto_data(object)
-      if(.hasSlot(object, "name") && nchar(object@name) > 0){
+      if(nchar(object@name) > 0){
         newNames <- sampleNames(fs)
         newNames[match(oldNames, newNames)] <- value
         sampleNames(fs) <- newNames
@@ -2174,8 +2174,8 @@ setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
 #' @export
 #' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
-      if(.hasSlot(object, "name") && nchar(object@name) > 0){
-        pData(gs_pop_get_data(object))
+      if(nchar(object@name) > 0){
+        pData(gs_cyto_data(object))[sampleNames(object),]
       }else{
         pData(gs_cyto_data(object))
       }
@@ -2195,7 +2195,7 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
         new.rownames <- value[["name"]] #use name column when rownames are absent
       rownames(value) <- new.rownames
       
-      if(.hasSlot(object, "name") && nchar(object@name) > 0){
+      if(nchar(object@name) > 0){
         # Make sure any changes (including re-sizing) are
         # applied to the full data.frame
         pd <- pData(fs)
