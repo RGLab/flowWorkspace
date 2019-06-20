@@ -73,7 +73,7 @@ Suggests:
     parallel,
     CytoML,
     openCyto
-LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.9), cytolib(>= 2.1.13),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
+LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 2.1.9), cytolib(>= 2.1.14),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
 SystemRequirements: GNU make, C++11

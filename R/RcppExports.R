@@ -275,8 +275,8 @@ load_cf_from_h5 <- function(filename, on_disk, flags) {
     .Call(`_flowWorkspace_load_cf_from_h5`, filename, on_disk, flags)
 }
 
-setMarker <- function(fr, old, new_name) {
-    invisible(.Call(`_flowWorkspace_setMarker`, fr, old, new_name))
+setMarker <- function(fr, channel, marker) {
+    invisible(.Call(`_flowWorkspace_setMarker`, fr, channel, marker))
 }
 
 setChannel <- function(fr, old, new_name) {

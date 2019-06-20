@@ -112,8 +112,8 @@ XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, unsigned int 
 }
 
 // [[Rcpp::export]] 
-void setMarker(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
-  fr->set_marker(old, new_name);
+void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker){
+  fr->set_marker(channel, marker);
 }                                      
 
 // [[Rcpp::export]] 
@@ -209,8 +209,7 @@ void setpdata(Rcpp::XPtr<CytoFrameView> fr, Rcpp::DataFrame df){
 	for(int i = 0; i < nChnls; i++)
 	{
 		string chnl = chnls[i];
-		string old_marker = fr->get_marker(chnl);
-		fr->set_marker(old_marker, markers[i]);
+		fr->set_marker(chnl, markers[i]);
 		fr->set_range(chnl, ColType::channel, pair<float, float>(minRange[i], maxRange[i]));
 	}
 	//no need to update $Pn keyword based on rownames of df assuming it is done through keyword setter separately

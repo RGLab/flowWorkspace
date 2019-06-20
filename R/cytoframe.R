@@ -502,21 +502,21 @@ cf_swap_colnames <- function(x, col1, col2){
 }
 setReplaceMethod("markernames",
     signature=signature(object="cytoframe", value="ANY"), function(object, value){
-      old.names <- parameters(object)[["desc"]]
+      channel.names <- colnames(object)
       if(!is.character(value)){
         stop("value must be a named character vector!")
       }else{
         chnls <- names(value)
         if(is.null(chnls))
           stop("value must be a named character vector!")
-        inds <- match(chnls, colnames(object))
+        inds <- match(chnls, channel.names)
         misMatch <- is.na(inds)
         if(any(misMatch))
           stop("channel names not found in flow data: ", paste0(chnls[misMatch], collapse = ","))
         
         for(i in seq_along(inds)){
           ind <- inds[i]
-          setMarker(object@pointer, old.names[ind], value[i])
+          setMarker(object@pointer, channel.names[ind], value[i])
         }
           
         

@@ -709,14 +709,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // setMarker
-void setMarker(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name);
-RcppExport SEXP _flowWorkspace_setMarker(SEXP frSEXP, SEXP oldSEXP, SEXP new_nameSEXP) {
+void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker);
+RcppExport SEXP _flowWorkspace_setMarker(SEXP frSEXP, SEXP channelSEXP, SEXP markerSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    Rcpp::traits::input_parameter< string >::type old(oldSEXP);
-    Rcpp::traits::input_parameter< string >::type new_name(new_nameSEXP);
-    setMarker(fr, old, new_name);
+    Rcpp::traits::input_parameter< string >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< string >::type marker(markerSEXP);
+    setMarker(fr, channel, marker);
     return R_NilValue;
 END_RCPP
 }
