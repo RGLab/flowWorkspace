@@ -1983,7 +1983,7 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 setMethod("sampleNames","GatingSet",function(object){
       # If created by [] extraction, has non-empty name slot
       # that should agree with sampleNames(gs_pop_get_data(object))
-      if(nchar(object@name) > 0){
+      if(any(nchar(object@name) > 0)){
         object@name
       # Otherwise, use the sampleNames from the original fs
       }else{
