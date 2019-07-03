@@ -2015,7 +2015,7 @@ setReplaceMethod("sampleNames",
       })
       #update data
       fs <- gs_cyto_data(object)
-      if(nchar(object@name) > 0){
+      if(any(nchar(object@name) > 0)){
         newNames <- sampleNames(fs)
         newNames[match(oldNames, newNames)] <- value
         sampleNames(fs) <- newNames
@@ -2174,7 +2174,7 @@ setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
 #' @export
 #' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
-      if(nchar(object@name) > 0){
+      if(any(nchar(object@name) > 0)){
         pData(gs_cyto_data(object))[sampleNames(object),]
       }else{
         pData(gs_cyto_data(object))
@@ -2195,7 +2195,7 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
         new.rownames <- value[["name"]] #use name column when rownames are absent
       rownames(value) <- new.rownames
       
-      if(nchar(object@name) > 0){
+      if(any(nchar(object@name) > 0)){
         # Make sure any changes (including re-sizing) are
         # applied to the full data.frame
         pd <- pData(fs)
