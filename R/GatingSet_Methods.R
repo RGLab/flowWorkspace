@@ -2175,7 +2175,7 @@ setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
 #' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
       if(any(nchar(object@name) > 0)){
-        pData(gs_cyto_data(object))[sampleNames(object),]
+        pData(gs_cyto_data(object))[sampleNames(object), , drop=FALSE]
       }else{
         pData(gs_cyto_data(object))
       }
