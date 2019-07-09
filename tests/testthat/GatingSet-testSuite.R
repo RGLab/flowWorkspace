@@ -139,7 +139,6 @@ test_that("pData ",{
     })
 
 test_that("[ subsetting",{
-      
       gs_sub <- gs[2]
       expect_is(gs_sub, "GatingSet");
       gs_sub <- gs["CytoTrol_CytoTrol_2.fcs"]
@@ -150,6 +149,9 @@ test_that("[ subsetting",{
       # Behavior for [] has changed, so should be 2
       # expect_equal(length(gs_sub), 1)
       expect_equal(length(gs_sub), 2)
+      # Verify that subsetting is preserving shape of pData
+      # (Check for missing drop=FALSE args to data.frame [ subset)
+      expect_true(is.data.frame(pData(gs_sub)))
     })
 
 test_that("subset.GatingSet",{
