@@ -121,9 +121,21 @@ test_that("lapply", {
 })
 
 fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]
-cs <- flowSet_to_cytoset(fs)
+test_that("flowSet_to_cytoset", {
+  cs <<- flowSet_to_cytoset(fs)
+  pd1 <- pData(fs)
+  pd2 <- pData(cs)
+  for(i in seq_along(colnames(pd1)))
+    pd1[, i] <- as.character(pd1[, i])
+  expect_equivalent(pd1, pd2[, colnames(pd1)])
+
+  cs_load_meta(cs)
+  pd2 <- pData(cs)
+  
+  expect_equivalent(pd1, pd2[, colnames(pd1)])
+  })
 samples <- sampleNames(cs)
-sampleNames(fs) <- samples
+# sampleNames(fs) <- samples
 rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 
 test_that("Subset", {

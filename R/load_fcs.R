@@ -339,6 +339,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
       pd <- pData(phenoFrame)
       pd[["FCS_File"]] <- NULL
       pData(cs) <- pd
+	  cs_flush_meta(cs)#make sure pd is synced to disk 
     }
     
     cs
