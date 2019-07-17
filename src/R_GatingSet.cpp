@@ -10,7 +10,6 @@
 #include "flowWorkspace.h"
 #include <Rcpp.h>
 using namespace Rcpp;
-CYTOLIB_INIT()
 GatingSet * getGsPtr(SEXP _gsPtr){
 
         if(R_ExternalPtrAddr(_gsPtr)==0)
