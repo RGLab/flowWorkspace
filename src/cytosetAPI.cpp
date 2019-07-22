@@ -1,3 +1,4 @@
+#include <cytolib/H5CytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 #include <flowWorkspace/convert_to_str_idx.h>
 #include <flowWorkspace/list_to_comp.h>

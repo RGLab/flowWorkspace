@@ -1,3 +1,4 @@
+#include <cytolib/H5CytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 using namespace Rcpp;
 using namespace cytolib;
