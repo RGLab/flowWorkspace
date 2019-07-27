@@ -4,11 +4,7 @@
 
 This package is designed to store, query and visualize the hierarchical gated flow data.
 
-It also facilitates the comparison of automated gating methods against manual gating by 
-
-importing basic flowJo workspaces into R and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies,
-
-groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.
+It also facilitates the comparison of automated gating methods against manual gating by importing basic flowJo workspaces into R and replicate the gating from flowJo using the flowCore functionality. Gating hierarchies, groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.
 
 ### INSTALLATION
 
