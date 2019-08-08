@@ -324,7 +324,7 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	if(u==0)
 		throw(domain_error("no gate associated with root node."));
 	nodeProperties & node = gh.getNodeProperty(u);
-	gate *g = node.getGate();
+	gatePtr g = node.getGate();
 	string nodeName = node.getName();
 	unsigned short gType=g->getType();
 	if(gType==RECTGATE||gType == CURLYQUADGATE)
@@ -334,17 +334,17 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	{
 		case ELLIPSEGATE:
 				{
-					ellipseGate * thisG = dynamic_cast<ellipseGate*>(g);
-					coordinate mu=thisG->getMu();
-					double dist=thisG->getDist();
-					vector<coordinate> cov = thisG->getCovarianceMat();
+					ellipseGate & thisG = dynamic_cast<ellipseGate&>(*g);
+					coordinate mu=thisG.getMu();
+					double dist=thisG.getDist();
+					vector<coordinate> cov = thisG.getCovarianceMat();
 					NumericMatrix covMat(2,2);
 					for(unsigned i =0; i < 2; i++){
 						covMat(i,0) = cov.at(i).x;
 						covMat(i,1) = cov.at(i).y;
 					}
 
-					 List ret=List::create(Named("parameters",thisG->getParamNames())
+					 List ret=List::create(Named("parameters",thisG.getParamNames())
 							 	 	 	 	 ,Named("mu", NumericVector::create(mu.x, mu.y))
 							 	 	 	 	 ,Named("cov", covMat)
 							 	 	 	 	 ,Named("dist", dist)
@@ -378,8 +378,8 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 			}
 		case BOOLGATE:
 			{
-			  boolGate * bg=dynamic_cast<boolGate*>(g);
-			  vector<BOOL_GATE_OP> boolOpSpec=bg->getBoolSpec();
+			  boolGate & bg=dynamic_cast<boolGate&>(*g);
+			  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
 			  vector<string> v;
 			  vector<char>v2;
 			  vector<deque<string> >ref;
@@ -401,8 +401,8 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 			}
 		case LOGICALGATE:
 		{
-			boolGate * bg=dynamic_cast<boolGate*>(g);
-		  vector<BOOL_GATE_OP> boolOpSpec=bg->getBoolSpec();
+			boolGate & bg=dynamic_cast<boolGate&>(*g);
+		  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
 		  vector<string> v;
 		  vector<char>v2;
 		  vector<deque<string> >ref;
@@ -424,8 +424,8 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 		}
 		case CLUSTERGATE:
 		{
-		  clusterGate * cg=dynamic_cast<clusterGate*>(g);
-		  vector<BOOL_GATE_OP> boolOpSpec=cg->getBoolSpec();
+		  clusterGate & cg=dynamic_cast<clusterGate&>(*g);
+		  vector<BOOL_GATE_OP> boolOpSpec=cg.getBoolSpec();
 		  vector<string> v;
 		  vector<char>v2;
 		  vector<deque<string> >ref;
@@ -441,7 +441,7 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 								 ,Named("ref",ref)
 								 ,Named("type",CLUSTERGATE)
 								 , Named("filterId", nodeName)
-								 , Named("cluster_method_name", cg->get_cluster_method_name())
+								 , Named("cluster_method_name", cg.get_cluster_method_name())
 								 );
 		  return ret;
 
@@ -552,21 +552,21 @@ vector<BOOL_GATE_OP> boolFilter_R_to_C(List filter){
  * convert R filter to specific gate class
  * Note: up to caller to free the dynamically allocated gate object
  */
-gate * newGate(List filter){
+gatePtr  newGate(List filter){
 
 	StringVec names=filter.names();
 
 	unsigned short gateType=as<unsigned short>(filter["type"]);
 
 	bool isNeg=as<bool>(filter["negated"]);
-	gate * g;
+	gatePtr  g;
 
 	switch(gateType)
 	{
 		case RANGEGATE:
 		{
 			StringVec params=as<StringVec>(filter["params"]);
-			rangeGate * rg=new rangeGate();
+			unique_ptr<rangeGate> rg(new rangeGate());
 			rg->setNegate(isNeg);
 
 			DoubleVec p=as<DoubleVec>(filter["range"]);
@@ -578,14 +578,14 @@ gate * newGate(List filter){
 
 			rg->setParam(pRange);
 
-			g=rg;
+			g.reset(rg.release());
 
 			break;
 		}
 		case POLYGONGATE:
 		{
 			StringVec params=as<StringVec>(filter["params"]);
-			polygonGate * pg=new polygonGate();
+			unique_ptr<polygonGate> pg(new polygonGate());
 
 			pg->setNegate(isNeg);
 
@@ -606,14 +606,14 @@ gate * newGate(List filter){
 
 			pg->setParam(pp);
 
-			g=pg;
+			g.reset(pg.release());
 
 			break;
 		}
 		case RECTGATE:
 		{
 			StringVec params=as<StringVec>(filter["params"]);
-			rectGate * rectg=new rectGate();
+			unique_ptr<rectGate> rectg(new rectGate());
 
 			rectg->setNegate(isNeg);
 
@@ -634,32 +634,32 @@ gate * newGate(List filter){
 
 			rectg->setParam(pp);
 
-			g=rectg;
+			g.reset(rectg.release());
 			break;
 
 		}
 		case BOOLGATE:
 		{
-			boolGate * bg=new boolGate();
+			unique_ptr<boolGate> bg(new boolGate());
 
 			bg->setNegate(isNeg);
 			bg->boolOpSpec = boolFilter_R_to_C(filter);
-			g=bg;
+			g.reset(bg.release());
 			break;
 
 		}
 		case LOGICALGATE:
 		{
-			logicalGate * lg = new logicalGate();
+			unique_ptr<logicalGate> lg(new logicalGate());
 			lg->setNegate(isNeg);
-			g = lg;
+			g.reset(lg.release());
 			break;
 		}
 		case CLUSTERGATE:
 		{
-			clusterGate * cg = new clusterGate(as<string>(filter["cluster_method_name"]));
+			unique_ptr<clusterGate> cg(new clusterGate(as<string>(filter["cluster_method_name"])));
 			cg->setNegate(isNeg);
-			g = cg;
+			g.reset(cg.release());
 			break;
 		}
 		case ELLIPSEGATE:
@@ -684,7 +684,7 @@ gate * newGate(List filter){
 
 			}
 
-			ellipseGate * eg = new ellipseGate(mu, cov,dist);
+			unique_ptr<ellipseGate> eg(new ellipseGate(mu, cov,dist));
 			eg->setNegate(isNeg);
 
 			// parse the parameter names
@@ -693,7 +693,7 @@ gate * newGate(List filter){
 			pp.setName(params);
 			eg->setParam(pp);
 
-			g=eg;
+			g.reset(eg.release());
 
 			break;
 		}
@@ -715,7 +715,7 @@ NODEID addGate(XPtr<GatingSet> gs,string sampleName
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
 		NODEID u = gh.getNodeID(gatePath);
-		gate * g=newGate(filter);
+		gatePtr  g=newGate(filter);
 
 
 		VertexID nodeID=gh.addGate(g,u,popName);
@@ -758,12 +758,9 @@ void setGate(XPtr<GatingSet> gs,string sampleName
 
 		NODEID u = gh.getNodeID(gatePath);
 
-		gate * g=newGate(filter);
+		gatePtr  g=newGate(filter);
 
 		nodeProperties & node=gh.getNodeProperty(u);
-		gate * old_g = node.getGate();
-		delete old_g;
-		old_g=NULL;
 		node.setGate(g);
 
 

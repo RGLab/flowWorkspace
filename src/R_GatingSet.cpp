@@ -88,8 +88,8 @@ void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData
           
           //if check if reference is gated
           bool allrefgated = true;
-          boolGate * g = dynamic_cast<boolGate *>(gh->getNodeProperty(i).getGate());
-          for(auto j : g->getBoolSpec())
+          boolGate & g = dynamic_cast<boolGate &>(*(gh->getNodeProperty(i).getGate()));
+          for(auto j : g.getBoolSpec())
           {
             if(!gh->getNodeProperty(gh->getParent(gh->getNodeID(j.path))).isGated())
             {
