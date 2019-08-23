@@ -1192,9 +1192,7 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 #						browser()
         if(curTrans$type=="log")
         {
-          f <- flowjo_flog(min_val = 0
-              , max_val = curTrans$T
-              , decade = curTrans$decade
+          f <- flowjo_flog(decade = curTrans$decade
               , offset = curTrans$offset
               , inverse = inverse
 	  		  , scale = curTrans$scale
