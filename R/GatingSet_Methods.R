@@ -2414,13 +2414,16 @@ setReplaceMethod("[[",
 #' @rdname length
 #' @export
 setMethod("length","GatingSet",function(x){
-      length(gs_cyto_data(x));
+      if(any(nchar(x@name) > 0))
+        length(x@name)
+      else
+        length(gs_cyto_data(x))
     })
 
 #' @rdname length
 #' @export
 setMethod("show","GatingSet",function(object){
-      cat("A GatingSet with",length(sampleNames(object)), "samples\n")
+      cat("A GatingSet with",length(object), "samples\n")
     })
 
 

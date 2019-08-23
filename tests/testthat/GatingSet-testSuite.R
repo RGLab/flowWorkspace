@@ -146,9 +146,7 @@ test_that("[ subsetting",{
       #c data structure does not change     
       expect_true(identical(gs@pointer,gs_sub@pointer));
       expect_false(identical(gs_sub@guid, gs@guid))
-      # Behavior for [] has changed, so should be 2
-      # expect_equal(length(gs_sub), 1)
-      expect_equal(length(gs_sub), 2)
+      expect_equal(length(gs_sub), 1)
       # Verify that subsetting is preserving shape of pData
       # (Check for missing drop=FALSE args to data.frame [ subset)
       expect_true(is.data.frame(pData(gs_sub)))
@@ -158,8 +156,7 @@ test_that("subset.GatingSet",{
   # GvHD has more samples for this test
   gs_full <- GatingSet(GvHD)
   gs_sub <- subset(gs_full, Visit == 2)
-  # Behavior for [] has changed, so should be 35
-  expect_equal(length(gs_sub), 35)
+  expect_equal(length(gs_sub), 5)
 })
 
 test_that("gs_pop_get_gate for gs",{
