@@ -185,8 +185,8 @@ load_gs<-function(path){
     stop(path,"' not found!")
   files<-list.files(path)
 #   browser()
-  .load_gs(output = path, files = files)$gs
-
+  gs <- .load_gs(output = path, files = files)$gs
+  gs
 }
 
 
@@ -315,6 +315,9 @@ load_gs<-function(path){
         gs <- new("GatingSet", flag = TRUE, guid = thisGuid, axis = axis, data = fs)
       }
 
+      if(!.hasSlot(gs, "name"))
+        gs@name <- ""
+      
       if(!.hasSlot(gs, "transformation"))
         gs@transformation <- list()
 
@@ -1978,7 +1981,14 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 #' @rdname sampleNames
 #' @export
 setMethod("sampleNames","GatingSet",function(object){
-      sampleNames(gs_cyto_data(object))
+      # If created by [] extraction, has non-empty name slot
+      # that should agree with sampleNames(gs_pop_get_data(object))
+      if(any(nchar(object@name) > 0)){
+        object@name
+      # Otherwise, use the sampleNames from the original fs
+      }else{
+        sampleNames(gs_cyto_data(object))
+      }
     })
 #' @name sampleNames
 #' @param value \code{character} new sample names
@@ -1994,15 +2004,25 @@ setReplaceMethod("sampleNames",
     signature=signature(object="GatingSet"),
     definition=function(object, value)
     {
+      # Guard against empty string because it's used as a sentinel
+      if(any(nchar(value) == 0)){
+        stop("Replacement sampleNames must be non-empty.")
+      }
       oldNames <- sampleNames(object)
       #update c++ data structure
       mapply(oldNames,value, FUN = function(oldName, newName){
             .cpp_setSample( object@pointer, oldName, newName)
       })
-
       #update data
       fs <- gs_cyto_data(object)
-      sampleNames(fs) <- value
+      if(any(nchar(object@name) > 0)){
+        newNames <- sampleNames(fs)
+        newNames[match(oldNames, newNames)] <- value
+        sampleNames(fs) <- newNames
+        object@name <- value
+      }else{
+        sampleNames(fs) <- value
+      }
       gs_cyto_data(object) <- fs
 
       object
@@ -2045,7 +2065,8 @@ gs_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
 		
 	}else
 	{
-	      this_data <- gs_cyto_data(obj, inverse.transform)[,...]
+	      fs <- gs_cyto_data(obj, inverse.transform)
+	      this_data <- fs[sampleNames(obj),...]
 	      if(y == "root"){
 	        this_data
 	      }else{
@@ -2153,7 +2174,11 @@ setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
 #' @export
 #' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
-			pData(gs_cyto_data(object))
+      if(any(nchar(object@name) > 0)){
+        pData(gs_cyto_data(object))[sampleNames(object), , drop=FALSE]
+      }else{
+        pData(gs_cyto_data(object))
+      }
 		})
 #' @name pData
 #' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object
@@ -2164,15 +2189,34 @@ setMethod("pData","GatingSet",function(object){
 #' @export
 #' @rdname pData-methods
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
-
-			fs <- gs_cyto_data(object)
-            new.rownames <- rownames(value)
-            if(is.null(new.rownames))
-              new.rownames <- value[["name"]] #use name column when rownames are absent
-
-            rownames(value) <- new.rownames
-
-			pData(fs) <- value
+      fs <- gs_cyto_data(object)
+      new.rownames <- rownames(value)
+      if(is.null(new.rownames))
+        new.rownames <- value[["name"]] #use name column when rownames are absent
+      rownames(value) <- new.rownames
+      
+      if(any(nchar(object@name) > 0)){
+        # Make sure any changes (including re-sizing) are
+        # applied to the full data.frame
+        pd <- pData(fs)
+        sub_rows <- match(sampleNames(object), rownames(pd))
+        pd_sub <- value
+        # Expand/contract/rename columns as necessary
+        pd_new <- data.frame(matrix(ncol = ncol(pd_sub), nrow = nrow(pd)),
+                             row.names = rownames(pd))
+        colnames(pd_new) <- colnames(pd_sub)
+        # Ensures old types remain intact unless
+        # intentionally changed
+        for(nm in colnames(pd_new)){
+          if(nm %in% colnames(pd)){
+            pd_new[[nm]] <- pd[[nm]]
+          }
+        }
+        pd_new[sub_rows,] <- pd_sub
+        pData(fs) <- pd_new
+      }else{
+        pData(fs) <- value
+      }
 
 			varM <- varMetadata(phenoData(fs))
 			varM[-1,] <- rownames(varM)[-1]
@@ -2195,28 +2239,25 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 #' [,GatingSet,ANY-method
 #' [,GatingSetList,ANY-method
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
-#            browser()
-            #convert non-character indices to character
-            if(extends(class(i), "numeric")||class(i) == "logical"){
-              i <- sampleNames(x)[i]
-            }
-
-            #copy the R structure
-            clone <- x
-            clone@axis <- clone@axis[i]
-			if(length(x@transformation) >0)
-				trans <- x@transformation[i]
-			else
-				trans <- list()
-			clone@transformation <- trans
-            #subsetting data
-			fs <- gs_cyto_data(clone)[i]
-
-
-            #update the data for clone
-            gs_cyto_data(clone) <- fs
-            identifier(clone) <- .uuid_gen()
-			return(clone);
+      data <- x@data
+      if(is.null(data))
+        data <- new("flowSet")
+      trans <- x@transformation
+      if(length(trans)>0)
+	      trans <- trans[i]
+      #convert non-character indices to character
+      if(extends(class(i), "numeric")||class(i) == "logical"){
+        i <- sampleNames(x)[i]
+      }
+      #new takes less time than as method
+      new("GatingSet", pointer = x@pointer
+                            , data = data
+                            , flag = x@flag
+                            , axis = x@axis
+                            , guid = .uuid_gen()
+                            , transformation = trans
+                            , compensation = x@compensation
+                            , name = i)
 		})
 
 #' subset the GatingSet/GatingSetList based on 'pData'
@@ -2346,22 +2387,7 @@ setMethod("[[",c(x="GatingSet",i="logical"),function(x,i,j,...){
 
     })
 setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
-      data <- x@data
-      if(is.null(data))
-        data <- new("flowSet")
-	trans <- x@transformation
-	if(length(trans)>0)
-		trans <- trans[i]
-      #new takes less time than as method
-      new("GatingHierarchy", pointer = x@pointer
-                            , data = data
-                            , flag = x@flag
-                            , axis = x@axis
-                            , guid = identifier(x)
-                            , transformation = trans
-                            , compensation = x@compensation
-                            , name = i)
-
+      as(x[i], "GatingHierarchy")
     })
 #' @rdname GatingSet-class
 #' @export
@@ -2388,7 +2414,10 @@ setReplaceMethod("[[",
 #' @rdname length
 #' @export
 setMethod("length","GatingSet",function(x){
-      length(gs_cyto_data(x));
+      if(any(nchar(x@name) > 0))
+        length(x@name)
+      else
+        length(gs_cyto_data(x))
     })
 
 #' @rdname length
@@ -2741,7 +2770,7 @@ setMethod("markernames",
           signature=signature(object="GatingSet"),
           definition=function(object){
 
-            markernames(gs_cyto_data(object))
+            markernames(gs_pop_get_data(object))
 
           })
 
@@ -2761,7 +2790,7 @@ setMethod("colnames",
           signature=signature(x="GatingSet"),
           definition=function(x, do.NULL="missing", prefix="missing"){
 
-            colnames(gs_cyto_data(x))
+            colnames(gs_pop_get_data(x))
 
           })
 

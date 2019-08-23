@@ -81,6 +81,7 @@ setClass("GatingSet"
                           ,guid = "character"
                           , transformation = "ANY"
                           , compensation = "ANY"
+                          , name = "character"
                           )
           ,prototype(FCSPath =""
                       ,data = NULL
@@ -89,6 +90,7 @@ setClass("GatingSet"
                       ,guid = ""
                       , transformation = list()
                       , compensation = NULL
+                      , name = ""
                   )                                       
           )
 
@@ -129,8 +131,6 @@ setClass("GatingSet"
 #' show,GatingHierarchy-method
 setClass("GatingHierarchy"
           , contains = "GatingSet"
-          , representation(name = "character")
-          , prototype(name = "")
         )
 
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
@@ -148,7 +148,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' gs <- GatingSet(fdata)
 #' }
 setMethod("GatingSet",c("flowSet"),function(x){
-      
+
       fs_clone<-flowCore:::copyFlowSet(x)
       samples<-sampleNames(fs_clone)
       G<-new("GatingSet")

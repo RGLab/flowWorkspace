@@ -1,5 +1,7 @@
 library(testthat)
 library(flowWorkspace)
+library(flowCore)
+library(ncdfFlow)
 
 test_check("flowWorkspace")
 

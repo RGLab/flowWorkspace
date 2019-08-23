@@ -40,10 +40,8 @@ NULL
 #' in the way that it reset negative input so that no NAN will be returned.
 #'
 #' @rdname flowJo_flog
-#' @param decade number of decades
-#' @param offset offset to the orignal input
-#' @param max_val top of scale value
-#' @param min_val lower bound of scaled value (where negative raw value gets truncated at)
+#' @param decade total number of decades (i.e. log(max)-log(min)
+#' @param offset offset to the orignal input(i.e. min value)
 #' @param scale the linear scale factor
 #' @param inverse whether return the inverse function
 #' @return flog(or its inverse) transform function
@@ -63,24 +61,26 @@ NULL
 #' inverse.trans(data.trans)#we lose the original value at lower end since flog can't restore negative value
 #' 
 #' #different
-#' trans <- flowjo_flog(decade = 3, max_val = 1e3)
+#' trans <- flowjo_flog(decade = 3, offset = 30)
 #' data.trans <- trans(data.raw)
 #' data.trans
-#' inverse.trans <- flowjo_flog(decade = 3, max_val = 1e3, inverse = TRUE)
+#' inverse.trans <- flowjo_flog(decade = 3, offset = 30, inverse = TRUE)
 #' inverse.trans(data.trans)
 #' 
 #' @export
-flowjo_flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){
+flowjo_flog <- function(decade = 4.5, offset = 1, scale = 1, inverse = FALSE){
   if(inverse){
     function(x)
     {
-      10 ^ ((x/scale - offset) * decade) * max_val
+      10 ^ (x* decade/scale + log10(offset))
     }
     
   }else{
     function(x){
-      sapply(x, function(i)ifelse(i>0,(log10((i)/max_val)/decade+offset)*scale,min_val))
-    }
+		x[x<offset] <- offset
+		x <- log10(x)-log10(offset)
+		x * scale/decade
+	}
     
   }
 }

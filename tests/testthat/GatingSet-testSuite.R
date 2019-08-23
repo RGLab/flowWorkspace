@@ -139,7 +139,6 @@ test_that("pData ",{
     })
 
 test_that("[ subsetting",{
-      
       gs_sub <- gs[2]
       expect_is(gs_sub, "GatingSet");
       gs_sub <- gs["CytoTrol_CytoTrol_2.fcs"]
@@ -148,6 +147,9 @@ test_that("[ subsetting",{
       expect_true(identical(gs@pointer,gs_sub@pointer));
       expect_false(identical(gs_sub@guid, gs@guid))
       expect_equal(length(gs_sub), 1)
+      # Verify that subsetting is preserving shape of pData
+      # (Check for missing drop=FALSE args to data.frame [ subset)
+      expect_true(is.data.frame(pData(gs_sub)))
     })
 
 test_that("subset.GatingSet",{
@@ -506,4 +508,100 @@ test_that("colnames", {
   expect_equal(colnames(gs[[1]]), chnls)
   expect_equal(colnames(gs[[2]]), chnls)
   
+})
+
+test_that("[ and [[ extraction", {
+  data("GvHD")
+  fs_reg <- GvHD
+  fs_ncdf <- ncdfFlowSet(GvHD)
+  gs_reg <- GatingSet(fs_reg)
+  gs_ncdf <- GatingSet(fs_ncdf)
+  gs_reg_sub <- gs_reg[2:4]
+  gs_ncdf_sub <- gs_ncdf[2:4]
+  gh_reg <- gs_reg[[5]]
+  gh_ncdf <- gs_ncdf[[5]]
+  # Make sure changed accessors are working appropriately
+  expect_equal(nchar(gs_reg@name), 0)
+  expect_equal(sampleNames(gs_reg_sub), sampleNames(gs_reg)[2:4])
+  expect_equal(gs_reg_sub@pointer, gs_reg@pointer)
+  expect_equal(pData(gs_reg_sub), pData(gs_reg)[2:4,])
+  expect_equal(sampleNames(gh_reg), sampleNames(gs_reg)[5])
+  expect_equal(gh_reg@pointer, gs_reg@pointer)
+  expect_equal(pData(gh_reg), pData(gs_reg)[5,])
+  
+  expect_equal(nchar(gs_ncdf@name), 0)
+  expect_equal(sampleNames(gs_ncdf_sub), sampleNames(gs_ncdf)[2:4])
+  expect_equal(gs_ncdf_sub@pointer, gs_ncdf@pointer)
+  expect_equal(pData(gs_ncdf_sub), pData(gs_ncdf)[2:4,])
+  expect_equal(sampleNames(gh_ncdf), sampleNames(gs_ncdf)[5])
+  expect_equal(gh_ncdf@pointer, gs_ncdf@pointer)
+  expect_equal(pData(gh_ncdf), pData(gs_ncdf)[5,])
+  
+  # Make sure the replacement methods aren't
+  # altering the parent
+  gs_sn_replacement <- sampleNames(gs_reg_sub)
+  gs_sn_replacement[[2]] <- "DummyName"
+  gs_pd_replacement <- pData(gs_reg_sub)
+  rownames(gs_pd_replacement) <- gs_sn_replacement
+  gs_pd_replacement$name[[2]] <- "DummyName"
+  gs_pd_replacement$Days <- 42
+  gh_sn_replacement <- "DummyName2"
+  gh_pd_replacement <- pData(gh_reg)
+  gh_pd_replacement$name <- gh_sn_replacement
+  rownames(gh_pd_replacement) <- gh_sn_replacement
+  gh_pd_replacement$Days <- 42
+  
+  sn_pre <- sampleNames(gs_reg)
+  pd_pre <- pData(gs_reg)
+  sampleNames(gs_reg_sub) <- gs_sn_replacement
+  pData(gs_reg_sub) <- gs_pd_replacement
+  expect_equal(sampleNames(gs_reg_sub), gs_sn_replacement)
+  expect_equal(pData(gs_reg_sub), gs_pd_replacement)
+  expect_equal(sampleNames(gs_reg), sn_pre)
+  expect_equal(pData(gs_reg), pd_pre)
+  sampleNames(gh_reg) <- gh_sn_replacement
+  pData(gh_reg) <- gh_pd_replacement
+  expect_equal(sampleNames(gh_reg), gh_sn_replacement)
+  expect_equal(pData(gh_reg), gh_pd_replacement)
+  expect_equal(sampleNames(gs_reg), sn_pre)
+  expect_equal(pData(gs_reg), pd_pre)
+  
+  sn_pre <- sampleNames(gs_ncdf)
+  pd_pre <- pData(gs_ncdf)
+  sampleNames(gs_ncdf_sub) <- gs_sn_replacement
+  pData(gs_ncdf_sub) <- gs_pd_replacement
+  expect_equal(sampleNames(gs_ncdf_sub), gs_sn_replacement)
+  expect_equal(pData(gs_ncdf_sub), gs_pd_replacement)
+  expect_equal(sampleNames(gs_ncdf), sn_pre)
+  expect_equal(pData(gs_ncdf), pd_pre)
+  sampleNames(gh_ncdf) <- gh_sn_replacement
+  pData(gh_ncdf) <- gh_pd_replacement
+  expect_equal(sampleNames(gh_ncdf), gh_sn_replacement)
+  expect_equal(pData(gh_ncdf), gh_pd_replacement)
+  expect_equal(sampleNames(gs_ncdf), sn_pre)
+  expect_equal(pData(gs_ncdf), pd_pre)
+  
+  # Make sure the replacement methods for the original
+  # GatingSet still work as expected
+  # Note, sampleNames<- alters the c++ data structure, so we
+  # need to start fresh
+  fs_reg <- GvHD
+  fs_ncdf <- ncdfFlowSet(GvHD)
+  gs_reg <- GatingSet(fs_reg)
+  gs_ncdf <- GatingSet(fs_ncdf)
+  full_sn_replacement <- sampleNames(gs_reg)
+  full_sn_replacement[2:4] <- gs_sn_replacement
+  full_pd_replacement <- pData(gs_reg)
+  full_pd_replacement[2:4,] <- gs_pd_replacement
+  rownames(full_pd_replacement)[2:4] <- rownames(gs_pd_replacement)
+  
+  sampleNames(gs_reg) <- full_sn_replacement
+  pData(gs_reg) <- full_pd_replacement
+  expect_equal(sampleNames(gs_reg), full_sn_replacement)
+  expect_equal(pData(gs_reg), full_pd_replacement)
+  
+  sampleNames(gs_ncdf) <- full_sn_replacement
+  pData(gs_ncdf) <- full_pd_replacement
+  expect_equal(sampleNames(gs_ncdf), full_sn_replacement)
+  expect_equal(pData(gs_ncdf), full_pd_replacement)
 })

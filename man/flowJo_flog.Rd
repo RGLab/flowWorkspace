@@ -5,20 +5,15 @@
 \alias{flowJo.flog}
 \title{flog transform function}
 \usage{
-flowjo_flog(decade = 4.5, offset = 1, max_val = 262144,
-  min_val = 0, scale = 1, inverse = FALSE)
+flowjo_flog(decade = 4.5, offset = 1, scale = 1, inverse = FALSE)
 
 flowJo.flog(decade = 4.5, offset = 1, max_val = 262144,
   min_val = 0, scale = 1, inverse = FALSE)
 }
 \arguments{
-\item{decade}{number of decades}
+\item{decade}{total number of decades (i.e. log(max)-log(min)}
 
-\item{offset}{offset to the orignal input}
-
-\item{max_val}{top of scale value}
-
-\item{min_val}{lower bound of scaled value (where negative raw value gets truncated at)}
+\item{offset}{offset to the orignal input(i.e. min value)}
 
 \item{scale}{the linear scale factor}
 
@@ -47,10 +42,10 @@ data.trans
 inverse.trans(data.trans)#we lose the original value at lower end since flog can't restore negative value
 
 #different
-trans <- flowjo_flog(decade = 3, max_val = 1e3)
+trans <- flowjo_flog(decade = 3, offset = 30)
 data.trans <- trans(data.raw)
 data.trans
-inverse.trans <- flowjo_flog(decade = 3, max_val = 1e3, inverse = TRUE)
+inverse.trans <- flowjo_flog(decade = 3, offset = 30, inverse = TRUE)
 inverse.trans(data.trans)
 
 }

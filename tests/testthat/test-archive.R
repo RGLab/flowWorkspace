@@ -120,7 +120,8 @@ test_that("extract GatingHierarchy from GatingSet",{
     gh <<- gs[[1]]
     gh2 <- gs[["CytoTrol_CytoTrol_1.fcs"]]
     expect_is(gh, "GatingHierarchy")
-    expect_true(identical(gh2@guid, gh@guid))
+    # Like gs[], gs[[]] now generates new guid
+    expect_false(identical(gh2@guid, gh@guid))
     expect_true(identical(gh@pointer, gh2@pointer))
     expect_equal(gh@data, gh2@data)
     expect_equal(gh@axis, gh2@axis)
