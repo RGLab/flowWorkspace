@@ -6,7 +6,6 @@
 #'
 #' @inheritParams flow_breaks
 #' @param M number of decades
-#' @param T top scale value
 #' @return logtGml2 transformation object
 #' @examples
 #' trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
@@ -20,11 +19,11 @@
 #' brks.trans <- trans.func(brks)
 #' brks.trans
 #' @export  
-logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
+logtGml2_trans <- function (M = 4.5, n = 6, equal.space = FALSE)
 {
   
-  trans <- flowjo_flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = FALSE)
-  inv <- flowjo_flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = TRUE)
+  trans <- flowjo_flog(decade = M, offset = 1, inverse = FALSE)
+  inv <- flowjo_flog(decade = M, offset = 1, inverse = TRUE)
   flow_trans(name = "logtGml2", trans.fun = trans, inverse.fun = inv,
              n = n, equal.space = equal.space)
 }
@@ -86,7 +85,7 @@ flowjo_flog <- function(decade = 4.5, offset = 1, scale = 1, inverse = FALSE){
 }
 #' @rdname flowJo_flog
 #' @export
-flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){
+flowJo.flog <- function(decade = 4.5, offset = 1, scale = 1, inverse = FALSE){
   .Defunct("flowjo_flog")
   }
 #' wrap the calibration table into transformation function using stats:::splinefun

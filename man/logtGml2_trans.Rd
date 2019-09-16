@@ -4,12 +4,10 @@
 \alias{logtGml2_trans}
 \title{Gating-ML 2.0 Log transformation.}
 \usage{
-logtGml2_trans(M = 4.5, T = 262144, n = 6, equal.space = FALSE)
+logtGml2_trans(M = 4.5, n = 6, equal.space = FALSE)
 }
 \arguments{
 \item{M}{number of decades}
-
-\item{T}{top scale value}
 
 \item{n}{desired number of breaks (the actual number will be different depending on the data range)}
 
