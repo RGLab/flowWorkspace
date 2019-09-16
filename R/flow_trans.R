@@ -8,7 +8,7 @@
 #' @param M number of decades
 #' @return logtGml2 transformation object
 #' @examples
-#' trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
+#' trans.obj <- logtGml2_trans(M = 1, equal.space = TRUE)
 #' data <- 1:1e3
 #' brks.func <- trans.obj[["breaks"]]
 #' brks <- brks.func(data)
