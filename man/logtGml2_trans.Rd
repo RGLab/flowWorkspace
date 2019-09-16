@@ -4,12 +4,10 @@
 \alias{logtGml2_trans}
 \title{Gating-ML 2.0 Log transformation.}
 \usage{
-logtGml2_trans(M = 4.5, T = 262144, n = 6, equal.space = FALSE)
+logtGml2_trans(M = 4.5, n = 6, equal.space = FALSE)
 }
 \arguments{
 \item{M}{number of decades}
-
-\item{T}{top scale value}
 
 \item{n}{desired number of breaks (the actual number will be different depending on the data range)}
 
@@ -23,7 +21,7 @@ Used to construct flog transformer object.
 (which uses a specilized \link{flowjo_flog})
 }
 \examples{
-trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
+trans.obj <- logtGml2_trans(M = 1, equal.space = TRUE)
 data <- 1:1e3
 brks.func <- trans.obj[["breaks"]]
 brks <- brks.func(data)

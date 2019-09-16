@@ -8,7 +8,7 @@
 \usage{
 \S4method{GatingSet}{GatingHierarchy,character}(x, y, path = ".", ...)
 
-gh_apply_to_new_fcs(x, files, swap_cols = FALSE, ...)
+gh_apply_to_new_fcs(x, files, ...)
 }
 \arguments{
 \item{x}{GatingHierarchy}
