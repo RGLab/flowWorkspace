@@ -22,10 +22,14 @@
 #' @export  
 logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 {
-  
-  trans <- flowjo_flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = FALSE)
-  inv <- flowjo_flog(decade = M, offset = 1, max_val = T, min_val = 0, inverse = TRUE)
-  flow_trans(name = "logtGml2", trans.fun = trans, inverse.fun = inv,
+  trans <- function(x){
+    x[x<0] <- min(x[x>0])
+    x <- log10(x/T)/M +1
+  }
+  inv <- function(x){
+    T*(10 ^ (M*(x-1)))
+  }
+  flow_trans(name = "logtGml2", trans.fun = trans, inverse.fun = inv, 
              n = n, equal.space = equal.space)
 }
 
