@@ -24,7 +24,7 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 {
   trans <- function(x){
     x[x<0] <- min(x[x>0])
-    x <- log10(x/T)/M +1
+    log10(x/T)/M + 1
   }
   inv <- function(x){
     T*(10 ^ (M*(x-1)))
