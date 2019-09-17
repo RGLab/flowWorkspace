@@ -21,7 +21,7 @@ Used to construct flog transformer object.
 (which uses a specilized \link{flowjo_flog})
 }
 \examples{
-trans.obj <- logtGml2_trans(M = 1, equal.space = TRUE)
+trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
 data <- 1:1e3
 brks.func <- trans.obj[["breaks"]]
 brks <- brks.func(data)
