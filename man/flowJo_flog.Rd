@@ -7,7 +7,8 @@
 \usage{
 flowjo_flog(decade = 4.5, offset = 1, scale = 1, inverse = FALSE)
 
-flowJo.flog(decade = 4.5, offset = 1, scale = 1, inverse = FALSE)
+flowJo.flog(decade = 4.5, offset = 1, max_val = 262144,
+  min_val = 0, scale = 1, inverse = FALSE)
 }
 \arguments{
 \item{decade}{total number of decades (i.e. log(max)-log(min)}
