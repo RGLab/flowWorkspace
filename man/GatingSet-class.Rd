@@ -9,15 +9,11 @@
 \alias{[[,GatingSet,numeric-method}
 \alias{[[,GatingSet,logical-method}
 \alias{[[,GatingSet,character-method}
-\alias{[[<-,GatingSet,ANY,ANY,GatingHierarchy-method}
 \title{Class \code{"GatingSet"}}
 \usage{
 \S4method{[}{GatingSet,ANY}(x, i, j, ..., drop = TRUE)
 
 \S4method{[[}{GatingSet,numeric}(x, i, j, ...)
-
-\S4method{[[}{GatingSet,ANY,ANY,GatingHierarchy}(x, i, j = "missing",
-  ...) <- value
 
 \S4method{[}{GatingSetList,ANY}(x, i, j, ..., drop = TRUE)
 }
