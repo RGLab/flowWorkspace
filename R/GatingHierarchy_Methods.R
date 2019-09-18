@@ -1220,10 +1220,10 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
           # attr(f,"type")<-"biexp"
         }else if(curTrans$type=="fasinh"){
           if(inverse){
-            f <- flowjo_fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)#in flowJo curTrans$length is not used
+            f <- flowjo_fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
             attr(f,"type")<-"fsinh"
           }else{
-            f <- flowjo_fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)
+            f <- flowjo_fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
             attr(f,"type")<-"fasinh"
           }
 
