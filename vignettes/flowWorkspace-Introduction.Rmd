@@ -1,13 +1,13 @@
 ---
 title: "flowWorkspace Introduction: A Package to store and maninpulate gated flow data"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     number_sections: yes
     theme: united
     toc: yes
     toc_float: yes
+  pdf_document:
+    toc: yes
 author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
 vignette: >    
   %\VignetteKeywords{flow cytometry, single cell assay, import}
