@@ -1,7 +1,5 @@
 ---
-title: 'flowWorkspace Introduction: A package to store and manipulate gated flow
-  data'
-author: "Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>"
+title: "flowWorkspace Introduction: A Package to store and maninpulate gated flow data"
 output:
   pdf_document:
     toc: yes
@@ -10,8 +8,12 @@ output:
     theme: united
     toc: yes
     toc_float: yes
-vignette: |
-  %\VignetteKeywords{flow cytometry, single cell assay, import} %\VignettePackage{flowWorkspace}   %\VignetteIndexEntry{flowWorkspace Introduction: A Package to store and maninpulate gated flow data} %\VignetteEngine{knitr}
+author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
+vignette: >    
+  %\VignetteKeywords{flow cytometry, single cell assay, import}
+  %\VignettePackage{flowWorkspace}  
+  %\VignetteIndexEntry{flowWorkspace Introduction: A Package to store and maninpulate gated flow data}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
