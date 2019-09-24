@@ -135,4 +135,11 @@ flowWorkspace.par.get <- function (name = NULL)
 
 .onLoad <- function(libname, pkgname){
   h5_set_error_handler()#set R stderr as output stream for error handler of libhdf5
-  }
+}
+
+.onAttach <- function(libname, pkgname){
+  packageStartupMessage(paste0('As part of improvements to flowWorkspace, some behavior of\n', 
+                               'GatingSet objects has changed. For details, please read the section\n',
+                               'titled "The cytoframe and cytoset classes" in the package vignette:\n\n',
+                               '  vignette("flowWorkspace-Introduction", "flowWorkspace")'))
+}
