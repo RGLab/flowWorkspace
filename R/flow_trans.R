@@ -1,7 +1,6 @@
 #' Gating-ML 2.0 Log transformation.
 #'
 #' Used to construct flog transformer object.
-#' (which uses a specilized \link{flowjo_flog})
 #' 
 #'
 #' @inheritParams flow_breaks
@@ -34,7 +33,7 @@ logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 }
 
 #' @templateVar old flowJo.flog
-#' @templateVar new flowjo_flog
+#' @templateVar new flowjo_log_trans
 #' @template template-depr_pkg
 NULL
 
@@ -50,44 +49,46 @@ NULL
 #' @param inverse whether return the inverse function
 #' @return flog(or its inverse) transform function
 #' @examples
-#' trans <- flowjo_flog()
+#' trans <- flowjo_log_trans()
 #' data.raw <- c(1,1e2,1e3)
-#' data.trans <- trans(data.raw)
+#' data.trans <- trans[["transform"]](data.raw)
 #' data.trans
 #'
-#' inverse.trans <- flowjo_flog(inverse = TRUE)
+#' inverse.trans <- trans[["inverse"]]
 #' inverse.trans(data.trans)
 #'
 #'#negative input
 #' data.raw <- c(-10,1e2,1e3)
-#' data.trans <- trans(data.raw)
+#' data.trans <- trans[["transform"]](data.raw)
 #' data.trans
 #' inverse.trans(data.trans)#we lose the original value at lower end since flog can't restore negative value
 #' 
 #' #different
-#' trans <- flowjo_flog(decade = 3, offset = 30)
-#' data.trans <- trans(data.raw)
+#' trans <- flowjo_log_trans(decade = 3, offset = 30)
+#' data.trans <- trans[["transform"]](data.raw)
 #' data.trans
-#' inverse.trans <- flowjo_flog(decade = 3, offset = 30, inverse = TRUE)
+#' inverse.trans <- trans[["inverse"]]
 #' inverse.trans(data.trans)
 #' 
-#' @export
-flowjo_flog <- function(decade = 4.5, offset = 1, scale = 1, inverse = FALSE){
-  if(inverse){
-    function(x)
-    {
-      10 ^ (x* decade/scale + log10(offset))
-    }
-    
-  }else{
-    function(x){
-		x[x<offset] <- offset
-		x <- log10(x)-log10(offset)
-		x * scale/decade
-	}
-    
+#' @export  
+flowjo_log_trans <- function(decade = 4.5, offset = 1, scale = 1, n = 6, equal.space = FALSE)
+{
+   trans <- function(x){
+    x[x<offset] <- offset
+    x <- log10(x)-log10(offset)
+    x * scale/decade
   }
+  
+   inv <- function(x)
+   {
+     10 ^ (x* decade/scale + log10(offset))
+   }
+   
+  
+  flow_trans(name = "flowJo_log", trans.fun = trans, inverse.fun = inv, 
+             n = n, equal.space = equal.space)
 }
+
 #' @rdname flowJo_flog
 #' @export
 flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){

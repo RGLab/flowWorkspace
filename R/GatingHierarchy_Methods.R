@@ -1176,20 +1176,19 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 #						browser()
         if(curTrans$type=="log")
         {
-          f <- flowjo_flog(decade = curTrans$decade
+          f <- flowjo_log_trans(decade = curTrans$decade
               , offset = curTrans$offset
               , inverse = inverse
+	  		  , scale = curTrans$scale
           )
           
           if(inverse){
-           
-            attr(f,"type")<-"flog.inverse"
+            f <- f[["inverse"]]
+            attr(f,"type")<-"flowJo_log.inverse"
           }else{
-            
-            attr(f,"type")<-"flog"
-          }
-
-
+            f <- f[["transform"]]
+            attr(f,"type")<- "flowJo_log"
+			    }
         }
         else if(curTrans$type=="lin")
         {
