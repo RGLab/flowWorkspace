@@ -475,14 +475,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // load_gatingset
-XPtr<GatingSet> load_gatingset(string path, unsigned int h5_acc_flags);
-RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP h5_acc_flagsSEXP) {
+XPtr<GatingSet> load_gatingset(string path, bool readonly);
+RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< string >::type path(pathSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type h5_acc_flags(h5_acc_flagsSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, h5_acc_flags));
+    Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
+    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -696,15 +696,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // load_cf_from_h5
-XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, unsigned int flags);
-RcppExport SEXP _flowWorkspace_load_cf_from_h5(SEXP filenameSEXP, SEXP on_diskSEXP, SEXP flagsSEXP) {
+XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly);
+RcppExport SEXP _flowWorkspace_load_cf_from_h5(SEXP filenameSEXP, SEXP on_diskSEXP, SEXP readonlySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type flags(flagsSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_cf_from_h5(filename, on_disk, flags));
+    Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
+    rcpp_result_gen = Rcpp::wrap(load_cf_from_h5(filename, on_disk, readonly));
     return rcpp_result_gen;
 END_RCPP
 }

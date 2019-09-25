@@ -221,8 +221,8 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
-XPtr<GatingSet> load_gatingset(string path, unsigned int h5_acc_flags) {
-		return XPtr<GatingSet>(new GatingSet(path, false, h5_acc_flags));
+XPtr<GatingSet> load_gatingset(string path, bool readonly) {
+		return XPtr<GatingSet>(new GatingSet(path, false, readonly));
 
 }
 

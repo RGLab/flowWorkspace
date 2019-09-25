@@ -55,8 +55,7 @@ load_gs<-function(path, h5_readonly = TRUE){
   {
     stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
   }
-  h5_acc_flags <- as.integer(!h5_readonly)
-  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_acc_flags))
+  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_readonly))
   
 }
 

@@ -714,7 +714,7 @@ cf_write_h5 <- function(cf, filename){
 #' @family cytoframe/cytoset IO functions
 #' @export
 load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE){
-  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk, as.integer(!readonly)), use.exprs = TRUE)
+  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk, readonly), use.exprs = TRUE)
 }
 #' Return the file path of the underlying h5 file
 #' 

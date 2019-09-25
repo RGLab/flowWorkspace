@@ -191,8 +191,8 @@ set_gatingset_id <- function(gsPtr, id) {
     invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, cdf))
 }
 
-.cpp_loadGatingSet <- function(path, h5_acc_flags) {
-    .Call(`_flowWorkspace_load_gatingset`, path, h5_acc_flags)
+.cpp_loadGatingSet <- function(path, readonly) {
+    .Call(`_flowWorkspace_load_gatingset`, path, readonly)
 }
 
 load_legacy_gs <- function(pbfile, cs) {
@@ -271,8 +271,8 @@ writeH5 <- function(fr, filename) {
     invisible(.Call(`_flowWorkspace_writeH5`, fr, filename))
 }
 
-load_cf_from_h5 <- function(filename, on_disk, flags) {
-    .Call(`_flowWorkspace_load_cf_from_h5`, filename, on_disk, flags)
+load_cf_from_h5 <- function(filename, on_disk, readonly) {
+    .Call(`_flowWorkspace_load_cf_from_h5`, filename, on_disk, readonly)
 }
 
 setMarker <- function(fr, channel, marker) {
