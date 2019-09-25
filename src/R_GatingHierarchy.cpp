@@ -143,7 +143,7 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 	  TransPtr thisTrans;
 	  List x = translist[chnl];
     string type = as<string>(x["type"]);
-			if(type == "logtGml2")
+			if(type == "flowJo_log")
 			{
 
 			  thisTrans.reset(new logTrans(as<EVENT_DATA_TYPE>(x["offset"]), as<EVENT_DATA_TYPE>(x["decade"]), as<unsigned>(x["scale"]), as<unsigned>(x["max_val"])));

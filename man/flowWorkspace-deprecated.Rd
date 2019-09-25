@@ -68,7 +68,7 @@
 
 \code{openWorkspace} --> \code{open_flowjo_xml}
 
-\code{flowJo.flog} --> \code{flowjo_flog}
+\code{flowJo.flog} --> \code{flowjo_log_trans}
 
 \code{flowJoTrans} --> \code{flowjo_biexp}
 
