@@ -1199,10 +1199,10 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
           
           if(inverse){
             f <- f[["inverse"]]
-            attr(f,"type")<-"flowJo_log.inverse"
+            attr(f,"type")<-"log.inverse"
           }else{
             f <- f[["transform"]]
-            attr(f,"type")<- "flowJo_log"
+            attr(f,"type")<- "log"
 			}
 
 
