@@ -146,7 +146,7 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 			if(type == "flowJo_log")
 			{
 
-			  thisTrans.reset(new logTrans(as<EVENT_DATA_TYPE>(x["offset"]), as<EVENT_DATA_TYPE>(x["decade"]), as<unsigned>(x["scale"]), as<unsigned>(x["max_val"])));
+			  thisTrans.reset(new logTrans(as<EVENT_DATA_TYPE>(x["offset"]), as<EVENT_DATA_TYPE>(x["decade"]), as<unsigned>(x["scale"]), 262144));
 			}
 			else if(type == "logicle")
 			{
