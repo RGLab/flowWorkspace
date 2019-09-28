@@ -1,14 +1,19 @@
 #' Gating-ML 2.0 Log transformation.
 #'
-#' Used to construct flog transformer object.
-#' 
+#' Used to construct GML 2.0 flog transformer object.
+#'
+#' GML 2.0 standard log transform function constructor. The definition is as
+#' in the GML 2.0 standard section 6.2 "parametrized logarithmic transformation -- flog"
+#' This deviates from standard only in the following way. Before applying the logarithmic
+#' transformation, non-positive values are assigned the smallest positive value from
+#' the input rather than having undefined values (NA) under the transformation.
 #'
 #' @inheritParams flow_breaks
-#' @param M number of decades
-#' @param T top scale value
+#' @param t top scale value 
+#' @param m number of decades
 #' @return logtGml2 transformation object
 #' @examples
-#' trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
+#' trans.obj <- logtGml2_trans(t = 1e3, m = 1, equal.space = TRUE)
 #' data <- 1:1e3
 #' brks.func <- trans.obj[["breaks"]]
 #' brks <- brks.func(data)
@@ -19,14 +24,14 @@
 #' brks.trans <- trans.func(brks)
 #' brks.trans
 #' @export  
-logtGml2_trans <- function (M = 4.5, T = 262144, n = 6, equal.space = FALSE)
+logtGml2_trans <- function (t = 262144, m = 4.5, n = 6, equal.space = FALSE)
 {
   trans <- function(x){
     x[x<0] <- min(x[x>0])
-    log10(x/T)/M + 1
+    log10(x/t)/m + 1
   }
   inv <- function(x){
-    T*(10 ^ (M*(x-1)))
+    t*(10 ^ (m*(x-1)))
   }
   flow_trans(name = "logtGml2", trans.fun = trans, inverse.fun = inv, 
              n = n, equal.space = equal.space)

@@ -148,6 +148,10 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 
 			  thisTrans.reset(new logTrans(as<EVENT_DATA_TYPE>(x["offset"]), as<EVENT_DATA_TYPE>(x["decade"]), as<unsigned>(x["scale"]), 262144));
 			}
+			else if(type == "logtGml2")
+			{
+			  thisTrans.reset(new logGML2Trans(as<EVENT_DATA_TYPE>(x["t"]), as<EVENT_DATA_TYPE>(x["m"])));
+			}
 			else if(type == "logicle")
 			{
 			  try
@@ -308,6 +312,17 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 
 					break;
 				}
+  			case LOGGML2:
+  			{
+  			  shared_ptr<logGML2Trans> thisTrans = dynamic_pointer_cast<logGML2Trans>(curTrans);
+  			  res.push_back(List::create(Named("type","logtGml2")
+                                    ,Named("T",thisTrans->T)
+                                    ,Named("M",thisTrans->M)
+  			                )
+                       ,chnl
+  			  );
+  			  break;
+  			}
 				default:
 					throw(domain_error("unknown transformation in R_getTransformations!"));
 			}

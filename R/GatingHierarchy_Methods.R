@@ -1207,6 +1207,18 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 
 
         }
+        else if(curTrans$type=="logtGml2")
+        {
+          f <- logtGml2_trans(t = curTrans$t, m = curTrans$m)
+          
+          if(inverse){
+            f <- f[["inverse"]]
+            attr(f,"type")<-"logtGml2.inverse"
+          }else{
+            f <- f[["transform"]]
+            attr(f,"type")<- "logtGml2"
+          }
+        }
         else if(curTrans$type=="lin")
         {
           f<-function(x){x*64}
