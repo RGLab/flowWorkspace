@@ -20,6 +20,8 @@ test_that("gh_apply_to_new_fcs",
             openCyto::gs_add_gating_method(gs, "HLA", "+", "root", "HLA", "mindensity")
             gh <- gs[[1]]
             gs2 <- gh_apply_to_new_fcs(gh, fcs)
+            #make sure manually scale time channel since it is no longer part of transform process
+            cf_scale_time_channel(gh_pop_get_data(gh, returnType = "cytoframe"))
             expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gh), "data"), tol = 6e-8)
             expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
             expect_equal(gs_get_compensations(gs), gs_get_compensations(gs2))
@@ -39,6 +41,8 @@ test_that("gh_apply_to_new_fcs",
             openCyto::gs_add_gating_method(gs, "HLA", "+", "root", "HLA", "mindensity")
             gh <- gs[[1]]
             gs2 <- gh_apply_to_new_fcs(gh, fcs)
+            #make sure manually scale time channel since it is no longer part of transform process
+            cf_scale_time_channel(gh_pop_get_data(gh, returnType = "cytoframe"))
             expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gh), "data"))
             expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
             expect_equal(gs_get_compensations(gs), gs_get_compensations(gs2))

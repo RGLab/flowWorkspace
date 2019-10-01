@@ -1751,7 +1751,6 @@ setMethod("transform",
 	  if(unrecognized)
 	    break
 	}
-
 	if(unrecognized)#transform in R
 	{
 		gs@transformation <- translist
