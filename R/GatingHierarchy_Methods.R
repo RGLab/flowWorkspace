@@ -706,8 +706,12 @@ gh_pop_get_gate <- function(obj,y){
 
 					mat<-matrix(c(g$x,g$y),ncol=2,dimnames=list(NULL,g$parameters))
 					if(nrow(mat)==2)#convert to rectangleGate
-						rectangleGate(.gate=mat,filterId=filterId)
-					else{
+					{
+						rg <- rectangleGate(.gate=mat,filterId=filterId)
+						if(!is.null(g[["uid"]]))#attach quadgate id
+							attr(rg, "uid") <- g[["uid"]]
+						rg
+					}else{
                       #restore gate coordinates due to the double overflow during pb archiving
                       mat[mat == Inf] <- .Machine$double.xmax
                       mat[mat == -Inf] <- -.Machine$double.xmax

@@ -7,6 +7,16 @@
 
 using namespace Rcpp;
 
+// gen_uid
+string gen_uid();
+RcppExport SEXP _flowWorkspace_gen_uid() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gen_uid());
+    return rcpp_result_gen;
+END_RCPP
+}
 // getSplineCoefs
 Rcpp::List getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis, bool inverse);
 RcppExport SEXP _flowWorkspace_getSplineCoefs(SEXP channelRangeSEXP, SEXP maxValueSEXP, SEXP posSEXP, SEXP negSEXP, SEXP widthBasisSEXP, SEXP inverseSEXP) {
@@ -1083,6 +1093,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_flowWorkspace_gen_uid", (DL_FUNC) &_flowWorkspace_gen_uid, 0},
     {"_flowWorkspace_getSplineCoefs", (DL_FUNC) &_flowWorkspace_getSplineCoefs, 6},
     {"_flowWorkspace_addTrans", (DL_FUNC) &_flowWorkspace_addTrans, 2},
     {"_flowWorkspace_updateChannels", (DL_FUNC) &_flowWorkspace_updateChannels, 2},

@@ -342,6 +342,14 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	gatePtr g = node.getGate();
 	string nodeName = node.getName();
 	unsigned short gType=g->getType();
+	string uid = "";
+	if(gType == QUADGATE)
+	{
+		quadGate & qg=dynamic_cast<quadGate&>(*g);
+		uid = qg.get_uid();
+		g.reset(new rectGate(qg.to_rectgate()));
+		gType=POLYGONGATE;
+	}
 	if(gType==RECTGATE||gType == CURLYQUADGATE)
 		gType=POLYGONGATE;
 
@@ -377,6 +385,8 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 						 	 	 	 	 ,Named("type",POLYGONGATE)
 						 	 	 	 	 , Named("filterId", nodeName)
 						 	 	 	 	 );
+				 if(uid!="")
+					 ret["uid"] = uid;
 				return ret;
 			}
 
@@ -711,6 +721,24 @@ gatePtr  newGate(List filter){
 			g.reset(eg.release());
 
 			break;
+		}
+		case QUADGATE:
+		{
+			StringVec params=as<StringVec>(filter["params"]);
+			auto mu = as<DoubleVec>(filter["mu"]);
+
+			paramPoly intersect;
+			intersect.setName(params);
+			intersect.setVertices({coordinate(mu[0], mu[1])});
+
+			string uid = as<string>(filter["uid"]);
+			QUAD quadrant = static_cast<QUAD>(as<int>(filter["quad"]));
+			unique_ptr<quadGate> qg(new quadGate(intersect, uid, quadrant));
+
+			g.reset(qg.release());
+
+			break;
+
 		}
 		default:
 			throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));

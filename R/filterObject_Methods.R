@@ -68,6 +68,18 @@ filter_to_list.polygonGate <- function(x){
           ,filterId=x@filterId)  
     }
 
+	#' @rdname filterObject
+#' @export
+filter_to_list.quadGate <- function(x){
+	params<-parameters(x)
+	
+	list(type=as.integer(9)
+			,params=params
+			,mu=x@boundary
+			,uid = gen_uid()
+			,filterId=x@filterId)  
+}
+
 #' @rdname filterObject
 #' @export
 filter_to_list.booleanFilter <- function(x){

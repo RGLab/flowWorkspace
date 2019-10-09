@@ -12,7 +12,11 @@ using namespace Rcpp;
 using namespace cytolib;
 
 #define ARRAY_TYPE vector<double>
-
+//[[Rcpp::export]]
+string gen_uid()
+{
+	return generate_uid();
+}
 //' construct the biexpTrans c++ object on the fly
 //'
 //' It returns the spline coefficients vectors to R.

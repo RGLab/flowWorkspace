@@ -65,8 +65,23 @@ test_that("add quadGate", {
   recompute(gs)
   node <- "CD15 FITC-CD45 PE+"
   expect_equal(gh_pop_get_stats(gs[[1]], node)[, count], sum((gh_pop_get_data(gs[[1]], "rectangle")%in%qg) == node))
-})
-
+  
+  #test the case where cells on the intersection lines
+  gs_pop_add(gs, quadGate(list(`FSC-H` = 500, `SSC-H` = 600)), names = c("A", "B", "C", "D"))
+  recompute(gs)
+  expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(count)])
+  #save and load
+  tmp <- tempfile()
+  save_gs(gs, tmp)
+  gs <- load_gs(tmp)
+  recompute(gs)
+  expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(count)])
+  
+  })
+gs_pop_remove(gs, "A")
+gs_pop_remove(gs, "B")
+gs_pop_remove(gs, "C")
+gs_pop_remove(gs, "D")
 #restore filter method during debug mode
 filter <- flowCore::filter#it is masked by dplyr during load_all()
 

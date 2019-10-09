@@ -207,16 +207,7 @@ pop_add.quadGate <- function(gate, gh, names = NULL, ... )
 			params<-parameters(gate)
 			fr <- gh_pop_get_data(gh, use.exprs = FALSE)
 			desc<-sapply(params,function(x)getChannelMarker(fr,x)$des)
-			
-			v <- gate@boundary[params[1]]
-			h <- gate@boundary[params[2]]
-			mat <- matrix(c(-Inf, v, h, Inf
-							, v, Inf, h, Inf
-							, v, Inf, -Inf, h
-							, -Inf, v, -Inf,h
-							)
-						, byrow=TRUE
-						, ncol=4)              
+			fb <- filter_to_list(gate)			
 			#clock-wise from top left quadrant
 			if(is.null(names))
 				names <- matrix(c(sprintf("%s-%s+", desc[1], desc[2]),
@@ -227,12 +218,10 @@ pop_add.quadGate <- function(gate, gh, names = NULL, ... )
 								ncol=2)
 			if(length(unique(names))!=4)
 				stop("names have to be four unique strings!")
+			
 			unlist(lapply(1:4,function(i){
-#								browser()
-							rg <- rectangleGate(.gate=matrix(mat[i,], ncol=2,
-											dimnames=list(c("min", "max"), params))
-											,filterId=names[i])
-							pop_add(rg, gh, ...)
+							fb1 <- c(fb, quad = i)
+				            .addGate(gh,  fb1, name = names[i], ...)
 						})
 					)
 			
