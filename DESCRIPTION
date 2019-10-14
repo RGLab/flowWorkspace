@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
-Version: 3.33.9
+Version: 3.33.10
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -58,6 +58,7 @@ Collate:
     'identifier.R'
     'merge_GatingSet.R'
     'moveNode.R'
+    'parse_transformer.R'
     'setGate_Methods.R'
     'updateIndices.R'
     'utils.R'

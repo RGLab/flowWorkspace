@@ -118,6 +118,90 @@ gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inver
 
 }
 
+#' Extract stats from populations(or nodes) within a restricted time window
+#' 
+#' @rdname gs_pop_get_stats_tfilter
+#' @param nodes the character vector specifies the populations of interest. default is all available nodes
+#' @param type the character vector specifies the type of pop stats or
+#'          a function used to compute population stats.
+#'          when character, it is expected to be either "count" or "percent". Default is "count" (total number of events in the populations).
+#'          when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.
+#' @param inverse.transform logical flag . Whether inverse transform the data before computing the stats.
+#' @param stats.fun.arg a list of arguments passed to `type` when 'type' is a function.
+#' @param tfilter Either a list (tmin, tmax) specifying the minimum and maximum of a the time window filter 
+#'                or a GatingHierarchy, whose minimum and maximum time will be used to determine the window.
+#'                For both x and the reference GatingHierarchy in tfilter, the only channels
+#'                that will match this filter are "Time" or "time" and the filter will be applied to each event
+#'                such that only events with time value t where tmin <= t <= tmax will be evaluated. 
+#' @export
+#' @export
+#' @rdname gs_pop_get_stats
+gs_pop_get_stats_tfilter <- function(x, ...){
+  res <-  lapply(x, function(gh){
+    gh_pop_get_stats_tfilter(gh, ...)
+    
+  })
+  rbindlist(res, idcol = "sample")
+}
+
+#' @rdname gs_pop_get_stats_tfilter
+#' @export
+gh_pop_get_stats_tfilter <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, stats.fun.arg = list(), 
+                                           tfilter=NULL ,...){
+  if (is(tfilter, "GatingHierarchy")) {
+    time_channel <- grep("^[Tt]ime$", colnames(tfilter), value=TRUE)
+    time <- exprs(gh_pop_get_data(tfilter))[,"Time"]
+    tfilter <- list(min(time), max(time))
+  } else if (!(is(tfilter, "list") && length(tfilter == 2))) {
+    stop("tfilter must be either a GatingHierarchy or a list with 2 time values: (tmin, tmax)!")
+  }
+  gh <- x
+  if (is.null(nodes))
+    nodes <- gh_get_pop_paths(gh, ...)
+  time_channel <- grep("^[Tt]ime$", colnames(gh), value=TRUE)
+  if (is.character(type))
+  {
+    time <- exprs(gh_pop_get_data(gh))[,time_channel]
+    tfilt <- time >= tfilter[[1]] & time <= tfilter[[2]]
+    in_gates <- gh_pop_get_indices_mat(gh, paste(nodes, collapse="|"))
+    
+    type <- match.arg(type, c("count", "percent"))
+    res <- colSums(sweep(in_gates, 1, tfilt, '&'))
+    if(type == "percent"){
+      # nodes[[1]] should be "root", but allow flexibility
+      res <- res / res[[nodes[[1]]]]
+    }
+    res <- as.data.table(res)
+    names(res) <- type
+    res <- cbind("pop"=nodes, res)
+  } else {
+    # Same as for gh_pop_get_stats, but with time filtering after transformation
+    res <- sapply(nodes, function(node){
+      fr <- gh_pop_get_data(gh, y = node)
+      if(inverse.transform)
+      {
+        trans <- gh_get_transformations(gh, inverse = TRUE)
+        if(length(trans)==0)
+          stop("No inverse transformation is found from the GatingSet!")
+        trans <- transformList(names(trans), trans)
+        fr <- transform(fr, trans)
+      }
+      time <- exprs(fr)[,time_channel]
+      tfilt <- time >= tfilter[[1]] & time <= tfilter[[2]]
+      fr <- Subset(fr, tfilt)
+      
+      thisCall <- quote(type(fr))
+      thisCall <- as.call(c(as.list(thisCall), stats.fun.arg))
+      
+      res <- eval(thisCall)
+      as.data.table(t(res))
+    }, simplify = FALSE)
+    res <- rbindlist(res, idcol = "pop")
+  }
+  res
+}
+
+
 #' built-in stats functions.
 #'
 #' pop.MFI computes and returns the median fluorescence intensity for each marker.

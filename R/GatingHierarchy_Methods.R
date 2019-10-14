@@ -1176,20 +1176,19 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 #						browser()
         if(curTrans$type=="log")
         {
-          f <- flowjo_flog(decade = curTrans$decade
+          f <- flowjo_log_trans(decade = curTrans$decade
               , offset = curTrans$offset
               , inverse = inverse
+	  		  , scale = curTrans$scale
           )
           
           if(inverse){
-           
-            attr(f,"type")<-"flog.inverse"
+            f <- f[["inverse"]]
+            attr(f,"type")<-"log.inverse"
           }else{
-            
-            attr(f,"type")<-"flog"
-          }
-
-
+            f <- f[["transform"]]
+            attr(f,"type")<- "log"
+			    }
         }
         else if(curTrans$type=="lin")
         {
@@ -1202,10 +1201,10 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
           # attr(f,"type")<-"biexp"
         }else if(curTrans$type=="fasinh"){
           if(inverse){
-            f <- flowjo_fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)#in flowJo curTrans$length is not used
+            f <- flowjo_fsinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
             attr(f,"type")<-"fsinh"
           }else{
-            f <- flowjo_fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$maxRange)
+            f <- flowjo_fasinh(t = curTrans$T, m = curTrans$M, a = curTrans$A, length = curTrans$length)
             attr(f,"type")<-"fasinh"
           }
 

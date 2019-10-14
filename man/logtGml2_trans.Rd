@@ -20,7 +20,6 @@ logtGml2 transformation object
 }
 \description{
 Used to construct flog transformer object.
-(which uses a specilized \link{flowjo_flog})
 }
 \examples{
 trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
