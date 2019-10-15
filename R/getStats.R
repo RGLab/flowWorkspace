@@ -134,8 +134,6 @@ gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inver
 #'                that will match this filter are "Time" or "time" and the filter will be applied to each event
 #'                such that only events with time value t where tmin <= t <= tmax will be evaluated. 
 #' @export
-#' @export
-#' @rdname gs_pop_get_stats
 gs_pop_get_stats_tfilter <- function(x, ...){
   res <-  lapply(x, function(gh){
     gh_pop_get_stats_tfilter(gh, ...)
