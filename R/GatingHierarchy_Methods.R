@@ -1178,7 +1178,6 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
         {
           f <- flowjo_log_trans(decade = curTrans$decade
               , offset = curTrans$offset
-              , inverse = inverse
 	  		  , scale = curTrans$scale
           )
           
