@@ -17,6 +17,10 @@ LazyLoad: yes
 Imports:
     Biobase,
     BiocGenerics,
+    cytolib,
+    lattice,
+    latticeExtra,
+    XML,
     ggplot2,
     graph,
     graphics,

@@ -456,9 +456,15 @@ setMethod("show","GatingHierarchy",function(object){
 #' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}
 #'
 #' Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}
-#'
+#' 
+#' @name keyword
+#' @aliases keyword,GatingHierarchy,character-method keyword,GatingHierarchy,missing-method
+#' keyword,GatingSet,character-method keyword,GatingSet,missing-method keyword,GatingSetList,character-method
+#' keyword,GatingSetList,missing-method
+#' 
 #' @details See \code{keyword} in Package `flowCore'
-#'
+#' 
+#' @usage keyword(object, keyword)
 #' @param object \code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}
 #' @param keyword \code{character} specifying keyword name. When \code{missing}, extract all keywords.
 #' @param ... other arguments passed to \code{\link[flowCore]{keyword-methods}}
@@ -478,13 +484,12 @@ setMethod("show","GatingHierarchy",function(object){
 #'       #get single keyword from one sample
 #'       keyword(G[[1, "FILENAME")
 #'     }
-#' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 
 			keyword(object)[[keyword]]
 		})
-#' @rdname keyword
+
 #' @export
 setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing", ...){
       fr <- gh_pop_get_data(object, use.exprs = FALSE)
@@ -980,10 +985,25 @@ gh_pop_is_hidden  <- function(obj,y){
 NULL
 #' @export
 setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
+
+#' @export
+setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...){
+  .Deprecated("gh_pop_get_data")
+  if(missing(y)){
+    gh_pop_get_data(obj, ...)
+  }else{
+    gh_pop_get_data(obj, y, ...)
+  }
+})
+
+
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
 #'
 #' get gated flow data from a GatingHierarchy/GatingSet/GatingSetList
-#'
+#' 
+#' @name gh_pop_get_data
+#' @aliases gs_pop_get_data getData getData,GatingHierarchy-method
+#' getData,GatingSet-method getData,GatingSetList-method
 #' @details
 #' Returns a flowFrame/flowSet containing the events in the gate defined at node \code{y}.
 #' Subset membership can be obtained using \code{gh_pop_get_indices}.
@@ -1012,19 +1032,6 @@ setGeneric("getData",function(obj,y,...)standardGeneric("getData"))
 #'     #gh is a GatingHierarchy
 #'     gh_pop_get_data(gh)
 #' }
-#' @aliases gh_pop_get_data
-#' @rdname gs_pop_get_data
-#' @export
-setMethod("getData",signature(obj="GatingHierarchy",y="ANY"),function(obj,y, ...){
-  .Deprecated("gh_pop_get_data")
-  if(missing(y)){
-    gh_pop_get_data(obj, ...)
-  }else{
-    gh_pop_get_data(obj, y, ...)
-  }
-})
-      
-#' @rdname gs_pop_get_data
 #' @export
 gh_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
       
@@ -1094,13 +1101,15 @@ prettyAxis <- function(gh, channel){
 #' @templateVar new gh_get_transformations
 #' @template template-depr_pkg
 NULL
-#' @rdname gh_get_transformations
+
 #' @export 
 getTransformations <- function(x, ...)UseMethod("getTransformations")
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
-#'
+#' 
+#' @name gh_get_transformations
+#' @aliases getTransformations getTransformations,GatingHierarchy-method
 #' @param x A \code{GatingHierarchy} object
 #' @param inverse \code{logical} whether to return the inverse transformation function. Valid when only.funtion is TRUE
 #' @param only.function \code{logical} whether to return the function or the entire transformer object(see \code{scales} package) that contains transform and inverse and breaks function.
@@ -1127,8 +1136,6 @@ getTransformations <- function(x, ...)UseMethod("getTransformations")
 #'  gh_get_transformations(gh, channel = "FL1-H") # only return the transfromation associated with given channel
 #'  gh_get_transformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
 #' }
-#' @aliases gh_get_transformations
-#' @rdname gh_get_transformations
 #' @export 
 #' @method getTransformations GatingHierarchy
 getTransformations.GatingHierarchy <- function(...){
@@ -1555,7 +1562,6 @@ gh_pop_set_visibility <- function(x,y,value){
 
 
 #' @export
-#' @rdname pData-methods
 setMethod("pData","GatingHierarchy",function(object){
       pData(gs_cyto_data(object))[sampleNames(object), , drop = FALSE]
     })
@@ -1563,6 +1569,10 @@ setMethod("pData","GatingHierarchy",function(object){
 #' Get/set the column(channel) or marker names
 #'
 #' It simply calls the methods for the underlying flow data (flowSet/ncdfFlowSet/ncdfFlowList).
+#' 
+#' @name markernames
+#' @aliases markernames,GatingSet-method markernames,GatingHierarchy-method
+#' @usage markernames(object)
 #' @param x,object GatingHierarchy/GatingSet/GatingSetList
 #' @param value named character vector for markernames<-, regular character vector for colnames<-.
 #' @examples
@@ -1578,7 +1588,6 @@ setMethod("pData","GatingHierarchy",function(object){
 #' chnls.new[c(1,4)] <- c("fsc", "ssc")
 #' colnames(gs) <-  chnls.new
 #' }
-#' @rdname markernames
 #' @export
 setMethod("markernames",
           signature=signature(object="GatingHierarchy"),
@@ -1590,6 +1599,8 @@ setMethod("markernames",
 
 
 #' @rdname markernames
+#' @usage markernames(object) <- value
+#' @aliases markernames<-,GatingSet,ANY-method markernames<-,GatingSet-method
 #' @export
 setReplaceMethod("markernames",
                  signature=signature(object="GatingHierarchy", value="ANY"), function(object, value){
@@ -1603,6 +1614,8 @@ setReplaceMethod("markernames",
 
 #' @param do.NULL,prefix not used.
 #' @rdname markernames
+#' @usage colnames(object)
+#' @aliases colnames,GatingSet-method colnames,GatingHierarchy-method
 #' @export
 setMethod("colnames",
           signature=signature(x="GatingHierarchy"),
@@ -1613,6 +1626,8 @@ setMethod("colnames",
           })
 
 #' @rdname markernames
+#' @usage colnames(object) <- value
+#' @aliases colnames<-,GatingSet,ANY-method colnames<-,GatingSet-method
 #' @export
 setReplaceMethod("colnames",
                  signature=signature(x="GatingHierarchy", value="ANY"), function(x, value){

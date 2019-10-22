@@ -4,12 +4,12 @@
 \alias{logtGml2_trans}
 \title{Gating-ML 2.0 Log transformation.}
 \usage{
-logtGml2_trans(M = 4.5, T = 262144, n = 6, equal.space = FALSE)
+logtGml2_trans(t = 262144, m = 4.5, n = 6, equal.space = FALSE)
 }
 \arguments{
-\item{M}{number of decades}
+\item{t}{top scale value}
 
-\item{T}{top scale value}
+\item{m}{number of decades}
 
 \item{n}{desired number of breaks (the actual number will be different depending on the data range)}
 
@@ -19,10 +19,17 @@ logtGml2_trans(M = 4.5, T = 262144, n = 6, equal.space = FALSE)
 logtGml2 transformation object
 }
 \description{
-Used to construct flog transformer object.
+Used to construct GML 2.0 flog transformer object.
+}
+\details{
+GML 2.0 standard log transform function constructor. The definition is as
+in the GML 2.0 standard section 6.2 "parametrized logarithmic transformation -- flog"
+This deviates from standard only in the following way. Before applying the logarithmic
+transformation, non-positive values are assigned the smallest positive value from
+the input rather than having undefined values (NA) under the transformation.
 }
 \examples{
-trans.obj <- logtGml2_trans(M = 1, T = 1e3, equal.space = TRUE)
+trans.obj <- logtGml2_trans(t = 1e3, m = 1, equal.space = TRUE)
 data <- 1:1e3
 brks.func <- trans.obj[["breaks"]]
 brks <- brks.func(data)
