@@ -6,3 +6,6 @@
 ^examples$
 ^fjWsExamples$
 ^wsTestSuite$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
