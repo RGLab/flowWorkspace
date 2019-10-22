@@ -37,11 +37,6 @@ setMethod("[",c(x="GatingSetList",i="ANY"),function(x,i,j,...){
     })
 
 
-#' @name pData
-#' @rdname pData-methods
-#' @usage \S4method{pData}{GatingSetList,data.frame}(object) <- value
-#' @aliases 
-#' pData<-,GatingSetList,data.frame-method
 #' @export
 setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
       res <- callNextMethod()
@@ -50,7 +45,6 @@ setReplaceMethod("pData",c("GatingSetList","data.frame"),function(object,value){
 
 
 
-#' @rdname gs_pop_get_data
 #' @export
 setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
 			.Deprecated("gs_pop_get_data")
@@ -102,13 +96,11 @@ setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ..
       }
       res
     }
-#' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingSetList", "missing"),function(object,keyword = "missing", ...){
       selectMethod("keyword",signature = c(x="GatingSet",y="missing"))(object, keyword, ...)
       
     })
-#' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
       selectMethod("keyword",signature = c(x="GatingSet",y="character"))(object, keyword)
@@ -147,7 +139,7 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
   g
 }
 
-#' @rdname transform
+#' @export
 setMethod("transform",
     signature = signature(`_data` = "GatingSetList"),
     definition = function(`_data`, ...)

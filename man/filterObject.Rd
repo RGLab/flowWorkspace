@@ -6,6 +6,7 @@
 \alias{filter_to_list}
 \alias{filter_to_list.rectangleGate}
 \alias{filter_to_list.polygonGate}
+\alias{filter_to_list.quadGate}
 \alias{filter_to_list.booleanFilter}
 \alias{filter_to_list.ellipsoidGate}
 \alias{filter_to_list.logical}
@@ -23,6 +24,8 @@ filter_to_list(x)
 \method{filter_to_list}{rectangleGate}(x)
 
 \method{filter_to_list}{polygonGate}(x)
+
+\method{filter_to_list}{quadGate}(x)
 
 \method{filter_to_list}{booleanFilter}(x)
 

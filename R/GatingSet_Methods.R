@@ -1101,9 +1101,12 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 #' Get/update sample names in a GatingSet
 #'
 #' Return  a sample names contained in a GatingSet
-#'
-#' @param object  or a \code{GatingSet}
-#'
+#' 
+#' @name sampleNames
+#' @aliases sampleNames,GatingSet-method
+#' @usage \S4method{sampleNames}{GatingSet}(object)
+#' @param object a \code{GatingSet}
+#' 
 #' @details
 #' The sample names comes from pdata of fs.
 #'
@@ -1115,13 +1118,11 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 #'         #G is  a GatingSet
 #'         sampleNames(G)
 #'       }
-#' @aliases sampleNames
-#' @rdname sampleNames
 #' @export
 setMethod("sampleNames","GatingSet",function(object){
       .cpp_getSamples(object@pointer)
     })
-#' @name sampleNames
+
 #' @param value \code{character} new sample names
 #' @usage \S4method{sampleNames}{GatingSet}(object) <- value
 #' @aliases
@@ -1146,7 +1147,6 @@ setReplaceMethod("sampleNames",
 
 # to speed up reading data from disk later on,
 # we can optionally pass j to ncdfFlow::[ to subset on channel
-#' @rdname gs_pop_get_data
 #' @export
 setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
   .Deprecated("gs_pop_get_data")
@@ -1156,8 +1156,7 @@ setMethod("getData",signature(obj="GatingSet",y="ANY"),function(obj,y, ...){
     gs_pop_get_data(obj, y, ...)
   }
 })
-      
-#' @rdname gs_pop_get_data
+
 #' @export
 gs_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
 
@@ -1272,28 +1271,28 @@ setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
 			set_cytoset(x@pointer, value@pointer)
 			x
 		})
-#' read/set pData of flow data associated with \code{GatingSet} or \code{GatingSetList}
+#' read/set pData of flow data associated with \code{GatingHierarchy}, \code{GatingSet}, or \code{GatingSetList}
 #'
-#' Accessor method that gets or replaces the pData of the flowset/ncdfFlowSet object in a GatingSet or GatingSetList
-#'
+#' Accessor method that gets or replaces the pData of the flowset/ncdfFlowSet object in a GatingHierarchy, GatingSet, or GatingSetList
+#' @name pData-methods
+#' @aliases pData pData,GatingHierarchy-method pData,GatingSet-method
 #' @param object \code{GatingSet} or \code{GatingSetList}
-#'
+#' @usage \S4method{pData}{GatingSet,data.frame}(object)
 #' @return a \code{data.frame}
 #'
 #' @importFrom Biobase pData description exprs sampleNames pData<-
 #'
-#' @aliases pData
 #' @export
-#' @rdname pData-methods
 setMethod("pData","GatingSet",function(object){
 			pData(gs_cyto_data(object))
 		})
-#' @name pData
+
 #' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object
 #' @usage \S4method{pData}{GatingSet,data.frame}(object) <- value
 #' @aliases
 #' pData<-
 #' pData<-,GatingSet,data.frame-method
+#' pData<-,GatingSetList,data.frame-method
 #' @export
 #' @rdname pData-methods
 setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
@@ -1659,13 +1658,12 @@ gs_plot_pop_count_cv <- function(x, scales = list(x = list(rot = 90)), path = "a
       return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
     }
 
-#' @rdname keyword
 #' @export
 setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing", ...){
         lapply(object, flowCore::keyword, ...)
 
     })
-#' @rdname keyword
+
 #' @export
 setMethod("keyword",c("GatingSet","character"),function(object,keyword){
       tmp<-data.frame(unlist(lapply(object,function(x)keyword(x,keyword)),use.names=FALSE));
@@ -1680,7 +1678,10 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' The transformation functions are saved in the GatingSet and can be retrieved by \link{gh_get_transformations}.
 #' Currently only flowJo-type biexponential transformation(either returned by \link{gh_get_transformations} or constructed by \link{flowJoTrans})
 #' is supported.
-#'
+#' 
+#' @name transform
+#' @aliases transform,GatingSetList-method transform,GatingSet-method
+#' @usage transform(`_data`, translist, ...)
 #' @param _data \code{GatingSet} or \code{GatingSetList}
 #' @param translist expect a \code{transformList} object or a list of \code{transformList} objects(with names matched to sample names)
 #' @param ... other arguments passed to 'transform' method for 'ncdfFlowSet'.(e.g. 'ncdfFile')
@@ -1704,7 +1705,6 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #'
 #' }
 #' @export
-#' @rdname transform
 setMethod("transform",
     signature = signature(`_data` = "GatingSet"),
     definition = function(`_data`, translist, ...)
@@ -1873,7 +1873,6 @@ gs_get_compensations <- function(x){
 			lapply(x, gh_get_compensations)
 		}
             
-#' @rdname markernames
 #' @export
 setMethod("markernames",
           signature=signature(object="GatingSet"),
@@ -1883,7 +1882,6 @@ setMethod("markernames",
 
           })
 
-#' @rdname markernames
 #' @export
 setReplaceMethod("markernames",
                  signature=signature(object="GatingSet", value="ANY"), function(object, value){
@@ -1893,7 +1891,6 @@ setReplaceMethod("markernames",
                    object
                  })
 
-#' @rdname markernames
 #' @export
 setMethod("colnames",
           signature=signature(x="GatingSet"),
@@ -1903,7 +1900,6 @@ setMethod("colnames",
 
           })
 
-#' @rdname markernames
 #' @export
 setReplaceMethod("colnames",
                  signature=signature(x="GatingSet", value="ANY"), function(x, value){
