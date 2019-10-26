@@ -380,8 +380,10 @@ gs_get_compensation_internal <- function(gs, sampleName) {
 #'
 #' }
 #'
-#' @rdname plot-methods
-#' @aliases plot
+#' @name plot-methods
+#' @aliases plot plot,GatingSet,missing-method
+#' plot,GatingSet,character-method
+#' @usage plot(x,y, ...)
 #' @export
 #' @importFrom stats4 plot
 #' @importMethodsFrom Rgraphviz renderGraph
@@ -407,7 +409,6 @@ setMethod("plot",c("GatingSet","missing"),function(x,y,...){
 
 }
 
-#' @rdname plot-methods
 #' @export
 #' @importMethodsFrom graph subGraph
 setMethod("plot",c("GatingSet","character"),function(x,y,...){
@@ -470,7 +471,6 @@ setMethod("show","GatingHierarchy",function(object){
 #' @param ... other arguments passed to \code{\link[flowCore]{keyword-methods}}
 #' @seealso \code{\link[flowCore]{keyword-methods}}
 #'
-#' @aliases keyword
 #' @examples
 #'     \dontrun{
 #'       #get all the keywords from all samples
@@ -504,9 +504,18 @@ NULL
 #' @export
 setGeneric("getNodes",function(x,...)standardGeneric("getNodes"))
 
+#' @export
+setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
+  .Deprecated("gs_get_pop_paths")
+  gs_get_pop_paths(x, y, order, path, showHidden, ...)
+})
+
 #'  Get the names of all nodes from a gating hierarchy.
 #'
 #'  \code{gs_get_pop_paths} returns a character vector of names of the nodes (populations) in the \code{GatingSet}.
+#'  
+#' @name gs_get_pop_paths
+#' @aliases gh_get_pop_paths getNodes getNodes,GatingSet-method
 #' @param x A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.
 #' @param y A \code{character} not used.
 #' @param order \code{order=c("regular","tsort","bfs")} returns the nodes in regular, topological or breadth-first sort order.
@@ -531,15 +540,7 @@ setGeneric("getNodes",function(x,...)standardGeneric("getNodes"))
 #'     gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
 #'     gs_pop_set_name(G,"L","lymph")
 #'   }
-#' @aliases gs_get_pop_paths
-#' @rdname gs_get_pop_paths
-#' @export
 #' @importFrom BiocGenerics duplicated
-setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
-  .Deprecated("gs_get_pop_paths")
-  gs_get_pop_paths(x, y, order, path, showHidden, ...)
-})
-#' @rdname gs_get_pop_paths
 #' @export
 gs_get_pop_paths <- function(x,y=NULL,order="regular", path = "full", showHidden = FALSE, ...){
 
@@ -605,9 +606,44 @@ NULL
 #' @export
 setGeneric("getParent",function(obj,y,...)standardGeneric("getParent"))
 
+#' @export
+setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, ...){
+  .Deprecated("gs_pop_get_parent")
+  gs_pop_get_parent(obj, y, ...)
+})
+
+#' @rdname gs_pop_get_children
+#' @export
+gs_pop_get_parent <- function(obj,y, ...){
+            pind <- .cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
+            pind <- pind +1
+			gs_get_pop_paths(obj, showHidden = TRUE, ...)[pind]
+		}
+#' @rdname gs_pop_get_children
+#' @export
+gh_pop_get_parent <- gs_pop_get_parent
+			
+#' @templateVar old getChildren
+#' @templateVar new gs_pop_get_children
+#' @template template-depr_pkg
+		NULL
+#' @export
+setGeneric("getChildren",function(obj,y,...)standardGeneric("getChildren"))
+
+#' @export
+setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y, showHidden = TRUE, ...){
+  .Deprecated("gs_pop_get_children")
+  gs_pop_get_children(obj, y, showHidden, ...)
+})
+		
 #' Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy
 #'
 #' Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
+#' 
+#' @name gs_pop_get_children
+#' @aliases gs_pop_get_children gh_pop_get_children gs_pop_get_parent gh_pop_get_parent 
+#' getChildren getChildren,GatingSet,character-method
+#' getParent getParent,GatingSet,character-method
 #' @param obj A \code{GatingHierarchy}
 #' @param y a \code{character/numeric} the name or full(/partial) gating path  or node indices of the node / population.
 #' @param showHidden \code{logical} whether to include the hidden children nodes.
@@ -626,38 +662,6 @@ setGeneric("getParent",function(obj,y,...)standardGeneric("getParent"))
 #'     gs_pop_get_children(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
 #'     gs_pop_get_children(G,4);#Get the ids of the child nodes
 #'   }
-#' @aliases gs_pop_get_parent
-#' @rdname gs_pop_get_children
-#' @export
-setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, ...){
-  .Deprecated("gs_pop_get_parent")
-  gs_pop_get_parent(obj, y, ...)
-})
-#' @rdname gs_pop_get_children
-#' @export
-gs_pop_get_parent <- function(obj,y, ...){
-            pind <- .cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
-            pind <- pind +1
-			gs_get_pop_paths(obj, showHidden = TRUE, ...)[pind]
-		}
-#' @rdname gs_pop_get_children
-#' @export
-gh_pop_get_parent <- gs_pop_get_parent
-			
-#' @templateVar old getChildren
-#' @templateVar new gs_pop_get_children
-#' @template template-depr_pkg
-		NULL
-#' @export
-setGeneric("getChildren",function(obj,y,...)standardGeneric("getChildren"))
-#' @rdname gs_pop_get_children
-#' @export
-#' @aliases gs_pop_get_children
-setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y, showHidden = TRUE, ...){
-  .Deprecated("gs_pop_get_children")
-  gs_pop_get_children(obj, y, showHidden, ...)
-})
-#' @rdname gs_pop_get_children
 #' @export
 gs_pop_get_children <- function(obj,y, showHidden = TRUE, ...){
       cind <- .cpp_getChildren(obj@pointer,sampleNames(obj), y, showHidden)
@@ -673,9 +677,10 @@ gh_pop_get_children <- gs_pop_get_children
 #' @templateVar new gs(/gh)_get_gate
 #' @template template-depr_pkg
 NULL
+
 #' @export
 setGeneric("getGate",function(obj,y,...)standardGeneric("getGate"))
-#' @rdname gh_pop_get_gate
+
 #' @export
 setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,y){
       .Deprecated("gh_pop_get_gate")
@@ -684,7 +689,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #'  Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.
 #'
 #'  Return the flowCore gate definition object associated with a node in a \code{GatingHierarchy} or \code{GatingSet} object.
-#'
+#' @name gs_pop_get_gate
 #' @param obj A \code{GatingHierrarchy} or \code{GatingSet}
 #' @param y A \code{character} the name or full(/partial) gating path of the node of interest.
 #'
@@ -697,9 +702,8 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #'     #G is a GatingSet
 #'     gs_pop_get_gate(G, "CD3") #return a list of gates for the fifth node in each tree
 #'   }
-#' @aliases
-#' gh_pop_get_gate
-#' @rdname gh_pop_get_gate
+#' @aliases gh_pop_get_gate getGate getGate,GatingHierarchy,character-method
+#' getGate,GatingSet,character-method getGate,GatingSetList,character-method
 #' @export
 gh_pop_get_gate <- function(obj,y){
 
@@ -809,10 +813,14 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
     
   
 }
+
 #' Compute logicle transformation from the flowData associated with a GatingHierarchy
 #' 
 #' See details in \link[flowCore]{estimateLogicle}
 #' 
+#' @name estimateLogicle
+#' @aliases estimateLogicle,GatingHierarchy-method estimateLogicle,GatingSet-method
+#' @usage estimateLogicle(x, channels, ...)
 #' @param x a GatingHierarchy
 #' @param channels channels or markers for which the logicle transformation is to be estimated.
 #' @param ... other arguments
@@ -827,15 +835,15 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
 #' }
 #' @export 
 estimateLogicle.GatingHierarchy <- function(x, channels, ...){
-	fr <- getData(x)
-	trans <- flowCore:::.estimateLogicle(fr, channels, ...)
-	
-	trans <- lapply(trans, function(t){
-				inv <- inverseLogicleTransform(trans = t)
-				flow_trans("logicle", t@.Data, inv@.Data)
-			})
-	channels <- names(trans)
-	transformerList(channels, trans)
+  fr <- gh_pop_get_data(x)
+  trans <- flowCore:::.estimateLogicle(fr, channels, ...)
+  
+  trans <- lapply(trans, function(t){
+    inv <- inverseLogicleTransform(trans = t)
+    flow_trans("logicle", t@.Data, inv@.Data)
+  })
+  channels <- names(trans)
+  transformerList(channels, trans)
 }
 
 #' Extract the population name from the node path
@@ -881,10 +889,20 @@ gh_pop_get_cluster_name <- function(gh, node){
 #' @templateVar new gh_pop_get_indices
 #' @template template-depr_pkg
 NULL
-#'  Get the membership indices for each event with respect to a particular gate in a GatingHierarchy
+
+#' @export
+setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
+			.Deprecated("gh_pop_get_indices")
+			gh_pop_get_indices(obj, y)
+ 
+		})
+
+#' Get the membership indices for each event with respect to a particular gate in a GatingHierarchy
 #'
-#'  Returns a logical vector that describes whether each event in a sample is included or excluded by this gate.
-#'
+#' Returns a logical vector that describes whether each event in a sample is included or excluded by this gate.
+#'  
+#' @name gh_pop_get_indices
+#' @aliases getIndices getIndices,GatingHierarchy,character-method
 #' @param obj A \code{GatingHierarchy} representing a sample.
 #' @param y A \code{character} giving the name or full(/partial) gating path of the population / node of interest.
 #'
@@ -905,14 +923,6 @@ NULL
 #' }
 #'
 #' @aliases gh_pop_get_indices
-#' @rdname gh_pop_get_indices
-#' @export
-setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-			.Deprecated("gh_pop_get_indices")
-			gh_pop_get_indices(obj, y)
- 
-		})
-#' @rdname gh_pop_get_indices
 #' @export
 gh_pop_get_indices <- function(obj,y){
 	.cpp_getIndices(obj@pointer,sampleNames(obj), y)
@@ -921,22 +931,25 @@ gh_pop_get_indices <- function(obj,y){
 #' @templateVar new gh_pop_is_gated
 #' @template template-depr_pkg
 NULL
-#' The flags of gate nodes
-#' gh_pop_is_gated checks if a node is already gated
-#' gh_pop_is_negated checks if a node is negated.
-#' gh_pop_is_hidden checks if a node is hidden.
-#' 
-#' @param obj GatingHierarchy
-#' @param y node/gating path
-#' @param ... not used
-#' @rdname nodeflags
+
 #' @export 
 isGated <- function(obj,y){
 			.Deprecated("gh_pop_is_gated")
 			gh_pop_is_gated(obj, y)
 			
-		}
-#' @rdname nodeflags
+}
+#' The flags of gate nodes
+#' 
+#' gh_pop_is_gated checks if a node is already gated.
+#' gh_pop_is_negated checks if a node is negated.
+#' gh_pop_is_hidden checks if a node is hidden.
+#' 
+#' @name nodeflags
+#' @aliases isGated isNegated isHidden
+#' 
+#' @param obj GatingHierarchy
+#' @param y node/gating path
+#' @param ... not used
 #' @export 
 gh_pop_is_gated <- function(obj,y){
       .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
@@ -947,7 +960,7 @@ gh_pop_is_gated <- function(obj,y){
 #' @templateVar new gh_pop_is_negated
 #' @template template-depr_pkg
 NULL
-#' @rdname nodeflags
+
 #' @export 
 isNegated <- function(obj,y){
 			.Deprecated("gh_pop_is_negated")
@@ -965,7 +978,7 @@ gh_pop_is_negated <- function(obj,y){
 #' @templateVar new gh_pop_is_hidden
 #' @template template-depr_pkg
 NULL
-#' @rdname nodeflags
+
 #' @export 
 isHidden <- function(obj,y){
 			.Deprecated("gh_pop_is_hidden")
@@ -1104,6 +1117,13 @@ NULL
 
 #' @export 
 getTransformations <- function(x, ...)UseMethod("getTransformations")
+
+#' @export 
+getTransformations.GatingHierarchy <- function(...){
+	.Deprecated("gh_get_transformations")
+  gh_get_transformations(...)
+}
+
 #' Return a list of transformations or a transformation in a GatingHierarchy
 #'
 #' Return a list of all the transformations or a transformation in a GatingHierarchy
@@ -1136,13 +1156,6 @@ getTransformations <- function(x, ...)UseMethod("getTransformations")
 #'  gh_get_transformations(gh, channel = "FL1-H") # only return the transfromation associated with given channel
 #'  gh_get_transformations(gh, channel = "FL1-H", only.function = FALSE) # return the entire transform object
 #' }
-#' @export 
-#' @method getTransformations GatingHierarchy
-getTransformations.GatingHierarchy <- function(...){
-	.Deprecated("gh_get_transformations")
-  gh_get_transformations(...)
-}
-#' @rdname gh_get_transformations
 #' @export 
 gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.function = TRUE, ...){
       trans.objects <- x@transformation
@@ -1286,14 +1299,22 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 #' @templateVar new gh_get_compensations
 #' @template template-depr_pkg
 NULL
-#' @rdname gh_get_compensations
+
 #' @export 
  getCompensationMatrices <- function(x)UseMethod("getCompensationMatrices")
-  
+
+#' @export
+getCompensationMatrices.GatingHierarchy <- function(x){
+  .Deprecated("gh_get_compensations")
+  gh_get_compensations(x)
+}
+
 #'  Retrieve the compensation matrices from a GatingHierarchy
 #'
 #'  Retrieve the compensation matrices from a GatingHierarchy.
 #'
+#' @name gh_get_compensations
+#' @aliases getCompensationMatrices getCompensationMatrices,GatinHierachy-method
 #' @param x A \code{GatingHierarchy} object.
 #'
 #' @details Return all the compensation matrices in a GatingHierarchy.
@@ -1304,17 +1325,7 @@ NULL
 #' 	#Assume gh is a GatingHierarchy
 #'   gh_get_compensations(gh);
 #' }
-#' @aliases gh_get_compensations
 #' @export
-#' @method getCompensationMatrices GatingHierarchy
-#' @rdname gh_get_compensations
-getCompensationMatrices.GatingHierarchy <- function(x){
-  .Deprecated("gh_get_compensations")
-  gh_get_compensations(x)
-}
-
-#' @export
-#' @rdname gh_get_compensations
 gh_get_compensations <- function(x){
   
       sn <- sampleNames(x)
@@ -1360,8 +1371,90 @@ gh_get_compensations <- function(x){
 #' @templateVar new autoplot
 #' @template template-depr_pkg
 NULL
-#' @docType methods
-#' @rdname plotGate-methods
+
+#' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
+#'
+#' \strong{Important}: The \code{plotGate} methods are now defunct and gates should instead be plotted using the 
+#' \code{\link[ggcyto]{autoplot}} method from the \code{ggcyto} package. The \code{plotGate} documentation has been 
+#' left here to ease the transition. \cr\cr
+#' When applied to a \code{GatingHierarchy},\code{arrange} is set as TRUE, then all the gates associated with it are plotted as different panel on the same page.
+#' If \code{arrange} is FALSE, then it plots one gate at a time.
+#' By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
+#' When applied to a \code{GatingSet}, if lattice is TRUE,it plots one gate (multiple samples) per page , otherwise, one sample (with multiple gates) per page.
+#'
+#' @name plotGate-methods-defunct
+#' @aliases
+#' plotGate
+#' plotGate-methods
+#' plotGate,GatingHierarchy,character-method
+#' plotGate,GatingHierarchy,numeric-method
+#' plotGate,GatingHierarchy,missing-method
+#' plotGate,GatingSet,numeric-method
+#' plotGate,GatingSet,character-method
+#' plotGate,GatingSet,missing-method
+#' plotGate,GatingSetList,character-method
+#' @param x \code{\linkS4class{GatingSet}} or \code{\linkS4class{GatingHierarchy}}object
+#' @param y \code{character} the node name or full(/partial) gating path
+#'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
+#'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
+#'          Nodes can be accessed with \code{\link{gs_get_pop_paths}}.
+#' @param ...
+#' \itemize{
+#'  \item{bool}{ \code{logical} specifying whether to plot boolean gates.}
+#'  \item{arrange.main}{ \code{character} The title of the main page of the plot. Default is the sample name. Only valid when \code{x} is GatingHierarchy}
+#'  \item{arrange}{ \code{logical} indicating whether to arrange different populations/nodes on the same page via \code{arrangeGrob} call.}
+#'  \item{merge}{ \code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
+#' \item{projections}{ \code{list} of character vectors used to customize x,y axis. By default, the x,y axis are determined by the respective gate parameters.
+#'                                 The elements of the list are named by the population name or path (see \code{y}). Each element is a pair of named character specifying the channel name(or marker name) for x, y axis.
+#'                                 Short form of channel or marker names (e.g. "APC" or "CD3") can be used as long as they can be uniquely matched to the dimentions of flow data.
+#'                                 For example, projections = list("lymph" = c(x = "SSC-A", y = "FSC-A"), "CD3" = c(x = "CD3", y = "SSC-A"))
+#'                      }
+#' \item{par.settings}{ \code{list} of graphical parameters passed to \code{\link{lattice}};}
+#'
+#'  \item{gpar}{ \code{list} of grid parameters passed to \code{\link{grid.layout}};}
+#'
+#'  \item{lattice}{ \code{logical} deprecated;}
+#'
+#'  \item{formula}{ \code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
+#'
+#'  \item{cond}{ \code{character} the conditioning variable to be passed to lattice plot.}
+#'
+#'  \item{overlay}{Node names. These populations are plotted on top of the existing gates(defined by \code{y} argument) as the overlaid dots.}
+#'  \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population.
+#'                         If not given, we automatically assign the colors.}
+#'  \item{key}{Lattice legend paraemter for overlay symbols.}
+#'
+#'  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A" and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(default.y = "FSC-A"))'}
+#'
+#'  \item{type}{ \code{character} either "xyplot" or "densityplot". Default is "xyplot"  and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(type = "xyplot"))'}
+#'
+#'  \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot. Default is FALSE and  session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(fitGate = FALSE))'}
+#'
+#'  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
+#' \item{strip.text}{either "parent" (the parent population name) or "gate "(the gate name).}
+#'
+#'
+#'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale. Default is TRUE and can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(raw.scale = TRUE))'}
+#'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
+#'                                            either by instrument measurement range or the actual data range.
+#'                     or \code{numeric} which specifies customized range.
+#'                      They can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(xlim = "instrument"))'
+#' }
+#'
+#'  \item{...}{
+#'
+#'          path A \code{character} or \code{numeric} scalar passed to \link{gs_get_pop_paths} method (used to control how the gating/node path is displayed)
+#'
+#'          ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
+#'          }
+#' }
+#'
+#' @return  a \code{trellis} object if \code{arrange} is \code{FALSE},
+#' @references \url{http://www.rglab.org/}
+#' @examples \dontrun{
+#' 	#G is a GatingHierarchy
+#' 	plotGate(G,gs_get_pop_paths(G)[5]);#plot the gate for the  fifth node
+#' }
 #' @export
 setGeneric("plotGate",function(x,y,...)standardGeneric("plotGate"))
 
@@ -1371,16 +1464,7 @@ setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,.
 setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
   .Defunct("ggcyto::autoplot", "flowWorkspace")
 })
-#' @examples \dontrun{
-#' projections <- list("cd3" = c(x = "cd3", y = "AViD")
-#'                     , "cd4" = c(x = "cd8", y = "cd4")
-#'                     , "cd4/IL2" = c(x = "IL2", y = "IFNg")
-#'                     , "cd4/IFNg" = c(x = "IL2", y = "IFNg")
-#'                 )
-#' plotGate(gh, c("cd3", "cd4", "cd4/IL2", "cd4/IFNg"), path = "auto", projections = projections, gpar = c(nrow = 2))
-#'
-#' }
-#' @rdname plotGate-methods-defunct
+
 setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
                     , function(x, y, ...){
                       .Defunct("ggcyto::autoplot", "flowWorkspace")
@@ -1507,18 +1591,7 @@ pretty10exp <-function (x, drop.1 = FALSE, digits.fuzz = 7)
 NULL
 #' @export
 setGeneric("setNode",function(x,y,value,...)standardGeneric("setNode"))
-#'  Update the name of one node in a gating hierarchy/GatingSet.
-#'
-#'  \code{gs_pop_set_name/gs_pop_set_name} update the name of one node in a gating hierarchy/GatingSet.
-#' @param value A \code{character} the name of the node. or \code{logical} to indicate whether to hide a node
-#' @examples
-#'   \dontrun{
-#'     #G is a gating hierarchy
-#'     gs_get_pop_paths(G[[1]])#return node names
-#'     gh_pop_set_name(G,"L","lymph")
-#'   }
-#' @aliases setNode
-#' @rdname gs_pop_set_name
+
 #' @export
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="character")
@@ -1526,24 +1599,29 @@ setMethod("setNode"
       .Deprecated("gh_pop_set_name")
 	  gh_pop_set_name(x, y, value)
       })
-#' @rdname gs_pop_set_name
+
+#' Update the name of one node in a gating hierarchy/GatingSet.
+#'
+#' \code{gh_pop_set_name/gs_pop_set_name} update the name of one node in a gating hierarchy/GatingSet.
+#'
+#' @name gs_pop_set_name
 #' @param x GatingHierarchy
 #' @param y pop name/path
+#' @param value A \code{character} the name of the node
+#' @examples
+#' \dontrun{
+#'     #G is a gating hierarchy
+#'     gs_get_pop_paths(G[[1]])#return node names
+#'     gh_pop_set_name(G,"L","lymph")
+#' }
+#' @aliases setNode setNode,GatingHierarchy,character,character-method
+#' setNode,GatingHierarchy,character,ANY-method
 #' @export
 gh_pop_set_name <- function(x,y,value){
   .cpp_setNodeName(x@pointer,sampleNames(x), y,value)
 }
-#' hide/unhide a node
-#'
-#' @param x \code{GatingHierarchy} object
-#' @param y \code{character} node name or path
-#' @examples
-#' \dontrun{
-#'      gh_pop_set_visibility(gh, 4, FALSE) # hide a node
-#'      gh_pop_set_visibility(gh, 4, TRUE) # unhide a node
-#' }
+
 #' @export
-#' @rdname gs_pop_set_visibility
 setMethod("setNode"
     ,signature(x="GatingHierarchy",y="character",value="logical")
     ,function(x,y,value){
@@ -1551,9 +1629,19 @@ setMethod("setNode"
       gh_pop_set_visibility(x, y, value)
       })
 
+#' hide/unhide a node
+#' 
+#' @name gs_pop_set_visibility
+#' @aliases gh_pop_set_visibility setNode,GatingHierarchy,character,logical-method
+#' @param x \code{GatingHierarchy} object
+#' @param y \code{character} node name or path
+#' @param value TRUE/FALSE to indicate whether to hide a node
+#' @examples
+#' \dontrun{
+#'      gh_pop_set_visibility(gh, 4, FALSE) # hide a node
+#'      gh_pop_set_visibility(gh, 4, TRUE) # unhide a node
+#' }
 #' @export
-#' @param value TRUE/FALSE
-#' @rdname gs_pop_set_visibility
 gh_pop_set_visibility <- function(x,y,value){
             
             hidden = !value
@@ -1572,6 +1660,7 @@ setMethod("pData","GatingHierarchy",function(object){
 #' 
 #' @name markernames
 #' @aliases markernames,GatingSet-method markernames,GatingHierarchy-method
+#' markernames,cytoset-method
 #' @usage markernames(object)
 #' @param x,object GatingHierarchy/GatingSet/GatingSetList
 #' @param value named character vector for markernames<-, regular character vector for colnames<-.
@@ -1601,6 +1690,7 @@ setMethod("markernames",
 #' @rdname markernames
 #' @usage markernames(object) <- value
 #' @aliases markernames<-,GatingSet,ANY-method markernames<-,GatingSet-method
+#' markernmaes<-,cytoframe-method markernames<-,cytoset-method
 #' @export
 setReplaceMethod("markernames",
                  signature=signature(object="GatingHierarchy", value="ANY"), function(object, value){
@@ -1616,6 +1706,7 @@ setReplaceMethod("markernames",
 #' @rdname markernames
 #' @usage colnames(object)
 #' @aliases colnames,GatingSet-method colnames,GatingHierarchy-method
+#' colnames,cytoframe-method colnames,cytoset-method
 #' @export
 setMethod("colnames",
           signature=signature(x="GatingHierarchy"),
@@ -1628,6 +1719,7 @@ setMethod("colnames",
 #' @rdname markernames
 #' @usage colnames(object) <- value
 #' @aliases colnames<-,GatingSet,ANY-method colnames<-,GatingSet-method
+#' colnames<-,cytoframe-method colnames<-,cytoset-method
 #' @export
 setReplaceMethod("colnames",
                  signature=signature(x="GatingHierarchy", value="ANY"), function(x, value){

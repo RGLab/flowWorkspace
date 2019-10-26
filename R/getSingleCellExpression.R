@@ -90,9 +90,7 @@ gh_pop_get_indices_mat <- function(gh,y){
 #' @templateVar new gs_get_singlecell_expression
 #' @template template-depr_pkg
 NULL
- 
-#' @rdname gs_get_singlecell_expression
-#' @importFrom dplyr bind_rows
+
 #' @export
 getSingleCellExpression <- function(...){
 	.Deprecated("gs_get_singlecell_expression")
@@ -103,6 +101,8 @@ getSingleCellExpression <- function(...){
 #'
 #' Returns a list of matrix containing the events that expressed in any one of the populations defined in \code{y}
 #'
+#' @name gs_get_singlecell_expression
+#' @aliases getSingleCellExpression getSingleCellExpressionByGate
 #' @param x A \code{GatingSet} or \code{GatingSetList} object .
 #' @param nodes \code{character} vector specifying different cell populations
 #' @param other.markers \code{character} vector specifying the extra markers/channels to be returned besides the ones derived from "nodes" and "map" argument.It is only valid when threshold is set to FALSE.
@@ -145,7 +145,7 @@ getSingleCellExpression <- function(...){
 #' 	#or simply call convenient wrapper
 #' 	gs_get_singlecell_expression_by_gate(gs, nodes)
 #' }
-#' @rdname gs_get_singlecell_expression
+#' @importFrom dplyr bind_rows
 #' @export
 gs_get_singlecell_expression <- function(x, nodes
 											, other.markers = NULL
@@ -240,13 +240,14 @@ gs_get_singlecell_expression <- function(x, nodes
 		  eval(thisCall)
 	  }
 }
-#' @rdname gs_get_singlecell_expression
+
 #' @export
 getSingleCellExpressionByGate <- function(...){
 	.Deprecated("gs_get_singlecell_expression_by_gate")
 	gs_get_singlecell_expression_by_gate(...)
   gs_get_singlecell_expression(..., marginal = FALSE)  
 }
+
 #' @rdname gs_get_singlecell_expression
 #' @export
 gs_get_singlecell_expression_by_gate <- function(...){

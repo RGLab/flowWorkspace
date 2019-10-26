@@ -3,12 +3,13 @@
 #' @template template-depr_pkg
 NULL
 #' get all the descendant nodes for the given ancester
-#'
+#' 
+#' @name gh_pop_get_descendants
+#' @aliases getDescendants getDescendants,GatingHierarchy-method
 #' @param gh GatingHierarchy
 #' @param node the node path
 #' @param ... passed to \code{getNode} call
 #' @export
-#' @rdname gh_pop_get_descendants
 #' @examples
 #' library(flowWorkspace)
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
@@ -22,7 +23,6 @@ gh_pop_get_descendants <- function(gh, node, ...){
 }
 
 #' @export
-#' @rdname gh_pop_get_descendants
 getDescendants <- function(...){
   .Deprecated("gh_pop_get_descendants")
   gh_pop_get_descendants(...)

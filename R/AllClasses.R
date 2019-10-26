@@ -385,9 +385,9 @@ GatingSetList <- function(x,samples = NULL)
 #' 
 #' \code{booleanFilter} class inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
 #' 
+#' @name booleanFilter-class
 #' @seealso \code{\link{add}} \code{\linkS4class{GatingHierarchy}}
 #' @name booleanFilter-class
-#' @rdname booleanFilter-class
 #' @exportClass booleanFilter
 #' @aliases 
 #' show,booleanFilter-method
@@ -450,8 +450,6 @@ char2booleanFilter <- function(expr, ..., filterId="defaultBooleanFilter") {
       deparse = expr)
 }
 
-#' @param object \code{booleanFilter}
-#' @rdname booleanFilter-class
 #' @export 
 setMethod("show",signature("booleanFilter"),function(object){
 			

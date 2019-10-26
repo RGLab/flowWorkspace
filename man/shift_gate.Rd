@@ -3,14 +3,11 @@
 \name{shift_gate}
 \alias{shift_gate}
 \alias{shift_gate.GatingHierarchy}
-\alias{shift_gate.GatingSet}
+\alias{shift_gate,GatingHierarchy-method}
+\alias{shift_gate,GatingSet-method}
 \title{Simplified geometric translation of gates associated with nodes}
 \usage{
-\method{shift_gate}{GatingHierarchy}(obj, y, dx = NULL, dy = NULL,
-  center = NULL, ...)
-
-\method{shift_gate}{GatingSet}(obj, y, dx = NULL, dy = NULL,
-  center = NULL, ...)
+shift_gate(obj, y, dx=NULL, dy=NULL, center=NULL, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}

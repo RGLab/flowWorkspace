@@ -5,14 +5,21 @@
 \alias{markernames}
 \alias{markernames,GatingSet-method}
 \alias{markernames,GatingHierarchy-method}
+\alias{markernames,cytoset-method}
 \alias{markernames<-,GatingHierarchy-method}
 \alias{markernames<-,GatingSet,ANY-method}
 \alias{markernames<-,GatingSet-method}
+\alias{markernmaes<-,cytoframe-method}
+\alias{markernames<-,cytoset-method}
 \alias{colnames,GatingHierarchy-method}
 \alias{colnames,GatingSet-method}
+\alias{colnames,cytoframe-method}
+\alias{colnames,cytoset-method}
 \alias{colnames<-,GatingHierarchy-method}
 \alias{colnames<-,GatingSet,ANY-method}
 \alias{colnames<-,GatingSet-method}
+\alias{colnames<-,cytoframe-method}
+\alias{colnames<-,cytoset-method}
 \title{Get/set the column(channel) or marker names}
 \usage{
 markernames(object)

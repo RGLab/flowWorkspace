@@ -2,8 +2,16 @@
 #' @templateVar new gh_pop_move
 #' @template template-depr_pkg
 NULL
+
+#' @export
+moveNode <- function(gh, node, to){
+  .Deprecated("gh_pop_move")
+  gh_pop_move(gh, node, to)
+}
 #' move a node along with all of its descendant nodes to the given ancester
-#'
+#' 
+#' @name gh_pop_move
+#' @aliases moveNode
 #' @param gh GatingHierarchy
 #' @param node the node to be moved
 #' @param to the new parent node under which the \code{node} will be moved to
@@ -17,13 +25,6 @@ NULL
 #' new.parent <- "singlets"
 #' gh_pop_move(gh, "CD4", new.parent)
 #' gs_pop_get_parent(gh, "CD4")
-#' @rdname gh_pop_move
-#' @export
-moveNode <- function(gh, node, to){
-  .Deprecated("gh_pop_move")
-  gh_pop_move(gh, node, to)
-}
-#' @rdname gh_pop_move
 #' @export
 gh_pop_move <- function(gh, node, to){
   

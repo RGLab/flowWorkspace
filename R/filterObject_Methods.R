@@ -5,32 +5,31 @@ NULL
 #' @templateVar new filter_to_list
 #' @template template-depr_pkg
 NULL
-#' @rdname filterObject
+
 #' @export 
 filterObject <- function(x)UseMethod("filterObject")
 
-#' @rdname filterObject
 #' @export 
 filterObject.default <- function(x){
   .Deprecated("filter_to_list")
   filter_to_list(x)
 }
 
-#' @rdname filterObject
-#' @export 
-filter_to_list <- function(x)UseMethod("filter_to_list")
-
 #' convert flowCore filter to a list 
 #'  
 #' It convert the flowCore gate to a list whose structure can be understood by 
 #' underlying c++ data structure.
 #' 
+#' @name filter_to_list
+#' @aliases filterObject filterObject,default-method filter_to_list,rectangleGate-method
+#' filter_to_list,polygonGate-method filter_to_list,quadGate-method filter_to_list,booleanFilter-method
+#' filter_to_list,ellipsoidGate-method filter_to_list,logical-method
 #' @param x \code{filter} a flowCore gate. Currently supported gates are:
 #'                          "rectangleGate", "polygonGate","ellipsoidGate" and "booleanFilter"
 #' @return a \code{list}
-#' @aliases 
-#' filterObject
-#' @rdname filterObject
+#' @export 
+filter_to_list <- function(x)UseMethod("filter_to_list")
+
 #' @export 
 filter_to_list.rectangleGate <- function(x){
       params<-parameters(x)
@@ -57,7 +56,6 @@ filter_to_list.rectangleGate <- function(x){
       filterObject
     }
 
-#' @rdname filterObject
 #' @export
 filter_to_list.polygonGate <- function(x){
       params<-parameters(x)
@@ -68,7 +66,6 @@ filter_to_list.polygonGate <- function(x){
           ,filterId=x@filterId)  
     }
 
-	#' @rdname filterObject
 #' @export
 filter_to_list.quadGate <- function(x){
 	params<-parameters(x)
@@ -80,7 +77,6 @@ filter_to_list.quadGate <- function(x){
 			,filterId=x@filterId)  
 }
 
-#' @rdname filterObject
 #' @export
 filter_to_list.booleanFilter <- function(x){
       expr <- x@deparse
@@ -126,7 +122,6 @@ filter_to_list.booleanFilter <- function(x){
           ,filterId=x@filterId)  
     }
     
-#' @rdname filterObject
 #' @export
 filter_to_list.ellipsoidGate <- function(x){
       params<-parameters(x)
@@ -140,7 +135,6 @@ filter_to_list.ellipsoidGate <- function(x){
     }
 
 
-#' @rdname filterObject
 #' @export
 filter_to_list.logical <- function(x){
   

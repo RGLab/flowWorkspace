@@ -2,13 +2,11 @@
 % Please edit documentation in R/utils.R
 \name{gs_get_leaf_nodes}
 \alias{gs_get_leaf_nodes}
-\alias{get_leaf_nodes}
 \alias{gh_get_leaf_nodes}
+\alias{get_leaf_nodes}
 \title{get all the leaf nodes}
 \usage{
 gs_get_leaf_nodes(x, ...)
-
-get_leaf_nodes(...)
 
 gh_get_leaf_nodes(x, ...)
 }

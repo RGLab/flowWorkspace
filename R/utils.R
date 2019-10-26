@@ -1,16 +1,16 @@
 #' get all the leaf nodes
+#' @name gs_get_leaf_nodes
+#' @aliases gh_get_leaf_nodes get_leaf_nodes
 #' @param x GatingHierarchy/GatingSet object
 #' @param ... arguments passed to 'gs_get_pop_paths" method
 #' @return the leaf nodes
 #' @export 
-#' @rdname gs_get_leaf_nodes
 gs_get_leaf_nodes <- function(x, ...){
   res <- gs_get_pop_paths(x, ...)
   ind <- sapply(res, function(i)length(.cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
   res[ind]
 }
 #' @export 
-#' @rdname gs_get_leaf_nodes
 get_leaf_nodes <- function(...){
   .Deprecated("gs_get_leaf_nodes")
   gs_get_leaf_nodes(...)

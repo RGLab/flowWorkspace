@@ -3,14 +3,11 @@
 \name{rotate_gate}
 \alias{rotate_gate}
 \alias{rotate_gate.GatingHierarchy}
-\alias{rotate_gate.GatingSet}
+\alias{rotate_gate,GatingHierarchy-method}
+\alias{rotate_gate,GatingSet-method}
 \title{Simplified geometric rotation of gates associated with nodes}
 \usage{
-\method{rotate_gate}{GatingHierarchy}(obj, y, deg = NULL,
-  rot_center = NULL, ...)
-
-\method{rotate_gate}{GatingSet}(obj, y, deg = NULL, rot_center = NULL,
-  ...)
+rotate_gate(obj, y, deg = NULL, rot_center = NULL, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}
@@ -52,9 +49,9 @@ the composition as a rotation around a shifted center.
 \examples{
 \dontrun{
 #' # Rotates the original gate 15 degrees counter-clockwise
-scale_gate(gs, node, deg = 15)
+rotate_gate(gs, node, deg = 15)
 # Rotates the original gate 270 degrees counter-clockwise
-scale_gate(gs, node, 270)
+rotate_gate(gs, node, 270)
 }
 
 }

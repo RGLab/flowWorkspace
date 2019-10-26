@@ -794,15 +794,6 @@ setReplaceMethod("sampleNames",
 		return(object)
 	})
 
-#' apply \code{FUN} to each sample (i.e. \code{cytoframe})
-#'
-#' sample names are used for names of the returned list
-#'
-#' @param X \code{cytoset}
-#' @param FUN \code{function} to be applied to each sample in 'cytoset'
-#' @param ... other arguments to be passed to 'FUN'
-#'
-#' @rdname lapply-methods
 #' @export
 setMethod("lapply","cytoset",function(X,FUN,...){
   sapply(sampleNames(X),function(sn,...){

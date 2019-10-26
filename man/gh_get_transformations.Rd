@@ -2,20 +2,14 @@
 % Please edit documentation in R/GatingHierarchy_Methods.R
 \name{gh_get_transformations}
 \alias{gh_get_transformations}
-\alias{getTransformations.GatingHierarchy}
 \alias{getTransformations}
 \alias{getTransformations,GatingHierarchy-method}
 \title{Return a list of transformations or a transformation in a GatingHierarchy}
 \usage{
-\method{getTransformations}{GatingHierarchy}(...)
-
 gh_get_transformations(x, channel = NULL, inverse = FALSE,
   only.function = TRUE, ...)
 }
 \arguments{
-\item{...}{other arguments
-equal.spaced \code{logical} passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals}
-
 \item{x}{A \code{GatingHierarchy} object}
 
 \item{channel}{\code{character} channel name}
@@ -23,6 +17,9 @@ equal.spaced \code{logical} passed to the breaks functio to determine whether to
 \item{inverse}{\code{logical} whether to return the inverse transformation function. Valid when only.funtion is TRUE}
 
 \item{only.function}{\code{logical} whether to return the function or the entire transformer object(see \code{scales} package) that contains transform and inverse and breaks function.}
+
+\item{...}{other arguments
+equal.spaced \code{logical} passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals}
 }
 \value{
 lists of functions(or transform objects when only.function is FALSE), with each element of the list representing a transformation applied to a specific

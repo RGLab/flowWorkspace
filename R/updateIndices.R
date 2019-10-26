@@ -2,11 +2,24 @@
 #' @templateVar new gh_pop_set_indices
 #' @template template-depr_pkg
 NULL
+
+#' @export
+setMethod("updateIndices",
+          signature=signature(obj="GatingHierarchy",y="character",z="logical"),
+          definition=function(obj,y,z)
+          {
+            .Deprecated("gh_pop_set_indices")
+            gh_pop_set_indices(obj, y, z)
+
+})
+
 #' directly update event indices without changing gates
 #'
 #' It is useful when we want to alter the popluation at events level yet
 #' without removing or adding the existing gates.
 #'
+#' @name gh_pop_set_indices
+#' @aliases updateIndices updateIndices,GatingHierarchy,character,logical-method
 #' @param obj \code{GatingHierarchy} object
 #' @param y \code{character} node name or path
 #' @param z \code{logical} vector as local event indices relative to node \code{y}
@@ -35,17 +48,6 @@ NULL
 #' nodes <- gh_pop_get_descendants(gh, "CD3+")
 #' for (node in nodes) suppressMessages(recompute(gh, node))
 #' gh_pop_get_stats(gs[[1]], nodes = c("CD3+", "CD4", "CD8")) #now all are update to date
-#' @rdname gh_pop_set_indices
-#' @export
-setMethod("updateIndices",
-          signature=signature(obj="GatingHierarchy",y="character",z="logical"),
-          definition=function(obj,y,z)
-          {
-            .Deprecated("gh_pop_set_indices")
-            gh_pop_set_indices(obj, y, z)
-
-})
-#' @rdname gh_pop_set_indices
 #' @export
 gh_pop_set_indices <- function(obj,y,z)
           {

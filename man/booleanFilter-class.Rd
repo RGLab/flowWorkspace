@@ -11,8 +11,6 @@
 booleanFilter(expr, ..., filterId = "defaultBooleanFilter")
 
 char2booleanFilter(expr, ..., filterId = "defaultBooleanFilter")
-
-\S4method{show}{booleanFilter}(object)
 }
 \arguments{
 \item{expr}{\code{expression}}
@@ -20,8 +18,6 @@ char2booleanFilter(expr, ..., filterId = "defaultBooleanFilter")
 \item{...}{further arguments to the expression}
 
 \item{filterId}{\code{character} identifier}
-
-\item{object}{\code{booleanFilter}}
 }
 \description{
 \code{booleanFilter} class inherits class \code{\link{expressionFilter}} and exists for the purpose of methods dispatching.
