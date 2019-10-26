@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
-  or the population proportions or the total number of events of a node (population) in a GatingHierarchy — getPopStats,GatingSet-method • flowWorkspace</title>
+  or the population proportions or the total number of events of a node (population) in a GatingHierarchy — gs_pop_get_count_fast • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -34,7 +34,7 @@
 
 
 <meta property="og:title" content="Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
-  or the population proportions or the total number of events of a node (population) in a GatingHierarchy — getPopStats,GatingSet-method" />
+  or the population proportions or the total number of events of a node (population) in a GatingHierarchy — gs_pop_get_count_fast" />
 
 <meta property="og:description" content="gs_pop_get_count_fast is more useful than getPop. Returns a table of population statistics for all populations in a GatingHierarchy/GatingSet. Includes the xml counts, openCyto counts and frequencies." />
 <meta name="twitter:card" content="summary" />
@@ -127,12 +127,7 @@
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingSet</span>
-<span class='fu'>getPopStats</span>(<span class='no'>x</span>, <span class='kw'>statistic</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"freq"</span>, <span class='st'>"count"</span>),
-  <span class='kw'>xml</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>subpopulations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"long"</span>, <span class='st'>"wide"</span>),
-  <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"full"</span>, <span class='no'>...</span>)
-
-<span class='fu'>gs_pop_get_count_fast</span>(<span class='no'>x</span>, <span class='kw'>statistic</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"freq"</span>, <span class='st'>"count"</span>), <span class='kw'>xml</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+    <pre class="usage"><span class='fu'>gs_pop_get_count_fast</span>(<span class='no'>x</span>, <span class='kw'>statistic</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"freq"</span>, <span class='st'>"count"</span>), <span class='kw'>xml</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>subpopulations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"long"</span>, <span class='st'>"wide"</span>), <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"full"</span>,
   <span class='no'>...</span>)
 

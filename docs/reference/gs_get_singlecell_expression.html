@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return the cell events data that express in any of the single populations defined in <code>y</code> — getSingleCellExpression • flowWorkspace</title>
+<title>Return the cell events data that express in any of the single populations defined in <code>y</code> — gs_get_singlecell_expression • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="Return the cell events data that express in any of the single populations defined in <code>y</code> — getSingleCellExpression" />
+<meta property="og:title" content="Return the cell events data that express in any of the single populations defined in <code>y</code> — gs_get_singlecell_expression" />
 
 <meta property="og:description" content="Returns a list of matrix containing the events that expressed in any one of the populations defined in y" />
 <meta name="twitter:card" content="summary" />
@@ -124,28 +124,15 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>getSingleCellExpression</span>(<span class='no'>...</span>)
-
-<span class='fu'>gs_get_singlecell_expression</span>(<span class='no'>x</span>, <span class='no'>nodes</span>, <span class='kw'>other.markers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>gs_get_singlecell_expression</span>(<span class='no'>x</span>, <span class='no'>nodes</span>, <span class='kw'>other.markers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>swap</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>marginal</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"mc.cores"</span>, <span class='fl'>1L</span>), <span class='no'>...</span>)
-
-<span class='fu'>getSingleCellExpressionByGate</span>(<span class='no'>...</span>)
 
 <span class='fu'>gs_get_singlecell_expression_by_gate</span>(<span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments
-        map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
-                        names (as specified in either the <code>desc</code> or <code>name</code>
-                         columns of the parameters of the associated <code>flowFrame</code>s
-                         in the <code>GatingSet</code>). see examples.</p>
-<p>ignore.case whether to ignore case when match the marker names. Default is FALSE.</p></td>
-    </tr>
     <tr>
       <th>x</th>
       <td><p>A <code>GatingSet</code> or <code>GatingSetList</code> object .</p></td>
@@ -175,6 +162,15 @@ and node name and 'map' argument are ignored.</p></td>
     <tr>
       <th>mc.cores</th>
       <td><p>passed to <code>mclapply</code>. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments
+        map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
+                        names (as specified in either the <code>desc</code> or <code>name</code>
+                         columns of the parameters of the associated <code>flowFrame</code>s
+                         in the <code>GatingSet</code>). see examples.</p>
+<p>ignore.case whether to ignore case when match the marker names. Default is FALSE.</p></td>
     </tr>
     </table>
     

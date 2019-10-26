@@ -189,7 +189,7 @@
 <div id="basics-on-gatingset" class="section level2">
 <h2 class="hasAnchor">
 <a href="#basics-on-gatingset" class="anchor"></a>Basics on GatingSet</h2>
-<p>Subsets of a <code>GatingSet</code> can be accessed using the standard R subset syntax <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code>.</p>
+<p>Subsets of a <code>GatingSet</code> can be accessed using the standard R subset syntax <code><a href="../reference/brackets.html">[</a></code>.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">gs[<span class="dv">1</span>]</a></code></pre></div>
 <pre><code>## A GatingSet with 1 samples</code></pre>
 <p>At this point we have parsed the workspace file and generated the gating hierarchy associated with each sample imported from the file. The data have been loaded, compensated, and transformed in the workspace, and gating has been executed. The resulting <code>GatingSet</code> contains a replicated analysis of the original flowJo workspace. It should be noted, however, that because <code>GatingSet</code> is a purely reference class, this sort of subsetting does not copy the underlying data but rather utilizes a view of it.</p>
@@ -226,7 +226,7 @@
 ## [19] "Monocytes/IL-12+" "Monocytes/TNFa+"</code></pre>
 <p>We can get the gate associated with the specific population:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">node &lt;-<span class="st"> </span>nodelist[<span class="dv">3</span>]</a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">g &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gh_pop_get_gate.html">gs_pop_get_gate</a></span>(gs, node)</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">g &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_pop_get_gate.html">gs_pop_get_gate</a></span>(gs, node)</a>
 <a class="sourceLine" id="cb26-3" data-line-number="3">g</a></code></pre></div>
 <pre><code>## $a2004_O1T2pb05i_A1_A01.fcs_61832
 ## Polygonal gate 'APC' with 14 vertices in dimensions &lt;PerCP-CY5-5-A&gt; and &lt;PE-CY7-A&gt;
@@ -274,10 +274,10 @@
 ## a2004_O1T2pb05i_A1_A01.fcs_61832 a2004_O1T2pb05i_A1_A01.fcs
 ## a2004_O1T2pb05i_A2_A02.fcs_45363 a2004_O1T2pb05i_A2_A02.fcs</code></pre>
 <p>We can subset the <code>GatingSet</code> by its <code>pData</code> directly:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(gs, treatment <span class="op">==</span><span class="st"> "control"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw"><a href="../reference/subset.html">subset</a></span>(gs, treatment <span class="op">==</span><span class="st"> "control"</span>)</a></code></pre></div>
 <pre><code>## A GatingSet with 1 samples</code></pre>
 <p>The underlying <code>flow data</code> can be retrieved by:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_pop_get_data.html">gs_pop_get_data</a></span>(gs)</a>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gh_pop_get_data.html">gs_pop_get_data</a></span>(gs)</a>
 <a class="sourceLine" id="cb35-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/class.html">class</a></span>(cs)</a></code></pre></div>
 <pre><code>## [1] "cytoset"
 ## attr(,"package")
@@ -286,14 +286,14 @@
 <pre><code>## [1] 61832</code></pre>
 <p>Because <code>GatingSet</code> is a purely reference class, the class type returned by <code>getData</code> is a <code>cytoset</code>, which is the purely reference class analog of a <code>flowSet</code> and will be discussed in more detail below. Also note that the data is already compensated and transformed during the parsing.</p>
 <p>We can retrieve the subset of data associated with a population node:</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_pop_get_data.html">gs_pop_get_data</a></span>(gs, node)</a>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gh_pop_get_data.html">gs_pop_get_data</a></span>(gs, node)</a>
 <a class="sourceLine" id="cb39-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(cs[[<span class="dv">1</span>]])</a></code></pre></div>
 <pre><code>## [1] 4154</code></pre>
 </div>
 <div id="gatinghierarchy" class="section level2">
 <h2 class="hasAnchor">
 <a href="#gatinghierarchy" class="anchor"></a>GatingHierarchy</h2>
-<p>We can retrieve a single gating hierarchical tree (corresponding to one sample) by using the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> extraction operator</p>
+<p>We can retrieve a single gating hierarchical tree (corresponding to one sample) by using the <code><a href="../reference/brackets.html">[[</a></code> extraction operator</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1">gh &lt;-<span class="st"> </span>gs[[<span class="dv">1</span>]]</a>
 <a class="sourceLine" id="cb41-2" data-line-number="2">gh</a></code></pre></div>
 <pre><code>## Sample:  a2004_O1T2pb05i_A1_A01.fcs_61832 
@@ -369,8 +369,8 @@
 ##         res[ind] &lt;- ifelse(deriv == 1, z$y[1L], 0)
 ##     res
 ## }
-## &lt;bytecode: 0x55bc959e0428&gt;
-## &lt;environment: 0x55bc93a5f918&gt;
+## &lt;bytecode: 0x562f1860ec88&gt;
+## &lt;environment: 0x562f17055fc8&gt;
 ## attr(,"type")
 ## [1] "biexp"
 ## attr(,"parameters")
@@ -424,7 +424,7 @@
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">chnls &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(fs)[<span class="dv">3</span><span class="op">:</span><span class="dv">6</span>] </a>
 <a class="sourceLine" id="cb62-2" data-line-number="2">transList &lt;-<span class="st"> </span><span class="kw"><a href="../reference/transformerList.html">transformerList</a></span>(chnls, trans.obj)</a></code></pre></div>
 <p>Alternatively, the overloaded <code>estimateLogicle</code> method can be used directly on <code>GatingHierarchy</code> to generate a <code>transformerList</code> object automatically.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/pkg/flowCore/man/logicleTransform.html">estimateLogicle</a></span>(gs[[<span class="dv">1</span>]], chnls)</a></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1"><span class="kw"><a href="../reference/estimateLogicle.html">estimateLogicle</a></span>(gs[[<span class="dv">1</span>]], chnls)</a></code></pre></div>
 <pre><code>## $`FL1-H`
 ## Transformer:  logicle 
 ## 
@@ -440,7 +440,7 @@
 ## attr(,"class")
 ## [1] "transformerList" "list"</code></pre>
 <p>Now we can transform our <code>GatingSet</code> with this <code>transformerList</code> object. It will also store the transformation in the <code>GatingSet</code> and can be used to inverse-transform the data.</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1">gs &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/flowCore/man/transform-class.html">transform</a></span>(gs, transList)</a>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1">gs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/transform.html">transform</a></span>(gs, transList)</a>
 <a class="sourceLine" id="cb65-2" data-line-number="2"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs) </a></code></pre></div>
 <pre><code>## [1] "root"</code></pre>
 <p>It now only contains the root node. We can add our first <code>rectangleGate</code>:</p>
@@ -711,9 +711,9 @@
 <div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(cs)</a></code></pre></div>
 <pre><code>##  [1] "FSC-A"  "FSC-H"  "FSC-W"  "SSC-A"  "B710-A" "R660-A" "R780-A"
 ##  [8] "V450-A" "V545-A" "G560-A" "G780-A" "Time"</code></pre>
-<p>Subsetting using <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code> will work in a manner similar to that for a <code>flowSet</code>, but will result in another <code>cytoset</code> that is a view in to the data of the original <code>cytoset</code>. The <code><a href="https://rdrr.io/pkg/flowCore/man/Subset-methods.html">Subset()</a></code> method, when called on a <code>cytoset</code>, will also return a <code>cytoset</code> that is a view in to the orignal data rather than a deep copy.</p>
+<p>Subsetting using <code><a href="../reference/brackets.html">[</a></code> will work in a manner similar to that for a <code>flowSet</code>, but will result in another <code>cytoset</code> that is a view in to the data of the original <code>cytoset</code>. The <code><a href="https://rdrr.io/pkg/flowCore/man/Subset-methods.html">Subset()</a></code> method, when called on a <code>cytoset</code>, will also return a <code>cytoset</code> that is a view in to the orignal data rather than a deep copy.</p>
 <div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" data-line-number="1">sub_cs &lt;-<span class="st"> </span>cs[<span class="dv">1</span>]</a></code></pre></div>
-<p><strong>Important:</strong> Perhaps unexpectedly, extraction using <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> on a <code>cytoset</code> will by default return a <code>flowFrame</code> instead of a <code>cytoframe</code> and so will represent a copy of the underlying data rather than a view. Thus, altering the result of the extraction <strong>will not</strong> alter the underlying data of the original <code>cytoset</code>. This is done for the sake of backwards compatibility with older user scripts.</p>
+<p><strong>Important:</strong> Perhaps unexpectedly, extraction using <code><a href="../reference/brackets.html">[[</a></code> on a <code>cytoset</code> will by default return a <code>flowFrame</code> instead of a <code>cytoframe</code> and so will represent a copy of the underlying data rather than a view. Thus, altering the result of the extraction <strong>will not</strong> alter the underlying data of the original <code>cytoset</code>. This is done for the sake of backwards compatibility with older user scripts.</p>
 <div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb137-1" data-line-number="1">sub_fr &lt;-<span class="st"> </span>cs[[<span class="dv">1</span>]]</a>
 <a class="sourceLine" id="cb137-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/pkg/flowCore/man/flowFrame-class.html">exprs</a></span>(cs[[<span class="dv">1</span>]])[<span class="dv">2</span>,<span class="dv">2</span>]</a></code></pre></div>
 <pre><code>## FSC-H 

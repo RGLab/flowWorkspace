@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — getGate,GatingHierarchy,character-method • flowWorkspace</title>
+<title>Bracket operators on <code>GatingSet</code> and <code>GatingSetList</code> objects — [,GatingSet,ANY-method • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,10 @@
 
 
 
-<meta property="og:title" content="Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — getGate,GatingHierarchy,character-method" />
+<meta property="og:title" content="Bracket operators on <code>GatingSet</code> and <code>GatingSetList</code> objects — [,GatingSet,ANY-method" />
 
-<meta property="og:description" content="Return the flowCore gate definition object associated with a node in a GatingHierarchy or GatingSet object." />
+<meta property="og:description" content="[ subsets a GatingSet or GatingSetList using the familiar bracket notation
+[[ extracts a GatingHierarchy object from a GatingSet or GatingSetList" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -113,58 +114,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.</h1>
+    <h1>Bracket operators on <code>GatingSet</code> and <code>GatingSetList</code> objects</h1>
     
-    <div class="hidden name"><code>gh_pop_get_gate.Rd</code></div>
+    <div class="hidden name"><code>brackets.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Return the flowCore gate definition object associated with a node in a <code>GatingHierarchy</code> or <code>GatingSet</code> object.</p>
+    <p><code>[</code> subsets a <code>GatingSet</code> or <code>GatingSetList</code> using the familiar bracket notation</p>
+<p><code>[[</code> extracts a <code>GatingHierarchy</code> object from a <code>GatingSet</code> or <code>GatingSetList</code></p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingHierarchy,character</span>
-<span class='fu'>getGate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)
+    <pre class="usage"><span class='no'>x</span>[<span class='no'>i</span>]
 
-<span class='fu'>gh_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)
-
-<span class='co'># S4 method for GatingSet,character</span>
-<span class='fu'>getGate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)
-
-<span class='fu'>gs_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)
-
-<span class='co'># S4 method for GatingSetList,character</span>
-<span class='fu'>getGate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)</pre>
+<span class='no'>x</span><span class='kw'>[[</span><span class='no'>i</span>]]</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>obj</th>
-      <td><p>A <code>GatingHierrarchy</code> or <code>GatingSet</code></p></td>
+      <th>x</th>
+      <td><p>a <code>GatingSet</code> or <code>GatingSetList</code></p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>A <code>character</code> the name or full(/partial) gating path of the node of interest.</p></td>
+      <th>i</th>
+      <td><p><code>numeric</code> or <code>logical</code> or <code>character</code> used as sample indices</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A gate object from <code>flowCore</code>. Usually a <code>polygonGate</code>, but may be a <code>rectangleGate</code>. Boolean gates are represented by a <code>"BooleanGate"</code> S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If <code>obj</code> is a <code>GatingSet</code>, assuming the trees associated with each <code>GatingHierarchy</code> are identical, then this method will return a list of gates, one for each sample in the <code>GatingSet</code> corresponding to the same population indexed by <code>y</code>.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='gh_pop_get_data.html'>gh_pop_get_data</a></code> <code><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></code></p></div>
+    <p>[] returns an object of the same type as <code>x</code> corresponding to the subset of indices
+in i, while [[]] returns a single <code>GatingHierarchy</code></p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>)    <span class='co'>#gh is a GatingHierarchy</span>
-    <span class='fu'>gh_pop_get_gate</span>(<span class='no'>gh</span>, <span class='st'>"CD3"</span>) <span class='co'>#return the gate for the fifth node in the tree, but fetch it by name.</span>
-    <span class='co'>#G is a GatingSet</span>
-    <span class='fu'>gs_pop_get_gate</span>(<span class='no'>G</span>, <span class='st'>"CD3"</span>) <span class='co'>#return a list of gates for the fifth node in each tree</span></div><div class='output co'>#&gt; <span class='error'>Error in lapply(obj, function(x) gh_pop_get_gate(x, y)): object 'G' not found</span></div><div class='input'>  
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -172,11 +156,7 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

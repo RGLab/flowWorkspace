@@ -34,7 +34,7 @@
 
 <meta property="og:title" content="Gating-ML 2.0 Log transformation. — logtGml2_trans" />
 
-<meta property="og:description" content="Used to construct flog transformer object." />
+<meta property="og:description" content="Used to construct GML 2.0 flog transformer object." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,22 +120,22 @@
 
     <div class="ref-description">
     
-    <p>Used to construct flog transformer object.</p>
+    <p>Used to construct GML 2.0 flog transformer object.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>logtGml2_trans</span>(<span class='kw'>M</span> <span class='kw'>=</span> <span class='fl'>4.5</span>, <span class='kw'>T</span> <span class='kw'>=</span> <span class='fl'>262144</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>equal.space</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>logtGml2_trans</span>(<span class='kw'>t</span> <span class='kw'>=</span> <span class='fl'>262144</span>, <span class='kw'>m</span> <span class='kw'>=</span> <span class='fl'>4.5</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>equal.space</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>M</th>
-      <td><p>number of decades</p></td>
+      <th>t</th>
+      <td><p>top scale value</p></td>
     </tr>
     <tr>
-      <th>T</th>
-      <td><p>top scale value</p></td>
+      <th>m</th>
+      <td><p>number of decades</p></td>
     </tr>
     <tr>
       <th>n</th>
@@ -151,12 +151,25 @@
 
     <p>logtGml2 transformation object</p>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>GML 2.0 standard log transform function constructor. The definition is as
+in the GML 2.0 standard section 6.2 "parametrized logarithmic transformation -- flog"
+This deviates from standard only in the following way. Before applying the logarithmic
+transformation, non-positive values are assigned the smallest positive value from
+the input rather than having undefined values (NA) under the transformation.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>trans.obj</span> <span class='kw'>&lt;-</span> <span class='fu'>logtGml2_trans</span>(<span class='kw'>M</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>T</span> <span class='kw'>=</span> <span class='fl'>1e3</span>, <span class='kw'>equal.space</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in logtGml2_trans(M = 1, T = 1000, equal.space = TRUE): unused arguments (M = 1, T = 1000)</span></div><div class='input'><span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>1e3</span>
-<span class='no'>brks.func</span> <span class='kw'>&lt;-</span> <span class='no'>trans.obj</span><span class='kw'>[[</span><span class='st'>"breaks"</span>]]</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'trans.obj' not found</span></div><div class='input'><span class='no'>brks</span> <span class='kw'>&lt;-</span> <span class='fu'>brks.func</span>(<span class='no'>data</span>)</div><div class='output co'>#&gt; <span class='error'>Error in brks.func(data): could not find function "brks.func"</span></div><div class='input'><span class='no'>brks</span> <span class='co'># fasinh space displayed at raw data scale</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'brks' not found</span></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>trans.obj</span> <span class='kw'>&lt;-</span> <span class='fu'>logtGml2_trans</span>(<span class='kw'>t</span> <span class='kw'>=</span> <span class='fl'>1e3</span>, <span class='kw'>m</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>equal.space</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>1e3</span>
+<span class='no'>brks.func</span> <span class='kw'>&lt;-</span> <span class='no'>trans.obj</span><span class='kw'>[[</span><span class='st'>"breaks"</span>]]
+<span class='no'>brks</span> <span class='kw'>&lt;-</span> <span class='fu'>brks.func</span>(<span class='no'>data</span>)
+<span class='no'>brks</span> <span class='co'># fasinh space displayed at raw data scale</span></div><div class='output co'>#&gt; [1]    1.000000    3.981072   15.848932   63.095734  251.188643 1000.000000</div><div class='input'>
 <span class='co'>#transform it to verify it is equal-spaced at transformed scale</span>
-<span class='no'>trans.func</span> <span class='kw'>&lt;-</span> <span class='no'>trans.obj</span><span class='kw'>[[</span><span class='st'>"transform"</span>]]</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'trans.obj' not found</span></div><div class='input'><span class='no'>brks.trans</span> <span class='kw'>&lt;-</span> <span class='fu'>trans.func</span>(<span class='no'>brks</span>)</div><div class='output co'>#&gt; <span class='error'>Error in trans.func(brks): could not find function "trans.func"</span></div><div class='input'><span class='no'>brks.trans</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'brks.trans' not found</span></div></pre>
+<span class='no'>trans.func</span> <span class='kw'>&lt;-</span> <span class='no'>trans.obj</span><span class='kw'>[[</span><span class='st'>"transform"</span>]]
+<span class='no'>brks.trans</span> <span class='kw'>&lt;-</span> <span class='fu'>trans.func</span>(<span class='no'>brks</span>)
+<span class='no'>brks.trans</span></div><div class='output co'>#&gt; [1] -2.0 -1.4 -0.8 -0.2  0.4  1.0</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -164,6 +177,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

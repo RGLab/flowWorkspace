@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>constructors for GatingSet — GatingSet,GatingHierarchy,character-method • flowWorkspace</title>
+<title>constructors for GatingSet — gh_apply_to_new_fcs • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="constructors for GatingSet — GatingSet,GatingHierarchy,character-method" />
+<meta property="og:title" content="constructors for GatingSet — gh_apply_to_new_fcs" />
 
 <meta property="og:description" content="construct object from existing gating hierarchy(gating template) and flow data" />
 <meta name="twitter:card" content="summary" />
@@ -124,10 +124,7 @@
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingHierarchy,character</span>
-<span class='fu'>GatingSet</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"."</span>, <span class='no'>...</span>)
-
-<span class='fu'>gh_apply_to_new_fcs</span>(<span class='no'>x</span>, <span class='no'>files</span>, <span class='kw'>swap_cols</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>gh_apply_to_new_fcs</span>(<span class='no'>x</span>, <span class='no'>files</span>, <span class='kw'>swap_cols</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,24 +134,24 @@
       <td><p>GatingHierarchy</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>sample names</p></td>
-    </tr>
-    <tr>
-      <th>path</th>
-      <td><p><code>character</code> specifies the path to the flow data (FCS files)</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments.</p></td>
-    </tr>
-    <tr>
       <th>files</th>
       <td><p>fcs file paths</p></td>
     </tr>
     <tr>
       <th>swap_cols</th>
       <td><p>for internal usage</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments.</p></td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td><p>sample names</p></td>
+    </tr>
+    <tr>
+      <th>path</th>
+      <td><p><code>character</code> specifies the path to the flow data (FCS files)</p></td>
     </tr>
     </table>
     

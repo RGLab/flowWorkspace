@@ -137,15 +137,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="GatingSet-class.html">`[`(<i>&lt;GatingSet&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="GatingSet-class.html">`[[`(<i>&lt;GatingSet&gt;</i>,<i>&lt;numeric&gt;</i>)</a></code> <code><a href="GatingSet-class.html">`[[<-`(<i>&lt;GatingSet&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="GatingSet-class.html">`[`(<i>&lt;GatingSetList&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> </p>
+          <p><code><a href="GatingSet-class.html">GatingSet-class</a></code> </p>
         </td>
         <td><p>Class <code>"GatingSet"</code></p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="gh_apply_to_new_fcs.html">GatingSet(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gh_apply_to_new_fcs.html">gh_apply_to_new_fcs()</a></code> </p>
-        </td>
-        <td><p>constructors for GatingSet</p></td>
       </tr><tr>
         
         <td>
@@ -163,7 +157,7 @@
       <tr>
         
         <td>
-          <p><code><a href="plot-methods.html">plot(<i>&lt;GatingSet&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="plot-methods.html">plot(<i>&lt;GatingSet&gt;</i>,<i>&lt;character&gt;</i>)</a></code> </p>
+          <p><code><a href="plot-methods.html">plot()</a></code> </p>
         </td>
         <td><p>plot a gating tree</p></td>
       </tr><tr>
@@ -175,25 +169,25 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_get_pop_paths.html">getNodes(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="gs_get_pop_paths.html">gs_get_pop_paths()</a></code> <code><a href="gs_get_pop_paths.html">gh_get_pop_paths()</a></code> </p>
+          <p><code><a href="gs_get_pop_paths.html">gs_get_pop_paths()</a></code> <code><a href="gs_get_pop_paths.html">gh_get_pop_paths()</a></code> </p>
         </td>
         <td><p>Get the names of all nodes from a gating hierarchy.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_get_leaf_nodes.html">gs_get_leaf_nodes()</a></code> <code><a href="gs_get_leaf_nodes.html">get_leaf_nodes()</a></code> <code><a href="gs_get_leaf_nodes.html">gh_get_leaf_nodes()</a></code> </p>
+          <p><code><a href="gs_get_leaf_nodes.html">gs_get_leaf_nodes()</a></code> <code><a href="gs_get_leaf_nodes.html">gh_get_leaf_nodes()</a></code> </p>
         </td>
         <td><p>get all the leaf nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_check_redundant_nodes.html">checkRedundantNodes()</a></code> <code><a href="gs_check_redundant_nodes.html">gs_check_redundant_nodes()</a></code> </p>
+          <p><code><a href="gs_check_redundant_nodes.html">gs_check_redundant_nodes()</a></code> </p>
         </td>
         <td><p>try to determine the redundant terminal(or leaf) nodes that can be removed</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_remove_redundant_nodes.html">dropRedundantNodes()</a></code> <code><a href="gs_remove_redundant_nodes.html">gs_remove_redundant_nodes()</a></code> </p>
+          <p><code><a href="gs_remove_redundant_nodes.html">gs_remove_redundant_nodes()</a></code> </p>
         </td>
         <td><p>Remove the terminal leaf nodes that make the gating trees to be different from one another.</p></td>
       </tr><tr>
@@ -224,37 +218,43 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_get_children.html">getParent(<i>&lt;GatingSet&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gs_pop_get_children.html">gs_pop_get_parent()</a></code> <code><a href="gs_pop_get_children.html">gh_pop_get_parent()</a></code> <code><a href="gs_pop_get_children.html">getChildren(<i>&lt;GatingSet&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gs_pop_get_children.html">gs_pop_get_children()</a></code> <code><a href="gs_pop_get_children.html">gh_pop_get_children()</a></code> </p>
+          <p><code><a href="gs_pop_get_children.html">gs_pop_get_parent()</a></code> <code><a href="gs_pop_get_children.html">gh_pop_get_parent()</a></code> <code><a href="gs_pop_get_children.html">gs_pop_get_children()</a></code> <code><a href="gs_pop_get_children.html">gh_pop_get_children()</a></code> </p>
         </td>
         <td><p>Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_get_descendants.html">gh_pop_get_descendants()</a></code> <code><a href="gh_pop_get_descendants.html">getDescendants()</a></code> </p>
+          <p><code><a href="gh_pop_get_descendants.html">gh_pop_get_descendants()</a></code> </p>
         </td>
         <td><p>get all the descendant nodes for the given ancester</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_get_stats.html">getStats()</a></code> <code><a href="gs_pop_get_stats.html">gs_pop_get_stats()</a></code> <code><a href="gs_pop_get_stats.html">gh_pop_get_stats()</a></code> </p>
+          <p><code><a href="gs_pop_get_stats.html">gs_pop_get_stats()</a></code> <code><a href="gs_pop_get_stats.html">gh_pop_get_stats()</a></code> </p>
         </td>
         <td><p>Extract stats from populations(or nodes)</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_compare_stats.html">getPopStats(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="gh_pop_compare_stats.html">gh_pop_compare_stats()</a></code> <code><a href="gh_pop_compare_stats.html">gh_plot_pop_count_cv()</a></code> </p>
+          <p><code><a href="gs_pop_get_stats_tfilter.html">gs_pop_get_stats_tfilter()</a></code> <code><a href="gs_pop_get_stats_tfilter.html">gh_pop_get_stats_tfilter()</a></code> </p>
+        </td>
+        <td><p>Extract stats from populations(or nodes) within a restricted time window</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="gh_pop_compare_stats.html">gh_pop_compare_stats()</a></code> <code><a href="gh_pop_compare_stats.html">gh_plot_pop_count_cv()</a></code> </p>
         </td>
         <td><p>Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_get_proportion.html">getProp()</a></code> <code><a href="gh_pop_get_proportion.html">gh_pop_get_proportion()</a></code> <code><a href="gh_pop_get_proportion.html">getTotal()</a></code> <code><a href="gh_pop_get_proportion.html">gh_pop_get_count()</a></code> </p>
+          <p><code><a href="gh_pop_get_proportion.html">gh_pop_get_proportion()</a></code> <code><a href="gh_pop_get_proportion.html">gh_pop_get_count()</a></code> </p>
         </td>
         <td><p>Get count or proportion from populations</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_get_count_fast.html">getPopStats(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="gs_pop_get_count_fast.html">gs_pop_get_count_fast()</a></code> <code><a href="gs_pop_get_count_fast.html">gs_pop_get_count_with_meta()</a></code> </p>
+          <p><code><a href="gs_pop_get_count_fast.html">gs_pop_get_count_fast()</a></code> <code><a href="gs_pop_get_count_fast.html">gs_pop_get_count_with_meta()</a></code> </p>
         </td>
         <td><p>Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
   or the population proportions or the total number of events of a node (population) in a GatingHierarchy</p></td>
@@ -275,19 +275,19 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_cyto_data.html">flowData()</a></code> <code><a href="gs_cyto_data.html">`flowData<-`()</a></code> <code><a href="gs_cyto_data.html">gs_cyto_data()</a></code> <code><a href="gs_cyto_data.html">`gs_cyto_data<-`(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="gs_cyto_data.html">`gs_cyto_data<-`(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="gs_cyto_data.html">gs_cyto_data()</a></code> <code><a href="gs_cyto_data.html">`gs_cyto_data<-`()</a></code> </p>
         </td>
         <td><p>Fetch or replace the flowData object associated with a GatingSet .</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_get_data.html">getData(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="gs_pop_get_data.html">gh_pop_get_data()</a></code> <code><a href="gs_pop_get_data.html">getData(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="gs_pop_get_data.html">gs_pop_get_data()</a></code> <code><a href="gs_pop_get_data.html">getData(<i>&lt;GatingSetList&gt;</i>)</a></code> </p>
+          <p><code><a href="gh_pop_get_data.html">gh_pop_get_data()</a></code> </p>
         </td>
         <td><p>get gated flow data from a GatingHierarchy/GatingSet/GatingSetList</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_get_compensations.html">getCompensationMatrices()</a></code> <code><a href="gh_get_compensations.html">gh_get_compensations()</a></code> </p>
+          <p><code><a href="gh_get_compensations.html">gh_get_compensations()</a></code> </p>
         </td>
         <td><p>Retrieve the compensation matrices from a GatingHierarchy</p></td>
       </tr><tr>
@@ -299,9 +299,15 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_get_transformations.html">getTransformations()</a></code> <code><a href="gh_get_transformations.html">gh_get_transformations()</a></code> </p>
+          <p><code><a href="gh_get_transformations.html">gh_get_transformations()</a></code> </p>
         </td>
         <td><p>Return a list of transformations or a transformation in a GatingHierarchy</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="transform.html">transform()</a></code> </p>
+        </td>
+        <td><p>tranform the flow data asssociated with the GatingSet</p></td>
       </tr><tr>
         
         <td>
@@ -311,25 +317,31 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="length.html">length(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="length.html">show(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="length.html">length()</a></code> <code><a href="length.html">show()</a></code> </p>
         </td>
         <td><p>Methods to get the length of a GatingSet</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="sampleNames.html">sampleNames(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="sampleNames.html">`sampleNames<-`(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="sampleNames.html">sampleNames()</a></code> <code><a href="sampleNames.html">`sampleNames<-`()</a></code> </p>
         </td>
         <td><p>Get/update sample names in a GatingSet</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="pData-methods.html">pData(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="pData-methods.html">pData(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="pData-methods.html">`pData<-`(<i>&lt;GatingSet&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="pData-methods.html">`pData<-`(<i>&lt;GatingSetList&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> </p>
+          <p><code><a href="markernames.html">markernames()</a></code> <code><a href="markernames.html">`markernames<-`()</a></code> <code><a href="markernames.html">colnames()</a></code> <code><a href="markernames.html">`colnames<-`()</a></code> </p>
         </td>
-        <td><p>read/set pData of flow data associated with <code>GatingSet</code> or <code>GatingSetList</code></p></td>
+        <td><p>Get/set the column(channel) or marker names</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="keyword.html">keyword(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="keyword.html">keyword(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="keyword.html">keyword(<i>&lt;GatingSet&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="keyword.html">keyword(<i>&lt;GatingSet&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="keyword.html">keyword(<i>&lt;GatingSetList&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="keyword.html">keyword(<i>&lt;GatingSetList&gt;</i>,<i>&lt;character&gt;</i>)</a></code> </p>
+          <p><code><a href="pData-methods.html">pData()</a></code> <code><a href="pData-methods.html">`pData<-`()</a></code> </p>
+        </td>
+        <td><p>read/set pData of flow data associated with <code>GatingHierarchy</code>, <code>GatingSet</code>, or <code>GatingSetList</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="keyword.html">keyword()</a></code> </p>
         </td>
         <td><p>Retrieve a specific keyword for a specific sample in a <code>GatingHierarchy</code> or or set of samples in a <code>GatingSet</code> or <code>GatingSetList</code></p></td>
       </tr>
@@ -343,16 +355,13 @@ It strips the parent path and cluster method name.</p></td>
       <tr>
         
         <td>
-          <p><code><a href="nodeflags.html">isGated()</a></code> <code><a href="nodeflags.html">gh_pop_is_gated()</a></code> <code><a href="nodeflags.html">isNegated()</a></code> <code><a href="nodeflags.html">gh_pop_is_negated()</a></code> <code><a href="nodeflags.html">isHidden()</a></code> <code><a href="nodeflags.html">gh_pop_is_hidden()</a></code> <code><a href="nodeflags.html">gh_pop_is_bool_gate()</a></code> </p>
+          <p><code><a href="nodeflags.html">gh_pop_is_gated()</a></code> <code><a href="nodeflags.html">gh_pop_is_negated()</a></code> <code><a href="nodeflags.html">gh_pop_is_hidden()</a></code> <code><a href="nodeflags.html">gh_pop_is_bool_gate()</a></code> </p>
         </td>
-        <td><p>The flags of gate nodes
-gh_pop_is_gated checks if a node is already gated
-gh_pop_is_negated checks if a node is negated.
-gh_pop_is_hidden checks if a node is hidden.</p></td>
+        <td><p>The flags of gate nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_set_visibility.html">setNode(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;logical&gt;</i>)</a></code> <code><a href="gs_pop_set_visibility.html">gh_pop_set_visibility()</a></code> <code><a href="gs_pop_set_visibility.html">gs_pop_set_visibility()</a></code> </p>
+          <p><code><a href="gs_pop_set_visibility.html">gh_pop_set_visibility()</a></code> <code><a href="gs_pop_set_visibility.html">gs_pop_set_visibility()</a></code> </p>
         </td>
         <td><p>hide/unhide a node</p></td>
       </tr><tr>
@@ -364,61 +373,61 @@ gh_pop_is_hidden checks if a node is hidden.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_get_gate.html">getGate(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gh_pop_get_gate.html">gh_pop_get_gate()</a></code> <code><a href="gh_pop_get_gate.html">getGate(<i>&lt;GatingSet&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gh_pop_get_gate.html">gs_pop_get_gate()</a></code> <code><a href="gh_pop_get_gate.html">getGate(<i>&lt;GatingSetList&gt;</i>,<i>&lt;character&gt;</i>)</a></code> </p>
+          <p><code><a href="gs_pop_get_gate.html">gh_pop_get_gate()</a></code> <code><a href="gs_pop_get_gate.html">gs_pop_get_gate()</a></code> </p>
         </td>
         <td><p>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_set_gate.html">setGate()</a></code> <code><a href="gs_pop_set_gate.html">gh_pop_set_gate()</a></code> <code><a href="gs_pop_set_gate.html">gs_pop_set_gate()</a></code> </p>
+          <p><code><a href="gs_pop_set_gate.html">gh_pop_set_gate()</a></code> <code><a href="gs_pop_set_gate.html">gs_pop_set_gate()</a></code> </p>
         </td>
         <td><p>update the gate</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="recompute.html">recompute(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="recompute.html">recompute(<i>&lt;GatingSetList&gt;</i>)</a></code> </p>
+          <p><code><a href="recompute.html">recompute()</a></code> </p>
         </td>
         <td><p>Compute the cell events by the gates stored within the gating tree.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_set_name.html">setNode(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gs_pop_set_name.html">gh_pop_set_name()</a></code> <code><a href="gs_pop_set_name.html">setNode(<i>&lt;GatingSet&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="gs_pop_set_name.html">gs_pop_set_name()</a></code> </p>
+          <p><code><a href="gs_pop_set_name.html">gh_pop_set_name()</a></code> <code><a href="gs_pop_set_name.html">gs_pop_set_name()</a></code> </p>
         </td>
         <td><p>Update the name of one node in a gating hierarchy/GatingSet.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="transform_gate.html">transform_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
+          <p><code><a href="transform_gate.html">transform_gate()</a></code> </p>
         </td>
         <td><p>Simplified geometric transformations of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rotate_gate.html">rotate_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="rotate_gate.html">rotate_gate(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="rotate_gate.html">rotate_gate()</a></code> </p>
         </td>
         <td><p>Simplified geometric rotation of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="scale_gate.html">scale_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="scale_gate.html">scale_gate(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="scale_gate.html">scale_gate()</a></code> </p>
         </td>
         <td><p>Simplified geometric scaling of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="shift_gate.html">shift_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="shift_gate.html">shift_gate(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="shift_gate.html">shift_gate()</a></code> </p>
         </td>
         <td><p>Simplified geometric translation of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="subset.html">subset(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="subset.html">subset()</a></code> </p>
         </td>
         <td><p>subset the GatingSet/GatingSetList based on 'pData'</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_get_indices.html">getIndices(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gh_pop_get_indices.html">gh_pop_get_indices()</a></code> </p>
+          <p><code><a href="gh_pop_get_indices.html">gh_pop_get_indices()</a></code> </p>
         </td>
         <td><p>Get the membership indices for each event with respect to a particular gate in a GatingHierarchy</p></td>
       </tr><tr>
@@ -430,13 +439,13 @@ gh_pop_is_hidden checks if a node is hidden.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_set_indices.html">updateIndices(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;logical&gt;</i>)</a></code> <code><a href="gh_pop_set_indices.html">gh_pop_set_indices()</a></code> </p>
+          <p><code><a href="gh_pop_set_indices.html">gh_pop_set_indices()</a></code> </p>
         </td>
         <td><p>directly update event indices without changing gates</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_get_singlecell_expression.html">getSingleCellExpression()</a></code> <code><a href="gs_get_singlecell_expression.html">gs_get_singlecell_expression()</a></code> <code><a href="gs_get_singlecell_expression.html">getSingleCellExpressionByGate()</a></code> <code><a href="gs_get_singlecell_expression.html">gs_get_singlecell_expression_by_gate()</a></code> </p>
+          <p><code><a href="gs_get_singlecell_expression.html">gs_get_singlecell_expression()</a></code> <code><a href="gs_get_singlecell_expression.html">gs_get_singlecell_expression_by_gate()</a></code> </p>
         </td>
         <td><p>Return the cell events data that express in any of the single populations defined in <code>y</code></p></td>
       </tr><tr>
@@ -454,64 +463,65 @@ gh_pop_is_hidden checks if a node is hidden.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_pop_add.html">add()</a></code> <code><a href="gs_pop_add.html">gs_pop_add()</a></code> <code><a href="gs_pop_add.html">gs_pop_remove()</a></code> <code><a href="gs_pop_add.html">Rm()</a></code> </p>
+          <p><code><a href="gs_pop_add.html">gs_pop_add()</a></code> <code><a href="gs_pop_add.html">gs_pop_remove()</a></code> </p>
         </td>
         <td><p>Create a GatingSet and add/remove the flowCore gate(or population) to/from a GatingHierarchy/GatingSet.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_move.html">moveNode()</a></code> <code><a href="gh_pop_move.html">gh_pop_move()</a></code> </p>
+          <p><code><a href="gh_pop_move.html">gh_pop_move()</a></code> </p>
         </td>
         <td><p>move a node along with all of its descendant nodes to the given ancester</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_copy_gate.html">copyNode()</a></code> <code><a href="gh_copy_gate.html">gh_copy_gate()</a></code> </p>
+          <p><code><a href="gh_copy_gate.html">gh_copy_gate()</a></code> </p>
         </td>
         <td><p>Copy a node along with all of its descendant nodes to the given ancestor</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_apply_to_new_fcs.html">GatingSet(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="gh_apply_to_new_fcs.html">gh_apply_to_new_fcs()</a></code> </p>
+          <p><code><a href="gh_apply_to_new_fcs.html">gh_apply_to_new_fcs()</a></code> </p>
         </td>
         <td><p>constructors for GatingSet</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_update_channels.html">updateChannels()</a></code> <code><a href="gs_update_channels.html">gs_update_channels()</a></code> </p>
+          <p><code><a href="gs_update_channels.html">gs_update_channels()</a></code> </p>
         </td>
         <td><p>Update the channel information of a GatingSet (c++ part)</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_remove_redundant_channels.html">dropRedundantChannels()</a></code> <code><a href="gs_remove_redundant_channels.html">gs_remove_redundant_channels()</a></code> </p>
+          <p><code><a href="gs_remove_redundant_channels.html">gs_remove_redundant_channels()</a></code> </p>
         </td>
         <td><p>Remove the channels from flow data that are not used by gates</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_split_by_channels.html">groupByChannels()</a></code> <code><a href="gs_split_by_channels.html">gs_split_by_channels()</a></code> </p>
+          <p><code><a href="gs_split_by_channels.html">gs_split_by_channels()</a></code> </p>
         </td>
         <td><p>split GatingSets into groups based on their flow channels</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_split_by_tree.html">groupByTree()</a></code> <code><a href="gs_split_by_tree.html">gs_split_by_tree()</a></code> </p>
+          <p><code><a href="gs_split_by_tree.html">gs_split_by_tree()</a></code> </p>
         </td>
         <td><p>split GatingSets into groups based on their gating schemes
 Be careful that the splitted resluts still points to the original data set!!</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gslist_to_gs.html">rbind2(<i>&lt;GatingSetList&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="gslist_to_gs.html">gslist_to_gs()</a></code> </p>
+          <p><code><a href="gslist_to_gs.html">gslist_to_gs()</a></code> </p>
         </td>
         <td><p>Merge a GatingSetList into a single GatingSet</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="lapply-methods.html">lapply(<i>&lt;cytoset&gt;</i>)</a></code> <code><a href="lapply-methods.html">lapply(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
+          <p><code><a href="lapply-methods.html">lapply()</a></code> </p>
         </td>
-        <td><p>apply <code>FUN</code> to each sample (i.e. <code>cytoframe</code>)</p></td>
+        <td><p>apply <code>FUN</code> to each sample (i.e. <code>GatingHierarchy</code> or <code>cytoframe</code>)
+in a <code>GatingSet</code> or <code>cytoset</code></p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -536,13 +546,13 @@ Used by other specific trans constructor</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="estimateLogicle.GatingHierarchy.html">estimateLogicle(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="estimateLogicle.GatingHierarchy.html">estimateLogicle(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
+          <p><code><a href="estimateLogicle.html">estimateLogicle()</a></code> </p>
         </td>
         <td><p>Compute logicle transformation from the flowData associated with a GatingHierarchy</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="filterObject.html">filterObject()</a></code> <code><a href="filterObject.html">filter_to_list()</a></code> </p>
+          <p><code><a href="filter_to_list.html">filter_to_list()</a></code> </p>
         </td>
         <td><p>convert flowCore filter to a list 
  
@@ -581,7 +591,7 @@ underlying c++ data structure.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="flowjo_fasinh.html">flowjo_fasinh()</a></code> <code><a href="flowjo_fasinh.html">flowJo.fasinh()</a></code> <code><a href="flowjo_fasinh.html">flowjo_fsinh()</a></code> <code><a href="flowjo_fasinh.html">flowJo.fsinh()</a></code> </p>
+          <p><code><a href="flowjo_fasinh.html">flowjo_fasinh()</a></code> <code><a href="flowjo_fasinh.html">flowjo_fsinh()</a></code> </p>
         </td>
         <td><p>inverse hyperbolic sine transform function</p></td>
       </tr><tr>
@@ -593,19 +603,19 @@ underlying c++ data structure.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="flowJo_flog.html">flowjo_log_trans()</a></code> <code><a href="flowJo_flog.html">flowJo.flog()</a></code> </p>
+          <p><code><a href="flowjo_log_trans.html">flowjo_log_trans()</a></code> </p>
         </td>
         <td><p>flog transform function</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="flowjo_biexp.html">flowjo_biexp()</a></code> <code><a href="flowjo_biexp.html">flowJoTrans()</a></code> </p>
+          <p><code><a href="flowjo_biexp.html">flowjo_biexp()</a></code> </p>
         </td>
         <td><p>construct the flowJo-type biexponentioal transformation function</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="booleanFilter-class.html">booleanFilter()</a></code> <code><a href="booleanFilter-class.html">char2booleanFilter()</a></code> <code><a href="booleanFilter-class.html">show(<i>&lt;booleanFilter&gt;</i>)</a></code> </p>
+          <p><code><a href="booleanFilter-class.html">booleanFilter()</a></code> <code><a href="booleanFilter-class.html">char2booleanFilter()</a></code> </p>
         </td>
         <td><p>A class describing logical operation (&amp; or |) of the reference populations</p></td>
       </tr>
@@ -633,13 +643,13 @@ underlying c++ data structure.</p></td>
       <tr>
         
         <td>
-          <p><code><a href="plot-methods.html">plot(<i>&lt;GatingSet&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="plot-methods.html">plot(<i>&lt;GatingSet&gt;</i>,<i>&lt;character&gt;</i>)</a></code> </p>
+          <p><code><a href="plot-methods.html">plot()</a></code> </p>
         </td>
         <td><p>plot a gating tree</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="plotGate-methods-defunct.html">plotGate(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;numeric&gt;</i>)</a></code> <code><a href="plotGate-methods-defunct.html">plotGate(<i>&lt;GatingSet&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="plotGate-methods-defunct.html">plotGate(<i>&lt;GatingSetList&gt;</i>,<i>&lt;character&gt;</i>)</a></code> </p>
+          <p><code><a href="plotGate-methods-defunct.html">plotGate()</a></code> </p>
         </td>
         <td><p>Plot gates and associated cell population contained in a <code>GatingHierarchy</code> or <code>GatingSet</code></p></td>
       </tr><tr>

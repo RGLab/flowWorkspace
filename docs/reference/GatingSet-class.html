@@ -34,9 +34,7 @@
 
 <meta property="og:title" content="Class <code>"GatingSet"</code> — GatingSet-class" />
 
-<meta property="og:description" content="GatingSet holds a set of GatingHierarchy objects, representing a set of samples and the gating scheme associated with each.
-[ subsets a GatingSet or GatingSetList using the familiar bracket notation
-[[ extract a GatingHierarchy object from a GatingSet or GatingSetList" />
+<meta property="og:description" content="GatingSet holds a set of GatingHierarchy objects, representing a set of samples and the gating scheme associated with each." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,49 +121,10 @@
     <div class="ref-description">
     
     <p>GatingSet holds a set of <code>GatingHierarchy</code> objects, representing a set of samples and the gating scheme associated with each.</p>
-<p><code>[</code> subsets a <code>GatingSet</code> or <code>GatingSetList</code> using the familiar bracket notation</p>
-<p><code>[[</code> extract a <code>GatingHierarchy</code> object from a <code>GatingSet</code> or <code>GatingSetList</code></p>
     
     </div>
 
-    <pre class="usage"># S4 method for GatingSet,ANY
-[(x, i, j, ..., drop = TRUE)
-
-# S4 method for GatingSet,numeric
-[[(x, i, j, ...)
-
-# S4 method for GatingSet,ANY,ANY,GatingHierarchy
-[[(x, i, j = "missing",
-  ...) <- value
-
-# S4 method for GatingSetList,ANY
-[(x, i, j, ..., drop = TRUE)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>x</th>
-      <td><p><code>GatingSet</code> or <code>GatingSetList</code></p></td>
-    </tr>
-    <tr>
-      <th>i</th>
-      <td><p><code>numeric</code> or <code>logical</code> or <code>character</code> used as sample index</p></td>
-    </tr>
-    <tr>
-      <th>j</th>
-      <td><p>not used</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>not used</p></td>
-    </tr>
-    <tr>
-      <th>drop</th>
-      <td><p>not used</p></td>
-    </tr>
-    </table>
-    
+        
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Objects stores a collection of GatingHierarchies and represent a group in a flowJo workspace.
@@ -206,7 +165,6 @@ It allows the use to load a workspace and subset desired samples before proceedi
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#details">Details</a></li>
 

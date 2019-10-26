@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return a list of transformations or a transformation in a GatingHierarchy — getTransformations • flowWorkspace</title>
+<title>Return a list of transformations or a transformation in a GatingHierarchy — gh_get_transformations • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="Return a list of transformations or a transformation in a GatingHierarchy — getTransformations" />
+<meta property="og:title" content="Return a list of transformations or a transformation in a GatingHierarchy — gh_get_transformations" />
 
 <meta property="og:description" content="Return a list of all the transformations or a transformation in a GatingHierarchy" />
 <meta name="twitter:card" content="summary" />
@@ -124,12 +124,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>getTransformations</span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for GatingHierarchy</span>
-<span class='fu'>getTransformations</span>(<span class='no'>...</span>)
-
-<span class='fu'>gh_get_transformations</span>(<span class='no'>x</span>, <span class='kw'>channel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>inverse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+    <pre class="usage"><span class='fu'>gh_get_transformations</span>(<span class='no'>x</span>, <span class='kw'>channel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>inverse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>only.function</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -138,11 +133,6 @@
     <tr>
       <th>x</th>
       <td><p>A <code>GatingHierarchy</code> object</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments
-equal.spaced <code>logical</code> passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals</p></td>
     </tr>
     <tr>
       <th>channel</th>
@@ -155,6 +145,11 @@ equal.spaced <code>logical</code> passed to the breaks functio to determine whet
     <tr>
       <th>only.function</th>
       <td><p><code>logical</code> whether to return the function or the entire transformer object(see <code>scales</code> package) that contains transform and inverse and breaks function.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments
+equal.spaced <code>logical</code> passed to the breaks functio to determine whether to break at 10^n or equally spaced intervals</p></td>
     </tr>
     </table>
     

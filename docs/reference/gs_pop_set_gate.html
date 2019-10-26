@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>update the gate — setGate • flowWorkspace</title>
+<title>update the gate — gs_pop_set_gate • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="update the gate — setGate" />
+<meta property="og:title" content="update the gate — gs_pop_set_gate" />
 
 <meta property="og:description" content="update the population node with a flowCore-compatible gate object" />
 <meta name="twitter:card" content="summary" />
@@ -124,15 +124,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>setGate</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>value</span>, <span class='no'>...</span>)
-
-<span class='co'># S4 method for GatingHierarchy,character,filter</span>
-<span class='fu'>setGate</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>value</span>, <span class='no'>...</span>)
-
-<span class='fu'>gh_pop_set_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>value</span>, <span class='kw'>negated</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
-
-<span class='co'># S4 method for GatingSet,character,ANY</span>
-<span class='fu'>setGate</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>value</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>gh_pop_set_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>value</span>, <span class='kw'>negated</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
 
 <span class='fu'>gs_pop_set_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>value</span>, <span class='no'>...</span>)</pre>
     
@@ -152,12 +144,12 @@
       <td><p><code>filter</code> or <code>filterList</code> or <code>list</code> of <code>filter</code> objects</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>other aguments</p></td>
-    </tr>
-    <tr>
       <th>negated</th>
       <td><p><code>logical</code> see <a href='gs_pop_add.html'>add</a></p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other aguments</p></td>
     </tr>
     </table>
     
@@ -165,7 +157,7 @@
 
     <p>Usually <a href='recompute.html'>recompute</a> is followed by this call since updating a gate
 doesn't re-calculating the cell events within the gate automatically.
-see <a href='filterObject.html'>filterObject</a> for the gate types that are currently supported.</p>
+see <a href='filter_to_list.html'>filterObject</a> for the gate types that are currently supported.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

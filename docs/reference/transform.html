@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>tranform the flow data asssociated with the GatingSet — transform,GatingSet-method • flowWorkspace</title>
+<title>tranform the flow data asssociated with the GatingSet — transform • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="tranform the flow data asssociated with the GatingSet — transform,GatingSet-method" />
+<meta property="og:title" content="tranform the flow data asssociated with the GatingSet — transform" />
 
 <meta property="og:description" content="The transformation functions are saved in the GatingSet and can be retrieved by gh_get_transformations.
 Currently only flowJo-type biexponential transformation(either returned by gh_get_transformations or constructed by flowJoTrans)
@@ -128,11 +128,7 @@ is supported.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingSet</span>
-<span class='fu'><a href='https://rdrr.io/r/base/transform.html'>transform</a></span>(<span class='no'>`_data`</span>, <span class='no'>translist</span>, <span class='no'>...</span>)
-
-<span class='co'># S4 method for GatingSetList</span>
-<span class='fu'><a href='https://rdrr.io/r/base/transform.html'>transform</a></span>(<span class='no'>`_data`</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>transform</span>(<span class='no'>`_data`</span>, <span class='no'>translist</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,7 +167,7 @@ is supported.</p>
 <span class='no'>transList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='transformerList.html'>transformerList</a></span>(<span class='no'>chnls</span>, <span class='no'>biexpTrans</span>)
 
 <span class='co'>#add it to GatingSet</span>
-<span class='no'>gs_trans</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/transform-class.html'>transform</a></span>(<span class='no'>gs</span>, <span class='no'>transList</span>)
+<span class='no'>gs_trans</span> <span class='kw'>&lt;-</span> <span class='fu'>transform</span>(<span class='no'>gs</span>, <span class='no'>transList</span>)
 
 }</div></pre>
   </div>

@@ -7,8 +7,6 @@ reference:
     contents:
       - GatingHierarchy-class
       - GatingSet-class
-      - GatingSet,flowSet,ANY-method
-      - GatingSet,GatingHierarchy,character-method
       - GatingSetList-class
   - title: "Examining the hierarchical gating tree"
     desc: >

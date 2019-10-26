@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy — getParent,GatingSet,character-method • flowWorkspace</title>
+<title>Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy — gs_pop_get_parent • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy — getParent,GatingSet,character-method" />
+<meta property="og:title" content="Return the name of the parent population or a list of child populations of the current population in the GatingHierarchy — gs_pop_get_parent" />
 
 <meta property="og:description" content="Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given GatingHierarchy" />
 <meta name="twitter:card" content="summary" />
@@ -124,16 +124,9 @@
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingSet,character</span>
-<span class='fu'>getParent</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>...</span>)
-
-<span class='fu'>gs_pop_get_parent</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>gs_pop_get_parent</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>...</span>)
 
 <span class='fu'>gh_pop_get_parent</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>...</span>)
-
-<span class='co'># S4 method for GatingSet,character</span>
-<span class='fu'>getChildren</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='kw'>showHidden</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='no'>...</span>)
 
 <span class='fu'>gs_pop_get_children</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='kw'>showHidden</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
 

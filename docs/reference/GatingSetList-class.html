@@ -156,7 +156,7 @@ if not specified, the samples are ordered as the underlying stored order.</p></t
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
     <span class='co'>#load several GatingSets from disk</span>
-   <span class='no'>gs_list</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='st'>"../gs_toMerge"</span>,<span class='kw'>full</span><span class='kw'>=</span><span class='no'>T</span>) ,<span class='kw'>function</span>(<span class='no'>this_folder</span>){
+   <span class='no'>gs_list</span><span class='kw'>&lt;-</span><span class='fu'><a href='lapply-methods.html'>lapply</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='st'>"../gs_toMerge"</span>,<span class='kw'>full</span><span class='kw'>=</span><span class='no'>T</span>) ,<span class='kw'>function</span>(<span class='no'>this_folder</span>){
                      <span class='fu'><a href='save_gs.html'>load_gs</a></span>(<span class='no'>this_folder</span>)
                      })
 
@@ -175,7 +175,7 @@ if not specified, the samples are ordered as the underlying stored order.</p></t
     <span class='no'>gslist2</span><span class='kw'>[[</span><span class='st'>"30104.fcs"</span>]]
 
     <span class='co'>#loop through all GatingSets within GatingSetList</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>gslist2</span>,<span class='no'>sampleNames</span>)
+    <span class='fu'><a href='lapply-methods.html'>lapply</a></span>(<span class='no'>gslist2</span>,<span class='no'>sampleNames</span>)
 
     <span class='co'>#subset a GatingSetList by [</span>
     <span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>gslist2</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>,<span class='fl'>1</span>)])
@@ -183,13 +183,13 @@ if not specified, the samples are ordered as the underlying stored order.</p></t
     <span class='no'>gslist2</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"30104.fcs"</span>)]
 
     <span class='co'>#get flow data from it</span>
-    <span class='fu'><a href='gs_pop_get_data.html'>gs_pop_get_data</a></span>(<span class='no'>gslist2</span>)
+    <span class='fu'><a href='gh_pop_get_data.html'>gs_pop_get_data</a></span>(<span class='no'>gslist2</span>)
     <span class='co'>#get gated flow data from a particular popoulation </span>
-    <span class='fu'><a href='gs_pop_get_data.html'>gs_pop_get_data</a></span>(<span class='no'>gslist2</span>, <span class='st'>"3+"</span>)
+    <span class='fu'><a href='gh_pop_get_data.html'>gs_pop_get_data</a></span>(<span class='no'>gslist2</span>, <span class='st'>"3+"</span>)
 
     <span class='co'>#extract the gates associated with one popoulation</span>
-    <span class='fu'><a href='gh_pop_get_gate.html'>gs_pop_get_gate</a></span>(<span class='no'>gslist2</span>,<span class='st'>"3+"</span>)
-    <span class='fu'><a href='gh_pop_get_gate.html'>gs_pop_get_gate</a></span>(<span class='no'>gslist2</span>,<span class='fl'>5</span>)
+    <span class='fu'><a href='gs_pop_get_gate.html'>gs_pop_get_gate</a></span>(<span class='no'>gslist2</span>,<span class='st'>"3+"</span>)
+    <span class='fu'><a href='gs_pop_get_gate.html'>gs_pop_get_gate</a></span>(<span class='no'>gslist2</span>,<span class='fl'>5</span>)
 
     <span class='co'>#extract the pheno data</span>
     <span class='fu'><a href='pData-methods.html'>pData</a></span>(<span class='no'>gslist2</span>[<span class='fl'>3</span>:<span class='fl'>1</span>])
@@ -204,7 +204,7 @@ if not specified, the samples are ordered as the underlying stored order.</p></t
 
     <span class='co'>#remove cerntain gates by loop through GatingSets</span>
     <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>gslist2</span><span class='kw'>[[</span><span class='fl'>1</span>]])
-    <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>gslist2</span>,<span class='kw'>function</span>(<span class='no'>gs</span>)<span class='fu'><a href='gs_pop_add.html'>gs_pop_remove</a></span>(<span class='st'>"Excl"</span>,<span class='kw'>gs</span> <span class='kw'>=</span> <span class='no'>gs</span>))
+    <span class='fu'><a href='lapply-methods.html'>lapply</a></span>(<span class='no'>gslist2</span>,<span class='kw'>function</span>(<span class='no'>gs</span>)<span class='fu'><a href='gs_pop_add.html'>gs_pop_remove</a></span>(<span class='st'>"Excl"</span>,<span class='kw'>gs</span> <span class='kw'>=</span> <span class='no'>gs</span>))
 
     <span class='co'>#extract the stats</span>
     <span class='fu'><a href='gs_pop_get_count_fast.html'>gs_pop_get_count_fast</a></span>(<span class='no'>gslist2</span>)

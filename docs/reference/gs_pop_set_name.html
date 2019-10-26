@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Update the name of one node in a gating hierarchy/GatingSet. — setNode,GatingHierarchy,character,character-method • flowWorkspace</title>
+<title>Update the name of one node in a gating hierarchy/GatingSet. — gs_pop_set_name • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
 
 
-<meta property="og:title" content="Update the name of one node in a gating hierarchy/GatingSet. — setNode,GatingHierarchy,character,character-method" />
+<meta property="og:title" content="Update the name of one node in a gating hierarchy/GatingSet. — gs_pop_set_name" />
 
-<meta property="og:description" content="gs_pop_set_name/gs_pop_set_name update the name of one node in a gating hierarchy/GatingSet." />
+<meta property="og:description" content="gh_pop_set_name/gs_pop_set_name update the name of one node in a gating hierarchy/GatingSet." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,17 +120,11 @@
 
     <div class="ref-description">
     
-    <p><code>gs_pop_set_name/gs_pop_set_name</code> update the name of one node in a gating hierarchy/GatingSet.</p>
+    <p><code>gh_pop_set_name/gs_pop_set_name</code> update the name of one node in a gating hierarchy/GatingSet.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingHierarchy,character,character</span>
-<span class='fu'>setNode</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>value</span>)
-
-<span class='fu'>gh_pop_set_name</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>value</span>)
-
-<span class='co'># S4 method for GatingSet,character,ANY</span>
-<span class='fu'>setNode</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>value</span>)
+    <pre class="usage"><span class='fu'>gh_pop_set_name</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>value</span>)
 
 <span class='fu'>gs_pop_set_name</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>value</span>)</pre>
     
@@ -147,17 +141,17 @@
     </tr>
     <tr>
       <th>value</th>
-      <td><p>A <code>character</code> the name of the node. or <code>logical</code> to indicate whether to hide a node</p></td>
+      <td><p>A <code>character</code> the name of the node</p></td>
     </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
     <span class='co'>#G is a gating hierarchy</span>
     <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]])<span class='co'>#return node names</span>
     <span class='fu'>gh_pop_set_name</span>(<span class='no'>G</span>,<span class='st'>"L"</span>,<span class='st'>"lymph"</span>)
-  }</div></pre>
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

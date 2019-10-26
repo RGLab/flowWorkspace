@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>try to determine the redundant terminal(or leaf) nodes that can be removed — checkRedundantNodes • flowWorkspace</title>
+<title>try to determine the redundant terminal(or leaf) nodes that can be removed — gs_check_redundant_nodes • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
 
 
-<meta property="og:title" content="try to determine the redundant terminal(or leaf) nodes that can be removed — checkRedundantNodes" />
+<meta property="og:title" content="try to determine the redundant terminal(or leaf) nodes that can be removed — gs_check_redundant_nodes" />
 
-<meta property="og:description" content="THese leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
+<meta property="og:description" content="These leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
 gs_remove_redundant_nodes." />
 <meta name="twitter:card" content="summary" />
 
@@ -121,22 +121,16 @@ gs_remove_redundant_nodes." />
 
     <div class="ref-description">
     
-    <p>THese leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
+    <p>These leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
 <a href='gs_remove_redundant_nodes.html'>gs_remove_redundant_nodes</a>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>checkRedundantNodes</span>(<span class='no'>...</span>)
-
-<span class='fu'>gs_check_redundant_nodes</span>(<span class='no'>x</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"auto"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>gs_check_redundant_nodes</span>(<span class='no'>x</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"auto"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments passed to <a href='gs_get_pop_paths.html'>gs_get_pop_paths</a>.</p></td>
-    </tr>
     <tr>
       <th>x</th>
       <td><p><code>GatingSet</code> or <code>list</code> of groups(each group is a list of 'GatingSet`). When it is a list, it is usually the outcome from <a href='gs_split_by_tree.html'>gs_split_by_tree</a>.</p></td>
@@ -144,6 +138,10 @@ gs_remove_redundant_nodes." />
     <tr>
       <th>path</th>
       <td><p>argumented passed to <a href='gs_get_pop_paths.html'>gs_get_pop_paths</a>. The default value is "auto".</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments passed to <a href='gs_get_pop_paths.html'>gs_get_pop_paths</a>.</p></td>
     </tr>
     </table>
     

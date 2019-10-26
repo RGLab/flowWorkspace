@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Merge a GatingSetList into a single GatingSet — rbind2,GatingSetList,missing-method • flowWorkspace</title>
+<title>Merge a GatingSetList into a single GatingSet — gslist_to_gs • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="Merge a GatingSetList into a single GatingSet — rbind2,GatingSetList,missing-method" />
+<meta property="og:title" content="Merge a GatingSetList into a single GatingSet — gslist_to_gs" />
 
 <meta property="og:description" content="Merge a GatingSetList into a single GatingSet" />
 <meta name="twitter:card" content="summary" />
@@ -124,10 +124,7 @@
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingSetList,missing</span>
-<span class='fu'>rbind2</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"missing"</span>, <span class='no'>...</span>)
-
-<span class='fu'>gslist_to_gs</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>gslist_to_gs</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,10 +132,6 @@
     <tr>
       <th>x</th>
       <td><p>GatingSetList</p></td>
-    </tr>
-    <tr>
-      <th>y</th>
-      <td><p><code>missing</code> not used.</p></td>
     </tr>
     <tr>
       <th>...</th>

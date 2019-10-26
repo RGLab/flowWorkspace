@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute the cell events by the gates stored within the gating tree. — recompute,GatingSet-method • flowWorkspace</title>
+<title>Compute the cell events by the gates stored within the gating tree. — recompute • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="Compute the cell events by the gates stored within the gating tree. — recompute,GatingSet-method" />
+<meta property="og:title" content="Compute the cell events by the gates stored within the gating tree. — recompute" />
 
 <meta property="og:description" content="Compute each cell event to see if it falls into the gate stored within the gating tree
 and store the result as cell count." />
@@ -126,19 +126,14 @@ and store the result as cell count.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for GatingSet</span>
-<span class='fu'>recompute</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"root"</span>, <span class='kw'>alwaysLoadData</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>...</span>)
-
-<span class='co'># S4 method for GatingSetList</span>
-<span class='fu'>recompute</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>recompute</span>(<span class='no'>x</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='st'>"root"</span>, <span class='kw'>alwaysLoadData</span><span class='kw'>=</span><span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p><code>GatingSet</code></p></td>
+      <td><p><code>GatingSet or GatingSetList</code></p></td>
     </tr>
     <tr>
       <th>y</th>

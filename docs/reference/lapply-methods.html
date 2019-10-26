@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>apply <code>FUN</code> to each sample (i.e. <code>cytoframe</code>) — lapply,cytoset-method • flowWorkspace</title>
+<title>apply <code>FUN</code> to each sample (i.e. <code>GatingHierarchy</code> or <code>cytoframe</code>)
+in a <code>GatingSet</code> or <code>cytoset</code> — lapply-methods • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,10 +33,10 @@
 
 
 
-<meta property="og:title" content="apply <code>FUN</code> to each sample (i.e. <code>cytoframe</code>) — lapply,cytoset-method" />
+<meta property="og:title" content="apply <code>FUN</code> to each sample (i.e. <code>GatingHierarchy</code> or <code>cytoframe</code>)
+in a <code>GatingSet</code> or <code>cytoset</code> — lapply-methods" />
 
-<meta property="og:description" content="sample names are used for names of the returned list
-sample names are used for names of the returned list" />
+<meta property="og:description" content="sample names are used for names of the returned list" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -114,7 +115,8 @@ sample names are used for names of the returned list" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>apply <code>FUN</code> to each sample (i.e. <code>cytoframe</code>)</h1>
+    <h1>apply <code>FUN</code> to each sample (i.e. <code>GatingHierarchy</code> or <code>cytoframe</code>)
+in a <code>GatingSet</code> or <code>cytoset</code></h1>
     
     <div class="hidden name"><code>lapply-methods.Rd</code></div>
     </div>
@@ -122,38 +124,21 @@ sample names are used for names of the returned list" />
     <div class="ref-description">
     
     <p>sample names are used for names of the returned list</p>
-<p>sample names are used for names of the returned list</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for cytoset</span>
-<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>X</span>, <span class='no'>FUN</span>, <span class='no'>...</span>)
-
-<span class='co'># S4 method for GatingSet</span>
-<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>X</span>, <span class='no'>FUN</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>lapply</span>(<span class='no'>X</span>, <span class='no'>FUN</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>X</th>
-      <td><p><code>cytoset</code></p></td>
+      <td><p><code>GatingSet</code> or <code>cytoset</code></p></td>
     </tr>
     <tr>
       <th>FUN</th>
-      <td><p><code>function</code> to be applied to each sample in 'cytoset'</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments to be passed to 'FUN'</p></td>
-    </tr>
-    <tr>
-      <th>X</th>
-      <td><p><code>GatingSet</code></p></td>
-    </tr>
-    <tr>
-      <th>FUN</th>
-      <td><p><code>function</code> to be applied to each sample in 'GatingSet'</p></td>
+      <td><p><code>function</code> to be applied to each sample in 'GatingSet' or 'cytoset'</p></td>
     </tr>
     <tr>
       <th>...</th>
