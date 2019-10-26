@@ -5,8 +5,7 @@ NULL
 #' @templateVar new gslist_to_gs
 #' @template template-depr_pkg
 NULL
-#' @param y \code{missing} not used.
-#' @rdname gslist_to_gs 
+
 #' @export 
 setMethod("rbind2",
     signature=signature("GatingSetList","missing"),
@@ -15,11 +14,13 @@ setMethod("rbind2",
 		.Deprecated("gslist_to_gs")
 		gslist_to_gs(x, ...)
 	})
+
 #' Merge a GatingSetList into a single GatingSet
 #' 
+#' @name gslist_to_gs
+#' @aliases rbind2,GatingSetList,missing-method
 #' @param x GatingSetList
 #' @param ... other arguments passed to \code{gslist_to_gs} method for \code{ncdfFlowList}
-#' @rdname gslist_to_gs 
 #' @export 
 gslist_to_gs <- function(x,...){
 #           browser()
@@ -28,8 +29,7 @@ gslist_to_gs <- function(x,...){
       sampleList <- lapply(x, sampleNames, level =1)
       new("GatingSet", pointer = .cpp_combineGatingSet(ptrlist,sampleList))
     }
-	
-#' @rdname GatingSet-class 
+
 #' @export
 setMethod("[",c(x="GatingSetList",i="ANY"),function(x,i,j,...){
       object <- callNextMethod()
@@ -55,7 +55,6 @@ setMethod("getData",signature(obj="GatingSetList",y="ANY"),function(obj,y, ...){
 
 
 
-#' @rdname gh_pop_get_gate
 #' @export
 setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y){
 			.Deprecated("gs_pop_get_gate")
@@ -63,8 +62,6 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y)
 		})
 
 
-#' @export 
-#' @rdname plotGate-methods-defunct
 setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
           .Defunct("ggcyto::autoplot", "flowWorkspace")
     })

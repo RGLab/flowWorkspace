@@ -6,8 +6,16 @@ NULL
 #' @template template-depr_pkg
 NULL
 #' @export
-#' @rdname gs_pop_set_gate
 setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
+
+#' @export
+setMethod("setGate"
+    ,signature(obj="GatingHierarchy",y="character",value="filter")
+    ,function(obj,y,value,...){
+      .Deprecated("gh_pop_set_gate")
+	  gh_pop_set_gate(obj,y,value,...)
+	   
+    })
 
 #' update the gate
 #' 
@@ -17,6 +25,9 @@ setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
 #' doesn't re-calculating the cell events within the gate automatically.
 #' see \link{filterObject} for the gate types that are currently supported.
 #' 
+#' @name gs_pop_set_gate
+#' @aliases gh_pop_set_gate setGate setGate,GatingHierarchy,character,filter-method
+#' setGate,GatingSet,character,ANY-method
 #' @param obj \code{GatingHierarchy} or \code{GatingSet}
 #' @param y \code{character} node name or path
 #' @param value \code{filter} or \code{filterList} or \code{list} of \code{filter} objects
@@ -31,18 +42,6 @@ setGeneric("setGate",function(obj,y,value,...)standardGeneric("setGate"))
 #' gs_pop_set_gate(gs[1:2], "lymph", flist)
 #' recompute(gs[1:2], "lymph") 
 #' }
-#' @aliases 
-#' gs_pop_set_gate
-#' @rdname gs_pop_set_gate
-#' @export
-setMethod("setGate"
-    ,signature(obj="GatingHierarchy",y="character",value="filter")
-    ,function(obj,y,value,...){
-      .Deprecated("gh_pop_set_gate")
-	  gh_pop_set_gate(obj,y,value,...)
-	   
-    })
-#' @rdname gs_pop_set_gate
 #' @export
 gh_pop_set_gate <- function(obj,y,value, negated = FALSE,...){
 			
@@ -51,7 +50,7 @@ gh_pop_set_gate <- function(obj,y,value, negated = FALSE,...){
 			.cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
 			
 		}
-#' @rdname gs_pop_set_gate
+
 #' @export 
 setMethod("setGate",
     signature=c(obj="GatingSet",y="character", value = "ANY"),
@@ -61,6 +60,7 @@ setMethod("setGate",
 		 gs_pop_set_gate(obj, y, value)
       
     })
+
 #' @rdname gs_pop_set_gate
 #' @export
 gs_pop_set_gate <- function(obj, y, value,...)
@@ -125,7 +125,8 @@ gs_pop_set_gate <- function(obj, y, value,...)
 #' }
 #' 
 #' @name transform_gate
-#' 
+#' @aliases transform_gate,GatingHierarchy-method transform_gate,GatingSet-method
+#' @usage transform_gate(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
@@ -174,7 +175,6 @@ transform_gate.GatingHierarchy <- function(obj, y, scale = NULL, deg = NULL, rot
   gh_pop_set_gate(obj, y, gate)
 }
 
-#' @noRd
 #' @export
 transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
   gates <- gs_pop_get_gate(obj, y)
@@ -216,7 +216,8 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' will result in a reflection in the corresponding dimension.
 #' 
 #' @name scale_gate
-#' 
+#' @aliases scale_gate,GatingHierarchy-method scale_gate,GatingSet-method
+#' @usage scale_gate(obj, y, scale = NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
@@ -235,7 +236,6 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' }
 #' 
 #' @seealso transform_gate \code{\link[flowCore:scale_gate]{flowCore::scale_gate}}
-#' @rdname scale_gate
 #' @export
 scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
   gate <- gh_pop_get_gate(obj, y)
@@ -243,7 +243,6 @@ scale_gate.GatingHierarchy <- function(obj, y, scale = NULL, ...){
   gh_pop_set_gate(obj, y, gate)
 }
 
-#' @rdname scale_gate
 #' @export
 scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
   gates <- gs_pop_get_gate(obj, y)
@@ -276,7 +275,8 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
 #' the composition as a rotation around a shifted center.
 #' 
 #' @name rotate_gate
-#' 
+#' @aliases rotate_gate,GatingHierarchy-method rotate_gate,GatingSet-method
+#' @usage rotate_gate(obj, y, deg = NULL, rot_center = NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
@@ -288,14 +288,12 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
 #' @examples
 #' \dontrun{
 #' #' # Rotates the original gate 15 degrees counter-clockwise
-#' scale_gate(gs, node, deg = 15)
+#' rotate_gate(gs, node, deg = 15)
 #' # Rotates the original gate 270 degrees counter-clockwise
-#' scale_gate(gs, node, 270)
+#' rotate_gate(gs, node, 270)
 #' }
 #' 
 #' @seealso transform_gate \code{\link[flowCore:rotate_gate]{flowCore::rotate_gate}}
-#' 
-#' @rdname rotate_gate
 #' @export
 rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, ...){
   gate <- gh_pop_get_gate(obj, y)
@@ -303,7 +301,6 @@ rotate_gate.GatingHierarchy <- function(obj, y, deg = NULL, rot_center = NULL, .
   gh_pop_set_gate(obj, y, gate)
 }
 
-#' @rdname rotate_gate
 #' @export
 rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
   gates <- gs_pop_get_gate(obj, y)
@@ -342,7 +339,8 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
 #' location provided by \code{center} and all other points on the polygon will be shifted by relation to the centroid.
 #' 
 #' @name shift_gate
-#' 
+#' @aliases shift_gate,GatingHierarchy-method shift_gate,GatingSet-method
+#' @usage shift_gate(obj, y, dx=NULL, dy=NULL, center=NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
@@ -370,7 +368,6 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
 #' }
 #' 
 #' @seealso transform_gate \code{\link[flowCore:shift_gate]{flowCore::shift_gate}}
-#' @rdname shift_gate
 #' @export
 shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
   gate <- gh_pop_get_gate(obj, y)
@@ -378,7 +375,6 @@ shift_gate.GatingHierarchy <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ..
   gh_pop_set_gate(obj, y, gate)
 }
 
-#' @rdname shift_gate
 #' @export
 shift_gate.GatingSet <- function(obj, y, dx=NULL, dy=NULL, center=NULL, ...){
   gates <- gs_pop_get_gate(obj, y)

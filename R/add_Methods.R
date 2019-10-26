@@ -6,6 +6,17 @@ NULL
 #' @template template-depr_pkg
 NULL
 
+#' @export
+add <- function(gs, gate,...)UseMethod("add")
+
+#' @export 
+add.default <- function(gs, gate,...)
+		{
+			.Deprecated("gs_pop_add")
+			gs_pop_add(gs, gate, ...)
+			
+}
+
 #' Create a GatingSet and add/remove the flowCore gate(or population) to/from a GatingHierarchy/GatingSet.
 #' 
 #' \code{GatingSet} method creates a gatingset from a flowSet with the ungated data as the root node.
@@ -14,6 +25,9 @@ NULL
 #' \code{Rm} method Remove the population node from a GatingHierarchy/GatingSet. 
 #' They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \code{flowCore} package. 
 #' \code{recompute} method does the actual gating after the gate is added,i.e. calculating the event indices according to the gate definition.   
+#' 
+#' @name gs_pop_add
+#' @aliases add add,default-method Rm
 #' @param gs A \code{GatingSet}
 #' @param gate A \code{filter} or a list of \code{filter}s to be added to the \code{GatingSet}.
 #' @param ... some other arguments to specify how the gates are added to the gating tree.
@@ -86,23 +100,8 @@ NULL
 #'     gs_pop_remove('rectangle', gs = gs)
 #'     gs_get_pop_paths(gs[[1]])
 #'  }
-#' @export 
-#' @rdname gs_pop_add
-#' @aliases
-#' add
-#' Rm
 #' @param validityCheck \code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.
-add <- function(gs, gate,...)UseMethod("add")
 #' @export 
-#' @rdname gs_pop_add
-add.default <- function(gs, gate,...)
-		{
-			.Deprecated("gs_pop_add")
-			gs_pop_add(gs, gate, ...)
-			
-		}
-#' @export 
-#' @rdname gs_pop_add
 gs_pop_add <- function(gs, gate, validityCheck = TRUE, ...){
   
   samples <- sampleNames(gs)
@@ -345,8 +344,7 @@ gs_pop_remove <- function(gs, node, ...){
     gh_pop_remove(gh, node, ...)
   }))
 }
-#' @export 
-#' @rdname gs_pop_add
+#' @export
 Rm <- function(node, gs, ...)
 		{
 			.Deprecated("gs_pop_remove")

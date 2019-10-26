@@ -4,14 +4,16 @@
 \name{sampleNames}
 \alias{sampleNames}
 \alias{sampleNames,GatingSet-method}
+\alias{sampleNames,cytoset-method}
+\alias{sampleNames,cytoset,}
 \alias{sampleNames<-,GatingSet,ANY-method}
 \alias{sampleNames<-}
 \alias{sampleNames<-,GatingSet-method}
 \title{Get/update sample names in a GatingSet}
 \usage{
-\S4method{sampleNames}{GatingSet}(object)
+sampleNames(object)
 
-\S4method{sampleNames}{GatingSet}(object) <- value
+sampleNames(object) <- value
 }
 \arguments{
 \item{object}{a \code{GatingSet}}

@@ -49,6 +49,13 @@ NULL
 #' @templateVar new gs_split_by_tree
 #' @template template-depr_pkg
 NULL
+
+#' @export 
+groupByTree <- function(x){
+  .Deprecated("gs_split_by_tree")
+  gs_split_by_tree(x)
+}
+
 #' split GatingSets into groups based on their gating schemes
 #' Be careful that the splitted resluts still points to the original data set!!
 #' 
@@ -56,6 +63,8 @@ NULL
 #' i.e. tree is considered to be the same
 #' as long as gs_get_pop_paths(gh, path = "auto", showHidden = F) returns the same set
 #' 
+#' @name gs_split_by_tree
+#' @aliases groupByTree
 #' @param x a list of GatingSets or one GatingSet
 #' @return 
 #' when x is a GatingSet, this function returns a list of sub-GatingSets
@@ -66,13 +75,6 @@ NULL
 #' gs_groups <- gs_split_by_tree(gslist)
 #' }
 #' @export 
-#' @rdname gs_split_by_tree
-groupByTree <- function(x){
-  .Deprecated("gs_split_by_tree")
-  gs_split_by_tree(x)
-}
-#' @export 
-#' @rdname gs_split_by_tree
 gs_split_by_tree <- function(x){
   message("Grouping by Gating tree...")
   node_seq <-unlist(lapply(x,function(this_gs){
@@ -90,6 +92,13 @@ gs_split_by_tree <- function(x){
 #' @templateVar new gs_split_by_channels
 #' @template template-depr_pkg
 NULL
+
+#' @export
+groupByChannels <- function(x){
+  .Deprecated("gs_split_by_channels")
+  gs_split_by_channels(x)
+}
+
 #' split GatingSets into groups based on their flow channels
 #' 
 #' Sometime it is gates are defined on the different dimensions
@@ -98,6 +107,8 @@ NULL
 #' But this prevents the gs from merging because they may not be collected across batces
 #' Thus we have to separate them if we want to visualize the gates.
 #' 
+#' @name gs_split_by_channels
+#' @aliases groupByChannels
 #' @param x a list of GatingSets
 #' @examples 
 #' \dontrun{
@@ -105,13 +116,6 @@ NULL
 #' gs_groups <- gs_split_by_channels(gslist)
 #' }
 #' @export
-#' @rdname gs_split_by_channels 
-groupByChannels <- function(x){
-  .Deprecated("gs_split_by_channels")
-  gs_split_by_channels(x)
-}
-#' @export
-#' @rdname gs_split_by_channels 
 gs_split_by_channels <- function(x){
   message("Grouping by channels...")
   key <- unlist(lapply(x,function(this_gs){
@@ -280,11 +284,20 @@ gs_plot_diff_tree <- function(x, path = "auto", ...){
 #' @templateVar new gs_check_redundant_nodes
 #' @template template-depr_pkg
 NULL
+
+#' @export
+checkRedundantNodes <- function(...){
+  .Deprecated("gs_check_redundant_nodes")
+  gs_check_redundant_nodes(...)
+}
+
 #' try to determine the redundant terminal(or leaf) nodes that can be removed
 #' 
-#' THese leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
+#' These leaf nodes make the gating trees to be different from one another and can be removed by the subsequent convevient call 
 #' \link{gs_remove_redundant_nodes}.
 #' 
+#' @name gs_check_redundant_nodes
+#' @aliases checkRedundantNodes
 #' @param x \code{GatingSet} or \code{list} of groups(each group is a list of 'GatingSet`). When it is a list, it is usually the outcome from \link{gs_split_by_tree}.
 #' @param path argumented passed to \link{gs_get_pop_paths}. The default value is "auto".
 #' @param ... other arguments passed to \link{gs_get_pop_paths}.
@@ -296,13 +309,6 @@ NULL
 #' toRm <- gs_check_redundant_nodes(gs_groups)
 #' }
 #' @export
-#' @rdname gs_check_redundant_nodes 
-checkRedundantNodes <- function(...){
-  .Deprecated("gs_check_redundant_nodes")
-  gs_check_redundant_nodes(...)
-}
-#' @export
-#' @rdname gs_check_redundant_nodes 
 gs_check_redundant_nodes <- function(x, path = "auto", ...){
   
   nodeSet <- lapply(x,function(thisObj){
@@ -354,11 +360,19 @@ gs_check_redundant_nodes <- function(x, path = "auto", ...){
 #' @templateVar new gs_remove_redundant_nodes
 #' @template template-depr_pkg
 NULL
+
+#' @export 
+dropRedundantNodes <- function(x,toRemove){
+  .Deprecated("gs_remove_redundant_nodes")
+  gs_remove_redundant_nodes(x,toRemove)
+}
+
 #' Remove the terminal leaf nodes that make the gating trees to be different from one another.
 #' 
 #' It is usually called after \link{gs_split_by_tree} and \link{gs_check_redundant_nodes}. The operation is done in place through external pointers which means
 #' all the orginal GatingSets are modified.
-#' 
+#' @name gs_remove_redundant_nodes
+#' @aliases dropRedundantNodes
 #' @param x \code{GatingSet} or \code{list} of groups(each group is a list of 'GatingSet`). When it is a list, it is usually the outcome from \link{gs_split_by_tree}.
 #' @param toRemove \code{list} of the node sets to be removed. its length must equals to the length of 'x'. When \code{x} is a list, \code{toRemove} is usually the outcome from \link{gs_check_redundant_nodes}.  
 #' @examples 
@@ -373,13 +387,6 @@ NULL
 #' GatingSetList(gslist)
 #' }
 #' @export 
-#' @rdname gs_remove_redundant_nodes
-dropRedundantNodes <- function(x,toRemove){
-  .Deprecated("gs_remove_redundant_nodes")
-  gs_remove_redundant_nodes(x,toRemove)
-}
-#' @export 
-#' @rdname gs_remove_redundant_nodes
 gs_remove_redundant_nodes <- function(x,toRemove){
   mapply(toRemove,x,FUN=function(thisNodeSet,thisObj){
         
@@ -403,10 +410,18 @@ gs_remove_redundant_nodes <- function(x,toRemove){
 #' @templateVar new gs_drop_redundant_channels
 #' @template template-depr_pkg
 NULL
+
+#' @export 
+dropRedundantChannels <- function( ...){
+  .Deprecated("gs_remove_redundant_channels")
+  gs_remove_redundant_channels(...)
+}
+
 #' Remove the channels from flow data that are not used by gates
 #' 
 #' Removing these redundant channels can help standardize the channels across different GatingSet objects and make them mergable.
-#'
+#' @name gs_remove_redundant_channels
+#' @aliases dropRedundantChannels
 #' @param gs a \code{GatingSet} 
 #' @param ... other arugments passed to gs_get_pop_paths method
 #' @return a new \code{GatingSet} object that has redundant channels removed. Please note that this new object shares the same reference (or external pointers) with the original GatingSets.
@@ -415,13 +430,6 @@ NULL
 #' gs_new <- gs_remove_redundant_channels(gs)
 #' }
 #' @export 
-#' @rdname gs_remove_redundant_channels
-dropRedundantChannels <- function( ...){
-  .Deprecated("gs_remove_redundant_channels")
-  gs_remove_redundant_channels(...)
-}
-#' @export 
-#' @rdname gs_remove_redundant_channels
 gs_remove_redundant_channels <- function(gs, ...){
   nodes <- gs_get_pop_paths(gs, ...)[-1]
   gh <- gs[[1]]
@@ -449,11 +457,20 @@ gs_remove_redundant_channels <- function(gs, ...){
 #' @templateVar new gs_update_channels
 #' @template template-depr_pkg
 NULL
+
+#' @export 
+updateChannels <- function(gs, map, all = TRUE){
+  .Deprecated("gs_update_channels")
+  gs_update_channels(gs, map, all)
+}
+
 #' Update the channel information of a GatingSet (c++ part)
 #' 
 #' It updates the channels stored in gates,compensations and transformations
 #' based on given mapping between the old and new channel names.
 #' 
+#' @name gs_update_channels
+#' @aliases updateChannels
 #' @param gs a GatingSet object
 #' @param map \code{data.frame} contains the mapping from old (case insensitive) to new channel names
 #'                             Note: Make sure to remove the '<' or '>' characters from 'old` name because the API tries 
@@ -471,13 +488,6 @@ NULL
 #'                      )  
 #'}
 #' @export 
-#' @rdname gs_update_channels
-updateChannels <- function(gs, map, all = TRUE){
-  .Deprecated("gs_update_channels")
-  gs_update_channels(gs, map, all)
-}
-#' @export 
-#' @rdname gs_update_channels
 gs_update_channels <- function(gs, map, all = TRUE){
 	stopifnot(all)
 	

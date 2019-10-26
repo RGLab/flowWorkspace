@@ -2,9 +2,23 @@
 #' @templateVar new gs(/gh)_pop_get_stats
 #' @template template-depr_pkg
 NULL
+
+#' @export
+getStats <- function(x, ...)UseMethod("getStats")
+
+#' @export
+getStats.GatingSetList <- function(x, ...){
+  getStats.GatingSet(x, ...)
+}
+
+#' @export
+getStats.GatingSet <- function(...){
+	.Deprecated("gs_pop_get_stats")
+  gs_pop_get_stats(...)
+}
 #' Extract stats from populations(or nodes)
 #'
-#'
+#' @name gs_pop_get_stats
 #' @param x a GatingSet or GatingHierarchy
 #' @param ... arguments passed to \link{gs_get_pop_paths} method.
 #' @return a data.table that contains stats values (if MFI, for each marker per column)
@@ -13,7 +27,8 @@ NULL
 #' @import ncdfFlow
 #' @import data.table
 #' @export
-#' @aliases gh_pop_get_stats
+#' @aliases gh_pop_get_stats getStats getStats,GatingSet-method getStats,GatingHierarchy-method
+#' getStats,GatingSetList-method
 #' @examples
 #' \dontrun{
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
@@ -40,23 +55,7 @@ NULL
 #'    }
 #' gs_pop_get_stats(gs, nodes, type = pop.quantiles)
 #' }
-#' @rdname gs_pop_get_stats
-getStats <- function(x, ...)UseMethod("getStats")
-
 #' @export
-#' @rdname gs_pop_get_stats
-getStats.GatingSetList <- function(x, ...){
-  getStats.GatingSet(x, ...)
-}
-
-#' @export
-#' @rdname gs_pop_get_stats
-getStats.GatingSet <- function(...){
-	.Deprecated("gs_pop_get_stats")
-  gs_pop_get_stats(...)
-}
-#' @export
-#' @rdname gs_pop_get_stats
 gs_pop_get_stats <- function(x, ...){
   res <-  lapply(x, function(gh){
     gh_pop_get_stats(gh, ...)
@@ -66,7 +65,11 @@ gs_pop_get_stats <- function(x, ...){
 }
 
 #' @export
-#' @rdname gs_pop_get_stats
+getStats.GatingHierarchy <- function(...){
+  .Deprecated("gh_pop_get_stats")
+  gh_pop_get_stats(...)
+}
+
 #' @param nodes the character vector specifies the populations of interest. default is all available nodes
 #' @param type the character vector specifies the type of pop stats or
 #'          a function used to compute population stats.
@@ -74,13 +77,9 @@ gs_pop_get_stats <- function(x, ...){
 #'          when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.
 #' @param inverse.transform logical flag . Whether inverse transform the data before computing the stats.
 #' @param stats.fun.arg a list of arguments passed to `type` when 'type' is a function.
-getStats.GatingHierarchy <- function(...){
-  .Deprecated("gh_pop_get_stats")
-  gh_pop_get_stats(...)
-}
 #' @param xml whether to extract xml stats or openCyto stats
-#' @export
 #' @rdname gs_pop_get_stats
+#' @export
 gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inverse.transform = FALSE, stats.fun.arg = list(), ...){
   gh <- x
   if(is.null(nodes))
@@ -122,13 +121,14 @@ gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inver
 #'
 #' pop.MFI computes and returns the median fluorescence intensity for each marker.
 #' They are typically used as the arguments passed to \code{gh_pop_get_stats} method to perform the sample-wise population stats calculations.
-#'
+#' 
+#' @name stats.fun
+#' @aliases pop.MFI
 #' @param fr a flowFrame represents a gated population
 #' @return a named numeric vector
 #'
-#' @rdname stats.fun
-#' @export
 #' @importFrom  matrixStats colMedians
+#' @export
 pop.MFI <- function(fr){
   pd <- pData(parameters(fr))
   pd <- data.table(pd)
@@ -145,18 +145,18 @@ pop.MFI <- function(fr){
 #' @templateVar new gh_pop_get_proportion
 #' @template template-depr_pkg
 NULL
-#' Get count or proportion from populations
-#' @param x GatingHierarchy
-#' @param y \code{character} node name or path
-#' @rdname gh_pop_get_proportion
-#' @aliases getProp
+
 #' @export
 getProp <- function(x,y,xml = FALSE){
 	.Deprecated("gh_pop_get_proportion")
 	gh_pop_get_proportion(x, y, xml)
 }
+#' Get count or proportion from populations
+#' @param x GatingHierarchy
+#' @param y \code{character} node name or path
 #' @param xml whether to extract xml stats or openCyto stats
-#' @rdname gh_pop_get_proportion
+#' @name gh_pop_get_proportion
+#' @aliases getProp getTotal
 #' @export
 gh_pop_get_proportion <- function(x,y,xml = FALSE){
 	gh_pop_get_stats(x, y, xml = xml, type = "percent")[, percent]
@@ -166,9 +166,8 @@ gh_pop_get_proportion <- function(x,y,xml = FALSE){
 #' @templateVar new gh_pop_get_count
 #' @template template-depr_pkg
 NULL
-#' @rdname gh_pop_get_proportion
+
 #' @export
-#' @aliases getProp
 getTotal <- function(x,y,xml = FALSE){
 	.Deprecated("gh_pop_get_count")
 	gh_pop_get_count(x, y, xml)
@@ -220,18 +219,20 @@ gh_pop_get_count <- function(x,y,xml = FALSE){
 NULL
 #' @export
 setGeneric("getPopStats",function(x,...)standardGeneric("getPopStats"))
-#' @rdname gh_pop_compare_stats
+
 #' @export
 setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 			.Deprecated("gh_pop_compare_stats")
 			gh_pop_compare_stats(x, path, ...)
 		})
+
 #' Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R
-#'
+#' 
+#' @name gh_pop_compare_stats
+#' @aliases getPopStats getPopStats,GatingHierarchy-method
 #' @param x GatingHierarchy
 #' @param path see \link{gs_get_pop_paths}
 #' @param ... not used
-#' @rdname gh_pop_compare_stats
 #' @export
 gh_pop_compare_stats <- function(x, path = "auto", ...){
 	
@@ -266,9 +267,9 @@ gh_pop_compare_stats <- function(x, path = "auto", ...){
 }
 
 #' @importFrom lattice barchart
-#' @export
 #' @rdname gh_pop_compare_stats
 #' @aliases gh_plot_pop_count_cv
+#' @export
 gh_plot_pop_count_cv <- function(x, path = "auto", ...){
 	cv <- .computeCV_gh(x, path = path)
 	return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));

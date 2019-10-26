@@ -2,13 +2,19 @@
 #' @templateVar new gh_copy_gate
 #' @template template-depr_pkg
 NULL
+
+#' @export
+copyNode <- function(gh, node, to){
+  .Defunct("gh_copy_gate")
+}
+
 #' Copy a node along with all of its descendant nodes to the given ancestor
-#'
+#' 
+#' @name gh_copy_gate
+#' @aliases copyNode
 #' @param gh GatingHierarchy
 #' @param node the node to be copied
 #' @param to the new parent node under which the \code{node} will be copied
-#' @export
-#' @rdname gh_copy_gate
 #' @examples
 #' library(flowWorkspace)
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
@@ -18,11 +24,7 @@ NULL
 #' new.parent <- "singlets"
 #' gh_copy_gate(gh, "CD4", new.parent)
 #' gs_get_pop_paths(gh)
-copyNode <- function(gh, node, to){
-  .Defunct("gh_copy_gate")
-}
 #' @export
-#' @rdname gh_copy_gate
 gh_copy_gate<- function(gh, node, to){
   node <- gh_pop_get_full_path(gh, node)
   to <- gh_pop_get_full_path(gh, to)

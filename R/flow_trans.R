@@ -47,7 +47,8 @@ NULL
 #' flog transform function constructor. It is different from flowCore version of \link{logtGml2}
 #' in the way that it reset negative input so that no NAN will be returned.
 #'
-#' @rdname flowJo_flog
+#' @name flowjo_log_trans
+#' @aliases flowJo.flog flowjo_flog
 #' @param decade total number of decades (i.e. log(max)-log(min)
 #' @param offset offset to the orignal input(i.e. min value)
 #' @param scale the linear scale factor
@@ -94,10 +95,9 @@ flowjo_log_trans <- function(decade = 4.5, offset = 1, scale = 1, n = 6, equal.s
              n = n, equal.space = equal.space)
 }
 
-#' @rdname flowJo_flog
 #' @export
 flowJo.flog <- function(decade = 4.5, offset = 1, max_val = 262144, min_val = 0, scale = 1, inverse = FALSE){
-  .Defunct("flowjo_flog")
+  .Defunct("flowjo_log_trans")
   }
 #' wrap the calibration table into transformation function using stats:::splinefun
 #'
@@ -151,7 +151,9 @@ NULL
 #'
 #' Normally it was parsed from flowJo xml workspace. This function provides the alternate
 #' way to construct the flowJo version of logicle transformation function within R.
-#'
+#' 
+#' @name flowjo_biexp
+#' @aliases flowJoTrans
 #' @param channelRange \code{numeric} the maximum value of transformed data
 #' @param maxValue \code{numeric} the maximum value of input data
 #' @param pos \code{numeric} the full width of the transformed display in asymptotic decades
@@ -159,7 +161,6 @@ NULL
 #' @param widthBasis \code{numeric} unkown.
 #' @param inverse \code{logical} whether to return the inverse transformation function.
 #' @export
-#' @rdname flowjo_biexp
 #' @examples
 #' trans <- flowjo_biexp()
 #' data.raw <- c(-1, 1e3, 1e5)
@@ -173,7 +174,7 @@ flowjo_biexp <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0,
   .flowJoTrans(coef)
 
 }
-#' @rdname flowjo_biexp
+
 #' @export
 flowJoTrans <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
   .Deprecated("flowjo_biexp")
@@ -300,7 +301,8 @@ NULL
 #'
 #'  hyperbolic sine/inverse hyperbolic sine (flowJo-version) transform function constructor
 #'
-#' @rdname flowjo_fasinh
+#' @name flowjo_fasinh
+#' @aliases flowJo.fasinh
 #' @param m numeric the full width of the transformed display in asymptotic decades
 #' @param t numeric the maximum value of input data
 #' @param a numeric Additional negative range to be included in the display in asymptotic decades
@@ -322,7 +324,7 @@ flowjo_fasinh <- function (m = 4.0, t = 12000, a =  0.7, length = 256)
     length * ((asinh(x * sinh(m * log(10)) / t) + a * log(10)) / ((m + a) * log(10)))
   }
 }
-#' @rdname flowjo_fasinh
+
 #' @export
 flowJo.fasinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
   .Defunct("flowjo_fasinh")
@@ -332,14 +334,15 @@ flowJo.fasinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
 #' @templateVar new flowjo_fsinh
 #' @template template-depr_pkg
 NULL
-#' @rdname flowjo_fasinh
+#' @name flowjo_fasinh
+#' @aliases flowJo.fsinh
 #' @export
 flowjo_fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
   function(x){
     sinh(((m + a) * log(10)) * x/length - a * log(10)) * t / sinh(m * log(10))
   }
 }
-#' @rdname flowjo_fasinh
+
 #' @export
 flowJo.fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
   .Defunct("flowjo_fsinh")

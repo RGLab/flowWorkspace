@@ -25,17 +25,6 @@ isNcdf <- function(x){
   gs_is_h5(x)
   }
 
-
-#' constructors for GatingSet
-#'
-#' construct object from existing gating hierarchy(gating template) and flow data 
-#'
-#' @param x GatingHierarchy
-#' @param files fcs file paths
-#' @param y sample names
-#' @param path \code{character} specifies the path to the flow data (FCS files)
-#' @param ... other arguments. 
-#' @rdname gh_apply_to_new_fcs
 #' @export
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path="."
 																	, ...){
@@ -71,7 +60,18 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			files<-file.path(dataPaths,samples)
 			gh_apply_to_new_fcs(x, files, ...)	
 		})
-#' @rdname gh_apply_to_new_fcs
+
+#' constructors for GatingSet
+#'
+#' construct object from existing gating hierarchy(gating template) and flow data
+#'  
+#' @name gh_apply_to_new_fcs
+#' @aliases GatingSet,GatingHierarchy,character-method
+#' @param x GatingHierarchy
+#' @param files fcs file paths
+#' @param y sample names
+#' @param path \code{character} specifies the path to the flow data (FCS files)
+#' @param ... other arguments. 
 #' @param swap_cols for internal usage
 #' @export
 gh_apply_to_new_fcs <- function(x, files
@@ -783,89 +783,7 @@ fix_y_axis <- function(gs, x, y){
     tempenv$axis.labels
 }
 
-#' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
-#'
-#' \strong{Important}: The \code{plotGate} methods are now defunct and gates should instead be plotted using the 
-#' \code{\link[ggcyto]{autoplot}} method from the \code{ggcyto} package. The \code{plotGate} documentation has been 
-#' left here to ease the transition. \cr\cr
-#' When applied to a \code{GatingHierarchy},\code{arrange} is set as TRUE, then all the gates associated with it are plotted as different panel on the same page.
-#' If \code{arrange} is FALSE, then it plots one gate at a time.
-#' By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
-#' When applied to a \code{GatingSet}, if lattice is TRUE,it plots one gate (multiple samples) per page , otherwise, one sample (with multiple gates) per page.
 
-#' @param x \code{\linkS4class{GatingSet}} or \code{\linkS4class{GatingHierarchy}}object
-#' @param y \code{character} the node name or full(/partial) gating path
-#'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
-#'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
-#'          Nodes can be accessed with \code{\link{gs_get_pop_paths}}.
-#' @param ...
-#' \itemize{
-#'  \item{bool}{ \code{logical} specifying whether to plot boolean gates.}
-#'  \item{arrange.main}{ \code{character} The title of the main page of the plot. Default is the sample name. Only valid when \code{x} is GatingHierarchy}
-#'  \item{arrange}{ \code{logical} indicating whether to arrange different populations/nodes on the same page via \code{arrangeGrob} call.}
-#'  \item{merge}{ \code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
-#' \item{projections}{ \code{list} of character vectors used to customize x,y axis. By default, the x,y axis are determined by the respective gate parameters.
-#'                                 The elements of the list are named by the population name or path (see \code{y}). Each element is a pair of named character specifying the channel name(or marker name) for x, y axis.
-#'                                 Short form of channel or marker names (e.g. "APC" or "CD3") can be used as long as they can be uniquely matched to the dimentions of flow data.
-#'                                 For example, projections = list("lymph" = c(x = "SSC-A", y = "FSC-A"), "CD3" = c(x = "CD3", y = "SSC-A"))
-#'                      }
-#' \item{par.settings}{ \code{list} of graphical parameters passed to \code{\link{lattice}};}
-#'
-#'  \item{gpar}{ \code{list} of grid parameters passed to \code{\link{grid.layout}};}
-#'
-#'  \item{lattice}{ \code{logical} deprecated;}
-#'
-#'  \item{formula}{ \code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
-#'
-#'  \item{cond}{ \code{character} the conditioning variable to be passed to lattice plot.}
-#'
-#'  \item{overlay}{Node names. These populations are plotted on top of the existing gates(defined by \code{y} argument) as the overlaid dots.}
-#'  \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population.
-#'                         If not given, we automatically assign the colors.}
-#'  \item{key}{Lattice legend paraemter for overlay symbols.}
-#'
-#'  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A" and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(default.y = "FSC-A"))'}
-#'
-#'  \item{type}{ \code{character} either "xyplot" or "densityplot". Default is "xyplot"  and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(type = "xyplot"))'}
-#'
-#'  \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot. Default is FALSE and  session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(fitGate = FALSE))'}
-#'
-#'  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
-#' \item{strip.text}{either "parent" (the parent population name) or "gate "(the gate name).}
-#'
-#'
-#'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale. Default is TRUE and can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(raw.scale = TRUE))'}
-#'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
-#'                                            either by instrument measurement range or the actual data range.
-#'                     or \code{numeric} which specifies customized range.
-#'                      They can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(xlim = "instrument"))'
-#' }
-#'
-#'  \item{...}{
-#'
-#'          path A \code{character} or \code{numeric} scalar passed to \link{gs_get_pop_paths} method (used to control how the gating/node path is displayed)
-#'
-#'          ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
-#'          }
-#' }
-#'
-#' @return  a \code{trellis} object if \code{arrange} is \code{FALSE},
-#' @references \url{http://www.rglab.org/}
-#' @examples \dontrun{
-#' 	#G is a GatingHierarchy
-#' 	plotGate(G,gs_get_pop_paths(G)[5]);#plot the gate for the  fifth node
-#' }
-#' @aliases
-#' plotGate
-#' plotGate-methods
-#' plotGate,GatingHierarchy,character-method
-#' plotGate,GatingHierarchy,numeric-method
-#' plotGate,GatingHierarchy,missing-method
-#' plotGate,GatingSet,numeric-method
-#' plotGate,GatingSet,character-method
-#' plotGate,GatingSet,missing-method
-#'
-#' @rdname plotGate-methods-defunct
 setMethod("plotGate",signature(x="GatingSet",y="missing"),function(x,y,...){
   .Defunct("ggcyto::autoplot", "flowWorkspace")
 })
@@ -1038,8 +956,11 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' and store the result as cell count.
 #'
 #' It is usually used immediately after \link{add} or \link{gs_pop_set_gate} calls.
-#'
-#' @param x \code{GatingSet}
+#' 
+#' @name recompute
+#' @aliases recompute,GatingSet-method recompute,GatingSetList-method
+#' @usage recompute(x, y="root", alwaysLoadData=FALSE, ...)
+#' @param x \code{GatingSet or GatingSetList}
 #' @param y \code{character} node name or node path. Default "root". Optional.
 #' @param alwaysLoadData \code{logical}. Specifies whether to load the flow raw data for gating boolean gates. Default 'FALSE'. Optional. Sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gated. 'FALSE' will check the parent node and reference to determine whether to load the data.
 #' This check may not be sufficient since  the further upstream ancestor nodes may not be gated yet.
@@ -1047,15 +968,13 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #'  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted at the cost of unnecessary data IO.
 #' @param ... other arguments
 #'              leaf.bool whether to compute the leaf boolean gate, default is TRUE
-#' @aliases recompute
-#' @rdname recompute
 #' @export
 setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, ...){
 			.recompute(x,y=y,alwaysLoadData=alwaysLoadData, ...)
 
 		})
 
-#' @rdname recompute
+#' @export
 setMethod("recompute",c("GatingSetList"),function(x, ...){
 	invisible(lapply(x, recompute, ..., level = 1))
         })
@@ -1075,17 +994,18 @@ setMethod("recompute",c("GatingSetList"),function(x, ...){
   message("done!")
   invisible()
 }
-#' apply \code{FUN} to each sample (i.e. \code{GatingHierarchy})
-#'
+
+#' apply \code{FUN} to each sample (i.e. \code{GatingHierarchy} or \code{cytoframe})
+#' in a \code{GatingSet} or \code{cytoset}
+#' 
 #' sample names are used for names of the returned list
 #'
-#' @param X \code{GatingSet}
-#' @param FUN \code{function} to be applied to each sample in 'GatingSet'
+#' @name lapply-methods
+#' @aliases lapply lapply,GatingSet-method lapply,cytoset-method
+#' @usage lapply(X, FUN, ...)
+#' @param X \code{GatingSet} or \code{cytoset}
+#' @param FUN \code{function} to be applied to each sample in 'GatingSet' or 'cytoset'
 #' @param ... other arguments to be passed to 'FUN'
-#'
-#' @rdname lapply-methods
-#' @aliases
-#' lapply,GatingSet-method
 #' @export
 setMethod("lapply","GatingSet",function(X,FUN,...){
       sapply(sampleNames(X),function(thisSample,...){
@@ -1104,7 +1024,8 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 #' 
 #' @name sampleNames
 #' @aliases sampleNames,GatingSet-method
-#' @usage \S4method{sampleNames}{GatingSet}(object)
+#' sampleNames,cytoset-method sampleNames,cytoset,
+#' @usage sampleNames(object)
 #' @param object a \code{GatingSet}
 #' 
 #' @details
@@ -1124,7 +1045,7 @@ setMethod("sampleNames","GatingSet",function(object){
     })
 
 #' @param value \code{character} new sample names
-#' @usage \S4method{sampleNames}{GatingSet}(object) <- value
+#' @usage sampleNames(object) <- value
 #' @aliases
 #' sampleNames<-
 #' sampleNames<-,GatingSet-method
@@ -1194,21 +1115,31 @@ gs_pop_get_data <- function(obj, y = "root", inverse.transform = FALSE, ...){
 #' @template template-depr_pkg
 NULL
 #' @export
-#' @rdname gs_cyto_data
 setGeneric("flowData", function(x) standardGeneric("flowData"))
 
 #' @templateVar old flowData<-
 #' @templateVar new gs_cyto_data<-
 #' @template template-depr_pkg
 NULL
-#' @rdname gs_cyto_data
+
 #' @export
 setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 
+
+#' @export
+setMethod("flowData",signature("GatingSet"),function(x){
+  .Deprecated("gs_cyto_data")
+  gs_cyto_data(obj)
+  
+})
 #' Fetch or replace the flowData object associated with a GatingSet .
 #'
 #' Accessor method that gets or replaces the flowset/ncdfFlowSet object in a GatingSet or GatingHierarchy
-#'
+#' 
+#' @name gs_cyto_data
+#' @aliases flowData flowData,GatingSet-method flowData<-,GatingSet-method
+#' gs_cyto_data,GatingSet-method gs_cyto_data<-,GatingSet-method
+#' @usage gs_cyto_data(x, ...)
 #' @param x A \code{GatingSet}
 #' @param inverse.transform logical flag indicating whether to inverse transform the data
 #'
@@ -1216,19 +1147,9 @@ setGeneric("flowData<-", function(x,value) standardGeneric("flowData<-"))
 #'
 #' @return the object with the new flowSet in place.
 #'
-#' @aliases gs_cyto_data
-#' @rdname gs_cyto_data
-#' @export
-setMethod("flowData",signature("GatingSet"),function(x){
-  .Deprecated("gs_cyto_data")
-  gs_cyto_data(obj)
-  
-})
-#' @rdname gs_cyto_data
 #' @export
 setGeneric("gs_cyto_data", function(x, ...) standardGeneric("gs_cyto_data"))
 
-#' @rdname gs_cyto_data
 #' @export
 setMethod("gs_cyto_data",signature("GatingSet"),function(x, inverse.transform=FALSE){
 	
@@ -1256,15 +1177,15 @@ gs_get_transformlists<- function(gs, inverse = FALSE){
 }
 #' @export
 setGeneric("gs_cyto_data<-", function(x,value) standardGeneric("gs_cyto_data<-"))
-#' @name gs_cyto_data
-#' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
-#' @usage \S4method{gs_cyto_data}{GatingSet}(x) <- value
-#' @rdname gs_cyto_data
+
 #' @export
 setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
     .Deprecated("gs_cyto_data<-")
     `gs_cyto_data<-`(x,value)
     })
+
+#' @param value The replacement \code{flowSet} or \code{ncdfFlowSet} object
+#' @usage gs_cyto_data(x) <- value
 #' @rdname gs_cyto_data
 #' @export
 setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
@@ -1276,8 +1197,9 @@ setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
 #' Accessor method that gets or replaces the pData of the flowset/ncdfFlowSet object in a GatingHierarchy, GatingSet, or GatingSetList
 #' @name pData-methods
 #' @aliases pData pData,GatingHierarchy-method pData,GatingSet-method
+#' pData,cytoset-method pData,cytoset,data.frame-method
 #' @param object \code{GatingSet} or \code{GatingSetList}
-#' @usage \S4method{pData}{GatingSet,data.frame}(object)
+#' @usage pData(object)
 #' @return a \code{data.frame}
 #'
 #' @importFrom Biobase pData description exprs sampleNames pData<-
@@ -1288,7 +1210,7 @@ setMethod("pData","GatingSet",function(object){
 		})
 
 #' @param value \code{data.frame} The replacement of pData for \code{flowSet} or \code{ncdfFlowSet} object
-#' @usage \S4method{pData}{GatingSet,data.frame}(object) <- value
+#' @usage pData(object) <- value
 #' @aliases
 #' pData<-
 #' pData<-,GatingSet,data.frame-method
@@ -1311,15 +1233,12 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 
 #' @description \code{[} subsets a \code{GatingSet} or \code{GatingSetList} using the familiar bracket notation
 #'
-#' @param x \code{GatingSet} or \code{GatingSetList}
-#' @param i \code{numeric} or \code{logical} or \code{character} used as sample index
-#' @param j not used
-#' @param drop not used
-#' @param ... not used
+#' @usage x[i]
 #'
-#' @rdname GatingSet-class
+#' @rdname brackets
 #' @export
 #' @aliases
+#' [
 #' [,GatingSet,ANY-method
 #' [,GatingSetList,ANY-method
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
@@ -1337,11 +1256,12 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 
 #' subset the GatingSet/GatingSetList based on 'pData'
 #'
+#' @name subset
+#' @usage subset(x, subset, ...)
 #' @param x \code{GatingSet} or \code{GatingSetList}
 #' @param subset logical expression(within the context of pData) indicating samples to keep. see \code{\link[base:subset]{subset}}
 #' @param ... other arguments. (not used)
 #' @return a code{GatingSet} or \code{GatingSetList} object
-#' @rdname subset
 #' @export
 subset.GatingSet <- function (x, subset, ...)
 {
@@ -1358,20 +1278,19 @@ subset.GatingSet <- function (x, subset, ...)
 
   x[as.character(rownames(pd)[r])]
 }
-#' @rdname gh_pop_get_gate
+
 #' @export
 setMethod("getGate",signature(obj="GatingSet",y="character"),function(obj,y){
 			.Deprecated("gs_pop_get_gate")
 			gs_pop_get_gate(obj, y)
 		})
 
-#' @rdname gh_pop_get_gate
+#' @rdname gs_pop_get_gate
 #' @export
 gs_pop_get_gate <- function(obj,y){
 			lapply(obj,function(x)gh_pop_get_gate(x,y))
 		}
 
-#' @rdname gs_pop_set_name
 #' @export
 setMethod("setNode"
     ,signature(x="GatingSet",y="character",value="ANY")
@@ -1441,15 +1360,23 @@ set_log_level <- function(level = "none"){
   level
 }
 
-
-#' @description \code{[[} extract a \code{GatingHierarchy} object from a \code{GatingSet} or \code{GatingSetList}
+#' Bracket operators on \code{GatingSet} and \code{GatingSetList} objects
+#' 
+#' @description \code{[[} extracts a \code{GatingHierarchy} object from a \code{GatingSet} or \code{GatingSetList}
 #'
-#' @rdname GatingSet-class
+#' @name brackets
+#' @usage x[[i]]
+#' @param x a \code{GatingSet} or \code{GatingSetList}
+#' @param i \code{numeric} or \code{logical} or \code{character} used as sample indices
+#' @return [] returns an object of the same type as \code{x} corresponding to the subset of indices
+#' in i, while [[]] returns a single \code{GatingHierarchy}
 #' @export
 #' @aliases
+#' [[
 #' [[,GatingSet,numeric-method
 #' [[,GatingSet,logical-method
 #' [[,GatingSet,character-method
+#' [[<-,GatingSet,ANY,ANY,GatingHierarchy-method
 setMethod("[[",c(x="GatingSet",i="numeric"),function(x,i,j,...){
       x[[sampleNames(x)[i]]]
 
@@ -1465,7 +1392,7 @@ setMethod("[[",c(x="GatingSet",i="character"),function(x,i,j,...){
       as(x[i], "GatingHierarchy")
       
     })
-#' @rdname GatingSet-class
+
 #' @export
 setReplaceMethod("[[",
 		signature=signature(x="GatingSet",value="GatingHierarchy"),
@@ -1483,27 +1410,36 @@ setReplaceMethod("[[",
 #' Methods to get the length of a GatingSet
 #'
 #' Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
-#'
+#' @name length
+#' @aliases length
 #' @param x \code{GatingSet}
 #' @param object \code{object}
-#' @aliases length
-#' @rdname length
+#' @usage length(x)
 #' @export
 setMethod("length","GatingSet",function(x){
       length(gs_cyto_data(x));
     })
 
 #' @rdname length
+#' @usage show(object)
 #' @export
 setMethod("show","GatingSet",function(object){
       cat("A GatingSet with",length(object), "samples\n")
     })
 
+#' @export
+setMethod("getPopStats", "GatingSet", function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
+.Deprecated("gs_pop_get_count_fast")
+gs_pop_get_count_fast(x, statistic, xml, subpopulations, format, path, ...)
+})
 
 #' Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
 #'   or the population proportions or the total number of events of a node (population) in a GatingHierarchy
 #'
 #' gs_pop_get_count_fast is more useful than getPop. Returns a table of population statistics for all populations in a \code{GatingHierarchy}/\code{GatingSet}. Includes the xml counts, openCyto counts and frequencies.
+#' 
+#' @name gs_pop_get_count_fast
+#' @aliases getPopStats,GatingSet-method
 #' @param x A \code{GatingHierarchy} or \code{GatingSet}
 #' @param statistic \code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.
 #' @param xml \code{logical} indicating whether the statistics come from xml (if parsed from xml workspace) or from openCyto.
@@ -1531,15 +1467,7 @@ setMethod("show","GatingSet",function(object){
 #'         #only get stats for a subset of populations
 #'         gs_pop_get_count_fast(gs, format = "long", subpopulations = gs_get_pop_paths(gs)[4:6])
 #'         }
-#' @aliases gs_pop_get_count_fast
-#' @rdname gs_pop_get_count_fast
-#' @export
 #' @import data.table
-setMethod("getPopStats", "GatingSet", function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
-.Deprecated("gs_pop_get_count_fast")
-gs_pop_get_count_fast(x, statistic, xml, subpopulations, format, path, ...)
-})
-#' @rdname gs_pop_get_count_fast
 #' @export
 gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
 	 if(is(x, "GatingSetList"))
@@ -1812,35 +1740,6 @@ transformerList <- function (from, trans)
   attr(trans, "class") <- c("transformerList", "list")
 
   return(trans)
-}
-
-#' Compute logicle transformation from the flowData associated with a GatingHierarchy
-#' 
-#' See details in ?flowCore::estimateLogicle
-#' 
-#' @param x a GatingHierarchy
-#' @param channels channels or markers for which the logicle transformation is to be estimated.
-#' @param ... other arguments
-#' @return transformerList object
-#'  
-#' @examples
-#' \dontrun{
-#'  # gs is a GatingSet
-#'  trans.list <- estimateLogicle(gs[[1]], c("CD3", "CD4", "CD8")) 
-#'  # trans.list is a transformerList that can be directly applied to GatinigSet
-#'  gs <- transform(gs, trans.list)
-#' }
-#' @export 
-estimateLogicle.GatingHierarchy <- function(x, channels, ...){
-  fr <- gh_pop_get_data(x)
-  trans <- flowCore:::.estimateLogicle(fr, channels, ...)
-  
-  trans <- lapply(trans, function(t){
-                      inv <- inverseLogicleTransform(trans = t)
-                      flow_trans("logicle", t@.Data, inv@.Data)
-  })
-  channels <- names(trans)
-  transformerList(channels, trans)
 }
 
 #' compensate the flow data asssociated with the GatingSet

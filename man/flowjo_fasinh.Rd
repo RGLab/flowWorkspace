@@ -9,11 +9,7 @@
 \usage{
 flowjo_fasinh(m = 4, t = 12000, a = 0.7, length = 256)
 
-flowJo.fasinh(m = 4, t = 12000, a = 0.7, length = 256)
-
 flowjo_fsinh(m = 4, t = 12000, a = 0.7, length = 256)
-
-flowJo.fsinh(m = 4, t = 12000, a = 0.7, length = 256)
 }
 \arguments{
 \item{m}{numeric the full width of the transformed display in asymptotic decades}

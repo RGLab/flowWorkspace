@@ -7,9 +7,6 @@
 \usage{
 flowjo_biexp(channelRange = 4096, maxValue = 262144, pos = 4.5,
   neg = 0, widthBasis = -10, inverse = FALSE)
-
-flowJoTrans(channelRange = 4096, maxValue = 262144, pos = 4.5,
-  neg = 0, widthBasis = -10, inverse = FALSE)
 }
 \arguments{
 \item{channelRange}{\code{numeric} the maximum value of transformed data}

@@ -6,14 +6,16 @@
 \alias{pData}
 \alias{pData,GatingHierarchy-method}
 \alias{pData,GatingSet-method}
+\alias{pData,cytoset-method}
+\alias{pData,cytoset,data.frame-method}
 \alias{pData<-,GatingSet,data.frame-method}
 \alias{pData<-}
 \alias{pData<-,GatingSetList,data.frame-method}
 \title{read/set pData of flow data associated with \code{GatingHierarchy}, \code{GatingSet}, or \code{GatingSetList}}
 \usage{
-\S4method{pData}{GatingSet,data.frame}(object)
+pData(object)
 
-\S4method{pData}{GatingSet,data.frame}(object) <- value
+pData(object) <- value
 }
 \arguments{
 \item{object}{\code{GatingSet} or \code{GatingSetList}}

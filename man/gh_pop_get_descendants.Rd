@@ -3,11 +3,10 @@
 \name{gh_pop_get_descendants}
 \alias{gh_pop_get_descendants}
 \alias{getDescendants}
+\alias{getDescendants,GatingHierarchy-method}
 \title{get all the descendant nodes for the given ancester}
 \usage{
 gh_pop_get_descendants(gh, node, ...)
-
-getDescendants(...)
 }
 \arguments{
 \item{gh}{GatingHierarchy}

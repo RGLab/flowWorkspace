@@ -3,11 +3,11 @@
 \name{transform_gate}
 \alias{transform_gate}
 \alias{transform_gate.GatingHierarchy}
+\alias{transform_gate,GatingHierarchy-method}
+\alias{transform_gate,GatingSet-method}
 \title{Simplified geometric transformations of gates associated with nodes}
 \usage{
-\method{transform_gate}{GatingHierarchy}(obj, y, scale = NULL,
-  deg = NULL, rot_center = NULL, dx = NULL, dy = NULL,
-  center = NULL, ...)
+transform_gate(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}

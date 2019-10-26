@@ -3,12 +3,11 @@
 \name{scale_gate}
 \alias{scale_gate}
 \alias{scale_gate.GatingHierarchy}
-\alias{scale_gate.GatingSet}
+\alias{scale_gate,GatingHierarchy-method}
+\alias{scale_gate,GatingSet-method}
 \title{Simplified geometric scaling of gates associated with nodes}
 \usage{
-\method{scale_gate}{GatingHierarchy}(obj, y, scale = NULL, ...)
-
-\method{scale_gate}{GatingSet}(obj, y, scale = NULL, ...)
+scale_gate(obj, y, scale = NULL, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}
