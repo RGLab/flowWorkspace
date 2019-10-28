@@ -3,11 +3,32 @@ reference:
   - title: "GatingHierarchy and GatingSet classes"
     desc: >
       Classes for managing compensation, transformation,
-      and gating of cytometry data (FCS files)
+      and gating of cytometry data (FCS files) and methods for creating them
     contents:
       - GatingHierarchy-class
       - GatingSet-class
+      - GatingSet-methods
       - GatingSetList-class
+      - brackets
+      - identifier-methods
+      - convert_legacy_gs
+  - title: "cytoframe and cytoset classes"
+    desc: >
+      Reference classes for efficiently managing the representation of data from
+      FCS files (analagous to flowFrame and flowSet classes from the flowCore package)
+    contents:
+      - cytoframe
+      - cytoset
+      - cyto_flow_coerce_methods
+      - load_cytoframe_from_fcs
+      - load_cytoframe_from_h5
+      - cf_get_h5_file_path
+      - cf_write_h5
+      - load_cytoset_from_fcs
+      - cs_add_sample
+      - cs_get_h5_file_path
+      - load_meta
+      - lock
   - title: "Examining the hierarchical gating tree"
     desc: >
       Functions for examining the subpopulations 
@@ -35,6 +56,7 @@ reference:
       - gs_pop_get_stats_tfilter
       - gh_pop_compare_stats
       - gh_plot_pop_count_cv
+      - gs_plot_pop_count_cv
       - gh_pop_get_count
       - gs_pop_get_count_fast
       - gs_pop_get_count_with_meta
@@ -52,6 +74,7 @@ reference:
       - gh_get_compensations
       - gs_get_compensation_internal
       - gh_get_transformations
+      - compensate
       - transform
       - gs_clone
       - length
@@ -96,6 +119,7 @@ reference:
       - gh_pop_move
       - gh_copy_gate
       - gh_apply_to_new_fcs
+      - standardize-GatingSet
       - gs_update_channels
       - gs_remove_redundant_channels
       - gs_split_by_channels
@@ -122,6 +146,7 @@ reference:
       - flowjo_fasinh_trans
       - flowjo_log_trans
       - flowjo_biexp
+      - flowjo_biexp_trans
       - booleanFilter
   - title: "Read/write GatingSet objects"
     desc: >
@@ -139,8 +164,7 @@ reference:
       objects are provided by the ggcyto package,
     contents:
       - plot
-      - plotGate
-      - mkformula
+      - plotGate-methods-defunct  
       - prettyAxis
   - title: "Miscellaneous helper functions"
     desc: >
@@ -160,7 +184,4 @@ articles:
   - title: How to merge GatingSets
     contents:
       - HowToMergeGatingSet
-  - title: How to plot gated data
-    contents:
-      - plotGate.Rmd
 

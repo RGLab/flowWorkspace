@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy. — gs_plot_pop_count_cv • flowWorkspace</title>
+<title>Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy. — gh_plot_pop_count_cv • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy. — gs_plot_pop_count_cv" />
+<meta property="og:title" content="Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy. — gh_plot_pop_count_cv" />
 
 <meta property="og:description" content="This function plots the coefficient of variation calculated between the xml population statistics and the openCyto population statistics for each population in a gating hierarchy extracted from a xml Workspace." />
 <meta name="twitter:card" content="summary" />
@@ -89,7 +89,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/HowToMergeGatingSet.html">UNKNOWN TITLE</a>
+      <a href="../articles/HowToMergeGatingSet.html">How to merge/standardize GatingSets</a>
     </li>
     <li>
       <a href="../articles/flowWorkspace-Introduction.html">flowWorkspace Introduction: A Package to store and maninpulate gated flow data</a>
@@ -124,7 +124,9 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>gs_plot_pop_count_cv</span>(<span class='no'>x</span>, <span class='kw'>scales</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>rot</span> <span class='kw'>=</span> <span class='fl'>90</span>)),
+    <pre class="usage"><span class='fu'><a href='gh_pop_compare_stats.html'>gh_plot_pop_count_cv</a></span>(<span class='no'>x</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"auto"</span>, <span class='no'>...</span>)
+
+<span class='fu'>gs_plot_pop_count_cv</span>(<span class='no'>x</span>, <span class='kw'>scales</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>rot</span> <span class='kw'>=</span> <span class='fl'>90</span>)),
   <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"auto"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -135,16 +137,16 @@
       <td><p>A <code>GatingHierarchy</code> from or a <code>GatingSet</code>.</p></td>
     </tr>
     <tr>
-      <th>scales</th>
-      <td><p><code>list</code> see barchart</p></td>
-    </tr>
-    <tr>
       <th>path</th>
       <td><p><code>character</code> see <a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>Additional arguments to the <code>barplot</code> methods.</p></td>
+    </tr>
+    <tr>
+      <th>scales</th>
+      <td><p><code>list</code> see barchart</p></td>
     </tr>
     </table>
     

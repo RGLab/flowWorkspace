@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Update the channel information of a GatingSet (c++ part) — gs_update_channels • flowWorkspace</title>
+<title>Retrieve/replace the GUID of a GatingSet or GatingSetList — identifier-methods • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,10 +32,9 @@
 
 
 
-<meta property="og:title" content="Update the channel information of a GatingSet (c++ part) — gs_update_channels" />
+<meta property="og:title" content="Retrieve/replace the GUID of a GatingSet or GatingSetList — identifier-methods" />
 
-<meta property="og:description" content="It updates the channels stored in gates,compensations and transformations
-based on given mapping between the old and new channel names." />
+<meta property="og:description" content="Retrieve or replace the GUID (globally unique identifier) for a GatingSet or GatingSetList" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -114,63 +113,41 @@ based on given mapping between the old and new channel names." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Update the channel information of a GatingSet (c++ part)</h1>
+    <h1>Retrieve/replace the GUID of a GatingSet or GatingSetList</h1>
     
-    <div class="hidden name"><code>gs_update_channels.Rd</code></div>
+    <div class="hidden name"><code>identifier-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>It updates the channels stored in gates,compensations and transformations
-based on given mapping between the old and new channel names.</p>
+    <p>Retrieve or replace the GUID (globally unique identifier) for a GatingSet or GatingSetList</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>gs_update_channels</span>(<span class='no'>gs</span>, <span class='no'>map</span>, <span class='kw'>all</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>identifier</span>(<span class='no'>object</span>)
+
+<span class='fu'>identifier</span>(<span class='no'>object</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>gs</th>
-      <td><p>a GatingSet object</p></td>
+      <th>object</th>
+      <td><p>a GatingSet or GatingSetList</p></td>
     </tr>
     <tr>
-      <th>map</th>
-      <td><p><code>data.frame</code> contains the mapping from old (case insensitive) to new channel names
-Note: Make sure to remove the '&lt;' or '&gt;' characters from 'old` name because the API tries 
-      to only look at the raw channel name so that the gates with both prefixed and non-prefixed names could be updated.</p></td>
-    </tr>
-    <tr>
-      <th>all</th>
-      <td><p><code>logical</code> whether to update the flow data as well</p></td>
+      <th>value</th>
+      <td><p>string</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>when 'all' is set to TRUE, it returns a new GatingSet but it still shares the same underling c++ tree structure with the original GatingSet                                  
- otherwise it returns nothing (less overhead.)</p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-  <span class='co'>##this will update both "Qdot 655-A" and "&lt;Qdot 655-A&gt;"</span>
- <span class='no'>gs</span> <span class='kw'>&lt;-</span> <span class='fu'>gs_update_channels</span>(<span class='no'>gs</span>, <span class='kw'>map</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>old</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Qdot 655-A"</span>)
-                                         , <span class='kw'>new</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"QDot 655-A"</span>)
-                                         )
-                     )
-}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+                </ul>
 
   </div>
 </div>

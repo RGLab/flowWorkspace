@@ -54,7 +54,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/HowToMergeGatingSet.html">UNKNOWN TITLE</a>
+      <a href="../articles/HowToMergeGatingSet.html">How to merge/standardize GatingSets</a>
     </li>
     <li>
       <a href="../articles/flowWorkspace-Introduction.html">flowWorkspace Introduction: A Package to store and maninpulate gated flow data</a>
@@ -369,8 +369,8 @@
 ##         res[ind] &lt;- ifelse(deriv == 1, z$y[1L], 0)
 ##     res
 ## }
-## &lt;bytecode: 0x562f1860ec88&gt;
-## &lt;environment: 0x562f17055fc8&gt;
+## &lt;bytecode: 0x557d0a648480&gt;
+## &lt;environment: 0x557d08e2e890&gt;
 ## attr(,"type")
 ## [1] "biexp"
 ## attr(,"parameters")
@@ -414,7 +414,7 @@
 <div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(scales)</a>
 <a class="sourceLine" id="cb59-2" data-line-number="2">trans.func &lt;-<span class="st"> </span>asinh</a>
 <a class="sourceLine" id="cb59-3" data-line-number="3">inv.func &lt;-<span class="st"> </span>sinh</a>
-<a class="sourceLine" id="cb59-4" data-line-number="4">trans.obj &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/scales/man/trans_new.html">trans_new</a></span>(<span class="st">"myAsinh"</span>, trans.func, inv.func)</a></code></pre></div>
+<a class="sourceLine" id="cb59-4" data-line-number="4">trans.obj &lt;-<span class="st"> </span><span class="kw"><a href="https://scales.r-lib.org//reference/trans_new.html">trans_new</a></span>(<span class="st">"myAsinh"</span>, trans.func, inv.func)</a></code></pre></div>
 <p>The <code>inverse</code> transformation is required so that the gates and data can be visualized in <code>transformed</code> scale while the axis label still remains in the raw scale. Optionally, the <code>breaks</code> and <code>format</code> functions can be supplied to further customize the appearance of axis labels.</p>
 <p>Besides doing all these by hand, we also provide some buildin transformations: <code>asinhtGml2_trans</code>, <code>flowjo_biexp_trans</code>, <code>flowjo_fasinh_trans</code> and <code>logicle_trans</code>. These are all very commonly used transformations in flow data analysis. User can construct the transform object by simply one-line of code. e.g.</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1">trans.obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/asinhtGml2_trans.html">asinhtGml2_trans</a></span>()</a>

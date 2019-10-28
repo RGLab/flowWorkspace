@@ -86,7 +86,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/HowToMergeGatingSet.html">UNKNOWN TITLE</a>
+      <a href="../articles/HowToMergeGatingSet.html">How to merge/standardize GatingSets</a>
     </li>
     <li>
       <a href="../articles/flowWorkspace-Introduction.html">flowWorkspace Introduction: A Package to store and maninpulate gated flow data</a>
@@ -125,7 +125,7 @@
       <tr>
         <th colspan="2">
           <h2 id="section-gatinghierarchy-and-gatingset-classes" class="hasAnchor"><a href="#section-gatinghierarchy-and-gatingset-classes" class="anchor"></a>GatingHierarchy and GatingSet classes</h2>
-          <p class="section-desc"><p>Classes for managing compensation, transformation, and gating of cytometry data (FCS files)</p></p>
+          <p class="section-desc"><p>Classes for managing compensation, transformation, and gating of cytometry data (FCS files) and methods for creating them</p></p>
         </th>
       </tr>
       <tr>
@@ -143,9 +143,115 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="GatingSet-methods.html">GatingSet()</a></code> </p>
+        </td>
+        <td><p>constructors for GatingSet</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="GatingSetList-class.html">GatingSetList()</a></code> </p>
         </td>
         <td><p>Class <code>"GatingSetList"</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="brackets.html">`[`</a></code> <code><a href="brackets.html">`[[`</a></code> </p>
+        </td>
+        <td><p>Bracket operators on <code>GatingSet</code> and <code>GatingSetList</code> objects</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="identifier-methods.html">identifier()</a></code> <code><a href="identifier-methods.html">`identifier<-`()</a></code> </p>
+        </td>
+        <td><p>Retrieve/replace the GUID of a GatingSet or GatingSetList</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="convert_legacy.html">convert_legacy_gs()</a></code> <code><a href="convert_legacy.html">convert_legacy_gslist()</a></code> </p>
+        </td>
+        <td><p>convert the legacy(mixed with R and C++ files) GatingSet archive to the new format(C++ only)</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-cytoframe-and-cytoset-classes" class="hasAnchor"><a href="#section-cytoframe-and-cytoset-classes" class="anchor"></a>cytoframe and cytoset classes</h2>
+          <p class="section-desc"><p>Reference classes for efficiently managing the representation of data from FCS files (analagous to flowFrame and flowSet classes from the flowCore package)</p></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="cytoframe.html">cytoframe</a></code> </p>
+        </td>
+        <td><p><code>cytoframe</code>: A reference class for efficiently managing the data representation of
+a <code>flowFrame</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cytoset.html">cytoset</a></code> </p>
+        </td>
+        <td><p><code>cytoset</code>: a reference class for efficiently managing the data representation
+of a <code>flowSet</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cyto_flow_coerce_methods.html">cytoframe_to_flowFrame()</a></code> <code><a href="cyto_flow_coerce_methods.html">flowFrame_to_cytoframe()</a></code> <code><a href="cyto_flow_coerce_methods.html">cytoset_to_flowSet()</a></code> <code><a href="cyto_flow_coerce_methods.html">flowSet_to_cytoset()</a></code> </p>
+        </td>
+        <td><p>Methods for conversions between cytoframe/cytoset and flowFrame/flowSet</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="load_cytoframe_from_fcs.html">load_cytoframe_from_fcs()</a></code> </p>
+        </td>
+        <td><p>Read a single FCS file in to a cytoframe</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="load_cytoframe_from_h5.html">load_cytoframe_from_h5()</a></code> </p>
+        </td>
+        <td><p>Load the cytoframe from h5 format</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cf_get_h5_file_path.html">cf_get_h5_file_path()</a></code> </p>
+        </td>
+        <td><p>Return the file path of the underlying h5 file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cf_write_h5.html">cf_write_h5()</a></code> </p>
+        </td>
+        <td><p>Save the cytoframe as h5 format</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="load_cytoset_from_fcs.html">load_cytoset_from_fcs()</a></code> </p>
+        </td>
+        <td><p>Read one or several FCS files in to a cytoset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cs_add_sample.html">cs_add_sample()</a></code> </p>
+        </td>
+        <td><p>Add a cytoframe to a cytoset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cs_get_h5_file_path.html">cs_get_h5_file_path()</a></code> </p>
+        </td>
+        <td><p>Return the file path of the underlying h5 files</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="load_meta.html">cf_flush_meta()</a></code> <code><a href="load_meta.html">cf_load_meta()</a></code> <code><a href="load_meta.html">cs_flush_meta()</a></code> <code><a href="load_meta.html">cs_load_meta()</a></code> </p>
+        </td>
+        <td><p>Flush/load meta data (keywords, pData, channels/markers) to/from disk (only valid for on-disk cytoset/cytoframe)</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="lock.html">cf_lock()</a></code> <code><a href="lock.html">cf_unlock()</a></code> <code><a href="lock.html">cs_lock()</a></code> <code><a href="lock.html">cs_unlock()</a></code> </p>
+        </td>
+        <td><p>Lock/Unlock the cytoset/cytoframe by turning on/off its read-only flag</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -242,9 +348,15 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_pop_compare_stats.html">gh_pop_compare_stats()</a></code> <code><a href="gh_pop_compare_stats.html">gh_plot_pop_count_cv()</a></code> </p>
+          <p><code><a href="gh_pop_compare_stats.html">gh_pop_compare_stats()</a></code> </p>
         </td>
         <td><p>Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="gs_plot_pop_count_cv.html">gh_plot_pop_count_cv()</a></code> <code><a href="gs_plot_pop_count_cv.html">gs_plot_pop_count_cv()</a></code> </p>
+        </td>
+        <td><p>Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy.</p></td>
       </tr><tr>
         
         <td>
@@ -302,6 +414,12 @@ It strips the parent path and cluster method name.</p></td>
           <p><code><a href="gh_get_transformations.html">gh_get_transformations()</a></code> </p>
         </td>
         <td><p>Return a list of transformations or a transformation in a GatingHierarchy</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="compensate.html">compensate()</a></code> </p>
+        </td>
+        <td><p>compensate the flow data asssociated with the GatingSet</p></td>
       </tr><tr>
         
         <td>
@@ -487,6 +605,12 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="standardize-GatingSet.html">standardize-GatingSet</a></code> </p>
+        </td>
+        <td><p>The tools to standardize the tree structures and channel names.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="gs_update_channels.html">gs_update_channels()</a></code> </p>
         </td>
         <td><p>Update the channel information of a GatingSet (c++ part)</p></td>
@@ -615,6 +739,12 @@ underlying c++ data structure.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="flowjo_biexp_trans.html">flowjo_biexp_trans()</a></code> <code><a href="flowjo_biexp_trans.html">flowJo_biexp_trans()</a></code> </p>
+        </td>
+        <td><p>flowJo biexponential transformation.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="booleanFilter-class.html">booleanFilter()</a></code> <code><a href="booleanFilter-class.html">char2booleanFilter()</a></code> </p>
         </td>
         <td><p>A class describing logical operation (&amp; or |) of the reference populations</p></td>
@@ -712,6 +842,7 @@ Perform some validity checks before returning the updated colnames</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#section-gatinghierarchy-and-gatingset-classes">GatingHierarchy and GatingSet classes</a></li>
+      <li><a href="#section-cytoframe-and-cytoset-classes">cytoframe and cytoset classes</a></li>
       <li><a href="#section-examining-the-hierarchical-gating-tree">Examining the hierarchical gating tree</a></li>
       <li><a href="#section-accessing-underyling-data">Accessing underyling data</a></li>
       <li><a href="#section-perform-gating-analysis">Perform gating analysis</a></li>

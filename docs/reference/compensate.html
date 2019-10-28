@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>compensate the flow data asssociated with the GatingSet — compensate,cytoset,ANY-method • flowWorkspace</title>
+<title>compensate the flow data asssociated with the GatingSet — compensate • flowWorkspace</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
 
 
-<meta property="og:title" content="compensate the flow data asssociated with the GatingSet — compensate,cytoset,ANY-method" />
+<meta property="og:title" content="compensate the flow data asssociated with the GatingSet — compensate" />
 
 <meta property="og:description" content="The compensation is saved in the GatingSet and can be retrieved by gh_get_compensations." />
 <meta name="twitter:card" content="summary" />
@@ -89,7 +89,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/HowToMergeGatingSet.html">UNKNOWN TITLE</a>
+      <a href="../articles/HowToMergeGatingSet.html">How to merge/standardize GatingSets</a>
     </li>
     <li>
       <a href="../articles/flowWorkspace-Introduction.html">flowWorkspace Introduction: A Package to store and maninpulate gated flow data</a>
@@ -124,34 +124,24 @@
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for cytoset,ANY</span>
-<span class='fu'>compensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)
-
-<span class='co'># S4 method for cytoset,list</span>
-<span class='fu'>compensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)
-
-<span class='co'># S4 method for GatingSet,ANY</span>
-<span class='fu'>compensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)
-
-<span class='co'># S4 method for GatingSetList,ANY</span>
-<span class='fu'>compensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)</pre>
+    <pre class="usage"><span class='fu'>compensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p><code>GatingSet</code> or <code>GatingSetList</code></p></td>
+      <td><p><code>GatingSet</code>, <code>GatingSetList</code>, <code>cytoframe</code>, or <code>cytoset</code></p></td>
     </tr>
     <tr>
       <th>spillover</th>
-      <td><p><code>compensation</code> object or a list of <code>compensation</code> objects</p></td>
+      <td><p><code>compensation</code> object or spillover matrix or a list of <code>compensation</code> objects</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code>GatingSet</code> or <code>GatingSetList</code> object with the underling flow data compensated.</p>
+    <p>a <code>GatingSet</code>, <code>GatingSetList</code>, <code>cytoframe</code>, or <code>cytoset</code> object with the underling flow data compensated.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

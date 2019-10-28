@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> • flowWorkspace</title>
+<title>How to merge/standardize GatingSets • flowWorkspace</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="">
+<script src="../pkgdown.js"></script><meta property="og:title" content="How to merge/standardize GatingSets">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -54,7 +54,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/HowToMergeGatingSet.html">UNKNOWN TITLE</a>
+      <a href="../articles/HowToMergeGatingSet.html">How to merge/standardize GatingSets</a>
     </li>
     <li>
       <a href="../articles/flowWorkspace-Introduction.html">flowWorkspace Introduction: A Package to store and maninpulate gated flow data</a>
@@ -75,7 +75,9 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1></h1>
+      <h1>How to merge/standardize GatingSets</h1>
+                        <h4 class="author">Greg Finak <a href="mailto:gfinak@fhcrc.org" class="email">gfinak@fhcrc.org</a>, Mike Jiang <a href="mailto:wjiang2@fhcrc.org" class="email">wjiang2@fhcrc.org</a>
+</h4>
             
       
       
@@ -85,13 +87,9 @@
 
     
     
-<!--
-%\VignetteEngine{knitr}
-%\VignetteIndexEntry{How to merge GatingSets}
--->
-<div id="how-to-mergstandardize-gatingsets" class="section level1">
+<div id="how-to-mergestandardize-gatingsets" class="section level1">
 <h1 class="hasAnchor">
-<a href="#how-to-mergstandardize-gatingsets" class="anchor"></a>How to merg/standardize GatingSets</h1>
+<a href="#how-to-mergestandardize-gatingsets" class="anchor"></a>How to merge/standardize GatingSets</h1>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
@@ -107,53 +105,6 @@
 ‘GatingSet’ objects or or list of groups (each group member is a list of ’GatingSet`)</p>
 <p><strong>toRemove</strong> list of the node sets to be removed. its length must equals to the length of argument <strong>x</strong></p>
 <p><strong>…</strong> other arguments</p>
-<pre><code>## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")
-
-## Warning: 'Rm' is deprecated.
-## Use 'gs_pop_remove' instead.
-## See help("Deprecated")</code></pre>
 </div>
 <div id="remove-the-redudant-leafterminal-nodes" class="section level2">
 <h2 class="hasAnchor">
@@ -166,17 +117,17 @@
 <a href="#hide-the-non-leaf-nodes" class="anchor"></a>Hide the non-leaf nodes</h2>
 <p><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-4-1.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-4-2.png" width="384"></p>
 <p><strong>singlets</strong> node is not present in the second tree. But we <strong>can’t</strong> remove it because it will remove all its descendants. We can <strong>hide</strong> it instead.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="kw"><a href="../reference/gs_pop_set_visibility.html">gs_pop_set_visibility</a></span>(gs2, <span class="st">"singlets"</span>, <span class="ot">FALSE</span>))</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gs2)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gs3)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="kw"><a href="../reference/gs_pop_set_visibility.html">gs_pop_set_visibility</a></span>(gs2, <span class="st">"singlets"</span>, <span class="ot">FALSE</span>))</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gs2)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gs3)</a></code></pre></div>
 <p><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-5-1.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-5-2.png" width="384"></p>
 <p>Note that even gating trees look the same but <strong>singlets</strong> still physically exists so we must refer the populations by <strong>relative path</strong> (<code>path = "auto"</code>) instead of <strong>full path</strong>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs2)[<span class="dv">5</span>]</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs3)[<span class="dv">5</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs2)[<span class="dv">5</span>]</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs3)[<span class="dv">5</span>]</a></code></pre></div>
 <pre><code>## [1] "/not debris/singlets/CD3+/CD4/38- DR+"
 ## [1] "/not debris/CD3+/CD4/38- DR+"</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs2, <span class="dt">path =</span> <span class="st">"auto"</span>)[<span class="dv">5</span>]</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs3, <span class="dt">path =</span> <span class="st">"auto"</span>)[<span class="dv">5</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs2, <span class="dt">path =</span> <span class="st">"auto"</span>)[<span class="dv">5</span>]</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs3, <span class="dt">path =</span> <span class="st">"auto"</span>)[<span class="dv">5</span>]</a></code></pre></div>
 <pre><code>## [1] "CD4/38- DR+"
 ## [1] "CD4/38- DR+"</code></pre>
 </div>
@@ -193,42 +144,42 @@
 <div id="grouping-by-tree-structures" class="section level3">
 <h3 class="hasAnchor">
 <a href="#grouping-by-tree-structures" class="anchor"></a>Grouping by tree structures</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">gslist &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(gs1, gs2, gs3, gs4, gs5)</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">gs_groups &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_split_by_tree.html">gs_split_by_tree</a></span>(gslist)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">gslist &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(gs1, gs2, gs3, gs4, gs5)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">gs_groups &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_split_by_tree.html">gs_split_by_tree</a></span>(gslist)</a></code></pre></div>
 <pre><code>## Grouping by Gating tree...</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="../reference/length.html">length</a></span>(gs_groups)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="../reference/length.html">length</a></span>(gs_groups)</a></code></pre></div>
 <p>[1] 4</p>
 <p>This divides all the <code>GatingSet</code>s into different groups, each group shares the same tree structure. Here we have <code>4</code> groups, ## Check if the discrepancy can be resolved by dropping leaf nodes</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">res &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/try.html">try</a></span>(<span class="kw"><a href="../reference/gs_check_redundant_nodes.html">gs_check_redundant_nodes</a></span>(gs_groups), <span class="dt">silent =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(res[[<span class="dv">1</span>]])</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">res &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/try.html">try</a></span>(<span class="kw"><a href="../reference/gs_check_redundant_nodes.html">gs_check_redundant_nodes</a></span>(gs_groups), <span class="dt">silent =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(res[[<span class="dv">1</span>]])</a></code></pre></div>
 <p>[1] “Error in (function (thisNodeSet, thisObj) : Can’t drop the non-terminal nodes: singlets”</p>
 <p>Apparently the non-leaf node (<code>singlets</code>) fails this check, and it is up to user to decide whether to hide this node or keep this group separate from further merging.Here we try to hide it.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="cf">for</span>(gp <span class="cf">in</span> gs_groups)</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gp[[<span class="dv">1</span>]])</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="cf">for</span>(gp <span class="cf">in</span> gs_groups)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gp[[<span class="dv">1</span>]])</a></code></pre></div>
 <p><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-12-1.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-12-2.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-12-3.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-12-4.png" width="384"></p>
 <p>Based on the tree structure of each group (usually there aren’t as many groups as <code>GatingSet</code> objects itself), we will hide <code>singlets</code> for <code>group 2</code> and <code>group 4</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="cf">for</span>(i <span class="cf">in</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>,<span class="dv">4</span>))</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">  <span class="cf">for</span>(gs <span class="cf">in</span> gs_groups[[i]])</a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">    <span class="kw"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="kw"><a href="../reference/gs_pop_set_visibility.html">gs_pop_set_visibility</a></span>(gs, <span class="st">"singlets"</span>, <span class="ot">FALSE</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="cf">for</span>(i <span class="cf">in</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>,<span class="dv">4</span>))</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="cf">for</span>(gs <span class="cf">in</span> gs_groups[[i]])</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">    <span class="kw"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="kw"><a href="../reference/gs_pop_set_visibility.html">gs_pop_set_visibility</a></span>(gs, <span class="st">"singlets"</span>, <span class="ot">FALSE</span>))</a></code></pre></div>
 <p>Now check again with <code>.gs_check_redundant_nodes</code></p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">toRm &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_check_redundant_nodes.html">gs_check_redundant_nodes</a></span>(gs_groups)</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">toRm</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">toRm &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_check_redundant_nodes.html">gs_check_redundant_nodes</a></span>(gs_groups)</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">toRm</a></code></pre></div>
 <p>[[1]] [1] “CCR7+ 45RA+” “CCR7+ 45RA-”</p>
 <p>[[2]] [1] “DNT” “DPT”</p>
 <p>[[3]] character(0)</p>
 <p>[[4]] character(0)</p>
 <p>Based on this, these groups can be consolidated by dropping * <code>CCR7+ 45RA+</code> and <code>CCR7+ 45RA-</code> from <code>group 1</code>. * <code>DNT</code> and <code>DPT</code> from <code>group 2</code>.</p>
 <p>Sometime it could be difficult to inspect and distinguish tree difference by simply plotting the enire gating tree or looking at this simple flat list of nodes (especially when the entire subtree is missing from cerntain groups). It is helpful to visualize and highlight only the tree hierarchy difference with the helper function <code>gs_plot_diff_tree</code></p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="../reference/gs_plot_diff_tree.html">gs_plot_diff_tree</a></span>(gs_groups)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="../reference/gs_plot_diff_tree.html">gs_plot_diff_tree</a></span>(gs_groups)</a></code></pre></div>
 <p><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-15-1.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-15-2.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-15-3.png" width="384"><img src="HowToMergeGatingSet_files/figure-html/unnamed-chunk-15-4.png" width="384"></p>
 <p>To proceed the deletion of these nodes, <code>.gs_remove_redundant_nodes</code> can be used instead of doing it manually</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="../reference/gs_remove_redundant_nodes.html">gs_remove_redundant_nodes</a></span>(gs_groups, toRm)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="../reference/gs_remove_redundant_nodes.html">gs_remove_redundant_nodes</a></span>(gs_groups, toRm)</a></code></pre></div>
 <pre><code>## Removing CCR7+ 45RA+</code></pre>
 <pre><code>## Removing CCR7+ 45RA-</code></pre>
 <pre><code>## Removing DNT</code></pre>
 <pre><code>## Removing DPT</code></pre>
 <p>Now they can be merged into a single <code>GatingSetList</code>.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="../reference/GatingSetList-class.html">GatingSetList</a></span>(gslist)</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="../reference/GatingSetList-class.html">GatingSetList</a></span>(gslist)</a></code></pre></div>
 <p>An GatingSetList with 5 GatingSet containing 5 unique samples.</p>
 </div>
 </div>
@@ -237,7 +188,7 @@
 <a href="#remove-the-redundant-channels-from-gatingset" class="anchor"></a>Remove the redundant channels from <code>GatingSet</code>
 </h2>
 <p>Sometime there may be the extra <code>channels</code> in one data set that prevents it from being merged with other. If these channels are not used by any gates, then they can be safely removed.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="../reference/gs_remove_redundant_channels.html">gs_remove_redundant_channels</a></span>(gs1)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="../reference/gs_remove_redundant_channels.html">gs_remove_redundant_channels</a></span>(gs1)</a></code></pre></div>
 <pre><code>## drop FSC-H, FSC-W, &lt;G560-A&gt;, &lt;G780-A&gt;, Time</code></pre>
 <p>A GatingSet with 1 samples</p>
 </div>
@@ -250,7 +201,7 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li>
-<a href="#how-to-mergstandardize-gatingsets">How to merg/standardize GatingSets</a><ul class="nav nav-pills nav-stacked">
+<a href="#how-to-mergestandardize-gatingsets">How to merge/standardize GatingSets</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#usage">Usage</a></li>
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#remove-the-redudant-leafterminal-nodes">Remove the redudant leaf/terminal nodes</a></li>
