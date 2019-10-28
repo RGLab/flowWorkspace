@@ -145,7 +145,7 @@ setMethod("transform",
       GatingSetList(res)
     })
 
-#' @rdname compensate
+#' @export
 setMethod("compensate", signature=signature(x="GatingSetList", spillover="ANY"),
     definition=function(x, spillover){
       res <- lapply(x, function(gs)compensate(gs, spillover), level = 1)

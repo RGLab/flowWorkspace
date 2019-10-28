@@ -3,7 +3,7 @@
 \docType{class}
 \name{cytoset}
 \alias{cytoset}
-\title{'cytoset': a reference class for efficiently managing the data representation
+\title{\code{cytoset}: a reference class for efficiently managing the data representation
 of a \code{flowSet}}
 \description{
 This class is a container for a set of \code{cytoframe} objects, analagous to

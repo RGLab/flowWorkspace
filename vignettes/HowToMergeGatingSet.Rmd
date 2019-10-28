@@ -1,9 +1,20 @@
-<!--
-%\VignetteEngine{knitr}
-%\VignetteIndexEntry{How to merge GatingSets}
--->
+---
+title: "How to merge/standardize GatingSets"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
+vignette: >    
+  %\VignetteIndexEntry{How to merge GatingSets}
+  %\VignetteEngine{knitr::rmarkdown}
+---
 
-How to merg/standardize GatingSets
+How to merge/standardize GatingSets
 ========================================================
 
 Usage
@@ -35,17 +46,17 @@ sampleNames(gs1) <- "1.fcs"
 # simply the tree
 nodes <- gs_get_pop_paths(gs1)
 for(toRm in nodes[grepl("CCR", nodes)])
-  Rm(toRm, gs1)
+  gs_pop_remove(gs1, toRm)
 
 # remove two terminal nodes
 gs2 <- gs_clone(gs1)
 sampleNames(gs2) <- "2.fcs"
-Rm("DPT", gs2)
-Rm("DNT", gs2)
+gs_pop_remove(gs2, "DPT")
+gs_pop_remove(gs2, "DNT")
 
 # remove singlets gate
 gs3 <- gs_clone(gs2)
-Rm("singlets", gs3)
+gs_pop_remove(gs3, "singlets")
 gs_pop_add(gs3, gs_pop_get_gate(gs2, "CD3+"), parent = "not debris")
 for(tsub in c("CD4", "CD8"))
   {
@@ -61,7 +72,7 @@ sampleNames(gs3) <- "3.fcs"
 # spin the branch to make it isomorphic
 gs4 <- gs_clone(gs3)
 # rm cd4 branch first
-Rm("CD4", gs4)
+gs_pop_remove(gs4, "CD4")
 # add it back
 gs_pop_add(gs4, gs_pop_get_gate(gs3, "CD4"), parent = "CD3+")
 # add all the chilren back

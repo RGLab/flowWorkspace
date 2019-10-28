@@ -4,12 +4,9 @@
 \alias{gh_pop_compare_stats}
 \alias{getPopStats}
 \alias{getPopStats,GatingHierarchy-method}
-\alias{gh_plot_pop_count_cv}
 \title{Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R}
 \usage{
 gh_pop_compare_stats(x, path = "auto", ...)
-
-gh_plot_pop_count_cv(x, path = "auto", ...)
 }
 \arguments{
 \item{x}{GatingHierarchy}

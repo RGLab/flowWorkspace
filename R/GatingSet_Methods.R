@@ -1558,6 +1558,8 @@ gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE
 #' Plot the coefficient of variation between xml and openCyto population statistics for each population in a gating hierarchy.
 #'
 #' This function plots the coefficient of variation calculated between the xml population statistics and the openCyto population statistics for each population in a gating hierarchy extracted from a xml Workspace.
+#' 
+#' @name gs_plot_pop_count_cv
 #' @param x A \code{GatingHierarchy} from or a \code{GatingSet}.
 #' @param scales \code{list} see \link{barchart}
 #' @param path \code{character} see \link{gs_get_pop_paths}
@@ -1572,7 +1574,7 @@ gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE
 #'   }
 #' @aliases gs_plot_pop_count_cv
 #' @export
-#' @rdname gs_plot_pop_count_cv
+#' @importFrom lattice barchart
 #' @importFrom latticeExtra ggplot2like
 gs_plot_pop_count_cv <- function(x, scales = list(x = list(rot = 90)), path = "auto",...){
       cv <- .computeCV(x, path = path)
@@ -1745,11 +1747,14 @@ transformerList <- function (from, trans)
 #' compensate the flow data asssociated with the GatingSet
 #'
 #' The compensation is saved in the GatingSet and can be retrieved by \link{gh_get_compensations}.
+#' @name compensate
+#' @aliases compensate,GatingSetList,ANY-method compensate,cytoset,ANY-method
+#' compensate,cytoset,list-method compensate,cytoset,matrix-method compensate,cytoframe,matrix-method
+#' @usage compensate(x, spillover)
+#' @param x \code{GatingSet}, \code{GatingSetList}, \code{cytoframe}, or \code{cytoset}
+#' @param spillover \code{compensation} object or spillover matrix or a list of \code{compensation} objects
 #'
-#' @param x \code{GatingSet} or \code{GatingSetList}
-#' @param spillover \code{compensation} object or a list of \code{compensation} objects
-#'
-#' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data compensated.
+#' @return a \code{GatingSet}, \code{GatingSetList}, \code{cytoframe}, or \code{cytoset} object with the underling flow data compensated.
 #' @examples
 #' \dontrun{
 #'
@@ -1761,7 +1766,6 @@ transformerList <- function (from, trans)
 #' gs <- compensate(gs, comp)
 #' }
 #' @export
-#' @rdname compensate
 setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
     definition=function(x, spillover){
       selectMethod("compensate", signature=c(x="cytoset", spillover="ANY"))(x, spillover)
