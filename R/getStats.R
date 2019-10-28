@@ -348,8 +348,7 @@ gh_pop_compare_stats <- function(x, path = "auto", ...){
 	cv
 }
 
-#' @importFrom lattice barchart
-#' @rdname gh_pop_compare_stats
+#' @rdname gs_plot_pop_count_cv
 #' @aliases gh_plot_pop_count_cv
 #' @export
 gh_plot_pop_count_cv <- function(x, path = "auto", ...){

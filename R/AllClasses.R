@@ -137,11 +137,14 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' 
 #' construct a gatingset with empty trees (just root node)
 #' 
-#' @rdname GatingSet-methods
+#' @name GatingSet-methods
+#' @aliases GatingSet,cytoset,ANY-method GatingSet,flowSet-method
+#' @usage GatingSet(x)
+#' @param x a flowSet, ncdfFlowSet, or cytoset
 #' @export 
 #' @examples 
 #' \dontrun{
-#' #fdata could be a flowSet or ncdfFlowSet
+#' #fdata could be a flowSet, ncdfFlowSet, or GatingSet
 #' gs <- GatingSet(fdata)
 #' }
 setMethod("GatingSet",c("cytoset"),function(x){
