@@ -1,0 +1,187 @@
+destination: docs
+reference:
+  - title: "GatingHierarchy and GatingSet classes"
+    desc: >
+      Classes for managing compensation, transformation,
+      and gating of cytometry data (FCS files) and methods for creating them
+    contents:
+      - GatingHierarchy-class
+      - GatingSet-class
+      - GatingSet-methods
+      - GatingSetList-class
+      - brackets
+      - identifier-methods
+      - convert_legacy_gs
+  - title: "cytoframe and cytoset classes"
+    desc: >
+      Reference classes for efficiently managing the representation of data from
+      FCS files (analagous to flowFrame and flowSet classes from the flowCore package)
+    contents:
+      - cytoframe
+      - cytoset
+      - cyto_flow_coerce_methods
+      - load_cytoframe_from_fcs
+      - load_cytoframe_from_h5
+      - cf_get_h5_file_path
+      - cf_write_h5
+      - load_cytoset_from_fcs
+      - cs_add_sample
+      - cs_get_h5_file_path
+      - load_meta
+      - lock
+  - title: "Examining the hierarchical gating tree"
+    desc: >
+      Functions for examining the subpopulations 
+      resulting from applying gates to the data
+    contents:
+      - plot
+      - gs_plot_diff_tree
+      - gs_get_pop_paths
+      - gh_get_pop_paths
+      - gs_get_leaf_nodes
+      - gh_get_leaf_nodes
+      - gs_check_redundant_nodes
+      - gs_remove_redundant_nodes
+      - gh_get_cluster_labels
+      - gh_pop_get_cluster_name
+      - extract_cluster_pop_name_from_node
+      - gh_pop_get_full_path
+      - gs_pop_get_parent
+      - gs_pop_get_children
+      - gh_pop_get_children
+      - gh_pop_get_descendants
+      - gh_pop_get_stats
+      - gh_pop_get_stats_tfilter
+      - gs_pop_get_stats
+      - gs_pop_get_stats_tfilter
+      - gh_pop_compare_stats
+      - gh_plot_pop_count_cv
+      - gs_plot_pop_count_cv
+      - gh_pop_get_count
+      - gs_pop_get_count_fast
+      - gs_pop_get_count_with_meta
+      - gh_pop_get_proportion
+  - title: "Accessing underyling data"
+    desc: >
+      Functions for accessing or altering the flowFrame or 
+      flowSet objects underlying the gating analysis. These
+      can also be useful in preparing GatingSet objects for merging.
+    contents:
+      - gs_is_h5
+      - gs_cyto_data
+      - gs_pop_get_data
+      - gh_pop_get_data
+      - gh_get_compensations
+      - gs_get_compensation_internal
+      - gh_get_transformations
+      - compensate
+      - transform
+      - gs_clone
+      - length
+      - sampleNames
+      - markernames
+      - pData
+      - keyword
+  - title: "Perform gating analysis"
+    desc: >
+      Functions for accessing, altering, adding, and removing
+      gate definitions and their resulting subpopulations. These
+      can also be useful in preparing GatingSet objects for merging.
+    contents:
+      - gh_pop_is_hidden
+      - gh_pop_set_visibility
+      - gh_pop_set_xml_count
+      - gh_pop_is_gated
+      - gh_pop_is_negated
+      - gh_pop_is_bool_gate
+      - gs_pop_get_gate
+      - gh_pop_get_gate
+      - gs_pop_set_gate
+      - gh_pop_set_gate
+      - recompute
+      - gs_pop_set_name
+      - gh_pop_set_name
+      - transform_gate
+      - rotate_gate
+      - scale_gate
+      - shift_gate
+      - subset.GatingSet
+      - gh_pop_get_indices
+      - gh_pop_get_indices_mat
+      - gh_pop_set_indices
+      - gs_get_singlecell_expression
+      - gs_get_singlecell_expression_by_gate
+      - pop.MFI
+      - pop_add
+      - gs_pop_add
+      - gh_pop_remove
+      - gs_pop_remove
+      - gh_pop_move
+      - gh_copy_gate
+      - gh_apply_to_new_fcs
+      - standardize-GatingSet
+      - gs_update_channels
+      - gs_remove_redundant_channels
+      - gs_split_by_channels
+      - gs_split_by_tree
+      - gslist_to_gs
+      - lapply,GatingSet-method
+      - rbind2,GatingSetList,missing-method
+  - title: "Helpers to generate transformations and filters"
+    desc: >
+      Functions for quickly constructing transformations or filters
+      or converting them to a form that can be applied to data in 
+      a GatingHierachy or GatingSet
+    contents:
+      - flow_trans
+      - transformerList
+      - estimateLogicle.GatingHierarchy
+      - filter_to_list
+      - asinh_Gml2
+      - asinhtGml2_trans
+      - logicle_trans
+      - logicleGml2_trans
+      - logtGml2_trans
+      - flowjo_fasinh
+      - flowjo_fasinh_trans
+      - flowjo_log_trans
+      - flowjo_biexp
+      - flowjo_biexp_trans
+      - booleanFilter
+  - title: "Read/write GatingSet objects"
+    desc: >
+      Functions to read save GatingSet objects to disk
+      or read them in to an R session
+    contents:
+      - save_gs
+      - load_gs
+      - save_gslist
+      - load_gslist
+  - title: "Plotting functions"
+    desc: >
+      Methods for plotting the hierarchical gating tree and gates.
+      More dedicated plotting methods for GatingSet and GatingHierarchy
+      objects are provided by the ggcyto package,
+    contents:
+      - plot
+      - plotGate-methods-defunct  
+      - prettyAxis
+  - title: "Miscellaneous helper functions"
+    desc: >
+      Functions whose role does not easily fit in to one
+      of the above categories
+    contents:
+      - get_log_level
+      - flowWorkspace.par.set
+      - compute_timestep
+      - fix_channel_slash
+      - flow_breaks
+      - swap_data_cols
+articles:
+  - title: Introduction
+    contents:
+      - flowWorkspace-Introduction
+  - title: How to merge GatingSets
+    contents:
+      - HowToMergeGatingSet
+
