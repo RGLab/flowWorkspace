@@ -178,6 +178,7 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 												,Named("decade",thisTrans->decade)
 												,Named("offset",thisTrans->offset)
 												,Named("T",thisTrans->T)
+												,Named("scale", thisTrans->scale)
 												)
 									,chnl
 									);
