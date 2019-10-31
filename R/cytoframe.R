@@ -500,6 +500,24 @@ cf_swap_colnames <- function(x, col1, col2){
 	setChannel(x@pointer, tmp, col2)
 	
 }
+
+#' @export
+cf_rename_marker <- function(x, old, new){
+  pd <- getpdata(x@pointer)
+  pd <- subset(pd, desc == old)
+  nr <- nrow(pd)
+  if(nr == 0)
+    stop("old marker is not found: ", old)
+  else if(nr > 1)
+    stop("old marker is ambiguous: ", old)
+  else
+  {
+    chnl <- pd[["name"]]
+    names(new) <- chnl
+    markernames(x) <- new
+  }
+  
+}
 setReplaceMethod("markernames",
     signature=signature(object="cytoframe", value="ANY"), function(object, value){
       channel.names <- colnames(object)

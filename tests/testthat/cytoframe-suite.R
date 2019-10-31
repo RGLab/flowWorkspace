@@ -139,6 +139,18 @@ test_that("exprs<-", {
   
 })
 
+test_that("cf_rename_marker", {
+  cf1 <- realize_view(cf)
+  old <- markernames(cf1)[1]
+  newname <- "test"
+  cf_rename_marker(cf1, old, newname)
+  expect_equal(markernames(cf1)[1], newname)
+  
+  # expect_equivalent(unlist(keyword(cf1)[c("$P5S")]), newname)
+  
+})
+
+
 test_that("colnames<-", {
       cf1 <- realize_view(cf)
       coln <- colnames(cf1)
