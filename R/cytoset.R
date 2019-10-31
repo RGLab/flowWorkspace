@@ -4,7 +4,7 @@ NULL
 #' @include cytoframe.R
 NULL
 
-#' 'cytoset': a reference class for efficiently managing the data representation
+#' \code{cytoset}: a reference class for efficiently managing the data representation
 #' of a \code{flowSet}
 #'
 #' This class is a container for a set of \code{cytoframe} objects, analagous to
@@ -527,7 +527,6 @@ setReplaceMethod("[[",
   
   
 #' @export
-#' @rdname compensate
 setMethod("compensate", signature=signature(x="cytoset", spillover="ANY"),
   definition=function(x, spillover){
 	  samples <- sampleNames(x)
@@ -552,7 +551,6 @@ check_comp <- function(compensation){
 }
 
 #' @export
-#' @rdname compensate
 setMethod("compensate", signature=signature(x="cytoset", spillover="list"),#explicitly define this to avoid dispatching (cs, list) to (flowSet,list)
           definition=function(x, spillover){
             spillover <- sapply(spillover, check_comp, simplify = FALSE)

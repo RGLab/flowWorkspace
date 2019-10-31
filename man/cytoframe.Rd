@@ -3,8 +3,8 @@
 \docType{class}
 \name{cytoframe}
 \alias{cytoframe}
-\title{'cytoframe': A reference class for efficiently managing the data representation of
-a `flowFrame``}
+\title{\code{cytoframe}: A reference class for efficiently managing the data representation of
+a \code{flowFrame}}
 \description{
 This class serves the same purpose as the \code{\linkS4class{flowFrame}} class: to store quantitative
 data on cell populations from a single FCS run. The primary difference is in the underlying representation

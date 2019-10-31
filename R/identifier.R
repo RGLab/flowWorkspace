@@ -1,5 +1,12 @@
+#' Retrieve/replace the GUID of a GatingSet or GatingSetList
+#' 
+#' Retrieve or replace the GUID (globally unique identifier) for a GatingSet or GatingSetList
+#' 
 #' @importFrom flowCore identifier
-#' @rdname GatingSet-methods
+#' @name identifier-methods
+#' @aliases identifier identifier,GatingSet-method identifier,GatingSetList-method
+#' @usage identifier(object)
+#' @param object a GatingSet or GatingSetList
 #' @export 
 setMethod("identifier",
 		signature=signature(object="GatingSet"),
@@ -10,7 +17,6 @@ setMethod("identifier",
 
 
 #' @importFrom digest digest
-#' @rdname GatingSet-methods
 #' @export 
 setMethod("identifier",c("GatingSetList"),function(object){
   gs.ids <- lapply(object, identifier, level = 1)
@@ -18,9 +24,10 @@ setMethod("identifier",c("GatingSetList"),function(object){
   digest(gs.ids)
 })
 
-#' @param object GatingSet
 #' @param value string
-#' @rdname GatingSet-methods
+#' @usage identifier(object) <- value
+#' @rdname identifier-methods
+#' @aliases identifier<-,GatingSet-method identifier<-,GatingSet,character-method
 #' @export 
 setReplaceMethod("identifier",
 		signature=signature(object="GatingSet"),
@@ -30,7 +37,6 @@ setReplaceMethod("identifier",
 			object
 		})
 
-#' @rdname GatingSet-methods
 #' @export 
 setReplaceMethod("identifier",
                  signature=signature(object="GatingSetList",

@@ -1,5 +1,5 @@
-#' 'cytoframe': A reference class for efficiently managing the data representation of
-#' a `flowFrame``
+#' \code{cytoframe}: A reference class for efficiently managing the data representation of
+#' a \code{flowFrame}
 #'
 #' This class serves the same purpose as the \code{\linkS4class{flowFrame}} class: to store quantitative
 #' data on cell populations from a single FCS run. The primary difference is in the underlying representation
@@ -379,7 +379,8 @@ setMethod("spillover",
       
       get_spillover(x@pointer, key)
     })
-#' compensate the data in place
+# compensate the data in place
+#' @export
 setMethod("compensate",
     signature=signature(x="cytoframe",
         spillover="matrix"),
@@ -748,9 +749,9 @@ cf_get_h5_file_path <- function(cf){
 }
 
 #' Lock/Unlock the cytoset/cytoframe by turning on/off its read-only flag
+#' @name lock
 #' @param cf cytoframe object
 #' @export 
-#' @rdname lock
 cf_lock <- function(cf){
 	cf_set_readonly(cf@pointer, TRUE)
 }
@@ -761,10 +762,10 @@ cf_unlock <- function(cf){
 }
 
 #' Flush/load meta data (keywords, pData, channels/markers) to/from disk (only valid for on-disk cytoset/cytoframe)
+#' @name load_meta
 #' @aliases flush_meta
 #' @param cf cytoframe object
-#' @export 
-#' @rdname load_meta
+#' @export
 cf_flush_meta <- function(cf){
 	.cf_flush_meta(cf@pointer)
 }
