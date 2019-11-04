@@ -324,9 +324,22 @@ setClass("cytoset", contains = "flowSet"
           ,representation=representation(pointer = "externalptr"))
 
 #' @export 
-cytoset <- function(){
-	new("cytoset", pointer = new_cytoset())
+cytoset <- function(x, ...){
 	
+	cs <- new("cytoset", pointer = new_cytoset())
+	if(!missing(x))
+	{
+		if(is.list(x))
+		{
+			samplenames <- names(x)
+			if(length(samplenames) == 0)
+				stop("input is not a named list!")
+			for(i in samplenames)
+				cs_add_sample(cs, i, x[[i]])
+		}else
+			stop("input is not a list!")
+	}
+	cs
 }
 
 #' @rdname cyto_flow_coerce_methods
