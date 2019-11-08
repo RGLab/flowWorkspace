@@ -27,6 +27,7 @@ is_equal_flowFrame <- function(orig, new, exprs = TRUE, description = TRUE){
     kw2[["FILENAME"]] <- NULL
     kw1[["ORIGINALGUID"]] <- NULL
     kw2[["ORIGINALGUID"]] <- NULL
+    kw1[["$CYTOLIB_VERSION"]] <- NULL
     expect_true(all(is.element(kw1, kw2)))
   }
     

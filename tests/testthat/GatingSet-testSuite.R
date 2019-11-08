@@ -286,6 +286,7 @@ test_that("keyword",{
             thisResult[["ORIGINALGUID"]] <-thisResult[["GUID"]] <- basename(thisResult[["FILENAME"]])
             thisResult[["$BEGINDATA"]] <- NULL
             thisResult[["$ENDDATA"]] <- NULL
+            thisResult[["$CYTOLIB_VERSION"]] <- NULL
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
           })
