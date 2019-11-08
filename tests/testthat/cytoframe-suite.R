@@ -146,6 +146,10 @@ test_that("cf_rename_marker", {
   cf_rename_marker(cf1, old, newname)
   expect_equal(markernames(cf1)[1], newname)
   
+  #rm marker by setting it to empty string
+  markers <- markernames(cf1)
+  cf_rename_marker(cf1, newname, "")
+  expect_equal(markernames(cf1), markers[-1])
   # expect_equivalent(unlist(keyword(cf1)[c("$P5S")]), newname)
   
 })
