@@ -488,7 +488,7 @@ setReplaceMethod("colnames",
             call.=FALSE)
       
       for(i in seq_along(value))
-        setChannel(x@pointer, old.names[i], value[i])
+        cf_rename_channel(x, old.names[i], value[i])
       
       return(x)
     })
@@ -496,12 +496,16 @@ setReplaceMethod("colnames",
 cf_swap_colnames <- function(x, col1, col2){
 	tmp <- "MagicStringUgly"
 	
-	setChannel(x@pointer, col1, tmp)
-	setChannel(x@pointer, col2, col1)
-	setChannel(x@pointer, tmp, col2)
+	cf_rename_channel(x, col1, tmp)
+	cf_rename_channel(x, col2, col1)
+	cf_rename_channel(x, tmp, col2)
 	
 }
-
+#' @export
+cf_rename_channel <- function(x, old, new){
+  setChannel(x@pointer, old, new)
+  
+}
 #' @export
 cf_rename_marker <- function(x, old, new){
   pd <- getpdata(x@pointer)
