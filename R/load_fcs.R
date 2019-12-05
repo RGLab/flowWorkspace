@@ -218,7 +218,7 @@ load_cytoframe_from_fcs <- function(filename,
 #' @family cytoframe/cytoset IO functions
 #' @export
 #' @importFrom Biobase read.AnnotatedDataFrame
-load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
+load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
                          descriptions, name.keyword,
                          transformation="linearize",
                          which.lines=NULL,
@@ -237,73 +237,8 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
                         , h5_dir = tempdir()
                          , ...)
 {
-    ## A frame of phenoData information
-    phenoFrame <- NULL
     if(!dir.exists(h5_dir))
       dir.create(h5_dir)
-    ## deal with the case that the phenoData is provided, either as
-    ## character vector or as AnnotatedDataFrame.
-    if(!missing(phenoData)) {
-        if(is.character(phenoData) && length(phenoData) == 1){
-            phenoData <- read.AnnotatedDataFrame(file.path(path, phenoData),
-                                                 header = TRUE, sep=sep
-                                                 , as.is=as.is
-                                                 , colClasses = c(FCS_File = "character") #avoid coersing filename to numbers that  accidentally tampers the filename by stripping leading zeros
-                                                 , ...)
-            ## the sampleNames of the Annotated data frame must match the
-            ## file names and we try to guess them from the input
-            fnams <- grep("file|filename", varLabels(phenoData),
-                          ignore.case=TRUE)
-            if(length(fnams)){
-                fn <- as.character(unlist(pData(phenoData[,fnams[1]])))
-                if(any(duplicated(fn)))
-                    stop("The file names supplied as part of the ",
-                         "phenoData are not unique", call.=FALSE)
-                sampleNames(phenoData) <- fn
-                pd <- pData(phenoData)
-                pd[,fnams[1]] <- fn
-                pData(phenoData) <- pd
-            }
-            phenoFrame <- phenoData
-        }else if(is(phenoData,"AnnotatedDataFrame")){
-            phenoFrame <- phenoData
-        }else{if(!is.list(phenoData))
-                  stop("Argument 'phenoData' must be of type 'list', ",
-                       "'AnnotatedDataFrame' or a filename\n",
-                       "of a text file containing the phenotypic information")
-          }
-    }
-
-    ## go on and find the files
-    if(!is.null(phenoFrame)) {
-        if(!is.null(files))
-            warning("Supplied file names will be ignored, ",
-                    "using names in the phenoData slot instead.")
-        file.names <- sampleNames(phenoFrame)
-	    files <- file.path(path, file.names)
-      	if(!all(file.exists(files)))
-            stop(paste("Not all files given by phenoData could be found in",
-                       path))
-        if(!"name" %in% varLabels(phenoFrame)){
-            phenoFrame$name <- basename(files)
-            varMetadata(phenoFrame)["name",] <- "Filename"
-        }
-    }else{
-        ## if we haven't found files by now try to search according to
-        ## 'pattern'
-        if(is.null(files)) {
-            files <- dir(path,pattern,full.names=TRUE)
-            file.names <- dir(path,pattern,full.names=FALSE)
-            if(length(files)<1)
-                stop(paste("No matching files found in ",path))
-        } else {
-            if(!is.character(files))
-                stop("'files' must be a character vector.")
-            file.names <- basename(files) ## strip path from names
-            if(path != ".")
-                files <- file.path(path, files)
-        }
-    }
   
     if(is.null(dataset))
       dataset <- 1
@@ -316,8 +251,14 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
       which.lines <- vector()
     else
       which.lines <- which.lines -1
-    guids <- make.unique(file.names)
-    names(files) <- guids
+    
+    phenoData <- flowCore:::parse_pd_for_read_fs(files, path, pattern, phenoData, sep, as.is,...)
+    pd <- pData(phenoData)
+    cols <- colnames(pd)
+    fidx <- grep("file|filename", cols, ignore.case=TRUE)
+    file_col_name <- cols[fidx]
+    files <- pd[[file_col_name]]
+    names(files) <- rownames(pd)#set guid
     cs <- fcs_to_cytoset(files, list(which_lines = which.lines
                                             , transformation = transformation
                                             , decades = decades
@@ -334,13 +275,10 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData,
                                   )
     cs <- new("cytoset", pointer = cs)
     
-    if(!is.null(phenoFrame))
-    {
-      pd <- pData(phenoFrame)
-      pd[["FCS_File"]] <- NULL
-      pData(cs) <- pd
-	  cs_flush_meta(cs)#make sure pd is synced to disk 
-    }
+   pd[[file_col_name]] <- NULL
+   pData(cs) <- pd
+	 cs_flush_meta(cs)#make sure pd is synced to disk 
+
     
     cs
     

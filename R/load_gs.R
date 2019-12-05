@@ -160,7 +160,6 @@ convert_legacy_gslist <- function(from, to){
   }
   
   cs <- flowSet_to_cytoset(fs, to)
-  
   gs <-  new("GatingSet", pointer = load_legacy_gs(dat.file, cs@pointer))
   
   if(.hasSlot(gs.old, "compensation"))

@@ -359,11 +359,7 @@ flowSet_to_cytoset <- function(fs, path = tempfile()){
   # for potential re-ordering
   sns <- sampleNames(fs)
   filenames <- sns
-  # Filename logic pulled from write.flowSet
-  for(f in seq_along(filenames)){
-        if(!length(grep(".", filenames[f], fixed=TRUE)))
-            filenames[f] <- paste(filenames[f], "fcs", sep=".")
-  }
+
   write.flowSet(fs, tmp, filename = sampleNames(fs))
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
                               , path = tmp

@@ -9,3 +9,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^output$
+^lyoplate_out$
+^src/Default$
