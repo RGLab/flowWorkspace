@@ -4,12 +4,24 @@
 \alias{load_cytoframe_from_fcs}
 \title{Read a single FCS file in to a cytoframe}
 \usage{
-load_cytoframe_from_fcs(filename, transformation = "linearize",
-  which.lines = NULL, alter.names = FALSE, column.pattern = NULL,
-  invert.pattern = FALSE, decades = 0, is_h5 = FALSE,
-  h5_filename = tempfile(fileext = ".h5"), min.limit = NULL,
-  truncate_max_range = TRUE, dataset = NULL, emptyValue = TRUE,
-  num_threads = 1, ignore.text.offset = FALSE, text.only = FALSE)
+load_cytoframe_from_fcs(
+  filename,
+  transformation = "linearize",
+  which.lines = NULL,
+  alter.names = FALSE,
+  column.pattern = NULL,
+  invert.pattern = FALSE,
+  decades = 0,
+  is_h5 = FALSE,
+  h5_filename = tempfile(fileext = ".h5"),
+  min.limit = NULL,
+  truncate_max_range = TRUE,
+  dataset = NULL,
+  emptyValue = TRUE,
+  num_threads = 1,
+  ignore.text.offset = FALSE,
+  text.only = FALSE
+)
 }
 \arguments{
 \item{filename}{Character of length 1: filename}
@@ -117,10 +129,11 @@ It is mainly used when there is not enough memory to read one single FCS
 reading the entire FCS (due to the multiple disk IO).
 }
 \seealso{
-Other cytoframe/cytoset IO functions: \code{\link{cf_get_h5_file_path}},
-  \code{\link{cf_write_h5}},
-  \code{\link{cs_get_h5_file_path}},
-  \code{\link{load_cytoframe_from_h5}},
-  \code{\link{load_cytoset_from_fcs}}
+Other cytoframe/cytoset IO functions: 
+\code{\link{cf_get_h5_file_path}()},
+\code{\link{cf_write_h5}()},
+\code{\link{cs_get_h5_file_path}()},
+\code{\link{load_cytoframe_from_h5}()},
+\code{\link{load_cytoset_from_fcs}()}
 }
 \concept{cytoframe/cytoset IO functions}

@@ -4,8 +4,14 @@
 \alias{logicleGml2_trans}
 \title{GatingML2 version of logicle transformation.}
 \usage{
-logicleGml2_trans(T = 262144, M = 4.5, W = 0.5, A = 0, n = 6,
-  equal.space = FALSE)
+logicleGml2_trans(
+  T = 262144,
+  M = 4.5,
+  W = 0.5,
+  A = 0,
+  n = 6,
+  equal.space = FALSE
+)
 }
 \arguments{
 \item{T, M, W, A}{see \link{logicletGml2}}

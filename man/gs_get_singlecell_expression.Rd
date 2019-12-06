@@ -7,9 +7,16 @@
 \alias{gs_get_singlecell_expression_by_gate}
 \title{Return the cell events data that express in any of the single populations defined in \code{y}}
 \usage{
-gs_get_singlecell_expression(x, nodes, other.markers = NULL,
-  swap = FALSE, threshold = TRUE, marginal = TRUE,
-  mc.cores = getOption("mc.cores", 1L), ...)
+gs_get_singlecell_expression(
+  x,
+  nodes,
+  other.markers = NULL,
+  swap = FALSE,
+  threshold = TRUE,
+  marginal = TRUE,
+  mc.cores = getOption("mc.cores", 1L),
+  ...
+)
 
 gs_get_singlecell_expression_by_gate(...)
 }

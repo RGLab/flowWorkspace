@@ -7,14 +7,20 @@
 \title{Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
   or the population proportions or the total number of events of a node (population) in a GatingHierarchy}
 \usage{
-gs_pop_get_count_fast(x, statistic = c("freq", "count"), xml = FALSE,
-  subpopulations = NULL, format = c("long", "wide"), path = "full",
-  ...)
+gs_pop_get_count_fast(
+  x,
+  statistic = c("freq", "count"),
+  xml = FALSE,
+  subpopulations = NULL,
+  format = c("long", "wide"),
+  path = "full",
+  ...
+)
 
 gs_pop_get_count_with_meta(x, ...)
 }
 \arguments{
-\item{x}{A \code{GatingHierarchy} or \code{GatingSet}}
+\item{x}{a \code{GatingSet} or \code{GatingSetList}}
 
 \item{statistic}{\code{character} specifies the type of population statistics to extract.(only valid when format is "wide"). Either "freq" or "count" is currently supported.}
 
@@ -25,10 +31,6 @@ gs_pop_get_count_with_meta(x, ...)
 \item{format}{\code{character} value of c("wide", "long") specifing whether to origanize the output in long or wide format}
 
 \item{path}{\code{character} see \link{gs_get_pop_paths}}
-
-\item{...}{Additional arguments passed to \link{gs_get_pop_paths}}
-
-\item{x}{a \code{GatingSet} or \code{GatingSetList}}
 
 \item{...}{additional arguments passed to \code{gs_pop_get_count_fast}}
 }

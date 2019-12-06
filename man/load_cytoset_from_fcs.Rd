@@ -4,13 +4,32 @@
 \alias{load_cytoset_from_fcs}
 \title{Read one or several FCS files in to a cytoset}
 \usage{
-load_cytoset_from_fcs(files = NULL, path = ".", pattern = NULL,
-  phenoData, descriptions, name.keyword, transformation = "linearize",
-  which.lines = NULL, alter.names = FALSE, column.pattern = NULL,
-  invert.pattern = FALSE, decades = 0, is_h5 = FALSE,
-  min.limit = NULL, truncate_max_range = TRUE, dataset = NULL,
-  emptyValue = TRUE, num_threads = 1, ignore.text.offset = FALSE,
-  sep = "\\t", as.is = TRUE, name, h5_dir = tempdir(), ...)
+load_cytoset_from_fcs(
+  files = NULL,
+  path = ".",
+  pattern = NULL,
+  phenoData = NULL,
+  descriptions,
+  name.keyword,
+  transformation = "linearize",
+  which.lines = NULL,
+  alter.names = FALSE,
+  column.pattern = NULL,
+  invert.pattern = FALSE,
+  decades = 0,
+  is_h5 = FALSE,
+  min.limit = NULL,
+  truncate_max_range = TRUE,
+  dataset = NULL,
+  emptyValue = TRUE,
+  num_threads = 1,
+  ignore.text.offset = FALSE,
+  sep = "\\t",
+  as.is = TRUE,
+  name,
+  h5_dir = tempdir(),
+  ...
+)
 }
 \arguments{
 \item{files}{Optional character vector with filenames.}
@@ -109,10 +128,11 @@ is not \code{NULL}, then the file names are obtained by calling
 \code{dir(path, pattern)}.
 }
 \seealso{
-Other cytoframe/cytoset IO functions: \code{\link{cf_get_h5_file_path}},
-  \code{\link{cf_write_h5}},
-  \code{\link{cs_get_h5_file_path}},
-  \code{\link{load_cytoframe_from_fcs}},
-  \code{\link{load_cytoframe_from_h5}}
+Other cytoframe/cytoset IO functions: 
+\code{\link{cf_get_h5_file_path}()},
+\code{\link{cf_write_h5}()},
+\code{\link{cs_get_h5_file_path}()},
+\code{\link{load_cytoframe_from_fcs}()},
+\code{\link{load_cytoframe_from_h5}()}
 }
 \concept{cytoframe/cytoset IO functions}

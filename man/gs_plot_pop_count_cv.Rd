@@ -7,8 +7,7 @@
 \usage{
 gh_plot_pop_count_cv(x, path = "auto", ...)
 
-gs_plot_pop_count_cv(x, scales = list(x = list(rot = 90)),
-  path = "auto", ...)
+gs_plot_pop_count_cv(x, scales = list(x = list(rot = 90)), path = "auto", ...)
 }
 \arguments{
 \item{x}{A \code{GatingHierarchy} from or a \code{GatingSet}.}

@@ -6,8 +6,13 @@
 \alias{flowjo_flog}
 \title{flog transform function}
 \usage{
-flowjo_log_trans(decade = 4.5, offset = 1, scale = 1, n = 6,
-  equal.space = FALSE)
+flowjo_log_trans(
+  decade = 4.5,
+  offset = 1,
+  scale = 1,
+  n = 6,
+  equal.space = FALSE
+)
 }
 \arguments{
 \item{decade}{total number of decades (i.e. log(max)-log(min)}

@@ -16,10 +16,11 @@ Return the file path of the underlying h5 file
 For the in-memory version of cytoframe, it returns an empty string. This can be used to check whether it is on-disk format.
 }
 \seealso{
-Other cytoframe/cytoset IO functions: \code{\link{cf_write_h5}},
-  \code{\link{cs_get_h5_file_path}},
-  \code{\link{load_cytoframe_from_fcs}},
-  \code{\link{load_cytoframe_from_h5}},
-  \code{\link{load_cytoset_from_fcs}}
+Other cytoframe/cytoset IO functions: 
+\code{\link{cf_write_h5}()},
+\code{\link{cs_get_h5_file_path}()},
+\code{\link{load_cytoframe_from_fcs}()},
+\code{\link{load_cytoframe_from_h5}()},
+\code{\link{load_cytoset_from_fcs}()}
 }
 \concept{cytoframe/cytoset IO functions}

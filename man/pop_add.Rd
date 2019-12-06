@@ -20,8 +20,7 @@ pop_add(gate, gh, ...)
 
 \method{pop_add}{quadGate}(gate, gh, names = NULL, ...)
 
-\method{pop_add}{logical}(gate, gh, parent, name, recompute,
-  cluster_method_name = NULL, ...)
+\method{pop_add}{logical}(gate, gh, parent, name, recompute, cluster_method_name = NULL, ...)
 
 \method{pop_add}{factor}(gate, gh, name = NULL, ...)
 

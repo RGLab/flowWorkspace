@@ -7,11 +7,23 @@
 \alias{getNodes,GatingSet-method}
 \title{Get the names of all nodes from a gating hierarchy.}
 \usage{
-gs_get_pop_paths(x, y = NULL, order = "regular", path = "full",
-  showHidden = FALSE, ...)
+gs_get_pop_paths(
+  x,
+  y = NULL,
+  order = "regular",
+  path = "full",
+  showHidden = FALSE,
+  ...
+)
 
-gh_get_pop_paths(x, y = NULL, order = "regular", path = "full",
-  showHidden = FALSE, ...)
+gh_get_pop_paths(
+  x,
+  y = NULL,
+  order = "regular",
+  path = "full",
+  showHidden = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{A \code{GatingSet} Assuming the gating hierarchy are identical within the \code{GatingSet}, the Gating tree of the first sample is used to query the node information.}

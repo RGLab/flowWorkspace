@@ -11,8 +11,15 @@
 \usage{
 gs_pop_get_stats(x, ...)
 
-gh_pop_get_stats(x, nodes = NULL, type = "count", xml = FALSE,
-  inverse.transform = FALSE, stats.fun.arg = list(), ...)
+gh_pop_get_stats(
+  x,
+  nodes = NULL,
+  type = "count",
+  xml = FALSE,
+  inverse.transform = FALSE,
+  stats.fun.arg = list(),
+  ...
+)
 }
 \arguments{
 \item{x}{a GatingSet or GatingHierarchy}

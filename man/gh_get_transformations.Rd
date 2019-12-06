@@ -6,8 +6,13 @@
 \alias{getTransformations,GatingHierarchy-method}
 \title{Return a list of transformations or a transformation in a GatingHierarchy}
 \usage{
-gh_get_transformations(x, channel = NULL, inverse = FALSE,
-  only.function = TRUE, ...)
+gh_get_transformations(
+  x,
+  channel = NULL,
+  inverse = FALSE,
+  only.function = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{A \code{GatingHierarchy} object}

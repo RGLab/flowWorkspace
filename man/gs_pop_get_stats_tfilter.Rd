@@ -7,9 +7,15 @@
 \usage{
 gs_pop_get_stats_tfilter(x, ...)
 
-gh_pop_get_stats_tfilter(x, nodes = NULL, type = "count",
-  inverse.transform = FALSE, stats.fun.arg = list(), tfilter = NULL,
-  ...)
+gh_pop_get_stats_tfilter(
+  x,
+  nodes = NULL,
+  type = "count",
+  inverse.transform = FALSE,
+  stats.fun.arg = list(),
+  tfilter = NULL,
+  ...
+)
 }
 \arguments{
 \item{nodes}{the character vector specifies the populations of interest. default is all available nodes}

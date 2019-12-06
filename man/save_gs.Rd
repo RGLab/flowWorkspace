@@ -7,10 +7,9 @@
 \alias{load_gslist}
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
-save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"),
-  ...)
+save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"), ...)
 
-load_gs(path, h5_readonly = TRUE)
+load_gs(path, h5_readonly = TRUE, select = character())
 
 save_gslist(gslist, path, ...)
 
@@ -26,6 +25,8 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.}
 \item{...}{other arguments: not used.}
 
 \item{h5_readonly}{whether to open h5 data as read-only. Default is TRUE}
+
+\item{select}{an integer or character vector to select a subset of samples to load}
 
 \item{gslist}{A \code{GatingSetList}}
 

@@ -21,7 +21,7 @@ will result in a reflection in that dimension.}
 \item{...}{not used}
 }
 \description{
-Simplified geometric scaling of gates associated with nodes
+
 }
 \details{
 This method allows uniform or non-uniform geometric scaling of filter types defined by simple geometric gates 
