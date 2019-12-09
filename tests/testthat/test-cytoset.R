@@ -40,6 +40,10 @@ test_that("[[", {
       fr1 <- fs[[sn, chnls]]
       is_equal_flowFrame(fr1, fr)
       
+      # Test graceful handling of bad subscripts
+      expect_error(cs[[-2]], "subscript out of bounds")
+      expect_error(cs[[c(2,4)]], "subscript out of bounds")
+      
     })
 
 test_that("cytoset_to_flowSet", {
@@ -76,6 +80,12 @@ test_that("[", {
       cs1 <- cs[, 1:2]
       expect_equal(colnames(cs1), chnls[1:2])
       expect_equal(colnames(cs), chnls)
+      
+      #Test negative subscripts
+      cs1 <- flowSet_to_cytoset(GvHD)
+      expect_equal(sampleNames(cs1[-c(3,7,11)]), sampleNames(cs1)[-c(3,7,11)])
+      expect_error(cs1[c(-3, 7, -11)], "Cannot mix positive and negative subscripts")
+      
     })
 
 test_that("subset", {
@@ -111,6 +121,10 @@ test_that("[[<-", {
   cs1[[sn]] <- fr
   is_equal_flowFrame(cf, fr)
   is_equal_flowFrame(cs1[[sn]], fr)
+  
+  #test graceful handling of bad subscripts
+  expect_error(cs1[[-5]]<-fr, "subscript out of bounds")
+  expect_error(cs1[[c(2,3)]]<-fr, "subscript out of bounds")
   
 })
 

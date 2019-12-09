@@ -501,7 +501,8 @@ setMethod("[[",
             returnType <- match.arg(returnType)
             if(missing(j))
               j <- NULL
-            
+            if(length(i) != 1 || i <= 0)
+            	stop("subscript out of bounds (index must have length 1 and be positive)")
             fr <- get_cytoframe_from_cs(x, i, j, use.exprs)
             if(returnType == "flowFrame")
               fr <- cytoframe_to_flowFrame(fr)
@@ -515,9 +516,8 @@ setReplaceMethod("[[",
 	  definition=function(x, i, j, ..., value)
 	  {
 	    
-		  if(length(i) != 1)
-			  stop("subscript out of bounds (index must have ",
-					  "length 1)")
+	  	if(length(i) != 1 || i <= 0)
+	  		stop("subscript out of bounds (index must have length 1 and be positive)")
 		  cnx <- colnames(x)
 		  cnv <- colnames(value)
 		  if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
@@ -684,11 +684,18 @@ setMethod("[",
   
 		if(missing(i))
 		  i <- NULL
-    if(missing(j))
-      j <- NULL
-    x <- shallow_copy(x)
-    subset_cytoset(x@pointer, i, j)
-    x
+		else if(any(i < 0)){
+			if(!all(i <= 0)){
+				stop("Cannot mix positive and negative subscripts")
+			}
+			i <- (1:length(cs))[i]
+		}
+			
+	    if(missing(j))
+	      j <- NULL
+	    x <- shallow_copy(x)
+	    subset_cytoset(x@pointer, i, j)
+	    x
 	})
 
 # Dispatching to the flowSet-version of fsApply by changing simplify default value from TRUE from FALSE
