@@ -688,7 +688,7 @@ setMethod("[",
 			if(!all(i <= 0)){
 				stop("Cannot mix positive and negative subscripts")
 			}
-			i <- (1:length(cs))[i]
+			i <- (1:length(x))[i]
 		}
 			
 	    if(missing(j))
