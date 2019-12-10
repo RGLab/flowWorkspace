@@ -186,6 +186,17 @@ test_that("subset.GatingSet",{
   expect_equal(length(gs_sub), 5)
 })
 
+test_that("Adding subpopulation off empty population", {
+	gs_scratch <- GatingSet(GvHD)
+	empty_gate <- rectangleGate(filterId="emptyGate", list("FL1-H"=c(2500, 5000), "FL2-H"=c(5000, 7500)))
+	gs_pop_add(gs_scratch, empty_gate, parent= "root")
+	extra_gate <- rectangleGate(filterId="extraGate", list("FL3-H"=c(0, 300), "FL2-A"=c(0, 250)))
+	gs_pop_add(gs_scratch, extra_gate, parent="emptyGate")
+	recompute(gs_scratch)
+	expectRes <- readRDS(file.path(resultDir, "empty_pop.rds"))
+	expect_equal(gs_pop_get_stats(gs_scratch), expectRes)
+})
+
 test_that("gs_pop_get_gate for gs",{
       
       thisRes <- gs_pop_get_gate(gs, "CD3+")
