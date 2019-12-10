@@ -23,7 +23,7 @@ test_that("save GatingSet to archive",
       expect_that(gs, is_a("GatingSet"))
       expect_setequal(colnames(pData(gs)), colnames(pd))
       expect_message(save_gs(gs, path = tmp), "Done")
-      expect_error(save_gs(gs[1], path = tmp), "doesn't match")
+      expect_error(save_gs(gs[1], path = tmp), "doesn't match", class = "std::domain_error")
 
       cdf <- list.files(tmp, ".h5", full.names = TRUE)
       expect_equal(identifier(gs), id)
@@ -33,10 +33,10 @@ test_that("save GatingSet to archive",
       #restore id
       identifier(gs) <- id
       file.copy(cdf, file.path(tmp, "redundant.nc"))
-      expect_error(save_gs(gs, path = tmp), "Not a valid")
+      expect_error(save_gs(gs, path = tmp), "Not a valid", class = "std::domain_error")
       
-      expect_error(colnames(gs_cyto_data(gs))[1] <- "dd" , "read-only")
-      expect_error(exprs(get_cytoframe_from_cs(gs_cyto_data(gs), 1))[1,1] <- 0, "read-only")
+      expect_error(colnames(gs_cyto_data(gs))[1] <- "dd" , "read-only", class = "std::domain_error")
+      expect_error(exprs(get_cytoframe_from_cs(gs_cyto_data(gs), 1))[1,1] <- 0, "read-only", class = "std::domain_error")
     
     })
 ## it is placed here because trans may get cleared later on by cloning process

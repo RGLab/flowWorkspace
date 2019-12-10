@@ -60,7 +60,7 @@ test_that("write permission", {
   rm(cf1)
   invisible(gc())
   cf2 <- load_cytoframe_from_h5(h5file)
-  expect_error(exprs(cf2)[1,1] <- 2, "read-only")
+  expect_error(exprs(cf2)[1,1] <- 2, "read-only", class = "std::domain_error")
   cf_unlock(cf2)
   exprs(cf2)[1,1] <- 2
   expect_equivalent(exprs(cf2)[1,1], 2)
@@ -87,8 +87,8 @@ test_that("lock", {
   expect_equivalent(exprs(cf1)[1,1], 3)
   #lock it
   cf_lock(cf1)
-  expect_error(exprs(cf1)[1,1] <- 4, "read-only")
-  expect_error(keyword(cf1)[["TUBE NAME"]] <- "dd", "read-only")
+  expect_error(exprs(cf1)[1,1] <- 4, "read-only", class = "std::domain_error")
+  expect_error(keyword(cf1)[["TUBE NAME"]] <- "dd", "read-only", class = "std::domain_error")
   expect_equivalent(exprs(cf1)[1,1], 3)
   cf_unlock(cf1)
   exprs(cf1)[1,1] <- 4
@@ -134,8 +134,8 @@ test_that("exprs<-", {
   expect_true(all(exprs(cf1)[1:10, 1:10] == 0))
   expect_false(all(exprs(cf)[1:10, 1:10] == 0))
   
-  expect_error(exprs(cf1) <- exprs(cf1)[1:10, ] , "size")
-  expect_error(exprs(cf1) <- exprs(cf1)[, 1:2] , "size")
+  expect_error(exprs(cf1) <- exprs(cf1)[1:10, ] , "size", class = "std::domain_error")
+  expect_error(exprs(cf1) <- exprs(cf1)[, 1:2] , "size", class = "std::domain_error")
   
 })
 
@@ -169,7 +169,7 @@ test_that("colnames<-", {
       #TODO:change the order of colnames
       coln <- colnames(cf1)
       cf2 <- cf1[, coln[2:1]]
-      expect_error(colnames(cf2) <- newColNames, "colname already exists")
+      expect_error(colnames(cf2) <- newColNames, "colname already exists", class = "std::domain_error")
       cf_swap_colnames(cf2, "c1", "c2")
       expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N")]), rev(newColNames))
     })

@@ -14,7 +14,7 @@ test_that("GatingSetList constructor", {
       #different colnames
       chnnls <- colnames(gs_cyto_data(gs_clone))
       chnnls[1] <- "FSC-H" 
-      expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "already")
+      expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "already", class = "std::domain_error")
       chnnls[1] <- "F" 
       colnames(gs_cyto_data(gs_clone)) <- chnnls
       expect_error(GatingSetList(list(gs, gs_clone)), "colnames of flowSets don't match")
@@ -181,7 +181,7 @@ test_that("save_gslist /load_gslist", {
       expect_true(setequal(list.files(tmp), expectRes))
       
       # can't cp the h5 file to the dest tmp since it is already present
-      expect_error(save_gslist(gslist, tmp), regexp = "File exists")
+      expect_error(save_gslist(gslist, tmp), regexp = "File exists", class = "boost::filesystem::filesystem_error")
       # set cdf flag to skip h5
       expect_message(save_gslist(gslist, tmp, cdf = "skip"), regexp = "Done")
       expect_true(setequal(list.files(tmp), expectRes))

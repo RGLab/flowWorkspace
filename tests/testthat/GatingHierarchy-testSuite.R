@@ -8,10 +8,10 @@ test_that(".isCompensated",
 test_that("getNodeInd ",{
       
       #invalid numeric indexing
-      expect_error(flowWorkspace:::.getNodeInd(gh, 2), "string")
+      expect_error(flowWorkspace:::.getNodeInd(gh, 2), "string", class = "Rcpp::not_compatible")
       
       #invalid node name
-      expect_error(flowWorkspace:::.getNodeInd(gh, "singlet"), "singlet not found")
+      expect_error(flowWorkspace:::.getNodeInd(gh, "singlet"), "singlet not found", class = "std::domain_error")
       
       #valid unique node name
       expect_equal(flowWorkspace:::.getNodeInd(gh, "singlets"), 3)
@@ -29,10 +29,10 @@ test_that("getNodeInd ",{
       expect_equal(flowWorkspace:::.getNodeInd(gh, "CD8/38- DR+"), 15)
       
       #non-unqiue partial path
-      expect_error(flowWorkspace:::.getNodeInd(gh, "/38- DR+"), "not found")
+      expect_error(flowWorkspace:::.getNodeInd(gh, "/38- DR+"), "not found", class = "std::domain_error")
       
       #non-unique node name indexing
-      expect_error(flowWorkspace:::.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree")
+      expect_error(flowWorkspace:::.getNodeInd(gh, "38- DR+"), "is ambiguous within the gating tree", class = "std::domain_error")
       
       #dealing with root
       expect_equal(flowWorkspace:::.getNodeInd(gh, "/not debris"), 2)
@@ -214,9 +214,9 @@ test_that("gs_pop_get_parent",{
       
       expect_equal(gs_pop_get_parent(gh, "not debris/singlets"), "/not debris")
       
-      expect_error(gs_pop_get_parent(gh, "singlet"), "singlet not found")
+      expect_error(gs_pop_get_parent(gh, "singlet"), "singlet not found", class = "std::domain_error")
       
-      expect_error(gs_pop_get_parent(gh, "root"), "0 :parent not found!")
+      expect_error(gs_pop_get_parent(gh, "root"), "0 :parent not found!", class = "std::domain_error")
       
     })
 
@@ -228,9 +228,9 @@ test_that("gs_pop_get_children",{
       expect_equal(gs_pop_get_children(gh, "singlets"), "/not debris/singlets/CD3+")
       
       
-      expect_error(gs_pop_get_children(gh, "singlet"), "singlet not found")
+      expect_error(gs_pop_get_children(gh, "singlet"), "singlet not found", class = "std::domain_error")
       
-      expect_error(gs_pop_get_children(gh, "38- DR+"), "ambiguous")
+      expect_error(gs_pop_get_children(gh, "38- DR+"), "ambiguous", class = "std::domain_error")
       
       expect_equal(gs_pop_get_children(gh, "CD4/38- DR+"), character(0))
       
@@ -244,9 +244,9 @@ test_that("gs_pop_get_children",{
 
 test_that(".getPopStat",{
       
-      expect_error(flowWorkspace:::.getPopStat(gh, 3), "string")
+      expect_error(flowWorkspace:::.getPopStat(gh, 3), "string", class = "Rcpp::not_compatible")
       
-      expect_error(flowWorkspace:::.getPopStat(gh, "singlet"), "not found")
+      expect_error(flowWorkspace:::.getPopStat(gh, "singlet"), "not found", class = "std::domain_error")
       
       expect_equal(flowWorkspace:::.getPopStat(gh, "singlets"), list(openCyto = c(percent = 9.487789e-01, count = 8.702200e+04)
                                             , xml = c(percent = 9.488988e-01, count = 8.703300e+04)
@@ -270,7 +270,7 @@ test_that("gh_pop_get_proportion",{
       
       expect_equal(gh_pop_get_proportion(gh, "singlets", xml = TRUE), 0.9488988, tol = 1e-7)
       
-      expect_error(gh_pop_get_proportion(gh, "singlet"), "singlet not found")
+      expect_error(gh_pop_get_proportion(gh, "singlet"), "singlet not found", class = "std::domain_error")
     })      
 
 test_that("gh_pop_get_count",{
@@ -281,7 +281,7 @@ test_that("gh_pop_get_count",{
       
       expect_equal(gh_pop_get_stats(gh, "singlets", xml = TRUE)[[2]], 87033)
       
-      expect_error(gh_pop_get_stats(gh, "singlet"), "singlet not found")
+      expect_error(gh_pop_get_stats(gh, "singlet"), "singlet not found", class = "std::domain_error")
     })      
 
 

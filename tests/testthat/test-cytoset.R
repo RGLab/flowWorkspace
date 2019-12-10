@@ -175,7 +175,7 @@ test_that("sampleNames<-", {
       is_equal_flowFrame(cs[sn][[1]], nc[[1]])
 
       newNames <- c("s2", "s2")
-      expect_error(sampleNames(nc) <- newNames, "exists")
+      expect_error(sampleNames(nc) <- newNames, "exists", class = "std::range_error")
 
       #replace the single subsetted fs
       nc <- nc["s2"]
@@ -203,7 +203,7 @@ test_that("colnames<-", {
       colnames(nc) <- newColNames
       newColNames <- rev(newColNames)
       expect_equivalent(unlist(keyword(nc[[1]])[c("$P1N", "$P2N")]), newColNames)
-      expect_error(colnames(nc) <- newColNames, "colname already exists")
+      expect_error(colnames(nc) <- newColNames, "colname already exists", class = "std::domain_error")
       cs_swap_colnames(nc, "c1", "c2")
       expect_equal(colnames(nc), newColNames)
       
