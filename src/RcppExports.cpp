@@ -639,14 +639,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// shallow_copy_cytoframe
-Rcpp::XPtr<CytoFrameView> shallow_copy_cytoframe(Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_shallow_copy_cytoframe(SEXP frSEXP) {
+// copy_view_cytoframe
+Rcpp::XPtr<CytoFrameView> copy_view_cytoframe(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_copy_view_cytoframe(SEXP frSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    rcpp_result_gen = Rcpp::wrap(shallow_copy_cytoframe(fr));
+    rcpp_result_gen = Rcpp::wrap(copy_view_cytoframe(fr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -941,14 +941,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// shallow_copy_cytoset
-Rcpp::XPtr<GatingSet> shallow_copy_cytoset(Rcpp::XPtr<GatingSet> cs);
-RcppExport SEXP _flowWorkspace_shallow_copy_cytoset(SEXP csSEXP) {
+// copy_view_cytoset
+Rcpp::XPtr<GatingSet> copy_view_cytoset(Rcpp::XPtr<GatingSet> cs);
+RcppExport SEXP _flowWorkspace_copy_view_cytoset(SEXP csSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
-    rcpp_result_gen = Rcpp::wrap(shallow_copy_cytoset(cs));
+    rcpp_result_gen = Rcpp::wrap(copy_view_cytoset(cs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1146,7 +1146,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cf_load_meta", (DL_FUNC) &_flowWorkspace_cf_load_meta, 1},
     {"_flowWorkspace_get_h5_file_path", (DL_FUNC) &_flowWorkspace_get_h5_file_path, 1},
     {"_flowWorkspace_realize_view_cytoframe", (DL_FUNC) &_flowWorkspace_realize_view_cytoframe, 2},
-    {"_flowWorkspace_shallow_copy_cytoframe", (DL_FUNC) &_flowWorkspace_shallow_copy_cytoframe, 1},
+    {"_flowWorkspace_copy_view_cytoframe", (DL_FUNC) &_flowWorkspace_copy_view_cytoframe, 1},
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
     {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
@@ -1172,7 +1172,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_fcs_to_cytoset", (DL_FUNC) &_flowWorkspace_fcs_to_cytoset, 4},
     {"_flowWorkspace_get_colnames", (DL_FUNC) &_flowWorkspace_get_colnames, 1},
     {"_flowWorkspace_realize_view_cytoset", (DL_FUNC) &_flowWorkspace_realize_view_cytoset, 2},
-    {"_flowWorkspace_shallow_copy_cytoset", (DL_FUNC) &_flowWorkspace_shallow_copy_cytoset, 1},
+    {"_flowWorkspace_copy_view_cytoset", (DL_FUNC) &_flowWorkspace_copy_view_cytoset, 1},
     {"_flowWorkspace_subset_cytoset_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoset_by_rows, 3},
     {"_flowWorkspace_subset_cytoset", (DL_FUNC) &_flowWorkspace_subset_cytoset, 3},
     {"_flowWorkspace_get_cytoframe", (DL_FUNC) &_flowWorkspace_get_cytoframe, 3},

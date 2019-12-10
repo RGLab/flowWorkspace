@@ -96,7 +96,7 @@ test_that("subset", {
     })
 
 test_that("copy", {
-  cs1 <- shallow_copy(cs)
+  cs1 <- copy_view(cs)#or cs[]
   expect_equal(cs_get_h5_file_path(cs1), cs_get_h5_file_path(cs))
   
   cs1 <- realize_view(cs)

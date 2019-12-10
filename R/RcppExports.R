@@ -251,8 +251,8 @@ realize_view_cytoframe <- function(fr, filename) {
     .Call(`_flowWorkspace_realize_view_cytoframe`, fr, filename)
 }
 
-shallow_copy_cytoframe <- function(fr) {
-    .Call(`_flowWorkspace_shallow_copy_cytoframe`, fr)
+copy_view_cytoframe <- function(fr) {
+    .Call(`_flowWorkspace_copy_view_cytoframe`, fr)
 }
 
 subset_cytoframe_by_rows <- function(fr, idx) {
@@ -357,8 +357,8 @@ realize_view_cytoset <- function(cs, path) {
     .Call(`_flowWorkspace_realize_view_cytoset`, cs, path)
 }
 
-shallow_copy_cytoset <- function(cs) {
-    .Call(`_flowWorkspace_shallow_copy_cytoset`, cs)
+copy_view_cytoset <- function(cs) {
+    .Call(`_flowWorkspace_copy_view_cytoset`, cs)
 }
 
 subset_cytoset_by_rows <- function(cs, sn, idx) {

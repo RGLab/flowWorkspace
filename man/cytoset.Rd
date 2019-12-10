@@ -292,14 +292,6 @@ documentation for details.
   set. See separate documentation for details.
 }
 
-\item{shallow_copy}{Returns a new \code{cytoset} that points to the same
-underlying data as the original
-  
-\emph{Usage:}
-    
-\code{shallow_copy(cytoset)}
-  
-}
 \item{realize_view}{Returns a new \code{cytoset} with its own copy of the
 underlying data (a deep copy). The optional \code{filepath} argument accepts
 a string to specify a full directory name for storing the new copies of the data 

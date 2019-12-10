@@ -38,7 +38,7 @@ Rcpp::XPtr<CytoFrameView> realize_view_cytoframe(Rcpp::XPtr<CytoFrameView> fr, s
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<CytoFrameView> shallow_copy_cytoframe(Rcpp::XPtr<CytoFrameView> fr)
+Rcpp::XPtr<CytoFrameView> copy_view_cytoframe(Rcpp::XPtr<CytoFrameView> fr)
 {
   return XPtr<CytoFrameView>(new CytoFrameView(*fr));
 }

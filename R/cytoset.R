@@ -292,14 +292,6 @@ NULL
 #'   set. See separate documentation for details.
 #' }
 #' 
-#' \item{shallow_copy}{Returns a new \code{cytoset} that points to the same
-#' underlying data as the original
-#'   
-#' \emph{Usage:}
-#'     
-#' \code{shallow_copy(cytoset)}
-#'   
-#' }
 #' \item{realize_view}{Returns a new \code{cytoset} with its own copy of the
 #' underlying data (a deep copy). The optional \code{filepath} argument accepts
 #' a string to specify a full directory name for storing the new copies of the data 
@@ -693,7 +685,7 @@ setMethod("[",
 			
 	    if(missing(j))
 	      j <- NULL
-	    x <- shallow_copy(x)
+	    x <- copy_view(x)
 	    subset_cytoset(x@pointer, i, j)
 	    x
 	})
@@ -752,7 +744,7 @@ setMethod("Subset",
               used <- nn
             
             
-            cs = shallow_copy(x)
+            cs = copy_view(x)
             for(sn in used)
             {
               
@@ -785,9 +777,9 @@ subset.cytoset <- function (x, subset, ...)
 	
 	x[as.character(rownames(pd[r, ]))]
 }
-#' @export 
-shallow_copy.cytoset <- function(x){
-  new("cytoset", pointer = shallow_copy_cytoset(x@pointer))
+
+copy_view.cytoset <- function(x){
+  new("cytoset", pointer = copy_view_cytoset(x@pointer))
 }
 #' @export 
 realize_view.cytoset <- function(x, filepath = tempdir()){

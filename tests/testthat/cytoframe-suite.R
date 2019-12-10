@@ -104,7 +104,7 @@ test_that("lock", {
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.old)
   
   #shallow cp
-  cf1 <- shallow_copy(cf)
+  cf1 <- copy_view(cf)
 })
 
 
@@ -118,7 +118,7 @@ test_that("[", {
     })
 
 test_that("copy", {
-  cf1 <- shallow_copy(cf)
+  cf1 <- copy_view(cf)
   expect_equal(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf))  
   
   cf1 <- realize_view(cf)

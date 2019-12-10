@@ -332,14 +332,6 @@
 #'     \code{   spillover(cytoframe)}
 #'     
 #'     }
-#'   \item{shallow_copy}{Returns a new \code{cytoframe} that points to the same
-#'   underlying data as the original
-#'   
-#'     \emph{Usage:}
-#'     
-#'     \code{shallow_copy(cytoframe)}
-#'   
-#'   }
 #'   \item{realize_view}{Returns a new \code{cytoframe} with its own copy of the
 #'   underlying data (a deep copy). The optional \code{filepath} argument accepts
 #'   a string to specify a full filename for storing the new copy of the data in h5
@@ -411,19 +403,17 @@ realize_view.cytoframe <- function(x, filepath = tempfile(fileext = ".h5")){
   new("cytoframe", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
 }
 
-#' @export
-shallow_copy <- function(x, ...)UseMethod("shallow_copy")
+copy_view <- function(x, ...)UseMethod("copy_view")
 
-#' @export 
-shallow_copy.cytoframe <- function(x){
-  new("cytoframe", pointer = shallow_copy_cytoframe(x@pointer), use.exprs = TRUE)
+copy_view.cytoframe <- function(x){
+  new("cytoframe", pointer = copy_view_cytoframe(x@pointer), use.exprs = TRUE)
 }
 
 setMethod("[",
     signature=signature(x="cytoframe"),
     definition=function(x, i, j, ..., drop=FALSE)
     {
-      fr <- shallow_copy(x)
+      fr <- copy_view(x)
       if(drop)
         warning("Argument 'drop' ignored for subsetting of flowFrame")
       msg <- "Subset out of bounds"

@@ -401,7 +401,7 @@ colnames(cf1)[1] <- "t"
 colnames(cf)[1] # The change affects the original cf object
 ```
 
-### Views/Shallow Copy
+### Views
 
 Extracting a subset of a `cytoframe` is not computationally intensive, as it merely constructs a view of the data of the original `cytoframe`. However, both objects still share the same underlying pointer to all of the data and thus changes to a view will affect the data of the original `cytoframe`.
 
@@ -412,9 +412,9 @@ exprs(cf)[2,3]
 exprs(cf1)[2,2] <- 0 # data change affects the orignal cf
 exprs(cf)[2,3]
 ```
-To perform a shallow copy of an entire `cytoframe`, use the `shallow_copy` method rather than the `<-` operator. This will ensure that a new view is created to the full underlying dataset.
+To construct a new view of an entire `cytoframe`, use the `[]` method rather than the `<-` operator. This will ensure that a new view is created to the full underlying dataset.
 ```{r shallow_cf}
-cf1 <- shallow_copy(cf)
+cf1 <- cf[]
 ```
 
 ### Deep Copy
@@ -499,7 +499,7 @@ Alternatively, if it is easier to remember, `get_cytoframe_from_cs` will accompl
 sub_cf <- get_cytoframe_from_cs(cs,1)
 ```
 
-Finally, the `shallow_copy()` and `realize_view()` methods work in a similar manner for `cytoset` objects as `cytoframe` objects. `shallow_copy()` will return a view in to the original data while `realize_view()` will perform a deep copy.
+Finally, the `[]` and `realize_view()` methods work in a similar manner for `cytoset` objects as `cytoframe` objects. `[]` will return a view in to the original data while `realize_view()` will perform a deep copy.
 
 ## Troubleshooting and error reporting
 If this package is throwing errors when parsing your workspace, contact the package author by emails for post an issue on https://github.com/RGLab/flowWorkspace/issues. If you can send your workspace by email, we can test, debug, and fix the package so that it works for you. Our goal is to provide a tool that works, and that people find useful.
