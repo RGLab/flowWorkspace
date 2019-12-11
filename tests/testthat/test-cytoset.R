@@ -86,6 +86,9 @@ test_that("[", {
       expect_equal(sampleNames(cs1[-c(3,7,11)]), sampleNames(cs1)[-c(3,7,11)])
       expect_error(cs1[c(-3, 7, -11)], "Cannot mix positive and negative subscripts")
       
+      #edge cases
+      ridx <- sapply(sampleNames(fs), function(sn)return(F), simplify = FALSE)
+      expect_equal(fsApply(Subset(cs, ridx), nrow), list(0,0))
     })
 
 test_that("subset", {

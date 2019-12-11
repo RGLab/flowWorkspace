@@ -115,7 +115,16 @@ test_that("[", {
       #nc1 and nc share the cdf file
       expect_equal(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf))
 
-    })
+      #edge case
+      idx <- integer()
+      expect_equal(nrow(cf1[idx, ]), 0)#empty rows
+      expect_equal(ncol(cf1[idx, ]), 2)
+      expect_equal(ncol(cf1[, idx]), 0)#empty cols
+      
+      expect_equal(nrow(realize_view(cf1[idx, ])), 0)
+      expect_equal(ncol(realize_view(cf1[idx, ])), 2)
+      expect_equal(ncol(realize_view(cf1[, idx])), 0)
+})
 
 test_that("copy", {
   cf1 <- copy_view(cf)
