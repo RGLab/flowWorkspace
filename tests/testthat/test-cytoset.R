@@ -91,7 +91,7 @@ test_that("[", {
       expect_equivalent(fsApply(Subset(cs, ridx), nrow, simplify = F), list(0,0))
       #Test negative subsetting of columns for cytoset and cytoframe
       expect_equal(colnames(cs1[,-c(3,5)]), colnames(cs1)[-c(3,5)])
-      cf1 <- cs1[[1]]
+      cf1 <- cs1[[1, returnType="cytoframe"]]
       expect_equal(colnames(cf1[,-c(2,4)]), colnames(cf1)[-c(2,4)])
       
     })
