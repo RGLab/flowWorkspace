@@ -86,6 +86,11 @@ test_that("[", {
       expect_equal(sampleNames(cs1[-c(3,7,11)]), sampleNames(cs1)[-c(3,7,11)])
       expect_error(cs1[c(-3, 7, -11)], "Cannot mix positive and negative subscripts")
       
+      #Test negative subsetting of columns for cytoset and cytoframe
+      expect_equal(colnames(cs1[,-c(3,5)]), colnames(cs1)[-c(3,5)])
+      cf1 <- cs1[[1]]
+      expect_equal(colnames(cf1[,-c(2,4)]), colnames(cf1)[-c(2,4)])
+      
     })
 
 test_that("subset", {

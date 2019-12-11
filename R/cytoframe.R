@@ -427,8 +427,15 @@ setMethod("[",
             stop(msg, call.=FALSE)
         }
             
-        if(is.numeric(j)||is.integer(j))    
-          subset_cytoframe_by_cols(fr@pointer, j - 1)
+        if(is.numeric(j)||is.integer(j)){
+        	if(any(j < 0)){
+        		if(!all(j <= 0)){
+        			stop("Cannot mix positive and negative subscripts")
+        		}
+        		j <- (1:length(colnames(x)))[j]
+        	}
+        	subset_cytoframe_by_cols(fr@pointer, j - 1)
+        }    
         else
           stop("invalid j index!")
       }
