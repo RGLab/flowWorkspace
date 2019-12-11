@@ -685,6 +685,14 @@ setMethod("[",
 			
 	    if(missing(j))
 	      j <- NULL
+	    if(is.numeric(j)||is.integer(j)){
+	    	if(any(j < 0)){
+	    		if(!all(j <= 0)){
+	    			stop("Cannot mix positive and negative subscripts")
+	    		}
+	    		j <- (1:length(colnames(x)))[j]
+	    	}
+	    }
 	    x <- copy_view(x)
 	    subset_cytoset(x@pointer, i, j)
 	    x

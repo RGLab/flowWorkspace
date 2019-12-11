@@ -120,7 +120,7 @@ test_that("[", {
       expect_equal(nrow(cf1[idx, ]), 0)#empty rows
       expect_equal(ncol(cf1[idx, ]), 2)
       expect_equal(ncol(cf1[, idx]), 0)#empty cols
-      
+      # cf1[idx, idx]
       expect_equal(nrow(realize_view(cf1[idx, ])), 0)
       expect_equal(ncol(realize_view(cf1[idx, ])), 2)
       expect_equal(ncol(realize_view(cf1[, idx])), 0)
