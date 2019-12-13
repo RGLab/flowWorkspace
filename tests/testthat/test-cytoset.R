@@ -6,6 +6,39 @@ suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, is_h5 = TRUE))
 samples <- sampleNames(cs)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
+test_that("save/load", {
+  pd <- pData(cs)
+  pd[["newCol"]] <- "A"
+  pData(cs) <- pd
+  id <- identifier(cs)
+  expect_is(id, "character")
+  tmp <- tempfile()
+  save_cytoset(cs, path = tmp)
+  
+  cs <- load_cytoset(tmp)
+  expect_that(cs, is_a("cytoset"))
+  expect_setequal(colnames(pData(cs)), colnames(pd))
+  expect_message(save_cytoset(cs, path = tmp), "Done")
+  expect_error(save_cytoset(cs[1], path = tmp), "h5 file not matched ")
+  
+  cdf <- list.files(tmp, ".h5", full.names = TRUE)
+  expect_equal(identifier(cs), id)
+  id.new <- "test"
+  identifier(cs) <- id.new
+  expect_equal(identifier(cs), id.new)
+  #restore id
+  identifier(cs) <- id
+  # file.copy(cdf, file.path(tmp, "redundant.nc"))
+  # expect_error(save_cytoset(cs, path = tmp), "Not a valid", class = "std::domain_error")
+  
+  expect_error(colnames(cs)[1] <- "dd" , "read-only", class = "std::domain_error")
+  expect_error(exprs(get_cytoframe_from_cs(cs, 1))[1,1] <- 0, "read-only", class = "std::domain_error")
+  
+  cs <- load_cytoset(tmp, h5_readonly = FALSE)
+  colnames(cs)[1] <- "dd"
+  expect_equal(colnames(cs)[1], "dd")
+})
+
 test_that("[[", {
       
       sn <- samples[1]

@@ -841,3 +841,49 @@ cs_flush_meta <- function(cs){
 cs_load_meta <- function(cs){
 	invisible(lapply(cs, cf_load_meta))
 }
+
+#' @title save/load a cytoset to/from disk.
+#'
+#' @description
+#' Save/load a cytoset  to/from the disk.
+#'
+#' @param cs A \code{cytoset}
+#' @param path A character scalar giving the path to save/load the GatingSet to/from.
+#' @param ... other arguments passed to \code{save_gs/load_gs}
+#'
+#'
+#' @return
+#' \code{load_cytoset} returns a cytoset object
+#'
+#'
+#' @examples
+#' \dontrun{
+#' 	#G is a GatingSet
+#' 	save_cytoset(cs, outdir)
+#' 	cs <-load_cytoset(outdir)
+#'
+#'
+#' }
+#' @rdname save_cytoset
+#' @export
+save_cytoset <-function(cs, path, ...){
+  suppressMessages(res <- try(save_gs(cs, path, ...), silent = TRUE))
+  if(class(res) == "try-error")
+  {
+    res <- gsub(" GatingSet", ' cytoset', res)
+    stop(res[[1]])
+  }
+  message("Done\nTo reload it, use 'load_cytoset' function\n")
+  
+  
+}
+
+
+#' @rdname save_cytoset
+#' @export
+load_cytoset<-function(path, ...){
+  gs <- load_gs(path, ...)
+  cs <- gs_cyto_data(gs)
+  identifier(cs) <- identifier(gs)#preserve id
+  cs
+}

@@ -15,6 +15,12 @@ setMethod("identifier",
 			get_gatingset_id(object@pointer)
 		})
 
+setMethod("identifier",
+		signature=signature(object="cytoset"),
+		definition=function (object)
+		{
+			get_gatingset_id(object@pointer)
+		})
 
 #' @importFrom digest digest
 #' @export 
@@ -36,7 +42,13 @@ setReplaceMethod("identifier",
 			set_gatingset_id(object@pointer, value)
 			object
 		})
-
+setReplaceMethod("identifier",
+		signature=signature(object="cytoset"),
+		definition=function (object, value) 
+		{
+			set_gatingset_id(object@pointer, value)
+			object
+		})
 #' @export 
 setReplaceMethod("identifier",
                  signature=signature(object="GatingSetList",

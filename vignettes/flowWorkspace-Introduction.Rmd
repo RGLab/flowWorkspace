@@ -464,6 +464,13 @@ files <- list.files(path, "Cyto", full.names = TRUE)
 cs <- load_cytoset_from_fcs(files, num_threads = 4)
 cs
 ```
+Once constructed, it can be saved/loaded through more efficient archive format. 
+```{r}
+tmp <- tempfile()
+save_cytoset(cs, tmp)
+cs <- load_cytoset(tmp, h5_readonly = FALSE)
+```
+note that `h5_readonly` is set to `TRUE` by default to protect the data from accidental changes. So it has to be turned off explicitly if your want to modify the loaded `cs` 
 
 The accessor methods function the same as they would for a `flowSet`
 ```{r colnames_cs}
