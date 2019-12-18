@@ -19,7 +19,8 @@ test_that("save GatingSet to archive",
       tmp <- tempfile()
       save_gs(gs, path = tmp)
       
-      gs <- load_gs(tmp)
+      expect_silent(gs <- load_gs(tmp))
+      expect_output(gs <- load_gs(tmp, verbose = TRUE), "archived by")
       expect_that(gs, is_a("GatingSet"))
       expect_setequal(colnames(pData(gs)), colnames(pd))
       expect_message(save_gs(gs, path = tmp), "Done")

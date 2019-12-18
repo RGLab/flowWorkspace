@@ -221,8 +221,8 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples) {
-		return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples));
+XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose) {
+		return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose));
 
 }
 

@@ -9,6 +9,7 @@
 #' @param path A character scalar giving the path to save/load the GatingSet to/from.
 #' @param h5_readonly whether to open h5 data as read-only. Default is TRUE
 #' @param select an integer or character vector to select a subset of samples to load
+#' @param verbose logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.
 #' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file.
 #'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
@@ -51,7 +52,7 @@ save_gs<-function(gs, path
 #' @rdname save_gs
 #' @export
 #' @aliases load_gs load_gslist
-load_gs<-function(path, h5_readonly = TRUE, select = character()){
+load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALSE){
   if(length(list.files(path = path, pattern = ".rds")) >0)
   {
     stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
@@ -65,7 +66,7 @@ load_gs<-function(path, h5_readonly = TRUE, select = character()){
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
   }else
     select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_readonly, select.sn))
+  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_readonly, select.sn, verbose))
   
 }
 
