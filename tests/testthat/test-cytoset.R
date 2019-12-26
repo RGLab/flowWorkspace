@@ -156,7 +156,7 @@ test_that("[[<-", {
   exprs(fr)[1:10, 1:10] <- 0
   markernames(fr) <- c("B710-A" = "test")
   
-  expect_identical(normalizePath(file.path(cs_get_h5_file_path(cs1),sn)), h5)
+  expect_identical(normalizePath(file.path(cs_get_h5_file_path(cs1),sn)), normalizePath(h5))
   
   #write flowFrame
   cs1[[sn]] <- fr
