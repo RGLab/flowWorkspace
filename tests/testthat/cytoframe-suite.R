@@ -219,8 +219,19 @@ test_that("keyword<-", {
   expect_equal(keyword(cf2)[names(kw)], kw)
 })
 
-
-
+test_that("keyword setters", {
+  cf1 <- realize_view(cf)
+  #add new
+  cf_keyword_insert(cf1, "k1", 2)
+  expect_error(cf_keyword_insert(cf1, "k1", 2), "exist")
+  #rename
+  cf_keyword_rename(cf1, "k1", "k2")
+  expect_error(cf_keyword_rename(cf1, "k1", "k2"), "not found")
+  expect_equal(keyword(cf1)[["k2"]], "2")
+  #delete
+  cf_keyword_delete(cf1, "k2")
+  expect_error(cf_keyword_delete(cf1, "k2"), "not found")
+})
 # test_that("range", {
 # cf <- flowFrame_to_cytoframe(GvHD[[1]], is_h5 = TRUE)
 #   rng1 <- data.frame("FSC-H" = c(0,1023)

@@ -620,7 +620,7 @@ setMethod("keyword",
       desc <- cf_getKeywords(object@pointer)
 
       if(compact)
-        desc <- kwfilter(desc)
+        desc <- flowCore:::kwfilter(desc)
       desc <- as.list(desc) 
 	  pdata <- getpdata(object@pointer)
 	  pid <- as.integer(gsub("\\$P", "", rownames(pdata)))
@@ -650,6 +650,38 @@ setReplaceMethod("keyword",
       return(object)
     })
 
+#' @export
+cf_keyword_insert <- function(cf, keyword, value){
+  kw <- keyword(cf)
+  kn <- names(kw)
+  idx <- match(keyword, kn)
+  if(!is.na(idx))
+    stop("keyword already exists:", keyword)
+  kw[[keyword]] <- value
+  keyword(cf) <- kw
+  
+}
+#' @export
+cf_keyword_delete <- function(cf, keyword){
+  kw <- keyword(cf)
+  kn <- names(kw)
+  idx <- match(keyword, kn)
+  if(is.na(idx))
+    stop("keyword not found:", keyword)
+  keyword(cf) <- kw[-idx]
+  
+}
+
+#' @export
+cf_keyword_rename <- function(cf, from, to){
+  kw <- keyword(cf)
+  kn <- names(kw)
+  idx <- match(from, kn)
+  if(is.na(idx))
+    stop("keyword not found:", from)
+  names(keyword(cf))[idx] <- to
+  
+}
 
 #  coerce cytoframe to flowFrame
 #' Methods for conversions between cytoframe/cytoset and flowFrame/flowSet
