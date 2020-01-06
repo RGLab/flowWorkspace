@@ -16,29 +16,69 @@ test_that("save GatingSet to archive",
       pData(gs) <- pd
       id <- identifier(gs)
       expect_is(id, "character")
+      #save to a new dir
       tmp <- tempfile()
       save_gs(gs, path = tmp)
-      
+      #load it back
       expect_silent(gs <- load_gs(tmp))
       expect_output(gs <- load_gs(tmp, verbose = TRUE), "archived by")
       expect_that(gs, is_a("GatingSet"))
+      #check the pd
       expect_setequal(colnames(pData(gs)), colnames(pd))
+      #overwrite the existing dir
       expect_message(save_gs(gs, path = tmp), "Done")
+      #fail to save due to mismatch of gs id
       expect_error(save_gs(gs[1], path = tmp), "doesn't match", class = "std::domain_error")
-
+      # check gs id is preserved
       cdf <- list.files(tmp, ".h5", full.names = TRUE)
       expect_equal(identifier(gs), id)
+      #update gs id
       id.new <- "test"
       identifier(gs) <- id.new
       expect_equal(identifier(gs), id.new)
       #restore id
       identifier(gs) <- id
+      #fail to save due to the mismatch of h5 files between folder and gs
       file.copy(cdf, file.path(tmp, "redundant.nc"))
       expect_error(save_gs(gs, path = tmp), "Not a valid", class = "std::domain_error")
-      
+      # fail to update the readonly data
       expect_error(colnames(gs_cyto_data(gs))[1] <- "dd" , "read-only", class = "std::domain_error")
       expect_error(exprs(get_cytoframe_from_cs(gs_cyto_data(gs), 1))[1,1] <- 0, "read-only", class = "std::domain_error")
-    
+      
+      #skip h5 when write to itself
+      file.remove(file.path(tmp, "redundant.nc"))
+      expect_message(save_gs(gs, path = tmp, cdf = "skip"), "Done")
+      
+      #skip h5 when the new dir already has h5 pre-copied
+      tmp1 <- tempfile()
+      dir.create(tmp1)
+      # file.copy(cdf, file.path(tmp1, list.files(tmp, ".h5")))
+      expect_message(save_gs(gs, path = tmp1, cdf = "skip"), "Done")
+      expect_equal(length(list.files(tmp1, ".h5")), 0)
+      
+      #link
+      tmp1 <- tempfile()
+      dir.create(tmp1)
+      expect_message(save_gs(gs, path = tmp1, cdf = "link"), "Done")
+      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
+      expect_equal(length(h5), 1)
+      expect_equal(nchar(Sys.readlink(h5)), 0)
+      
+      #symlink
+      tmp1 <- tempfile()
+      dir.create(tmp1)
+      expect_message(save_gs(gs, path = tmp1, cdf = "symlink"), "Done")
+      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
+      expect_equal(length(h5), 1)
+      expect_equal(Sys.readlink(h5), cdf)
+      
+      #move
+      tmp1 <- tempfile()
+      dir.create(tmp1)
+      expect_message(save_gs(gs, path = tmp1, cdf = "move"), "Done")
+      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
+      expect_equal(length(h5), 1)
+      expect_false(file.exists(cdf))
     })
 ## it is placed here because trans may get cleared later on by cloning process
 test_that("gh_get_transformations",{    
