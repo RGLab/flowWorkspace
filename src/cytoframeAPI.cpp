@@ -100,8 +100,8 @@ void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename){
 }
 
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly){
-    unique_ptr<CytoFrame> fr(new H5CytoFrame(filename.c_str(), readonly));
+XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly, bool in_mem){
+    unique_ptr<CytoFrame> fr(new H5CytoFrame(filename.c_str(), readonly, in_mem));
 
 	if(on_disk)
 		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(fr.release())));

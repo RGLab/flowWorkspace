@@ -765,8 +765,8 @@ cf_write_h5 <- function(cf, filename){
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE){
-  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk, readonly), use.exprs = TRUE)
+load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE, in_mem = FALSE){
+  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk, readonly, in_mem), use.exprs = TRUE)
 }
 #' Return the file path of the underlying h5 file
 #' 
