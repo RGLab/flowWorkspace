@@ -98,6 +98,7 @@ load_cytoframe_from_fcs <- function(filename,
                      invert.pattern = FALSE,
                      decades=0,
 					 is_h5=FALSE,
+					 in_mem=FALSE,
 					 h5_filename = tempfile(fileext = ".h5"),
                      min.limit=NULL,
                      truncate_max_range = TRUE,
@@ -137,6 +138,7 @@ load_cytoframe_from_fcs <- function(filename,
                                                          )
                                                      , text_only = text.only
 											 		 , is_h5 = is_h5
+    					   							 , in_mem = in_mem
 											 		 , h5_filename = h5_filename
                             )
      fr@use.exprs <- !text.only
