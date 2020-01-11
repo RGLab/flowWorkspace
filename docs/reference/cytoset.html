@@ -9,16 +9,25 @@
 <title><code>cytoset</code>: a reference class for efficiently managing the data representation
 of a <code>flowSet</code> — cytoset • flowWorkspace</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -33,12 +42,14 @@ of a <code>flowSet</code> — cytoset • flowWorkspace</title>
 
 
 
+
 <meta property="og:title" content="<code>cytoset</code>: a reference class for efficiently managing the data representation
 of a <code>flowSet</code> — cytoset" />
-
 <meta property="og:description" content="This class is a container for a set of cytoframe objects, analagous to
 a flowSet." />
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -69,7 +80,7 @@ a flowSet." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.0.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.35.8</span>
       </span>
     </div>
 
@@ -100,7 +111,6 @@ a flowSet." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -123,13 +133,12 @@ of a <code>flowSet</code></h1>
     </div>
 
     <div class="ref-description">
-    
     <p>This class is a container for a set of <code>cytoframe</code> objects, analagous to
 a <code>flowSet</code>.</p>
-    
     </div>
 
-        
+
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Similar to the distinction between the <code>cytoframe</code> and
@@ -143,7 +152,6 @@ The standard extraction operator (<code>[[]]</code>) will by default perform a d
 copy of the subset being extracted and return a <code>flowFrame</code>. This is for the sake of compatibility
 with existing user scripts.
 methods.</p>
-    
     <h2 class="hasAnchor" id="creating-objects"><a class="anchor" href="#creating-objects"></a>Creating Objects</h2>
 
     
@@ -159,7 +167,6 @@ cs_add_sample(cs, "Sample Name", cytoframe)
 <acronym>FCS</acronym> files is via the <code><a href='load_cytoset_from_fcs.html'>load_cytoset_from_fcs</a></code> function, and
 there are alternative ways to specify the files to read. See the separate
 documentation for details.</p>
-    
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
@@ -191,7 +198,7 @@ documentation for details.</p>
   <code><a href='cytoframe.html'>cytoframe</a></code>s.  <em>Usage:</em>  <code><a href='https://rdrr.io/r/base/colnames.html'>   colnames(cytoset)</a></code>  <code>   colnames(cytoset) &lt;- value</code></p></dd>
 
 <dt>identifier, identifier&lt;-</dt><dd><p>Extract or replace the <code>name</code>
-  item from the environment.  <em>Usage:</em>  <code>   identifier(cytoset)</code>  <code>   identifier(cytoset) &lt;- value</code></p></dd>
+  item from the environment.  <em>Usage:</em>  <code><a href='identifier-methods.html'>   identifier(cytoset)</a></code>  <code>   identifier(cytoset) &lt;- value</code></p></dd>
 
 
 <dt>phenoData, phenoData&lt;-</dt><dd><p>Extract or replace the
@@ -234,7 +241,7 @@ documentation for details.</p>
   parameters. See separate documentation for details.  <em>Usage:</em>  <code>   fsApply(cytoset, function, ...)</code>  <code>   fsApply(cytoset, function, use.exprs=TRUE, ...)</code></p></dd>
 
 <dt>compensate</dt><dd><p>Apply a compensation matrix on all frames in a
-  <code>cytoset</code> object. See separate documentation for details.  <em>Usage:</em>  <code>   compensate(cytoset, matrix)</code></p></dd>
+  <code>cytoset</code> object. See separate documentation for details.  <em>Usage:</em>  <code><a href='compensate.html'>   compensate(cytoset, matrix)</a></code></p></dd>
 
 <dt>transform</dt><dd><p>Apply a transformation function on all frames of a
   <code>cytoset</code> object. See separate documentation for details.  <em>Usage:</em>  <code><a href='transform.html'>   transform(cytoset, ...)</a></code></p></dd>
@@ -271,8 +278,6 @@ documentation for details.</p>
 <dt>spillover</dt><dd><p>Compute spillover matrix from a compensation
   set. See separate documentation for details.</p></dd>
 
-<dt>shallow_copy</dt><dd><p>Returns a new <code>cytoset</code> that points to the same
-underlying data as the original<em>Usage:</em><code>shallow_copy(cytoset)</code></p></dd>
 <dt>realize_view</dt><dd><p>Returns a new <code>cytoset</code> with its own copy of the
 underlying data (a deep copy). The optional <code>filepath</code> argument accepts
 a string to specify a full directory name for storing the new copies of the data 
@@ -282,19 +287,15 @@ by a string.  <em>Usage:</em>  <code><a href='cs_add_sample.html'>cs_add_sample(
 
 </dl>
 
-    
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      
       <li><a href="#details">Details</a></li>
-
       <li><a href="#creating-objects">Creating Objects</a></li>
-
       <li><a href="#methods">Methods</a></li>
-          </ul>
+    </ul>
 
   </div>
 </div>
