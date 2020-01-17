@@ -127,8 +127,6 @@ test_that("gh_get_transformations",{
 
 
 
-source("GatingSetList-testSuite.R", local = TRUE)
-
 source("GatingSet-testSuite.R", local = TRUE)
 
 

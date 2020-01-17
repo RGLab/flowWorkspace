@@ -51,10 +51,9 @@ test_that("gs_cyto_data ",{
     })
 
 
-test_that("gs_clone & gslist_to_gs",{
+test_that("gs_clone",{
       
       gs1 <- gs_clone(gs)
-      
       expect_is(gs1, "GatingSet");
       
       #check data consistency
@@ -98,23 +97,69 @@ test_that("gs_clone & gslist_to_gs",{
       expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
       expect_equal(gh_pop_compare_stats(gs[[1]]), gh_pop_compare_stats(gs2[[1]]))
 })
-test_that("rbind2",{
-      orig_sn <- sampleNames(gs)
-  
-      gs1 <- gs_clone(gs)
-  
-      #construct gslist to rbind2
-      sampleNames(gs1) <- "CytoTrol_CytoTrol_2.fcs"
-      clone_sn <- sampleNames(gs1)
-      gslist <- GatingSetList(list(gs, gs1))
 
-      expect_is(gslist, "GatingSetList");
-      suppressMessages(gs <<- gslist_to_gs(gslist))
-      
-      new_samples <- sampleNames(gs) 
-      expect_setequal(new_samples, c(orig_sn, clone_sn))
-      
-    })
+test_that("merge_list_to_gs", {
+    sn1 <- sampleNames(gs)
+    suppressMessages(gs_clone <- gs_clone(gs))
+    #duplicated sample names
+    expect_error(merge_list_to_gs(list(gs, gs_clone)), "There are overlapping samples across GatingSets")
+    sn2 <- "CytoTrol_CytoTrol_2.fcs"
+    sampleNames(gs_clone) <- sn2
+    
+    #different colnames
+    chnnls <- colnames(gs_cyto_data(gs_clone))
+    chnnls[1] <- "FSC-H" 
+    expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "already", class = "std::domain_error")
+    chnnls[1] <- "F" 
+    colnames(gs_cyto_data(gs_clone)) <- chnnls
+    expect_error(merge_list_to_gs(list(gs, gs_clone)), "colnames of cyto data don't match")
+    
+    #different tree structure
+    invisible(gs_pop_remove("CD8", gs = gs_clone))
+    expect_error(merge_list_to_gs(list(gs, gs_clone)), "gating structure doesn't match: CytoTrol_CytoTrol_2.fcs CytoTrol_CytoTrol_1.fcs")
+    
+    #succeed
+    suppressMessages(gs_clone <- gs_clone(gs))
+    sampleNames(gs_clone) <- sn2
+    gs <<- merge_list_to_gs(list(gs, gs_clone))
+    
+    expect_is(gs, "GatingSet")
+    
+    samp <- c(sn1, sn2)
+    expect_equal(sampleNames(gs), samp)
+    
+    #share the same h5 with original gs
+    cs <- gs_pop_get_data(gs)
+    cf <- get_cytoframe_from_cs(cs, sn2)
+    expect_equal(cf_get_h5_file_path(cf), cf_get_h5_file_path(get_cytoframe_from_cs(gs_cyto_data(gs_clone), sn2)))
+    expect_equal(nrow(cs[[sn2]]),  119531)
+    cs <- gs_pop_get_data(gs, "CD8")
+    expect_equal(nrow(cs[[sn2]]),  14564)
+    
+    #keyword
+    thisRes <- keyword(gs)
+    expect_equal(thisRes[[1]], keyword(gs_clone)[[1]])
+    
+    
+    expect_true(setequal(markernames(gs), sort(markernames(gs_clone))))
+    
+    chnls <- c('FSC-A','FSC-H','FSC-W','SSC-A','<B710-A>','<R660-A>','<R780-A>','<V450-A>','<V545-A>','<G560-A>','<G780-A>','Time')
+    expect_equal(colnames(gs), chnls)
+    
+    gs2 <- gs_clone(gs)
+    sampleNames(gs2) <- c("A", "B")
+    gs3 <- merge_list_to_gs(list(gs, gs2))
+    
+    #create discrepancy
+    chnls <- c("<B710-A>", "<R780-A>")
+    markers <- c("CD4", "CD8")
+    names(markers) <- chnls
+    markernames(gs2) <- markers
+    expect_warning(res <- markernames(gs3), "marker names are not consistent across")
+    #preserved the original sample order
+    expect_equal(sampleNames(gs3), c(sampleNames(gs), sampleNames(gs2)))
+
+})
 test_that("sampleNames",{
       
       sn <- sampleNames(gs)

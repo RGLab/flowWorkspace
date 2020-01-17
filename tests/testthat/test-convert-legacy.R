@@ -30,7 +30,7 @@ test_that("convert_legacy_gs", {
 
 
 test_that("convert_legacy_gslist", {
-  legacy <- "~/remote/fh_fast/lyoplate_out/gated_data/legacy/manual/gslist-tcell"
+  legacy <- "~/remote/fh/fast/gottardo_r/mike_working/lyoplate_out/gated_data/legacy/manual/gslist-tcell"
   skip_if_not(dir.exists(legacy))
   expect_error(load_gslist(legacy), "convert_legacy_gslist")
   tmp <- tempfile()

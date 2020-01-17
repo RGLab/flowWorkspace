@@ -974,10 +974,6 @@ setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, 
 
 		})
 
-#' @export
-setMethod("recompute",c("GatingSetList"),function(x, ...){
-	invisible(lapply(x, recompute, ..., level = 1))
-        })
 
 #' @param x \code{GatingSet}
 #' @param y \code{character}

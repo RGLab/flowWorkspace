@@ -449,7 +449,7 @@ setMethod("markernames",
       
       res <- unique(res)
       if(length(res) > 1)
-        warning("marker names are not consistent across samples within flowSet")
+        warning("marker names are not consistent across samples within cytoset")
       else
         res <- res[[1]]
       res
