@@ -8,16 +8,25 @@
 
 <title>The tools to standardize the tree structures and channel names. — standardize-GatingSet • flowWorkspace</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -32,8 +41,8 @@
 
 
 
-<meta property="og:title" content="The tools to standardize the tree structures and channel names. — standardize-GatingSet" />
 
+<meta property="og:title" content="The tools to standardize the tree structures and channel names. — standardize-GatingSet" />
 <meta property="og:description" content="gs_split_by_tree(x)
 gs_split_by_channels(x)
 gs_check_redundant_nodes(x)
@@ -42,7 +51,9 @@ gs_remove_redundant_channels(gs)
 gs_update_channels(gs, map, all = TRUE)
 gh_pop_move(gh, node, to)
 gs_pop_set_visibility(x, y, FALSE)" />
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -73,7 +84,7 @@ gs_pop_set_visibility(x, y, FALSE)" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.0.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.35.8</span>
       </span>
     </div>
 
@@ -104,7 +115,6 @@ gs_pop_set_visibility(x, y, FALSE)" />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -126,7 +136,6 @@ gs_pop_set_visibility(x, y, FALSE)" />
     </div>
 
     <div class="ref-description">
-    
     <p>gs_split_by_tree(x)</p>
 <p>gs_split_by_channels(x)</p>
 <p>gs_check_redundant_nodes(x)</p>
@@ -135,10 +144,10 @@ gs_pop_set_visibility(x, y, FALSE)" />
 <p>gs_update_channels(gs, map, all = TRUE)</p>
 <p>gh_pop_move(gh, node, to)</p>
 <p>gs_pop_set_visibility(x, y, FALSE)</p>
-    
     </div>
 
-        
+
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>In order to merge multiple GatingSets into single <a href='GatingSetList-class.html'>GatingSetList</a>, the gating trees and channel names must be
@@ -151,15 +160,13 @@ consistent. These functions help removing the discrepancies and standardize the 
 <p><a href='gs_update_channels.html'>gs_update_channels</a> modifies the channel names in place. (Usually used to standardize the channels among GatingSets due to the letter case discrepancies or typo).</p>
 <p><a href='gh_pop_move.html'>gh_pop_move</a> inserts a dummy gate to the GatingSet. Is is useful trick to deal with the extra non-leaf node in some GatingSets that can not be simply removed by <code>gs_remove_redundant_nodes</code></p>
 <p><a href='gs_pop_set_visibility.html'>gs_pop_set_visibility</a> hide a node/gate in a GatingSet. It is useful to deal with the non-leaf node that causes the tree structure discrepancy.</p>
-    
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      
       <li><a href="#details">Details</a></li>
-          </ul>
+    </ul>
 
   </div>
 </div>

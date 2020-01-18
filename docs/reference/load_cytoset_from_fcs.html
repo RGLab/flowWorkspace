@@ -8,16 +8,25 @@
 
 <title>Read one or several FCS files in to a cytoset — load_cytoset_from_fcs • flowWorkspace</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -32,11 +41,13 @@
 
 
 
-<meta property="og:title" content="Read one or several FCS files in to a cytoset — load_cytoset_from_fcs" />
 
+<meta property="og:title" content="Read one or several FCS files in to a cytoset — load_cytoset_from_fcs" />
 <meta property="og:description" content="Similar to read.flowSet, this takes a list of FCS filenames
 and returns a cytoset." />
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -67,7 +78,7 @@ and returns a cytoset." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.0.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.35.8</span>
       </span>
     </div>
 
@@ -98,7 +109,6 @@ and returns a cytoset." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -120,20 +130,37 @@ and returns a cytoset." />
     </div>
 
     <div class="ref-description">
-    
     <p>Similar to <code><a href='https://rdrr.io/pkg/flowCore/man/read.flowSet.html'>read.flowSet</a></code>, this takes a list of FCS filenames
 and returns a <code>cytoset</code>.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>load_cytoset_from_fcs</span>(<span class='kw'>files</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"."</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>phenoData</span>, <span class='no'>descriptions</span>, <span class='no'>name.keyword</span>, <span class='kw'>transformation</span> <span class='kw'>=</span> <span class='st'>"linearize"</span>,
-  <span class='kw'>which.lines</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alter.names</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>column.pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>invert.pattern</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>decades</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>is_h5</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>min.limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>truncate_max_range</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>dataset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>emptyValue</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>num_threads</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>ignore.text.offset</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"\t"</span>, <span class='kw'>as.is</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>name</span>, <span class='kw'>h5_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(), <span class='no'>...</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>load_cytoset_from_fcs</span>(
+  <span class='kw'>files</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"."</span>,
+  <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>phenoData</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>descriptions</span>,
+  <span class='no'>name.keyword</span>,
+  <span class='kw'>transformation</span> <span class='kw'>=</span> <span class='st'>"linearize"</span>,
+  <span class='kw'>which.lines</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>alter.names</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>column.pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>invert.pattern</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>decades</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>is_h5</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>min.limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>truncate_max_range</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>dataset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>emptyValue</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>num_threads</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>ignore.text.offset</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"\t"</span>,
+  <span class='kw'>as.is</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='no'>name</span>,
+  <span class='kw'>h5_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
+  <span class='no'>...</span>
+)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -247,11 +274,10 @@ for the h5 files if <code>is_h5</code> is TRUE</p></td>
 <code><a href='https://rdrr.io/pkg/Biobase/man/read.AnnotatedDataFrame.html'>read.AnnotatedDataFrame</a></code>, see details.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An object of class <code><a href='cytoset.html'>cytoset</a></code>.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>There are four different ways to specify the file from which data is to be
@@ -275,28 +301,24 @@ character vector with the file names.</p>
 <p>Fourth, if neither the argument <code>phenoData</code> is present nor <code>files</code>
 is not <code>NULL</code>, then the file names are obtained by calling
 <code><a href='https://rdrr.io/r/base/list.files.html'>dir(path, pattern)</a></code>.</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other cytoframe/cytoset IO functions: <code><a href='cf_get_h5_file_path.html'>cf_get_h5_file_path</a></code>,
-  <code><a href='cf_write_h5.html'>cf_write_h5</a></code>,
-  <code><a href='cs_get_h5_file_path.html'>cs_get_h5_file_path</a></code>,
-  <code><a href='load_cytoframe_from_fcs.html'>load_cytoframe_from_fcs</a></code>,
-  <code><a href='load_cytoframe_from_h5.html'>load_cytoframe_from_h5</a></code></p></div>
-    
+    <div class='dont-index'><p>Other cytoframe/cytoset IO functions: 
+<code><a href='cf_get_h5_file_path.html'>cf_get_h5_file_path</a>()</code>,
+<code><a href='cf_write_h5.html'>cf_write_h5</a>()</code>,
+<code><a href='cs_get_h5_file_path.html'>cs_get_h5_file_path</a>()</code>,
+<code><a href='load_cytoframe_from_fcs.html'>load_cytoframe_from_fcs</a>()</code>,
+<code><a href='load_cytoframe_from_h5.html'>load_cytoframe_from_h5</a>()</code></p></div>
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-
       <li><a href="#see-also">See also</a></li>
-          </ul>
+    </ul>
 
   </div>
 </div>

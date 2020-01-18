@@ -184,4 +184,6 @@ articles:
   - title: How to merge GatingSets
     contents:
       - HowToMergeGatingSet
+figures:
+  fig.width: 4.5
 
