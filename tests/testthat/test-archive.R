@@ -64,14 +64,6 @@ test_that("save GatingSet to archive",
       expect_equal(length(h5), 1)
       expect_equal(nchar(Sys.readlink(h5)), 0)
       
-      #symlink
-      tmp1 <- tempfile()
-      dir.create(tmp1)
-      expect_message(save_gs(gs, path = tmp1, cdf = "symlink"), "Done")
-      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
-      expect_equal(length(h5), 1)
-      expect_equal(Sys.readlink(h5), cdf)
-      
       #move
       tmp1 <- tempfile()
       dir.create(tmp1)
@@ -79,7 +71,16 @@ test_that("save GatingSet to archive",
       h5 <- list.files(tmp1, ".h5", full.names = TRUE)
       expect_equal(length(h5), 1)
       expect_false(file.exists(cdf))
-    })
+ 
+      #symlink
+      skip_on_os("windows")
+      tmp1 <- tempfile()
+      dir.create(tmp1)
+      expect_message(save_gs(gs, path = tmp1, cdf = "symlink"), "Done")
+      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
+      expect_equal(length(h5), 1)
+      expect_equal(Sys.readlink(h5), cdf)
+  })
 ## it is placed here because trans may get cleared later on by cloning process
 test_that("gh_get_transformations",{    
       
