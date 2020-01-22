@@ -123,9 +123,9 @@ gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inver
 #' @param nodes the character vector specifies the populations of interest. default is all available nodes
 #' @param type the character vector specifies the type of pop stats or
 #'          a function used to compute population stats.
-#'          when character, it is expected to be either "count" or "percent". Default is "count" (total number of events in the populations).
-#'          when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.
-#' @param inverse.transform logical flag . Whether inverse transform the data before computing the stats.
+#'          When it is a character, it is expected to be either "Count" or "Frequency". Default is "Count" (total number of events in the populations).
+#'          When it is a function,  it takes a flowFrame object through the 'fr' argument and returns the stats as a named vector.
+#' @param inverse.transform logical flag . Whether to inverse transform the data before computing the stats.
 #' @param stats.fun.arg a list of arguments passed to `type` when 'type' is a function.
 #' @param tfilter Either a list (tmin, tmax) specifying the minimum and maximum of a the time window filter 
 #'                or a GatingHierarchy, whose minimum and maximum time will be used to determine the window.
@@ -138,13 +138,13 @@ gs_pop_get_stats_tfilter <- function(x, ...){
     gh_pop_get_stats_tfilter(gh, ...)
     
   })
-  rbindlist(res, idcol = "sample")
+  rbindlist(res)
 }
 
 #' @rdname gs_pop_get_stats_tfilter
 #' @export
-gh_pop_get_stats_tfilter <- function(x, nodes = NULL, type = "count", inverse.transform = FALSE, stats.fun.arg = list(), 
-                                           tfilter=NULL ,...){
+gh_pop_get_stats_tfilter <- function(x, nodes = NULL, type = c("Count", "Frequency"), inverse.transform = FALSE, stats.fun.arg = list(), 
+                                           tfilter=NULL , path = c("full","auto"), ...){
   if (is(tfilter, "GatingHierarchy")) {
     time_channel <- grep("^[Tt]ime$", colnames(tfilter), value=TRUE)
     time <- exprs(gh_pop_get_data(tfilter))[,"Time"]
@@ -153,26 +153,41 @@ gh_pop_get_stats_tfilter <- function(x, nodes = NULL, type = "count", inverse.tr
     stop("tfilter must be either a GatingHierarchy or a list with 2 time values: (tmin, tmax)!")
   }
   gh <- x
+  path <- match.arg(path, c("full", "auto"))
   if (is.null(nodes))
-    nodes <- gh_get_pop_paths(gh, ...)
+    nodes <- gh_get_pop_paths(gh, path=path, ...)
   time_channel <- grep("^[Tt]ime$", colnames(gh), value=TRUE)
   if (is.character(type))
   {
+    type <- match.arg(type, c("Count", "Frequency"))
     time <- exprs(gh_pop_get_data(gh))[,time_channel]
     tfilt <- time >= tfilter[[1]] & time <= tfilter[[2]]
     in_gates <- gh_pop_get_indices_mat(gh, paste(nodes, collapse="|"))
     
-    type <- match.arg(type, c("count", "percent"))
     res <- colSums(sweep(in_gates, 1, tfilt, '&'))
-    if(type == "percent"){
+    if(type == "Frequency"){
       # nodes[[1]] should be "root", but allow flexibility
       res <- res / res[[nodes[[1]]]]
     }
     res <- as.data.table(res)
     names(res) <- type
-    res <- cbind("pop"=nodes, res)
+    res <- cbind(Population=nodes, res)
+    
+    # Add extra columns relating to parent to match output of gs_pop_get_count_fast
+    parent_cols <- lapply(nodes[-1], function(node){
+                      parent = gh_pop_get_parent(x, node, path=path)
+                      parent_stat = res[Population == parent][[type]]
+                      data.frame(Parent=parent, ParentStat=parent_stat, stringsAsFactors = FALSE)
+                    })
+    
+    parent_cols <- do.call(rbind, parent_cols)
+    names(parent_cols)[[2]] <- paste0("Parent", type)
+    # Add sampleName and reorder columns to match gs_pop_get_count_fast
+    res <- cbind(name = sampleNames(x), res[-1], parent_cols)[, c(1,2,4,3,5)]
+    
   } else {
     # Same as for gh_pop_get_stats, but with time filtering after transformation
+    # In this case, make column names match gh_pop_get_stats
     res <- sapply(nodes, function(node){
       fr <- gh_pop_get_data(gh, y = node)
       if(inverse.transform)
@@ -194,6 +209,7 @@ gh_pop_get_stats_tfilter <- function(x, nodes = NULL, type = "count", inverse.tr
       as.data.table(t(res))
     }, simplify = FALSE)
     res <- rbindlist(res, idcol = "pop")
+    res <- cbind(sample = sampleNames(gh), res)
   }
   res
 }
