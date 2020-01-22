@@ -137,10 +137,11 @@
 <span class='fu'>gh_pop_get_stats_tfilter</span>(
   <span class='no'>x</span>,
   <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"count"</span>,
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Count"</span>, <span class='st'>"Frequency"</span>),
   <span class='kw'>inverse.transform</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>stats.fun.arg</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
   <span class='kw'>tfilter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"full"</span>, <span class='st'>"auto"</span>),
   <span class='no'>...</span>
 )</pre>
 
@@ -155,12 +156,12 @@
       <th>type</th>
       <td><p>the character vector specifies the type of pop stats or
 a function used to compute population stats.
-when character, it is expected to be either "count" or "percent". Default is "count" (total number of events in the populations).
-when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.</p></td>
+When it is a character, it is expected to be either "Count" or "Frequency". Default is "Count" (total number of events in the populations).
+When it is a function,  it takes a flowFrame object through the 'fr' argument and returns the stats as a named vector.</p></td>
     </tr>
     <tr>
       <th>inverse.transform</th>
-      <td><p>logical flag . Whether inverse transform the data before computing the stats.</p></td>
+      <td><p>logical flag . Whether to inverse transform the data before computing the stats.</p></td>
     </tr>
     <tr>
       <th>stats.fun.arg</th>

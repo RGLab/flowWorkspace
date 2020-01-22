@@ -124,7 +124,7 @@ reference:
       - gs_remove_redundant_channels
       - gs_split_by_channels
       - gs_split_by_tree
-      - gslist_to_gs
+      - merge_list_to_gs
       - lapply,GatingSet-method
       - rbind2,GatingSetList,missing-method
   - title: "Helpers to generate transformations and filters"
@@ -184,6 +184,4 @@ articles:
   - title: How to merge GatingSets
     contents:
       - HowToMergeGatingSet
-figures:
-  fig.width: 4.5
 

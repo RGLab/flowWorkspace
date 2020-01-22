@@ -15,10 +15,10 @@ identifier(object)
 identifier(object) <- value
 }
 \arguments{
-\item{object}{a GatingSet or GatingSetList}
+\item{object}{a \code{GatingSet} or \code{GatingSetList}}
 
 \item{value}{string}
 }
 \description{
-Retrieve or replace the GUID (globally unique identifier) for a GatingSet or GatingSetList
+Retrieve or replace the GUID (globally unique identifier) for a \code{\link{GatingSet}} or \code{\link{GatingSetList}}
 }

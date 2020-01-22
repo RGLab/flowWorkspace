@@ -187,6 +187,9 @@
 <pre><code>## Removing DPT</code></pre>
 <p>Now they can be merged into a single <code>GatingSetList</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="../reference/GatingSetList-class.html">GatingSetList</a></span>(gslist)</a></code></pre></div>
+<pre><code>## Warning: 'GatingSetList' is deprecated.
+## Use 'merge_list_to_gs' instead.
+## See help("Deprecated")</code></pre>
 <p>An GatingSetList with 5 GatingSet containing 5 unique samples.</p>
 </div>
 </div>
@@ -195,7 +198,7 @@
 <a href="#remove-the-redundant-channels-from-gatingset" class="anchor"></a>Remove the redundant channels from <code>GatingSet</code>
 </h2>
 <p>Sometime there may be the extra <code>channels</code> in one data set that prevents it from being merged with other. If these channels are not used by any gates, then they can be safely removed.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="../reference/gs_remove_redundant_channels.html">gs_remove_redundant_channels</a></span>(gs1)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="../reference/gs_remove_redundant_channels.html">gs_remove_redundant_channels</a></span>(gs1)</a></code></pre></div>
 <pre><code>## drop FSC-H, FSC-W, &lt;G560-A&gt;, &lt;G780-A&gt;, Time</code></pre>
 <p>A GatingSet with 1 samples</p>
 </div>

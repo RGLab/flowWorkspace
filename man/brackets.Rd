@@ -22,11 +22,11 @@ x[[i]]
 \item{i}{\code{numeric} or \code{logical} or \code{character} used as sample indices}
 }
 \value{
-[] returns an object of the same type as \code{x} corresponding to the subset of indices
-in i, while [[]] returns a single \code{GatingHierarchy}
+The \code{[} operator returns an object of the same type as \code{x} corresponding to the subset of indices
+in i, while the \code{[[} operator returns a single \code{GatingHierarchy}
 }
 \description{
 \code{[} subsets a \code{GatingSet} or \code{GatingSetList} using the familiar bracket notation
 
-\code{[[} extracts a \code{GatingHierarchy} object from a \code{GatingSet} or \code{GatingSetList}
+\code{[[} extracts a \code{GatingHierarchy} object from a \code{GatingSet}.
 }

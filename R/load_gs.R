@@ -89,10 +89,16 @@ setMethod("sampleNames","character",function(object){
   sub(".h5$", "" , list.files(object, ".h5"))
 })
 
-#' convert the legacy(mixed with R and C++ files) GatingSet archive to the new format(C++ only)
+#' convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only)
 #' 
-#' Note that it is likely some of the keyword values (mainly offsets e.g. BEGINDATA) may change slightly after the converting due to the rewriting data
-#' to FCS files through write.FCS.
+#' Older versions of flowWorkspace represented \code{\link{GatingSet}} objects using a combination of
+#' R and C++ files, while newer versions have moved the representation entirely to the C++ level for
+#' the sake of efficiency. In order to use \code{GatingSet} or \code{GatingSetList} archives created in older versions, 
+#' they will need to be converted to the new format.
+#' 
+#' @details
+#' Note that it is likely some of the keyword values (mainly offsets e.g. BEGINDATA) may change slightly after the conversion 
+#' due to the process of rewriting data to FCS files through write.FCS.
 #' 
 #' @param from the old archive path
 #' @param to the new archive path

@@ -24,34 +24,34 @@ load_cytoframe_from_fcs(
 )
 }
 \arguments{
-\item{filename}{Character of length 1: filename}
+\item{filename}{The filename of the single FCS file to be read}
 
-\item{transformation}{An character string that defines the type of
+\item{transformation}{A character string that defines the type of
 transformation. Valid values are \code{linearize} (default),
 \code{linearize-with-PnG-scaling}, or \code{scale}.  The \code{linearize}
 transformation applies the appropriate power transform to the data. The
 \code{linearize-with-PnG-scaling} transformation applies the appropriate
 power transform for parameters stored on log scale, and also a linear
-scaling transformation based on the 'gain' (FCS \$PnG keywords) for
+scaling transformation based on the "gain" (FCS $PnG keywords) for
 parameters stored on a linear scale. The \code{scale} transformation scales
-all columns to $[0,10^decades]$.  defaulting to decades=0 as in the FCS4
+all columns to \eqn{[0,10^{decades}]}.  defaulting to \eqn{decades=0} as in the FCS4
 specification.  A logical can also be used: \code{TRUE} is equal to
 \code{linearize} and \code{FALSE}(or \code{NULL}) corresponds to no
-transformation.  Also when the transformation keyword of the FCS header is
+transformation.  Also, when the transformation keyword of the FCS header is
 set to "custom" or "applied", no transformation will be used.}
 
 \item{which.lines}{Numeric vector to specify the indices of the lines to be
-read. If NULL all the records are read, if of length 1, a random sample of
+read. If it is NULL, all the records are read. If it is of length 1, a random sample of
 the size indicated by \code{which.lines} is read in.}
 
-\item{alter.names}{boolean indicating whether or not we should rename the
+\item{alter.names}{Logical indicating whether or not we should rename the
 columns to valid R names using \code{\link{make.names}}. The default is
 FALSE.}
 
 \item{column.pattern}{An optional regular expression defining parameters we
 should keep when loading the file. The default is NULL.}
 
-\item{invert.pattern}{logical. By default, \code{FALSE}. If \code{TRUE},
+\item{invert.pattern}{Logical. By default, \code{FALSE}. If \code{TRUE},
 inverts the regular expression specified in \code{column.pattern}. This is
 useful for indicating the channel names that we do not want to read. If
 \code{column.pattern} is set to \code{NULL}, this argument is ignored.}
@@ -59,7 +59,7 @@ useful for indicating the channel names that we do not want to read. If
 \item{decades}{When scaling is activated, the number of decades to use for
 the output.}
 
-\item{is_h5}{Boolean indicating whether the data should be stored in h5 format}
+\item{is_h5}{Logical indicating whether the data should be stored in h5 format}
 
 \item{h5_filename}{String specifying a name for the h5 file if \code{is_h5} is TRUE}
 
@@ -72,33 +72,31 @@ values below the original measurement range of the instrument. This can be
 set to an arbitrary number or to \code{NULL} (the default value), in which 
 case the original values are kept.}
 
-\item{truncate_max_range}{logical type. Default is TRUE. can be optionally
+\item{truncate_max_range}{Logical. Default is TRUE. can be optionally
 turned off to avoid truncating the extreme positive value to the instrument
-measurement range .i.e.'$PnR'.}
+measurement range, i.e. '$PnR'.}
 
 \item{dataset}{The FCS file specification allows for multiple data segments
 in a single file. Since the output of \code{load_cytoframe_from_cytoset} is a single
 \code{cytoframe} we can't automatically read in all available sets. This
-parameter allows to chose one of the subsets for import. Its value is
-supposed to be an integer in the range of available data sets. This argument
+parameter allows the user to choose one of the subsets for import. Its value should
+be an integer in the range of available data sets. This argument
 is ignored if there is only a single data segment in the FCS file.}
 
-\item{emptyValue}{Boolean indicating whether or not we allow empty value for
-keyword values in TEXT segment.  It affects how the double delimiters are
-treated.  IF TRUE, The double delimiters are parsed as a pair of start and
-end single delimiter for an empty value.  Otherwise, double delimiters are
-parsed one part of string as the keyword value.  default is TRUE.}
+\item{emptyValue}{Logical indicating whether or not to allow empty values for
+keywords in TEXT segment.  It affects how double delimiters are
+treated. If TRUE, double delimiters are parsed as a pair of start and
+end single delimiters for an empty value.  Otherwise, double delimiters are
+parsed as one part of the string of the keyword value. The default is TRUE.}
 
 \item{num_threads}{Integer allowing for parallelization of the parsing
 operation by specifiying a number of threads}
 
-\item{ignore.text.offset}{Whether to ignore the keyword values in TEXT
+\item{ignore.text.offset}{Logical indicating whether to ignore the keyword values in TEXT
 segment when they don't agree with the HEADER.  Default is FALSE, which
-throws the error when such discrepancy is found.  User can turn it on to
-ignore TEXT segment when he is sure of the accuracy of HEADER so that the
+throws the error when such a discrepancy is found. Users can turn it on to
+ignore the TEXT segment when they are sure of the accuracy of the HEADER segment so that the
 file still can be read.}
-
-\item{files}{A vector of filenames}
 
 \item{\dots}{Further arguments that get passed on to
 \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details}
@@ -116,7 +114,7 @@ FCS file and returns a \code{cytoframe}.
 The function \code{load_cytoframe_from_fcs} works with the output of the FACS machine
 software from a number of vendors (FCS 2.0, FCS 3.0 and List Mode Data LMD).
 However, the FCS 3.0 standard includes some options that are not yet
-implemented in this function. If you need extensions, please let me know.
+implemented in this function. If you need extensions, please let us know.
 The output of the function is an object of class \code{cytoframe}.
 
 For specifications of FCS 3.0 see \url{http://www.isac-net.org} and the file

@@ -45,11 +45,11 @@ a <code>flowFrame</code> — cytoframe • flowWorkspace</title>
 
 <meta property="og:title" content="<code>cytoframe</code>: A reference class for efficiently managing the data representation of
 a <code>flowFrame</code> — cytoframe" />
-<meta property="og:description" content="This class serves the same purpose as the flowFrame class: to store quantitative
-data on cell populations from a single FCS run. The primary difference is in the underlying representation
+<meta property="og:description" content="This class serves the same purpose as the flowFrame class from the flowCore package: 
+to store quantitative data on cell populations from a single FCS run. The primary difference is in the underlying representation
 of the data. While flowFrame objects store the underlying data matrix in the exprs slot 
 as an R object, cytoframe objects store the matrix (as well as the data from the other slots) in a 
-'C' data structure that is accessed through an external pointer. This allows for greater optimization of 
+C data structure that is accessed through an external pointer. This allows for greater optimization of 
 data operations including I/O, parsing, transformation, and gating." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -137,11 +137,11 @@ a <code>flowFrame</code></h1>
     </div>
 
     <div class="ref-description">
-    <p>This class serves the same purpose as the <code>flowFrame</code> class: to store quantitative
-data on cell populations from a single FCS run. The primary difference is in the underlying representation
+    <p>This class serves the same purpose as the <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>flowFrame</a></code> class from the <code>flowCore</code> package: 
+to store quantitative data on cell populations from a single FCS run. The primary difference is in the underlying representation
 of the data. While <code>flowFrame</code> objects store the underlying data matrix in the <code>exprs</code> slot 
 as an R object, <code>cytoframe</code> objects store the matrix (as well as the data from the other slots) in a 
-'C' data structure that is accessed through an external pointer. This allows for greater optimization of 
+C data structure that is accessed through an external pointer. This allows for greater optimization of 
 data operations including I/O, parsing, transformation, and gating.</p>
     </div>
 
@@ -164,126 +164,199 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
 
     
 
-<p>There are separate documentation pages for most of the methods
-  listed here which should be consulted for more details.</p><dl class='dl-horizontal'>
-  <dt>[</dt><dd><p>Subsetting. Returns an object of class <code>cytoframe</code>.
+<p>Many of the methods here have their own documentation pages or are more extensively explained
+  in the documentation for <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>flowFrame</a></code>, so those documentation pages may
+  be consulted as well for more details.</p><dl class='dl-horizontal'>
+  <dt><code><a href='brackets.html'>[</a></code></dt><dd><p>Subsetting. Returns an object of class <code>cytoframe</code>.
     The syntax for subsetting is similar to that of <code><a href='https://rdrr.io/r/base/data.frame.html'>data.frames</a></code>. 
     In addition to the usual index vectors (integer and logical by
     position, character by parameter names), <code>cytoframe</code>s can be
     subset via <code>filterResult</code> and
-    <code>filter</code> objects.    <em>Usage:</em>    <code>   cytoframe[i,j]</code>    <code>   cytoframe[filter,]</code>    <code>   cytoframe[filterResult,]</code>    Note that the value of argument <code>drop</code> is ignored when
-    subsetting <code>cytoframes</code>.</p></dd>
+    <code>filter</code> objects.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   cytoframe[i,j]</code><br /><br />
+    <code>   cytoframe[filter,]</code><br /><br />
+    <code>   cytoframe[filterResult,]</code><br /><br />
+    Note that the value of argument <code>drop</code> is ignored when
+    subsetting <code>cytoframes</code>.<br /><br /></p></dd>
   <dt>$</dt><dd><p>Subsetting by channel name. This is similar to subsetting
     of columns of <code><a href='https://rdrr.io/r/base/data.frame.html'>data.frames</a></code>, i.e.,
     <code>frame$FSC.H</code> is equivalent to <code>frame[, "FSC.H"]</code>. Note
     that column names may have to be quoted if they are not valid R
-    symbols (e.g. <code>frame$"FSC-H"</code>).</p></dd>
+    symbols (e.g. <code>frame$"FSC-H"</code> or <code>frame$`FSC-H`</code>).<br /><br /></p></dd>
   <dt>exprs, exprs&lt;-</dt><dd><p><code>exprs</code> returns an object of class <code>matrix</code> containing the
     measured intensities. Rows correspond to cells, columns to the
     different measurement channels. The <code>colnames</code> attribute of
-    the matrix is supposed to hold the names or identifiers for the
-    channels. The <code>rownames</code> attribute would usually not be set.    <code>exprs&lt;-</code> replaces the raw data intensities. The replacement value 
-    must be a numeric matrix with colnames matching the parameter definitions. 
+    the matrix should hold the names or identifiers for the
+    channels. The <code>rownames</code> attribute would usually not be set.<br /><br />
+    <code>exprs&lt;-</code> replaces the raw data intensities. The replacement value 
+    must be a numeric matrix with <code>colnames</code> matching the parameter definitions. 
     Implicit subsetting is allowed (i.e. less columns in the replacement value 
-    compared to the original <code>cytoframe</code>, but all have to be defined there).    <em>Usage:</em>    <code>   exprs(cytoframe)</code>    <code>   exprs(cytoframe) &lt;- value</code></p></dd>
-  <dt>head, tail</dt><dd><p>Show first/last elements of the raw data matrix    <em>Usage:</em>    <code><a href='https://rdrr.io/r/utils/head.html'>   head(cytoframe)</a></code>    <code><a href='https://rdrr.io/r/utils/head.html'>   tail(cytoframe)</a></code></p></dd>
+    compared to the original <code>cytoframe</code>), but all columns must be defined in the original <code>cytoframe</code>.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   exprs(cytoframe)</code><br /><br />
+    <code>   exprs(cytoframe) &lt;- value</code><br /><br /></p></dd>
+  <dt>head, tail</dt><dd><p>Show first/last elements of the raw data matrix<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='https://rdrr.io/r/utils/head.html'>   head(cytoframe)</a></code><br /><br />
+    <code><a href='https://rdrr.io/r/utils/head.html'>   tail(cytoframe)</a></code><br /><br /></p></dd>
   <dt>description, description&lt;-</dt><dd><p>Extract or replace the whole list
     of annotation keywords obtained from the metadata of the original FCS
     file. Usually one would only be interested in a
     subset of keywords, in which case the <code>keyword</code> method is
     more appropriate. The optional <code>hideInternal</code> parameter can
     be used to exclude internal FCS parameters starting
-    with <code>$</code>.    <em>Usage:</em>    <code>   description(cytoframe)</code>    <code>   description(cytoframe) &lt;- value</code></p></dd>
+    with <code>$</code>.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   description(cytoframe)</code><br /><br />
+    <code>   description(cytoframe) &lt;- value</code><br /><br /></p></dd>
   <dt>keyword, keyword&lt;-</dt><dd><p>Extract all entries or a single entry
     from the annotations by keyword or replace
     the entire list of key/value pairs with a new named
-    list. See <code><a href='keyword.html'>keyword</a></code> for details.    <em>Usage:</em>    <code><a href='keyword.html'>   keyword(cytoframe)</a></code>    <code><a href='keyword.html'>   keyword(cytoframe, character)</a></code>    <code>   keyword(cytoframe) &lt;- list(value) </code></p></dd>
+    list. See <code><a href='keyword.html'>keyword</a></code> for details.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='keyword.html'>   keyword(cytoframe)</a></code><br /><br />
+    <code><a href='keyword.html'>   keyword(cytoframe, character)</a></code><br /><br />
+    <code>   keyword(cytoframe) &lt;- list(value) </code><br /><br /></p></dd>
   <dt>parameters, parameters&lt;-</dt><dd><p>Extract parameters and return an object of class 
     <code>AnnotatedDataFrame</code>
     containing information about each column of the <code>cytoframe</code>,
-    or replace such an object.     This information will generally be filled in by
+    or replace such an object.<br /><br />
+    This information will generally be filled in by
     <code>load_cytoframe_from_fcs</code> or similar functions using data from the
     <acronym>FCS</acronym> keywords describing the parameters. To access the actual parameter
-    annotation, use <code><a href='pData-methods.html'>pData(parameters(cytoframe))</a></code>.     Replacement is only valid with
+    annotation, use <code><a href='pData-methods.html'>pData(parameters(cytoframe))</a></code>.<br /><br />
+    Replacement is only valid with
     <code>AnnotatedDataFrames</code>
     containing all varLabels <code>name</code>, <code>desc</code>, <code>range</code>,
     <code>minRange</code> and <code>maxRange</code>, and matching entries in the
     <code>name</code> column to the colnames of the <code>exprs</code> matrix. See
-    <code>parameters</code> for more details.    <em>Usage:</em>    <code>   parameters(cytoframe)</code>    <code>   parameters(cytoframe) &lt;- value</code></p></dd>
-  <dt>show</dt><dd><p>Display details about the <code>cytoframe</code> object.</p></dd>
-  <dt>summary</dt><dd><p>Return descriptive statistical summary (min, max,
-                                                         mean and quantile) for each channel    <em>Usage:</em>    <code><a href='https://rdrr.io/r/base/summary.html'>   summary(cytoframe)</a></code></p></dd>
+    <code>parameters</code> for more details.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   parameters(cytoframe)</code><br /><br />
+    <code>   parameters(cytoframe) &lt;- value</code><br /><br /></p></dd>
+  <dt>show</dt><dd><p>Display details about the <code>cytoframe</code> object.<br /><br /></p></dd>
+  <dt>summary</dt><dd><p>Return descriptive statistical summary (min, max, mean and quantile) for each channel<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='https://rdrr.io/r/base/summary.html'>   summary(cytoframe)</a></code><br /><br /></p></dd>
   <dt>plot</dt><dd><p>Basic plots for <code>cytoframe</code> objects. If the object
     has only a single parameter this produces a <code><a href='https://rdrr.io/r/graphics/hist.html'>histogram</a></code>. 
-    For exactly two parameters we plot a bivariate density map (see <code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter</a></code>
+    For exactly two parameters we plot a bivariate density map (see <code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter</a></code>)
     and for more than two parameters we produce a simple <code><a href='https://rdrr.io/pkg/lattice/man/splom.html'>splom</a></code> plot. 
     To select specific parameters from a <code>flowFrame</code> for plotting, either subset the object or
     specify the parameters as a character vector in the second argument to <code>plot</code>. 
     The smooth parameters lets you toggle between density-type <code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter</a></code>
     plots and regular scatterplots.  For far more sophisticated plotting of flow cytometry data, 
-    see the <code><a href='https://rdrr.io/pkg/flowViz/man/flowViz-package.html'>flowViz</a></code> package.    <em>Usage:</em>    <code><a href='plot-methods.html'>   plot(cytoframe, ...)</a></code>    <code><a href='plot-methods.html'>   plot(cytoframe, character, ...)</a></code>    <code><a href='plot-methods.html'>   plot(cytoframe, smooth=FALSE, ...)</a></code></p></dd>
-  <dt>ncol, nrow, dim</dt><dd><p>Extract the dimensions of the data matrix.    <em>Usage:</em>    <code><a href='https://rdrr.io/r/base/nrow.html'>   ncol(cytoframe)</a></code>    <code><a href='https://rdrr.io/r/base/nrow.html'>   nrow(cytoframe)</a></code>    <code><a href='https://rdrr.io/r/base/dim.html'>   dim(cytoframe)</a></code></p></dd>
-  <dt>featureNames, colnames, colnames&lt;-</dt><dd><p>. <code>colnames</code> and
-    <code>featureNames</code> are synonyms, they extract parameter names 
-    (i.e., the colnames of the data matrix) .
+    see the <code>ggcyto</code> package.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='plot-methods.html'>   plot(cytoframe, ...)</a></code><br /><br />
+    <code><a href='plot-methods.html'>   plot(cytoframe, character, ...)</a></code><br /><br />
+    <code><a href='plot-methods.html'>   plot(cytoframe, smooth=FALSE, ...)</a></code><br /><br /></p></dd>
+  <dt>ncol, nrow, dim</dt><dd><p>Extract the dimensions of the data matrix.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='https://rdrr.io/r/base/nrow.html'>   ncol(cytoframe)</a></code><br /><br />
+    <code><a href='https://rdrr.io/r/base/nrow.html'>   nrow(cytoframe)</a></code><br /><br />
+    <code><a href='https://rdrr.io/r/base/dim.html'>   dim(cytoframe)</a></code><br /><br /></p></dd>
+  <dt>featureNames, colnames, colnames&lt;-</dt><dd><p><code>colnames</code> and
+    <code>featureNames</code> are synonyms. They extract parameter names 
+    (i.e., the colnames of the data matrix).
     For <code>colnames</code> there is also a replacement method. This will
-    update the <code>name</code> column in the <code>parameters</code> slot as well.    <em>Usage:</em>    <code>   featureNames(cytoframe)</code>    <code><a href='https://rdrr.io/r/base/colnames.html'>   colnames(cytoframe)</a></code>    <code>   colnames(cytoframe) &lt;- value</code></p></dd>
+    update the <code>name</code> column in the <code>parameters</code> slot as well.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   featureNames(cytoframe)</code><br /><br />
+    <code><a href='https://rdrr.io/r/base/colnames.html'>   colnames(cytoframe)</a></code><br /><br />
+    <code>   colnames(cytoframe) &lt;- value</code><br /><br /></p></dd>
   <dt>names</dt><dd><p>Extract pretty formatted names of the parameters
-    including parameter descriptions.    <em>Usage:</em>    <code><a href='https://rdrr.io/r/base/names.html'>   names(cytoframe)</a></code></p></dd>
+    including parameter descriptions.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='https://rdrr.io/r/base/names.html'>   names(cytoframe)</a></code><br /><br /></p></dd>
   <dt>identifier</dt><dd><p>Extract GUID of a <code>cytoframe</code>. Returns the
     file name if no GUID is available. See <code><a href='identifier-methods.html'>identifier</a></code>
-    for details.    <em>Usage:</em>    <code><a href='identifier-methods.html'>   identifier(cytoframe)</a></code></p></dd>
+    for details.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='identifier-methods.html'>   identifier(cytoframe)</a></code><br /><br /></p></dd>
   <dt>range</dt><dd><p>Get instrument or actual data range of the <code>cytoframe</code>. Note that
     instrument dynamic range is not necessarily the same as the range of the actual data values, but
     the theoretical range of values the measurement instrument was
     able to capture. The values of the dynamic range will be
-    transformed when using the transformation methods for<code>cytoframe</code>s.    Parameters:      x: cytoframe object.      type: Range type. either "instrument" or "data". Default is "instrument"    <em>Usage:</em>    <code><a href='https://rdrr.io/r/base/range.html'>   range(x, type = "data")</a></code></p></dd>
+    transformed when using the transformation methods for<code>cytoframe</code> objects.<br /><br />
+    <em>Parameters:</em><br /><br />
+      x: cytoframe object.<br /><br />
+      type: Range type. either "instrument" or "data". Default is "instrument"<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='https://rdrr.io/r/base/range.html'>   range(x, type = "data")</a></code><br /><br /></p></dd>
   <dt>each_row, each_col</dt><dd><p>Apply functions over rows or columns of
     the data matrix. These are convenience methods. See
-    <code>each_col</code> for details.    <em>Usage:</em>    <code>   each_row(cytoframe, function, ...)</code>    <code>   each_col(cytoframe, function, ...)</code></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/each_col.html'>each_col</a></code> for details.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   each_row(cytoframe, function, ...)</code><br /><br />
+    <code>   each_col(cytoframe, function, ...)</code><br /><br /></p></dd>
   <dt>transform</dt><dd><p>Apply a transformation function on a
     <code>cytoframe</code> object. This uses R's
     <code><a href='https://rdrr.io/r/base/transform.html'>transform</a></code> function by treating the
     <code>cytoframe</code> like a regular <code>data.frame</code>. <code>flowCore</code>
     provides an additional inline mechanism for transformations (see
     <code>%on%</code>) which is strictly more limited
-    than the out-of-line transformation described here.    <em>Usage:</em>    <code><a href='transform.html'>   transform(cytoframe, translist, ...)</a></code></p></dd>
+    than the out-of-line transformation described here.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='transform.html'>   transform(cytoframe, translist, ...)</a></code><br /><br /></p></dd>
   <dt>filter</dt><dd><p>Apply a <code>filter</code> object on a
     <code>cytoframe</code> object. This returns an object of class
     <code>filterResult</code>, which could then be used for
     subsetting of the data or to calculate summary statistics. See
-    <code><a href='https://rdrr.io/r/stats/filter.html'>filter</a></code> for details.    <em>Usage:</em>    <code><a href='https://rdrr.io/r/stats/filter.html'>   filter(cytoframe, filter)</a></code></p></dd>
+    <code><a href='https://rdrr.io/r/stats/filter.html'>filter</a></code> for details.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='https://rdrr.io/r/stats/filter.html'>   filter(cytoframe, filter)</a></code><br /><br /></p></dd>
   <dt>split</dt><dd><p>Split <code>cytoframe</code> object according to a
-    <code><a href='https://rdrr.io/r/stats/filter.html'>filter</a></code>, a <code>filterResult</code> or a
+    <code><a href='https://rdrr.io/pkg/flowCore/man/filter-class.html'>filter</a></code>, a <code><a href='https://rdrr.io/pkg/flowCore/man/filterResult-class.html'>filterResult</a></code> or a
     <code>factor</code>. For most types of filters, an optional
     <code>flowSet=TRUE</code> parameter will create a
     <code>flowSet</code> rather than a simple list. See
-    <code><a href='https://rdrr.io/r/base/split.html'>split</a></code> for details.    <em>Usage:</em>    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, filter, flowSet=FALSE, ...)</a></code>    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, filterResult, flowSet=FALSE, ...)</a></code>    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, factor, flowSet=FALSE, ...)</a></code></p></dd>
+    <code><a href='https://rdrr.io/r/base/split.html'>split</a></code> for details.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, filter, flowSet=FALSE, ...)</a></code><br /><br />
+    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, filterResult, flowSet=FALSE, ...)</a></code><br /><br />
+    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, factor, flowSet=FALSE, ...)</a></code><br /><br /></p></dd>
   <dt>Subset</dt><dd><p>Subset a <code>cytoframe</code> according to a <code>filter</code>
     or a logical vector. The same can be done using the standard
     subsetting operator with a <code>filter</code>, <code>filterResult</code>, or
-    a logical vector as first argument.    <em>Usage:</em>    <code>   Subset(cytoframe, filter)</code>    <code>   Subset(cytoframe, logical)</code></p></dd>
+    a logical vector as first argument.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   Subset(cytoframe, filter)</code><br /><br />
+    <code>   Subset(cytoframe, logical)</code><br /><br /></p></dd>
   <dt>cbind2</dt><dd><p><strong>Not yet implemented</strong>.<br /> Expand a <code>cytoframe</code> by the data in a
     <code>numeric matrix</code> of the same length. The <code>matrix</code> must
     have column names different from those of the
     <code>cytoframe</code>. The additional method for <code>numerics</code> only
-    raises a useful error message.    <em>Usage:</em>    <code>   cbind2(cytoframe, matrix)</code>    <code>   cbind2(cytoframe, numeric)</code></p></dd>
+    raises a useful error message.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   cbind2(cytoframe, matrix)</code><br /><br />
+    <code>   cbind2(cytoframe, numeric)</code><br /><br /></p></dd>
   <dt>compensate</dt><dd><p>Apply a compensation matrix (or a
     <code>compensation</code> object) on a <code>cytoframe</code>
-    object. This returns a compensated <code>cytoframe</code>.    <em>Usage:</em>    <code><a href='compensate.html'>   compensate(cytoframe, matrix)</a></code>
-    <code><a href='compensate.html'>   compensate(cytoframe, data.frame)</a></code></p></dd>
+    object. This returns a compensated <code>cytoframe</code>.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code><a href='compensate.html'>   compensate(cytoframe, matrix)</a></code><br /><br />
+    <code><a href='compensate.html'>   compensate(cytoframe, data.frame)</a></code><br /><br />
+    <code><a href='compensate.html'>   compensate(cytoframe, compensation)</a></code><br /><br /></p></dd>
   <dt>decompensate</dt><dd><p><strong>Not yet implemented</strong>.<br /> Reverse the application of a compensation matrix (or a
     <code>compensation</code> object) on a <code>cytoframe</code>
-    object. This returns a decompensated <code>cytoframe</code>.    <em>Usage:</em>    <code>   decompensate(cytoframe, matrix)</code>
-    <code>   decompensate(cytoframe, data.frame)</code></p></dd>
+    object. This returns a decompensated <code>cytoframe</code>.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   decompensate(cytoframe, matrix)</code><br /><br />
+    <code>   decompensate(cytoframe, data.frame)</code><br /><br /></p></dd>
   <dt>spillover</dt><dd><p>Extract spillover matrix from description slot if
     present. It is equivalent to 
     <code><a href='keyword.html'>keyword(x, c("spillover", "SPILL"))</a></code>
-    Thus will simply return a list of keywords value for "spillover" and "SPILL".    <em>Usage:</em>    <code>   spillover(cytoframe)</code></p></dd>
+    Thus will simply return a list of keyword values for "spillover" and "SPILL".<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>   spillover(cytoframe)</code><br /><br /></p></dd>
   <dt>realize_view</dt><dd><p>Returns a new <code>cytoframe</code> with its own copy of the
   underlying data (a deep copy). The optional <code>filepath</code> argument accepts
   a string to specify a full filename for storing the new copy of the data in h5
-  format.    <em>Usage:</em>    <code>realize_view(cytoframe, filepath)</code></p></dd>
+  format.<br /><br />
+    <em>Usage:</em><br /><br />
+    <code>realize_view(cytoframe, filepath)</code><br /><br /></p></dd>
   
   
   

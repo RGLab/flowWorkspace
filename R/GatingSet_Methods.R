@@ -1358,14 +1358,14 @@ set_log_level <- function(level = "none"){
 
 #' Bracket operators on \code{GatingSet} and \code{GatingSetList} objects
 #' 
-#' @description \code{[[} extracts a \code{GatingHierarchy} object from a \code{GatingSet} or \code{GatingSetList}
+#' @description \code{[[} extracts a \code{GatingHierarchy} object from a \code{GatingSet}.
 #'
 #' @name brackets
 #' @usage x[[i]]
 #' @param x a \code{GatingSet} or \code{GatingSetList}
 #' @param i \code{numeric} or \code{logical} or \code{character} used as sample indices
-#' @return [] returns an object of the same type as \code{x} corresponding to the subset of indices
-#' in i, while [[]] returns a single \code{GatingHierarchy}
+#' @return The \code{[} operator returns an object of the same type as \code{x} corresponding to the subset of indices
+#' in i, while the \code{[[} operator returns a single \code{GatingHierarchy}
 #' @export
 #' @aliases
 #' [[

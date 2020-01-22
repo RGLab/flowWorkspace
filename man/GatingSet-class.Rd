@@ -26,13 +26,13 @@ It allows the use to load a workspace and subset desired samples before proceedi
 
 \examples{
 \dontrun{
-  require(flowWorkspaceData)
-  d<-system.file("extdata",package="flowWorkspaceData")
-  wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
-	library(CytoML)
-  ws <- open_flowjo_xml(wsfile);
-  G<-try(flowjo_to_gatingset(ws,execute=TRUE,path=d,name=1));
-  gs_plot_pop_count_cv(G);
+ require(flowWorkspaceData)
+ d<-system.file("extdata",package="flowWorkspaceData")
+ wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
+ library(CytoML)
+ ws <- open_flowjo_xml(wsfile);
+ G<-try(flowjo_to_gatingset(ws,execute=TRUE,path=d,name=1));
+ gs_plot_pop_count_cv(G);
 }
 }
 \seealso{
