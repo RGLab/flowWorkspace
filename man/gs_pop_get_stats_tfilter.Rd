@@ -10,10 +10,11 @@ gs_pop_get_stats_tfilter(x, ...)
 gh_pop_get_stats_tfilter(
   x,
   nodes = NULL,
-  type = "count",
+  type = c("Count", "Frequency"),
   inverse.transform = FALSE,
   stats.fun.arg = list(),
   tfilter = NULL,
+  path = c("full", "auto"),
   ...
 )
 }
@@ -22,10 +23,10 @@ gh_pop_get_stats_tfilter(
 
 \item{type}{the character vector specifies the type of pop stats or
 a function used to compute population stats.
-when character, it is expected to be either "count" or "percent". Default is "count" (total number of events in the populations).
-when a function,  it takes a flowFrame object through 'fr' argument and return the stats as a named vector.}
+When it is a character, it is expected to be either "Count" or "Frequency". Default is "Count" (total number of events in the populations).
+When it is a function,  it takes a flowFrame object through the 'fr' argument and returns the stats as a named vector.}
 
-\item{inverse.transform}{logical flag . Whether inverse transform the data before computing the stats.}
+\item{inverse.transform}{logical flag . Whether to inverse transform the data before computing the stats.}
 
 \item{stats.fun.arg}{a list of arguments passed to `type` when 'type' is a function.}
 
