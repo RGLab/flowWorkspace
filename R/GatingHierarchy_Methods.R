@@ -717,8 +717,14 @@ gh_pop_get_gate <- function(obj,y){
 					if(nrow(mat)==2)#convert to rectangleGate
 					{
 						rg <- rectangleGate(.gate=mat,filterId=filterId)
-						if(!is.null(g[["uid"]]))#attach quadgate id
-							attr(rg, "uid") <- g[["uid"]]
+						if(!is.null(g[["quadintersection"]]))#attach quadgate
+						{
+							quadrants = g[["quadrants"]];
+							names(quadrants) <- g[["quadpops"]];
+							attr(rg, "quadrants") <- quadrants
+							attr(rg, "quadintersection") <- g[["quadintersection"]]
+							
+						}
 						rg
 					}else{
                       #restore gate coordinates due to the double overflow during pb archiving

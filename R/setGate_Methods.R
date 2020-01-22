@@ -44,7 +44,15 @@ setMethod("setGate"
 #' }
 #' @export
 gh_pop_set_gate <- function(obj,y,value, negated = FALSE,...){
-			
+			# if(is(value, "quadGate"))
+			# {
+			#   if(negated)
+			#     stop("'negated' flag can't be TRUE for quadGate")
+			#   g <- gh_pop_get_gate(gh, y)
+			#   oldquadgate <- attr(g, "quadGate") 
+			#   if(is.null(oldquadgate))
+			#     stop(y, " is not a quadGate and can't")
+			# }
 			this_fobj <- filter_to_list(value)
 			this_fobj$negated<-negated
 			.cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)

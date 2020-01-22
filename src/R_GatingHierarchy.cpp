@@ -342,11 +342,35 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	gatePtr g = node.getGate();
 	string nodeName = node.getName();
 	unsigned short gType=g->getType();
-	string uid = "";
+	vector<string> quadpops;
+	vector<unsigned> quadrants;
+	coordinate quadintersection;
 	if(gType == QUADGATE)
 	{
+
 		quadGate & qg=dynamic_cast<quadGate&>(*g);
-		uid = qg.get_uid();
+		quadintersection = qg.get_intersection();
+		//recollect all the quadrants
+		auto uid = qg.get_uid();
+		auto pid = gh.getParent(u);
+		auto siblings = gh.getChildren(pid);
+		for(auto id : siblings)//search all siblings
+		{
+			nodeProperties & nd = gh.getNodeProperty(id);
+			gatePtr g1 = nd.getGate();
+
+			if(g1->getType() == QUADGATE)//if a quad
+			{
+				quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
+				if(qg1.get_uid() == uid)//if belongs to the same quad
+				{
+					quadpops.push_back(nd.getName());
+					quadrants.push_back(qg1.get_quadrant());
+
+				}
+			}
+
+		}
 		g.reset(new rectGate(qg.to_rectgate()));
 		gType=POLYGONGATE;
 	}
@@ -379,14 +403,22 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 		case POLYGONGATE:
 			{
 				vertices_vector vert=g->getVertices().toVector();
-
-				 List ret=List::create(Named("parameters",g->getParamNames())
+				 auto pn = g->getParamNames();
+				 List ret=List::create(Named("parameters", pn)
 						 	 	 	 	 ,Named("x",vert.x),Named("y",vert.y)
 						 	 	 	 	 ,Named("type",POLYGONGATE)
 						 	 	 	 	 , Named("filterId", nodeName)
 						 	 	 	 	 );
-				 if(uid!="")
-					 ret["uid"] = uid;
+				 if(quadpops.size() > 0)
+				 {
+
+					 NumericVector inter = NumericVector::create(quadintersection.x, quadintersection.y);
+					 inter.attr("names") = pn;
+					 ret["quadintersection"] = inter;
+					 ret["quadrants"] = quadrants;
+					 ret["quadpops"] = quadpops;
+
+				 }
 				return ret;
 			}
 

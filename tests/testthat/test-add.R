@@ -65,9 +65,17 @@ test_that("add quadGate", {
   recompute(gs)
   node <- "CD15 FITC-CD45 PE+"
   expect_equal(gh_pop_get_stats(gs[[1]], node)[, count], sum((gh_pop_get_data(gs[[1]], "rectangle")%in%qg) == node))
+  g <- gh_pop_get_gate(gs[[1]], "CD15 FITC-CD45 PE+")
+  expect_is(g, "rectangleGate")
+  #check the attached quadgate info
+  expect_equal(attr(g, "quadintersection"), c("FL1-H"= 2, "FL2-H"= 3))
+  quadrants <- 1:4
+  names(quadrants) <- gh_pop_get_children(gs[[1]], "rectangle", path = "auto")
+  expect_equal(attr(g, "quadrants"), quadrants)
   
   #test the case where cells on the intersection lines
-  gs_pop_add(gs, quadGate(list(`FSC-H` = 500, `SSC-H` = 600)), names = c("A", "B", "C", "D"))
+  qg2 <- quadGate(list(`FSC-H` = 500, `SSC-H` = 600))
+  gs_pop_add(gs, qg2, names = c("A", "B", "C", "D"))
   recompute(gs)
   expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(count)])
   #save and load
@@ -77,6 +85,13 @@ test_that("add quadGate", {
   recompute(gs)
   expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(count)])
   
+  #set quadgate
+  qg2@boundary[[1]] <- 200
+  gs_pop_set_gate(gs, c("A","B","C", "D"), qg)
+  g1 <- gs_pop_get_gate(gs, "A")[[1]]
+  g2 <- rectangleGate(list(`FSC-H`= c(-Inf, 200), `SSC-H` = c(600, Inf)), filterId = "A")
+  expect_equal(g1@min, g2@min)
+  expect_equal(g1@max, g2@max)
   })
 gs_pop_remove(gs, "A")
 gs_pop_remove(gs, "B")
