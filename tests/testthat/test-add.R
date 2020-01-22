@@ -87,12 +87,19 @@ test_that("add quadGate", {
   
   #set quadgate
   qg2@boundary[[1]] <- 200
-  gs_pop_set_gate(gs, c("A","B","C", "D"), qg)
+  expect_error(gh_pop_set_gate(gs[[1]], c("A"), qg), "do not match")
+  expect_error(gh_pop_set_gate(gs[[1]], c("rectangle"), qg), "not a quadGate")
+  gh_pop_set_gate(gs[[1]], c("A"), qg2)
   g1 <- gs_pop_get_gate(gs, "A")[[1]]
   g2 <- rectangleGate(list(`FSC-H`= c(-Inf, 200), `SSC-H` = c(600, Inf)), filterId = "A")
   expect_equal(g1@min, g2@min)
   expect_equal(g1@max, g2@max)
-  })
+  g1 <- gs_pop_get_gate(gs, "B")[[1]]
+  g2 <- rectangleGate(list(`FSC-H`= c(200, Inf), `SSC-H` = c(600, Inf)), filterId = "A")
+  expect_equal(g1@min, g2@min)
+  expect_equal(g1@max, g2@max)
+  
+    })
 gs_pop_remove(gs, "A")
 gs_pop_remove(gs, "B")
 gs_pop_remove(gs, "C")

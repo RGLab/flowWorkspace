@@ -331,6 +331,38 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 	return (res);
 }
 
+vector<VertexID> retrieve_sibling_quadnodes(GatingHierarchy & gh,  VertexID quadnode)
+{
+	vector<VertexID> res;
+	auto & node = gh.getNodeProperty(quadnode);
+	auto g = node.getGate();
+	auto gType=g->getType();
+	if(gType == QUADGATE)
+	{
+		quadGate & qg=dynamic_cast<quadGate&>(*g);
+		//recollect all the quadrants
+		auto uid = qg.get_uid();
+		auto pid = gh.getParent(quadnode);
+		auto siblings = gh.getChildren(pid);
+		for(auto id : siblings)//search all siblings
+		{
+			nodeProperties & nd = gh.getNodeProperty(id);
+			gatePtr g1 = nd.getGate();
+
+			if(g1->getType() == QUADGATE)//if a quad
+			{
+				quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
+				if(qg1.get_uid() == uid)//if belongs to the same quad
+				{
+					res.push_back(id);
+
+				}
+			}
+
+		}
+	}
+	return res;
+}
 //[[Rcpp::export(name=".cpp_getGate")]]
 List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
@@ -347,28 +379,16 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	coordinate quadintersection;
 	if(gType == QUADGATE)
 	{
-
+		auto siblings = retrieve_sibling_quadnodes(gh, u);
 		quadGate & qg=dynamic_cast<quadGate&>(*g);
 		quadintersection = qg.get_intersection();
-		//recollect all the quadrants
-		auto uid = qg.get_uid();
-		auto pid = gh.getParent(u);
-		auto siblings = gh.getChildren(pid);
-		for(auto id : siblings)//search all siblings
+		for(auto id : siblings)//collect all quadrants info
 		{
 			nodeProperties & nd = gh.getNodeProperty(id);
 			gatePtr g1 = nd.getGate();
-
-			if(g1->getType() == QUADGATE)//if a quad
-			{
-				quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
-				if(qg1.get_uid() == uid)//if belongs to the same quad
-				{
-					quadpops.push_back(nd.getName());
-					quadrants.push_back(qg1.get_quadrant());
-
-				}
-			}
+			quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
+			quadpops.push_back(nd.getName());
+			quadrants.push_back(qg1.get_quadrant());
 
 		}
 		g.reset(new rectGate(qg.to_rectgate()));
@@ -824,6 +844,27 @@ void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID
 
 }
 
+//[[Rcpp::export]]
+void set_quadgate(XPtr<GatingSet> gs,string sampleName,string gatePath, vector<double> inter) {
+
+	if(inter.size()!=2)
+		throw(domain_error("invalid intersection values!"));
+
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+
+	NODEID u = gh.getNodeID(gatePath);
+	auto siblings = retrieve_sibling_quadnodes(gh, u);
+	for(auto id : siblings)
+	{
+		auto& nd = gh.getNodeProperty(id);
+		auto g = nd.getGate();
+		quadGate & qg=dynamic_cast<quadGate&>(*g);
+		paramPoly param = qg.getParam();
+		param.setVertices({coordinate(inter[0], inter[1])});
+		qg.setParam(param);
+	}
+
+}
 
 //[[Rcpp::export(name=".cpp_setGate")]]
 void setGate(XPtr<GatingSet> gs,string sampleName
