@@ -356,7 +356,8 @@ flowSet_to_cytoset <- function(fs, path = tempfile()){
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
                               , path = tmp
                               , is_h5 = TRUE
-                              , h5_dir = path)
+                              , h5_dir = path
+                              , file_col_name = "FCS_File")
   # Fix any potential change or re-ordering of sampleNames
   sns_matched <- sampleNames(cs)
   sns_matched <- sns[match(sns_matched, filenames)]
