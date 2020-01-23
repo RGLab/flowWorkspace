@@ -357,7 +357,8 @@ flowSet_to_cytoset <- function(fs, path = tempfile()){
                               , path = tmp
                               , is_h5 = TRUE
                               , h5_dir = path
-                              , file_col_name = "FCS_File")
+                              , file_col_name = "FCS_File"
+                              , check.names = FALSE )
   # Fix any potential change or re-ordering of sampleNames
   sns_matched <- sampleNames(cs)
   sns_matched <- sns[match(sns_matched, filenames)]
