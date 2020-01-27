@@ -1,13 +1,14 @@
 #' \code{cytoframe}: A reference class for efficiently managing the data representation of
 #' a \code{flowFrame}
 #'
-#' This class serves the same purpose as the \code{\linkS4class{flowFrame}} class: to store quantitative
-#' data on cell populations from a single FCS run. The primary difference is in the underlying representation
+#' This class serves the same purpose as the \code{\link[flowCore]{flowFrame}} class from the \code{flowCore} package: 
+#' to store quantitative data on cell populations from a single FCS run. The primary difference is in the underlying representation
 #' of the data. While \code{flowFrame} objects store the underlying data matrix in the \code{exprs} slot 
 #' as an R object, \code{cytoframe} objects store the matrix (as well as the data from the other slots) in a 
-#' 'C' data structure that is accessed through an external pointer. This allows for greater optimization of 
+#' C data structure that is accessed through an external pointer. This allows for greater optimization of 
 #' data operations including I/O, parsing, transformation, and gating.
 #' 
+#' @details
 #' From the user's standpoint, interacting with a \code{cytoframe} is very similar to interacting with a
 #' \code{flowframe}, with one important difference. While operations such as subsetting or copying a \code{flowFrame}
 #' using the standard R assignment operator (<-) will perform a deep copy of the data in its slots, the same
@@ -25,62 +26,47 @@
 #' @docType class
 #' 
 #' @section Methods:
-#'   There are separate documentation pages for most of the methods
-#'   listed here which should be consulted for more details.
+#'   Many of the methods here have their own documentation pages or are more extensively explained
+#'   in the documentation for \code{\link[flowCore]{flowFrame}}, so those documentation pages may
+#'   be consulted as well for more details.
 #'   \describe{
-#'   \item{[}{Subsetting. Returns an object of class \code{cytoframe}.
+#'   \item{\code{\link{[}}}{Subsetting. Returns an object of class \code{cytoframe}.
 #'     The syntax for subsetting is similar to that of \code{\link[=data.frame]{data.frames}}. 
 #'     In addition to the usual index vectors (integer and logical by
 #'     position, character by parameter names), \code{cytoframe}s can be
 #'     subset via \code{\link{filterResult}} and
-#'     \code{\linkS4class{filter}} objects.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   cytoframe[i,j]}
-#'     
-#'     \code{   cytoframe[filter,]}
-#'     
-#'     \code{   cytoframe[filterResult,]}
-#'     
+#'     \code{\linkS4class{filter}} objects.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   cytoframe[i,j]}\cr\cr
+#'     \code{   cytoframe[filter,]}\cr\cr
+#'     \code{   cytoframe[filterResult,]}\cr\cr
 #'     Note that the value of argument \code{drop} is ignored when
-#'     subsetting \code{cytoframes}.
-#'     
+#'     subsetting \code{cytoframes}.\cr\cr
 #'   }
 #'   \item{$}{Subsetting by channel name. This is similar to subsetting
 #'     of columns of \code{\link[=data.frame]{data.frames}}, i.e.,
 #'     \code{frame$FSC.H} is equivalent to \code{frame[, "FSC.H"]}. Note
 #'     that column names may have to be quoted if they are not valid R
-#'     symbols (e.g. \code{frame$"FSC-H"}).
-#'     
+#'     symbols (e.g. \code{frame$"FSC-H"} or \code{frame$`FSC-H`}).\cr\cr
 #'   }
 #'   \item{exprs, exprs<-}{
 #'     \code{exprs} returns an object of class \code{matrix} containing the
 #'     measured intensities. Rows correspond to cells, columns to the
 #'     different measurement channels. The \code{colnames} attribute of
-#'     the matrix is supposed to hold the names or identifiers for the
-#'     channels. The \code{rownames} attribute would usually not be set.
-#'     
+#'     the matrix should hold the names or identifiers for the
+#'     channels. The \code{rownames} attribute would usually not be set.\cr\cr
 #'     \code{exprs<-} replaces the raw data intensities. The replacement value 
-#'     must be a numeric matrix with colnames matching the parameter definitions. 
+#'     must be a numeric matrix with \code{colnames} matching the parameter definitions. 
 #'     Implicit subsetting is allowed (i.e. less columns in the replacement value 
-#'     compared to the original \code{cytoframe}, but all have to be defined there).
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   exprs(cytoframe)}
-#'     
-#'     \code{   exprs(cytoframe) <- value}
-#'     
+#'     compared to the original \code{cytoframe}), but all columns must be defined in the original \code{cytoframe}.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   exprs(cytoframe)}\cr\cr
+#'     \code{   exprs(cytoframe) <- value}\cr\cr
 #'   }
-#'   \item{head, tail}{Show first/last elements of the raw data matrix
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   head(cytoframe)}
-#'     
-#'     \code{   tail(cytoframe)}
-#'     
+#'   \item{head, tail}{Show first/last elements of the raw data matrix\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   head(cytoframe)}\cr\cr
+#'     \code{   tail(cytoframe)}\cr\cr
 #'   }
 #'   \item{description, description<-}{Extract or replace the whole list
 #'     of annotation keywords obtained from the metadata of the original FCS
@@ -88,154 +74,104 @@
 #'     subset of keywords, in which case the \code{keyword} method is
 #'     more appropriate. The optional \code{hideInternal} parameter can
 #'     be used to exclude internal FCS parameters starting
-#'     with \code{$}.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   description(cytoframe)}
-#'     
-#'     \code{   description(cytoframe) <- value}
-#'     
+#'     with \code{$}.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   description(cytoframe)}\cr\cr
+#'     \code{   description(cytoframe) <- value}\cr\cr
 #'   }
 #'   \item{keyword, keyword<-}{Extract all entries or a single entry
 #'     from the annotations by keyword or replace
 #'     the entire list of key/value pairs with a new named
-#'     list. See \code{\link{keyword}} for details.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   keyword(cytoframe)}
-#'     
-#'     \code{   keyword(cytoframe, character)}
-#'    
-#'     \code{   keyword(cytoframe) <- list(value) }
-#'     
+#'     list. See \code{\link{keyword}} for details.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   keyword(cytoframe)}\cr\cr
+#'     \code{   keyword(cytoframe, character)}\cr\cr
+#'     \code{   keyword(cytoframe) <- list(value) }\cr\cr
 #'   }
 #'   \item{parameters, parameters<-}{
 #'     Extract parameters and return an object of class 
 #'     \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
 #'     containing information about each column of the \code{cytoframe},
-#'     or replace such an object. 
-#'     
+#'     or replace such an object.\cr\cr
 #'     This information will generally be filled in by
 #'     \code{load_cytoframe_from_fcs} or similar functions using data from the
 #'     \acronym{FCS} keywords describing the parameters. To access the actual parameter
-#'     annotation, use \code{pData(parameters(cytoframe))}. 
-#'     
+#'     annotation, use \code{pData(parameters(cytoframe))}.\cr\cr
 #'     Replacement is only valid with
 #'     \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrames}}
 #'     containing all varLabels \code{name}, \code{desc}, \code{range},
 #'     \code{minRange} and \code{maxRange}, and matching entries in the
 #'     \code{name} column to the colnames of the \code{exprs} matrix. See
-#'     \code{\link{parameters}} for more details.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   parameters(cytoframe)}
-#'     
-#'     \code{   parameters(cytoframe) <- value}
-#'     
+#'     \code{\link{parameters}} for more details.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   parameters(cytoframe)}\cr\cr
+#'     \code{   parameters(cytoframe) <- value}\cr\cr
 #'   }
 #'   \item{show}{
-#'     
-#'     Display details about the \code{cytoframe} object.
-#'     
+#'     Display details about the \code{cytoframe} object.\cr\cr
 #'   }
-#'   \item{summary}{Return descriptive statistical summary (min, max,
-#'                                                          mean and quantile) for each channel
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   summary(cytoframe)}
-#'     
+#'   \item{summary}{Return descriptive statistical summary (min, max, mean and quantile) for each channel\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   summary(cytoframe)}\cr\cr
 #'   }
 #'   \item{plot}{Basic plots for \code{cytoframe} objects. If the object
 #'     has only a single parameter this produces a \code{\link[graphics:hist]{histogram}}. 
-#'     For exactly two parameters we plot a bivariate density map (see \code{\link[graphics]{smoothScatter}}
+#'     For exactly two parameters we plot a bivariate density map (see \code{\link[graphics]{smoothScatter}})
 #'     and for more than two parameters we produce a simple \code{\link[lattice]{splom}} plot. 
 #'     To select specific parameters from a \code{flowFrame} for plotting, either subset the object or
 #'     specify the parameters as a character vector in the second argument to \code{plot}. 
 #'     The smooth parameters lets you toggle between density-type \code{\link[graphics]{smoothScatter}}
 #'     plots and regular scatterplots.  For far more sophisticated plotting of flow cytometry data, 
-#'     see the \code{\link[flowViz:flowViz-package]{flowViz}} package.
-#'                                      
-#'     \emph{Usage:}
-#'                                      
-#'     \code{   plot(cytoframe, ...)}
-#'                                      
-#'     \code{   plot(cytoframe, character, ...)}
-#'                                      
-#'     \code{   plot(cytoframe, smooth=FALSE, ...)}
-#'                                      
+#'     see the \code{ggcyto} package.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   plot(cytoframe, ...)}\cr\cr
+#'     \code{   plot(cytoframe, character, ...)}\cr\cr
+#'     \code{   plot(cytoframe, smooth=FALSE, ...)}\cr\cr
 #'   }
-#'   \item{ncol, nrow, dim}{Extract the dimensions of the data matrix.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   ncol(cytoframe)}
-#'     
-#'     \code{   nrow(cytoframe)}
-#'     
-#'     \code{   dim(cytoframe)}
-#'     
+#'   \item{ncol, nrow, dim}{Extract the dimensions of the data matrix.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   ncol(cytoframe)}\cr\cr
+#'     \code{   nrow(cytoframe)}\cr\cr
+#'     \code{   dim(cytoframe)}\cr\cr
 #'   }
-#'   \item{featureNames, colnames, colnames<-}{. \code{colnames} and
-#'     \code{featureNames} are synonyms, they extract parameter names 
-#'     (i.e., the colnames of the data matrix) .
+#'   \item{featureNames, colnames, colnames<-}{\code{colnames} and
+#'     \code{featureNames} are synonyms. They extract parameter names 
+#'     (i.e., the colnames of the data matrix).
 #'     For \code{colnames} there is also a replacement method. This will
-#'     update the \code{name} column in the \code{parameters} slot as well.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   featureNames(cytoframe)}
-#'     
-#'     \code{   colnames(cytoframe)}
-#'     
-#'     \code{   colnames(cytoframe) <- value}
-#'     
+#'     update the \code{name} column in the \code{parameters} slot as well.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   featureNames(cytoframe)}\cr\cr
+#'     \code{   colnames(cytoframe)}\cr\cr
+#'     \code{   colnames(cytoframe) <- value}\cr\cr
 #'   }
 #'   \item{names}{Extract pretty formatted names of the parameters
-#'     including parameter descriptions.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   names(cytoframe)}
-#'     
+#'     including parameter descriptions.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   names(cytoframe)}\cr\cr
 #'   }
 #'   \item{identifier}{Extract GUID of a \code{cytoframe}. Returns the
 #'     file name if no GUID is available. See \code{\link{identifier}}
-#'     for details.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   identifier(cytoframe)}
+#'     for details.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   identifier(cytoframe)}\cr\cr
 #'   }
 #'   \item{range}{Get instrument or actual data range of the \code{cytoframe}. Note that
 #'     instrument dynamic range is not necessarily the same as the range of the actual data values, but
 #'     the theoretical range of values the measurement instrument was
 #'     able to capture. The values of the dynamic range will be
-#'     transformed when using the transformation methods for\code{cytoframe}s.
-#'     
-#'     Parameters:
-#'       
-#'       x: cytoframe object.
-#'     
-#'       type: Range type. either "instrument" or "data". Default is "instrument"
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   range(x, type = "data")}
-#'     
+#'     transformed when using the transformation methods for\code{cytoframe} objects.\cr\cr
+#'     \emph{Parameters:}\cr\cr
+#'       x: cytoframe object.\cr\cr
+#'       type: Range type. either "instrument" or "data". Default is "instrument"\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   range(x, type = "data")}\cr\cr
 #'   }
 #'   \item{each_row, each_col}{Apply functions over rows or columns of
 #'     the data matrix. These are convenience methods. See
-#'     \code{\link{each_col}} for details.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   each_row(cytoframe, function, ...)}
-#'     
-#'     \code{   each_col(cytoframe, function, ...)}
+#'     \code{\link[flowCore]{each_col}} for details.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   each_row(cytoframe, function, ...)}\cr\cr
+#'     \code{   each_col(cytoframe, function, ...)}\cr\cr
 #'   }
 #'   \item{transform}{Apply a transformation function on a
 #'     \code{cytoframe} object. This uses R's
@@ -243,103 +179,74 @@
 #'     \code{cytoframe} like a regular \code{data.frame}. \code{flowCore}
 #'     provides an additional inline mechanism for transformations (see
 #'     \code{\link{\%on\%}}) which is strictly more limited
-#'     than the out-of-line transformation described here.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   transform(cytoframe, translist, ...)}
-#'     
+#'     than the out-of-line transformation described here.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   transform(cytoframe, translist, ...)}\cr\cr
 #'   }
 #'   \item{filter}{Apply a \code{\linkS4class{filter}} object on a
 #'     \code{cytoframe} object. This returns an object of class
 #'     \code{\link{filterResult}}, which could then be used for
 #'     subsetting of the data or to calculate summary statistics. See
-#'     \code{\link{filter}} for details.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   filter(cytoframe, filter)}
-#'     
+#'     \code{\link{filter}} for details.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   filter(cytoframe, filter)}\cr\cr
 #'     }
 #'   \item{split}{Split \code{cytoframe} object according to a
-#'     \code{\link{filter}}, a \code{\link{filterResult}} or a
+#'     \code{\link[flowCore:filter-class]{filter}}, a \code{\link[flowCore]{filterResult}} or a
 #'     \code{factor}. For most types of filters, an optional
 #'     \code{flowSet=TRUE} parameter will create a
 #'     \code{\linkS4class{flowSet}} rather than a simple list. See
-#'     \code{\link{split}} for details.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   split(cytoframe, filter, flowSet=FALSE, ...)}
-#'     
-#'     \code{   split(cytoframe, filterResult, flowSet=FALSE, ...)}
-#'     
-#'     \code{   split(cytoframe, factor, flowSet=FALSE, ...)}
-#'     
+#'     \code{\link{split}} for details.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   split(cytoframe, filter, flowSet=FALSE, ...)}\cr\cr
+#'     \code{   split(cytoframe, filterResult, flowSet=FALSE, ...)}\cr\cr
+#'     \code{   split(cytoframe, factor, flowSet=FALSE, ...)}\cr\cr
 #'     }
 #'   \item{Subset}{Subset a \code{cytoframe} according to a \code{filter}
 #'     or a logical vector. The same can be done using the standard
 #'     subsetting operator with a \code{filter}, \code{filterResult}, or
-#'     a logical vector as first argument.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   Subset(cytoframe, filter)}
-#'     
-#'     \code{   Subset(cytoframe, logical)}
-#'     
+#'     a logical vector as first argument.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   Subset(cytoframe, filter)}\cr\cr
+#'     \code{   Subset(cytoframe, logical)}\cr\cr
 #'     }
 #'   \item{cbind2}{\strong{Not yet implemented}.\cr Expand a \code{cytoframe} by the data in a
 #'     \code{numeric matrix} of the same length. The \code{matrix} must
 #'     have column names different from those of the
 #'     \code{cytoframe}. The additional method for \code{numerics} only
-#'     raises a useful error message.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   cbind2(cytoframe, matrix)}
-#'     
-#'     \code{   cbind2(cytoframe, numeric)}
-#'      
+#'     raises a useful error message.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   cbind2(cytoframe, matrix)}\cr\cr
+#'     \code{   cbind2(cytoframe, numeric)}\cr\cr
 #'     }
 #'   \item{compensate}{Apply a compensation matrix (or a
 #'     \code{\linkS4class{compensation}} object) on a \code{cytoframe}
-#'     object. This returns a compensated \code{cytoframe}.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   compensate(cytoframe, matrix)}
-#'     \code{   compensate(cytoframe, data.frame)}
-#'     
+#'     object. This returns a compensated \code{cytoframe}.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   compensate(cytoframe, matrix)}\cr\cr
+#'     \code{   compensate(cytoframe, data.frame)}\cr\cr
+#'     \code{   compensate(cytoframe, compensation)}\cr\cr
 #'     }
 #'   \item{decompensate}{\strong{Not yet implemented}.\cr Reverse the application of a compensation matrix (or a
 #'     \code{\linkS4class{compensation}} object) on a \code{cytoframe}
-#'     object. This returns a decompensated \code{cytoframe}.
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   decompensate(cytoframe, matrix)}
-#'     \code{   decompensate(cytoframe, data.frame)}
-#'     
+#'     object. This returns a decompensated \code{cytoframe}.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   decompensate(cytoframe, matrix)}\cr\cr
+#'     \code{   decompensate(cytoframe, data.frame)}\cr\cr
 #'     }
 #'   \item{spillover}{Extract spillover matrix from description slot if
 #'     present. It is equivalent to 
 #'     \code{keyword(x, c("spillover", "SPILL"))}
-#'     Thus will simply return a list of keywords value for "spillover" and "SPILL".
-#'     
-#'     \emph{Usage:}
-#'     
-#'     \code{   spillover(cytoframe)}
-#'     
+#'     Thus will simply return a list of keyword values for "spillover" and "SPILL".\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{   spillover(cytoframe)}\cr\cr
 #'     }
 #'   \item{realize_view}{Returns a new \code{cytoframe} with its own copy of the
 #'   underlying data (a deep copy). The optional \code{filepath} argument accepts
 #'   a string to specify a full filename for storing the new copy of the data in h5
-#'   format.
-#'   
-#'     \emph{Usage:}
-#'     
-#'     \code{realize_view(cytoframe, filepath)}
+#'   format.\cr\cr
+#'     \emph{Usage:}\cr\cr
+#'     \code{realize_view(cytoframe, filepath)}\cr\cr
 #'   }
 #'   
 #'   

@@ -174,14 +174,20 @@
 ## invalid zeroChan: -2147483648
 ## caused by the invalid biexp parameters!Downcast the biexp to Calibration table instead!
 ## invalid zeroChan: -2147483648
-## caused by the invalid biexp parameters!Downcast the biexp to Calibration table instead!</code></pre>
+## caused by the invalid biexp parameters!Downcast the biexp to Calibration table instead!
+## h5_dir: "/tmp/RtmpmTRU2f/70de6992-b191-451b-ac8f-c508a00965da"
+## uid: a2004_O1T2pb05i_A1_A01.fcs
+## h5_filename: /tmp/RtmpmTRU2f/70de6992-b191-451b-ac8f-c508a00965da/a2004_O1T2pb05i_A1_A01.fcs.h5
+## h5_dir: "/tmp/RtmpmTRU2f/70de6992-b191-451b-ac8f-c508a00965da"
+## uid: a2004_O1T2pb05i_A2_A02.fcs
+## h5_filename: /tmp/RtmpmTRU2f/70de6992-b191-451b-ac8f-c508a00965da/a2004_O1T2pb05i_A2_A02.fcs.h5</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co">#Lots of output here suppressed for the vignette.</span></a>
 <a class="sourceLine" id="cb14-2" data-line-number="2">gs</a></code></pre></div>
 <pre><code>## A GatingSet with 2 samples</code></pre>
 <p>We have generated a <code>GatingSet</code> with 2 samples, each of which has 19 associated gates.</p>
 <p>To list the samples stored in <code>GatingSet</code>:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="../reference/sampleNames.html">sampleNames</a></span>(gs)</a></code></pre></div>
-<pre><code>## [1] "a2004_O1T2pb05i_A1_A01.fcs_61832" "a2004_O1T2pb05i_A2_A02.fcs_45363"</code></pre>
+<pre><code>## [1] "a2004_O1T2pb05i_A1_A01.fcs" "a2004_O1T2pb05i_A2_A02.fcs"</code></pre>
 <p>Note that it is different from the previous call <code>fj_ws_get_samples</code> on <code>workspace</code> where the latter list all samples stored in <code>xml</code> file and here are the ones actually get parsed. Because sometime not all of samples in xml will be imported for various reason. Also we’ve seen an extra string <code>_xxx</code> is attached to the end of each sample name. It is due to the argument <code>additional.keys</code> has the default value set to <code>'$TOT'</code>. See more details on these parsing options from <a href="http://bioconductor.org/packages/release/bioc/vignettes/flowWorkspace/inst/doc/HowToParseFlowJo.html">How to parse a flowJo workspace</a>.</p>
 </div>
 </div>
@@ -204,7 +210,7 @@
 <p>At this point we have parsed the workspace file and generated the gating hierarchy associated with each sample imported from the file. The data have been loaded, compensated, and transformed in the workspace, and gating has been executed. The resulting <code>GatingSet</code> contains a replicated analysis of the original flowJo workspace. It should be noted, however, that because <code>GatingSet</code> is a purely reference class, this sort of subsetting does not copy the underlying data but rather utilizes a view of it.</p>
 <p>We can plot the gating tree:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gs)</a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/plotTree-1.png" width="432"></p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/plotTree-1.png" width="700"></p>
 <p>We can list the nodes (populations) in the gating hierarchy:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="../reference/gs_get_pop_paths.html">gs_get_pop_paths</a></span>(gs, <span class="dt">path =</span> <span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##  [1] "root"       "Live"       "APC"        "B Cell"     "mDC"       
@@ -232,24 +238,24 @@
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">node &lt;-<span class="st"> </span>nodelist[<span class="dv">3</span>]</a>
 <a class="sourceLine" id="cb28-2" data-line-number="2">g &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gs_pop_get_gate.html">gs_pop_get_gate</a></span>(gs, node)</a>
 <a class="sourceLine" id="cb28-3" data-line-number="3">g</a></code></pre></div>
-<pre><code>## $a2004_O1T2pb05i_A1_A01.fcs_61832
+<pre><code>## $a2004_O1T2pb05i_A1_A01.fcs
 ## Polygonal gate 'APC' with 14 vertices in dimensions &lt;PerCP-CY5-5-A&gt; and &lt;PE-CY7-A&gt;
 ## 
-## $a2004_O1T2pb05i_A2_A02.fcs_45363
+## $a2004_O1T2pb05i_A2_A02.fcs
 ## Polygonal gate 'APC' with 14 vertices in dimensions &lt;PerCP-CY5-5-A&gt; and &lt;PE-CY7-A&gt;</code></pre>
 <p>We can retrieve the population statistics :</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="../reference/gs_pop_get_count_fast.html">gs_pop_get_count_fast</a></span>(gs)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]</a></code></pre></div>
-<pre><code>##                                 name           Population        Parent Count
-##  1: a2004_O1T2pb05i_A1_A01.fcs_61832                /Live          root 49484
-##  2: a2004_O1T2pb05i_A1_A01.fcs_61832            /Live/APC         /Live  4154
-##  3: a2004_O1T2pb05i_A1_A01.fcs_61832     /Live/APC/B Cell     /Live/APC  2311
-##  4: a2004_O1T2pb05i_A1_A01.fcs_61832        /Live/APC/mDC     /Live/APC   512
-##  5: a2004_O1T2pb05i_A1_A01.fcs_61832  /Live/APC/mDC/IFNa+ /Live/APC/mDC     2
-##  6: a2004_O1T2pb05i_A1_A01.fcs_61832  /Live/APC/mDC/IL-6+ /Live/APC/mDC    22
-##  7: a2004_O1T2pb05i_A1_A01.fcs_61832 /Live/APC/mDC/IL-12+ /Live/APC/mDC     2
-##  8: a2004_O1T2pb05i_A1_A01.fcs_61832  /Live/APC/mDC/TNFa+ /Live/APC/mDC    72
-##  9: a2004_O1T2pb05i_A1_A01.fcs_61832        /Live/APC/pDC     /Live/APC   433
-## 10: a2004_O1T2pb05i_A1_A01.fcs_61832  /Live/APC/pDC/IFNa+ /Live/APC/pDC     0
+<pre><code>##                           name           Population        Parent Count
+##  1: a2004_O1T2pb05i_A1_A01.fcs                /Live          root 49484
+##  2: a2004_O1T2pb05i_A1_A01.fcs            /Live/APC         /Live  4154
+##  3: a2004_O1T2pb05i_A1_A01.fcs     /Live/APC/B Cell     /Live/APC  2311
+##  4: a2004_O1T2pb05i_A1_A01.fcs        /Live/APC/mDC     /Live/APC   512
+##  5: a2004_O1T2pb05i_A1_A01.fcs  /Live/APC/mDC/IFNa+ /Live/APC/mDC     2
+##  6: a2004_O1T2pb05i_A1_A01.fcs  /Live/APC/mDC/IL-6+ /Live/APC/mDC    22
+##  7: a2004_O1T2pb05i_A1_A01.fcs /Live/APC/mDC/IL-12+ /Live/APC/mDC     2
+##  8: a2004_O1T2pb05i_A1_A01.fcs  /Live/APC/mDC/TNFa+ /Live/APC/mDC    72
+##  9: a2004_O1T2pb05i_A1_A01.fcs        /Live/APC/pDC     /Live/APC   433
+## 10: a2004_O1T2pb05i_A1_A01.fcs  /Live/APC/pDC/IFNa+ /Live/APC/pDC     0
 ##     ParentCount
 ##  1:       61832
 ##  2:       49484
@@ -264,16 +270,16 @@
 <p>We can plot individual gates. Note the scale of the transformed axes. The second argument is the node path of any depth as long as it is uniquely identifiable.</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggcyto)</a>
 <a class="sourceLine" id="cb32-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/pkg/ggcyto/man/autoplot.html">autoplot</a></span>(gs, <span class="st">"pDC"</span>)</a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-nodeName-1.png" width="432"> More details about gate visualization can be found <a href="http://bioconductor.org/packages/release/bioc/html/ggcyto.html">here</a>.</p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-nodeName-1.png" width="700"> More details about gate visualization can be found <a href="http://bioconductor.org/packages/release/bioc/html/ggcyto.html">here</a>.</p>
 <p>If we have metadata associated with the experiment, it can be attached to the <code>GatingSet</code>.</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">d &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="dt">sample=</span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sample 1"</span>, <span class="st">"sample 2"</span>)),<span class="dt">treatment=</span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sample"</span>,<span class="st">"control"</span>)) )</a>
 <a class="sourceLine" id="cb33-2" data-line-number="2">pd &lt;-<span class="st"> </span><span class="kw"><a href="../reference/pData-methods.html">pData</a></span>(gs)</a>
 <a class="sourceLine" id="cb33-3" data-line-number="3">pd &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(pd,d)</a>
 <a class="sourceLine" id="cb33-4" data-line-number="4"><span class="kw"><a href="../reference/pData-methods.html">pData</a></span>(gs) &lt;-<span class="st"> </span>pd</a>
 <a class="sourceLine" id="cb33-5" data-line-number="5"><span class="kw"><a href="../reference/pData-methods.html">pData</a></span>(gs)</a></code></pre></div>
-<pre><code>##                                                        name   sample treatment
-## a2004_O1T2pb05i_A1_A01.fcs_61832 a2004_O1T2pb05i_A1_A01.fcs sample 1    sample
-## a2004_O1T2pb05i_A2_A02.fcs_45363 a2004_O1T2pb05i_A2_A02.fcs sample 2   control</code></pre>
+<pre><code>##                                                  name   sample treatment
+## a2004_O1T2pb05i_A1_A01.fcs a2004_O1T2pb05i_A1_A01.fcs sample 1    sample
+## a2004_O1T2pb05i_A2_A02.fcs a2004_O1T2pb05i_A2_A02.fcs sample 2   control</code></pre>
 <p>We can subset the <code>GatingSet</code> by its <code>pData</code> directly:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw"><a href="../reference/subset.html">subset</a></span>(gs, treatment <span class="op">==</span><span class="st"> "control"</span>)</a></code></pre></div>
 <pre><code>## A GatingSet with 1 samples</code></pre>
@@ -297,7 +303,7 @@
 <p>We can retrieve a single gating hierarchical tree (corresponding to one sample) by using the <code><a href="../reference/brackets.html">[[</a></code> extraction operator</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1">gh &lt;-<span class="st"> </span>gs[[<span class="dv">1</span>]]</a>
 <a class="sourceLine" id="cb43-2" data-line-number="2">gh</a></code></pre></div>
-<pre><code>## Sample:  a2004_O1T2pb05i_A1_A01.fcs_61832 
+<pre><code>## Sample:  a2004_O1T2pb05i_A1_A01.fcs 
 ## GatingHierarchy with  20  gates</code></pre>
 <p>Note that the index can be either numeric or character (the <code>guid</code> returned by the <code>sampleNames</code> method)</p>
 <p>We can do similar operations on this <code>GatingHierarchy</code> object and the same methods behave differently from <code>GatingSet</code></p>
@@ -311,10 +317,10 @@
 ## 6:    0.00390625 0.003984064              2         2 mDC/IFNa+</code></pre>
 <p>Here <code>gh_pop_compare_stats</code> returns both the stats directly stored in <code>flowJo</code> xml workspace and one calcuated by <code>GatingSet</code> through the gating. There are could be minor difference between the two due to the numerical errors. However the difference should not be significant. Therore this can be used as the validity check for the parsing accuracy.</p>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" data-line-number="1"><span class="kw"><a href="../reference/gs_plot_pop_count_cv.html">gh_plot_pop_count_cv</a></span>(gh)</a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/gh_plot_pop_count_cv-1.png" width="432"></p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/gh_plot_pop_count_cv-1.png" width="700"></p>
 <p>The <code>autoplot</code> method without specifying any node will lay out all the gates in the same plot</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/pkg/ggcyto/man/autoplot.html">autoplot</a></span>(gh)</a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/unnamed-chunk-5-1.png" width="432"></p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <p>We can retrieve the indices specifying if an event is included inside or outside a gate using:</p>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="kw"><a href="../reference/gh_pop_get_indices.html">gh_pop_get_indices</a></span>(gh,node))</a></code></pre></div>
 <pre><code>## 
@@ -368,8 +374,8 @@
 ##         res[ind] &lt;- ifelse(deriv == 1, z$y[1L], 0)
 ##     res
 ## }
-## &lt;bytecode: 0x5627162a07c8&gt;
-## &lt;environment: 0x562713d89630&gt;
+## &lt;bytecode: 0x5630f525b730&gt;
+## &lt;environment: 0x5630f41d6818&gt;
 ## attr(,"type")
 ## [1] "biexp"
 ## attr(,"parameters")
@@ -477,16 +483,16 @@
 ## [7] "/rectangle/CD15 FITC-CD45 PE+|CD15 FITC+CD45 PE-"</code></pre>
 <p>The gating hierarchy is plotted by:</p>
 <div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" data-line-number="1"><span class="kw"><a href="../reference/plot-methods.html">plot</a></span>(gs, <span class="dt">bool=</span><span class="ot">TRUE</span>)</a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/plot-gh-1.png" width="432"> Note that Boolean gate is skipped by default and thus needs to be enabled explictily.</p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/plot-gh-1.png" width="700"> Note that Boolean gate is skipped by default and thus needs to be enabled explictily.</p>
 <p>Now all the gates are added to the gating tree but the actual data is not gated yet. This is done by calling the <code>recompute</code> method explictily:</p>
 <div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" data-line-number="1"><span class="kw"><a href="../reference/recompute.html">recompute</a></span>(gs)</a></code></pre></div>
 <p>After gating is finished, gating results can be visualized by the <code>autoplot</code> method:</p>
 <div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/pkg/ggcyto/man/autoplot.html">autoplot</a></span>(gs,<span class="st">"rectangle"</span>) <span class="co">#plot one Gate</span></a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-rect-1.png" width="432"> Multiple gates can be plotted on the same panel:</p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-rect-1.png" width="700"> Multiple gates can be plotted on the same panel:</p>
 <div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/pkg/ggcyto/man/autoplot.html">autoplot</a></span>(gs, <span class="kw"><a href="../reference/gs_pop_get_children.html">gs_pop_get_children</a></span>(gs[[<span class="dv">1</span>]], <span class="st">"rectangle"</span>)[<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>])</a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-multiple-1.png" width="432"> We may also want to plot all the gates without specifying the gate index:</p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-multiple-1.png" width="700"> We may also want to plot all the gates without specifying the gate index:</p>
 <div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/pkg/ggcyto/man/autoplot.html">autoplot</a></span>(gs[[<span class="dv">1</span>]])</a></code></pre></div>
-<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-gh-bool-1.png" width="432"></p>
+<p><img src="flowWorkspace-Introduction_files/figure-html/autoplot-gh-bool-1.png" width="700"></p>
 <p>If we want to remove one node, simply:</p>
 <div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" data-line-number="1"><span class="kw"><a href="../reference/gs_pop_add.html">Rm</a></span>(<span class="st">'rectangle'</span>, gs)</a></code></pre></div>
 <pre><code>## Warning: 'Rm' is deprecated.

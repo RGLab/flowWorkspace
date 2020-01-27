@@ -283,6 +283,15 @@ test_that("transform", {
   trans_range <- range(cf, "data")
   expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
   expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  
+  #transform using inline arguments
+  fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
+  cf <- flowFrame_to_cytoframe(fr, is_h5 = TRUE)
+  h5 <- cf_get_h5_file_path(cf)
+  transform(cf, `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`))
+  expect_equal(trans_range[, c("FL1-H")], c(0.000000, 8.237988))
+  expect_equal(trans_range[, c("FL2-H")], c(0.000000, 7.400684))
+  
 })
 
 test_that("load_fcs", {

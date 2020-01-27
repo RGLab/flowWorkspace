@@ -221,8 +221,8 @@ if not specified, the samples are ordered as the underlying stored order.</p></t
     <span class='fu'><a href='save_gs.html'>save_gslist</a></span>(<span class='no'>gslist2</span>, <span class='kw'>path</span> <span class='kw'>=</span><span class='st'>"~/rglab/workspace/flowIncubator/output/gslist"</span>,<span class='kw'>overwrite</span><span class='kw'>=</span><span class='no'>T</span>)
     <span class='no'>gslist2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gslist</a></span>(<span class='kw'>path</span> <span class='kw'>=</span><span class='st'>"~/rglab/workspace/flowIncubator/output/gslist"</span>)
 
-    <span class='co'>#convert GatingSetList into one GatingSet by gslist_to_gs</span>
-    <span class='no'>gs_merged2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='gslist_to_gs.html'>gslist_to_gs</a></span>(<span class='no'>gslist2</span>,<span class='kw'>ncdfFile</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/path.expand.html'>path.expand</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>(<span class='kw'>tmpdir</span><span class='kw'>=</span><span class='st'>"~/rglab/workspace/flowIncubator/output/"</span>,<span class='kw'>fileext</span><span class='kw'>=</span><span class='st'>".nc"</span>)))
+    <span class='co'>#convert GatingSetList into one GatingSet by merge_list_to_gs</span>
+    <span class='no'>gs_merged2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='merge_list_to_gs.html'>merge_list_to_gs</a></span>(<span class='no'>gslist2</span>)
     <span class='no'>gs_merged2</span>
   }
 

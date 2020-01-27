@@ -16,21 +16,21 @@ Given a GatingHierarchy, one can extract the data associated with any subpopulat
 }
 \examples{
 \dontrun{
-	require(flowWorkspaceData)
-	d<-system.file("extdata",package="flowWorkspaceData")
-	wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
-library(CytoML)
-	ws <- open_flowjo_xml(wsfile);
-	G<-try(flowjo_to_gatingset(ws,path=d,name=1));
+ require(flowWorkspaceData)
+ d<-system.file("extdata",package="flowWorkspaceData")
+ wsfile<-list.files(d,pattern="A2004Analysis.xml",full=TRUE)
+ library(CytoML)
+ ws <- open_flowjo_xml(wsfile);
+ G<-try(flowjo_to_gatingset(ws,path=d,name=1));
  gh <- G[[1]]
-	gh_pop_compare_stats(gh);
-	gh_plot_pop_count_cv(gh)
+ gh_pop_compare_stats(gh);
+ gh_plot_pop_count_cv(gh)
  nodes <- gs_get_pop_paths(gh)
  thisNode <- nodes[4]
  require(ggcyto)
-	autoplot(gh,thisNode);
-	gh_pop_get_gate(gh,thisNode);
-	gh_pop_get_data(gh,thisNode)
+ autoplot(gh,thisNode);
+ gh_pop_get_gate(gh,thisNode);
+ gh_pop_get_data(gh,thisNode)
 }
 }
 \seealso{

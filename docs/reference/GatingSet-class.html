@@ -159,13 +159,13 @@ It allows the use to load a workspace and subset desired samples before proceedi
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowWorkspaceData</span>)
-  <span class='no'>d</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowWorkspaceData"</span>)
-  <span class='no'>wsfile</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>d</span>,<span class='kw'>pattern</span><span class='kw'>=</span><span class='st'>"A2004Analysis.xml"</span>,<span class='kw'>full</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
-        <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>CytoML</span>)
-  <span class='no'>ws</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/open_flowjo_xml.html'>open_flowjo_xml</a></span>(<span class='no'>wsfile</span>);
-  <span class='no'>G</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/try.html'>try</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/flowjo_to_gatingset.html'>flowjo_to_gatingset</a></span>(<span class='no'>ws</span>,<span class='kw'>execute</span><span class='kw'>=</span><span class='fl'>TRUE</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='no'>d</span>,<span class='kw'>name</span><span class='kw'>=</span><span class='fl'>1</span>));
-  <span class='fu'><a href='gs_plot_pop_count_cv.html'>gs_plot_pop_count_cv</a></span>(<span class='no'>G</span>);
+ <span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowWorkspaceData</span>)
+ <span class='no'>d</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowWorkspaceData"</span>)
+ <span class='no'>wsfile</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>d</span>,<span class='kw'>pattern</span><span class='kw'>=</span><span class='st'>"A2004Analysis.xml"</span>,<span class='kw'>full</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+ <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>CytoML</span>)
+ <span class='no'>ws</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/open_flowjo_xml.html'>open_flowjo_xml</a></span>(<span class='no'>wsfile</span>);
+ <span class='no'>G</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/try.html'>try</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/flowjo_to_gatingset.html'>flowjo_to_gatingset</a></span>(<span class='no'>ws</span>,<span class='kw'>execute</span><span class='kw'>=</span><span class='fl'>TRUE</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='no'>d</span>,<span class='kw'>name</span><span class='kw'>=</span><span class='fl'>1</span>));
+ <span class='fu'><a href='gs_plot_pop_count_cv.html'>gs_plot_pop_count_cv</a></span>(<span class='no'>G</span>);
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

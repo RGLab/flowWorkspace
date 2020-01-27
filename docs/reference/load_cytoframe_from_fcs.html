@@ -158,33 +158,33 @@ FCS file and returns a <code>cytoframe</code>.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>filename</th>
-      <td><p>Character of length 1: filename</p></td>
+      <td><p>The filename of the single FCS file to be read</p></td>
     </tr>
     <tr>
       <th>transformation</th>
-      <td><p>An character string that defines the type of
+      <td><p>A character string that defines the type of
 transformation. Valid values are <code>linearize</code> (default),
 <code>linearize-with-PnG-scaling</code>, or <code>scale</code>.  The <code>linearize</code>
 transformation applies the appropriate power transform to the data. The
 <code>linearize-with-PnG-scaling</code> transformation applies the appropriate
 power transform for parameters stored on log scale, and also a linear
-scaling transformation based on the 'gain' (FCS \$PnG keywords) for
+scaling transformation based on the "gain" (FCS $PnG keywords) for
 parameters stored on a linear scale. The <code>scale</code> transformation scales
-all columns to $[0,10^decades]$.  defaulting to decades=0 as in the FCS4
+all columns to \([0,10^{decades}]\).  defaulting to \(decades=0\) as in the FCS4
 specification.  A logical can also be used: <code>TRUE</code> is equal to
 <code>linearize</code> and <code>FALSE</code>(or <code>NULL</code>) corresponds to no
-transformation.  Also when the transformation keyword of the FCS header is
+transformation.  Also, when the transformation keyword of the FCS header is
 set to "custom" or "applied", no transformation will be used.</p></td>
     </tr>
     <tr>
       <th>which.lines</th>
       <td><p>Numeric vector to specify the indices of the lines to be
-read. If NULL all the records are read, if of length 1, a random sample of
+read. If it is NULL, all the records are read. If it is of length 1, a random sample of
 the size indicated by <code>which.lines</code> is read in.</p></td>
     </tr>
     <tr>
       <th>alter.names</th>
-      <td><p>boolean indicating whether or not we should rename the
+      <td><p>Logical indicating whether or not we should rename the
 columns to valid R names using <code><a href='https://rdrr.io/r/base/make.names.html'>make.names</a></code>. The default is
 FALSE.</p></td>
     </tr>
@@ -195,7 +195,7 @@ should keep when loading the file. The default is NULL.</p></td>
     </tr>
     <tr>
       <th>invert.pattern</th>
-      <td><p>logical. By default, <code>FALSE</code>. If <code>TRUE</code>,
+      <td><p>Logical. By default, <code>FALSE</code>. If <code>TRUE</code>,
 inverts the regular expression specified in <code>column.pattern</code>. This is
 useful for indicating the channel names that we do not want to read. If
 <code>column.pattern</code> is set to <code>NULL</code>, this argument is ignored.</p></td>
@@ -207,7 +207,7 @@ the output.</p></td>
     </tr>
     <tr>
       <th>is_h5</th>
-      <td><p>Boolean indicating whether the data should be stored in h5 format</p></td>
+      <td><p>Logical indicating whether the data should be stored in h5 format</p></td>
     </tr>
     <tr>
       <th>h5_filename</th>
@@ -226,26 +226,26 @@ case the original values are kept.</p></td>
     </tr>
     <tr>
       <th>truncate_max_range</th>
-      <td><p>logical type. Default is TRUE. can be optionally
+      <td><p>Logical. Default is TRUE. can be optionally
 turned off to avoid truncating the extreme positive value to the instrument
-measurement range .i.e.'$PnR'.</p></td>
+measurement range, i.e. '$PnR'.</p></td>
     </tr>
     <tr>
       <th>dataset</th>
       <td><p>The FCS file specification allows for multiple data segments
 in a single file. Since the output of <code>load_cytoframe_from_cytoset</code> is a single
 <code>cytoframe</code> we can't automatically read in all available sets. This
-parameter allows to chose one of the subsets for import. Its value is
-supposed to be an integer in the range of available data sets. This argument
+parameter allows the user to choose one of the subsets for import. Its value should
+be an integer in the range of available data sets. This argument
 is ignored if there is only a single data segment in the FCS file.</p></td>
     </tr>
     <tr>
       <th>emptyValue</th>
-      <td><p>Boolean indicating whether or not we allow empty value for
-keyword values in TEXT segment.  It affects how the double delimiters are
-treated.  IF TRUE, The double delimiters are parsed as a pair of start and
-end single delimiter for an empty value.  Otherwise, double delimiters are
-parsed one part of string as the keyword value.  default is TRUE.</p></td>
+      <td><p>Logical indicating whether or not to allow empty values for
+keywords in TEXT segment.  It affects how double delimiters are
+treated. If TRUE, double delimiters are parsed as a pair of start and
+end single delimiters for an empty value.  Otherwise, double delimiters are
+parsed as one part of the string of the keyword value. The default is TRUE.</p></td>
     </tr>
     <tr>
       <th>num_threads</th>
@@ -254,15 +254,11 @@ operation by specifiying a number of threads</p></td>
     </tr>
     <tr>
       <th>ignore.text.offset</th>
-      <td><p>Whether to ignore the keyword values in TEXT
+      <td><p>Logical indicating whether to ignore the keyword values in TEXT
 segment when they don't agree with the HEADER.  Default is FALSE, which
-throws the error when such discrepancy is found.  User can turn it on to
-ignore TEXT segment when he is sure of the accuracy of HEADER so that the
+throws the error when such a discrepancy is found. Users can turn it on to
+ignore the TEXT segment when they are sure of the accuracy of the HEADER segment so that the
 file still can be read.</p></td>
-    </tr>
-    <tr>
-      <th>files</th>
-      <td><p>A vector of filenames</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -281,7 +277,7 @@ and the keywords and values saved in the header of the FCS file.</p>
     <p>The function <code>load_cytoframe_from_fcs</code> works with the output of the FACS machine
 software from a number of vendors (FCS 2.0, FCS 3.0 and List Mode Data LMD).
 However, the FCS 3.0 standard includes some options that are not yet
-implemented in this function. If you need extensions, please let me know.
+implemented in this function. If you need extensions, please let us know.
 The output of the function is an object of class <code>cytoframe</code>.</p>
 <p>For specifications of FCS 3.0 see <a href='http://www.isac-net.org'>http://www.isac-net.org</a> and the file
 <a href='../doc/fcs3.html'>../doc/fcs3.html</a> in the <code>doc</code> directory of the package.</p>

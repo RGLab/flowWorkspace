@@ -6,8 +6,8 @@
 \title{\code{cytoset}: a reference class for efficiently managing the data representation
 of a \code{flowSet}}
 \description{
-This class is a container for a set of \code{cytoframe} objects, analagous to
-a \code{flowSet}.
+This class is a container for a set of \code{\link{cytoframe}} objects, analagous to
+a \code{\link[flowCore]{flowSet}}.
 }
 \details{
 Similar to the distinction between the \code{cytoframe} and
@@ -21,13 +21,12 @@ There is one notable exception to the typical behavior of most methods returning
 The standard extraction operator (\code{[[]]}) will by default perform a deep
 copy of the subset being extracted and return a \code{flowFrame}. This is for the sake of compatibility
 with existing user scripts.
-methods.
 }
 \section{Creating Objects}{
 
 
 Objects can be created using \code{cytoset()} and then adding samples
-by providing a cytoframe and sample name to \code{cs_add_sample}:\cr\cr
+by providing a \code{cytoframe} and sample name to \code{cs_add_sample}:\cr\cr
 
 \code{
 cs <- cytoset()\cr
@@ -52,261 +51,188 @@ documentation for details.
   parameters of each \code{\linkS4class{cytoframe}} have been subset
   according to \code{j}, \code{x[[i,j]]} returns the subset of a
   single \code{\linkS4class{flowFrame}} for all parameters in
-  \code{j}. 
-  
-  The reason for the default behavior for the extraction operator \code{[[]]}
-  of returning a \code{flowFrame} rather than \code{cytoframe}
+  \code{j}.\cr\cr
+  The reason for the default behavior of the extraction operator \code{[[]]}
+  returning a \code{flowFrame} rather than \code{cytoframe}
   is for backwards compatibility with existing user scripts. This behavior
   can be overridden to instead return a \code{cytoframe} with the additional
-  \code{returnType} argument
-  
-  \emph{Usage:}
-  
-  \code{   cytoset[i]}
-  
-  \code{   cytoset[i,j]}
-  
-  \code{   cytoset[[i]]}
-  
-  \code{cytoset[[i, returnType = "cytoframe"]]}
+  \code{returnType} argument.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   cytoset[i]}\cr\cr
+  \code{   cytoset[i,j]}\cr\cr
+  \code{   cytoset[[i]]}\cr\cr
+  \code{cytoset[[i, returnType = "cytoframe"]]}\cr\cr
 }
 
 \item{$}{Subsetting by frame name. This will return a single
   \code{\linkS4class{cytoframe}} object. Note that names may have to
-  be quoted if they are no valid R symbols
-  (e.g. \code{cytoset$"sample 1"})
+  be quoted if they are not valid R symbols
+  (e.g. \code{cytoset$"sample 1"}).\cr\cr
 }
 
 \item{colnames, colnames<-}{Extract or replace
   the \code{character} object with the (common)
   column names of all the data matrices in the
-  \code{\link{cytoframe}}s.
-  
-  \emph{Usage:}
-  
-  \code{   colnames(cytoset)}
-  
-  \code{   colnames(cytoset) <- value}
+  \code{\link{cytoframe}s}.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   colnames(cytoset)}\cr\cr
+  \code{   colnames(cytoset) <- value}\cr\cr
 }
 
 \item{identifier, identifier<-}{Extract or replace the \code{name}
-  item from the environment.
-  
-  \emph{Usage:}
-  
-  \code{   identifier(cytoset)}
-  
-  \code{   identifier(cytoset) <- value}
-  
+  item from the environment.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   identifier(cytoset)}\cr\cr
+  \code{   identifier(cytoset) <- value}\cr\cr
 }
 
 
 \item{phenoData, phenoData<-}{Extract or replace the
   \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
   containing the phenotypic data for the whole data set. Each row
-  corresponds to one of the \code{\linkS4class{cytoframe}}s.  
+  corresponds to one of the \code{\link{cytoframe}}s.  
   The \code{sampleNames} of \code{phenoData}
   (see below) must match the names of the
-  \code{\linkS4class{cytoframes}} in the \code{frames} environment.
-  
-  
-  \emph{Usage:}
-  
-  \code{   phenoData(cytoset)}
-  
-  \code{   phenoData(cytoset) <- value}
-  
+  \code{cytoframe}s in the \code{frames} environment.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   phenoData(cytoset)}\cr\cr
+  \code{   phenoData(cytoset) <- value}\cr\cr
 }
 
 \item{pData, pData<-}{Extract or replace the data frame (or columns
   thereof) containing actual phenotypic information from the
-  \code{phenoData} of the underlying data.
-  
-  \emph{Usage:}
-  
-  \code{   pData(cytoset)}
-  
-  \code{   pData(cytoset)$someColumn <- value}
-  
+  \code{phenoData} of the underlying data.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   pData(cytoset)}\cr\cr
+  \code{   pData(cytoset)$someColumn <- value}\cr\cr
 }
 
 \item{varLabels, varLabels<-}{ \strong{Not yet implemented.}\cr
-  Extract and set varLabels in the \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
-  of the \code{phenoData} of the underyling data.
-  
-  \emph{Usage:}
-  
-  \code{   varLabels(cytoset)}
-  
-  \code{   varLabels(cytoset) <- value}
-  
+  Extract and set \code{varLabels} in the \code{\link[Biobase]{AnnotatedDataFrame}}
+  of the \code{phenoData} of the underyling data.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   varLabels(cytoset)}\cr\cr
+  \code{   varLabels(cytoset) <- value}\cr\cr
 }
 
 \item{sampleNames}{Extract and replace sample names from the
   \code{phenoData}. Sample names correspond to frame
   identifiers, and replacing them will also replace the \code{GUID}
-  for each cytoframe. Note that \code{sampleName} needs to be
-  unique.
-  
-  \emph{Usage:}
-  
-  \code{   sampleNames(cytoset)}
-  
-  \code{   sampleNames(cytoset) <- value}
-  
+  for each cytoframe. Note that each sample name needs to be
+  unique.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   sampleNames(cytoset)}\cr\cr
+  \code{   sampleNames(cytoset) <- value}\cr\cr
 }
 
 \item{keyword}{Extract or replace keywords specified in a character
   vector or a list from the \code{description} slot of each
-  frame. See \code{\link{keyword}} for details.
-  
-  \emph{Usage:}
-  
-  \code{   keyword(cytoset, list(keywords))}
-  
-  \code{   keyword(cytoset, keywords)}
-  
-  \code{   keyword(cytoset) <- list(foo="bar") }
-  
+  frame. See \code{\link{keyword}} for details.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   keyword(cytoset, list(keywords))}\cr\cr
+  \code{   keyword(cytoset, keywords)}\cr\cr
+  \code{   keyword(cytoset) <- list(foo="bar") }\cr\cr
 }
 
-\item{length}{number of \code{\link{cytoframe}} objects in
-  the set.
-  
-  \emph{Usage:}
-  
-  \code{   length(cytoset)}
-  
+\item{length}{The number of \code{\link{cytoframe}} objects in
+  the set.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   length(cytoset)}\cr\cr
 }
 
-\item{show}{display object summary.}
+\item{show}{display object summary.\cr\cr}
 
 \item{summary}{Return descriptive statistical summary (min, max,
-  mean and quantile) for each channel of each \code{\link{cytoframe}}
-  
-  \emph{Usage:}
-  
-  \code{   summary(cytoset)}
-  
+  mean and quantile) for each channel of each \code{\link{cytoframe}}.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   summary(cytoset)}\cr\cr
 }
 
 
 \item{fsApply}{Apply a function on all frames in a \code{cytoset}
   object. Similar to \code{\link{sapply}}, but with additional
-  parameters. See separate documentation for details.
-  
-  \emph{Usage:}
-  
-  \code{   fsApply(cytoset, function, ...)}
-  
-  \code{   fsApply(cytoset, function, use.exprs=TRUE, ...)}
-  
+  parameters. See \code{\link[flowCore]{fsApply}} for details.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   fsApply(cytoset, function, ...)}\cr\cr
+  \code{   fsApply(cytoset, function, use.exprs=TRUE, ...)}\cr\cr
 }
 
 \item{compensate}{Apply a compensation matrix on all frames in a
-  \code{cytoset} object. See separate documentation for details.
-  
-  \emph{Usage:}
-  
-  \code{   compensate(cytoset, matrix)}
-  
+  \code{cytoset} object. See \code{\link{compensate}} for details.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   compensate(cytoset, matrix)}\cr\cr
 }
 
 \item{transform}{Apply a transformation function on all frames of a
-  \code{cytoset} object. See separate documentation for details.
-  
-  \emph{Usage:}
-  
-  \code{   transform(cytoset, ...)}
-  
+  \code{cytoset} object. See \code{\link{transform}} for details.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   transform(cytoset, ...)}\cr\cr
 }
 
-\item{filter}{Apply a filter object on a \code{cytoset}
-  object. There are methods for \code{\linkS4class{filter}}s,
-  \code{\link{filterSet}}s and lists of filters. The latter has to
+\item{filter}{Apply a filter on a \code{cytoset}
+  object. There are methods for \code{\link[flowCore:filter-class]{filter}} objects,
+  and lists of \code{filter} objects. The latter has to
   be a named list, where names of the list items are matching
-  sampleNames of the \code{cytoset}. See \code{\linkS4class{filter}}
-  for details.
-  
-  \emph{Usage:}
-  
-  \code{   filter(cytoset, filter)}
-  
-  \code{   filter(cytoset, list(filters))}
-  
+  the \code{sampleNames} of the \code{cytoset}. See \code{\link[flowCore]{filter}}
+  for details.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   filter(cytoset, filter)}\cr\cr
+  \code{   filter(cytoset, list(filters))}\cr\cr
 }
 
-\item{split}{Split all \code{cytoset} objects according to a
-  \code{\link{filter}}, \code{\link{filterResult}} or a list of such
+\item{split}{Split all \code{cytoframe} objects according to a
+  \code{\link[flowCore:filter-class]{filter}}, \code{\link[flowCore]{filterResult}} or a list of such
   objects, where the length of the list has to be the same as the
   length of the \code{cytoset}. This returns a list of
-  \code{\linkS4class{cytoframe}}s or an object of class
+  \code{\link{cytoframe}}s or an object of class
   \code{cytoset} if the \code{flowSet} argument is set to
   \code{TRUE}. Alternatively, a \code{cytoset} can be split into
   separate subsets according to a factor (or any vector that can be
-  coerced into factors), similar to the behaviour of
+  coerced into a factor), similar to the behaviour of
   \code{\link[base]{split}} for lists. This will return a list of
-  \code{cytoset}s. See \code{\link{split}} for details.
-  
-  \emph{Usage:}
-  
-  \code{   split(cytoset, filter)}
-  
-  \code{   split(cytoset, filterResult)}
-  
-  \code{   split(cytoset, list(filters))}
-  
-  \code{   split(cytoset, factor)}
-  
+  \code{cytoset}s. See \code{\link[flowCore]{split}} for details.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   split(cytoset, filter)}\cr\cr
+  \code{   split(cytoset, filterResult)}\cr\cr
+  \code{   split(cytoset, list(filters))}\cr\cr
+  \code{   split(cytoset, factor)}\cr\cr
 }
 
 \item{Subset}{Returns a \code{cytoset} of
   \code{\linkS4class{cytoframe}}s that have been subset according
-  to a \code{\linkS4class{filter}} or
-  \code{\linkS4class{filterResult}}, or according to a list of such
-  items of equal length as the \code{cytoset}.
-  
-  \emph{Usage:}
-  
-  \code{   Subset(cytoset, filter)}
-  
-  \code{   Subset(cytoset, filterResult)}
-  
-  \code{   Subset(cytoset, list(filters))}
-  
+  to a \code{\link[flowCore:filter-class]{filter}} or
+  \code{\link[flowCore]{filterResult}}, or according to a list of such
+  items of equal length as the \code{cytoset}. See \code{\link[flowCore]{Subset}}
+  for details.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   Subset(cytoset, filter)}\cr\cr
+  \code{   Subset(cytoset, filterResult)}\cr\cr
+  \code{   Subset(cytoset, list(filters))}\cr\cr
 }
 
 
 \item{rbind2}{\strong{Not yet implemented.}\cr Combine two \code{cytoset} objects, or one
-  \code{cytoset} and one \code{\linkS4class{cytoframe}} object.
-  
-  \emph{Usage:}
-  
-  \code{   rbind2(cytoset, cytoset)}
-  
-  \code{   rbind2(cytoset, cytoframe)}
-  
+  \code{cytoset} and one \code{\link{cytoframe}} object.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{   rbind2(cytoset, cytoset)}\cr\cr
+  \code{   rbind2(cytoset, cytoframe)}\cr\cr
 }
 
 \item{spillover}{Compute spillover matrix from a compensation
-  set. See separate documentation for details.
+  set. See \code{\link[flowStats]{spillover}} for details.
 }
 
 \item{realize_view}{Returns a new \code{cytoset} with its own copy of the
 underlying data (a deep copy). The optional \code{filepath} argument accepts
 a string to specify a full directory name for storing the new copies of the data 
-from the FCS files in h5 format.
-  
-  \emph{Usage:}
-    
-  \code{realize_view(cytoset, filepath)}
+from the FCS files in h5 format.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{realize_view(cytoset, filepath)}\cr\cr
 }
 \item{cs_add_sample}{Adds a \code{cytoframe} to the \code{cytoset} with sample name given
-by a string.
-
-  \emph{Usage:}
-  
-  \code{cs_add_sample(cytoset, "SampleName", cytoframe)}
+by a string.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{cs_add_sample(cytoset, "SampleName", cytoframe)}\cr\cr
 }
 }
 }

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>convert the legacy(mixed with R and C++ files) GatingSet archive to the new format(C++ only) — convert_legacy_gs • flowWorkspace</title>
+<title>convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only) — convert_legacy_gs • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -42,9 +42,11 @@
 
 
 
-<meta property="og:title" content="convert the legacy(mixed with R and C++ files) GatingSet archive to the new format(C++ only) — convert_legacy_gs" />
-<meta property="og:description" content="Note that it is likely some of the keyword values (mainly offsets e.g. BEGINDATA) may change slightly after the converting due to the rewriting data
-to FCS files through write.FCS." />
+<meta property="og:title" content="convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only) — convert_legacy_gs" />
+<meta property="og:description" content="Older versions of flowWorkspace represented GatingSet objects using a combination of
+R and C++ files, while newer versions have moved the representation entirely to the C++ level for
+the sake of efficiency. In order to use GatingSet or GatingSetList archives created in older versions, 
+they will need to be converted to the new format." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -124,14 +126,16 @@ to FCS files through write.FCS." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>convert the legacy(mixed with R and C++ files) GatingSet archive to the new format(C++ only)</h1>
+    <h1>convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only)</h1>
     
     <div class="hidden name"><code>convert_legacy.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Note that it is likely some of the keyword values (mainly offsets e.g. BEGINDATA) may change slightly after the converting due to the rewriting data
-to FCS files through write.FCS.</p>
+    <p>Older versions of flowWorkspace represented <code>GatingSet</code> objects using a combination of
+R and C++ files, while newer versions have moved the representation entirely to the C++ level for
+the sake of efficiency. In order to use <code>GatingSet</code> or <code>GatingSetList</code> archives created in older versions, 
+they will need to be converted to the new format.</p>
     </div>
 
     <pre class="usage"><span class='fu'>convert_legacy_gs</span>(<span class='no'>from</span>, <span class='no'>to</span>)
@@ -151,6 +155,10 @@ to FCS files through write.FCS.</p>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Note that it is likely some of the keyword values (mainly offsets e.g. BEGINDATA) may change slightly after the conversion 
+due to the process of rewriting data to FCS files through write.FCS.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
@@ -161,6 +169,7 @@ to FCS files through write.FCS.</p>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#details">Details</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

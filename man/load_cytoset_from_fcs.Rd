@@ -63,7 +63,7 @@ then the file names are used.}
 
 \item{decades}{see \code{\link{load_cytoframe_from_fcs}} for details.}
 
-\item{is_h5}{Boolean indicating whether the data should be stored in h5 format}
+\item{is_h5}{logical indicating whether the data should be stored in h5 format}
 
 \item{min.limit}{see \code{\link{load_cytoframe_from_fcs}} for details.}
 
@@ -81,7 +81,7 @@ operation by specifiying a number of threads}
 \item{sep}{Separator character that gets passed on to
 \code{\link[Biobase]{read.AnnotatedDataFrame}}.}
 
-\item{as.is}{Logical that gets passed on to
+\item{as.is}{logical that gets passed on to
 \code{\link[Biobase]{read.AnnotatedDataFrame}}. This controls the automatic
 coercion of characters to factors in the \code{phenoData}.}
 
