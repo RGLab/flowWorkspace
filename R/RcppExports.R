@@ -122,6 +122,10 @@ set_transformations <- function(gs, sampleName, translist) {
     invisible(.Call(`_flowWorkspace_boolGating`, gs, sampleName, filter, nodeID))
 }
 
+set_quadgate <- function(gs, sampleName, gatePath, inter) {
+    invisible(.Call(`_flowWorkspace_set_quadgate`, gs, sampleName, gatePath, inter))
+}
+
 .cpp_setGate <- function(gs, sampleName, gatePath, filter) {
     invisible(.Call(`_flowWorkspace_setGate`, gs, sampleName, gatePath, filter))
 }

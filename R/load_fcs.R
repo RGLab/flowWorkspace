@@ -234,7 +234,8 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                          ignore.text.offset = FALSE,
                          sep="\t", as.is=TRUE, name
                         , h5_dir = tempdir()
-                         , ...)
+                        , file_col_name = NULL
+                        , ...)
 {
     if(!dir.exists(h5_dir))
       dir.create(h5_dir)
@@ -251,11 +252,14 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
     else
       which.lines <- which.lines -1
     
-    phenoData <- flowCore:::parse_pd_for_read_fs(files, path, pattern, phenoData, sep, as.is,...)
+    phenoData <- flowCore:::parse_pd_for_read_fs(files, path, pattern, phenoData, sep, as.is, file_col_name = file_col_name, ...)
     pd <- pData(phenoData)
-    cols <- colnames(pd)
-    fidx <- grep("file|filename", cols, ignore.case=TRUE)
-    file_col_name <- cols[fidx]
+    if(is.null(file_col_name))
+    {
+      cols <- colnames(pd)
+      fidx <- grep("file|filename", cols, ignore.case=TRUE)
+      file_col_name <- cols[fidx]
+    }
     files <- pd[[file_col_name]]
     names(files) <- rownames(pd)#set guid
     cs <- fcs_to_cytoset(files, list(which_lines = which.lines

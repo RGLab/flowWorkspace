@@ -291,6 +291,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// set_quadgate
+void set_quadgate(XPtr<GatingSet> gs, string sampleName, string gatePath, vector<double> inter);
+RcppExport SEXP _flowWorkspace_set_quadgate(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP gatePathSEXP, SEXP interSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< string >::type gatePath(gatePathSEXP);
+    Rcpp::traits::input_parameter< vector<double> >::type inter(interSEXP);
+    set_quadgate(gs, sampleName, gatePath, inter);
+    return R_NilValue;
+END_RCPP
+}
 // setGate
 void setGate(XPtr<GatingSet> gs, string sampleName, string gatePath, List filter);
 RcppExport SEXP _flowWorkspace_setGate(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP gatePathSEXP, SEXP filterSEXP) {
@@ -1117,6 +1130,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getHiddenFlag", (DL_FUNC) &_flowWorkspace_getHiddenFlag, 3},
     {"_flowWorkspace_addGate", (DL_FUNC) &_flowWorkspace_addGate, 5},
     {"_flowWorkspace_boolGating", (DL_FUNC) &_flowWorkspace_boolGating, 4},
+    {"_flowWorkspace_set_quadgate", (DL_FUNC) &_flowWorkspace_set_quadgate, 4},
     {"_flowWorkspace_setGate", (DL_FUNC) &_flowWorkspace_setGate, 4},
     {"_flowWorkspace_removeNode", (DL_FUNC) &_flowWorkspace_removeNode, 3},
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
