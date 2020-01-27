@@ -59,10 +59,10 @@ test_that("save GatingSet to archive",
       #link
       tmp1 <- tempfile()
       dir.create(tmp1)
-      expect_message(save_gs(gs, path = tmp1, cdf = "link"), "Done")
-      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
-      expect_equal(length(h5), 1)
-      expect_equal(nchar(Sys.readlink(h5)), 0)
+      expect_error(save_gs(gs, path = tmp1, cdf = "link"), "no longer", class = "error")
+      # h5 <- list.files(tmp1, ".h5", full.names = TRUE)
+      # expect_equal(length(h5), 1)
+      # expect_equal(nchar(Sys.readlink(h5)), 0)
       
       #move
       tmp1 <- tempfile()
