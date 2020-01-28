@@ -81,15 +81,25 @@ test_that("write permission", {
 })
 
 test_that("lock", {
+  skip_if_not(ish5)
+  
   cf1 <- realize_view(cf)
   #writable
   exprs(cf1)[1,1] <- 3
   expect_equivalent(exprs(cf1)[1,1], 3)
+  
   #lock it
   cf_lock(cf1)
+  oldkey <- keyword(cf1)[["TUBE NAME"]]
   expect_error(exprs(cf1)[1,1] <- 4, "read-only", class = "std::domain_error")
-  expect_error(keyword(cf1)[["TUBE NAME"]] <- "dd", "read-only", class = "std::domain_error")
   expect_equivalent(exprs(cf1)[1,1], 3)
+  keyword(cf1)[["TUBE NAME"]] <- "dd"
+  expect_equal(keyword(cf1)[["TUBE NAME"]], "dd")
+  expect_error(cf_flush_meta(cf1), "read-only", class = "std::domain_error")
+  cf_load_meta(cf1)
+  expect_equal(keyword(cf1)[["TUBE NAME"]], oldkey)
+  
+  
   cf_unlock(cf1)
   exprs(cf1)[1,1] <- 4
   expect_equivalent(exprs(cf1)[1,1], 4)
@@ -97,14 +107,27 @@ test_that("lock", {
   key.new <- "dd"
   keyword(cf1)[["TUBE NAME"]] <- key.new
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
-  skip_if_not(ish5)
-  #test flush and load
-  cf_lock(cf1)
+  
+  #test load
   cf_load_meta(cf1)
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.old)
   
-  #shallow cp
-  cf1 <- copy_view(cf)
+  #flush to disk
+  keyword(cf1)[["TUBE NAME"]] <- key.new
+  cf_flush_meta(cf1)
+  tmp <- cf_get_h5_file_path(cf1)
+  cf1 <- load_cytoframe_from_h5(tmp, readonly = FALSE)
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
+  
+  #without explicit flush changes won't automatically synced to disk
+  #which is the intentional to prevent accidental tamper become permanant
+  keyword(cf1)[["TUBE NAME"]] <- key.old
+  rm(cf1)
+  invisible(gc())
+  cf1 <- load_cytoframe_from_h5(tmp)
+  expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
+  
+
 })
 
 
@@ -271,7 +294,7 @@ test_that("keyword setters", {
 # })
 # 
 test_that("transform", {
-  
+  skip_if_not(ish5)
   fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
   cf <- flowFrame_to_cytoframe(fr, is_h5 = TRUE)
   h5 <- cf_get_h5_file_path(cf)
@@ -284,13 +307,15 @@ test_that("transform", {
   expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
   expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
   
-  #transform using inline arguments
-  fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
-  cf <- flowFrame_to_cytoframe(fr, is_h5 = TRUE)
-  h5 <- cf_get_h5_file_path(cf)
-  transform(cf, `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`))
-  expect_equal(trans_range[, c("FL1-H")], c(0.000000, 8.237988))
-  expect_equal(trans_range[, c("FL2-H")], c(0.000000, 7.400684))
+  #TODO:not ported to cytoframe yet
+  #transform using inline arguments 
+  # fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
+  # cf <- flowFrame_to_cytoframe(fr, is_h5 = TRUE)
+  # h5 <- cf_get_h5_file_path(cf)
+  # transform(cf, `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`))
+  # trans_range <- range(cf, "data")
+  # expect_equal(trans_range[, c("FL1-H")], c(0.000000, 8.237988))
+  # expect_equal(trans_range[, c("FL2-H")], c(0.000000, 7.400684))
   
 })
 

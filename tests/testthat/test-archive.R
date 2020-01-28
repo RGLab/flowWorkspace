@@ -41,9 +41,24 @@ test_that("save GatingSet to archive",
       #fail to save due to the mismatch of h5 files between folder and gs
       file.copy(cdf, file.path(tmp, "redundant.nc"))
       expect_error(save_gs(gs, path = tmp), "Not a valid", class = "std::domain_error")
-      # fail to update the readonly data
-      expect_error(colnames(gs_cyto_data(gs))[1] <- "dd" , "read-only", class = "std::domain_error")
-      expect_error(exprs(get_cytoframe_from_cs(gs_cyto_data(gs), 1))[1,1] <- 0, "read-only", class = "std::domain_error")
+      
+      # protect the readonly data
+      cf <- get_cytoframe_from_cs(gs_cyto_data(gs), 1)
+      expect_error(exprs(cf)[1,1] <- 0, "read-only", class = "std::domain_error")
+      colnames(gs_cyto_data(gs))[1] <- "dd"
+      expect_equal(colnames(gs)[1], "dd")
+      expect_error(cs_flush_meta(gs_cyto_data(gs)) , "read-only", class = "std::domain_error")
+      #but can be saved 
+      tmp1 <- tempfile()
+      #either by save_gs
+      save_gs(gs, tmp1)
+      gs1 <- load_gs(tmp1)
+      expect_equal(colnames(gs1)[1], "dd")
+      #or by clone
+      gs1 <- gs_clone(gs)
+      expect_equal(colnames(gs1)[1], "dd")
+      expect_silent(cs_flush_meta(gs_cyto_data(gs1)))
+      
       
       #skip h5 when write to itself
       file.remove(file.path(tmp, "redundant.nc"))

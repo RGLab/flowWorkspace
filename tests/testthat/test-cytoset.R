@@ -30,12 +30,15 @@ test_that("save/load", {
   identifier(cs) <- id
   # file.copy(cdf, file.path(tmp, "redundant.nc"))
   # expect_error(save_cytoset(cs, path = tmp), "Not a valid", class = "std::domain_error")
-  
-  expect_error(colnames(cs)[1] <- "dd" , "read-only", class = "std::domain_error")
+  colnames(cs)[1] <- "dd"
+  expect_equal(colnames(cs)[1], "dd")
+  expect_error(cs_flush_meta(cs) , "read-only", class = "std::domain_error")
   expect_error(exprs(get_cytoframe_from_cs(cs, 1))[1,1] <- 0, "read-only", class = "std::domain_error")
   
   cs <- load_cytoset(tmp, h5_readonly = FALSE)
   colnames(cs)[1] <- "dd"
+  expect_silent(cs_flush_meta(cs))
+  cs <- load_cytoset(tmp)
   expect_equal(colnames(cs)[1], "dd")
 })
 
