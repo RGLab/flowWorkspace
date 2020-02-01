@@ -60,8 +60,11 @@ using namespace cytolib;
           //get count or frequency of this pop
           VertexID u = gh.getNodeID(pop);
           unsigned thisCount = gh.getNodeProperty(u).getStats(isFlowCore)["count"];
-          if(freq && rootCount)
-            freqVec(counter) = double(thisCount) / double(rootCount);
+          if(freq)
+            if(rootCount)
+              freqVec(counter) = double(thisCount) / double(rootCount);
+            else
+              freqVec(counter) = 0.0;
           else
             countVec(counter) = thisCount;
               
@@ -71,8 +74,11 @@ using namespace cytolib;
           
           //get parent count or frequency
           unsigned parentCount = gh.getNodeProperty(pid).getStats(isFlowCore)["count"];
-          if(freq && rootCount)
-            parentFreqVec(counter) = double(parentCount) / double(rootCount);
+          if(freq)
+            if(rootCount)
+              parentFreqVec(counter) = double(parentCount) / double(rootCount);
+            else
+              parentFreqVec(counter) = 0.0;
           else
             parentCountVec(counter) = parentCount;
           
