@@ -1465,7 +1465,7 @@ gs_pop_get_count_fast(x, statistic, xml, subpopulations, format, path, ...)
 #'         }
 #' @import data.table
 #' @export
-gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
+gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
 	 if(is(x, "GatingSetList"))
 		 return(.gslist_get_pop_stats(x, format, statistic, xml, subpopulations, path, ...))
       # Based on the choice of statistic, the population statistics are returned for
@@ -1479,14 +1479,22 @@ gs_pop_get_count_fast <- function(x, statistic = c("freq", "count"), xml = FALSE
         if(is.null(subpopulations))
           subpopulations <- gs_get_pop_paths(x, path = path, ...)[-1]
 
-        pop_stats <- .getPopCounts(x@pointer, subpopulations, xml, path == "full")
-        pop_stats <- data.table(name = pop_stats[["name"]]
-                              , Population = pop_stats[["Population"]]
-                              , Parent = pop_stats[["Parent"]]
-                              , Count = pop_stats[["Count"]]
-                              , ParentCount = pop_stats[["ParentCount"]]
-                            )
-
+        pop_stats <- .getPopCounts(x@pointer, statistic == "freq", subpopulations, xml, path == "full")
+        if(statistic == "freq"){
+        	pop_stats <- data.table(name = pop_stats[["name"]]
+        							, Population = pop_stats[["Population"]]
+        							, Parent = pop_stats[["Parent"]]
+        							, Frequency = pop_stats[["Frequency"]]
+        							, ParentFrequency = pop_stats[["ParentFrequency"]]
+        	)
+        }else{
+        	pop_stats <- data.table(name = pop_stats[["name"]]
+        							, Population = pop_stats[["Population"]]
+        							, Parent = pop_stats[["Parent"]]
+        							, Count = pop_stats[["Count"]]
+        							, ParentCount = pop_stats[["ParentCount"]]
+        	)
+        }
       }else{
 
 

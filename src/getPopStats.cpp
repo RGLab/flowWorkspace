@@ -10,6 +10,7 @@ using namespace cytolib;
   {
     // source 
     Rcpp::XPtr<GatingSet> gs;
+    const bool freq;
     const StringVec sampleNames;
     const StringVec subpopulation;
     const bool isFlowCore;
@@ -21,18 +22,24 @@ using namespace cytolib;
     Rcpp::CharacterVector popVec;
     Rcpp::CharacterVector parentVec;
     Rcpp::IntegerVector countVec;
+    Rcpp::DoubleVector freqVec;
     Rcpp::IntegerVector parentCountVec;
-    
+    Rcpp::DoubleVector parentFreqVec;
     
     // initialize with source and destination
-    getStats(Rcpp::XPtr<GatingSet> gs,const StringVec sampleNames,const StringVec subpopulation, const bool isFlowCore, const bool isFullPath,List output) 
-      : gs(gs),sampleNames(sampleNames), subpopulation(subpopulation), isFlowCore(isFlowCore), isFullPath(isFullPath), output(output) {
+    getStats(Rcpp::XPtr<GatingSet> gs, const bool freq, const StringVec sampleNames,const StringVec subpopulation, const bool isFlowCore, const bool isFullPath,List output) 
+      : gs(gs), freq(freq), sampleNames(sampleNames), subpopulation(subpopulation), isFlowCore(isFlowCore), isFullPath(isFullPath), output(output) {
           sampleVec = output["name"];
           popVec = output["Population"];
           parentVec = output["Parent"];
-          countVec = output["Count"];
-          parentCountVec = output["ParentCount"];
-      
+          if(freq){
+            freqVec = output["Frequency"];
+            parentFreqVec = output["ParentFrequency"];
+          }else{
+            countVec = output["Count"];
+            parentCountVec = output["ParentCount"];
+          }
+
     }
     
     // take the square root of the range of elements requested
@@ -43,22 +50,31 @@ using namespace cytolib;
       {
         std::string sn = sampleNames.at(i);
         GatingHierarchy & gh = *gs->getGatingHierarchy(sn);
+        unsigned rootCount = gh.getNodeProperty(gh.getNodeID("root")).getStats(isFlowCore)["count"];
         for(unsigned j = 0; j < nPop; j++){
           std::string pop = subpopulation.at(j);
           auto counter = i * nPop + j;
           sampleVec(counter) = sn;
           popVec(counter) = pop;
           
-          //				get count of this pop
+          //get count or frequency of this pop
           VertexID u = gh.getNodeID(pop);
-          countVec(counter) = gh.getNodeProperty(u).getStats(isFlowCore)["count"];
-          
-          //				 get parent name
+          unsigned thisCount = gh.getNodeProperty(u).getStats(isFlowCore)["count"];
+          if(freq && rootCount)
+            freqVec(counter) = double(thisCount) / double(rootCount);
+          else
+            countVec(counter) = thisCount;
+              
+          //get parent name
           VertexID pid = gh.getParent(u);
           parentVec(counter) = gh.getNodePath(pid, isFullPath);
           
-          //				get parent count
-          parentCountVec(counter) = gh.getNodeProperty(pid).getStats(isFlowCore)["count"];
+          //get parent count or frequency
+          unsigned parentCount = gh.getNodeProperty(pid).getStats(isFlowCore)["count"];
+          if(freq && rootCount)
+            parentFreqVec(counter) = double(parentCount) / double(rootCount);
+          else
+            parentCountVec(counter) = parentCount;
           
           //increment counter
           counter++;
@@ -72,6 +88,7 @@ using namespace cytolib;
 //' This speeds up the process of getPopStats by putting the loop in c++ and avoiding copying while constructing vectors
 //'
 //' @param gsPtr external pointer that points to the C data structure of GatingSet
+//' @param freq logical flag indicating whether counts should be converted to frequencies
 //' @param sampleNames sample names vector
 //' @param subpopulation population vector that specify the subset of pops to query
 //' @param flowJo logical flag to specify whether flowCore or flowJo counts to return
@@ -79,7 +96,7 @@ using namespace cytolib;
 //' @importFrom RcppParallel RcppParallelLibs
 //' @noRd
 //[[Rcpp::export(".getPopCounts")]]
-Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bool flowJo, bool isFullPath){
+Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath){
   
   bool isFlowCore = !flowJo;
   StringVec sampleNames = gsPtr->get_sample_uids();
@@ -89,16 +106,14 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bo
   Rcpp::CharacterVector sampleVec(nVec);
   Rcpp::CharacterVector popVec(nVec);
   Rcpp::CharacterVector parentVec(nVec);
-  Rcpp::IntegerVector countVec(nVec);
-  Rcpp::IntegerVector parentCountVec(nVec);
   
   auto output = Rcpp::List::create(Rcpp::Named("name", sampleVec)
                               , Rcpp::Named("Population", popVec)
                               , Rcpp::Named("Parent", parentVec)
-                              , Rcpp::Named("Count", countVec)
-                              , Rcpp::Named("ParentCount", parentCountVec)
+                              , Rcpp::Named(freq ? "Frequency" : "Count", freq ? Rcpp::DoubleVector(nVec) : Rcpp::IntegerVector(nVec))
+                              , Rcpp::Named(freq ? "ParentFrequency" : "ParentCount", freq ? Rcpp::DoubleVector(nVec) : Rcpp::IntegerVector(nVec))
                             );
-  getStats getStats(gsPtr, sampleNames, subpopulation, isFlowCore, isFullPath, output);
+  getStats getStats(gsPtr, freq, sampleNames, subpopulation, isFlowCore, isFullPath, output);
   
   parallelFor(0, nSample, getStats);
 

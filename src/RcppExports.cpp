@@ -1039,16 +1039,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // getPopCounts
-Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, StringVec subpopulation, bool flowJo, bool isFullPath);
-RcppExport SEXP _flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
+Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath);
+RcppExport SEXP _flowWorkspace_getPopCounts(SEXP gsPtrSEXP, SEXP freqSEXP, SEXP subpopulationSEXP, SEXP flowJoSEXP, SEXP isFullPathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< bool >::type freq(freqSEXP);
     Rcpp::traits::input_parameter< StringVec >::type subpopulation(subpopulationSEXP);
     Rcpp::traits::input_parameter< bool >::type flowJo(flowJoSEXP);
     Rcpp::traits::input_parameter< bool >::type isFullPath(isFullPathSEXP);
-    rcpp_result_gen = Rcpp::wrap(getPopCounts(gsPtr, subpopulation, flowJo, isFullPath));
+    rcpp_result_gen = Rcpp::wrap(getPopCounts(gsPtr, freq, subpopulation, flowJo, isFullPath));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1194,7 +1195,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_set_pheno_data", (DL_FUNC) &_flowWorkspace_set_pheno_data, 2},
     {"_flowWorkspace_get_pheno_data", (DL_FUNC) &_flowWorkspace_get_pheno_data, 1},
     {"_flowWorkspace_getDescendants", (DL_FUNC) &_flowWorkspace_getDescendants, 3},
-    {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 4},
+    {"_flowWorkspace_getPopCounts", (DL_FUNC) &_flowWorkspace_getPopCounts, 5},
     {"_flowWorkspace_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_getSingleCellExpression", (DL_FUNC) &_flowWorkspace_getSingleCellExpression, 6},
     {"_flowWorkspace_h5_set_error_handler", (DL_FUNC) &_flowWorkspace_h5_set_error_handler, 0},

@@ -269,7 +269,7 @@ test_that("gs_pop_set_name",{
 
 test_that("gs_pop_get_count_fast",{
   
-      thisRes <- gs_pop_get_count_fast(gs, path = "full", format = "wide")
+      thisRes <- gs_pop_get_count_fast(gs, , statistic = "freq", path = "full", format = "wide")
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
@@ -285,7 +285,7 @@ test_that("gs_pop_get_count_fast",{
       stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "auto")
       
       #convert it to wide to do the comparsion
-      stats_long[, value := Count/ParentCount]
+      stats_long[, value := Count]
       stats_long <- dcast.data.table(stats_long[, list(Population,name, value)],  Population~name)
       rn <- stats_long[, Population]
       stats_long[, Population := NULL]

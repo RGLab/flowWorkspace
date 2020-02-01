@@ -402,14 +402,15 @@ get_pheno_data <- function(cs) {
 #' This speeds up the process of getPopStats by putting the loop in c++ and avoiding copying while constructing vectors
 #'
 #' @param gsPtr external pointer that points to the C data structure of GatingSet
+#' @param freq logical flag indicating whether counts should be converted to frequencies
 #' @param sampleNames sample names vector
 #' @param subpopulation population vector that specify the subset of pops to query
 #' @param flowJo logical flag to specify whether flowCore or flowJo counts to return
 #' @param isFullPath logical flag to specify whether return the full path or partial path of populations
 #' @importFrom RcppParallel RcppParallelLibs
 #' @noRd
-.getPopCounts <- function(gsPtr, subpopulation, flowJo, isFullPath) {
-    .Call(`_flowWorkspace_getPopCounts`, gsPtr, subpopulation, flowJo, isFullPath)
+.getPopCounts <- function(gsPtr, freq, subpopulation, flowJo, isFullPath) {
+    .Call(`_flowWorkspace_getPopCounts`, gsPtr, freq, subpopulation, flowJo, isFullPath)
 }
 
 .cpp_getSingleCellExpressionByGate <- function(gs, sampleName, markers_pops, data, markers, threshold) {

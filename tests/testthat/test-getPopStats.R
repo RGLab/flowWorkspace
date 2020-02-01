@@ -17,5 +17,18 @@ test_that("group and merge the GatingSet object", {
   setkey(stats.new, name, Population, Parent)
   expect_equal(stats, stats.new)
   
+  # Make sure frequencies are working as expected
+  normalized_in_c <- gs_pop_get_count_fast(gs, "freq")
+  normalized <- lapply(gs, function(gh){
+    df <- gs_pop_get_count_fast(gh)
+    totalEvents <- as.numeric(keyword(gh, "$TOT"))
+    df$Frequency <- df$Count / totalEvents
+    df$ParentFrequency <- df$ParentCount / totalEvents
+    # Need to do this because otherwise the row orders differ
+    df[order(match(df$Population, normalized_in_c$Population))]
+  })
+  normalized_in_r <- do.call(rbind, normalized)[,-c("Count", "ParentCount")]
+  expect_equal(normalized_in_r, normalized_in_c, tolerance = 1e-6)
+  
 })
 
