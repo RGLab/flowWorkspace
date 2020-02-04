@@ -42,7 +42,16 @@ save_gs<-function(gs, path
   #  browser()
   cdf <- match.arg(cdf)
   path <- suppressWarnings(normalizePath(path))
-  .cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf)
+  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf), silent = TRUE))
+  
+  
+  if(class(res) == "try-error")
+  {
+    res <- gsub(" H5Option", ' option', res)
+    res <- gsub(" the indexed CytoFrameView object", ' the GatingSet has been subsetted', res)
+    
+    stop(res[[1]])
+  }
   message("Done\nTo reload it, use 'load_gs' function\n")
   
   

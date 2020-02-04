@@ -28,7 +28,7 @@ test_that("save GatingSet to archive",
       #overwrite the existing dir
       expect_message(save_gs(gs, path = tmp), "Done")
       #fail to save due to mismatch of gs id
-      expect_error(save_gs(gs[1], path = tmp), "doesn't match", class = "std::domain_error")
+      expect_error(save_gs(gs[1], path = tmp), "doesn't match", class = "error")
       # check gs id is preserved
       cdf <- list.files(tmp, ".h5", full.names = TRUE)
       expect_equal(identifier(gs), id)
@@ -40,7 +40,7 @@ test_that("save GatingSet to archive",
       identifier(gs) <- id
       #fail to save due to the mismatch of h5 files between folder and gs
       file.copy(cdf, file.path(tmp, "redundant.nc"))
-      expect_error(save_gs(gs, path = tmp), "Not a valid", class = "std::domain_error")
+      expect_error(save_gs(gs, path = tmp), "Not a valid", class = "error")
       
       # protect the readonly data
       cf <- get_cytoframe_from_cs(gs_cyto_data(gs), 1)
