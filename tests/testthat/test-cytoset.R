@@ -21,6 +21,13 @@ test_that("save/load", {
   expect_message(save_cytoset(cs, path = tmp), "Done")
   expect_error(save_cytoset(cs[1], path = tmp), "h5 file not matched ")
   
+  #idx by col
+  tmp1 <- tempfile()
+  save_cytoset(cs[, 1:2], tmp1)
+  cs1 <- load_cytoset(tmp1)
+  expect_equal(colnames(cs1), colnames(cs[,1:2]))
+  expect_error(save_cytoset(cs[, 1:2], tempfile(), cdf = "skip"), "Only 'copy'")
+  
   cdf <- list.files(tmp, ".h5", full.names = TRUE)
   expect_equal(identifier(cs), id)
   id.new <- "test"
