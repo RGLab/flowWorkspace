@@ -25,8 +25,22 @@ test_that("save/load", {
   tmp1 <- tempfile()
   save_cytoset(cs[, 1:2], tmp1)
   cs1 <- load_cytoset(tmp1)
-  expect_equal(colnames(cs1), colnames(cs[,1:2]))
+  expect_equal(colnames(cs1), colnames(cs[,1:2]))#col-idexing result is preserved
+  expect_equal(range(cs1[[1]], "data"), range(cs[[1]][,1:2], "data"))#the data is correct
+  h5f <- cf_get_h5_file_path(get_cytoframe_from_cs(cs1, 1))
+  fsize <- file.size(h5f)
+  expect_lt(fsize, file.size(cf_get_h5_file_path(get_cytoframe_from_cs(cs, 1))))#file size decreased
   expect_error(save_cytoset(cs[, 1:2], tempfile(), cdf = "skip"), "Only 'copy'")
+  #overwrite existing h5
+  id <- identifier(cs1)
+  cs2 <- cs1[, 2]
+  identifier(cs2) <- id#force it to be identical in order to be able to overwrite the existing folder
+  save_cytoset(cs2, tmp1)
+  cs1 <- load_cytoset(tmp1)
+  expect_equal(colnames(cs1), colnames(cs[,2]))#col-idexing result is preserved
+  expect_equal(range(cs1[[1]], "data"), range(cs[[1]][,2], "data"))#the data is correct
+  expect_lt(file.size(cf_get_h5_file_path(get_cytoframe_from_cs(cs1, 1))), fsize)#file size decreased
+  
   
   cdf <- list.files(tmp, ".h5", full.names = TRUE)
   expect_equal(identifier(cs), id)
