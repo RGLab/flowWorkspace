@@ -115,6 +115,7 @@ test_that("cytoset_to_flowSet", {
 
 
 test_that("cs_get_h5_file_path", {
+      expect_error(cf_get_h5_file_path(cs), "cytoframe")
       h5file <- cs_get_h5_file_path(cs)
       expect_true(dir.exists(h5file))
       

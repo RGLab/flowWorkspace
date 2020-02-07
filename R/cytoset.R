@@ -579,6 +579,7 @@ setMethod("identifier",
 #' 
 #' @export
 cs_add_sample <- function(cs, sn, fr){
+	stopifnot(is(cs, "cytoset"))
 	cs_add_cytoframe(cs@pointer, sn, fr@pointer)
 }
 
@@ -587,6 +588,7 @@ cs_add_sample <- function(cs, sn, fr){
 #' @family cytoframe/cytoset IO functions
 #' @export  
 cs_get_h5_file_path <- function(x){
+	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
 	cf <- get_cytoframe_from_cs(x, 1)
 	h5file <- cf_get_h5_file_path(cf)
 	dirname(h5file)
@@ -594,7 +596,8 @@ cs_get_h5_file_path <- function(x){
 }
 #' @export
 get_cytoframe_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
-  
+	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
+	
   new("cytoframe", pointer = get_cytoframe(x@pointer, i, j), use.exprs = use.exprs)
 }
 setMethod("[",

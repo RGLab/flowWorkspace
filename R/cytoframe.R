@@ -407,12 +407,14 @@ cf_swap_colnames <- function(x, col1, col2){
 }
 #' @export
 cf_rename_channel <- function(x, old, new){
-  setChannel(x@pointer, old, new)
+	stopifnot(is(x, "cytoframe"))
+	setChannel(x@pointer, old, new)
   
 }
 #' @export
 cf_rename_marker <- function(x, old, new){
-  pd <- getpdata(x@pointer)
+	stopifnot(is(x, "cytoframe"))
+	pd <- getpdata(x@pointer)
   pd <- subset(pd, desc == old)
   nr <- nrow(pd)
   if(nr == 0)
@@ -662,7 +664,8 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @family cytoframe/cytoset IO functions
 #' @export
 cf_write_h5 <- function(cf, filename){
-  writeH5(cf@pointer,filename)
+	stopifnot(is(cf, "cytoframe"))
+	writeH5(cf@pointer,filename)
 }
 
 #' Load the cytoframe from h5 format
@@ -684,6 +687,7 @@ load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE){
 #' @family cytoframe/cytoset IO functions
 #' @export 
 cf_get_h5_file_path <- function(cf){
+  stopifnot(is(cf, "cytoframe"))
   get_h5_file_path(cf@pointer)
   
 }
@@ -693,11 +697,13 @@ cf_get_h5_file_path <- function(cf){
 #' @param cf cytoframe object
 #' @export 
 cf_lock <- function(cf){
+	stopifnot(is(cf, "cytoframe"))
 	cf_set_readonly(cf@pointer, TRUE)
 }
 #' @export 
 #' @rdname lock
 cf_unlock <- function(cf){
+	stopifnot(is(cf, "cytoframe"))
 	cf_set_readonly(cf@pointer, FALSE)
 }
 
@@ -707,14 +713,17 @@ cf_unlock <- function(cf){
 #' @param cf cytoframe object
 #' @export
 cf_flush_meta <- function(cf){
+	stopifnot(is(cf, "cytoframe"))
 	.cf_flush_meta(cf@pointer)
 }
 #' @export 
 #' @rdname load_meta
 cf_load_meta <- function(cf){
+	stopifnot(is(cf, "cytoframe"))
 	.cf_load_meta(cf@pointer)
 }
 
 cf_scale_time_channel <- function(cf){
+	stopifnot(is(cf, "cytoframe"))
 	.cf_scale_time_channel(cf@pointer)
 }
