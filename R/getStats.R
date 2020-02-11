@@ -162,7 +162,7 @@ gh_pop_get_stats_tfilter <- function(x, nodes = NULL, type = c("Count", "Frequen
     type <- match.arg(type, c("Count", "Frequency"))
     time <- exprs(gh_pop_get_data(gh))[,time_channel]
     tfilt <- time >= tfilter[[1]] & time <= tfilter[[2]]
-    in_gates <- gh_pop_get_indices_mat(gh, paste(nodes, collapse="|"))
+    in_gates <- gh_pop_get_indices_mat(gh, nodes)
     
     res <- colSums(sweep(in_gates, 1, tfilt, '&'))
     if(type == "Frequency"){
