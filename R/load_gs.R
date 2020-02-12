@@ -10,8 +10,8 @@
 #' @param h5_readonly whether to open h5 data as read-only. Default is TRUE
 #' @param select an integer or character vector to select a subset of samples to load
 #' @param verbose logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.
-#' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file.
-#'              Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
+#' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
+#'              Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
 #' @param ... other arguments: not used.
 #'
@@ -41,6 +41,8 @@ save_gs<-function(gs, path
                   , ...){
   #  browser()
   cdf <- match.arg(cdf)
+  if(cdf == "link")
+  	stop("'link' option for save_gs is no longer supported")
   path <- suppressWarnings(normalizePath(path))
   suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf), silent = TRUE))
   
