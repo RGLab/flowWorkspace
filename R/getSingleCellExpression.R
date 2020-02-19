@@ -1,10 +1,9 @@
 #' Return the single-cell matrix of 1/0 dichotomized expression
 #' @param gh \code{GatingHierarchy} object
-#' @param y \code{character} string containing the boolean or of node names.e.g. 'cd4|cd8'
+#' @param y \code{character} vector containing the node names
 #' @export
 gh_pop_get_indices_mat <- function(gh,y){
-  strExpr <- as.character(y)
-  nodes <- strsplit(strExpr,split="\\|")[[1]]
+  nodes <- as.character(y)
   .getIndiceMat(gh, sampleNames(gh), nodes)
   
 }
