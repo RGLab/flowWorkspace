@@ -150,14 +150,22 @@ test_that("[", {
 })
 
 test_that("copy", {
-  cf1 <- copy_view(cf)
+  cf1 <- cf[] #copy_view(cf)
   expect_equal(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf))  
-  
+
   cf1 <- realize_view(cf)
   skip_if_not(ish5)
   
-  expect_false(identical(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf)))
+  h5 <- cf_get_h5_file_path(cf1)
+  
+  expect_false(identical(h5, cf_get_h5_file_path(cf)))
   is_equal_flowFrame(cf, cf1)
+  
+  #overwrite the existing h5
+  expect_error(cf2 <- realize_view(cf1, filepath = h5), "not supported", class = "error")
+
+  expect_error(cf2 <- realize_view(cf1[,1:2], filepath = h5), "not supported", class = "error")
+  
 })
 
 test_that("exprs<-", {

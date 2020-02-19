@@ -310,6 +310,8 @@ realize_view.cytoframe <- function(x, filepath = tempfile(fileext = ".h5")){
   new("cytoframe", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
 }
 
+#it is equivalent to x[] thus not really necessary to be exposed to users
+#to avoid the confusion to users we keep it private
 copy_view <- function(x, ...)UseMethod("copy_view")
 
 copy_view.cytoframe <- function(x){
