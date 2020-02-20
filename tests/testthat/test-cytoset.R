@@ -6,6 +6,20 @@ suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, is_h5 = TRUE))
 samples <- sampleNames(cs)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
+test_that("cs constructor", {
+  fs1 <- read.flowSet(fcs_files)
+  colnames(fs1@frames[[samples[[1]]]])[1] <- "FSC"#hack to create discrepancy
+  tmp <- tempfile()
+  write.flowSet(fs1, tmp)
+  expect_error(load_cytoset_from_fcs(path = tmp, pattern = ".fcs"), "inconsistency", class = "error")
+  cflist <- lapply(list.files(tmp, ".fcs", full.names = T), load_cytoframe_from_fcs)
+  names(cflist) <- letters[1:2]
+  expect_error(cytoset(cflist), "missing", class = "error")
+  cflist[[1]] <-  cflist[[1]][,-1] 
+  expect_error(cytoset(cflist), "not found", class = "error")
+  
+  })
+
 test_that("save/load", {
   pd <- pData(cs)
   pd[["newCol"]] <- "A"
@@ -162,7 +176,7 @@ test_that("subset", {
     })
 
 test_that("copy", {
-  cs1 <- copy_view(cs)#or cs[]
+  cs1 <- cs[]
   expect_equal(cs_get_h5_file_path(cs1), cs_get_h5_file_path(cs))
   
   cs1 <- realize_view(cs)
