@@ -109,7 +109,7 @@ test_that("merge_list_to_gs", {
     #different colnames
     chnnls <- colnames(gs_cyto_data(gs_clone))
     chnnls[1] <- "FSC-H" 
-    expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "already", class = "std::domain_error")
+    expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "duplicates", class = "std::domain_error")
     chnnls[1] <- "F" 
     colnames(gs_cyto_data(gs_clone)) <- chnnls
     expect_error(merge_list_to_gs(list(gs, gs_clone)), "colnames of cyto data don't match")

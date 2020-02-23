@@ -118,6 +118,11 @@ void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker){
 }                                      
 
 // [[Rcpp::export]] 
+void set_all_channels(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_names){
+  fr->set_channels(new_names);
+}
+
+// [[Rcpp::export]]
 void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
   fr->set_channel(old, new_name);
 }                                      

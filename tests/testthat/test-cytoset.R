@@ -281,10 +281,10 @@ test_that("colnames<-", {
       #change the order of colnames
       nc <- realize_view(cs[sn, coln[2:1]])
       colnames(nc) <- newColNames
-      newColNames <- rev(newColNames)
       expect_equivalent(unlist(keyword(nc[[1]])[c("$P1N", "$P2N")]), newColNames)
-      expect_error(colnames(nc) <- newColNames, "colname already exists", class = "std::domain_error")
-      cs_swap_colnames(nc, "c1", "c2")
+      newColNames <- rev(newColNames)
+      colnames(nc) <- newColNames
+      
       expect_equal(colnames(nc), newColNames)
       
     })

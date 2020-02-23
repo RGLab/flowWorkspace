@@ -199,19 +199,21 @@ test_that("colnames<-", {
       cf1 <- realize_view(cf)
       coln <- colnames(cf1)
       expect_equal(coln, colnames(fr))
-      cf2 <- cf1[, coln[1:2]]
-      newColNames <- c("c1", "c2")
+      cf2 <- cf1[, coln[1:3]]
+      newColNames <- c("c1", "c2", "c3")
       colnames(cf2) <- newColNames
       expect_equal(colnames(cf2), newColNames)
       
-      expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N")]), newColNames)
-
-      #TODO:change the order of colnames
-      coln <- colnames(cf1)
-      cf2 <- cf1[, coln[2:1]]
-      expect_error(colnames(cf2) <- newColNames, "colname already exists", class = "std::domain_error")
-      cf_swap_colnames(cf2, "c1", "c2")
-      expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N")]), rev(newColNames))
+      expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N", "$P3N")]), newColNames)
+      # expect_equal(colnames(keyword(cf2)[["SPILL"]]), newColNames)
+      
+      #:change the order of colnames
+      newColNames <- newColNames[c(2,3,1)]
+      colnames(cf2) <- newColNames
+      expect_equal(colnames(cf2), newColNames)
+      expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N", "$P3N")]), newColNames)
+      expect_error(set_all_channels(cf2@pointer, c("c1", "c2")), "size", class = "error")
+      expect_error(set_all_channels(cf2@pointer, c("c1", "c1", "c2")), "duplicates", class = "error")
     })
 
 test_that("parameters<-", {

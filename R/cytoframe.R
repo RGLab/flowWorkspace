@@ -393,11 +393,11 @@ setReplaceMethod("colnames",
         stop("colnames don't match dimensions of data matrix",
             call.=FALSE)
       
-      for(i in seq_along(value))
-        cf_rename_channel(x, old.names[i], value[i])
+		set_all_channels(x@pointer, value)
       
       return(x)
     })
+
 #' @export 
 cf_swap_colnames <- function(x, col1, col2){
 	tmp <- "MagicStringUgly"

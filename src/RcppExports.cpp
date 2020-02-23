@@ -745,6 +745,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// set_all_channels
+void set_all_channels(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_names);
+RcppExport SEXP _flowWorkspace_set_all_channels(SEXP frSEXP, SEXP new_namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type new_names(new_namesSEXP);
+    set_all_channels(fr, new_names);
+    return R_NilValue;
+END_RCPP
+}
 // setChannel
 void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name);
 RcppExport SEXP _flowWorkspace_setChannel(SEXP frSEXP, SEXP oldSEXP, SEXP new_nameSEXP) {
@@ -1170,6 +1181,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_writeH5", (DL_FUNC) &_flowWorkspace_writeH5, 2},
     {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 3},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
+    {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
     {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 5},
     {"_flowWorkspace_cf_getData", (DL_FUNC) &_flowWorkspace_cf_getData, 1},

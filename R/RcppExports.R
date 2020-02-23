@@ -287,6 +287,10 @@ setMarker <- function(fr, channel, marker) {
     invisible(.Call(`_flowWorkspace_setMarker`, fr, channel, marker))
 }
 
+set_all_channels <- function(fr, new_names) {
+    invisible(.Call(`_flowWorkspace_set_all_channels`, fr, new_names))
+}
+
 setChannel <- function(fr, old, new_name) {
     invisible(.Call(`_flowWorkspace_setChannel`, fr, old, new_name))
 }
