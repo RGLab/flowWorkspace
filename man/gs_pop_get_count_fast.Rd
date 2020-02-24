@@ -9,7 +9,7 @@
 \usage{
 gs_pop_get_count_fast(
   x,
-  statistic = c("freq", "count"),
+  statistic = c("count", "freq"),
   xml = FALSE,
   subpopulations = NULL,
   format = c("long", "wide"),

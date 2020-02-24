@@ -80,18 +80,6 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
   // comp.get_spillover_mat().print(Rcout, "comp");
   fr->compensate(comp);
 }
-// [[Rcpp::export]] 
-NumericMatrix get_spillover(Rcpp::XPtr<CytoFrameView> fr, string key){
-	compensation comp = fr->get_compensation(key);
-  // Rcout << comp.marker.size() << endl;
-  // Rcout << comp.spillOver.size() << endl;
-	arma::mat spillover = comp.get_spillover_mat();
-	// Rcpp::RcogetPairsut << spillover << endl;
-	NumericMatrix res(Rcpp::wrap(spillover));//can't directly convert arma::mat to NumericMatrix
-	colnames(res) = StringVector(wrap(comp.marker));
-	// return Rcpp::List::create(spillover, comp.marker);
-	return res;
-}
 
 // [[Rcpp::export]]
 void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename){

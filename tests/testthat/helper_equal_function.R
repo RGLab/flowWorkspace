@@ -28,6 +28,14 @@ is_equal_flowFrame <- function(orig, new, exprs = TRUE, description = TRUE){
     kw1[["ORIGINALGUID"]] <- NULL
     kw2[["ORIGINALGUID"]] <- NULL
     kw1[["$CYTOLIB_VERSION"]] <- NULL
+    
+    sp1 <- sp2 <- list()
+    try(sp1 <- spillover(orig), silent = T)
+    try(sp2 <- spillover(new), silent = T)
+    
+    expect_equal(sp1, sp2, tol = 6e-6)
+    kw1[names(sp1)] <- NULL
+    kw2[names(sp2)] <- NULL
     expect_true(all(is.element(kw1, kw2)))
   }
     

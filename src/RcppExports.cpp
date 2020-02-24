@@ -697,18 +697,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// get_spillover
-NumericMatrix get_spillover(Rcpp::XPtr<CytoFrameView> fr, string key);
-RcppExport SEXP _flowWorkspace_get_spillover(SEXP frSEXP, SEXP keySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    Rcpp::traits::input_parameter< string >::type key(keySEXP);
-    rcpp_result_gen = Rcpp::wrap(get_spillover(fr, key));
-    return rcpp_result_gen;
-END_RCPP
-}
 // writeH5
 void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename);
 RcppExport SEXP _flowWorkspace_writeH5(SEXP frSEXP, SEXP filenameSEXP) {
@@ -1177,7 +1165,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
     {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
-    {"_flowWorkspace_get_spillover", (DL_FUNC) &_flowWorkspace_get_spillover, 2},
     {"_flowWorkspace_writeH5", (DL_FUNC) &_flowWorkspace_writeH5, 2},
     {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 3},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},

@@ -17,7 +17,7 @@ LazyLoad: yes
 Imports:
     Biobase,
     BiocGenerics,
-    cytolib (>= 1.9.14),
+    cytolib (>= 1.9.15),
     lattice,
     latticeExtra,
     XML,
@@ -41,7 +41,7 @@ Imports:
     RcppParallel,
     RProtoBufLib,
     digest,
-    flowCore(>= 1.53.8),
+    flowCore(>= 1.53.11),
 	ncdfFlow(>= 2.25.4)
 Collate: 
     'cytoframe.R'

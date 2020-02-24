@@ -9,7 +9,7 @@ gh_pop_get_indices_mat(gh, y)
 \arguments{
 \item{gh}{\code{GatingHierarchy} object}
 
-\item{y}{\code{character} string containing the boolean or of node names.e.g. 'cd4|cd8'}
+\item{y}{\code{character} vector containing the node names}
 }
 \description{
 Return the single-cell matrix of 1/0 dichotomized expression

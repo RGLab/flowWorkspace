@@ -271,10 +271,6 @@ frm_compensate <- function(fr, spillover) {
     invisible(.Call(`_flowWorkspace_frm_compensate`, fr, spillover))
 }
 
-get_spillover <- function(fr, key) {
-    .Call(`_flowWorkspace_get_spillover`, fr, key)
-}
-
 writeH5 <- function(fr, filename) {
     invisible(.Call(`_flowWorkspace_writeH5`, fr, filename))
 }

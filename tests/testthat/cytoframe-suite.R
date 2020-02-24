@@ -226,6 +226,13 @@ test_that("parameters<-", {
   
 })
 
+test_that("spillover", {
+  mat <- spillover(cf)[["SPILL"]]
+  mat1 <- keyword(cf , "SPILL")[[1]]
+  expect_equal(mat, mat1)
+  
+})
+
 test_that("keyword<-", {
   cf1 <- realize_view(cf)
   kw <- kw.old <- keyword(cf1)
@@ -234,7 +241,7 @@ test_that("keyword<-", {
   kw[["testkw"]] <- 11 #add new
   keyword(cf1) <- kw
   kw <- collapse_desc(kw, collapse.spill = FALSE)
-  expect_equal(keyword(cf1)[names(kw)], kw)
+  expect_equal(keyword(cf1)[names(kw)], kw, tol = 6e-6)
   skip_if_not(ish5)
   
   #now meta won't be flushed to disk automatically after destroy cf1
@@ -249,7 +256,7 @@ test_that("keyword<-", {
   rm(cf2)
   invisible(gc())
   cf2 <- load_cytoframe_from_h5(tmp)
-  expect_equal(keyword(cf2)[names(kw)], kw)
+  expect_equal(keyword(cf2)[names(kw)], kw, tol = 6e-6)
 })
 
 test_that("keyword setters", {

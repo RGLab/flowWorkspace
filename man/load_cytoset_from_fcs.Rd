@@ -28,6 +28,7 @@ load_cytoset_from_fcs(
   as.is = TRUE,
   name,
   h5_dir = tempdir(),
+  file_col_name = NULL,
   ...
 )
 }

@@ -18,8 +18,8 @@ load_gslist(path)
 \arguments{
 \item{path}{A character scalar giving the path to save/load the GatingSet to/from.}
 
-\item{cdf}{a character scalar. The valid options are :"copy","move","skip","symlink","link" specifying what to do with the cdf data file.
-Sometime it is more efficient to move or create a link of the existing cdf file to the archived folder.
+\item{cdf}{a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
+Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
 It is useful to "skip" archiving cdf file if raw data has not been changed.}
 
 \item{...}{other arguments: not used.}

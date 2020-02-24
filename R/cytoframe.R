@@ -270,14 +270,7 @@ setClass("cytoframe", contains = "flowFrame" ,
                                   prototype = list(use.exprs = FALSE) 
                               )
 
-#' @import flowCore 
-setMethod("spillover",
-    signature=signature(x="cytoframe"),
-    definition=function(x, key = "SPILL")
-    {
-      
-      get_spillover(x@pointer, key)
-    })
+
 # compensate the data in place
 #' @export
 setMethod("compensate",
@@ -507,17 +500,6 @@ process_spill_keyword <- function(desc){
   }
   desc
 }
-setMethod("keyword",
-    signature=signature(object="cytoframe",
-        keyword="character"),
-    function(object, keyword){
-      val <- cf_getKeyword(object@pointer,keyword)
-      if(val=="")
-        val <- NULL
-      desc <- structure(list(val), names=keyword)
-      process_spill_keyword(desc)
-      
-    })
 
 
 ## this is equivalent to the description method
