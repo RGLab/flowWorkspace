@@ -28,11 +28,11 @@ NULL
 #' @section Creating Objects:
 #' 
 #' Objects can be created using \code{cytoset()} and then adding samples
-#' by providing a \code{cytoframe} and sample name to \code{cs_add_sample}:\cr\cr
+#' by providing a \code{cytoframe} and sample name to \code{cs_add_cytoframe}:\cr\cr
 #' 
 #' \code{
 #' cs <- cytoset()\cr
-#' cs_add_sample(cs, "Sample Name", cytoframe)
+#' cs_add_cytoframe(cs, "Sample Name", cytoframe)
 #' }
 #' 
 #' The safest and easiest way to create \code{cytoset}s directly from
@@ -229,10 +229,10 @@ NULL
 #'   \emph{Usage:}\cr\cr
 #'   \code{realize_view(cytoset, filepath)}\cr\cr
 #' }
-#' \item{cs_add_sample}{Adds a \code{cytoframe} to the \code{cytoset} with sample name given
+#' \item{cs_add_cytoframe}{Adds a \code{cytoframe} to the \code{cytoset} with sample name given
 #' by a string.\cr\cr
 #'   \emph{Usage:}\cr\cr
-#'   \code{cs_add_sample(cytoset, "SampleName", cytoframe)}\cr\cr
+#'   \code{cs_add_cytoframe(cytoset, "SampleName", cytoframe)}\cr\cr
 #' }
 #' }
 #'   
@@ -253,7 +253,7 @@ cytoset <- function(x, ...){
 			if(length(samplenames) == 0)
 				stop("input is not a named list!")
 			for(i in samplenames)
-				cs_add_sample(cs, i, x[[i]])
+				cs_add_cytoframe(cs, i, x[[i]])
 		}else
 			stop("input is not a list!")
 	}
@@ -565,7 +565,7 @@ setMethod("identifier",
 # 					
 # 				
 # 				if(new)
-# 					cs_add_sample(cs.new, n, fr)
+# 					cs_add_cytoframe(cs.new, n, fr)
 # 				else
 # 					x[[n]]<- fr
 # 			}           
@@ -578,11 +578,18 @@ setMethod("identifier",
 #' Add a cytoframe to a cytoset
 #' 
 #' @export
-cs_add_sample <- function(cs, sn, fr){
+cs_add_cytoframe <- function(cs, sn, fr){
 	stopifnot(is(cs, "cytoset"))
-	cs_add_cytoframe(cs@pointer, sn, fr@pointer)
+	add_cytoframe(cs@pointer, sn, fr@pointer)
 }
 
+#' update a cytoframe in a cytoset
+#' 
+#' @export
+cs_set_cytoframe <- function(cs, sn, fr){
+	stopifnot(is(cs, "cytoset"))
+	set_cytoframe(cs@pointer, sn, fr@pointer)
+}
 #' Return the file path of the underlying h5 files
 #' 
 #' @family cytoframe/cytoset IO functions

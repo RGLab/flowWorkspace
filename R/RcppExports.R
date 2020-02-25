@@ -337,12 +337,12 @@ cs_set_compensation <- function(cs, comps, compensate_data) {
     invisible(.Call(`_flowWorkspace_cs_set_compensation`, cs, comps, compensate_data))
 }
 
-cs_set_cytoframe <- function(cs, sn, fr) {
-    invisible(.Call(`_flowWorkspace_cs_set_cytoframe`, cs, sn, fr))
+set_cytoframe <- function(cs, sn, fr) {
+    invisible(.Call(`_flowWorkspace_set_cytoframe`, cs, sn, fr))
 }
 
-cs_add_cytoframe <- function(cs, sn, fr) {
-    invisible(.Call(`_flowWorkspace_cs_add_cytoframe`, cs, sn, fr))
+add_cytoframe <- function(cs, sn, fr) {
+    invisible(.Call(`_flowWorkspace_add_cytoframe`, cs, sn, fr))
 }
 
 new_cytoset <- function() {

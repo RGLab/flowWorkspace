@@ -26,11 +26,11 @@ with existing user scripts.
 
 
 Objects can be created using \code{cytoset()} and then adding samples
-by providing a \code{cytoframe} and sample name to \code{cs_add_sample}:\cr\cr
+by providing a \code{cytoframe} and sample name to \code{cs_add_cytoframe}:\cr\cr
 
 \code{
 cs <- cytoset()\cr
-cs_add_sample(cs, "Sample Name", cytoframe)
+cs_add_cytoframe(cs, "Sample Name", cytoframe)
 }
 
 The safest and easiest way to create \code{cytoset}s directly from
@@ -229,10 +229,10 @@ from the FCS files in h5 format.\cr\cr
   \emph{Usage:}\cr\cr
   \code{realize_view(cytoset, filepath)}\cr\cr
 }
-\item{cs_add_sample}{Adds a \code{cytoframe} to the \code{cytoset} with sample name given
+\item{cs_add_cytoframe}{Adds a \code{cytoframe} to the \code{cytoset} with sample name given
 by a string.\cr\cr
   \emph{Usage:}\cr\cr
-  \code{cs_add_sample(cytoset, "SampleName", cytoframe)}\cr\cr
+  \code{cs_add_cytoframe(cytoset, "SampleName", cytoframe)}\cr\cr
 }
 }
 }

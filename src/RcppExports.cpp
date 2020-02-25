@@ -883,27 +883,27 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// cs_set_cytoframe
-void cs_set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_cs_set_cytoframe(SEXP csSEXP, SEXP snSEXP, SEXP frSEXP) {
+// set_cytoframe
+void set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_set_cytoframe(SEXP csSEXP, SEXP snSEXP, SEXP frSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< string >::type sn(snSEXP);
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    cs_set_cytoframe(cs, sn, fr);
+    set_cytoframe(cs, sn, fr);
     return R_NilValue;
 END_RCPP
 }
-// cs_add_cytoframe
-void cs_add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_cs_add_cytoframe(SEXP csSEXP, SEXP snSEXP, SEXP frSEXP) {
+// add_cytoframe
+void add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_add_cytoframe(SEXP csSEXP, SEXP snSEXP, SEXP frSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< string >::type sn(snSEXP);
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    cs_add_cytoframe(cs, sn, fr);
+    add_cytoframe(cs, sn, fr);
     return R_NilValue;
 END_RCPP
 }
@@ -1181,8 +1181,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setpdata", (DL_FUNC) &_flowWorkspace_setpdata, 2},
     {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
     {"_flowWorkspace_cs_set_compensation", (DL_FUNC) &_flowWorkspace_cs_set_compensation, 3},
-    {"_flowWorkspace_cs_set_cytoframe", (DL_FUNC) &_flowWorkspace_cs_set_cytoframe, 3},
-    {"_flowWorkspace_cs_add_cytoframe", (DL_FUNC) &_flowWorkspace_cs_add_cytoframe, 3},
+    {"_flowWorkspace_set_cytoframe", (DL_FUNC) &_flowWorkspace_set_cytoframe, 3},
+    {"_flowWorkspace_add_cytoframe", (DL_FUNC) &_flowWorkspace_add_cytoframe, 3},
     {"_flowWorkspace_new_cytoset", (DL_FUNC) &_flowWorkspace_new_cytoset, 0},
     {"_flowWorkspace_fcs_to_cytoset", (DL_FUNC) &_flowWorkspace_fcs_to_cytoset, 4},
     {"_flowWorkspace_get_colnames", (DL_FUNC) &_flowWorkspace_get_colnames, 1},

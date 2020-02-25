@@ -6,6 +6,41 @@ suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, is_h5 = TRUE))
 samples <- sampleNames(cs)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
+test_that("add/set frames", {
+  cs1 <- realize_view(cs)
+  cf <- realize_view(get_cytoframe_from_cs(cs1, 1))
+  sn <- "a"
+  cs_add_cytoframe(cs1, sn, cf)
+  expect_equal(sampleNames(cs1), c(sampleNames(cs), sn))
+  expect_error(cs_add_cytoframe(cs1, sn, cf), "already", class = "error")
+  expect_error(cs_set_cytoframe(cs1, "b", cf), "doesn't exist", class = "error")
+  cf <- realize_view(get_cytoframe_from_cs(cs1, 1))
+  cf <- cf[, 1:2]
+  expect_error(cs_add_cytoframe(cs1, "b", cf), "missing", class = "error")
+  expect_error(cs_set_cytoframe(cs1, sn, cf), "missing", class = "error")
+  cf <- realize_view(get_cytoframe_from_cs(cs1, 1))
+  cs1 <- cs1[,1:2]
+  expect_error(cs_add_cytoframe(cs1, "b", cf), "not found", class = "error")
+  expect_error(cs_set_cytoframe(cs1, sn, cf), "not found", class = "error")
+})
+test_that("gs constructor", {
+  cs1 <- realize_view(cs)
+  h5 <- cf_get_h5_file_path(get_cytoframe_from_cs(cs1,1))
+  gs <- GatingSet(cs1)
+  #cs change in place
+  colnames(cs1)[1] <- "d"
+  expect_equal(colnames(gs)[1], "d")
+  #gates preserved 
+  gs_pop_add(gs, rectangleGate(d = c(1,10)))
+  cs_set_cytoframe(cs1, sampleNames(gs)[1], get_cytoframe_from_cs(cs, 1))
+  expect_equal(length(gs_get_pop_paths(gs)), 2)
+  #data changed
+  expect_false(identical(cf_get_h5_file_path(get_cytoframe_from_cs(gs,1)), h5))
+  h5 <- cf_get_h5_file_path(get_cytoframe_from_cs(cs1,1))
+  
+  expect_true(identical(cf_get_h5_file_path(get_cytoframe_from_cs(gs,1)), h5))
+  
+  })
 test_that("cs constructor", {
   fs1 <- read.flowSet(fcs_files)
   colnames(fs1@frames[[samples[[1]]]])[1] <- "FSC"#hack to create discrepancy
@@ -206,7 +241,19 @@ test_that("[[<-", {
   expect_error(cs1[[-5]]<-fr, "subscript out of bounds")
   expect_error(cs1[[c(2,3)]]<-fr, "subscript out of bounds")
   
-})
+  #write cf
+  cf1 <- realize_view(cf)
+  h5 <- cf_get_h5_file_path(cf1)
+  cs1[[sn]] <- cf1
+  is_equal_flowFrame(cs1[[sn]], cf1)
+  expect_false(identical(normalizePath(file.path(cs_get_h5_file_path(cs1),sn)), normalizePath(h5)))
+  #set cf
+  cs_set_cytoframe(cs1, sn, cf1)  
+  cf2 <- cs1[[sn, returnType = "cytoframe"]]
+  expect_identical(normalizePath(cf_get_h5_file_path(cf2)), normalizePath(h5))
+  colnames(cf1)[1] <- "d"
+  expect_equal(colnames(cf2)[1], "d")
+  })
 
 test_that("lapply", {
   cs1 <- realize_view(cs)

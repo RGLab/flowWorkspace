@@ -35,14 +35,14 @@ void cs_set_compensation(Rcpp::XPtr<GatingSet> cs, List comps, bool compensate_d
 
 
 // [[Rcpp::export]]
-void cs_set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
+void set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
 {
 	cs->update_cytoframe_view(sn, *fr);
 
 }
 
 // [[Rcpp::export]]
-void cs_add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
+void add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
 {
 	cs->add_cytoframe_view(sn, *fr);
 
