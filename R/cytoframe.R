@@ -426,7 +426,8 @@ cf_rename_marker <- function(x, old, new){
 }
 setReplaceMethod("markernames",
     signature=signature(object="cytoframe", value="ANY"), function(object, value){
-      channel.names <- colnames(object)
+		pdata <- getpdata(object@pointer)
+		channel.names <- pdata[["name"]]
       if(!is.character(value)){
         stop("value must be a named character vector!")
       }else{
@@ -437,7 +438,17 @@ setReplaceMethod("markernames",
         misMatch <- is.na(inds)
         if(any(misMatch))
           stop("channel names not found in flow data: ", paste0(chnls[misMatch], collapse = ","))
-        
+        #validity check
+		oldmarkers <- pdata[["desc"]]		
+		oldmarkers[inds] <- value
+		oldmarkers <- oldmarkers[!is.na(oldmarkers)]
+		dup <- duplicated(oldmarkers)
+		if(any(dup))
+		{
+			
+			stop("Trying to assing the marker: ", oldmarkers[dup][1], " to multiple channels")
+		}
+			
         for(i in seq_along(inds)){
           ind <- inds[i]
           setMarker(object@pointer, channel.names[ind], value[i])

@@ -191,12 +191,24 @@ test_that("cf_rename_marker", {
   cf_rename_marker(cf1, newname, "")
   expect_equal(markernames(cf1), markers[-1])
   # expect_equivalent(unlist(keyword(cf1)[c("$P5S")]), newname)
+  #rotate
+  markers <- markernames(cf1)
+  new <- markers[6:1]
+  names(new) <- colnames(cf1)[6:11]
+  markernames(cf1) <- new
+  expect_equal(markernames(cf1),markers[6:1])
+  #dup
+  new1 <- new[1]
+  names(new1) <- names(new[2])
+  expect_error(markernames(cf1) <- new1, "multiple")
+  
   
 })
 
 
 test_that("colnames<-", {
       cf1 <- realize_view(cf)
+      sp0 <- spillover(cf)[[1]]
       coln <- colnames(cf1)
       expect_equal(coln, colnames(fr))
       newColNames <- coln
@@ -226,8 +238,13 @@ test_that("colnames<-", {
       colnames(cf1) <- newColNames
       expect_equal(colnames(cf1), newColNames)
       expect_equivalent(unlist(keyword(cf1)[pids])[idx1], newColNames)
-      expect_equal(colnames(spillover(cf1)[["SPILL"]]), newColNames[c(6,5, 7:11)])#but the order of channels in spillover should remain the same
-      
+      sp1 <- spillover(cf1)[[1]]
+      expect_equal(colnames(sp1), newColNames[c(6,5, 7:11)])#but the order of channels in spillover should remain the same
+      #verify the compensation results are the same
+      sa0 <- summary(compensate(realize_view(cf), sp0))
+      sa1 <- summary(compensate(cf1, sp1))
+      sa0 <- sa0[, idx1]
+      expect_equivalent(sa0, sa1, tol = 2e-6)
       expect_error(set_all_channels(cf1@pointer, c("c1", "c2")), "size", class = "error")
       expect_error(set_all_channels(cf1@pointer, c("c1", "c1", newColNames[-(1:2)])), "duplicates", class = "error")
     })
