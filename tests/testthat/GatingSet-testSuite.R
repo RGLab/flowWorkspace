@@ -343,6 +343,7 @@ test_that("keyword",{
             thisResult[["$BEGINDATA"]] <- NULL
             thisResult[["$ENDDATA"]] <- NULL
             thisResult[["$CYTOLIB_VERSION"]] <- NULL
+            colnames(thisResult[["SPILL"]]) <- gsub("<|>", "", colnames(thisResult[["SPILL"]]))
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
           })

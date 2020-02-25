@@ -189,6 +189,8 @@ test_that("keyword",{
       thisRes$FILENAME <- NULL
       #skip flowCore_R keys due to the historical archived results do not have this info up to date
       thisRes <- thisRes[!grepl("(flowCore_\\$P)|(transformation)",names(thisRes))]
+      colnames(thisRes[["SPILL"]]) <- gsub("<|>", "", colnames(thisRes[["SPILL"]]))
+      
       expectRes <- expectRes[!grepl("(flowCore_\\$P)|(transformation)",names(expectRes))]
       #fix legacy result
       expectRes[paste0("$P",5:11, "N")] <- paste0("<", expectRes[paste0("$P",5:11, "N")], ">")
@@ -201,7 +203,7 @@ test_that("keyword",{
       expectRes[["$BEGINDATA"]] <- NULL
       expectRes[["$ENDDATA"]] <- NULL
       expectRes[["GUID"]] <- "CytoTrol_CytoTrol_1.fcs"
-      expect_equal(thisRes[names(expectRes)], expectRes)
+      expect_equal(thisRes[names(expectRes)], expectRes, tol = 6e-6)
       expect_equal(keyword(gh, 'P11DISPLAY'), "LOG")
       
       expect_equal(keyword(gh, '$P8N'), "<V450-A>")

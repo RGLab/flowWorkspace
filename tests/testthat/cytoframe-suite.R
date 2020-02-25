@@ -199,21 +199,37 @@ test_that("colnames<-", {
       cf1 <- realize_view(cf)
       coln <- colnames(cf1)
       expect_equal(coln, colnames(fr))
-      cf2 <- cf1[, coln[1:3]]
-      newColNames <- c("c1", "c2", "c3")
-      colnames(cf2) <- newColNames
-      expect_equal(colnames(cf2), newColNames)
-      
-      expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N", "$P3N")]), newColNames)
-      # expect_equal(colnames(keyword(cf2)[["SPILL"]]), newColNames)
+      newColNames <- coln
+      idx <- c(5,7,9)
+      newColNames[idx] <- c("c1", "c2", "c3")
+      colnames(cf1) <- newColNames
+      expect_equal(colnames(cf1), newColNames)
+      pids <- paste0("$P", seq_along(coln), "N")
+      expect_equivalent(unlist(keyword(cf1)[pids]), newColNames)
+      expect_equal(colnames(spillover(cf1)[["SPILL"]]), newColNames[5:11])
       
       #:change the order of colnames
-      newColNames <- newColNames[c(2,3,1)]
-      colnames(cf2) <- newColNames
-      expect_equal(colnames(cf2), newColNames)
-      expect_equivalent(unlist(keyword(cf2)[c("$P1N", "$P2N", "$P3N")]), newColNames)
-      expect_error(set_all_channels(cf2@pointer, c("c1", "c2")), "size", class = "error")
-      expect_error(set_all_channels(cf2@pointer, c("c1", "c1", "c2")), "duplicates", class = "error")
+      newColNames[idx] <- newColNames[idx][c(2,3,1)]
+      colnames(cf1) <- newColNames
+      expect_equal(colnames(cf1), newColNames)
+      expect_equivalent(unlist(keyword(cf1)[pids]), newColNames)
+      expect_equal(colnames(spillover(cf1)[["SPILL"]]), newColNames[5:11])
+      
+      #reorder data 
+      cf1 <- realize_view(cf)
+      coln <- colnames(cf1)
+      idx1 <- c(1:4, 6, 5, 7:12)
+      cf1 <- cf1[, idx1]
+      newColNames <- coln
+      idx <- c(5,7,9)
+      newColNames[idx] <- c("c1", "c2", "c3")
+      colnames(cf1) <- newColNames
+      expect_equal(colnames(cf1), newColNames)
+      expect_equivalent(unlist(keyword(cf1)[pids])[idx1], newColNames)
+      expect_equal(colnames(spillover(cf1)[["SPILL"]]), newColNames[c(6,5, 7:11)])#but the order of channels in spillover should remain the same
+      
+      expect_error(set_all_channels(cf1@pointer, c("c1", "c2")), "size", class = "error")
+      expect_error(set_all_channels(cf1@pointer, c("c1", "c1", newColNames[-(1:2)])), "duplicates", class = "error")
     })
 
 test_that("parameters<-", {
