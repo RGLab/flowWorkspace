@@ -265,7 +265,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
     }
     files <- pd[[file_col_name]]
     names(files) <- rownames(pd)#set guid
-    cs <- fcs_to_cytoset(files, list(which.lines = which.lines
+    cs <- fcs_to_cytoset(sapply(files, normalizePath), list(which.lines = which.lines
                                             , transformation = transformation
                                             , decades = decades
                                             , truncate_min_val = truncate_min_val
