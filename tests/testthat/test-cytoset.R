@@ -27,16 +27,16 @@ test_that("gs constructor", {
   cs1 <- realize_view(cs)
   h5 <- cf_get_h5_file_path(get_cytoframe_from_cs(cs1,1))
   gs <- GatingSet(cs1)
-  #cs change in place
-  colnames(cs1)[1] <- "d"
-  expect_equal(colnames(gs)[1], "d")
-  #gates preserved 
+ #gates preserved 
   gs_pop_add(gs, rectangleGate(d = c(1,10)))
   cs_set_cytoframe(cs1, sampleNames(gs)[1], get_cytoframe_from_cs(cs, 1))
   expect_equal(length(gs_get_pop_paths(gs)), 2)
   #data changed
   expect_false(identical(cf_get_h5_file_path(get_cytoframe_from_cs(gs,1)), h5))
   h5 <- cf_get_h5_file_path(get_cytoframe_from_cs(cs1,1))
+  #cs change in place
+  colnames(cs1)[1] <- "d"
+  expect_equal(colnames(gs)[1], "d")
   
   expect_true(identical(cf_get_h5_file_path(get_cytoframe_from_cs(gs,1)), h5))
   

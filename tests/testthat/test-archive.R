@@ -9,6 +9,46 @@ test_that("load GatingSet from archive",
   gs <<- gs_clone(gs)#make it writable
 })
 
+test_that("save indexed GatingSet",
+{
+  
+  mytest <- function(gs, mem = TRUE){
+    cs <- gs_cyto_data(gs)
+    gs_cyto_data(gs) <- cs[, 1:2]
+    tmp <- tempfile()
+    expect_error(save_gs(gs, tmp, cdf = "symlink"), "subsetted")
+    #cp
+    tmp <- tempfile()
+    suppressMessages(save_gs(gs, tmp))
+    h5 <- list.files(cs_get_h5_file_path(gs), full = T)
+    expect_equal(length(h5), ifelse(mem, 0 ,2))
+    h5 <- list.files(tmp, pattern = ".h5", full = T)
+    expect_equal(length(h5), 2)
+    #mv
+    tmp <- tempfile()
+    suppressMessages(save_gs(gs, tmp, cdf = "move"))
+    h5 <- list.files(cs_get_h5_file_path(gs), full = T)
+    expect_equal(length(h5), 0)
+    h5 <- list.files(tmp, pattern = ".h5", full = T)
+    expect_equal(length(h5), 2)
+    gs1 <- load_gs(tmp)
+    expect_equal(length(colnames(gs_cyto_data(gs1))), 2)
+ }
+  
+  #mem
+  fs <- GvHD[1:2]
+  cflist <- fsApply(fs, flowFrame_to_cytoframe, simplify = F)
+  expect_equal(cf_get_h5_file_path(cflist[[1]]), "")
+  cs <- cytoset(cflist)
+  gs <- GatingSet(cs)
+  
+  mytest(gs)
+  
+  #h5
+  gs <- GatingSet(fs)
+  mytest(gs, F)
+})
+
 test_that("save GatingSet to archive",
     {
       pd <- pData(gs)
