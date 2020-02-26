@@ -52,7 +52,10 @@ test_that("cs constructor", {
   expect_error(cytoset(cflist), "missing", class = "error")
   cflist[[1]] <-  cflist[[1]][,-1] 
   expect_error(cytoset(cflist), "not found", class = "error")
-  
+  cs <- load_cytoset_from_fcs(fcs_files, which.lines = 1)
+  res <- unlist(lapply(cs, nrow))
+  names(res) <- NULL
+  expect_equal(res, c(1,1))
   })
 
 test_that("save/load", {

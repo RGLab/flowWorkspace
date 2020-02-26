@@ -250,8 +250,11 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
     if(is.null(which.lines))
       which.lines <- vector()
     else
-      which.lines <- which.lines -1
-    
+    {     
+      if (length(which.lines) > 1) {
+        which.lines <- which.lines -1
+      }
+    }    
     phenoData <- flowCore:::parse_pd_for_read_fs(files, path, pattern, phenoData, sep, as.is, file_col_name = file_col_name, ...)
     pd <- pData(phenoData)
     if(is.null(file_col_name))
@@ -262,7 +265,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
     }
     files <- pd[[file_col_name]]
     names(files) <- rownames(pd)#set guid
-    cs <- fcs_to_cytoset(files, list(which_lines = which.lines
+    cs <- fcs_to_cytoset(files, list(which.lines = which.lines
                                             , transformation = transformation
                                             , decades = decades
                                             , truncate_min_val = truncate_min_val
