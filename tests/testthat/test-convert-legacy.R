@@ -20,7 +20,7 @@ test_that("convert_legacy_gs", {
   expect_is(gs, "GatingSet")
   
   #output/legacy_gs_sn_without_fcs_ext
-  legacy <- "output/legacy_gs_sn_without_fcs_ext"
+  legacy <- "~/rglab/workspace/flowWorkspace/output/legacy_gs_sn_without_fcs_ext"
   skip_if_not(dir.exists(legacy))
   tmp <- tempfile()
   expect_message(convert_legacy_gs(legacy, tmp), "saved")

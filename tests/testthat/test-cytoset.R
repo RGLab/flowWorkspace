@@ -6,6 +6,47 @@ suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, is_h5 = TRUE))
 samples <- sampleNames(cs)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
+test_that("col order", {
+  fr1 <- GvHD[[1]][1:2, 4:6]
+  fr2 <- GvHD[[2]][1:2, 6:4]
+  cn1 <- colnames(fr1)
+  cn2 <- colnames(fr2)
+  
+  #constructor from fcs
+  tmp1 <- tempfile()
+  write.FCS(fr1, tmp1)
+  tmp2 <- tempfile()
+  write.FCS(fr2, tmp2)
+  cs1 <- load_cytoset_from_fcs(c(a=tmp1, b = tmp2))
+  expect_equal(length(unique(lapply(cs1, colnames))), 1)
+  
+  #add/set
+  cs1 <- load_cytoset_from_fcs(c(a=tmp1))
+  cf <- load_cytoframe_from_fcs(tmp2)
+  sn <- "b"
+  cs_add_cytoframe(cs1, sn, cf)
+  expect_is(markernames(cs1), "character")
+  expect_equal(colnames(cf), cn2)
+  #the view that is added to cs is reordered
+  expect_equal(colnames(get_cytoframe_from_cs(cs1, sn)), cn1)
+  
+  cs_set_cytoframe(cs1, sn, cf)
+  expect_equal(colnames(cf), cn2)
+  cf1 <- get_cytoframe_from_cs(cs1, sn)
+  expect_equal(colnames(get_cytoframe_from_cs(cs1, sn)), cn1)
+  
+  #constructor from gs archive
+  tmp1 <- tempfile()
+  save_cytoset(cs1, tmp1)
+  h5 <- list.files(tmp1, pattern = ".h5", full.names = T)[1]
+  #create different ordered h5
+  cf_write_h5(cf, h5)
+  expect_equal(colnames(cf), cn2)#verify the order is different
+  cs1 <- load_cytoset(tmp1)
+  #sample gets reordered after loading into cs
+  expect_equal(colnames(get_cytoframe_from_cs(cs1, sn)), cn1)
+  
+  })
 test_that("add/set frames", {
   cs1 <- realize_view(cs)
   cf <- realize_view(get_cytoframe_from_cs(cs1, 1))
@@ -29,7 +70,7 @@ test_that("gs constructor", {
   gs <- GatingSet(cs1)
  #gates preserved 
   gs_pop_add(gs, rectangleGate(d = c(1,10)))
-  cs_set_cytoframe(cs1, sampleNames(gs)[1], get_cytoframe_from_cs(cs, 1))
+  cs_set_cytoframe(cs1, sampleNames(gs)[1], realize_view(get_cytoframe_from_cs(cs, 1)))
   expect_equal(length(gs_get_pop_paths(gs)), 2)
   #data changed
   expect_false(identical(cf_get_h5_file_path(get_cytoframe_from_cs(gs,1)), h5))
