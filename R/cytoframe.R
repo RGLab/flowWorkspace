@@ -743,8 +743,8 @@ cf_scale_time_channel <- function(cf){
 #' @export
 cf_cleanup_temp <- function(x, temp_dir = NULL){
 	if(is.null(temp_dir))
-		temp_dir <- tempdir()
-	h5_path <- cf_get_h5_file_path(x)
+		temp_dir <- normalizePath(tempdir())
+	h5_path <- normalizePath(cf_get_h5_file_path(x))
 	if(grepl(paste0("^", temp_dir), h5_path))
 		unlink(h5_path, recursive = TRUE)
 }

@@ -286,7 +286,7 @@ flowSet_to_cytoset <- function(fs, path = tempfile()){
                               , file_col_name = "FCS_File"
                               , check.names = FALSE )
   # Remove the temporary intermediate flowSet
-  unlink(tmp, recursive = TRUE)
+  unlink(normalizePath(tmp), recursive = TRUE)
   # Fix any potential change or re-ordering of sampleNames
   sns_matched <- sampleNames(cs)
   sns_matched <- sns[match(sns_matched, filenames)]
@@ -832,8 +832,8 @@ load_cytoset<-function(path, ...){
 #' @export
 cs_cleanup_temp <- function(x, temp_dir = NULL){
 	if(is.null(temp_dir))
-		temp_dir <- tempdir()
-	h5_path <- cs_get_h5_file_path(x)
+		temp_dir <- normalizePath(tempdir())
+	h5_path <- normalizePath(cs_get_h5_file_path(x))
 	if(grepl(paste0("^", temp_dir), h5_path))
 	   unlink(h5_path, recursive = TRUE)
 }
