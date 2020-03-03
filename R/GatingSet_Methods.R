@@ -1815,3 +1815,9 @@ setReplaceMethod("colnames",
 
                    x
                  })
+
+#' @rdname cleanup_temp
+#' @export
+gs_cleanup_temp <- function(x, temp_dir = NULL){
+	cs_cleanup_temp(gs_cyto_data(x), temp_dir)
+}

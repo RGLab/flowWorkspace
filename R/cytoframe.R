@@ -722,3 +722,29 @@ cf_scale_time_channel <- function(cf){
 	stopifnot(is(cf, "cytoframe"))
 	.cf_scale_time_channel(cf@pointer)
 }
+
+#' Remove temporary files associatated with flowWorkspace data classes
+#' 
+#' These methods immediately delete the on-disk h5 storage associated with \link{cytoframe},
+#' \link{cytoset}, \linkS4class{GatingHierarchy}, or \linkS4class{GatingSet} objects, but only if it is
+#' under the directory pointed to by tempdir() or alternatively specified by the temp_dir option.
+#' The temp_dir option should be used with caution as it acts as a guard against accidental
+#' removal of non-temporary storage.
+#' 
+#' Use of these functions will generally be unnecessary for most users, but they are provided
+#' for workflows that involve repeated creation of such data structures within the same R session
+#' to avoid overwhelming temporary storage.
+#' 
+#' @name cleanup_temp
+#' @aliases cf_cleanup_temp cs_cleanup_temp gh_cleanup_temp gs_cleanup_temp
+#' @param x a cytoframe, cytoset, GatingHierarchy, or GatingSet object
+#' @param temp_dir an optional argument designating another path as temporary storage. If specified
+#' this will override tempdir() in determining the top directory under which files can safely be removed.
+#' @export
+cf_cleanup_temp <- function(x, temp_dir = NULL){
+	if(is.null(temp_dir))
+		temp_dir <- tempdir()
+	h5_path <- cf_get_h5_file_path(x)
+	if(grepl(paste0("^", temp_dir), h5_path))
+		unlink(h5_path, recursive = TRUE)
+}

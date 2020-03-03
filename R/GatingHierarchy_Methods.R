@@ -1735,3 +1735,11 @@ setReplaceMethod("colnames",
 
                    # x
                  })
+
+#' @rdname cleanup_temp
+#' @export
+gh_cleanup_temp <- function(x, temp_dir = NULL){
+	sn <- sampleNames(x)
+	cf <- gs_cyto_data(x)[[sn, returnType = "cytoframe"]]
+	cf_cleanup_temp(cf, temp_dir)
+}
