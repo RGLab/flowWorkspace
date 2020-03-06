@@ -387,7 +387,10 @@ swap_data_cols <- function(cols, swap_cols)
 					# return keywords from workspace successfully, thus it is currently
 					# only used when execute = FALSE
 					if(!is.null(ws))
-						kw <- fj_ws_get_keywords(ws, sampleID)
+					{
+					  kw <- CytoML::fj_ws_get_keywords(ws, sampleID) 
+					}
+						
 					#use $PnB to determine the number of parameters since {N,R,S) could be
 					#redundant in some workspaces
 					key_names <- unique(names(kw[grep("\\$P[0-9]{1,}B", names(kw))]))
