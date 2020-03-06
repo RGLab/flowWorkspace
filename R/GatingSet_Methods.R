@@ -168,7 +168,6 @@ swap_data_cols <- function(cols, swap_cols)
 #'                                  But when the gates needs to be extended without loading the raw data (i.e. \code{execute} is set to FALSE), then this hard-coded value is used.
 #' @param transform \code{logical} to enable/disable transformation of gates and data. Default is TRUE. It is mainly for debug purpose (when the raw gates need to be parsed.
 #' @importFrom Biobase AnnotatedDataFrame
-#' @importFrom CytoML fj_ws_get_keywords
 #' @noRd 
 .addGatingHierarchies <- function(gs, samples, execute,isNcdf = TRUE
 		,compensation=NULL
