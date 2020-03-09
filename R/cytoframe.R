@@ -668,10 +668,22 @@ cf_write_h5 <- function(cf, filename){
 #' @param filename the full path of the output h5 file
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
+#' @param cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
+#'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE){
-  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk, readonly), use.exprs = TRUE)
+#' @importFrom aws.signature read_credentials
+load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL){
+  
+  if(grepl("^https://", filename, ignore.case = TRUE))
+  {
+    cred <- read_credentials()[[1]]
+    cred$AWS_REGION <- "us-west-1"
+    p <- load_cf_from_s3(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION)
+  }
+  else
+    p <- load_cf_from_h5(filename, on_disk, readonly)
+  new("cytoframe", pointer = p, use.exprs = TRUE)
 }
 #' Return the file path of the underlying h5 file
 #' 

@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
-Version: 3.35.13
+Version: 3.37.13
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
@@ -17,7 +17,7 @@ LazyLoad: yes
 Imports:
     Biobase,
     BiocGenerics,
-    cytolib (>= 1.9.17),
+    cytolib (>= 1.11.17),
     lattice,
     latticeExtra,
     XML,
@@ -42,7 +42,9 @@ Imports:
     RProtoBufLib,
     digest,
     flowCore(>= 1.53.11),
-	ncdfFlow(>= 2.25.4)
+	ncdfFlow(>= 2.25.4),
+	aws.s3,
+	aws.signature
 Collate: 
     'cytoframe.R'
     'cytoset.R'

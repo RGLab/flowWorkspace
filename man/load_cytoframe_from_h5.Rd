@@ -4,7 +4,7 @@
 \alias{load_cytoframe_from_h5}
 \title{Load the cytoframe from h5 format}
 \usage{
-load_cytoframe_from_h5(filename, readonly = TRUE, on_disk = TRUE)
+load_cytoframe_from_h5(filename, readonly = TRUE, on_disk = TRUE, cred = NULL)
 }
 \arguments{
 \item{filename}{the full path of the output h5 file}
@@ -12,6 +12,9 @@ load_cytoframe_from_h5(filename, readonly = TRUE, on_disk = TRUE)
 \item{readonly}{logical flag indicating whether to open h5 data as readonly. Default is TRUE.}
 
 \item{on_disk}{logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.}
+
+\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
+when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
 }
 \description{
 Load the cytoframe from h5 format

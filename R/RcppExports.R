@@ -279,6 +279,10 @@ load_cf_from_h5 <- function(filename, on_disk, readonly) {
     .Call(`_flowWorkspace_load_cf_from_h5`, filename, on_disk, readonly)
 }
 
+load_cf_from_s3 <- function(url, id, key, region) {
+    .Call(`_flowWorkspace_load_cf_from_s3`, url, id, key, region)
+}
+
 setMarker <- function(fr, channel, marker) {
     invisible(.Call(`_flowWorkspace_setMarker`, fr, channel, marker))
 }

@@ -721,6 +721,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// load_cf_from_s3
+XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string region);
+RcppExport SEXP _flowWorkspace_load_cf_from_s3(SEXP urlSEXP, SEXP idSEXP, SEXP keySEXP, SEXP regionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< string >::type url(urlSEXP);
+    Rcpp::traits::input_parameter< string >::type id(idSEXP);
+    Rcpp::traits::input_parameter< string >::type key(keySEXP);
+    Rcpp::traits::input_parameter< string >::type region(regionSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_cf_from_s3(url, id, key, region));
+    return rcpp_result_gen;
+END_RCPP
+}
 // setMarker
 void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker);
 RcppExport SEXP _flowWorkspace_setMarker(SEXP frSEXP, SEXP channelSEXP, SEXP markerSEXP) {
@@ -1167,6 +1181,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
     {"_flowWorkspace_writeH5", (DL_FUNC) &_flowWorkspace_writeH5, 2},
     {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 3},
+    {"_flowWorkspace_load_cf_from_s3", (DL_FUNC) &_flowWorkspace_load_cf_from_s3, 4},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
