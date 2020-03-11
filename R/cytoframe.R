@@ -587,12 +587,15 @@ cf_keyword_rename <- function(cf, from, to){
   
 }
 
-#  coerce cytoframe to flowFrame
-#' Methods for conversions between cytoframe/cytoset and flowFrame/flowSet
+#' Methods for conversion between flowCore and flowWorkspace data classes
+#'
+#' These methods perform conversions between flowWorkspace classes (\link{cytoframe}/\link{cytoset}) and 
+#' flowCore classes (\link{flowFrame}/\link{flowSet}) as well as between single-sample and aggregated classes
+#' (e.g. between \code{cytoset} and a list of \code{cytoframe}s)
 #' 
-#' These methods consist of a pair of methods to coerce a \code{cytoframe}
+#' The first set of methods consist of a pair of methods to coerce a \code{cytoframe}
 #' to or from a \code{flowFrame} and another pair to coerce a \code{cytoset}
-#' to or from a \code{flowSet}. 
+#' to or from a \code{flowSet}.
 #' 
 #' The conversion between the two sets of data container classes mostly entails
 #' a conversion of the back-end representation of the data. \code{cytoframe}
@@ -603,6 +606,11 @@ cf_keyword_rename <- function(cf, from, to){
 #' a \code{flowFrame} to a \code{cytoframe} entails creation of the 'C'-level
 #' data structure from the \code{flowFrame} slots. The names of each of the
 #' methods are pretty self-explanatory.
+#' 
+#' The second set of methods perform disaggregation of data objects that represent
+#' multiple samples in to lists of data objects that represent a single sample. The opposite
+#' direction is handled by the constructors for the aggregate data classes.
+#' 
 #' 
 #' @section Methods:
 #' 
@@ -619,11 +627,22 @@ cf_keyword_rename <- function(cf, from, to){
 #' \item{flowSet_to_cytoset(object = "flowSet")}{Returns a \code{cytoset} object
 #' coerced from a \code{flowSet} object.}
 #' 
+#' \item{flowSet_to_list(object = "flowSet")}{Returns a list of \code{cytoframe} objects
+#' with names provided by the sampleNames of the original \code{cytoset}}
+#' 
+#' \item{flowSet(object = "list)}{Constructs a \code{cytoset} object from a list of \code{cytoframe}
+#' objects. See documentation for \link{cytoset}}
+#' 
+#' \item{cytoset_to_list(object = "cytoset")}{Returns a list of \code{cytoframe} objects
+#' with names provided by the sampleNames of the original \code{cytoset}}
+#' 
+#' \item{cytoset(object = "list)}{Constructs a \code{cytoset} object from a list of \code{cytoframe}
+#' objects. See documentation for \link{flowSet}}
 #' }
 #' 
-#' @name cyto_flow_coerce_methods
+#' @name cyto_flow_conversions
 #' @aliases cytoframe_to_flowFrame flowFrame_to_cytoframe cytoset_to_flowSet
-#' flowSet_to_cytoset
+#' flowSet_to_cytoset cytoset_to_list flowSet_to_list
 #' 
 #' @docType methods
 #' @keywords methods
@@ -644,7 +663,7 @@ cytoframe_to_flowFrame <- function(fr){
   as(fr, "flowFrame")
 }
 
-#' @rdname cyto_flow_coerce_methods
+#' @rdname cyto_flow_conversions
 #' @export
 flowFrame_to_cytoframe <- function(fr, ...){
 	tmp <- tempfile()
