@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>save/load a GatingSet/GatingSetList to/from disk. — save_gs • flowWorkspace</title>
+<title>Methods for conversion between flowCore and flowWorkspace data classes — cyto_flow_conversions • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -42,9 +42,10 @@
 
 
 
-<meta property="og:title" content="save/load a GatingSet/GatingSetList to/from disk. — save_gs" />
-<meta property="og:description" content="Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.
-The GatingSet object The internal C data structure (gating tree),ncdfFlowSet object(if applicable)" />
+<meta property="og:title" content="Methods for conversion between flowCore and flowWorkspace data classes — cyto_flow_conversions" />
+<meta property="og:description" content="These methods perform conversions between flowWorkspace classes (cytoframe/cytoset) and 
+flowCore classes (flowFrame/flowSet) as well as between single-sample and aggregated classes
+(e.g. between cytoset and a list of cytoframes)" />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -124,89 +125,91 @@ The GatingSet object The internal C data structure (gating tree),ncdfFlowSet obj
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>save/load a GatingSet/GatingSetList to/from disk.</h1>
+    <h1>Methods for conversion between flowCore and flowWorkspace data classes</h1>
     
-    <div class="hidden name"><code>save_gs.Rd</code></div>
+    <div class="hidden name"><code>cyto_flow_conversions.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.
-The <code>GatingSet</code> object The internal C data structure (gating tree),<code>ncdfFlowSet</code> object(if applicable)</p>
+    <p>These methods perform conversions between flowWorkspace classes (<a href='cytoframe.html'>cytoframe</a>/<a href='cytoset.html'>cytoset</a>) and 
+flowCore classes (flowFrame/flowSet) as well as between single-sample and aggregated classes
+(e.g. between <code>cytoset</code> and a list of <code>cytoframe</code>s)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>save_gs</span>(<span class='no'>gs</span>, <span class='no'>path</span>, <span class='kw'>cdf</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"copy"</span>, <span class='st'>"move"</span>, <span class='st'>"skip"</span>, <span class='st'>"symlink"</span>, <span class='st'>"link"</span>), <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>cytoframe_to_flowFrame</span>(<span class='no'>fr</span>)
 
-<span class='fu'>load_gs</span>(<span class='no'>path</span>, <span class='kw'>h5_readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span>(), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='fu'>flowFrame_to_cytoframe</span>(<span class='no'>fr</span>, <span class='no'>...</span>)
 
-<span class='fu'>save_gslist</span>(<span class='no'>gslist</span>, <span class='no'>path</span>, <span class='no'>...</span>)
+<span class='fu'>cytoset_to_flowSet</span>(<span class='no'>cs</span>)
 
-<span class='fu'>load_gslist</span>(<span class='no'>path</span>)</pre>
+<span class='fu'>flowSet_to_cytoset</span>(<span class='no'>fs</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>())
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>path</th>
-      <td><p>A character scalar giving the path to save/load the GatingSet to/from.</p></td>
-    </tr>
-    <tr>
-      <th>cdf</th>
-      <td><p>a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
-Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
-It is useful to "skip" archiving cdf file if raw data has not been changed.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments: not used.</p></td>
-    </tr>
-    <tr>
-      <th>h5_readonly</th>
-      <td><p>whether to open h5 data as read-only. Default is TRUE</p></td>
-    </tr>
-    <tr>
-      <th>select</th>
-      <td><p>an integer or character vector to select a subset of samples to load</p></td>
-    </tr>
-    <tr>
-      <th>verbose</th>
-      <td><p>logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.</p></td>
-    </tr>
-    <tr>
-      <th>gslist</th>
-      <td><p>A <code>GatingSetList</code></p></td>
-    </tr>
-    <tr>
-      <th>G</th>
-      <td><p>A <code>GatingSet</code></p></td>
-    </tr>
-    </table>
+<span class='fu'>cytoset_to_list</span>(<span class='no'>cs</span>)</pre>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>load_gs</code> returns a GatingSet object
-<code>load_gslist</code> returns a GatingSetList object</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <div class='dont-index'><p><code><a href='GatingSet-class.html'>GatingSet-class</a></code>,<code><a href='GatingSetList-class.html'>GatingSetList-class</a></code></p></div>
+    <p>The first set of methods consist of a pair of methods to coerce a <code>cytoframe</code>
+to or from a <code>flowFrame</code> and another pair to coerce a <code>cytoset</code>
+to or from a <code>flowSet</code>.</p>
+<p>The conversion between the two sets of data container classes mostly entails
+a conversion of the back-end representation of the data. <code>cytoframe</code>
+and <code>cytoset</code> objects contain <code>flowFrame</code> and <code>flowSet</code> objects
+respectively, so coercion of a <code>cytoframe</code> to <code>flowFrame</code> entails
+moving the data from the 'C'-level data structure to the corresponding
+<code>exprs</code>, <code>description</code>, and <code>parameters</code> slots. Coercion of
+a <code>flowFrame</code> to a <code>cytoframe</code> entails creation of the 'C'-level
+data structure from the <code>flowFrame</code> slots. The names of each of the
+methods are pretty self-explanatory.</p>
+<p>The second set of methods perform disaggregation of data objects that represent
+multiple samples in to lists of data objects that represent a single sample. The opposite
+direction is handled by the constructors for the aggregate data classes.</p>
+    <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
+
+    
+
+
+<dl class='dl-horizontal'>
+<dt>cytoframe_to_flowFrame(object = "cytoframe")</dt><dd><p>Returns a <code>flowFrame</code> object
+coerced from a <code>cytoframe</code> object.</p></dd>
+
+<dt>flowFrame_to_cytoframe(object = "flowFrame")</dt><dd><p>Returns a <code>cytoframe</code> object
+coerced from a <code>flowFrame</code> object.</p></dd>
+
+<dt>cytoset_to_flowSet(object = "cytoset")</dt><dd><p>Returns a <code>flowSet</code> object
+coerced from a <code>cytoset</code> object.</p></dd>
+
+<dt>flowSet_to_cytoset(object = "flowSet")</dt><dd><p>Returns a <code>cytoset</code> object
+coerced from a <code>flowSet</code> object.</p></dd>
+
+<dt>flowSet_to_list(object = "flowSet")</dt><dd><p>Returns a list of <code>cytoframe</code> objects
+with names provided by the sampleNames of the original <code>cytoset</code></p></dd>
+
+<dt>flowSet(object = "list)</dt><dd><p>Constructs a <code>cytoset</code> object from a list of <code>cytoframe</code>
+objects. See documentation for <a href='cytoset.html'>cytoset</a></p></dd>
+
+<dt>cytoset_to_list(object = "cytoset")</dt><dd><p>Returns a list of <code>cytoframe</code> objects
+with names provided by the sampleNames of the original <code>cytoset</code></p></dd>
+
+<dt>cytoset(object = "list)</dt><dd><p>Constructs a <code>cytoset</code> object from a list of <code>cytoframe</code>
+objects. See documentation for <a href='https://rdrr.io/pkg/flowCore/man/flowSet-class.html'>flowSet</a></p></dd>
+
+</dl>
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-        <span class='co'>#G is a GatingSet</span>
-        <span class='fu'>save_gs</span>(<span class='no'>G</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-        <span class='no'>G1</span><span class='kw'>&lt;-</span><span class='fu'>load_gs</span>(<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-
-        <span class='co'>#G is a GatingSet</span>
-
-        <span class='fu'>save_gslist</span>(<span class='no'>gslist1</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-        <span class='no'>gslist2</span><span class='kw'>&lt;-</span><span class='fu'>load_gslist</span>(<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowCore</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"GvHD"</span>)
+<span class='no'>fs</span> <span class='kw'>&lt;-</span> <span class='no'>GvHD</span>[<span class='fl'>1</span>]
+<span class='no'>cs</span> <span class='kw'>&lt;-</span> <span class='fu'>flowSet_to_cytoset</span>(<span class='no'>fs</span>)
+<span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='no'>cs</span><span class='kw'>[[</span><span class='fl'>1</span>, <span class='kw'>returnType</span><span class='kw'>=</span><span class='st'>"cytoframe"</span>]]
+<span class='no'>ff</span> <span class='kw'>&lt;-</span> <span class='fu'>cytoframe_to_flowFrame</span>(<span class='no'>cf</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#methods">Methods</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>save/load a GatingSet/GatingSetList to/from disk. — save_gs • flowWorkspace</title>
+<title>Remove temporary files associatated with flowWorkspace data classes — cleanup_temp • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -42,9 +42,12 @@
 
 
 
-<meta property="og:title" content="save/load a GatingSet/GatingSetList to/from disk. — save_gs" />
-<meta property="og:description" content="Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.
-The GatingSet object The internal C data structure (gating tree),ncdfFlowSet object(if applicable)" />
+<meta property="og:title" content="Remove temporary files associatated with flowWorkspace data classes — cleanup_temp" />
+<meta property="og:description" content="These methods immediately delete the on-disk h5 storage associated with cytoframe,
+cytoset, GatingHierarchy, or GatingSet objects, but only if it is
+under the directory pointed to by tempdir() or alternatively specified by the temp_dir option.
+The temp_dir option should be used with caution as it acts as a guard against accidental
+removal of non-temporary storage." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -124,90 +127,53 @@ The GatingSet object The internal C data structure (gating tree),ncdfFlowSet obj
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>save/load a GatingSet/GatingSetList to/from disk.</h1>
+    <h1>Remove temporary files associatated with flowWorkspace data classes</h1>
     
-    <div class="hidden name"><code>save_gs.Rd</code></div>
+    <div class="hidden name"><code>cleanup_temp.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.
-The <code>GatingSet</code> object The internal C data structure (gating tree),<code>ncdfFlowSet</code> object(if applicable)</p>
+    <p>These methods immediately delete the on-disk h5 storage associated with <a href='cytoframe.html'>cytoframe</a>,
+<a href='cytoset.html'>cytoset</a>, <a href='GatingHierarchy-class.html'>GatingHierarchy</a>, or <a href='GatingSet-class.html'>GatingSet</a> objects, but only if it is
+under the directory pointed to by tempdir() or alternatively specified by the temp_dir option.
+The temp_dir option should be used with caution as it acts as a guard against accidental
+removal of non-temporary storage.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>save_gs</span>(<span class='no'>gs</span>, <span class='no'>path</span>, <span class='kw'>cdf</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"copy"</span>, <span class='st'>"move"</span>, <span class='st'>"skip"</span>, <span class='st'>"symlink"</span>, <span class='st'>"link"</span>), <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>cf_cleanup_temp</span>(<span class='no'>x</span>, <span class='kw'>temp_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>load_gs</span>(<span class='no'>path</span>, <span class='kw'>h5_readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span>(), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='fu'>cs_cleanup_temp</span>(<span class='no'>x</span>, <span class='kw'>temp_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>save_gslist</span>(<span class='no'>gslist</span>, <span class='no'>path</span>, <span class='no'>...</span>)
+<span class='fu'>gh_cleanup_temp</span>(<span class='no'>x</span>, <span class='kw'>temp_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>load_gslist</span>(<span class='no'>path</span>)</pre>
+<span class='fu'>gs_cleanup_temp</span>(<span class='no'>x</span>, <span class='kw'>temp_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>path</th>
-      <td><p>A character scalar giving the path to save/load the GatingSet to/from.</p></td>
+      <th>x</th>
+      <td><p>a cytoframe, cytoset, GatingHierarchy, or GatingSet object</p></td>
     </tr>
     <tr>
-      <th>cdf</th>
-      <td><p>a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
-Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
-It is useful to "skip" archiving cdf file if raw data has not been changed.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments: not used.</p></td>
-    </tr>
-    <tr>
-      <th>h5_readonly</th>
-      <td><p>whether to open h5 data as read-only. Default is TRUE</p></td>
-    </tr>
-    <tr>
-      <th>select</th>
-      <td><p>an integer or character vector to select a subset of samples to load</p></td>
-    </tr>
-    <tr>
-      <th>verbose</th>
-      <td><p>logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.</p></td>
-    </tr>
-    <tr>
-      <th>gslist</th>
-      <td><p>A <code>GatingSetList</code></p></td>
-    </tr>
-    <tr>
-      <th>G</th>
-      <td><p>A <code>GatingSet</code></p></td>
+      <th>temp_dir</th>
+      <td><p>an optional argument designating another path as temporary storage. If specified
+this will override tempdir() in determining the top directory under which files can safely be removed.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>load_gs</code> returns a GatingSet object
-<code>load_gslist</code> returns a GatingSetList object</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+    <p>Use of these functions will generally be unnecessary for most users, but they are provided
+for workflows that involve repeated creation of such data structures within the same R session
+to avoid overwhelming temporary storage.</p>
 
-    <div class='dont-index'><p><code><a href='GatingSet-class.html'>GatingSet-class</a></code>,<code><a href='GatingSetList-class.html'>GatingSetList-class</a></code></p></div>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-        <span class='co'>#G is a GatingSet</span>
-        <span class='fu'>save_gs</span>(<span class='no'>G</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-        <span class='no'>G1</span><span class='kw'>&lt;-</span><span class='fu'>load_gs</span>(<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-
-        <span class='co'>#G is a GatingSet</span>
-
-        <span class='fu'>save_gslist</span>(<span class='no'>gslist1</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-        <span class='no'>gslist2</span><span class='kw'>&lt;-</span><span class='fu'>load_gslist</span>(<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
   </div>

@@ -640,7 +640,7 @@ cf_keyword_rename <- function(cf, from, to){
 #' objects. See documentation for \link{flowSet}}
 #' }
 #' 
-#' @name cyto_flow_conversions
+#' @name convert
 #' @aliases cytoframe_to_flowFrame flowFrame_to_cytoframe cytoset_to_flowSet
 #' flowSet_to_cytoset cytoset_to_list flowSet_to_list
 #' 
@@ -655,6 +655,7 @@ cf_keyword_rename <- function(cf, from, to){
 #' cf <- cs[[1, returnType="cytoframe"]]
 #' ff <- cytoframe_to_flowFrame(cf)
 #' 
+#' @seealso \link{merge_list_to_gs}
 #' @export
 cytoframe_to_flowFrame <- function(fr){
   fr@exprs <- exprs(fr)
@@ -663,7 +664,7 @@ cytoframe_to_flowFrame <- function(fr){
   as(fr, "flowFrame")
 }
 
-#' @rdname cyto_flow_conversions
+#' @rdname convert
 #' @export
 flowFrame_to_cytoframe <- function(fr, ...){
 	tmp <- tempfile()
