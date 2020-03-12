@@ -486,3 +486,13 @@ test_that("transform", {
 #   expect_true(cs_get_h5_file_path(nc1) == cs_get_h5_file_path(cs))
 # 
 # })
+
+test_that("cytoset_to_list", {
+  cs <- flowSet_to_cytoset(GvHD)
+  cfs <- cytoset_to_list(cs)
+  expect_true(is.list(cfs))
+  expect_equal(sampleNames(cs), names(cfs))
+  expect_true(all(sapply(1:length(cfs), function(idx) {all.equal(cfs[[idx]], cs[[idx, returnType="cytoframe"]])})))
+  # spot check
+  expect_equal(exprs(cfs[[7]]), exprs(cs[[7, returnType="cytoframe"]]))
+})

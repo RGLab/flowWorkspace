@@ -260,7 +260,7 @@ cytoset <- function(x, ...){
 	cs
 }
 
-#' @rdname cyto_flow_coerce_methods
+#' @rdname cyto_flow_conversions
 #' @export 
 cytoset_to_flowSet <- function(cs){
   fs <- as(fsApply(cs, function(fr)fr), "flowSet")
@@ -268,7 +268,7 @@ cytoset_to_flowSet <- function(cs){
   fs
 }
 
-#' @rdname cyto_flow_coerce_methods
+#' @rdname cyto_flow_conversions
 #' @export 
 flowSet_to_cytoset <- function(fs, path = tempfile()){
   tmp <- tempfile()
@@ -836,4 +836,13 @@ cs_cleanup_temp <- function(x, temp_dir = NULL){
 	h5_path <- normalizePath(cs_get_h5_file_path(x))
 	if(grepl(paste0("^", temp_dir), h5_path))
 	   unlink(h5_path, recursive = TRUE)
+}
+
+
+#' @rdname cyto_flow_conversions
+#' @export
+cytoset_to_list <- function(cs){
+	cfs <- lapply(1:length(cs), function(idx) {cs[[idx, returnType="cytoframe"]]})
+	names(cfs) <- sampleNames(cs)
+	cfs
 }
