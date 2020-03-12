@@ -19,13 +19,13 @@ reference:
     contents:
       - cytoframe
       - cytoset
-      - cyto_flow_coerce_methods
+      - convert
       - load_cytoframe_from_fcs
       - load_cytoframe_from_h5
       - cf_get_h5_file_path
       - cf_write_h5
       - load_cytoset_from_fcs
-      - cs_add_sample
+      - cs_add_cytoframe
       - cs_get_h5_file_path
       - load_meta
       - lock
