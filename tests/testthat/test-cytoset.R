@@ -112,7 +112,7 @@ test_that("save/load", {
   expect_that(cs, is_a("cytoset"))
   expect_setequal(colnames(pData(cs)), colnames(pd))
   expect_message(save_cytoset(cs, path = tmp), "Done")
-  expect_error(save_cytoset(cs[1], path = tmp), "h5 file not matched ")
+  expect_error(save_cytoset(cs[1], path = tmp), "not matched ")
   
   #idx by col
   tmp1 <- tempfile()

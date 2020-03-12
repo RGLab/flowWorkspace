@@ -68,7 +68,7 @@ test_that("save GatingSet to archive",
       #overwrite the existing dir
       expect_message(save_gs(gs, path = tmp), "Done")
       #fail to save due to mismatch of gs id
-      expect_error(save_gs(gs[1], path = tmp), "doesn't match", class = "error")
+      expect_error(save_gs(gs[1], path = tmp), "not match", class = "error")
       # check gs id is preserved
       cdf <- list.files(tmp, ".h5", full.names = TRUE)
       expect_equal(identifier(gs), id)

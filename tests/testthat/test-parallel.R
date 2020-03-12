@@ -37,7 +37,7 @@ test_that("partial load_gs", {
     tmp1 <- tempfile()
     save_gs(gs1, tmp1)
     expect_equal(length(list.files(tmp1, ".h5")), 2)
-    expect_lt(file.size(list.files(tmp1, ".pb", full.names = TRUE)), file.size(list.files(tmp, ".pb", full.names = TRUE)))
+    expect_equal(length(list.files(tmp1, ".pb")), 3)
 })
 
 test_that("parallel load_gs", {
