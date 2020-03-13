@@ -15,6 +15,7 @@ gs_get_singlecell_expression(
   threshold = TRUE,
   marginal = TRUE,
   mc.cores = getOption("mc.cores", 1L),
+  inverse.transform = FALSE,
   ...
 )
 
@@ -36,6 +37,8 @@ by node name or by 'map' argument explained below. When FALSE, the markers are d
 and node name and 'map' argument are ignored.}
 
 \item{mc.cores}{passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.}
+
+\item{inverse.transform}{logical flag indicating whether to inverse transform the data}
 
 \item{...}{other arguments
         map a named list providing the mapping between node names (as specified in the gating hierarchy of the gating set) and channel
