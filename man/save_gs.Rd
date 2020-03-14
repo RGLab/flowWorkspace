@@ -7,7 +7,13 @@
 \alias{load_gslist}
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
-save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"), ...)
+save_gs(
+  gs,
+  path,
+  cdf = c("copy", "move", "skip", "symlink", "link"),
+  cred = NULL,
+  ...
+)
 
 load_gs(path, h5_readonly = TRUE, select = character(), verbose = FALSE)
 

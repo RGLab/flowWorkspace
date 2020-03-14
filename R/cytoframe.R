@@ -675,15 +675,28 @@ cf_write_h5 <- function(cf, filename){
 #' @importFrom aws.signature read_credentials
 load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL){
   
-  if(grepl("^https://", filename, ignore.case = TRUE))
+  if(is_http_path(filename))
   {
-    cred <- read_credentials()[[1]]
-    cred$AWS_REGION <- "us-west-1"
+    cred <- check_credential(cred)
+    
     p <- load_cf_from_s3(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION)
   }
   else
     p <- load_cf_from_h5(filename, on_disk, readonly)
   new("cytoframe", pointer = p, use.exprs = TRUE)
+}
+
+is_http_path <- function(x){
+  grepl("^https://", x, ignore.case = TRUE)
+}
+
+check_credential <- function(cred){
+  if(is.null(cred))
+  {
+    cred <- read_credentials()[[1]]
+    cred$AWS_REGION <- "us-west-1"
+  }
+  cred
 }
 #' Return the file path of the underlying h5 file
 #' 

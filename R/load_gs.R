@@ -36,29 +36,90 @@
 #' @rdname save_gs
 #' @export
 #' @aliases save_gs load_gs save_gslist load_gslist
+#' @importFrom aws.s3 put_object
 save_gs<-function(gs, path
                   , cdf = c("copy","move","skip","symlink","link")
+                  , cred = NULL
                   , ...){
-  #  browser()
   cdf <- match.arg(cdf)
-  if(cdf == "link")
-  	stop("'link' option for save_gs is no longer supported")
-  path <- suppressWarnings(normalizePath(path))
-  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf), silent = TRUE))
   
-  
-  if(class(res) == "try-error")
+  if(is_s3_path(path))
   {
-    res <- gsub(" H5Option", ' option', res)
-    res <- gsub(" the indexed CytoFrameView object", ' the GatingSet has been subsetted', res)
+    cred <- check_credential(cred)
+    h5dir <- cs_get_h5_file_path(gs)
+    if(h5dir=="")
+      stop("Saving the in-memory version of gs to remote is not supported!")
     
-    stop(res[[1]])
+    #grab the h5 named by sn (which could be different from h5 filename)
+    h5files <- unlist(lapply(gs_cyto_data(gs), cf_get_h5_file_path))
+    sn <- names(h5files)
+    dest_file_names <- paste0(sn, ".h5")
+    names(h5files) <- dest_file_names
+    
+    #TODO
+    # validity_check_dest()
+    
+    tmp <- tempfile()
+    #save to temp local if local h5 is out of date
+    if(gs_is_dirty(gs))
+    {
+      message("Saving h5 data before uploading...")
+      suppressMessages(save_gs(gs, tmp))
+      # h5files <- list.files(tmp, ".h5", full.names = TRUE)
+      # #attach sn to files
+      # names(h5files) <- gsub(".h5$", "", basename(h5files))
+    }else
+    {
+      #only save pb files  
+      suppressMessages(save_gs(gs, tmp, cdf = "skip"))
+    }
+    
+    pbfiles <- list.files(tmp, ".pb", full.names = TRUE)
+    #attache object key names
+    names(pbfiles) <- basename(pbfiles)
+    
+    message("Uploading gs ...")
+    if(cdf != "copy")
+    {
+      stop("only cdf='copy' is supported for remote saving!")
+    }
+    files_to_put <- c(pbfiles, h5files)
+    keys <- names(files_to_put)
+    for(i in seq_along(keys))
+      put_object(files_to_put[i], file.path(path, keys[i])
+                 , region = cred$AWS_REGION
+                 , key = cred$AWS_ACCESS_KEY_ID
+                 , secret = cred$AWS_SECRET_ACCESS_KEY
+                 , show_progress = TRUE
+                 # , verbose = TRUE
+                 )
+  }else
+  {
+    if(cdf == "link")
+    	stop("'link' option for save_gs is no longer supported")
+    path <- suppressWarnings(normalizePath(path))
+    suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf)))
+    
+    
+    if(class(res) == "try-error")
+    {
+      res <- gsub(" H5Option", ' option', res)
+      res <- gsub(" the indexed CytoFrameView object", ' the GatingSet has been subsetted', res)
+      
+      stop(res[[1]])
+    }
+    
   }
   message("Done\nTo reload it, use 'load_gs' function\n")
-  
-  
 }
 
+#TODO
+gs_is_dirty<- function(x){
+  FALSE
+  }
+is_s3_path <- function(x){
+  grepl("^s3://", x, ignore.case = TRUE)
+}
 
 #' @rdname save_gs
 #' @export
