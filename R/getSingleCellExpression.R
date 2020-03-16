@@ -158,7 +158,7 @@ gs_get_singlecell_expression <- function(x, nodes
 
 	if(is(x, "GatingSetList"))
 	{
-		res <- lapply(x, function(gs)gs_get_singlecell_expression(gs, nodes, other.markers, swap, threshold, marginal, mc.cores, ...), level = 1)
+		res <- lapply(x, function(gs)gs_get_singlecell_expression(gs, nodes, other.markers, swap, threshold, marginal, mc.cores, inverse.transform, ...), level = 1)
 		unlist(res, recursive = FALSE)	
 	}else{
 	
