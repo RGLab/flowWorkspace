@@ -17,7 +17,7 @@ LazyLoad: yes
 Imports:
     Biobase,
     BiocGenerics,
-    cytolib (>= 1.9.20),
+    cytolib (>= 1.9.21),
     lattice,
     latticeExtra,
     XML,
