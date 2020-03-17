@@ -19,17 +19,17 @@ test_that("validity checks for new distributed pb format",
   expect_message(save_gs(gs, tmp1), "Done")
   
   #extra pb
-  gspbfile <- paste0(identifier(gs), ".pb")
-  gspbfile1 <- "t.pb"
+  gspbfile <- paste0(identifier(gs), ".gs")
+  gspbfile1 <- "t.gs"
   file.copy(file.path(tmp1, gspbfile), file.path(tmp1, gspbfile1))
-  expect_error(load_gs(tmp1), "Can't determine the pb", class = "error")
-  expect_error(save_gs(gs, tmp1), "pb file not matched", class = "error")
+  expect_error(load_gs(tmp1), "Multiple .gs", class = "error")
+  expect_error(save_gs(gs, tmp1), "not matched to GatingSet uid", class = "error")
   
   #extra h5
   h5f <- "t.h5"
   file.rename(file.path(tmp1, gspbfile1), file.path(tmp1, h5f))
-  expect_error(load_gs(tmp1), "No .pb file found for sample", class = "error")
-  expect_error(save_gs(gs, tmp1), "h5 file not matched to any sample", class = "error")
+  expect_error(load_gs(tmp1), "No .pb file matched for sample", class = "error")
+  expect_error(save_gs(gs, tmp1), "file not matched to any sample", class = "error")
   
   #unrecognized file
   f1 <- "t.txt"
@@ -41,15 +41,15 @@ test_that("validity checks for new distributed pb format",
   #missing gs pb
   gspbtmp <- tempfile()
   file.rename(file.path(tmp1, gspbfile), gspbtmp)
-  expect_error(load_gs(tmp1), "No .pb file found for gs", class = "error")
-  expect_error(save_gs(gs, tmp1), "pb file missing", class = "error")
+  expect_error(load_gs(tmp1), "No .gs file found", class = "error")
+  expect_error(save_gs(gs, tmp1), "gs file missing", class = "error")
   file.rename(gspbtmp, file.path(tmp1, gspbfile))
   
   #missing h5
   sn <- sampleNames(gs)
   h5f <- paste0(sn, ".h5")    
   file.remove(file.path(tmp1, h5f))
-  expect_error(load_gs(tmp1), "an't determine the pb file for gs", class = "error")
+  expect_error(load_gs(tmp1), "No .h5 file matched", class = "error")
   expect_error(save_gs(gs, tmp1), "h5 file missing", class = "error")
 })
 test_that("save indexed GatingSet",
