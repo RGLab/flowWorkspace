@@ -123,6 +123,7 @@ getSingleCellExpression <- function(...){
 #'        ignore.case whether to ignore case when match the marker names. Default is FALSE.
 #'
 #' @param mc.cores passed to \code{mclapply}. Default is 1, which means the process runs in serial mode. When it is larger than 1, parallel mode is enabled.
+#' @param inverse.transform logical flag indicating whether to inverse transform the data
 #' @return A \code{list} of \code{numerci matrices}
 #' @aliases gs_get_singlecell_expression
 #' @author Mike Jiang \email{wjiang2@@fhcrc.org}
@@ -152,16 +153,17 @@ gs_get_singlecell_expression <- function(x, nodes
 											, threshold = TRUE
 											, marginal = TRUE
 											, mc.cores = getOption("mc.cores", 1L)
+											, inverse.transform = FALSE
 											, ...){
 
 	if(is(x, "GatingSetList"))
 	{
-		res <- lapply(x, function(gs)gs_get_singlecell_expression(gs, nodes, other.markers, swap, threshold, marginal, mc.cores, ...), level = 1)
+		res <- lapply(x, function(gs)gs_get_singlecell_expression(gs, nodes, other.markers, swap, threshold, marginal, mc.cores, inverse.transform, ...), level = 1)
 		unlist(res, recursive = FALSE)	
 	}else{
 	
 		  datSrc <- ifelse(swap, "name", "desc")
-		  fs <- gs_pop_get_data(x)
+		  fs <- gs_pop_get_data(x, inverse.transform = inverse.transform)
 		  sn <- sampleNames(x)
 		  
 		  names(sn) <- sn
