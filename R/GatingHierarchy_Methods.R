@@ -1274,6 +1274,14 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
             f <- inverseLogicleTransform(f)
           f <- f@.Data
           attr(f,"type")<-"logicle"
+        }else if(curTrans$type=="scale"){
+        	if(inverse){
+        		f<-function(x){x/curTrans$scale_factor}
+        		attr(f,"type")<-"scale.inverse"
+        	}else{
+        		f<-function(x){x*curTrans$scale_factor}
+        		attr(f,"type")<-"scale"
+        	}
         }
 
         return (f)

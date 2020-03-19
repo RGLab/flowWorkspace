@@ -176,6 +176,19 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 					  throw(domain_error("logicle transformation constructor error: " + chnl +"\n" + string(e.what())));
 				  }
 			}
+			else if(type == "scale")
+			{
+				try
+				{
+					if((as<int>(x["t_scale"]) == 0) || (as<int>(x["r_scale"]) == 0))
+						thisTrans.reset(new scaleTrans(as<EVENT_DATA_TYPE>(x["scale_factor"])));
+					else
+						thisTrans.reset(new scaleTrans(as<int>(x["t_scale"]), as<int>(x["r_scale"])));
+				}catch(const domain_error &e)
+				{
+					throw(domain_error("scale transformation constructor error: " + chnl +"\n" + string(e.what())));
+				}
+			}
 			else
 			  stop("unknown transformation in set_transformations!");
 			
@@ -323,6 +336,19 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
   			  );
   			  break;
   			}
+			case SCALE:
+			{
+				shared_ptr<scaleTrans> thisTrans = dynamic_pointer_cast<scaleTrans>(curTrans);
+				res.push_back(List::create(
+								Named("type", "scale"),
+								Named("trans_scale", thisTrans->t_scale),
+								Named("raw_scale", thisTrans->r_scale),
+								Named("scale_factor", thisTrans->scale_factor)
+							 ),
+						chnl
+				);
+				break;
+			}
 				default:
 					throw(domain_error("unknown transformation in R_getTransformations!"));
 			}
