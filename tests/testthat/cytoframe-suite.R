@@ -398,3 +398,40 @@ test_that("load_fcs", {
   # setting range from flowCore_Rmax in makeFCSparameters call without checking condition of x[["transformation"]] == "custom"
   #expect_equal(range(fr)[2,], range(cf)[2,] + 1)
 })
+
+test_that("write.FCS compatibility", {
+  fr <- GvHD[[1]]
+  cf <- flowFrame_to_cytoframe(fr)
+  
+  tmp_fr <- tempfile()
+  write.FCS(fr, tmp_fr)
+  tmp_cf <- tempfile()
+  write.FCS(cf, tmp_cf)
+  
+  
+  fr_from_fr <- read.FCS(tmp_fr)
+  fr_from_cf <- read.FCS(tmp_cf)
+  
+  keys_fr <- keyword(fr_from_fr)
+  keys_cf <- keyword(fr_from_cf)
+  # keys_cf will have a few different keys (like cytolib version)
+  # and will thus also slightly offset BEGINDATA and ENDDATA
+  keys_to_compare <- names(keys_fr)
+  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID"))]
+  to_compare <- keys_cf[keys_to_compare]
+  expect_equal(keys_fr[keys_to_compare], keys_cf[keys_to_compare])
+  expect_equal(exprs(fr_from_fr), exprs(fr_from_cf))
+  
+  cf_from_fr <- load_cytoframe_from_fcs(tmp_fr)
+  cf_from_cf <- load_cytoframe_from_fcs(tmp_cf)
+  
+  keys_fr <- keyword(cf_from_fr)
+  keys_cf <- keyword(cf_from_cf)
+  # keys_cf will have a few different keys (like cytolib version)
+  # and will thus also slightly offset BEGINDATA and ENDDATA
+  keys_to_compare <- names(keys_fr)
+  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID"))]
+  to_compare <- keys_cf[keys_to_compare]
+  expect_equal(keys_fr[keys_to_compare], keys_cf[keys_to_compare])
+  expect_equal(exprs(cf_from_fr), exprs(cf_from_cf))
+})

@@ -41,7 +41,7 @@ Imports:
     RcppParallel,
     RProtoBufLib,
     digest,
-    flowCore(>= 1.53.14),
+    flowCore(>= 1.53.15),
 	ncdfFlow(>= 2.25.4)
 Collate: 
     'cytoframe.R'
