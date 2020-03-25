@@ -138,6 +138,12 @@ test_that("[", {
       #nc1 and nc share the cdf file
       expect_equal(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf))
 
+      #write h5
+      tmp <- tempfile()
+      cf_write_h5(cf1, tmp)
+      cf2 <- load_cytoframe_from_h5(tmp)
+      is_equal_flowFrame(cf2, fr[1:100, 2:3], description = F)
+      
       #edge case
       idx <- integer()
       expect_equal(nrow(cf1[idx, ]), 0)#empty rows
