@@ -29,3 +29,49 @@ Enhancements
 + add 'long' format output from 'getPopStats` method
 + add 'transform' method for 'GatingSet' to transform the flow data associated with the GatingSet and save the transformation functions within 'GatingSet'
 + add some internal functions ('merge-GatingSet.R') to handle merging 'GatingSets'	
+
+
+CHANGES IN VERSION 3.31.17 (Bioconductor release 3.9)
++ Deprecate many method names to change over to new naming standard
+  -- see #274 and help(`flowWorkspace-deprecated`) for summary
++ Add additional.sampleID option to parseWorkspace to help uniquely identify samples
++ Add parseWorkspace option to disable transformation of gates and data
++ Add fcs_file_extension optional argument to parseWorkspace
++ normalizePath for parseWorkspace path and h5_dir arguments
++ Move parseWorkspace to CytoML package
++ normalizePath for load_gs
++ Defunct plotGate and remove some flowViz dependendencies
++ Parallelizion and efficient improvements for getPopStats (gh_pop_get_stats/gs_pop_get_stats)
++ Add get_leaf_nodes
++ Add copyNode method for copying node (and its decscendants) to another point in gating tree
++ Add getFullNodePath to convert partial node paths to full
++ Add transform_gate methods for geometric transformations of gates from GatingSet nodes
+
+CHANGES IN VERSION 3.33.10 (Bioconductor release 3.10)
++ MAJOR CHANGE: Added cytoframe and cytoset classes (and supporting methdos) which are now used by GatingSet
+  -- see section "The cytoframe and cytoset classes" in introduction vignette for summary of changes
++ Add cf_scale_time_channel for scaling time channel in a cytoframe
++ Add gh_apply_to_new_fcs to use a GatingHierarchy as template for gating new FCS files
++ Add inverse.transform option for gh_pop_get_data, gs_pop_get_data
++ Rename flowjo_flog -> flowjo_log_trans
++ Add gs_pop_get_stats_tfilter to prefilter by time range for getting pop stats #287
++ More api renaming according to #274: flowJo_biexp_trans -> flowjo_biexp_trans
+
+CHANGES IN VERSION 3.35.x (Bioconductor release 3.11)
++ Allow cytoset constructor to take a list of cytoframes
++ Add cf_rename_channel and cf_rename_marker
++ Add "select" option to load_gs
++ Remove shallow_copy method for cytoframe/cytoset
++ Allow negative subsetting of columns in cytoframe/cytoset
++ add save_cytoset and load_cytoset
++ Add methods for setting cytoframe keywords (cf_keyword_delete, cf_keyword_insert, cf_keyword_rename)
++ GatingSetList deprecated for merge_gslist
++ Make gs_pop_get_stats_tfilter columns/format match gh_pop_get_count_fast
++ Make gh_pop_get_indices take a vector of nodes rather than collapsed node string
++ Check for duplicate markers in markernames<- replacement
++ Add cs_set_cytoframe to change cytoframe reference within cytoset
++ Add cleanup_temp functions for manually cleaning up temp files associated with GatingSets
++ Remove automatic scaling of time channel from  gh_apply_to_new_fcs
++ Add inverse.transform option for gs_get_singlecell_expansion
++ write.FCS support added for cytoframe
++ Update GatingSet archive to use one protobuf file per sample
