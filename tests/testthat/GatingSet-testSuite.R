@@ -5,7 +5,7 @@ test_that("<<- ",{
   # expect_error(gs[[1]] <- gh)
   gs1[[1]] <- gh
   markernames(gs1[[1]]) <- c("<B710-A>" = "cd4")
-  expect_equal(markernames(gs1)[1], "cd4");
+  expect_equivalent(markernames(gs1)[1], "cd4");
   
 })
 test_that("gs_is_h5 ",{
@@ -468,7 +468,7 @@ if(!isCpStaticGate)
 
 test_that("markernames", {
   markers <- c('CD4 PcpCy55','CD38 APC','CD8 APCH7','CD3 V450','HLA-DR V500','CCR7 PE','CD45RA PECy7')
-  expect_equal(markernames(gs), markers)
+  expect_equivalent(markernames(gs), markers)
   
   markers.new <- c("CD4", "CD8")
   chnls <- c("<B710-A>", "<R780-A>")
@@ -478,7 +478,7 @@ test_that("markernames", {
   expect_equivalent(markernames(gh)[c(1,3)], markers.new)
   
   expect_warning(res <- markernames(gs), "not consistent")
-  expect_equal(unique(lapply(gs, markernames)), res)
+  expect_equivalent(unique(lapply(gs, markernames)), res)
 
   
   markernames(gs) <-  markers.new
@@ -488,7 +488,7 @@ test_that("markernames", {
   markers.orig <- markers[c(1,3)]
   names(markers.orig) <- chnls
   markernames(gs) <-  markers.orig
-  expect_equal(markernames(gs), markers)
+  expect_equivalent(markernames(gs), markers)
   
 })
 
