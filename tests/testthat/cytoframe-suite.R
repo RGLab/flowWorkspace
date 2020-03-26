@@ -190,7 +190,7 @@ test_that("cf_rename_marker", {
   old <- markernames(cf1)[1]
   newname <- "test"
   cf_rename_marker(cf1, old, newname)
-  expect_equal(markernames(cf1)[1], newname)
+  expect_equivalent(markernames(cf1)[1], newname)
   
   #rm marker by setting it to empty string
   markers <- markernames(cf1)
@@ -202,7 +202,7 @@ test_that("cf_rename_marker", {
   new <- markers[6:1]
   names(new) <- colnames(cf1)[6:11]
   markernames(cf1) <- new
-  expect_equal(markernames(cf1),markers[6:1])
+  expect_equivalent(markernames(cf1),markers[6:1])
   #dup
   new1 <- new[1]
   names(new1) <- names(new[2])
