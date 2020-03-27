@@ -13,8 +13,8 @@ is_equal_flowFrame <- function(orig, new, exprs = TRUE, description = TRUE){
   #keyword may have minor change
   if(description)
   {
-    kw1 <- description(orig)
-    kw2 <- description(new)
+    kw1 <- keyword(orig)
+    kw2 <- keyword(new)
     #clean up ws from legacy parser
     kw1 <- sapply(kw1, function(kw){
       trimws(kw)
