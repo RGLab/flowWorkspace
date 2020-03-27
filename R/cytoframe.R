@@ -525,8 +525,6 @@ setMethod("keyword",
       process_spill_keyword(desc)
     })
 
-#Note: its behavior is different from flowFrame. The latter only does keyword update or addition
-#But this replace the entire keyword section with the new list.
 #' @importFrom flowCore collapse_desc
 setReplaceMethod("keyword",
     signature=signature(object="cytoframe",
@@ -536,9 +534,9 @@ setReplaceMethod("keyword",
       n <- names(value)
       if(length(n) == 0)
         stop(kwdError, call.=FALSE)
-	delimiter <- "|"
-	# browser()
-	  value <- collapse_desc(value) #flattern and coerce any R object to string
+	  kw <- keyword(object)
+	  kw[n] <- value
+	  value <- collapse_desc(kw) #flattern and coerce any R object to string
       setKeywords(object@pointer, value)
       return(object)
     })
@@ -559,9 +557,13 @@ cf_keyword_delete <- function(cf, keyword){
   kw <- keyword(cf)
   kn <- names(kw)
   idx <- match(keyword, kn)
-  if(is.na(idx))
-    stop("keyword not found:", keyword)
-  keyword(cf) <- kw[-idx]
+  na_idx <- is.na(idx)
+  if(any(na_idx))
+    stop("keyword not found:", paste(keyword[na_idx], collapse = ", "))
+  kw <- kw[-idx]
+  value <- collapse_desc(kw) #flattern and coerce any R object to string
+  setKeywords(cf@pointer, value)
+  
   
 }
 
@@ -573,7 +575,7 @@ cf_keyword_rename <- function(cf, from, to){
   if(is.na(idx))
     stop("keyword not found:", from)
   names(keyword(cf))[idx] <- to
-  
+  cf_keyword_delete(cf, from)
 }
 
 #' Methods for conversion between flowCore and flowWorkspace data classes

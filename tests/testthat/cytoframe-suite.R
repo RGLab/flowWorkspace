@@ -281,6 +281,17 @@ test_that("keyword<-", {
   keyword(cf1) <- kw
   kw <- collapse_desc(kw, collapse.spill = FALSE)
   expect_equal(keyword(cf1)[names(kw)], kw, tol = 6e-6)
+  
+  #add new kw through a named list
+  newk <- list("newk" = "d")
+  keyword(cf1) <- newk
+  kw <- c(kw, newk)
+  expect_equal(keyword(cf1)[names(kw)], kw, tol = 6e-6)
+  #update
+  newk <- list("newk" = "a")
+  keyword(cf1) <- newk
+  kw[["newk"]] <- "a"
+  expect_equal(keyword(cf1)[names(kw)], kw, tol = 6e-6)
   skip_if_not(ish5)
   
   #now meta won't be flushed to disk automatically after destroy cf1
