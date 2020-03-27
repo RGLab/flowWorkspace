@@ -72,7 +72,7 @@ Collate:
     'zzz.R'
 Suggests:
     testthat,
-    flowWorkspaceData (>= 2.23.1),
+    flowWorkspaceData (>= 2.23.2),
     knitr,
     ggcyto,
     parallel,
