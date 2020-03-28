@@ -121,6 +121,30 @@ is_s3_path <- function(x){
   grepl("^s3://", x, ignore.case = TRUE)
 }
 
+parse_s3_path <- function(url){
+  url <- sub("^s3://", "", url)
+  tokens <- strsplit(url, "/")[[1]]
+  list(bucket = tokens[1], key = paste(tokens[-1], collapse = "/"))
+}
+#' delete the archive of GatingSet
+#' 
+#' @param path either a local path or s3 path (e.g. "s3://bucketname/gs_path)
+#' @importFrom aws.s3 get_bucket delete_object
+#' @export
+delete_gs <- function(path, cred = NULL){
+  if(is_s3_path(path))
+  {
+    cred <- check_credential(cred)
+    s3_paths <- parse_s3_path(path)
+    b <- get_bucket(s3_paths[["bucket"]], s3_paths[["key"]], region = cred$AWS_REGION)
+    for(obj in b)
+      delete_object(obj, region = cred$AWS_REGION)
+    
+  }else
+    unlink(path, recursive = TRUE)
+  message(path, " is deleted")
+}
+
 #' @rdname save_gs
 #' @export
 #' @aliases load_gs load_gslist
