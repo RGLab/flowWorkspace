@@ -15,7 +15,13 @@ save_gs(
   ...
 )
 
-load_gs(path, h5_readonly = TRUE, select = character(), verbose = FALSE)
+load_gs(
+  path,
+  h5_readonly = TRUE,
+  select = character(),
+  verbose = FALSE,
+  cred = NULL
+)
 
 save_gslist(gslist, path, ...)
 

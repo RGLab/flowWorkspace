@@ -101,9 +101,9 @@ XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly
 }
 // [[Rcpp::export]]
 XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string region){
-
+	S3Cred cred(id, key, region);
 	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new H5RCytoFrame(url.c_str(), true,
-																		id.c_str(), key.c_str(), region.c_str()
+																		cred
 																		)
 															)
 													)

@@ -74,7 +74,7 @@ save_gs<-function(gs, path
       suppressMessages(save_gs(gs, tmp, cdf = "skip"))
     }
     
-    pbfiles <- list.files(tmp, ".pb", full.names = TRUE)
+    pbfiles <- list.files(tmp, ".(pb)|(gs)$", full.names = TRUE)
     #attache object key names
     names(pbfiles) <- basename(pbfiles)
     
@@ -86,6 +86,8 @@ save_gs<-function(gs, path
     files_to_put <- c(pbfiles, h5files)
     keys <- names(files_to_put)
     for(i in seq_along(keys))
+    {
+      message("Uploading ", keys[i])
       put_object(files_to_put[i], file.path(path, keys[i])
                  , region = cred$AWS_REGION
                  , key = cred$AWS_ACCESS_KEY_ID
@@ -93,6 +95,7 @@ save_gs<-function(gs, path
                  , show_progress = TRUE
                  # , verbose = TRUE
                  )
+    }
   }else
   {
     if(cdf == "link")
@@ -148,21 +151,51 @@ delete_gs <- function(path, cred = NULL){
 #' @rdname save_gs
 #' @export
 #' @aliases load_gs load_gslist
-load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALSE){
-  if(length(list.files(path = path, pattern = ".rds")) >0)
+#' @importFrom aws.s3 get_bucket_df save_object
+load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL){
+  remote_path <- ""
+  if(is_s3_path(path))
   {
-    stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
+    cred <- check_credential(cred)
+    s3_paths <- parse_s3_path(path)
+    bucket <- s3_paths[["bucket"]]
+    gs_key <- s3_paths[["key"]]
+    b <- get_bucket_df(bucket, gs_key, region = cred$AWS_REGION)
+    keys <- b$Key
+    gs_key <- keys[grepl("\\.gs$", keys)]
+    pb_keys <- keys[grepl("\\.pb$", keys)]
+    sns <- sapply(pb_keys, function(key)sub(".pb", "", basename(key)))
+    
+    #download pb files
+    tmp_gs <- tempfile()
+    for(k in c(gs_key, pb_keys))
+    {
+      message("downloading ", k, " ...")
+      save_object(k, bucket, file.path(tmp_gs, basename(k)), region = cred$AWS_REGION)
+    }
+    remote_path <- paste0("https://", bucket, ".s3.amazonaws.com/", dirname(gs_key))
+    #load the temp local pb and pass s3 path for h5
+    path <- tmp_gs
+  }else
+  {
+    
+    
+    if(length(list.files(path = path, pattern = ".rds")) >0)
+    {
+      stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
+    }
+    sns <- sampleNames(path)
+    cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "", AWS_REGION = "")
   }
   if(!is.character(select))
   {
-    sns <- sampleNames(path)
     select.sn <- sns[select]
     idx <- is.na(select.sn)
     if(any(idx))
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
   }else
     select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_readonly, select.sn, verbose))
+  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_readonly, select.sn, verbose, remote_path, cred))
   
 }
 

@@ -221,8 +221,14 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose) {
-		return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose));
+XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
+									, string remote_path, List cred) {
+	S3Cred cred1;
+	cred1.access_key_id_ = as<string>(cred["AWS_ACCESS_KEY_ID"]);
+	cred1.access_key_ = as<string>(cred["AWS_SECRET_ACCESS_KEY"]);
+	cred1.region_ = as<string>(cred["AWS_REGION"]);
+	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose
+			, remote_path, cred1));
 
 }
 
