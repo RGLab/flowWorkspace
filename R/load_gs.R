@@ -92,7 +92,7 @@ save_gs<-function(gs, path
                  , region = cred$AWS_REGION
                  , key = cred$AWS_ACCESS_KEY_ID
                  , secret = cred$AWS_SECRET_ACCESS_KEY
-                 , show_progress = TRUE
+                 # , show_progress = TRUE
                  # , verbose = TRUE
                  )
     }
