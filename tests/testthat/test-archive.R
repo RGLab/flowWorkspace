@@ -9,6 +9,49 @@ test_that("load GatingSet from archive",
   gs <<- gs_clone(gs)#make it writable
 })
 
+test_that("validity checks for new distributed pb format",
+{
+            
+  tmp1 <- tempfile()
+  save_gs(gs, tmp1)
+  
+  #allow save to the existing folder twice
+  expect_message(save_gs(gs, tmp1), "Done")
+  
+  #extra pb
+  gspbfile <- paste0(identifier(gs), ".gs")
+  gspbfile1 <- "t.gs"
+  file.copy(file.path(tmp1, gspbfile), file.path(tmp1, gspbfile1))
+  expect_error(load_gs(tmp1), "Multiple .gs", class = "error")
+  expect_error(save_gs(gs, tmp1), "not matched to GatingSet uid", class = "error")
+  
+  #extra h5
+  h5f <- "t.h5"
+  file.rename(file.path(tmp1, gspbfile1), file.path(tmp1, h5f))
+  expect_error(load_gs(tmp1), "No .pb file matched for sample", class = "error")
+  expect_error(save_gs(gs, tmp1), "file not matched to any sample", class = "error")
+  
+  #unrecognized file
+  f1 <- "t.txt"
+  file.rename(file.path(tmp1, h5f), file.path(tmp1, f1))
+  expect_error(load_gs(tmp1), "not recognized", class = "error")
+  expect_error(save_gs(gs, tmp1), "not recognized", class = "error")
+  file.remove(file.path(tmp1, f1))
+  
+  #missing gs pb
+  gspbtmp <- tempfile()
+  file.rename(file.path(tmp1, gspbfile), gspbtmp)
+  expect_error(load_gs(tmp1), "No .gs file found", class = "error")
+  expect_error(save_gs(gs, tmp1), "gs file missing", class = "error")
+  file.rename(gspbtmp, file.path(tmp1, gspbfile))
+  
+  #missing h5
+  sn <- sampleNames(gs)
+  h5f <- paste0(sn, ".h5")    
+  file.remove(file.path(tmp1, h5f))
+  expect_error(load_gs(tmp1), "No .h5 file matched", class = "error")
+  expect_error(save_gs(gs, tmp1), "h5 file missing", class = "error")
+})
 test_that("save indexed GatingSet",
 {
   
@@ -68,7 +111,7 @@ test_that("save GatingSet to archive",
       #overwrite the existing dir
       expect_message(save_gs(gs, path = tmp), "Done")
       #fail to save due to mismatch of gs id
-      expect_error(save_gs(gs[1], path = tmp), "doesn't match", class = "error")
+      expect_error(save_gs(gs[1], path = tmp), "not match", class = "error")
       # check gs id is preserved
       cdf <- list.files(tmp, ".h5", full.names = TRUE)
       expect_equal(identifier(gs), id)
@@ -135,6 +178,7 @@ test_that("save GatingSet to archive",
       h5 <- list.files(tmp1, ".h5", full.names = TRUE)
       expect_equal(length(h5), 1)
       expect_equal(Sys.readlink(h5), cdf)
+      
   })
 ## it is placed here because trans may get cleared later on by cloning process
 test_that("gh_get_transformations",{    

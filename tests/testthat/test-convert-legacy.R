@@ -1,7 +1,7 @@
 context("legacy_gs")
 
-test_that(".load_legacy", {
-  legacy <- file.path(dataDir,"/legacy_gs/gs_manual")
+test_that(".load_legacy v1", {
+  legacy <- file.path(dataDir,"/legacy_gs/v1/gs_manual")
   tmp <- tempfile()
   gs <- .load_legacy(legacy, tmp)
   #ensure the range slot is synced to keyword
@@ -11,8 +11,8 @@ test_that(".load_legacy", {
                                 , row.names = c("min", "max"), class = "data.frame")
               )
   })
-test_that("convert_legacy_gs", {
-  legacy <- file.path(dataDir,"/legacy_gs/gs_bcell_auto")
+test_that("convert_legacy_gs v1", {
+  legacy <- file.path(dataDir,"/legacy_gs/v1/gs_bcell_auto")
   expect_error(load_gs(legacy), "convert_legacy_gs")
   tmp <- tempfile()
   expect_message(convert_legacy_gs(legacy, tmp), "saved")
@@ -28,8 +28,18 @@ test_that("convert_legacy_gs", {
   expect_equal(sampleNames(gs1), sub(".fcs", "", sampleNames(gs)))  
   })
 
-
-test_that("convert_legacy_gslist", {
+test_that("load legacy_gs v2", {
+  legacy <- file.path(dataDir,"/legacy_gs/v2/gs_bcell_auto")
+  gs <- load_gs(legacy)
+  expect_is(gs, "GatingSet")
+  
+  tmp <- tempfile()
+  expect_message(save_gs(gs, tmp), "Done")
+  expect_equal(length(list.files(tmp, ".h5")), 2)
+  expect_equal(length(list.files(tmp, ".pb")), 2)
+  expect_equal(length(list.files(tmp, ".gs")), 1)
+})
+test_that("convert_legacy_gslist v1", {
   legacy <- "~/remote/fh/fast/gottardo_r/mike_working/lyoplate_out/gated_data/legacy/manual/gslist-tcell"
   skip_if_not(dir.exists(legacy))
   expect_error(load_gslist(legacy), "convert_legacy_gslist")

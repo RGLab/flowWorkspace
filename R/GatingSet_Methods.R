@@ -103,7 +103,6 @@ gh_apply_to_new_fcs <- function(x, files
 			  #post transform the data and copy over the R trans to new gs
 			  #because c++ code only compensate but doesn't transform data
 			  gs <- transform(gs, x@transformation[[1]])
-			  invisible(lapply(cs, cf_scale_time_channel))
 			  
 			  recompute(gs)
 			}	
@@ -780,7 +779,7 @@ fix_y_axis <- function(gs, x, y){
 
 	datarange <- t(rbind(datarange[2,]-datarange[1,],datarange))
 	pData(parameters(fr))[,c("range","minRange","maxRange")] <- datarange
-	description(fr) <- flowCore:::updateTransformKeywords(fr)
+	keyword(fr) <- flowCore:::updateTransformKeywords(fr)
 	frmEnv[[sampleName]] <- fr
 
     tempenv$axis.labels

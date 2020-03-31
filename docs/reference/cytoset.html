@@ -80,7 +80,7 @@ a flowSet." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.35.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.35.14</span>
       </span>
     </div>
 
@@ -157,10 +157,10 @@ with existing user scripts.</p>
 
 
 <p>Objects can be created using <code>cytoset()</code> and then adding samples
-by providing a <code>cytoframe</code> and sample name to <code>cs_add_sample</code>:<br /><br /></p>
+by providing a <code>cytoframe</code> and sample name to <code>cs_add_cytoframe</code>:<br /><br /></p>
 <p><code>
 cs &lt;- cytoset()<br />
-cs_add_sample(cs, "Sample Name", cytoframe)
+cs_add_cytoframe(cs, "Sample Name", cytoframe)
 </code></p>
 <p>The safest and easiest way to create <code>cytoset</code>s directly from
 <acronym>FCS</acronym> files is via the <code><a href='load_cytoset_from_fcs.html'>load_cytoset_from_fcs</a></code> function, and
@@ -338,10 +338,10 @@ a string to specify a full directory name for storing the new copies of the data
 from the FCS files in h5 format.<br /><br />
   <em>Usage:</em><br /><br />
   <code>realize_view(cytoset, filepath)</code><br /><br /></p></dd>
-<dt>cs_add_sample</dt><dd><p>Adds a <code>cytoframe</code> to the <code>cytoset</code> with sample name given
+<dt>cs_add_cytoframe</dt><dd><p>Adds a <code>cytoframe</code> to the <code>cytoset</code> with sample name given
 by a string.<br /><br />
   <em>Usage:</em><br /><br />
-  <code><a href='cs_add_sample.html'>cs_add_sample(cytoset, "SampleName", cytoframe)</a></code><br /><br /></p></dd>
+  <code><a href='cs_add_cytoframe.html'>cs_add_cytoframe(cytoset, "SampleName", cytoframe)</a></code><br /><br /></p></dd>
 
 </dl>
 

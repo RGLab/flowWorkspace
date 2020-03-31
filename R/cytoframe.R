@@ -68,17 +68,6 @@
 #'     \code{   head(cytoframe)}\cr\cr
 #'     \code{   tail(cytoframe)}\cr\cr
 #'   }
-#'   \item{description, description<-}{Extract or replace the whole list
-#'     of annotation keywords obtained from the metadata of the original FCS
-#'     file. Usually one would only be interested in a
-#'     subset of keywords, in which case the \code{keyword} method is
-#'     more appropriate. The optional \code{hideInternal} parameter can
-#'     be used to exclude internal FCS parameters starting
-#'     with \code{$}.\cr\cr
-#'     \emph{Usage:}\cr\cr
-#'     \code{   description(cytoframe)}\cr\cr
-#'     \code{   description(cytoframe) <- value}\cr\cr
-#'   }
 #'   \item{keyword, keyword<-}{Extract all entries or a single entry
 #'     from the annotations by keyword or replace
 #'     the entire list of key/value pairs with a new named
@@ -536,8 +525,6 @@ setMethod("keyword",
       process_spill_keyword(desc)
     })
 
-#Note: its behavior is different from flowFrame. The latter only does keyword update or addition
-#But this replace the entire keyword section with the new list.
 #' @importFrom flowCore collapse_desc
 setReplaceMethod("keyword",
     signature=signature(object="cytoframe",
@@ -547,9 +534,9 @@ setReplaceMethod("keyword",
       n <- names(value)
       if(length(n) == 0)
         stop(kwdError, call.=FALSE)
-	delimiter <- "|"
-	# browser()
-	  value <- collapse_desc(value) #flattern and coerce any R object to string
+	  kw <- keyword(object)
+	  kw[n] <- value
+	  value <- collapse_desc(kw) #flattern and coerce any R object to string
       setKeywords(object@pointer, value)
       return(object)
     })
@@ -570,9 +557,13 @@ cf_keyword_delete <- function(cf, keyword){
   kw <- keyword(cf)
   kn <- names(kw)
   idx <- match(keyword, kn)
-  if(is.na(idx))
-    stop("keyword not found:", keyword)
-  keyword(cf) <- kw[-idx]
+  na_idx <- is.na(idx)
+  if(any(na_idx))
+    stop("keyword not found:", paste(keyword[na_idx], collapse = ", "))
+  kw <- kw[-idx]
+  value <- collapse_desc(kw) #flattern and coerce any R object to string
+  setKeywords(cf@pointer, value)
+  
   
 }
 
@@ -584,15 +575,18 @@ cf_keyword_rename <- function(cf, from, to){
   if(is.na(idx))
     stop("keyword not found:", from)
   names(keyword(cf))[idx] <- to
-  
+  cf_keyword_delete(cf, from)
 }
 
-#  coerce cytoframe to flowFrame
-#' Methods for conversions between cytoframe/cytoset and flowFrame/flowSet
+#' Methods for conversion between flowCore and flowWorkspace data classes
+#'
+#' These methods perform conversions between flowWorkspace classes (\link{cytoframe}/\link{cytoset}) and 
+#' flowCore classes (\link{flowFrame}/\link{flowSet}) as well as between single-sample and aggregated classes
+#' (e.g. between \code{cytoset} and a list of \code{cytoframe}s)
 #' 
-#' These methods consist of a pair of methods to coerce a \code{cytoframe}
+#' The first set of methods consist of a pair of methods to coerce a \code{cytoframe}
 #' to or from a \code{flowFrame} and another pair to coerce a \code{cytoset}
-#' to or from a \code{flowSet}. 
+#' to or from a \code{flowSet}.
 #' 
 #' The conversion between the two sets of data container classes mostly entails
 #' a conversion of the back-end representation of the data. \code{cytoframe}
@@ -603,6 +597,11 @@ cf_keyword_rename <- function(cf, from, to){
 #' a \code{flowFrame} to a \code{cytoframe} entails creation of the 'C'-level
 #' data structure from the \code{flowFrame} slots. The names of each of the
 #' methods are pretty self-explanatory.
+#' 
+#' The second set of methods perform disaggregation of data objects that represent
+#' multiple samples in to lists of data objects that represent a single sample. The opposite
+#' direction is handled by the constructors for the aggregate data classes.
+#' 
 #' 
 #' @section Methods:
 #' 
@@ -619,11 +618,22 @@ cf_keyword_rename <- function(cf, from, to){
 #' \item{flowSet_to_cytoset(object = "flowSet")}{Returns a \code{cytoset} object
 #' coerced from a \code{flowSet} object.}
 #' 
+#' \item{flowSet_to_list(object = "flowSet")}{Returns a list of \code{cytoframe} objects
+#' with names provided by the sampleNames of the original \code{cytoset}}
+#' 
+#' \item{flowSet(object = "list)}{Constructs a \code{cytoset} object from a list of \code{cytoframe}
+#' objects. See documentation for \link{cytoset}}
+#' 
+#' \item{cytoset_to_list(object = "cytoset")}{Returns a list of \code{cytoframe} objects
+#' with names provided by the sampleNames of the original \code{cytoset}}
+#' 
+#' \item{cytoset(object = "list)}{Constructs a \code{cytoset} object from a list of \code{cytoframe}
+#' objects. See documentation for \link{flowSet}}
 #' }
 #' 
-#' @name cyto_flow_coerce_methods
+#' @name convert
 #' @aliases cytoframe_to_flowFrame flowFrame_to_cytoframe cytoset_to_flowSet
-#' flowSet_to_cytoset
+#' flowSet_to_cytoset cytoset_to_list flowSet_to_list
 #' 
 #' @docType methods
 #' @keywords methods
@@ -636,6 +646,7 @@ cf_keyword_rename <- function(cf, from, to){
 #' cf <- cs[[1, returnType="cytoframe"]]
 #' ff <- cytoframe_to_flowFrame(cf)
 #' 
+#' @seealso \link{merge_list_to_gs}
 #' @export
 cytoframe_to_flowFrame <- function(fr){
   fr@exprs <- exprs(fr)
@@ -644,7 +655,7 @@ cytoframe_to_flowFrame <- function(fr){
   as(fr, "flowFrame")
 }
 
-#' @rdname cyto_flow_coerce_methods
+#' @rdname convert
 #' @export
 flowFrame_to_cytoframe <- function(fr, ...){
 	tmp <- tempfile()
@@ -768,8 +779,8 @@ cf_scale_time_channel <- function(cf){
 #' @export
 cf_cleanup_temp <- function(x, temp_dir = NULL){
 	if(is.null(temp_dir))
-		temp_dir <- normalizePath(tempdir())
-	h5_path <- normalizePath(cf_get_h5_file_path(x))
+		temp_dir <- normalizePath(tempdir(), winslash = "/")
+	h5_path <- normalizePath(cf_get_h5_file_path(x), winslash = "/")
 	if(grepl(paste0("^", temp_dir), h5_path))
 		unlink(h5_path, recursive = TRUE)
 }
