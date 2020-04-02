@@ -534,9 +534,7 @@ setReplaceMethod("keyword",
       n <- names(value)
       if(length(n) == 0)
         stop(kwdError, call.=FALSE)
-	  kw <- keyword(object)
-	  kw[n] <- value
-	  value <- collapse_desc(kw) #flattern and coerce any R object to string
+	  value <- collapse_desc(value) #flattern and coerce any R object to string
       setKeywords(object@pointer, value)
       return(object)
     })
@@ -560,10 +558,8 @@ cf_keyword_delete <- function(cf, keyword){
   na_idx <- is.na(idx)
   if(any(na_idx))
     stop("keyword not found:", paste(keyword[na_idx], collapse = ", "))
-  kw <- kw[-idx]
-  value <- collapse_desc(kw) #flattern and coerce any R object to string
-  setKeywords(cf@pointer, value)
-  
+  keyword(cf) <- kw[-idx]
+ 	
   
 }
 
@@ -575,7 +571,6 @@ cf_keyword_rename <- function(cf, from, to){
   if(is.na(idx))
     stop("keyword not found:", from)
   names(keyword(cf))[idx] <- to
-  cf_keyword_delete(cf, from)
 }
 
 #' Methods for conversion between flowCore and flowWorkspace data classes

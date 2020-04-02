@@ -779,7 +779,8 @@ fix_y_axis <- function(gs, x, y){
 
 	datarange <- t(rbind(datarange[2,]-datarange[1,],datarange))
 	pData(parameters(fr))[,c("range","minRange","maxRange")] <- datarange
-	keyword(fr) <- flowCore:::updateTransformKeywords(fr)
+	newkw <- flowCore:::updateTransformKeywords(fr)
+	keyword(fr)[names(newkw)] <- newkw
 	frmEnv[[sampleName]] <- fr
 
     tempenv$axis.labels
