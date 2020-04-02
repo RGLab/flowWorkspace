@@ -94,4 +94,5 @@ This version supports importing of flowJo XML workspaces generated using, up to 
 + Remove automatic scaling of time channel from  gh_apply_to_new_fcs
 + Add inverse.transform option for gs_get_singlecell_expansion
 + write.FCS support added for cytoframe
-+ Update GatingSet archive to use one protobuf file per sample
++ Update GatingSet archive to use one protobuf file per sample and use `.gs` extension for protobuf files RGLab/cytolib #32
++ Modify `keyword<-` replacement method for `cytoframe` to allow partial replacement using named list, like `flowFrame` #311
