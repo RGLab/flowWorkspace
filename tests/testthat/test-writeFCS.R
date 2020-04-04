@@ -51,7 +51,6 @@ test_that("test write.FCS", {
   missing.keys <- names(keys)[which(!names(keys) %in% names(keyword(fr1)))]
   expect_equal(length(missing.keys), 0)
   
-  #TODO: it is not working for cytoframe
   #transform fr 
   fr.trans <- transform(fr_notrans, estimateLogicle(fr_notrans, markernames(fr_notrans)))
   expect_equal(keyword(fr.trans)[["transformation"]], "custom")
@@ -70,65 +69,65 @@ test_that("test write.FCS", {
   missing.keys <- names(keys)[which(!names(keys) %in% names(keyword(fr1)))]
   expect_equal(length(missing.keys), 0)
   
-  #TODO: also broken
-  # test delimiter(\) escaping 
-  # keyword(fr)[["$DATE"]] <- "05\\JUN\\2012"
-  # suppressWarnings(write.FCS(fr,tmp, delimiter = "\\"))
-  # fr1 <- load_cytoframe_from_fcs(tmp, emptyValue = F)
-  # keys.new <- keyword(fr1)
-  # keys.new[["FILENAME"]] <- "setToDummy"
-  # expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
-  # keys.new[["$DATE"]] <- keys[["$DATE"]]
-  # expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
-  # expect_equivalent(exprs(fr), exprs(fr1))
-  # 
-  # # write it again to see if the existing double delimiter is handled properly
-  # suppressWarnings(write.FCS(fr1,tmp, delimiter = "\\"))
-  # fr1 <- read.FCS(tmp, emptyValue = F)
-  # keys.new <- keyword(fr1)
-  # keys.new[["FILENAME"]] <- "setToDummy"
-  # expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
-  # keys.new[["$DATE"]] <- keys[["$DATE"]]
-  # expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
-  # expect_equivalent(exprs(fr), exprs(fr1))
-  # 
-  # #test other delimiter
-  # suppressWarnings(write.FCS(fr,tmp, delimiter = ";"))
-  # fr1 <- read.FCS(tmp, emptyValue = F)
-  # keys.new <- keyword(fr1)
-  # keys.new[["FILENAME"]] <- "setToDummy"
-  # expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
-  # keys.new[["$DATE"]] <- keys[["$DATE"]]
-  # expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
-  # expect_equivalent(exprs(fr), exprs(fr1))
-  # 
-  # #test quadrual-delimiter string
-  # keyword(fr)[["$DATE"]] <- "05||JUN||2012"
-  # suppressWarnings(write.FCS(fr,tmp, delimiter = "|"))
-  # fr1 <- read.FCS(tmp, emptyValue = F)
-  # keys.new <- keyword(fr1)
-  # keys.new[["FILENAME"]] <- "setToDummy"
-  # expect_equal(keys.new[["$DATE"]], "05||JUN||2012")
-  # keys.new[["$DATE"]] <- keys[["$DATE"]]
-  # expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
-  # expect_equivalent(exprs(fr), exprs(fr1))
-  # 
-  # #when colmn.pattern is used to subset channels in read.FCS
-  # #make sure the id in $Pn is set properly in write.FCS
+    # test delimiter(\) escaping 
+  keyword(fr)[["$DATE"]] <- "05\\JUN\\2012"
+  suppressWarnings(write.FCS(fr,tmp, delimiter = "\\"))
+  fr1 <- load_cytoframe_from_fcs(tmp, emptyValue = F)
+  keys.new <- keyword(fr1)
+  keys.new[["FILENAME"]] <- "setToDummy"
+  expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
+  keys.new[["$DATE"]] <- keys[["$DATE"]]
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
+  expect_equivalent(exprs(fr), exprs(fr1))
+
+  # write it again to see if the existing double delimiter is handled properly
+  suppressWarnings(write.FCS(fr1,tmp, delimiter = "\\"))
+  fr1 <- load_cytoframe_from_fcs(tmp, emptyValue = F)
+  keys.new <- keyword(fr1)
+  keys.new[["FILENAME"]] <- "setToDummy"
+  expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
+  keys.new[["$DATE"]] <- keys[["$DATE"]]
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
+  expect_equivalent(exprs(fr), exprs(fr1))
+
+  #test other delimiter
+  suppressWarnings(write.FCS(fr,tmp, delimiter = ";"))
+  fr1 <- load_cytoframe_from_fcs(tmp, emptyValue = F)
+  keys.new <- keyword(fr1)
+  keys.new[["FILENAME"]] <- "setToDummy"
+  expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
+  keys.new[["$DATE"]] <- keys[["$DATE"]]
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
+  expect_equivalent(exprs(fr), exprs(fr1))
+
+  #test quadrual-delimiter string
+  keyword(fr)[["$DATE"]] <- "05||JUN||2012"
+  suppressWarnings(write.FCS(fr,tmp, delimiter = "|"))
+  fr1 <- load_cytoframe_from_fcs(tmp, emptyValue = F)
+  keys.new <- keyword(fr1)
+  keys.new[["FILENAME"]] <- "setToDummy"
+  expect_equal(keys.new[["$DATE"]], "05||JUN||2012")
+  keys.new[["$DATE"]] <- keys[["$DATE"]]
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
+  expect_equivalent(exprs(fr), exprs(fr1))
+
+  #TODO:not supported
+  #when colmn.pattern is used to subset channels in read.FCS
+  #make sure the id in $Pn is set properly in write.FCS
   # fr_sub <- read.FCS(fcsfile, column.pattern = '-A')
   # tmp <- tempfile()
   # suppressWarnings(write.FCS(fr_sub , filename = tmp))
   # fr1 <- read.FCS(tmp)
   # expect_equal(pData(parameters(fr_sub))[["name"]], pData(parameters(fr1))[["name"]], check.attributes = FALSE)
   # expect_equal(pData(parameters(fr_sub))[["desc"]], pData(parameters(fr1))[["desc"]], check.attributes = FALSE)
-  
+  # 
   
 })
 test_that("write.FCS -- subsetted flowframe", {
   tmpfile <- tempfile()
   f1 = flowFrame_to_cytoframe(GvHD[[2]])[,c(1:6,8)]
   write.FCS(f1, tmpfile)
-  f2 <- load_cytoframe_from_fcs(tmpfile)
+  f2 <- read.F(tmpfile)
   expect_equal(nrow(f2),  3405)
   expect_equal(ncol(f2),  7)
   expect_equal(colnames(f2),  colnames(f1))
