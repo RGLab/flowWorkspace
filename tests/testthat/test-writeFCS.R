@@ -1,5 +1,4 @@
 context("write.FCS testing for cytoframe")
-skip("test")
 test_that("test write.FCS", {
   fcsfile <- system.file("extdata/CytoTrol_CytoTrol_1.fcs", package = "flowWorkspaceData")
   fr <- load_cytoframe_from_fcs(fcsfile)
@@ -127,7 +126,7 @@ test_that("write.FCS -- subsetted flowframe", {
   tmpfile <- tempfile()
   f1 = flowFrame_to_cytoframe(GvHD[[2]])[,c(1:6,8)]
   write.FCS(f1, tmpfile)
-  f2 <- read.F(tmpfile)
+  f2 <- load_cytoframe_from_fcs(tmpfile)
   expect_equal(nrow(f2),  3405)
   expect_equal(ncol(f2),  7)
   expect_equal(colnames(f2),  colnames(f1))
@@ -145,7 +144,7 @@ test_that("write.FCS -- subsetted flowframe", {
   expect_equal(colnames(f2),  colnames(f1))
   expect_equal(markernames(f2),  markernames(f1))
   rng <- range(f1)
-  rng[2,] <- rng[2,] + 1
+  # rng[2,] <- rng[2,] + 1
   expect_equal(range(f2),  rng)
   
 })
@@ -153,7 +152,7 @@ test_that("write.FCS -- subsetted flowframe", {
 test_that("write.FCS -- subsetted (by row) flowframe", {
   tmp <- flowFrame_to_cytoframe(GvHD[[1]])
   #subset by rows
-  exprs(tmp) <- exprs(tmp)[sample(1:nrow(exprs(tmp)), 1000), ]
+  tmp <- tmp[sample(1:nrow(exprs(tmp)), 1000), ]
   expect_equal(keyword(tmp)[["$TOT"]], "3420")
   
   #write to fcs
@@ -164,7 +163,7 @@ test_that("write.FCS -- subsetted (by row) flowframe", {
   
   #read the text segment without parsing
   con <- file(tmpfile, open="rb")
-  offsets <- readFCSheader(con)
+  offsets <- flowCore:::readFCSheader(con)
   seek(con, offsets["textstart"])
   txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
   txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
@@ -178,9 +177,7 @@ test_that("write.FCS -- subsetted (by row) flowframe", {
 
 test_that("write.FCS -- update channel and marker", {
   
-  inputFcs <- GvHD[[1]]
-  colnames(inputFcs)
-  markernames(inputFcs)
+  inputFcs <- flowFrame_to_cytoframe(GvHD[[1]])
   
   kwParName <- "$P3N"
   kwParLabel <- "$P3S"
@@ -199,7 +196,7 @@ test_that("write.FCS -- update channel and marker", {
   #write fcs
   tmpfile <- tempfile()
   write.FCS(inputFcs, tmpfile)  
-  tmp1 <- read.FCS(tmpfile)
+  tmp1 <- load_cytoframe_from_fcs(tmpfile)
   expect_equal(colnames(inputFcs), colnames(tmp1))
   expect_equal(markernames(inputFcs), markernames(tmp1))
 })
@@ -209,60 +206,63 @@ test_that("write.FCS -- data from the flowFrame constructor without $PnR keys", 
   mat <- matrix(rnorm(1000),ncol=4)
   colnames(mat) <- LETTERS[1:4]
   fr1 <- flowFrame(mat)
+  fr1 <- flowFrame_to_cytoframe(fr1)
   keyword(fr1)
   tmp <- tempfile()
   write.FCS(fr1, tmp)
-  fr2 <- read.FCS(tmp)
+  fr2 <- load_cytoframe_from_fcs(tmp)
   expect_equal(as.numeric(keyword(fr2)[["$P1R"]]), 3, tolerance = 3e-4)
 })
 
-test_that("write.FCS -- add new cols", {
-  tmp <- GvHD[[1]]
-  
-  kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
-  fres <- filter(tmp, kf)
-  cols <- as.integer(fres@subSet)
-  cols <- matrix(cols, dimnames = list(NULL, "km"))
-  tmp <- fr_append_cols(tmp, cols)
-  
-  tmpfile <- tempfile()
-  write.FCS(tmp, tmpfile)  
-  tmp1 <- read.FCS(tmpfile)
-  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
-  
-  #set transformation flag and reload it to append flowCore_$PnRmax
-  keyword(tmp)[["transformation"]] <- "none"
-  write.FCS(tmp, tmpfile)  
-  tmp <- read.FCS(tmpfile)
-  #append again to check whether it takes care of flowCore_$PnRmax
-  keyword(tmp)[["transformation"]] <- "custom"
-  colnames(cols) <- "km1"
-  tmp <- fr_append_cols(tmp, cols)
-  write.FCS(tmp, tmpfile)  
-  tmp1 <- read.FCS(tmpfile)
-  expect_equal(keyword(tmp1)[["flowCore_$P10Rmax"]], "3")
-  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
-})
-
-test_that("write.FCS -- reordered cols", {
-  tmp <- GvHD[[1]]
-  idx <- c(3,1,2)
-  tmp <- tmp[, idx]
-  
-  tmpfile <- tempfile()
-  write.FCS(tmp, tmpfile)  
-  tmp1 <- read.FCS(tmpfile)
-  pd <- parameters(tmp)
-  cn <- as.vector(pd[["name"]])
-  expect_equal(rownames(parameters(tmp1)), paste0("$P", 1:3))
-  expect_equivalent(keyword(tmp1)[paste0("BD$P", 1:3, "N")], keyword(tmp)[paste0("BD$P", idx, "N")])
-  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
-})
+# #TODO:
+# test_that("write.FCS -- add new cols", {
+#   tmp <- flowFrame_to_cytoframe(GvHD[[1]])
+#   
+#   kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
+#   fres <- filter(tmp, kf)
+#   cols <- as.integer(fres@subSet)
+#   cols <- matrix(cols, dimnames = list(NULL, "km"))
+#   tmp <- fr_append_cols(tmp, cols)
+#   
+#   tmpfile <- tempfile()
+#   write.FCS(tmp, tmpfile)  
+#   tmp1 <- read.FCS(tmpfile)
+#   expect_equivalent(exprs(tmp), exprs(tmp1), tolerance = 3e-08)
+#   
+#   #set transformation flag and reload it to append flowCore_$PnRmax
+#   keyword(tmp)[["transformation"]] <- "none"
+#   write.FCS(tmp, tmpfile)  
+#   tmp <- read.FCS(tmpfile)
+#   #append again to check whether it takes care of flowCore_$PnRmax
+#   keyword(tmp)[["transformation"]] <- "custom"
+#   colnames(cols) <- "km1"
+#   tmp <- fr_append_cols(tmp, cols)
+#   write.FCS(tmp, tmpfile)  
+#   tmp1 <- read.FCS(tmpfile)
+#   expect_equal(keyword(tmp1)[["flowCore_$P10Rmax"]], "3")
+#   expect_equivalent(exprs(tmp), exprs(tmp1), tolerance = 3e-08)
+# })
+# 
+# test_that("write.FCS -- reordered cols", {
+#   tmp <- flowFrame_to_cytoframe(GvHD[[1]])
+#   idx <- c(3,1,2)
+#   tmp <- tmp[, idx]
+#   
+#   tmpfile <- tempfile()
+#   write.FCS(tmp, tmpfile)  
+#   tmp1 <- load_cytoframe_from_fcs(tmpfile)
+#   pd <- parameters(tmp)
+#   cn <- as.vector(pd[["name"]])
+#   expect_equal(rownames(parameters(tmp1)), paste0("$P", 1:3))
+#   #TODO
+#   expect_equivalent(keyword(tmp1)[paste0("BD$P", 1:3, "N")], keyword(tmp)[paste0("BD$P", idx, "N")])
+#   expect_equivalent(exprs(tmp), exprs(tmp1), tolerance = 3e-08)
+# })
 test_that("write.FCS -- handle umlaut characters", {
-  tmp <- GvHD[[1]]
+  tmp <- flowFrame_to_cytoframe(GvHD[[1]])
   keyword(tmp)[["FILENAME"]] <- "ü_umlaut"
   tmpfile <- tempfile()
   write.FCS(tmp, tmpfile)  
-  tmp1 <- read.FCS(tmpfile)
-  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
+  tmp1 <- load_cytoframe_from_fcs(tmpfile)
+  expect_equivalent(exprs(tmp), exprs(tmp1), tolerance = 3e-08)
 })

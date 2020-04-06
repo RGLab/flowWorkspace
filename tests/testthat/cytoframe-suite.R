@@ -134,6 +134,11 @@ test_that("lock", {
 test_that("[", {
       cf1 <- cf[1:100, 2:3]
       is_equal_flowFrame(cf1, fr[1:100, 2:3])
+      #keyword is also removed
+      key.rm <- "$P1N"
+      expect_equal(cf_getKeyword(cf1@pointer, key.rm), "")
+      keyword(cf1)[[key.rm]] <- "dd"
+      expect_equal(keyword(cf1)[[key.rm]], "dd")
       
       #nc1 and nc share the cdf file
       expect_equal(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf))

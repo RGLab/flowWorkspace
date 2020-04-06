@@ -326,6 +326,12 @@ setMethod("[",
         		j <- (1:length(colnames(x)))[j]
         	}
         	subset_cytoframe_by_cols(fr@pointer, j - 1)
+			pdata <- getpdata(fr@pointer)
+			pid <- as.integer(gsub("\\$P", "", rownames(pdata)))
+			# browser()
+			desc <- keyword(fr)					
+			desc <- filter_keywords(desc, pid)
+			keyword(fr) <- desc
         }    
         else
           stop("invalid j index!")
@@ -515,10 +521,7 @@ setMethod("keyword",
       if(compact)
         desc <- flowCore:::kwfilter(desc)
       desc <- as.list(desc) 
-	  pdata <- getpdata(object@pointer)
-	  pid <- as.integer(gsub("\\$P", "", rownames(pdata)))
-	  # browser()
-	  desc <- filter_keywords(desc, pid)
+	
       FCSversion <- desc[["FCSversion"]]
       desc[["FCSversion"]] <- NULL
       desc <- c(FCSversion = FCSversion, desc)  
