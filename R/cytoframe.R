@@ -326,12 +326,6 @@ setMethod("[",
         		j <- (1:length(colnames(x)))[j]
         	}
         	subset_cytoframe_by_cols(fr@pointer, j - 1)
-			pdata <- getpdata(fr@pointer)
-			pid <- as.integer(gsub("\\$P", "", rownames(pdata)))
-			# browser()
-			desc <- keyword(fr)					
-			desc <- filter_keywords(desc, pid)
-			keyword(fr) <- desc
         }    
         else
           stop("invalid j index!")
@@ -509,7 +503,6 @@ process_spill_keyword <- function(desc){
 
 
 ## this is equivalent to the description method
-#' @importFrom flowCore filter_keywords
 setMethod("keyword",
     signature=signature(object="cytoframe",
         keyword="missing"),

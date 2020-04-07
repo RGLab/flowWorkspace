@@ -132,11 +132,12 @@ test_that("lock", {
 
 
 test_that("[", {
+      cf <- realize_view(cf)
       cf1 <- cf[1:100, 2:3]
       is_equal_flowFrame(cf1, fr[1:100, 2:3])
-      #keyword is also removed
+      #keyword is not removed during []
       key.rm <- "$P1N"
-      expect_equal(cf_getKeyword(cf1@pointer, key.rm), "")
+      expect_equal(cf_getKeyword(cf1@pointer, key.rm), "FSC-A")
       keyword(cf1)[[key.rm]] <- "dd"
       expect_equal(keyword(cf1)[[key.rm]], "dd")
       

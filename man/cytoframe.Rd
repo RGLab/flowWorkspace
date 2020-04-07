@@ -71,17 +71,6 @@ to a \code{flowFrame} by accessing the same information from the underlying data
     \code{   head(cytoframe)}\cr\cr
     \code{   tail(cytoframe)}\cr\cr
   }
-  \item{description, description<-}{Extract or replace the whole list
-    of annotation keywords obtained from the metadata of the original FCS
-    file. Usually one would only be interested in a
-    subset of keywords, in which case the \code{keyword} method is
-    more appropriate. The optional \code{hideInternal} parameter can
-    be used to exclude internal FCS parameters starting
-    with \code{$}.\cr\cr
-    \emph{Usage:}\cr\cr
-    \code{   description(cytoframe)}\cr\cr
-    \code{   description(cytoframe) <- value}\cr\cr
-  }
   \item{keyword, keyword<-}{Extract all entries or a single entry
     from the annotations by keyword or replace
     the entire list of key/value pairs with a new named
