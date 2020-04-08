@@ -155,8 +155,8 @@ NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
   return mat;
 }
 // [[Rcpp::export]]
-void cf_setData(Rcpp::XPtr<CytoFrameView> fr, EVENT_DATA_VEC data){
- fr->set_data(data);
+void cf_setData(Rcpp::XPtr<CytoFrameView> fr, EVENT_DATA_VEC data, bool force){
+ fr->set_data(data, force);
 }
 
 // [[Rcpp::export]] 
