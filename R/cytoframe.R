@@ -750,3 +750,36 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 	if(grepl(paste0("^", temp_dir), h5_path))
 		unlink(h5_path, recursive = TRUE)
 }
+
+#' Append data columns to a flowFrame
+#' 
+#' Append data columns to a flowFrame
+#' 
+#' It is used to add extra data columns to the existing flowFrame.  It handles
+#' keywords and parameters properly to ensure the new flowFrame can be written
+#' as a valid FCS through the function \code{write.FCS} .
+#' 
+#' @param cf A \code{cytoframe}.
+#' @param cols A numeric matrix containing the new data columns to be added.
+#' Must has column names to be used as new channel names.
+#' 
+#' @examples
+#' 
+#'   data(GvHD)
+#'   tmp <- GvHD[[1]]
+#'   cf <- flowFrame_to_cytoframe(tmp)
+#'   kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
+#'   fres <- filter(cf, kf)
+#'   cols <- as.integer(fres@subSet)
+#'   cols <- matrix(cols, dimnames = list(NULL, "km"))
+#'   cf <- cf_append_cols(cf, cols)
+#'   
+#' 
+#' 
+#' @export
+cf_append_cols <- function(cf, cols){
+  fr <- cytoframe_to_flowFrame(cf)
+  fr <- fr_append_cols(fr, cols)
+  ish5 <- cf_get_h5_file_path(cf) != ""
+  flowFrame_to_cytoframe(fr, is_h5 = ish5)
+}

@@ -1,3 +1,26 @@
+test_that("cf_append_cols", {
+  skip_if(ish5)
+  cf <- flowFrame_to_cytoframe(GvHD[[1]])
+  
+  n <- matrix(1:(nrow(cf)), ncol = 1)
+  colnames(n) <- "A"
+  m <- matrix(1:(2*nrow(cf)), ncol = 2)
+  colnames(m) <- c("B", "C")
+  
+  # Add single column and make sure min/max keywords set appropriately
+  fr_plus <- cf_append_cols(cf, n)
+  key_range <- keyword(fr_plus)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
+  expect_equal(as.numeric(unname(unlist(key_range))), range(n[,"A"]))
+  
+  # Add multiple columns
+  fr_plus <- cf_append_cols(cf, m)
+  key_range <- keyword(fr_plus)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
+  expect_equal(as.numeric(unname(unlist(key_range))), range(m[,"B"]))
+  key_range <- keyword(fr_plus)[c("flowCore_$P10Rmin", "flowCore_$P10Rmax")]
+  expect_equal(as.numeric(unname(unlist(key_range))), range(m[,"C"]))
+  
+})
+
 test_that("cf_scale_time_channel", {
   cf1 <- realize_view(cf)
   
@@ -383,6 +406,8 @@ test_that("transform", {
 })
 
 test_that("load_fcs", {
+  skip_if_not(ish5)
+  
   fr <- read.FCS(list.files(system.file("extdata","compdata","data",package="flowCore"), full.names = TRUE)[1])
   #write to carry flowCore_Rmax keywords
   tmp <- tempfile()
@@ -412,39 +437,3 @@ test_that("load_fcs", {
   #expect_equal(range(fr)[2,], range(cf)[2,] + 1)
 })
 
-test_that("write.FCS compatibility", {
-  fr <- GvHD[[1]]
-  cf <- flowFrame_to_cytoframe(fr)
-  
-  tmp_fr <- tempfile()
-  write.FCS(fr, tmp_fr)
-  tmp_cf <- tempfile()
-  write.FCS(cf, tmp_cf)
-  
-  
-  fr_from_fr <- read.FCS(tmp_fr)
-  fr_from_cf <- read.FCS(tmp_cf)
-  
-  keys_fr <- keyword(fr_from_fr)
-  keys_cf <- keyword(fr_from_cf)
-  # keys_cf will have a few different keys (like cytolib version)
-  # and will thus also slightly offset BEGINDATA and ENDDATA
-  keys_to_compare <- names(keys_fr)
-  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID"))]
-  to_compare <- keys_cf[keys_to_compare]
-  expect_equal(keys_fr[keys_to_compare], keys_cf[keys_to_compare])
-  expect_equal(exprs(fr_from_fr), exprs(fr_from_cf))
-  
-  cf_from_fr <- load_cytoframe_from_fcs(tmp_fr)
-  cf_from_cf <- load_cytoframe_from_fcs(tmp_cf)
-  
-  keys_fr <- keyword(cf_from_fr)
-  keys_cf <- keyword(cf_from_cf)
-  # keys_cf will have a few different keys (like cytolib version)
-  # and will thus also slightly offset BEGINDATA and ENDDATA
-  keys_to_compare <- names(keys_fr)
-  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID"))]
-  to_compare <- keys_cf[keys_to_compare]
-  expect_equal(keys_fr[keys_to_compare], keys_cf[keys_to_compare])
-  expect_equal(exprs(cf_from_fr), exprs(cf_from_cf))
-})
