@@ -361,24 +361,10 @@ setReplaceMethod("exprs",
 				value="matrix"),
 		definition=function(object, value)
 		{
-			cf_set_data(object, value)
+			cf_setData(object@pointer, value)
 			object
 		})
 
-#' data setter for cytoframe
-#' 
-#' Compared to "exprs<-" method, this setter has extra 'force' flag 
-#' which allows user to optionally lift the restriction on the input matrix dimension.
-#' 
-#' Use with caution since it bypasses the validity check and may cause the discrepancy between data matrix
-#' and other parameters.
-#' 
-#' @param cf cytoframe
-#' @param mat the new event data matrix to replace the existing one
-#' @param force whether to bypass the validity check on the size of input matrix. default is FALSE
-cf_set_data <- function(cf, mat, force = FALSE){
-  cf_setData(cf@pointer, mat, force)
-}
 setReplaceMethod("colnames",
     signature=signature(x="cytoframe",
         value="ANY"),
@@ -764,4 +750,3 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 	if(grepl(paste0("^", temp_dir), h5_path))
 		unlink(h5_path, recursive = TRUE)
 }
-

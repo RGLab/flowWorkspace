@@ -299,8 +299,8 @@ cf_getData <- function(fr) {
     .Call(`_flowWorkspace_cf_getData`, fr)
 }
 
-cf_setData <- function(fr, data, force) {
-    invisible(.Call(`_flowWorkspace_cf_setData`, fr, data, force))
+cf_setData <- function(fr, data) {
+    invisible(.Call(`_flowWorkspace_cf_setData`, fr, data))
 }
 
 cf_getKeyword <- function(fr, key) {
