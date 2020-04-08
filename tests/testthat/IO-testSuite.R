@@ -322,3 +322,11 @@ test_that("handle > 2^32-1 bytes", {
   fr1 <- load_cytoframe_from_fcs(tmp, which.lines = lines)
   expect_equivalent(exprs(fr)[lines,], exprs(fr1))
 })
+
+test_that("whitespace in spillover matrix", {
+  cs <- load_cytoset(dataPath, "spillover_spaces.fcs")
+  expect_equal(spillover(cs[[1]]), expectRes[["read.FCS"]][["spillover_spaces"]])
+  # Simple checks to make sure it continued parsing fine
+  expect_equal(nrow(cs_test[[1]]), 10)
+  expect_equal(ncol(cs_test[[1]]), 27)
+})
