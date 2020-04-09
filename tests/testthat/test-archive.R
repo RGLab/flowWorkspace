@@ -177,7 +177,7 @@ test_that("save GatingSet to archive",
       expect_message(save_gs(gs, path = tmp1, cdf = "symlink"), "Done")
       h5 <- list.files(tmp1, ".h5", full.names = TRUE)
       expect_equal(length(h5), 1)
-      expect_equal(Sys.readlink(h5), cdf)
+      expect_equal(normalizePath(Sys.readlink(h5)), normalizePath(cdf))
       
   })
 ## it is placed here because trans may get cleared later on by cloning process
