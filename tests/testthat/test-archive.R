@@ -171,7 +171,7 @@ test_that("save GatingSet to archive",
       expect_false(file.exists(cdf))
  
       #symlink
-      skip_on_os("windows")
+      skip_on_os(c("mac","windows"))
       tmp1 <- tempfile()
       dir.create(tmp1)
       expect_message(save_gs(gs, path = tmp1, cdf = "symlink"), "Done")
