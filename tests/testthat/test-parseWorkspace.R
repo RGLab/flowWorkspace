@@ -36,7 +36,8 @@ test_that("gh_get_transformations ",{
     })
 isCpStaticGate <<- TRUE
 source("GatingHierarchy-testSuite.R", local = TRUE)
-source("GatingSet-testSuite.R", local = TRUE)
+if(!win32_flag)
+  source("GatingSet-testSuite.R", local = TRUE)
 
 
 # we need test trans so have to put this test here since the legacy archived gs doesn't have trans
