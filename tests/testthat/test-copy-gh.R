@@ -1,3 +1,4 @@
+skip_if(win32_flag)
 test_that("gh_apply_to_new_fcs",
           {
             fcs <- list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1]

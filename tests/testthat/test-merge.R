@@ -1,4 +1,5 @@
 context("merg/standardize GatingSets")
+skip_if(win32_flag)
 
 suppressMessages(gs0 <- load_gs(file.path(dataDir,"gs_manual")))
 suppressMessages(gs1 <- gs_clone(gs0))

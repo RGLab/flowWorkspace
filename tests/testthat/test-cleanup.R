@@ -1,4 +1,5 @@
 context("cytoset accessors")
+skip_if(win32_flag)
 data("GvHD")
 gs_untouched <- GatingSet(GvHD)
 files_untouched <- list.files(cs_get_h5_file_path(gs_cyto_data(gs_untouched)), full.names = TRUE)

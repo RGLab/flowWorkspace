@@ -1,4 +1,5 @@
 context("filterObject (convert flowCore filter to list")
+skip_if(win32_flag)
 
 test_that("filterObject from logical", {
   #logical vector

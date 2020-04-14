@@ -1,4 +1,5 @@
 context("cytoframe test suite--h5")
+skip_if(win32_flag)
 fcs_file <- list.files(dataDir, "Cyto", full.names = TRUE)[1]
 fr <- read.FCS(fcs_file)
 cf <- load_cytoframe_from_fcs(fcs_file, is_h5 = TRUE)

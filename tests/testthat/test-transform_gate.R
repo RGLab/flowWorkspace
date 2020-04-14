@@ -1,4 +1,5 @@
 context("test gate transform methods")
+skip_if(win32_flag)
 
 gs <- load_gs(file.path(system.file("extdata", package="flowWorkspaceData"),"gs_bcell_auto"))
 gh <- gs[[1]]
