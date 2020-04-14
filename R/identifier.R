@@ -1,6 +1,6 @@
 #' Retrieve/replace the GUID of a GatingSet or GatingSetList
 #' 
-#' Retrieve or replace the GUID (globally unique identifier) for a \code{\link{GatingSet-class}} or \code{\link{GatingSetList-class}}
+#' Retrieve or replace the GUID (globally unique identifier) for a \code{\link[flowWorkspace:GatingSet-class]{GatingSet}} or \code{\link[flowWorkspace:GatingSetList-class]{GatingSetList}}
 #' 
 #' @importFrom flowCore identifier
 #' @name identifier-methods
