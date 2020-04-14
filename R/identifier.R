@@ -1,10 +1,11 @@
 #' Retrieve/replace the GUID of a GatingSet or GatingSetList
 #' 
-#' Retrieve or replace the GUID (globally unique identifier) for a \code{\link{GatingSet}} or \code{\link{GatingSetList}}
+#' Retrieve or replace the GUID (globally unique identifier) for a \code{\link{GatingSet-class}} or \code{\link{GatingSetList-class}}
 #' 
 #' @importFrom flowCore identifier
 #' @name identifier-methods
 #' @aliases identifier identifier,GatingSet-method identifier,GatingSetList-method
+#' identifier<-,GatingSetList,ANY-method
 #' @usage identifier(object)
 #' @param object a \code{GatingSet} or \code{GatingSetList}
 #' @export 

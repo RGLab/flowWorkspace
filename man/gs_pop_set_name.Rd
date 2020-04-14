@@ -7,6 +7,7 @@
 \alias{setNode}
 \alias{setNode,GatingHierarchy,character,character-method}
 \alias{setNode,GatingHierarchy,character,ANY-method}
+\alias{setNode,GatingSet,character,ANY-method}
 \title{Update the name of one node in a gating hierarchy/GatingSet.}
 \usage{
 gh_pop_set_name(x, y, value)

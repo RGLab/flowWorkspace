@@ -1323,21 +1323,23 @@ getCompensationMatrices.GatingHierarchy <- function(x){
   gh_get_compensations(x)
 }
 
-#'  Retrieve the compensation matrices from a GatingHierarchy
+#'  Retrieve the compensation matrices from a \code{GatingHierarchy} or \code{GatingSet}
 #'
-#'  Retrieve the compensation matrices from a GatingHierarchy.
+#'  Retrieve the compensation matrices from a \code{GatingHierarchy} or \code{GatingSet}.
 #'
 #' @name gh_get_compensations
-#' @aliases getCompensationMatrices getCompensationMatrices,GatinHierachy-method
-#' @param x A \code{GatingHierarchy} object.
+#' @aliases getCompensationMatrices getCompensationMatrices,GatingHierachy-method
+#' gs_get_compensations
+#' @param x A \code{GatingHierarchy} or \code{GatingSet} object.
 #'
-#' @details Return all the compensation matrices in a GatingHierarchy.
+#' @details Return all the compensation matrices in a \code{GatingHierarchy} or \code{GatingSet} 
 #' @return
-#'   A list of \code{matrix} representing the spillover matrix in \code{GatingHierarchy}
+#'   A list of \code{matrix} representing the spillover matrix in \code{GatingHierarchy} or \code{GatingSet} 
 #' @examples
 #'   \dontrun{
-#' 	#Assume gh is a GatingHierarchy
-#'   gh_get_compensations(gh);
+#' 	 # Assume gh is a GatingHierarchy and gs is a GatingSet
+#'   gh_get_compensations(gh)
+#'   gs_get_compensations(gs)
 #' }
 #' @export
 gh_get_compensations <- function(x){
@@ -1629,7 +1631,7 @@ setMethod("setNode"
 #'     gh_pop_set_name(G,"L","lymph")
 #' }
 #' @aliases setNode setNode,GatingHierarchy,character,character-method
-#' setNode,GatingHierarchy,character,ANY-method
+#' setNode,GatingHierarchy,character,ANY-method setNode,GatingSet,character,ANY-method
 #' @export
 gh_pop_set_name <- function(x,y,value){
   .cpp_setNodeName(x@pointer,sampleNames(x), y,value)

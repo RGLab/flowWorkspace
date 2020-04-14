@@ -3,6 +3,21 @@
 \docType{class}
 \name{cytoset}
 \alias{cytoset}
+\alias{cytoset-class}
+\alias{realize_view,cytoset-method}
+\alias{get_cytoframe_from_cs}
+\alias{[,cytoset,ANY-method}
+\alias{[[,cytoset,ANY-method}
+\alias{[[<-,cytoset,ANY,ANY,flowFrame-method}
+\alias{identifier,cytoset-method}
+\alias{identifier<-,cytoset,ANY-method}
+\alias{pData,cytoset-method}
+\alias{pData<-,cytoset,data.frame-method}
+\alias{phenoData,cytoset-method}
+\alias{phenoData<-,cytoset,ANY-method}
+\alias{sampleNames<-,cytoset,ANY-method}
+\alias{show,cytoset-method}
+\alias{transform,cytoset-method}
 \title{\code{cytoset}: a reference class for efficiently managing the data representation
 of a \code{flowSet}}
 \description{
@@ -15,7 +30,7 @@ Similar to the distinction between the \code{cytoframe} and
 and \code{flowSet} classes is in the underlying representation of the data.
 Because \code{cytoset} is a reference class, copying or subsetting a \code{cytoset}
 object will return a \code{cytoset} pointing to the same underlying data. A
-deep copy of the data can be obtained via the \code{\link{realize_view}} method.
+deep copy of the data can be obtained via the \code{realize_view} method.
 
 There is one notable exception to the typical behavior of most methods returning a \code{cytoframe}.
 The standard extraction operator (\code{[[]]}) will by default perform a deep
@@ -28,8 +43,8 @@ with existing user scripts.
 Objects can be created using \code{cytoset()} and then adding samples
 by providing a \code{cytoframe} and sample name to \code{cs_add_cytoframe}:\cr\cr
 
-\code{
-cs <- cytoset()\cr
+\preformatted{
+cs <- cytoset()
 cs_add_cytoframe(cs, "Sample Name", cytoframe)
 }
 
@@ -62,6 +77,20 @@ documentation for details.
   \code{   cytoset[i,j]}\cr\cr
   \code{   cytoset[[i]]}\cr\cr
   \code{cytoset[[i, returnType = "cytoframe"]]}\cr\cr
+}
+
+\item{get_cytoframe_from_cs}{
+  Extract a \code{cytoframe} from a \code{cytoset} by supplying either
+  a sample name or index and optionally supplying a subset of columns.
+  
+  The \code{cytoframe} to be extracted (\code{i} argument) can be specified using its sample name (character)
+  or index in the cytoset (int/numeric). Columns (\code{j} argument) can be specified using channel name (character),
+  index (int/numeric), or logical vector. If this argument is missing, all columns will be selected.
+  
+  \emph{Usage:}\cr\cr
+  (Assuming \code{cs} is a \code{cytoset} and \code{cf} is the extracted \code{cytoframe})
+  \code{cf <- get_cytoframe_from_cs(cs, i, j)}
+  \code{cf <- get_cytoframe_from_cs(cs, i)}
 }
 
 \item{$}{Subsetting by frame name. This will return a single

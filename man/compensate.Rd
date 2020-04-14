@@ -7,6 +7,7 @@
 \alias{compensate,cytoset,list-method}
 \alias{compensate,cytoset,matrix-method}
 \alias{compensate,cytoframe,matrix-method}
+\alias{compensate,GatingSet,ANY-method}
 \title{compensate the flow data asssociated with the GatingSet}
 \usage{
 compensate(x, spillover)

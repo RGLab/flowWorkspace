@@ -14,7 +14,7 @@
 #' using the standard R assignment operator (<-) will perform a deep copy of the data in its slots, the same
 #' operations on a \code{cytoframe} will produce a view to the same underlying data as the original object.
 #' This means that changes made to the \code{cytoframe} resulting from subsetting or copying will affect
-#' the original \code{cytoframe}. If a deep copy of the underyling data is desired, the \code{\link{realize_view}} method
+#' the original \code{cytoframe}. If a deep copy of the underyling data is desired, the \code{realize_view} method
 #' will accomplish this.
 #' 
 #' Because the \code{cytoframe} class inherits from \code{flowFrame}, the \code{flowFrame} slots are present but
@@ -23,6 +23,8 @@
 #' to a \code{flowFrame} by accessing the same information from the underlying data structure.
 #' 
 #' @name cytoframe
+#' @aliases cytoframe-class realize_view realize_view,cytoframe-method [,cytoframe,ANY-method
+#' keyword,cytoframe,missing-method markernames,cytoframe-method markernames<-,cytoframe-method
 #' @docType class
 #' 
 #' @section Methods:
@@ -30,12 +32,13 @@
 #'   in the documentation for \code{\link[flowCore]{flowFrame}}, so those documentation pages may
 #'   be consulted as well for more details.
 #'   \describe{
-#'   \item{\code{\link{[}}}{Subsetting. Returns an object of class \code{cytoframe}.
+#'   \item{\code{[}}{Subsetting. Returns an object of class \code{cytoframe}.
 #'     The syntax for subsetting is similar to that of \code{\link[=data.frame]{data.frames}}. 
 #'     In addition to the usual index vectors (integer and logical by
 #'     position, character by parameter names), \code{cytoframe}s can be
 #'     subset via \code{\link{filterResult}} and
-#'     \code{\linkS4class{filter}} objects.\cr\cr
+#'     \code{\linkS4class{filter}} objects.
+#'     
 #'     \emph{Usage:}\cr\cr
 #'     \code{   cytoframe[i,j]}\cr\cr
 #'     \code{   cytoframe[filter,]}\cr\cr
@@ -132,6 +135,14 @@
 #'     \code{   featureNames(cytoframe)}\cr\cr
 #'     \code{   colnames(cytoframe)}\cr\cr
 #'     \code{   colnames(cytoframe) <- value}\cr\cr
+#'   }
+#'   \item{markernames, markernames<-}{Access or replace the marker names associated
+#'   with the channels of the \code{cytoframe}. For replacement, \code{value} should
+#'   be a named list or character vector where the names correspond to the channel names
+#'   and the values correpond to the marker names.\cr\cr
+#'   \emph{Usage:}\cr\cr
+#'   \code{markernames(object)}\cr\cr
+#'   \code{markernames(object) <- value}\cr\cr
 #'   }
 #'   \item{names}{Extract pretty formatted names of the parameters
 #'     including parameter descriptions.\cr\cr
@@ -285,7 +296,7 @@ setMethod("ncol",
 )
 
 #' @export
-realize_view <- function(x, ...)UseMethod("realize_view")
+realize_view <- function(x, filepath)UseMethod("realize_view")
 
 #' @export 
 realize_view.cytoframe <- function(x, filepath = tempfile(fileext = ".h5")){
@@ -380,6 +391,21 @@ setReplaceMethod("colnames",
       return(x)
     })
 
+#' Methods to change channel and marker names for \code{cytoframe} and \code{cytoset} objects
+#' 
+#' The methods allow direct alteration of channel names or marker names
+#' of \code{\link{cytoframe}} and \code{\link{cytoset}} objects. These objects are accessed
+#' by reference and changed in place, so there is no need to assign the return
+#' value of these methods.
+#' 
+#' @name cytoframe-labels
+#' @aliases cf_swap_colnames cf_rename_channel cf_rename_marker cs_swap_colnames
+#' @param x a \code{cytoframe}
+#' @param old old channel or marker name to be changed
+#' @param new new channel or marker name after change
+#' @param col1 first channel name to swap
+#' @param col2 second channel name to swap
+#' 
 #' @export 
 cf_swap_colnames <- function(x, col1, col2){
 	tmp <- "MagicStringUgly"
@@ -389,12 +415,14 @@ cf_swap_colnames <- function(x, col1, col2){
 	cf_rename_channel(x, tmp, col2)
 	
 }
+#' @rdname cytoframe-labels
 #' @export
 cf_rename_channel <- function(x, old, new){
 	stopifnot(is(x, "cytoframe"))
 	setChannel(x@pointer, old, new)
   
 }
+#' @rdname cytoframe-labels
 #' @export
 cf_rename_marker <- function(x, old, new){
 	stopifnot(is(x, "cytoframe"))
@@ -535,6 +563,19 @@ setReplaceMethod("keyword",
       return(object)
     })
 
+#' \code{cytoframe} keyword access methods
+#' 
+#' These methods allow for direct insertion, deletion, or renaming
+#' of keywords in \code{\link{cytoframe}} objects.
+#' 
+#' @param cf a \code{cytoframe}
+#' @param keyword the keyword name to insert/delete/replace
+#' @param value the value to associate with the supplied keyword
+#' @param from the old keyword name (for renaming)
+#' @param to the new keyword name (for renamiing)
+#' 
+#' @rdname cytoframe-keywords
+#' @aliases cf_keyword_insert cf_keyword_rename cf_keyword_delete 
 #' @export
 cf_keyword_insert <- function(cf, keyword, value){
   kw <- keyword(cf)
@@ -546,6 +587,8 @@ cf_keyword_insert <- function(cf, keyword, value){
   keyword(cf) <- kw
   
 }
+
+#' @rdname cytoframe-keywords
 #' @export
 cf_keyword_delete <- function(cf, keyword){
   kw <- keyword(cf)
@@ -559,6 +602,7 @@ cf_keyword_delete <- function(cf, keyword){
   
 }
 
+#' @rdname cytoframe-keywords
 #' @export
 cf_keyword_rename <- function(cf, from, to){
   kw <- keyword(cf)
@@ -759,12 +803,14 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' keywords and parameters properly to ensure the new flowFrame can be written
 #' as a valid FCS through the function \code{write.FCS} .
 #' 
+#' @name cf_append_cols
 #' @param cf A \code{cytoframe}.
 #' @param cols A numeric matrix containing the new data columns to be added.
 #' Must has column names to be used as new channel names.
 #' 
 #' @examples
 #' 
+#'   library(flowCore)
 #'   data(GvHD)
 #'   tmp <- GvHD[[1]]
 #'   cf <- flowFrame_to_cytoframe(tmp)

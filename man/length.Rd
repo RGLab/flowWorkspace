@@ -2,6 +2,7 @@
 % Please edit documentation in R/GatingSet_Methods.R
 \name{length}
 \alias{length}
+\alias{length,GatingSet-method}
 \alias{show,GatingSet-method}
 \title{Methods to get the length of a GatingSet}
 \usage{

@@ -3,6 +3,13 @@
 \docType{class}
 \name{cytoframe}
 \alias{cytoframe}
+\alias{cytoframe-class}
+\alias{realize_view}
+\alias{realize_view,cytoframe-method}
+\alias{[,cytoframe,ANY-method}
+\alias{keyword,cytoframe,missing-method}
+\alias{markernames,cytoframe-method}
+\alias{markernames<-,cytoframe-method}
 \title{\code{cytoframe}: A reference class for efficiently managing the data representation of
 a \code{flowFrame}}
 \description{
@@ -19,7 +26,7 @@ From the user's standpoint, interacting with a \code{cytoframe} is very similar 
 using the standard R assignment operator (<-) will perform a deep copy of the data in its slots, the same
 operations on a \code{cytoframe} will produce a view to the same underlying data as the original object.
 This means that changes made to the \code{cytoframe} resulting from subsetting or copying will affect
-the original \code{cytoframe}. If a deep copy of the underyling data is desired, the \code{\link{realize_view}} method
+the original \code{cytoframe}. If a deep copy of the underyling data is desired, the \code{realize_view} method
 will accomplish this.
 
 Because the \code{cytoframe} class inherits from \code{flowFrame}, the \code{flowFrame} slots are present but
@@ -33,12 +40,13 @@ to a \code{flowFrame} by accessing the same information from the underlying data
   in the documentation for \code{\link[flowCore]{flowFrame}}, so those documentation pages may
   be consulted as well for more details.
   \describe{
-  \item{\code{\link{[}}}{Subsetting. Returns an object of class \code{cytoframe}.
+  \item{\code{[}}{Subsetting. Returns an object of class \code{cytoframe}.
     The syntax for subsetting is similar to that of \code{\link[=data.frame]{data.frames}}. 
     In addition to the usual index vectors (integer and logical by
     position, character by parameter names), \code{cytoframe}s can be
     subset via \code{\link{filterResult}} and
-    \code{\linkS4class{filter}} objects.\cr\cr
+    \code{\linkS4class{filter}} objects.
+    
     \emph{Usage:}\cr\cr
     \code{   cytoframe[i,j]}\cr\cr
     \code{   cytoframe[filter,]}\cr\cr
@@ -135,6 +143,14 @@ to a \code{flowFrame} by accessing the same information from the underlying data
     \code{   featureNames(cytoframe)}\cr\cr
     \code{   colnames(cytoframe)}\cr\cr
     \code{   colnames(cytoframe) <- value}\cr\cr
+  }
+  \item{markernames, markernames<-}{Access or replace the marker names associated
+  with the channels of the \code{cytoframe}. For replacement, \code{value} should
+  be a named list or character vector where the names correspond to the channel names
+  and the values correpond to the marker names.\cr\cr
+  \emph{Usage:}\cr\cr
+  \code{markernames(object)}\cr\cr
+  \code{markernames(object) <- value}\cr\cr
   }
   \item{names}{Extract pretty formatted names of the parameters
     including parameter descriptions.\cr\cr

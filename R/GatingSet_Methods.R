@@ -1133,10 +1133,10 @@ setMethod("flowData",signature("GatingSet"),function(x){
 })
 #' Fetch or replace the flowData object associated with a GatingSet .
 #'
-#' Accessor method that gets or replaces the flowset/ncdfFlowSet object in a GatingSet or GatingHierarchy
+#' Accessor method that gets or replaces the \code{\link{cytoset}}/\code{\link[flowCore]{flowSet}}/\code{\link[ncdfFlow:ncdfFlowSet-class]{ncdfFlowSet}} object in a GatingSet or GatingHierarchy
 #' 
 #' @name gs_cyto_data
-#' @aliases flowData flowData,GatingSet-method flowData<-,GatingSet-method
+#' @aliases flowData flowData<- gs_cyto_data<- flowData,GatingSet-method flowData<-,GatingSet-method
 #' gs_cyto_data,GatingSet-method gs_cyto_data<-,GatingSet-method
 #' @usage gs_cyto_data(x, ...)
 #' @param x A \code{GatingSet}
@@ -1196,7 +1196,6 @@ setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
 #' Accessor method that gets or replaces the pData of the flowset/ncdfFlowSet object in a GatingHierarchy, GatingSet, or GatingSetList
 #' @name pData-methods
 #' @aliases pData pData,GatingHierarchy-method pData,GatingSet-method
-#' pData,cytoset-method pData,cytoset,data.frame-method
 #' @param object \code{GatingSet} or \code{GatingSetList}
 #' @usage pData(object)
 #' @return a \code{data.frame}
@@ -1233,13 +1232,9 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 #' @description \code{[} subsets a \code{GatingSet} or \code{GatingSetList} using the familiar bracket notation
 #'
 #' @usage x[i]
-#'
 #' @rdname brackets
+#' @aliases  [ [,GatingSet,ANY-method [,GatingSetList,ANY-method
 #' @export
-#' @aliases
-#' [
-#' [,GatingSet,ANY-method
-#' [,GatingSetList,ANY-method
 setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #            browser()
       if(extends(class(i), "numeric")||class(i) == "logical"){
@@ -1364,18 +1359,15 @@ set_log_level <- function(level = "none"){
 #' @description \code{[[} extracts a \code{GatingHierarchy} object from a \code{GatingSet}.
 #'
 #' @name brackets
+#' @aliases
+#' [[ [[,GatingSet,numeric-method [[,GatingSet,logical-method [[,GatingSet,character-method
+#' [[<-,GatingSet,ANY,ANY,GatingHierarchy-method
 #' @usage x[[i]]
 #' @param x a \code{GatingSet} or \code{GatingSetList}
 #' @param i \code{numeric} or \code{logical} or \code{character} used as sample indices
 #' @return The \code{[} operator returns an object of the same type as \code{x} corresponding to the subset of indices
 #' in i, while the \code{[[} operator returns a single \code{GatingHierarchy}
 #' @export
-#' @aliases
-#' [[
-#' [[,GatingSet,numeric-method
-#' [[,GatingSet,logical-method
-#' [[,GatingSet,character-method
-#' [[<-,GatingSet,ANY,ANY,GatingHierarchy-method
 setMethod("[[",c(x="GatingSet",i="numeric"),function(x,i,j,...){
       x[[sampleNames(x)[i]]]
 
@@ -1410,7 +1402,7 @@ setReplaceMethod("[[",
 #'
 #' Return the length of a \code{GatingSet} or \code{GatingSetList} object (number of samples).
 #' @name length
-#' @aliases length
+#' @aliases length length,GatingSet-method
 #' @param x \code{GatingSet}
 #' @param object \code{object}
 #' @usage length(x)
@@ -1757,6 +1749,7 @@ transformerList <- function (from, trans)
 #' @name compensate
 #' @aliases compensate,GatingSetList,ANY-method compensate,cytoset,ANY-method
 #' compensate,cytoset,list-method compensate,cytoset,matrix-method compensate,cytoframe,matrix-method
+#' compensate,GatingSet,ANY-method
 #' @usage compensate(x, spillover)
 #' @param x \code{GatingSet}, \code{GatingSetList}, \code{cytoframe}, or \code{cytoset}
 #' @param spillover \code{compensation} object or spillover matrix or a list of \code{compensation} objects
@@ -1778,6 +1771,7 @@ setMethod("compensate", signature=signature(x="GatingSet", spillover="ANY"),
       selectMethod("compensate", signature=c(x="cytoset", spillover="ANY"))(x, spillover)
       
     })
+#' @rdname gh_get_compensations
 #' @export
 gs_get_compensations <- function(x){
 			lapply(x, gh_get_compensations)

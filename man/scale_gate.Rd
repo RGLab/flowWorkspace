@@ -21,7 +21,16 @@ will result in a reflection in that dimension.}
 \item{...}{not used}
 }
 \description{
-
+Scale a gate associated with a node of a \code{GatingHierarchy} or
+\code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{scale_gate}} that enables 
+updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
+ 
+\code{scale_gate} calls \code{\link{gs_pop_set_gate}} to modify the provided \code{GatingHierarchy} or \code{GatingSet} 
+directly so there is no need to re-assign its output. The arguments will be essentially identical to the 
+\code{flowCore} method, except for the specification of the target gate. Rather than being called on an 
+object of type \code{\link[flowCore]{filter}}, here it is called on a \code{GatingHierarchy} or \code{GatingSet} 
+object with an additional character argument for specifying the node whose gate should be transformed. 
+The rest of the details below are taken from the \code{flowCore} documentation.
 }
 \details{
 This method allows uniform or non-uniform geometric scaling of filter types defined by simple geometric gates 

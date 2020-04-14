@@ -136,7 +136,7 @@ gs_pop_add <- function(gs, gate, validityCheck = TRUE, ...){
 }
 
 
-#' @rdname add                                                       
+                                                     
 .addGate <- function(gh, filterObject, parent = "root", name = NULL, negated = FALSE, recompute = FALSE){
   if(recompute)
 	  stop("'recompute = TRUE' is no longer supported by addGate!")

@@ -4,6 +4,7 @@
 \alias{GatingSet-methods}
 \alias{GatingSet,cytoset,ANY-method}
 \alias{GatingSet,flowSet-method}
+\alias{GatingSet,flowSet,ANY-method}
 \title{constructors for GatingSet}
 \usage{
 GatingSet(x)

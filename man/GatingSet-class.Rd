@@ -3,6 +3,7 @@
 \docType{class}
 \name{GatingSet-class}
 \alias{GatingSet-class}
+\alias{GatingSet}
 \title{Class \code{"GatingSet"}}
 \description{
 GatingSet holds a set of \code{GatingHierarchy} objects, representing a set of samples and the gating scheme associated with each.

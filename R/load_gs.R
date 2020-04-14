@@ -102,7 +102,7 @@ setMethod("sampleNames","character",function(object){
 
 #' convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only)
 #' 
-#' Older versions of flowWorkspace represented \code{\link{GatingSet}} objects using a combination of
+#' Older versions of flowWorkspace represented \code{\link{GatingSet-class}} objects using a combination of
 #' R and C++ files, while newer versions have moved the representation entirely to the C++ level for
 #' the sake of efficiency. In order to use \code{GatingSet} or \code{GatingSetList} archives created in older versions, 
 #' they will need to be converted to the new format.
