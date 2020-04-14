@@ -1,7 +1,6 @@
 context("GatingSet s3")
 
 bucket <- "mike-h5"
-skip("test")
 prefix <- "test"
 url <- paste0("s3://", bucket, "/", prefix)
 reg <- "us-west-1"

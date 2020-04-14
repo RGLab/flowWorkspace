@@ -3,6 +3,8 @@
 \name{gs_cyto_data}
 \alias{gs_cyto_data}
 \alias{flowData}
+\alias{flowData<-}
+\alias{gs_cyto_data<-}
 \alias{flowData,GatingSet-method}
 \alias{flowData<-,GatingSet-method}
 \alias{gs_cyto_data,GatingSet-method}
@@ -24,7 +26,7 @@ gs_cyto_data(x) <- value
 the object with the new flowSet in place.
 }
 \description{
-Accessor method that gets or replaces the flowset/ncdfFlowSet object in a GatingSet or GatingHierarchy
+Accessor method that gets or replaces the \code{\link{cytoset}}/\code{\link[flowCore]{flowSet}}/\code{\link[ncdfFlow:ncdfFlowSet-class]{ncdfFlowSet}} object in a GatingSet or GatingHierarchy
 }
 \details{
 Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.

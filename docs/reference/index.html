@@ -17,23 +17,27 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -44,7 +48,6 @@
 
 <meta property="og:title" content="Function reference" />
 <meta property="og:image" content="/logo.png" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -62,7 +65,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -76,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.35.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.20</span>
       </span>
     </div>
 
@@ -91,20 +94,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/HowToMergeGatingSet.html">How to merge/standardize GatingSets</a>
-    </li>
-    <li>
-      <a href="../articles/flowWorkspace-Introduction.html">flowWorkspace Introduction: A Package to store and maninpulate gated flow data</a>
-    </li>
-  </ul>
+<li>
+  <a href="../articles/index.html">Articles</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -140,6 +134,11 @@
           <p class="section-desc"><p>Classes for managing compensation, transformation, and gating of cytometry data (FCS files) and methods for creating them</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -173,7 +172,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="identifier-methods.html">identifier()</a></code> <code><a href="identifier-methods.html">`identifier<-`()</a></code> </p>
+          <p><code><a href="identifier-methods.html">identifier()</a></code> <code><a href="identifier-methods.html">`identifier&lt;-`()</a></code> </p>
         </td>
         <td><p>Retrieve/replace the GUID of a GatingSet or GatingSetList</p></td>
       </tr><tr>
@@ -190,6 +189,11 @@
           <p class="section-desc"><p>Reference classes for efficiently managing the representation of data from FCS files (analagous to flowFrame and flowSet classes from the flowCore package)</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -264,6 +268,18 @@ of a <code>flowSet</code></p></td>
           <p><code><a href="lock.html">cf_lock()</a></code> <code><a href="lock.html">cf_unlock()</a></code> <code><a href="lock.html">cs_lock()</a></code> <code><a href="lock.html">cs_unlock()</a></code> </p>
         </td>
         <td><p>Lock/Unlock the cytoset/cytoframe by turning on/off its read-only flag</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cytoframe-labels.html">cf_swap_colnames()</a></code> <code><a href="cytoframe-labels.html">cf_rename_channel()</a></code> <code><a href="cytoframe-labels.html">cf_rename_marker()</a></code> <code><a href="cytoframe-labels.html">cs_swap_colnames()</a></code> </p>
+        </td>
+        <td><p>Methods to change channel and marker names for <code>cytoframe</code> and <code>cytoset</code> objects</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cytoframe-keywords.html">cf_keyword_insert()</a></code> <code><a href="cytoframe-keywords.html">cf_keyword_delete()</a></code> <code><a href="cytoframe-keywords.html">cf_keyword_rename()</a></code> </p>
+        </td>
+        <td><p><code>cytoframe</code> keyword access methods</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -272,6 +288,11 @@ of a <code>flowSet</code></p></td>
           <p class="section-desc"><p>Functions for examining the subpopulations resulting from applying gates to the data</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -390,6 +411,11 @@ It strips the parent path and cluster method name.</p></td>
           <p class="section-desc"><p>Functions for accessing or altering the flowFrame or flowSet objects underlying the gating analysis. These can also be useful in preparing GatingSet objects for merging.</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -399,7 +425,7 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gs_cyto_data.html">gs_cyto_data()</a></code> <code><a href="gs_cyto_data.html">`gs_cyto_data<-`()</a></code> </p>
+          <p><code><a href="gs_cyto_data.html">gs_cyto_data()</a></code> <code><a href="gs_cyto_data.html">`gs_cyto_data&lt;-`()</a></code> </p>
         </td>
         <td><p>Fetch or replace the flowData object associated with a GatingSet .</p></td>
       </tr><tr>
@@ -411,9 +437,9 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="gh_get_compensations.html">gh_get_compensations()</a></code> </p>
+          <p><code><a href="gh_get_compensations.html">gh_get_compensations()</a></code> <code><a href="gh_get_compensations.html">gs_get_compensations()</a></code> </p>
         </td>
-        <td><p>Retrieve the compensation matrices from a GatingHierarchy</p></td>
+        <td><p>Retrieve the compensation matrices from a <code>GatingHierarchy</code> or <code>GatingSet</code></p></td>
       </tr><tr>
         
         <td>
@@ -453,19 +479,19 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="sampleNames.html">sampleNames()</a></code> <code><a href="sampleNames.html">`sampleNames<-`()</a></code> </p>
+          <p><code><a href="sampleNames.html">sampleNames()</a></code> <code><a href="sampleNames.html">`sampleNames&lt;-`()</a></code> </p>
         </td>
         <td><p>Get/update sample names in a GatingSet</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="markernames.html">markernames()</a></code> <code><a href="markernames.html">`markernames<-`()</a></code> <code><a href="markernames.html">colnames()</a></code> <code><a href="markernames.html">`colnames<-`()</a></code> </p>
+          <p><code><a href="markernames.html">markernames()</a></code> <code><a href="markernames.html">`markernames&lt;-`()</a></code> <code><a href="markernames.html">colnames()</a></code> <code><a href="markernames.html">`colnames&lt;-`()</a></code> </p>
         </td>
         <td><p>Get/set the column(channel) or marker names</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="pData-methods.html">pData()</a></code> <code><a href="pData-methods.html">`pData<-`()</a></code> </p>
+          <p><code><a href="pData-methods.html">pData()</a></code> <code><a href="pData-methods.html">`pData&lt;-`()</a></code> </p>
         </td>
         <td><p>read/set pData of flow data associated with <code>GatingHierarchy</code>, <code>GatingSet</code>, or <code>GatingSetList</code></p></td>
       </tr><tr>
@@ -482,6 +508,11 @@ It strips the parent path and cluster method name.</p></td>
           <p class="section-desc"><p>Functions for accessing, altering, adding, and removing gate definitions and their resulting subpopulations. These can also be useful in preparing GatingSet objects for merging.</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -672,6 +703,11 @@ in a <code>GatingSet</code> or <code>cytoset</code></p></td>
           <p class="section-desc"><p>Functions for quickly constructing transformations or filters or converting them to a form that can be applied to data in a GatingHierachy or GatingSet</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -774,6 +810,11 @@ underlying c++ data structure.</p></td>
           <p class="section-desc"><p>Functions to read save GatingSet objects to disk or read them in to an R session</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -788,6 +829,11 @@ underlying c++ data structure.</p></td>
           <p class="section-desc"><p>Methods for plotting the hierarchical gating tree and gates. More dedicated plotting methods for GatingSet and GatingHierarchy objects are provided by the ggcyto package,</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -814,6 +860,11 @@ underlying c++ data structure.</p></td>
           <p class="section-desc"><p>Functions whose role does not easily fit in to one of the above categories</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -857,18 +908,9 @@ Perform some validity checks before returning the updated colnames</p></td>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-gatinghierarchy-and-gatingset-classes">GatingHierarchy and GatingSet classes</a></li>
-      <li><a href="#section-cytoframe-and-cytoset-classes">cytoframe and cytoset classes</a></li>
-      <li><a href="#section-examining-the-hierarchical-gating-tree">Examining the hierarchical gating tree</a></li>
-      <li><a href="#section-accessing-underyling-data">Accessing underyling data</a></li>
-      <li><a href="#section-perform-gating-analysis">Perform gating analysis</a></li>
-      <li><a href="#section-helpers-to-generate-transformations-and-filters">Helpers to generate transformations and filters</a></li>
-      <li><a href="#section-read-write-gatingset-objects">Read/write GatingSet objects</a></li>
-      <li><a href="#section-plotting-functions">Plotting functions</a></li>
-      <li><a href="#section-miscellaneous-helper-functions">Miscellaneous helper functions</a></li>
-    </ul>
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -879,7 +921,7 @@ Perform some validity checks before returning the updated colnames</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

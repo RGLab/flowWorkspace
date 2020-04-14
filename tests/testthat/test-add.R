@@ -1,4 +1,5 @@
 context("add method")
+skip_if(win32_flag)
 fs <- GvHD[1:2]
 cfile <- system.file("extdata","compdata","compmatrix", package="flowCore")
 comp.mat <- read.table(cfile, header=TRUE, skip=2, check.names = FALSE)

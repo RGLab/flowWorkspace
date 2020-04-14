@@ -1,4 +1,5 @@
 context("copyNode")
+skip_if(win32_flag)
 test_that("copyNode", {
   
   gs <- load_gs(file.path(dataDir,"gs_manual"))

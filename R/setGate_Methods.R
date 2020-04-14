@@ -204,7 +204,7 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 
 #' Simplified geometric scaling of gates associated with nodes
 #' 
-#' Scale a gate associated with a node of a \code{GatingHierarchy}} or
+#' Scale a gate associated with a node of a \code{GatingHierarchy} or
 #' \code{\linkS4class{GatingSet}}. This method is a wrapper for \code{\link[flowCore]{scale_gate}} that enables 
 #' updating of the gate associated with a node of a \code{GatingHierarchy} or \code{GatingSet}.
 #'  

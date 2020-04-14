@@ -71,7 +71,7 @@ setOldClass("XMLInternalDocument")
 #' @rdname GatingSet-class
 #' @exportClass GatingSet
 #' @aliases 
-#' GatingSet-class
+#' GatingSet-class GatingSet
 setClass("GatingSet", representation(pointer = "externalptr", transformation = "list"))
 
 setClass("GatingSet_legacy"
@@ -128,7 +128,7 @@ setClass("GatingSet_legacy"
 #' @rdname GatingHierarchy-class
 #' @exportClass GatingHierarchy
 #' @aliases 
-#' show,GatingHierarchy-method
+#' show,GatingHierarchy-method GatingHierarchy
 setClass("GatingHierarchy", contains = "GatingSet")
 
 setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
@@ -138,7 +138,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' construct a gatingset with empty trees (just root node)
 #' 
 #' @name GatingSet-methods
-#' @aliases GatingSet,cytoset,ANY-method GatingSet,flowSet-method
+#' @aliases GatingSet,cytoset,ANY-method GatingSet,flowSet-method GatingSet,flowSet,ANY-method
 #' @usage GatingSet(x)
 #' @param x a flowSet, ncdfFlowSet, or cytoset
 #' @export 
@@ -167,7 +167,6 @@ setMethod("GatingSet",c("flowSet"),function(x){
 #' 
 #' @name booleanFilter-class
 #' @seealso \code{\link{add}} \code{\linkS4class{GatingHierarchy}}
-#' @name booleanFilter-class
 #' @exportClass booleanFilter
 #' @aliases 
 #' show,booleanFilter-method

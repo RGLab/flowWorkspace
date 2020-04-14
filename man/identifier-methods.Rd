@@ -5,6 +5,7 @@
 \alias{identifier}
 \alias{identifier,GatingSet-method}
 \alias{identifier,GatingSetList-method}
+\alias{identifier<-,GatingSetList,ANY-method}
 \alias{identifier<-,GatingSet,ANY-method}
 \alias{identifier<-,GatingSet-method}
 \alias{identifier<-,GatingSet,character-method}
@@ -20,5 +21,5 @@ identifier(object) <- value
 \item{value}{string}
 }
 \description{
-Retrieve or replace the GUID (globally unique identifier) for a \code{\link{GatingSet}} or \code{\link{GatingSetList}}
+Retrieve or replace the GUID (globally unique identifier) for a \code{\link[flowWorkspace:GatingSet-class]{GatingSet}} or \code{\link[flowWorkspace:GatingSetList-class]{GatingSetList}}
 }

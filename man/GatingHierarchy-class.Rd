@@ -4,6 +4,7 @@
 \name{GatingHierarchy-class}
 \alias{GatingHierarchy-class}
 \alias{show,GatingHierarchy-method}
+\alias{GatingHierarchy}
 \title{Class GatingHierarchy}
 \description{
 GatingHierarchy is a class for representing the gating hierarchy,which can be either imported from a flowJo workspace or constructed in R.

@@ -1,4 +1,5 @@
 context("legacy_gs")
+skip_if(win32_flag)
 
 test_that(".load_legacy v1", {
   legacy <- file.path(dataDir,"/legacy_gs/v1/gs_manual")

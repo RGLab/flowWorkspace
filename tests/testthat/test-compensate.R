@@ -1,3 +1,4 @@
+skip_if(win32_flag)
 test_that("compensate & transform a GatingSet", {
       fs.raw <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore"))
       gs.raw <- GatingSet(fs.raw)

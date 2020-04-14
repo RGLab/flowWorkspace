@@ -5,8 +5,6 @@
 \alias{pData}
 \alias{pData,GatingHierarchy-method}
 \alias{pData,GatingSet-method}
-\alias{pData,cytoset-method}
-\alias{pData,cytoset,data.frame-method}
 \alias{pData<-,GatingSet,data.frame-method}
 \alias{pData<-}
 \alias{pData<-,GatingSetList,data.frame-method}
