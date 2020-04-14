@@ -5,11 +5,14 @@
 \alias{load_gs}
 \alias{save_gslist}
 \alias{load_gslist}
+\alias{sampleNames,character-method}
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
 save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"), ...)
 
 load_gs(path, h5_readonly = TRUE, select = character(), verbose = FALSE)
+
+sampleNames(object)
 
 save_gslist(gslist, path, ...)
 
@@ -30,17 +33,22 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.}
 
 \item{verbose}{logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.}
 
+\item{object}{a \code{GatingSet} folder}
+
 \item{gslist}{A \code{GatingSetList}}
 
 \item{G}{A \code{GatingSet}}
 }
 \value{
-\code{load_gs} returns a GatingSet object
-\code{load_gslist} returns a GatingSetList object
+\code{load_gs} returns a GatingSet object\cr
+\code{load_gslist} returns a GatingSetList object\cr
+\code{sampleNames} returns a character vector of sample names
 }
 \description{
 Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.
 The \code{GatingSet} object The internal C data structure (gating tree),\code{ncdfFlowSet} object(if applicable)
+
+Retrieve  sample names by scanning h5 files from a GatingSet folder
 }
 \examples{
 \dontrun{
@@ -53,6 +61,9 @@ The \code{GatingSet} object The internal C data structure (gating tree),\code{nc
 	save_gslist(gslist1,path="tempFolder")
 	gslist2<-load_gslist(path="tempFolder")
 }
+      \dontrun{
+        sampleNames(gsdir)
+      }
 }
 \seealso{
 \code{\link{GatingSet-class}},\code{\link{GatingSetList-class}}

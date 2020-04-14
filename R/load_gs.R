@@ -17,8 +17,10 @@
 #'
 #'
 #' @return
-#' \code{load_gs} returns a GatingSet object
-#' \code{load_gslist} returns a GatingSetList object
+#' \code{load_gs} returns a GatingSet object\cr
+#' \code{load_gslist} returns a GatingSetList object\cr
+#' \code{sampleNames} returns a character vector of sample names
+#' 
 #'
 #' @seealso \code{\link{GatingSet-class}},\code{\link{GatingSetList-class}}
 #'
@@ -83,14 +85,12 @@ load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALS
 
 #' Get sample names from a GatingSet archive folder
 #'
-#' retrive  sample names by scanning h5 files from a GatingSet folder
+#' Retrieve  sample names by scanning h5 files from a GatingSet folder
 #' 
+#' @usage sampleNames(object)
 #' @param object a \code{GatingSet} folder
 #' 
-#'
-#' @return
-#' A character vector of sample names
-#'
+#' @rdname save_gs
 #' @examples
 #'       \dontrun{
 #'         sampleNames(gsdir)
