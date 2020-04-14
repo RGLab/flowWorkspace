@@ -472,18 +472,18 @@ setMethod("show","GatingHierarchy",function(object){
 #' @seealso \code{\link[flowCore]{keyword-methods}}
 #'
 #' @examples
-#'     \dontrun{
-#'       #get all the keywords from all samples
-#'       keyword(G)
-#'       #get all the keywords from one sample
-#'       keyword(G[[1]])
-#'       # filter the instrument setting
-#'       keyword(G[[1]], compact = TRUE)
-#'       #get single keyword from all samples
-#'       keyword(G, "FILENAME")
-#'       #get single keyword from one sample
-#'       keyword(G[[1, "FILENAME")
-#'     }
+#' \dontrun{
+#'     # get all the keywords from all samples
+#'     keyword(G)
+#'     # get all the keywords from one sample
+#'     keyword(G[[1]])
+#'     # filter the instrument setting
+#'     keyword(G[[1]], compact = TRUE)
+#'     # get single keyword from all samples
+#'     keyword(G, "FILENAME")
+#'     # get single keyword from one sample
+#'     keyword(G[[1]], "FILENAME")
+#' }
 #' @export
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 
@@ -533,12 +533,12 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 #'
 #' @examples
 #'   \dontrun{
-#'     #G is a gating hierarchy
-#'     gs_get_pop_paths(G, path = 1])#return node names (without prefix)
-#'     gs_get_pop_paths(G,path = "full")#return the full path
-#'     gs_get_pop_paths(G,path = 2)#return the path as length of two
-#'     gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
-#'     gs_pop_set_name(G,"L","lymph")
+#'     # G is a gating hierarchy
+#'     gs_get_pop_paths(G, path = 1)#return node names (without prefix)
+#'     gs_get_pop_paths(G, path = "full")#return the full path
+#'     gs_get_pop_paths(G, path = 2)#return the path as length of two
+#'     gs_get_pop_paths(G, path = "auto")#automatically determine the length of path
+#'     gs_pop_set_name(G, "L", "lymph")
 #'   }
 #' @importFrom BiocGenerics duplicated
 #' @export
@@ -654,14 +654,16 @@ setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y,
 #' @seealso \code{\link{gs_get_pop_paths}}
 #'
 #' @examples
-#'   \dontrun{
-#'     #G is a gatinghierarchy
-#'     #return the name of the parent of the fifth node in the hierarchy.
-#'     gs_pop_get_parent(G,gs_get_pop_paths(G[[1)[5])
-#'     n<-gs_get_pop_paths(G,tsort=T)[4];
-#'     gs_pop_get_children(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
-#'     gs_pop_get_children(G,4);#Get the ids of the child nodes
-#'   }
+#' \dontrun{
+#'     # G is a GatingHierarchy
+#'     # return the name of the parent of the fifth node in the hierarchy.
+#'     gs_pop_get_parent(G,gs_get_pop_paths(G[[1]])[5])
+#'     n<-gs_get_pop_paths(G,tsort=T)[4]
+#'     #Get the names of the child nodes of the 4th node in this gating hierarchy.
+#'     gs_pop_get_children(G,n)
+#'     #Get the ids of the child nodes
+#'     gs_pop_get_children(G,4)
+#' }
 #' @export
 gs_pop_get_children <- function(obj,y, showHidden = TRUE, ...){
       cind <- .cpp_getChildren(obj@pointer,sampleNames(obj), y, showHidden)
@@ -1626,7 +1628,7 @@ setMethod("setNode"
 #' @param value A \code{character} the name of the node
 #' @examples
 #' \dontrun{
-#'     #G is a gating hierarchy
+#'     # G is a GatingHierarchy
 #'     gs_get_pop_paths(G[[1]])#return node names
 #'     gh_pop_set_name(G,"L","lymph")
 #' }

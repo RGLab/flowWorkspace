@@ -52,11 +52,11 @@ to use default order which is regular.
 }
 \examples{
   \dontrun{
-    #G is a gating hierarchy
-    gs_get_pop_paths(G, path = 1])#return node names (without prefix)
-    gs_get_pop_paths(G,path = "full")#return the full path
-    gs_get_pop_paths(G,path = 2)#return the path as length of two
-    gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
-    gs_pop_set_name(G,"L","lymph")
+    # G is a gating hierarchy
+    gs_get_pop_paths(G, path = 1)#return node names (without prefix)
+    gs_get_pop_paths(G, path = "full")#return the full path
+    gs_get_pop_paths(G, path = 2)#return the path as length of two
+    gs_get_pop_paths(G, path = "auto")#automatically determine the length of path
+    gs_pop_set_name(G, "L", "lymph")
   }
 }

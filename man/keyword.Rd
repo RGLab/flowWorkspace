@@ -26,18 +26,18 @@ Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or
 See \code{keyword} in Package `flowCore'
 }
 \examples{
-    \dontrun{
-      #get all the keywords from all samples
-      keyword(G)
-      #get all the keywords from one sample
-      keyword(G[[1]])
-      # filter the instrument setting
-      keyword(G[[1]], compact = TRUE)
-      #get single keyword from all samples
-      keyword(G, "FILENAME")
-      #get single keyword from one sample
-      keyword(G[[1, "FILENAME")
-    }
+\dontrun{
+    # get all the keywords from all samples
+    keyword(G)
+    # get all the keywords from one sample
+    keyword(G[[1]])
+    # filter the instrument setting
+    keyword(G[[1]], compact = TRUE)
+    # get single keyword from all samples
+    keyword(G, "FILENAME")
+    # get single keyword from one sample
+    keyword(G[[1]], "FILENAME")
+}
 }
 \seealso{
 \code{\link[flowCore]{keyword-methods}}
