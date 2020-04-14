@@ -153,7 +153,18 @@
     <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/flowCore/man/keyword-methods.html'>keyword-methods</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <span class='co'># get all the keywords from all samples</span>
+    <span class='fu'>keyword</span>(<span class='no'>G</span>)
+    <span class='co'># get all the keywords from one sample</span>
+    <span class='fu'>keyword</span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]])
+    <span class='co'># filter the instrument setting</span>
+    <span class='fu'>keyword</span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='kw'>compact</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+    <span class='co'># get single keyword from all samples</span>
+    <span class='fu'>keyword</span>(<span class='no'>G</span>, <span class='st'>"FILENAME"</span>)
+    <span class='co'># get single keyword from one sample</span>
+    <span class='fu'>keyword</span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='st'>"FILENAME"</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -247,9 +247,21 @@ of a <code>flowSet</code></p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="save_cytoset.html">save_cytoset()</a></code> <code><a href="save_cytoset.html">load_cytoset()</a></code> </p>
+        </td>
+        <td><p>save/load a cytoset to/from disk.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="cs_add_cytoframe.html">cs_add_cytoframe()</a></code> </p>
         </td>
         <td><p>Add a cytoframe to a cytoset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cs_set_cytoframe.html">cs_set_cytoframe()</a></code> </p>
+        </td>
+        <td><p>update a cytoframe in a cytoset</p></td>
       </tr><tr>
         
         <td>
@@ -268,6 +280,12 @@ of a <code>flowSet</code></p></td>
           <p><code><a href="lock.html">cf_lock()</a></code> <code><a href="lock.html">cf_unlock()</a></code> <code><a href="lock.html">cs_lock()</a></code> <code><a href="lock.html">cs_unlock()</a></code> </p>
         </td>
         <td><p>Lock/Unlock the cytoset/cytoframe by turning on/off its read-only flag</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cf_append_cols.html">cf_append_cols()</a></code> </p>
+        </td>
+        <td><p>Append data columns to a flowFrame</p></td>
       </tr><tr>
         
         <td>
@@ -818,7 +836,7 @@ underlying c++ data structure.</p></td>
       <tr>
         
         <td>
-          <p><code><a href="save_gs.html">save_gs()</a></code> <code><a href="save_gs.html">load_gs()</a></code> <code><a href="save_gs.html">save_gslist()</a></code> <code><a href="save_gs.html">load_gslist()</a></code> </p>
+          <p><code><a href="save_gs.html">save_gs()</a></code> <code><a href="save_gs.html">load_gs()</a></code> <code><a href="save_gs.html">sampleNames()</a></code> <code><a href="save_gs.html">save_gslist()</a></code> <code><a href="save_gs.html">load_gslist()</a></code> </p>
         </td>
         <td><p>save/load a GatingSet/GatingSetList to/from disk.</p></td>
       </tr>
@@ -902,6 +920,12 @@ underlying c++ data structure.</p></td>
         </td>
         <td><p>Swap the colnames
 Perform some validity checks before returning the updated colnames</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cleanup_temp.html">cf_cleanup_temp()</a></code> <code><a href="cleanup_temp.html">cs_cleanup_temp()</a></code> <code><a href="cleanup_temp.html">gh_cleanup_temp()</a></code> <code><a href="cleanup_temp.html">gs_cleanup_temp()</a></code> </p>
+        </td>
+        <td><p>Remove temporary files associatated with flowWorkspace data classes</p></td>
       </tr>
     </tbody>
     </table>
