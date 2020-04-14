@@ -1,4 +1,5 @@
 context("flowjo_to_gatingset")
+skip_if(win32_flag)
 
 wsfile <- list.files(dataDir, pattern="manual.xml",full=TRUE)
 library(CytoML)

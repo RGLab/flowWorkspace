@@ -1,4 +1,5 @@
 context("parallel IO")
+skip_if(win32_flag)
 
 gs <- GatingSet(GvHD[c(4,2,3,1)])
 tmp <- tempfile()

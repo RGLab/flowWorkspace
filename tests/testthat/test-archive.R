@@ -1,5 +1,5 @@
 context("GatingSet archive")
-
+skip_if(win32_flag)
 gs <- NULL
 isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",

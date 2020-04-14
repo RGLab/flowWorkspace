@@ -1,4 +1,5 @@
 context("gs_pop_get_count_fast")
+skip_if(win32_flag)
 test_that("group and merge the GatingSet object", {
   
   gs <- load_gs(file.path(dataDir,"gs_bcell_auto"))

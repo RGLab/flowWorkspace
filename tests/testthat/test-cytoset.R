@@ -1,4 +1,5 @@
 context("cytoset accessors")
+skip_if(win32_flag)
 # fs <- GvHD[pData(GvHD)$Patient %in% 6:7][1:4]#can't use it due to its malformated FCS TEXT making test difficult
 fcs_files <- list.files(dataDir, "Cyto", full.names = TRUE)
 fs <- read.flowSet(fcs_files)

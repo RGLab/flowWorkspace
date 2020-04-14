@@ -1,4 +1,5 @@
 context("gh_pop_move")
+skip_if(win32_flag)
 test_that("gh_pop_move", {
   
   gs <- load_gs(file.path(dataDir,"gs_manual"))

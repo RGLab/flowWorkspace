@@ -1,4 +1,5 @@
 context("write.FCS testing for cytoframe")
+skip_if(win32_flag)
 test_that("test write.FCS", {
   fcsfile <- system.file("extdata/CytoTrol_CytoTrol_1.fcs", package = "flowWorkspaceData")
   fr <- load_cytoframe_from_fcs(fcsfile)
