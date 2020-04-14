@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — gs_pop_get_gate • flowWorkspace</title>
+<title><code>cytoframe</code> keyword access methods — cf_keyword_insert • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,9 @@
 
 
 
-<meta property="og:title" content="Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — gs_pop_get_gate" />
-<meta property="og:description" content="Return the flowCore gate definition object associated with a node in a GatingHierarchy or GatingSet object." />
+<meta property="og:title" content="<code>cytoframe</code> keyword access methods — cf_keyword_insert" />
+<meta property="og:description" content="These methods allow for direct insertion, deletion, or renaming
+of keywords in cytoframe objects." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -117,45 +118,48 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.</h1>
+    <h1><code>cytoframe</code> keyword access methods</h1>
     
-    <div class="hidden name"><code>gs_pop_get_gate.Rd</code></div>
+    <div class="hidden name"><code>cytoframe-keywords.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Return the flowCore gate definition object associated with a node in a <code>GatingHierarchy</code> or <code>GatingSet</code> object.</p>
+    <p>These methods allow for direct insertion, deletion, or renaming
+of keywords in <code><a href='cytoframe.html'>cytoframe</a></code> objects.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gh_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)
+    <pre class="usage"><span class='fu'>cf_keyword_insert</span>(<span class='no'>cf</span>, <span class='no'>keyword</span>, <span class='no'>value</span>)
 
-<span class='fu'>gs_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)</pre>
+<span class='fu'>cf_keyword_delete</span>(<span class='no'>cf</span>, <span class='no'>keyword</span>)
+
+<span class='fu'>cf_keyword_rename</span>(<span class='no'>cf</span>, <span class='no'>from</span>, <span class='no'>to</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>obj</th>
-      <td><p>A <code>GatingHierrarchy</code> or <code>GatingSet</code></p></td>
+      <th>cf</th>
+      <td><p>a <code>cytoframe</code></p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>A <code>character</code> the name or full(/partial) gating path of the node of interest.</p></td>
+      <th>keyword</th>
+      <td><p>the keyword name to insert/delete/replace</p></td>
+    </tr>
+    <tr>
+      <th>value</th>
+      <td><p>the value to associate with the supplied keyword</p></td>
+    </tr>
+    <tr>
+      <th>from</th>
+      <td><p>the old keyword name (for renaming)</p></td>
+    </tr>
+    <tr>
+      <th>to</th>
+      <td><p>the new keyword name (for renamiing)</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A gate object from <code>flowCore</code>. Usually a <code>polygonGate</code>, but may be a <code>rectangleGate</code>. Boolean gates are represented by a <code>"BooleanGate"</code> S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If <code>obj</code> is a <code>GatingSet</code>, assuming the trees associated with each <code>GatingHierarchy</code> are identical, then this method will return a list of gates, one for each sample in the <code>GatingSet</code> corresponding to the same population indexed by <code>y</code>.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='gh_pop_get_data.html'>gh_pop_get_data</a></code> <code><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></code></p></div>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>)    <span class='co'>#gh is a GatingHierarchy</span>
-    <span class='fu'>gh_pop_get_gate</span>(<span class='no'>gh</span>, <span class='st'>"CD3"</span>) <span class='co'>#return the gate for the fifth node in the tree, but fetch it by name.</span>
-    <span class='co'>#G is a GatingSet</span>
-    <span class='fu'>gs_pop_get_gate</span>(<span class='no'>G</span>, <span class='st'>"CD3"</span>) <span class='co'>#return a list of gates for the fifth node in each tree</span></div><div class='output co'>#&gt; <span class='error'>Error in lapply(obj, function(x) gh_pop_get_gate(x, y)): object 'G' not found</span></div><div class='input'>  
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

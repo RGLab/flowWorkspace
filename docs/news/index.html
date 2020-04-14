@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — gs_pop_get_gate • flowWorkspace</title>
+<title>Changelog • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,7 @@
 
 
 
-<meta property="og:title" content="Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — gs_pop_get_gate" />
-<meta property="og:description" content="Return the flowCore gate definition object associated with a node in a GatingHierarchy or GatingSet object." />
+<meta property="og:title" content="Changelog" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -67,7 +66,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -117,51 +116,49 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.</h1>
-    
-    <div class="hidden name"><code>gs_pop_get_gate.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small></small></h1>
+      
     </div>
 
-    <div class="ref-description">
-    <p>Return the flowCore gate definition object associated with a node in a <code>GatingHierarchy</code> or <code>GatingSet</code> object.</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>gh_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)
-
-<span class='fu'>gs_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>obj</th>
-      <td><p>A <code>GatingHierrarchy</code> or <code>GatingSet</code></p></td>
-    </tr>
-    <tr>
-      <th>y</th>
-      <td><p>A <code>character</code> the name or full(/partial) gating path of the node of interest.</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A gate object from <code>flowCore</code>. Usually a <code>polygonGate</code>, but may be a <code>rectangleGate</code>. Boolean gates are represented by a <code>"BooleanGate"</code> S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If <code>obj</code> is a <code>GatingSet</code>, assuming the trees associated with each <code>GatingHierarchy</code> are identical, then this method will return a list of gates, one for each sample in the <code>GatingSet</code> corresponding to the same population indexed by <code>y</code>.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='gh_pop_get_data.html'>gh_pop_get_data</a></code> <code><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></code></p></div>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>)    <span class='co'>#gh is a GatingHierarchy</span>
-    <span class='fu'>gh_pop_get_gate</span>(<span class='no'>gh</span>, <span class='st'>"CD3"</span>) <span class='co'>#return the gate for the fifth node in the tree, but fetch it by name.</span>
-    <span class='co'>#G is a GatingSet</span>
-    <span class='fu'>gs_pop_get_gate</span>(<span class='no'>G</span>, <span class='st'>"CD3"</span>) <span class='co'>#return a list of gates for the fifth node in each tree</span></div><div class='output co'>#&gt; <span class='error'>Error in lapply(obj, function(x) gh_pop_get_gate(x, y)): object 'G' not found</span></div><div class='input'>  
-</div></pre>
+    <div id="version-060" class="section level1">
+<h1 class="page-header" data-toc-text="0.6.0">
+<a href="#version-060" class="anchor"></a>VERSION 0.6.0</h1>
+<hr>
+<p>This version supports importing of flowJo XML workspaces generated using, up to version 9.2 of the Mac OS X version of flowJo. We do not yet support workpsaces generated using the windows version of flowJo.</p>
+<div id="features" class="section level2">
+<h2 class="hasAnchor">
+<a href="#features" class="anchor"></a>FEATURES:</h2>
+<ul>
+<li>import flowJo XML workspace from the Mac version. (Greg Finak)</li>
+<li>convert GatingHierarchy objects to workflows. (Mike Jiang)</li>
+<li>export workflows to flowJo XML workspace readable by Mac version of flowJo (Mose Andre)</li>
+<li>netCDF support for large data sets. Based on code contributed by Nisat Gopalakrishnan.</li>
+</ul>
+</div>
+<div id="known-issues" class="section level2">
+<h2 class="hasAnchor">
+<a href="#known-issues" class="anchor"></a>KNOWN ISSUES:</h2>
+<ul>
+<li>export to flowJo - flowWorkspace will export the correct compensation matrices, but they will need to apply manually via the menu items in flowJo.
+<ul>
+<li>Navigating between graphs of populations is buggy.</li>
+<li>export expects to receive a workflow that contains a compensation view and a transformation view as the first two actions in the workflow.</li>
+<li>import from flowJ - we may not support all gating configurations. The parsing code was written based on examples. If your workspace is not being imported correctly, contact the authors. If your workspace is not being imported correctly because it’s generated by flowJo for windows, it is not supported. Are you sure you’re trying to import the XML workspace and not the .jo or .wsp file?</li>
+<li>flowJo 8.2 for MAC. - XML has some differences and there may be issues importing workspaces into R. We have resolved those bugs that we’ve found but we have not had the opportunity for extensive testing with this version.</li>
+<li>speed - import can slow for very large workspaces with many gates.</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 

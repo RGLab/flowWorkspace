@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — gs_pop_get_gate • flowWorkspace</title>
+<title>Append data columns to a flowFrame — cf_append_cols • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet. — gs_pop_get_gate" />
-<meta property="og:description" content="Return the flowCore gate definition object associated with a node in a GatingHierarchy or GatingSet object." />
+<meta property="og:title" content="Append data columns to a flowFrame — cf_append_cols" />
+<meta property="og:description" content="Append data columns to a flowFrame" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -117,45 +117,48 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Return the flowCore gate definition associated with a node in a GatingHierarchy/GatingSet.</h1>
+    <h1>Append data columns to a flowFrame</h1>
     
-    <div class="hidden name"><code>gs_pop_get_gate.Rd</code></div>
+    <div class="hidden name"><code>cf_append_cols.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Return the flowCore gate definition object associated with a node in a <code>GatingHierarchy</code> or <code>GatingSet</code> object.</p>
+    <p>Append data columns to a flowFrame</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gh_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)
-
-<span class='fu'>gs_pop_get_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>)</pre>
+    <pre class="usage"><span class='fu'>cf_append_cols</span>(<span class='no'>cf</span>, <span class='no'>cols</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>obj</th>
-      <td><p>A <code>GatingHierrarchy</code> or <code>GatingSet</code></p></td>
+      <th>cf</th>
+      <td><p>A <code>cytoframe</code>.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>A <code>character</code> the name or full(/partial) gating path of the node of interest.</p></td>
+      <th>cols</th>
+      <td><p>A numeric matrix containing the new data columns to be added.
+Must has column names to be used as new channel names.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>A gate object from <code>flowCore</code>. Usually a <code>polygonGate</code>, but may be a <code>rectangleGate</code>. Boolean gates are represented by a <code>"BooleanGate"</code> S3 class. This is a list boolean gate definition that references populations in the GatingHierarchy and how they are to be combined logically. If <code>obj</code> is a <code>GatingSet</code>, assuming the trees associated with each <code>GatingHierarchy</code> are identical, then this method will return a list of gates, one for each sample in the <code>GatingSet</code> corresponding to the same population indexed by <code>y</code>.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='gh_pop_get_data.html'>gh_pop_get_data</a></code> <code><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></code></p></div>
+    <p>It is used to add extra data columns to the existing flowFrame.  It handles
+keywords and parameters properly to ensure the new flowFrame can be written
+as a valid FCS through the function <code>write.FCS</code> .</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>)    <span class='co'>#gh is a GatingHierarchy</span>
-    <span class='fu'>gh_pop_get_gate</span>(<span class='no'>gh</span>, <span class='st'>"CD3"</span>) <span class='co'>#return the gate for the fifth node in the tree, but fetch it by name.</span>
-    <span class='co'>#G is a GatingSet</span>
-    <span class='fu'>gs_pop_get_gate</span>(<span class='no'>G</span>, <span class='st'>"CD3"</span>) <span class='co'>#return a list of gates for the fifth node in each tree</span></div><div class='output co'>#&gt; <span class='error'>Error in lapply(obj, function(x) gh_pop_get_gate(x, y)): object 'G' not found</span></div><div class='input'>  
-</div></pre>
+    <pre class="examples"><div class='input'>
+  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowCore</span>)
+  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>GvHD</span>)
+  <span class='no'>tmp</span> <span class='kw'>&lt;-</span> <span class='no'>GvHD</span><span class='kw'>[[</span><span class='fl'>1</span>]]
+  <span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='convert.html'>flowFrame_to_cytoframe</a></span>(<span class='no'>tmp</span>)
+  <span class='no'>kf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/kmeansFilter-class.html'>kmeansFilter</a></span>(<span class='st'>"FSC-H"</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Pop1"</span>,<span class='st'>"Pop2"</span>,<span class='st'>"Pop3"</span>), <span class='kw'>filterId</span><span class='kw'>=</span><span class='st'>"myKmFilter"</span>)
+  <span class='no'>fres</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>filter</a></span>(<span class='no'>cf</span>, <span class='no'>kf</span>)
+  <span class='no'>cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>fres</span>@<span class='kw'>subSet</span>)
+  <span class='no'>cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='no'>cols</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>NULL</span>, <span class='st'>"km"</span>))
+  <span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'>cf_append_cols</span>(<span class='no'>cf</span>, <span class='no'>cols</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
