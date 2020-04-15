@@ -44,7 +44,8 @@ Imports:
 	aws.s3,
 	aws.signature,
     flowCore(>= 1.99.20),
-	ncdfFlow(>= 2.25.4)
+	ncdfFlow(>= 2.25.4),
+	BiocFileCache
 Collate: 
     'cytoframe.R'
     'cytoset.R'

@@ -152,6 +152,7 @@ delete_gs <- function(path, cred = NULL){
 #' @export
 #' @aliases load_gs load_gslist
 #' @importFrom aws.s3 get_bucket_df save_object
+#' @importFrom BiocFileCache BiocFileCache bfcnew bfcquery
 load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL){
   remote_path <- ""
   if(is_s3_path(path))
@@ -163,19 +164,36 @@ load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALS
     b <- get_bucket_df(bucket, gs_key, region = cred$AWS_REGION)
     keys <- b$Key
     gs_key <- keys[grepl("\\.gs$", keys)]
-    pb_keys <- keys[grepl("\\.pb$", keys)]
-    sns <- sapply(pb_keys, function(key)sub(".pb", "", basename(key)))
-    
-    #download pb files
-    tmp_gs <- tempfile()
-    for(k in c(gs_key, pb_keys))
+    #check local cache for s3 path
+    bfc <- BiocFileCache()
+    tbl <- bfcquery(bfc, path)
+    ncache <- nrow(tbl)
+    if(ncache == 0)#download if no cache
     {
-      message("downloading ", k, " ...")
-      save_object(k, bucket, file.path(tmp_gs, basename(k)), region = cred$AWS_REGION)
-    }
+      savepath <- bfcnew(bfc, path)
+      rid <- names(savepath)
+      
+      pb_keys <- keys[grepl("\\.pb$", keys)]
+      sns <- sapply(pb_keys, function(key)sub(".pb", "", basename(key)))
+      
+      #download pb files
+      for(k in c(gs_key, pb_keys))
+      {
+        message("downloading ", k, " ...")
+        save_object(k, bucket, file.path(savepath, basename(k)), region = cred$AWS_REGION)
+      }
+      
+      path <- savepath
+    }else if(ncache == 1)
+    {
+      path <- tbl[["rpath"]]  
+      message("loading from local cache:", path)
+    }else
+      stop("More than one local caches matches to ", gs_key)
+    
+    # s3 path for h5    
     remote_path <- paste0("https://", bucket, ".s3.amazonaws.com/", dirname(gs_key))
-    #load the temp local pb and pass s3 path for h5
-    path <- tmp_gs
+    
   }else
   {
     
