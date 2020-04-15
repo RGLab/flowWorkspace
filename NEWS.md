@@ -1,6 +1,4 @@
-# VERSION 0.6.0
-
-----------------------------------
+# flowWorkspace 0.6.0
 
 This version supports importing of flowJo XML workspaces generated using, up to version 9.2 of the Mac OS X version of flowJo. We do not yet support workpsaces generated using the windows version of flowJo. 
 
@@ -21,9 +19,7 @@ This version supports importing of flowJo XML workspaces generated using, up to 
 	* speed - import can slow for very large workspaces with many gates.
 
 
-# CHANGES IN VERSION 3.11.32
-
-----------------------------------
+# flowWorkspace 3.11.32
 
 ## Enhancements
 + stores the axis information in 'axis' slot of 'GatingSet' class to be used by plotGate
@@ -40,9 +36,7 @@ This version supports importing of flowJo XML workspaces generated using, up to 
 + add some internal functions ('merge-GatingSet.R') to handle merging 'GatingSets'	
 
 
-# CHANGES IN VERSION 3.31.17 (Bioconductor release 3.9)
-
-----------------------------------
+# flowWorkspace 3.31.17 (Bioconductor release 3.9)
 
 + Deprecate many method names to change over to new naming standard
   -- see #274 and help(`flowWorkspace-deprecated`) for summary
@@ -60,9 +54,7 @@ This version supports importing of flowJo XML workspaces generated using, up to 
 + Add transform_gate methods for geometric transformations of gates from GatingSet nodes
 
 
-# CHANGES IN VERSION 3.33.10 (Bioconductor release 3.10)
-
-----------------------------------
+# flowWorkspace 3.33.10 (Bioconductor release 3.10)
 
 + MAJOR CHANGE: Added cytoframe and cytoset classes (and supporting methdos) which are now used by GatingSet
   -- see section "The cytoframe and cytoset classes" in introduction vignette for summary of changes
@@ -74,9 +66,7 @@ This version supports importing of flowJo XML workspaces generated using, up to 
 + More api renaming according to #274: flowJo_biexp_trans -> flowjo_biexp_trans
 
 
-# CHANGES IN VERSION 3.35.x (Bioconductor release 3.11)
-
-----------------------------------
+# flowWorkspace 3.35.x (Bioconductor release 3.11)
 
 + Allow cytoset constructor to take a list of cytoframes
 + Add cf_rename_channel and cf_rename_marker
