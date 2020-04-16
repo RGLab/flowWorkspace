@@ -205,6 +205,7 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
 void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
       H5Option h5_opt;
+      bool skip_data = false;
       if(cdf == "copy")
         h5_opt = H5Option::copy;
       else if(cdf == "move")
@@ -214,10 +215,13 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
       else if(cdf == "symlink")
         h5_opt = H5Option::symlink;
       else if(cdf == "skip")
-        h5_opt = H5Option::skip;
+      {
+          h5_opt = H5Option::skip;
+          skip_data = true;
+      }
       else
         stop("invalid cdf option!");
-			gs->serialize_pb(path, h5_opt);
+			gs->serialize_pb(path, h5_opt, skip_data);
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]

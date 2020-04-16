@@ -25,15 +25,22 @@ test_that("save_gs from local to remote",
 test_that("load_gs from s3",
           {
             #load gs from remote without downloading h5
-            gs <- load_gs(url)
+            expect_message(gs <- load_gs(url), "downloading")
             expect_is(gs, "GatingSet")
             expect_true(grepl("https", cs_get_h5_file_path(gs)))
+            expect_message(gs <- load_gs(url), "local")
            })
 test_that("save_gs from s3 to local",
           {
             tmp <- tempfile()
             save_gs(gs, tmp)
-          })
+            guid <- identifier(gs)
+            sn <- sampleNames(gs)
+            gs_key <- paste0(guid, ".gs")
+            gh_key <- paste0(sn, ".pb")
+            h5_key <- paste0(sn, ".h5")
+            expect_true(setequal(list.files(tmp), c(gs_key, gh_key, h5_key)))
+            })
 
 test_that("save_gs from s3 to s3",
           {

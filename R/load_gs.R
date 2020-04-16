@@ -98,12 +98,43 @@ save_gs<-function(gs, path
     }
   }else
   {
-    if(cdf == "link")
-    	stop("'link' option for save_gs is no longer supported")
     path <- suppressWarnings(normalizePath(path))
-    suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf)))
-    
-    
+    #check gs is loaded from s3
+    h5_path <- cs_get_h5_file_path(gs)
+    if(!grepl("^https://", h5_path))#local gs
+    {
+      
+      if(cdf == "link")
+      	stop("'link' option for save_gs is no longer supported")
+      
+      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf)))
+
+    }else{
+      #remote gs
+      #since we lose the track of local cache of remote gs pb files
+      #we have to resave it 
+      #TODO: more efficient way is to attach the rid to gs object so that local cp can be made 
+      
+      if(cdf != "copy")
+        stop("Only 'copy' option is supported for save_gs from remote to local")
+      #only save pb since h5remote is currently readonly thus can't be saved through the serialization api
+      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = "skip")))
+      #download h5 separately
+      cred <- check_credential(cred)
+      s3_paths <- parse_s3_path(h5_path)
+      bucket <- s3_paths[["bucket"]]
+      gs_key <- s3_paths[["key"]]
+      b <- get_bucket_df(bucket, gs_key, region = cred$AWS_REGION)
+      
+      keys <- b$Key
+      h5_key <- keys[grepl("\\.h5$", keys)]
+      #download pb files
+      for(k in c(h5_key))
+      {
+        message("downloading ", k, " ...")
+        save_object(k, bucket, file.path(path, basename(k)), region = cred$AWS_REGION)
+      }
+    }
     if(class(res) == "try-error")
     {
       res <- gsub(" H5Option", ' option', res)
@@ -111,7 +142,6 @@ save_gs<-function(gs, path
       
       stop(res[[1]])
     }
-    
   }
   message("Done\nTo reload it, use 'load_gs' function\n")
 }
@@ -123,10 +153,22 @@ gs_is_dirty<- function(x){
 is_s3_path <- function(x){
   grepl("^s3://", x, ignore.case = TRUE)
 }
+is_http_path <- function(x){
+  grepl("^https://", x, ignore.case = TRUE)
+}
 
 parse_s3_path <- function(url){
-  url <- sub("^s3://", "", url)
-  tokens <- strsplit(url, "/")[[1]]
+  if(is_s3_path(url))
+  {
+    url <- sub("^s3://", "", url)
+    tokens <- strsplit(url, "/")[[1]]
+  }else if(is_http_path(url)){
+    url <- sub("^https://", "", url)
+    tokens <- strsplit(url, "/")[[1]]
+    tokens[1] <- sub(".s3.amazonaws.com", "", tokens[1])
+  }else
+    stop("invalid s3 path", url)
+  
   list(bucket = tokens[1], key = paste(tokens[-1], collapse = "/"))
 }
 #' delete the archive of GatingSet
