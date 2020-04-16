@@ -175,6 +175,7 @@ parse_s3_path <- function(url){
 #' 
 #' @param path either a local path or s3 path (e.g. "s3://bucketname/gs_path)
 #' @importFrom aws.s3 get_bucket delete_object
+#' @importFrom BiocFileCache bfcremove
 #' @export
 delete_gs <- function(path, cred = NULL){
   if(is_s3_path(path))
@@ -184,7 +185,12 @@ delete_gs <- function(path, cred = NULL){
     b <- get_bucket(s3_paths[["bucket"]], s3_paths[["key"]], region = cred$AWS_REGION)
     for(obj in b)
       delete_object(obj, region = cred$AWS_REGION)
+    #clear local cache as well
+    tbl <- bfcquery(query = path)
+    rid <- tbl[["rid"]]
     
+    suppressWarnings(bfcremove(rids = rid))#TODO:tackle the warning
+    message("local cache is cleared")
   }else
     unlink(path, recursive = TRUE)
   message(path, " is deleted")
