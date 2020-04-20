@@ -827,7 +827,6 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
 #' 
 #' @name estimateLogicle
 #' @aliases estimateLogicle,GatingHierarchy-method estimateLogicle,GatingSet-method
-#' @usage estimateLogicle(x, channels, ...)
 #' @param x a GatingHierarchy
 #' @param channels channels or markers for which the logicle transformation is to be estimated.
 #' @param ... other arguments

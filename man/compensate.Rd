@@ -10,7 +10,7 @@
 \alias{compensate,GatingSet,ANY-method}
 \title{compensate the flow data asssociated with the GatingSet}
 \usage{
-compensate(x, spillover)
+\S4method{compensate}{GatingSet,ANY}(x, spillover)
 }
 \arguments{
 \item{x}{\code{GatingSet}, \code{GatingSetList}, \code{cytoframe}, or \code{cytoset}}

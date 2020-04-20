@@ -6,7 +6,7 @@
 \alias{transform,GatingSet-method}
 \title{tranform the flow data asssociated with the GatingSet}
 \usage{
-transform(`_data`, translist, ...)
+\S4method{transform}{GatingSet}(`_data`, translist, ...)
 }
 \arguments{
 \item{_data}{\code{GatingSet} or \code{GatingSetList}}

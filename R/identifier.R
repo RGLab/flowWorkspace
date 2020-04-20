@@ -49,6 +49,7 @@ setReplaceMethod("identifier",
 			set_gatingset_id(object@pointer, value)
 			object
 		})
+#' @rdname identifier-methods
 #' @export 
 setReplaceMethod("identifier",
                  signature=signature(object="GatingSetList",

@@ -12,14 +12,16 @@
 \alias{[[<-,GatingSet,ANY,ANY,GatingHierarchy-method}
 \title{Bracket operators on \code{GatingSet} and \code{GatingSetList} objects}
 \usage{
-x[i]
+\S4method{[}{GatingSet,ANY}(x, i, j, ..., drop = TRUE)
 
-x[[i]]
+\S4method{[[}{GatingSet,numeric}(x, i, j, ...)
 }
 \arguments{
 \item{x}{a \code{GatingSet} or \code{GatingSetList}}
 
 \item{i}{\code{numeric} or \code{logical} or \code{character} used as sample indices}
+
+\item{j, ..., drop}{unused}
 }
 \value{
 The \code{[} operator returns an object of the same type as \code{x} corresponding to the subset of indices

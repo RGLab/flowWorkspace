@@ -46,8 +46,6 @@
 
 \code{clone} --> \code{gs_clone}
 
-\code{recompute} --> \code{gs_recompute}
-
 \code{flowData} --> \code{gs_cyto_data}
 
 \code{flowData<-} --> \code{gs_cyto_data<-}

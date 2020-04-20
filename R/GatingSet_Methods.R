@@ -946,12 +946,10 @@ gs_copy_tree_only <- function(x){
   new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
   
 }
-
-#' @templateVar old recompute
-#' @templateVar new gs_recompute
-#' @template template-depr_pkg
-NULL
-setGeneric("recompute", function(x,...)standardGeneric("recompute"))
+#' @name recompute
+#' @export
+#' @param ... arguments
+recompute <- function(x, y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE)UseMethod("recompute")
 #' Compute the cell events by the gates stored within the gating tree.
 #'
 #' Compute each cell event to see if it falls into the gate stored within the gating tree
@@ -960,34 +958,16 @@ setGeneric("recompute", function(x,...)standardGeneric("recompute"))
 #' It is usually used immediately after \link{add} or \link{gs_pop_set_gate} calls.
 #' 
 #' @name recompute
-#' @aliases recompute,GatingSet-method recompute,GatingSetList-method
-#' @usage recompute(x, y="root", alwaysLoadData=FALSE, ...)
 #' @param x \code{GatingSet or GatingSetList}
 #' @param y \code{character} node name or node path. Default "root". Optional.
 #' @param alwaysLoadData \code{logical}. Specifies whether to load the flow raw data for gating boolean gates. Default 'FALSE'. Optional. Sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gated. 'FALSE' will check the parent node and reference to determine whether to load the data.
 #' This check may not be sufficient since  the further upstream ancestor nodes may not be gated yet.
 #' In that case, we allow the gating to fail and prompt user to recompute those nodes explictily.
 #'  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted at the cost of unnecessary data IO.
-#' @param ... other arguments
-#'              leaf.bool whether to compute the leaf boolean gate, default is TRUE
+#' @param leaf.bool whether to compute the leaf boolean gate, default is TRUE
+#' @param verbose default is FALSE
 #' @export
-setMethod("recompute",c("GatingSet"),function(x, y="root",alwaysLoadData=FALSE, ...){
-			.recompute(x,y=y,alwaysLoadData=alwaysLoadData, ...)
-
-		})
-
-
-#' @param x \code{GatingSet}
-#' @param y \code{character}
-#' @param alwaysLoadData \code{logical} specifies whether to load the flow raw data for gating
-#'                  for boolean gates, sometime it is more efficient to skip loading the raw data if all the reference nodes and parent are already gates
-#'                  Default 'FALSE' will check the parent node and reference to determine whether to load the data
-#'                  but this check may not be sufficient since  the further upstream ancester nodes may not be gated yet
-#'                  In that case, we allow the gating to be failed and prompt user to recompute those nodes explictily
-#'                  When TRUE, then it forces data to be loaded to guarantee the gating process to be uninterrupted
-#'                  , yet may at the cost of unnecessary data IO
-#' @noRd 
-.recompute <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE){
+recompute.GatingSet <- function(x,y = "root", alwaysLoadData = FALSE, verbose = FALSE, leaf.bool = TRUE){
   cpp_gating(x@pointer, y, alwaysLoadData, verbose, leaf.bool)
   message("done!")
   invisible()
@@ -1232,7 +1212,6 @@ setReplaceMethod("pData",c("GatingSet","data.frame"),function(object,value){
 
 #' @description \code{[} subsets a \code{GatingSet} or \code{GatingSetList} using the familiar bracket notation
 #'
-#' @usage x[i]
 #' @rdname brackets
 #' @aliases  [ [,GatingSet,ANY-method [,GatingSetList,ANY-method
 #' @export
@@ -1252,7 +1231,6 @@ setMethod("[",c("GatingSet"),function(x,i,j,...,drop){
 #' subset the GatingSet/GatingSetList based on 'pData'
 #'
 #' @name subset
-#' @usage subset(x, subset, ...)
 #' @param x \code{GatingSet} or \code{GatingSetList}
 #' @param subset logical expression(within the context of pData) indicating samples to keep. see \code{\link[base:subset]{subset}}
 #' @param ... other arguments. (not used)
@@ -1363,9 +1341,9 @@ set_log_level <- function(level = "none"){
 #' @aliases
 #' [[ [[,GatingSet,numeric-method [[,GatingSet,logical-method [[,GatingSet,character-method
 #' [[<-,GatingSet,ANY,ANY,GatingHierarchy-method
-#' @usage x[[i]]
 #' @param x a \code{GatingSet} or \code{GatingSetList}
 #' @param i \code{numeric} or \code{logical} or \code{character} used as sample indices
+#' @param j,...,drop unused
 #' @return The \code{[} operator returns an object of the same type as \code{x} corresponding to the subset of indices
 #' in i, while the \code{[[} operator returns a single \code{GatingHierarchy}
 #' @export
@@ -1609,7 +1587,6 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
 #' 
 #' @name transform
 #' @aliases transform,GatingSetList-method transform,GatingSet-method
-#' @usage transform(`_data`, translist, ...)
 #' @param _data \code{GatingSet} or \code{GatingSetList}
 #' @param translist expect a \code{transformList} object or a list of \code{transformList} objects(with names matched to sample names)
 #' @param ... other arguments passed to 'transform' method for 'ncdfFlowSet'.(e.g. 'ncdfFile')
@@ -1749,10 +1726,8 @@ transformerList <- function (from, trans)
 #' @aliases compensate,GatingSetList,ANY-method compensate,cytoset,ANY-method
 #' compensate,cytoset,list-method compensate,cytoset,matrix-method compensate,cytoframe,matrix-method
 #' compensate,GatingSet,ANY-method
-#' @usage compensate(x, spillover)
 #' @param x \code{GatingSet}, \code{GatingSetList}, \code{cytoframe}, or \code{cytoset}
 #' @param spillover \code{compensation} object or spillover matrix or a list of \code{compensation} objects
-#'
 #' @return a \code{GatingSet}, \code{GatingSetList}, \code{cytoframe}, or \code{cytoset} object with the underling flow data compensated.
 #' @examples
 #' \dontrun{
