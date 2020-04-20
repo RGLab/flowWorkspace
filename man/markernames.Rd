@@ -21,13 +21,13 @@
 \alias{colnames<-,cytoset-method}
 \title{Get/set the column(channel) or marker names}
 \usage{
-markernames(object)
+\S4method{markernames}{GatingHierarchy}(object)
 
-markernames(object) <- value
+\S4method{markernames}{GatingHierarchy}(object) <- value
 
-colnames(object)
+\S4method{colnames}{GatingHierarchy}(x, do.NULL = "missing", prefix = "missing")
 
-colnames(object) <- value
+\S4method{colnames}{GatingHierarchy}(x) <- value
 }
 \arguments{
 \item{value}{named character vector for markernames<-, regular character vector for colnames<-.}

@@ -13,14 +13,18 @@
 \usage{
 gs_cyto_data(x, ...)
 
+\S4method{gs_cyto_data}{GatingSet}(x, inverse.transform = FALSE)
+
 gs_cyto_data(x) <- value
 }
 \arguments{
 \item{x}{A \code{GatingSet}}
 
-\item{value}{The replacement \code{flowSet} or \code{ncdfFlowSet} object}
+\item{...}{other arugments}
 
 \item{inverse.transform}{logical flag indicating whether to inverse transform the data}
+
+\item{value}{The replacement \code{flowSet} or \code{ncdfFlowSet} object}
 }
 \value{
 the object with the new flowSet in place.

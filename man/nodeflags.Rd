@@ -23,8 +23,6 @@ gh_pop_is_bool_gate(obj, y)
 \item{obj}{GatingHierarchy}
 
 \item{y}{node/gating path}
-
-\item{...}{not used}
 }
 \description{
 gh_pop_is_gated checks if a node is already gated.

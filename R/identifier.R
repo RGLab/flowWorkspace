@@ -32,7 +32,6 @@ setMethod("identifier",c("GatingSetList"),function(object){
 })
 
 #' @param value string
-#' @usage identifier(object) <- value
 #' @rdname identifier-methods
 #' @aliases identifier<-,GatingSet-method identifier<-,GatingSet,character-method
 #' @export 

@@ -682,15 +682,18 @@ cf_keyword_rename <- function(cf, from, to){
 #' ff <- cytoframe_to_flowFrame(cf)
 #' 
 #' @seealso \link{merge_list_to_gs}
+#' @param cf cytoframe object 
 #' @export
-cytoframe_to_flowFrame <- function(fr){
-  fr@exprs <- exprs(fr)
-  fr@description = keyword(fr)
-  fr@parameters <- parameters(fr)
-  as(fr, "flowFrame")
+cytoframe_to_flowFrame <- function(cf){
+  cf@exprs <- exprs(cf)
+  cf@description = keyword(cf)
+  cf@parameters <- parameters(cf)
+  as(cf, "flowFrame")
 }
 
 #' @rdname convert
+#' @param fr flowframe
+#' @param ... arguments passed to 'load_cytoframe_from_fcs' call
 #' @export
 flowFrame_to_cytoframe <- function(fr, ...){
 	tmp <- tempfile()

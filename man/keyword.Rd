@@ -10,7 +10,9 @@
 \alias{keyword,GatingSetList,missing-method}
 \title{Retrieve a specific keyword for a specific sample in a \code{GatingHierarchy} or or set of samples in a \code{GatingSet} or \code{GatingSetList}}
 \usage{
-keyword(object, keyword)
+\S4method{keyword}{GatingHierarchy,character}(object, keyword)
+
+\S4method{keyword}{GatingHierarchy,missing}(object, keyword = "missing", ...)
 }
 \arguments{
 \item{object}{\code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}}

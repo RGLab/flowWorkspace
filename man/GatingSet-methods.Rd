@@ -7,7 +7,7 @@
 \alias{GatingSet,flowSet,ANY-method}
 \title{constructors for GatingSet}
 \usage{
-GatingSet(x)
+\S4method{GatingSet}{cytoset,ANY}(x)
 }
 \arguments{
 \item{x}{a flowSet, ncdfFlowSet, or cytoset}

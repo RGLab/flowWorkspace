@@ -465,7 +465,6 @@ setMethod("show","GatingHierarchy",function(object){
 #' 
 #' @details See \code{keyword} in Package `flowCore'
 #' 
-#' @usage keyword(object, keyword)
 #' @param object \code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}
 #' @param keyword \code{character} specifying keyword name. When \code{missing}, extract all keywords.
 #' @param ... other arguments passed to \code{\link[flowCore]{keyword-methods}}
@@ -489,7 +488,7 @@ setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 
 			keyword(object)[[keyword]]
 		})
-
+#' @name keyword
 #' @export
 setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing", ...){
       fr <- gh_pop_get_data(object, use.exprs = FALSE)
@@ -957,7 +956,6 @@ isGated <- function(obj,y){
 #' 
 #' @param obj GatingHierarchy
 #' @param y node/gating path
-#' @param ... not used
 #' @export 
 gh_pop_is_gated <- function(obj,y){
       .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
@@ -1679,7 +1677,6 @@ setMethod("pData","GatingHierarchy",function(object){
 #' @name markernames
 #' @aliases markernames,GatingSet-method markernames,GatingHierarchy-method
 #' markernames,cytoset-method
-#' @usage markernames(object)
 #' @param x,object GatingHierarchy/GatingSet/GatingSetList
 #' @param value named character vector for markernames<-, regular character vector for colnames<-.
 #' @examples
@@ -1706,7 +1703,6 @@ setMethod("markernames",
 
 
 #' @rdname markernames
-#' @usage markernames(object) <- value
 #' @aliases markernames<-,GatingSet,ANY-method markernames<-,GatingSet-method
 #' markernmaes<-,cytoframe-method markernames<-,cytoset-method
 #' @export
@@ -1722,7 +1718,6 @@ setReplaceMethod("markernames",
 
 #' @param do.NULL,prefix not used.
 #' @rdname markernames
-#' @usage colnames(object)
 #' @aliases colnames,GatingSet-method colnames,GatingHierarchy-method
 #' colnames,cytoframe-method colnames,cytoset-method
 #' @export
@@ -1735,7 +1730,6 @@ setMethod("colnames",
           })
 
 #' @rdname markernames
-#' @usage colnames(object) <- value
 #' @aliases colnames<-,GatingSet,ANY-method colnames<-,GatingSet-method
 #' colnames<-,cytoframe-method colnames<-,cytoset-method
 #' @export

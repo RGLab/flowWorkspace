@@ -52,7 +52,7 @@ NULL
 #' @param decade total number of decades (i.e. log(max)-log(min)
 #' @param offset offset to the orignal input(i.e. min value)
 #' @param scale the linear scale factor
-#' @param inverse whether return the inverse function
+#' @inheritParams flow_breaks
 #' @return flog(or its inverse) transform function
 #' @examples
 #' trans <- flowjo_log_trans()

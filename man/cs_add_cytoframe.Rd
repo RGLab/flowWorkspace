@@ -4,7 +4,14 @@
 \alias{cs_add_cytoframe}
 \title{Add a cytoframe to a cytoset}
 \usage{
-cs_add_cytoframe(cs, sn, fr)
+cs_add_cytoframe(cs, sn, cf)
+}
+\arguments{
+\item{cs}{cytoset}
+
+\item{sn}{sample name to be added}
+
+\item{cf}{cytoframe to be added}
 }
 \description{
 Add a cytoframe to a cytoset

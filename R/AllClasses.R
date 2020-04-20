@@ -139,7 +139,6 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' 
 #' @name GatingSet-methods
 #' @aliases GatingSet,cytoset,ANY-method GatingSet,flowSet-method GatingSet,flowSet,ANY-method
-#' @usage GatingSet(x)
 #' @param x a flowSet, ncdfFlowSet, or cytoset
 #' @export 
 #' @examples 

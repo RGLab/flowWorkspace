@@ -6,6 +6,9 @@
 \usage{
 cs_get_h5_file_path(x)
 }
+\arguments{
+\item{x}{cytoset or GatingSet}
+}
 \description{
 Return the file path of the underlying h5 files
 }

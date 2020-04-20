@@ -69,9 +69,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @aliases GatingSet,GatingHierarchy,character-method
 #' @param x GatingHierarchy
 #' @param files fcs file paths
-#' @param y sample names
-#' @param path \code{character} specifies the path to the flow data (FCS files)
-#' @param ... other arguments. 
+#' @param ... other arguments passed to 'load_cytoset_from_fcs()'
 #' @param swap_cols for internal usage
 #' @export
 gh_apply_to_new_fcs <- function(x, files
@@ -935,6 +933,7 @@ setMethod("clone",c("GatingSet"),function(x, ...){
     })
 
 #' @rdname gs_clone
+#' @param h5_dir h5 dir for the new gs
 #' @export 
 gs_clone <- function(x, h5_dir = tempdir()){
   new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir, is_copy_data = TRUE))
@@ -1140,7 +1139,7 @@ setMethod("flowData",signature("GatingSet"),function(x){
 #' gs_cyto_data,GatingSet-method gs_cyto_data<-,GatingSet-method
 #' @usage gs_cyto_data(x, ...)
 #' @param x A \code{GatingSet}
-#' @param inverse.transform logical flag indicating whether to inverse transform the data
+#' @param ... other arugments
 #'
 #' @details Accessor method that sets or replaces the ncdfFlowSet object in the GatingSet or GatingHierarchy.
 #'
@@ -1149,6 +1148,8 @@ setMethod("flowData",signature("GatingSet"),function(x){
 #' @export
 setGeneric("gs_cyto_data", function(x, ...) standardGeneric("gs_cyto_data"))
 
+#' @name gs_cyto_data
+#' @param inverse.transform logical flag indicating whether to inverse transform the data
 #' @export
 setMethod("gs_cyto_data",signature("GatingSet"),function(x, inverse.transform=FALSE){
 	
@@ -1405,14 +1406,12 @@ setReplaceMethod("[[",
 #' @aliases length length,GatingSet-method
 #' @param x \code{GatingSet}
 #' @param object \code{object}
-#' @usage length(x)
 #' @export
 setMethod("length","GatingSet",function(x){
       length(gs_cyto_data(x));
     })
 
 #' @rdname length
-#' @usage show(object)
 #' @export
 setMethod("show","GatingSet",function(object){
       cat("A GatingSet with",length(object), "samples\n")

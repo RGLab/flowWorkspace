@@ -120,6 +120,7 @@ gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inver
 #' Extract stats from populations(or nodes) within a restricted time window
 #' 
 #' @rdname gs_pop_get_stats_tfilter
+#' @param x GatingSet or GatingHierarchy
 #' @param nodes the character vector specifies the populations of interest. default is all available nodes
 #' @param type the character vector specifies the type of pop stats or
 #'          a function used to compute population stats.
@@ -142,6 +143,7 @@ gs_pop_get_stats_tfilter <- function(x, ...){
 }
 
 #' @rdname gs_pop_get_stats_tfilter
+#' @param path,... arguments passed to 'gh_get_pop_paths()'
 #' @export
 gh_pop_get_stats_tfilter <- function(x, nodes = NULL, type = c("Count", "Frequency"), inverse.transform = FALSE, stats.fun.arg = list(), 
                                            tfilter=NULL , path = c("full","auto"), ...){

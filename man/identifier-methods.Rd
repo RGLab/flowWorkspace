@@ -13,7 +13,7 @@
 \usage{
 identifier(object)
 
-identifier(object) <- value
+\S4method{identifier}{GatingSet,ANY}(object) <- value
 }
 \arguments{
 \item{object}{a \code{GatingSet} or \code{GatingSetList}}

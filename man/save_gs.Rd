@@ -12,13 +12,15 @@ save_gs(gs, path, cdf = c("copy", "move", "skip", "symlink", "link"), ...)
 
 load_gs(path, h5_readonly = TRUE, select = character(), verbose = FALSE)
 
-sampleNames(object)
+\S4method{sampleNames}{character}(object)
 
 save_gslist(gslist, path, ...)
 
 load_gslist(path)
 }
 \arguments{
+\item{gs}{A \code{GatingSet}}
+
 \item{path}{A character scalar giving the path to save/load the GatingSet to/from.}
 
 \item{cdf}{a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
@@ -36,13 +38,6 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.}
 \item{object}{a \code{GatingSet} folder}
 
 \item{gslist}{A \code{GatingSetList}}
-
-\item{G}{A \code{GatingSet}}
-}
-\value{
-\code{load_gs} returns a GatingSet object\cr
-\code{load_gslist} returns a GatingSetList object\cr
-\code{sampleNames} returns a character vector of sample names
 }
 \description{
 Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.

@@ -4,7 +4,7 @@
 #' Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.
 #' The \code{GatingSet} object The internal C data structure (gating tree),\code{ncdfFlowSet} object(if applicable)
 #'
-#' @param G A \code{GatingSet}
+#' @param gs A \code{GatingSet}
 #' @param gslist A \code{GatingSetList}
 #' @param path A character scalar giving the path to save/load the GatingSet to/from.
 #' @param h5_readonly whether to open h5 data as read-only. Default is TRUE
@@ -16,10 +16,6 @@
 #' @param ... other arguments: not used.
 #'
 #'
-#' @return
-#' \code{load_gs} returns a GatingSet object\cr
-#' \code{load_gslist} returns a GatingSetList object\cr
-#' \code{sampleNames} returns a character vector of sample names
 #' 
 #'
 #' @seealso \code{\link{GatingSet-class}},\code{\link{GatingSetList-class}}
@@ -87,7 +83,6 @@ load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALS
 #'
 #' Retrieve  sample names by scanning h5 files from a GatingSet folder
 #' 
-#' @usage sampleNames(object)
 #' @param object a \code{GatingSet} folder
 #' 
 #' @rdname save_gs

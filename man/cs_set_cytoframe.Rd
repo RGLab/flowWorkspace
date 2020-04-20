@@ -4,7 +4,14 @@
 \alias{cs_set_cytoframe}
 \title{update a cytoframe in a cytoset}
 \usage{
-cs_set_cytoframe(cs, sn, fr)
+cs_set_cytoframe(cs, sn, cf)
+}
+\arguments{
+\item{cs}{cytoset}
+
+\item{sn}{sample name}
+
+\item{cf}{cytoframe}
 }
 \description{
 update a cytoframe in a cytoset
