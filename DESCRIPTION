@@ -4,7 +4,7 @@ Title: Infrastructure for representing and interacting with gated and ungated cy
 Version: 3.99.22
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
-Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>
+Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>
 Description: This package is designed to facilitate comparison of automated
     gating methods against manual gating done in flowJo. This package allows
     you to import basic flowJo workspaces into BioConductor and replicate the
