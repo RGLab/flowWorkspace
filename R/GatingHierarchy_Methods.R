@@ -665,7 +665,7 @@ setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y,
 #' }
 #' @export
 gs_pop_get_children <- function(obj,y, showHidden = TRUE, ...){
-      cind <- .cpp_getChildren(obj@pointer,sampleNames(obj), y, showHidden)
+      cind <- .cpp_getChildren(obj@pointer,sampleNames(obj)[1], y, showHidden)
       cind <- cind + 1
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[cind]
 }
