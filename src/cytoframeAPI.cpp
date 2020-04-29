@@ -1,4 +1,5 @@
 #include <cytolib/H5RCytoFrame.hpp>
+#include <cytolib/TileCytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 using namespace Rcpp;
 using namespace cytolib;
@@ -111,6 +112,17 @@ XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string re
 
 }
 
+// [[Rcpp::export]]
+XPtr<CytoFrameView> load_cf_from_tile(string url, string id, string key, string region, bool readonly){
+	S3Cred cred(id, key, region);
+	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new TileCytoFrame(url.c_str(), readonly, true,
+																		cred
+																		)
+															)
+													)
+								);
+
+}
 // [[Rcpp::export]] 
 void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker){
   fr->set_marker(channel, marker);
