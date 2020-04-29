@@ -612,17 +612,26 @@ cs_set_cytoframe <- function(cs, sn, fr){
 	stopifnot(is(cs, "cytoset"))
 	set_cytoframe(cs@pointer, sn, fr@pointer)
 }
-#' Return the file path of the underlying h5 files
+#' Return the path of the underlying data files
 #' 
 #' @family cytoframe/cytoset IO functions
-#' @export  
-cs_get_h5_file_path <- function(x){
+#' @export
+#' @rdname cs_get_uri  
+cs_get_uri <- function(x){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
 	cf <- get_cytoframe_from_cs(x, 1)
-	h5file <- cf_get_h5_file_path(cf)
+	h5file <- cf_get_uri(cf)
 	dirname(h5file)
 	
 }
+
+#' @export
+#' @rdname cs_get_uri
+cs_get_h5_file_path <- function(x){
+	.Deprecated("cs_get_uri")
+	
+}
+
 #' @export
 get_cytoframe_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
@@ -853,7 +862,7 @@ load_cytoset<-function(path, ...){
 cs_cleanup_temp <- function(x, temp_dir = NULL){
 	if(is.null(temp_dir))
 		temp_dir <- normalizePath(tempdir(), winslash = "/")
-	h5_path <- normalizePath(cs_get_h5_file_path(x), winslash = "/")
+	h5_path <- normalizePath(cs_get_uri(x), winslash = "/")
 	if(grepl(paste0("^", temp_dir), h5_path))
 	   unlink(h5_path, recursive = TRUE)
 }

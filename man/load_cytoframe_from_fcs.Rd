@@ -128,9 +128,9 @@ reading the entire FCS (due to the multiple disk IO).
 }
 \seealso{
 Other cytoframe/cytoset IO functions: 
-\code{\link{cf_get_h5_file_path}()},
+\code{\link{cf_get_uri}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cs_get_h5_file_path}()},
+\code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_h5}()},
 \code{\link{load_cytoset_from_fcs}()}
 }

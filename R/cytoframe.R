@@ -752,12 +752,20 @@ check_credential <- function(cred){
 #' @param cf cytoframe object
 #' @family cytoframe/cytoset IO functions
 #' @export 
-cf_get_h5_file_path <- function(cf){
+#' @rdname cf_get_uri
+cf_get_uri <- function(cf){
   stopifnot(is(cf, "cytoframe"))
-  get_h5_file_path(cf@pointer)
+  get_uri(cf@pointer)
   
 }
 
+#' @rdname cf_get_uri
+#' @export 
+cf_get_h5_file_path <- function(cf){
+	.Deprecated("cf_get_uri")
+	cf_get_uri(cf)
+	
+}
 #' Lock/Unlock the cytoset/cytoframe by turning on/off its read-only flag
 #' @name lock
 #' @param cf cytoframe object
@@ -815,7 +823,7 @@ cf_scale_time_channel <- function(cf){
 cf_cleanup_temp <- function(x, temp_dir = NULL){
 	if(is.null(temp_dir))
 		temp_dir <- normalizePath(tempdir(), winslash = "/")
-	h5_path <- normalizePath(cf_get_h5_file_path(x), winslash = "/")
+	h5_path <- normalizePath(cf_get_uri(x), winslash = "/")
 	if(grepl(paste0("^", temp_dir), h5_path))
 		unlink(h5_path, recursive = TRUE)
 }
@@ -851,6 +859,6 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 cf_append_cols <- function(cf, cols){
   fr <- cytoframe_to_flowFrame(cf)
   fr <- fr_append_cols(fr, cols)
-  ish5 <- cf_get_h5_file_path(cf) != ""
+  ish5 <- cf_get_uri(cf) != ""
   flowFrame_to_cytoframe(fr, is_h5 = ish5)
 }

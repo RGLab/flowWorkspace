@@ -16,8 +16,8 @@ Save the cytoframe as h5 format
 }
 \seealso{
 Other cytoframe/cytoset IO functions: 
-\code{\link{cf_get_h5_file_path}()},
-\code{\link{cs_get_h5_file_path}()},
+\code{\link{cf_get_uri}()},
+\code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
 \code{\link{load_cytoframe_from_h5}()},
 \code{\link{load_cytoset_from_fcs}()}

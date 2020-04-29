@@ -247,8 +247,8 @@ cf_set_readonly <- function(fr, flag) {
     invisible(.Call(`_flowWorkspace_cf_load_meta`, fr))
 }
 
-get_h5_file_path <- function(fr) {
-    .Call(`_flowWorkspace_get_h5_file_path`, fr)
+get_uri <- function(fr) {
+    .Call(`_flowWorkspace_get_uri`, fr)
 }
 
 realize_view_cytoframe <- function(fr, filename) {

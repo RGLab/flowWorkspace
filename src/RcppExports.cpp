@@ -632,14 +632,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// get_h5_file_path
-string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_get_h5_file_path(SEXP frSEXP) {
+// get_uri
+string get_uri(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_get_uri(SEXP frSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_h5_file_path(fr));
+    rcpp_result_gen = Rcpp::wrap(get_uri(fr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1175,7 +1175,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cf_set_readonly", (DL_FUNC) &_flowWorkspace_cf_set_readonly, 2},
     {"_flowWorkspace_cf_flush_meta", (DL_FUNC) &_flowWorkspace_cf_flush_meta, 1},
     {"_flowWorkspace_cf_load_meta", (DL_FUNC) &_flowWorkspace_cf_load_meta, 1},
-    {"_flowWorkspace_get_h5_file_path", (DL_FUNC) &_flowWorkspace_get_h5_file_path, 1},
+    {"_flowWorkspace_get_uri", (DL_FUNC) &_flowWorkspace_get_uri, 1},
     {"_flowWorkspace_realize_view_cytoframe", (DL_FUNC) &_flowWorkspace_realize_view_cytoframe, 2},
     {"_flowWorkspace_copy_view_cytoframe", (DL_FUNC) &_flowWorkspace_copy_view_cytoframe, 1},
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},

@@ -130,9 +130,9 @@ is not \code{NULL}, then the file names are obtained by calling
 }
 \seealso{
 Other cytoframe/cytoset IO functions: 
-\code{\link{cf_get_h5_file_path}()},
+\code{\link{cf_get_uri}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cs_get_h5_file_path}()},
+\code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
 \code{\link{load_cytoframe_from_h5}()}
 }

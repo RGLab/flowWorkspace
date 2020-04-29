@@ -8,18 +8,26 @@ NULL
 #' @templateVar new gs_is_h5
 #' @template template-depr_pkg
 NULL
-#' determine the flow data associated with a Gating Hiearchy is based on `ncdfFlowSet` or `flowSet`
+#' determine whether the flow data associated with a GatingSet is persistent(on-disk) or in-memory
 #'
-#' @param x \code{GatingHiearchy} object
+#' @param x \code{GatingSet} object
 #' @return \code{logical}
 #' @export
-#' @rdname gs_is_h5
-gs_is_h5 <- function(x){
-  return (cs_get_h5_file_path(gs_cyto_data(x))!="")
+#' @rdname gs_is_persistent
+gs_is_persistent <- function(x){
+  return (cs_get_uri(gs_cyto_data(x))!="")
 
 }
+
 #' @export
-#' @rdname gs_is_h5
+#' @rdname gs_is_persistent
+gs_is_h5 <- function(x){
+	.Deprecated("gs_is_persistent")
+	
+}
+
+#' @export
+#' @rdname gs_is_persistent
 isNcdf <- function(x){
   .Deprecated("gs_is_h5")
   gs_is_h5(x)

@@ -26,9 +26,9 @@ void cf_load_meta(Rcpp::XPtr<CytoFrameView> fr)
 }
 
 // [[Rcpp::export]]
-string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr)
+string get_uri(Rcpp::XPtr<CytoFrameView> fr)
 {
-	return fr->get_h5_file_path();
+	return fr->get_uri();
 }
 
 // [[Rcpp::export]]

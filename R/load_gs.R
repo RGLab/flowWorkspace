@@ -46,12 +46,12 @@ save_gs<-function(gs, path
   if(is_s3_path(path))
   {
     cred <- check_credential(cred)
-    h5dir <- cs_get_h5_file_path(gs)
+    h5dir <- cs_get_uri(gs)
     if(h5dir=="")
       stop("Saving the in-memory version of gs to remote is not supported!")
     
     #grab the h5 named by sn (which could be different from h5 filename)
-    h5files <- unlist(lapply(gs_cyto_data(gs), cf_get_h5_file_path))
+    h5files <- unlist(lapply(gs_cyto_data(gs), cf_get_uri))
     sn <- names(h5files)
     dest_file_names <- paste0(sn, ".h5")
     names(h5files) <- dest_file_names
@@ -100,7 +100,7 @@ save_gs<-function(gs, path
   {
     path <- suppressWarnings(normalizePath(path))
     #check gs is loaded from s3
-    h5_path <- cs_get_h5_file_path(gs)
+    h5_path <- cs_get_uri(gs)
     if(!grepl("^https://", h5_path))#local gs
     {
       
@@ -309,7 +309,7 @@ convert_legacy_gs <- function(from, to){
     
     #TODO:optional skip generate_h5_folder in add_fcs api to be able to directly write to the target path
     #without needing to do this hack below
-    h5dir <- cs_get_h5_file_path(gs)
+    h5dir <- cs_get_uri(gs)
     system(paste0("mv ", h5dir, "/* ", to))#mv h5 files to dest
     #clean the auto generated dir
     system(paste0("rmdir ", h5dir))
