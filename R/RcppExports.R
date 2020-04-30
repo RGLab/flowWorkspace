@@ -271,8 +271,8 @@ frm_compensate <- function(fr, spillover) {
     invisible(.Call(`_flowWorkspace_frm_compensate`, fr, spillover))
 }
 
-writeH5 <- function(fr, filename) {
-    invisible(.Call(`_flowWorkspace_writeH5`, fr, filename))
+write_to_disk <- function(fr, filename, ish5) {
+    invisible(.Call(`_flowWorkspace_write_to_disk`, fr, filename, ish5))
 }
 
 load_cf_from_h5 <- function(filename, on_disk, readonly) {

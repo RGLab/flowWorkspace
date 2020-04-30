@@ -1,5 +1,6 @@
 #include <cytolib/H5RCytoFrame.hpp>
 #include <cytolib/TileCytoFrame.hpp>
+#include <cytolib/CytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 using namespace Rcpp;
 using namespace cytolib;
@@ -83,11 +84,11 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename){
-  fr->write_h5(filename);
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5){
+  FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
+  fr->write_to_disk(filename, format);
   
 }
-
 // [[Rcpp::export]]
 XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly){
     unique_ptr<CytoFrame> fr(new H5CytoFrame(filename.c_str(), readonly));

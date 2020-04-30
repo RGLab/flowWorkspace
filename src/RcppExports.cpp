@@ -699,14 +699,15 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// writeH5
-void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename);
-RcppExport SEXP _flowWorkspace_writeH5(SEXP frSEXP, SEXP filenameSEXP) {
+// write_to_disk
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5);
+RcppExport SEXP _flowWorkspace_write_to_disk(SEXP frSEXP, SEXP filenameSEXP, SEXP ish5SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
-    writeH5(fr, filename);
+    Rcpp::traits::input_parameter< bool >::type ish5(ish5SEXP);
+    write_to_disk(fr, filename, ish5);
     return R_NilValue;
 END_RCPP
 }
@@ -1196,7 +1197,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
     {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
-    {"_flowWorkspace_writeH5", (DL_FUNC) &_flowWorkspace_writeH5, 2},
+    {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 3},
     {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 3},
     {"_flowWorkspace_load_cf_from_s3", (DL_FUNC) &_flowWorkspace_load_cf_from_s3, 4},
     {"_flowWorkspace_load_cf_from_tile", (DL_FUNC) &_flowWorkspace_load_cf_from_tile, 5},

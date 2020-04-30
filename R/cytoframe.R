@@ -706,7 +706,18 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @export
 cf_write_h5 <- function(cf, filename){
 	stopifnot(is(cf, "cytoframe"))
-	writeH5(cf@pointer,filename)
+  write_to_disk(cf@pointer,filename, TRUE)
+}
+
+#' Save the cytoframe as h5 format
+#' 
+#' @param cf cytoframe object
+#' @param filename the full path of the output file
+#' @family cytoframe/cytoset IO functions
+#' @export
+cf_write_tile <- function(cf, filename){
+  stopifnot(is(cf, "cytoframe"))
+  write_to_disk(cf@pointer,filename,FALSE)
 }
 
 #' Load the cytoframe from disk
@@ -726,14 +737,10 @@ load_cytoframe <- function(uri, ...){
 
 load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL){
   
-  if(is_http_path(filename))
-  {
     cred <- check_credential(cred)
     
-    p <- load_cf_from_s3(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION, readonly)
-  }
-  else
-    p <- load_cf_from_h5(filename, on_disk, readonly)
+    p <- load_cf_from_tile(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION, readonly)
+  
   new("cytoframe", pointer = p, use.exprs = TRUE)
 }
 
