@@ -702,6 +702,7 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' 
 #' @param cf cytoframe object
 #' @param filename the full path of the output h5 file
+#' @inheritParams load_cytoframe_from_h5
 #' @family cytoframe/cytoset IO functions
 #' @export
 cf_write_h5 <- function(cf, filename, cred = NULL){
@@ -715,6 +716,7 @@ cf_write_h5 <- function(cf, filename, cred = NULL){
 #' 
 #' @param cf cytoframe object
 #' @param filename the full path of the output file
+#' @inheritParams load_cytoframe_from_h5
 #' @family cytoframe/cytoset IO functions
 #' @export
 cf_write_tile <- function(cf, filename, cred = NULL){
@@ -875,6 +877,33 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 		unlink(h5_path, recursive = TRUE)
 }
 
+#' Remove on-disk files associatated with flowWorkspace data classes
+#' 
+#' These methods immediately delete the on-disk  storage associated with \link{cytoframe},
+#' \link{cytoset}, \linkS4class{GatingHierarchy}, or \linkS4class{GatingSet} objects
+#' 
+#' @name cleanup
+#' @aliases cf_cleanup cs_cleanup gh_cleanup gs_cleanup
+#' @param cf a cytoframe, cytoset, GatingHierarchy, or GatingSet object
+#' @inheritParams load_cytoframe_from_h5
+#' this will override tempdir() in determining the top directory under which files can safely be removed.
+#' @export
+cf_cleanup <- function(cf, cred = NULL){
+  uri <- cf_get_uri(cf)
+  
+  if(is_http_path(uri)||is_s3_path(uri))
+  {
+    s3_paths <- parse_s3_path(uri)
+    bucket <- s3_paths[["bucket"]]
+    key <- s3_paths[["key"]]	
+    cred <- check_credential(cred)
+    b <- get_bucket(bucket, key, region = cred$AWS_REGION)
+    for(obj in b)
+      delete_object(obj, region = cred$AWS_REGION)
+  }else
+    unlink(uri, recursive = TRUE)
+  message(uri, "is deleted!")
+} 
 #' Append data columns to a flowFrame
 #' 
 #' Append data columns to a flowFrame

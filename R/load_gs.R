@@ -13,6 +13,7 @@
 #' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
 #'              Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
 #'              It is useful to "skip" archiving cdf file if raw data has not been changed.
+#' @inheritParams load_cytoframe_from_h5
 #' @param ... other arguments: not used.
 #'
 #'

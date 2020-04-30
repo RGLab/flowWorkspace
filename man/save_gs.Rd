@@ -34,6 +34,9 @@ load_gslist(path)
 Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
 It is useful to "skip" archiving cdf file if raw data has not been changed.}
 
+\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
+when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
+
 \item{...}{other arguments: not used.}
 
 \item{h5_readonly}{whether to open h5 data as read-only. Default is TRUE}
