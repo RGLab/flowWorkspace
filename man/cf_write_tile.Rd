@@ -4,7 +4,7 @@
 \alias{cf_write_tile}
 \title{Save the cytoframe as h5 format}
 \usage{
-cf_write_tile(cf, filename)
+cf_write_tile(cf, filename, cred = NULL)
 }
 \arguments{
 \item{cf}{cytoframe object}

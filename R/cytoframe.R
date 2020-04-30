@@ -704,9 +704,11 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @param filename the full path of the output h5 file
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_h5 <- function(cf, filename){
+cf_write_h5 <- function(cf, filename, cred = NULL){
 	stopifnot(is(cf, "cytoframe"))
-  write_to_disk(cf@pointer,filename, TRUE)
+	cred <- check_credential(cred)
+	
+	write_to_disk(cf@pointer,filename,TRUE, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION)
 }
 
 #' Save the cytoframe as h5 format
@@ -715,9 +717,11 @@ cf_write_h5 <- function(cf, filename){
 #' @param filename the full path of the output file
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_tile <- function(cf, filename){
+cf_write_tile <- function(cf, filename, cred = NULL){
   stopifnot(is(cf, "cytoframe"))
-  write_to_disk(cf@pointer,filename,FALSE)
+  cred <- check_credential(cred)
+  
+  write_to_disk(cf@pointer,filename,FALSE, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION)
 }
 
 #' Load the cytoframe from disk
@@ -755,7 +759,15 @@ load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, 
 #' @export
 #' @importFrom aws.signature read_credentials
 load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL){
-  
+  if(is_s3_path(filename))
+  {
+  	s3_paths <- parse_s3_path(filename)
+  	bucket <- s3_paths[["bucket"]]
+  	key <- s3_paths[["key"]]	
+  	filename <- paste0("https://", bucket, ".s3.amazonaws.com/", key)
+  	
+  }
+	
   if(is_http_path(filename))
   {
     cred <- check_credential(cred)

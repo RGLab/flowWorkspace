@@ -84,9 +84,11 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5){
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, string id, string key, string region){
   FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
-  fr->write_to_disk(filename, format);
+  S3Cred cred(id, key, region);
+
+  fr->write_to_disk(filename, format, cred);
   
 }
 // [[Rcpp::export]]
