@@ -116,10 +116,10 @@ XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string re
 }
 
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf_from_tile(string url, string id, string key, string region, bool readonly){
+XPtr<CytoFrameView> load_cf_from_tile(string url, string id, string key, string region, bool readonly, int num_threads){
 	S3Cred cred(id, key, region);
 	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new TileCytoFrame(url.c_str(), readonly, true,
-																		cred
+																		cred, num_threads
 																		)
 															)
 													)

@@ -283,8 +283,8 @@ load_cf_from_s3 <- function(url, id, key, region) {
     .Call(`_flowWorkspace_load_cf_from_s3`, url, id, key, region)
 }
 
-load_cf_from_tile <- function(url, id, key, region, readonly) {
-    .Call(`_flowWorkspace_load_cf_from_tile`, url, id, key, region, readonly)
+load_cf_from_tile <- function(url, id, key, region, readonly, num_threads) {
+    .Call(`_flowWorkspace_load_cf_from_tile`, url, id, key, region, readonly, num_threads)
 }
 
 setMarker <- function(fr, channel, marker) {

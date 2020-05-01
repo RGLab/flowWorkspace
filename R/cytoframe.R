@@ -741,11 +741,11 @@ load_cytoframe <- function(uri, ...){
     load_cytoframe_from_tile(uri, ...)
 }
 
-load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL){
+load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL, num_threads = 1L){
   
     cred <- check_credential(cred)
     
-    p <- load_cf_from_tile(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION, readonly)
+    p <- load_cf_from_tile(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION, readonly, num_threads)
   
   new("cytoframe", pointer = p, use.exprs = TRUE)
 }
@@ -902,7 +902,7 @@ cf_cleanup <- function(cf, cred = NULL){
       delete_object(obj, region = cred$AWS_REGION)
   }else
     unlink(uri, recursive = TRUE)
-  message(uri, "is deleted!")
+  message(uri, " is deleted!")
 } 
 #' Append data columns to a flowFrame
 #' 
