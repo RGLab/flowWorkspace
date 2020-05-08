@@ -142,13 +142,20 @@ void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
 }                                      
                                       
 // [[Rcpp::export]] 
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false, bool is_h5 = false, string h5_filename = "")
+Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false
+		, string format = "mem", string uri = "")
 {
-	if(is_h5)
+	CytoFramePtr ptr;
+	if(format!="mem")
 	{
 		if(text_only)
-			warning("text_only is ignored when is_h5 is set to TRUE!");
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new H5CytoFrame(filename, config, h5_filename))));
+			warning("text_only is ignored when format is set to 'h5' or 'tile'!");
+
+		if(format == "h5")
+			ptr.reset(new H5CytoFrame(filename, config, uri));
+		else
+			ptr.reset(new TileCytoFrame(filename, config, uri));
+
 	}
 	else
 	{
@@ -157,8 +164,9 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 		  fr->read_fcs_header();
 		else
 		  fr->read_fcs();
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(fr.release())));
+		ptr.reset(fr.release());
 	}
+	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 }
 
 // [[Rcpp::export]] 

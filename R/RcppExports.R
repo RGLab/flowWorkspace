@@ -299,8 +299,8 @@ setChannel <- function(fr, old, new_name) {
     invisible(.Call(`_flowWorkspace_setChannel`, fr, old, new_name))
 }
 
-parseFCS <- function(filename, config, text_only = FALSE, is_h5 = FALSE, h5_filename = "") {
-    .Call(`_flowWorkspace_parseFCS`, filename, config, text_only, is_h5, h5_filename)
+parseFCS <- function(filename, config, text_only = FALSE, format = "mem", uri = "") {
+    .Call(`_flowWorkspace_parseFCS`, filename, config, text_only, format, uri)
 }
 
 cf_getData <- function(fr) {

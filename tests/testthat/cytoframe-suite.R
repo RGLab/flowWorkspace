@@ -44,7 +44,7 @@ test_that("load_meta", {
   keyword(cf1)[["TUBE NAME"]] <- "dd"
   #flush the change
   cf_flush_meta(cf1)
-  cf2 <- load_cytoframe_from_h5(tmp)
+  cf2 <- load_cytoframe(tmp)
   expect_equivalent(keyword(cf2)[["TUBE NAME"]], "dd")
   
   cf_load_meta(cf1)

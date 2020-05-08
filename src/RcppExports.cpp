@@ -793,17 +793,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // parseFCS
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only, bool is_h5, string h5_filename);
-RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP is_h5SEXP, SEXP h5_filenameSEXP) {
+Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only, string format, string uri);
+RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP formatSEXP, SEXP uriSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< FCS_READ_PARAM >::type config(configSEXP);
     Rcpp::traits::input_parameter< bool >::type text_only(text_onlySEXP);
-    Rcpp::traits::input_parameter< bool >::type is_h5(is_h5SEXP);
-    Rcpp::traits::input_parameter< string >::type h5_filename(h5_filenameSEXP);
-    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only, is_h5, h5_filename));
+    Rcpp::traits::input_parameter< string >::type format(formatSEXP);
+    Rcpp::traits::input_parameter< string >::type uri(uriSEXP);
+    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only, format, uri));
     return rcpp_result_gen;
 END_RCPP
 }

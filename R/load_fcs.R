@@ -96,8 +96,10 @@ load_cytoframe_from_fcs <- function(filename,
                      column.pattern=NULL,
                      invert.pattern = FALSE,
                      decades=0,
-					 is_h5=FALSE,
-					 h5_filename = tempfile(fileext = ".h5"),
+					 is_h5= NULL,
+					 format = c("mem", "h5", "tile"),
+					 uri = NULL,
+					 h5_filename = NULL,
                      min.limit=NULL,
                      truncate_max_range = TRUE,
                      dataset=NULL,
@@ -106,6 +108,23 @@ load_cytoframe_from_fcs <- function(filename,
                      ignore.text.offset = FALSE,
                      text.only = FALSE)
 {
+  format <- match.arg(format)
+  if(!is.null(is_h5))
+  {
+    warning("'is_h5' argument is deprecated by 'format'! ")
+    if(is_h5)
+      format <-"h5"
+  }
+  if(!is.null(h5_filename))
+  {
+    warning("'h5_filename' argument is deprecated by 'uri'! ")
+      uri <- h5_filename
+  }
+  if(format != "mem")
+  {
+    if(is.null(uri))
+      uri <- tempfile(fileext = paste0(".", format))
+  }
     fr <- new("cytoframe")
     if(is.null(dataset))
       dataset <- 0
@@ -135,8 +154,9 @@ load_cytoframe_from_fcs <- function(filename,
                                                          , ignoreTextOffset = ignore.text.offset
                                                          )
                                                      , text_only = text.only
-											 		 , is_h5 = is_h5
-											 		 , h5_filename = h5_filename
+											 		 # , is_h5 = is_h5
+											 		 , format = format
+											 		 , uri = uri
                             )
      fr@use.exprs <- !text.only
 
