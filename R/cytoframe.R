@@ -299,7 +299,9 @@ setMethod("ncol",
 realize_view <- function(x, filepath)UseMethod("realize_view")
 
 #' @export 
-realize_view.cytoframe <- function(x, filepath = tempfile(fileext = ".h5")){
+realize_view.cytoframe <- function(x, filepath = NULL){
+  if(is.null(filepath))
+    filepath <- tempfile(fileext = paste0(".", cf_backend_type(x)))
   new("cytoframe", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
 }
 
@@ -735,12 +737,31 @@ cf_write_tile <- function(cf, filename, cred = NULL){
 #'        cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
 #'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
 load_cytoframe <- function(uri, ...){
-  if(grepl("\\.h5$", uri))
+  if(backend_type(uri) == "h5")
     load_cytoframe_from_h5(uri, ...)
   else
     load_cytoframe_from_tile(uri, ...)
 }
 
+#' return the cytoframe backend storage format
+#' @param cf cytoframe
+#' @return one of "mem","h5", "tile"
+cf_backend_type <- function(cf)
+{
+  backend_type(cf_get_uri(cf))
+}
+
+backend_type <- function(uri)#TODO: support more robust way of checking format
+{
+  if(uri == "")
+    "mem"
+  else if(grepl("\\.h5$", uri))
+    "h5"
+  else
+    "tile"
+    
+      
+}
 load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL, num_threads = 1L){
   
     cred <- check_credential(cred)

@@ -96,10 +96,10 @@ load_cytoframe_from_fcs <- function(filename,
                      column.pattern=NULL,
                      invert.pattern = FALSE,
                      decades=0,
-					 is_h5= NULL,
-					 format = c("mem", "h5", "tile"),
-					 uri = NULL,
-					 h5_filename = NULL,
+                      is_h5= NULL,
+                      backend = c("mem", "h5", "tile"),
+                      uri = NULL,
+                      h5_filename = NULL,
                      min.limit=NULL,
                      truncate_max_range = TRUE,
                      dataset=NULL,
@@ -108,23 +108,24 @@ load_cytoframe_from_fcs <- function(filename,
                      ignore.text.offset = FALSE,
                      text.only = FALSE)
 {
-  format <- match.arg(format)
+  backend <- match.arg(backend)
   if(!is.null(is_h5))
   {
-    warning("'is_h5' argument is deprecated by 'format'! ")
+    warning("'is_h5' argument is deprecated by 'backend'! ")
     if(is_h5)
-      format <-"h5"
+      backend <-"h5"
   }
   if(!is.null(h5_filename))
   {
     warning("'h5_filename' argument is deprecated by 'uri'! ")
       uri <- h5_filename
   }
-  if(format != "mem")
+  if(backend != "mem")
   {
     if(is.null(uri))
-      uri <- tempfile(fileext = paste0(".", format))
-  }
+      uri <- tempfile(fileext = paste0(".", backend))
+  }else
+    uri <- ""
     fr <- new("cytoframe")
     if(is.null(dataset))
       dataset <- 0
@@ -136,12 +137,12 @@ load_cytoframe_from_fcs <- function(filename,
     if(is.null(which.lines))
       which.lines <- vector()
     else
-	{
-		# Verify that which.lines is positive and within file limit.
-		if (length(which.lines) > 1) {
-			which.lines <- which.lines -1
-		}
-	}
+    {
+    	# Verify that which.lines is positive and within file limit.
+    	if (length(which.lines) > 1) {
+    		which.lines <- which.lines -1
+    	}
+    }
     fr@pointer <- parseFCS(normalizePath(filename), list(which.lines = which.lines
                                                          , transformation = transformation
                                                          , decades = decades
@@ -154,9 +155,8 @@ load_cytoframe_from_fcs <- function(filename,
                                                          , ignoreTextOffset = ignore.text.offset
                                                          )
                                                      , text_only = text.only
-											 		 # , is_h5 = is_h5
-											 		 , format = format
-											 		 , uri = uri
+                                                    , format = backend
+                                                    , uri = uri
                             )
      fr@use.exprs <- !text.only
 
