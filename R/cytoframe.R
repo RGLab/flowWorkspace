@@ -751,15 +751,17 @@ cf_backend_type <- function(cf)
   backend_type(cf_get_uri(cf))
 }
 
-backend_type <- function(uri)#TODO: support more robust way of checking format
+backend_type <- function(uri)#TODO: support s3
 {
   if(uri == "")
     "mem"
-  else if(grepl("\\.h5$", uri))
-    "h5"
   else
+  {
+    if(dir.exists(uri))
     "tile"
-    
+  else
+    "h5"
+  }
       
 }
 load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL, num_threads = 1L){

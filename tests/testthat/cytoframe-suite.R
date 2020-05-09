@@ -33,7 +33,7 @@ test_that("cf_scale_time_channel", {
 test_that("load_meta", {
   cf1 <- realize_view(cf)
   tmp <- cf_get_uri(cf1)
-  skip_if_not(backend_mode != "mem")
+    skip_if(backend_mode == "mem")
   oldvalue <- keyword(cf1)[["TUBE NAME"]]
   keyword(cf1)[["TUBE NAME"]] <- "dd"
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], "dd")
@@ -64,7 +64,7 @@ test_that("cytoset_to_flowframe", {
 
 
 test_that("cf_get_uri", {
-  skip_if_not(backend_mode != "mem")
+    skip_if(backend_mode == "mem")
   
       h5file <- cf_get_uri(cf)
       expect_true(file.exists(h5file))
@@ -73,7 +73,8 @@ test_that("cf_get_uri", {
       expect_true(cf_get_uri(cf1)=="")
     })
 test_that("write permission", {
-  #newly created from fcs: writable
+    skip_if(backend_mode == "mem")
+    #newly created from fcs: writable
   cf1 <- load_cytoframe_from_fcs(fcs_file, backend = backend_mode, which.lines = 1:10)
   exprs(cf1)[1,1] <- 1
   expect_equivalent(exprs(cf1)[1,1], 1)
@@ -104,7 +105,7 @@ test_that("write permission", {
 })
 
 test_that("lock", {
-  skip_if_not(backend_mode != "mem")
+    skip_if(backend_mode == "mem")
   
   cf1 <- realize_view(cf)
   #writable
@@ -139,7 +140,7 @@ test_that("lock", {
   keyword(cf1)[["TUBE NAME"]] <- key.new
   cf_flush_meta(cf1)
   tmp <- cf_get_uri(cf1)
-  cf1 <- load_cytoframe_from_h5(tmp, readonly = FALSE)
+  cf1 <- load_cytoframe(tmp, readonly = FALSE)
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
   
   #without explicit flush changes won't automatically synced to disk
@@ -147,7 +148,7 @@ test_that("lock", {
   keyword(cf1)[["TUBE NAME"]] <- key.old
   rm(cf1)
   invisible(gc())
-  cf1 <- load_cytoframe_from_h5(tmp)
+  cf1 <- load_cytoframe(tmp)
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
   
 
@@ -155,8 +156,8 @@ test_that("lock", {
 
 
 test_that("[", {
-      cf <- realize_view(cf)
-      cf1 <- cf[1:100, 2:3]
+      cf0 <- realize_view(cf)
+      cf1 <- cf0[1:100, 2:3]
       is_equal_flowFrame(cf1, fr[1:100, 2:3])
       #keyword is not removed during []
       key.rm <- "$P1N"
@@ -165,12 +166,15 @@ test_that("[", {
       expect_equal(keyword(cf1)[[key.rm]], "dd")
       
       #nc1 and nc share the cdf file
-      expect_equal(cf_get_uri(cf1), cf_get_uri(cf))
+      expect_equal(cf_get_uri(cf1), cf_get_uri(cf0))
 
       #write h5
       tmp <- tempfile()
-      cf_write_h5(cf1, tmp)
-      cf2 <- load_cytoframe_from_h5(tmp)
+      if(backend_mode=="h5")
+        cf_write_h5(cf1, tmp)
+      else
+        cf_write_tile(cf1, tmp)
+      cf2 <- load_cytoframe(tmp)
       is_equal_flowFrame(cf2, fr[1:100, 2:3], description = F)
       
       #edge case
@@ -189,7 +193,7 @@ test_that("copy", {
   expect_equal(cf_get_uri(cf1), cf_get_uri(cf))  
 
   cf1 <- realize_view(cf)
-  skip_if_not(backend_mode != "mem")
+    skip_if(backend_mode == "mem")
   
   h5 <- cf_get_uri(cf1)
   
@@ -311,21 +315,22 @@ test_that("keyword<-", {
   kw <- collapse_desc(kw, collapse.spill = FALSE)
   expect_equal(keyword(cf1)[names(kw)], kw, tol = 6e-6)
   
-  skip_if_not(backend_mode != "mem")
+    skip_if(backend_mode == "mem")
   
   #now meta won't be flushed to disk automatically after destroy cf1
   tmp <- cf_get_uri(cf1)
   rm(cf1)
   invisible(gc())
-  cf2 <- load_cytoframe_from_h5(tmp, readonly = FALSE)
+  cf2 <- load_cytoframe(tmp, readonly = FALSE)
   expect_equal(keyword(cf2)[names(kw.old)], kw.old)
   #explicit flush
   keyword(cf2) <- kw
   cf_flush_meta(cf2)
   rm(cf2)
   invisible(gc())
-  cf2 <- load_cytoframe_from_h5(tmp)
-  expect_equal(keyword(cf2)[names(kw)], kw, tol = 6e-6)
+  cf2 <- load_cytoframe(tmp)
+  kw1 <- keyword(cf2)[names(kw)]
+  expect_equal(kw1, kw, tol = 6e-6)
 })
 
 test_that("keyword setters", {
@@ -380,7 +385,7 @@ test_that("keyword setters", {
 # })
 # 
 test_that("transform", {
-  skip_if_not(backend_mode != "mem")
+    skip_if(backend_mode == "mem")
   fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
   cf <- flowFrame_to_cytoframe(fr, backend = backend_mode)
   h5 <- cf_get_uri(cf)
@@ -406,7 +411,7 @@ test_that("transform", {
 })
 
 test_that("load_fcs", {
-  skip_if_not(backend_mode != "mem")
+    skip_if(backend_mode == "mem")
   
   fr <- read.FCS(list.files(system.file("extdata","compdata","data",package="flowCore"), full.names = TRUE)[1])
   #write to carry flowCore_Rmax keywords
