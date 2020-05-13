@@ -245,20 +245,35 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                          column.pattern=NULL,
                          invert.pattern = FALSE,
                          decades=0,
-                         is_h5=FALSE,
-                         min.limit=NULL,
+                         is_h5= NULL
+                         , h5_dir = NULL
+                         , backend = c("mem", "h5", "tile")
+                         , backend_dir = tempdir()
+                         , min.limit=NULL,
                          truncate_max_range = TRUE,
                          dataset=NULL,
                          emptyValue=TRUE,
                          num_threads = 1,
                          ignore.text.offset = FALSE,
                          sep="\t", as.is=TRUE, name
-                        , h5_dir = tempdir()
                         , file_col_name = NULL
                         , ...)
 {
-    if(!dir.exists(h5_dir))
-      dir.create(h5_dir)
+  backend <- match.arg(backend)
+  if(!is.null(is_h5))
+  {
+    warning("'is_h5' argument is deprecated by 'backend'! ")
+    if(is_h5)
+      backend <-"h5"
+  }
+  if(!is.null(h5_dir))
+  {
+    warning("'h5_dir' argument is deprecated by 'backend_dir'! ")
+    backend_dir <- h5_dir
+  }
+  
+    if(!dir.exists(backend_dir))
+      dir.create(backend_dir)
   
     if(is.null(dataset))
       dataset <- 1
@@ -296,8 +311,8 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                                             , num_threads = num_threads
                                             , ignoreTextOffset = ignore.text.offset
                                           )
-                                          , is_h5 = is_h5
-                                          , h5_dir = normalizePath(h5_dir)
+                                          , backend = backend
+                                          , backend_dir = normalizePath(backend_dir)
                                   )
     cs <- new("cytoset", pointer = cs)
     

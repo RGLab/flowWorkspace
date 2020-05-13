@@ -5,6 +5,10 @@
 using namespace Rcpp;
 using namespace cytolib;
 
+FileFormat backend_type(Rcpp::XPtr<CytoFrameView> fr)
+{
+	return fr->get_backend_type();
+}
 
 // [[Rcpp::export(name=".cf_scale_time_channel")]]
 void cf_scale_time_channel(Rcpp::XPtr<CytoFrameView> fr)
@@ -105,9 +109,16 @@ XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly
 }
 // [[Rcpp::export]]
 XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string region){
-	S3Cred cred(id, key, region);
+	tiledb::Config cfg;
+	cfg["vfs.s3.aws_access_key_id"] =  id;
+	cfg["vfs.s3.aws_secret_access_key"] =  key;
+
+	cfg["vfs.s3.region"] = region;
+
+	CtxPtr ctx(new tiledb::Context(cfg));
+
 	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new H5RCytoFrame(url.c_str(), true,
-																		cred
+																		ctx
 																		)
 															)
 													)
@@ -117,9 +128,16 @@ XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string re
 
 // [[Rcpp::export]]
 XPtr<CytoFrameView> load_cf_from_tile(string url, string id, string key, string region, bool readonly, int num_threads){
-	S3Cred cred(id, key, region);
+	tiledb::Config cfg;
+	cfg["vfs.s3.aws_access_key_id"] =  id;
+	cfg["vfs.s3.aws_secret_access_key"] =  key;
+
+	cfg["vfs.s3.region"] = region;
+	cfg["sm.num_reader_threads"] = num_threads;
+	CtxPtr ctx(new tiledb::Context(cfg));
+
 	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new TileCytoFrame(url.c_str(), readonly, true,
-																		cred, num_threads
+																		ctx
 																		)
 															)
 													)

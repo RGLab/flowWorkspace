@@ -10,9 +10,9 @@
 #' @param h5_readonly whether to open h5 data as read-only. Default is TRUE
 #' @param select an integer or character vector to select a subset of samples to load
 #' @param verbose logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.
-#' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
-#'              Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
-#'              It is useful to "skip" archiving cdf file if raw data has not been changed.
+#' @param backend_opt a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the backend data file.
+#'              Sometimes it is more efficient to move or create a symlink of the existing backend file to the archived folder.
+#'              It is useful to "skip" archiving backend file if raw data has not been changed.
 #' @inheritParams load_cytoframe_from_h5
 #' @param ... other arguments: not used.
 #'
@@ -39,10 +39,16 @@
 #' @aliases save_gs load_gs save_gslist load_gslist
 #' @importFrom aws.s3 put_object
 save_gs<-function(gs, path
-                  , cdf = c("copy","move","skip","symlink","link")
+                  , cdf = NULL
+                  , backend_opt = c("copy","move","skip","symlink","link")
                   , cred = NULL
                   , ...){
-  cdf <- match.arg(cdf)
+  if(!is.null(cdf))
+  {
+    warning("'cdf' argument is deprecated by 'backend_opt'")
+    backend_opt <- cdf
+  }
+  backend_opt <- match.arg(backend_opt)
   
   if(is_s3_path(path))
   {
@@ -72,7 +78,7 @@ save_gs<-function(gs, path
     }else
     {
       #only save pb files  
-      suppressMessages(save_gs(gs, tmp, cdf = "skip"))
+      suppressMessages(save_gs(gs, tmp, backend_opt = "skip"))
     }
     
     pbfiles <- list.files(tmp, ".(pb)|(gs)$", full.names = TRUE)
@@ -80,9 +86,9 @@ save_gs<-function(gs, path
     names(pbfiles) <- basename(pbfiles)
     
     message("Uploading gs ...")
-    if(cdf != "copy")
+    if(backend_opt != "copy")
     {
-      stop("only cdf='copy' is supported for remote saving!")
+      stop("only backend_opt='copy' is supported for remote saving!")
     }
     files_to_put <- c(pbfiles, h5files)
     keys <- names(files_to_put)
@@ -105,10 +111,10 @@ save_gs<-function(gs, path
     if(!grepl("^https://", h5_path))#local gs
     {
       
-      if(cdf == "link")
+      if(backend_opt == "link")
       	stop("'link' option for save_gs is no longer supported")
       
-      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf)))
+      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt)))
 
     }else{
       #remote gs
@@ -116,10 +122,10 @@ save_gs<-function(gs, path
       #we have to resave it 
       #TODO: more efficient way is to attach the rid to gs object so that local cp can be made 
       
-      if(cdf != "copy")
+      if(backend_opt != "copy")
         stop("Only 'copy' option is supported for save_gs from remote to local")
       #only save pb since h5remote is currently readonly thus can't be saved through the serialization api
-      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = "skip")))
+      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = "skip")))
       #download h5 separately
       cred <- check_credential(cred)
       s3_paths <- parse_s3_path(h5_path)
@@ -315,7 +321,7 @@ convert_legacy_gs <- function(from, to){
     #clean the auto generated dir
     system(paste0("rmdir ", h5dir))
     message("saving to new archive...")
-    suppressMessages(save_gs(gs, to, cdf = "skip"))
+    suppressMessages(save_gs(gs, to, backend_opt = "skip"))
     message("GatingSet is now saved in new format and can be loaded with 'load_gs'")
   
 }  

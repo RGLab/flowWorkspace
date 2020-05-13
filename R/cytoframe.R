@@ -748,22 +748,22 @@ load_cytoframe <- function(uri, ...){
 #' @return one of "mem","h5", "tile"
 cf_backend_type <- function(cf)
 {
-  backend_type(cf_get_uri(cf))
+  backend_type(cf@pointer)
 }
 
-backend_type <- function(uri)#TODO: support s3
-{
-  if(uri == "")
-    "mem"
-  else
-  {
-    if(dir.exists(uri))
-    "tile"
-  else
-    "h5"
-  }
-      
-}
+# backend_type <- function(uri)#TODO: support s3
+# {
+#   if(uri == "")
+#     "mem"
+#   else
+#   {
+#     if(dir.exists(uri))
+#     "tile"
+#   else
+#     "h5"
+#   }
+#       
+# }
 load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL, num_threads = 1L){
   
     cred <- check_credential(cred)

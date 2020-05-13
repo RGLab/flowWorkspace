@@ -486,14 +486,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // save_gatingset
-void save_gatingset(XPtr<GatingSet> gs, string path, string cdf);
-RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP cdfSEXP) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt);
+RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP backend_optSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< string >::type path(pathSEXP);
-    Rcpp::traits::input_parameter< string >::type cdf(cdfSEXP);
-    save_gatingset(gs, path, cdf);
+    Rcpp::traits::input_parameter< string >::type backend_opt(backend_optSEXP);
+    save_gatingset(gs, path, backend_opt);
     return R_NilValue;
 END_RCPP
 }
@@ -954,16 +954,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // fcs_to_cytoset
-Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, FCS_READ_PARAM config, bool is_h5, string h5_dir);
-RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP is_h5SEXP, SEXP h5_dirSEXP) {
+Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, FCS_READ_PARAM config, string backend, string backend_dir);
+RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP backendSEXP, SEXP backend_dirSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< vector<pair<string,string>> >::type sample_uid_vs_file_path(sample_uid_vs_file_pathSEXP);
     Rcpp::traits::input_parameter< FCS_READ_PARAM >::type config(configSEXP);
-    Rcpp::traits::input_parameter< bool >::type is_h5(is_h5SEXP);
-    Rcpp::traits::input_parameter< string >::type h5_dir(h5_dirSEXP);
-    rcpp_result_gen = Rcpp::wrap(fcs_to_cytoset(sample_uid_vs_file_path, config, is_h5, h5_dir));
+    Rcpp::traits::input_parameter< string >::type backend(backendSEXP);
+    Rcpp::traits::input_parameter< string >::type backend_dir(backend_dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(fcs_to_cytoset(sample_uid_vs_file_path, config, backend, backend_dir));
     return rcpp_result_gen;
 END_RCPP
 }

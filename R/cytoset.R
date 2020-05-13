@@ -289,7 +289,8 @@ cytoset_to_flowSet <- function(cs){
 
 #' @rdname convert
 #' @export 
-flowSet_to_cytoset <- function(fs, path = tempfile()){
+flowSet_to_cytoset <- function(fs,backend = c("h5", "mem",  "tile"), path = tempfile()){
+  backend <- match.arg(backend)
   tmp <- tempfile()
   # Set up mapping to ensure that the sampleNames 
   # come back in without additional ".fcs" and allow
@@ -300,8 +301,8 @@ flowSet_to_cytoset <- function(fs, path = tempfile()){
   write.flowSet(fs, tmp, filename = sampleNames(fs))
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
                               , path = tmp
-                              , is_h5 = TRUE
-                              , h5_dir = path
+                              , backend = backend
+                              , backend_dir = path
                               , file_col_name = "FCS_File"
                               , check.names = FALSE )
   # Remove the temporary intermediate flowSet

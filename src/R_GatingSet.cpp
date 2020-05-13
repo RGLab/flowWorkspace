@@ -203,36 +203,43 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
  * save/load GatingSet
  */
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
-      H5Option h5_opt;
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt) {
+      CytoFileOption cf_opt;
       bool skip_data = false;
-      if(cdf == "copy")
-        h5_opt = H5Option::copy;
-      else if(cdf == "move")
-        h5_opt = H5Option::move;
-      else if(cdf == "link")
-        h5_opt = H5Option::link;
-      else if(cdf == "symlink")
-        h5_opt = H5Option::symlink;
-      else if(cdf == "skip")
+      if(backend_opt == "copy")
+        cf_opt = CytoFileOption::copy;
+      else if(backend_opt == "move")
+        cf_opt = CytoFileOption::move;
+      else if(backend_opt == "link")
+        cf_opt = CytoFileOption::link;
+      else if(backend_opt == "symlink")
+        cf_opt = CytoFileOption::symlink;
+      else if(backend_opt == "skip")
       {
-          h5_opt = H5Option::skip;
+          cf_opt = CytoFileOption::skip;
           skip_data = true;
       }
       else
-        stop("invalid cdf option!");
-			gs->serialize_pb(path, h5_opt, skip_data);
+        stop("invalid backend_opt option!");
+			gs->serialize_pb(path, cf_opt, skip_data);
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
 XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
 									, string remote_path, List cred) {
-	S3Cred cred1;
-	cred1.access_key_id_ = as<string>(cred["AWS_ACCESS_KEY_ID"]);
-	cred1.access_key_ = as<string>(cred["AWS_SECRET_ACCESS_KEY"]);
-	cred1.region_ = as<string>(cred["AWS_REGION"]);
+	tiledb::Config cfg;
+	cfg["vfs.s3.aws_access_key_id"] = as<string>(cred["AWS_ACCESS_KEY_ID"]);
+	cfg["vfs.s3.aws_secret_access_key"] =  as<string>(cred["AWS_SECRET_ACCESS_KEY"]);
+
+	cfg["vfs.s3.region"] =  as<string>(cred["AWS_REGION"]);;
+//	cfg["sm.num_reader_threads"] = num_threads;
+	CtxPtr ctx(new tiledb::Context(cfg));
+
+
+
+
 	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose
-			, remote_path, cred1));
+			, remote_path, ctx));
 
 }
 

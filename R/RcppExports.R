@@ -195,8 +195,8 @@ set_gatingset_id <- function(gsPtr, id) {
     invisible(.Call(`_flowWorkspace_set_gatingset_id`, gsPtr, id))
 }
 
-.cpp_saveGatingSet <- function(gs, path, cdf) {
-    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, cdf))
+.cpp_saveGatingSet <- function(gs, path, backend_opt) {
+    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, backend_opt))
 }
 
 .cpp_loadGatingSet <- function(path, readonly, select_samples, verbose, remote_path, cred) {
@@ -357,8 +357,8 @@ new_cytoset <- function() {
     .Call(`_flowWorkspace_new_cytoset`)
 }
 
-fcs_to_cytoset <- function(sample_uid_vs_file_path, config, is_h5, h5_dir) {
-    .Call(`_flowWorkspace_fcs_to_cytoset`, sample_uid_vs_file_path, config, is_h5, h5_dir)
+fcs_to_cytoset <- function(sample_uid_vs_file_path, config, backend, backend_dir) {
+    .Call(`_flowWorkspace_fcs_to_cytoset`, sample_uid_vs_file_path, config, backend, backend_dir)
 }
 
 get_colnames <- function(cs) {
