@@ -265,7 +265,4 @@ to a \code{flowFrame} by accessing the same information from the underlying data
 \seealso{
 \code{\linkS4class{flowSet}}, \code{\link{read.FCS}}
 }
-\author{
-F. Hahne, B. Ellis, P. Haaland and N. Le Meur
-}
 \keyword{classes}

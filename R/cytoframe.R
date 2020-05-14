@@ -253,9 +253,6 @@
 #'   
 #' }
 #' 
-#' @author
-#' 
-#' F. Hahne, B. Ellis, P. Haaland and N. Le Meur
 #' @seealso
 #' 
 #' \code{\linkS4class{flowSet}}, \code{\link{read.FCS}}
