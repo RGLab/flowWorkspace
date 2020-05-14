@@ -130,8 +130,8 @@ set_quadgate <- function(gs, sampleName, gatePath, inter) {
     invisible(.Call(`_flowWorkspace_setGate`, gs, sampleName, gatePath, filter))
 }
 
-.cpp_removeNode <- function(gs, sampleName, gatePath) {
-    invisible(.Call(`_flowWorkspace_removeNode`, gs, sampleName, gatePath))
+.cpp_removeNode <- function(gs, sampleName, gatePath, recursive = FALSE) {
+    invisible(.Call(`_flowWorkspace_removeNode`, gs, sampleName, gatePath, recursive))
 }
 
 #' move a node within the gating tree
