@@ -318,14 +318,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // removeNode
-void removeNode(XPtr<GatingSet> gs, string sampleName, string gatePath);
-RcppExport SEXP _flowWorkspace_removeNode(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP gatePathSEXP) {
+void removeNode(XPtr<GatingSet> gs, string sampleName, string gatePath, bool recursive);
+RcppExport SEXP _flowWorkspace_removeNode(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP gatePathSEXP, SEXP recursiveSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
     Rcpp::traits::input_parameter< string >::type gatePath(gatePathSEXP);
-    removeNode(gs, sampleName, gatePath);
+    Rcpp::traits::input_parameter< bool >::type recursive(recursiveSEXP);
+    removeNode(gs, sampleName, gatePath, recursive);
     return R_NilValue;
 END_RCPP
 }
@@ -1168,7 +1169,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_boolGating", (DL_FUNC) &_flowWorkspace_boolGating, 4},
     {"_flowWorkspace_set_quadgate", (DL_FUNC) &_flowWorkspace_set_quadgate, 4},
     {"_flowWorkspace_setGate", (DL_FUNC) &_flowWorkspace_setGate, 4},
-    {"_flowWorkspace_removeNode", (DL_FUNC) &_flowWorkspace_removeNode, 3},
+    {"_flowWorkspace_removeNode", (DL_FUNC) &_flowWorkspace_removeNode, 4},
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},

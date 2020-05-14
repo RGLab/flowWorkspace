@@ -910,13 +910,20 @@ void setGate(XPtr<GatingSet> gs,string sampleName
 
 //[[Rcpp::export(name=".cpp_removeNode")]]
 void removeNode(XPtr<GatingSet> gs,string sampleName
-                  ,string gatePath) {
+                  ,string gatePath, bool recursive = false) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-		NODEID u = gh.getNodeID(gatePath);
+		if(recursive)
+		{
+			gh.removeNode(gatePath);
+		}
+		else
+		{
+			NODEID u = gh.getNodeID(gatePath);
+			gh.removeNode(u);
+		}
 
-		gh.removeNode(u);
 
 }
 
