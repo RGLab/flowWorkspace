@@ -20,6 +20,7 @@ For the in-memory version of cytoframe, it returns an empty string. This can be 
 }
 \seealso{
 Other cytoframe/cytoset IO functions: 
+\code{\link{cf_write_disk}()},
 \code{\link{cf_write_h5}()},
 \code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},

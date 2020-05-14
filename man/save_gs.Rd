@@ -10,7 +10,8 @@
 save_gs(
   gs,
   path,
-  cdf = c("copy", "move", "skip", "symlink", "link"),
+  cdf = NULL,
+  backend_opt = c("copy", "move", "skip", "symlink", "link"),
   cred = NULL,
   ...
 )
@@ -30,9 +31,9 @@ load_gslist(path)
 \arguments{
 \item{path}{A character scalar giving the path to save/load the GatingSet to/from.}
 
-\item{cdf}{a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
-Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
-It is useful to "skip" archiving cdf file if raw data has not been changed.}
+\item{backend_opt}{a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the backend data file.
+Sometimes it is more efficient to move or create a symlink of the existing backend file to the archived folder.
+It is useful to "skip" archiving backend file if raw data has not been changed.}
 
 \item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
 when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}

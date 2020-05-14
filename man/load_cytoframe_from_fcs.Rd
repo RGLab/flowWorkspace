@@ -12,8 +12,10 @@ load_cytoframe_from_fcs(
   column.pattern = NULL,
   invert.pattern = FALSE,
   decades = 0,
-  format = c("mem", "h5", "tile"),
+  is_h5 = NULL,
+  backend = c("mem", "h5", "tile"),
   uri = NULL,
+  h5_filename = NULL,
   min.limit = NULL,
   truncate_max_range = TRUE,
   dataset = NULL,
@@ -59,6 +61,10 @@ useful for indicating the channel names that we do not want to read. If
 \item{decades}{When scaling is activated, the number of decades to use for
 the output.}
 
+\item{is_h5}{Logical indicating whether the data should be stored in h5 format}
+
+\item{h5_filename}{String specifying a name for the h5 file if \code{is_h5} is TRUE}
+
 \item{min.limit}{The minimum value in the data range that is allowed. Some
 instruments produce extreme artifactual values. The positive data range for
 each parameter is completely defined by the measurement range of the
@@ -94,10 +100,6 @@ throws the error when such a discrepancy is found. Users can turn it on to
 ignore the TEXT segment when they are sure of the accuracy of the HEADER segment so that the
 file still can be read.}
 
-\item{is_h5}{Logical indicating whether the data should be stored in h5 format}
-
-\item{h5_filename}{String specifying a name for the h5 file if \code{is_h5} is TRUE}
-
 \item{\dots}{Further arguments that get passed on to
 \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details}
 }
@@ -129,6 +131,7 @@ reading the entire FCS (due to the multiple disk IO).
 \seealso{
 Other cytoframe/cytoset IO functions: 
 \code{\link{cf_get_uri}()},
+\code{\link{cf_write_disk}()},
 \code{\link{cf_write_h5}()},
 \code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
