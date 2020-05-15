@@ -231,6 +231,10 @@ load_legacy_gs <- function(pbfile, cs) {
     invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
 }
 
+backend_type <- function(fr) {
+    .Call(`_flowWorkspace_backend_type`, fr)
+}
+
 .cf_scale_time_channel <- function(fr) {
     invisible(.Call(`_flowWorkspace_cf_scale_time_channel`, fr))
 }

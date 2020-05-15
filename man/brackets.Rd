@@ -13,9 +13,9 @@
 \alias{[[<-,GatingSet,ANY,ANY,GatingHierarchy-method}
 \title{Bracket operators on \code{GatingSet} and \code{GatingSetList} objects}
 \usage{
-\S4method{[}{GatingSet,ANY}(x, i, j, ..., drop = TRUE)
+\S4method{[}{GatingSet,ANY,ANY}(x, i, j, ..., drop = TRUE)
 
-\S4method{[[}{GatingSet,numeric}(x, i, j, ...)
+\S4method{[[}{GatingSet,numeric,ANY}(x, i, j, ...)
 }
 \arguments{
 \item{x}{a \code{GatingSet} or \code{GatingSetList}}

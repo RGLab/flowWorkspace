@@ -592,6 +592,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// backend_type
+string backend_type(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_backend_type(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(backend_type(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cf_scale_time_channel
 void cf_scale_time_channel(Rcpp::XPtr<CytoFrameView> fr);
 RcppExport SEXP _flowWorkspace_cf_scale_time_channel(SEXP frSEXP) {
@@ -1192,6 +1203,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
+    {"_flowWorkspace_backend_type", (DL_FUNC) &_flowWorkspace_backend_type, 1},
     {"_flowWorkspace_cf_scale_time_channel", (DL_FUNC) &_flowWorkspace_cf_scale_time_channel, 1},
     {"_flowWorkspace_cf_set_readonly", (DL_FUNC) &_flowWorkspace_cf_set_readonly, 2},
     {"_flowWorkspace_cf_flush_meta", (DL_FUNC) &_flowWorkspace_cf_flush_meta, 1},

@@ -5,9 +5,21 @@
 using namespace Rcpp;
 using namespace cytolib;
 
-FileFormat backend_type(Rcpp::XPtr<CytoFrameView> fr)
+// [[Rcpp::export]]
+string backend_type(Rcpp::XPtr<CytoFrameView> fr)
 {
-	return fr->get_backend_type();
+	switch(fr->get_backend_type())
+	{
+	case FileFormat::H5:
+		return "h5";
+	case FileFormat::TILE:
+		return "tile";
+	case FileFormat::MEM:
+		return "mem";
+	default:
+		stop("unknown cytoframe FileFormat!");
+	}
+
 }
 
 // [[Rcpp::export(name=".cf_scale_time_channel")]]

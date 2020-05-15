@@ -747,7 +747,7 @@ cf_write_tile <- function(cf, filename, cred = NULL){
 #'        cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
 #'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
 load_cytoframe <- function(uri, ...){
-  if(backend_type(uri) == "h5")
+  if(uri_backend_type(uri) == "h5")
     load_cytoframe_from_h5(uri, ...)
   else
     load_cytoframe_from_tile(uri, ...)
@@ -761,19 +761,19 @@ cf_backend_type <- function(cf)
   backend_type(cf@pointer)
 }
 
-# backend_type <- function(uri)#TODO: support s3
-# {
-#   if(uri == "")
-#     "mem"
-#   else
-#   {
-#     if(dir.exists(uri))
-#     "tile"
-#   else
-#     "h5"
-#   }
-#       
-# }
+uri_backend_type <- function(uri)#TODO: support s3
+{
+  if(uri == "")
+    "mem"
+  else
+  {
+    if(dir.exists(uri))
+    "tile"
+  else
+    "h5"
+  }
+
+}
 load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL, num_threads = 1L){
   
     cred <- check_credential(cred)
