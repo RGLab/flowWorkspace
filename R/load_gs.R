@@ -112,7 +112,7 @@ save_gs<-function(gs, path
       if(backend_opt == "link")
       	stop("'link' option for save_gs is no longer supported")
       
-      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt)))
+      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt), silent = TRUE))
 
     }else{
       #remote gs
