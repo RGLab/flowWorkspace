@@ -9,11 +9,14 @@
 \alias{identifier<-,GatingSet,ANY-method}
 \alias{identifier<-,GatingSet-method}
 \alias{identifier<-,GatingSet,character-method}
+\alias{identifier<-,GatingSetList,character-method}
 \title{Retrieve/replace the GUID of a GatingSet or GatingSetList}
 \usage{
 identifier(object)
 
-identifier(object) <- value
+\S4method{identifier}{GatingSet,ANY}(object) <- value
+
+\S4method{identifier}{GatingSetList,character}(object) <- value
 }
 \arguments{
 \item{object}{a \code{GatingSet} or \code{GatingSetList}}

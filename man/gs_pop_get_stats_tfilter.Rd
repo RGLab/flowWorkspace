@@ -19,6 +19,8 @@ gh_pop_get_stats_tfilter(
 )
 }
 \arguments{
+\item{x}{GatingSet or GatingHierarchy}
+
 \item{nodes}{the character vector specifies the populations of interest. default is all available nodes}
 
 \item{type}{the character vector specifies the type of pop stats or
@@ -35,6 +37,8 @@ or a GatingHierarchy, whose minimum and maximum time will be used to determine t
 For both x and the reference GatingHierarchy in tfilter, the only channels
 that will match this filter are "Time" or "time" and the filter will be applied to each event
 such that only events with time value t where tmin <= t <= tmax will be evaluated.}
+
+\item{path, ...}{arguments passed to 'gh_get_pop_paths()'}
 }
 \description{
 Extract stats from populations(or nodes) within a restricted time window

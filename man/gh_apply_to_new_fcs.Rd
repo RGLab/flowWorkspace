@@ -14,11 +14,7 @@ gh_apply_to_new_fcs(x, files, swap_cols = FALSE, ...)
 
 \item{swap_cols}{for internal usage}
 
-\item{...}{other arguments.}
-
-\item{y}{sample names}
-
-\item{path}{\code{character} specifies the path to the flow data (FCS files)}
+\item{...}{other arguments passed to 'load_cytoset_from_fcs()'}
 }
 \description{
 construct object from existing gating hierarchy(gating template) and flow data

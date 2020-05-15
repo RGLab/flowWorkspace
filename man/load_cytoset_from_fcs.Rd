@@ -93,8 +93,13 @@ coercion of characters to factors in the \code{phenoData}.}
 
 \item{name}{An optional character scalar used as name of the object.}
 
-\item{\dots}{Further arguments that get passed on to
+\item{h5_dir}{String specifying a name for the h5 directory
+for the h5 files if \code{is_h5} is TRUE}
+
+\item{file_col_name}{optionally specify the column name that stores the fcs filename when phenoData is supplied
 \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
+
+\item{\dots}{Further arguments that get passed on to}
 }
 \value{
 An object of class \code{\link{cytoset}}.

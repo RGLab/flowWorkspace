@@ -18,6 +18,8 @@ gs_copy_tree_only(x)
 \item{x}{A \code{GatingSet}}
 
 \item{...}{h5_dir = tempdir() the directory to store the h5-based flow data matrix}
+
+\item{h5_dir}{h5 dir for the new gs}
 }
 \value{
 A copy of a given \code{GatingSet}.

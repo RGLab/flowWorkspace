@@ -144,7 +144,6 @@ gs_pop_set_gate <- function(obj, y, value,...)
 #' 
 #' @name transform_gate
 #' @aliases transform_gate,GatingHierarchy-method transform_gate,GatingSet-method
-#' @usage transform_gate(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
@@ -235,7 +234,6 @@ transform_gate.GatingSet <- function(obj, y, scale = NULL, deg = NULL, rot_cente
 #' 
 #' @name scale_gate
 #' @aliases scale_gate,GatingHierarchy-method scale_gate,GatingSet-method
-#' @usage scale_gate(obj, y, scale = NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
@@ -294,7 +292,6 @@ scale_gate.GatingSet <- function(obj, y, scale = NULL, ...){
 #' 
 #' @name rotate_gate
 #' @aliases rotate_gate,GatingHierarchy-method rotate_gate,GatingSet-method
-#' @usage rotate_gate(obj, y, deg = NULL, rot_center = NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 
@@ -358,7 +355,6 @@ rotate_gate.GatingSet <- function(obj, y, deg = NULL, rot_center = NULL, ...){
 #' 
 #' @name shift_gate
 #' @aliases shift_gate,GatingHierarchy-method shift_gate,GatingSet-method
-#' @usage shift_gate(obj, y, dx=NULL, dy=NULL, center=NULL, ...)
 #' @param obj A \code{GatingHierarchy} or \code{GatingSet} object
 #' @param y A character specifying the node whose gate should be modified
 #' 

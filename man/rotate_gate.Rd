@@ -7,7 +7,7 @@
 \alias{rotate_gate,GatingSet-method}
 \title{Simplified geometric rotation of gates associated with nodes}
 \usage{
-rotate_gate(obj, y, deg = NULL, rot_center = NULL, ...)
+\method{rotate_gate}{GatingHierarchy}(obj, y, deg = NULL, rot_center = NULL, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}

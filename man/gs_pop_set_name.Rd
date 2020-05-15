@@ -26,7 +26,7 @@ gs_pop_set_name(x, y, value)
 }
 \examples{
 \dontrun{
-    #G is a gating hierarchy
+    # G is a GatingHierarchy
     gs_get_pop_paths(G[[1]])#return node names
     gh_pop_set_name(G,"L","lymph")
 }

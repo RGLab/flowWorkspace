@@ -25,10 +25,13 @@ reference:
       - cf_get_h5_file_path
       - cf_write_h5
       - load_cytoset_from_fcs
+      - save_cytoset
       - cs_add_cytoframe
+      - cs_set_cytoframe
       - cs_get_h5_file_path
       - load_meta
       - lock
+      - cf_append_cols
       - cytoframe-labels
       - cf_keyword_insert
   - title: "Examining the hierarchical gating tree"
@@ -179,6 +182,7 @@ reference:
       - fix_channel_slash
       - flow_breaks
       - swap_data_cols
+      - cleanup_temp
 articles:
   - title: Introduction
     contents:

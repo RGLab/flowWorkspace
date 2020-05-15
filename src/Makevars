@@ -7,7 +7,7 @@ This makefile requires GNU Make.
 endif
 	
 CXX_STD = CXX11
-PKG_CPPFLAGS =-DROUT -I../inst/include -Wno-deprecated-declarations -DBOOST_NO_AUTO_PTR -Wno-unknown-pragmas -Wno-comment 
+PKG_CPPFLAGS =-DROUT -I../inst/include -DBOOST_NO_AUTO_PTR 
 
 #somehow the implicit $CC isn't available/accurate, so we have to re-fetch it
 compilerinfo = ${shell R CMD config CXX}

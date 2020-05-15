@@ -465,31 +465,30 @@ setMethod("show","GatingHierarchy",function(object){
 #' 
 #' @details See \code{keyword} in Package `flowCore'
 #' 
-#' @usage keyword(object, keyword)
 #' @param object \code{GatingHierarchy} or \code{GatingSet} or \code{GatingSetList}
 #' @param keyword \code{character} specifying keyword name. When \code{missing}, extract all keywords.
 #' @param ... other arguments passed to \code{\link[flowCore]{keyword-methods}}
 #' @seealso \code{\link[flowCore]{keyword-methods}}
 #'
 #' @examples
-#'     \dontrun{
-#'       #get all the keywords from all samples
-#'       keyword(G)
-#'       #get all the keywords from one sample
-#'       keyword(G[[1]])
-#'       # filter the instrument setting
-#'       keyword(G[[1]], compact = TRUE)
-#'       #get single keyword from all samples
-#'       keyword(G, "FILENAME")
-#'       #get single keyword from one sample
-#'       keyword(G[[1, "FILENAME")
-#'     }
+#' \dontrun{
+#'     # get all the keywords from all samples
+#'     keyword(G)
+#'     # get all the keywords from one sample
+#'     keyword(G[[1]])
+#'     # filter the instrument setting
+#'     keyword(G[[1]], compact = TRUE)
+#'     # get single keyword from all samples
+#'     keyword(G, "FILENAME")
+#'     # get single keyword from one sample
+#'     keyword(G[[1]], "FILENAME")
+#' }
 #' @export
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
 
 			keyword(object)[[keyword]]
 		})
-
+#' @name keyword
 #' @export
 setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing", ...){
       fr <- gh_pop_get_data(object, use.exprs = FALSE)
@@ -533,12 +532,12 @@ setMethod("getNodes","GatingSet",function(x,y=NULL,order="regular", path = "full
 #'
 #' @examples
 #'   \dontrun{
-#'     #G is a gating hierarchy
-#'     gs_get_pop_paths(G, path = 1])#return node names (without prefix)
-#'     gs_get_pop_paths(G,path = "full")#return the full path
-#'     gs_get_pop_paths(G,path = 2)#return the path as length of two
-#'     gs_get_pop_paths(G,path = "auto")#automatically determine the length of path
-#'     gs_pop_set_name(G,"L","lymph")
+#'     # G is a gating hierarchy
+#'     gs_get_pop_paths(G, path = 1)#return node names (without prefix)
+#'     gs_get_pop_paths(G, path = "full")#return the full path
+#'     gs_get_pop_paths(G, path = 2)#return the path as length of two
+#'     gs_get_pop_paths(G, path = "auto")#automatically determine the length of path
+#'     gs_pop_set_name(G, "L", "lymph")
 #'   }
 #' @importFrom BiocGenerics duplicated
 #' @export
@@ -654,17 +653,19 @@ setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y,
 #' @seealso \code{\link{gs_get_pop_paths}}
 #'
 #' @examples
-#'   \dontrun{
-#'     #G is a gatinghierarchy
-#'     #return the name of the parent of the fifth node in the hierarchy.
-#'     gs_pop_get_parent(G,gs_get_pop_paths(G[[1)[5])
-#'     n<-gs_get_pop_paths(G,tsort=T)[4];
-#'     gs_pop_get_children(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
-#'     gs_pop_get_children(G,4);#Get the ids of the child nodes
-#'   }
+#' \dontrun{
+#'     # G is a GatingHierarchy
+#'     # return the name of the parent of the fifth node in the hierarchy.
+#'     gs_pop_get_parent(G,gs_get_pop_paths(G[[1]])[5])
+#'     n<-gs_get_pop_paths(G,tsort=T)[4]
+#'     #Get the names of the child nodes of the 4th node in this gating hierarchy.
+#'     gs_pop_get_children(G,n)
+#'     #Get the ids of the child nodes
+#'     gs_pop_get_children(G,4)
+#' }
 #' @export
 gs_pop_get_children <- function(obj,y, showHidden = TRUE, ...){
-      cind <- .cpp_getChildren(obj@pointer,sampleNames(obj), y, showHidden)
+      cind <- .cpp_getChildren(obj@pointer,sampleNames(obj)[1], y, showHidden)
       cind <- cind + 1
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[cind]
 }
@@ -826,7 +827,6 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
 #' 
 #' @name estimateLogicle
 #' @aliases estimateLogicle,GatingHierarchy-method estimateLogicle,GatingSet-method
-#' @usage estimateLogicle(x, channels, ...)
 #' @param x a GatingHierarchy
 #' @param channels channels or markers for which the logicle transformation is to be estimated.
 #' @param ... other arguments
@@ -955,7 +955,6 @@ isGated <- function(obj,y){
 #' 
 #' @param obj GatingHierarchy
 #' @param y node/gating path
-#' @param ... not used
 #' @export 
 gh_pop_is_gated <- function(obj,y){
       .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
@@ -1626,7 +1625,7 @@ setMethod("setNode"
 #' @param value A \code{character} the name of the node
 #' @examples
 #' \dontrun{
-#'     #G is a gating hierarchy
+#'     # G is a GatingHierarchy
 #'     gs_get_pop_paths(G[[1]])#return node names
 #'     gh_pop_set_name(G,"L","lymph")
 #' }
@@ -1677,7 +1676,6 @@ setMethod("pData","GatingHierarchy",function(object){
 #' @name markernames
 #' @aliases markernames,GatingSet-method markernames,GatingHierarchy-method
 #' markernames,cytoset-method
-#' @usage markernames(object)
 #' @param x,object GatingHierarchy/GatingSet/GatingSetList
 #' @param value named character vector for markernames<-, regular character vector for colnames<-.
 #' @examples
@@ -1704,7 +1702,6 @@ setMethod("markernames",
 
 
 #' @rdname markernames
-#' @usage markernames(object) <- value
 #' @aliases markernames<-,GatingSet,ANY-method markernames<-,GatingSet-method
 #' markernmaes<-,cytoframe-method markernames<-,cytoset-method
 #' @export
@@ -1720,7 +1717,6 @@ setReplaceMethod("markernames",
 
 #' @param do.NULL,prefix not used.
 #' @rdname markernames
-#' @usage colnames(object)
 #' @aliases colnames,GatingSet-method colnames,GatingHierarchy-method
 #' colnames,cytoframe-method colnames,cytoset-method
 #' @export
@@ -1733,7 +1729,6 @@ setMethod("colnames",
           })
 
 #' @rdname markernames
-#' @usage colnames(object) <- value
 #' @aliases colnames<-,GatingSet,ANY-method colnames<-,GatingSet-method
 #' colnames<-,cytoframe-method colnames<-,cytoset-method
 #' @export

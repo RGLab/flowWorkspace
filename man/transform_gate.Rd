@@ -7,7 +7,17 @@
 \alias{transform_gate,GatingSet-method}
 \title{Simplified geometric transformations of gates associated with nodes}
 \usage{
-transform_gate(obj, y, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...)
+\method{transform_gate}{GatingHierarchy}(
+  obj,
+  y,
+  scale = NULL,
+  deg = NULL,
+  rot_center = NULL,
+  dx = NULL,
+  dy = NULL,
+  center = NULL,
+  ...
+)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}

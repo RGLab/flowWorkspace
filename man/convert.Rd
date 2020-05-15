@@ -11,7 +11,7 @@
 \alias{flowSet_to_list}
 \title{Methods for conversion between flowCore and flowWorkspace data classes}
 \usage{
-cytoframe_to_flowFrame(fr)
+cytoframe_to_flowFrame(cf)
 
 flowFrame_to_cytoframe(fr, ...)
 
@@ -20,6 +20,19 @@ cytoset_to_flowSet(cs)
 flowSet_to_cytoset(fs, backend = c("h5", "mem", "tile"), path = tempfile())
 
 cytoset_to_list(cs)
+}
+\arguments{
+\item{cf}{cytoframe object}
+
+\item{fr}{flowframe}
+
+\item{...}{arguments passed to 'load_cytoframe_from_fcs' call}
+
+\item{cs}{cytoset}
+
+\item{fs}{flowSet or ncdfFlowSet}
+
+\item{path}{the h5 path for cytoset}
 }
 \description{
 These methods perform conversions between flowWorkspace classes (\link{cytoframe}/\link{cytoset}) and 

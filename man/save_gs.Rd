@@ -5,6 +5,7 @@
 \alias{load_gs}
 \alias{save_gslist}
 \alias{load_gslist}
+\alias{sampleNames,character-method}
 \title{save/load a GatingSet/GatingSetList to/from disk.}
 \usage{
 save_gs(
@@ -24,11 +25,15 @@ load_gs(
   cred = NULL
 )
 
+\S4method{sampleNames}{character}(object)
+
 save_gslist(gslist, path, ...)
 
 load_gslist(path)
 }
 \arguments{
+\item{gs}{A \code{GatingSet}}
+
 \item{path}{A character scalar giving the path to save/load the GatingSet to/from.}
 
 \item{backend_opt}{a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the backend data file.
@@ -46,17 +51,15 @@ when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
 
 \item{verbose}{logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.}
 
-\item{gslist}{A \code{GatingSetList}}
+\item{object}{a \code{GatingSet} folder}
 
-\item{G}{A \code{GatingSet}}
-}
-\value{
-\code{load_gs} returns a GatingSet object
-\code{load_gslist} returns a GatingSetList object
+\item{gslist}{A \code{GatingSetList}}
 }
 \description{
 Save/load a GatingSet/GatingSetList which is the gated flow data including gates and populations to/from the disk.
 The \code{GatingSet} object The internal C data structure (gating tree),\code{ncdfFlowSet} object(if applicable)
+
+Retrieve  sample names by scanning h5 files from a GatingSet folder
 }
 \examples{
 \dontrun{
@@ -69,6 +72,9 @@ The \code{GatingSet} object The internal C data structure (gating tree),\code{nc
 	save_gslist(gslist1,path="tempFolder")
 	gslist2<-load_gslist(path="tempFolder")
 }
+      \dontrun{
+        sampleNames(gsdir)
+      }
 }
 \seealso{
 \code{\link{GatingSet-class}},\code{\link{GatingSetList-class}}

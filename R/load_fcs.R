@@ -78,7 +78,7 @@
 #' throws the error when such a discrepancy is found. Users can turn it on to
 #' ignore the TEXT segment when they are sure of the accuracy of the HEADER segment so that the
 #' file still can be read.
-#' @param \dots Further arguments that get passed on to
+#' @param text.only whether to only parse text section of FCS (default is FALSE), it is sometime useful to skip loading data section for the faster loading meta data from FCS
 #' \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details
 #' 
 #' @return
@@ -229,6 +229,7 @@ load_cytoframe_from_fcs <- function(filename,
 #' @param h5_dir String specifying a name for the h5 directory
 #' for the h5 files if \code{is_h5} is TRUE
 #' @param \dots Further arguments that get passed on to
+#' @param file_col_name optionally specify the column name that stores the fcs filename when phenoData is supplied
 #' \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.
 #' 
 #' @return An object of class \code{\link{cytoset}}.

@@ -7,7 +7,7 @@
 \alias{shift_gate,GatingSet-method}
 \title{Simplified geometric translation of gates associated with nodes}
 \usage{
-shift_gate(obj, y, dx=NULL, dy=NULL, center=NULL, ...)
+\method{shift_gate}{GatingHierarchy}(obj, y, dx = NULL, dy = NULL, center = NULL, ...)
 }
 \arguments{
 \item{obj}{A \code{GatingHierarchy} or \code{GatingSet} object}

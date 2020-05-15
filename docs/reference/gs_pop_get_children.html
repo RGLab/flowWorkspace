@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.20</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.21</span>
       </span>
     </div>
 
@@ -164,7 +164,16 @@
     <div class='dont-index'><p><code><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <span class='co'># G is a GatingHierarchy</span>
+    <span class='co'># return the name of the parent of the fifth node in the hierarchy.</span>
+    <span class='fu'>gs_pop_get_parent</span>(<span class='no'>G</span>,<span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]])[<span class='fl'>5</span>])
+    <span class='no'>n</span><span class='kw'>&lt;-</span><span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>G</span>,<span class='kw'>tsort</span><span class='kw'>=</span><span class='no'>T</span>)[<span class='fl'>4</span>]
+    <span class='co'>#Get the names of the child nodes of the 4th node in this gating hierarchy.</span>
+    <span class='fu'>gs_pop_get_children</span>(<span class='no'>G</span>,<span class='no'>n</span>)
+    <span class='co'>#Get the ids of the child nodes</span>
+    <span class='fu'>gs_pop_get_children</span>(<span class='no'>G</span>,<span class='fl'>4</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

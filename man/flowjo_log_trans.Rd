@@ -21,7 +21,9 @@ flowjo_log_trans(
 
 \item{scale}{the linear scale factor}
 
-\item{inverse}{whether return the inverse function}
+\item{n}{desired number of breaks (the actual number will be different depending on the data range)}
+
+\item{equal.space}{whether breaks at equal-spaced intervals}
 }
 \value{
 flog(or its inverse) transform function

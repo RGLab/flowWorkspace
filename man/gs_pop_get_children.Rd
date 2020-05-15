@@ -36,14 +36,16 @@ gh_pop_get_children(obj, y, showHidden = TRUE, ...)
 Returns the name of the parent population or a character/numeric vector of all the children of the current population in the given \code{GatingHierarchy}
 }
 \examples{
-  \dontrun{
-    #G is a gatinghierarchy
-    #return the name of the parent of the fifth node in the hierarchy.
-    gs_pop_get_parent(G,gs_get_pop_paths(G[[1)[5])
-    n<-gs_get_pop_paths(G,tsort=T)[4];
-    gs_pop_get_children(G,n);#Get the names of the child nodes of the 4th node in this gating hierarchy.
-    gs_pop_get_children(G,4);#Get the ids of the child nodes
-  }
+\dontrun{
+    # G is a GatingHierarchy
+    # return the name of the parent of the fifth node in the hierarchy.
+    gs_pop_get_parent(G,gs_get_pop_paths(G[[1]])[5])
+    n<-gs_get_pop_paths(G,tsort=T)[4]
+    #Get the names of the child nodes of the 4th node in this gating hierarchy.
+    gs_pop_get_children(G,n)
+    #Get the ids of the child nodes
+    gs_pop_get_children(G,4)
+}
 }
 \seealso{
 \code{\link{gs_get_pop_paths}}

@@ -515,3 +515,14 @@ test_that("colnames", {
   
 })
 
+test_that("node path accessors for GatingSet", {
+  expect_equal(gs_get_pop_paths(gs)[c(4,7,9)], c("/not debris/singlets/CD3+",
+                                                 "/not debris/singlets/CD3+/CD4/38+ DR+",
+                                                 "/not debris/singlets/CD3+/CD4/38- DR-"))
+  expect_equal(gs_pop_get_parent(gs, "DNT"), "/not debris/singlets/CD3+")
+  expect_equal(gs_pop_get_children(gs, "CD3+"), c("/not debris/singlets/CD3+/CD4", 
+                                                  "/not debris/singlets/CD3+/CD8", 
+                                                  "/not debris/singlets/CD3+/DNT", 
+                                                  "/not debris/singlets/CD3+/DPT"))
+  
+})

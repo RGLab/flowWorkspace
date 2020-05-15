@@ -100,7 +100,7 @@ throws the error when such a discrepancy is found. Users can turn it on to
 ignore the TEXT segment when they are sure of the accuracy of the HEADER segment so that the
 file still can be read.}
 
-\item{\dots}{Further arguments that get passed on to
+\item{text.only}{whether to only parse text section of FCS (default is FALSE), it is sometime useful to skip loading data section for the faster loading meta data from FCS
 \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details}
 }
 \value{

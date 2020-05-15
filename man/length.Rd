@@ -6,9 +6,9 @@
 \alias{show,GatingSet-method}
 \title{Methods to get the length of a GatingSet}
 \usage{
-length(x)
+\S4method{length}{GatingSet}(x)
 
-show(object)
+\S4method{show}{GatingSet}(object)
 }
 \arguments{
 \item{x}{\code{GatingSet}}

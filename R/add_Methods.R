@@ -364,7 +364,7 @@ gh_pop_remove <- function(gh, node, ...)
     childrenNodes <- gs_pop_get_children(gh,node)
         #use path instead of unqiue name since the prefix of unique name
         #will change during deletion
-    lapply(childrenNodes,function(child)gh_pop_remove(gh, child))
+    lapply(childrenNodes,function(child)gh_pop_remove(gh, child, fast = FALSE))
         
     .cpp_removeNode(gh@pointer,sampleNames(gh), node, FALSE)
   }else

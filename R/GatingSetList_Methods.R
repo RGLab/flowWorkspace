@@ -201,10 +201,11 @@ gslist_to_gs <- function(x,...){
 	new("GatingSet", pointer = .cpp_combineGatingSet(ptrlist,sampleList))
 }
 
+#' @name recompute
 #' @export
-setMethod("recompute",c("GatingSetList"),function(x, ...){
+recompute.GatingSetList <- function(x, ...){
 			invisible(lapply(x, recompute, ..., level = 1))
-		})
+		}
 
 #' @export
 setMethod("[",c(x="GatingSetList",i="ANY"),function(x,i,j,...){

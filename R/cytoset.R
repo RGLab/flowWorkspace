@@ -288,6 +288,8 @@ cytoset_to_flowSet <- function(cs){
 }
 
 #' @rdname convert
+#' @param fs flowSet or ncdfFlowSet
+#' @param path the h5 path for cytoset
 #' @export 
 flowSet_to_cytoset <- function(fs,backend = c("h5", "mem",  "tile"), path = tempfile()){
   backend <- match.arg(backend)
@@ -600,18 +602,24 @@ setMethod("identifier",
 
 #' Add a cytoframe to a cytoset
 #' 
+#' @param cs cytoset
+#' @param sn sample name to be added
+#' @param cf cytoframe to be added
 #' @export
-cs_add_cytoframe <- function(cs, sn, fr){
+cs_add_cytoframe <- function(cs, sn, cf){
 	stopifnot(is(cs, "cytoset"))
-	add_cytoframe(cs@pointer, sn, fr@pointer)
+	add_cytoframe(cs@pointer, sn, cf@pointer)
 }
 
 #' update a cytoframe in a cytoset
 #' 
+#' @param cs cytoset
+#' @param sn sample name 
+#' @param cf cytoframe 
 #' @export
-cs_set_cytoframe <- function(cs, sn, fr){
+cs_set_cytoframe <- function(cs, sn, cf){
 	stopifnot(is(cs, "cytoset"))
-	set_cytoframe(cs@pointer, sn, fr@pointer)
+	set_cytoframe(cs@pointer, sn, cf@pointer)
 }
 #' Return the path of the underlying data files
 #' 
@@ -870,6 +878,7 @@ cs_cleanup_temp <- function(x, temp_dir = NULL){
 
 
 #' @rdname convert
+#' @param cs cytoset
 #' @export
 cytoset_to_list <- function(cs){
 	cfs <- lapply(1:length(cs), function(idx) {cs[[idx, returnType="cytoframe"]]})

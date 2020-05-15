@@ -7,7 +7,7 @@
 \alias{estimateLogicle,GatingSet-method}
 \title{Compute logicle transformation from the flowData associated with a GatingHierarchy}
 \usage{
-estimateLogicle(x, channels, ...)
+\method{estimateLogicle}{GatingHierarchy}(x, channels, ...)
 }
 \arguments{
 \item{x}{a GatingHierarchy}

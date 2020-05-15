@@ -9,6 +9,9 @@ cs_get_uri(x)
 
 cs_get_h5_file_path(x)
 }
+\arguments{
+\item{x}{cytoset or GatingSet}
+}
 \description{
 Return the path of the underlying data files
 }
