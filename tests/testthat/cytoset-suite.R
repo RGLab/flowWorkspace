@@ -1,3 +1,4 @@
+fs <- read.flowSet(fcs_files)
 suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, backend = backend_mode))
 samples <- sampleNames(cs)
 test_that("col order", {
@@ -115,22 +116,49 @@ test_that("save/load", {
   cs1 <- load_cytoset(tmp1)
   expect_equal(colnames(cs1), colnames(cs[,1:2]))#col-idexing result is preserved
   expect_equal(range(cs1[[1]], "data"), range(cs[[1]][,1:2], "data"))#the data is correct
-  h5f <- cf_get_uri(get_cytoframe_from_cs(cs1, 1))
-  fsize <- file.size(h5f)
-  expect_lt(fsize, file.size(cf_get_uri(get_cytoframe_from_cs(cs, 1))))#file size decreased
-  expect_error(save_cytoset(cs[, 1:2], tempfile(), cdf = "skip"), "Only 'copy'")
+  
+  if(backend_mode != "mem")
+  {
+    
+    h5f <- cf_get_uri(get_cytoframe_from_cs(cs1, 1))
+    f2 <- cf_get_uri(get_cytoframe_from_cs(cs, 1))
+    if(backend_mode=="tile")
+    {
+      fsize1 <- sum(file.info(list.files(h5f, all.files = TRUE, recursive = TRUE, full.names = T))$size)
+      fsize2 <- sum(file.info(list.files(f2, all.files = TRUE, recursive = TRUE, full.names = T))$size)
+    }else
+    {
+      fsize1 <- file.size(h5f)  
+      fsize2 <- file.size(f2)  
+    }
+    
+    expect_lt(fsize1, fsize2)#file size decreased
+  }
+  expect_error(save_cytoset(cs[, 1:2], tempfile(), backend_opt = "symlink"), "Only 'copy'")
   #overwrite existing h5
   id1 <- identifier(cs1)
   cs2 <- cs1[, 2]
   identifier(cs2) <- id1#force it to be identical in order to be able to overwrite the existing folder
-  save_cytoset(cs2, tmp1)
+  capture_output(save_cytoset(cs2, tmp1))
   cs1 <- load_cytoset(tmp1)
   expect_equal(colnames(cs1), colnames(cs[,2]))#col-idexing result is preserved
   expect_equal(range(cs1[[1]], "data"), range(cs[[1]][,2], "data"))#the data is correct
-  expect_lt(file.size(cf_get_uri(get_cytoframe_from_cs(cs1, 1))), fsize)#file size decreased
   
+  if(backend_mode != "mem")
+  {
+    f2 <- cf_get_uri(get_cytoframe_from_cs(cs1, 1))
+    if(backend_mode=="tile")
+    {
+     
+      fsize2 <- sum(file.info(list.files(f2, all.files = TRUE, recursive = TRUE, full.names = T))$size)
+    }else
+    {
+     
+      fsize2 <- file.size(f2)  
+    }
+    expect_lt(fsize2, fsize1)#file size decreased
+  }
   
-  cdf <- list.files(tmp, ".h5", full.names = TRUE)
   expect_equal(identifier(cs), id)
   id.new <- "test"
   identifier(cs) <- id.new
@@ -141,14 +169,18 @@ test_that("save/load", {
   # expect_error(save_cytoset(cs, path = tmp), "Not a valid", class = "std::domain_error")
   colnames(cs)[1] <- "dd"
   expect_equal(colnames(cs)[1], "dd")
-  expect_error(cs_flush_meta(cs) , "read-only", class = "std::domain_error")
-  expect_error(exprs(get_cytoframe_from_cs(cs, 1))[1,1] <- 0, "read-only", class = "std::domain_error")
+  if(backend_mode != "mem")
+  {
+    expect_error(cs_flush_meta(cs) , "read-only", class = "std::domain_error")
+    cf <- get_cytoframe_from_cs(cs, 1)
+    expect_error(exprs(cf)[1,1] <- 0, "read-only", class = "std::domain_error")
   
-  cs <- load_cytoset(tmp, h5_readonly = FALSE)
-  colnames(cs)[1] <- "dd"
-  expect_silent(cs_flush_meta(cs))
-  cs <- load_cytoset(tmp)
-  expect_equal(colnames(cs)[1], "dd")
+    cs <- load_cytoset(tmp, backend_readonly = FALSE)
+    colnames(cs)[1] <- "dd"
+    expect_silent(cs_flush_meta(cs))
+    cs <- load_cytoset(tmp)
+    expect_equal(colnames(cs)[1], "dd")
+  }
 })
 
 test_that("[[", {
@@ -262,6 +294,7 @@ test_that("copy", {
 })
 
 test_that("[[<-", {
+  skip_if(backend_mode=="mem")
   cs1 <- realize_view(Subset(cs, sampleFilter(1e3)))#TODO:dowsize the data because somehow [[<- is abnormally slow, which needs to be investigated later
   sn <- samples[1]
   
@@ -272,7 +305,7 @@ test_that("[[<-", {
   exprs(fr)[1:10, 1:10] <- 0
   markernames(fr) <- c("B710-A" = "test")
   
-  expect_identical(normalizePath(file.path(cs_get_uri(cs1),sn)), normalizePath(h5))
+  expect_identical(normalizePath(file.path(cs_get_uri(cs1),paste(sn, backend_mode, sep = "."))), normalizePath(h5))
   
   #write flowFrame
   cs1[[sn]] <- fr
@@ -288,7 +321,7 @@ test_that("[[<-", {
   h5 <- cf_get_uri(cf1)
   cs1[[sn]] <- cf1
   is_equal_flowFrame(cs1[[sn]], cf1)
-  expect_false(identical(normalizePath(file.path(cs_get_uri(cs1),sn)), normalizePath(h5)))
+  expect_false(identical(normalizePath(file.path(cs_get_uri(cs1),paste(sn, backend_mode, sep = "."))), normalizePath(h5)))
   #set cf
   cs_set_cytoframe(cs1, sn, cf1)  
   cf2 <- cs1[[sn, returnType = "cytoframe"]]
@@ -420,8 +453,8 @@ test_that("transform", {
   trans.list <- sapply(sampleNames(nc), function(sn)translist)
   trans.fs1 <- transform(nc, trans.list)
   trans_range <- range(trans.fs1[[sn]], "data")
-  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
-  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226), tol = 2e-7)
+  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872), tol = 2e-7)
   expect_equal(cs_get_uri(nc), cs_get_uri(trans.fs1))
   
   trans.list[[1]] <- logicleTransform()
@@ -437,8 +470,8 @@ test_that("transform", {
   nc <- realize_view(cs[1:2])
   suppressMessages(nc[[sn]] <- fr_trans)
   trans_range <- apply(exprs(nc[[sn]]), 2, range)
-  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
-  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226), tol = 2e-7)
+  expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872), tol = 2e-7)
 
   #subset on channels
   nc <- realize_view(cs[1:2])
@@ -448,7 +481,7 @@ test_that("transform", {
   suppressMessages(nc1[[sn]] <- fr_trans[,c("FL1-H")])
   trans_range <- apply(exprs(nc[[sn]]), 2, range)
   #transformed channel
-  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
+  expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226), tol = 2e-7)
   #untransformed channel
   # expect_equal(trans_range[, c("FL2-H")], c(1.000, 1637.104), tol = 8e-08)
 
@@ -486,6 +519,7 @@ test_that("transform", {
 # })
 
 test_that("cytoset_to_list", {
+  skip_if(backend_mode!="h5")
   cs <- flowSet_to_cytoset(GvHD)
   cfs <- cytoset_to_list(cs)
   expect_true(is.list(cfs))

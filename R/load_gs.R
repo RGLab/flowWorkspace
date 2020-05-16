@@ -206,8 +206,13 @@ delete_gs <- function(path, cred = NULL){
 #' @aliases load_gs load_gslist
 #' @importFrom aws.s3 get_bucket_df save_object
 #' @importFrom BiocFileCache BiocFileCache bfcnew bfcquery
-load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL){
-  remote_path <- ""
+load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL){
+  if(!is.null(h5_readonly))
+  {
+    warning("'h5_readonly' is deprecated by 'backend_readonly'!")
+    backend_readonly <- h5_readonly
+  }
+   remote_path <- ""
   if(is_s3_path(path))
   {
     cred <- check_credential(cred)
@@ -266,7 +271,7 @@ load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALS
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
   }else
     select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_readonly, select.sn, verbose, remote_path, cred))
+  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), backend_readonly, select.sn, verbose, remote_path, cred))
   
 }
 
