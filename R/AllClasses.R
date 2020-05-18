@@ -140,6 +140,7 @@ setGeneric("GatingSet",function(x,y,...)standardGeneric("GatingSet"))
 #' @name GatingSet-methods
 #' @aliases GatingSet,cytoset,ANY-method GatingSet,flowSet-method GatingSet,flowSet,ANY-method
 #' @param x a flowSet, ncdfFlowSet, or cytoset
+#' @param ... arguments passed to flowSet_to_cytoset() when x is a flowSet
 #' @export 
 #' @examples 
 #' \dontrun{
@@ -153,9 +154,9 @@ setMethod("GatingSet",c("cytoset"),function(x){
 	  gs
 	  
     })
-setMethod("GatingSet",c("flowSet"),function(x){
+setMethod("GatingSet",c("flowSet"),function(x, ...){
       
-      GatingSet(flowSet_to_cytoset(x))
+      GatingSet(flowSet_to_cytoset(x, ...))
       
     })
 

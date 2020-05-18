@@ -82,12 +82,13 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @export
 gh_apply_to_new_fcs <- function(x, files
 									, swap_cols = FALSE #for diva parsing
+									, backend = "h5"
 									, ...){	
 			
 			message("generating new GatingSet from the gating template...")
 			
 			#load new data
-  		cs <- load_cytoset_from_fcs(files, is_h5 = TRUE, ...)
+  		cs <- load_cytoset_from_fcs(files, backend = backend, ...)
 			cols.old <- colnames(cs)
 			cols <- swap_data_cols(cols.old, swap_cols)#validity check
 			if(!all(cols==cols.old))
