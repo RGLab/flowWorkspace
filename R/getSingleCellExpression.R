@@ -194,7 +194,14 @@ gs_get_singlecell_expression <- function(x, nodes
 		              #pops will be repeated for 2d gate to keep its length consistent with the number of chnls
 		              #so that the original c++ code still works without modification
 		              pops <- names(chnls)
-		              marker_chnl <- lapply(chnls, getChannelMarker, frm = fr)%>% bind_rows
+		              marker_chnl <- lapply(chnls, function(c){
+		                                    res <- getChannelMarker(fr, c)
+		                                    if(is.na(res[["desc"]]))#replace marker with channel name when marker is not present
+		                                    {
+		                                      res[["desc"]] <- res[["name"]]
+		                                    }
+		                                    res
+		                })%>% bind_rows
 		              markers <- marker_chnl[[datSrc]]
 		              markers.unique <- unique(markers)
 		              markers_pops <- sapply(markers.unique, function(marker){

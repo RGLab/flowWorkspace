@@ -461,6 +461,10 @@ if(!isCpStaticGate)
     mat <- mat[ind.total, ]
     expect_equal(thisRes[[1]], mat, check.attributes = FALSE)
     
+    #gs_get_singlecell_expression_by_gate associated with channel that does not have markers
+    mat <- gs_get_singlecell_expression_by_gate(gs, "CD3+")
+    expect_equal(colnames(mat[[1]]), c("CD3 V450", "SSC-A"))
+    expect_equal(nrow(mat[[1]]), gh_pop_get_count(gs[[1]], "CD3+"))
   })
   
 }
