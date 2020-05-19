@@ -291,7 +291,7 @@ cytoset_to_flowSet <- function(cs){
 #' @param fs flowSet or ncdfFlowSet
 #' @param path the h5 path for cytoset
 #' @export 
-flowSet_to_cytoset <- function(fs,backend = c("h5", "mem",  "tile"), path = tempfile()){
+flowSet_to_cytoset <- function(fs, path = tempfile(),backend = c("h5", "mem",  "tile")){
   backend <- match.arg(backend)
   tmp <- tempfile()
   # Set up mapping to ensure that the sampleNames 
