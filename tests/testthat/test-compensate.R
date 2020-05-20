@@ -93,7 +93,8 @@ test_that("compensate & transform a GatingSet", {
       translist <- list(flowjo_fasinh_trans(), logicle_trans(), flowjo_biexp_trans(), asinhtGml2_trans(), logicleGml2_trans())
       trans <- transformerList(colnames(cs), translist)      
       gs <- transform(gs, trans)
-      expect_equal(gs@transformation[[1]], trans)
+      # Now all above transformations are supported at c++ level
+      expect_equal(gs@transformation, list())
       #trans the cs directly
       gs1 <- gs_clone(gs.raw)
       cs1 <- gs_cyto_data(gs1)
