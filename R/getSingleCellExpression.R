@@ -33,7 +33,8 @@ gh_pop_get_indices_mat <- function(gh,y){
 .getPopChnlMapping <- function(this_pd, popNames, map =  NULL, swap = FALSE, ignore.case = FALSE){
   
   datSrc <- ifelse(swap, "name", "desc")
-  this_pd[, datSrc] <- as.vector(this_pd[, datSrc])
+  this_pd[, "name"] <- as.vector(this_pd[, "name"])
+  this_pd[, "desc"] <- as.vector(this_pd[, "desc"])
   
   #match to the pdata of flow frame
   all_markers <- this_pd[,datSrc]
