@@ -9,7 +9,7 @@ parse_transformer <- function(x){
   if(transobj[["type"]] == "flowJo_biexp")
   {
 	  transobj <- c(transobj["type"], attr(x[["transform"]], "parameters"))
-  }else if(!(transobj[["type"]] %in% c("logicle", "flowJo_log", "logtGml2", "asinhtGml2", "logicleGml2")))
+  }else if(!(transobj[["type"]] %in% c("logicle", "flowJo_log", "logtGml2", "asinhtGml2", "logicleGml2", "flowJo_fasinh")))
   {
     transobj <- list()
   }

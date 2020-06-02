@@ -164,7 +164,7 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 			}
 			else if(type == "flowJo_biexp")
 			  thisTrans.reset(new biexpTrans(as<int>(x["channelRange"]), as<EVENT_DATA_TYPE>(x["pos"]), as<EVENT_DATA_TYPE>(x["neg"]), as<EVENT_DATA_TYPE>(x["widthBasis"]), as<EVENT_DATA_TYPE>(x["maxValue"])));
-			else if(type == "asinhtGml2")
+			else if(type == "asinhtGml2" || type == "flowJo_fasinh")
 			  thisTrans.reset(new fasinhTrans(as<EVENT_DATA_TYPE>(x["t"]), as<EVENT_DATA_TYPE>(x["length"]), as<EVENT_DATA_TYPE>(x["t"]), as<EVENT_DATA_TYPE>(x["a"]), as<EVENT_DATA_TYPE>(x["m"])));
 			else if(type == "logicleGml2")
 			{
@@ -910,13 +910,20 @@ void setGate(XPtr<GatingSet> gs,string sampleName
 
 //[[Rcpp::export(name=".cpp_removeNode")]]
 void removeNode(XPtr<GatingSet> gs,string sampleName
-                  ,string gatePath) {
+                  ,string gatePath, bool recursive = false) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-		NODEID u = gh.getNodeID(gatePath);
+		if(recursive)
+		{
+			gh.removeNode(gatePath);
+		}
+		else
+		{
+			NODEID u = gh.getNodeID(gatePath);
+			gh.removeNode(u);
+		}
 
-		gh.removeNode(u);
 
 }
 

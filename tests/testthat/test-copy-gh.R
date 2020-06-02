@@ -42,7 +42,7 @@ test_that("gh_apply_to_new_fcs",
             gh <- gs[[1]]
             gs2 <- gh_apply_to_new_fcs(gh, fcs)
 
-            expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gh), "data"))
+            expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gh), "data"), tolerance = 1e-6)
             expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
             expect_equal(gs_get_compensations(gs), gs_get_compensations(gs2))
             expect_equal(gs_get_transformlists(gs), gs_get_transformlists(gs2))

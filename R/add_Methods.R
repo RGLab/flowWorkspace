@@ -356,15 +356,20 @@ Rm <- function(node, gs, ...)
 #' @param node population name/path
 #' @rdname pop_add
 gh_pop_remove <- function(gh, node, ...)
-		{
-            ##remove all children nodes as well
-			childrenNodes <- gs_pop_get_children(gh,node)
-            #use path instead of unqiue name since the prefix of unique name
-            #will change during deletion
-			lapply(childrenNodes,function(child)gh_pop_remove(gh, child))
-            
-			.cpp_removeNode(gh@pointer,sampleNames(gh), node)
-		}
+{
+  fast <- list(...)[["fast"]]
+  if(!is.null(fast)&&!fast)
+  {
+    ##remove all children nodes as well
+    childrenNodes <- gs_pop_get_children(gh,node)
+        #use path instead of unqiue name since the prefix of unique name
+        #will change during deletion
+    lapply(childrenNodes,function(child)gh_pop_remove(gh, child, fast = FALSE))
+        
+    .cpp_removeNode(gh@pointer,sampleNames(gh), node, FALSE)
+  }else
+    .cpp_removeNode(gh@pointer,sampleNames(gh), node, TRUE)
+}
 
 
     
