@@ -9,6 +9,24 @@ test_that("load GatingSet from archive",
   gs <<- gs_clone(gs)#make it writable
 })
 
+test_that("load read-only archive",
+{
+  skip_on_os("windows")
+  tmp <- tempfile()
+  save_gs(gs, tmp)
+  
+  #set the archive permission as readonly
+  system2("chmod", paste0("-R 555 ", tmp))
+  gs1 <- load_gs(tmp)      
+  expect_is(gs1, "GatingSet")
+  colnames(gs1)[1] <- "d"
+  expect_error(cs_flush_meta(gs_cyto_data(gs1)), "read-only", class = "error")
+  
+  expect_error(capture.output(gs1 <- load_gs(tmp, h5_readonly = FALSE), type = "message"), "hdf Error", class = "error")
+  
+  #restore write permission so that tmp can be cleanedup
+  system2("chmod", paste0("-R 755 ", tmp))
+  })
 test_that("validity checks for new distributed pb format",
 {
             
