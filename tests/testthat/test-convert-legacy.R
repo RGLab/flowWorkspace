@@ -20,6 +20,11 @@ test_that("convert_legacy_gs v1", {
   gs <- load_gs(tmp)
   expect_is(gs, "GatingSet")
   
+  #use customized folder to hold temp fcs files generated during the converting
+  tmpfcs <- tempfile()
+  tmp <- tempfile()
+  expect_message(convert_legacy_gs(legacy, tmp, tmp = tmpfcs), "saved")
+  list.files(tmpfcs)
   #output/legacy_gs_sn_without_fcs_ext
   legacy <- "~/rglab/workspace/flowWorkspace/output/legacy_gs_sn_without_fcs_ext"
   skip_if_not(dir.exists(legacy))

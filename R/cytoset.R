@@ -290,9 +290,11 @@ cytoset_to_flowSet <- function(cs){
 #' @rdname convert
 #' @param fs flowSet or ncdfFlowSet
 #' @param path the h5 path for cytoset
+#' @param tmp the temp folder when the temporary files are written to during conversion
+#'         by default, it is system temp path. And it can be changed to the customized location
+#'         when there is not enough space at system path.
 #' @export 
-flowSet_to_cytoset <- function(fs, path = tempfile()){
-  tmp <- tempfile()
+flowSet_to_cytoset <- function(fs, path = tempfile(), tmp = tempfile()){
   # Set up mapping to ensure that the sampleNames 
   # come back in without additional ".fcs" and allow
   # for potential re-ordering

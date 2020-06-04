@@ -17,7 +17,7 @@ flowFrame_to_cytoframe(fr, ...)
 
 cytoset_to_flowSet(cs)
 
-flowSet_to_cytoset(fs, path = tempfile())
+flowSet_to_cytoset(fs, path = tempfile(), tmp = tempfile())
 
 cytoset_to_list(cs)
 }
@@ -33,6 +33,10 @@ cytoset_to_list(cs)
 \item{fs}{flowSet or ncdfFlowSet}
 
 \item{path}{the h5 path for cytoset}
+
+\item{tmp}{the temp folder when the temporary files are written to during conversion
+by default, it is system temp path. And it can be changed to the customized location
+when there is not enough space at system path.}
 }
 \description{
 These methods perform conversions between flowWorkspace classes (\link{cytoframe}/\link{cytoset}) and 
