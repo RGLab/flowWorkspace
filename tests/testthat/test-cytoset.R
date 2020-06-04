@@ -7,6 +7,15 @@ suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, is_h5 = TRUE))
 samples <- sampleNames(cs)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 
+test_that("empty cs", {
+  cs <- cytoset()
+  expect_error(cs[[1]], "Empty")
+  expect_error(cs[1], "Empty")
+  expect_equal(colnames(cs), character())
+  expect_equal(nrow(pData(cs)), 0)
+  expect_error(cs_get_h5_file_path(cs), "Empty")
+  
+  })
 test_that("col order", {
   fr1 <- GvHD[[1]][1:2, 4:6]
   fr2 <- GvHD[[2]][1:2, 6:4]
