@@ -12,6 +12,16 @@ importing basic flowJo workspaces into R and replicate the gating from flowJo us
 
 groups of samples, compensation, and transformation are performed so that the output matches the flowJo analysis.
 
+### Reporting Bugs or Issues
+- Use the issue template in github when creating a new issue. 
+- Follow the instructions in the template (do your background reading).
+- Search and verify that the issue hasn't already been addressed.
+- Check the Bioconductor support site. 
+- Make sure your flow packages are up to date.
+- THEN if your issue persists, file a bug report.
+
+Otherwise, we will close your issue without responding.
+
 ### INSTALLATION
 
 ```r
