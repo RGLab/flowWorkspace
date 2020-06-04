@@ -20,7 +20,7 @@ groups of samples, compensation, and transformation are performed so that the ou
 - Make sure your flow packages are up to date.
 - THEN if your issue persists, file a bug report.
 
-Otherwise, we will close your issue without responding.
+Otherwise, we may close your issue without responding.
 
 ### INSTALLATION
 
