@@ -29,7 +29,10 @@ add.default <- function(gs, gate,...)
 #' @name gs_pop_add
 #' @aliases add add,default-method Rm
 #' @param gs A \code{GatingSet}
-#' @param gate A \code{filter} or a list of \code{filter}s to be added to the \code{GatingSet}.
+#' @param gate A \code{flowCore::filter} or a list of \code{flowCore::filter}s or \code{logical} vectors to be added to the \code{GatingSet}.
+#'             when logical vectors, they represent the indices of events to be included in the populations. It can be global that represents
+#'             the index to the original full events or local index that is relative to the parent population cell events. See examples for more
+#'             details.
 #' @param ... some other arguments to specify how the gates are added to the gating tree.
 #' \itemize{
 #' 		\item names  a \code{character} vector of length four,which specifies the population names resulted by adding a \code{quadGate}.The order of the names is clock-wise starting from the top left quadrant population.
@@ -99,6 +102,15 @@ add.default <- function(gs, gate,...)
 #' #remove one node causing the removal of all the descendants 
 #'     gs_pop_remove('rectangle', gs = gs)
 #'     gs_get_pop_paths(gs[[1]])
+#'     
+#'     #add logical vectors as gate
+#'     lg <- sapply(sampleNames(gs), function(sn){
+#'                                    gh <- gs[[sn]]
+#'                                    dat <- exprs(gh_pop_get_data(gh, "cd3+"))#get events data matrix for this sample at cd3+ node
+#'                                    vec <- dat[, "FSC-A"] > 1e4 & data[, "SSC-A"] > 1e5
+#'                                    vec
+#'                                    })
+#'    gs_pop_add(gs, lg, name = "new_bool", parent = "cd3+")
 #'  }
 #' @param validityCheck \code{logical} whether to check the consistency of tree structure across samples. default is TRUE. Can be turned off when speed is prefered to the robustness.
 #' @export 
