@@ -212,7 +212,7 @@ test_that("write.FCS -- data from the flowFrame constructor without $PnR keys", 
   tmp <- tempfile()
   write.FCS(fr1, tmp)
   fr2 <- load_cytoframe_from_fcs(tmp)
-  expect_equal(as.numeric(keyword(fr2)[["$P1R"]]), 3, tolerance = 3e-4)
+  expect_equal(as.numeric(keyword(fr2)[["$P1R"]]), 4, tolerance = 3e-4)
 })
 
 test_that("write.FCS -- add new cols", {

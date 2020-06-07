@@ -1,6 +1,17 @@
 fs <- read.flowSet(fcs_files)
 suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, backend = backend_mode))
 samples <- sampleNames(cs)
+test_that("empty cs", {
+			skip_if(backend_mode!="mem")
+			
+			cs <- cytoset()
+			expect_error(cs[[1]], "Empty")
+			expect_error(cs[1], "Empty")
+			expect_equal(colnames(cs), character())
+			expect_equal(nrow(pData(cs)), 0)
+			expect_error(cs_get_h5_file_path(cs), "Empty")
+			
+		})
 test_that("col order", {
   fr1 <- GvHD[[1]][1:2, 4:6]
   fr2 <- GvHD[[2]][1:2, 6:4]

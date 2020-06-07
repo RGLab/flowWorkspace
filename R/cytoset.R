@@ -290,10 +290,12 @@ cytoset_to_flowSet <- function(cs){
 #' @rdname convert
 #' @param fs flowSet or ncdfFlowSet
 #' @param path the h5 path for cytoset
+#' @param tmp the temp folder when the temporary files are written to during conversion
+#'         by default, it is system temp path. And it can be changed to the customized location
+#'         when there is not enough space at system path.
 #' @export 
-flowSet_to_cytoset <- function(fs, path = tempfile(),backend = c("h5", "mem",  "tile")){
+flowSet_to_cytoset <- function(fs, path = tempfile(),backend = c("h5", "mem",  "tile"), tmp = tempfile()){
   backend <- match.arg(backend)
-  tmp <- tempfile()
   # Set up mapping to ensure that the sampleNames 
   # come back in without additional ".fcs" and allow
   # for potential re-ordering
@@ -370,7 +372,13 @@ setReplaceMethod("pData",
 setMethod("colnames",
           signature=signature(x="cytoset"),
           definition=function(x, do.NULL="missing", prefix="missing")
-            get_colnames(x@pointer))
+           {
+            if(length(x) == 0)
+              character()
+            else
+            get_colnames(x@pointer)
+          }
+          )
   
 setReplaceMethod("colnames",
 	signature=signature(x="cytoset",
@@ -443,6 +451,7 @@ setMethod("[[",
           signature=signature(x="cytoset"),
           definition=function(x, i, j,  use.exprs = TRUE, returnType = c("flowFrame", "cytoframe"))
           {
+            
             returnType <- match.arg(returnType)
             if(missing(j))
               j <- NULL
@@ -644,14 +653,16 @@ cs_get_h5_file_path <- function(x){
 #' @export
 get_cytoframe_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
-	
+  if(length(x) == 0)
+    stop("Empty cytoset!")
   new("cytoframe", pointer = get_cytoframe(x@pointer, i, j), use.exprs = use.exprs)
 }
 setMethod("[",
 	signature=signature(x="cytoset"),
 	definition=function(x, i, j, ..., drop=FALSE)
 	{
-  
+    if(length(x) == 0)
+      stop("Empty cytoset!")
 		if(missing(i))
 		  i <- NULL
 		else if(any(i < 0)){
@@ -682,6 +693,8 @@ setMethod("fsApply",
         FUN="ANY"),
     definition=function(x,FUN,...,simplify=FALSE, use.exprs=FALSE)
     {
+		if(length(x) == 0)
+			stop("Empty cytoset!")
       callNextMethod()
     })
 setMethod("Subset",

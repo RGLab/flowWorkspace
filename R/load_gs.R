@@ -304,15 +304,19 @@ setMethod("sampleNames","character",function(object){
 #' 
 #' @param from the old archive path
 #' @param to the new archive path
+#' @param ...
+#'         tmp the path where the temporary files will be written to during the conversion. By default it is system temp folder and
+#'          sometime it is helpful to be able to customize it to other location when system temp folder is fulll or not succicient when
+#'           converting big data sets.
 #' @export 
 #' @rdname convert_legacy
 #' @examples 
 #' \dontrun{
 #' convert_legacy_gs(old_gs_path, new_gs_path)
 #' }
-convert_legacy_gs <- function(from, to){
+convert_legacy_gs <- function(from, to, ...){
     message("loading legacy archive...")
-    suppressMessages(gs <- .load_legacy(from, to))
+    suppressMessages(gs <- .load_legacy(from, to, ...))
     
     #TODO:optional skip generate_h5_folder in add_fcs api to be able to directly write to the target path
     #without needing to do this hack below
@@ -328,7 +332,7 @@ convert_legacy_gs <- function(from, to){
 
 #' @export
 #' @rdname convert_legacy
-convert_legacy_gslist <- function(from, to){
+convert_legacy_gslist <- function(from, to, ...){
   if(file.exists(to)){
       stop("The existing target path '", to, ". Please specify a new destination path for saving the new 'GatingSetList'!")
   }else{
@@ -343,7 +347,7 @@ convert_legacy_gslist <- function(from, to){
   res <- lapply(dirs,function(this_dir){
     message("converting legacy archive: ", this_dir)
     new_dir <- file.path(to, basename(this_dir)) 
-    suppressMessages(convert_legacy_gs(this_dir, new_dir))
+    suppressMessages(convert_legacy_gs(this_dir, new_dir, ...))
   })
   file.copy(file.path(from,"samples.rds"), file.path(to,"samples.rds"))
 
@@ -351,7 +355,7 @@ convert_legacy_gslist <- function(from, to){
   
 }
 
-.load_legacy <- function(from, to){
+.load_legacy <- function(from, to, ...){
   from <- normalizePath(from,mustWork = TRUE)
   if(!file.exists(from))
     stop(from,"' not found!")
@@ -396,7 +400,7 @@ convert_legacy_gslist <- function(from, to){
     fs@frames[[sn]] <- fr
   }
   
-  cs <- flowSet_to_cytoset(fs, to)
+  cs <- flowSet_to_cytoset(fs, to, ...)
   gs <-  new("GatingSet", pointer = load_legacy_gs(dat.file, cs@pointer))
   
   if(.hasSlot(gs.old, "compensation"))

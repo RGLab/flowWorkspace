@@ -5,14 +5,18 @@
 \alias{convert_legacy_gslist}
 \title{convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only)}
 \usage{
-convert_legacy_gs(from, to)
+convert_legacy_gs(from, to, ...)
 
-convert_legacy_gslist(from, to)
+convert_legacy_gslist(from, to, ...)
 }
 \arguments{
 \item{from}{the old archive path}
 
 \item{to}{the new archive path}
+
+\item{...}{tmp the path where the temporary files will be written to during the conversion. By default it is system temp folder and
+sometime it is helpful to be able to customize it to other location when system temp folder is fulll or not succicient when
+ converting big data sets.}
 }
 \description{
 Older versions of flowWorkspace represented \code{\link{GatingSet-class}} objects using a combination of
