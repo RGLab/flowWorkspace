@@ -9,7 +9,7 @@ test_that("empty cs", {
 			expect_error(cs[1], "Empty")
 			expect_equal(colnames(cs), character())
 			expect_equal(nrow(pData(cs)), 0)
-			expect_error(cs_get_h5_file_path(cs), "Empty")
+			expect_error(cs_get_uri(cs), "Empty")
 			
 		})
 test_that("col order", {
