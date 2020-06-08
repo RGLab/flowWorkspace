@@ -31,7 +31,7 @@ bicLite(flowWorkspace) # may be older
 # Then, install the latest version from github using devtools package 
 install.packages("devtools") 
 library(devtools) #load it
-install_github("RGLab/flowWorkspace", ref="trunk")
+install_github("RGLab/flowWorkspace")
 
 ```
 
