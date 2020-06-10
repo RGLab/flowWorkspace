@@ -37,7 +37,9 @@ test_that("load read-only archive",
   colnames(gs1)[1] <- "d"
   expect_error(cs_flush_meta(gs_cyto_data(gs1)), "read-only", class = "error")
   
-  expect_error(capture.output(gs1 <- load_gs(tmp, h5_readonly = FALSE), type = "message"), "hdf Error", class = "error")
+  expect_error(capture.output(gs1 <- load_gs(tmp, backend_readonly = FALSE), type = "message")
+                , ifelse(backend_mode=="h5", "hdf Error", "Permission")
+                , class = "error")
   
   #restore write permission so that tmp can be cleanedup
   system2("chmod", paste0("-R 755 ", tmp))
