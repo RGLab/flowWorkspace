@@ -12,8 +12,8 @@ test_that("compensate & transform a GatingSet", {
       
       gs <- gs_clone(gs.raw)
       gs1 <- compensate(gs, comp.mat)
-      expect_equal(cs_get_h5_file_path(gs)
-                  , cs_get_h5_file_path(gs1)
+      expect_equal(cs_get_uri(gs)
+                  , cs_get_uri(gs1)
                   )
 	    comp <- gs_get_compensations(gs1)
       expect_is(comp, "list")
@@ -103,6 +103,6 @@ test_that("compensate & transform a GatingSet", {
       transform(cs1, trans)
       
       expect_equal(range(cs[[1]], "data"), range(cs1[[1]], "data"))
-      expect_false(cs_get_h5_file_path(cs)==cs_get_h5_file_path(cs1))
+      expect_false(cs_get_uri(cs)==cs_get_uri(cs1))
       
     })
