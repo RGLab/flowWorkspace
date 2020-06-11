@@ -455,12 +455,12 @@ setReplaceMethod("markernames",
         #validity check
 		oldmarkers <- pdata[["desc"]]		
 		oldmarkers[inds] <- value
-		oldmarkers <- oldmarkers[!is.na(oldmarkers)]
+		oldmarkers <- oldmarkers[!is.na(oldmarkers) & oldmarkers != ""]
 		dup <- duplicated(oldmarkers)
 		if(any(dup))
 		{
 			
-			stop("Trying to assing the marker: ", oldmarkers[dup][1], " to multiple channels")
+			stop("Trying to assign the marker: ", oldmarkers[dup][1], " to multiple channels")
 		}
 			
         for(i in seq_along(inds)){
