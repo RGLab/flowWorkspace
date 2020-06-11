@@ -443,6 +443,7 @@ setReplaceMethod("markernames",
 		oldmarkers[inds] <- value
 		oldmarkers <- oldmarkers[!is.na(oldmarkers)]
 		dup <- duplicated(oldmarkers)
+		dup <- dup[!dup == ""]
 		if(any(dup))
 		{
 			
