@@ -442,8 +442,8 @@ setReplaceMethod("markernames",
 		oldmarkers <- pdata[["desc"]]		
 		oldmarkers[inds] <- value
 		oldmarkers <- oldmarkers[!is.na(oldmarkers)]
+		oldmarkers <- oldmarkers[oldmarkers != ""]
 		dup <- duplicated(oldmarkers)
-		dup <- dup[!dup == ""]
 		if(any(dup))
 		{
 			
