@@ -1,4 +1,5 @@
-context("GatingSet Accessors")
+context("---- gs")
+
 test_that("markernames<- ",{
   gs1 <- gs_clone(gs)
   gh <- gs1[[1]]

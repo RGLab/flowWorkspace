@@ -1,3 +1,13 @@
+context("-- cytoframe")
+
+fcs_file <- list.files(dataDir, "Cyto", full.names = TRUE)[1]
+fr <- read.FCS(fcs_file)
+lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
+rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+
+cf <- load_cytoframe_from_fcs(fcs_file, backend = backend_mode)
+cf_lock(cf)
+
 test_that("cf_append_cols", {
   skip_if(backend_mode != "mem")
   cf <- flowFrame_to_cytoframe(GvHD[[1]])

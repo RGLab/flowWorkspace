@@ -1,3 +1,5 @@
+context("-- archived gs")
+
 gs <- NULL
 isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",

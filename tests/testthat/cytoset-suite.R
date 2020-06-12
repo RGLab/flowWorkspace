@@ -1,3 +1,7 @@
+context("-- cytoset")
+
+fcs_files <- list.files(dataDir, "Cyto", full.names = TRUE)
+lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 fs <- read.flowSet(fcs_files)
 suppressMessages(cs <- load_cytoset_from_fcs(fcs_files, backend = backend_mode))
 samples <- sampleNames(cs)

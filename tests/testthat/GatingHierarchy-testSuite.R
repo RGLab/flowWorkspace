@@ -1,4 +1,4 @@
-context("GatingHierarchy Accessors")
+context("---- gh")
 
 test_that(".isCompensated",
     {
