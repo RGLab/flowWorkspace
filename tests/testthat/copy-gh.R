@@ -2,7 +2,7 @@ skip_if(win32_flag)
 test_that("gh_apply_to_new_fcs",
           {
             fcs <- list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1]
-            cs <- load_cytoset_from_fcs(fcs, is_h5 = TRUE)
+            cs <- load_cytoset_from_fcs(fcs, backend = backend_mode)
             gs1 <- GatingSet(cs)
             comp <- spillover(cs[[1]])[[1]]
             compensate(gs1, comp)
@@ -26,7 +26,7 @@ test_that("gh_apply_to_new_fcs",
             expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
             expect_equal(gs_get_compensations(gs), gs_get_compensations(gs2))
             expect_equal(gs_get_transformlists(gs), gs_get_transformlists(gs2))
-            expect_false(cs_get_h5_file_path(gs)==cs_get_h5_file_path(gs2))
+            expect_false(cs_get_uri(gs)==cs_get_uri(gs2))
             
             #add non-supported trans to test trans cp at R level
             gs <- gs_clone(gs1)
@@ -46,6 +46,6 @@ test_that("gh_apply_to_new_fcs",
             expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
             expect_equal(gs_get_compensations(gs), gs_get_compensations(gs2))
             expect_equal(gs_get_transformlists(gs), gs_get_transformlists(gs2))
-            expect_false(cs_get_h5_file_path(gs)==cs_get_h5_file_path(gs2))
+            expect_false(cs_get_uri(gs)==cs_get_uri(gs2))
             
           })
