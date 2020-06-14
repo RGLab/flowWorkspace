@@ -19,7 +19,8 @@ save_gs(
 
 load_gs(
   path,
-  h5_readonly = TRUE,
+  h5_readonly = NULL,
+  backend_readonly = TRUE,
   select = character(),
   verbose = FALSE,
   cred = NULL

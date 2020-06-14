@@ -24,11 +24,10 @@ test_that("save_gs from local to remote",
 
 test_that("load_gs from s3",
           {
-            #load gs from remote without downloading h5
-            expect_message(gs <- load_gs(url), "downloading")
+            gs <- load_gs(url)
             expect_is(gs, "GatingSet")
-            expect_true(grepl("https", cs_get_h5_file_path(gs)))
-            expect_message(gs <- load_gs(url), "local")
+            expect_true(grepl("https", cs_get_uri(gs)))
+            
            })
 test_that("save_gs from s3 to local",
           {

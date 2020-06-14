@@ -226,7 +226,7 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt) {
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
 XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
-									, string remote_path, List cred) {
+									, List cred) {
 	tiledb::Config cfg;
 	cfg["vfs.s3.aws_access_key_id"] = as<string>(cred["AWS_ACCESS_KEY_ID"]);
 	cfg["vfs.s3.aws_secret_access_key"] =  as<string>(cred["AWS_SECRET_ACCESS_KEY"]);
@@ -238,8 +238,7 @@ XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select
 
 
 
-	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose
-			, remote_path, ctx));
+	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose, ctx));
 
 }
 

@@ -205,52 +205,16 @@ delete_gs <- function(path, cred = NULL){
 #' @export
 #' @aliases load_gs load_gslist
 #' @importFrom aws.s3 get_bucket_df save_object
-#' @importFrom BiocFileCache BiocFileCache bfcnew bfcquery
 load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL){
   if(!is.null(h5_readonly))
   {
     warning("'h5_readonly' is deprecated by 'backend_readonly'!")
     backend_readonly <- h5_readonly
   }
-   remote_path <- ""
   if(is_s3_path(path))
   {
     cred <- check_credential(cred)
-    s3_paths <- parse_s3_path(path)
-    bucket <- s3_paths[["bucket"]]
-    gs_key <- s3_paths[["key"]]
-    b <- get_bucket_df(bucket, gs_key, region = cred$AWS_REGION)
-    keys <- b$Key
-    gs_key <- keys[grepl("\\.gs$", keys)]
-    #check local cache for s3 path
-    bfc <- BiocFileCache()
-    tbl <- bfcquery(bfc, path)
-    ncache <- nrow(tbl)
-    if(ncache == 0)#download if no cache
-    {
-      savepath <- bfcnew(bfc, path)
-      rid <- names(savepath)
-      
-      pb_keys <- keys[grepl("\\.pb$", keys)]
-      sns <- sapply(pb_keys, function(key)sub(".pb", "", basename(key)))
-      
-      #download pb files
-      for(k in c(gs_key, pb_keys))
-      {
-        message("downloading ", k, " ...")
-        save_object(k, bucket, file.path(savepath, basename(k)), region = cred$AWS_REGION)
-      }
-      
-      path <- savepath
-    }else if(ncache == 1)
-    {
-      path <- tbl[["rpath"]]  
-      message("loading from local cache:", path)
-    }else
-      stop("More than one local caches matches to ", gs_key)
-    
-    # s3 path for h5    
-    remote_path <- paste0("https://", bucket, ".s3.amazonaws.com/", dirname(gs_key))
+     
     
   }else
   {
@@ -260,6 +224,7 @@ load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = ch
     {
       stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
     }
+	path <- normalizePath(path)
     sns <- sampleNames(path)
     cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "", AWS_REGION = "")
   }
@@ -271,7 +236,7 @@ load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = ch
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
   }else
     select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), backend_readonly, select.sn, verbose, remote_path, cred))
+  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose, cred))
   
 }
 

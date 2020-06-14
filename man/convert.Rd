@@ -17,7 +17,12 @@ flowFrame_to_cytoframe(fr, ...)
 
 cytoset_to_flowSet(cs)
 
-flowSet_to_cytoset(fs, backend = c("h5", "mem", "tile"), path = tempfile(), tmp = tempfile())
+flowSet_to_cytoset(
+  fs,
+  path = tempfile(),
+  backend = c("h5", "mem", "tile"),
+  tmp = tempfile()
+)
 
 cytoset_to_list(cs)
 }

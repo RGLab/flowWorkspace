@@ -5,7 +5,7 @@
 \alias{GatingSet,GatingHierarchy,character-method}
 \title{constructors for GatingSet}
 \usage{
-gh_apply_to_new_fcs(x, files, swap_cols = FALSE, ...)
+gh_apply_to_new_fcs(x, files, swap_cols = FALSE, backend = "h5", ...)
 }
 \arguments{
 \item{x}{GatingHierarchy}

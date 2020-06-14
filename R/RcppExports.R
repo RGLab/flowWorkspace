@@ -199,8 +199,8 @@ set_gatingset_id <- function(gsPtr, id) {
     invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, backend_opt))
 }
 
-.cpp_loadGatingSet <- function(path, readonly, select_samples, verbose, remote_path, cred) {
-    .Call(`_flowWorkspace_load_gatingset`, path, readonly, select_samples, verbose, remote_path, cred)
+.cpp_loadGatingSet <- function(path, readonly, select_samples, verbose, cred) {
+    .Call(`_flowWorkspace_load_gatingset`, path, readonly, select_samples, verbose, cred)
 }
 
 load_legacy_gs <- function(pbfile, cs) {
