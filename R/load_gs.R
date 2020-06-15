@@ -180,7 +180,6 @@ parse_s3_path <- function(url){
 #' 
 #' @param path either a local path or s3 path (e.g. "s3://bucketname/gs_path)
 #' @importFrom aws.s3 get_bucket delete_object
-#' @importFrom BiocFileCache bfcremove
 #' @export
 delete_gs <- function(path, cred = NULL){
   if(is_s3_path(path))
@@ -190,13 +189,7 @@ delete_gs <- function(path, cred = NULL){
     b <- get_bucket(s3_paths[["bucket"]], s3_paths[["key"]], region = cred$AWS_REGION)
     for(obj in b)
       delete_object(obj, region = cred$AWS_REGION)
-    #clear local cache as well
-    tbl <- bfcquery(query = path)
-    rid <- tbl[["rid"]]
-    
-    suppressWarnings(bfcremove(rids = rid))#TODO:tackle the warning
-    message("local cache is cleared")
-  }else
+     }else
     unlink(path, recursive = TRUE)
   message(path, " is deleted")
 }
@@ -479,5 +472,29 @@ load_gslist<-function(path){
   })
   samples <- readRDS(file.path(path,"samples.rds"))
   GatingSetList(res, samples = samples)
+  
+}
+
+#' convert h5 based gs archive to tiledb
+#' @param gs_dir existing gs archive path
+#' @param output_dir the new gs path
+#' @export
+convert_backend <- function(gs_dir, output_dir){
+  #convert h5 to tile
+  h5files <- list.files(gs_dir, "\\.h5$", full.names = TRUE)
+  if(length(h5files)==0)
+    stop("no h5 files to be converted!")
+  if(dir.exists(output_dir))
+    stop("output dir already exists: ", output)
+  dir.create(output_dir)
+  pb <- list.files(gs_dir, "\\.(pb|gs)$", full.names = TRUE)
+  file.copy(pb, output_dir)
+  
+  for(h5 in h5files)
+  {
+    message("converting ", h5)
+    cf <- load_cytoframe_from_h5(h5)
+    cf_write_tile(cf, file.path(output_dir, sub("\\.h5$", ".tile",basename(h5))))
+  }
   
 }
