@@ -455,12 +455,12 @@ setReplaceMethod("markernames",
         #validity check
 		oldmarkers <- pdata[["desc"]]		
 		oldmarkers[inds] <- value
-		oldmarkers <- oldmarkers[!is.na(oldmarkers)]
+		oldmarkers <- oldmarkers[!is.na(oldmarkers) & oldmarkers != ""]
 		dup <- duplicated(oldmarkers)
 		if(any(dup))
 		{
 			
-			stop("Trying to assing the marker: ", oldmarkers[dup][1], " to multiple channels")
+			stop("Trying to assign the marker: ", oldmarkers[dup][1], " to multiple channels")
 		}
 			
         for(i in seq_along(inds)){
@@ -826,8 +826,15 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' 
 #' @export
 cf_append_cols <- function(cf, cols){
-  fr <- cytoframe_to_flowFrame(cf)
-  fr <- fr_append_cols(fr, cols)
   ish5 <- cf_get_h5_file_path(cf) != ""
-  flowFrame_to_cytoframe(fr, is_h5 = ish5)
+  if(ish5){
+    fr <- cytoframe_to_flowFrame(cf)
+    fr <- fr_append_cols(fr, cols)
+    flowFrame_to_cytoframe(fr, is_h5 = ish5)
+  }else{
+    # For now, to be safe, append to a copy. Needs discussion.
+    cf <- realize_view(cf)
+    append_cols(cf@pointer, colnames(cols), cols)
+    cf
+  }
 }

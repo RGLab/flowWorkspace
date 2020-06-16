@@ -239,7 +239,7 @@ test_that("write.FCS -- add new cols", {
   tmp <- cf_append_cols(tmp, cols)
   write.FCS(tmp, tmpfile)
   tmp1 <- load_cytoframe_from_fcs(tmpfile)
-  expect_equal(keyword(tmp1)[["flowCore_$P10Rmax"]], "3")
+  expect_equal(as.numeric(keyword(tmp1)[["flowCore_$P10Rmax"]]), 3)
   expect_equivalent(exprs(tmp), exprs(tmp1), tolerance = 3e-08)
 })
 
