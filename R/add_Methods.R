@@ -79,7 +79,7 @@ add.default <- function(gs, gate,...)
 #'     gs_get_pop_paths(gs[[1]]) #population names are named after dimensions of gate if not specified
 #'     
 #' #add a boolean Gate
-#'     bg<-booleanFilter(`CD15 FITC-CD45 PE+`|`CD15 FITC+CD45 PE-`)
+#'     bg<-booleanFilter(`CD15 FITC-CD45 PE+|CD15 FITC+CD45 PE-`)
 #'     bg
 #'     nodeID2<-gs_pop_add(gs,bg,parent="rectangle")
 #'     nodeID2
