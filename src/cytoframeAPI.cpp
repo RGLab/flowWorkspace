@@ -1,4 +1,4 @@
-#include <cytolib/H5RCytoFrame.hpp>
+#include <cytolib/H5CytoFrame.hpp>
 #include <cytolib/TileCytoFrame.hpp>
 #include <cytolib/CytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
@@ -100,65 +100,25 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, string id, string key, string region){
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, tiledb::Config cfg){
   FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
-  tiledb::Config cfg;
-  	cfg["vfs.s3.aws_access_key_id"] =  id;
-  	cfg["vfs.s3.aws_secret_access_key"] =  key;
 
-  	cfg["vfs.s3.region"] = region;
-
-  	tiledb::Context ctx(cfg);
+  tiledb::Context ctx(cfg);
   fr->write_to_disk(filename, format, ctx);
   
 }
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly){
-    unique_ptr<CytoFrame> fr(new H5CytoFrame(filename.c_str(), readonly));
-
-	if(on_disk)
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(fr.release())));
-	else
-	{
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new MemCytoFrame(*fr.release()))));
-	}
-
-}
-// [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string region){
-	tiledb::Config cfg;
-	cfg["vfs.s3.aws_access_key_id"] =  id;
-	cfg["vfs.s3.aws_secret_access_key"] =  key;
-
-	cfg["vfs.s3.region"] = region;
-
-	CtxPtr ctx(new tiledb::Context(cfg));
-
-	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new H5RCytoFrame(url.c_str(), true,
-																		ctx
-																		)
-															)
-													)
-								);
-
-}
-
-// [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf_from_tile(string url, string id, string key, string region, bool readonly, int num_threads){
-	tiledb::Config cfg;
-	cfg["vfs.s3.aws_access_key_id"] =  id;
-	cfg["vfs.s3.aws_secret_access_key"] =  key;
-
-	cfg["vfs.s3.region"] = region;
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, int num_threads, tiledb::Config cfg){
 	cfg["sm.num_reader_threads"] = num_threads;
 	CtxPtr ctx(new tiledb::Context(cfg));
+    CytoFramePtr ptr = load_cytoframe(url, readonly, ctx);
 
-	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new TileCytoFrame(url.c_str(), readonly, true,
-																		ctx
-																		)
-															)
-													)
-								);
+	if(!on_disk)
+	{
+		ptr.reset(new MemCytoFrame(*ptr));
+	}
+
+	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 
 }
 // [[Rcpp::export]] 

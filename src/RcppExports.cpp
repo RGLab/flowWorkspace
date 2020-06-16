@@ -487,20 +487,21 @@ BEGIN_RCPP
 END_RCPP
 }
 // save_gatingset
-void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt);
-RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP backend_optSEXP) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, tiledb::Config cfg);
+RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP backend_optSEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< string >::type path(pathSEXP);
     Rcpp::traits::input_parameter< string >::type backend_opt(backend_optSEXP);
-    save_gatingset(gs, path, backend_opt);
+    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    save_gatingset(gs, path, backend_opt, cfg);
     return R_NilValue;
 END_RCPP
 }
 // load_gatingset
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, List cred);
-RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP, SEXP credSEXP) {
+XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, tiledb::Config cfg);
+RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -508,8 +509,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
     Rcpp::traits::input_parameter< vector<string> >::type select_samples(select_samplesSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< List >::type cred(credSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly, select_samples, verbose, cred));
+    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly, select_samples, verbose, cfg));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -711,60 +712,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // write_to_disk
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, string id, string key, string region);
-RcppExport SEXP _flowWorkspace_write_to_disk(SEXP frSEXP, SEXP filenameSEXP, SEXP ish5SEXP, SEXP idSEXP, SEXP keySEXP, SEXP regionSEXP) {
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, tiledb::Config cfg);
+RcppExport SEXP _flowWorkspace_write_to_disk(SEXP frSEXP, SEXP filenameSEXP, SEXP ish5SEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< bool >::type ish5(ish5SEXP);
-    Rcpp::traits::input_parameter< string >::type id(idSEXP);
-    Rcpp::traits::input_parameter< string >::type key(keySEXP);
-    Rcpp::traits::input_parameter< string >::type region(regionSEXP);
-    write_to_disk(fr, filename, ish5, id, key, region);
+    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    write_to_disk(fr, filename, ish5, cfg);
     return R_NilValue;
 END_RCPP
 }
-// load_cf_from_h5
-XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly);
-RcppExport SEXP _flowWorkspace_load_cf_from_h5(SEXP filenameSEXP, SEXP on_diskSEXP, SEXP readonlySEXP) {
+// load_cf
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, int num_threads, tiledb::Config cfg);
+RcppExport SEXP _flowWorkspace_load_cf(SEXP urlSEXP, SEXP readonlySEXP, SEXP on_diskSEXP, SEXP num_threadsSEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< string >::type url(urlSEXP);
+    Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
     Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
-    Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
-    rcpp_result_gen = Rcpp::wrap(load_cf_from_h5(filename, on_disk, readonly));
-    return rcpp_result_gen;
-END_RCPP
-}
-// load_cf_from_s3
-XPtr<CytoFrameView> load_cf_from_s3(string url, string id, string key, string region);
-RcppExport SEXP _flowWorkspace_load_cf_from_s3(SEXP urlSEXP, SEXP idSEXP, SEXP keySEXP, SEXP regionSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type url(urlSEXP);
-    Rcpp::traits::input_parameter< string >::type id(idSEXP);
-    Rcpp::traits::input_parameter< string >::type key(keySEXP);
-    Rcpp::traits::input_parameter< string >::type region(regionSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_cf_from_s3(url, id, key, region));
-    return rcpp_result_gen;
-END_RCPP
-}
-// load_cf_from_tile
-XPtr<CytoFrameView> load_cf_from_tile(string url, string id, string key, string region, bool readonly, int num_threads);
-RcppExport SEXP _flowWorkspace_load_cf_from_tile(SEXP urlSEXP, SEXP idSEXP, SEXP keySEXP, SEXP regionSEXP, SEXP readonlySEXP, SEXP num_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type url(urlSEXP);
-    Rcpp::traits::input_parameter< string >::type id(idSEXP);
-    Rcpp::traits::input_parameter< string >::type key(keySEXP);
-    Rcpp::traits::input_parameter< string >::type region(regionSEXP);
-    Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
     Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_cf_from_tile(url, id, key, region, readonly, num_threads));
+    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_cf(url, readonly, on_disk, num_threads, cfg));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1193,7 +1164,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 4},
     {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
     {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
-    {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 3},
+    {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
     {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 5},
     {"_flowWorkspace_load_legacy_gs", (DL_FUNC) &_flowWorkspace_load_legacy_gs, 2},
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 3},
@@ -1213,10 +1184,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
     {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
-    {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 6},
-    {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 3},
-    {"_flowWorkspace_load_cf_from_s3", (DL_FUNC) &_flowWorkspace_load_cf_from_s3, 4},
-    {"_flowWorkspace_load_cf_from_tile", (DL_FUNC) &_flowWorkspace_load_cf_from_tile, 6},
+    {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 4},
+    {"_flowWorkspace_load_cf", (DL_FUNC) &_flowWorkspace_load_cf, 5},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},

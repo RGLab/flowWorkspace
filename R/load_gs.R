@@ -13,7 +13,7 @@
 #' @param backend_opt a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the backend data file.
 #'              Sometimes it is more efficient to move or create a symlink of the existing backend file to the archived folder.
 #'              It is useful to "skip" archiving backend file if raw data has not been changed.
-#' @inheritParams load_cytoframe_from_h5
+#' @inheritParams load_cytoframe
 #' @param ... other arguments: not used.
 #'
 #'
@@ -48,10 +48,10 @@ save_gs<-function(gs, path
   }
   backend_opt <- match.arg(backend_opt)
   path <- suppressWarnings(normalizePath(path))
-  
+  cred <- check_credential(cred)
   if(is_s3_path(path))
   {
-    cred <- check_credential(cred)
+    
     cf <- get_cytoframe_from_cs(gs_cyto_data(gs), 1)
     back_type <- cf_backend_type(cf)
     if(back_type != "tile")
@@ -125,12 +125,8 @@ load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = ch
     warning("'h5_readonly' is deprecated by 'backend_readonly'!")
     backend_readonly <- h5_readonly
   }
-  if(is_s3_path(path))
-  {
-    cred <- check_credential(cred)
-     
-    
-  }else
+  cred <- check_credential(cred)
+  if(!is_s3_path(path))
   {
     
     
@@ -138,9 +134,9 @@ load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = ch
     {
       stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
     }
-	path <- normalizePath(path)
+	  path <- normalizePath(path)
     sns <- sampleNames(path)
-    cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "", AWS_REGION = "")
+    
   }
   if(!is.character(select))
   {
@@ -414,7 +410,7 @@ convert_backend <- function(gs_dir, output_dir){
   for(h5 in h5files)
   {
     message("converting ", h5)
-    cf <- load_cytoframe_from_h5(h5)
+    cf <- load_cytoframe(h5)
     cf_write_tile(cf, file.path(output_dir, sub("\\.h5$", ".tile",basename(h5))))
   }
   

@@ -24,7 +24,7 @@ Other cytoframe/cytoset IO functions:
 \code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
-\code{\link{load_cytoframe_from_h5}()},
+\code{\link{load_cytoframe}()},
 \code{\link{load_cytoset_from_fcs}()}
 }
 \concept{cytoframe/cytoset IO functions}

@@ -203,7 +203,7 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
  * save/load GatingSet
  */
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, List cred) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, tiledb::Config cfg) {
       CytoFileOption cf_opt;
       bool skip_data = false;
       if(backend_opt == "copy")
@@ -221,7 +221,7 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, List cr
       }
       else
         stop("invalid backend_opt option!");
-			gs->serialize_pb(path, cf_opt, skip_data);
+			gs->serialize_pb(path, cf_opt, skip_data, tiledb::Context(cfg));
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
@@ -229,9 +229,6 @@ XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select
 									, tiledb::Config cfg) {
 	//	cfg["sm.num_reader_threads"] = num_threads;
 	CtxPtr ctx(new tiledb::Context(cfg));
-
-
-
 
 	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose, ctx));
 

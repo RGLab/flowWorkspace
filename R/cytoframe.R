@@ -707,7 +707,7 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @param cf cytoframe object
 #' @param filename the full path of the output file
 #' @param backend either "h5" or "tile"
-#' @inheritParams load_cytoframe_from_h5
+#' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
 cf_write_disk <- function(cf, filename, backend = c("h5", "tile"), cred = NULL){
@@ -715,14 +715,14 @@ cf_write_disk <- function(cf, filename, backend = c("h5", "tile"), cred = NULL){
   stopifnot(is(cf, "cytoframe"))
   cred <- check_credential(cred)
   
-  write_to_disk(cf@pointer,filename, backend == "h5",  cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION)
+  write_to_disk(cf@pointer,filename, backend == "h5",  cred)
 }
 
 #' Save the cytoframe as h5 format
 #' 
 #' @param cf cytoframe object
 #' @param filename the full path of the output h5 file
-#' @inheritParams load_cytoframe_from_h5
+#' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
 cf_write_h5 <- function(cf, filename, cred = NULL){
@@ -733,7 +733,7 @@ cf_write_h5 <- function(cf, filename, cred = NULL){
 #' 
 #' @param cf cytoframe object
 #' @param filename the full path of the output file
-#' @inheritParams load_cytoframe_from_h5
+#' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
 cf_write_tile <- function(cf, filename, cred = NULL){
@@ -743,16 +743,26 @@ cf_write_tile <- function(cf, filename, cred = NULL){
 #' Load the cytoframe from disk
 #' 
 #' @param uri path to the cytoframe file
-#' @param ...
-#'        readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
-#'        on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
-#'        cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
+#' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
+#' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
+#'                 And it is valid when on_disk is set to true.
+#' @param cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
 #'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
-load_cytoframe <- function(uri, ...){
-  if(uri_backend_type(uri) == "h5")
-    load_cytoframe_from_h5(uri, ...)
-  else
-    load_cytoframe_from_tile(uri, ...)
+#' @importFrom aws.signature read_credentials
+#' @family cytoframe/cytoset IO functions
+#' @export
+load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads = 1L, cred = NULL){
+	cred <- check_credential(cred)
+	if(!on_disk)
+	{
+	  if(readonly)
+	  {
+	    stop("'readonly = TRUE' is only valid when 'on_disk' is TRUE! ")
+	  }
+	}
+	p <- load_cf(uri, readonly, on_disk, num_threads, cred)
+	
+	new("cytoframe", pointer = p, use.exprs = TRUE)
 }
 
 #' return the cytoframe backend storage format
@@ -763,7 +773,7 @@ cf_backend_type <- function(cf)
   backend_type(cf@pointer)
 }
 
-uri_backend_type <- function(uri)#TODO: support s3
+uri_backend_type <- function(uri)
 {
   if(uri == "")
     "mem"
@@ -776,45 +786,7 @@ uri_backend_type <- function(uri)#TODO: support s3
   }
 
 }
-load_cytoframe_from_tile <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL, num_threads = 1L){
-  
-    cred <- check_credential(cred)
-    
-    p <- load_cf_from_tile(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION, readonly, num_threads)
-  
-  new("cytoframe", pointer = p, use.exprs = TRUE)
-}
 
-#' Load the cytoframe from h5 format
-#' 
-#' @param filename the full path of the output h5 file
-#' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
-#' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
-#' @param cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-#'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
-#' @family cytoframe/cytoset IO functions
-#' @export
-#' @importFrom aws.signature read_credentials
-load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE, cred = NULL){
-  if(is_s3_path(filename))
-  {
-  	s3_paths <- parse_s3_path(filename)
-  	bucket <- s3_paths[["bucket"]]
-  	key <- s3_paths[["key"]]	
-  	filename <- paste0("https://", bucket, ".s3.amazonaws.com/", key)
-  	
-  }
-	
-  if(is_http_path(filename))
-  {
-    cred <- check_credential(cred)
-    
-    p <- load_cf_from_s3(filename, cred$AWS_ACCESS_KEY_ID, cred$AWS_SECRET_ACCESS_KEY, cred$AWS_REGION)
-  }
-  else
-    p <- load_cf_from_h5(filename, on_disk, readonly)
-  new("cytoframe", pointer = p, use.exprs = TRUE)
-}
 
 is_http_path <- function(x){
   grepl("^https://", x, ignore.case = TRUE)
@@ -823,7 +795,11 @@ is_http_path <- function(x){
 check_credential <- function(cred){
   if(is.null(cred))
   {
-    cred <- read_credentials()[[1]]
+    cred <- try(read_credentials()[[1]], silent = TRUE)
+    if(is(cred, "try-error"))
+    {
+      cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
+    }
     cred$AWS_REGION <- "us-west-1"
   }
   cred
@@ -920,7 +896,7 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' @name cleanup
 #' @aliases cf_cleanup cs_cleanup gh_cleanup gs_cleanup
 #' @param cf a cytoframe, cytoset, GatingHierarchy, or GatingSet object
-#' @inheritParams load_cytoframe_from_h5
+#' @inheritParams load_cytoframe
 #' this will override tempdir() in determining the top directory under which files can safely be removed.
 #' @export
 cf_cleanup <- function(cf, cred = NULL){

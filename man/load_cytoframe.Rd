@@ -4,16 +4,35 @@
 \alias{load_cytoframe}
 \title{Load the cytoframe from disk}
 \usage{
-load_cytoframe(uri, ...)
+load_cytoframe(
+  uri,
+  readonly = TRUE,
+  on_disk = TRUE,
+  num_threads = 1L,
+  cred = NULL
+)
 }
 \arguments{
 \item{uri}{path to the cytoframe file}
 
-\item{...}{readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
-on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
-cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-           when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
+\item{readonly}{logical flag indicating whether to open h5 data as readonly. Default is TRUE.}
+
+\item{on_disk}{logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.}
+
+\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
+when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
 }
 \description{
 Load the cytoframe from disk
 }
+\seealso{
+Other cytoframe/cytoset IO functions: 
+\code{\link{cf_get_uri}()},
+\code{\link{cf_write_disk}()},
+\code{\link{cf_write_h5}()},
+\code{\link{cf_write_tile}()},
+\code{\link{cs_get_uri}()},
+\code{\link{load_cytoframe_from_fcs}()},
+\code{\link{load_cytoset_from_fcs}()}
+}
+\concept{cytoframe/cytoset IO functions}
