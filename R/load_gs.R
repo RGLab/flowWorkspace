@@ -47,106 +47,27 @@ save_gs<-function(gs, path
     backend_opt <- cdf
   }
   backend_opt <- match.arg(backend_opt)
+  path <- suppressWarnings(normalizePath(path))
   
   if(is_s3_path(path))
   {
     cred <- check_credential(cred)
-    h5dir <- cs_get_uri(gs)
-    if(h5dir=="")
-      stop("Saving the in-memory version of gs to remote is not supported!")
+    cf <- get_cytoframe_from_cs(gs_cyto_data(gs), 1)
+    back_type <- cf_backend_type(cf)
+    if(back_type != "tile")
+      stop("Saving gs to remote only support tiledb backend!Please use 'convert_backend()` first.")
     
-    #grab the h5 named by sn (which could be different from h5 filename)
-    h5files <- unlist(lapply(gs_cyto_data(gs), cf_get_uri))
-    sn <- names(h5files)
-    dest_file_names <- paste0(sn, ".h5")
-    names(h5files) <- dest_file_names
-    
-    #TODO
-    # validity_check_dest()
-    
-    tmp <- tempfile()
-    #save to temp local if local h5 is out of date
-    if(gs_is_dirty(gs))
-    {
-      message("Saving h5 data before uploading...")
-      suppressMessages(save_gs(gs, tmp))
-      # h5files <- list.files(tmp, ".h5", full.names = TRUE)
-      # #attach sn to files
-      # names(h5files) <- gsub(".h5$", "", basename(h5files))
-    }else
-    {
-      #only save pb files  
-      suppressMessages(save_gs(gs, tmp, backend_opt = "skip"))
-    }
-    
-    pbfiles <- list.files(tmp, ".(pb)|(gs)$", full.names = TRUE)
-    #attache object key names
-    names(pbfiles) <- basename(pbfiles)
-    
-    message("Uploading gs ...")
-    if(backend_opt != "copy")
-    {
-      stop("only backend_opt='copy' is supported for remote saving!")
-    }
-    files_to_put <- c(pbfiles, h5files)
-    keys <- names(files_to_put)
-    for(i in seq_along(keys))
-    {
-      message("Uploading ", keys[i])
-      put_object(files_to_put[i], file.path(path, keys[i])
-                 , region = cred$AWS_REGION
-                 , key = cred$AWS_ACCESS_KEY_ID
-                 , secret = cred$AWS_SECRET_ACCESS_KEY
-                 # , show_progress = TRUE
-                 # , verbose = TRUE
-                 )
-    }
-  }else
-  {
-    path <- suppressWarnings(normalizePath(path))
-    #check gs is loaded from s3
-    h5_path <- cs_get_uri(gs)
-    if(!grepl("^https://", h5_path))#local gs
-    {
-      
-      if(backend_opt == "link")
-      	stop("'link' option for save_gs is no longer supported")
-      
-      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt), silent = TRUE))
+  }
+  if(backend_opt == "link")
+  	stop("'link' option for save_gs is no longer supported")
+  
+  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt, cred), silent = TRUE))
 
-    }else{
-      #remote gs
-      #since we lose the track of local cache of remote gs pb files
-      #we have to resave it 
-      #TODO: more efficient way is to attach the rid to gs object so that local cp can be made 
-      
-      if(backend_opt != "copy")
-        stop("Only 'copy' option is supported for save_gs from remote to local")
-      #only save pb since h5remote is currently readonly thus can't be saved through the serialization api
-      suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = "skip")))
-      #download h5 separately
-      cred <- check_credential(cred)
-      s3_paths <- parse_s3_path(h5_path)
-      bucket <- s3_paths[["bucket"]]
-      gs_key <- s3_paths[["key"]]
-      b <- get_bucket_df(bucket, gs_key, region = cred$AWS_REGION)
-      
-      keys <- b$Key
-      h5_key <- keys[grepl("\\.h5$", keys)]
-      #download pb files
-      for(k in c(h5_key))
-      {
-        message("downloading ", k, " ...")
-        save_object(k, bucket, file.path(path, basename(k)), region = cred$AWS_REGION)
-      }
-    }
-    if(class(res) == "try-error")
-    {
-      res <- gsub(" H5Option", ' option', res)
-      res <- gsub(" the indexed CytoFrameView object", ' the GatingSet has been subsetted', res)
-      
-      stop(res[[1]])
-    }
+  if(class(res) == "try-error")
+  {
+    res <- gsub(" the indexed CytoFrameView object", ' the GatingSet has been subsetted', res)
+    
+    stop(res[[1]])
   }
   message("Done\nTo reload it, use 'load_gs' function\n")
 }

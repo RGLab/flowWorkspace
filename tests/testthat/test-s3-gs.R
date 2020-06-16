@@ -11,6 +11,7 @@ test_that("save_gs from local to remote",
   {
     tmp <- tempfile()
     convert_backend(gs_dir, tmp)
+    gs_dir <- tmp
   }
   #load the local gs archive
   gs <- load_gs(gs_dir)

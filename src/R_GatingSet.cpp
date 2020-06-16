@@ -203,7 +203,7 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
  * save/load GatingSet
  */
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, List cred) {
       CytoFileOption cf_opt;
       bool skip_data = false;
       if(backend_opt == "copy")
@@ -226,13 +226,8 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt) {
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
 XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
-									, List cred) {
-	tiledb::Config cfg;
-	cfg["vfs.s3.aws_access_key_id"] = as<string>(cred["AWS_ACCESS_KEY_ID"]);
-	cfg["vfs.s3.aws_secret_access_key"] =  as<string>(cred["AWS_SECRET_ACCESS_KEY"]);
-
-	cfg["vfs.s3.region"] =  as<string>(cred["AWS_REGION"]);;
-//	cfg["sm.num_reader_threads"] = num_threads;
+									, tiledb::Config cfg) {
+	//	cfg["sm.num_reader_threads"] = num_threads;
 	CtxPtr ctx(new tiledb::Context(cfg));
 
 

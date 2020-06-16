@@ -45,6 +45,17 @@ namespace Rcpp {
 
 		return res;
 	}
+	 // as for list to tiledb:Config
+	template <> inline tiledb::Config as(SEXP sexp) {
+		 Rcpp::List cfg(sexp);
+		 tiledb::Config cfg;
+		cfg["vfs.s3.aws_access_key_id"] = as<string>(cred["AWS_ACCESS_KEY_ID"]);
+		cfg["vfs.s3.aws_secret_access_key"] =  as<string>(cred["AWS_SECRET_ACCESS_KEY"]);
+
+		cfg["vfs.s3.region"] =  as<string>(cred["AWS_REGION"]);;
+
+		return cfg;
+	}
 	 // as for FCS_READ_PARAM
 	template <> inline FCS_READ_PARAM as(SEXP sexp) {
 		 Rcpp::List cfg(sexp);

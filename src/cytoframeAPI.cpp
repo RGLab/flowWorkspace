@@ -102,9 +102,14 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 // [[Rcpp::export]]
 void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, string id, string key, string region){
   FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
-  S3Cred cred(id, key, region);
+  tiledb::Config cfg;
+  	cfg["vfs.s3.aws_access_key_id"] =  id;
+  	cfg["vfs.s3.aws_secret_access_key"] =  key;
 
-  fr->write_to_disk(filename, format, cred);
+  	cfg["vfs.s3.region"] = region;
+
+  	tiledb::Context ctx(cfg);
+  fr->write_to_disk(filename, format, ctx);
   
 }
 // [[Rcpp::export]]
