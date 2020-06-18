@@ -946,6 +946,6 @@ cf_cleanup <- function(cf, cred = NULL){
 cf_append_cols <- function(cf, cols){
   fr <- cytoframe_to_flowFrame(cf)
   fr <- fr_append_cols(fr, cols)
-  ish5 <- cf_get_uri(cf) != ""
-  flowFrame_to_cytoframe(fr, is_h5 = ish5)
+  
+  flowFrame_to_cytoframe(fr, backend = cf_backend_type(cf))
 }

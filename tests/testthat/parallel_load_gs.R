@@ -1,7 +1,7 @@
 context("parallel IO")
 skip_if(win32_flag)
-
-gs <- GatingSet(GvHD[c(4,2,3,1)])
+fs <- fsApply(GvHD[c(4,2,3,1)], function(fr)fr[1:2, ])
+gs <- GatingSet(fs)
 tmp <- tempfile()
 save_gs(gs, tmp)
 sid <- sampleNames(gs)
@@ -37,7 +37,7 @@ test_that("partial load_gs", {
     #prove it is real subset
     tmp1 <- tempfile()
     save_gs(gs1, tmp1)
-    expect_equal(length(list.files(tmp1, ".h5")), 2)
+    expect_equal(length(list.files(tmp1, ".", get_default_backend())), 2)
     expect_equal(length(list.files(tmp1, ".pb")), 2)
 })
 

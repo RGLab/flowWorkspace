@@ -18,7 +18,7 @@ test_that("gh_apply_to_new_fcs",
             openCyto::gs_add_gating_method(gs, "cd4", "+", "root", "cd4", "mindensity")
             openCyto::gs_add_gating_method(gs, "cd8", "+", "root", "cd8", "mindensity")
             openCyto::gs_add_gating_method(gs, "CD38", "+", "root", "CD38", "mindensity")
-            openCyto::gs_add_gating_method(gs, "HLA", "+", "root", "HLA", "mindensity")
+            suppressWarnings(openCyto::gs_add_gating_method(gs, "HLA", "+", "root", "HLA", "mindensity"))
             gh <- gs[[1]]
             gs2 <- gh_apply_to_new_fcs(gh, fcs)
 
@@ -38,7 +38,7 @@ test_that("gh_apply_to_new_fcs",
             openCyto::gs_add_gating_method(gs, "cd4", "+", "root", "cd4", "mindensity")
             openCyto::gs_add_gating_method(gs, "cd8", "+", "root", "cd8", "mindensity")
             openCyto::gs_add_gating_method(gs, "CD38", "+", "root", "CD38", "mindensity")
-            openCyto::gs_add_gating_method(gs, "HLA", "+", "root", "HLA", "mindensity")
+            suppressWarnings(openCyto::gs_add_gating_method(gs, "HLA", "+", "root", "HLA", "mindensity"))
             gh <- gs[[1]]
             gs2 <- gh_apply_to_new_fcs(gh, fcs)
 

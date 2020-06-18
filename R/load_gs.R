@@ -163,7 +163,7 @@ load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = ch
 #'       }
 #' @export
 setMethod("sampleNames","character",function(object){
-  sub(".h5$", "" , list.files(object, ".h5"))
+  sub(".pb$", "" , list.files(object, ".pb"))
 })
 
 #' convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only)
