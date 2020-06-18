@@ -20,7 +20,7 @@ cytoset_to_flowSet(cs)
 flowSet_to_cytoset(
   fs,
   path = tempfile(),
-  backend = c("h5", "mem", "tile"),
+  backend = get_default_backend(),
   tmp = tempfile()
 )
 

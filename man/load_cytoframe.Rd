@@ -6,8 +6,8 @@
 \usage{
 load_cytoframe(
   uri,
-  readonly = TRUE,
   on_disk = TRUE,
+  readonly = on_disk,
   num_threads = 1L,
   cred = NULL
 )
@@ -15,9 +15,10 @@ load_cytoframe(
 \arguments{
 \item{uri}{path to the cytoframe file}
 
-\item{readonly}{logical flag indicating whether to open h5 data as readonly. Default is TRUE.}
-
 \item{on_disk}{logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.}
+
+\item{readonly}{logical flag indicating whether to open h5 data as readonly. Default is TRUE.
+And it is valid when on_disk is set to true.}
 
 \item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
 when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}

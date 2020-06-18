@@ -294,8 +294,8 @@ cytoset_to_flowSet <- function(cs){
 #'         by default, it is system temp path. And it can be changed to the customized location
 #'         when there is not enough space at system path.
 #' @export 
-flowSet_to_cytoset <- function(fs, path = tempfile(),backend = c("h5", "mem",  "tile"), tmp = tempfile()){
-  backend <- match.arg(backend)
+flowSet_to_cytoset <- function(fs, path = tempfile(),backend = get_default_backend(), tmp = tempfile()){
+  backend <- match.arg(backend, c("h5", "mem",  "tile"))
   # Set up mapping to ensure that the sampleNames 
   # come back in without additional ".fcs" and allow
   # for potential re-ordering

@@ -710,8 +710,8 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_disk <- function(cf, filename, backend = c("h5", "tile"), cred = NULL){
-  backend <- match.arg(backend)
+cf_write_disk <- function(cf, filename, backend = get_default_backend(), cred = NULL){
+  backend <- match.arg(backend, c("h5", "tile"))
   stopifnot(is(cf, "cytoframe"))
   cred <- check_credential(cred)
   

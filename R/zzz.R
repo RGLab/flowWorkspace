@@ -133,7 +133,23 @@ flowWorkspace.par.get <- function (name = NULL)
   else NULL
 }
 
+#' get/set the default backend format of cytoframe
+#' @param backend one of c("h5", "mem",  "tile")
+#' @rdname default_backend
+#' @export
+get_default_backend <- function(){
+  getOption("backend")
+}
+
+#' @rdname default_backend
+#' @export
+set_default_backend <- function(backend = c("h5", "mem",  "tile")){
+  backend <- match.arg(backend)
+  options("backend" = backend)
+}
+
 .onLoad <- function(libname, pkgname){
+  set_default_backend()
   h5_set_error_handler()#set R stderr as output stream for error handler of libhdf5
 }
 

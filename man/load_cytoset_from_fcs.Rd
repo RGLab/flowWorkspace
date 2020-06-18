@@ -19,7 +19,7 @@ load_cytoset_from_fcs(
   decades = 0,
   is_h5 = NULL,
   h5_dir = NULL,
-  backend = c("mem", "h5", "tile"),
+  backend = get_default_backend(),
   backend_dir = tempdir(),
   min.limit = NULL,
   truncate_max_range = TRUE,

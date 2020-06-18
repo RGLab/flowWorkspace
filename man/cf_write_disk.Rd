@@ -4,7 +4,7 @@
 \alias{cf_write_disk}
 \title{Save the cytoframe to disk}
 \usage{
-cf_write_disk(cf, filename, backend = c("h5", "tile"), cred = NULL)
+cf_write_disk(cf, filename, backend = get_default_backend(), cred = NULL)
 }
 \arguments{
 \item{cf}{cytoframe object}

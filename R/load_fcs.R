@@ -97,7 +97,7 @@ load_cytoframe_from_fcs <- function(filename,
                      invert.pattern = FALSE,
                      decades=0,
                       is_h5= NULL,
-                      backend = c("mem", "h5", "tile"),
+                      backend = get_default_backend(),
                       uri = NULL,
                       h5_filename = NULL,
                      min.limit=NULL,
@@ -108,7 +108,7 @@ load_cytoframe_from_fcs <- function(filename,
                      ignore.text.offset = FALSE,
                      text.only = FALSE)
 {
-  backend <- match.arg(backend)
+  backend <- match.arg(backend, c("mem", "h5", "tile"))
   if(!is.null(is_h5))
   {
     warning("'is_h5' argument is deprecated by 'backend'! ")
@@ -248,7 +248,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                          decades=0,
                          is_h5= NULL
                          , h5_dir = NULL
-                         , backend = c("mem", "h5", "tile")
+                         , backend = get_default_backend()
                          , backend_dir = tempdir()
                          , min.limit=NULL,
                          truncate_max_range = TRUE,
@@ -260,7 +260,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                         , file_col_name = NULL
                         , ...)
 {
-  backend <- match.arg(backend)
+  backend <- match.arg(backend, c("mem", "h5", "tile"))
   if(!is.null(is_h5))
   {
     warning("'is_h5' argument is deprecated by 'backend'! ")

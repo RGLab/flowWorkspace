@@ -13,7 +13,7 @@ load_cytoframe_from_fcs(
   invert.pattern = FALSE,
   decades = 0,
   is_h5 = NULL,
-  backend = c("mem", "h5", "tile"),
+  backend = get_default_backend(),
   uri = NULL,
   h5_filename = NULL,
   min.limit = NULL,

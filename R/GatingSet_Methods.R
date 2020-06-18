@@ -82,9 +82,9 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 #' @export
 gh_apply_to_new_fcs <- function(x, files
 									, swap_cols = FALSE #for diva parsing
-									, backend = "h5"
+									, backend = get_default_backend()
 									, ...){	
-			
+			backend <- match.arg(backend, c("h5", "mem",  "tile"))
 			message("generating new GatingSet from the gating template...")
 			
 			#load new data
