@@ -5,11 +5,11 @@ fr <- read.FCS(fcs_file)
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 
-cf <- load_cytoframe_from_fcs(fcs_file, backend = backend_mode)
+cf <- load_cytoframe_from_fcs(fcs_file)
 cf_lock(cf)
 
 test_that("cf_append_cols", {
-  skip_if(backend_mode != "mem")
+  skip_if(get_default_backend() != "mem")
   cf <- flowFrame_to_cytoframe(GvHD[[1]])
   
   n <- matrix(1:(nrow(cf)), ncol = 1)
@@ -43,7 +43,7 @@ test_that("cf_scale_time_channel", {
 test_that("load_meta", {
   cf1 <- realize_view(cf)
   tmp <- cf_get_uri(cf1)
-    skip_if(backend_mode == "mem")
+    skip_if(get_default_backend() == "mem")
   oldvalue <- keyword(cf1)[["TUBE NAME"]]
   keyword(cf1)[["TUBE NAME"]] <- "dd"
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], "dd")
@@ -74,18 +74,20 @@ test_that("cytoset_to_flowframe", {
 
 
 test_that("cf_get_uri", {
-    skip_if(backend_mode == "mem")
-  
-      h5file <- cf_get_uri(cf)
-      expect_true(file.exists(h5file))
+    
+      uri <- cf_get_uri(cf)
+      if(get_default_backend() == "mem")
+        expect_true(uri=="")
+      else if(get_default_backend() == "h5")
+        expect_true(file.exists(uri))
+      else
+        expect_true(dir.exists(uri))
       
-      cf1 <- load_cytoframe_from_fcs(fcs_file)
-      expect_true(cf_get_uri(cf1)=="")
     })
 test_that("write permission", {
-    skip_if(backend_mode == "mem")
+    skip_if(get_default_backend() == "mem")
     #newly created from fcs: writable
-  cf1 <- load_cytoframe_from_fcs(fcs_file, backend = backend_mode, which.lines = 1:10)
+  cf1 <- load_cytoframe_from_fcs(fcs_file, which.lines = 1:10)
   exprs(cf1)[1,1] <- 1
   expect_equivalent(exprs(cf1)[1,1], 1)
   
@@ -115,7 +117,7 @@ test_that("write permission", {
 })
 
 test_that("lock", {
-    skip_if(backend_mode == "mem")
+    skip_if(get_default_backend() == "mem")
   
   cf1 <- realize_view(cf)
   #writable
@@ -180,7 +182,7 @@ test_that("[", {
 
       #write h5
       tmp <- tempfile()
-      if(backend_mode=="h5")
+      if(get_default_backend()=="h5")
         cf_write_h5(cf1, tmp)
       else
         cf_write_tile(cf1, tmp)
@@ -203,7 +205,7 @@ test_that("copy", {
   expect_equal(cf_get_uri(cf1), cf_get_uri(cf))  
 
   cf1 <- realize_view(cf)
-    skip_if(backend_mode == "mem")
+    skip_if(get_default_backend() == "mem")
   
   h5 <- cf_get_uri(cf1)
   
@@ -325,7 +327,7 @@ test_that("keyword<-", {
   kw <- collapse_desc(kw, collapse.spill = FALSE)
   expect_equal(keyword(cf1)[names(kw)], kw, tol = 6e-6)
   
-    skip_if(backend_mode == "mem")
+    skip_if(get_default_backend() == "mem")
   
   #now meta won't be flushed to disk automatically after destroy cf1
   tmp <- cf_get_uri(cf1)
@@ -357,7 +359,7 @@ test_that("keyword setters", {
   expect_error(cf_keyword_delete(cf1, "k2"), "not found")
 })
 # test_that("range", {
-# cf <- flowFrame_to_cytoframe(GvHD[[1]], backend = backend_mode)
+# cf <- flowFrame_to_cytoframe(GvHD[[1]])
 #   rng1 <- data.frame("FSC-H" = c(0,1023)
 #                      ,"SSC-H" = c(0,1023)
 #                      ,"FL1-H" = c(1,10000)
@@ -395,9 +397,9 @@ test_that("keyword setters", {
 # })
 # 
 test_that("transform", {
-    skip_if(backend_mode == "mem")
+    skip_if(get_default_backend() == "mem")
   fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
-  cf <- flowFrame_to_cytoframe(fr, backend = backend_mode)
+  cf <- flowFrame_to_cytoframe(fr)
   h5 <- cf_get_uri(cf)
   translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
   
@@ -411,7 +413,7 @@ test_that("transform", {
   #TODO:not ported to cytoframe yet
   #transform using inline arguments 
   # fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
-  # cf <- flowFrame_to_cytoframe(fr, backend = backend_mode)
+  # cf <- flowFrame_to_cytoframe(fr)
   # h5 <- cf_get_uri(cf)
   # transform(cf, `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`))
   # trans_range <- range(cf, "data")
@@ -421,7 +423,7 @@ test_that("transform", {
 })
 
 test_that("load_fcs", {
-    skip_if(backend_mode == "mem")
+    skip_if(get_default_backend() == "mem")
   
   fr <- read.FCS(list.files(system.file("extdata","compdata","data",package="flowCore"), full.names = TRUE)[1])
   #write to carry flowCore_Rmax keywords

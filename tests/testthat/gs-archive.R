@@ -8,7 +8,7 @@ test_that("load GatingSet from archive",
   expect_that(gs, is_a("GatingSet"))
   gs <<- gs_clone(gs)#make it writable  
   
-  if(backend_mode == "tile")
+  if(get_default_backend() == "tile")
   {
     #convert h5 to tile
     cs <- gs_cyto_data(gs)
@@ -39,7 +39,7 @@ test_that("load read-only archive",
   colnames(gs1)[1] <- "d"
   expect_error(cs_flush_meta(gs_cyto_data(gs1)), "read-only", class = "error")
   
-  if(backend_mode=="h5")
+  if(get_default_backend()=="h5")
     expect_error(capture.output(gs1 <- load_gs(tmp, backend_readonly = FALSE), type = "message"), "hdf Error", class = "error")
   else
   {
@@ -67,7 +67,7 @@ test_that("validity checks for new distributed pb format",
   expect_error(save_gs(gs, tmp1), "not matched to GatingSet uid", class = "error")
   
   #extra h5
-  h5f <- paste0("t.", backend_mode)
+  h5f <- paste0("t.", get_default_backend())
   file.rename(file.path(tmp1, gspbfile1), file.path(tmp1, h5f))
   expect_error(load_gs(tmp1), "No .pb file matched for sample", class = "error")
   expect_error(save_gs(gs, tmp1), "file not matched to any sample", class = "error")
@@ -88,7 +88,7 @@ test_that("validity checks for new distributed pb format",
   
   #missing h5
   sn <- sampleNames(gs)
-  h5f <- paste(sn, backend_mode, sep = ".")    
+  h5f <- paste(sn, get_default_backend(), sep = ".")    
   unlink(file.path(tmp1, h5f), recursive = TRUE)
     
   expect_error(load_gs(tmp1), "No cytoframe file matched", class = "error")
@@ -107,7 +107,7 @@ test_that("save indexed GatingSet",
     suppressMessages(save_gs(gs, tmp))
     h5 <- list.files(cs_get_uri(gs), full = T)
     expect_equal(length(h5), ifelse(mem, 0 ,2))
-    ext <- ifelse(mem, ".h5", backend_mode)
+    ext <- ifelse(mem, ".h5", get_default_backend())
     h5 <- list.files(tmp, pattern = ext, full = T)
     expect_equal(length(h5), 2)
     #mv
@@ -129,14 +129,14 @@ test_that("save indexed GatingSet",
   mytest(gs)
   
   #h5
-  gs <- GatingSet(fs, backend = backend_mode)
+  gs <- GatingSet(fs)
   expect_true(cf_get_uri(get_cytoframe_from_cs(gs_cyto_data(gs), 1)) != "")
   mytest(gs, F)
 })
 
 test_that("save GatingSet to archive",
     {
-      skip_if(backend_mode == "mem")
+      skip_if(get_default_backend() == "mem")
       pd <- pData(gs)
       pd[["newCol"]] <- "A"
       pData(gs) <- pd
@@ -157,7 +157,7 @@ test_that("save GatingSet to archive",
       #fail to save due to mismatch of gs id
       expect_error(save_gs(gs[1], path = tmp), "not match", class = "error")
       # check gs id is preserved
-      cdf <- list.files(tmp, backend_mode, full.names = TRUE)
+      cdf <- list.files(tmp, get_default_backend(), full.names = TRUE)
       expect_equal(identifier(gs), id)
       #update gs id
       id.new <- "test"
@@ -166,7 +166,7 @@ test_that("save GatingSet to archive",
       #restore id
       identifier(gs) <- id
       #fail to save due to the mismatch of h5 files between folder and gs
-      redundant <- file.path(tmp, paste0("redundant.", backend_mode))
+      redundant <- file.path(tmp, paste0("redundant.", get_default_backend()))
       file.create(redundant)
       expect_error(save_gs(gs, path = tmp), "Not a valid", class = "error")
       
@@ -197,7 +197,7 @@ test_that("save GatingSet to archive",
       dir.create(tmp1)
       # file.copy(cdf, file.path(tmp1, list.files(tmp, ".h5")))
       expect_message(save_gs(gs, path = tmp1, backend_opt = "skip"), "Done")
-      expect_equal(length(list.files(tmp1, backend_mode)), 0)
+      expect_equal(length(list.files(tmp1, get_default_backend())), 0)
       
       #link
       tmp1 <- tempfile()
@@ -209,7 +209,7 @@ test_that("save GatingSet to archive",
       tmp1 <- tempfile()
       dir.create(tmp1)
       expect_message(save_gs(gs, path = tmp1, backend_opt = "symlink"), "Done")
-      h5 <- list.files(tmp1, backend_mode, full.names = TRUE)
+      h5 <- list.files(tmp1, get_default_backend(), full.names = TRUE)
       expect_equal(length(h5), 1)
       expect_equal(normalizePath(Sys.readlink(h5)), normalizePath(cdf))
      
@@ -217,7 +217,7 @@ test_that("save GatingSet to archive",
       tmp1 <- tempfile()
       dir.create(tmp1)
       expect_message(save_gs(gs, path = tmp1, backend_opt = "move"), "Done")
-      h5 <- list.files(tmp1, backend_mode, full.names = TRUE)
+      h5 <- list.files(tmp1, get_default_backend(), full.names = TRUE)
       expect_equal(length(h5), 1)
       expect_false(file.exists(cdf))
       
@@ -295,7 +295,7 @@ test_that("Construct new GatingSet based on the existing gating hierarchy",
      #re-load the gs since the trans get lost during clone
      suppressWarnings(suppressMessages(gs1 <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
      gh <- gs1[[1]]
-     suppressMessages(gs <<- gh_apply_to_new_fcs(gh, list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1], backend = backend_mode))
+     suppressMessages(gs <<- gh_apply_to_new_fcs(gh, list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1]))
      expect_that(gs, is_a("GatingSet"))
      expect_equal(gs_get_pop_paths(gs), gs_get_pop_paths(gs1))
      expect_equal(gs_pop_get_stats(gs), gs_pop_get_stats(gs1), tol = 2e-3)

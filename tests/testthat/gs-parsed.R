@@ -12,7 +12,7 @@ test_that("can load xml workspace",
 dd <- capture.output(gs <- flowjo_to_gatingset(ws, path = dataDir, name = 4
                                                , subset = "CytoTrol_CytoTrol_1.fcs"
                                                , additional.keys = NULL
-                                               , backend = backend_mode
+                                               
                                                )
                      )
 
@@ -51,7 +51,7 @@ test_that("updateChannles",{
   dd <- capture.output(suppressMessages(gs1 <- flowjo_to_gatingset(ws, path = dataDir, name = 4
                                                                    , subset = 1:2#`TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2")
                                                                    , keywords = "TUBE NAME"
-                                                                   , backend = backend_mode
+                                                                   
                                                                    )
                                         )
                        )
