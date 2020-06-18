@@ -1,13 +1,13 @@
 context("GatingSet s3")
 
 bucket <- "mike-h5"
-prefix <- "test"
+prefix <- flowCore:::guid()
 url <- paste0("s3://", bucket, "/", prefix)
 reg <- "us-west-1"
 test_that("save_gs from local to remote",
 {
   gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
-  if(backend_mode == "tile")
+  if(backend_mode == "tile")#currently we don't support h5 backend for s3
   {
     tmp <- tempfile()
     convert_backend(gs_dir, tmp)
@@ -22,10 +22,16 @@ test_that("save_gs from local to remote",
   sn <- sampleNames(gs)
   gs_key <- paste0(prefix, "/", guid, ".gs")
   gh_key <- paste0(prefix, "/", sn, ".pb")
-  h5_key <- paste0(prefix, "/", sn, ".h5")
+  cf_key <- paste0(prefix, "/", sn, ".", backend_mode)
   
   keys <- get_bucket_df(url, region = reg)[["Key"]]
-  expect_true(setequal(keys, c(gs_key, gh_key, h5_key)))
+  expect_true(is.element(c(gs_key), keys))
+  expect_true(is.element(c(gh_key), keys))
+  expect_equal(sum(grepl(cf_key, keys)), 21)
+  
+  if(backend_mode == "tile")
+    delete_gs(tmp)
+  
   })
 
 
@@ -33,7 +39,7 @@ test_that("load_gs from s3",
           {
             gs <- load_gs(url)
             expect_is(gs, "GatingSet")
-            expect_true(grepl("https", cs_get_uri(gs)))
+            expect_true(is_s3_path(cs_get_uri(gs)))
             
            })
 test_that("save_gs from s3 to local",
@@ -44,13 +50,17 @@ test_that("save_gs from s3 to local",
             sn <- sampleNames(gs)
             gs_key <- paste0(guid, ".gs")
             gh_key <- paste0(sn, ".pb")
-            h5_key <- paste0(sn, ".h5")
-            expect_true(setequal(list.files(tmp), c(gs_key, gh_key, h5_key)))
+            cf_key <- paste0(sn, ".", backend_mode)
+            expect_true(setequal(list.files(tmp), c(gs_key, gh_key, cf_key)))
+            delete_gs(tmp)
             })
 
 test_that("save_gs from s3 to s3",
           {
-            
+            gs <- load_gs(url)
+            url1 <- paste0("s3://", bucket, "/", flowCore:::guid())
+            save_gs(gs, url1)
+            delete_gs(url1)
           })
 
 delete_gs(url)

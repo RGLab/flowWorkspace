@@ -8,6 +8,7 @@ source("gs-archive.R", local = TRUE)
 source("gs-parsed.R", local = TRUE)
 source("comp-trans-gs.R", local = TRUE)
 source("copy-gh.R", local = TRUE)
+source("s3-gs.R", local = TRUE)
 
 backend_mode <<- "h5"
 context(paste("backend:", backend_mode))
