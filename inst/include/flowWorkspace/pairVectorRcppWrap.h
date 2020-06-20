@@ -46,9 +46,9 @@ namespace Rcpp {
 		return res;
 	}
 	 // as for list to tiledb:Config
-	template <> inline tiledb::Config as(SEXP sexp) {
+	template <> inline CFG as(SEXP sexp) {
 		 Rcpp::List cred(sexp);
-		 tiledb::Config cfg;
+		 CFG cfg;
 		cfg["vfs.s3.aws_access_key_id"] = as<string>(cred["AWS_ACCESS_KEY_ID"]);
 		cfg["vfs.s3.aws_secret_access_key"] =  as<string>(cred["AWS_SECRET_ACCESS_KEY"]);
 

@@ -1,5 +1,4 @@
 #include <cytolib/H5CytoFrame.hpp>
-#include <cytolib/TileCytoFrame.hpp>
 #include <cytolib/CytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 using namespace Rcpp;
@@ -8,18 +7,7 @@ using namespace cytolib;
 // [[Rcpp::export]]
 string backend_type(Rcpp::XPtr<CytoFrameView> fr)
 {
-	switch(fr->get_backend_type())
-	{
-	case FileFormat::H5:
-		return "h5";
-	case FileFormat::TILE:
-		return "tile";
-	case FileFormat::MEM:
-		return "mem";
-	default:
-		stop("unknown cytoframe FileFormat!");
-	}
-
+	return fmt_to_str(fr->get_backend_type());
 }
 
 // [[Rcpp::export(name=".cf_scale_time_channel")]]
@@ -100,17 +88,17 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, tiledb::Config cfg){
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CFG cfg){
   FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
 
-  tiledb::Context ctx(cfg);
+  CTX ctx(cfg);
   fr->write_to_disk(filename, format, ctx);
   
 }
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, int num_threads, tiledb::Config cfg){
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, int num_threads, CFG cfg){
 	cfg["sm.num_reader_threads"] = num_threads;
-	CtxPtr ctx(new tiledb::Context(cfg));
+	CtxPtr ctx(new CTX(cfg));
     CytoFramePtr ptr = load_cytoframe(url, readonly, ctx);
 
 	if(!on_disk)
