@@ -487,20 +487,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // save_gatingset
-void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, tiledb::Config cfg);
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CFG cfg);
 RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP backend_optSEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< string >::type path(pathSEXP);
     Rcpp::traits::input_parameter< string >::type backend_opt(backend_optSEXP);
-    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    Rcpp::traits::input_parameter< CFG >::type cfg(cfgSEXP);
     save_gatingset(gs, path, backend_opt, cfg);
     return R_NilValue;
 END_RCPP
 }
 // load_gatingset
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, tiledb::Config cfg);
+XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, CFG cfg);
 RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -509,7 +509,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
     Rcpp::traits::input_parameter< vector<string> >::type select_samples(select_samplesSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    Rcpp::traits::input_parameter< CFG >::type cfg(cfgSEXP);
     rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly, select_samples, verbose, cfg));
     return rcpp_result_gen;
 END_RCPP
@@ -712,20 +712,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // write_to_disk
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, tiledb::Config cfg);
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CFG cfg);
 RcppExport SEXP _flowWorkspace_write_to_disk(SEXP frSEXP, SEXP filenameSEXP, SEXP ish5SEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< bool >::type ish5(ish5SEXP);
-    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    Rcpp::traits::input_parameter< CFG >::type cfg(cfgSEXP);
     write_to_disk(fr, filename, ish5, cfg);
     return R_NilValue;
 END_RCPP
 }
 // load_cf
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, int num_threads, tiledb::Config cfg);
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, int num_threads, CFG cfg);
 RcppExport SEXP _flowWorkspace_load_cf(SEXP urlSEXP, SEXP readonlySEXP, SEXP on_diskSEXP, SEXP num_threadsSEXP, SEXP cfgSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -734,7 +734,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
     Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
     Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
-    Rcpp::traits::input_parameter< tiledb::Config >::type cfg(cfgSEXP);
+    Rcpp::traits::input_parameter< CFG >::type cfg(cfgSEXP);
     rcpp_result_gen = Rcpp::wrap(load_cf(url, readonly, on_disk, num_threads, cfg));
     return rcpp_result_gen;
 END_RCPP

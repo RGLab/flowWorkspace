@@ -72,6 +72,7 @@ Collate:
     'setGate_Methods.R'
     'updateIndices.R'
     'utils.R'
+    'have_tiledb.R'
     'zzz.R'
 Suggests:
     testthat,

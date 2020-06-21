@@ -129,26 +129,31 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 		, string format = "mem", string uri = "")
 {
 	CytoFramePtr ptr;
-	if(format!="mem")
+	unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
+	if(format!="mem"&&text_only)
 	{
-		if(text_only)
-			warning("text_only is ignored when format is set to 'h5' or 'tile'!");
-
-		if(format == "h5")
-			ptr.reset(new H5CytoFrame(filename, config, uri));
-		else
-			ptr.reset(new TileCytoFrame(filename, config, uri));
-
+		warning("text_only is ignored when format is set to 'h5' or 'tile'!");
+		text_only = false;
+	}
+	if(text_only)
+		cf->read_fcs_header();
+	else
+		cf->read_fcs();
+	if(format=="mem")
+	{
+		ptr.reset(cf.release());
 	}
 	else
 	{
-		unique_ptr<MemCytoFrame> fr(new MemCytoFrame(filename.c_str(), config));
-		if(text_only)
-		  fr->read_fcs_header();
+		FileFormat fmt;
+		if(format == "h5")
+			fmt = FileFormat::H5;
 		else
-		  fr->read_fcs();
-		ptr.reset(fr.release());
+			fmt = FileFormat::TILE;
+		cf->write_to_disk(uri, fmt);
+		ptr = load_cytoframe(uri, false);
 	}
+
 	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 }
 
