@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.21</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
       </span>
     </div>
 
@@ -103,7 +103,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowWorkspace">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -143,6 +148,10 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>x</th>
+      <td><p>GatingSet or GatingHierarchy</p></td>
+    </tr>
+    <tr>
       <th>nodes</th>
       <td><p>the character vector specifies the populations of interest. default is all available nodes</p></td>
     </tr>
@@ -169,6 +178,10 @@ For both x and the reference GatingHierarchy in tfilter, the only channels
 that will match this filter are "Time" or "time" and the filter will be applied to each event
 such that only events with time value t where tmin &lt;= t &lt;= tmax will be evaluated.</p></td>
     </tr>
+    <tr>
+      <th>path, ...</th>
+      <td><p>arguments passed to 'gh_get_pop_paths()'</p></td>
+    </tr>
     </table>
 
 
@@ -183,7 +196,7 @@ such that only events with time value t where tmin &lt;= t &lt;= tmax will be ev
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
