@@ -62,6 +62,7 @@ Collate:
     'flow_trans.R'
     'getDescendants.R'
     'getSingleCellExpression.R'
+    'have_tiledb.R'
     'identifier.R'
     'load_fcs.R'
     'load_gs.R'
@@ -72,7 +73,6 @@ Collate:
     'setGate_Methods.R'
     'updateIndices.R'
     'utils.R'
-    'have_tiledb.R'
     'zzz.R'
 Suggests:
     testthat,

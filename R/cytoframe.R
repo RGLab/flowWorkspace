@@ -760,7 +760,8 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads 
 	    stop("'readonly = TRUE' is only valid when 'on_disk' is TRUE! ")
 	  }
 	}
-	p <- load_cf(uri, readonly, on_disk, num_threads, cred)
+	cred[["num_threads"]] <- num_threads
+	p <- load_cf(uri, readonly, on_disk, cred)
 	
 	new("cytoframe", pointer = p, use.exprs = TRUE)
 }

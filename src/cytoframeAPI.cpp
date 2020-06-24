@@ -88,17 +88,14 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CFG cfg){
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CytoCtx ctx){
   FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
 
-  CTX ctx(cfg);
   fr->write_to_disk(filename, format, ctx);
   
 }
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, int num_threads, CFG cfg){
-	cfg["sm.num_reader_threads"] = num_threads;
-	CtxPtr ctx(new CTX(cfg));
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,CytoCtx ctx){
     CytoFramePtr ptr = load_cytoframe(url, readonly, ctx);
 
 	if(!on_disk)

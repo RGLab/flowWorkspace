@@ -195,12 +195,12 @@ set_gatingset_id <- function(gsPtr, id) {
     invisible(.Call(`_flowWorkspace_set_gatingset_id`, gsPtr, id))
 }
 
-.cpp_saveGatingSet <- function(gs, path, backend_opt, cfg) {
-    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, backend_opt, cfg))
+.cpp_saveGatingSet <- function(gs, path, backend_opt, ctx) {
+    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, backend_opt, ctx))
 }
 
-.cpp_loadGatingSet <- function(path, readonly, select_samples, verbose, cfg) {
-    .Call(`_flowWorkspace_load_gatingset`, path, readonly, select_samples, verbose, cfg)
+.cpp_loadGatingSet <- function(path, readonly, select_samples, verbose, ctx) {
+    .Call(`_flowWorkspace_load_gatingset`, path, readonly, select_samples, verbose, ctx)
 }
 
 load_legacy_gs <- function(pbfile, cs) {
@@ -275,12 +275,12 @@ frm_compensate <- function(fr, spillover) {
     invisible(.Call(`_flowWorkspace_frm_compensate`, fr, spillover))
 }
 
-write_to_disk <- function(fr, filename, ish5, cfg) {
-    invisible(.Call(`_flowWorkspace_write_to_disk`, fr, filename, ish5, cfg))
+write_to_disk <- function(fr, filename, ish5, ctx) {
+    invisible(.Call(`_flowWorkspace_write_to_disk`, fr, filename, ish5, ctx))
 }
 
-load_cf <- function(url, readonly, on_disk, num_threads, cfg) {
-    .Call(`_flowWorkspace_load_cf`, url, readonly, on_disk, num_threads, cfg)
+load_cf <- function(url, readonly, on_disk, ctx) {
+    .Call(`_flowWorkspace_load_cf`, url, readonly, on_disk, ctx)
 }
 
 setMarker <- function(fr, channel, marker) {

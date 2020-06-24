@@ -203,7 +203,7 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
  * save/load GatingSet
  */
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CFG cfg) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx ctx) {
       CytoFileOption cf_opt;
       bool skip_data = false;
       if(backend_opt == "copy")
@@ -221,14 +221,13 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CFG cfg
       }
       else
         stop("invalid backend_opt option!");
-			gs->serialize_pb(path, cf_opt, skip_data, CTX(cfg));
+			gs->serialize_pb(path, cf_opt, skip_data, ctx);
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
 XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
-									, CFG cfg) {
-	//	cfg["sm.num_reader_threads"] = num_threads;
-	CtxPtr ctx(new CTX(cfg));
+									, CytoCtx ctx) {
+
 
 	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose, ctx));
 
