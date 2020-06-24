@@ -563,6 +563,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// is_tiledb_support
+bool is_tiledb_support();
+RcppExport SEXP _flowWorkspace_is_tiledb_support() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(is_tiledb_support());
+    return rcpp_result_gen;
+END_RCPP
+}
 // getLogLevel
 unsigned short getLogLevel();
 RcppExport SEXP _flowWorkspace_getLogLevel() {
@@ -1169,6 +1179,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 3},
     {"_flowWorkspace_combineGatingSet", (DL_FUNC) &_flowWorkspace_combineGatingSet, 2},
     {"_flowWorkspace_set_sample_uid", (DL_FUNC) &_flowWorkspace_set_sample_uid, 3},
+    {"_flowWorkspace_is_tiledb_support", (DL_FUNC) &_flowWorkspace_is_tiledb_support, 0},
     {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},

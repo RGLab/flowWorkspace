@@ -219,6 +219,13 @@ load_legacy_gs <- function(pbfile, cs) {
     invisible(.Call(`_flowWorkspace_set_sample_uid`, gs, oldName, newName))
 }
 
+#' check whether cytolib is build with tiledb support
+#' @return TRUE or FALSE
+#' @export
+is_tiledb_support <- function() {
+    .Call(`_flowWorkspace_is_tiledb_support`)
+}
+
 .cpp_getLogLevel <- function() {
     .Call(`_flowWorkspace_getLogLevel`)
 }

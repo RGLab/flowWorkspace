@@ -37,7 +37,7 @@ test_that("partial load_gs", {
     #prove it is real subset
     tmp1 <- tempfile()
     save_gs(gs1, tmp1)
-    expect_equal(length(list.files(tmp1, ".", get_default_backend())), 2)
+    expect_equal(length(list.files(tmp1, paste0(".", get_default_backend()))), 2)
     expect_equal(length(list.files(tmp1, ".pb")), 2)
 })
 

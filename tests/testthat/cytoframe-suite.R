@@ -182,7 +182,7 @@ test_that("[", {
 
       #write h5
       tmp <- tempfile()
-      if(get_default_backend()=="h5")
+      if(get_default_backend()!="tile")
         cf_write_h5(cf1, tmp)
       else
         cf_write_tile(cf1, tmp)

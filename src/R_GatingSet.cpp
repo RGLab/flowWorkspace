@@ -282,7 +282,15 @@ void set_sample_uid(XPtr<GatingSet> gs,string oldName, string newName) {
 
 }
 
+//' check whether cytolib is build with tiledb support
+//' @return TRUE or FALSE
+//' @export
+//[[Rcpp::export]]
+bool is_tiledb_support() {
 
+		return have_tiledb;
+
+}
 //[[Rcpp::export(name=".cpp_getLogLevel")]]
 unsigned short getLogLevel() {
 

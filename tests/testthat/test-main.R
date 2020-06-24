@@ -1,5 +1,5 @@
 skip_if(win32_flag)
-if(have_tiledb())
+if(is_tiledb_support())
 {
   backend_mode <<- "tile"
   set_default_backend(backend_mode)

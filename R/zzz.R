@@ -10,6 +10,8 @@ get_default_backend <- function(){
 #' @export
 set_default_backend <- function(backend = c("h5", "mem",  "tile")){
   backend <- match.arg(backend)
+  if(backend=="tile"&&!is_tiledb_support())
+    stop("Can't set backend to 'tile' because cytolib is not build with tiledb support!")
   options("backend" = backend)
 }
 
