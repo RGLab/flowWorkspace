@@ -21,18 +21,13 @@ endif
 	
 
 h5lib = $(shell echo 'Rhdf5lib::pkgconfig("PKG_C_LIBS")'|\
-    "${R_HOME}/bin/R" --vanilla --slave) -lssl -lcurl -lcrypto
+    "${R_HOME}/bin/R" --vanilla --slave)
     
 
 PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"` ${h5lib}  
 
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 PKGLIB = ${USERDIR}/libflowWorkspace.a
-
-ifeq ($(HAVE_TILEDB),yes)
-#PKG_CPPFLAGS += -DHAVE_TILEDB @TILEDB_INCLUDE@  
-#PKG_LIBS += @TILEDB_LIBS@
-endif
 
  
 all:  $(SHLIB)

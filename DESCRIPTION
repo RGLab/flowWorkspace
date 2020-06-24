@@ -62,7 +62,6 @@ Collate:
     'flow_trans.R'
     'getDescendants.R'
     'getSingleCellExpression.R'
-    'have_tiledb.R'
     'identifier.R'
     'load_fcs.R'
     'load_gs.R'
