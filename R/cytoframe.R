@@ -793,15 +793,31 @@ is_http_path <- function(x){
   grepl("^https://", x, ignore.case = TRUE)
 }
 
-check_credential <- function(cred){
+check_credential <- function(cred = NULL){
   if(is.null(cred))
   {
-    cred <- try(read_credentials()[[1]], silent = TRUE)
-    if(is(cred, "try-error"))
+    #try the sys env first
+    if(Sys.getenv("AWS_ACCESS_KEY_ID")!="")
     {
-      cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
+      cred <- list(AWS_ACCESS_KEY_ID = Sys.getenv("AWS_ACCESS_KEY_ID")
+                   , AWS_SECRET_ACCESS_KEY = Sys.getenv("AWS_SECRET_ACCESS_KEY")
+                   , AWS_DEFAULT_REGION = Sys.getenv("AWS_DEFAULT_REGION")
+                   )
+      if(cred[["AWS_DEFAULT_REGION"]] == "")
+        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
+    }else
+    {
+      cred <- try(read_credentials()[[1]], silent = TRUE)
+      if(is(cred, "try-error"))
+      {
+        cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
+      }  
+      if(is.null(cred[["AWS_DEFAULT_REGION"]]))
+        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
     }
-    cred$AWS_REGION <- "us-west-1"
+    
+    cred$AWS_REGION <- cred[["AWS_DEFAULT_REGION"]]
+    cred[["AWS_DEFAULT_REGION"]] <- NULL
   }
   cred
 }

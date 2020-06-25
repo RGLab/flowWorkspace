@@ -1,5 +1,9 @@
 context("GatingSet s3")
 
+#only run s3 test on my machine for now 
+#until figure out how to create bucket on the fly using put_bucket
+skip_if_not(dir.exists("/home/wjiang2"))
+
 bucket <- "mike-h5"
 prefix <- flowCore:::guid()
 url <- paste0("s3://", bucket, "/", prefix)
