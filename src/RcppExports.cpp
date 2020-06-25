@@ -783,6 +783,18 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// append_cols
+void append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat);
+RcppExport SEXP _flowWorkspace_append_cols(SEXP frSEXP, SEXP new_colnamesSEXP, SEXP new_cols_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type new_colnames(new_colnamesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type new_cols_mat(new_cols_matSEXP);
+    append_cols(fr, new_colnames, new_cols_mat);
+    return R_NilValue;
+END_RCPP
+}
 // parseFCS
 Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only, string format, string uri);
 RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP formatSEXP, SEXP uriSEXP) {
@@ -1199,6 +1211,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
+    {"_flowWorkspace_append_cols", (DL_FUNC) &_flowWorkspace_append_cols, 3},
     {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 5},
     {"_flowWorkspace_cf_getData", (DL_FUNC) &_flowWorkspace_cf_getData, 1},
     {"_flowWorkspace_cf_setData", (DL_FUNC) &_flowWorkspace_cf_setData, 2},

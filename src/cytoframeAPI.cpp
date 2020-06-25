@@ -119,7 +119,13 @@ void set_all_channels(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_names){
 // [[Rcpp::export]]
 void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
   fr->set_channel(old, new_name);
-}                                      
+}
+
+// [[Rcpp::export]]
+void append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat){
+  arma::mat new_cols = as<arma::mat>(new_cols_mat);
+  fr->append_columns(new_colnames, new_cols);
+}
                                       
 // [[Rcpp::export]] 
 Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false

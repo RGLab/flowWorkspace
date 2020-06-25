@@ -302,6 +302,10 @@ setChannel <- function(fr, old, new_name) {
     invisible(.Call(`_flowWorkspace_setChannel`, fr, old, new_name))
 }
 
+append_cols <- function(fr, new_colnames, new_cols_mat) {
+    invisible(.Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat))
+}
+
 parseFCS <- function(filename, config, text_only = FALSE, format = "mem", uri = "") {
     .Call(`_flowWorkspace_parseFCS`, filename, config, text_only, format, uri)
 }

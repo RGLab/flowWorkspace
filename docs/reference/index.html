@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.21</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
       </span>
     </div>
 
@@ -102,7 +102,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowWorkspace">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -154,7 +159,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="GatingSet-methods.html">GatingSet()</a></code> </p>
+          <p><code><a href="GatingSet-methods.html">GatingSet(<i>&lt;cytoset&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> </p>
         </td>
         <td><p>constructors for GatingSet</p></td>
       </tr><tr>
@@ -166,13 +171,13 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="brackets.html">`[`</a></code> <code><a href="brackets.html">`[[`</a></code> </p>
+          <p><code><a href="brackets.html">`[`(<i>&lt;GatingSet&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="brackets.html">`[[`(<i>&lt;GatingSet&gt;</i>,<i>&lt;numeric&gt;</i>)</a></code> </p>
         </td>
         <td><p>Bracket operators on <code>GatingSet</code> and <code>GatingSetList</code> objects</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="identifier-methods.html">identifier()</a></code> <code><a href="identifier-methods.html">`identifier&lt;-`()</a></code> </p>
+          <p><code><a href="identifier-methods.html">identifier()</a></code> <code><a href="identifier-methods.html">`identifier&lt;-`(<i>&lt;GatingSet&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="identifier-methods.html">`identifier&lt;-`(<i>&lt;GatingSetList&gt;</i>,<i>&lt;character&gt;</i>)</a></code> </p>
         </td>
         <td><p>Retrieve/replace the GUID of a GatingSet or GatingSetList</p></td>
       </tr><tr>
@@ -473,13 +478,13 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="compensate.html">compensate()</a></code> </p>
+          <p><code><a href="compensate.html">compensate(<i>&lt;GatingSet&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> </p>
         </td>
         <td><p>compensate the flow data asssociated with the GatingSet</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="transform.html">transform()</a></code> </p>
+          <p><code><a href="transform.html">transform(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
         </td>
         <td><p>tranform the flow data asssociated with the GatingSet</p></td>
       </tr><tr>
@@ -491,7 +496,7 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="length.html">length()</a></code> <code><a href="length.html">show()</a></code> </p>
+          <p><code><a href="length.html">length(<i>&lt;GatingSet&gt;</i>)</a></code> <code><a href="length.html">show(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
         </td>
         <td><p>Methods to get the length of a GatingSet</p></td>
       </tr><tr>
@@ -503,7 +508,7 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="markernames.html">markernames()</a></code> <code><a href="markernames.html">`markernames&lt;-`()</a></code> <code><a href="markernames.html">colnames()</a></code> <code><a href="markernames.html">`colnames&lt;-`()</a></code> </p>
+          <p><code><a href="markernames.html">markernames(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="markernames.html">`markernames&lt;-`(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="markernames.html">colnames(<i>&lt;GatingHierarchy&gt;</i>)</a></code> <code><a href="markernames.html">`colnames&lt;-`(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get/set the column(channel) or marker names</p></td>
       </tr><tr>
@@ -515,7 +520,7 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="keyword.html">keyword()</a></code> </p>
+          <p><code><a href="keyword.html">keyword(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="keyword.html">keyword(<i>&lt;GatingHierarchy&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> </p>
         </td>
         <td><p>Retrieve a specific keyword for a specific sample in a <code>GatingHierarchy</code> or or set of samples in a <code>GatingSet</code> or <code>GatingSetList</code></p></td>
       </tr>
@@ -576,31 +581,31 @@ It strips the parent path and cluster method name.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="transform_gate.html">transform_gate()</a></code> </p>
+          <p><code><a href="transform_gate.html">transform_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
         </td>
         <td><p>Simplified geometric transformations of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rotate_gate.html">rotate_gate()</a></code> </p>
+          <p><code><a href="rotate_gate.html">rotate_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
         </td>
         <td><p>Simplified geometric rotation of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="scale_gate.html">scale_gate()</a></code> </p>
+          <p><code><a href="scale_gate.html">scale_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
         </td>
         <td><p>Simplified geometric scaling of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="shift_gate.html">shift_gate()</a></code> </p>
+          <p><code><a href="shift_gate.html">shift_gate(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
         </td>
         <td><p>Simplified geometric translation of gates associated with nodes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="subset.html">subset()</a></code> </p>
+          <p><code><a href="subset.html">subset(<i>&lt;GatingSet&gt;</i>)</a></code> </p>
         </td>
         <td><p>subset the GatingSet/GatingSetList based on 'pData'</p></td>
       </tr><tr>
@@ -742,7 +747,7 @@ Used by other specific trans constructor</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="estimateLogicle.html">estimateLogicle()</a></code> </p>
+          <p><code><a href="estimateLogicle.html">estimateLogicle(<i>&lt;GatingHierarchy&gt;</i>)</a></code> </p>
         </td>
         <td><p>Compute logicle transformation from the flowData associated with a GatingHierarchy</p></td>
       </tr><tr>
@@ -836,7 +841,7 @@ underlying c++ data structure.</p></td>
       <tr>
         
         <td>
-          <p><code><a href="save_gs.html">save_gs()</a></code> <code><a href="save_gs.html">load_gs()</a></code> <code><a href="save_gs.html">sampleNames()</a></code> <code><a href="save_gs.html">save_gslist()</a></code> <code><a href="save_gs.html">load_gslist()</a></code> </p>
+          <p><code><a href="save_gs.html">save_gs()</a></code> <code><a href="save_gs.html">load_gs()</a></code> <code><a href="save_gs.html">sampleNames(<i>&lt;character&gt;</i>)</a></code> <code><a href="save_gs.html">save_gslist()</a></code> <code><a href="save_gs.html">load_gslist()</a></code> </p>
         </td>
         <td><p>save/load a GatingSet/GatingSetList to/from disk.</p></td>
       </tr>
@@ -941,7 +946,7 @@ Perform some validity checks before returning the updated colnames</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">

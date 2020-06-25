@@ -83,7 +83,7 @@ they will need to be converted to the new format." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.21</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
       </span>
     </div>
 
@@ -106,7 +106,12 @@ they will need to be converted to the new format." />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowWorkspace">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -132,9 +137,9 @@ the sake of efficiency. In order to use <code>GatingSet</code> or <code>GatingSe
 they will need to be converted to the new format.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>convert_legacy_gs</span>(<span class='no'>from</span>, <span class='no'>to</span>)
+    <pre class="usage"><span class='fu'>convert_legacy_gs</span>(<span class='no'>from</span>, <span class='no'>to</span>, <span class='no'>...</span>)
 
-<span class='fu'>convert_legacy_gslist</span>(<span class='no'>from</span>, <span class='no'>to</span>)</pre>
+<span class='fu'>convert_legacy_gslist</span>(<span class='no'>from</span>, <span class='no'>to</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,6 +151,12 @@ they will need to be converted to the new format.</p>
     <tr>
       <th>to</th>
       <td><p>the new archive path</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>tmp the path where the temporary files will be written to during the conversion. By default it is system temp folder and
+sometime it is helpful to be able to customize it to other location when system temp folder is fulll or not succicient when
+ converting big data sets.</p></td>
     </tr>
     </table>
 
@@ -169,7 +180,7 @@ due to the process of rewriting data to FCS files through write.FCS.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
