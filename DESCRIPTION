@@ -35,7 +35,6 @@ Imports:
     data.table,
     dplyr,
     Rcpp,
-    stringr,
     scales,
     matrixStats,
     RcppParallel,
@@ -44,8 +43,7 @@ Imports:
 	aws.s3,
 	aws.signature,
     flowCore(>= 1.99.20),
-	ncdfFlow(>= 2.25.4),
-	BiocFileCache
+	ncdfFlow(>= 2.25.4)
 Collate: 
     'cytoframe.R'
     'cytoset.R'

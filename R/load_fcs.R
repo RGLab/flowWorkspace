@@ -237,7 +237,7 @@ load_cytoframe_from_fcs <- function(filename,
 #' @name load_cytoset_from_fcs
 #' @family cytoframe/cytoset IO functions
 #' @export
-#' @importFrom Biobase read.AnnotatedDataFrame
+#' @importFrom Biobase read.AnnotatedDataFrame AnnotatedDataFrame
 load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
                          descriptions, name.keyword,
                          transformation="linearize",
