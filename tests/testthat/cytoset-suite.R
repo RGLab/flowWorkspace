@@ -5,6 +5,20 @@ lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
 fs <- read.flowSet(fcs_files)
 suppressMessages(cs <- load_cytoset_from_fcs(fcs_files))
 samples <- sampleNames(cs)
+
+
+test_that("fsApply", {
+  fsApply(cs, function(fr){
+    expect_is(fr, "flowFrame")
+    })
+})
+
+test_that("coerce", {
+  fr <- as(cs, "flowFrame")
+  expect_is(fr, "flowFrame")
+
+})
+
 test_that("empty cs", {
 			skip_if(get_default_backend()!="mem")
 			

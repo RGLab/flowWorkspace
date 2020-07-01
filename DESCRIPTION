@@ -42,7 +42,7 @@ Imports:
     digest,
 	aws.s3,
 	aws.signature,
-    flowCore(>= 1.99.20),
+    flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4)
 Collate: 
     'cytoframe.R'

@@ -691,6 +691,9 @@ cytoframe_to_flowFrame <- function(cf){
   cf@parameters <- parameters(cf)
   as(cf, "flowFrame")
 }
+#can't define coerce method for cytoframe, i.e. SetAS for as(cf, "flowFrame")
+#since there is already existing implicit coerce available
+#and by doing so it will cause infinite recursive calls
 
 #' @rdname convert
 #' @param fr flowframe
