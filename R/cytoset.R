@@ -449,7 +449,7 @@ setMethod("sampleNames",
 
 setMethod("[[",
           signature=signature(x="cytoset"),
-          definition=function(x, i, j,  use.exprs = TRUE, returnType = c("flowFrame", "cytoframe"))
+          definition=function(x, i, j,  use.exprs = TRUE, returnType = c("cytoframe", "flowFrame"))
           {
             
             returnType <- match.arg(returnType)

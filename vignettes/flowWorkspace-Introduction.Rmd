@@ -451,7 +451,7 @@ A couple of methods handle the task of writing or reading a `cytoframe` in the H
 ```{r h5}
 tmpfile <- tempfile(fileext = ".h5")
 cf_write_h5(cf, tmpfile)
-loaded <- load_cytoframe_from_h5(tmpfile)
+loaded <- load_cytoframe(tmpfile)
 ```
 
 ### `cytoset` methods

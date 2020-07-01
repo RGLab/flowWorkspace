@@ -202,7 +202,7 @@ test_that("[[", {
       
       sn <- samples[1]
       fr <- cs[[sn]]
-      expect_is(fr, "flowFrame")
+      expect_is(fr, "cytoframe")
       fr1 <- fs[[sn]]
       is_equal_flowFrame(fr, fr1)
       fr <- cs[[1]]
@@ -459,7 +459,7 @@ test_that("transform", {
   nc <- realize_view(cs[1:2])
   sn <- samples[1]
   #return the entire flowFrame
-  fr <- cs[[sn]]
+  fr <- cs[[sn, returnType = "flowFrame"]]
 
   #transform the data
   translist <- transformList(c("FL1-H", "FL2-H"), lgcl)

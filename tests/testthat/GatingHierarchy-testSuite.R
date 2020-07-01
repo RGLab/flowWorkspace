@@ -73,13 +73,14 @@ test_that("gh_pop_is_bool_gate ",{
 test_that("gh_pop_get_data ",{
       
       fr <- gh_pop_get_data(gh)
-      expect_is(fr, "flowFrame");
+      expect_is(fr, "cytoframe");
       expect_equal(nrow(fr), 119531)
       
       fr <- gh_pop_get_data(gh, "CD8")
       expect_equal(nrow(fr), 14564)
       
-      fr <- gh_pop_get_data(gh, use.exprs = FALSE)
+      cf <- gh_pop_get_data(gh, use.exprs = FALSE)
+      fr <- cytoframe_to_flowFrame(cf)
       expect_equal(nrow(fr), 0)
     })
 
