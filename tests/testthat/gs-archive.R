@@ -1,12 +1,29 @@
-context("GatingSet archive")
-skip_if(win32_flag)
+context("-- archived gs")
+
 gs <- NULL
 isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",
 {
   suppressWarnings(suppressMessages(gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
   expect_that(gs, is_a("GatingSet"))
-  gs <<- gs_clone(gs)#make it writable
+  gs <<- gs_clone(gs)#make it writable  
+  
+  if(get_default_backend() == "tile")
+  {
+    #convert h5 to tile
+    cs <- gs_cyto_data(gs)
+    cf <- get_cytoframe_from_cs(cs, 1)
+    tmp <- tempfile()
+    cf_write_tile(cf, tmp)  
+    cf <- load_cytoframe(tmp)
+    cs_set_cytoframe(cs, sampleNames(gs), cf)
+    gs_cyto_data(gs) <- cs
+    tmp1 <- tempfile()
+    save_gs(gs, tmp1, backend_opt = "move")
+    gs <<- load_gs(tmp1)
+  }
+  
+  
 })
 
 test_that("load read-only archive",
@@ -22,8 +39,14 @@ test_that("load read-only archive",
   colnames(gs1)[1] <- "d"
   expect_error(cs_flush_meta(gs_cyto_data(gs1)), "read-only", class = "error")
   
-  expect_error(capture.output(gs1 <- load_gs(tmp, h5_readonly = FALSE), type = "message"), "hdf Error", class = "error")
-  
+  if(get_default_backend()=="h5")
+    expect_error(capture.output(gs1 <- load_gs(tmp, backend_readonly = FALSE), type = "message"), "hdf Error", class = "error")
+  else
+  {
+    gs1 <- load_gs(tmp, backend_readonly = FALSE)
+    colnames(gs1)[1]<- "d"
+    expect_error(cs_flush_meta(gs_cyto_data(gs1)), "Permission", class = "error")
+  }
   #restore write permission so that tmp can be cleanedup
   system2("chmod", paste0("-R 755 ", tmp))
   })
@@ -44,7 +67,7 @@ test_that("validity checks for new distributed pb format",
   expect_error(save_gs(gs, tmp1), "not matched to GatingSet uid", class = "error")
   
   #extra h5
-  h5f <- "t.h5"
+  h5f <- paste0("t.", get_default_backend())
   file.rename(file.path(tmp1, gspbfile1), file.path(tmp1, h5f))
   expect_error(load_gs(tmp1), "No .pb file matched for sample", class = "error")
   expect_error(save_gs(gs, tmp1), "file not matched to any sample", class = "error")
@@ -65,10 +88,11 @@ test_that("validity checks for new distributed pb format",
   
   #missing h5
   sn <- sampleNames(gs)
-  h5f <- paste0(sn, ".h5")    
-  file.remove(file.path(tmp1, h5f))
-  expect_error(load_gs(tmp1), "No .h5 file matched", class = "error")
-  expect_error(save_gs(gs, tmp1), "h5 file missing", class = "error")
+  h5f <- paste(sn, get_default_backend(), sep = ".")    
+  unlink(file.path(tmp1, h5f), recursive = TRUE)
+    
+  expect_error(load_gs(tmp1), "No cytoframe file matched", class = "error")
+  expect_error(save_gs(gs, tmp1), "file missing", class = "error")
 })
 test_that("save indexed GatingSet",
 {
@@ -77,20 +101,21 @@ test_that("save indexed GatingSet",
     cs <- gs_cyto_data(gs)
     gs_cyto_data(gs) <- cs[, 1:2]
     tmp <- tempfile()
-    expect_error(save_gs(gs, tmp, cdf = "symlink"), "subsetted")
+    expect_error(save_gs(gs, tmp, backend_opt = "symlink"), "subsetted")
     #cp
     tmp <- tempfile()
     suppressMessages(save_gs(gs, tmp))
-    h5 <- list.files(cs_get_h5_file_path(gs), full = T)
+    h5 <- list.files(cs_get_uri(gs), full = T)
     expect_equal(length(h5), ifelse(mem, 0 ,2))
-    h5 <- list.files(tmp, pattern = ".h5", full = T)
+    ext <- ifelse(mem, ".h5", get_default_backend())
+    h5 <- list.files(tmp, pattern = ext, full = T)
     expect_equal(length(h5), 2)
     #mv
     tmp <- tempfile()
-    suppressMessages(save_gs(gs, tmp, cdf = "move"))
-    h5 <- list.files(cs_get_h5_file_path(gs), full = T)
+    suppressMessages(save_gs(gs, tmp, backend_opt = "move"))
+    h5 <- list.files(cs_get_uri(gs), full = T)
     expect_equal(length(h5), 0)
-    h5 <- list.files(tmp, pattern = ".h5", full = T)
+    h5 <- list.files(tmp, pattern = ext, full = T)
     expect_equal(length(h5), 2)
     gs1 <- load_gs(tmp)
     expect_equal(length(colnames(gs_cyto_data(gs1))), 2)
@@ -98,20 +123,20 @@ test_that("save indexed GatingSet",
   
   #mem
   fs <- GvHD[1:2]
-  cflist <- fsApply(fs, flowFrame_to_cytoframe, simplify = F)
-  expect_equal(cf_get_h5_file_path(cflist[[1]]), "")
-  cs <- cytoset(cflist)
-  gs <- GatingSet(cs)
   
+  gs <- GatingSet(fs, backend = "mem")
+  expect_true(cf_get_uri(get_cytoframe_from_cs(gs_cyto_data(gs), 1)) == "")
   mytest(gs)
   
   #h5
   gs <- GatingSet(fs)
+  expect_true(cf_get_uri(get_cytoframe_from_cs(gs_cyto_data(gs), 1)) != "")
   mytest(gs, F)
 })
 
 test_that("save GatingSet to archive",
     {
+      skip_if(get_default_backend() == "mem")
       pd <- pData(gs)
       pd[["newCol"]] <- "A"
       pData(gs) <- pd
@@ -132,7 +157,7 @@ test_that("save GatingSet to archive",
       #fail to save due to mismatch of gs id
       expect_error(save_gs(gs[1], path = tmp), "not match", class = "error")
       # check gs id is preserved
-      cdf <- list.files(tmp, ".h5", full.names = TRUE)
+      cdf <- list.files(tmp, get_default_backend(), full.names = TRUE)
       expect_equal(identifier(gs), id)
       #update gs id
       id.new <- "test"
@@ -141,7 +166,8 @@ test_that("save GatingSet to archive",
       #restore id
       identifier(gs) <- id
       #fail to save due to the mismatch of h5 files between folder and gs
-      file.copy(cdf, file.path(tmp, "redundant.nc"))
+      redundant <- file.path(tmp, paste0("redundant.", get_default_backend()))
+      file.create(redundant)
       expect_error(save_gs(gs, path = tmp), "Not a valid", class = "error")
       
       # protect the readonly data
@@ -163,40 +189,38 @@ test_that("save GatingSet to archive",
       
       
       #skip h5 when write to itself
-      file.remove(file.path(tmp, "redundant.nc"))
-      expect_message(save_gs(gs, path = tmp, cdf = "skip"), "Done")
+      file.remove(redundant)
+      expect_message(save_gs(gs, path = tmp, backend_opt = "skip"), "Done")
       
       #skip h5 when the new dir already has h5 pre-copied
       tmp1 <- tempfile()
       dir.create(tmp1)
       # file.copy(cdf, file.path(tmp1, list.files(tmp, ".h5")))
-      expect_message(save_gs(gs, path = tmp1, cdf = "skip"), "Done")
-      expect_equal(length(list.files(tmp1, ".h5")), 0)
+      expect_message(save_gs(gs, path = tmp1, backend_opt = "skip"), "Done")
+      expect_equal(length(list.files(tmp1, get_default_backend())), 0)
       
       #link
       tmp1 <- tempfile()
       dir.create(tmp1)
-      expect_error(save_gs(gs, path = tmp1, cdf = "link"), "no longer", class = "error")
-      # h5 <- list.files(tmp1, ".h5", full.names = TRUE)
-      # expect_equal(length(h5), 1)
-      # expect_equal(nchar(Sys.readlink(h5)), 0)
+      expect_error(save_gs(gs, path = tmp1, backend_opt = "link"), "no longer", class = "error")
       
-      #move
-      tmp1 <- tempfile()
-      dir.create(tmp1)
-      expect_message(save_gs(gs, path = tmp1, cdf = "move"), "Done")
-      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
-      expect_equal(length(h5), 1)
-      expect_false(file.exists(cdf))
- 
       #symlink
       skip_on_os(c("mac","windows"))
       tmp1 <- tempfile()
       dir.create(tmp1)
-      expect_message(save_gs(gs, path = tmp1, cdf = "symlink"), "Done")
-      h5 <- list.files(tmp1, ".h5", full.names = TRUE)
+      expect_message(save_gs(gs, path = tmp1, backend_opt = "symlink"), "Done")
+      h5 <- list.files(tmp1, get_default_backend(), full.names = TRUE)
       expect_equal(length(h5), 1)
       expect_equal(normalizePath(Sys.readlink(h5)), normalizePath(cdf))
+     
+      #move
+      tmp1 <- tempfile()
+      dir.create(tmp1)
+      expect_message(save_gs(gs, path = tmp1, backend_opt = "move"), "Done")
+      h5 <- list.files(tmp1, get_default_backend(), full.names = TRUE)
+      expect_equal(length(h5), 1)
+      expect_false(file.exists(cdf))
+      
       
   })
 ## it is placed here because trans may get cleared later on by cloning process

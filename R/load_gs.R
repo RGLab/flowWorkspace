@@ -10,9 +10,10 @@
 #' @param h5_readonly whether to open h5 data as read-only. Default is TRUE
 #' @param select an integer or character vector to select a subset of samples to load
 #' @param verbose logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.
-#' @param cdf a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
-#'              Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
-#'              It is useful to "skip" archiving cdf file if raw data has not been changed.
+#' @param backend_opt a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the backend data file.
+#'              Sometimes it is more efficient to move or create a symlink of the existing backend file to the archived folder.
+#'              It is useful to "skip" archiving backend file if raw data has not been changed.
+#' @inheritParams load_cytoframe
 #' @param ... other arguments: not used.
 #'
 #'
@@ -34,48 +35,118 @@
 #' @rdname save_gs
 #' @export
 #' @aliases save_gs load_gs save_gslist load_gslist
+#' @importFrom aws.s3 put_object
 save_gs<-function(gs, path
-                  , cdf = c("copy","move","skip","symlink","link")
+                  , cdf = NULL
+                  , backend_opt = c("copy","move","skip","symlink","link")
+                  , cred = NULL
                   , ...){
-  #  browser()
-  cdf <- match.arg(cdf)
-  if(cdf == "link")
-  	stop("'link' option for save_gs is no longer supported")
+  if(!is.null(cdf))
+  {
+    warning("'cdf' argument is deprecated by 'backend_opt'")
+    backend_opt <- cdf
+  }
+  backend_opt <- match.arg(backend_opt)
   path <- suppressWarnings(normalizePath(path))
-  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, cdf = cdf), silent = TRUE))
+  cred <- check_credential(cred)
+  if(is_s3_path(path))
+  {
+    
+    cf <- get_cytoframe_from_cs(gs_cyto_data(gs), 1)
+    back_type <- cf_backend_type(cf)
+    if(back_type != "tile")
+      stop("Saving gs to remote only support tiledb backend!Please use 'convert_backend()` first.")
+    
+  }
+  if(backend_opt == "link")
+  	stop("'link' option for save_gs is no longer supported")
   
-  
+  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt, cred), silent = TRUE))
+
   if(class(res) == "try-error")
   {
-    res <- gsub(" H5Option", ' option', res)
     res <- gsub(" the indexed CytoFrameView object", ' the GatingSet has been subsetted', res)
     
     stop(res[[1]])
   }
   message("Done\nTo reload it, use 'load_gs' function\n")
-  
-  
 }
 
+#TODO
+gs_is_dirty<- function(x){
+  FALSE
+  }
+is_s3_path <- function(x){
+  grepl("^s3://", x, ignore.case = TRUE)
+}
+is_http_path <- function(x){
+  grepl("^https://", x, ignore.case = TRUE)
+}
+
+parse_s3_path <- function(url){
+  if(is_s3_path(url))
+  {
+    url <- sub("^s3://", "", url)
+    tokens <- strsplit(url, "/")[[1]]
+  }else if(is_http_path(url)){
+    url <- sub("^https://", "", url)
+    tokens <- strsplit(url, "/")[[1]]
+    tokens[1] <- sub(".s3.amazonaws.com", "", tokens[1])
+  }else
+    stop("invalid s3 path", url)
+  
+  list(bucket = tokens[1], key = paste(tokens[-1], collapse = "/"))
+}
+#' delete the archive of GatingSet
+#' 
+#' @param path either a local path or s3 path (e.g. "s3://bucketname/gs_path)
+#' @importFrom aws.s3 get_bucket delete_object
+#' @export
+delete_gs <- function(path, cred = NULL){
+  if(is_s3_path(path))
+  {
+    cred <- check_credential(cred)
+    s3_paths <- parse_s3_path(path)
+    b <- get_bucket(s3_paths[["bucket"]], s3_paths[["key"]], region = cred$AWS_REGION)
+    for(obj in b)
+      delete_object(obj, region = cred$AWS_REGION)
+     }else
+    unlink(path, recursive = TRUE)
+  message(path, " is deleted")
+}
 
 #' @rdname save_gs
 #' @export
 #' @aliases load_gs load_gslist
-load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALSE){
-  if(length(list.files(path = path, pattern = ".rds")) >0)
+#' @importFrom aws.s3 get_bucket_df save_object
+load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL){
+  if(!is.null(h5_readonly))
   {
-    stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
+    warning("'h5_readonly' is deprecated by 'backend_readonly'!")
+    backend_readonly <- h5_readonly
+  }
+  cred <- check_credential(cred)
+  if(!is_s3_path(path))
+  {
+    
+    
+    if(length(list.files(path = path, pattern = ".rds")) >0)
+    {
+      stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
+    }
+	  path <- normalizePath(path)
+    sns <- sampleNames(path)
+    
   }
   if(!is.character(select))
   {
-    sns <- sampleNames(path)
     select.sn <- sns[select]
     idx <- is.na(select.sn)
     if(any(idx))
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
   }else
     select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(normalizePath(path), h5_readonly, select.sn, verbose))
+  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose, cred))
   
 }
 
@@ -92,7 +163,7 @@ load_gs<-function(path, h5_readonly = TRUE, select = character(), verbose = FALS
 #'       }
 #' @export
 setMethod("sampleNames","character",function(object){
-  sub(".h5$", "" , list.files(object, ".h5"))
+  sub(".pb$", "" , list.files(object, ".pb"))
 })
 
 #' convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only)
@@ -124,12 +195,12 @@ convert_legacy_gs <- function(from, to, ...){
     
     #TODO:optional skip generate_h5_folder in add_fcs api to be able to directly write to the target path
     #without needing to do this hack below
-    h5dir <- cs_get_h5_file_path(gs)
+    h5dir <- cs_get_uri(gs)
     system(paste0("mv ", h5dir, "/* ", to))#mv h5 files to dest
     #clean the auto generated dir
     system(paste0("rmdir ", h5dir))
     message("saving to new archive...")
-    suppressMessages(save_gs(gs, to, cdf = "skip"))
+    suppressMessages(save_gs(gs, to, backend_opt = "skip"))
     message("GatingSet is now saved in new format and can be loaded with 'load_gs'")
   
 }  
@@ -318,5 +389,29 @@ load_gslist<-function(path){
   })
   samples <- readRDS(file.path(path,"samples.rds"))
   GatingSetList(res, samples = samples)
+  
+}
+
+#' convert h5 based gs archive to tiledb
+#' @param gs_dir existing gs archive path
+#' @param output_dir the new gs path
+#' @export
+convert_backend <- function(gs_dir, output_dir){
+  #convert h5 to tile
+  h5files <- list.files(gs_dir, "\\.h5$", full.names = TRUE)
+  if(length(h5files)==0)
+    stop("no h5 files to be converted!")
+  if(dir.exists(output_dir))
+    stop("output dir already exists: ", output)
+  dir.create(output_dir)
+  pb <- list.files(gs_dir, "\\.(pb|gs)$", full.names = TRUE)
+  file.copy(pb, output_dir)
+  
+  for(h5 in h5files)
+  {
+    message("converting ", h5)
+    cf <- load_cytoframe(h5)
+    cf_write_tile(cf, file.path(output_dir, sub("\\.h5$", ".tile",basename(h5))))
+  }
   
 }

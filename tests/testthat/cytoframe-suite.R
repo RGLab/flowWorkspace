@@ -1,5 +1,15 @@
+context("-- cytoframe")
+
+fcs_file <- list.files(dataDir, "Cyto", full.names = TRUE)[1]
+fr <- read.FCS(fcs_file)
+lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
+rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+
+cf <- load_cytoframe_from_fcs(fcs_file)
+cf_lock(cf)
+
 test_that("cf_append_cols", {
-  skip_if(ish5)
+  skip_if(get_default_backend() != "mem")
   cf <- flowFrame_to_cytoframe(GvHD[[1]])
   
   n <- matrix(1:(nrow(cf)), ncol = 1)
@@ -32,8 +42,8 @@ test_that("cf_scale_time_channel", {
 })
 test_that("load_meta", {
   cf1 <- realize_view(cf)
-  tmp <- cf_get_h5_file_path(cf1)
-  skip_if_not(ish5)
+  tmp <- cf_get_uri(cf1)
+    skip_if(get_default_backend() == "mem")
   oldvalue <- keyword(cf1)[["TUBE NAME"]]
   keyword(cf1)[["TUBE NAME"]] <- "dd"
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], "dd")
@@ -44,7 +54,7 @@ test_that("load_meta", {
   keyword(cf1)[["TUBE NAME"]] <- "dd"
   #flush the change
   cf_flush_meta(cf1)
-  cf2 <- load_cytoframe_from_h5(tmp)
+  cf2 <- load_cytoframe(tmp)
   expect_equivalent(keyword(cf2)[["TUBE NAME"]], "dd")
   
   cf_load_meta(cf1)
@@ -63,40 +73,43 @@ test_that("cytoset_to_flowframe", {
 })
 
 
-test_that("get_h5_file_path", {
-  skip_if_not(ish5)
-  
-      h5file <- cf_get_h5_file_path(cf)
-      expect_true(file.exists(h5file))
+test_that("cf_get_uri", {
+    
+      uri <- cf_get_uri(cf)
+      if(get_default_backend() == "mem")
+        expect_true(uri=="")
+      else if(get_default_backend() == "h5")
+        expect_true(file.exists(uri))
+      else
+        expect_true(dir.exists(uri))
       
-      cf1 <- load_cytoframe_from_fcs(fcs_file)
-      expect_true(cf_get_h5_file_path(cf1)=="")
     })
 test_that("write permission", {
-  #newly created from fcs: writable
-  cf1 <- load_cytoframe_from_fcs(fcs_file, is_h5 = TRUE, which.lines = 1:10)
+    skip_if(get_default_backend() == "mem")
+    #newly created from fcs: writable
+  cf1 <- load_cytoframe_from_fcs(fcs_file, which.lines = 1:10)
   exprs(cf1)[1,1] <- 1
   expect_equivalent(exprs(cf1)[1,1], 1)
   
   #loaded from h5: default readonly
-  h5file <- cf_get_h5_file_path(cf1)
+  h5file <- cf_get_uri(cf1)
   rm(cf1)
   invisible(gc())
-  cf2 <- load_cytoframe_from_h5(h5file)
+  cf2 <- load_cytoframe(h5file)
   expect_error(exprs(cf2)[1,1] <- 2, "read-only", class = "std::domain_error")
   cf_unlock(cf2)
   exprs(cf2)[1,1] <- 2
   expect_equivalent(exprs(cf2)[1,1], 2)
   
   #loaded from h5: explicitly set write mode
-  cf2 <- load_cytoframe_from_h5(h5file, readonly = FALSE)
+  cf2 <- load_cytoframe(h5file, readonly = FALSE)
   exprs(cf2)[1,1] <- 2
   expect_equivalent(exprs(cf2)[1,1], 2)
   
   #fresh deep cp: writable
   rm(cf2)
   invisible(gc())
-  cf2 <- load_cytoframe_from_h5(h5file)
+  cf2 <- load_cytoframe(h5file)
   cf3 <- realize_view(cf2)
   exprs(cf3)[1,1] <- 3
   expect_equivalent(exprs(cf3)[1,1], 3)
@@ -104,7 +117,7 @@ test_that("write permission", {
 })
 
 test_that("lock", {
-  skip_if_not(ish5)
+    skip_if(get_default_backend() == "mem")
   
   cf1 <- realize_view(cf)
   #writable
@@ -138,8 +151,8 @@ test_that("lock", {
   #flush to disk
   keyword(cf1)[["TUBE NAME"]] <- key.new
   cf_flush_meta(cf1)
-  tmp <- cf_get_h5_file_path(cf1)
-  cf1 <- load_cytoframe_from_h5(tmp, readonly = FALSE)
+  tmp <- cf_get_uri(cf1)
+  cf1 <- load_cytoframe(tmp, readonly = FALSE)
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
   
   #without explicit flush changes won't automatically synced to disk
@@ -147,7 +160,7 @@ test_that("lock", {
   keyword(cf1)[["TUBE NAME"]] <- key.old
   rm(cf1)
   invisible(gc())
-  cf1 <- load_cytoframe_from_h5(tmp)
+  cf1 <- load_cytoframe(tmp)
   expect_equivalent(keyword(cf1)[["TUBE NAME"]], key.new)
   
 
@@ -155,8 +168,8 @@ test_that("lock", {
 
 
 test_that("[", {
-      cf <- realize_view(cf)
-      cf1 <- cf[1:100, 2:3]
+      cf0 <- realize_view(cf)
+      cf1 <- cf0[1:100, 2:3]
       is_equal_flowFrame(cf1, fr[1:100, 2:3])
       #keyword is not removed during []
       key.rm <- "$P1N"
@@ -165,12 +178,15 @@ test_that("[", {
       expect_equal(keyword(cf1)[[key.rm]], "dd")
       
       #nc1 and nc share the cdf file
-      expect_equal(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf))
+      expect_equal(cf_get_uri(cf1), cf_get_uri(cf0))
 
       #write h5
       tmp <- tempfile()
-      cf_write_h5(cf1, tmp)
-      cf2 <- load_cytoframe_from_h5(tmp)
+      if(get_default_backend()!="tile")
+        cf_write_h5(cf1, tmp)
+      else
+        cf_write_tile(cf1, tmp)
+      cf2 <- load_cytoframe(tmp)
       is_equal_flowFrame(cf2, fr[1:100, 2:3], description = F)
       
       #edge case
@@ -186,14 +202,14 @@ test_that("[", {
 
 test_that("copy", {
   cf1 <- cf[] #copy_view(cf)
-  expect_equal(cf_get_h5_file_path(cf1), cf_get_h5_file_path(cf))  
+  expect_equal(cf_get_uri(cf1), cf_get_uri(cf))  
 
   cf1 <- realize_view(cf)
-  skip_if_not(ish5)
+    skip_if(get_default_backend() == "mem")
   
-  h5 <- cf_get_h5_file_path(cf1)
+  h5 <- cf_get_uri(cf1)
   
-  expect_false(identical(h5, cf_get_h5_file_path(cf)))
+  expect_false(identical(h5, cf_get_uri(cf)))
   is_equal_flowFrame(cf, cf1)
   
   #overwrite the existing h5
@@ -311,21 +327,22 @@ test_that("keyword<-", {
   kw <- collapse_desc(kw, collapse.spill = FALSE)
   expect_equal(keyword(cf1)[names(kw)], kw, tol = 6e-6)
   
-  skip_if_not(ish5)
+    skip_if(get_default_backend() == "mem")
   
   #now meta won't be flushed to disk automatically after destroy cf1
-  tmp <- cf_get_h5_file_path(cf1)
+  tmp <- cf_get_uri(cf1)
   rm(cf1)
   invisible(gc())
-  cf2 <- load_cytoframe_from_h5(tmp, readonly = FALSE)
+  cf2 <- load_cytoframe(tmp, readonly = FALSE)
   expect_equal(keyword(cf2)[names(kw.old)], kw.old)
   #explicit flush
   keyword(cf2) <- kw
   cf_flush_meta(cf2)
   rm(cf2)
   invisible(gc())
-  cf2 <- load_cytoframe_from_h5(tmp)
-  expect_equal(keyword(cf2)[names(kw)], kw, tol = 6e-6)
+  cf2 <- load_cytoframe(tmp)
+  kw1 <- keyword(cf2)[names(kw)]
+  expect_equal(kw1, kw, tol = 6e-6)
 })
 
 test_that("keyword setters", {
@@ -342,7 +359,7 @@ test_that("keyword setters", {
   expect_error(cf_keyword_delete(cf1, "k2"), "not found")
 })
 # test_that("range", {
-# cf <- flowFrame_to_cytoframe(GvHD[[1]], is_h5 = TRUE)
+# cf <- flowFrame_to_cytoframe(GvHD[[1]])
 #   rng1 <- data.frame("FSC-H" = c(0,1023)
 #                      ,"SSC-H" = c(0,1023)
 #                      ,"FL1-H" = c(1,10000)
@@ -380,15 +397,15 @@ test_that("keyword setters", {
 # })
 # 
 test_that("transform", {
-  skip_if_not(ish5)
+    skip_if(get_default_backend() == "mem")
   fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
-  cf <- flowFrame_to_cytoframe(fr, is_h5 = TRUE)
-  h5 <- cf_get_h5_file_path(cf)
+  cf <- flowFrame_to_cytoframe(fr)
+  h5 <- cf_get_uri(cf)
   translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
   
   #in place transform
   transform(cf, translist)
-  expect_equal(h5, cf_get_h5_file_path(cf))
+  expect_equal(h5, cf_get_uri(cf))
   trans_range <- range(cf, "data")
   expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
   expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
@@ -396,8 +413,8 @@ test_that("transform", {
   #TODO:not ported to cytoframe yet
   #transform using inline arguments 
   # fr <- GvHD[pData(GvHD)$Patient %in% 6:7][[1]]
-  # cf <- flowFrame_to_cytoframe(fr, is_h5 = TRUE)
-  # h5 <- cf_get_h5_file_path(cf)
+  # cf <- flowFrame_to_cytoframe(fr)
+  # h5 <- cf_get_uri(cf)
   # transform(cf, `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`))
   # trans_range <- range(cf, "data")
   # expect_equal(trans_range[, c("FL1-H")], c(0.000000, 8.237988))
@@ -406,7 +423,7 @@ test_that("transform", {
 })
 
 test_that("load_fcs", {
-  skip_if_not(ish5)
+    skip_if(get_default_backend() == "mem")
   
   fr <- read.FCS(list.files(system.file("extdata","compdata","data",package="flowCore"), full.names = TRUE)[1])
   #write to carry flowCore_Rmax keywords

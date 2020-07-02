@@ -1,17 +1,18 @@
-context("GatingSet Accessors")
-test_that("<<- ",{
+context("---- gs")
+
+test_that("markernames<- ",{
   gs1 <- gs_clone(gs)
   gh <- gs1[[1]]
   # expect_error(gs[[1]] <- gh)
   gs1[[1]] <- gh
   markernames(gs1[[1]]) <- c("<B710-A>" = "cd4")
-  expect_equivalent(markernames(gs1)[1], "cd4");
+  expect_equivalent(markernames(gs1[[1]])[1], "cd4");
   
 })
-test_that("gs_is_h5 ",{
+test_that("gs_is_persistent ",{
       
         
-	expect_equal(gs_is_h5(gs), TRUE);
+	expect_equal(gs_is_persistent(gs), TRUE);
     
 })
 test_that("length ",{
@@ -61,8 +62,8 @@ test_that("gs_clone",{
       fs2 <- gs_pop_get_data(gs1)
       expect_equal(fs1[[1]], fs2[[1]])
       
-      expect_false(cs_get_h5_file_path(fs1)
-                            == cs_get_h5_file_path(fs2)
+      expect_false(cs_get_uri(fs1)
+                            == cs_get_uri(fs2)
                             )
       
       
@@ -85,8 +86,8 @@ test_that("gs_clone",{
       fs2 <- gs_pop_get_data(gs2)
       expect_equal(fs1[[1]], fs2[[1]])
       
-      expect_true(cs_get_h5_file_path(fs1)
-                   == cs_get_h5_file_path(fs2)
+      expect_true(cs_get_uri(fs1)
+                   == cs_get_uri(fs2)
                   )
       #check tree consistentcy
       expect_identical(gs_get_pop_paths(gs[[1]]), gs_get_pop_paths(gs2[[1]]))
@@ -131,7 +132,7 @@ test_that("merge_list_to_gs", {
     #share the same h5 with original gs
     cs <- gs_pop_get_data(gs)
     cf <- get_cytoframe_from_cs(cs, sn2)
-    expect_equal(cf_get_h5_file_path(cf), cf_get_h5_file_path(get_cytoframe_from_cs(gs_cyto_data(gs_clone), sn2)))
+    expect_equal(cf_get_uri(cf), cf_get_uri(get_cytoframe_from_cs(gs_cyto_data(gs_clone), sn2)))
     expect_equal(nrow(cs[[sn2]]),  119531)
     cs <- gs_pop_get_data(gs, "CD8")
     expect_equal(nrow(cs[[sn2]]),  14564)
@@ -217,8 +218,8 @@ test_that("[ subsetting",{
       expect_equal(pData(gs_sub1), pData(gs_sub2))
       expect_equal(length(gs_sub1), 1)
       
-      expect_equal(cs_get_h5_file_path(gs_pop_get_data(gs_sub1))
-                   ,cs_get_h5_file_path(gs_pop_get_data(gs_sub2))
+      expect_equal(cs_get_uri(gs_pop_get_data(gs_sub1))
+                   ,cs_get_uri(gs_pop_get_data(gs_sub2))
       )
       
       

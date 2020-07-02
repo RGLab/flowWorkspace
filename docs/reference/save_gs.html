@@ -82,7 +82,7 @@ Retrieve  sample names by scanning h5 files from a GatingSet folder" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.21</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
       </span>
     </div>
 
@@ -105,7 +105,12 @@ Retrieve  sample names by scanning h5 files from a GatingSet folder" />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowWorkspace">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -134,6 +139,7 @@ The <code>GatingSet</code> object The internal C data structure (gating tree),<c
 
 <span class='fu'>load_gs</span>(<span class='no'>path</span>, <span class='kw'>h5_readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span>(), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 
+<span class='co'># S4 method for character</span>
 <span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>object</span>)
 
 <span class='fu'>save_gslist</span>(<span class='no'>gslist</span>, <span class='no'>path</span>, <span class='no'>...</span>)
@@ -143,6 +149,10 @@ The <code>GatingSet</code> object The internal C data structure (gating tree),<c
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>gs</th>
+      <td><p>A <code>GatingSet</code></p></td>
+    </tr>
     <tr>
       <th>path</th>
       <td><p>A character scalar giving the path to save/load the GatingSet to/from.</p></td>
@@ -177,17 +187,8 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.</p><
       <th>gslist</th>
       <td><p>A <code>GatingSetList</code></p></td>
     </tr>
-    <tr>
-      <th>G</th>
-      <td><p>A <code>GatingSet</code></p></td>
-    </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p><code>load_gs</code> returns a GatingSet object<br />
-<code>load_gslist</code> returns a GatingSetList object<br />
-<code>sampleNames</code> returns a character vector of sample names</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='GatingSet-class.html'>GatingSet-class</a></code>,<code><a href='GatingSetList-class.html'>GatingSetList-class</a></code></p></div>
@@ -217,7 +218,7 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.</p><
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">

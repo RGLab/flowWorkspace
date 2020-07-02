@@ -12,8 +12,10 @@ load_cytoframe_from_fcs(
   column.pattern = NULL,
   invert.pattern = FALSE,
   decades = 0,
-  is_h5 = FALSE,
-  h5_filename = tempfile(fileext = ".h5"),
+  is_h5 = NULL,
+  backend = get_default_backend(),
+  uri = NULL,
+  h5_filename = NULL,
   min.limit = NULL,
   truncate_max_range = TRUE,
   dataset = NULL,
@@ -128,10 +130,12 @@ reading the entire FCS (due to the multiple disk IO).
 }
 \seealso{
 Other cytoframe/cytoset IO functions: 
-\code{\link{cf_get_h5_file_path}()},
+\code{\link{cf_get_uri}()},
+\code{\link{cf_write_disk}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cs_get_h5_file_path}()},
-\code{\link{load_cytoframe_from_h5}()},
+\code{\link{cf_write_tile}()},
+\code{\link{cs_get_uri}()},
+\code{\link{load_cytoframe}()},
 \code{\link{load_cytoset_from_fcs}()}
 }
 \concept{cytoframe/cytoset IO functions}

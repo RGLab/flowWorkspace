@@ -44,8 +44,6 @@
 
 \code{isNcdf} --> \code{gs_is_h5}
 
-\code{clone} --> \code{gs_clone}
-
 \code{flowData} --> \code{gs_cyto_data}
 
 \code{flowData<-} --> \code{gs_cyto_data<-}

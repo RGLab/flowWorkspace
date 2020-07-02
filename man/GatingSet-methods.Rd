@@ -11,6 +11,8 @@
 }
 \arguments{
 \item{x}{a flowSet, ncdfFlowSet, or cytoset}
+
+\item{...}{arguments passed to flowSet_to_cytoset() when x is a flowSet}
 }
 \description{
 construct a gatingset with empty trees (just root node)

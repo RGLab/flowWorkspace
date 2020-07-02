@@ -1,8 +1,14 @@
 #include <cytolib/H5CytoFrame.hpp>
+#include <cytolib/CytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 using namespace Rcpp;
 using namespace cytolib;
 
+// [[Rcpp::export]]
+string backend_type(Rcpp::XPtr<CytoFrameView> fr)
+{
+	return fmt_to_str(fr->get_backend_type());
+}
 
 // [[Rcpp::export(name=".cf_scale_time_channel")]]
 void cf_scale_time_channel(Rcpp::XPtr<CytoFrameView> fr)
@@ -26,9 +32,9 @@ void cf_load_meta(Rcpp::XPtr<CytoFrameView> fr)
 }
 
 // [[Rcpp::export]]
-string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr)
+string get_uri(Rcpp::XPtr<CytoFrameView> fr)
 {
-	return fr->get_h5_file_path();
+	return fr->get_uri();
 }
 
 // [[Rcpp::export]]
@@ -82,24 +88,24 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename){
-  fr->write_h5(filename);
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CytoCtx ctx){
+  FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
+
+  fr->write_to_disk(filename, format, ctx);
   
 }
-
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly){
-    unique_ptr<CytoFrame> fr(new H5CytoFrame(filename.c_str(), readonly));
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,CytoCtx ctx){
+    CytoFramePtr ptr = load_cytoframe(url, readonly, ctx);
 
-	if(on_disk)
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(fr.release())));
-	else
+	if(!on_disk)
 	{
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new MemCytoFrame(*fr.release()))));
+		ptr.reset(new MemCytoFrame(*ptr));
 	}
 
-}
+	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 
+}
 // [[Rcpp::export]] 
 void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker){
   fr->set_marker(channel, marker);
@@ -122,23 +128,36 @@ void append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, Nume
 }
                                       
 // [[Rcpp::export]] 
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false, bool is_h5 = false, string h5_filename = "")
+Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false
+		, string format = "mem", string uri = "")
 {
-	if(is_h5)
+	CytoFramePtr ptr;
+	unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
+	if(format!="mem"&&text_only)
 	{
-		if(text_only)
-			warning("text_only is ignored when is_h5 is set to TRUE!");
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(new H5CytoFrame(filename, config, h5_filename))));
+		warning("text_only is ignored when format is set to 'h5' or 'tile'!");
+		text_only = false;
+	}
+	if(text_only)
+		cf->read_fcs_header();
+	else
+		cf->read_fcs();
+	if(format=="mem")
+	{
+		ptr.reset(cf.release());
 	}
 	else
 	{
-		unique_ptr<MemCytoFrame> fr(new MemCytoFrame(filename.c_str(), config));
-		if(text_only)
-		  fr->read_fcs_header();
+		FileFormat fmt;
+		if(format == "h5")
+			fmt = FileFormat::H5;
 		else
-		  fr->read_fcs();
-		return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(CytoFramePtr(fr.release())));
+			fmt = FileFormat::TILE;
+		cf->write_to_disk(uri, fmt);
+		ptr = load_cytoframe(uri, false);
 	}
+
+	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 }
 
 // [[Rcpp::export]] 

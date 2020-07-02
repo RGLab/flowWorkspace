@@ -294,7 +294,8 @@ cytoset_to_flowSet <- function(cs){
 #'         by default, it is system temp path. And it can be changed to the customized location
 #'         when there is not enough space at system path.
 #' @export 
-flowSet_to_cytoset <- function(fs, path = tempfile(), tmp = tempfile()){
+flowSet_to_cytoset <- function(fs, path = tempfile(),backend = get_default_backend(), tmp = tempfile()){
+  backend <- match.arg(backend, c("h5", "mem",  "tile"))
   # Set up mapping to ensure that the sampleNames 
   # come back in without additional ".fcs" and allow
   # for potential re-ordering
@@ -304,8 +305,8 @@ flowSet_to_cytoset <- function(fs, path = tempfile(), tmp = tempfile()){
   write.flowSet(fs, tmp, filename = sampleNames(fs))
   cs <- load_cytoset_from_fcs(phenoData = list.files(tmp, pattern = ".txt")
                               , path = tmp
-                              , is_h5 = TRUE
-                              , h5_dir = path
+                              , backend = backend
+                              , backend_dir = path
                               , file_col_name = "FCS_File"
                               , check.names = FALSE )
   # Remove the temporary intermediate flowSet
@@ -448,7 +449,7 @@ setMethod("sampleNames",
 
 setMethod("[[",
           signature=signature(x="cytoset"),
-          definition=function(x, i, j,  use.exprs = TRUE, returnType = c("flowFrame", "cytoframe"))
+          definition=function(x, i, j,  use.exprs = TRUE, returnType = c("cytoframe", "flowFrame"))
           {
             
             returnType <- match.arg(returnType)
@@ -629,18 +630,26 @@ cs_set_cytoframe <- function(cs, sn, cf){
 	stopifnot(is(cs, "cytoset"))
 	set_cytoframe(cs@pointer, sn, cf@pointer)
 }
-#' Return the file path of the underlying h5 files
+#' Return the path of the underlying data files
 #' 
 #' @family cytoframe/cytoset IO functions
-#' @param x cytoset or GatingSet
-#' @export  
-cs_get_h5_file_path <- function(x){
+#' @export
+#' @rdname cs_get_uri  
+cs_get_uri <- function(x){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
 	cf <- get_cytoframe_from_cs(x, 1)
-	h5file <- cf_get_h5_file_path(cf)
+	h5file <- cf_get_uri(cf)
 	dirname(h5file)
 	
 }
+
+#' @export
+#' @rdname cs_get_uri
+cs_get_h5_file_path <- function(x){
+	.Deprecated("cs_get_uri")
+	
+}
+
 #' @export
 get_cytoframe_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
@@ -875,7 +884,7 @@ load_cytoset<-function(path, ...){
 cs_cleanup_temp <- function(x, temp_dir = NULL){
 	if(is.null(temp_dir))
 		temp_dir <- normalizePath(tempdir(), winslash = "/")
-	h5_path <- normalizePath(cs_get_h5_file_path(x), winslash = "/")
+	h5_path <- normalizePath(cs_get_uri(x), winslash = "/")
 	if(grepl(paste0("^", temp_dir), h5_path))
 	   unlink(h5_path, recursive = TRUE)
 }

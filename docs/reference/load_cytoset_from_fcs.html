@@ -81,7 +81,7 @@ and returns a cytoset." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.99.21</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
       </span>
     </div>
 
@@ -104,7 +104,12 @@ and returns a cytoset." />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowWorkspace">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -264,9 +269,13 @@ coercion of characters to factors in the <code>phenoData</code>.</p></td>
 for the h5 files if <code>is_h5</code> is TRUE</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Further arguments that get passed on to
+      <th>file_col_name</th>
+      <td><p>optionally specify the column name that stores the fcs filename when phenoData is supplied
 <code><a href='https://rdrr.io/pkg/Biobase/man/read.AnnotatedDataFrame.html'>read.AnnotatedDataFrame</a></code>, see details.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Further arguments that get passed on to</p></td>
     </tr>
     </table>
 
@@ -316,7 +325,7 @@ is not <code>NULL</code>, then the file names are obtained by calling
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">

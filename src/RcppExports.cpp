@@ -487,20 +487,21 @@ BEGIN_RCPP
 END_RCPP
 }
 // save_gatingset
-void save_gatingset(XPtr<GatingSet> gs, string path, string cdf);
-RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP cdfSEXP) {
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx ctx);
+RcppExport SEXP _flowWorkspace_save_gatingset(SEXP gsSEXP, SEXP pathSEXP, SEXP backend_optSEXP, SEXP ctxSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
     Rcpp::traits::input_parameter< string >::type path(pathSEXP);
-    Rcpp::traits::input_parameter< string >::type cdf(cdfSEXP);
-    save_gatingset(gs, path, cdf);
+    Rcpp::traits::input_parameter< string >::type backend_opt(backend_optSEXP);
+    Rcpp::traits::input_parameter< CytoCtx >::type ctx(ctxSEXP);
+    save_gatingset(gs, path, backend_opt, ctx);
     return R_NilValue;
 END_RCPP
 }
 // load_gatingset
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose);
-RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP) {
+XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, CytoCtx ctx);
+RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP, SEXP ctxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -508,7 +509,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
     Rcpp::traits::input_parameter< vector<string> >::type select_samples(select_samplesSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly, select_samples, verbose));
+    Rcpp::traits::input_parameter< CytoCtx >::type ctx(ctxSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly, select_samples, verbose, ctx));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -561,6 +563,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// is_tiledb_support
+bool is_tiledb_support();
+RcppExport SEXP _flowWorkspace_is_tiledb_support() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(is_tiledb_support());
+    return rcpp_result_gen;
+END_RCPP
+}
 // getLogLevel
 unsigned short getLogLevel();
 RcppExport SEXP _flowWorkspace_getLogLevel() {
@@ -588,6 +600,17 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     toggleErrorFlag();
     return R_NilValue;
+END_RCPP
+}
+// backend_type
+string backend_type(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_backend_type(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(backend_type(fr));
+    return rcpp_result_gen;
 END_RCPP
 }
 // cf_scale_time_channel
@@ -631,14 +654,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// get_h5_file_path
-string get_h5_file_path(Rcpp::XPtr<CytoFrameView> fr);
-RcppExport SEXP _flowWorkspace_get_h5_file_path(SEXP frSEXP) {
+// get_uri
+string get_uri(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_get_uri(SEXP frSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_h5_file_path(fr));
+    rcpp_result_gen = Rcpp::wrap(get_uri(fr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -698,27 +721,30 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// writeH5
-void writeH5(Rcpp::XPtr<CytoFrameView> fr, string filename);
-RcppExport SEXP _flowWorkspace_writeH5(SEXP frSEXP, SEXP filenameSEXP) {
+// write_to_disk
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CytoCtx ctx);
+RcppExport SEXP _flowWorkspace_write_to_disk(SEXP frSEXP, SEXP filenameSEXP, SEXP ish5SEXP, SEXP ctxSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
-    writeH5(fr, filename);
+    Rcpp::traits::input_parameter< bool >::type ish5(ish5SEXP);
+    Rcpp::traits::input_parameter< CytoCtx >::type ctx(ctxSEXP);
+    write_to_disk(fr, filename, ish5, ctx);
     return R_NilValue;
 END_RCPP
 }
-// load_cf_from_h5
-XPtr<CytoFrameView> load_cf_from_h5(string filename, bool on_disk, bool readonly);
-RcppExport SEXP _flowWorkspace_load_cf_from_h5(SEXP filenameSEXP, SEXP on_diskSEXP, SEXP readonlySEXP) {
+// load_cf
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, CytoCtx ctx);
+RcppExport SEXP _flowWorkspace_load_cf(SEXP urlSEXP, SEXP readonlySEXP, SEXP on_diskSEXP, SEXP ctxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
+    Rcpp::traits::input_parameter< string >::type url(urlSEXP);
     Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
-    rcpp_result_gen = Rcpp::wrap(load_cf_from_h5(filename, on_disk, readonly));
+    Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
+    Rcpp::traits::input_parameter< CytoCtx >::type ctx(ctxSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_cf(url, readonly, on_disk, ctx));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -770,17 +796,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // parseFCS
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only, bool is_h5, string h5_filename);
-RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP is_h5SEXP, SEXP h5_filenameSEXP) {
+Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only, string format, string uri);
+RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP formatSEXP, SEXP uriSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< FCS_READ_PARAM >::type config(configSEXP);
     Rcpp::traits::input_parameter< bool >::type text_only(text_onlySEXP);
-    Rcpp::traits::input_parameter< bool >::type is_h5(is_h5SEXP);
-    Rcpp::traits::input_parameter< string >::type h5_filename(h5_filenameSEXP);
-    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only, is_h5, h5_filename));
+    Rcpp::traits::input_parameter< string >::type format(formatSEXP);
+    Rcpp::traits::input_parameter< string >::type uri(uriSEXP);
+    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only, format, uri));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -931,16 +957,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // fcs_to_cytoset
-Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, FCS_READ_PARAM config, bool is_h5, string h5_dir);
-RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP is_h5SEXP, SEXP h5_dirSEXP) {
+Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, FCS_READ_PARAM config, string backend, string backend_dir);
+RcppExport SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_pathSEXP, SEXP configSEXP, SEXP backendSEXP, SEXP backend_dirSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< vector<pair<string,string>> >::type sample_uid_vs_file_path(sample_uid_vs_file_pathSEXP);
     Rcpp::traits::input_parameter< FCS_READ_PARAM >::type config(configSEXP);
-    Rcpp::traits::input_parameter< bool >::type is_h5(is_h5SEXP);
-    Rcpp::traits::input_parameter< string >::type h5_dir(h5_dirSEXP);
-    rcpp_result_gen = Rcpp::wrap(fcs_to_cytoset(sample_uid_vs_file_path, config, is_h5, h5_dir));
+    Rcpp::traits::input_parameter< string >::type backend(backendSEXP);
+    Rcpp::traits::input_parameter< string >::type backend_dir(backend_dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(fcs_to_cytoset(sample_uid_vs_file_path, config, backend, backend_dir));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1159,27 +1185,29 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 4},
     {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
     {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
-    {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 3},
-    {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 4},
+    {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
+    {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 5},
     {"_flowWorkspace_load_legacy_gs", (DL_FUNC) &_flowWorkspace_load_legacy_gs, 2},
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 3},
     {"_flowWorkspace_combineGatingSet", (DL_FUNC) &_flowWorkspace_combineGatingSet, 2},
     {"_flowWorkspace_set_sample_uid", (DL_FUNC) &_flowWorkspace_set_sample_uid, 3},
+    {"_flowWorkspace_is_tiledb_support", (DL_FUNC) &_flowWorkspace_is_tiledb_support, 0},
     {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
+    {"_flowWorkspace_backend_type", (DL_FUNC) &_flowWorkspace_backend_type, 1},
     {"_flowWorkspace_cf_scale_time_channel", (DL_FUNC) &_flowWorkspace_cf_scale_time_channel, 1},
     {"_flowWorkspace_cf_set_readonly", (DL_FUNC) &_flowWorkspace_cf_set_readonly, 2},
     {"_flowWorkspace_cf_flush_meta", (DL_FUNC) &_flowWorkspace_cf_flush_meta, 1},
     {"_flowWorkspace_cf_load_meta", (DL_FUNC) &_flowWorkspace_cf_load_meta, 1},
-    {"_flowWorkspace_get_h5_file_path", (DL_FUNC) &_flowWorkspace_get_h5_file_path, 1},
+    {"_flowWorkspace_get_uri", (DL_FUNC) &_flowWorkspace_get_uri, 1},
     {"_flowWorkspace_realize_view_cytoframe", (DL_FUNC) &_flowWorkspace_realize_view_cytoframe, 2},
     {"_flowWorkspace_copy_view_cytoframe", (DL_FUNC) &_flowWorkspace_copy_view_cytoframe, 1},
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
     {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
-    {"_flowWorkspace_writeH5", (DL_FUNC) &_flowWorkspace_writeH5, 2},
-    {"_flowWorkspace_load_cf_from_h5", (DL_FUNC) &_flowWorkspace_load_cf_from_h5, 3},
+    {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 4},
+    {"_flowWorkspace_load_cf", (DL_FUNC) &_flowWorkspace_load_cf, 4},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},

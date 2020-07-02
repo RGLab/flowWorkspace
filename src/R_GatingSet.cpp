@@ -203,26 +203,33 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
  * save/load GatingSet
  */
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void save_gatingset(XPtr<GatingSet> gs, string path, string cdf) {
-      H5Option h5_opt;
-      if(cdf == "copy")
-        h5_opt = H5Option::copy;
-      else if(cdf == "move")
-        h5_opt = H5Option::move;
-      else if(cdf == "link")
-        h5_opt = H5Option::link;
-      else if(cdf == "symlink")
-        h5_opt = H5Option::symlink;
-      else if(cdf == "skip")
-        h5_opt = H5Option::skip;
+void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx ctx) {
+      CytoFileOption cf_opt;
+      bool skip_data = false;
+      if(backend_opt == "copy")
+        cf_opt = CytoFileOption::copy;
+      else if(backend_opt == "move")
+        cf_opt = CytoFileOption::move;
+      else if(backend_opt == "link")
+        cf_opt = CytoFileOption::link;
+      else if(backend_opt == "symlink")
+        cf_opt = CytoFileOption::symlink;
+      else if(backend_opt == "skip")
+      {
+          cf_opt = CytoFileOption::skip;
+          skip_data = true;
+      }
       else
-        stop("invalid cdf option!");
-			gs->serialize_pb(path, h5_opt);
+        stop("invalid backend_opt option!");
+			gs->serialize_pb(path, cf_opt, skip_data, ctx);
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose) {
-		return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose));
+XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
+									, CytoCtx ctx) {
+
+
+	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose, ctx));
 
 }
 
@@ -275,7 +282,15 @@ void set_sample_uid(XPtr<GatingSet> gs,string oldName, string newName) {
 
 }
 
+//' check whether cytolib is build with tiledb support
+//' @return TRUE or FALSE
+//' @export
+//[[Rcpp::export]]
+bool is_tiledb_support() {
 
+		return have_tiledb;
+
+}
 //[[Rcpp::export(name=".cpp_getLogLevel")]]
 unsigned short getLogLevel() {
 

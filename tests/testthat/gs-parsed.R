@@ -1,5 +1,4 @@
-context("flowjo_to_gatingset")
-skip_if(win32_flag)
+context("-- parsed gs")
 
 wsfile <- list.files(dataDir, pattern="manual.xml",full=TRUE)
 library(CytoML)
@@ -10,7 +9,12 @@ test_that("can load xml workspace",
   expect_that(ws, is_a("flowjo_workspace"))
 })
 
-dd <- capture.output(gs <- flowjo_to_gatingset(ws, path = dataDir, name = 4, subset = "CytoTrol_CytoTrol_1.fcs", additional.keys = NULL))
+dd <- capture.output(gs <- flowjo_to_gatingset(ws, path = dataDir, name = 4
+                                               , subset = "CytoTrol_CytoTrol_1.fcs"
+                                               , additional.keys = NULL
+                                               
+                                               )
+                     )
 
 gh <- gs[[1]]
 
@@ -46,7 +50,11 @@ test_that("updateChannles",{
 
   dd <- capture.output(suppressMessages(gs1 <- flowjo_to_gatingset(ws, path = dataDir, name = 4
                                                                    , subset = 1:2#`TUBE NAME` %in% c("CytoTrol_1", "CytoTrol_2")
-                                                                   , keywords = "TUBE NAME")))
+                                                                   , keywords = "TUBE NAME"
+                                                                   
+                                                                   )
+                                        )
+                       )
   oldCols <- colnames(gs_pop_get_data(gs1)[[1, use.exprs = F]])
   comp_cols <- parameters(gh_get_compensations(gs1[[1]]))
   trans_names <- names(gh_get_transformations(gs1[[1]]))

@@ -296,7 +296,9 @@ setMethod("ncol",
 realize_view <- function(x, filepath)UseMethod("realize_view")
 
 #' @export 
-realize_view.cytoframe <- function(x, filepath = tempfile(fileext = ".h5")){
+realize_view.cytoframe <- function(x, filepath = NULL){
+  if(is.null(filepath))
+    filepath <- tempfile(fileext = paste0(".", cf_backend_type(x)))
   new("cytoframe", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
 }
 
@@ -689,6 +691,9 @@ cytoframe_to_flowFrame <- function(cf){
   cf@parameters <- parameters(cf)
   as(cf, "flowFrame")
 }
+#can't define coerce method for cytoframe, i.e. SetAS for as(cf, "flowFrame")
+#since there is already existing implicit coerce available
+#and by doing so it will cause infinite recursive calls
 
 #' @rdname convert
 #' @param fr flowframe
@@ -700,26 +705,124 @@ flowFrame_to_cytoframe <- function(fr, ...){
 	load_cytoframe_from_fcs(tmp, ...)
 }
 
+#' Save the cytoframe to disk
+#' 
+#' @param cf cytoframe object
+#' @param filename the full path of the output file
+#' @param backend either "h5" or "tile"
+#' @inheritParams load_cytoframe
+#' @family cytoframe/cytoset IO functions
+#' @export
+cf_write_disk <- function(cf, filename, backend = get_default_backend(), cred = NULL){
+  backend <- match.arg(backend, c("h5", "tile"))
+  stopifnot(is(cf, "cytoframe"))
+  cred <- check_credential(cred)
+  
+  write_to_disk(cf@pointer,filename, backend == "h5",  cred)
+}
+
 #' Save the cytoframe as h5 format
 #' 
 #' @param cf cytoframe object
 #' @param filename the full path of the output h5 file
+#' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_h5 <- function(cf, filename){
-	stopifnot(is(cf, "cytoframe"))
-	writeH5(cf@pointer,filename)
+cf_write_h5 <- function(cf, filename, cred = NULL){
+	cf_write_disk(cf, filename, backend = "h5", cred)
 }
 
-#' Load the cytoframe from h5 format
+#' Save the cytoframe as h5 format
 #' 
-#' @param filename the full path of the output h5 file
-#' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
-#' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
+#' @param cf cytoframe object
+#' @param filename the full path of the output file
+#' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE){
-  new("cytoframe", pointer = load_cf_from_h5(filename, on_disk, readonly), use.exprs = TRUE)
+cf_write_tile <- function(cf, filename, cred = NULL){
+  cf_write_disk(cf, filename, backend = "tile", cred)
+}
+
+#' Load the cytoframe from disk
+#' 
+#' @param uri path to the cytoframe file
+#' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
+#' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
+#'                 And it is valid when on_disk is set to true.
+#' @param cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
+#'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
+#' @importFrom aws.signature read_credentials
+#' @family cytoframe/cytoset IO functions
+#' @export
+load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads = 1L, cred = NULL){
+	cred <- check_credential(cred)
+	if(!on_disk)
+	{
+	  if(readonly)
+	  {
+	    stop("'readonly = TRUE' is only valid when 'on_disk' is TRUE! ")
+	  }
+	}
+	cred[["num_threads"]] <- num_threads
+	p <- load_cf(uri, readonly, on_disk, cred)
+	
+	new("cytoframe", pointer = p, use.exprs = TRUE)
+}
+
+#' return the cytoframe backend storage format
+#' @param cf cytoframe
+#' @return one of "mem","h5", "tile"
+cf_backend_type <- function(cf)
+{
+  backend_type(cf@pointer)
+}
+
+uri_backend_type <- function(uri)
+{
+  if(uri == "")
+    "mem"
+  else
+  {
+    if(dir.exists(uri))
+    "tile"
+  else
+    "h5"
+  }
+
+}
+
+
+is_http_path <- function(x){
+  grepl("^https://", x, ignore.case = TRUE)
+}
+
+check_credential <- function(cred = NULL){
+  if(is.null(cred))
+  {
+    #try the sys env first
+    if(Sys.getenv("AWS_ACCESS_KEY_ID")!="")
+    {
+      cred <- list(AWS_ACCESS_KEY_ID = Sys.getenv("AWS_ACCESS_KEY_ID")
+                   , AWS_SECRET_ACCESS_KEY = Sys.getenv("AWS_SECRET_ACCESS_KEY")
+                   , AWS_DEFAULT_REGION = Sys.getenv("AWS_DEFAULT_REGION")
+                   )
+      if(cred[["AWS_DEFAULT_REGION"]] == "")
+        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
+    }else
+    {
+      cred <- try(read_credentials()[[1]], silent = TRUE)
+      if(is(cred, "try-error"))
+      {
+        cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
+      }  
+      if(is.null(cred[["AWS_DEFAULT_REGION"]]))
+        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
+    }
+    
+    cred$AWS_REGION <- cred[["AWS_DEFAULT_REGION"]]
+    cred[["AWS_DEFAULT_REGION"]] <- NULL
+  }
+  cred
 }
 #' Return the file path of the underlying h5 file
 #' 
@@ -729,12 +832,20 @@ load_cytoframe_from_h5 <- function(filename, readonly = TRUE, on_disk = TRUE){
 #' @param cf cytoframe object
 #' @family cytoframe/cytoset IO functions
 #' @export 
-cf_get_h5_file_path <- function(cf){
+#' @rdname cf_get_uri
+cf_get_uri <- function(cf){
   stopifnot(is(cf, "cytoframe"))
-  get_h5_file_path(cf@pointer)
+  get_uri(cf@pointer)
   
 }
 
+#' @rdname cf_get_uri
+#' @export 
+cf_get_h5_file_path <- function(cf){
+	.Deprecated("cf_get_uri")
+	cf_get_uri(cf)
+	
+}
 #' Lock/Unlock the cytoset/cytoframe by turning on/off its read-only flag
 #' @name lock
 #' @param cf cytoframe object
@@ -792,11 +903,38 @@ cf_scale_time_channel <- function(cf){
 cf_cleanup_temp <- function(x, temp_dir = NULL){
 	if(is.null(temp_dir))
 		temp_dir <- normalizePath(tempdir(), winslash = "/")
-	h5_path <- normalizePath(cf_get_h5_file_path(x), winslash = "/")
+	h5_path <- normalizePath(cf_get_uri(x), winslash = "/")
 	if(grepl(paste0("^", temp_dir), h5_path))
 		unlink(h5_path, recursive = TRUE)
 }
 
+#' Remove on-disk files associatated with flowWorkspace data classes
+#' 
+#' These methods immediately delete the on-disk  storage associated with \link{cytoframe},
+#' \link{cytoset}, \linkS4class{GatingHierarchy}, or \linkS4class{GatingSet} objects
+#' 
+#' @name cleanup
+#' @aliases cf_cleanup cs_cleanup gh_cleanup gs_cleanup
+#' @param cf a cytoframe, cytoset, GatingHierarchy, or GatingSet object
+#' @inheritParams load_cytoframe
+#' this will override tempdir() in determining the top directory under which files can safely be removed.
+#' @export
+cf_cleanup <- function(cf, cred = NULL){
+  uri <- cf_get_uri(cf)
+  
+  if(is_http_path(uri)||is_s3_path(uri))
+  {
+    s3_paths <- parse_s3_path(uri)
+    bucket <- s3_paths[["bucket"]]
+    key <- s3_paths[["key"]]	
+    cred <- check_credential(cred)
+    b <- get_bucket(bucket, key, region = cred$AWS_REGION)
+    for(obj in b)
+      delete_object(obj, region = cred$AWS_REGION)
+  }else
+    unlink(uri, recursive = TRUE)
+  message(uri, " is deleted!")
+} 
 #' Append data columns to a flowFrame
 #' 
 #' Append data columns to a flowFrame
@@ -826,15 +964,17 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' 
 #' @export
 cf_append_cols <- function(cf, cols){
-  ish5 <- cf_get_h5_file_path(cf) != ""
-  if(ish5){
+
+  backendtype <- cf_backend_type(cf)
+  if(backendtype!="mem"){
     fr <- cytoframe_to_flowFrame(cf)
     fr <- fr_append_cols(fr, cols)
-    flowFrame_to_cytoframe(fr, is_h5 = ish5)
+    flowFrame_to_cytoframe(fr, backend = backendtype)
   }else{
     # For now, to be safe, append to a copy. Needs discussion.
     cf <- realize_view(cf)
     append_cols(cf@pointer, colnames(cols), cols)
     cf
   }
+
 }

@@ -96,8 +96,10 @@ load_cytoframe_from_fcs <- function(filename,
                      column.pattern=NULL,
                      invert.pattern = FALSE,
                      decades=0,
-					 is_h5=FALSE,
-					 h5_filename = tempfile(fileext = ".h5"),
+                      is_h5= NULL,
+                      backend = get_default_backend(),
+                      uri = NULL,
+                      h5_filename = NULL,
                      min.limit=NULL,
                      truncate_max_range = TRUE,
                      dataset=NULL,
@@ -106,6 +108,24 @@ load_cytoframe_from_fcs <- function(filename,
                      ignore.text.offset = FALSE,
                      text.only = FALSE)
 {
+  backend <- match.arg(backend, c("mem", "h5", "tile"))
+  if(!is.null(is_h5))
+  {
+    warning("'is_h5' argument is deprecated by 'backend'! ")
+    if(is_h5)
+      backend <-"h5"
+  }
+  if(!is.null(h5_filename))
+  {
+    warning("'h5_filename' argument is deprecated by 'uri'! ")
+      uri <- h5_filename
+  }
+  if(backend != "mem")
+  {
+    if(is.null(uri))
+      uri <- tempfile(fileext = paste0(".", backend))
+  }else
+    uri <- ""
     fr <- new("cytoframe")
     if(is.null(dataset))
       dataset <- 0
@@ -117,12 +137,12 @@ load_cytoframe_from_fcs <- function(filename,
     if(is.null(which.lines))
       which.lines <- vector()
     else
-	{
-		# Verify that which.lines is positive and within file limit.
-		if (length(which.lines) > 1) {
-			which.lines <- which.lines -1
-		}
-	}
+    {
+    	# Verify that which.lines is positive and within file limit.
+    	if (length(which.lines) > 1) {
+    		which.lines <- which.lines -1
+    	}
+    }
     fr@pointer <- parseFCS(normalizePath(filename), list(which.lines = which.lines
                                                          , transformation = transformation
                                                          , decades = decades
@@ -135,8 +155,8 @@ load_cytoframe_from_fcs <- function(filename,
                                                          , ignoreTextOffset = ignore.text.offset
                                                          )
                                                      , text_only = text.only
-											 		 , is_h5 = is_h5
-											 		 , h5_filename = h5_filename
+                                                    , format = backend
+                                                    , uri = uri
                             )
      fr@use.exprs <- !text.only
 
@@ -217,7 +237,7 @@ load_cytoframe_from_fcs <- function(filename,
 #' @name load_cytoset_from_fcs
 #' @family cytoframe/cytoset IO functions
 #' @export
-#' @importFrom Biobase read.AnnotatedDataFrame
+#' @importFrom Biobase read.AnnotatedDataFrame AnnotatedDataFrame
 load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
                          descriptions, name.keyword,
                          transformation="linearize",
@@ -226,20 +246,35 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                          column.pattern=NULL,
                          invert.pattern = FALSE,
                          decades=0,
-                         is_h5=FALSE,
-                         min.limit=NULL,
+                         is_h5= NULL
+                         , h5_dir = NULL
+                         , backend = get_default_backend()
+                         , backend_dir = tempdir()
+                         , min.limit=NULL,
                          truncate_max_range = TRUE,
                          dataset=NULL,
                          emptyValue=TRUE,
                          num_threads = 1,
                          ignore.text.offset = FALSE,
                          sep="\t", as.is=TRUE, name
-                        , h5_dir = tempdir()
                         , file_col_name = NULL
                         , ...)
 {
-    if(!dir.exists(h5_dir))
-      dir.create(h5_dir)
+  backend <- match.arg(backend, c("mem", "h5", "tile"))
+  if(!is.null(is_h5))
+  {
+    warning("'is_h5' argument is deprecated by 'backend'! ")
+    if(is_h5)
+      backend <-"h5"
+  }
+  if(!is.null(h5_dir))
+  {
+    warning("'h5_dir' argument is deprecated by 'backend_dir'! ")
+    backend_dir <- h5_dir
+  }
+  
+    if(!dir.exists(backend_dir))
+      dir.create(backend_dir)
   
     if(is.null(dataset))
       dataset <- 1
@@ -277,8 +312,8 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                                             , num_threads = num_threads
                                             , ignoreTextOffset = ignore.text.offset
                                           )
-                                          , is_h5 = is_h5
-                                          , h5_dir = normalizePath(h5_dir)
+                                          , backend = backend
+                                          , backend_dir = normalizePath(backend_dir)
                                   )
     cs <- new("cytoset", pointer = cs)
     

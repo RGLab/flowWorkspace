@@ -183,6 +183,13 @@ reference:
       - flow_breaks
       - swap_data_cols
       - cleanup_temp
+      
+navbar:
+  title: flowWorkspace
+  right:
+    - icon: fas fa fa-github fa-lg
+      href: https://github.com/RGLab/flowWorkspace
+
 articles:
   - title: Introduction
     contents:

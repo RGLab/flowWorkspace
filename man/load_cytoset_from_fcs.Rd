@@ -17,7 +17,10 @@ load_cytoset_from_fcs(
   column.pattern = NULL,
   invert.pattern = FALSE,
   decades = 0,
-  is_h5 = FALSE,
+  is_h5 = NULL,
+  h5_dir = NULL,
+  backend = get_default_backend(),
+  backend_dir = tempdir(),
   min.limit = NULL,
   truncate_max_range = TRUE,
   dataset = NULL,
@@ -27,7 +30,6 @@ load_cytoset_from_fcs(
   sep = "\\t",
   as.is = TRUE,
   name,
-  h5_dir = tempdir(),
   file_col_name = NULL,
   ...
 )
@@ -66,6 +68,9 @@ then the file names are used.}
 
 \item{is_h5}{logical indicating whether the data should be stored in h5 format}
 
+\item{h5_dir}{String specifying a name for the h5 directory
+for the h5 files if \code{is_h5} is TRUE}
+
 \item{min.limit}{see \code{\link{load_cytoframe_from_fcs}} for details.}
 
 \item{truncate_max_range}{see \code{\link{load_cytoframe_from_fcs}} for details.}
@@ -87,9 +92,6 @@ operation by specifiying a number of threads}
 coercion of characters to factors in the \code{phenoData}.}
 
 \item{name}{An optional character scalar used as name of the object.}
-
-\item{h5_dir}{String specifying a name for the h5 directory
-for the h5 files if \code{is_h5} is TRUE}
 
 \item{file_col_name}{optionally specify the column name that stores the fcs filename when phenoData is supplied
 \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
@@ -132,10 +134,12 @@ is not \code{NULL}, then the file names are obtained by calling
 }
 \seealso{
 Other cytoframe/cytoset IO functions: 
-\code{\link{cf_get_h5_file_path}()},
+\code{\link{cf_get_uri}()},
+\code{\link{cf_write_disk}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cs_get_h5_file_path}()},
+\code{\link{cf_write_tile}()},
+\code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
-\code{\link{load_cytoframe_from_h5}()}
+\code{\link{load_cytoframe}()}
 }
 \concept{cytoframe/cytoset IO functions}
