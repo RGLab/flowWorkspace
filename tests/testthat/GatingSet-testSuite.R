@@ -1,5 +1,26 @@
 context("---- gs")
 
+test_that("gs_get_uri", {
+  expect_equal(gs_get_uri(gs), cs_get_uri(gs))
+  
+})
+test_that("nrow", {
+  expect_equal(nrow(gs), nrow(gs_cyto_data(gs)))
+  
+})
+
+test_that("Subset ",{
+  gs <- gs_copy_tree_only(gs)
+  gs <- Subset(gs, sampleFilter(10))
+  expect_true(all(nrow(gs) == 10))
+  
+})
+
+test_that("gs_get_cytoframe", {
+  expect_equal(gs_get_cytoframe(gs, 1), cs_get_cytoframe(gs_cyto_data(gs), 1))
+  
+})
+
 test_that("markernames<- ",{
   gs1 <- gs_clone(gs)
   gh <- gs1[[1]]

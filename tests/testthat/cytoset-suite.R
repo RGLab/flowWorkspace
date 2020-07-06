@@ -6,6 +6,11 @@ fs <- read.flowSet(fcs_files)
 suppressMessages(cs <- load_cytoset_from_fcs(fcs_files))
 samples <- sampleNames(cs)
 
+test_that("nrow", {
+  expect_equal(nrow(cs), lapply(cs, nrow))
+  
+})
+
 
 test_that("fsApply", {
   fsApply(cs, function(fr){

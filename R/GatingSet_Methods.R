@@ -33,6 +33,34 @@ isNcdf <- function(x){
   gs_is_h5(x)
   }
 
+setMethod("nrow",
+          signature=signature(x="GatingSet"),
+          definition=function(x)
+            nrow(gs_cyto_data(x))
+)
+
+setMethod("Subset",
+          signature=signature(x="GatingSet",
+                              subset="ANY"),
+          definition=function(x, subset, ...)
+          {
+            cs <- gs_cyto_data(x)
+            cs <- Subset(cs, subset, ...)
+            gs_cyto_data(x) <- cs
+            x
+          })
+
+#' @export
+#' @rdname cs_get_uri  
+gs_get_uri <- function(x){
+  cs_get_uri(x)
+}
+
+#' @export
+gs_get_cytoframe <- function(x, ...){
+  cs_get_cytoframe(gs_cyto_data(x), ...)
+}
+
 #' @export
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path="."
 																	, ...){

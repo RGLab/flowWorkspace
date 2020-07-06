@@ -27,7 +27,7 @@ NULL
 #' [[,cytoset,ANY-method [[<-,cytoset,ANY,ANY,flowFrame-method identifier,cytoset-method
 #' identifier<-,cytoset,ANY-method pData,cytoset-method pData<-,cytoset,data.frame-method
 #' phenoData,cytoset-method phenoData<-,cytoset,ANY-method sampleNames<-,cytoset,ANY-method
-#' show,cytoset-method transform,cytoset-method
+#' show,cytoset-method transform,cytoset-method gs_get_cytoframe cs_get_cytoframe
 #' @docType class
 #'
 #' @section Creating Objects:
@@ -651,12 +651,15 @@ cs_get_h5_file_path <- function(x){
 }
 
 #' @export
-get_cytoframe_from_cs <- function(x, i, j = NULL, use.exprs = TRUE){
+cs_get_cytoframe <- function(x, i, j = NULL, use.exprs = TRUE){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
   if(length(x) == 0)
     stop("Empty cytoset!")
   new("cytoframe", pointer = get_cytoframe(x@pointer, i, j), use.exprs = use.exprs)
 }
+#' @export
+get_cytoframe_from_cs <- cs_get_cytoframe
+
 setMethod("[",
 	signature=signature(x="cytoset"),
 	definition=function(x, i, j, ..., drop=FALSE)
@@ -788,7 +791,11 @@ realize_view.cytoset <- function(x, filepath = tempdir()){
 }
 
 
-
+setMethod("nrow",
+		signature=signature(x="cytoset"),
+		definition=function(x)
+			lapply(x, nrow)
+)
 
 ## Note that the replacement method also replaces the GUID for each flowFrame
 setReplaceMethod("sampleNames",

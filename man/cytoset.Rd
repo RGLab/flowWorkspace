@@ -18,6 +18,8 @@
 \alias{sampleNames<-,cytoset,ANY-method}
 \alias{show,cytoset-method}
 \alias{transform,cytoset-method}
+\alias{gs_get_cytoframe}
+\alias{cs_get_cytoframe}
 \title{\code{cytoset}: a reference class for efficiently managing the data representation
 of a \code{flowSet}}
 \description{
