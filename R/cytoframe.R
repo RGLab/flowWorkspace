@@ -764,6 +764,8 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads 
 	  }
 	}
 	cred[["num_threads"]] <- num_threads
+	uri <- suppressWarnings(normalizePath(uri))
+	
 	p <- load_cf(uri, readonly, on_disk, cred)
 	
 	new("cytoframe", pointer = p, use.exprs = TRUE)
@@ -776,21 +778,6 @@ cf_backend_type <- function(cf)
 {
   backend_type(cf@pointer)
 }
-
-uri_backend_type <- function(uri)
-{
-  if(uri == "")
-    "mem"
-  else
-  {
-    if(dir.exists(uri))
-    "tile"
-  else
-    "h5"
-  }
-
-}
-
 
 is_http_path <- function(x){
   grepl("^https://", x, ignore.case = TRUE)

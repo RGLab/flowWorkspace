@@ -8,6 +8,9 @@ rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 cf <- load_cytoframe_from_fcs(fcs_file)
 cf_lock(cf)
 
+test_that("load_cytoframe", {
+  expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
+})
 test_that("cf_append_cols", {
   skip_if(get_default_backend() != "mem")
   cf <- flowFrame_to_cytoframe(GvHD[[1]])
