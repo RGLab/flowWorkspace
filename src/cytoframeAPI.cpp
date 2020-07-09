@@ -117,7 +117,7 @@ XPtr<CytoFrameView> cf_to_memcf(Rcpp::XPtr<CytoFrameView> fr){
       ptr.reset(new MemCytoFrame(*ptr));
       // Delete file made in copy to avoid polluting tempdir
       if(!temp_uri.empty())
-        fs::remove(temp_uri);
+        fs::remove_all(temp_uri);
     }
     return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 }
