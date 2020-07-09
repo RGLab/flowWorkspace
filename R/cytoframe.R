@@ -950,18 +950,8 @@ cf_cleanup <- function(cf, cred = NULL){
 #' 
 #' 
 #' @export
-cf_append_cols <- function(cf, cols){
+cf_append_cols <- function(cf, cols, cred = NULL){
 
-  backendtype <- cf_backend_type(cf)
-  if(backendtype!="mem"){
-    fr <- cytoframe_to_flowFrame(cf)
-    fr <- fr_append_cols(fr, cols)
-    flowFrame_to_cytoframe(fr, backend = backendtype)
-  }else{
-    # For now, to be safe, append to a copy. Needs discussion.
-    cf <- realize_view(cf)
-    append_cols(cf@pointer, colnames(cols), cols)
-    cf
-  }
+  cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
 
 }
