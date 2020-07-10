@@ -47,6 +47,7 @@ setMethod("Subset",
             cs <- gs_cyto_data(x)
             cs <- Subset(cs, subset, ...)
             gs_cyto_data(x) <- cs
+            recompute(x)
             x
           })
 

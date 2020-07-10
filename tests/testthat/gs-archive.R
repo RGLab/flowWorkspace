@@ -4,22 +4,15 @@ gs <- NULL
 isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",
 {
-  suppressWarnings(suppressMessages(gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
+  gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
+  suppressWarnings(suppressMessages(gs <<- load_gs(gs_dir)))
   expect_that(gs, is_a("GatingSet"))
   gs <<- gs_clone(gs)#make it writable  
   
   if(get_default_backend() == "tile")
   {
-    #convert h5 to tile
-    cs <- gs_cyto_data(gs)
-    cf <- get_cytoframe_from_cs(cs, 1)
-    tmp <- tempfile()
-    cf_write_tile(cf, tmp)  
-    cf <- load_cytoframe(tmp)
-    cs_set_cytoframe(cs, sampleNames(gs), cf)
-    gs_cyto_data(gs) <- cs
     tmp1 <- tempfile()
-    save_gs(gs, tmp1, backend_opt = "move")
+    convert_backend(gs_dir, tmp1)
     gs <<- load_gs(tmp1)
   }
   
