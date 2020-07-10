@@ -428,6 +428,12 @@ setReplaceMethod("markernames",
                    object
                  })
 
+#' @rdname is_subsetted
+#' @export
+cs_is_subsetted <- function(x){
+  any(unlist(lapply(x, cf_is_subsetted)))
+}
+
 setMethod("show",
           signature=signature(object="cytoset"),
           definition=function(object)
@@ -440,6 +446,11 @@ setMethod("show",
             cat(" ", paste(colnames(object), collapse = ", "))
              cat("\n")
             cat("\n")
+            if(cs_is_subsetted(object))
+            {
+              cat("cytoset has been subsetted and can be realized through 'realize_view()'.")  
+            }
+            
             
           })
 setMethod("sampleNames",

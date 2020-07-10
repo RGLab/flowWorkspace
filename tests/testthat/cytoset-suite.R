@@ -389,7 +389,9 @@ samples <- sampleNames(cs)
 rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 
 test_that("Subset", {
-  
+  expect_false(cs_is_subsetted(cs))
+  expect_true(cs_is_subsetted(cs[,1:2]))
+  expect_true(cs_is_subsetted(Subset(cs, rectGate)))
   #Subset by gate
   expect_equivalent(fsApply(Subset(cs, rectGate), nrow), fsApply(Subset(fs, rectGate), nrow))
   #ensure the original cs is intact

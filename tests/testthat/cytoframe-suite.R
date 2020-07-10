@@ -173,6 +173,11 @@ test_that("lock", {
 test_that("[", {
       cf0 <- realize_view(cf)
       cf1 <- cf0[1:100, 2:3]
+      expect_false(cf_is_subsetted(cf0))
+      expect_true(cf_is_subsetted(cf0[,1:2]))
+      expect_true(cf_is_subsetted(cf0[1:2, ]))
+      expect_true(cf_is_subsetted(cf1))
+      
       is_equal_flowFrame(cf1, fr[1:100, 2:3])
       #keyword is not removed during []
       key.rm <- "$P1N"
