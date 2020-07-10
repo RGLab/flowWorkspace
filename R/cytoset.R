@@ -856,7 +856,7 @@ cs_load_meta <- function(cs){
 #'
 #' @examples
 #' \dontrun{
-#' 	#G is a GatingSet
+#' 	#cs is a cytoset
 #' 	save_cytoset(cs, outdir)
 #' 	cs <-load_cytoset(outdir)
 #'
