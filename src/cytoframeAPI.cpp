@@ -106,6 +106,22 @@ XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,CytoCtx ctx)
 	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 
 }
+
+
+// [[Rcpp::export]]
+XPtr<CytoFrameView> cf_to_memcf(Rcpp::XPtr<CytoFrameView> fr){
+    CytoFrameView new_fr = fr->copy_realized();
+    CytoFramePtr ptr = new_fr.get_cytoframe_ptr();
+    if(ptr->get_backend_type() != FileFormat::MEM){
+      string temp_uri = ptr->get_uri();
+      ptr.reset(new MemCytoFrame(*ptr));
+      // Delete file made in copy to avoid polluting tempdir
+      if(!temp_uri.empty())
+        fs::remove_all(temp_uri);
+    }
+    return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
+}
+
 // [[Rcpp::export]] 
 void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker){
   fr->set_marker(channel, marker);
@@ -122,9 +138,29 @@ void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
 }
 
 // [[Rcpp::export]]
-void append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat){
+Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat){
+  
+  CytoFrameView new_fr = fr->copy_realized();
+  CytoFramePtr ptr = new_fr.get_cytoframe_ptr();
+  string new_uri = ptr->get_uri();
+  FileFormat fmt = ptr->get_backend_type();
+  
+  // For now, push all backends through MemCytoFrame::append_columns
+  // by conversion
+  if(fmt != FileFormat::MEM)
+    ptr.reset(new MemCytoFrame(*ptr));
+  
+  // Add the columns to the MemCytoFrame
   arma::mat new_cols = as<arma::mat>(new_cols_mat);
-  fr->append_columns(new_colnames, new_cols);
+  ptr->append_columns(new_colnames, new_cols);
+  
+  // If necessary, convert back to prior backend, overwriting the copy uri.
+  if(fmt != FileFormat::MEM){
+    ptr->write_to_disk(new_uri, fmt);
+    ptr = load_cytoframe(new_uri, false);
+  }
+  
+  return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
 }
                                       
 // [[Rcpp::export]] 

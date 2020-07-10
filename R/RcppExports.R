@@ -290,6 +290,10 @@ load_cf <- function(url, readonly, on_disk, ctx) {
     .Call(`_flowWorkspace_load_cf`, url, readonly, on_disk, ctx)
 }
 
+cf_to_memcf <- function(fr) {
+    .Call(`_flowWorkspace_cf_to_memcf`, fr)
+}
+
 setMarker <- function(fr, channel, marker) {
     invisible(.Call(`_flowWorkspace_setMarker`, fr, channel, marker))
 }
@@ -303,7 +307,7 @@ setChannel <- function(fr, old, new_name) {
 }
 
 append_cols <- function(fr, new_colnames, new_cols_mat) {
-    invisible(.Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat))
+    .Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat)
 }
 
 parseFCS <- function(filename, config, text_only = FALSE, format = "mem", uri = "") {

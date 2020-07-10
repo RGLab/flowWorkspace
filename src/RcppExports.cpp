@@ -748,6 +748,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cf_to_memcf
+XPtr<CytoFrameView> cf_to_memcf(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cf_to_memcf(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(cf_to_memcf(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // setMarker
 void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker);
 RcppExport SEXP _flowWorkspace_setMarker(SEXP frSEXP, SEXP channelSEXP, SEXP markerSEXP) {
@@ -784,15 +795,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // append_cols
-void append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat);
+Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat);
 RcppExport SEXP _flowWorkspace_append_cols(SEXP frSEXP, SEXP new_colnamesSEXP, SEXP new_cols_matSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
     Rcpp::traits::input_parameter< vector<string> >::type new_colnames(new_colnamesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type new_cols_mat(new_cols_matSEXP);
-    append_cols(fr, new_colnames, new_cols_mat);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(append_cols(fr, new_colnames, new_cols_mat));
+    return rcpp_result_gen;
 END_RCPP
 }
 // parseFCS
@@ -1208,6 +1220,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
     {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 4},
     {"_flowWorkspace_load_cf", (DL_FUNC) &_flowWorkspace_load_cf, 4},
+    {"_flowWorkspace_cf_to_memcf", (DL_FUNC) &_flowWorkspace_cf_to_memcf, 1},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
