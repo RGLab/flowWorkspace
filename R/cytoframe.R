@@ -904,7 +904,7 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' @aliases cf_cleanup cs_cleanup gh_cleanup gs_cleanup
 #' @param cf a cytoframe, cytoset, GatingHierarchy, or GatingSet object
 #' @inheritParams load_cytoframe
-#' this will override tempdir() in determining the top directory under which files can safely be removed.
+#' @details this will override tempdir() in determining the top directory under which files can safely be removed.
 #' @export
 cf_cleanup <- function(cf, cred = NULL){
   uri <- cf_get_uri(cf)

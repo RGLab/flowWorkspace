@@ -295,7 +295,7 @@ test_that("Construct new GatingSet based on the existing gating hierarchy",
      #re-load the gs since the trans get lost during clone
      suppressWarnings(suppressMessages(gs1 <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
      gh <- gs1[[1]]
-     suppressMessages(gs <<- gh_apply_to_new_fcs(gh, list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1]))
+     suppressMessages(gs <<- gh_apply_to_new_fcs(gh, list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1], compensation_source = "template"))
      expect_that(gs, is_a("GatingSet"))
      expect_equal(gs_get_pop_paths(gs), gs_get_pop_paths(gs1))
      expect_equal(gs_pop_get_stats(gs), gs_pop_get_stats(gs1), tol = 2e-3)
