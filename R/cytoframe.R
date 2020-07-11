@@ -292,6 +292,30 @@ setMethod("ncol",
       getncol(x@pointer)
 )
 
+setMethod("show",
+          signature=signature(object="cytoframe"),
+          definition=function(object)
+          {
+            
+            selectMethod("show", "flowFrame")(object)
+            if(cf_is_subsetted(object))
+            {
+              cat("cytoframe has been subsetted and can be realized through 'realize_view()'.")  
+            }
+            
+            
+            
+          })
+
+#' check whether a cytoframe/cytoset is a subsetted(by column or by row) view
+#' 
+#' @param x a cytoset or cytoframe
+#' @rdname is_subsetted
+#' @export
+cf_is_subsetted <- function(x){
+  cf_is_indexed(x@pointer)
+}
+
 #' @export
 realize_view <- function(x, filepath)UseMethod("realize_view")
 

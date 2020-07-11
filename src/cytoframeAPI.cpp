@@ -10,6 +10,12 @@ string backend_type(Rcpp::XPtr<CytoFrameView> fr)
 	return fmt_to_str(fr->get_backend_type());
 }
 
+// [[Rcpp::export]]
+bool cf_is_indexed(Rcpp::XPtr<CytoFrameView> fr)
+{
+	return fr->is_row_indexed()||fr->is_col_indexed();
+}
+
 // [[Rcpp::export(name=".cf_scale_time_channel")]]
 void cf_scale_time_channel(Rcpp::XPtr<CytoFrameView> fr)
 {

@@ -24,7 +24,7 @@ Save/load a cytoset  to/from the disk.
 }
 \examples{
 \dontrun{
-	#G is a GatingSet
+	#cs is a cytoset
 	save_cytoset(cs, outdir)
 	cs <-load_cytoset(outdir)
 

@@ -110,9 +110,9 @@ void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData
     }
     
     //actual gating
-    unique_ptr<MemCytoFrame> fr (new MemCytoFrame());
+    shared_ptr<MemCytoFrame> fr (new MemCytoFrame());
     if(isloadData)
-      fr.reset(new MemCytoFrame(*cs.get_cytoframe_view(sid).get_cytoframe_ptr()));
+      fr = cs.get_cytoframe_view(sid).get_realized_memcytoframe();
     for(auto nodeID : nodeIDs)
     {
       try{

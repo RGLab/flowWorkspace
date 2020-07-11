@@ -11,9 +11,11 @@ test_that("nrow", {
 
 test_that("Subset ",{
   gs <- gs_copy_tree_only(gs)
+  set.seed(1)
   gs <- Subset(gs, sampleFilter(10))
   expect_true(all(nrow(gs) == 10))
-  
+  expect_equal(gh_pop_get_count(gs[[1]], "CD4")  , 5)
+  expect_equal(nrow(gh_pop_get_data(gs[[1]], "CD3+"))  , 6)
 })
 
 test_that("gs_get_cytoframe", {
