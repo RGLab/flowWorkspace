@@ -6,6 +6,15 @@ fs <- read.flowSet(fcs_files)
 suppressMessages(cs <- load_cytoset_from_fcs(fcs_files))
 samples <- sampleNames(cs)
 
+
+test_that("throw on slash symbol in sample names", {
+  skip_if(get_default_backend()=="mem")
+  
+  expect_error(cs <- cytoset(sapply(list.files(cs_get_uri(cs), full.names = TRUE), load_cytoframe)), "invalid", class = "error")
+  expect_error(sampleNames(cs)[1] <- "a/b", "invalid", class = "error")
+  
+})
+
 test_that("nrow", {
   expect_equal(nrow(cs), lapply(cs, nrow))
   
