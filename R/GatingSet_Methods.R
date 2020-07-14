@@ -147,7 +147,18 @@ gh_apply_to_cs <- function(x, cs
 			    compensate(gs, gh_get_compensations(x))#setting comp is redundant(since it is already copied) but it is lightweight so should fine
 			  else if(compensation_source == "sample"){
 			    # Could end up with NULLs if not using proper SPILL keyword
-			    comp <- lapply(cs, function(cf) spillover(cf)$SPILL)
+			    comp <- lapply(seq_along(cs), function(idx){
+			      cf <- cs[[idx]]
+			      spills <- spillover(cf)
+			      # Make search order match cytolib::CytoFrame::get_compensation
+			      spills <- spills[c("$SPILLOVER", "SPILL", "spillover")]
+			      found <- !sapply(spills, is.null)
+			      if(!any(found))
+			        stop("No spillover matrix found for sample: ", sampleNames(cs)[idx])
+			      # return first found in search order
+			      spills[[min(which(found))]]
+			    })
+			    names(comp) <- sampleNames(cs)
 			    compensate(gs, comp)
 			  }
 			  #post transform the data and copy over the R trans to new gs
