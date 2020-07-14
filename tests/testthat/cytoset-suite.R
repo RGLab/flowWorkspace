@@ -139,6 +139,12 @@ test_that("cs constructor", {
   })
 
 test_that("save/load", {
+  #load h5
+  skip_if(get_default_backend() == "mem")
+  cf_dir <- cs_get_uri(cs)
+  cs <- load_cytoset(cf_dir)
+  expect_equal(sampleNames(cs), paste0(samples, ".", get_default_backend()))
+  
   pd <- pData(cs)
   pd[["newCol"]] <- "A"
   pData(cs) <- pd
