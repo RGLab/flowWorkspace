@@ -448,7 +448,7 @@ setMethod("show",
             cat("\n")
             if(cs_is_subsetted(object))
             {
-              cat("cytoset has been subsetted and can be realized through 'realize_view()'.")  
+              cat("cytoset has been subsetted and can be realized through 'realize_view()'.\n")  
             }
             
             

@@ -300,7 +300,7 @@ setMethod("show",
             selectMethod("show", "flowFrame")(object)
             if(cf_is_subsetted(object))
             {
-              cat("cytoframe has been subsetted and can be realized through 'realize_view()'.")  
+              cat("cytoframe has been subsetted and can be realized through 'realize_view()'.\n")  
             }
             
             
