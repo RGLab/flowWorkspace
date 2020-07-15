@@ -7,6 +7,20 @@ suppressMessages(cs <- load_cytoset_from_fcs(fcs_files))
 samples <- sampleNames(cs)
 
 
+test_that("throw on slash symbol in sample names", {
+  skip_if(get_default_backend()=="mem")
+  
+  expect_error(cs <- cytoset(sapply(list.files(cs_get_uri(cs), full.names = TRUE), load_cytoframe)), "invalid", class = "error")
+  expect_error(sampleNames(cs)[1] <- "a/b", "invalid", class = "error")
+  
+})
+
+test_that("nrow", {
+  expect_equal(nrow(cs), lapply(cs, nrow))
+  
+})
+
+
 test_that("fsApply", {
   fsApply(cs, function(fr){
     expect_is(fr, "flowFrame")
@@ -125,6 +139,12 @@ test_that("cs constructor", {
   })
 
 test_that("save/load", {
+  #load h5
+  skip_if(get_default_backend() == "mem")
+  cf_dir <- cs_get_uri(cs)
+  cs <- load_cytoset(cf_dir)
+  expect_equal(sampleNames(cs), paste0(samples, ".", get_default_backend()))
+  
   pd <- pData(cs)
   pd[["newCol"]] <- "A"
   pData(cs) <- pd
@@ -384,7 +404,9 @@ samples <- sampleNames(cs)
 rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 
 test_that("Subset", {
-  
+  expect_false(cs_is_subsetted(cs))
+  expect_true(cs_is_subsetted(cs[,1:2]))
+  expect_true(cs_is_subsetted(Subset(cs, rectGate)))
   #Subset by gate
   expect_equivalent(fsApply(Subset(cs, rectGate), nrow), fsApply(Subset(fs, rectGate), nrow))
   #ensure the original cs is intact

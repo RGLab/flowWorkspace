@@ -110,9 +110,9 @@ void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData
     }
     
     //actual gating
-    unique_ptr<MemCytoFrame> fr (new MemCytoFrame());
+    shared_ptr<MemCytoFrame> fr (new MemCytoFrame());
     if(isloadData)
-      fr.reset(new MemCytoFrame(*cs.get_cytoframe_view(sid).get_cytoframe_ptr()));
+      fr = cs.get_cytoframe_view(sid).get_realized_memcytoframe();
     for(auto nodeID : nodeIDs)
     {
       try{
@@ -169,7 +169,8 @@ StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
 XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
                ,string src_sample_uid
 			   , XPtr<GatingSet> cs
-			   , bool execute)
+			   , bool execute
+         , string comp_source)
   {
 
 		GatingHierarchy & gh=*gsPtr->getGatingHierarchy(src_sample_uid);
@@ -177,7 +178,7 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
 		/*
 		 * used gh as the template to clone multiple ghs in the new gs
 		 */
-		GatingSet * newGS=new GatingSet(gh, *cs, execute);
+		GatingSet * newGS=new GatingSet(gh, *cs, execute, comp_source);
 
 		/*
 		 * using default finalizer to delete gs,which is triggered by gc() when

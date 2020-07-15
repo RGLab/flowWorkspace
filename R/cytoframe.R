@@ -292,6 +292,30 @@ setMethod("ncol",
       getncol(x@pointer)
 )
 
+setMethod("show",
+          signature=signature(object="cytoframe"),
+          definition=function(object)
+          {
+            
+            selectMethod("show", "flowFrame")(object)
+            if(cf_is_subsetted(object))
+            {
+              cat("cytoframe has been subsetted and can be realized through 'realize_view()'.\n")  
+            }
+            
+            
+            
+          })
+
+#' check whether a cytoframe/cytoset is a subsetted(by column or by row) view
+#' 
+#' @param x a cytoset or cytoframe
+#' @rdname is_subsetted
+#' @export
+cf_is_subsetted <- function(x){
+  cf_is_indexed(x@pointer)
+}
+
 #' @export
 realize_view <- function(x, filepath)UseMethod("realize_view")
 
@@ -764,6 +788,8 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads 
 	  }
 	}
 	cred[["num_threads"]] <- num_threads
+	uri <- suppressWarnings(normalizePath(uri))
+	
 	p <- load_cf(uri, readonly, on_disk, cred)
 	
 	new("cytoframe", pointer = p, use.exprs = TRUE)
@@ -776,21 +802,6 @@ cf_backend_type <- function(cf)
 {
   backend_type(cf@pointer)
 }
-
-uri_backend_type <- function(uri)
-{
-  if(uri == "")
-    "mem"
-  else
-  {
-    if(dir.exists(uri))
-    "tile"
-  else
-    "h5"
-  }
-
-}
-
 
 is_http_path <- function(x){
   grepl("^https://", x, ignore.case = TRUE)
@@ -917,7 +928,7 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' @aliases cf_cleanup cs_cleanup gh_cleanup gs_cleanup
 #' @param cf a cytoframe, cytoset, GatingHierarchy, or GatingSet object
 #' @inheritParams load_cytoframe
-#' this will override tempdir() in determining the top directory under which files can safely be removed.
+#' @details this will override tempdir() in determining the top directory under which files can safely be removed.
 #' @export
 cf_cleanup <- function(cf, cred = NULL){
   uri <- cf_get_uri(cf)
@@ -963,18 +974,8 @@ cf_cleanup <- function(cf, cred = NULL){
 #' 
 #' 
 #' @export
-cf_append_cols <- function(cf, cols){
+cf_append_cols <- function(cf, cols, cred = NULL){
 
-  backendtype <- cf_backend_type(cf)
-  if(backendtype!="mem"){
-    fr <- cytoframe_to_flowFrame(cf)
-    fr <- fr_append_cols(fr, cols)
-    flowFrame_to_cytoframe(fr, backend = backendtype)
-  }else{
-    # For now, to be safe, append to a copy. Needs discussion.
-    cf <- realize_view(cf)
-    append_cols(cf@pointer, colnames(cols), cols)
-    cf
-  }
+  cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
 
 }

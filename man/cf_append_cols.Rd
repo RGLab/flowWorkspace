@@ -4,7 +4,7 @@
 \alias{cf_append_cols}
 \title{Append data columns to a flowFrame}
 \usage{
-cf_append_cols(cf, cols)
+cf_append_cols(cf, cols, cred = NULL)
 }
 \arguments{
 \item{cf}{A \code{cytoframe}.}

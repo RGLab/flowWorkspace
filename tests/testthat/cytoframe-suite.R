@@ -8,6 +8,9 @@ rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 cf <- load_cytoframe_from_fcs(fcs_file)
 cf_lock(cf)
 
+test_that("load_cytoframe", {
+  expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
+})
 test_that("cf_append_cols", {
   skip_if(get_default_backend() != "mem")
   cf <- flowFrame_to_cytoframe(GvHD[[1]])
@@ -170,6 +173,11 @@ test_that("lock", {
 test_that("[", {
       cf0 <- realize_view(cf)
       cf1 <- cf0[1:100, 2:3]
+      expect_false(cf_is_subsetted(cf0))
+      expect_true(cf_is_subsetted(cf0[,1:2]))
+      expect_true(cf_is_subsetted(cf0[1:2, ]))
+      expect_true(cf_is_subsetted(cf1))
+      
       is_equal_flowFrame(cf1, fr[1:100, 2:3])
       #keyword is not removed during []
       key.rm <- "$P1N"

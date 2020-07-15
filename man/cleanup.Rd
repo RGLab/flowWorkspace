@@ -12,8 +12,14 @@ cf_cleanup(cf, cred = NULL)
 }
 \arguments{
 \item{cf}{a cytoframe, cytoset, GatingHierarchy, or GatingSet object}
+
+\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
+when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
 }
 \description{
 These methods immediately delete the on-disk  storage associated with \link{cytoframe},
 \link{cytoset}, \linkS4class{GatingHierarchy}, or \linkS4class{GatingSet} objects
+}
+\details{
+this will override tempdir() in determining the top directory under which files can safely be removed.
 }

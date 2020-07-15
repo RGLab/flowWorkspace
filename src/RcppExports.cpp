@@ -451,8 +451,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // NewGatingSet
-XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr, string src_sample_uid, XPtr<GatingSet> cs, bool execute);
-RcppExport SEXP _flowWorkspace_NewGatingSet(SEXP gsPtrSEXP, SEXP src_sample_uidSEXP, SEXP csSEXP, SEXP executeSEXP) {
+XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr, string src_sample_uid, XPtr<GatingSet> cs, bool execute, string comp_source);
+RcppExport SEXP _flowWorkspace_NewGatingSet(SEXP gsPtrSEXP, SEXP src_sample_uidSEXP, SEXP csSEXP, SEXP executeSEXP, SEXP comp_sourceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -460,7 +460,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< string >::type src_sample_uid(src_sample_uidSEXP);
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< bool >::type execute(executeSEXP);
-    rcpp_result_gen = Rcpp::wrap(NewGatingSet(gsPtr, src_sample_uid, cs, execute));
+    Rcpp::traits::input_parameter< string >::type comp_source(comp_sourceSEXP);
+    rcpp_result_gen = Rcpp::wrap(NewGatingSet(gsPtr, src_sample_uid, cs, execute, comp_source));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -613,6 +614,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cf_is_indexed
+bool cf_is_indexed(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cf_is_indexed(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(cf_is_indexed(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cf_scale_time_channel
 void cf_scale_time_channel(Rcpp::XPtr<CytoFrameView> fr);
 RcppExport SEXP _flowWorkspace_cf_scale_time_channel(SEXP frSEXP) {
@@ -748,6 +760,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cf_to_memcf
+XPtr<CytoFrameView> cf_to_memcf(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_cf_to_memcf(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(cf_to_memcf(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // setMarker
 void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker);
 RcppExport SEXP _flowWorkspace_setMarker(SEXP frSEXP, SEXP channelSEXP, SEXP markerSEXP) {
@@ -784,15 +807,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // append_cols
-void append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat);
+Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat);
 RcppExport SEXP _flowWorkspace_append_cols(SEXP frSEXP, SEXP new_colnamesSEXP, SEXP new_cols_matSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
     Rcpp::traits::input_parameter< vector<string> >::type new_colnames(new_colnamesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type new_cols_mat(new_cols_matSEXP);
-    append_cols(fr, new_colnames, new_cols_mat);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(append_cols(fr, new_colnames, new_cols_mat));
+    return rcpp_result_gen;
 END_RCPP
 }
 // parseFCS
@@ -1182,7 +1206,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_cytoset_from_node", (DL_FUNC) &_flowWorkspace_get_cytoset_from_node, 2},
     {"_flowWorkspace_set_cytoset", (DL_FUNC) &_flowWorkspace_set_cytoset, 2},
     {"_flowWorkspace_get_sample_uids", (DL_FUNC) &_flowWorkspace_get_sample_uids, 1},
-    {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 4},
+    {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 5},
     {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
     {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
     {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
@@ -1196,6 +1220,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
     {"_flowWorkspace_backend_type", (DL_FUNC) &_flowWorkspace_backend_type, 1},
+    {"_flowWorkspace_cf_is_indexed", (DL_FUNC) &_flowWorkspace_cf_is_indexed, 1},
     {"_flowWorkspace_cf_scale_time_channel", (DL_FUNC) &_flowWorkspace_cf_scale_time_channel, 1},
     {"_flowWorkspace_cf_set_readonly", (DL_FUNC) &_flowWorkspace_cf_set_readonly, 2},
     {"_flowWorkspace_cf_flush_meta", (DL_FUNC) &_flowWorkspace_cf_flush_meta, 1},
@@ -1208,6 +1233,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
     {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 4},
     {"_flowWorkspace_load_cf", (DL_FUNC) &_flowWorkspace_load_cf, 4},
+    {"_flowWorkspace_cf_to_memcf", (DL_FUNC) &_flowWorkspace_cf_to_memcf, 1},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},

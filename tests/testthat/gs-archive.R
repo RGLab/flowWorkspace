@@ -4,22 +4,15 @@ gs <- NULL
 isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",
 {
-  suppressWarnings(suppressMessages(gs <<- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
+  gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
+  suppressWarnings(suppressMessages(gs <<- load_gs(gs_dir)))
   expect_that(gs, is_a("GatingSet"))
   gs <<- gs_clone(gs)#make it writable  
   
   if(get_default_backend() == "tile")
   {
-    #convert h5 to tile
-    cs <- gs_cyto_data(gs)
-    cf <- get_cytoframe_from_cs(cs, 1)
-    tmp <- tempfile()
-    cf_write_tile(cf, tmp)  
-    cf <- load_cytoframe(tmp)
-    cs_set_cytoframe(cs, sampleNames(gs), cf)
-    gs_cyto_data(gs) <- cs
     tmp1 <- tempfile()
-    save_gs(gs, tmp1, backend_opt = "move")
+    convert_backend(gs_dir, tmp1)
     gs <<- load_gs(tmp1)
   }
   
@@ -295,7 +288,7 @@ test_that("Construct new GatingSet based on the existing gating hierarchy",
      #re-load the gs since the trans get lost during clone
      suppressWarnings(suppressMessages(gs1 <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE))))
      gh <- gs1[[1]]
-     suppressMessages(gs <<- gh_apply_to_new_fcs(gh, list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1]))
+     suppressMessages(gs <<- gh_apply_to_new_fcs(gh, list.files(dataDir, pattern = "CytoTrol_CytoTrol",full = TRUE)[1], compensation_source = "template"))
      expect_that(gs, is_a("GatingSet"))
      expect_equal(gs_get_pop_paths(gs), gs_get_pop_paths(gs1))
      expect_equal(gs_pop_get_stats(gs), gs_pop_get_stats(gs1), tol = 2e-3)

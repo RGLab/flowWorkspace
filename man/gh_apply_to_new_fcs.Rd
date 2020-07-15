@@ -2,26 +2,38 @@
 % Please edit documentation in R/GatingSet_Methods.R
 \name{gh_apply_to_new_fcs}
 \alias{gh_apply_to_new_fcs}
-\alias{GatingSet,GatingHierarchy,character-method}
-\title{constructors for GatingSet}
+\title{Construct a \code{GatingSet} using a template and FCS files}
 \usage{
 gh_apply_to_new_fcs(
   x,
   files,
   swap_cols = FALSE,
   backend = get_default_backend(),
+  compensation_source = "sample",
   ...
 )
 }
 \arguments{
 \item{x}{GatingHierarchy}
 
-\item{files}{fcs file paths}
-
 \item{swap_cols}{for internal usage}
 
-\item{...}{other arguments passed to 'load_cytoset_from_fcs()'}
+\item{backend}{the backend storage mode to use for \code{\link{load_cytoset_from_fcs}}}
+
+\item{compensation_source}{One of the following options:
+\itemize{
+  \item "sample" -- each cytoframe will be compensated with the spillover matrix included in its own FCS
+  \item "template" -- all cytoframes will be compensatied with the spillover matrix of the template GatingHierarchy
+  \item "none" -- no compensation will be applied
+}}
+
+\item{...}{other arguments passed to \code{\link{load_cytoset_from_fcs}}}
 }
 \description{
-construct object from existing gating hierarchy(gating template) and flow data
+This uses a \code{\link{GatingHierarchy}} as a template to apply to other loaded samples in the form of a list of FCS files,
+resulting in a \code{\link{GatingSet}}. The transformations and gates from the template are applied to all samples.
+}
+\details{
+This method is still included to support legacy scripts but will deprecated for the more modular workflow of loading a \code{\link{cytoset}}
+via \code{\link{load_cytoset_from_fcs}} followed by \code{\link{gh_apply_to_cs}}.
 }

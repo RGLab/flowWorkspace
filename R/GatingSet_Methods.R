@@ -33,6 +33,35 @@ isNcdf <- function(x){
   gs_is_h5(x)
   }
 
+setMethod("nrow",
+          signature=signature(x="GatingSet"),
+          definition=function(x)
+            nrow(gs_cyto_data(x))
+)
+
+setMethod("Subset",
+          signature=signature(x="GatingSet",
+                              subset="ANY"),
+          definition=function(x, subset, ...)
+          {
+            cs <- gs_cyto_data(x)
+            cs <- Subset(cs, subset, ...)
+            gs_cyto_data(x) <- cs
+            recompute(x)
+            x
+          })
+
+#' @export
+#' @rdname cs_get_uri  
+gs_get_uri <- function(x){
+  cs_get_uri(x)
+}
+
+#' @export
+gs_get_cytoframe <- function(x, ...){
+  cs_get_cytoframe(gs_cyto_data(x), ...)
+}
+
 #' @export
 setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path="."
 																	, ...){
@@ -69,26 +98,34 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 			gh_apply_to_new_fcs(x, files, ...)	
 		})
 
-#' constructors for GatingSet
+#' Construct a \code{GatingSet} using a template
 #'
-#' construct object from existing gating hierarchy(gating template) and flow data
+#' This uses a \code{\link{GatingHierarchy}} as a template to apply to other loaded samples in the form of a \code{\link{cytoset}},
+#' resulting in a \code{\link{GatingSet}}. The transformations and gates from the template are applied to all samples. The compensation
+#' applied to each of the samples can be controlled via the \code{compensation_source} argument.
 #'  
-#' @name gh_apply_to_new_fcs
+#' @name gh_apply_to_cs
 #' @aliases GatingSet,GatingHierarchy,character-method
 #' @param x GatingHierarchy
-#' @param files fcs file paths
-#' @param ... other arguments passed to 'load_cytoset_from_fcs()'
+#' @param cs a cytoset
+#' @param ... not currently used
 #' @param swap_cols for internal usage
+#' @param compensation_source One of the following options:
+#' \itemize{
+#'   \item "sample" -- each cytoframe will be compensated with the spillover matrix included in its own FCS
+#'   \item "template" -- all cytoframes will be compensatied with the spillover matrix of the template GatingHierarchy
+#'   \item "none" -- no compensation will be applied
+#' }
+#' @return a \code{GatingSet} 
 #' @export
-gh_apply_to_new_fcs <- function(x, files
-									, swap_cols = FALSE #for diva parsing
-									, backend = get_default_backend()
-									, ...){	
-			backend <- match.arg(backend, c("h5", "mem",  "tile"))
+gh_apply_to_cs <- function(x, cs
+									              , swap_cols = FALSE #for diva parsing
+									              , compensation_source = "sample"
+									              , ...){	
+      
+			compensation_source <- match.arg(compensation_source, c("sample", "template", "none"))
 			message("generating new GatingSet from the gating template...")
 			
-			#load new data
-  		cs <- load_cytoset_from_fcs(files, backend = backend, ...)
 			cols.old <- colnames(cs)
 			cols <- swap_data_cols(cols.old, swap_cols)#validity check
 			if(!all(cols==cols.old))
@@ -102,11 +139,28 @@ gh_apply_to_new_fcs <- function(x, files
 				
 			}
 			execute_in_c <- length(x@transformation) == 0
-			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c))
+			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c, compensation_source))
 			#deal with the trans that are not stored in c++
 			if(!execute_in_c)
 			{
-			  compensate(gs, gh_get_compensations(x))#setting comp is redundant(since it is already copied) but it is lightweight so should fine
+			  if(compensation_source == "template")
+			    compensate(gs, gh_get_compensations(x))#setting comp is redundant(since it is already copied) but it is lightweight so should fine
+			  else if(compensation_source == "sample"){
+			    # Could end up with NULLs if not using proper SPILL keyword
+			    comp <- lapply(seq_along(cs), function(idx){
+			      cf <- cs[[idx]]
+			      spills <- spillover(cf)
+			      # Make search order match cytolib::CytoFrame::get_compensation
+			      spills <- spills[c("$SPILLOVER", "SPILL", "spillover")]
+			      found <- !sapply(spills, is.null)
+			      if(!any(found))
+			        stop("No spillover matrix found for sample: ", sampleNames(cs)[idx])
+			      # return first found in search order
+			      spills[[min(which(found))]]
+			    })
+			    names(comp) <- sampleNames(cs)
+			    compensate(gs, comp)
+			  }
 			  #post transform the data and copy over the R trans to new gs
 			  #because c++ code only compensate but doesn't transform data
 			  gs <- transform(gs, x@transformation[[1]])
@@ -115,7 +169,29 @@ gh_apply_to_new_fcs <- function(x, files
 			}	
 			
 			return(gs)
-		}
+}
+
+#' Construct a \code{GatingSet} using a template and FCS files
+#' 
+#' This uses a \code{\link{GatingHierarchy}} as a template to apply to other loaded samples in the form of a list of FCS files,
+#' resulting in a \code{\link{GatingSet}}. The transformations and gates from the template are applied to all samples.
+#' 
+#' This method is still included to support legacy scripts but will deprecated for the more modular workflow of loading a \code{\link{cytoset}}
+#' via \code{\link{load_cytoset_from_fcs}} followed by \code{\link{gh_apply_to_cs}}.
+#' 
+#' @inheritParams gh_apply_to_cs
+#' @param backend the backend storage mode to use for \code{\link{load_cytoset_from_fcs}}
+#' @param ... other arguments passed to \code{\link{load_cytoset_from_fcs}}
+#' @export
+gh_apply_to_new_fcs <- function(x, files
+                                , swap_cols = FALSE #for diva parsing
+                                , backend = get_default_backend()
+                                , compensation_source = "sample"
+                                , ...){
+  .Deprecated("gh_apply_to_cs")
+  cs <- load_cytoset_from_fcs(files, backend = backend, ...)
+  gh_apply_to_cs(x, cs, swap_cols = swap_cols, compensation_source = compensation_source) #for diva parsing
+}
 
 #' Swap the colnames
 #' Perform some validity checks before returning the updated colnames

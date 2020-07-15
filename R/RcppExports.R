@@ -183,8 +183,8 @@ set_cytoset <- function(gsPtr, cs) {
     .Call(`_flowWorkspace_get_sample_uids`, gsPtr)
 }
 
-.cpp_NewGatingSet <- function(gsPtr, src_sample_uid, cs, execute) {
-    .Call(`_flowWorkspace_NewGatingSet`, gsPtr, src_sample_uid, cs, execute)
+.cpp_NewGatingSet <- function(gsPtr, src_sample_uid, cs, execute, comp_source) {
+    .Call(`_flowWorkspace_NewGatingSet`, gsPtr, src_sample_uid, cs, execute, comp_source)
 }
 
 get_gatingset_id <- function(gsPtr) {
@@ -242,6 +242,10 @@ backend_type <- function(fr) {
     .Call(`_flowWorkspace_backend_type`, fr)
 }
 
+cf_is_indexed <- function(fr) {
+    .Call(`_flowWorkspace_cf_is_indexed`, fr)
+}
+
 .cf_scale_time_channel <- function(fr) {
     invisible(.Call(`_flowWorkspace_cf_scale_time_channel`, fr))
 }
@@ -290,6 +294,10 @@ load_cf <- function(url, readonly, on_disk, ctx) {
     .Call(`_flowWorkspace_load_cf`, url, readonly, on_disk, ctx)
 }
 
+cf_to_memcf <- function(fr) {
+    .Call(`_flowWorkspace_cf_to_memcf`, fr)
+}
+
 setMarker <- function(fr, channel, marker) {
     invisible(.Call(`_flowWorkspace_setMarker`, fr, channel, marker))
 }
@@ -303,7 +311,7 @@ setChannel <- function(fr, old, new_name) {
 }
 
 append_cols <- function(fr, new_colnames, new_cols_mat) {
-    invisible(.Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat))
+    .Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat)
 }
 
 parseFCS <- function(filename, config, text_only = FALSE, format = "mem", uri = "") {

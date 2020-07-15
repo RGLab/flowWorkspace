@@ -3,18 +3,23 @@
 \name{save_cytoset}
 \alias{save_cytoset}
 \alias{load_cytoset}
-\title{save/load a cytoset to/from disk.}
+\title{save/load a cytoset to/from disk.
+
+load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
+or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format)}
 \usage{
 save_cytoset(cs, path, ...)
 
-load_cytoset(path, ...)
+load_cytoset(path, verbose = FALSE, ...)
 }
 \arguments{
 \item{cs}{A \code{cytoset}}
 
-\item{path}{A character scalar giving the path to save/load the GatingSet to/from.}
+\item{path}{A character scalar giving the path to save/load the cytoset to/from.}
 
 \item{...}{other arguments passed to \code{save_gs/load_gs}}
+
+\item{verbose}{whether to print details. Default is FALSE.}
 }
 \value{
 \code{load_cytoset} returns a cytoset object
@@ -24,10 +29,13 @@ Save/load a cytoset  to/from the disk.
 }
 \examples{
 \dontrun{
-	#G is a GatingSet
+	#cs is a cytoset
 	save_cytoset(cs, outdir)
 	cs <-load_cytoset(outdir)
 
+#or from cytoframe on-disk files
+# e.g. h5_dir contains the cytoframes in h5 format
+cs <- load_cytoset(h5_dir)
 
 }
 }
