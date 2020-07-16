@@ -448,7 +448,7 @@ setMethod("show",
             cat("\n")
             if(cs_is_subsetted(object))
             {
-              cat("cytoset has been subsetted and can be realized through 'realize_view()'.")  
+              cat("cytoset has been subsetted and can be realized through 'realize_view()'.\n")  
             }
             
             
@@ -853,11 +853,13 @@ cs_load_meta <- function(cs){
 
 #' @title save/load a cytoset to/from disk.
 #'
+#' load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
+#' or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format)
 #' @description
 #' Save/load a cytoset  to/from the disk.
 #'
 #' @param cs A \code{cytoset}
-#' @param path A character scalar giving the path to save/load the GatingSet to/from.
+#' @param path A character scalar giving the path to save/load the cytoset to/from.
 #' @param ... other arguments passed to \code{save_gs/load_gs}
 #'
 #'
@@ -871,6 +873,9 @@ cs_load_meta <- function(cs){
 #' 	save_cytoset(cs, outdir)
 #' 	cs <-load_cytoset(outdir)
 #'
+#' #or from cytoframe on-disk files
+#' # e.g. h5_dir contains the cytoframes in h5 format
+#' cs <- load_cytoset(h5_dir)
 #'
 #' }
 #' @rdname save_cytoset
@@ -889,11 +894,27 @@ save_cytoset <-function(cs, path, ...){
 
 
 #' @rdname save_cytoset
+#' @param verbose whether to print details. Default is FALSE.
 #' @export
-load_cytoset<-function(path, ...){
-  gs <- load_gs(path, ...)
-  cs <- gs_cyto_data(gs)
-  identifier(cs) <- identifier(gs)#preserve id
+load_cytoset<-function(path, verbose = FALSE, ...){
+  files <- list.files(path, full.names = TRUE)
+  if(any(grepl(".gs$", files)))
+  {
+    gs <- load_gs(path, ...)
+    cs <- gs_cyto_data(gs)
+    identifier(cs) <- identifier(gs)#preserve id  
+  }else
+  {
+    #load from individual cytoframe files
+    cflist <- sapply(files, function(i){
+      message("loading :", i)
+      load_cytoframe(i, ...)
+    })
+    #drop dir
+    names(cflist) <- basename(names(cflist))
+    cs <- cytoset(cflist)
+  }
+  
   cs
 }
 
