@@ -1,6 +1,6 @@
 # <img src="logo_mid.png" align="right" />
 
-[![Build Status](https://travis-ci.org/RGLab/flowWorkspace.png?branch=trunk)](https://travis-ci.org/RGLab/flowWorkspace)
+[![Build Status](https://travis-ci.org/RGLab/flowWorkspace.png?branch=master)](https://travis-ci.org/RGLab/flowWorkspace)
 
 # flowWorkspace: An infrastructure tool for the hierarchical gated flow cytometry data.     
 
