@@ -43,11 +43,14 @@ Imports:
 	aws.s3,
 	aws.signature,
     flowCore(>= 2.1.1),
-	ncdfFlow(>= 2.25.4)
+	ncdfFlow(>= 2.25.4),
+	SummarizedExperiment,
+	DelayedArray
 Collate: 
     'cytoframe.R'
     'cytoset.R'
     'AllClasses.R'
+    'CytoArraySeed.R'
     'getStats.R'
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'
@@ -56,6 +59,7 @@ Collate:
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
+    'cytoexperiment.R'
     'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'
