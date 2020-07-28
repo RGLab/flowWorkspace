@@ -45,12 +45,13 @@ Imports:
     flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4),
 	SummarizedExperiment,
-	DelayedArray
+	DelayedArray,
+	SingleCellExperiment
 Collate: 
     'cytoframe.R'
     'cytoset.R'
     'AllClasses.R'
-    'CytoArraySeed.R'
+    'CytoArray.R'
     'getStats.R'
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'
@@ -64,6 +65,7 @@ Collate:
     'flow_trans.R'
     'getDescendants.R'
     'getSingleCellExpression.R'
+    'gsexperiment.R'
     'identifier.R'
     'load_fcs.R'
     'load_gs.R'

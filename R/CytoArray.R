@@ -85,7 +85,7 @@ setClass("CytoArray",
 # needed to be able to generate new matrix class through new_DelayedArray
 # which can be treated by scran as abstract matrix instead of Default delayedMatrix
 #' @export
-#' setClass("CytoMatrix", contains=c("CytoArray", "DelayedMatrix"))
+setClass("CytoMatrix", contains=c("CytoArray", "DelayedMatrix"))
 #' @export
 setMethod("matrixClass", "CytoArray", function(x) "CytoMatrix")
 
