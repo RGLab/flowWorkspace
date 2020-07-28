@@ -1,5 +1,17 @@
 context("---- gs")
 
+test_that("gs_get_leaf_nodes", {
+  leaf.all <- c('CD4/38- DR+','CD4/38+ DR+','CD4/38+ DR-','CD4/38- DR-'
+                ,'CD4/CCR7- 45RA+','CD4/CCR7+ 45RA+','CD4/CCR7+ 45RA-','CD4/CCR7- 45RA-'
+                ,'CD8/38- DR+','CD8/38+ DR+','CD8/38+ DR-','CD8/38- DR-'
+                ,'CD8/CCR7- 45RA+','CD8/CCR7+ 45RA+','CD8/CCR7+ 45RA-','CD8/CCR7- 45RA-'
+                ,'DNT','DPT')
+  expect_true(setequal(gs_get_leaf_nodes(gs, path = "auto"), leaf.all))
+  expect_true(setequal(gs_get_leaf_nodes(gs, path = "auto", ancestor = "CD4"), leaf.all[1:8]))
+  expect_true(setequal(gs_get_leaf_nodes(gs, path = "auto", ancestor = "CD8"), leaf.all[9:16]))
+})
+
+
 test_that("gs_get_uri", {
   expect_equal(gs_get_uri(gs), cs_get_uri(gs))
   
