@@ -6,12 +6,14 @@
 \alias{getDescendants,GatingHierarchy-method}
 \title{get all the descendant nodes for the given ancester}
 \usage{
-gh_pop_get_descendants(gh, node, ...)
+gh_pop_get_descendants(gh, node, showHidden = TRUE, ...)
 }
 \arguments{
 \item{gh}{GatingHierarchy}
 
 \item{node}{the node path}
+
+\item{showHidden}{whether show hidden nodes}
 
 \item{...}{passed to \code{getNode} call}
 }
