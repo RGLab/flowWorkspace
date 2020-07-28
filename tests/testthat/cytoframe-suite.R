@@ -12,7 +12,6 @@ test_that("load_cytoframe", {
   expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
 })
 test_that("cf_append_cols", {
-  skip_if(get_default_backend() != "mem")
   cf <- flowFrame_to_cytoframe(GvHD[[1]])
   
   n <- matrix(1:(nrow(cf)), ncol = 1)
@@ -21,15 +20,17 @@ test_that("cf_append_cols", {
   colnames(m) <- c("B", "C")
   
   # Add single column and make sure min/max keywords set appropriately
-  fr_plus <- cf_append_cols(cf, n)
-  key_range <- keyword(fr_plus)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
+  cf_expanded <- realize_view(cf)
+  cf_append_cols(cf_expanded, n)
+  key_range <- keyword(cf_expanded)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
   expect_equal(as.numeric(unname(unlist(key_range))), range(n[,"A"]))
   
   # Add multiple columns
-  fr_plus <- cf_append_cols(cf, m)
-  key_range <- keyword(fr_plus)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
+  cf_expanded <- realize_view(cf)
+  cf_append_cols(cf_expanded, m)
+  key_range <- keyword(cf_expanded)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
   expect_equal(as.numeric(unname(unlist(key_range))), range(m[,"B"]))
-  key_range <- keyword(fr_plus)[c("flowCore_$P10Rmin", "flowCore_$P10Rmax")]
+  key_range <- keyword(cf_expanded)[c("flowCore_$P10Rmin", "flowCore_$P10Rmax")]
   expect_equal(as.numeric(unname(unlist(key_range))), range(m[,"C"]))
   
 })
