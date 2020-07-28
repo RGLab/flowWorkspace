@@ -6,12 +6,14 @@
 \alias{get_leaf_nodes}
 \title{get all the leaf nodes}
 \usage{
-gs_get_leaf_nodes(x, ...)
+gs_get_leaf_nodes(x, ancestor = "root", ...)
 
-gh_get_leaf_nodes(x, ...)
+gh_get_leaf_nodes(x, ancestor = "root", ...)
 }
 \arguments{
 \item{x}{GatingHierarchy/GatingSet object}
+
+\item{ancestor}{ancestor node where the leaf nodes descend from. Default is 'root'.}
 
 \item{...}{arguments passed to 'gs_get_pop_paths" method}
 }
