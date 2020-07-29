@@ -5,7 +5,7 @@
 \alias{moveNode}
 \title{move a node along with all of its descendant nodes to the given ancester}
 \usage{
-gh_pop_move(gh, node, to)
+gh_pop_move(gh, node, to, recompute = TRUE)
 }
 \arguments{
 \item{gh}{GatingHierarchy}
@@ -13,6 +13,8 @@ gh_pop_move(gh, node, to)
 \item{node}{the node to be moved}
 
 \item{to}{the new parent node under which the \code{node} will be moved to}
+
+\item{recompute}{whether to recompute the gates after the node is moved. Default is TRUE.}
 }
 \description{
 move a node along with all of its descendant nodes to the given ancester

@@ -4,6 +4,40 @@ NULL
 #' @importMethodsFrom methods coerce show
 NULL
 
+#' subset gs by population node
+#' 
+#' Basically it returns a new GatingSet with only the substree of the given population node
+#' @param gs GatingSet
+#' @param pop the population node that will become the new root node
+#' @return a new GatingSet that share the underlying events data
+#' @export
+gs_pop_get_gs <- function(gs, pop){
+  gs1 <- gs_copy_tree_only(gs)
+  cs <- gs_pop_get_data(gs1, pop)
+  # # check if pop is child of root
+  # if(gs_pop_get_parent(gs1, pop) == "root")
+  # {
+  #   stop("Can't ")
+  # }
+  if(pop != "root")
+  {
+    nodes.first.level <- gs_pop_get_children(gs1, "root")
+  
+    nodes.tomv <- gs_pop_get_children(gs1, pop)
+    for(node in nodes.tomv)
+      for(i in seq_len(length(gs1)))
+      {
+        gh_pop_move(gs1[[i]], node, "root", recompute = FALSE)
+      }
+    #purge the rest ancestors and siblings
+    for(node in nodes.first.level)
+      gs_pop_remove(gs1, node)
+    
+    gs_cyto_data(gs1) <- cs
+  }
+  recompute(gs1)#update cell indicies even stats remain unchanged
+  gs1
+}
 #' @templateVar old isNcdf
 #' @templateVar new gs_is_h5
 #' @template template-depr_pkg
