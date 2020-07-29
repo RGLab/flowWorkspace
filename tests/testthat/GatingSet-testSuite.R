@@ -1,5 +1,23 @@
 context("---- gs")
 
+test_that("gs_pop_get_gs", {
+  pop <- "CD3+"
+  nodes <- gh_pop_get_descendants(gs[[1]], pop)
+  parent <- gs_pop_get_parent(gs, pop)
+  nodes.new <- gsub(paste0("^\\Q", file.path(parent, pop), "\\E"), "", nodes)
+  
+  gs1 <- gs_pop_get_gs(gs, pop)
+  # only contain the descendants of pop
+  expect_true(setequal(gs_get_pop_paths(gs1)[-1], nodes.new))
+  # only has cells from pop
+  expect_equal(nrow(gs1)[[1]], gh_pop_get_count(gs[[1]], pop))
+  # stats unchanged
+  expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
+  recompute(gs1)
+  expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
+  
+})
+
 test_that("gs_get_leaf_nodes", {
   leaf.all <- c('CD4/38- DR+','CD4/38+ DR+','CD4/38+ DR-','CD4/38- DR-'
                 ,'CD4/CCR7- 45RA+','CD4/CCR7+ 45RA+','CD4/CCR7+ 45RA-','CD4/CCR7- 45RA-'
