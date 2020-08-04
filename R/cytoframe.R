@@ -279,6 +279,46 @@ setMethod("compensate",
       x
     })
 
+cf_colnames <- function(cf){
+  get_channels(cf@pointer)
+}
+
+cf_rownames <- function(cf){
+  res <- get_rownames(cf@pointer)
+  if(length(res) == 0)
+    res <- NULL
+  res
+}
+
+#' @export
+setMethod("colnames", "cytoframe",
+          function (x, do.NULL = TRUE, prefix = "col") 
+          {
+            cf_colnames(x)
+          })
+#' @export
+setMethod("rownames", "cytoframe",
+    function (x, do.NULL = TRUE, prefix = "row") 
+    {
+      dimnames(x)[[1L]]
+      })
+#' @export
+setMethod("dimnames", "cytoframe",
+          function(x)
+          {
+            ans <- list(cf_rownames(x), cf_colnames((x)))
+            DelayedArray:::simplify_NULL_dimnames(ans)
+          })
+#' @export
+setReplaceMethod("rownames", c("cytoframe"),
+                 function(x, value)
+                 {
+                    if(is.null(value))
+                      del_rownames(x@pointer)
+                    else
+                      set_rownames(x@pointer, value)
+                    x
+                 })
 
 setMethod("nrow",
     signature=signature(x="cytoframe"),
@@ -291,13 +331,15 @@ setMethod("ncol",
     definition=function(x)
       getncol(x@pointer)
 )
-
+#' @importFrom S4Vectors coolcat
 setMethod("show",
           signature=signature(object="cytoframe"),
           definition=function(object)
           {
             
             selectMethod("show", "flowFrame")(object)
+            coolcat("row names(%d): %s\n", rownames(object))
+            
             if(cf_is_subsetted(object))
             {
               cat("cytoframe has been subsetted and can be realized through 'realize_view()'.\n")  
@@ -382,12 +424,15 @@ setMethod("exprs",
     signature=signature(object="cytoframe"),
     definition=function(object){
       if(object@use.exprs)
-        cf_getData(object@pointer)
+        mat <- cf_getData(object@pointer)
       else
       {
         cn <- colnames(object)
-        matrix(nrow = 0, ncol = length(cn), dimnames = list(NULL, cn))
+        mat <- matrix(nrow = 0, ncol = length(cn), dimnames = list(NULL, cn))
       }
+	  # browser()
+      # rownames(mat) <- rownames(object) #strange that rownames method always fall back to ANY signature
+      mat
     })
 
 setReplaceMethod("exprs",
@@ -398,21 +443,21 @@ setReplaceMethod("exprs",
 			cf_setData(object@pointer, value)
 			object
 		})
-
-setReplaceMethod("colnames",
-    signature=signature(x="cytoframe",
-        value="ANY"),
-    definition=function(x, value)
-    {
-      old.names <- colnames(x)
-      if(length(value) != length(old.names))
-        stop("colnames don't match dimensions of data matrix",
-            call.=FALSE)
-      
-		set_all_channels(x@pointer, value)
-      
-      return(x)
-    })
+# 
+# setReplaceMethod("colnames",
+#     signature=signature(x="cytoframe",
+#         value="ANY"),
+#     definition=function(x, value)
+#     {
+#       old.names <- colnames(x)
+#       if(length(value) != length(old.names))
+#         stop("colnames don't match dimensions of data matrix",
+#             call.=FALSE)
+#       
+# 		set_all_channels(x@pointer, value)
+#       
+#       return(x)
+#     })
 
 #' Methods to change channel and marker names for \code{cytoframe} and \code{cytoset} objects
 #' 
