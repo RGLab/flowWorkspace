@@ -297,6 +297,7 @@ setMethod("colnames", "cytoframe",
             cf_colnames(x)
           })
 #' @export
+#' @importFrom BiocGenerics rownames
 setMethod("rownames", "cytoframe",
     function (x, do.NULL = TRUE, prefix = "row") 
     {
@@ -310,6 +311,7 @@ setMethod("dimnames", "cytoframe",
             DelayedArray:::simplify_NULL_dimnames(ans)
           })
 #' @export
+#' @importFrom BiocGenerics rownames<-
 setReplaceMethod("rownames", c("cytoframe"),
                  function(x, value)
                  {

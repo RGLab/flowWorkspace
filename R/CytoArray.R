@@ -38,7 +38,7 @@ setMethod("path", "CytoArraySeed", function(object, ...)cf_get_uri(object@obj))
 setMethod("dim", "CytoArraySeed", function(x)as.integer(rev(dim(x@obj))))
 
 setMethod("dimnames", "CytoArraySeed",
-          function(x) list(colnames(x@obj), NULL)
+          function(x) list(colnames(x@obj), rownames(x@obj))
 )
 .extract_array <- function(x, index){
   #transpose i,j

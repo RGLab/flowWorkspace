@@ -46,7 +46,8 @@ Imports:
 	ncdfFlow(>= 2.25.4),
 	SummarizedExperiment,
 	DelayedArray,
-	SingleCellExperiment
+	SingleCellExperiment,
+	S4Vectors
 Collate: 
     'cytoframe.R'
     'cytoset.R'
