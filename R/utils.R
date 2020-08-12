@@ -2,11 +2,17 @@
 #' @name gs_get_leaf_nodes
 #' @aliases gh_get_leaf_nodes get_leaf_nodes
 #' @param x GatingHierarchy/GatingSet object
+#' @param ancestor ancestor node where the leaf nodes descend from. Default is 'root'.
 #' @param ... arguments passed to 'gs_get_pop_paths" method
 #' @return the leaf nodes
 #' @export 
-gs_get_leaf_nodes <- function(x, ...){
-  res <- gs_get_pop_paths(x, ...)
+gs_get_leaf_nodes <- function(x, ancestor = "root", ...){
+  if(ancestor == "root")
+    res <- gs_get_pop_paths(x, ...)
+  else
+  {
+    res <- gh_pop_get_descendants(x[[1]],  ancestor, ...)
+  }
   ind <- sapply(res, function(i)length(.cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
   res[ind]
 }

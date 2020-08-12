@@ -24,19 +24,19 @@ install:
   - R -e 'install.packages("testthat")'
   - R -e 'install.packages("knitr")'
   - R -e 'install.packages("parallel")'
-  - R -e 'devtools::install_github("FredHutch/cytolib", ref="cytoset", auth_token=Sys.getenv("CI_USER_TOKEN"))'
   - R -e 'devtools::install_github("RcppCore/RcppParallel", ref="master")'
-  - R -e 'devtools::install_github("RGLab/RProtoBufLib", ref="cytoset")'
-  - R -e 'devtools::install_github("RGLab/flowCore",ref="trunk", auth_token=Sys.getenv("CI_USER_TOKEN"))'
-  - R -e 'devtools::install_github("RGLab/ncdfFlow",ref="trunk")'
-  - R -e 'devtools::install_github("RGLab/flowWorkspaceData", ref="cytoset")'
+  - R -e 'devtools::install_github("RGLab/RProtoBufLib")'
+  - R -e 'devtools::install_github("RGLab/cytolib")'
+  - R -e 'devtools::install_github("RGLab/flowCore")'
+  - R -e 'devtools::install_github("RGLab/ncdfFlow")'
+  - R -e 'devtools::install_github("RGLab/flowWorkspaceData")'
   - R -e 'devtools::install_deps(upgrade = "Always")'
 
 script:
   - R CMD build . --no-build-vignettes
   - R -e 'install.packages(list.files(pattern="*tar.gz"), repos=NULL, type="source")'
-  - R -e 'devtools::install_github("RGLab/CytoML", ref="cytoset", auth_token=Sys.getenv("CI_USER_TOKEN"))'
-  - R -e 'devtools::install_github("RGLab/ggcyto", ref="trunk")'
+  - R -e 'devtools::install_github("RGLab/CytoML")'
+  - R -e 'devtools::install_github("RGLab/ggcyto")'
   - R CMD build .
   - R CMD check *tar.gz
 

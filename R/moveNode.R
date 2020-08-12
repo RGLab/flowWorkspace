@@ -15,6 +15,7 @@ moveNode <- function(gh, node, to){
 #' @param gh GatingHierarchy
 #' @param node the node to be moved
 #' @param to the new parent node under which the \code{node} will be moved to
+#' @param recompute whether to recompute the gates after the node is moved. Default is TRUE.
 #' @export
 #' @examples
 #' library(flowWorkspace)
@@ -26,9 +27,10 @@ moveNode <- function(gh, node, to){
 #' gh_pop_move(gh, "CD4", new.parent)
 #' gs_pop_get_parent(gh, "CD4")
 #' @export
-gh_pop_move <- function(gh, node, to){
+gh_pop_move <- function(gh, node, to, recompute = TRUE){
   
   .moveNode(gh@pointer, sampleNames(gh), node, to)
-  recompute(gh, to)
+  if(recompute)
+    recompute(gh, to)
 
 }

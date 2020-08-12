@@ -8,6 +8,7 @@ NULL
 #' @aliases getDescendants getDescendants,GatingHierarchy-method
 #' @param gh GatingHierarchy
 #' @param node the node path
+#' @param showHidden whether show hidden nodes
 #' @param ... passed to \code{getNode} call
 #' @export
 #' @examples
@@ -16,10 +17,12 @@ NULL
 #' suppressMessages(gs <- load_gs(list.files(dataDir, pattern = "gs_manual",full = TRUE)))
 #' gh_pop_get_descendants(gs[[1]], "CD4")
 #' gh_pop_get_descendants(gs[[1]], "CD8", path = "auto")
-gh_pop_get_descendants <- function(gh, node, ...){
+gh_pop_get_descendants <- function(gh, node, showHidden = TRUE, ...){
  descendants.id <- .getDescendants(gh@pointer, sampleNames(gh), node)
- gs_get_pop_paths(gh, showHidden = T, ...)[descendants.id+1]
-
+ res <- gs_get_pop_paths(gh, showHidden = T, ...)[descendants.id+1]
+ if(!showHidden)
+   res <- Filter(function(i)!gh_pop_is_hidden(gh, i), res)
+ res
 }
 
 #' @export
