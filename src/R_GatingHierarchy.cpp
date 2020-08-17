@@ -64,7 +64,13 @@ List getPhylo(XPtr<GatingSet> gs,string sampleName,string gatePath){
   IntegerVector leaf_nodes(gh_phylo.leaf_nodes.size());
   for(int i = 0; i < gh_phylo.leaf_nodes.size(); i++)
     leaf_nodes[i] = gh_phylo.leaf_nodes[i];
-  return(List::create(Named("edges", edges), Named("leaf_nodes", leaf_nodes)));
+  StringVector leaf_names(gh_phylo.leaf_names.size());
+  for(int i = 0; i < gh_phylo.leaf_names.size(); i++)
+    leaf_names[i] = gh_phylo.leaf_names[i];
+  
+  return(List::create(Named("edges", edges), 
+                      Named("leaf_nodes", leaf_nodes),
+                      Named("leaf_names", leaf_names)));
 }
 
 //[[Rcpp::export]]
