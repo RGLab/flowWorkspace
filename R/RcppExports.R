@@ -58,6 +58,10 @@ gen_uid <- function() {
     .Call(`_flowWorkspace_getNodes`, gs, sampleName, order, fullPath, showHidden)
 }
 
+.cpp_getPhylo <- function(gs, sampleName) {
+    .Call(`_flowWorkspace_getPhylo`, gs, sampleName)
+}
+
 getNodePath <- function(gs, sampleName, id) {
     .Call(`_flowWorkspace_getNodePath`, gs, sampleName, id)
 }

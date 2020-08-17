@@ -52,6 +52,21 @@ StringVec getNodes(XPtr<GatingSet> gs,string sampleName
 
 }
 
+//[[Rcpp::export(name=".cpp_getPhylo")]]
+List getPhylo(XPtr<GatingSet> gs,string sampleName){
+  GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+  
+  phylo gh_phylo = gh.getPhylo();
+  NumericMatrix edges(gh_phylo.edges.size(), 2);
+  for(int i = 0; i < gh_phylo.edges.size(); i++)
+    edges(i, Rcpp::_) = NumericVector::create(gh_phylo.edges[i].first, gh_phylo.edges[i].second);
+  
+  IntegerVector leaf_nodes(gh_phylo.leaf_nodes.size());
+  for(int i = 0; i < gh_phylo.leaf_nodes.size(); i++)
+    leaf_nodes[i] = gh_phylo.leaf_nodes[i];
+  return(List::create(Named("edges", edges), Named("leaf_nodes", leaf_nodes)));
+}
+
 //[[Rcpp::export]]
 string getNodePath(XPtr<GatingSet> gs,string sampleName,NODEID id){
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
