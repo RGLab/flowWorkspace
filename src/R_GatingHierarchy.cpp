@@ -104,15 +104,47 @@ List getPopStats(XPtr<GatingSet> gs,string sampleName
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
 	nodeProperties &node=gh.getNodeProperty(u);
-
-	return List::create(Named("FlowCore",node.getStats(true))
-						,Named("FlowJo",node.getStats(false))
+	auto stats = node.get_stats();
+	auto n = stats.size();
+	StringVector keys(n);
+	StringVector types(n);
+	StringVector attrs(n);
+	NumericVector v1(n);
+	NumericVector v2(n);
+	int i = n;
+	for(auto s : stats)
+	{
+		i--;
+		auto &stat = *(s.second);
+		keys[i] = stat.get_key();
+		types[i] = stat.get_type();
+		attrs[i] = stat.get_attr();
+		v1[i] = stat.get_value(true);
+		v2[i] = stat.get_value(false);
+	}
+	return DataFrame::create(
+			Named("key", keys)
+			, Named("type", types)
+			, Named("attr", attrs)
+			, Named("cytolib", v1)
+			,Named("xml", v2)
 						);
 
 }
 
+//[[Rcpp::export]]
+vector<string> gh_ls_stats(XPtr<GatingSet> gs,string sampleName){
 
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	return gh.ls_stats();
+}
 
+//[[Rcpp::export]]
+vector<string> gh_ls_pop_stats(XPtr<GatingSet> gs,string sampleName, string node){
+
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	return gh.getNodeProperty(gh.getNodeID(node)).ls_stats();
+}
 //[[Rcpp::export(name=".cpp_getCompensation")]]
 List getCompensation(XPtr<GatingSet> gs,string sampleName){
   GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -589,7 +621,7 @@ void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
 
 	nodeProperties & node = gh.getNodeProperty(u);
 	node.setIndices(ind);
-	node.computeStats();
+	node.computeStats(gh);
 
 }
 
@@ -865,7 +897,7 @@ void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID
 		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
 		//save the indices
 		node.setIndices(curIndices);
-		node.computeStats();
+		node.computeStats(gh);
 
 
 }

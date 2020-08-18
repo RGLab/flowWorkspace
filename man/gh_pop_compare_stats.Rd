@@ -4,9 +4,12 @@
 \alias{gh_pop_compare_stats}
 \alias{getPopStats}
 \alias{getPopStats,GatingHierarchy-method}
+\alias{gh_pop_ls_stats_type}
 \title{Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R}
 \usage{
-gh_pop_compare_stats(x, path = "auto", ...)
+gh_pop_compare_stats(x, path = "auto", type = c("Count"), legacy = FALSE, ...)
+
+gh_pop_ls_stats_type(x, node = NULL, ...)
 }
 \arguments{
 \item{x}{GatingHierarchy}
@@ -14,7 +17,11 @@ gh_pop_compare_stats(x, path = "auto", ...)
 \item{path}{see \link{gs_get_pop_paths}}
 
 \item{...}{not used}
+
+\item{node}{the population node to retrieve the stats from. Default is NUll, meaning retrieving stats type all nodes.}
 }
 \description{
 Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R
+
+list the stats type available in the gating tree
 }

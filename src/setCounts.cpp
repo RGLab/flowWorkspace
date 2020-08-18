@@ -21,8 +21,6 @@ void setCounts(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, int 
   GatingHierarchy & gh = *gsPtr->getGatingHierarchy(sampleName);
   VertexID nodeID = gh.getNodeID(node);
   nodeProperties & np = gh.getNodeProperty(nodeID);
-  POPSTATS fjStats;
-  fjStats["count"]= count;
-  np.setStats(fjStats, false);
+  np.set_stats("Count", count, false);
 }
 

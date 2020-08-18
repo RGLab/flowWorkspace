@@ -148,6 +148,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gh_ls_stats
+vector<string> gh_ls_stats(XPtr<GatingSet> gs, string sampleName);
+RcppExport SEXP _flowWorkspace_gh_ls_stats(SEXP gsSEXP, SEXP sampleNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    rcpp_result_gen = Rcpp::wrap(gh_ls_stats(gs, sampleName));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gh_ls_pop_stats
+vector<string> gh_ls_pop_stats(XPtr<GatingSet> gs, string sampleName, string node);
+RcppExport SEXP _flowWorkspace_gh_ls_pop_stats(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP nodeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< string >::type node(nodeSEXP);
+    rcpp_result_gen = Rcpp::wrap(gh_ls_pop_stats(gs, sampleName, node));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getCompensation
 List getCompensation(XPtr<GatingSet> gs, string sampleName);
 RcppExport SEXP _flowWorkspace_getCompensation(SEXP gsSEXP, SEXP sampleNameSEXP) {
@@ -1182,6 +1207,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getParent", (DL_FUNC) &_flowWorkspace_getParent, 3},
     {"_flowWorkspace_getChildren", (DL_FUNC) &_flowWorkspace_getChildren, 4},
     {"_flowWorkspace_getPopStats", (DL_FUNC) &_flowWorkspace_getPopStats, 3},
+    {"_flowWorkspace_gh_ls_stats", (DL_FUNC) &_flowWorkspace_gh_ls_stats, 2},
+    {"_flowWorkspace_gh_ls_pop_stats", (DL_FUNC) &_flowWorkspace_gh_ls_pop_stats, 3},
     {"_flowWorkspace_getCompensation", (DL_FUNC) &_flowWorkspace_getCompensation, 2},
     {"_flowWorkspace_set_transformations", (DL_FUNC) &_flowWorkspace_set_transformations, 3},
     {"_flowWorkspace_getTransformations", (DL_FUNC) &_flowWorkspace_getTransformations, 3},

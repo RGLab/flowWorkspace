@@ -286,32 +286,32 @@ gh_pop_get_count <- function(x,y,xml = FALSE){
 	
 	
 	stats<-.cpp_getPopStats(x@pointer,sampleNames(x), y)
+	stats
 	
-	
-	parent<-try(gs_pop_get_parent(x, y),silent=T)
-	
-	
-	if(class(parent)=="try-error")#if parent exist
-		pstats<-stats
-	else
-	{
-		
-		pstats<-.cpp_getPopStats(x@pointer,sampleNames(x), parent)
-	}
-	
-	
-#	browser()
-	list(openCyto=c(percent=as.numeric(ifelse(pstats$FlowCore["count"]==0
-									,0
-									,stats$FlowCore["count"]/pstats$FlowCore["count"]
-							))
-					,count=as.numeric(stats$FlowCore["count"]))
-			,xml=c(percent=as.numeric(ifelse(pstats$FlowJo["count"]==0
-									,0
-									,stats$FlowJo["count"]/pstats$FlowJo["count"]
-							))
-					,count=as.numeric(stats$FlowJo["count"]))
-	)
+# 	parent<-try(gs_pop_get_parent(x, y),silent=T)
+# 	
+# 	
+# 	if(class(parent)=="try-error")#if parent exist
+# 		pstats<-stats
+# 	else
+# 	{
+# 		
+# 		pstats<-.cpp_getPopStats(x@pointer,sampleNames(x), parent)
+# 	}
+# 	
+# 	
+# #	browser()
+# 	list(openCyto=c(percent=as.numeric(ifelse(pstats$FlowCore["count"]==0
+# 									,0
+# 									,stats$FlowCore["count"]/pstats$FlowCore["count"]
+# 							))
+# 					,count=as.numeric(stats$FlowCore["count"]))
+# 			,xml=c(percent=as.numeric(ifelse(pstats$FlowJo["count"]==0
+# 									,0
+# 									,stats$FlowJo["count"]/pstats$FlowJo["count"]
+# 							))
+# 					,count=as.numeric(stats$FlowJo["count"]))
+# 	)
 }
 #' @templateVar old getPopStats
 #' @templateVar new gs(/gh)_pop_get_stats
@@ -334,23 +334,62 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 #' @param path see \link{gs_get_pop_paths}
 #' @param ... not used
 #' @export
-gh_pop_compare_stats <- function(x, path = "auto", ...){
+#' @importFrom dplyr filter tibble rename rename_if
+#' @importFrom tidyselect contains
+gh_pop_compare_stats <- function(x, path = "auto", type = c("Count"), legacy = FALSE, ...){
 	
 	nodePath <- gs_get_pop_paths(x, path = path, ...)
-	stats <- rbindlist(lapply(nodePath, function(thisPath){
-						curStats <- .getPopStat(x,thisPath)
-						data.table(openCyto.freq = curStats$openCyto["percent"]
-								,xml.freq = curStats$xml["percent"]
-								,openCyto.count = curStats$openCyto["count"]
-								,xml.count = curStats$xml["count"]
-								, node = thisPath
-						
-						)
-					})
+	stats <- do.call(rbind, lapply(nodePath, function(thisPath){
+              					 .getPopStat(x,thisPath) %>% 
+	                                            tibble() %>%
+              					                      filter(type %in% !!type) %>%
+	                                            mutate(node = thisPath)
+              					})
 	)
 	
-	rownames(stats) <- stats[, node]
-	stats
+	## format it according to its type
+	col.show <- c("cytolib", "xml", "node")
+	
+	no.attr <- all(type %in% c("Count", "Freqofparent", "Freqofgrandparent", "FreqofTotal"))
+	if(!no.attr)
+	  col.show <- c("attr", col.show)
+	
+	if(type == "Freqof")
+	  col.attr <- "ancestor"
+	else
+	  col.attr <- "channel"
+	
+	col.show <- c("type", col.show)
+	stats <- select(stats, col.show)
+	if(!no.attr)
+	  stats <- rename(stats, !!col.attr := attr)
+	
+	##convert to legacy format for backward compatibility
+	if(legacy)
+	{
+	  stopifnot(length(type)==1)
+	  
+	  stats <- select(stats, -contains("type")) %>% rename(!!paste0("openCyto.", tolower(type)) := cytolib
+	                  , !!paste0("xml.", tolower(type)) := xml)   
+	}
+  
+	  
+	stats%>%
+	  data.table()
+}
+
+#' list the stats type available in the gating tree
+#' 
+#' @name gh_pop_compare_stats
+#' @param x GatingHierarchy
+#' @param node the population node to retrieve the stats from. Default is NUll, meaning retrieving stats type all nodes.
+#' @param ... not used
+#' @export
+gh_pop_ls_stats_type <- function(x, node = NULL, ...){
+	if(is.null(node))
+		gh_ls_stats(x@pointer, sampleNames(gh))
+	else
+		gh_ls_pop_stats(x@pointer, sampleNames(gh), node)
 }
 
 .computeCV_gh <- function(gh, ...){

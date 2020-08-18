@@ -78,6 +78,14 @@ getNodePath <- function(gs, sampleName, id) {
     .Call(`_flowWorkspace_getPopStats`, gs, sampleName, gatePath)
 }
 
+gh_ls_stats <- function(gs, sampleName) {
+    .Call(`_flowWorkspace_gh_ls_stats`, gs, sampleName)
+}
+
+gh_ls_pop_stats <- function(gs, sampleName, node) {
+    .Call(`_flowWorkspace_gh_ls_pop_stats`, gs, sampleName, node)
+}
+
 .cpp_getCompensation <- function(gs, sampleName) {
     .Call(`_flowWorkspace_getCompensation`, gs, sampleName)
 }

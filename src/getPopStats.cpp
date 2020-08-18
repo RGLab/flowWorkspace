@@ -13,7 +13,7 @@ using namespace cytolib;
     const bool freq;
     const StringVec sampleNames;
     const StringVec subpopulation;
-    const bool isFlowCore;
+    const bool iscytolib;
     const bool isFullPath;
     
     // destination 
@@ -27,8 +27,8 @@ using namespace cytolib;
     Rcpp::DoubleVector parentFreqVec;
     
     // initialize with source and destination
-    getStats(Rcpp::XPtr<GatingSet> gs, const bool freq, const StringVec sampleNames,const StringVec subpopulation, const bool isFlowCore, const bool isFullPath,List output) 
-      : gs(gs), freq(freq), sampleNames(sampleNames), subpopulation(subpopulation), isFlowCore(isFlowCore), isFullPath(isFullPath), output(output) {
+    getStats(Rcpp::XPtr<GatingSet> gs, const bool freq, const StringVec sampleNames,const StringVec subpopulation, const bool iscytolib, const bool isFullPath,List output)
+      : gs(gs), freq(freq), sampleNames(sampleNames), subpopulation(subpopulation), iscytolib(iscytolib), isFullPath(isFullPath), output(output) {
           sampleVec = output["name"];
           popVec = output["Population"];
           parentVec = output["Parent"];
@@ -50,7 +50,7 @@ using namespace cytolib;
       {
         std::string sn = sampleNames.at(i);
         GatingHierarchy & gh = *gs->getGatingHierarchy(sn);
-        unsigned rootCount = gh.getNodeProperty(gh.getNodeID("root")).getStats(isFlowCore)["count"];
+        unsigned rootCount = gh.getNodeProperty(gh.getNodeID("root")).get_stats("Count", iscytolib);
         for(unsigned j = 0; j < nPop; j++){
           std::string pop = subpopulation.at(j);
           auto counter = i * nPop + j;
@@ -59,7 +59,7 @@ using namespace cytolib;
           
           //get count or frequency of this pop
           VertexID u = gh.getNodeID(pop);
-          unsigned thisCount = gh.getNodeProperty(u).getStats(isFlowCore)["count"];
+          unsigned thisCount = gh.getNodeProperty(u).get_stats("Count", iscytolib);
           if(freq)
             if(rootCount)
               freqVec(counter) = double(thisCount) / double(rootCount);
@@ -73,7 +73,7 @@ using namespace cytolib;
           parentVec(counter) = gh.getNodePath(pid, isFullPath);
           
           //get parent count or frequency
-          unsigned parentCount = gh.getNodeProperty(pid).getStats(isFlowCore)["count"];
+          unsigned parentCount = gh.getNodeProperty(pid).get_stats("Count", iscytolib);
           if(freq)
             if(rootCount)
               parentFreqVec(counter) = double(parentCount) / double(rootCount);
@@ -104,7 +104,7 @@ using namespace cytolib;
 //[[Rcpp::export(".getPopCounts")]]
 Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath){
   
-  bool isFlowCore = !flowJo;
+  bool iscytolib = !flowJo;
   StringVec sampleNames = gsPtr->get_sample_uids();
   unsigned nPop = subpopulation.size();
   unsigned nSample = sampleNames.size();
@@ -119,7 +119,7 @@ Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, bool freq, StringVec subpop
                               , Rcpp::Named(freq ? "Frequency" : "Count", freq ? Rcpp::DoubleVector(nVec) : Rcpp::IntegerVector(nVec))
                               , Rcpp::Named(freq ? "ParentFrequency" : "ParentCount", freq ? Rcpp::DoubleVector(nVec) : Rcpp::IntegerVector(nVec))
                             );
-  getStats getStats(gsPtr, freq, sampleNames, subpopulation, isFlowCore, isFullPath, output);
+  getStats getStats(gsPtr, freq, sampleNames, subpopulation, iscytolib, isFullPath, output);
   
   parallelFor(0, nSample, getStats);
 
