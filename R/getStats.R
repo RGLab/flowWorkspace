@@ -413,3 +413,15 @@ gh_plot_pop_count_cv <- function(x, path = "auto", ...){
 	return(barchart(cv,xlab="Coefficient of Variation",..., par.settings=ggplot2like));
 }
 
+#' Compute all the stats
+#' 
+#' To save time, some channel-specific stats such as mean, SD are not computed automatically at the time when they are added to GatingSet.
+#' This function allows usesr to invoke this computation manually if they want to extract these values.
+#' 
+#' @param gs GatingSet
+#' 
+gs_compute_stats <- function(gs)
+{
+  for(sn in sampleNames(gs))
+    gh_compute_stats(gs@pointer, sn)
+}
