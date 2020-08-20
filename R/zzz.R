@@ -17,6 +17,13 @@ set_default_backend <- function(backend = c("h5", "mem",  "tile")){
 
 .onLoad <- function(libname, pkgname){
   set_default_backend()
+  options("cyto_stats_type" = list(basic = c('Count','Freqoftotal','Freqofgranparent','Freqofparent')
+                                   , with_ancestor = 'Freqof'
+                                   , with_channel = c('SD', 'CV', 'Robust CV','Robust SD'
+                                                      ,'Median Abs Dev','Median','Mean','Geometric Mean'
+                                                      ,'Mode','Percentile')
+                                   , with_percent = "Percentile")
+  )
   h5_set_error_handler()#set R stderr as output stream for error handler of libhdf5
 }
 

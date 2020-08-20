@@ -171,6 +171,10 @@ gs_transform_data <- function(gsPtr) {
     invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }
 
+gs_add_stats <- function(gsPtr, nodes, stats) {
+    invisible(.Call(`_flowWorkspace_gs_add_stats`, gsPtr, nodes, stats))
+}
+
 cpp_gating <- function(gsPtr, nodes, alwaysLoadData, verbose, leafbool) {
     invisible(.Call(`_flowWorkspace_cpp_gating`, gsPtr, nodes, alwaysLoadData, verbose, leafbool))
 }

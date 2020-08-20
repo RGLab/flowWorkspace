@@ -37,6 +37,87 @@ void gs_transform_data(XPtr<GatingSet> gsPtr) {
 		cf->set_keywords(fr.get_keywords());
 	}
 }
+/*
+ * convert R filter to specific gate class
+ * Note: up to caller to free the dynamically allocated gate object
+ */
+popStatsPtr list_to_stats(List stat){
+
+
+	auto statType = as<string>(stat["type"]);
+  string attr = "";
+  if(stat.containsElementNamed("attr"))
+    attr = as<string>(stat["attr"]);
+	popStatsPtr s1;
+	if(statType == "Count")
+		s1 = popStatsPtr(new StatsCount());
+	else if(statType == "Freqof")
+		s1 = popStatsPtr(new StatsFreq(attr));
+	else if(statType == "Freqofparent")
+		s1 = popStatsPtr(new StatsFreqofparent(attr));//attr is dummy and will be instantiate later
+	else if(statType == "Freqofgrandparent")
+		s1 = popStatsPtr(new StatsFreqofgrandparent(attr));//attr is dummy and will be instantiate later
+	else if(statType == "Freqoftotal")
+		s1 = popStatsPtr(new StatsFreqoftotal(attr));//attr is dummy and will be instantiate later
+	else if(statType == "Mean")
+		s1 = popStatsPtr(new StatsMean(attr));
+	else if(statType == "Median")
+	  s1 = popStatsPtr(new StatsMedian(attr));
+	else if(statType == "Geometric Mean")
+	{
+	  s1 = popStatsPtr(new StatsGeometricMean(attr));
+	}
+	else if(statType == "Median Abs Dev")
+	{
+	  s1 = popStatsPtr(new StatsMAD(attr));
+	}
+	else if(statType == "SD")
+	{
+	  s1 = popStatsPtr(new StatsSD(attr));
+	}
+	else if(statType == "CV")
+	{
+	  s1 = popStatsPtr(new StatsCV(attr));
+	}
+	else if(statType == "Robust SD")
+	{
+	  s1 = popStatsPtr(new StatsRobustSD(attr));
+	}
+	else if(statType == "Robust CV")
+	{
+	  s1 = popStatsPtr(new StatsRobustCV(attr));
+	}
+	else if(statType == "Mode")
+	{
+	  s1 = popStatsPtr(new StatsMode(attr));
+	}
+	else if(statType == "Percentile")
+	{
+	  s1 = popStatsPtr(new StatsPercentile(attr));
+	  auto percent = as<int>(stat["percent"]);
+	  dynamic_pointer_cast<StatsPercentile>(s1)->set_percent(percent);
+	}
+	else
+		throw(domain_error("unsupported stats type!" + statType));
+  return s1;
+
+}
+//[[Rcpp::export]]
+void gs_add_stats(XPtr<GatingSet> gsPtr, vector<string> nodes, List stats) {
+  for(auto & i : *gsPtr)
+  {
+    auto gh = i.second;
+    for(auto node : nodes)
+    {
+      for(int i = 0;i < stats.size(); i++)
+      {
+        auto s = list_to_stats(stats.at(i));
+        gh->add_stats(node, s);
+      }
+    }
+  }
+}
+
 //[[Rcpp::export]]
 void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool) {
   if(nodes[0] == "root")

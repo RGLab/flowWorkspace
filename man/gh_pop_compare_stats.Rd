@@ -8,7 +8,14 @@
 \alias{gh_pop_stats_ls}
 \title{Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R}
 \usage{
-gh_pop_stats_compare(x, path = "auto", type = c("Count"), legacy = FALSE, ...)
+gh_pop_stats_compare(
+  x,
+  nodes = NULL,
+  path = "auto",
+  type = c("Count"),
+  legacy = FALSE,
+  ...
+)
 
 gh_pop_compare_stats(...)
 

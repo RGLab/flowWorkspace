@@ -416,6 +416,18 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// gs_add_stats
+void gs_add_stats(XPtr<GatingSet> gsPtr, vector<string> nodes, List stats);
+RcppExport SEXP _flowWorkspace_gs_add_stats(SEXP gsPtrSEXP, SEXP nodesSEXP, SEXP statsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< List >::type stats(statsSEXP);
+    gs_add_stats(gsPtr, nodes, stats);
+    return R_NilValue;
+END_RCPP
+}
 // cpp_gating
 void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool);
 RcppExport SEXP _flowWorkspace_cpp_gating(SEXP gsPtrSEXP, SEXP nodesSEXP, SEXP alwaysLoadDataSEXP, SEXP verboseSEXP, SEXP leafboolSEXP) {
@@ -1240,6 +1252,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
     {"_flowWorkspace_gs_transform_data", (DL_FUNC) &_flowWorkspace_gs_transform_data, 1},
+    {"_flowWorkspace_gs_add_stats", (DL_FUNC) &_flowWorkspace_gs_add_stats, 3},
     {"_flowWorkspace_cpp_gating", (DL_FUNC) &_flowWorkspace_cpp_gating, 5},
     {"_flowWorkspace_subset_gs_by_sample", (DL_FUNC) &_flowWorkspace_subset_gs_by_sample, 2},
     {"_flowWorkspace_get_cytoset", (DL_FUNC) &_flowWorkspace_get_cytoset, 1},

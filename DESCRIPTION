@@ -44,7 +44,8 @@ Imports:
 	aws.signature,
     flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4),
-	tidyselect
+	tidyselect,
+	crayon
 Collate: 
     'cytoframe.R'
     'cytoset.R'
