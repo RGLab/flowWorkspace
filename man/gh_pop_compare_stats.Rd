@@ -2,14 +2,17 @@
 % Please edit documentation in R/getStats.R
 \name{gh_pop_compare_stats}
 \alias{gh_pop_compare_stats}
+\alias{gh_pop_stats_compare}
 \alias{getPopStats}
 \alias{getPopStats,GatingHierarchy-method}
-\alias{gh_pop_ls_stats_type}
+\alias{gh_pop_stats_ls}
 \title{Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R}
 \usage{
-gh_pop_compare_stats(x, path = "auto", type = c("Count"), legacy = FALSE, ...)
+gh_pop_stats_compare(x, path = "auto", type = c("Count"), legacy = FALSE, ...)
 
-gh_pop_ls_stats_type(x, node = NULL, ...)
+gh_pop_compare_stats(...)
+
+gh_pop_stats_ls(x, node = NULL, ...)
 }
 \arguments{
 \item{x}{GatingHierarchy}

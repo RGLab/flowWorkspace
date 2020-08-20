@@ -336,7 +336,7 @@ setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
 #' @export
 #' @importFrom dplyr filter tibble rename rename_if
 #' @importFrom tidyselect contains
-gh_pop_compare_stats <- function(x, path = "auto", type = c("Count"), legacy = FALSE, ...){
+gh_pop_stats_compare <- function(x, path = "auto", type = c("Count"), legacy = FALSE, ...){
 	
 	nodePath <- gs_get_pop_paths(x, path = path, ...)
 	stats <- do.call(rbind, lapply(nodePath, function(thisPath){
@@ -377,19 +377,11 @@ gh_pop_compare_stats <- function(x, path = "auto", type = c("Count"), legacy = F
 	stats%>%
 	  data.table()
 }
-
-#' list the stats type available in the gating tree
-#' 
 #' @name gh_pop_compare_stats
-#' @param x GatingHierarchy
-#' @param node the population node to retrieve the stats from. Default is NUll, meaning retrieving stats type all nodes.
-#' @param ... not used
 #' @export
-gh_pop_ls_stats_type <- function(x, node = NULL, ...){
-	if(is.null(node))
-		gh_ls_stats(x@pointer, sampleNames(gh))
-	else
-		gh_ls_pop_stats(x@pointer, sampleNames(gh), node)
+gh_pop_compare_stats <- function(...){
+  .Deprecated("gh_pop_stats_compare")
+  gh_pop_stats_compare(...)
 }
 
 .computeCV_gh <- function(gh, ...){
@@ -416,12 +408,32 @@ gh_plot_pop_count_cv <- function(x, path = "auto", ...){
 #' Compute all the stats
 #' 
 #' To save time, some channel-specific stats such as mean, SD are not computed automatically at the time when they are added to GatingSet.
-#' This function allows usesr to invoke this computation manually if they want to extract these values.
+#' This function allows users to invoke this computation manually for the given population node and all its descendants.
+#' 
 #' 
 #' @param gs GatingSet
-#' 
-gs_compute_stats <- function(gs)
+#' @param node the population node. Default is root.
+gs_pop_stats_compute <- function(gs, node = "root")
 {
   for(sn in sampleNames(gs))
-    gh_compute_stats(gs@pointer, sn)
+    gh_compute_stats(gs@pointer, sn, node)
+}
+
+#' list the stats type available in the gating tree
+#' 
+#' @name gh_pop_compare_stats
+#' @param x GatingHierarchy
+#' @param node the population node to retrieve the stats from. Default is NUll, meaning retrieving stats type all nodes.
+#' @param ... not used
+#' @export
+gh_pop_stats_ls <- function(x, node = NULL, ...){
+  if(is.null(node))
+    gh_ls_stats(x@pointer, sampleNames(gh))
+  else
+    gh_ls_pop_stats(x@pointer, sampleNames(gh), node)
+}
+
+cyto_stats <- function(type = "Median",  channels = c("Comp-V450-A", "Comp-G560-A"))
+{
+  type <- match.arg(type, c(""))
 }

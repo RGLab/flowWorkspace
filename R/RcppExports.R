@@ -82,8 +82,8 @@ gh_ls_stats <- function(gs, sampleName) {
     .Call(`_flowWorkspace_gh_ls_stats`, gs, sampleName)
 }
 
-gh_compute_stats <- function(gs, sampleName) {
-    invisible(.Call(`_flowWorkspace_gh_compute_stats`, gs, sampleName))
+gh_compute_stats <- function(gs, sampleName, node) {
+    invisible(.Call(`_flowWorkspace_gh_compute_stats`, gs, sampleName, node))
 }
 
 gh_ls_pop_stats <- function(gs, sampleName, node) {

@@ -140,10 +140,11 @@ vector<string> gh_ls_stats(XPtr<GatingSet> gs,string sampleName){
 }
 
 //[[Rcpp::export]]
-void gh_compute_stats(XPtr<GatingSet> gs,string sampleName){
+void gh_compute_stats(XPtr<GatingSet> gs,string sampleName, string node){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-	gh.compute_stats();
+
+	gh.compute_stats(gh.getNodeID(node));
 }
 //[[Rcpp::export]]
 vector<string> gh_ls_pop_stats(XPtr<GatingSet> gs,string sampleName, string node){
