@@ -2,24 +2,38 @@
 % Please edit documentation in R/getStats.R
 \name{gs_pop_get_stats}
 \alias{gs_pop_get_stats}
+\alias{gs_pop_stats_print}
 \alias{gh_pop_get_stats}
 \alias{getStats}
 \alias{getStats,GatingSet-method}
 \alias{getStats,GatingHierarchy-method}
 \alias{getStats,GatingSetList-method}
+\alias{gh_pop_stats_print}
 \title{Extract stats from populations(or nodes)}
 \usage{
-gs_pop_get_stats(x, ...)
+gs_pop_stats_print(x, ...)
 
-gh_pop_get_stats(
+gh_pop_stats_print(
   x,
   nodes = NULL,
-  type = "count",
+  type = "Count",
   xml = FALSE,
   inverse.transform = FALSE,
   stats.fun.arg = list(),
   ...
 )
+
+gh_pop_get_stats(
+  x,
+  nodes = NULL,
+  type = "Count",
+  xml = FALSE,
+  inverse.transform = FALSE,
+  stats.fun.arg = list(),
+  ...
+)
+
+gs_pop_get_stats(x, ...)
 }
 \arguments{
 \item{x}{a GatingSet or GatingHierarchy}
