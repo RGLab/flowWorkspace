@@ -544,6 +544,8 @@ gs_pop_stats_add <- function(gs, nodes = NULL, stats){
   gs_add_stats(gs@pointer, nodes, stats)
 }
 
+#somehow roxygen doesn't export s3 method automatically (may be due to the print generic got changed into s4 generic at some point), current it is manually added to NAMESPACE file
+#' @export print.cyto_stats
 #' @export
 #' @importFrom crayon bold green cyan italic
 print.cyto_stats <- function(x, ...){
