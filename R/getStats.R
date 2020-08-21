@@ -56,9 +56,9 @@ getStats.GatingSet <- function(...){
 #' gs_pop_get_stats(gs, nodes, type = pop.quantiles)
 #' }
 #' @export
-gs_pop_get_stats <- function(x, ...){
+gs_pop_stats_print <- function(x, ...){
   res <-  lapply(x, function(gh){
-    gh_pop_get_stats(gh, ...)
+    gh_pop_stats_print(gh, ...)
 
   })
   rbindlist(res, idcol = "sample")
@@ -70,6 +70,7 @@ getStats.GatingHierarchy <- function(...){
   gh_pop_get_stats(...)
 }
 
+
 #' @param nodes the character vector specifies the populations of interest. default is all available nodes
 #' @param type the character vector specifies the type of pop stats or
 #'          a function used to compute population stats.
@@ -80,42 +81,55 @@ getStats.GatingHierarchy <- function(...){
 #' @param xml whether to extract xml stats or openCyto stats
 #' @rdname gs_pop_get_stats
 #' @export
-gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inverse.transform = FALSE, stats.fun.arg = list(), ...){
+gh_pop_stats_print <- function(x, nodes = NULL, type = "Count", xml = FALSE, inverse.transform = FALSE, stats.fun.arg = list(), ...){
   gh <- x
-  if(is.null(nodes))
-    nodes <- gs_get_pop_paths(gh, ...)
-  res <- sapply(nodes, function(node){
-    if(is.character(type))
-    {
-      type <- match.arg(type, c("count", "percent"))
-	  stats<-.getPopStat(x,y = node)
-	  source <- ifelse(xml, "xml", "openCyto")
-	
-	  res <- stats[[source]][type]
+  if(is.character(type))##buildin stats
+  {
+    type <- match.arg(type, cyto_stats_supported())
+    
+    stats<- gh_pop_stats_compare(x, nodes = nodes, type = type, ...)
+    keep.val <- ifelse(xml, "xml", "cytolib")
+    stats  %>%
+      rename(pop := node) %>%
+      mutate(value = stats[[keep.val]])%>% 
+      select(-contains(c("type", "cytolib", "xml")))
+    
+  }else##custom stats func
+  {
+    if(is.null(nodes))
+      nodes <- gs_get_pop_paths(gh, ...)
+    
+    res <- sapply(nodes, function(node){
+        fr <- gh_pop_get_data(gh, y = node)
+        if(inverse.transform)
+        {
+          trans <- gh_get_transformations(gh, inverse = TRUE)
+          if(length(trans)==0)
+            stop("No inverse transformation is found from the GatingSet!")
+          trans <- transformList(names(trans), trans)
+          fr <- transform(fr, trans)
+        }
+        thisCall <- quote(type(fr))
+        thisCall <- as.call(c(as.list(thisCall), stats.fun.arg))
+        
+        res <- eval(thisCall)
       
-        names(res) <- type
-      
-    }else{
-      fr <- gh_pop_get_data(gh, y = node)
-      if(inverse.transform)
-      {
-        trans <- gh_get_transformations(gh, inverse = TRUE)
-        if(length(trans)==0)
-          stop("No inverse transformation is found from the GatingSet!")
-        trans <- transformList(names(trans), trans)
-        fr <- transform(fr, trans)
-      }
-      thisCall <- quote(type(fr))
-      thisCall <- as.call(c(as.list(thisCall), stats.fun.arg))
-      
-      res <- eval(thisCall)
-    }
-
-    as.data.table(t(res))
-  }, simplify = FALSE)
-  rbindlist(res, idcol = "pop")
+  
+      as.data.table(t(res))
+    }, simplify = FALSE)
+    rbindlist(res, idcol = "pop")
+    
+  }
 
 }
+
+#' @rdname gs_pop_get_stats
+#' @export
+gh_pop_get_stats <- gh_pop_stats_print
+
+#' @rdname gs_pop_get_stats
+#' @export
+gs_pop_get_stats <- gs_pop_stats_print
 
 #' Extract stats from populations(or nodes) within a restricted time window
 #' 
