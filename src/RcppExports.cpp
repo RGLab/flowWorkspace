@@ -148,6 +148,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gh_remove_stats
+void gh_remove_stats(XPtr<GatingSet> gs, string sampleName, vector<string> nodes, List stats);
+RcppExport SEXP _flowWorkspace_gh_remove_stats(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP nodesSEXP, SEXP statsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< List >::type stats(statsSEXP);
+    gh_remove_stats(gs, sampleName, nodes, stats);
+    return R_NilValue;
+END_RCPP
+}
 // gh_add_stats
 void gh_add_stats(XPtr<GatingSet> gs, string sampleName, vector<string> nodes, List stats);
 RcppExport SEXP _flowWorkspace_gh_add_stats(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP nodesSEXP, SEXP statsSEXP) {
@@ -1232,6 +1245,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getParent", (DL_FUNC) &_flowWorkspace_getParent, 3},
     {"_flowWorkspace_getChildren", (DL_FUNC) &_flowWorkspace_getChildren, 4},
     {"_flowWorkspace_getPopStats", (DL_FUNC) &_flowWorkspace_getPopStats, 3},
+    {"_flowWorkspace_gh_remove_stats", (DL_FUNC) &_flowWorkspace_gh_remove_stats, 4},
     {"_flowWorkspace_gh_add_stats", (DL_FUNC) &_flowWorkspace_gh_add_stats, 4},
     {"_flowWorkspace_gh_ls_stats", (DL_FUNC) &_flowWorkspace_gh_ls_stats, 2},
     {"_flowWorkspace_gh_compute_stats", (DL_FUNC) &_flowWorkspace_gh_compute_stats, 3},

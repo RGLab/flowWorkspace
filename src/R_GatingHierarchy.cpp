@@ -194,6 +194,20 @@ popStatsPtr list_to_stats(List stat){
 }
 
 //[[Rcpp::export]]
+void gh_remove_stats(XPtr<GatingSet> gs,string sampleName, vector<string> nodes, List stats) {
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+
+    for(auto node : nodes)
+    {
+    	for(int i = 0;i < stats.size(); i++)
+    	{
+    		auto s = list_to_stats(stats.at(i));
+    		gh.getNodeProperty(gh.getNodeID(node)).remove_stats(*s);
+    	}
+    }
+}
+
+//[[Rcpp::export]]
 void gh_add_stats(XPtr<GatingSet> gs,string sampleName, vector<string> nodes, List stats) {
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 

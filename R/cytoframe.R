@@ -259,6 +259,7 @@
 #' @keywords classes
 #'
 #' @import flowCore
+#' @import ncdfFlow
 #' @importClassesFrom flowCore flowFrame
 #' @export 
 setClass("cytoframe", contains = "flowFrame" ,               

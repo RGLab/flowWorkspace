@@ -78,6 +78,10 @@ getNodePath <- function(gs, sampleName, id) {
     .Call(`_flowWorkspace_getPopStats`, gs, sampleName, gatePath)
 }
 
+gh_remove_stats <- function(gs, sampleName, nodes, stats) {
+    invisible(.Call(`_flowWorkspace_gh_remove_stats`, gs, sampleName, nodes, stats))
+}
+
 gh_add_stats <- function(gs, sampleName, nodes, stats) {
     invisible(.Call(`_flowWorkspace_gh_add_stats`, gs, sampleName, nodes, stats))
 }

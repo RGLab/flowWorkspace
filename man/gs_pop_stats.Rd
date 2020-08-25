@@ -13,6 +13,8 @@
 \alias{gs_pop_stats_ls}
 \alias{gh_pop_stats_add}
 \alias{gs_pop_stats_add}
+\alias{gh_pop_stats_remove}
+\alias{gs_pop_stats_remove}
 \title{Extract stats from populations(or nodes)}
 \usage{
 gs_pop_stats_print(gs, ...)
@@ -61,6 +63,10 @@ gs_pop_stats_ls(gs, ...)
 gh_pop_stats_add(gh, nodes = NULL, stats)
 
 gs_pop_stats_add(gs, ...)
+
+gh_pop_stats_remove(gh, nodes = NULL, stats)
+
+gs_pop_stats_remove(gs, ...)
 }
 \arguments{
 \item{gs}{a GatingSet}
