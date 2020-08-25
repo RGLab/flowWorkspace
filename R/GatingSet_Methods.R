@@ -754,11 +754,6 @@ setMethod("show","GatingSet",function(object){
       cat("A GatingSet with",length(object), "samples\n")
     })
 
-#' @export
-setMethod("getPopStats", "GatingSet", function(x, statistic = c("freq", "count"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
-.Deprecated("gs_pop_get_count_fast")
-gs_pop_get_count_fast(x, statistic, xml, subpopulations, format, path, ...)
-})
 
 #' Return a table of population statistics for all populations in a GatingHierarchy/GatingSet
 #'   or the population proportions or the total number of events of a node (population) in a GatingHierarchy

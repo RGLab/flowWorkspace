@@ -78,6 +78,10 @@ getNodePath <- function(gs, sampleName, id) {
     .Call(`_flowWorkspace_getPopStats`, gs, sampleName, gatePath)
 }
 
+gh_add_stats <- function(gs, sampleName, nodes, stats) {
+    invisible(.Call(`_flowWorkspace_gh_add_stats`, gs, sampleName, nodes, stats))
+}
+
 gh_ls_stats <- function(gs, sampleName) {
     .Call(`_flowWorkspace_gh_ls_stats`, gs, sampleName)
 }
@@ -169,10 +173,6 @@ set_quadgate <- function(gs, sampleName, gatePath, inter) {
 
 gs_transform_data <- function(gsPtr) {
     invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
-}
-
-gs_add_stats <- function(gsPtr, nodes, stats) {
-    invisible(.Call(`_flowWorkspace_gs_add_stats`, gsPtr, nodes, stats))
 }
 
 cpp_gating <- function(gsPtr, nodes, alwaysLoadData, verbose, leafbool) {

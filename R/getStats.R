@@ -1,34 +1,9 @@
-#' @templateVar old getStats
-#' @templateVar new gs(/gh)_pop_get_stats
-#' @template template-depr_pkg
-NULL
-
-#' @export
-getStats <- function(x, ...)UseMethod("getStats")
-
-#' @export
-getStats.GatingSetList <- function(x, ...){
-  getStats.GatingSet(x, ...)
-}
-
-#' @export
-getStats.GatingSet <- function(...){
-	.Deprecated("gs_pop_get_stats")
-  gs_pop_get_stats(...)
-}
 #' Extract stats from populations(or nodes)
 #'
-#' @name gs_pop_get_stats
-#' @param x a GatingSet or GatingHierarchy
+#' @name gs_pop_stats_print
+#' @param gs a GatingSet 
+#' @param gh a GatingHierarchy
 #' @param ... arguments passed to \link{gs_get_pop_paths} method.
-#' @return a data.table that contains stats values (if MFI, for each marker per column)
-#'  along with 'pop' column and 'sample' column (when used on a 'GatingSet')
-#' @import flowCore
-#' @import ncdfFlow
-#' @import data.table
-#' @export
-#' @aliases gh_pop_get_stats getStats getStats,GatingSet-method getStats,GatingHierarchy-method
-#' getStats,GatingSetList-method
 #' @examples
 #' \dontrun{
 #' dataDir <- system.file("extdata",package="flowWorkspaceData")
@@ -55,19 +30,14 @@ getStats.GatingSet <- function(...){
 #'    }
 #' gs_pop_get_stats(gs, nodes, type = pop.quantiles)
 #' }
+#' @rdname gs_pop_stats
 #' @export
-gs_pop_stats_print <- function(x, ...){
-  res <-  lapply(x, function(gh){
+gs_pop_stats_print <- function(gs, ...){
+  res <-  lapply(gs, function(gh){
     gh_pop_stats_print(gh, ...)
 
   })
   rbindlist(res, idcol = "sample")
-}
-
-#' @export
-getStats.GatingHierarchy <- function(...){
-  .Deprecated("gh_pop_get_stats")
-  gh_pop_get_stats(...)
 }
 
 
@@ -79,15 +49,14 @@ getStats.GatingHierarchy <- function(...){
 #' @param inverse.transform logical flag . Whether inverse transform the data before computing the stats.
 #' @param stats.fun.arg a list of arguments passed to `type` when 'type' is a function.
 #' @param xml whether to extract xml stats or openCyto stats
-#' @rdname gs_pop_get_stats
+#' @rdname gs_pop_stats
 #' @export
-gh_pop_stats_print <- function(x, nodes = NULL, type = "Count", xml = FALSE, inverse.transform = FALSE, stats.fun.arg = list(), ...){
-  gh <- x
+gh_pop_stats_print <- function(gh, nodes = NULL, type = "Count", xml = FALSE, inverse.transform = FALSE, stats.fun.arg = list(), ...){
   if(is.character(type))##buildin stats
   {
     type <- match.arg(type, cyto_stats_supported())
     
-    stats<- gh_pop_stats_compare(x, nodes = nodes, type = type, ...)
+    stats<- gh_pop_stats_compare(gh, nodes = nodes, type = type, ...)
     keep.val <- ifelse(xml, "xml", "cytolib")
     stats  %>%
       rename(pop := node) %>%
@@ -123,11 +92,11 @@ gh_pop_stats_print <- function(x, nodes = NULL, type = "Count", xml = FALSE, inv
 
 }
 
-#' @rdname gs_pop_get_stats
+#' @rdname gs_pop_stats
 #' @export
 gh_pop_get_stats <- gh_pop_stats_print
 
-#' @rdname gs_pop_get_stats
+#' @rdname gs_pop_stats
 #' @export
 gs_pop_get_stats <- gs_pop_stats_print
 
@@ -255,36 +224,15 @@ pop.MFI <- function(fr){
   res
 }
 
-#' @templateVar old getProp
-#' @templateVar new gh_pop_get_proportion
-#' @template template-depr_pkg
-NULL
 
-#' @export
-getProp <- function(x,y,xml = FALSE){
-	.Deprecated("gh_pop_get_proportion")
-	gh_pop_get_proportion(x, y, xml)
-}
 #' Get count or proportion from populations
 #' @param x GatingHierarchy
 #' @param y \code{character} node name or path
 #' @param xml whether to extract xml stats or openCyto stats
 #' @name gh_pop_get_proportion
-#' @aliases getProp getTotal
 #' @export
 gh_pop_get_proportion <- function(x,y,xml = FALSE){
 	gh_pop_get_stats(x, y, xml = xml, type = "percent")[, percent]
-}
-
-#' @templateVar old getTotal
-#' @templateVar new gh_pop_get_count
-#' @template template-depr_pkg
-NULL
-
-#' @export
-getTotal <- function(x,y,xml = FALSE){
-	.Deprecated("gh_pop_get_count")
-	gh_pop_get_count(x, y, xml)
 }
 
 #' @rdname gh_pop_get_proportion
@@ -301,60 +249,21 @@ gh_pop_get_count <- function(x,y,xml = FALSE){
 	
 	stats<-.cpp_getPopStats(x@pointer,sampleNames(x), y)
 	stats
-	
-# 	parent<-try(gs_pop_get_parent(x, y),silent=T)
-# 	
-# 	
-# 	if(class(parent)=="try-error")#if parent exist
-# 		pstats<-stats
-# 	else
-# 	{
-# 		
-# 		pstats<-.cpp_getPopStats(x@pointer,sampleNames(x), parent)
-# 	}
-# 	
-# 	
-# #	browser()
-# 	list(openCyto=c(percent=as.numeric(ifelse(pstats$FlowCore["count"]==0
-# 									,0
-# 									,stats$FlowCore["count"]/pstats$FlowCore["count"]
-# 							))
-# 					,count=as.numeric(stats$FlowCore["count"]))
-# 			,xml=c(percent=as.numeric(ifelse(pstats$FlowJo["count"]==0
-# 									,0
-# 									,stats$FlowJo["count"]/pstats$FlowJo["count"]
-# 							))
-# 					,count=as.numeric(stats$FlowJo["count"]))
-# 	)
 }
-#' @templateVar old getPopStats
-#' @templateVar new gs(/gh)_pop_get_stats
-#' @template template-depr_pkg
-NULL
-#' @export
-setGeneric("getPopStats",function(x,...)standardGeneric("getPopStats"))
-
-#' @export
-setMethod("getPopStats","GatingHierarchy",function(x, path = "auto", ...){
-			.Deprecated("gh_pop_compare_stats")
-			gh_pop_compare_stats(x, path, ...)
-		})
 
 #' Compare the stats(count/freq) between the version parsed from xml and the one recalculated/gated from R
 #' 
-#' @name gh_pop_compare_stats
-#' @aliases getPopStats getPopStats,GatingHierarchy-method
-#' @param x GatingHierarchy
 #' @param path see \link{gs_get_pop_paths}
 #' @param ... not used
 #' @export
+#' @rdname gs_pop_stats
 #' @importFrom dplyr filter tibble rename rename_if select
 #' @importFrom tidyselect contains
-gh_pop_stats_compare <- function(x, nodes = NULL, path = "auto", type = c("Count"), legacy = FALSE, ...){
+gh_pop_stats_compare <- function(gh, nodes = NULL, path = "auto", type = c("Count"), legacy = FALSE, ...){
 	if(is.null(nodes))
-	  nodes <- gs_get_pop_paths(x, path = path, ...)
+	  nodes <- gs_get_pop_paths(gh, path = path, ...)
 	stats <- do.call(rbind, lapply(nodes, function(thisPath){
-              					 .getPopStat(x,thisPath) %>% 
+              					 .getPopStat(gh,thisPath) %>% 
 	                                            tibble() %>%
               					                      filter(type %in% !!type) %>%
 	                                            mutate(node = thisPath)
@@ -391,7 +300,7 @@ gh_pop_stats_compare <- function(x, nodes = NULL, path = "auto", type = c("Count
 	stats%>%
 	  data.table()
 }
-#' @name gh_pop_compare_stats
+#' @rdname gs_pop_stats
 #' @export
 gh_pop_compare_stats <- function(...){
   .Deprecated("gh_pop_stats_compare")
@@ -425,8 +334,14 @@ gh_plot_pop_count_cv <- function(x, path = "auto", ...){
 #' This function allows users to invoke this computation manually for the given population node and all its descendants.
 #' 
 #' 
-#' @param gs GatingSet
-#' @param node the population node. Default is root.
+#' @rdname gs_pop_stats
+#' @export
+gh_pop_stats_compute <- function(gh, node = "root")
+{
+  gh_compute_stats(gh@pointer, sampleNames(gh), node)
+}
+
+#' @rdname gs_pop_stats
 #' @export
 gs_pop_stats_compute <- function(gs, node = "root")
 {
@@ -436,18 +351,20 @@ gs_pop_stats_compute <- function(gs, node = "root")
 
 #' list the stats type available in the gating tree
 #' 
-#' @name gh_pop_compare_stats
-#' @param x GatingHierarchy
-#' @param node the population node to retrieve the stats from. Default is NUll, meaning retrieving stats type all nodes.
-#' @param ... not used
 #' @export
-gh_pop_stats_ls <- function(x, node = NULL, ...){
+#' @rdname gs_pop_stats
+gh_pop_stats_ls <- function(gh, node = NULL, ...){
   if(is.null(node))
-    gh_ls_stats(x@pointer, sampleNames(gh))
+    gh_ls_stats(gh@pointer, sampleNames(gh))
   else
-    gh_ls_pop_stats(x@pointer, sampleNames(gh), node)
+    gh_ls_pop_stats(gh@pointer, sampleNames(gh), node)
 }
 
+#' @export
+#' @rdname gs_pop_stats
+gs_pop_stats_ls <- function(gs, ...){
+  unique(unlist(lapply(gs, gh_pop_stats_ls, ...)))
+}
 
 is_empty_val <- function(x)
 {
@@ -547,17 +464,6 @@ cyto_stats <- function(type,  channel = "", ancestor = "", percent = "")
   res
 }
 
-#' @export
-gs_pop_stats_add <- function(gs, nodes = NULL, stats){
-  if(is(stats, "cyto_stats"))
-    stats <- list(stats)
-  if(any(sapply(stats, function(stat)!is(stat, "cyto_stats"))))
-    stop("stat must be a valid 'cyto_stats' object generated by 'cyto_stats()' constuctor")
-  if(is.null(nodes))
-    nodes <- gs_get_pop_paths(gs)
-  gs_add_stats(gs@pointer, nodes, stats)
-}
-
 #somehow roxygen doesn't export s3 method automatically (may be due to the print generic got changed into s4 generic at some point), current it is manually added to NAMESPACE file
 #' @export print.cyto_stats
 #' @export
@@ -568,4 +474,24 @@ print.cyto_stats <- function(x, ...){
   cat(bold(green("type: ")), italic(cyan(x[["type"]])), "\n")
   if(!is.null(x[["attr"]]))
     cat(bold(green("attr: ")), italic(cyan(x[["attr"]])), "\n")
-  }
+}
+
+#' @export
+#' @rdname gs_pop_stats
+gh_pop_stats_add <- function(gh, nodes = NULL, stats){
+  if(is(stats, "cyto_stats"))
+    stats <- list(stats)
+  if(any(sapply(stats, function(stat)!is(stat, "cyto_stats"))))
+    stop("stat must be a valid 'cyto_stats' object generated by 'cyto_stats()' constuctor")
+  if(is.null(nodes))
+    nodes <- gh_get_pop_paths(gh)
+  gh_add_stats(gh@pointer, sampleNames(gh), nodes, stats)
+}
+
+#' @export
+#' @rdname gs_pop_stats
+gs_pop_stats_add <- function(gs, ...){
+  invisible(lapply(gs, gs_pop_stats_add, ...))
+}
+
+

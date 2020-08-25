@@ -1,18 +1,3 @@
-#' @templateVar old updateIndices
-#' @templateVar new gh_pop_set_indices
-#' @template template-depr_pkg
-NULL
-
-#' @export
-setMethod("updateIndices",
-          signature=signature(obj="GatingHierarchy",y="character",z="logical"),
-          definition=function(obj,y,z)
-          {
-            .Deprecated("gh_pop_set_indices")
-            gh_pop_set_indices(obj, y, z)
-
-})
-
 #' directly update event indices without changing gates
 #'
 #' It is useful when we want to alter the popluation at events level yet

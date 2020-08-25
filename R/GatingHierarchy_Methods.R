@@ -891,18 +891,6 @@ gh_pop_get_cluster_name <- function(gh, node){
 }
 
 
-#' @templateVar old getIndices
-#' @templateVar new gh_pop_get_indices
-#' @template template-depr_pkg
-NULL
-
-#' @export
-setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(obj,y){
-			.Deprecated("gh_pop_get_indices")
-			gh_pop_get_indices(obj, y)
- 
-		})
-
 #' Get the membership indices for each event with respect to a particular gate in a GatingHierarchy
 #'
 #' Returns a logical vector that describes whether each event in a sample is included or excluded by this gate.

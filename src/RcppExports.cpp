@@ -148,6 +148,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gh_add_stats
+void gh_add_stats(XPtr<GatingSet> gs, string sampleName, vector<string> nodes, List stats);
+RcppExport SEXP _flowWorkspace_gh_add_stats(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP nodesSEXP, SEXP statsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< List >::type stats(statsSEXP);
+    gh_add_stats(gs, sampleName, nodes, stats);
+    return R_NilValue;
+END_RCPP
+}
 // gh_ls_stats
 vector<string> gh_ls_stats(XPtr<GatingSet> gs, string sampleName);
 RcppExport SEXP _flowWorkspace_gh_ls_stats(SEXP gsSEXP, SEXP sampleNameSEXP) {
@@ -413,18 +426,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
     gs_transform_data(gsPtr);
-    return R_NilValue;
-END_RCPP
-}
-// gs_add_stats
-void gs_add_stats(XPtr<GatingSet> gsPtr, vector<string> nodes, List stats);
-RcppExport SEXP _flowWorkspace_gs_add_stats(SEXP gsPtrSEXP, SEXP nodesSEXP, SEXP statsSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
-    Rcpp::traits::input_parameter< vector<string> >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< List >::type stats(statsSEXP);
-    gs_add_stats(gsPtr, nodes, stats);
     return R_NilValue;
 END_RCPP
 }
@@ -1231,6 +1232,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getParent", (DL_FUNC) &_flowWorkspace_getParent, 3},
     {"_flowWorkspace_getChildren", (DL_FUNC) &_flowWorkspace_getChildren, 4},
     {"_flowWorkspace_getPopStats", (DL_FUNC) &_flowWorkspace_getPopStats, 3},
+    {"_flowWorkspace_gh_add_stats", (DL_FUNC) &_flowWorkspace_gh_add_stats, 4},
     {"_flowWorkspace_gh_ls_stats", (DL_FUNC) &_flowWorkspace_gh_ls_stats, 2},
     {"_flowWorkspace_gh_compute_stats", (DL_FUNC) &_flowWorkspace_gh_compute_stats, 3},
     {"_flowWorkspace_gh_ls_pop_stats", (DL_FUNC) &_flowWorkspace_gh_ls_pop_stats, 3},
@@ -1252,7 +1254,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
     {"_flowWorkspace_gs_transform_data", (DL_FUNC) &_flowWorkspace_gs_transform_data, 1},
-    {"_flowWorkspace_gs_add_stats", (DL_FUNC) &_flowWorkspace_gs_add_stats, 3},
     {"_flowWorkspace_cpp_gating", (DL_FUNC) &_flowWorkspace_cpp_gating, 5},
     {"_flowWorkspace_subset_gs_by_sample", (DL_FUNC) &_flowWorkspace_subset_gs_by_sample, 2},
     {"_flowWorkspace_get_cytoset", (DL_FUNC) &_flowWorkspace_get_cytoset, 1},

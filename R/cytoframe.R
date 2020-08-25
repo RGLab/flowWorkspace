@@ -258,6 +258,7 @@
 #' \code{\linkS4class{flowSet}}, \code{\link{read.FCS}}
 #' @keywords classes
 #'
+#' @import flowCore
 #' @importClassesFrom flowCore flowFrame
 #' @export 
 setClass("cytoframe", contains = "flowFrame" ,               
@@ -269,6 +270,7 @@ setClass("cytoframe", contains = "flowFrame" ,
 
 
 # compensate the data in place
+#' @importFrom flowCore compensate
 #' @export
 setMethod("compensate",
     signature=signature(x="cytoframe",
@@ -279,7 +281,7 @@ setMethod("compensate",
       x
     })
 
-
+#' @importFrom flowCore nrow ncol
 setMethod("nrow",
     signature=signature(x="cytoframe"),
     definition=function(x)
@@ -378,6 +380,7 @@ setMethod("[",
       fr
     })
 
+#' @importFrom Biobase exprs exprs<-	
 setMethod("exprs",
     signature=signature(object="cytoframe"),
     definition=function(object){
@@ -398,7 +401,7 @@ setReplaceMethod("exprs",
 			cf_setData(object@pointer, value)
 			object
 		})
-
+#' @importFrom flowCore colnames<-	
 setReplaceMethod("colnames",
     signature=signature(x="cytoframe",
         value="ANY"),
@@ -464,6 +467,7 @@ cf_rename_marker <- function(x, old, new){
   }
   
 }
+#' @importFrom flowCore markernames<-
 setReplaceMethod("markernames",
     signature=signature(object="cytoframe", value="ANY"), function(object, value){
 		pdata <- getpdata(object@pointer)
@@ -504,7 +508,7 @@ setReplaceMethod("markernames",
       
       
     })
-
+#' @importFrom flowCore parameters parameters<-
 setMethod("parameters",
     signature=signature(object="cytoframe"),
     definition=function(object, names=FALSE)

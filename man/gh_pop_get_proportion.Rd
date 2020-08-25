@@ -2,8 +2,6 @@
 % Please edit documentation in R/getStats.R
 \name{gh_pop_get_proportion}
 \alias{gh_pop_get_proportion}
-\alias{getProp}
-\alias{getTotal}
 \alias{gh_pop_get_count}
 \title{Get count or proportion from populations}
 \usage{
