@@ -247,21 +247,19 @@ test_that("gs_pop_get_children",{
 
 test_that(".getPopStat",{
       
-      expect_error(flowWorkspace:::.getPopStat(gh, 3), "string", class = "Rcpp::not_compatible")
+      expect_error(.getPopStat(gh, 3), "string", class = "Rcpp::not_compatible")
       
-      expect_error(flowWorkspace:::.getPopStat(gh, "singlet"), "not found", class = "std::domain_error")
+      expect_error(.getPopStat(gh, "singlet"), "not found", class = "std::domain_error")
       
-      expect_equal(flowWorkspace:::.getPopStat(gh, "singlets"), list(openCyto = c(percent = 9.487789e-01, count = 8.702200e+04)
-                                            , xml = c(percent = 9.488988e-01, count = 8.703300e+04)
-                                            )
+      expect_equal(.getPopStat(gh, "singlets"), data.frame(key = "Count", type = "Count", attr = ""
+                                                           , cytolib = 8.702200e+04
+                                                            , xml = 8.703300e+04)
+                                                          
+                                            
                       , tol = 1e-7 )
       
       
       
-      expect_equal(flowWorkspace:::.getPopStat(gh, "root"), list(openCyto = c(percent = 1, count = 119531)
-                                            , xml = c(percent = 1, count = 119531)
-                                        )
-                                )
     })      
 
 
@@ -288,22 +286,22 @@ test_that("gh_pop_get_count",{
     })      
 
 
-test_that("gh_pop_compare_stats",{
+test_that("gh_pop_stats_compare",{
       
       
-      thisRes <- gh_pop_compare_stats(gh, path = "full")
+      thisRes <- gh_pop_stats_compare(gh, path = "full", legacy = TRUE)
       expect_is(thisRes, "data.table")
      
       expectRes <- fread(file.path(resultDir, "getPopStats_gh.csv"))
       expectRes[, node := V1]
       expectRes[, V1 := NULL]
-      expect_equal(rownames(thisRes),expectRes[["node"]])#check rownames 
-      expect_equal(thisRes[, xml.freq], thisRes[, openCyto.freq], tol = 3e-3) 
+      expect_equal(thisRes[["node"]],expectRes[["node"]])#check rownames 
+      expect_equal(thisRes[, xml.count], thisRes[, openCyto.count], tol = 3e-3) 
     })
 
 test_that("compute CV from gh",{
       
-      thisRes <- flowWorkspace:::.computeCV_gh(gh)
+      thisRes <- .computeCV_gh(gh)
       expect_is(thisRes, "matrix")
       
       expectRes <- readRDS(file.path(resultDir, "cv_gh.rds"))

@@ -792,7 +792,8 @@ setMethod("show","GatingSet",function(object){
 #' @import data.table
 #' @export
 gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
-	 if(is(x, "GatingSetList"))
+.Defunct("gs_pop_stats_print")
+  	 if(is(x, "GatingSetList"))
 		 return(.gslist_get_pop_stats(x, format, statistic, xml, subpopulations, path, ...))
       # Based on the choice of statistic, the population statistics are returned for
       # each Gating Hierarchy within the GatingSet.
@@ -833,7 +834,7 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
         }
 
         stats <- lapply(x,function(y){
-                d<-gh_pop_compare_stats(y, path = path,...)
+                d<-gh_pop_stats_compare(y, path = path, legacy = T, ...)
                 d$key<-rownames(d)
                 setkeyv(d,"key")
                 d<-d[,list(key,get(statistic))]
@@ -865,7 +866,7 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
   #rows are samples
   statList <- lapply(x,function(gh){
 
-        thisStat <- gh_pop_compare_stats(gh, ...)
+        thisStat <- gh_pop_stats_compare(gh, legacy = TRUE,...)
         thisStat
       })
 

@@ -232,13 +232,13 @@ pop.MFI <- function(fr){
 #' @name gh_pop_get_proportion
 #' @export
 gh_pop_get_proportion <- function(x,y,xml = FALSE){
-	gh_pop_get_stats(x, y, xml = xml, type = "percent")[, percent]
+  gh_pop_get_count(x, y, xml = xml)/gh_pop_get_count(x, gh_pop_get_parent(x, y), xml)
 }
 
 #' @rdname gh_pop_get_proportion
 #' @export
 gh_pop_get_count <- function(x,y,xml = FALSE){
-	gh_pop_get_stats(x, y, xml = xml, type = "count")[, count]
+	gh_pop_get_stats(x, y, xml = xml, type = "Count")[, value]
 	
 }
 
@@ -309,8 +309,8 @@ gh_pop_compare_stats <- function(...){
 
 .computeCV_gh <- function(gh, ...){
 	
-	x<-gh_pop_compare_stats(gh, ...)
-	rn<-rownames(x)
+	x<-gh_pop_stats_compare(gh, legacy = TRUE,...)
+	rn<-x[["node"]]
 	x<-as.data.frame(x)
 	rownames(x)<-rn
 	cv<-apply(as.matrix(x[,c("xml.count","openCyto.count")]),1,function(y)IQR(y)/median(y));

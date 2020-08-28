@@ -12,9 +12,9 @@ test_that("gs_pop_get_gs", {
   # only has cells from pop
   expect_equal(nrow(gs1)[[1]], gh_pop_get_count(gs[[1]], pop))
   # stats unchanged
-  expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
+  expect_equal(gs_pop_stats_print(gs, nodes)[, c(1,3)], gs_pop_stats_print(gs1, nodes.new)[, c(1,3)])
   recompute(gs1)
-  expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
+  expect_equal(gs_pop_stats_print(gs, nodes)[, c(1,3)], gs_pop_stats_print(gs1, nodes.new)[, c(1,3)])
   
 })
 
@@ -130,8 +130,8 @@ test_that("gs_clone",{
       #check if trans is preserved
       expect_equal(gh_get_transformations(gs[[1]]), gh_get_transformations(gs1[[1]]))
       
-      expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs1))
-      expect_equal(gh_pop_compare_stats(gs[[1]]), gh_pop_compare_stats(gs1[[1]]))
+      expect_equal(gs_pop_stats_print(gs), gs_pop_stats_print(gs1))
+      expect_equal(gh_pop_stats_compare(gs[[1]]), gh_pop_stats_compare(gs1[[1]]))
       
       #clone without copying hdf data
       gs2 <- gs_copy_tree_only(gs)
@@ -148,8 +148,8 @@ test_that("gs_clone",{
       #check if trans is preserved
       expect_equal(gh_get_transformations(gs[[1]]), gh_get_transformations(gs2[[1]]))
       
-      expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
-      expect_equal(gh_pop_compare_stats(gs[[1]]), gh_pop_compare_stats(gs2[[1]]))
+      expect_equal(gs_pop_stats_print(gs), gs_pop_stats_print(gs2))
+      expect_equal(gh_pop_stats_compare(gs[[1]]), gh_pop_stats_compare(gs2[[1]]))
 })
 
 test_that("merge_list_to_gs", {
@@ -293,7 +293,8 @@ test_that("Adding subpopulation off empty population", {
 	gs_pop_add(gs_scratch, extra_gate, parent="emptyGate")
 	recompute(gs_scratch)
 	expectRes <- readRDS(file.path(resultDir, "empty_pop.rds"))
-	expect_equal(gs_pop_get_stats(gs_scratch), expectRes)
+	colnames(expectRes)[3] <- "value"
+	expect_equal(gs_pop_stats_print(gs_scratch, path = "full"), expectRes)
 })
 
 test_that("gs_pop_get_gate for gs",{
@@ -321,9 +322,9 @@ test_that("gs_pop_set_name",{
     
   })
 
-test_that("gs_pop_get_count_fast",{
-  
-      thisRes <- gs_pop_get_count_fast(gs, , statistic = "freq", path = "full", format = "wide")
+test_that("gs_pop_stats_print",{
+      skip("defunct")
+      thisRes <- gs_pop_stats_print(gs, , statistic = "freq", path = "full", format = "wide")
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
@@ -332,11 +333,11 @@ test_that("gs_pop_get_count_fast",{
       expect_equal(as.data.table(thisRes[,1:2]), expectRes[,-1, with = F], tol = 2e-3)
       
       #use auto path
-      stats_wide <- gs_pop_get_count_fast(gs, format = "wide", path = "auto")
+      stats_wide <- gs_pop_stats_print(gs, format = "wide", path = "auto")
       stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
       stats_wide <- as.data.frame(stats_wide)
       #get long format
-      stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "auto")
+      stats_long <- gs_pop_stats_print(gs, format = "long", path = "auto")
       
       #convert it to wide to do the comparsion
       stats_long[, value := Count]
@@ -354,7 +355,7 @@ test_that("gs_pop_get_count_fast",{
 
 test_that("compute CV from gs",{
       
-      thisRes <- flowWorkspace:::.computeCV(gs)
+      thisRes <- .computeCV(gs)
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "cv_gs.csv"))
