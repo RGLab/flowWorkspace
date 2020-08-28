@@ -50,7 +50,7 @@ using namespace cytolib;
       {
         std::string sn = sampleNames.at(i);
         GatingHierarchy & gh = *gs->getGatingHierarchy(sn);
-        unsigned rootCount = gh.getNodeProperty(gh.getNodeID("root")).get_stats("Count", iscytolib);
+        unsigned rootCount = gh.getNodeProperty(gh.getNodeID("root")).get_stats("Count").get_value(iscytolib);
         for(unsigned j = 0; j < nPop; j++){
           std::string pop = subpopulation.at(j);
           auto counter = i * nPop + j;
@@ -59,7 +59,7 @@ using namespace cytolib;
           
           //get count or frequency of this pop
           VertexID u = gh.getNodeID(pop);
-          unsigned thisCount = gh.getNodeProperty(u).get_stats("Count", iscytolib);
+          unsigned thisCount = gh.getNodeProperty(u).get_stats("Count").get_value(iscytolib);
           if(freq)
             if(rootCount)
               freqVec(counter) = double(thisCount) / double(rootCount);
@@ -73,7 +73,7 @@ using namespace cytolib;
           parentVec(counter) = gh.getNodePath(pid, isFullPath);
           
           //get parent count or frequency
-          unsigned parentCount = gh.getNodeProperty(pid).get_stats("Count", iscytolib);
+          unsigned parentCount = gh.getNodeProperty(pid).get_stats("Count").get_value(iscytolib);
           if(freq)
             if(rootCount)
               parentFreqVec(counter) = double(parentCount) / double(rootCount);

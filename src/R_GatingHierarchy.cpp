@@ -144,11 +144,11 @@ popStatsPtr list_to_stats(List stat){
 	else if(statType == "Freqof")
 		s1 = popStatsPtr(new StatsFreq(attr));
 	else if(statType == "Freqofparent")
-		s1 = popStatsPtr(new StatsFreqofparent(attr));//attr is dummy and will be instantiate later
+		s1 = popStatsPtr(new StatsFreqofparent());//attr is dummy and will be instantiate later
 	else if(statType == "Freqofgrandparent")
-		s1 = popStatsPtr(new StatsFreqofgrandparent(attr));//attr is dummy and will be instantiate later
+		s1 = popStatsPtr(new StatsFreqofgrandparent());//attr is dummy and will be instantiate later
 	else if(statType == "Freqoftotal")
-		s1 = popStatsPtr(new StatsFreqoftotal(attr));//attr is dummy and will be instantiate later
+		s1 = popStatsPtr(new StatsFreqoftotal());//attr is dummy and will be instantiate later
 	else if(statType == "Mean")
 		s1 = popStatsPtr(new StatsMean(attr));
 	else if(statType == "Median")
@@ -233,7 +233,7 @@ void gh_compute_stats(XPtr<GatingSet> gs,string sampleName, string node){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-	gh.compute_stats(gh.getNodeID(node));
+	gh.compute_stats_recursive(gh.getNodeID(node));
 }
 //[[Rcpp::export]]
 vector<string> gh_ls_pop_stats(XPtr<GatingSet> gs,string sampleName, string node){
@@ -717,7 +717,7 @@ void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
 
 	nodeProperties & node = gh.getNodeProperty(u);
 	node.setIndices(ind);
-	node.computeStats(gh);
+	gh.compute_stats_recursive(u);
 
 }
 
@@ -993,7 +993,7 @@ void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID
 		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
 		//save the indices
 		node.setIndices(curIndices);
-		node.computeStats(gh);
+		gh.compute_stats_recursive(nodeID);
 
 
 }
