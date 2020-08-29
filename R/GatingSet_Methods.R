@@ -867,6 +867,7 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
   statList <- lapply(x,function(gh){
 
         thisStat <- gh_pop_stats_compare(gh, legacy = TRUE,...)
+        rownames(thisStat) <- thisStat[["node"]]
         thisStat
       })
 

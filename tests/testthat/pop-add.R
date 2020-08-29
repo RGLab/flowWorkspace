@@ -65,7 +65,7 @@ test_that("add quadGate", {
                                ))
   recompute(gs)
   node <- "CD15 FITC-CD45 PE+"
-  expect_equal(gh_pop_get_stats(gs[[1]], node)[, count], sum((gh_pop_get_data(gs[[1]], "rectangle")%in%qg) == node))
+  expect_equal(gh_pop_get_stats(gs[[1]], node)[, value], sum((gh_pop_get_data(gs[[1]], "rectangle")%in%qg) == node))
   g <- gh_pop_get_gate(gs[[1]], "CD15 FITC-CD45 PE+")
   expect_is(g, "rectangleGate")
   #check the attached quadgate info
@@ -78,13 +78,13 @@ test_that("add quadGate", {
   qg2 <- quadGate(list(`FSC-H` = 500, `SSC-H` = 600))
   gs_pop_add(gs, qg2, names = c("A", "B", "C", "D"))
   recompute(gs)
-  expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(count)])
+  expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(value)])
   #save and load
   tmp <- tempfile()
   save_gs(gs, tmp)
   gs <- load_gs(tmp)
   recompute(gs)
-  expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(count)])
+  expect_equal(gh_pop_get_count(gs[[1]], "root"), gh_pop_get_stats(gs[[1]], c("A", "B", "C", "D"))[,sum(value)])
   
   #set quadgate
   qg2@boundary[[1]] <- 200
@@ -120,7 +120,7 @@ test_that("add filterResult", {
 	gs_pop_add(gs, fres, name = "g1", parent = pnode)
   
   expect_equal(gs_get_pop_paths(gs)[7], "/rectangle/g1")
-  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[, count], nrow(Subset(gh_pop_get_data(gs[[1]], pnode), fres[[1]])))
+  expect_equal(gh_pop_get_stats(gs[[1]], "g1")[, value], nrow(Subset(gh_pop_get_data(gs[[1]], pnode), fres[[1]])))
   gs_pop_remove(gs, "g1")
   
 })

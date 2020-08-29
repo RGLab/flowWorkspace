@@ -251,7 +251,7 @@ test_that(".getPopStat",{
       
       expect_error(.getPopStat(gh, "singlet"), "not found", class = "std::domain_error")
       
-      expect_equal(.getPopStat(gh, "singlets"), data.frame(key = "Count", type = "Count", attr = ""
+      expect_equivalent(subset(.getPopStat(gh, "singlets"), key == "Count"), data.frame(key = "Count", type = "Count", attr = ""
                                                            , cytolib = 8.702200e+04
                                                             , xml = 8.703300e+04)
                                                           

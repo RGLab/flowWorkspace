@@ -724,7 +724,7 @@ setMethod("Subset",
                               subset="filter"),
           definition=function(x, subset, ...)
           {
-            fres <- filter(x, subset, ...)
+            fres <- flowCore::filter(x, subset, ...)#masked by dplyr::filter
             Subset(x,fres)
           })
 

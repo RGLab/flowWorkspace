@@ -23,7 +23,7 @@ test_that("gh_apply_to_new_fcs",
             gs2 <- gh_apply_to_new_fcs(gh, fcs)
 
             expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gh), "data"), tol = 6e-8)
-            expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
+            expect_equal(gs_pop_stats_print(gs), gs_pop_stats_print(gs2))
             expect_equal(gs_get_compensations(gs), gs_get_compensations(gs2))
             expect_equal(gs_get_transformlists(gs), gs_get_transformlists(gs2))
             expect_false(cs_get_uri(gs)==cs_get_uri(gs2))
@@ -43,7 +43,7 @@ test_that("gh_apply_to_new_fcs",
             gs2 <- gh_apply_to_new_fcs(gh, fcs)
 
             expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gh), "data"), tolerance = 1e-6)
-            expect_equal(gs_pop_get_count_fast(gs), gs_pop_get_count_fast(gs2))
+            expect_equal(gs_pop_stats_print(gs), gs_pop_stats_print(gs2))
             expect_equal(gs_get_compensations(gs), gs_get_compensations(gs2))
             expect_equal(gs_get_transformlists(gs), gs_get_transformlists(gs2))
             expect_false(cs_get_uri(gs)==cs_get_uri(gs2))
@@ -116,7 +116,7 @@ test_that("gh_apply_to_cs", {
     expect_equal(comp_compare, comp)
     expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gs_normal[[1]]), "data"), tolerance = 1e-6)
 
-    expect_equal(gs_pop_get_count_fast(gs_normal), gs_pop_get_count_fast(gs2[1]))
+    expect_equal(gs_pop_stats_print(gs_normal), gs_pop_stats_print(gs2[1]))
     expect_equal(gs_get_compensations(gs_normal), gs_get_compensations(gs2[1]))
     expect_equal(gs_get_transformlists(gs_normal), gs_get_transformlists(gs2[1]))
     expect_false(cs_get_uri(gs_marked)==cs_get_uri(gs2))
@@ -129,7 +129,7 @@ test_that("gh_apply_to_cs", {
     rownames(comp_compare) <- NULL
     expect_equal(comp_compare, comp_marked)
     expect_equal(range(gs_cyto_data(gs3)[[1]], "data"), range(gh_pop_get_data(gs_marked[[1]]), "data"), tolerance = 1e-6)
-    expect_equal(gs_pop_get_count_fast(gs_marked), gs_pop_get_count_fast(gs3[1]))
+    expect_equal(gs_pop_stats_print(gs_marked), gs_pop_stats_print(gs3[1]))
     expect_equal(gs_get_compensations(gs_marked), gs_get_compensations(gs3[1]))
     expect_equal(gs_get_transformlists(gs_marked), gs_get_transformlists(gs3[1]))
     expect_false(cs_get_uri(gs_marked)==cs_get_uri(gs3))
@@ -140,7 +140,7 @@ test_that("gh_apply_to_cs", {
     
     expect_null(gs_get_compensations(gs4)[[1]])
     expect_equal(range(gs_cyto_data(gs4)[[1]], "data"), range(gh_pop_get_data(gs_nocomp[[1]]), "data"), tolerance = 1e-6)
-    expect_equal(gs_pop_get_count_fast(gs_nocomp), gs_pop_get_count_fast(gs4[1]))
+    expect_equal(gs_pop_stats_print(gs_nocomp), gs_pop_stats_print(gs4[1]))
     expect_equal(gs_get_compensations(gs_nocomp), gs_get_compensations(gs4[1]))
     expect_equal(gs_get_transformlists(gs_nocomp), gs_get_transformlists(gs4[1]))
     expect_false(cs_get_uri(gs_marked)==cs_get_uri(gs4))
