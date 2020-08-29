@@ -281,12 +281,16 @@ gh_pop_stats_compare <- function(gh, nodes = NULL, path = "auto", type = c("Coun
 	  col.attr <- "ancestor"
 	else
 	  col.attr <- "channel"
-	
-	col.show <- c("type", col.show)
+	if(type == "Percentile")
+	  col.show <- c("type", "key", col.show)
+	else
+	  col.show <- c("type", col.show)
 	stats <- select(stats, col.show)
 	if(!no.attr)
 	  stats <- rename(stats, !!col.attr := attr)
 	
+	if(type == "Percentile")#parse out percent info from key
+	  stats <- mutate(stats, key = paste0(strsplit(key, " ")[[1]][3], "%")) %>% rename(percent := key)
 	##convert to legacy format for backward compatibility
 	if(legacy)
 	{

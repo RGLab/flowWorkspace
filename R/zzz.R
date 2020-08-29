@@ -17,7 +17,7 @@ set_default_backend <- function(backend = c("h5", "mem",  "tile")){
 
 .onLoad <- function(libname, pkgname){
   set_default_backend()
-  options("cyto_stats_type" = list(basic = c('Count','Freqoftotal','Freqofgranparent','Freqofparent')
+  options("cyto_stats_type" = list(basic = c('Count','Freqoftotal','Freqofgrandparent','Freqofparent')
                                    , with_ancestor = 'Freqof'
                                    , with_channel = c('SD', 'CV', 'Robust CV','Robust SD'
                                                       ,'Median Abs Dev','Median','Mean','Geometric Mean'
