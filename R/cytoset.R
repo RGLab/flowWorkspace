@@ -466,7 +466,7 @@ setMethod("[[",
             returnType <- match.arg(returnType)
             if(missing(j))
               j <- NULL
-            if(length(i) != 1 || i <= 0)
+            if(length(i) != 1||(is.numeric(i)&&i<=0))
             	stop("subscript out of bounds (index must have length 1 and be positive)")
             fr <- get_cytoframe_from_cs(x, i, j, use.exprs)
             if(returnType == "flowFrame")
