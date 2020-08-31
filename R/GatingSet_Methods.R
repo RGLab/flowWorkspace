@@ -792,7 +792,7 @@ setMethod("show","GatingSet",function(object){
 #' @import data.table
 #' @export
 gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE, subpopulations = NULL, format = c("long", "wide"), path = "full", ...) {
-.Defunct("gs_pop_stats_print")
+.Deprecated("gs_pop_stats_print")
   	 if(is(x, "GatingSetList"))
 		 return(.gslist_get_pop_stats(x, format, statistic, xml, subpopulations, path, ...))
       # Based on the choice of statistic, the population statistics are returned for
@@ -823,7 +823,7 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
         	)
         }
       }else{
-
+		stop("format = 'wide' no longer supported!")
 
         # The 'xml' flag determines whether the 'xml' or 'openCyto' statistics
         # are returned.
