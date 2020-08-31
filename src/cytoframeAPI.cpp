@@ -5,6 +5,25 @@ using namespace Rcpp;
 using namespace cytolib;
 
 // [[Rcpp::export]]
+void del_rownames(Rcpp::XPtr<CytoFrameView> fr)
+{
+  return fr->del_rownames();
+}
+
+// [[Rcpp::export]]
+void set_rownames(Rcpp::XPtr<CytoFrameView> fr, vector<string> val)
+{
+  return fr->set_rownames(val);
+}
+
+// [[Rcpp::export]]
+vector<string> get_rownames(Rcpp::XPtr<CytoFrameView> fr)
+{
+  return fr->get_rownames();
+}
+
+
+// [[Rcpp::export]]
 string backend_type(Rcpp::XPtr<CytoFrameView> fr)
 {
 	return fmt_to_str(fr->get_backend_type());
@@ -144,6 +163,11 @@ void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
 }
 
 // [[Rcpp::export]]
+vector<string> get_channels(Rcpp::XPtr<CytoFrameView> fr){
+	return fr->get_channels();
+}
+
+// [[Rcpp::export]]
 Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat){
   
   
@@ -202,9 +226,11 @@ NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
   for(int i = 0; i < ncol; i++)
     cid[i] = "$P" + to_string(i+1) + "N";
   
-    
   chnl.attr("names") = cid;
-  mat.attr("dimnames") = List::create(R_NilValue, chnl);
+  colnames(mat) = chnl;
+  auto rn = fr->get_rownames();
+  if(rn.size()>0)
+	  rownames(mat) = wrap(rn);
   return mat;
 }
 // [[Rcpp::export]]

@@ -666,6 +666,38 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// del_rownames
+void del_rownames(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_del_rownames(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    del_rownames(fr);
+    return R_NilValue;
+END_RCPP
+}
+// set_rownames
+void set_rownames(Rcpp::XPtr<CytoFrameView> fr, vector<string> val);
+RcppExport SEXP _flowWorkspace_set_rownames(SEXP frSEXP, SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type val(valSEXP);
+    set_rownames(fr, val);
+    return R_NilValue;
+END_RCPP
+}
+// get_rownames
+vector<string> get_rownames(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_get_rownames(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_rownames(fr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // backend_type
 string backend_type(Rcpp::XPtr<CytoFrameView> fr);
 RcppExport SEXP _flowWorkspace_backend_type(SEXP frSEXP) {
@@ -867,6 +899,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< string >::type new_name(new_nameSEXP);
     setChannel(fr, old, new_name);
     return R_NilValue;
+END_RCPP
+}
+// get_channels
+vector<string> get_channels(Rcpp::XPtr<CytoFrameView> fr);
+RcppExport SEXP _flowWorkspace_get_channels(SEXP frSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_channels(fr));
+    return rcpp_result_gen;
 END_RCPP
 }
 // append_cols
@@ -1287,6 +1330,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
+    {"_flowWorkspace_del_rownames", (DL_FUNC) &_flowWorkspace_del_rownames, 1},
+    {"_flowWorkspace_set_rownames", (DL_FUNC) &_flowWorkspace_set_rownames, 2},
+    {"_flowWorkspace_get_rownames", (DL_FUNC) &_flowWorkspace_get_rownames, 1},
     {"_flowWorkspace_backend_type", (DL_FUNC) &_flowWorkspace_backend_type, 1},
     {"_flowWorkspace_cf_is_indexed", (DL_FUNC) &_flowWorkspace_cf_is_indexed, 1},
     {"_flowWorkspace_cf_scale_time_channel", (DL_FUNC) &_flowWorkspace_cf_scale_time_channel, 1},
@@ -1305,6 +1351,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
+    {"_flowWorkspace_get_channels", (DL_FUNC) &_flowWorkspace_get_channels, 1},
     {"_flowWorkspace_append_cols", (DL_FUNC) &_flowWorkspace_append_cols, 3},
     {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 5},
     {"_flowWorkspace_cf_getData", (DL_FUNC) &_flowWorkspace_cf_getData, 1},

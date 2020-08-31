@@ -45,11 +45,16 @@ Imports:
     flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4),
 	tidyselect,
-	crayon
+	crayon,
+	SummarizedExperiment,
+	DelayedArray,
+	SingleCellExperiment,
+	S4Vectors
 Collate: 
     'cytoframe.R'
     'cytoset.R'
     'AllClasses.R'
+    'CytoArray.R'
     'getStats.R'
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'
@@ -58,10 +63,12 @@ Collate:
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
+    'cytoexperiment.R'
     'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'
     'getSingleCellExpression.R'
+    'gsexperiment.R'
     'identifier.R'
     'load_fcs.R'
     'load_gs.R'
