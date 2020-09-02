@@ -322,9 +322,9 @@ test_that("gs_pop_set_name",{
     
   })
 
-test_that("gs_pop_stats_print",{
+test_that("gs_pop_get_count_fast",{
       skip("defunct")
-      thisRes <- gs_pop_stats_print(gs, , statistic = "freq", path = "full", format = "wide")
+      thisRes <- gs_pop_get_count_fast(gs, , statistic = "freq", path = "full", format = "wide")
       expect_is(thisRes, "matrix")
       
       expectRes <- fread(file.path(resultDir, "getPopStats_gs.csv"))
@@ -333,11 +333,11 @@ test_that("gs_pop_stats_print",{
       expect_equal(as.data.table(thisRes[,1:2]), expectRes[,-1, with = F], tol = 2e-3)
       
       #use auto path
-      stats_wide <- gs_pop_stats_print(gs, format = "wide", path = "auto")
+      stats_wide <- gs_pop_get_count_fast(gs, format = "wide", path = "auto")
       stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
       stats_wide <- as.data.frame(stats_wide)
       #get long format
-      stats_long <- gs_pop_stats_print(gs, format = "long", path = "auto")
+      stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "auto")
       
       #convert it to wide to do the comparsion
       stats_long[, value := Count]
