@@ -75,7 +75,7 @@ namespace Rcpp {
       config.header.isEmptyKeyValue = cfg["emptyValue"];
     
     if(cfg.containsElementNamed("which.lines"))
-      config.data.which_lines = as<vector<long>>(cfg["which.lines"]);
+      config.data.which_lines = as<vector<int64_t>>(cfg["which.lines"]);
     
 		if(config.data.which_lines.size()==1)
 		  config.data.seed = Rf_runif(0, RAND_MAX);//set seed from R
