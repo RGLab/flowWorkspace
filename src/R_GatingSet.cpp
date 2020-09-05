@@ -225,6 +225,13 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx
 			gs->serialize_pb(path, cf_opt, skip_data, ctx);
 }
 
+//[[Rcpp::export]]
+void update_gs_ptr(Rcpp::S4 gs, XPtr<GatingSet> new_ptr) {
+
+  gs.slot("pointer") = new_ptr;
+  
+
+}
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
 XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
 									, CytoCtx ctx) {
