@@ -184,6 +184,9 @@ test_that("save GatingSet to archive",
       #skip h5 when write to itself
       file.remove(redundant)
       expect_message(save_gs(gs, path = tmp, backend_opt = "skip"), "Done")
+      #load it back to ensure the is_h5 flag is preserved
+      gs1 <- load_gs(tmp)
+      expect_equal(cf_get_uri(gs_get_cytoframe(gs,1)),  cf_get_uri(gs_get_cytoframe(gs1,1)))
       
       #skip h5 when the new dir already has h5 pre-copied
       tmp1 <- tempfile()

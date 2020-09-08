@@ -211,7 +211,6 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
 void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx ctx) {
       CytoFileOption cf_opt;
-      bool skip_data = false;
       if(backend_opt == "copy")
         cf_opt = CytoFileOption::copy;
       else if(backend_opt == "move")
@@ -223,11 +222,10 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx
       else if(backend_opt == "skip")
       {
           cf_opt = CytoFileOption::skip;
-          skip_data = true;
       }
       else
         stop("invalid backend_opt option!");
-			gs->serialize_pb(path, cf_opt, skip_data, ctx);
+			gs->serialize_pb(path, cf_opt, ctx);
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
