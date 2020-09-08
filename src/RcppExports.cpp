@@ -563,6 +563,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// update_gs_ptr
+void update_gs_ptr(Rcpp::S4 gs, XPtr<GatingSet> new_ptr);
+RcppExport SEXP _flowWorkspace_update_gs_ptr(SEXP gsSEXP, SEXP new_ptrSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::S4 >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type new_ptr(new_ptrSEXP);
+    update_gs_ptr(gs, new_ptr);
+    return R_NilValue;
+END_RCPP
+}
 // load_gatingset
 XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, CytoCtx ctx);
 RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP, SEXP ctxSEXP) {
@@ -1321,6 +1332,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
     {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
     {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
+    {"_flowWorkspace_update_gs_ptr", (DL_FUNC) &_flowWorkspace_update_gs_ptr, 2},
     {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 5},
     {"_flowWorkspace_load_legacy_gs", (DL_FUNC) &_flowWorkspace_load_legacy_gs, 2},
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 3},
