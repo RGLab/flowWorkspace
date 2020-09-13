@@ -102,9 +102,7 @@ sce_to_gs <- function(sce
                       markernames(fr) <- mkrs
                       cf <- flowFrame_to_cytoframe(fr)
                       
-                      #hack to store cell id in R slot
-                      # cf@description[["cellid"]] <- rownames(mat)
-                      #TODO:store cell id at cytolib
+                      rownames(cf) <- rownames(mat)
                       cf
                     })
   
@@ -113,6 +111,3 @@ sce_to_gs <- function(sce
   
 } 
 
-gs_get_cell_pop_labels <- function(gs){
-  
-}
