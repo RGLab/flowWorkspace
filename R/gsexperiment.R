@@ -1,11 +1,16 @@
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #' @export
 setClass("gsexperiment", contains = c("SingleCellExperiment"))
+
+#' @export
+gsexperiment <- function(gs, pop = "root"){
+.Defunct("gs_to_sce")
+  }
          
 #' @importFrom S4Vectors DataFrame SimpleList
 #' @importFrom SingleCellExperiment SingleCellExperiment
 #' @export
-gsexperiment <- function(gs, pop = "root"){
+gs_to_sce <- function(gs, pop = "root"){
   leaf <- gs_get_leaf_nodes(gs, pop, path = "auto", showHidden = FALSE)
   sns <- sampleNames(gs)
   selist <-  lapply(sns, function(sn){
