@@ -121,7 +121,10 @@ delete_gs <- function(path, cred = NULL){
 #' @aliases load_gs load_gslist
 #' @importFrom aws.s3 get_bucket_df save_object
 load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL, load_format = c("default", "on-disk", "in-memory")) {
-  if (!is.null(h5_readonly)) {
+  
+  load_format <- match.arg(load_format)
+  
+   if (!is.null(h5_readonly)) {
     warning("'h5_readonly' is deprecated by 'backend_readonly'!")
     backend_readonly <- h5_readonly
   }
