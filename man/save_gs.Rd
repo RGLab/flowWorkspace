@@ -23,7 +23,8 @@ load_gs(
   backend_readonly = TRUE,
   select = character(),
   verbose = FALSE,
-  cred = NULL
+  cred = NULL,
+  load_format = c("default", "on-disk", "in-memory")
 )
 
 \S4method{sampleNames}{character}(object)
@@ -51,6 +52,8 @@ when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
 \item{select}{an integer or character vector to select a subset of samples to load}
 
 \item{verbose}{logical flag to optionally print the versions of the libraries that were used to archive the GatingSet for troubleshooting purpose.}
+
+\item{load_format}{\code{character} Determine how the cell-level data should be loaded. Either "on-disk": use disk-backed storage, don't load the data in memory. "in-memory" load the data in memory or "default" load the data as described in the GatingSet archive.}
 
 \item{object}{a \code{GatingSet} folder}
 

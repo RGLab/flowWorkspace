@@ -116,38 +116,36 @@ delete_gs <- function(path, cred = NULL){
 }
 
 #' @rdname save_gs
+#' @param load_format \code{character} Determine how the cell-level data should be loaded. Either "on-disk": use disk-backed storage, don't load the data in memory. "in-memory" load the data in memory or "default" load the data as described in the GatingSet archive. 
 #' @export
 #' @aliases load_gs load_gslist
 #' @importFrom aws.s3 get_bucket_df save_object
-load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL){
-  if(!is.null(h5_readonly))
-  {
+load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL, load_format = c("default", "on-disk", "in-memory")) {
+  if (!is.null(h5_readonly)) {
     warning("'h5_readonly' is deprecated by 'backend_readonly'!")
     backend_readonly <- h5_readonly
   }
   cred <- check_credential(cred)
-  if(!is_s3_path(path))
-  {
-    
-    
-    if(length(list.files(path = path, pattern = ".rds")) >0)
-    {
+  if (!is_s3_path(path)) {
+
+
+    if (length(list.files(path = path, pattern = ".rds")) > 0) {
       stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
     }
-	  path <- normalizePath(path)
+    path <- normalizePath(path)
     sns <- sampleNames(path)
-    
+
   }
-  if(!is.character(select))
-  {
+  if (!is.character(select)) {
     select.sn <- sns[select]
     idx <- is.na(select.sn)
-    if(any(idx))
+    if (any(idx))
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
-  }else
-    select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose, cred))
-  
+    } else {
+      select.sn <- select
+    }
+  load_format = match.arg(load_format, c("default", "on-disk", "in-memory"));
+  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose, cred, load_format))
 }
 
 #' Get sample names from a GatingSet archive folder

@@ -564,8 +564,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // load_gatingset
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, CytoCtx ctx);
-RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP, SEXP ctxSEXP) {
+XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose, CytoCtx ctx, string load_format);
+RcppExport SEXP _flowWorkspace_load_gatingset(SEXP pathSEXP, SEXP readonlySEXP, SEXP select_samplesSEXP, SEXP verboseSEXP, SEXP ctxSEXP, SEXP load_formatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -574,7 +574,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< vector<string> >::type select_samples(select_samplesSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< CytoCtx >::type ctx(ctxSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly, select_samples, verbose, ctx));
+    Rcpp::traits::input_parameter< string >::type load_format(load_formatSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_gatingset(path, readonly, select_samples, verbose, ctx, load_format));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1321,7 +1322,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
     {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
     {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
-    {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 5},
+    {"_flowWorkspace_load_gatingset", (DL_FUNC) &_flowWorkspace_load_gatingset, 6},
     {"_flowWorkspace_load_legacy_gs", (DL_FUNC) &_flowWorkspace_load_legacy_gs, 2},
     {"_flowWorkspace_CloneGatingSet", (DL_FUNC) &_flowWorkspace_CloneGatingSet, 3},
     {"_flowWorkspace_combineGatingSet", (DL_FUNC) &_flowWorkspace_combineGatingSet, 2},

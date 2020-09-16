@@ -208,6 +208,7 @@ void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
 /*
  * save/load GatingSet
  */
+// added is_skip_data = false to save_gatingset method
 //[[Rcpp::export(name=".cpp_saveGatingSet")]]
 void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx ctx) {
       CytoFileOption cf_opt;
@@ -225,15 +226,15 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, CytoCtx
       }
       else
         stop("invalid backend_opt option!");
-			gs->serialize_pb(path, cf_opt, ctx);
+      gs->serialize_pb(path, cf_opt, ctx);
 }
 
 //[[Rcpp::export(name=".cpp_loadGatingSet")]]
 XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
-									, CytoCtx ctx) {
+									, CytoCtx ctx, string load_format) {
 
 
-	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose, ctx));
+	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose, ctx, load_format));
 
 }
 
