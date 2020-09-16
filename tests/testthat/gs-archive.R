@@ -19,6 +19,36 @@ test_that("load GatingSet from archive",
   
 })
 
+test_that("load archive with specified format",
+{
+  fmt_orig <- get_default_backend()
+  skip_if(fmt_orig=="mem")
+  tmp <- tempfile()
+  save_gs(gs, tmp)
+  #default load cf as it is
+  gs1 <- load_gs(tmp)
+  expect_equal(cf_backend_type(gs_get_cytoframe(gs1, 1)), fmt_orig)
+  #load it as on disk
+  gs1 <- load_gs(tmp, load_format = "on-disk")
+  expect_equal(cf_backend_type(gs_get_cytoframe(gs1, 1)), fmt_orig)
+  #load it as in-mem
+  gs1 <- load_gs(tmp, load_format = "in-memory")
+  expect_equal(cf_backend_type(gs_get_cytoframe(gs1, 1)), "mem")
+  #save it back
+  save_gs(gs1, tmp, backend_opt = "skip")
+  #now default is in-mem
+  gs1 <- load_gs(tmp)
+  expect_equal(cf_backend_type(gs_get_cytoframe(gs1, 1)), "mem")
+  #load it as on-disk again
+  gs1 <- load_gs(tmp, load_format = "on-disk")
+  expect_equal(cf_backend_type(gs_get_cytoframe(gs1, 1)), fmt_orig)
+  #save it back
+  save_gs(gs1, tmp, backend_opt = "skip")
+  #now default is on-disk
+  gs1 <- load_gs(tmp)
+  expect_equal(cf_backend_type(gs_get_cytoframe(gs1, 1)), fmt_orig)
+  
+})
 test_that("load read-only archive",
 {
   skip_on_os("windows")
