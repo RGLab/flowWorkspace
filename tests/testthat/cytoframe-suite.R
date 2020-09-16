@@ -10,7 +10,6 @@ cf_lock(cf)
 
 
 test_that("rownames", {
-  skip_if_not(get_default_backend()=="mem")
   rn <- rownames(cf)
   cn <- colnames(cf)
   expect_equivalent(dimnames(cf), list(rn, cn))
