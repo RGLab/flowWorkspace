@@ -976,6 +976,8 @@ cf_cleanup <- function(cf, cred = NULL){
 #' @export
 cf_append_cols <- function(cf, cols, cred = NULL){
 
+  if(cf_is_subsetted(cf))
+    stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")
   cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
 
 }

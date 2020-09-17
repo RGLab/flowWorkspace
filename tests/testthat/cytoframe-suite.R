@@ -19,6 +19,10 @@ test_that("cf_append_cols", {
   m <- matrix(1:(2*nrow(cf)), ncol = 2)
   colnames(m) <- c("B", "C")
   
+  # Test error if trying to append to subsetted cytoframe
+  cf_subsetted <- cf[1:1000, 1:5]
+  expect_error(cf_append_cols(cf_subsetted, n), "cannot be added to subsetted")
+  
   # Add single column and make sure min/max keywords set appropriately
   cf_expanded <- realize_view(cf)
   cf_append_cols(cf_expanded, n)
