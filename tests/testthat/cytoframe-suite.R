@@ -432,11 +432,22 @@ test_that("transform", {
   translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
   
   #in place transform
+  
+  # R level transformation using transList
   transform(cf, translist)
   expect_equal(h5, cf_get_uri(cf))
   trans_range <- range(cf, "data")
   expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
   expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  
+  # C++ level transformation using fully-supported transformerList
+  cf <- flowFrame_to_cytoframe(fr)
+  translist <- list(logtGml2_trans(), logicle_trans(), flowjo_biexp_trans(), asinhtGml2_trans(), logicleGml2_trans())
+  translist <- transformerList(colnames(cf)[3:7], translist)
+  transform(cf, translist)
+  trans_range <- range(cf, "data")
+  expect_equal(trans_range[, c("FL1-H")], c(-0.2041200, 0.5909272), tolerance = 1e-7)
+  expect_equal(trans_range[, c("FL2-H")], c(0.5050419, 2.2717643), tolerance = 1e-7)
   
   #TODO:not ported to cytoframe yet
   #transform using inline arguments 
