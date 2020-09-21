@@ -580,7 +580,7 @@ setMethod("transform",
             if(is(tList, "transformList")){
               # flowCore %on% method for flowFrame
               # Also updates keywords: "transformation", "PnRmax", "PnRmin"
-              return(translist %on% `_data`)
+              return(tList %on% `_data`)
             }else{
               # Do the transformation at the C++ level
               cf_transform_data(`_data`@pointer, tList)
