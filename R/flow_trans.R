@@ -448,6 +448,15 @@ asinhtGml2_trans <- function(..., n = 6, equal.space = FALSE){
   flow_trans(name = "asinhtGml2", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
 
+# Maps from asinh(x/cofactor) to asinhGML2 definition for cytolib/GatingML/FlowJo compatibility
+asinh_trans <- function(cofactor = 5, n = 6, equal.space = FALSE){
+  T <- sinh(1)*cofactor
+  M <- log10(exp(1))
+  A <- 0
+  trans <- asinh_Gml2(T, M, A)
+  inv <- asinh_Gml2(T, M, A, inverse = TRUE)
+  flow_trans(name = "asinh", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
+}
 
 #' logicle transformation.
 #'
