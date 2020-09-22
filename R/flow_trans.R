@@ -455,7 +455,7 @@ asinh_trans <- function(cofactor = 5, n = 6, equal.space = FALSE){
   A <- 0
   trans <- asinh_Gml2(T, M, A)
   inv <- asinh_Gml2(T, M, A, inverse = TRUE)
-  flow_trans(name = "asinh", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
+  flow_trans(name = "asinhtGml2", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
 
 #' logicle transformation.
