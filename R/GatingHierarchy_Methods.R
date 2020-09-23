@@ -921,6 +921,12 @@ gh_pop_get_cluster_name <- function(gh, node){
 gh_pop_get_indices <- function(obj,y){
 	.cpp_getIndices(obj@pointer,sampleNames(obj), y)
 }
+
+#' @export
+gh_get_idx_uri <- function(gh){
+	get_idx_uri(gh@pointer,sampleNames(gh))
+}
+
 #' @templateVar old isGated
 #' @templateVar new gh_pop_is_gated
 #' @template template-depr_pkg

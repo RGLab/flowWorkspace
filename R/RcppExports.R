@@ -50,6 +50,10 @@ gen_uid <- function() {
     invisible(.Call(`_flowWorkspace_updateChannels`, gs, map))
 }
 
+get_idx_uri <- function(gs, sn) {
+    .Call(`_flowWorkspace_get_idx_uri`, gs, sn)
+}
+
 .cpp_plotGh <- function(gs, sampleName, output) {
     invisible(.Call(`_flowWorkspace_plotGh`, gs, sampleName, output))
 }
@@ -173,6 +177,14 @@ set_quadgate <- function(gs, sampleName, gatePath, inter) {
 
 .cpp_setNodeFlag <- function(gs, sampleName, gatePath, hidden) {
     invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
+}
+
+get_ondisk_idx_flag <- function() {
+    .Call(`_flowWorkspace_get_ondisk_idx_flag`)
+}
+
+set_ondisk_idx_flag <- function(val) {
+    invisible(.Call(`_flowWorkspace_set_ondisk_idx_flag`, val))
 }
 
 gs_transform_data <- function(gsPtr) {

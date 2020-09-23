@@ -15,6 +15,21 @@ set_default_backend <- function(backend = c("h5", "mem",  "tile")){
   options("backend" = backend)
 }
 
+#' report/set the on-disk idx flag
+#' @param value TRUE/FALSE, when not specified, it is NULL and simply report the current setting
+#' @return TRUE/FALSE
+#' @export
+#' @examples 
+#' #report the current setting
+#' use_on_disk_idx()
+#' #turn on the ondisk idx
+#' use_on_disk_idx(TRUE)
+use_on_disk_idx <- function(value = NULL)
+{
+	if(!is.null(value))
+		set_ondisk_idx_flag(value)
+	get_ondisk_idx_flag()
+}
 .onLoad <- function(libname, pkgname){
   set_default_backend()
   options("cyto_stats_type" = list(basic = c('Count','Freqoftotal','Freqofgrandparent','Freqofparent')

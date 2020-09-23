@@ -24,6 +24,12 @@ using namespace std;
 using namespace Rcpp;
 using namespace cytolib;
 
+//[[Rcpp::export]]
+string get_idx_uri(XPtr<GatingSet> gs,string sn)
+{
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sn);
+	return gh.get_idx_uri();
+}
 
 /*
  * only expose gating set pointer to R to avoid gc() by R
@@ -695,14 +701,14 @@ vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 	NODEID u = gh.getNodeID(gatePath);
 	nodeProperties & node = gh.getNodeProperty(u);
 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
-	if(u>0&&!node.isGated())
+	if(u>0&&!gh.isGated(u))
 	{
 		if(node.getGate()->getType()!=BOOLGATE)
 			throw(domain_error("Event indicies are not available for the ungated non-boolean node: '" + gatePath + "'. \n Please recompute it first!"));
 		MemCytoFrame fr;
 		gh.gating(fr, u);
 	}
-	return node.getIndices();
+	return gh.getIndices(u);
 
 
 }
@@ -715,8 +721,7 @@ void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-	nodeProperties & node = gh.getNodeProperty(u);
-	node.setIndices(ind);
+	gh.setIndices(u, ind);
 	gh.compute_stats_recursive(u);
 
 }
@@ -727,7 +732,7 @@ bool getGateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
-	return gh.getNodeProperty(u).isGated();
+	return gh.isGated(u);
 
 
 }

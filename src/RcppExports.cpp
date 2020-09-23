@@ -55,6 +55,18 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// get_idx_uri
+string get_idx_uri(XPtr<GatingSet> gs, string sn);
+RcppExport SEXP _flowWorkspace_get_idx_uri(SEXP gsSEXP, SEXP snSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sn(snSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_idx_uri(gs, sn));
+    return rcpp_result_gen;
+END_RCPP
+}
 // plotGh
 void plotGh(XPtr<GatingSet> gs, string sampleName, string output);
 RcppExport SEXP _flowWorkspace_plotGh(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP outputSEXP) {
@@ -429,6 +441,26 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< string >::type gatePath(gatePathSEXP);
     Rcpp::traits::input_parameter< bool >::type hidden(hiddenSEXP);
     setNodeFlag(gs, sampleName, gatePath, hidden);
+    return R_NilValue;
+END_RCPP
+}
+// get_ondisk_idx_flag
+bool get_ondisk_idx_flag();
+RcppExport SEXP _flowWorkspace_get_ondisk_idx_flag() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(get_ondisk_idx_flag());
+    return rcpp_result_gen;
+END_RCPP
+}
+// set_ondisk_idx_flag
+void set_ondisk_idx_flag(bool val);
+RcppExport SEXP _flowWorkspace_set_ondisk_idx_flag(SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type val(valSEXP);
+    set_ondisk_idx_flag(val);
     return R_NilValue;
 END_RCPP
 }
@@ -1282,6 +1314,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getSplineCoefs", (DL_FUNC) &_flowWorkspace_getSplineCoefs, 6},
     {"_flowWorkspace_addTrans", (DL_FUNC) &_flowWorkspace_addTrans, 2},
     {"_flowWorkspace_updateChannels", (DL_FUNC) &_flowWorkspace_updateChannels, 2},
+    {"_flowWorkspace_get_idx_uri", (DL_FUNC) &_flowWorkspace_get_idx_uri, 2},
     {"_flowWorkspace_plotGh", (DL_FUNC) &_flowWorkspace_plotGh, 3},
     {"_flowWorkspace_getNodes", (DL_FUNC) &_flowWorkspace_getNodes, 5},
     {"_flowWorkspace_getNodePath", (DL_FUNC) &_flowWorkspace_getNodePath, 3},
@@ -1311,6 +1344,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
+    {"_flowWorkspace_get_ondisk_idx_flag", (DL_FUNC) &_flowWorkspace_get_ondisk_idx_flag, 0},
+    {"_flowWorkspace_set_ondisk_idx_flag", (DL_FUNC) &_flowWorkspace_set_ondisk_idx_flag, 1},
     {"_flowWorkspace_gs_transform_data", (DL_FUNC) &_flowWorkspace_gs_transform_data, 1},
     {"_flowWorkspace_cpp_gating", (DL_FUNC) &_flowWorkspace_cpp_gating, 5},
     {"_flowWorkspace_subset_gs_by_sample", (DL_FUNC) &_flowWorkspace_subset_gs_by_sample, 2},

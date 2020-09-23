@@ -19,6 +19,15 @@ GatingSet * getGsPtr(SEXP _gsPtr){
         return gs;
 }
 
+//[[Rcpp::export]]
+bool get_ondisk_idx_flag(){
+	return use_ondisk_idx;
+}
+
+//[[Rcpp::export]]
+void set_ondisk_idx_flag(bool val){
+	use_ondisk_idx = val;
+}
 
 //[[Rcpp::export]]
 void gs_transform_data(XPtr<GatingSet> gsPtr) {
