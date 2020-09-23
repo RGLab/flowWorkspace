@@ -869,6 +869,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// cf_transform_data
+void cf_transform_data(Rcpp::XPtr<CytoFrameView> fr, List translist);
+RcppExport SEXP _flowWorkspace_cf_transform_data(SEXP frSEXP, SEXP translistSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< List >::type translist(translistSEXP);
+    cf_transform_data(fr, translist);
+    return R_NilValue;
+END_RCPP
+}
 // cf_getKeyword
 string cf_getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key);
 RcppExport SEXP _flowWorkspace_cf_getKeyword(SEXP frSEXP, SEXP keySEXP) {
@@ -1255,6 +1266,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 5},
     {"_flowWorkspace_cf_getData", (DL_FUNC) &_flowWorkspace_cf_getData, 1},
     {"_flowWorkspace_cf_setData", (DL_FUNC) &_flowWorkspace_cf_setData, 2},
+    {"_flowWorkspace_cf_transform_data", (DL_FUNC) &_flowWorkspace_cf_transform_data, 2},
     {"_flowWorkspace_cf_getKeyword", (DL_FUNC) &_flowWorkspace_cf_getKeyword, 2},
     {"_flowWorkspace_cf_getKeywords", (DL_FUNC) &_flowWorkspace_cf_getKeywords, 1},
     {"_flowWorkspace_setKeywords", (DL_FUNC) &_flowWorkspace_setKeywords, 2},

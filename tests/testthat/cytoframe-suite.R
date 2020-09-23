@@ -19,19 +19,38 @@ test_that("cf_append_cols", {
   m <- matrix(1:(2*nrow(cf)), ncol = 2)
   colnames(m) <- c("B", "C")
   
+  # Test error if trying to append to subsetted cytoframe
+  cf_subsetted <- cf[1:1000, 1:5]
+  expect_error(cf_append_cols(cf_subsetted, n), "cannot be added to subsetted")
+  
   # Add single column and make sure min/max keywords set appropriately
   cf_expanded <- realize_view(cf)
   cf_append_cols(cf_expanded, n)
   key_range <- keyword(cf_expanded)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
   expect_equal(as.numeric(unname(unlist(key_range))), range(n[,"A"]))
+  expect_equal(as.numeric(keyword(cf_expanded, "$P9R")), max(n[,"A"]) + 1)
   
   # Add multiple columns
   cf_expanded <- realize_view(cf)
   cf_append_cols(cf_expanded, m)
   key_range <- keyword(cf_expanded)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
   expect_equal(as.numeric(unname(unlist(key_range))), range(m[,"B"]))
+  expect_equal(as.numeric(keyword(cf_expanded, "$P9R")), max(m[,"B"]) + 1)
   key_range <- keyword(cf_expanded)[c("flowCore_$P10Rmin", "flowCore_$P10Rmax")]
   expect_equal(as.numeric(unname(unlist(key_range))), range(m[,"C"]))
+  expect_equal(as.numeric(keyword(cf_expanded, "$P10R")), max(m[,"C"]) + 1)
+  
+  # Test edge case of adding a column to a cytoframe with no events
+  fr_empty <- flowFrame(matrix(1:4, nrow = 1, ncol = 4, dimnames = list(NULL, c("A","B","C","D"))))
+  fr_empty <- fr_empty[-1, ]
+  new_col <- matrix(, ncol = 1, nrow= 0, dimnames = list(NULL, "Test"))
+  cf_expanded <- flowFrame_to_cytoframe(fr_empty)
+  cf_append_cols(cf_expanded, new_col)
+  
+  # Make sure min/max keywords are not set in this case (because they will be infinite)
+  expect_null(keyword(cf_expanded, "$P5R")[[1]])
+  expect_null(keyword(cf_expanded, "flowCore_$P5Rmin")[[1]])
+  expect_null(keyword(cf_expanded, "flowCore_$P5Rmax")[[1]])
   
 })
 
@@ -413,11 +432,22 @@ test_that("transform", {
   translist <- transformList(c("FL1-H", "FL2-H"), lgcl)
   
   #in place transform
+  
+  # R level transformation using transList
   transform(cf, translist)
   expect_equal(h5, cf_get_uri(cf))
   trans_range <- range(cf, "data")
   expect_equal(trans_range[, c("FL1-H")], c(0.6312576, 4.0774226))
   expect_equal(trans_range[, c("FL2-H")], c(0.6312576, 3.7131872))
+  
+  # C++ level transformation using fully-supported transformerList
+  cf <- flowFrame_to_cytoframe(fr)
+  translist <- list(logtGml2_trans(), logicle_trans(), flowjo_biexp_trans(), asinhtGml2_trans(), logicleGml2_trans())
+  translist <- transformerList(colnames(cf)[3:7], translist)
+  transform(cf, translist)
+  trans_range <- range(cf, "data")
+  expect_equal(trans_range[, c("FL1-H")], c(-0.2041200, 0.5909272), tolerance = 1e-7)
+  expect_equal(trans_range[, c("FL2-H")], c(0.5050419, 2.2717643), tolerance = 1e-7)
   
   #TODO:not ported to cytoframe yet
   #transform using inline arguments 

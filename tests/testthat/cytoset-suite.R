@@ -162,7 +162,8 @@ test_that("save/load", {
   #idx by col
   tmp1 <- tempfile()
   save_cytoset(cs[, 1:2], tmp1)
-  cs1 <- load_cytoset(tmp1)
+  # For later overwrite test, this needs to be writable
+  cs1 <- load_cytoset(tmp1, backend_readonly = FALSE)
   expect_equal(colnames(cs1), colnames(cs[,1:2]))#col-idexing result is preserved
   expect_equal(range(cs1[[1]], "data"), range(cs[[1]][,1:2], "data"))#the data is correct
   
