@@ -34,6 +34,8 @@ Imports:
     Rgraphviz,
     data.table,
     dplyr,
+    tidyr,
+    tibble,
     Rcpp,
     scales,
     matrixStats,

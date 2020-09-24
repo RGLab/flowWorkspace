@@ -5,9 +5,9 @@
 \alias{gh_get_phylo}
 \title{Get a ape::phylo object from a \code{\link{GatingSet}} or \code{\link{GatingHierarchy}}}
 \usage{
-gs_get_phylo(gs, below = "root")
+gs_get_phylo(gs, ancestor = "root", tip.label = "auto")
 
-gh_get_phylo(gs, below = "root")
+gh_get_phylo(gs, ancestor = "root", tip.label = "auto")
 }
 \description{
 Get a ape::phylo object from a \code{\link{GatingSet}} or \code{\link{GatingHierarchy}}
