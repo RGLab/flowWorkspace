@@ -120,6 +120,7 @@ gs_get_cell_pop_labels <- function(gs){
 #' @importFrom dplyr select
 #' @importFrom tidyr pivot_wider
 #' @importFrom tibble column_to_rownames
+#' @importFrom TreeSummarizedExperiment TreeSummarizedExperiment
 #' @export
 gstreeexperiment <- function(gs, ancestor = "root", path = "auto"){
   path <- match.arg(path, c("auto", "full"))
