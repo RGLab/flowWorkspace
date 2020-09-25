@@ -7,11 +7,26 @@ setMethod("show","gscluster",function(object){
   cat("archive dir: ", object@path, "\n")
   })
 
+#' construct a gscluster object from an existing gatingset object
+#' @param gs GatingSet
+#' @param path the path to store the on-disk portion of gs (i.e. pb and cytoframe content)
 #' @export
 gscluster <- function(gs, path = tempfile()){
   stopifnot(is(gs, "GatingSet"))
   suppressMessages(save_gs(gs, path))
   suppressMessages(gs <- load_gs(path))
+  gsc <- as(gs, "gscluster")
+  gsc@path <- path
+  gsc
+}
+
+#' construct a gscluster object from an existing gatingset archive folder
+#' @param path a gs archive folder.
+#' @param ... see 'load_gs()'
+#' @export
+load_gs_cluster <- function(path, ...)
+{
+  suppressMessages(gs <- load_gs(path, ...))
   gsc <- as(gs, "gscluster")
   gsc@path <- path
   gsc
@@ -33,7 +48,7 @@ gscluster <- function(gs, path = tempfile()){
 
 #' @importFrom parallel clusterApply clusterExport
 #' @export
-gs_clusterApply <- function(cl = NULL, gs, FUN, ..., mutable = TRUE){
+gs_clusterApply <- function(cl = NULL, gs, FUN, ..., mutable = TRUE, verbose = FALSE){
   stopifnot(is(gs, "gscluster"))
   gs_tmp <- tempfile()
   dir.create(gs_tmp)
@@ -42,7 +57,8 @@ gs_clusterApply <- function(cl = NULL, gs, FUN, ..., mutable = TRUE){
     suppressPackageStartupMessages({library(flowCore)
                                     library(flowWorkspace)
                                   })
-    message("processing: ", sn)
+    if(verbose)
+      message("processing: ", sn)
     suppressMessages(gs1 <- load_gs(gs@path, select = sn, backend_readonly = FALSE))
     gh <- gs1[[sn]]
     thisres <- FUN(gh, ...)
