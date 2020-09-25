@@ -923,9 +923,15 @@ gh_pop_get_indices <- function(obj,y){
 }
 
 #' @export
-gh_get_idx_uri <- function(gh){
+gh_idx_get_uri <- function(gh){
 	get_idx_uri(gh@pointer,sampleNames(gh))
 }
+
+#' @export
+gh_idx_flush <- function(gh, unload_cache = TRUE){
+  flush_idx(gh@pointer,sampleNames(gh), unload_cache)
+}
+
 
 #' @templateVar old isGated
 #' @templateVar new gh_pop_is_gated

@@ -55,6 +55,18 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// flush_idx
+void flush_idx(XPtr<GatingSet> gs, string sn, bool unload_cache);
+RcppExport SEXP _flowWorkspace_flush_idx(SEXP gsSEXP, SEXP snSEXP, SEXP unload_cacheSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sn(snSEXP);
+    Rcpp::traits::input_parameter< bool >::type unload_cache(unload_cacheSEXP);
+    flush_idx(gs, sn, unload_cache);
+    return R_NilValue;
+END_RCPP
+}
 // get_idx_uri
 string get_idx_uri(XPtr<GatingSet> gs, string sn);
 RcppExport SEXP _flowWorkspace_get_idx_uri(SEXP gsSEXP, SEXP snSEXP) {
@@ -1314,6 +1326,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getSplineCoefs", (DL_FUNC) &_flowWorkspace_getSplineCoefs, 6},
     {"_flowWorkspace_addTrans", (DL_FUNC) &_flowWorkspace_addTrans, 2},
     {"_flowWorkspace_updateChannels", (DL_FUNC) &_flowWorkspace_updateChannels, 2},
+    {"_flowWorkspace_flush_idx", (DL_FUNC) &_flowWorkspace_flush_idx, 3},
     {"_flowWorkspace_get_idx_uri", (DL_FUNC) &_flowWorkspace_get_idx_uri, 2},
     {"_flowWorkspace_plotGh", (DL_FUNC) &_flowWorkspace_plotGh, 3},
     {"_flowWorkspace_getNodes", (DL_FUNC) &_flowWorkspace_getNodes, 5},

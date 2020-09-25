@@ -50,6 +50,10 @@ gen_uid <- function() {
     invisible(.Call(`_flowWorkspace_updateChannels`, gs, map))
 }
 
+flush_idx <- function(gs, sn, unload_cache) {
+    invisible(.Call(`_flowWorkspace_flush_idx`, gs, sn, unload_cache))
+}
+
 get_idx_uri <- function(gs, sn) {
     .Call(`_flowWorkspace_get_idx_uri`, gs, sn)
 }

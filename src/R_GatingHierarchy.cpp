@@ -25,6 +25,13 @@ using namespace Rcpp;
 using namespace cytolib;
 
 //[[Rcpp::export]]
+void flush_idx(XPtr<GatingSet> gs,string sn, bool unload_cache)
+{
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sn);
+	gh.flush_idx(unload_cache);
+}
+
+//[[Rcpp::export]]
 string get_idx_uri(XPtr<GatingSet> gs,string sn)
 {
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sn);
