@@ -456,6 +456,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// convert_idx_to_ondisk
+void convert_idx_to_ondisk(XPtr<GatingSet> gsPtr);
+RcppExport SEXP _flowWorkspace_convert_idx_to_ondisk(SEXP gsPtrSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gsPtr(gsPtrSEXP);
+    convert_idx_to_ondisk(gsPtr);
+    return R_NilValue;
+END_RCPP
+}
 // get_ondisk_idx_flag
 bool get_ondisk_idx_flag();
 RcppExport SEXP _flowWorkspace_get_ondisk_idx_flag() {
@@ -1357,6 +1367,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_moveNode", (DL_FUNC) &_flowWorkspace_moveNode, 4},
     {"_flowWorkspace_setNodeName", (DL_FUNC) &_flowWorkspace_setNodeName, 4},
     {"_flowWorkspace_setNodeFlag", (DL_FUNC) &_flowWorkspace_setNodeFlag, 4},
+    {"_flowWorkspace_convert_idx_to_ondisk", (DL_FUNC) &_flowWorkspace_convert_idx_to_ondisk, 1},
     {"_flowWorkspace_get_ondisk_idx_flag", (DL_FUNC) &_flowWorkspace_get_ondisk_idx_flag, 0},
     {"_flowWorkspace_set_ondisk_idx_flag", (DL_FUNC) &_flowWorkspace_set_ondisk_idx_flag, 1},
     {"_flowWorkspace_gs_transform_data", (DL_FUNC) &_flowWorkspace_gs_transform_data, 1},

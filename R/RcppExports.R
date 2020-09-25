@@ -183,6 +183,10 @@ set_quadgate <- function(gs, sampleName, gatePath, inter) {
     invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
 }
 
+convert_idx_to_ondisk <- function(gsPtr) {
+    invisible(.Call(`_flowWorkspace_convert_idx_to_ondisk`, gsPtr))
+}
+
 get_ondisk_idx_flag <- function() {
     .Call(`_flowWorkspace_get_ondisk_idx_flag`)
 }

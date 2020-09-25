@@ -72,6 +72,11 @@ save_gs<-function(gs, path
   message("Done\nTo reload it, use 'load_gs' function\n")
 }
 
+#' @export 
+gs_convert_idx_to_ondisk <- function(gs){
+	convert_idx_to_ondisk(gs@pointer)
+}
+
 #TODO
 gs_is_dirty<- function(x){
   FALSE

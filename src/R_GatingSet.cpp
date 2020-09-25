@@ -20,6 +20,11 @@ GatingSet * getGsPtr(SEXP _gsPtr){
 }
 
 //[[Rcpp::export]]
+void convert_idx_to_ondisk(XPtr<GatingSet> gsPtr){
+	gsPtr->convert_idx_to_ondisk();
+}
+
+//[[Rcpp::export]]
 bool get_ondisk_idx_flag(){
 	return use_ondisk_idx;
 }
