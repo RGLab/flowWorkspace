@@ -131,6 +131,6 @@ gstreeexperiment <- function(gs, ancestor = "root", path = "auto"){
     select(name, Count, Population) %>%
     pivot_wider(names_from = name, values_from = Count) %>%
     column_to_rownames("Population")
-  tse <- TreeSummarizedExperiment(list(counts), rowTree = this_phylo, colData = pData(gs))
+  tse <- TreeSummarizedExperiment(assays = list(counts), rowTree = this_phylo, colData = pData(gs))
   tse
 }
