@@ -1,5 +1,48 @@
 context("---- gh")
-
+test_that("gh_pop_move", {
+  
+  stats <- gh_pop_stats_compare(gh)
+  
+  old.parent <- gs_pop_get_parent(gh, "CD4")
+  
+  new.parent <- "CD4"
+  expect_error(gh_pop_move(gh, "CD4", new.parent), "itself", class = "std::domain_error")
+  
+  new.parent <- "CD4/CCR7- 45RA+"
+  expect_error(gh_pop_move(gh, "CD4", new.parent), "descendants", class = "std::domain_error")
+  
+  # if(use_on_disk_idx())
+  # {
+  #   idxfile <- gh_idx_get_uri(gh)
+  #   idxfile <- list.files(file.path(idxfile, "__meta"), full.names = TRUE)
+  #   idx.size <- file.size(idxfile)
+  # }
+  new.parent <- "singlets"
+  suppressMessages(gh_pop_move(gh, "CD4", new.parent))
+  expect_equal(gs_pop_get_parent(gh, "CD4", path = "auto"), new.parent)
+  
+  
+  if(use_on_disk_idx())
+  {
+    tmp <- tempfile()
+    save_gs(gh, tmp)
+    gs_tmp <- load_gs(tmp)
+    gs_pop_stats_compute(gs_tmp)#update stats with new idx
+    gh_tmp <- gs_tmp[[1]]
+    expect_equal(gh_pop_stats_compare(gh), gh_pop_stats_compare(gh_tmp))
+    # idx.size.after <- file.size(idxfile)
+    # expect_lt(idx.size.after, idx.size)
+    # gh_idx_flush(gh, FALSE)
+    # idx.size.final <- file.size(idxfile)
+    # expect_lt(idx.size.final, idx.size.after)
+    unlink(tmp, recursive = T)
+  }
+  #mv back to original parent
+  suppressMessages(gh_pop_move(gh, "CD4", old.parent))
+  expect_equal(gs_pop_get_parent(gh, "CD4"), old.parent)
+  expect_equal(gh_pop_stats_compare(gh), stats)
+  
+})
 test_that(".isCompensated",
     {
       expect_true(flowWorkspace:::.isCompensated(gh))

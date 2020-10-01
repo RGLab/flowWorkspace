@@ -14,6 +14,11 @@ test_that("load GatingSet from archive",
     tmp1 <- tempfile()
     convert_backend(gs_dir, tmp1)
     gs <<- load_gs(tmp1)
+    if(use_on_disk_idx())
+    {
+      gs_convert_idx_to_ondisk(gs)
+      expect_equal(basename(gh_idx_get_uri(gs[[1]])), paste0(sampleNames(gs[[1]]), ".idx"))
+    }
   }
   
   
