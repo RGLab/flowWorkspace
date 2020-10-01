@@ -94,6 +94,17 @@ test_that("gh_pop_get_indices ",{
       
     })
 
+test_that("gh_pop_set_indices ",{
+  node <- "singlets"
+  idx <- gh_pop_get_indices(gh, node)
+  idx1 <- idx
+  idx1[c(1,3,5)] <- F
+  gh_pop_set_indices(gh, node, idx1)
+  expect_equal(gh_pop_get_indices(gh, node), idx1)
+  #restore  
+  gh_pop_set_indices(gh, node, idx)
+  expect_equal(gh_pop_get_indices(gh, node), idx)
+})
 
 test_that("gh_get_compensations ",{
       
