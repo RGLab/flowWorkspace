@@ -302,7 +302,7 @@ gs_clone <- function(x, h5_dir = tempdir()){
 #' @rdname gs_clone
 #' @export 
 gs_copy_tree_only <- function(x){
-  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
+  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir = tempdir(), is_copy_data = FALSE))
   
 }
 #' @name recompute
