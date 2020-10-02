@@ -99,6 +99,29 @@ test_that("validity checks for new distributed pb format",
   #allow save to the existing folder twice
   expect_message(save_gs(gs, tmp1), "Done")
   
+  sn <- sampleNames(gs)
+  
+  # idx file
+  if(use_on_disk_idx())
+  {
+    idxfile <- file.path(tmp1, paste0(sn, ".idx"))
+    # extra
+    idxfile1 <- file.path(tmp1, paste0(sn, "1.idx"))
+    file.copy(idxfile, idxfile1)
+    expect_error(load_gs(tmp1), "No cytoframe file matched", class = "error")
+    #missing
+    unlink(idxfile, recursive = T)
+    unlink(idxfile1)
+    gs1 <- load_gs(tmp1)
+    gh <- gs1[[1]]
+    expect_equal(gh_idx_get_uri(gh), "")
+    node <- gh_get_pop_paths(gh)[2]
+    expect_error(gh_pop_get_indices(gh, node), "not available", class = "error")
+    cnt <- gh_pop_get_count(gh, node)
+    recompute(gs1)
+    expect_equal(cnt, gh_pop_get_count(gh, node))
+  }
+    
   #extra pb
   gspbfile <- paste0(identifier(gs), ".gs")
   gspbfile1 <- "t.gs"
@@ -127,7 +150,6 @@ test_that("validity checks for new distributed pb format",
   file.rename(gspbtmp, file.path(tmp1, gspbfile))
   
   #missing h5
-  sn <- sampleNames(gs)
   h5f <- paste(sn, get_default_backend(), sep = ".")    
   unlink(file.path(tmp1, h5f), recursive = TRUE)
     
