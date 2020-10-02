@@ -62,16 +62,27 @@ List getPhylo(XPtr<GatingSet> gs,string sampleName,string gatePath, bool fullPat
   for(int i = 0; i < gh_phylo.edges.size(); i++)
     edges(i, Rcpp::_) = NumericVector::create(gh_phylo.edges[i].first, gh_phylo.edges[i].second);
   
+  // This could be 2 for loops if we trust cytolib to ensure the node/name vectors
+  // are always of equal length (which it should), but the time savings would generally
+  // be negligible
   IntegerVector leaf_nodes(gh_phylo.leaf_nodes.size());
   for(int i = 0; i < gh_phylo.leaf_nodes.size(); i++)
     leaf_nodes[i] = gh_phylo.leaf_nodes[i];
   StringVector leaf_names(gh_phylo.leaf_names.size());
   for(int i = 0; i < gh_phylo.leaf_names.size(); i++)
     leaf_names[i] = gh_phylo.leaf_names[i];
+  IntegerVector internal_nodes(gh_phylo.internal_nodes.size());
+  for(int i = 0; i < gh_phylo.internal_nodes.size(); i++)
+    internal_nodes[i] = gh_phylo.internal_nodes[i];
+  StringVector internal_names(gh_phylo.internal_names.size());
+  for(int i = 0; i < gh_phylo.internal_names.size(); i++)
+    internal_names[i] = gh_phylo.internal_names[i];
   
   return(List::create(Named("edges", edges), 
                       Named("leaf_nodes", leaf_nodes),
-                      Named("leaf_names", leaf_names)));
+                      Named("leaf_names", leaf_names),
+                      Named("internal_nodes", internal_nodes),
+                      Named("internal_names", internal_names)));
 }
 
 //[[Rcpp::export]]

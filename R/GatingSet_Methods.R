@@ -1161,14 +1161,15 @@ gs_get_phylo <- function(gs, ancestor = "root", tip.label = "auto"){
   
   # Remap node indices to satsify ape::phylo indexing requirements
   gs_leaf_idx <- phylo_components$leaf_nodes
-  gs_idx <- unique(as.vector(phylo_components$edges))
-  gs_internal_idx <- sort(setdiff(gs_idx, gs_leaf_idx))
-  idx_map <- data.frame("phylo"=seq_along(gs_idx), 
-                        "gs"=c(gs_leaf_idx, gs_internal_idx),
-                        "leaf_names"=c(phylo_components$leaf_names, rep(NA, length(gs_internal_idx))))
+  gs_internal_idx <- phylo_components$internal_nodes
+  gs_idx <- c(gs_leaf_idx, gs_internal_idx)
+  idx_map <- data.frame("phylo_idx"=seq_along(gs_idx), 
+                        "gs_idx"=gs_idx,
+                        "node_names"=c(phylo_components$leaf_names, phylo_components$internal_names),
+                        "is_leaf"=c(rep(TRUE, length(gs_leaf_idx)), rep(FALSE, length(gs_internal_idx))))
   
-  phylo_idx <- sapply(as.vector(phylo_components$edges), function(gs_val) {idx_map[idx_map$gs == gs_val, "phylo"]})
-  phylo_components$phylo_edges <- matrix(phylo_idx, ncol = 2, byrow = FALSE)
+  phylo_edges <- sapply(as.vector(phylo_components$edges), function(gs_val) {idx_map[idx_map$gs == gs_val, "phylo_idx"]})
+  phylo_components$phylo_edges <- matrix(phylo_edges, ncol = 2, byrow = FALSE)
   
   if(tip.label %in% c("auto", "full"))
     tip.label <- phylo_components$leaf_names
