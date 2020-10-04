@@ -45,7 +45,8 @@ test_that("load archive with specified format",
   #now default is in-mem
   gs1 <- load_gs(tmp)
   expect_equal(cf_backend_type(gs_get_cytoframe(gs1, 1)), "mem")
-  expect_false(gh_idx_get_uri(gs1[[1]]) == "")#not sure if we want to erase the original on-disk idx instead
+  if(use_on_disk_idx())
+    expect_false(gh_idx_get_uri(gs1[[1]]) == "")#not sure if we want to erase the original on-disk idx instead
   
   #load it as on-disk again
   gs1 <- load_gs(tmp, load_format = "on-disk")

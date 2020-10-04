@@ -1,6 +1,6 @@
 context("---- gh")
 test_that("gh_pop_move", {
-  
+  gh <- gs_clone(gs)[[1]]#avoid alter tree traverse order (bfs) in the later test
   stats <- gh_pop_stats_compare(gh)
   
   old.parent <- gs_pop_get_parent(gh, "CD4")
