@@ -993,7 +993,7 @@ NODEID addGate(XPtr<GatingSet> gs,string sampleName
 void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-		nodeProperties & node=gh.getNodeProperty(nodeID);
+
 		//parse boolean expression from R data structure into c++
 		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
 		//perform bool gating
@@ -1001,10 +1001,10 @@ void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID
 		vector<bool> curIndices= gh.boolGating(fr, boolOp, true);//pass dummy frame since boolgating doesn't need it in openCyto where all the ref nodes are guaranteed to be gated
 
 		//combine with parent indices
-		nodeProperties & parentNode=gh.getNodeProperty(gh.getParent(nodeID));
-		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
+		auto pid = gh.getParent(nodeID);
+		transform (curIndices.begin(), curIndices.end(), gh.getIndices(pid).begin(), curIndices.begin(),logical_and<bool>());
 		//save the indices
-		node.setIndices(curIndices);
+		gh.setIndices(nodeID, curIndices);
 		gh.compute_stats_recursive(nodeID);
 
 
