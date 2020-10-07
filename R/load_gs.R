@@ -141,10 +141,11 @@ load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = 
       stop("'", path, "' appears to be the legacy GatingSet archive folder!\nPlease use 'convert_legacy_gs()' to convert it to the new format.")
     }
     path <- normalizePath(path)
-    sns <- sampleNames(path)
 
   }
+  
   if (!is.character(select)) {
+    sns <- sampleNames(path)
     select.sn <- sns[select]
     idx <- is.na(select.sn)
     if (any(idx))
@@ -169,7 +170,22 @@ load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = 
 #'       }
 #' @export
 setMethod("sampleNames","character",function(object){
-  sub(".pb$", "" , list.files(object, ".pb"))
+  cred <- check_credential(NULL)
+  if(is_s3_path(object))
+  {
+    gs_name <- basename(object)
+    prefix <- paste0("^", gs_name, "/")
+    pbfiles <- get_bucket_df(object
+                             , prefix = gs_name
+                             , region = cred$AWS_REGION
+                             , max = Inf)[["Key"]]  
+    
+    pbfiles <- pbfiles[grepl("\\.pb$", pbfiles)]
+    pbfiles <- sub(prefix, "" , pbfiles)
+  }
+  else  
+    pbfiles <- list.files(object, ".pb")
+  sub(".pb$", "" , pbfiles)
 })
 
 #' convert the legacy GatingSet archive (mixed with R and C++ files) to the new format (C++ only)
