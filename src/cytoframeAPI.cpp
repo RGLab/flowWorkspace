@@ -87,9 +87,14 @@ void subset_cytoframe_by_cols(Rcpp::XPtr<CytoFrameView> fr, vector<unsigned> idx
 // [[Rcpp::export]] 
 void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
   vector<string> marker = as<vector<string>>(colnames(spillover));
+  vector<string> detector;
+  if(!Rf_isNull(rownames(spillover)))
+    detector = as<vector<string>>(rownames(spillover));
+  else
+    detector = marker;
   mat spill = as<mat>(spillover);
   // spill.print(Rcout, "spill");
-  compensation comp(spill, marker);
+  compensation comp(spill, marker, detector);
   // comp.get_spillover_mat().print(Rcout, "comp");
   fr->compensate(comp);
 }
