@@ -6,6 +6,7 @@
 #include "flowWorkspace/pairVectorRcppWrap.h"
 #include "flowWorkspace/list_to_comp.h"
 #include "flowWorkspace/convert_to_str_idx.h"
+#include "flowWorkspace/convert_trans.h"
 
 using namespace cytolib;
 //header included somewhere(not sure where exactly) defines FALSE,which interferes RcppExports.cpp

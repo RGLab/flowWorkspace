@@ -596,6 +596,52 @@ setReplaceMethod("parameters",
 			return(object)
 		})
 
+setMethod("transform",
+          signature=signature(`_data`="cytoframe"),
+          definition=function(`_data`, translist, ...)
+          {
+            if(missing(translist))
+              stop("Missing the second argument 'translist'!")
+            else if(!(is(translist, "transformerList") || is(translist, "transformList")))
+              stop("expect the second argument as a 'transformList' or 'transformerList' object!")
+            
+            if(is(translist, "transformList")){
+              tList <- translist
+            }else if(is(translist, "transformerList")){
+              unrecognized <- FALSE
+              # This is checked at the GatingSet level too
+              for(trans in translist)
+              {
+                transobj <- parse_transformer(trans)
+                if(length(transobj)==0)
+                {
+                  unrecognized <- TRUE
+                  break
+                }
+              }
+              if(unrecognized){
+                # If any transformers unsupported at C++ level, transform in R
+                res <- lapply(translist, function(obj)obj[["transform"]])
+                tList <- transformList(names(translist), res)
+              }else{
+                tList <- sapply(translist, parse_transformer, simplify = FALSE)
+              }
+            }else{
+              stop("expect the second argument as a 'transformList' or 'transformerList' object!")
+            }
+            
+            # Transform in R due to current lack of support at C++ level
+            if(is(tList, "transformList")){
+              # flowCore %on% method for flowFrame
+              # Also updates keywords: "transformation", "PnRmax", "PnRmin"
+              return(tList %on% `_data`)
+            }else{
+              # Do the transformation at the C++ level
+              cf_transform_data(`_data`@pointer, tList)
+              return(`_data`)
+            }
+            
+          })
 
 process_spill_keyword <- function(desc){
   ## the spillover matrix
@@ -1030,6 +1076,8 @@ cf_cleanup <- function(cf, cred = NULL){
 #' @export
 cf_append_cols <- function(cf, cols, cred = NULL){
 
+  if(cf_is_subsetted(cf))
+    stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")
   cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
 
 }

@@ -1,6 +1,7 @@
 #include <cytolib/H5CytoFrame.hpp>
 #include <cytolib/CytoFrame.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
+#include <flowWorkspace/convert_trans.h>
 using namespace Rcpp;
 using namespace cytolib;
 
@@ -236,6 +237,22 @@ NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
 // [[Rcpp::export]]
 void cf_setData(Rcpp::XPtr<CytoFrameView> fr, EVENT_DATA_VEC data){
  fr->set_data(data);
+}
+
+// [[Rcpp::export]]
+void cf_transform_data(Rcpp::XPtr<CytoFrameView> fr, List translist){
+  trans_map trans = convert_transformer_list(translist);
+  trans_local t_local = trans_local();
+  t_local.setTransMap(trans);
+  CytoFramePtr cf = fr->get_cytoframe_ptr();
+  
+  MemCytoFrame cf_mem(*cf);
+  cf_mem.transform_data(t_local);
+  
+  cf->set_data(cf_mem.get_data());
+  cf->set_params(cf_mem.get_params());
+  cf->set_keywords(cf_mem.get_keywords());
+  
 }
 
 // [[Rcpp::export]] 

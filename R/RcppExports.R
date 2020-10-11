@@ -386,6 +386,10 @@ cf_setData <- function(fr, data) {
     invisible(.Call(`_flowWorkspace_cf_setData`, fr, data))
 }
 
+cf_transform_data <- function(fr, translist) {
+    invisible(.Call(`_flowWorkspace_cf_transform_data`, fr, translist))
+}
+
 cf_getKeyword <- function(fr, key) {
     .Call(`_flowWorkspace_cf_getKeyword`, fr, key)
 }
