@@ -19,11 +19,11 @@
 #' pop.stats
 #'
 #' # subsample 30% cell events at CD3+ node
-#' total.cd3 <- pop.stats[pop == "CD3+", count]
-#' gInd <- seq_len(total.cd3) #create integer index for cd3
-#' gInd <- sample.int(total.cd3, size = total.cd3 * 0.3) #randomly select 30%
+#' total <- nrow(gh)[[1]]
+#' gInd <- seq_len(total) #create integer index for cd3
+#' gInd <- sample.int(total, size = total * 0.3) #randomly select 30%
 #' #convert it to logicle index
-#' gInd.logical <- rep(FALSE, total.cd3)
+#' gInd.logical <- rep(FALSE, total)
 #' gInd.logical[gInd] <- TRUE
 #' #replace the original index stored at GatingHierarchy
 #' gh_pop_set_indices(gh, "CD3+", gInd.logical)
