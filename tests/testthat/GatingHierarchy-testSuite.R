@@ -202,6 +202,7 @@ test_that("keyword",{
       #skip flowCore_R keys due to the historical archived results do not have this info up to date
       thisRes <- thisRes[!grepl("(flowCore_\\$P)|(transformation)",names(thisRes))]
       colnames(thisRes[["SPILL"]]) <- gsub("<|>", "", colnames(thisRes[["SPILL"]]))
+      rownames(thisRes[["SPILL"]]) <- gsub("<|>", "", rownames(thisRes[["SPILL"]]))
       
       expectRes <- expectRes[!grepl("(flowCore_\\$P)|(transformation)",names(expectRes))]
       #fix legacy result
@@ -215,6 +216,8 @@ test_that("keyword",{
       expectRes[["$BEGINDATA"]] <- NULL
       expectRes[["$ENDDATA"]] <- NULL
       expectRes[["GUID"]] <- "CytoTrol_CytoTrol_1.fcs"
+      # Quick patch for the fact that now spillover matrices have rownames (because they can differ from colnames)
+      rownames(expectRes$SPILL) <- colnames(expectRes$SPILL)
       expect_equal(thisRes[names(expectRes)], expectRes, tol = 6e-6)
       expect_equal(keyword(gh, 'P11DISPLAY'), "LOG")
       

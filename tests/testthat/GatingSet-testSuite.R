@@ -398,6 +398,7 @@ test_that("keyword",{
             thisResult[["$ENDDATA"]] <- NULL
             thisResult[["$CYTOLIB_VERSION"]] <- NULL
             colnames(thisResult[["SPILL"]]) <- gsub("<|>", "", colnames(thisResult[["SPILL"]]))
+            rownames(thisResult[["SPILL"]]) <- gsub("<|>", "", colnames(thisResult[["SPILL"]]))
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
           })
@@ -406,6 +407,10 @@ test_that("keyword",{
       expect_setequal(names(thisRes[[1]]), names(expectRes[[1]]))
       for(i in seq_along(thisRes))
         thisRes[[i]] <- thisRes[[i]][names(expectRes[[i]])]
+      
+      # Quick patch for the fact that now spillover matrices have rownames (because they can differ from colnames)
+      rownames(expectRes$CytoTrol_CytoTrol_1.fcs$SPILL) <- colnames(expectRes$CytoTrol_CytoTrol_1.fcs$SPILL)
+      rownames(expectRes$CytoTrol_CytoTrol_2.fcs$SPILL) <- colnames(expectRes$CytoTrol_CytoTrol_2.fcs$SPILL)
       
       expect_equal(thisRes,expectRes)
       
