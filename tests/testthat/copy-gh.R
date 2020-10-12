@@ -112,7 +112,6 @@ test_that("gh_apply_to_cs", {
     gs2 <- gh_apply_to_cs(gh_marked, cs)
     
     comp_compare <- gs_get_compensations(gs2)[[1]]@spillover
-    rownames(comp_compare) <- NULL
     expect_equal(comp_compare, comp)
     expect_equal(range(gs_cyto_data(gs2)[[1]], "data"), range(gh_pop_get_data(gs_normal[[1]]), "data"), tolerance = 1e-6)
 
@@ -126,7 +125,6 @@ test_that("gh_apply_to_cs", {
     gs3 <- gh_apply_to_cs(gh_marked, cs, compensation_source = "template")
     
     comp_compare <- gs_get_compensations(gs3)[[1]]@spillover
-    rownames(comp_compare) <- NULL
     expect_equal(comp_compare, comp_marked)
     expect_equal(range(gs_cyto_data(gs3)[[1]], "data"), range(gh_pop_get_data(gs_marked[[1]]), "data"), tolerance = 1e-6)
     expect_equal(gs_pop_get_count_fast(gs_marked), gs_pop_get_count_fast(gs3[1]))
