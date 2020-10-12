@@ -10,7 +10,7 @@ test_that(".load_legacy v1", {
               , structure(list("<B710-A>" = c(426, 4097), "<R660-A>" = c(519, 4096), "<R780-A>" = c(877, 4093)
                                      , "<V450-A>" = c(-904, 4098), "<V545-A>" = c(213, 4097), "<G560-A>" = c(110, 4097))
                                 , row.names = c("min", "max"), class = "data.frame")
-              )
+              ,tol = 2.5e-4)
   })
 test_that("convert_legacy_gs v1", {
   legacy <- file.path(dataDir,"/legacy_gs/v1/gs_bcell_auto")
