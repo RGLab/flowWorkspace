@@ -1352,7 +1352,8 @@ gh_get_compensations <- function(x){
           cid=-2
         if(cid!="-1" && cid!="-2"){
           marker<-comp$parameters
-          compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+          detector<-comp$detectors
+          compobj<-compensation(matrix(comp$spillOver,nrow=length(detector),ncol=length(marker),byrow=TRUE,dimnames=list(detector,marker)))
         }else if(cid=="-2"){
           #TODO the matrix may be acquisition defined.
           #				message("No compensation");
