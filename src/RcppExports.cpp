@@ -106,6 +106,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getPhylo
+List getPhylo(XPtr<GatingSet> gs, string sampleName, string gatePath, bool fullPath);
+RcppExport SEXP _flowWorkspace_getPhylo(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP gatePathSEXP, SEXP fullPathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<GatingSet> >::type gs(gsSEXP);
+    Rcpp::traits::input_parameter< string >::type sampleName(sampleNameSEXP);
+    Rcpp::traits::input_parameter< string >::type gatePath(gatePathSEXP);
+    Rcpp::traits::input_parameter< bool >::type fullPath(fullPathSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPhylo(gs, sampleName, gatePath, fullPath));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getNodePath
 string getNodePath(XPtr<GatingSet> gs, string sampleName, NODEID id);
 RcppExport SEXP _flowWorkspace_getNodePath(SEXP gsSEXP, SEXP sampleNameSEXP, SEXP idSEXP) {
@@ -1362,6 +1376,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_idx_uri", (DL_FUNC) &_flowWorkspace_get_idx_uri, 2},
     {"_flowWorkspace_plotGh", (DL_FUNC) &_flowWorkspace_plotGh, 3},
     {"_flowWorkspace_getNodes", (DL_FUNC) &_flowWorkspace_getNodes, 5},
+    {"_flowWorkspace_getPhylo", (DL_FUNC) &_flowWorkspace_getPhylo, 4},
     {"_flowWorkspace_getNodePath", (DL_FUNC) &_flowWorkspace_getNodePath, 3},
     {"_flowWorkspace_getNodeID", (DL_FUNC) &_flowWorkspace_getNodeID, 3},
     {"_flowWorkspace_getParent", (DL_FUNC) &_flowWorkspace_getParent, 3},

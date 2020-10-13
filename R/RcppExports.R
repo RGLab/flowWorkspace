@@ -66,6 +66,10 @@ get_idx_uri <- function(gs, sn) {
     .Call(`_flowWorkspace_getNodes`, gs, sampleName, order, fullPath, showHidden)
 }
 
+.cpp_getPhylo <- function(gs, sampleName, gatePath, fullPath) {
+    .Call(`_flowWorkspace_getPhylo`, gs, sampleName, gatePath, fullPath)
+}
+
 getNodePath <- function(gs, sampleName, id) {
     .Call(`_flowWorkspace_getNodePath`, gs, sampleName, id)
 }
