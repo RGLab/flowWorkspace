@@ -901,6 +901,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setKeywordsSubset
+void setKeywordsSubset(Rcpp::XPtr<CytoFrameView> fr, StringVector keys);
+RcppExport SEXP _flowWorkspace_setKeywordsSubset(SEXP frSEXP, SEXP keysSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type keys(keysSEXP);
+    setKeywordsSubset(fr, keys);
+    return R_NilValue;
+END_RCPP
+}
 // getncol
 int getncol(Rcpp::XPtr<CytoFrameView> fr);
 RcppExport SEXP _flowWorkspace_getncol(SEXP frSEXP) {
@@ -1256,6 +1267,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cf_getKeyword", (DL_FUNC) &_flowWorkspace_cf_getKeyword, 2},
     {"_flowWorkspace_cf_getKeywords", (DL_FUNC) &_flowWorkspace_cf_getKeywords, 1},
     {"_flowWorkspace_setKeywords", (DL_FUNC) &_flowWorkspace_setKeywords, 2},
+    {"_flowWorkspace_setKeywordsSubset", (DL_FUNC) &_flowWorkspace_setKeywordsSubset, 2},
     {"_flowWorkspace_getncol", (DL_FUNC) &_flowWorkspace_getncol, 1},
     {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},
     {"_flowWorkspace_setpdata", (DL_FUNC) &_flowWorkspace_setpdata, 2},

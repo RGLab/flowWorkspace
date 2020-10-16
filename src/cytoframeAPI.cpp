@@ -250,6 +250,14 @@ void setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys){
       kws[names[i]] = as<string>(keys[i]);
     fr->set_keywords(kws);
 }
+
+// [[Rcpp::export]]
+void setKeywordsSubset(Rcpp::XPtr<CytoFrameView> fr, StringVector keys){
+    vector<string> names = keys.attr("names");
+    for(int i = 0; i < keys.size(); i++)
+      fr->set_keyword(names[i], as<string>(keys[i]));
+}
+
 // [[Rcpp::export]] 
 int getncol(Rcpp::XPtr<CytoFrameView> fr){
   

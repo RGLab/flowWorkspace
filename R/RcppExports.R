@@ -342,6 +342,10 @@ setKeywords <- function(fr, keys) {
     invisible(.Call(`_flowWorkspace_setKeywords`, fr, keys))
 }
 
+setKeywordsSubset <- function(fr, keys) {
+    invisible(.Call(`_flowWorkspace_setKeywordsSubset`, fr, keys))
+}
+
 getncol <- function(fr) {
     .Call(`_flowWorkspace_getncol`, fr)
 }

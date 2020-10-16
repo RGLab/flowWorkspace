@@ -642,11 +642,12 @@ setReplaceMethod("keyword",
 #' @param cf a \code{cytoframe}
 #' @param keyword the keyword name to insert/delete/replace
 #' @param value the value to associate with the supplied keyword
+#' @param values a named character vector of replacement values, whose names are the keys whose values will be replaced
 #' @param from the old keyword name (for renaming)
 #' @param to the new keyword name (for renamiing)
 #' 
 #' @rdname cytoframe-keywords
-#' @aliases cf_keyword_insert cf_keyword_rename cf_keyword_delete 
+#' @aliases cf_keyword_insert cf_keyword_rename cf_keyword_delete cf_keyword_set
 #' @export
 cf_keyword_insert <- function(cf, keyword, value){
   kw <- keyword(cf)
@@ -682,6 +683,16 @@ cf_keyword_rename <- function(cf, from, to){
   if(is.na(idx))
     stop("keyword not found:", from)
   names(keyword(cf))[idx] <- to
+}
+
+#' @rdname cytoframe-keywords
+#' @export
+cf_keyword_set <- function(cf, values){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(length(names(values)) == 0)
+    stop("values must be a named character vector", call.=FALSE)
+  setKeywordsSubset(cf@pointer, values)
 }
 
 #' Methods for conversion between flowCore and flowWorkspace data classes
