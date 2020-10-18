@@ -7,26 +7,24 @@
 \alias{cf_keyword_set}
 \title{\code{cytoframe} keyword access methods}
 \usage{
-cf_keyword_insert(cf, keyword, value)
+cf_keyword_insert(cf, keys, values)
 
-cf_keyword_delete(cf, keyword)
+cf_keyword_delete(cf, keys)
 
-cf_keyword_rename(cf, from, to)
+cf_keyword_rename(cf, old_keys, new_keys)
 
-cf_keyword_set(cf, values)
+cf_keyword_set(cf, keys, values)
 }
 \arguments{
 \item{cf}{a \code{cytoframe}}
 
-\item{keyword}{the keyword name to insert/delete/replace}
+\item{keys}{the keyword names to insert/delete/replace -- single value or vector}
 
-\item{value}{the value to associate with the supplied keyword}
+\item{values}{the values to associate with the supplied keywords -- single value or vector of sample length as keys}
 
-\item{from}{the old keyword name (for renaming)}
+\item{old_keys}{the old keyword name (for renaming)}
 
-\item{to}{the new keyword name (for renamiing)}
-
-\item{values}{a named character vector of replacement values, whose names are the keys whose values will be replaced}
+\item{new_keys}{the new keyword name (for renamiing)}
 }
 \description{
 These methods allow for direct insertion, deletion, or renaming
