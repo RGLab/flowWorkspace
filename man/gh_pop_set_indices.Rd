@@ -29,7 +29,7 @@ pop.stats <- gh_pop_get_stats(gh, nodes = c("CD3+", "CD4", "CD8"))
 pop.stats
 
 # subsample 30\% cell events at CD3+ node
-total <- nrow(gh)[[1]]
+total <- gh_pop_get_count(gh, "root")
 gInd <- seq_len(total) #create integer index for cd3
 gInd <- sample.int(total, size = total * 0.3) #randomly select 30\%
 #convert it to logicle index
