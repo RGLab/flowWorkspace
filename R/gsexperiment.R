@@ -116,3 +116,24 @@ sce_to_gs <- function(sce
   
 } 
 
+gs_get_cell_pop_labels <- function(gs){
+  
+}
+
+#' @importFrom dplyr select
+#' @importFrom tidyr pivot_wider
+#' @importFrom tibble column_to_rownames
+#' @importFrom TreeSummarizedExperiment TreeSummarizedExperiment
+#' @export
+gstreeexperiment <- function(gs, ancestor = "root", path = "auto"){
+  path <- match.arg(path, c("auto", "full"))
+  this_phylo <- gs_get_phylo(gs, ancestor, tip.label = path)
+  leaves <- gs_get_leaf_nodes(gs, ancestor, path = path)
+  counts <- gs_pop_get_count_fast(gs, subpopulations = leaves, path = path)
+  counts <- counts %>%
+    select(name, Count, Population) %>%
+    pivot_wider(names_from = name, values_from = Count) %>%
+    column_to_rownames("Population")
+  tse <- TreeSummarizedExperiment(assays = list(counts), rowTree = this_phylo, colData = pData(gs))
+  tse
+}

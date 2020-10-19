@@ -34,6 +34,8 @@ Imports:
     Rgraphviz,
     data.table,
     dplyr,
+    tidyr,
+    tibble,
     Rcpp,
     scales,
     matrixStats,
@@ -49,7 +51,8 @@ Imports:
 	SummarizedExperiment,
 	DelayedArray,
 	SingleCellExperiment,
-	S4Vectors
+	S4Vectors,
+	TreeSummarizedExperiment
 Collate: 
     'cytoframe.R'
     'cytoset.R'
