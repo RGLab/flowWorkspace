@@ -269,13 +269,32 @@ KW_PAIR cf_getKeywords(Rcpp::XPtr<CytoFrameView> fr){
 }
 
 // [[Rcpp::export]] 
-void setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys){
+void cf_setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys){
     vector<string> names = keys.names();
     KEY_WORDS kws;
     for(int i = 0; i < keys.size(); i++) 
       kws[names[i]] = as<string>(keys[i]);
     fr->set_keywords(kws);
 }
+
+// [[Rcpp::export]]
+void cf_setKeywordsSubset(Rcpp::XPtr<CytoFrameView> fr, StringVector keys, StringVector values){
+    for(int i = 0; i < keys.size(); i++)
+      fr->set_keyword(as<string>(keys[i]), as<string>(values[i]));
+}
+
+// [[Rcpp::export]]
+void cf_renameKeywords(Rcpp::XPtr<CytoFrameView> fr, StringVector old_keys, StringVector new_keys){
+  for(int i = 0; i < old_keys.size(); i++)
+    fr->rename_keyword(as<string>(old_keys[i]), as<string>(new_keys[i]));
+}
+
+// [[Rcpp::export]]
+void cf_removeKeywords(Rcpp::XPtr<CytoFrameView> fr, StringVector keys){
+  for(int i = 0; i < keys.size(); i++)
+    fr->remove_keyword(as<string>(keys[i]));
+}
+
 // [[Rcpp::export]] 
 int getncol(Rcpp::XPtr<CytoFrameView> fr){
   

@@ -398,8 +398,20 @@ cf_getKeywords <- function(fr) {
     .Call(`_flowWorkspace_cf_getKeywords`, fr)
 }
 
-setKeywords <- function(fr, keys) {
-    invisible(.Call(`_flowWorkspace_setKeywords`, fr, keys))
+cf_setKeywords <- function(fr, keys) {
+    invisible(.Call(`_flowWorkspace_cf_setKeywords`, fr, keys))
+}
+
+cf_setKeywordsSubset <- function(fr, keys, values) {
+    invisible(.Call(`_flowWorkspace_cf_setKeywordsSubset`, fr, keys, values))
+}
+
+cf_renameKeywords <- function(fr, old_keys, new_keys) {
+    invisible(.Call(`_flowWorkspace_cf_renameKeywords`, fr, old_keys, new_keys))
+}
+
+cf_removeKeywords <- function(fr, keys) {
+    invisible(.Call(`_flowWorkspace_cf_removeKeywords`, fr, keys))
 }
 
 getncol <- function(fr) {
