@@ -630,7 +630,7 @@ setReplaceMethod("keyword",
       if(length(n) == 0)
         stop(kwdError, call.=FALSE)
 	  value <- collapse_desc(value) #flattern and coerce any R object to string
-      setKeywords(object@pointer, value)
+      cf_setKeywords(object@pointer, value)
       return(object)
     })
 
@@ -640,48 +640,63 @@ setReplaceMethod("keyword",
 #' of keywords in \code{\link{cytoframe}} objects.
 #' 
 #' @param cf a \code{cytoframe}
-#' @param keyword the keyword name to insert/delete/replace
-#' @param value the value to associate with the supplied keyword
-#' @param from the old keyword name (for renaming)
-#' @param to the new keyword name (for renamiing)
+#' @param keys the keyword names to insert/delete/replace -- single value or vector
+#' @param values the values to associate with the supplied keywords -- single value or vector of sample length as keys
+#' @param old_keys the old keyword name (for renaming)
+#' @param new_keys the new keyword name (for renamiing)
 #' 
 #' @rdname cytoframe-keywords
-#' @aliases cf_keyword_insert cf_keyword_rename cf_keyword_delete 
+#' @aliases cf_keyword_insert cf_keyword_rename cf_keyword_delete cf_keyword_set
 #' @export
-cf_keyword_insert <- function(cf, keyword, value){
+cf_keyword_insert <- function(cf, keys, values){
   kw <- keyword(cf)
   kn <- names(kw)
-  idx <- match(keyword, kn)
-  if(!is.na(idx))
-    stop("keyword already exists:", keyword)
-  kw[[keyword]] <- value
-  keyword(cf) <- kw
-  
+  idx <- match(keys, kn)
+  dup_idx <- !is.na(idx)
+  if(any(dup_idx))
+    stop("keywords already exist!:", paste(keys[dup_idx], collapse = ", "))
+  cf_setKeywordsSubset(cf@pointer, keys, values)
 }
 
 #' @rdname cytoframe-keywords
 #' @export
-cf_keyword_delete <- function(cf, keyword){
+cf_keyword_delete <- function(cf, keys){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(!is.vector(keys))
+    stop("keys must be a vector")
   kw <- keyword(cf)
   kn <- names(kw)
-  idx <- match(keyword, kn)
+  idx <- match(keys, kn)
   na_idx <- is.na(idx)
   if(any(na_idx))
-    stop("keyword not found:", paste(keyword[na_idx], collapse = ", "))
-  keyword(cf) <- kw[-idx]
- 	
-  
+    stop("keyword not found:", paste(keys[na_idx], collapse = ", "))
+ 	cf_removeKeywords(cf@pointer, keys);
 }
 
 #' @rdname cytoframe-keywords
 #' @export
-cf_keyword_rename <- function(cf, from, to){
-  kw <- keyword(cf)
+cf_keyword_rename <- function(cf, old_keys, new_keys){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(!(is.vector(old_keys) && is.vector(new_keys) && length(old_keys) == length(new_keys)))
+    stop("old_keys and new_keys must be vectors of equal length")
+  kw <- keyword(cf) 
   kn <- names(kw)
-  idx <- match(from, kn)
-  if(is.na(idx))
-    stop("keyword not found:", from)
-  names(keyword(cf))[idx] <- to
+  idx <- match(old_keys, kn)
+  if(any(is.na(idx)))
+    stop("keyword not found:", paste(old_keys[na_idx], collapse = ", "))
+  cf_renameKeywords(cf@pointer, old_keys, new_keys);
+}
+
+#' @rdname cytoframe-keywords
+#' @export
+cf_keyword_set <- function(cf, keys, values){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
+    stop("keys and values must be character vectors of equal length")
+  cf_setKeywordsSubset(cf@pointer, keys, values)
 }
 
 #' Methods for conversion between flowCore and flowWorkspace data classes
