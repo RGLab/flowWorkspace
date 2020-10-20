@@ -925,17 +925,56 @@ gs_plot_pop_count_cv <- function(x, scales = list(x = list(rot = 90)), path = "a
 
 #' @export
 setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing", ...){
+  # browser()
         lapply(object, flowCore::keyword, ...)
 
     })
 
 #' @export
 setMethod("keyword",c("GatingSet","character"),function(object,keyword){
+  # browser()
       tmp<-data.frame(unlist(lapply(object,function(x)keyword(x,keyword)),use.names=FALSE));
       tmp<-data.frame(matrix(tmp[[1]],ncol=length(keyword),byrow=T))
       colnames(tmp)<-keyword
       tmp
     })
+
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_insert <- function(gs, keys, values){
+  cs <- gs_pop_get_data(gs, use.exprs = FALSE)
+  if(missing(values))
+    cs_keyword_insert(cs, keys)
+  else
+    cs_keyword_insert(cs, keys, values)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_delete <- function(gs, keys){
+  cs <- gs_pop_get_data(gs, use.exprs = FALSE)
+  cs_keyword_delete(cs, keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_rename <- function(gs, old_keys, new_keys){
+  cs <- gs_pop_get_data(gs, use.exprs = FALSE)
+  if(missing(new_keys))
+    cs_keyword_rename(cs, old_keys)
+  else
+    cs_keyword_rename(cs, old_keys, new_keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_set <- function(gs, keys, values){
+  cs <- gs_pop_get_data(gs, use.exprs = FALSE)
+  if(missing(values))
+    cs_keyword_set(cs, keys)
+  else
+    cs_keyword_set(cs, keys, values)
+}
 
 
 #' tranform the flow data asssociated with the GatingSet

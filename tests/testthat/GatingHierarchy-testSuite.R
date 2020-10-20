@@ -500,3 +500,62 @@ test_that("getPopChnlMapping",{
     })
 
 
+test_that("keyword setters", {
+  gs_copy <- gs_clone(gs)
+  gh1 <- gs_copy[[1]]
+  #add new
+  gh_keyword_insert(gh1, "k1", 2)
+  expect_error(gh_keyword_insert(gh1, "k1", 2), "exist")
+  #rename
+  gh_keyword_rename(gh1, "k1", "k2")
+  expect_error(gh_keyword_rename(gh1, "k1", "k2"), "not found")
+  expect_equal(keyword(gh1)[["k2"]], "2")
+  #set (subset)
+  gh_keyword_set(gh1, "k2", 5)
+  expect_equal(keyword(gh1)[["k2"]], "5")
+  #delete
+  gh_keyword_delete(gh1, "k2")
+  expect_error(gh_keyword_delete(gh1, "k2"), "not found")
+  
+  # Testing vectorized operations
+  gs_copy <- gs_clone(gs)
+  gh1 <- gs_copy[[1]]
+  #add new
+  gh_keyword_insert(gh1, c("k1", "k2", "k3"), c("red", 5, 1.23))
+  # If any is already present, the call should fail
+  expect_error(gh_keyword_insert(gh1, c("k1", "k2"), c("blue", 6)), "exist")
+  #rename
+  gh_keyword_rename(gh1, c("k1", "k2"), c("key1", "key2"))
+  expect_error(gh_keyword_rename(gh1, c("k1", "k2"), c("key1", "key2")), "not found")
+  expected <- list(key1="red", key2="5")
+  expect_equal(keyword(gh1)[c("key1", "key2")], expected)
+  #set (subset) -- overwrite two and add one
+  gh_keyword_set(gh1, c("key1", "key2", "key4"), c("green", 7, "newval"))
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
+  expect_equal(keyword(gh1)[c("key1", "key2", "k3", "key4")], expected)
+  #delete
+  gh_keyword_delete(gh1, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(gh_keyword_delete(gh1, c("key2", "k3")), "not found")
+  
+  # Testing vectorized operations with named vectors
+  gs_copy <- gs_clone(gs)
+  gh1 <- gs_copy[[1]]
+  #add new
+  gh_keyword_insert(gh1, c(k1="red", k2=5, k3=1.23))
+  # If any is already present, the call should fail
+  expect_error(gh_keyword_insert(gh1, c(k1="blue", k2=6)), "exist")
+  #rename
+  gh_keyword_rename(gh1, c(k1="key1", k2="key2"))
+  expect_error(gh_keyword_rename(gh1, c(k1="key1", k2="key2")), "not found")
+  expected <- list(key1="red", key2="5")
+  expect_equal(keyword(gh1)[c("key1", "key2")], expected)
+  #set (subset) -- overwrite two and add one
+  gh_keyword_set(gh1, c("key1", "key2", "key4"), c("green", 7, "newval"))
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
+  expect_equal(keyword(gh1)[c("key1", "key2", "k3", "key4")], expected)
+  #delete
+  gh_keyword_delete(gh1, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(gh_keyword_delete(gh1, c("key2", "k3")), "not found")
+})
