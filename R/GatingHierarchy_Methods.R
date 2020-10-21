@@ -495,6 +495,43 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
       flowCore::keyword(fr, ...)
     })
 
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_insert <- function(gh, keys, values){
+  cf <- gh_pop_get_data(gh)
+  if(missing(values))
+    cf_keyword_insert(cf, keys)
+  else
+    cf_keyword_insert(cf, keys, values)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_delete <- function(gh, keys){
+  cf <- gh_pop_get_data(gh)
+  cf_keyword_delete(cf, keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_rename <- function(gh, old_keys, new_keys){
+  cf <- gh_pop_get_data(gh)
+  if(missing(new_keys))
+    cf_keyword_rename(cf, old_keys)
+  else
+    cf_keyword_rename(cf, old_keys, new_keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_set <- function(gh, keys, values){
+  cf <- gh_pop_get_data(gh)
+  if(missing(values))
+    cf_keyword_set(cf, keys)
+  else
+    cf_keyword_set(cf, keys, values)
+}
+
 #' @title Deprecated functions in package \pkg{flowWorkspace}.
 #' @templateVar old getNodes
 #' @templateVar new gs_get_pop_paths

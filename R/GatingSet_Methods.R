@@ -937,6 +937,43 @@ setMethod("keyword",c("GatingSet","character"),function(object,keyword){
       tmp
     })
 
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_insert <- function(gs, keys, values){
+  cs <- gs_pop_get_data(gs)
+  if(missing(values))
+    cs_keyword_insert(cs, keys)
+  else
+    cs_keyword_insert(cs, keys, values)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_delete <- function(gs, keys){
+  cs <- gs_pop_get_data(gs)
+  cs_keyword_delete(cs, keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_rename <- function(gs, old_keys, new_keys){
+  cs <- gs_pop_get_data(gs)
+  if(missing(new_keys))
+    cs_keyword_rename(cs, old_keys)
+  else
+    cs_keyword_rename(cs, old_keys, new_keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gs_keyword_set <- function(gs, keys, values){
+  cs <- gs_pop_get_data(gs)
+  if(missing(values))
+    cs_keyword_set(cs, keys)
+  else
+    cs_keyword_set(cs, keys, values)
+}
+
 
 #' tranform the flow data asssociated with the GatingSet
 #'

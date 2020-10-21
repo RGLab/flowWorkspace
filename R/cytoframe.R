@@ -607,7 +607,6 @@ setMethod("keyword",
         keyword="missing"),
     function(object, compact = FALSE)
     {           
-      
       desc <- cf_getKeywords(object@pointer)
 
       if(compact)
@@ -634,21 +633,79 @@ setReplaceMethod("keyword",
       return(object)
     })
 
-#' \code{cytoframe} keyword access methods
+#' Methods to alter keywords in \code{cytoframe}, \code{cytoset}, \code{GatingHierarchy}, or \code{GatingSet} objects
 #' 
 #' These methods allow for direct insertion, deletion, or renaming
-#' of keywords in \code{\link{cytoframe}} objects.
+#' of keywords in \code{\link{cytoframe}}, \code{\link{cytoset}}, \code{\link{GatingHierarchy}}, 
+#' or \code{\link{GatingSet}} objects.
 #' 
-#' @param cf a \code{cytoframe}
+#' @param cf a \code{\link{cytoframe}}
+#' @param cs a \code{\link{cytoset}}}
+#' @param gh a \code{\link{GatingHierarchy}}
+#' @param gs a \code{\link{GatingSet}}
 #' @param keys the keyword names to insert/delete/replace -- single value or vector
 #' @param values the values to associate with the supplied keywords -- single value or vector of sample length as keys
 #' @param old_keys the old keyword name (for renaming)
-#' @param new_keys the new keyword name (for renamiing)
+#' @param new_keys the new keyword name (for renaming)
 #' 
-#' @rdname cytoframe-keywords
-#' @aliases cf_keyword_insert cf_keyword_rename cf_keyword_delete cf_keyword_set
+#' @name keyword-mutators
+#' @rdname keyword-mutators
+#' @aliases 
+#' cf_keyword_insert cf_keyword_rename cf_keyword_delete cf_keyword_set
+#' cs_keyword_insert cs_keyword_rename cs_keyword_delete cs_keyword_set
+#' gh_keyword_insert gh_keyword_rename gh_keyword_delete gh_keyword_set
+#' gs_keyword_insert gs_keyword_rename gs_keyword_delete gs_keyword_set
+#' 
+#' @details
+#' Each of the methods taking two character vectors (keys/values or old_keys/new_keys)
+#' will also accept a single named vector for flexibility in usage. 
+#' 
+#' For the functions that take a vector of keys and a vector of values (the \code{keyword_insert} and \code{keyword_set} functions), 
+#' the names of this vector should be the keys to which the values of the vector will be assigned. 
+#' 
+#' For the \code{keyword_rename} functions, the names of this vector should be the existing keyword names (\code{old_keys})
+#' while the values should be the replacement keyword names (\code{new_keys}).
+#' 
+#' See examples for details
+#' 
+#' @examples 
+#' library(flowCore)
+#' data(GvHD)
+#' cs <- flowSet_to_cytoset(GvHD[1:2])
+#' 
+#' keys <- c("CYTNUM", "CREATOR")
+#' 
+#' # Values before changes
+#' keyword(cs, keys)
+#' 
+#' # Set two keyword values using separate key and values vectors
+#' values <- c("E3598", "CELLQuest  3.4")
+#' cs_keyword_set(cs, keys, values)
+#' 
+#' # Values after changes
+#' keyword(cs, keys)
+#' 
+#' # Change the values again using a single named vector
+#' values <- c("E3599", "CELLQuest  3.5")
+#' names(values) <- keys
+#' cs_keyword_set(cs, values)
+#' 
+#' # Values after changes
+#' keyword(cs, keys)
+#' 
 #' @export
 cf_keyword_insert <- function(cf, keys, values){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(missing(values)){
+    if(!is.vector(keys) || is.null(names(keys)) || any(is.na(names(keys))))
+      stop("If you are providing a single vector of values, it must have valid names providing the keys")
+    values <- keys
+    keys <- names(values)
+  }
+  if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
+    stop("keys and values must be vectors of equal length")
+
   kw <- keyword(cf)
   kn <- names(kw)
   idx <- match(keys, kn)
@@ -658,7 +715,7 @@ cf_keyword_insert <- function(cf, keys, values){
   cf_setKeywordsSubset(cf@pointer, keys, values)
 }
 
-#' @rdname cytoframe-keywords
+#' @rdname keyword-mutators
 #' @export
 cf_keyword_delete <- function(cf, keys){
   if(!is(cf, "cytoframe"))
@@ -671,14 +728,20 @@ cf_keyword_delete <- function(cf, keys){
   na_idx <- is.na(idx)
   if(any(na_idx))
     stop("keyword not found:", paste(keys[na_idx], collapse = ", "))
- 	cf_removeKeywords(cf@pointer, keys);
+ 	cf_removeKeywords(cf@pointer, keys)
 }
 
-#' @rdname cytoframe-keywords
+#' @rdname keyword-mutators
 #' @export
 cf_keyword_rename <- function(cf, old_keys, new_keys){
   if(!is(cf, "cytoframe"))
     stop("cf must be a cytoframe object")
+  if(missing(new_keys)){
+    if(!is.vector(old_keys) || is.null(names(old_keys)) || any(is.na(names(old_keys))))
+      stop("If you are providing a single vector of new keys, it must have valid names providing the old keys")
+    new_keys <- old_keys
+    old_keys <- names(new_keys)
+  }
   if(!(is.vector(old_keys) && is.vector(new_keys) && length(old_keys) == length(new_keys)))
     stop("old_keys and new_keys must be vectors of equal length")
   kw <- keyword(cf) 
@@ -686,12 +749,18 @@ cf_keyword_rename <- function(cf, old_keys, new_keys){
   idx <- match(old_keys, kn)
   if(any(is.na(idx)))
     stop("keyword not found:", paste(old_keys[na_idx], collapse = ", "))
-  cf_renameKeywords(cf@pointer, old_keys, new_keys);
+  cf_renameKeywords(cf@pointer, old_keys, new_keys)
 }
 
-#' @rdname cytoframe-keywords
+#' @rdname keyword-mutators
 #' @export
 cf_keyword_set <- function(cf, keys, values){
+  if(missing(values)){
+    if(!is.vector(keys) || is.null(names(keys)) || any(is.na(names(keys))))
+      stop("If you are providing a single vector of values, it must have valid names providing the keys")
+    values <- keys
+    keys <- names(values)
+  }
   if(!is(cf, "cytoframe"))
     stop("cf must be a cytoframe object")
   if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))

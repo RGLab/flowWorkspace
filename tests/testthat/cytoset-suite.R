@@ -580,3 +580,71 @@ test_that("cytoset_to_list", {
   # spot check
   expect_equal(exprs(cfs[[7]]), exprs(cs[[7, returnType="cytoframe"]]))
 })
+
+
+test_that("keyword setters", {
+  cs1 <- realize_view(cs)
+  #add new
+  cs_keyword_insert(cs1, "k1", 2)
+  expect_error(cs_keyword_insert(cs1, "k1", 2), "exist")
+  #rename
+  cs_keyword_rename(cs1, "k1", "k2")
+  expect_error(cs_keyword_rename(cs1, "k1", "k2"), "not found")
+  expected <- matrix(rep("2", 4), ncol = 1, dimnames = list(sampleNames(cs), "k2"))
+  expect_equal(keyword(cs1, "k2"), expected)
+  #set (subset)
+  cs_keyword_set(cs1, "k2", 5)
+  expected <- matrix(rep("5", 4), ncol = 1, dimnames = list(sampleNames(cs), "k2"))
+  expect_equal(keyword(cs1, "k2"), expected)
+  #delete
+  cs_keyword_delete(cs1, "k2")
+  expect_error(cs_keyword_delete(cs1, "k2"), "not found")
+  
+  # Testing vectorized operations
+  cs1 <- realize_view(cs)
+  #add new
+  cs_keyword_insert(cs1, c("k1", "k2", "k3"), c("red", 5, 1.23))
+  # If any is already present, the call should fail
+  expect_error(cs_keyword_insert(cs1, c("k1", "k2"), c("blue", 6)), "exist")
+  #rename
+  cs_keyword_rename(cs1, c("k1", "k2"), c("key1", "key2"))
+  expect_error(cs_keyword_rename(cs1, c("k1", "k2"), c("key1", "key2")), "not found")
+  expected <- matrix(c(rep("red", 4), rep("5", 4)),
+                     ncol = 2, byrow = FALSE, 
+                     dimnames = list(sampleNames(cs), c("key1", "key2")))
+  expect_equal(keyword(cs1, c("key1", "key2")), expected)
+  #set (subset) -- overwrite two and add one
+  cs_keyword_set(cs1, c("key1", "key2", "key4"), c("green", 7, "newval"))
+  expected <- matrix(c(rep("green", 4), rep("7", 4), rep("1.23", 4), rep("newval", 4)),
+                     ncol = 4, byrow = FALSE,
+                     dimnames = list(sampleNames(cs), c("key1", "key2", "k3", "key4")))
+  expect_equal(keyword(cs1, c("key1", "key2", "k3", "key4")), expected)
+  #delete
+  cs_keyword_delete(cs1, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(cs_keyword_delete(cs1, c("key2", "k3")), "not found")
+  
+  # Testing vectorized operations with named vectors
+  cs1 <- realize_view(cs)
+  #add new
+  cs_keyword_insert(cs1, c(k1="red", k2=5, k3=1.23))
+  # If any is already present, the call should fail
+  expect_error(cs_keyword_insert(cs1, c(k1="blue", k2=6)), "exist")
+  #rename
+  cs_keyword_rename(cs1, c(k1="key1", k2="key2"))
+  expect_error(cs_keyword_rename(cs1, c(k1="key1", k2="key2")), "not found")
+  expected <- matrix(c(rep("red", 4), rep("5", 4)),
+                     ncol = 2, byrow = FALSE, 
+                     dimnames = list(sampleNames(cs), c("key1", "key2")))
+  expect_equal(keyword(cs1, c("key1", "key2")), expected)
+  #set (subset) -- overwrite two and add one
+  cs_keyword_set(cs1, c(key1="green", key2=7, key4="newval"))
+  expected <- matrix(c(rep("green", 4), rep("7", 4), rep("1.23", 4), rep("newval", 4)),
+                     ncol = 4, byrow = FALSE,
+                     dimnames = list(sampleNames(cs), c("key1", "key2", "k3", "key4")))
+  expect_equal(keyword(cs1, c("key1", "key2", "k3", "key4")), expected)
+  #delete
+  cs_keyword_delete(cs1, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(cs_keyword_delete(cs1, c("key2", "k3")), "not found")
+})
