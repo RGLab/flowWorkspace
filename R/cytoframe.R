@@ -607,7 +607,6 @@ setMethod("keyword",
         keyword="missing"),
     function(object, compact = FALSE)
     {           
-      # browser()
       desc <- cf_getKeywords(object@pointer)
 
       if(compact)
@@ -626,7 +625,6 @@ setReplaceMethod("keyword",
         value="list"),
     definition=function(object, value)
     {
-      # browser()
       n <- names(value)
       if(length(n) == 0)
         stop(kwdError, call.=FALSE)

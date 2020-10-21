@@ -485,14 +485,12 @@ setMethod("show","GatingHierarchy",function(object){
 #' }
 #' @export
 setMethod("keyword",c("GatingHierarchy","character"),function(object,keyword){
-  # browser()
 
 			keyword(object)[[keyword]]
 		})
 #' @name keyword
 #' @export
 setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "missing", ...){
-  # browser()
       fr <- gh_pop_get_data(object, use.exprs = FALSE)
       flowCore::keyword(fr, ...)
     })
@@ -500,7 +498,7 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
 #' @rdname keyword-mutators
 #' @export
 gh_keyword_insert <- function(gh, keys, values){
-  cf <- gh_pop_get_data(gh, use.exprs = FALSE)
+  cf <- gh_pop_get_data(gh)
   if(missing(values))
     cf_keyword_insert(cf, keys)
   else
@@ -510,14 +508,14 @@ gh_keyword_insert <- function(gh, keys, values){
 #' @rdname keyword-mutators
 #' @export
 gh_keyword_delete <- function(gh, keys){
-  cf <- gh_pop_get_data(gh, use.exprs = FALSE)
+  cf <- gh_pop_get_data(gh)
   cf_keyword_delete(cf, keys)
 }
 
 #' @rdname keyword-mutators
 #' @export
 gh_keyword_rename <- function(gh, old_keys, new_keys){
-  cf <- gh_pop_get_data(gh, use.exprs = FALSE)
+  cf <- gh_pop_get_data(gh)
   if(missing(new_keys))
     cf_keyword_rename(cf, old_keys)
   else
@@ -527,7 +525,7 @@ gh_keyword_rename <- function(gh, old_keys, new_keys){
 #' @rdname keyword-mutators
 #' @export
 gh_keyword_set <- function(gh, keys, values){
-  cf <- gh_pop_get_data(gh, use.exprs = FALSE)
+  cf <- gh_pop_get_data(gh)
   if(missing(values))
     cf_keyword_set(cf, keys)
   else
