@@ -15,6 +15,11 @@ test_that("gs_pop_get_gs", {
   expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
   recompute(gs1)
   expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
+  # Quick test to make sure get_stats methods do not alter the original data frame when
+  # passed a function and/or inverse.transform = TRUE
+  stats_1 <- gs_pop_get_stats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
+  stats_2 <- gs_pop_get_stats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
+  expect_equal(stats_1, stats_2)
   
 })
 
