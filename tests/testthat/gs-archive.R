@@ -21,7 +21,7 @@ test_that("load GatingSet from archive",
 
 test_that("load read-only archive",
 {
-  skip_on_os("windows")
+  skip_on_os(c("windows", "mac"))
   tmp <- tempfile()
   save_gs(gs, tmp)
   
