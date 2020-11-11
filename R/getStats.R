@@ -69,7 +69,7 @@ gh_pop_stats_print <- function(gh, nodes = NULL, type = "Count", xml = FALSE, in
       nodes <- gs_get_pop_paths(gh, ...)
     
     res <- sapply(nodes, function(node){
-        fr <- gh_pop_get_data(gh, y = node)
+        fr <- gh_pop_get_data(gh, y = node, returnType = "flowFrame")
         if(inverse.transform)
         {
           trans <- gh_get_transformations(gh, inverse = TRUE)
@@ -82,7 +82,7 @@ gh_pop_stats_print <- function(gh, nodes = NULL, type = "Count", xml = FALSE, in
         thisCall <- as.call(c(as.list(thisCall), stats.fun.arg))
         
         res <- eval(thisCall)
-      
+     
   
       as.data.table(t(res))
     }, simplify = FALSE)

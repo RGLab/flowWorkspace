@@ -433,13 +433,32 @@ test_that("keyword setters", {
   #rename
   cf_keyword_rename(cf1, c("k1", "k2"), c("key1", "key2"))
   expect_error(cf_keyword_rename(cf1, c("k1", "k2"), c("key1", "key2")), "not found")
-  expected <- list("red", "5")
-  names(expected) <- c("key1", "key2")
+  expected <- list(key1="red", key2="5")
   expect_equal(keyword(cf1)[c("key1", "key2")], expected)
   #set (subset) -- overwrite two and add one
   cf_keyword_set(cf1, c("key1", "key2", "key4"), c("green", 7, "newval"))
-  expected <- list("green", "7", "1.23", "newval")
-  names(expected) <- c("key1", "key2", "k3", "key4")
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
+  expect_equal(keyword(cf1)[c("key1", "key2", "k3", "key4")], expected)
+  #delete
+  cf_keyword_delete(cf1, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(cf_keyword_delete(cf1, c("key2", "k3")), "not found")
+  
+  # Testing vectorized operations with named vector
+  cf1 <- realize_view(cf)
+  #add new
+  values <- c(k1="red", k2=5, k3=1.23)
+  cf_keyword_insert(cf1, values)
+  # If any is already present, the call should fail
+  expect_error(cf_keyword_insert(cf1, c(k1="blue", k2=6)), "exist")
+  #rename
+  cf_keyword_rename(cf1, c(k1="key1", k2="key2"))
+  expect_error(cf_keyword_rename(cf1, c(k1="key1", k2="key2")), "not found")
+  expected <- list(key1="red", key2="5")
+  expect_equal(keyword(cf1)[c("key1", "key2")], expected)
+  #set (subset) -- overwrite two and add one
+  cf_keyword_set(cf1, c(key1="green", key2=7, key4="newval"))
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
   expect_equal(keyword(cf1)[c("key1", "key2", "k3", "key4")], expected)
   #delete
   cf_keyword_delete(cf1, c("key2", "key4"))

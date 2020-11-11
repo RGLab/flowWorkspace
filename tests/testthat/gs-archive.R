@@ -60,7 +60,7 @@ test_that("load archive with specified format",
 })
 test_that("load read-only archive",
 {
-  skip_on_os("windows")
+  skip_on_os(c("windows", "mac"))
   tmp <- tempfile()
   save_gs(gs, tmp)
   
