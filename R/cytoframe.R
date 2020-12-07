@@ -297,6 +297,7 @@ setMethod("colnames", "cytoframe",
             cf_colnames(x)
           })
 #' @export
+#' @importFrom BiocGenerics rownames rownames<-
 setMethod("rownames", "cytoframe",
     function (x, do.NULL = TRUE, prefix = "row") 
     {
