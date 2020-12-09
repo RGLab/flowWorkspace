@@ -444,21 +444,21 @@ setReplaceMethod("exprs",
 			cf_setData(object@pointer, value)
 			object
 		})
-# 
-# setReplaceMethod("colnames",
-#     signature=signature(x="cytoframe",
-#         value="ANY"),
-#     definition=function(x, value)
-#     {
-#       old.names <- colnames(x)
-#       if(length(value) != length(old.names))
-#         stop("colnames don't match dimensions of data matrix",
-#             call.=FALSE)
-#       
-# 		set_all_channels(x@pointer, value)
-#       
-#       return(x)
-#     })
+ 
+ setReplaceMethod("colnames",
+     signature=signature(x="cytoframe",
+         value="ANY"),
+     definition=function(x, value)
+     {
+       old.names <- colnames(x)
+       if(length(value) != length(old.names))
+         stop("colnames don't match dimensions of data matrix",
+             call.=FALSE)
+       
+ 		set_all_channels(x@pointer, value)
+       
+       return(x)
+     })
 
 #' Methods to change channel and marker names for \code{cytoframe} and \code{cytoset} objects
 #' 
