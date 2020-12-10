@@ -4,15 +4,14 @@
 \alias{cf_write_tile}
 \title{Save the cytoframe as h5 format}
 \usage{
-cf_write_tile(cf, filename, cred = NULL)
+cf_write_tile(cf, filename, ctx = .cytoctx_global)
 }
 \arguments{
 \item{cf}{cytoframe object}
 
 \item{filename}{the full path of the output file}
 
-\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
+\item{ctx}{cytoctx object, see [cytoctx] for details}
 }
 \description{
 Save the cytoframe as h5 format

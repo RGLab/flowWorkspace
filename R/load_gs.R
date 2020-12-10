@@ -39,7 +39,7 @@
 save_gs<-function(gs, path
                   , cdf = NULL
                   , backend_opt = c("copy","move","skip","symlink","link")
-                  , cred = NULL
+                  , ctx = .cytoctx_global
                   , ...){
   if(!is.null(cdf))
   {
@@ -48,7 +48,6 @@ save_gs<-function(gs, path
   }
   backend_opt <- match.arg(backend_opt)
   path <- suppressWarnings(normalizePath(path))
-  cred <- check_credential(cred)
   if(is_s3_path(path))
   {
     
@@ -61,7 +60,7 @@ save_gs<-function(gs, path
   if(backend_opt == "link")
   	stop("'link' option for save_gs is no longer supported")
   
-  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt, cred), silent = TRUE))
+  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt, ctx$pointer), silent = TRUE))
 
   if(class(res) == "try-error")
   {
@@ -107,10 +106,10 @@ parse_s3_path <- function(url){
 #' @param path either a local path or s3 path (e.g. "s3://bucketname/gs_path)
 #' @importFrom aws.s3 get_bucket delete_object
 #' @export
-delete_gs <- function(path, cred = NULL){
+delete_gs <- function(path, ctx = .cytoctx_global){
   if(is_s3_path(path))
   {
-    cred <- check_credential(cred)
+    cred <- ctx_to_list(ctx)
     s3_paths <- parse_s3_path(path)
     b <- get_bucket(s3_paths[["bucket"]], s3_paths[["key"]], region = cred$AWS_REGION)
     for(obj in b)
@@ -125,7 +124,7 @@ delete_gs <- function(path, cred = NULL){
 #' @export
 #' @aliases load_gs load_gslist
 #' @importFrom aws.s3 get_bucket_df save_object
-load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, cred = NULL, load_format = c("default", "on-disk", "in-memory")) {
+load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, ctx = .cytoctx_global, load_format = c("default", "on-disk", "in-memory")) {
   
   load_format <- match.arg(load_format)
   
@@ -133,7 +132,6 @@ load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = 
     warning("'h5_readonly' is deprecated by 'backend_readonly'!")
     backend_readonly <- h5_readonly
   }
-  cred <- check_credential(cred)
   if (!is_s3_path(path)) {
 
 
@@ -154,7 +152,8 @@ load_gs <- function(path, h5_readonly = NULL, backend_readonly = TRUE, select = 
       select.sn <- select
     }
   load_format = match.arg(load_format, c("default", "on-disk", "in-memory"));
-  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose, cred, load_format))
+  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose, ctx$pointer, load_format))
+
 }
 
 #' Get sample names from a GatingSet archive folder

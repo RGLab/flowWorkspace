@@ -30,7 +30,9 @@ use_on_disk_idx <- function(value = NULL)
 		set_ondisk_idx_flag(value)
 	get_ondisk_idx_flag()
 }
+.cytoctx_global <- NULL
 .onLoad <- function(libname, pkgname){
+  .cytoctx_global <<- cytoctx()
   set_default_backend()
   options("cyto_stats_type" = list(basic = c('Count','Freqoftotal','Freqofgrandparent','Freqofparent')
                                    , with_ancestor = 'Freqof'
