@@ -913,12 +913,11 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_disk <- function(cf, filename, backend = get_default_backend(), cred = NULL){
+cf_write_disk <- function(cf, filename, backend = get_default_backend(), ctx = .cytoctx_global){
   backend <- match.arg(backend, c("h5", "tile"))
   stopifnot(is(cf, "cytoframe"))
-  cred <- check_credential(cred)
-  
-  write_to_disk(cf@pointer,filename, backend == "h5",  cred)
+
+  write_to_disk(cf@pointer,filename, backend == "h5",  ctx$pointer)
 }
 
 #' Save the cytoframe as h5 format
@@ -928,8 +927,8 @@ cf_write_disk <- function(cf, filename, backend = get_default_backend(), cred = 
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_h5 <- function(cf, filename, cred = NULL){
-	cf_write_disk(cf, filename, backend = "h5", cred)
+cf_write_h5 <- function(cf, filename, ctx = .cytoctx_global){
+	cf_write_disk(cf, filename, backend = "h5", ctx)
 }
 
 #' Save the cytoframe as h5 format
@@ -939,8 +938,8 @@ cf_write_h5 <- function(cf, filename, cred = NULL){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_tile <- function(cf, filename, cred = NULL){
-  cf_write_disk(cf, filename, backend = "tile", cred)
+cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
+  cf_write_disk(cf, filename, backend = "tile", ctx)
 }
 
 #' Load the cytoframe from disk
@@ -949,13 +948,11 @@ cf_write_tile <- function(cf, filename, cred = NULL){
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #'                 And it is valid when on_disk is set to true.
-#' @param cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-#'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
+#' @param ctx cytoctx object, see [cytoctx] for details
 #' @importFrom aws.signature read_credentials
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads = 1L, cred = NULL){
-	cred <- check_credential(cred)
+load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoctx_global){
 	if(!on_disk)
 	{
 	  if(readonly)
@@ -963,10 +960,9 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads 
 	    stop("'readonly = TRUE' is only valid when 'on_disk' is TRUE! ")
 	  }
 	}
-	cred[["num_threads"]] <- num_threads
 	uri <- suppressWarnings(normalizePath(uri))
 	
-	p <- load_cf(uri, readonly, on_disk, cred)
+	p <- load_cf(uri, readonly, on_disk, ctx$pointer)
 	
 	new("cytoframe", pointer = p, use.exprs = TRUE)
 }
@@ -1106,7 +1102,7 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' @inheritParams load_cytoframe
 #' @details this will override tempdir() in determining the top directory under which files can safely be removed.
 #' @export
-cf_cleanup <- function(cf, cred = NULL){
+cf_cleanup <- function(cf, ctx = .cytoctx_global){
   uri <- cf_get_uri(cf)
   
   if(is_http_path(uri)||is_s3_path(uri))
@@ -1114,7 +1110,7 @@ cf_cleanup <- function(cf, cred = NULL){
     s3_paths <- parse_s3_path(uri)
     bucket <- s3_paths[["bucket"]]
     key <- s3_paths[["key"]]	
-    cred <- check_credential(cred)
+    cred <- ctx_to_list(ctx)
     b <- get_bucket(bucket, key, region = cred$AWS_REGION)
     for(obj in b)
       delete_object(obj, region = cred$AWS_REGION)
@@ -1150,7 +1146,7 @@ cf_cleanup <- function(cf, cred = NULL){
 #' 
 #' 
 #' @export
-cf_append_cols <- function(cf, cols, cred = NULL){
+cf_append_cols <- function(cf, cols, ctx = .cytoctx_global){
 
   if(cf_is_subsetted(cf))
     stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")

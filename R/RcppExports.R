@@ -238,8 +238,12 @@ is_tiledb_support <- function() {
     invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
 }
 
-new_cytoctx <- function(ctx) {
-    .Call(`_flowWorkspace_new_cytoctx`, ctx)
+new_cytoctx <- function(cred) {
+    .Call(`_flowWorkspace_new_cytoctx`, cred)
+}
+
+read_cytoctx <- function(ctx) {
+    .Call(`_flowWorkspace_read_cytoctx`, ctx)
 }
 
 del_rownames <- function(fr) {
