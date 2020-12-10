@@ -57,6 +57,7 @@ Collate:
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
+    'cytoctx.R'
     'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'

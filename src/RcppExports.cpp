@@ -603,6 +603,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// new_cytoctx
+XPtr<CytoCtx> new_cytoctx(List ctx);
+RcppExport SEXP _flowWorkspace_new_cytoctx(SEXP ctxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type ctx(ctxSEXP);
+    rcpp_result_gen = Rcpp::wrap(new_cytoctx(ctx));
+    return rcpp_result_gen;
+END_RCPP
+}
 // del_rownames
 void del_rownames(Rcpp::XPtr<CytoFrameView> fr);
 RcppExport SEXP _flowWorkspace_del_rownames(SEXP frSEXP) {
@@ -1308,6 +1319,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getLogLevel", (DL_FUNC) &_flowWorkspace_getLogLevel, 0},
     {"_flowWorkspace_setLogLevel", (DL_FUNC) &_flowWorkspace_setLogLevel, 1},
     {"_flowWorkspace_toggleErrorFlag", (DL_FUNC) &_flowWorkspace_toggleErrorFlag, 0},
+    {"_flowWorkspace_new_cytoctx", (DL_FUNC) &_flowWorkspace_new_cytoctx, 1},
     {"_flowWorkspace_del_rownames", (DL_FUNC) &_flowWorkspace_del_rownames, 1},
     {"_flowWorkspace_set_rownames", (DL_FUNC) &_flowWorkspace_set_rownames, 2},
     {"_flowWorkspace_get_rownames", (DL_FUNC) &_flowWorkspace_get_rownames, 1},
