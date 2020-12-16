@@ -30,6 +30,7 @@ test_that("save_gs/load",
   #load the local gs archive
   gs <- load_gs(gs_dir)
   #save to remote 
+  delete_gs(url)#strange that url already exists in devtools::test() environment(but not separately run)
   save_gs(gs, url)
   
   guid <- identifier(gs)
