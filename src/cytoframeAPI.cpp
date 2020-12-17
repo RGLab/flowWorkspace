@@ -1,5 +1,6 @@
 #include <cytolib/H5CytoFrame.hpp>
 #include <cytolib/CytoFrame.hpp>
+#include <cytolib/utils.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 #include <flowWorkspace/convert_trans.h>
 using namespace Rcpp;
@@ -177,40 +178,30 @@ Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<strin
   fr->append_columns(new_colnames, new_cols);
   
   return fr;
-  // return Rcpp::XPtr<CytoFrameView>(fr);
 }
-                                      
-// [[Rcpp::export]] 
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false
-		, string format = "mem", string uri = "")
-{
-	CytoFramePtr ptr;
-	unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
-	if(format!="mem"&&text_only)
-	{
-		warning("text_only is ignored when format is set to 'h5' or 'tile'!");
-		text_only = false;
-	}
-	if(text_only)
-		cf->read_fcs_header();
-	else
-		cf->read_fcs();
-	if(format=="mem")
-	{
-		ptr.reset(cf.release());
-	}
-	else
-	{
-		FileFormat fmt;
-		if(format == "h5")
-			fmt = FileFormat::H5;
-		else
-			fmt = FileFormat::TILE;
-		cf->write_to_disk(uri, fmt);
-		ptr = load_cytoframe(uri, false);
-	}
 
-	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
+// [[Rcpp::export]]
+List load_fcs_cpp(vector<string> filenames, FCS_READ_PARAM config, bool text_only, string format, vector<string> uri, int num_threads)
+{
+
+  FileFormat fmt;
+  if(format == "mem")
+  {
+    fmt = FileFormat::MEM;
+  }
+  else if(format == "tile")
+    fmt = FileFormat::TILE;
+  else
+    fmt = FileFormat::H5;
+  
+	auto cf_ptrs = load_fcs(filenames, config, text_only, fmt, uri, num_threads);
+	int n = cf_ptrs.size();
+	List res(n);
+	for(int i = 0; i< n; i++)
+	{
+	  res[i] = Rcpp::XPtr<CytoFrameView>(new CytoFrameView(cf_ptrs[i]));
+	}
+	return res;
 }
 
 // [[Rcpp::export]] 

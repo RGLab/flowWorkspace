@@ -1027,18 +1027,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// parseFCS
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only, string format, string uri);
-RcppExport SEXP _flowWorkspace_parseFCS(SEXP filenameSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP formatSEXP, SEXP uriSEXP) {
+// load_fcs_cpp
+List load_fcs_cpp(vector<string> filenames, FCS_READ_PARAM config, bool text_only, string format, vector<string> uri, int num_threads);
+RcppExport SEXP _flowWorkspace_load_fcs_cpp(SEXP filenamesSEXP, SEXP configSEXP, SEXP text_onlySEXP, SEXP formatSEXP, SEXP uriSEXP, SEXP num_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type filenames(filenamesSEXP);
     Rcpp::traits::input_parameter< FCS_READ_PARAM >::type config(configSEXP);
     Rcpp::traits::input_parameter< bool >::type text_only(text_onlySEXP);
     Rcpp::traits::input_parameter< string >::type format(formatSEXP);
-    Rcpp::traits::input_parameter< string >::type uri(uriSEXP);
-    rcpp_result_gen = Rcpp::wrap(parseFCS(filename, config, text_only, format, uri));
+    Rcpp::traits::input_parameter< vector<string> >::type uri(uriSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_fcs_cpp(filenames, config, text_only, format, uri, num_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1510,7 +1511,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_setChannel", (DL_FUNC) &_flowWorkspace_setChannel, 3},
     {"_flowWorkspace_get_channels", (DL_FUNC) &_flowWorkspace_get_channels, 1},
     {"_flowWorkspace_append_cols", (DL_FUNC) &_flowWorkspace_append_cols, 3},
-    {"_flowWorkspace_parseFCS", (DL_FUNC) &_flowWorkspace_parseFCS, 5},
+    {"_flowWorkspace_load_fcs_cpp", (DL_FUNC) &_flowWorkspace_load_fcs_cpp, 6},
     {"_flowWorkspace_cf_getData", (DL_FUNC) &_flowWorkspace_cf_getData, 1},
     {"_flowWorkspace_cf_setData", (DL_FUNC) &_flowWorkspace_cf_setData, 2},
     {"_flowWorkspace_cf_transform_data", (DL_FUNC) &_flowWorkspace_cf_transform_data, 2},

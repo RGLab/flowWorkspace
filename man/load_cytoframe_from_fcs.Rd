@@ -5,7 +5,7 @@
 \title{Read a single FCS file in to a cytoframe}
 \usage{
 load_cytoframe_from_fcs(
-  filename,
+  filenames,
   transformation = "linearize",
   which.lines = NULL,
   alter.names = FALSE,
@@ -14,7 +14,7 @@ load_cytoframe_from_fcs(
   decades = 0,
   is_h5 = NULL,
   backend = get_default_backend(),
-  uri = NULL,
+  uri = character(),
   h5_filename = NULL,
   min.limit = NULL,
   truncate_max_range = TRUE,
@@ -26,7 +26,7 @@ load_cytoframe_from_fcs(
 )
 }
 \arguments{
-\item{filename}{The filename of the single FCS file to be read}
+\item{filenames}{The filenames of the FCS files to be read}
 
 \item{transformation}{A character string that defines the type of
 transformation. Valid values are \code{linearize} (default),

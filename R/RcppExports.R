@@ -386,8 +386,8 @@ append_cols <- function(fr, new_colnames, new_cols_mat) {
     .Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat)
 }
 
-parseFCS <- function(filename, config, text_only = FALSE, format = "mem", uri = "") {
-    .Call(`_flowWorkspace_parseFCS`, filename, config, text_only, format, uri)
+load_fcs_cpp <- function(filenames, config, text_only, format, uri, num_threads) {
+    .Call(`_flowWorkspace_load_fcs_cpp`, filenames, config, text_only, format, uri, num_threads)
 }
 
 cf_getData <- function(fr) {

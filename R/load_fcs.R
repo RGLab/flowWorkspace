@@ -19,7 +19,7 @@
 #' reading the entire FCS (due to the multiple disk IO).
 #'
 #'
-#' @param filename The filename of the single FCS file to be read
+#' @param filenames The filenames of the FCS files to be read
 #' @param transformation A character string that defines the type of
 #' transformation. Valid values are \code{linearize} (default),
 #' \code{linearize-with-PnG-scaling}, or \code{scale}.  The \code{linearize}
@@ -89,7 +89,7 @@
 #' @name load_cytoframe_from_fcs
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe_from_fcs <- function(filename,
+load_cytoframe_from_fcs <- function(filenames,
                      transformation="linearize",
                      which.lines=NULL,
                      alter.names=FALSE,
@@ -98,7 +98,7 @@ load_cytoframe_from_fcs <- function(filename,
                      decades=0,
                       is_h5= NULL,
                       backend = get_default_backend(),
-                      uri = NULL,
+                      uri = character(),
                       h5_filename = NULL,
                      min.limit=NULL,
                      truncate_max_range = TRUE,
@@ -120,47 +120,52 @@ load_cytoframe_from_fcs <- function(filename,
     warning("'h5_filename' argument is deprecated by 'uri'! ")
       uri <- h5_filename
   }
-  if(backend != "mem")
-  {
-    if(is.null(uri))
-      uri <- tempfile(fileext = paste0(".", backend))
-  }else
-    uri <- ""
-    fr <- new("cytoframe")
-    if(is.null(dataset))
-      dataset <- 0
-    if(is.null(min.limit)){
-      truncate_min_val <- FALSE
-      min.limit <- -111
-    }else
-      truncate_min_val <- TRUE
-    if(is.null(which.lines))
-      which.lines <- vector()
-    else
-    {
-    	# Verify that which.lines is positive and within file limit.
-    	if (length(which.lines) > 1) {
-    		which.lines <- which.lines -1
-    	}
-    }
-    fr@pointer <- parseFCS(normalizePath(filename), list(which.lines = which.lines
-                                                         , transformation = transformation
-                                                         , decades = decades
-                                                         , truncate_min_val = truncate_min_val
-                                                         , min_limit = min.limit
-                                                         , truncate_max_range = truncate_max_range
-                                                         , dataset = dataset
-                                                         , emptyValue = emptyValue
-                                                         , num_threads = num_threads
-                                                         , ignoreTextOffset = ignore.text.offset
-                                                         )
-                                                     , text_only = text.only
-                                                    , format = backend
-                                                    , uri = uri
-                            )
-     fr@use.exprs <- !text.only
+  # if(backend != "mem")
+  # {
+  #   if(is.null(uri))
+  #     uri <- tempfile(fileext = paste0(".", backend))
+  # }else
+  #   uri <- ""
 
-    return(fr)
+  if(is.null(dataset))
+    dataset <- 0
+  if(is.null(min.limit)){
+    truncate_min_val <- FALSE
+    min.limit <- -111
+  }else
+    truncate_min_val <- TRUE
+  if(is.null(which.lines))
+    which.lines <- vector()
+  else
+  {
+    # Verify that which.lines is positive and within file limit.
+    if (length(which.lines) > 1) {
+      which.lines <- which.lines -1
+    }
+  }
+  
+  pointers <- load_fcs_cpp(normalizePath(filenames), list(which.lines = which.lines
+                                                           , transformation = transformation
+                                                           , decades = decades
+                                                           , truncate_min_val = truncate_min_val
+                                                           , min_limit = min.limit
+                                                           , truncate_max_range = truncate_max_range
+                                                           , dataset = dataset
+                                                           , emptyValue = emptyValue
+                                                           , num_threads = 1
+                                                           , ignoreTextOffset = ignore.text.offset
+                                                        )
+                                                        , text_only = text.only
+                                                        , format = backend
+                                                        , uri = uri
+                                                        , num_threads = num_threads
+                                                        )
+  res <- lapply(pointers, function(pointer){
+     new("cytoframe", pointer = pointer, use.exprs = !text.only)
+  })
+  if(length(res)==1)
+    res <- res[[1]]
+  res
 }
 
 #' Read one or several FCS files in to a cytoset
