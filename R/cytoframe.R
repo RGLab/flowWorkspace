@@ -921,11 +921,24 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_disk <- function(cf, filename, backend = get_default_backend(), ctx = .cytoctx_global){
-  backend <- match.arg(backend, c("h5", "tile"))
-  stopifnot(is(cf, "cytoframe"))
+#' @rdname write_cytoframes
+cf_write_disk <- function(cf, filename, ...){
+	write_cytoframes(list(cf), filename, ...)
+}
 
-  write_to_disk(cf@pointer,filename, backend == "h5",  ctx$pointer)
+#' @export
+#' @rdname write_cytoframes
+write_cytoframes <- function(cflist, filenames
+								, backend = get_default_backend()
+								, ctx = .cytoctx_global
+								, num_threads = 1
+								)
+{
+	backend <- match.arg(backend, c("h5", "tile"))
+	stopifnot(is(cflist, "list"))
+	lapply(cflist, function(cf)stopifnot(is(cf, "cytoframe")))
+	
+	write_to_disk(lapply(cflist,slot, "pointer"), filenames, backend == "h5", num_threads,  ctx$pointer)
 }
 
 #' Save the cytoframe as h5 format
@@ -952,7 +965,7 @@ cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
 
 #' Load the cytoframe from disk
 #' 
-#' @param uri path to the cytoframe file
+#' @param uri path to the cytoframe files
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #'                 And it is valid when on_disk is set to true.
@@ -960,7 +973,11 @@ cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
 #' @importFrom aws.signature read_credentials
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoctx_global){
+#' @rdname load_cytoframe
+load_cytoframes <- function(uri, on_disk = TRUE, readonly = on_disk
+							, ctx = .cytoctx_global
+							, num_threads = 1)
+{
 	if(!on_disk)
 	{
 	  if(readonly)
@@ -970,9 +987,16 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoc
 	}
 	uri <- suppressWarnings(normalizePath(uri))
 	
-	p <- load_cf(uri, readonly, on_disk, ctx$pointer)
+	pointers <- load_cf(uri, readonly, on_disk, num_threads, ctx$pointer)
 	
-	new("cytoframe", pointer = p, use.exprs = TRUE)
+	lapply(pointers, function(pointer){
+				new("cytoframe", pointer = pointer, use.exprs = TRUE)
+			})
+}
+#' @export
+#' @rdname load_cytoframe
+load_cytoframe <- function(...){
+	load_cytoframes(...)[[1]]
 }
 
 #' return the cytoframe backend storage format

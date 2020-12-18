@@ -135,7 +135,7 @@ Other cytoframe/cytoset IO functions:
 \code{\link{cf_write_h5}()},
 \code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
-\code{\link{load_cytoframe}()},
+\code{\link{load_cytoframes}()},
 \code{\link{load_cytoset_from_fcs}()}
 }
 \concept{cytoframe/cytoset IO functions}

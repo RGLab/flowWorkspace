@@ -354,12 +354,12 @@ frm_compensate <- function(fr, spillover) {
     invisible(.Call(`_flowWorkspace_frm_compensate`, fr, spillover))
 }
 
-write_to_disk <- function(fr, filename, ish5, ctx) {
-    invisible(.Call(`_flowWorkspace_write_to_disk`, fr, filename, ish5, ctx))
+write_to_disk <- function(ptrs, filenames, ish5, num_threads, ctx) {
+    invisible(.Call(`_flowWorkspace_write_to_disk`, ptrs, filenames, ish5, num_threads, ctx))
 }
 
-load_cf <- function(url, readonly, on_disk, ctx) {
-    .Call(`_flowWorkspace_load_cf`, url, readonly, on_disk, ctx)
+load_cf <- function(filenames, readonly, on_disk, num_threads, ctx) {
+    .Call(`_flowWorkspace_load_cf`, filenames, readonly, on_disk, num_threads, ctx)
 }
 
 cf_to_memcf <- function(fr) {

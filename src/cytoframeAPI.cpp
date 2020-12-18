@@ -1,6 +1,6 @@
 #include <cytolib/H5CytoFrame.hpp>
 #include <cytolib/CytoFrame.hpp>
-#include <cytolib/utils.hpp>
+#include <cytolib/io.hpp>
 #include <flowWorkspace/pairVectorRcppWrap.h>
 #include <flowWorkspace/convert_trans.h>
 using namespace Rcpp;
@@ -115,22 +115,29 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, XPtr<CytoCtx> ctx){
+void write_to_disk(List ptrs, vector<string> filenames, bool ish5, int num_threads,XPtr<CytoCtx> ctx){
   FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
-
-  fr->write_to_disk(filename, format, *ctx);
-  
+	int n = ptrs.size();
+	vector <CytoFrameView> cvs(n);
+	for(int i = 0; i < n; i++){
+	  auto p = ptrs[i];
+	  Rcpp::XPtr<CytoFrameView> xp = as<Rcpp::XPtr<CytoFrameView>>(p);
+	  cvs[i] = *xp;
+	}
+	  cytolib::io::write_cytoframeview(cvs, filenames, format, num_threads, *ctx);
+	
 }
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,XPtr<CytoCtx> ctx){
-    CytoFramePtr ptr = load_cytoframe(url, readonly, *ctx);
-
-	if(!on_disk)
+List load_cf(vector<string> filenames, bool readonly, bool on_disk
+		, int num_threads,XPtr<CytoCtx> ctx){
+	auto cf_ptrs = cytolib::io::load_cytoframe(filenames, readonly, on_disk, num_threads, *ctx);
+	int n = cf_ptrs.size();
+	List res(n);
+	for(int i = 0; i< n; i++)
 	{
-		ptr.reset(new MemCytoFrame(*ptr));
+	  res[i] = Rcpp::XPtr<CytoFrameView>(new CytoFrameView(cf_ptrs[i]));
 	}
-
-	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
+	return res;
 
 }
 
@@ -194,7 +201,9 @@ List load_fcs_cpp(vector<string> filenames, FCS_READ_PARAM config, bool text_onl
   else
     fmt = FileFormat::H5;
   
-	auto cf_ptrs = load_fcs(filenames, config, text_only, fmt, uri, num_threads);
+  auto cf_ptrs = load_fcs(filenames, config, text_only, fmt, uri, num_threads); 
+  
+	
 	int n = cf_ptrs.size();
 	List res(n);
 	for(int i = 0; i< n; i++)

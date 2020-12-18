@@ -931,29 +931,31 @@ BEGIN_RCPP
 END_RCPP
 }
 // write_to_disk
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, XPtr<CytoCtx> ctx);
-RcppExport SEXP _flowWorkspace_write_to_disk(SEXP frSEXP, SEXP filenameSEXP, SEXP ish5SEXP, SEXP ctxSEXP) {
+void write_to_disk(List ptrs, vector<string> filenames, bool ish5, int num_threads, XPtr<CytoCtx> ctx);
+RcppExport SEXP _flowWorkspace_write_to_disk(SEXP ptrsSEXP, SEXP filenamesSEXP, SEXP ish5SEXP, SEXP num_threadsSEXP, SEXP ctxSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<CytoFrameView> >::type fr(frSEXP);
-    Rcpp::traits::input_parameter< string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< List >::type ptrs(ptrsSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type filenames(filenamesSEXP);
     Rcpp::traits::input_parameter< bool >::type ish5(ish5SEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
     Rcpp::traits::input_parameter< XPtr<CytoCtx> >::type ctx(ctxSEXP);
-    write_to_disk(fr, filename, ish5, ctx);
+    write_to_disk(ptrs, filenames, ish5, num_threads, ctx);
     return R_NilValue;
 END_RCPP
 }
 // load_cf
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk, XPtr<CytoCtx> ctx);
-RcppExport SEXP _flowWorkspace_load_cf(SEXP urlSEXP, SEXP readonlySEXP, SEXP on_diskSEXP, SEXP ctxSEXP) {
+List load_cf(vector<string> filenames, bool readonly, bool on_disk, int num_threads, XPtr<CytoCtx> ctx);
+RcppExport SEXP _flowWorkspace_load_cf(SEXP filenamesSEXP, SEXP readonlySEXP, SEXP on_diskSEXP, SEXP num_threadsSEXP, SEXP ctxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type url(urlSEXP);
+    Rcpp::traits::input_parameter< vector<string> >::type filenames(filenamesSEXP);
     Rcpp::traits::input_parameter< bool >::type readonly(readonlySEXP);
     Rcpp::traits::input_parameter< bool >::type on_disk(on_diskSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
     Rcpp::traits::input_parameter< XPtr<CytoCtx> >::type ctx(ctxSEXP);
-    rcpp_result_gen = Rcpp::wrap(load_cf(url, readonly, on_disk, ctx));
+    rcpp_result_gen = Rcpp::wrap(load_cf(filenames, readonly, on_disk, num_threads, ctx));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1503,8 +1505,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_subset_cytoframe_by_rows", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows, 2},
     {"_flowWorkspace_subset_cytoframe_by_cols", (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols, 2},
     {"_flowWorkspace_frm_compensate", (DL_FUNC) &_flowWorkspace_frm_compensate, 2},
-    {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 4},
-    {"_flowWorkspace_load_cf", (DL_FUNC) &_flowWorkspace_load_cf, 4},
+    {"_flowWorkspace_write_to_disk", (DL_FUNC) &_flowWorkspace_write_to_disk, 5},
+    {"_flowWorkspace_load_cf", (DL_FUNC) &_flowWorkspace_load_cf, 5},
     {"_flowWorkspace_cf_to_memcf", (DL_FUNC) &_flowWorkspace_cf_to_memcf, 1},
     {"_flowWorkspace_setMarker", (DL_FUNC) &_flowWorkspace_setMarker, 3},
     {"_flowWorkspace_set_all_channels", (DL_FUNC) &_flowWorkspace_set_all_channels, 2},

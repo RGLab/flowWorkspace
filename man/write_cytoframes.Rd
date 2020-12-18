@@ -2,13 +2,17 @@
 % Please edit documentation in R/cytoframe.R
 \name{cf_write_disk}
 \alias{cf_write_disk}
+\alias{write_cytoframes}
 \title{Save the cytoframe to disk}
 \usage{
-cf_write_disk(
-  cf,
-  filename,
+cf_write_disk(cf, filename, ...)
+
+write_cytoframes(
+  cflist,
+  filenames,
   backend = get_default_backend(),
-  ctx = .cytoctx_global
+  ctx = .cytoctx_global,
+  num_threads = 1
 )
 }
 \arguments{
@@ -30,7 +34,7 @@ Other cytoframe/cytoset IO functions:
 \code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
-\code{\link{load_cytoframe}()},
+\code{\link{load_cytoframes}()},
 \code{\link{load_cytoset_from_fcs}()}
 }
 \concept{cytoframe/cytoset IO functions}
