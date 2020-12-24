@@ -227,8 +227,8 @@ set_cytoset <- function(gsPtr, cs) {
     .Call(`_flowWorkspace_get_sample_uids`, gsPtr)
 }
 
-.cpp_NewGatingSet <- function(gsPtr, src_sample_uid, cs, execute, comp_source) {
-    .Call(`_flowWorkspace_NewGatingSet`, gsPtr, src_sample_uid, cs, execute, comp_source)
+.cpp_NewGatingSet <- function(gsPtr, src_sample_uid, cs, execute, comp_source, num_threads) {
+    .Call(`_flowWorkspace_NewGatingSet`, gsPtr, src_sample_uid, cs, execute, comp_source, num_threads)
 }
 
 get_gatingset_id <- function(gsPtr) {

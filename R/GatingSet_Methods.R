@@ -155,6 +155,7 @@ setMethod("GatingSet", c("GatingHierarchy", "character"), function(x, y, path=".
 gh_apply_to_cs <- function(x, cs
 									              , swap_cols = FALSE #for diva parsing
 									              , compensation_source = "sample"
+									              , num_threads = 1
 									              , ...){	
       
 			compensation_source <- match.arg(compensation_source, c("sample", "template", "none"))
@@ -173,7 +174,7 @@ gh_apply_to_cs <- function(x, cs
 				
 			}
 			execute_in_c <- length(x@transformation) == 0
-			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c, compensation_source))
+			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c, compensation_source, num_threads))
 			#deal with the trans that are not stored in c++
 			if(!execute_in_c)
 			{

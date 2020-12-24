@@ -582,8 +582,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // NewGatingSet
-XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr, string src_sample_uid, XPtr<GatingSet> cs, bool execute, string comp_source);
-RcppExport SEXP _flowWorkspace_NewGatingSet(SEXP gsPtrSEXP, SEXP src_sample_uidSEXP, SEXP csSEXP, SEXP executeSEXP, SEXP comp_sourceSEXP) {
+XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr, string src_sample_uid, XPtr<GatingSet> cs, bool execute, string comp_source, int num_threads);
+RcppExport SEXP _flowWorkspace_NewGatingSet(SEXP gsPtrSEXP, SEXP src_sample_uidSEXP, SEXP csSEXP, SEXP executeSEXP, SEXP comp_sourceSEXP, SEXP num_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -592,7 +592,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< XPtr<GatingSet> >::type cs(csSEXP);
     Rcpp::traits::input_parameter< bool >::type execute(executeSEXP);
     Rcpp::traits::input_parameter< string >::type comp_source(comp_sourceSEXP);
-    rcpp_result_gen = Rcpp::wrap(NewGatingSet(gsPtr, src_sample_uid, cs, execute, comp_source));
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(NewGatingSet(gsPtr, src_sample_uid, cs, execute, comp_source, num_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1474,7 +1475,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_cytoset_from_node", (DL_FUNC) &_flowWorkspace_get_cytoset_from_node, 2},
     {"_flowWorkspace_set_cytoset", (DL_FUNC) &_flowWorkspace_set_cytoset, 2},
     {"_flowWorkspace_get_sample_uids", (DL_FUNC) &_flowWorkspace_get_sample_uids, 1},
-    {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 5},
+    {"_flowWorkspace_NewGatingSet", (DL_FUNC) &_flowWorkspace_NewGatingSet, 6},
     {"_flowWorkspace_get_gatingset_id", (DL_FUNC) &_flowWorkspace_get_gatingset_id, 1},
     {"_flowWorkspace_set_gatingset_id", (DL_FUNC) &_flowWorkspace_set_gatingset_id, 2},
     {"_flowWorkspace_save_gatingset", (DL_FUNC) &_flowWorkspace_save_gatingset, 4},
