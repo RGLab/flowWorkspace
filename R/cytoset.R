@@ -431,7 +431,7 @@ setReplaceMethod("markernames",
 #' @rdname is_subsetted
 #' @export
 cs_is_subsetted <- function(x){
-  any(unlist(lapply(x, cf_is_subsetted)))
+  cs_is_indexed(x@pointer)
 }
 
 setMethod("show",

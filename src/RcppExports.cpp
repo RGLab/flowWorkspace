@@ -1192,6 +1192,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cs_is_indexed
+bool cs_is_indexed(Rcpp::XPtr<GatingSet> cs);
+RcppExport SEXP _flowWorkspace_cs_is_indexed(SEXP csSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<GatingSet> >::type cs(csSEXP);
+    rcpp_result_gen = Rcpp::wrap(cs_is_indexed(cs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cs_set_compensation
 void cs_set_compensation(Rcpp::XPtr<GatingSet> cs, List comps, bool compensate_data);
 RcppExport SEXP _flowWorkspace_cs_set_compensation(SEXP csSEXP, SEXP compsSEXP, SEXP compensate_dataSEXP) {
@@ -1528,6 +1539,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getnrow", (DL_FUNC) &_flowWorkspace_getnrow, 1},
     {"_flowWorkspace_setpdata", (DL_FUNC) &_flowWorkspace_setpdata, 2},
     {"_flowWorkspace_getpdata", (DL_FUNC) &_flowWorkspace_getpdata, 1},
+    {"_flowWorkspace_cs_is_indexed", (DL_FUNC) &_flowWorkspace_cs_is_indexed, 1},
     {"_flowWorkspace_cs_set_compensation", (DL_FUNC) &_flowWorkspace_cs_set_compensation, 3},
     {"_flowWorkspace_set_cytoframe", (DL_FUNC) &_flowWorkspace_set_cytoframe, 3},
     {"_flowWorkspace_add_cytoframe", (DL_FUNC) &_flowWorkspace_add_cytoframe, 3},

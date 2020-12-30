@@ -8,6 +8,17 @@ using namespace cytolib;
 
 //[[Rcpp::plugins("temp")]]
 
+// [[Rcpp::export]]
+bool cs_is_indexed(Rcpp::XPtr<GatingSet> cs)
+{
+	for(auto &[sn, gh]: *cs)
+	{
+		auto fr = gh->get_cytoframe_view();
+		if(fr.is_row_indexed()||fr.is_col_indexed())
+			return true;
+	}
+	return false;
+}
 
 //' @param comps a list of NumericMatrix
 //' @param compensate_data Typically we set it to true to compensate the data as we set comp, Only when we convert the legacy gs, do we skipping this part.

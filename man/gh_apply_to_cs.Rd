@@ -5,7 +5,14 @@
 \alias{GatingSet,GatingHierarchy,character-method}
 \title{Construct a \code{GatingSet} using a template}
 \usage{
-gh_apply_to_cs(x, cs, swap_cols = FALSE, compensation_source = "sample", ...)
+gh_apply_to_cs(
+  x,
+  cs,
+  swap_cols = FALSE,
+  compensation_source = "sample",
+  num_threads = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{GatingHierarchy}
