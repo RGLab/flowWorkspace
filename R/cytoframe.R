@@ -262,7 +262,7 @@
 #' @import ncdfFlow
 #' @importClassesFrom flowCore flowFrame
 #' @export 
-setClass("cytoframe", contains = "flowFrame" ,               
+setClass("cytoframe",                
     representation=representation(pointer = "externalptr"
                                   , use.exprs = "logical" #for the purpose  of backward compatible (e.g. fs[[1, use.exprs = F]]
                                   ),
@@ -894,10 +894,10 @@ cf_keyword_set <- function(cf, keys, values){
 #' @param cf cytoframe object 
 #' @export
 cytoframe_to_flowFrame <- function(cf){
-  cf@exprs <- exprs(cf)
-  cf@description = keyword(cf)
-  cf@parameters <- parameters(cf)
-  as(cf, "flowFrame")
+  res <- new("flowFrame", exprs = exprs(cf)
+                        , description = keyword(cf)
+                        , parameters <- parameters(cf)
+              )
 }
 #can't define coerce method for cytoframe, i.e. SetAS for as(cf, "flowFrame")
 #since there is already existing implicit coerce available
@@ -1185,3 +1185,65 @@ cf_append_cols <- function(cf, cols, ctx = .cytoctx_global){
   cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
 
 }
+
+setMethod("identifier",
+          signature=signature(object="cytoframe"),
+          definition=function(object)
+          {
+            selectMethod("identifier", "flowFrame")(object)
+          })
+
+#' @export
+setMethod("keyword",
+          signature=signature(object="cytoframe",
+                              keyword="character"),
+          function(object, keyword)
+            selectMethod("keyword", c("flowFrame", "character"))(object, keyword)
+)
+setMethod("range",
+          signature=signature(x="cytoframe"),
+          definition=function(x, ..., type = c("instrument", "data"), na.rm)
+          {
+            selectMethod("range", "flowFrame")(x, ..., type = type)
+          })
+setMethod("Subset",
+          signature=signature(x="cytoframe",
+                              subset="ANY"),
+          definition=function(x,subset,select,...)
+          {
+            selectMethod("Subset", c("flowFrame", class(subset)))(x,subset,select,...)
+          })
+setMethod("%in%",
+          signature=signature(x="cytoframe", table="ANY"),
+          definition=function(x, table)
+          {
+            selectMethod("%in%", c("flowFrame", class(table)))(x, table)
+            
+          })
+setMethod("spillover",
+          signature=signature(x="cytoframe"),
+          definition=function(x)
+          {
+            selectMethod("spillover", "flowFrame")(x)
+          })
+
+setMethod("markernames",
+          signature=signature(object="cytoframe"),
+          definition=function(object){
+            selectMethod("markernames", "flowFrame")(object)
+          })
+
+setMethod("summary",
+          signature=signature(object="cytoframe"),
+          definition=function(object, ...)
+          {
+            selectMethod("summary", "flowFrame")(object)
+          })
+
+setMethod("%on%",
+          signature=signature(e1="ANY",
+                              e2="cytoframe"),
+          definition=function(e1, e2)
+          {
+            selectMethod("%on%", c(class(e1), "flowFrame"))(e1, e2)
+          })
