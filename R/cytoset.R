@@ -257,8 +257,7 @@ NULL
 #'   
 #' @importClassesFrom flowCore flowSet
 #' @export 
-setClass("cytoset", contains = "flowSet"
-          ,representation=representation(pointer = "externalptr"))
+setClass("cytoset", representation=representation(pointer = "externalptr"))
 
 #' @export 
 cytoset <- function(x, ...){
@@ -477,10 +476,10 @@ setMethod("[[",
 #TODO: how to clean up on-disk h5 after replacement with new cf
 setReplaceMethod("[[",
 	  signature=signature(x="cytoset",
-			  value="flowFrame"),
+			  value="ANY"),
 	  definition=function(x, i, j, ..., value)
 	  {
-	    
+	    stopifnot(is(value, "flowFrame")||is(value, "cytoframe"))
 	  	if(length(i) != 1 || i <= 0)
 	  		stop("subscript out of bounds (index must have length 1 and be positive)")
 		  cnx <- colnames(x)
@@ -804,9 +803,9 @@ realize_view.cytoset <- function(x, filepath = tempdir()){
 
 setMethod("nrow",
 		signature=signature(x="cytoset"),
-		definition=function(x)
-			lapply(x, nrow)
-)
+		definition=function(x){
+			lapply(x, flowCore::nrow)
+})
 
 ## Note that the replacement method also replaces the GUID for each flowFrame
 setReplaceMethod("sampleNames",
@@ -1024,3 +1023,49 @@ cs_keyword_set <- function(cs, keys, values){
   for(idx in seq_along(cs))
     cf_setKeywordsSubset(cs[[idx]]@pointer, keys, values)
 }
+
+setMethod("fsApply",
+          signature=signature(x="cytoset",
+                              FUN="ANY"),
+          definition=function(x,FUN,...,simplify=TRUE, use.exprs=FALSE)
+          {
+            selectMethod("fsApply", "flowSet")(x,FUN,...
+                                               , simplify = simplify
+                                               , use.exprs = use.exprs)
+            
+          })
+
+setAs(from="cytoset", to="flowFrame", def=function(from)
+{
+  res <- selectMethod("coerce", c("flowSet", "flowFrame"))(from)
+  if(is(res, "cytoframe"))
+    res <- cytoframe_to_flowFrame(res)
+  res
+})
+
+setMethod("length",
+          signature=signature(x="cytoset"),
+          definition=function(x) length(sampleNames(x)))
+
+setMethod("Subset",
+          signature=signature(x="cytoset",
+                              subset="ANY"),
+          definition=function(x,subset,select,...)
+          {
+            selectMethod("Subset", c("flowSet", class(subset)))(x,subset,select,...)
+          })
+
+setMethod("filter",
+          signature=signature(x="cytoset",
+                              filter="ANY"),
+          definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
+          {
+            selectMethod("filter", c("flowSet", class(filter)))(x,filter,...)
+          })
+
+setMethod("keyword",
+          signature=signature(object="cytoset",
+                              keyword="ANY"),
+          definition=function(object, keyword)
+            selectMethod("keyword", c("flowSet", class(keyword)))(object, keyword)
+)

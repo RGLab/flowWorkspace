@@ -1247,3 +1247,7 @@ setMethod("%on%",
           {
             selectMethod("%on%", c(class(e1), "flowFrame"))(e1, e2)
           })
+
+estimateLogicle.cytoframe <- function(x, channels, ...){
+  estimateLogicle.flowFrame(x, channels, ...)
+}
