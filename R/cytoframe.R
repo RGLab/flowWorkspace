@@ -1185,6 +1185,13 @@ cf_append_cols <- function(cf, cols, ctx = .cytoctx_global){
   cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
 
 }
+setMethod("filter",
+          signature=signature(x="cytoframe",
+                              filter="ANY"),
+          definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
+          {
+            selectMethod("filter", c("flowFrame", class(filter)))(x,filter)
+          })
 
 setMethod("identifier",
           signature=signature(object="cytoframe"),
