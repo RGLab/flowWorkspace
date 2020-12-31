@@ -1060,7 +1060,7 @@ setMethod("filter",
                               filter="ANY"),
           definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
           {
-            selectMethod("filter", c("flowSet", class(filter)))(x,filter,...)
+            selectMethod("filter", c("flowSet", class(filter)))(x,filter)
           })
 
 setMethod("keyword",

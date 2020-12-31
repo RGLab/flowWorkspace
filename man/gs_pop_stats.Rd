@@ -120,4 +120,9 @@ pop.quantiles <- function(fr){
    }
 gs_pop_get_stats(gs, nodes, type = pop.quantiles)
 }
+\dontrun{
+ gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
+gs <<- load_gs(gs_dir)
+gh_pop_stats_compare(gs[[1]])
+}
 }

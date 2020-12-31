@@ -257,15 +257,21 @@ gh_pop_get_count <- function(x,y,xml = FALSE){
 #' @param ... not used
 #' @export
 #' @rdname gs_pop_stats
-#' @importFrom dplyr filter tibble rename rename_if select
+#' @importFrom dplyr tibble rename rename_if select
 #' @importFrom tidyselect contains
+#' @examples 
+#' \dontrun{
+#'  gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
+#' gs <<- load_gs(gs_dir)
+#' gh_pop_stats_compare(gs[[1]])
+#' }
 gh_pop_stats_compare <- function(gh, nodes = NULL, path = "auto", type = c("Count"), legacy = FALSE, ...){
 	if(is.null(nodes))
 	  nodes <- gs_get_pop_paths(gh, path = path, ...)
 	stats <- do.call(rbind, lapply(nodes, function(thisPath){
-              					 .getPopStat(gh,thisPath) %>% 
-	                                            tibble() %>%
-              					                      filter(type %in% !!type) %>%
+              					 
+	                                            res <- tibble(.getPopStat(gh,thisPath))
+              					                      res[res[["type"]] %in% eval(type), ] %>%
 	                                            mutate(node = thisPath)
               					})
 	)
