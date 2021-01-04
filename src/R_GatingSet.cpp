@@ -289,7 +289,7 @@ void set_sample_uid(XPtr<GatingSet> gs,string oldName, string newName) {
 //[[Rcpp::export]]
 bool is_tiledb_support() {
 
-		return have_tiledb;
+		return false;
 
 }
 //[[Rcpp::export(name=".cpp_getLogLevel")]]

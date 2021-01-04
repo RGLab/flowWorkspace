@@ -42,9 +42,9 @@ test_that("rownames", {
   expect_null(rownames(cf1))
 })
 
-test_that("load_cytoframe", {
-  expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
-})
+# test_that("load_cytoframe", {
+#   expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
+# })
 
 test_that("cf_append_cols", {
   cf <- flowFrame_to_cytoframe(GvHD[[1]])

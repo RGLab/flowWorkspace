@@ -115,7 +115,7 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 
 // [[Rcpp::export]]
 void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, XPtr<CytoCtx> ctx){
-  FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
+  FileFormat format = FileFormat::H5;
 
   fr->write_to_disk(filename, format, *ctx);
   
@@ -202,10 +202,7 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 	else
 	{
 		FileFormat fmt;
-		if(format == "h5")
-			fmt = FileFormat::H5;
-		else
-			fmt = FileFormat::TILE;
+		fmt = FileFormat::H5;
 		cf->write_to_disk(uri, fmt);
 		ptr = load_cytoframe(uri, false);
 	}
