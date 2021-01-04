@@ -6,6 +6,25 @@ using namespace Rcpp;
 using namespace cytolib;
 
 // [[Rcpp::export]]
+void del_rownames(Rcpp::XPtr<CytoFrameView> fr)
+{
+  return fr->del_rownames();
+}
+
+// [[Rcpp::export]]
+void set_rownames(Rcpp::XPtr<CytoFrameView> fr, vector<string> val)
+{
+  return fr->set_rownames(val);
+}
+
+// [[Rcpp::export]]
+vector<string> get_rownames(Rcpp::XPtr<CytoFrameView> fr)
+{
+  return fr->get_rownames();
+}
+
+
+// [[Rcpp::export]]
 string backend_type(Rcpp::XPtr<CytoFrameView> fr)
 {
 	return fmt_to_str(fr->get_backend_type());
@@ -95,15 +114,15 @@ void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
 }
 
 // [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CytoCtx ctx){
-  FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, XPtr<CytoCtx> ctx){
+  FileFormat format = FileFormat::H5;
 
-  fr->write_to_disk(filename, format, ctx);
+  fr->write_to_disk(filename, format, *ctx);
   
 }
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,CytoCtx ctx){
-    CytoFramePtr ptr = load_cytoframe(url, readonly, ctx);
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,XPtr<CytoCtx> ctx){
+    CytoFramePtr ptr = load_cytoframe(url, readonly, *ctx);
 
 	if(!on_disk)
 	{
@@ -145,6 +164,11 @@ void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
 }
 
 // [[Rcpp::export]]
+vector<string> get_channels(Rcpp::XPtr<CytoFrameView> fr){
+	return fr->get_channels();
+}
+
+// [[Rcpp::export]]
 Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat){
   
   
@@ -178,10 +202,7 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 	else
 	{
 		FileFormat fmt;
-		if(format == "h5")
-			fmt = FileFormat::H5;
-		else
-			fmt = FileFormat::TILE;
+		fmt = FileFormat::H5;
 		cf->write_to_disk(uri, fmt);
 		ptr = load_cytoframe(uri, false);
 	}
@@ -203,9 +224,11 @@ NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
   for(int i = 0; i < ncol; i++)
     cid[i] = "$P" + to_string(i+1) + "N";
   
-    
   chnl.attr("names") = cid;
-  mat.attr("dimnames") = List::create(R_NilValue, chnl);
+  colnames(mat) = chnl;
+  auto rn = fr->get_rownames();
+  if(rn.size()>0)
+	  rownames(mat) = wrap(rn);
   return mat;
 }
 // [[Rcpp::export]]

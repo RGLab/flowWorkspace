@@ -238,6 +238,26 @@ is_tiledb_support <- function() {
     invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
 }
 
+new_cytoctx <- function(cred) {
+    .Call(`_flowWorkspace_new_cytoctx`, cred)
+}
+
+read_cytoctx <- function(ctx) {
+    .Call(`_flowWorkspace_read_cytoctx`, ctx)
+}
+
+del_rownames <- function(fr) {
+    invisible(.Call(`_flowWorkspace_del_rownames`, fr))
+}
+
+set_rownames <- function(fr, val) {
+    invisible(.Call(`_flowWorkspace_set_rownames`, fr, val))
+}
+
+get_rownames <- function(fr) {
+    .Call(`_flowWorkspace_get_rownames`, fr)
+}
+
 backend_type <- function(fr) {
     .Call(`_flowWorkspace_backend_type`, fr)
 }
@@ -308,6 +328,10 @@ set_all_channels <- function(fr, new_names) {
 
 setChannel <- function(fr, old, new_name) {
     invisible(.Call(`_flowWorkspace_setChannel`, fr, old, new_name))
+}
+
+get_channels <- function(fr) {
+    .Call(`_flowWorkspace_get_channels`, fr)
 }
 
 append_cols <- function(fr, new_colnames, new_cols_mat) {

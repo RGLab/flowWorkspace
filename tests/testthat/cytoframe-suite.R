@@ -8,9 +8,44 @@ rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 cf <- load_cytoframe_from_fcs(fcs_file)
 cf_lock(cf)
 
-test_that("load_cytoframe", {
-  expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
+
+test_that("rownames", {
+  rn <- rownames(cf)
+  cn <- colnames(cf)
+  expect_equivalent(dimnames(cf), list(rn, cn))
+  expect_null(rn)
+  expect_null(rownames(exprs(cf)))
+  
+  # add rn
+  cf <- realize_view(cf)  
+  rn <- paste0("c", seq_len(nrow(cf)))
+  rownames(cf) <- rn
+  expect_equal(rownames(cf), rn)
+  expect_equal(rownames(exprs(cf)), rn)
+  
+  #subset
+  cf1 <- cf[2:4, 1:2]
+  rn1 <- rn[2:4]
+  expect_equal(rownames(cf1), rn1)
+  rn1 <- sub("c", "d", rn1)
+  expect_error(rownames(cf) <- rn1, "different", class = "error")
+  rownames(cf1) <- rn1
+  expect_equal(rownames(cf1), rn1)
+  rn[2:4] <- rn1
+  expect_equal(rownames(cf), rn)
+  expect_equal(rownames(exprs(cf)), rn)
+  
+  #del
+  expect_error(rownames(cf1) <- NULL, "subsetted", class = "error")
+  rownames(cf) <- NULL
+  expect_null(rownames(cf))
+  expect_null(rownames(cf1))
 })
+
+# test_that("load_cytoframe", {
+#   expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
+# })
+
 test_that("cf_append_cols", {
   cf <- flowFrame_to_cytoframe(GvHD[[1]])
   
