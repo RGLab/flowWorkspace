@@ -82,7 +82,7 @@ Retrieve  sample names by scanning h5 files from a GatingSet folder" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@ Retrieve  sample names by scanning h5 files from a GatingSet folder" />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -107,7 +107,7 @@ Retrieve  sample names by scanning h5 files from a GatingSet folder" />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -135,16 +135,30 @@ The <code>GatingSet</code> object The internal C data structure (gating tree),<c
 <p>Retrieve  sample names by scanning h5 files from a GatingSet folder</p>
     </div>
 
-    <pre class="usage"><span class='fu'>save_gs</span>(<span class='no'>gs</span>, <span class='no'>path</span>, <span class='kw'>cdf</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"copy"</span>, <span class='st'>"move"</span>, <span class='st'>"skip"</span>, <span class='st'>"symlink"</span>, <span class='st'>"link"</span>), <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>save_gs</span><span class='op'>(</span>
+  <span class='va'>gs</span>,
+  <span class='va'>path</span>,
+  cdf <span class='op'>=</span> <span class='cn'>NULL</span>,
+  backend_opt <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"copy"</span>, <span class='st'>"move"</span>, <span class='st'>"skip"</span>, <span class='st'>"symlink"</span>, <span class='st'>"link"</span><span class='op'>)</span>,
+  ctx <span class='op'>=</span> <span class='va'>.cytoctx_global</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
-<span class='fu'>load_gs</span>(<span class='no'>path</span>, <span class='kw'>h5_readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span>(), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='fu'>load_gs</span><span class='op'>(</span>
+  <span class='va'>path</span>,
+  h5_readonly <span class='op'>=</span> <span class='cn'>NULL</span>,
+  backend_readonly <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  select <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span><span class='op'>(</span><span class='op'>)</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ctx <span class='op'>=</span> <span class='va'>.cytoctx_global</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for character</span>
-<span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>object</span>)
+<span class='fu'><a href='sampleNames.html'>sampleNames</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
 
-<span class='fu'>save_gslist</span>(<span class='no'>gslist</span>, <span class='no'>path</span>, <span class='no'>...</span>)
+<span class='fu'>save_gslist</span><span class='op'>(</span><span class='va'>gslist</span>, <span class='va'>path</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>load_gslist</span>(<span class='no'>path</span>)</pre>
+<span class='fu'>load_gslist</span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,10 +172,14 @@ The <code>GatingSet</code> object The internal C data structure (gating tree),<c
       <td><p>A character scalar giving the path to save/load the GatingSet to/from.</p></td>
     </tr>
     <tr>
-      <th>cdf</th>
-      <td><p>a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the cdf data file.
-Sometimes it is more efficient to move or create a symlink of the existing cdf file to the archived folder.
-It is useful to "skip" archiving cdf file if raw data has not been changed.</p></td>
+      <th>backend_opt</th>
+      <td><p>a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the backend data file.
+Sometimes it is more efficient to move or create a symlink of the existing backend file to the archived folder.
+It is useful to "skip" archiving backend file if raw data has not been changed.</p></td>
+    </tr>
+    <tr>
+      <th>ctx</th>
+      <td><p>cytoctx object, see [cytoctx] for details</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -194,19 +212,20 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.</p><
     <div class='dont-index'><p><code><a href='GatingSet-class.html'>GatingSet-class</a></code>,<code><a href='GatingSetList-class.html'>GatingSetList-class</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-        <span class='co'>#G is a GatingSet</span>
-        <span class='fu'>save_gs</span>(<span class='no'>G</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-        <span class='no'>G1</span><span class='kw'>&lt;-</span><span class='fu'>load_gs</span>(<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='co'>#G is a GatingSet</span>
+  <span class='fu'>save_gs</span><span class='op'>(</span><span class='va'>G</span>,path<span class='op'>=</span><span class='st'>"tempFolder"</span><span class='op'>)</span>
+  <span class='va'>G1</span><span class='op'>&lt;-</span><span class='fu'>load_gs</span><span class='op'>(</span>path<span class='op'>=</span><span class='st'>"tempFolder"</span><span class='op'>)</span>
 
-        <span class='co'>#G is a GatingSet</span>
+  <span class='co'>#G is a GatingSet</span>
 
-        <span class='fu'>save_gslist</span>(<span class='no'>gslist1</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-        <span class='no'>gslist2</span><span class='kw'>&lt;-</span><span class='fu'>load_gslist</span>(<span class='kw'>path</span><span class='kw'>=</span><span class='st'>"tempFolder"</span>)
-}
-      <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-        <span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>gsdir</span>)
-      }</div></pre>
+  <span class='fu'>save_gslist</span><span class='op'>(</span><span class='va'>gslist1</span>,path<span class='op'>=</span><span class='st'>"tempFolder"</span><span class='op'>)</span>
+  <span class='va'>gslist2</span><span class='op'>&lt;-</span><span class='fu'>load_gslist</span><span class='op'>(</span>path<span class='op'>=</span><span class='st'>"tempFolder"</span><span class='op'>)</span>
+<span class='op'>}</span>
+      <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='fu'><a href='sampleNames.html'>sampleNames</a></span><span class='op'>(</span><span class='va'>gsdir</span><span class='op'>)</span>
+      <span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -222,7 +241,7 @@ It is useful to "skip" archiving cdf file if raw data has not been changed.</p><
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

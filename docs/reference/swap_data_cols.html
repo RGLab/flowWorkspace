@@ -83,7 +83,7 @@ Perform some validity checks before returning the updated colnames" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@ Perform some validity checks before returning the updated colnames" />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -108,7 +108,7 @@ Perform some validity checks before returning the updated colnames" />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -136,7 +136,7 @@ Perform some validity checks before returning the updated colnames</h1>
 Perform some validity checks before returning the updated colnames</p>
     </div>
 
-    <pre class="usage"><span class='fu'>swap_data_cols</span>(<span class='no'>cols</span>, <span class='no'>swap_cols</span>)</pre>
+    <pre class="usage"><span class='fu'>swap_data_cols</span><span class='op'>(</span><span class='va'>cols</span>, <span class='va'>swap_cols</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,10 +156,13 @@ Perform some validity checks before returning the updated colnames</p>
     <p>the new colname vector that has some colnames swapped</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowCore</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>GvHD</span>)
-<span class='no'>fr</span> <span class='kw'>&lt;-</span> <span class='no'>GvHD</span><span class='kw'>[[</span><span class='fl'>1</span>]]
-<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>fr</span>)</div><div class='output co'>#&gt; [1] "FSC-H" "SSC-H" "FL1-H" "FL2-H" "FL3-H" "FL2-A" "FL4-H" "Time" </div><div class='input'><span class='no'>new</span> <span class='kw'>&lt;-</span> <span class='fu'>swap_data_cols</span>(<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>fr</span>), <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>`FSC-H`</span> <span class='kw'>=</span> <span class='st'>"SSC-H"</span>, <span class='kw'>`FL2-H`</span> <span class='kw'>=</span> <span class='st'>"FL2-A"</span>))</div><div class='output co'>#&gt; <span class='message'>swap cols: FSC-H:SSC-H</span></div><div class='output co'>#&gt; <span class='message'>swap cols: FL2-H:FL2-A</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>fr</span>) <span class='kw'>&lt;-</span> <span class='no'>new</span></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>flowCore</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>GvHD</span><span class='op'>)</span>
+<span class='va'>fr</span> <span class='op'>&lt;-</span> <span class='va'>GvHD</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>fr</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "FSC-H" "SSC-H" "FL1-H" "FL2-H" "FL3-H" "FL2-A" "FL4-H" "Time" </div><div class='input'><span class='va'>new</span> <span class='op'>&lt;-</span> <span class='fu'>swap_data_cols</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>fr</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>`FSC-H` <span class='op'>=</span> <span class='st'>"SSC-H"</span>, `FL2-H` <span class='op'>=</span> <span class='st'>"FL2-A"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>swap cols: FSC-H:SSC-H</span></div><div class='output co'>#&gt; <span class='message'>swap cols: FL2-H:FL2-A</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>fr</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>new</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -175,7 +178,7 @@ Perform some validity checks before returning the updated colnames</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

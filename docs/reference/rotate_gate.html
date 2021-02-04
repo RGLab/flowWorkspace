@@ -88,7 +88,7 @@ The rest of the details below are taken from the flowCore documentation." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ The rest of the details below are taken from the flowCore documentation." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -113,7 +113,7 @@ The rest of the details below are taken from the flowCore documentation." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,7 +148,7 @@ The rest of the details below are taken from the <code>flowCore</code> documenta
     </div>
 
     <pre class="usage"><span class='co'># S3 method for GatingHierarchy</span>
-<span class='fu'>rotate_gate</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='kw'>deg</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>rot_center</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>rotate_gate</span><span class='op'>(</span><span class='va'>obj</span>, <span class='va'>y</span>, deg <span class='op'>=</span> <span class='cn'>NULL</span>, rot_center <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -180,7 +180,7 @@ is currently only supported for <code>polygonGate</code> objects.</p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This method allows for geometric rotation of filter types defined by simple geometric gates 
-(<code>ellipsoidGate</code>, and <code>polygonGate</code>). The method is not defined 
+(<code><a href='https://rdrr.io/pkg/flowCore/man/ellipsoidGate-class.html'>ellipsoidGate</a></code>, and <code><a href='https://rdrr.io/pkg/flowCore/man/polygonGate-class.html'>polygonGate</a></code>). The method is not defined 
 for <code>rectangleGate</code> or <code>quadGate</code> objects, due to their definition as having 1-dimensional boundaries.</p>
 <p>The angle provided in the <code>deg</code> argument should be in degrees rather than radians. By default, the rotation
 will be performed around the center of an <code>ellipsoidGate</code> or the centroid of the area encompassed by
@@ -193,12 +193,14 @@ the composition as a rotation around a shifted center.</p>
     <div class='dont-index'><p>transform_gate <code><a href='https://rdrr.io/pkg/flowCore/man/rotate_gate.html'>flowCore::rotate_gate</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'>#' # Rotates the original gate 15 degrees counter-clockwise</span>
-<span class='fu'>rotate_gate</span>(<span class='no'>gs</span>, <span class='no'>node</span>, <span class='kw'>deg</span> <span class='kw'>=</span> <span class='fl'>15</span>)
+<span class='fu'>rotate_gate</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>node</span>, deg <span class='op'>=</span> <span class='fl'>15</span><span class='op'>)</span>
 <span class='co'># Rotates the original gate 270 degrees counter-clockwise</span>
-<span class='fu'>rotate_gate</span>(<span class='no'>gs</span>, <span class='no'>node</span>, <span class='fl'>270</span>)
-}</div></pre>
+<span class='fu'>rotate_gate</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>node</span>, <span class='fl'>270</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -214,7 +216,7 @@ the composition as a rotation around a shifted center.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

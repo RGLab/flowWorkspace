@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title><code>cytoframe</code>: A reference class for efficiently managing the data representation of
-a <code>flowFrame</code> — cytoframe • flowWorkspace</title>
+<title>cytoframe: A reference class for efficiently managing the data representation of
+a flowFrame — cytoframe • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,8 +47,8 @@ a <code>flowFrame</code> — cytoframe • flowWorkspace</title>
 
 
 
-<meta property="og:title" content="<code>cytoframe</code>: A reference class for efficiently managing the data representation of
-a <code>flowFrame</code> — cytoframe" />
+<meta property="og:title" content="cytoframe: A reference class for efficiently managing the data representation of
+a flowFrame — cytoframe" />
 <meta property="og:description" content="This class serves the same purpose as the flowFrame class from the flowCore package: 
 to store quantitative data on cell populations from a single FCS run. The primary difference is in the underlying representation
 of the data. While flowFrame objects store the underlying data matrix in the exprs slot 
@@ -87,7 +87,7 @@ data operations including I/O, parsing, transformation, and gating." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@ data operations including I/O, parsing, transformation, and gating." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -112,7 +112,7 @@ data operations including I/O, parsing, transformation, and gating." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -157,7 +157,7 @@ the original <code>cytoframe</code>. If a deep copy of the underyling data is de
 will accomplish this.</p>
 <p>Because the <code>cytoframe</code> class inherits from <code>flowFrame</code>, the <code>flowFrame</code> slots are present but
 not utilized. Thus, attempting to access them directly will yield empty data structures. However, the
-<code>exprs</code>, <code>parameters</code>, or <code>description</code> methods work in a manner similar
+<code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>exprs</a></code>, <code><a href='https://rdrr.io/pkg/flowCore/man/parameters-methods.html'>parameters</a></code>, or <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>description</a></code> methods work in a manner similar
 to a <code>flowFrame</code> by accessing the same information from the underlying data structure.</p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
@@ -165,13 +165,13 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
 
 <p>Many of the methods here have their own documentation pages or are more extensively explained
   in the documentation for <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>flowFrame</a></code>, so those documentation pages may
-  be consulted as well for more details.</p><dl'>
-  <dt><code>[</code></dt><dd><p>Subsetting. Returns an object of class <code>cytoframe</code>.
+  be consulted as well for more details.</p><dl>
+  <dt><code><a href='[,GatingSet,ANY,ANY,ANY-method.html'>[</a></code></dt><dd><p>Subsetting. Returns an object of class <code>cytoframe</code>.
     The syntax for subsetting is similar to that of <code><a href='https://rdrr.io/r/base/data.frame.html'>data.frames</a></code>. 
     In addition to the usual index vectors (integer and logical by
     position, character by parameter names), <code>cytoframe</code>s can be
-    subset via <code>filterResult</code> and
-    <code>filter</code> objects.    <em>Usage:</em><br /><br />
+    subset via <code><a href='https://rdrr.io/pkg/flowCore/man/filterResult-class.html'>filterResult</a></code> and
+    <code><a href='https://rdrr.io/pkg/flowCore/man/filter-class.html'>filter</a></code> objects.    <em>Usage:</em><br /><br />
     <code>   cytoframe[i,j]</code><br /><br />
     <code>   cytoframe[filter,]</code><br /><br />
     <code>   cytoframe[filterResult,]</code><br /><br />
@@ -192,7 +192,7 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
     Implicit subsetting is allowed (i.e. less columns in the replacement value 
     compared to the original <code>cytoframe</code>), but all columns must be defined in the original <code>cytoframe</code>.<br /><br />
     <em>Usage:</em><br /><br />
-    <code>   exprs(cytoframe)</code><br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>   exprs(cytoframe)</a></code><br /><br />
     <code>   exprs(cytoframe) &lt;- value</code><br /><br /></p></dd>
   <dt>head, tail</dt><dd><p>Show first/last elements of the raw data matrix<br /><br />
     <em>Usage:</em><br /><br />
@@ -219,9 +219,9 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
     containing all varLabels <code>name</code>, <code>desc</code>, <code>range</code>,
     <code>minRange</code> and <code>maxRange</code>, and matching entries in the
     <code>name</code> column to the colnames of the <code>exprs</code> matrix. See
-    <code>parameters</code> for more details.<br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/parameters-methods.html'>parameters</a></code> for more details.<br /><br />
     <em>Usage:</em><br /><br />
-    <code>   parameters(cytoframe)</code><br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/parameters-methods.html'>   parameters(cytoframe)</a></code><br /><br />
     <code>   parameters(cytoframe) &lt;- value</code><br /><br /></p></dd>
   <dt>show</dt><dd><p>Display details about the <code>cytoframe</code> object.<br /><br /></p></dd>
   <dt>summary</dt><dd><p>Return descriptive statistical summary (min, max, mean and quantile) for each channel<br /><br />
@@ -244,14 +244,14 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
     <em>Usage:</em><br /><br />
     <code><a href='https://rdrr.io/r/base/nrow.html'>   ncol(cytoframe)</a></code><br /><br />
     <code><a href='https://rdrr.io/r/base/nrow.html'>   nrow(cytoframe)</a></code><br /><br />
-    <code><a href='https://rdrr.io/r/base/dim.html'>   dim(cytoframe)</a></code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>   dim(cytoframe)</a></code><br /><br /></p></dd>
   <dt>featureNames, colnames, colnames&lt;-</dt><dd><p><code>colnames</code> and
     <code>featureNames</code> are synonyms. They extract parameter names 
     (i.e., the colnames of the data matrix).
     For <code>colnames</code> there is also a replacement method. This will
     update the <code>name</code> column in the <code>parameters</code> slot as well.<br /><br />
     <em>Usage:</em><br /><br />
-    <code>   featureNames(cytoframe)</code><br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>   featureNames(cytoframe)</a></code><br /><br />
     <code><a href='https://rdrr.io/r/base/colnames.html'>   colnames(cytoframe)</a></code><br /><br />
     <code>   colnames(cytoframe) &lt;- value</code><br /><br /></p></dd>
   <dt>markernames, markernames&lt;-</dt><dd><p>Access or replace the marker names associated
@@ -264,7 +264,7 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
   <dt>names</dt><dd><p>Extract pretty formatted names of the parameters
     including parameter descriptions.<br /><br />
     <em>Usage:</em><br /><br />
-    <code><a href='https://rdrr.io/r/base/names.html'>   names(cytoframe)</a></code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>   names(cytoframe)</a></code><br /><br /></p></dd>
   <dt>identifier</dt><dd><p>Extract GUID of a <code>cytoframe</code>. Returns the
     file name if no GUID is available. See <code><a href='identifier-methods.html'>identifier</a></code>
     for details.<br /><br />
@@ -279,7 +279,7 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
       x: cytoframe object.<br /><br />
       type: Range type. either "instrument" or "data". Default is "instrument"<br /><br />
     <em>Usage:</em><br /><br />
-    <code><a href='https://rdrr.io/r/base/range.html'>   range(x, type = "data")</a></code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>   range(x, type = "data")</a></code><br /><br /></p></dd>
   <dt>each_row, each_col</dt><dd><p>Apply functions over rows or columns of
     the data matrix. These are convenience methods. See
     <code><a href='https://rdrr.io/pkg/flowCore/man/each_col.html'>each_col</a></code> for details.<br /><br />
@@ -291,34 +291,34 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
     <code><a href='https://rdrr.io/r/base/transform.html'>transform</a></code> function by treating the
     <code>cytoframe</code> like a regular <code>data.frame</code>. <code>flowCore</code>
     provides an additional inline mechanism for transformations (see
-    <code>%on%</code>) which is strictly more limited
+    <code><a href='https://rdrr.io/pkg/flowCore/man/filter-on-methods.html'>%on%</a></code>) which is strictly more limited
     than the out-of-line transformation described here.<br /><br />
     <em>Usage:</em><br /><br />
     <code><a href='transform.html'>   transform(cytoframe, translist, ...)</a></code><br /><br /></p></dd>
-  <dt>filter</dt><dd><p>Apply a <code>filter</code> object on a
+  <dt>filter</dt><dd><p>Apply a <code><a href='https://rdrr.io/pkg/flowCore/man/filter-class.html'>filter</a></code> object on a
     <code>cytoframe</code> object. This returns an object of class
-    <code>filterResult</code>, which could then be used for
+    <code><a href='https://rdrr.io/pkg/flowCore/man/filterResult-class.html'>filterResult</a></code>, which could then be used for
     subsetting of the data or to calculate summary statistics. See
-    <code><a href='https://rdrr.io/r/stats/filter.html'>filter</a></code> for details.<br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>filter</a></code> for details.<br /><br />
     <em>Usage:</em><br /><br />
-    <code><a href='https://rdrr.io/r/stats/filter.html'>   filter(cytoframe, filter)</a></code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>   filter(cytoframe, filter)</a></code><br /><br /></p></dd>
   <dt>split</dt><dd><p>Split <code>cytoframe</code> object according to a
     <code><a href='https://rdrr.io/pkg/flowCore/man/filter-class.html'>filter</a></code>, a <code><a href='https://rdrr.io/pkg/flowCore/man/filterResult-class.html'>filterResult</a></code> or a
     <code>factor</code>. For most types of filters, an optional
     <code>flowSet=TRUE</code> parameter will create a
-    <code>flowSet</code> rather than a simple list. See
-    <code><a href='https://rdrr.io/r/base/split.html'>split</a></code> for details.<br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/flowSet-class.html'>flowSet</a></code> rather than a simple list. See
+    <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>split</a></code> for details.<br /><br />
     <em>Usage:</em><br /><br />
-    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, filter, flowSet=FALSE, ...)</a></code><br /><br />
-    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, filterResult, flowSet=FALSE, ...)</a></code><br /><br />
-    <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoframe, factor, flowSet=FALSE, ...)</a></code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>   split(cytoframe, filter, flowSet=FALSE, ...)</a></code><br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>   split(cytoframe, filterResult, flowSet=FALSE, ...)</a></code><br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>   split(cytoframe, factor, flowSet=FALSE, ...)</a></code><br /><br /></p></dd>
   <dt>Subset</dt><dd><p>Subset a <code>cytoframe</code> according to a <code>filter</code>
     or a logical vector. The same can be done using the standard
     subsetting operator with a <code>filter</code>, <code>filterResult</code>, or
     a logical vector as first argument.<br /><br />
     <em>Usage:</em><br /><br />
-    <code>   Subset(cytoframe, filter)</code><br /><br />
-    <code>   Subset(cytoframe, logical)</code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/Subset-methods.html'>   Subset(cytoframe, filter)</a></code><br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/Subset-methods.html'>   Subset(cytoframe, logical)</a></code><br /><br /></p></dd>
   <dt>cbind2</dt><dd><p><strong>Not yet implemented</strong>.<br /> Expand a <code>cytoframe</code> by the data in a
     <code>numeric matrix</code> of the same length. The <code>matrix</code> must
     have column names different from those of the
@@ -328,24 +328,24 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
     <code>   cbind2(cytoframe, matrix)</code><br /><br />
     <code>   cbind2(cytoframe, numeric)</code><br /><br /></p></dd>
   <dt>compensate</dt><dd><p>Apply a compensation matrix (or a
-    <code>compensation</code> object) on a <code>cytoframe</code>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/compensation-class.html'>compensation</a></code> object) on a <code>cytoframe</code>
     object. This returns a compensated <code>cytoframe</code>.<br /><br />
     <em>Usage:</em><br /><br />
     <code><a href='compensate.html'>   compensate(cytoframe, matrix)</a></code><br /><br />
     <code><a href='compensate.html'>   compensate(cytoframe, data.frame)</a></code><br /><br />
     <code><a href='compensate.html'>   compensate(cytoframe, compensation)</a></code><br /><br /></p></dd>
   <dt>decompensate</dt><dd><p><strong>Not yet implemented</strong>.<br /> Reverse the application of a compensation matrix (or a
-    <code>compensation</code> object) on a <code>cytoframe</code>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/compensation-class.html'>compensation</a></code> object) on a <code>cytoframe</code>
     object. This returns a decompensated <code>cytoframe</code>.<br /><br />
     <em>Usage:</em><br /><br />
-    <code>   decompensate(cytoframe, matrix)</code><br /><br />
-    <code>   decompensate(cytoframe, data.frame)</code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/decompensate.html'>   decompensate(cytoframe, matrix)</a></code><br /><br />
+    <code><a href='https://rdrr.io/pkg/flowCore/man/decompensate.html'>   decompensate(cytoframe, data.frame)</a></code><br /><br /></p></dd>
   <dt>spillover</dt><dd><p>Extract spillover matrix from description slot if
     present. It is equivalent to 
     <code><a href='keyword.html'>keyword(x, c("spillover", "SPILL"))</a></code>
     Thus will simply return a list of keyword values for "spillover" and "SPILL".<br /><br />
     <em>Usage:</em><br /><br />
-    <code>   spillover(cytoframe)</code><br /><br /></p></dd>
+    <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>   spillover(cytoframe)</a></code><br /><br /></p></dd>
   <dt>realize_view</dt><dd><p>Returns a new <code>cytoframe</code> with its own copy of the
   underlying data (a deep copy). The optional <code>filepath</code> argument accepts
   a string to specify a full filename for storing the new copy of the data in h5
@@ -360,7 +360,7 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code>flowSet</code>, <code>read.FCS</code></p></div>
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/flowCore/man/flowSet-class.html'>flowSet</a></code>, <code><a href='https://rdrr.io/pkg/flowCore/man/read.FCS.html'>read.FCS</a></code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -377,7 +377,7 @@ to a <code>flowFrame</code> by accessing the same information from the underlyin
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

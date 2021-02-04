@@ -88,7 +88,7 @@ The rest of the details below are taken from the flowCore documentation." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ The rest of the details below are taken from the flowCore documentation." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -113,7 +113,7 @@ The rest of the details below are taken from the flowCore documentation." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,17 +148,17 @@ The rest of the details below are taken from the <code>flowCore</code> documenta
     </div>
 
     <pre class="usage"><span class='co'># S3 method for GatingHierarchy</span>
-<span class='fu'>transform_gate</span>(
-  <span class='no'>obj</span>,
-  <span class='no'>y</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>deg</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rot_center</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>dx</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>dy</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>center</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'>transform_gate</span><span class='op'>(</span>
+  <span class='va'>obj</span>,
+  <span class='va'>y</span>,
+  scale <span class='op'>=</span> <span class='cn'>NULL</span>,
+  deg <span class='op'>=</span> <span class='cn'>NULL</span>,
+  rot_center <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dx <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dy <span class='op'>=</span> <span class='cn'>NULL</span>,
+  center <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -217,8 +217,8 @@ and/or <code>dy</code>)</p></td>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This method allows changes to the four filter types defined by simple geometric gates (<code>quadGate</code>,
-<code>rectangleGate</code>, <code>ellipsoidGate</code>, and <code>polygonGate</code>) using
+    <p>This method allows changes to the four filter types defined by simple geometric gates (<code><a href='https://rdrr.io/pkg/flowCore/man/quadGate-class.html'>quadGate</a></code>,
+<code><a href='https://rdrr.io/pkg/flowCore/man/rectangleGate-class.html'>rectangleGate</a></code>, <code><a href='https://rdrr.io/pkg/flowCore/man/ellipsoidGate-class.html'>ellipsoidGate</a></code>, and <code><a href='https://rdrr.io/pkg/flowCore/man/polygonGate-class.html'>polygonGate</a></code>) using
 equally simple geometric transformations (shifting/translation, scaling/dilation, and rotation). The method also
 allows for directly re-setting the slots of each Gate-type object. Note that these methods are for manually altering
 the geometric definition of a gate. To easily transform the definition of a gate with an accompanyging scale 
@@ -244,13 +244,15 @@ results in the sort of scaling most users expect, with a uniform scale factor no
     <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/flowCore/man/transform_gate.html'>flowCore::transform_gate</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Scale the original gate non-uniformly, rotate it 15 degrees, and shift it</span>
-<span class='fu'>transform_gate</span>(<span class='no'>gs</span>, <span class='no'>node</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>3</span>), <span class='kw'>deg</span> <span class='kw'>=</span> <span class='fl'>15</span>, <span class='kw'>dx</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>dy</span> <span class='kw'>=</span> -<span class='fl'>700</span>)
+<span class='fu'>transform_gate</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>node</span>, scale <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>,<span class='fl'>3</span><span class='op'>)</span>, deg <span class='op'>=</span> <span class='fl'>15</span>, dx <span class='op'>=</span> <span class='fl'>500</span>, dy <span class='op'>=</span> <span class='op'>-</span><span class='fl'>700</span><span class='op'>)</span>
 
 <span class='co'># Scale the original gate (in this case an ellipsoidGate) after moving its center to (1500, 2000)</span>
-<span class='fu'>transform_gate</span>(<span class='no'>gs</span>, <span class='no'>node</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>3</span>), <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1500</span>, <span class='fl'>2000</span>))
-}</div></pre>
+<span class='fu'>transform_gate</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>node</span>, scale <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>,<span class='fl'>3</span><span class='op'>)</span>, mean <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1500</span>, <span class='fl'>2000</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -266,7 +268,7 @@ results in the sort of scaling most users expect, with a uniform scale factor no
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

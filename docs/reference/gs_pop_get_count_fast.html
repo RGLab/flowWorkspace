@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -107,7 +107,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -134,17 +134,17 @@
     <p>gs_pop_get_count_fast is more useful than getPop. Returns a table of population statistics for all populations in a <code>GatingHierarchy</code>/<code>GatingSet</code>. Includes the xml counts, openCyto counts and frequencies.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gs_pop_get_count_fast</span>(
-  <span class='no'>x</span>,
-  <span class='kw'>statistic</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"count"</span>, <span class='st'>"freq"</span>),
-  <span class='kw'>xml</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>subpopulations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"long"</span>, <span class='st'>"wide"</span>),
-  <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"full"</span>,
-  <span class='no'>...</span>
-)
+    <pre class="usage"><span class='fu'>gs_pop_get_count_fast</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  statistic <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"count"</span>, <span class='st'>"freq"</span><span class='op'>)</span>,
+  xml <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  subpopulations <span class='op'>=</span> <span class='cn'>NULL</span>,
+  format <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"long"</span>, <span class='st'>"wide"</span><span class='op'>)</span>,
+  path <span class='op'>=</span> <span class='st'>"full"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
-<span class='fu'>gs_pop_get_count_with_meta</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>gs_pop_get_count_with_meta</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -191,22 +191,23 @@
     <div class='dont-index'><p><code><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>        <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'>        <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
         <span class='co'>#gh is a GatingHierarchy</span>
-        <span class='fu'>gs_pop_get_count_fast</span>(<span class='no'>gh</span>);
-        <span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span>(<span class='no'>gh</span>,<span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>gh</span>,<span class='kw'>tsort</span><span class='kw'>=</span><span class='no'>T</span>)[<span class='fl'>5</span>])
+        <span class='fu'>gs_pop_get_count_fast</span><span class='op'>(</span><span class='va'>gh</span><span class='op'>)</span>;
+        <span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span><span class='op'>(</span><span class='va'>gh</span>,<span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span><span class='op'>(</span><span class='va'>gh</span>,tsort<span class='op'>=</span><span class='cn'>T</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>5</span><span class='op'>]</span><span class='op'>)</span>
 
         <span class='co'>#gs is a GatingSet</span>
-        <span class='fu'>gs_pop_get_count_fast</span>(<span class='no'>gs</span>)
+        <span class='fu'>gs_pop_get_count_fast</span><span class='op'>(</span><span class='va'>gs</span><span class='op'>)</span>
         <span class='co'>#optionally output in long format as a data.table</span>
-        <span class='fu'>gs_pop_get_count_fast</span>(<span class='no'>gs</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"long"</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"auto"</span>)
+        <span class='fu'>gs_pop_get_count_fast</span><span class='op'>(</span><span class='va'>gs</span>, format <span class='op'>=</span> <span class='st'>"long"</span>, path <span class='op'>=</span> <span class='st'>"auto"</span><span class='op'>)</span>
         <span class='co'>#only get stats for a subset of populations</span>
-        <span class='fu'>gs_pop_get_count_fast</span>(<span class='no'>gs</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"long"</span>, <span class='kw'>subpopulations</span> <span class='kw'>=</span> <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>gs</span>)[<span class='fl'>4</span>:<span class='fl'>6</span>])
-        }
- <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+        <span class='fu'>gs_pop_get_count_fast</span><span class='op'>(</span><span class='va'>gs</span>, format <span class='op'>=</span> <span class='st'>"long"</span>, subpopulations <span class='op'>=</span> <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span><span class='op'>(</span><span class='va'>gs</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>4</span><span class='op'>:</span><span class='fl'>6</span><span class='op'>]</span><span class='op'>)</span>
+        <span class='op'>}</span>
+ <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
     <span class='co'>#G is a GatingSetList</span>
-    <span class='no'>stats</span> <span class='kw'>=</span> <span class='fu'>gs_pop_get_count_with_meta</span>(<span class='no'>G</span>)
-  }</div></pre>
+    <span class='va'>stats</span> <span class='op'>=</span> <span class='fu'>gs_pop_get_count_with_meta</span><span class='op'>(</span><span class='va'>G</span><span class='op'>)</span>
+  <span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -222,7 +223,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -81,7 +81,7 @@ method from scales so that the inverse and breaks functions are also included." 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@ method from scales so that the inverse and breaks functions are also included." 
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,7 +106,7 @@ method from scales so that the inverse and breaks functions are also included." 
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -133,7 +133,7 @@ method from scales so that the inverse and breaks functions are also included." 
 method from <code>scales</code> so that the inverse and breaks functions are also included.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>transformerList</span>(<span class='no'>from</span>, <span class='no'>trans</span>)</pre>
+    <pre class="usage"><span class='fu'>transformerList</span><span class='op'>(</span><span class='va'>from</span>, <span class='va'>trans</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,16 +150,18 @@ method from <code>scales</code> so that the inverse and breaks functions are als
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowCore</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>scales</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: package ‘scales’ was built under R version 4.1.0</span></div><div class='input'><span class='co'>#create tranformer object from scratch</span>
-<span class='no'>trans</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/logicleTransform.html'>logicleTransform</a></span>(<span class='kw'>w</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>t</span> <span class='kw'>=</span> <span class='fl'>262144</span>, <span class='kw'>m</span> <span class='kw'>=</span> <span class='fl'>4.5</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='fl'>0</span>)
-<span class='no'>inv</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/inverseLogicleTransform.html'>inverseLogicleTransform</a></span>(<span class='kw'>trans</span> <span class='kw'>=</span> <span class='no'>trans</span>)
-<span class='no'>trans.obj</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='flow_trans.html'>flow_trans</a></span>(<span class='st'>"logicle"</span>, <span class='no'>trans</span>, <span class='no'>inv</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>equal.space</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>flowCore</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://scales.r-lib.org'>scales</a></span><span class='op'>)</span>
+<span class='co'>#create tranformer object from scratch</span>
+<span class='va'>trans</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/logicleTransform.html'>logicleTransform</a></span><span class='op'>(</span>w <span class='op'>=</span> <span class='fl'>0.5</span>, t <span class='op'>=</span> <span class='fl'>262144</span>, m <span class='op'>=</span> <span class='fl'>4.5</span>, a <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>
+<span class='va'>inv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/inverseLogicleTransform.html'>inverseLogicleTransform</a></span><span class='op'>(</span>trans <span class='op'>=</span> <span class='va'>trans</span><span class='op'>)</span>
+<span class='va'>trans.obj</span> <span class='op'>&lt;-</span> <span class='fu'><a href='flow_trans.html'>flow_trans</a></span><span class='op'>(</span><span class='st'>"logicle"</span>, <span class='va'>trans</span>, <span class='va'>inv</span>, n <span class='op'>=</span> <span class='fl'>5</span>, equal.space <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='co'>#or simply use convenient constructor</span>
 <span class='co'>#trans.obj &lt;- logicle_trans(n = 5, equal.space = FALSE, w = 0.5, t = 262144, m = 4.5, a = 0)</span>
 
-<span class='fu'>transformerList</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FL1-H"</span>, <span class='st'>"FL2-H"</span>), <span class='no'>trans.obj</span>)</div><div class='output co'>#&gt; $`FL1-H`
+<span class='fu'>transformerList</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"FL1-H"</span>, <span class='st'>"FL2-H"</span><span class='op'>)</span>, <span class='va'>trans.obj</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $`FL1-H`
 #&gt; Transformer:  logicle 
 #&gt; 
 #&gt; $`FL2-H`
@@ -168,8 +170,9 @@ method from <code>scales</code> so that the inverse and breaks functions are als
 #&gt; attr(,"class")
 #&gt; [1] "transformerList" "list"           </div><div class='input'>
 <span class='co'>#use different transformer for each channel</span>
-<span class='no'>trans.obj2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='asinhtGml2_trans.html'>asinhtGml2_trans</a></span>()
-<span class='fu'>transformerList</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FL1-H"</span>, <span class='st'>"FL2-H"</span>), <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>trans.obj</span>, <span class='no'>trans.obj2</span>))</div><div class='output co'>#&gt; $`FL1-H`
+<span class='va'>trans.obj2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='asinhtGml2_trans.html'>asinhtGml2_trans</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'>transformerList</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"FL1-H"</span>, <span class='st'>"FL2-H"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>trans.obj</span>, <span class='va'>trans.obj2</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $`FL1-H`
 #&gt; Transformer:  logicle 
 #&gt; 
 #&gt; $`FL2-H`
@@ -192,7 +195,7 @@ method from <code>scales</code> so that the inverse and breaks functions are als
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

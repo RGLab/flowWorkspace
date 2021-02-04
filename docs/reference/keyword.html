@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Retrieve a specific keyword for a specific sample in a <code>GatingHierarchy</code> or or set of samples in a <code>GatingSet</code> or <code>GatingSetList</code> — keyword • flowWorkspace</title>
+<title>Retrieve a specific keyword for a specific sample in a GatingHierarchy or or set of samples in a GatingSet or GatingSetList — keyword • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Retrieve a specific keyword for a specific sample in a <code>GatingHierarchy</code> or or set of samples in a <code>GatingSet</code> or <code>GatingSetList</code> — keyword" />
+<meta property="og:title" content="Retrieve a specific keyword for a specific sample in a GatingHierarchy or or set of samples in a GatingSet or GatingSetList — keyword" />
 <meta property="og:description" content="Retrieve a specific keyword for a specific sample in a GatingHierarchy or or set of samples in a GatingSet or GatingSetList" />
 <meta property="og:image" content="/logo.png" />
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +105,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -132,10 +132,10 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for GatingHierarchy,character</span>
-<span class='fu'>keyword</span>(<span class='no'>object</span>, <span class='no'>keyword</span>)
+<span class='fu'>keyword</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>keyword</span><span class='op'>)</span>
 
 <span class='co'># S4 method for GatingHierarchy,missing</span>
-<span class='fu'>keyword</span>(<span class='no'>object</span>, <span class='kw'>keyword</span> <span class='kw'>=</span> <span class='st'>"missing"</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>keyword</span><span class='op'>(</span><span class='va'>object</span>, keyword <span class='op'>=</span> <span class='st'>"missing"</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,18 +162,19 @@
     <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/flowCore/man/keyword-methods.html'>keyword-methods</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
     <span class='co'># get all the keywords from all samples</span>
-    <span class='fu'>keyword</span>(<span class='no'>G</span>)
+    <span class='fu'>keyword</span><span class='op'>(</span><span class='va'>G</span><span class='op'>)</span>
     <span class='co'># get all the keywords from one sample</span>
-    <span class='fu'>keyword</span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]])
+    <span class='fu'>keyword</span><span class='op'>(</span><span class='va'>G</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
     <span class='co'># filter the instrument setting</span>
-    <span class='fu'>keyword</span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='kw'>compact</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+    <span class='fu'>keyword</span><span class='op'>(</span><span class='va'>G</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, compact <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
     <span class='co'># get single keyword from all samples</span>
-    <span class='fu'>keyword</span>(<span class='no'>G</span>, <span class='st'>"FILENAME"</span>)
+    <span class='fu'>keyword</span><span class='op'>(</span><span class='va'>G</span>, <span class='st'>"FILENAME"</span><span class='op'>)</span>
     <span class='co'># get single keyword from one sample</span>
-    <span class='fu'>keyword</span>(<span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='st'>"FILENAME"</span>)
-}</div></pre>
+    <span class='fu'>keyword</span><span class='op'>(</span><span class='va'>G</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>"FILENAME"</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -189,7 +190,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
