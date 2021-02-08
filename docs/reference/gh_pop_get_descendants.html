@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +105,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@
     <p>get all the descendant nodes for the given ancester</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gh_pop_get_descendants</span>(<span class='no'>gh</span>, <span class='no'>node</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>gh_pop_get_descendants</span><span class='op'>(</span><span class='va'>gh</span>, <span class='va'>node</span>, showHidden <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +145,10 @@
       <td><p>the node path</p></td>
     </tr>
     <tr>
+      <th>showHidden</th>
+      <td><p>whether show hidden nodes</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>passed to <code>getNode</code> call</p></td>
     </tr>
@@ -152,17 +156,19 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowWorkspace</span>)
-<span class='no'>dataDir</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowWorkspaceData"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span>(<span class='no'>gs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gs</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>dataDir</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>"gs_manual"</span>,<span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)))
-<span class='fu'>gh_pop_get_descendants</span>(<span class='no'>gs</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='st'>"CD4"</span>)</div><div class='output co'>#&gt; [1] "/not debris/singlets/CD3+/CD4/38- DR+"    
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>flowWorkspace</span><span class='op'>)</span>
+<span class='va'>dataDir</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>,package<span class='op'>=</span><span class='st'>"flowWorkspaceData"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span><span class='op'>(</span><span class='va'>gs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gs</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span><span class='va'>dataDir</span>, pattern <span class='op'>=</span> <span class='st'>"gs_manual"</span>,full <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>gh_pop_get_descendants</span><span class='op'>(</span><span class='va'>gs</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>"CD4"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "/not debris/singlets/CD3+/CD4/38- DR+"    
 #&gt; [2] "/not debris/singlets/CD3+/CD4/38+ DR+"    
 #&gt; [3] "/not debris/singlets/CD3+/CD4/38+ DR-"    
 #&gt; [4] "/not debris/singlets/CD3+/CD4/38- DR-"    
 #&gt; [5] "/not debris/singlets/CD3+/CD4/CCR7- 45RA+"
 #&gt; [6] "/not debris/singlets/CD3+/CD4/CCR7+ 45RA+"
 #&gt; [7] "/not debris/singlets/CD3+/CD4/CCR7+ 45RA-"
-#&gt; [8] "/not debris/singlets/CD3+/CD4/CCR7- 45RA-"</div><div class='input'><span class='fu'>gh_pop_get_descendants</span>(<span class='no'>gs</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='st'>"CD8"</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"auto"</span>)</div><div class='output co'>#&gt; [1] "CD8/38- DR+"     "CD8/38+ DR+"     "CD8/38+ DR-"     "CD8/38- DR-"    
+#&gt; [8] "/not debris/singlets/CD3+/CD4/CCR7- 45RA-"</div><div class='input'><span class='fu'>gh_pop_get_descendants</span><span class='op'>(</span><span class='va'>gs</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>"CD8"</span>, path <span class='op'>=</span> <span class='st'>"auto"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "CD8/38- DR+"     "CD8/38+ DR+"     "CD8/38+ DR-"     "CD8/38- DR-"    
 #&gt; [5] "CD8/CCR7- 45RA+" "CD8/CCR7+ 45RA+" "CD8/CCR7+ 45RA-" "CD8/CCR7- 45RA-"</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -179,7 +185,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

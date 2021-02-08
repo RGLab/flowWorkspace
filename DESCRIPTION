@@ -1,10 +1,10 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
-Version: 4.3.4
+Version: 4.3.5
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
-Maintainer: Greg Finak <gfinak@fhcrc.org>,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>
+Maintainer: Greg Finak <greg@ozette.ai>, Mike Jiang <mike@ozette.ai>
 Description: This package is designed to facilitate comparison of automated
     gating methods against manual gating done in flowJo. This package allows
     you to import basic flowJo workspaces into BioConductor and replicate the
@@ -44,7 +44,8 @@ Imports:
 	aws.signature,
     flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4),
-	DelayedArray
+	DelayedArray,
+	S4Vectors
 Collate: 
     'cytoframe.R'
     'cytoset.R'

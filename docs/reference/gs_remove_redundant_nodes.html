@@ -81,7 +81,7 @@ all the orginal GatingSets are modified." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@ all the orginal GatingSets are modified." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,7 +106,7 @@ all the orginal GatingSets are modified." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -133,7 +133,7 @@ all the orginal GatingSets are modified." />
 all the orginal GatingSets are modified.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gs_remove_redundant_nodes</span>(<span class='no'>x</span>, <span class='no'>toRemove</span>)</pre>
+    <pre class="usage"><span class='fu'>gs_remove_redundant_nodes</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>toRemove</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,16 +150,17 @@ all the orginal GatingSets are modified.</p>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>gslist</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>gs1</span>, <span class='no'>gs2</span>, <span class='no'>gs3</span>, <span class='no'>gs4</span>, <span class='no'>gs5</span>)
-<span class='no'>gs_groups</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='gs_split_by_tree.html'>gs_split_by_tree</a></span>(<span class='no'>gslist</span>)
-<span class='no'>toRm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='gs_check_redundant_nodes.html'>gs_check_redundant_nodes</a></span>(<span class='no'>gs_groups</span>)
-<span class='fu'>gs_remove_redundant_nodes</span>(<span class='no'>gs_groups</span>, <span class='no'>toRm</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>gslist</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>gs1</span>, <span class='va'>gs2</span>, <span class='va'>gs3</span>, <span class='va'>gs4</span>, <span class='va'>gs5</span><span class='op'>)</span>
+<span class='va'>gs_groups</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gs_split_by_tree.html'>gs_split_by_tree</a></span><span class='op'>(</span><span class='va'>gslist</span><span class='op'>)</span>
+<span class='va'>toRm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gs_check_redundant_nodes.html'>gs_check_redundant_nodes</a></span><span class='op'>(</span><span class='va'>gs_groups</span><span class='op'>)</span>
+<span class='fu'>gs_remove_redundant_nodes</span><span class='op'>(</span><span class='va'>gs_groups</span>, <span class='va'>toRm</span><span class='op'>)</span>
 
 <span class='co'>#Now they can be merged into a single GatingSetList.</span>
 <span class='co'>#Note that the original gs objects are all modified in place.</span>
-<span class='fu'><a href='GatingSetList-class.html'>GatingSetList</a></span>(<span class='no'>gslist</span>)
-}</div></pre>
+<span class='fu'><a href='GatingSetList-class.html'>GatingSetList</a></span><span class='op'>(</span><span class='va'>gslist</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -175,7 +176,7 @@ all the orginal GatingSets are modified.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
