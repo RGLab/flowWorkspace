@@ -994,7 +994,7 @@ check_credential <- function(cred = NULL){
     }else
     {
       cred <- try(read_credentials()[[1]], silent = TRUE)
-      if(is(cred, "try-error"))
+      if(class(cred) == "try-error")
       {
         cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
       }  
