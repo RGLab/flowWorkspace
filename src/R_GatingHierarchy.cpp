@@ -123,6 +123,7 @@ List getCompensation(XPtr<GatingSet> gs,string sampleName){
 						,Named("suffix",comp.suffix)
 						,Named("comment",comp.comment)
 						,Named("parameters",comp.marker)
+            ,Named("detectors",comp.detector)
 						,Named("spillOver",comp.spillOver))
 			);
 
