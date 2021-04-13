@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
-Version: 4.3.7
+Version: 4.3.8
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <greg@ozette.ai>, Mike Jiang <mike@ozette.ai>
@@ -17,7 +17,7 @@ LazyLoad: yes
 Imports:
     Biobase,
     BiocGenerics,
-    cytolib (>= 2.3.4),
+    cytolib (>= 2.3.9),
     lattice,
     latticeExtra,
     XML,
