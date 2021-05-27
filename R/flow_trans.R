@@ -486,9 +486,8 @@ asinhtGml2_trans <- function(..., n = 6, equal.space = FALSE){
 #' print(trans.obj[["transform"]](brks))
 #' @export
 logicle_trans <- function(..., n = 6, equal.space = FALSE){
-  .Defunct("logicleGml2_trans")
   trans.obj <- logicleTransform(...)
-  trans <- trans.obj@.Data
+  trans <- trans.obj@.Data#by retrieving the function object, it effectively force the argument to be evaluated. so no need to explicitly call eval()
   inv <- inverseLogicleTransform(trans = trans.obj)@.Data
   flow_trans(name = "logicle", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
