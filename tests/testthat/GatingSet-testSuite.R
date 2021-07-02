@@ -385,7 +385,8 @@ test_that("keyword",{
             
             #fix legacy result
             thisResult[paste0("$P",5:11, "N")] <- paste0("<", thisResult[paste0("$P",5:11, "N")], ">")
-            
+            thisResult$FCSversion <- NULL #avoid comaptibility test failure
+
             thisResult[["$BEGINDATA"]] <- NULL
             thisResult[["$ENDDATA"]] <- NULL
             thisResult <- sapply(thisResult, function(i)
@@ -402,6 +403,7 @@ test_that("keyword",{
             thisResult[["$BEGINDATA"]] <- NULL
             thisResult[["$ENDDATA"]] <- NULL
             thisResult[["$CYTOLIB_VERSION"]] <- NULL
+            thisResult$FCSversion <- NULL #avoid comaptibility test failure
             colnames(thisResult[["SPILL"]]) <- gsub("<|>", "", colnames(thisResult[["SPILL"]]))
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]

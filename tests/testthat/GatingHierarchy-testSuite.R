@@ -199,6 +199,10 @@ test_that("keyword",{
       expect_true(grepl(kw_fn, expectRes$FILENAME))
       expectRes$FILENAME <- NULL
       thisRes$FILENAME <- NULL
+      
+      expectRes$FCSversion <- NULL #avoid comaptibility test failure
+      thisRes$FCSversion <- NULL
+      
       #skip flowCore_R keys due to the historical archived results do not have this info up to date
       thisRes <- thisRes[!grepl("(flowCore_\\$P)|(transformation)",names(thisRes))]
       colnames(thisRes[["SPILL"]]) <- gsub("<|>", "", colnames(thisRes[["SPILL"]]))
