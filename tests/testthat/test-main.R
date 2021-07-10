@@ -2,7 +2,8 @@ skip_if(win32_flag)
 backend_mode <<- "h5"
 set_default_backend(backend_mode)
 context(paste("backend:", backend_mode))
-if(Sys.getenv("test-gs-compatibility")!="yes")
+# Sys.setenv("test_gs_compatibility"="yes")
+if(Sys.getenv("test_gs_compatibility")!="yes")
 {
 source("cytoframe-suite.R", local = TRUE)
 source("cytoset-suite.R", local = TRUE)
