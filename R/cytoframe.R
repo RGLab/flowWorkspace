@@ -1041,18 +1041,18 @@ cf_unlock <- function(cf){
 #' @export
 cf_flush_meta <- function(cf){
 	stopifnot(is(cf, "cytoframe"))
-	.cf_flush_meta(cf@pointer)
+	cf_flush_meta_cpp(cf@pointer)
 }
 #' @export 
 #' @rdname load_meta
 cf_load_meta <- function(cf){
 	stopifnot(is(cf, "cytoframe"))
-	.cf_load_meta(cf@pointer)
+	cf_load_meta_cpp(cf@pointer)
 }
 
 cf_scale_time_channel <- function(cf){
 	stopifnot(is(cf, "cytoframe"))
-	.cf_scale_time_channel(cf@pointer)
+	cf_scale_time_channel_cpp(cf@pointer)
 }
 
 #' Remove temporary files associatated with flowWorkspace data classes
