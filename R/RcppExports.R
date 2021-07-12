@@ -195,12 +195,12 @@ set_gatingset_id <- function(gsPtr, id) {
     invisible(.Call(`_flowWorkspace_set_gatingset_id`, gsPtr, id))
 }
 
-.cpp_saveGatingSet <- function(gs, path, backend_opt, ctx) {
-    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, backend_opt, ctx))
+.cpp_saveGatingSet <- function(gs, path, backend_opt) {
+    invisible(.Call(`_flowWorkspace_save_gatingset`, gs, path, backend_opt))
 }
 
-.cpp_loadGatingSet <- function(path, readonly, select_samples, verbose, ctx) {
-    .Call(`_flowWorkspace_load_gatingset`, path, readonly, select_samples, verbose, ctx)
+.cpp_loadGatingSet <- function(path, readonly, select_samples, verbose) {
+    .Call(`_flowWorkspace_load_gatingset`, path, readonly, select_samples, verbose)
 }
 
 load_legacy_gs <- function(pbfile, cs) {
@@ -236,14 +236,6 @@ is_tiledb_support <- function() {
 
 .cpp_togleErrorFlag <- function() {
     invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
-}
-
-new_cytoctx <- function(cred) {
-    .Call(`_flowWorkspace_new_cytoctx`, cred)
-}
-
-read_cytoctx <- function(ctx) {
-    .Call(`_flowWorkspace_read_cytoctx`, ctx)
 }
 
 del_rownames <- function(fr) {
@@ -306,12 +298,12 @@ frm_compensate <- function(fr, spillover) {
     invisible(.Call(`_flowWorkspace_frm_compensate`, fr, spillover))
 }
 
-write_to_disk <- function(fr, filename, ish5, ctx) {
-    invisible(.Call(`_flowWorkspace_write_to_disk`, fr, filename, ish5, ctx))
+write_to_disk <- function(fr, filename, ish5) {
+    invisible(.Call(`_flowWorkspace_write_to_disk`, fr, filename, ish5))
 }
 
-load_cf <- function(url, readonly, on_disk, ctx) {
-    .Call(`_flowWorkspace_load_cf`, url, readonly, on_disk, ctx)
+load_cf <- function(url, readonly, on_disk) {
+    .Call(`_flowWorkspace_load_cf`, url, readonly, on_disk)
 }
 
 cf_to_memcf <- function(fr) {

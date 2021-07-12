@@ -913,11 +913,11 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_disk <- function(cf, filename, backend = get_default_backend(), ctx = .cytoctx_global){
+cf_write_disk <- function(cf, filename, backend = get_default_backend()){
   backend <- match.arg(backend, c("h5", "tile"))
   stopifnot(is(cf, "cytoframe"))
 
-  write_to_disk(cf@pointer,filename, backend == "h5",  ctx$pointer)
+  write_to_disk(cf@pointer,filename, backend == "h5")
 }
 
 #' Save the cytoframe as h5 format
@@ -927,20 +927,11 @@ cf_write_disk <- function(cf, filename, backend = get_default_backend(), ctx = .
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_h5 <- function(cf, filename, ctx = .cytoctx_global){
-	cf_write_disk(cf, filename, backend = "h5", ctx)
+cf_write_h5 <- function(cf, filename){
+	cf_write_disk(cf, filename, backend = "h5")
 }
 
-#' Save the cytoframe as h5 format
-#' 
-#' @param cf cytoframe object
-#' @param filename the full path of the output file
-#' @inheritParams load_cytoframe
-#' @family cytoframe/cytoset IO functions
-#' @export
-cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
-  cf_write_disk(cf, filename, backend = "tile", ctx)
-}
+
 
 #' Load the cytoframe from disk
 #' 
@@ -948,11 +939,10 @@ cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #'                 And it is valid when on_disk is set to true.
-#' @param ctx cytoctx object, see [cytoctx] for details
 #' @importFrom aws.signature read_credentials
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoctx_global){
+load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk){
 	if(!on_disk)
 	{
 	  if(readonly)
@@ -962,7 +952,7 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoc
 	}
 	uri <- suppressWarnings(normalizePath(uri))
 	
-	p <- load_cf(uri, readonly, on_disk, ctx$pointer)
+	p <- load_cf(uri, readonly, on_disk)
 	
 	new("cytoframe", pointer = p, use.exprs = TRUE)
 }
@@ -1102,20 +1092,10 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' @inheritParams load_cytoframe
 #' @details this will override tempdir() in determining the top directory under which files can safely be removed.
 #' @export
-cf_cleanup <- function(cf, ctx = .cytoctx_global){
+cf_cleanup <- function(cf){
   uri <- cf_get_uri(cf)
   
-  if(is_http_path(uri)||is_s3_path(uri))
-  {
-    s3_paths <- parse_s3_path(uri)
-    bucket <- s3_paths[["bucket"]]
-    key <- s3_paths[["key"]]	
-    cred <- ctx_to_list(ctx)
-    b <- get_bucket(bucket, key, region = cred$AWS_REGION)
-    for(obj in b)
-      delete_object(obj, region = cred$AWS_REGION)
-  }else
-    unlink(uri, recursive = TRUE)
+  unlink(uri, recursive = TRUE)
   message(uri, " is deleted!")
 } 
 #' Append data columns to a flowFrame
@@ -1146,7 +1126,7 @@ cf_cleanup <- function(cf, ctx = .cytoctx_global){
 #' 
 #' 
 #' @export
-cf_append_cols <- function(cf, cols, ctx = .cytoctx_global){
+cf_append_cols <- function(cf, cols){
 
   if(cf_is_subsetted(cf))
     stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")

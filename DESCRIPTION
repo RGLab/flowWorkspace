@@ -58,7 +58,6 @@ Collate:
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
-    'cytoctx.R'
     'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'
@@ -83,7 +82,7 @@ Suggests:
     parallel,
     CytoML,
     openCyto
-LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
+LinkingTo: cpp11, Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
 SystemRequirements: GNU make, C++11
