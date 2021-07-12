@@ -164,7 +164,7 @@ gs_get_singlecell_expression <- function(x, nodes
 	}else{
 	
 		  datSrc <- ifelse(swap, "name", "desc")
-		  fs <- gs_pop_get_data(x, inverse.transform = inverse.transform)
+		  fs <- gs_pop_get_data(x)#, inverse.transform = inverse.transform) #avoid cp the h5 data ,do inverse in-mem instead
 		  sn <- sampleNames(x)
 		  
 		  names(sn) <- sn
@@ -228,7 +228,16 @@ gs_get_singlecell_expression <- function(x, nodes
 		            
 		            
 		            
-					data <- fs[[sample, unique(chnls), returnType = "cytoframe"]]
+					data <- fs[[sample, unique(chnls), returnType = "flowFrame"]]
+					if(inverse.transform)
+					{
+					  trans <- gh_get_transformations(x[[sample]], inverse = TRUE)
+					  if(length(trans)==0)
+					    stop("No inverse transformation is found from the GatingSet!")
+					  trans <- trans[names(trans) %in% colnames(data)]
+					  trans <- transformList(names(trans), trans)
+					  data <- transform(data, trans)
+					}
 					data <- exprs(data)
 		            if(marginal)
 		              data <- .cpp_getSingleCellExpression(x@pointer, sample, pops, data, markers, threshold)
