@@ -44,16 +44,19 @@ void cf_scale_time_channel_cpp(cpp11::external_pointer<CytoFrameView> fr)
 {
 	fr->scale_time_channel();
 }
+
 [[cpp11::register]]
 void cf_set_readonly(cpp11::external_pointer<CytoFrameView> fr, bool flag)
 {
 	fr->set_readonly(flag);
 }
+
 [[cpp11::register]]
 void cf_flush_meta_cpp(cpp11::external_pointer<CytoFrameView> fr)
 {
 	fr->flush_meta();
 }
+
 [[cpp11::register]]
 void cf_load_meta_cpp(cpp11::external_pointer<CytoFrameView> fr)
 {
@@ -79,17 +82,17 @@ cpp11::external_pointer<CytoFrameView> copy_view_cytoframe(cpp11::external_point
 }
 
 [[cpp11::register]]
-void subset_cytoframe_by_rows(cpp11::external_pointer<CytoFrameView> fr, vector<unsigned> idx)
+void subset_cytoframe_by_rows(cpp11::external_pointer<CytoFrameView> fr, vector<int> idx)
 {
   
-  fr->rows_(idx);
+  fr->rows_(vector<unsigned>(idx.begin(), idx.end()));
 }
 
 [[cpp11::register]]
-void subset_cytoframe_by_cols(cpp11::external_pointer<CytoFrameView> fr, vector<unsigned> idx)
+void subset_cytoframe_by_cols(cpp11::external_pointer<CytoFrameView> fr, vector<int> idx)
 {
   
-  fr->cols_(idx);
+  fr->cols_(vector<unsigned>(idx.begin(), idx.end()));
 }
  /*
   * subset by cols and rows in place for each frames

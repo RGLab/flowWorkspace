@@ -95,18 +95,18 @@ extern "C" SEXP _flowWorkspace_copy_view_cytoframe(SEXP fr) {
   END_CPP11
 }
 // cytoframeAPI.cpp
-void subset_cytoframe_by_rows(cpp11::external_pointer<CytoFrameView> fr, vector<unsigned> idx);
+void subset_cytoframe_by_rows(cpp11::external_pointer<CytoFrameView> fr, vector<int> idx);
 extern "C" SEXP _flowWorkspace_subset_cytoframe_by_rows(SEXP fr, SEXP idx) {
   BEGIN_CPP11
-    subset_cytoframe_by_rows(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<unsigned>>>(idx));
+    subset_cytoframe_by_rows(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<int>>>(idx));
     return R_NilValue;
   END_CPP11
 }
 // cytoframeAPI.cpp
-void subset_cytoframe_by_cols(cpp11::external_pointer<CytoFrameView> fr, vector<unsigned> idx);
+void subset_cytoframe_by_cols(cpp11::external_pointer<CytoFrameView> fr, vector<int> idx);
 extern "C" SEXP _flowWorkspace_subset_cytoframe_by_cols(SEXP fr, SEXP idx) {
   BEGIN_CPP11
-    subset_cytoframe_by_cols(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<unsigned>>>(idx));
+    subset_cytoframe_by_cols(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<int>>>(idx));
     return R_NilValue;
   END_CPP11
 }
