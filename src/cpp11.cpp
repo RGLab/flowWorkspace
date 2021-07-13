@@ -201,6 +201,20 @@ extern "C" SEXP _flowWorkspace_cf_transform_data(SEXP fr, SEXP translist) {
     return R_NilValue;
   END_CPP11
 }
+// cytoframeAPI.cpp
+string cf_getKeyword(cpp11::external_pointer<CytoFrameView> fr, string key);
+extern "C" SEXP _flowWorkspace_cf_getKeyword(SEXP fr, SEXP key) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cf_getKeyword(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<string>>(key)));
+  END_CPP11
+}
+// cytoframeAPI.cpp
+SEXP cf_getKeywords(cpp11::external_pointer<CytoFrameView> fr);
+extern "C" SEXP _flowWorkspace_cf_getKeywords(SEXP fr) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cf_getKeywords(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
+  END_CPP11
+}
 
 extern "C" {
 /* .Call calls */
@@ -208,6 +222,8 @@ extern SEXP _flowWorkspace_append_cols(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_backend_type(SEXP);
 extern SEXP _flowWorkspace_cf_flush_meta_cpp(SEXP);
 extern SEXP _flowWorkspace_cf_getData(SEXP);
+extern SEXP _flowWorkspace_cf_getKeyword(SEXP, SEXP);
+extern SEXP _flowWorkspace_cf_getKeywords(SEXP);
 extern SEXP _flowWorkspace_cf_is_indexed(SEXP);
 extern SEXP _flowWorkspace_cf_load_meta_cpp(SEXP);
 extern SEXP _flowWorkspace_cf_scale_time_channel_cpp(SEXP);
@@ -236,6 +252,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_backend_type",              (DL_FUNC) &_flowWorkspace_backend_type,              1},
     {"_flowWorkspace_cf_flush_meta_cpp",         (DL_FUNC) &_flowWorkspace_cf_flush_meta_cpp,         1},
     {"_flowWorkspace_cf_getData",                (DL_FUNC) &_flowWorkspace_cf_getData,                1},
+    {"_flowWorkspace_cf_getKeyword",             (DL_FUNC) &_flowWorkspace_cf_getKeyword,             2},
+    {"_flowWorkspace_cf_getKeywords",            (DL_FUNC) &_flowWorkspace_cf_getKeywords,            1},
     {"_flowWorkspace_cf_is_indexed",             (DL_FUNC) &_flowWorkspace_cf_is_indexed,             1},
     {"_flowWorkspace_cf_load_meta_cpp",          (DL_FUNC) &_flowWorkspace_cf_load_meta_cpp,          1},
     {"_flowWorkspace_cf_scale_time_channel_cpp", (DL_FUNC) &_flowWorkspace_cf_scale_time_channel_cpp, 1},

@@ -297,18 +297,17 @@ void cf_transform_data(cpp11::external_pointer<CytoFrameView> fr, cpp11::list tr
   
 }
 
-// [[cpp11::register]]
-// string cf_getKeyword(cpp11::external_pointer<CytoFrameView> fr, string key){
+[[cpp11::register]]
+string cf_getKeyword(cpp11::external_pointer<CytoFrameView> fr, string key){
   
-//   string res = fr->get_keyword(key);
-//   return res;
-// }
+  string res = fr->get_keyword(key);
+  return res;
+}
 
-// [[cpp11::register]]
-// KW_PAIR cf_getKeywords(cpp11::external_pointer<CytoFrameView> fr){
-//   // return fr->getKeywords().getPairs();
-//   return fr->get_keywords().getPairs();
-// }
+[[cpp11::register]]
+SEXP cf_getKeywords(cpp11::external_pointer<CytoFrameView> fr){
+  return kw_to_sexp(fr->get_keywords().getPairs());
+}
 
 // [[cpp11::register]]
 // void cf_setKeywords(cpp11::external_pointer<CytoFrameView> fr, List keys){
