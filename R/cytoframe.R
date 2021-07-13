@@ -402,7 +402,7 @@ setMethod("[",
         		}
         		j <- (1:length(colnames(x)))[j]
         	}
-        	subset_cytoframe_by_cols(fr@pointer, j - 1)
+        	subset_cytoframe_by_cols(fr@pointer, as.integer(j - 1))
         }    
         else
           stop("invalid j index!")
@@ -413,7 +413,7 @@ setMethod("[",
         if(is.logical(i))
           i <- which(i)
         if(is.numeric(i)||is.integer(i))    
-          subset_cytoframe_by_rows(fr@pointer, i - 1)
+          subset_cytoframe_by_rows(fr@pointer, as.integer(i - 1))
         else
           stop("invalid i index!")
       }
@@ -1130,6 +1130,7 @@ cf_append_cols <- function(cf, cols){
 
   if(cf_is_subsetted(cf))
     stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")
-  cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
+  append_cols(cf@pointer, colnames(cols), cols)
+  cf <- new("cytoframe", pointer = cf@pointer, use.exprs = TRUE);
 
 }

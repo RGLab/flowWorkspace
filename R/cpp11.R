@@ -89,7 +89,7 @@ get_channels <- function(fr) {
 }
 
 append_cols <- function(fr, new_colnames, new_cols_mat) {
-  .Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat)
+  invisible(.Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat))
 }
 
 parseFCS <- function(filename, configr, text_only, format, uri) {

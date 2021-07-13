@@ -172,10 +172,11 @@ extern "C" SEXP _flowWorkspace_get_channels(SEXP fr) {
   END_CPP11
 }
 // cytoframeAPI.cpp
-cpp11::external_pointer<CytoFrameView> append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix new_cols_mat);
+void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix new_cols_mat);
 extern "C" SEXP _flowWorkspace_append_cols(SEXP fr, SEXP new_colnames, SEXP new_cols_mat) {
   BEGIN_CPP11
-    return cpp11::as_sexp(append_cols(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(new_colnames), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(new_cols_mat)));
+    append_cols(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(new_colnames), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(new_cols_mat));
+    return R_NilValue;
   END_CPP11
 }
 // cytoframeAPI.cpp

@@ -191,7 +191,7 @@ vector<string> get_channels(cpp11::external_pointer<CytoFrameView> fr){
 }
 
 [[cpp11::register]]
-cpp11::external_pointer<CytoFrameView> append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix new_cols_mat){
+void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix new_cols_mat){
   
   
   // Add the columns to the MemCytoFrame
@@ -202,13 +202,12 @@ cpp11::external_pointer<CytoFrameView> append_cols(cpp11::external_pointer<CytoF
   // copy spillover matrix.
   for (auto j = 0; j < m; j++) {
     for (auto i = 0; i < n; i++) {
-      mat(i, j) = new_cols_mat(i, j);
+      new_cols(i, j) = new_cols_mat(i, j);
     }
   }
   
   fr->append_columns(new_colnames, new_cols);
   
-  return fr;
 }
                                       
 [[cpp11::register]]
