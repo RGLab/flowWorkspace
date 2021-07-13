@@ -8,12 +8,10 @@
 \alias{gs_cleanup}
 \title{Remove on-disk files associatated with flowWorkspace data classes}
 \usage{
-cf_cleanup(cf, ctx = .cytoctx_global)
+cf_cleanup(cf)
 }
 \arguments{
 \item{cf}{a cytoframe, cytoset, GatingHierarchy, or GatingSet object}
-
-\item{ctx}{cytoctx object, see [cytoctx] for details}
 }
 \description{
 These methods immediately delete the on-disk  storage associated with \link{cytoframe},

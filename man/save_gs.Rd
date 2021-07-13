@@ -13,7 +13,6 @@ save_gs(
   path,
   cdf = NULL,
   backend_opt = c("copy", "move", "skip", "symlink", "link"),
-  ctx = .cytoctx_global,
   ...
 )
 
@@ -22,8 +21,7 @@ load_gs(
   h5_readonly = NULL,
   backend_readonly = TRUE,
   select = character(),
-  verbose = FALSE,
-  ctx = .cytoctx_global
+  verbose = FALSE
 )
 
 \S4method{sampleNames}{character}(object)
@@ -40,8 +38,6 @@ load_gslist(path)
 \item{backend_opt}{a character scalar. The valid options are :"copy","move","skip","symlink" specifying what to do with the backend data file.
 Sometimes it is more efficient to move or create a symlink of the existing backend file to the archived folder.
 It is useful to "skip" archiving backend file if raw data has not been changed.}
-
-\item{ctx}{cytoctx object, see [cytoctx] for details}
 
 \item{...}{other arguments: not used.}
 

@@ -22,7 +22,6 @@ For the in-memory version of cytoframe, it returns an empty string. This can be 
 Other cytoframe/cytoset IO functions: 
 \code{\link{cf_write_disk}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
 \code{\link{load_cytoframe}()},
