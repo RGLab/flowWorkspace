@@ -11,7 +11,7 @@
 #include <Rmath.h>
 #include <cytolib/GatingSet.hpp>
 using namespace cytolib;
-SEXP kw_to_sexp(const KW_PAIR & kw){
+inline SEXP kw_to_sexp(const KW_PAIR & kw){
 		int nSize = kw.size();
 		cpp11::writable::strings res(nSize);
 		cpp11::writable::strings res_names(nSize);
@@ -24,7 +24,7 @@ SEXP kw_to_sexp(const KW_PAIR & kw){
 		return res;
 	}
 	 // as for FCS_READ_PARAM
-	KW_PAIR sexp_to_kw(SEXP sexp) {
+inline 	KW_PAIR sexp_to_kw(SEXP sexp) {
 		cpp11::strings vec(sexp);
 		int n = vec.size();
 		auto sample_uids = cpp11::as_cpp<cpp11::strings>(vec.names());
@@ -41,7 +41,7 @@ SEXP kw_to_sexp(const KW_PAIR & kw){
 	}
 
 	 // as for FCS_READ_PARAM
-	FCS_READ_PARAM sexp_to_fcs_read_param(SEXP sexp) {
+inline 	FCS_READ_PARAM sexp_to_fcs_read_param(SEXP sexp) {
 		 cpp11::list cfg(sexp);
 
 		FCS_READ_PARAM config;

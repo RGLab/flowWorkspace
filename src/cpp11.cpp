@@ -284,6 +284,14 @@ extern "C" SEXP _flowWorkspace_getpdata(SEXP fr) {
     return cpp11::as_sexp(getpdata(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
   END_CPP11
 }
+// h5_error_r_handler.cpp
+void h5_set_error_handler();
+extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
+  BEGIN_CPP11
+    h5_set_error_handler();
+    return R_NilValue;
+  END_CPP11
+}
 
 extern "C" {
 /* .Call calls */
@@ -313,6 +321,7 @@ extern SEXP _flowWorkspace_get_uri(SEXP);
 extern SEXP _flowWorkspace_getncol(SEXP);
 extern SEXP _flowWorkspace_getnrow(SEXP);
 extern SEXP _flowWorkspace_getpdata(SEXP);
+extern SEXP _flowWorkspace_h5_set_error_handler();
 extern SEXP _flowWorkspace_load_cf(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_parseFCS(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_realize_view_cytoframe(SEXP, SEXP);
@@ -352,6 +361,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
     {"_flowWorkspace_getnrow",                   (DL_FUNC) &_flowWorkspace_getnrow,                   1},
     {"_flowWorkspace_getpdata",                  (DL_FUNC) &_flowWorkspace_getpdata,                  1},
+    {"_flowWorkspace_h5_set_error_handler",      (DL_FUNC) &_flowWorkspace_h5_set_error_handler,      0},
     {"_flowWorkspace_load_cf",                   (DL_FUNC) &_flowWorkspace_load_cf,                   3},
     {"_flowWorkspace_parseFCS",                  (DL_FUNC) &_flowWorkspace_parseFCS,                  5},
     {"_flowWorkspace_realize_view_cytoframe",    (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,    2},

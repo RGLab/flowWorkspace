@@ -156,7 +156,7 @@ test_that("write permission", {
   rm(cf1)
   invisible(gc())
   cf2 <- load_cytoframe(h5file)
-  expect_error(exprs(cf2)[1,1] <- 2, "read-only", class = "std::domain_error")
+  expect_error(exprs(cf2)[1,1] <- 2, "read-only", class = "error")
   cf_unlock(cf2)
   exprs(cf2)[1,1] <- 2
   expect_equivalent(exprs(cf2)[1,1], 2)
@@ -187,11 +187,11 @@ test_that("lock", {
   #lock it
   cf_lock(cf1)
   oldkey <- keyword(cf1)[["TUBE NAME"]]
-  expect_error(exprs(cf1)[1,1] <- 4, "read-only", class = "std::domain_error")
+  expect_error(exprs(cf1)[1,1] <- 4, "read-only", class = "error")
   expect_equivalent(exprs(cf1)[1,1], 3)
   keyword(cf1)[["TUBE NAME"]] <- "dd"
   expect_equal(keyword(cf1)[["TUBE NAME"]], "dd")
-  expect_error(cf_flush_meta(cf1), "read-only", class = "std::domain_error")
+  expect_error(cf_flush_meta(cf1), "read-only", class = "error")
   cf_load_meta(cf1)
   expect_equal(keyword(cf1)[["TUBE NAME"]], oldkey)
   
@@ -290,8 +290,8 @@ test_that("exprs<-", {
   expect_true(all(exprs(cf1)[1:10, 1:10] == 0))
   expect_false(all(exprs(cf)[1:10, 1:10] == 0))
   
-  expect_error(exprs(cf1) <- exprs(cf1)[1:10, ] , "size", class = "std::domain_error")
-  expect_error(exprs(cf1) <- exprs(cf1)[, 1:2] , "size", class = "std::domain_error")
+  expect_error(exprs(cf1) <- exprs(cf1)[1:10, ] , "size", class = "error")
+  expect_error(exprs(cf1) <- exprs(cf1)[, 1:2] , "size", class = "error")
   
 })
 

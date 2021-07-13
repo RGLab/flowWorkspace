@@ -147,3 +147,7 @@ setpdata <- function(fr, df) {
 getpdata <- function(fr) {
   .Call(`_flowWorkspace_getpdata`, fr)
 }
+
+h5_set_error_handler <- function() {
+  invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
+}
