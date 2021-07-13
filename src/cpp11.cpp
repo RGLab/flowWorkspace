@@ -187,7 +187,7 @@ extern "C" SEXP _flowWorkspace_parseFCS(SEXP filename, SEXP configr, SEXP text_o
   END_CPP11
 }
 // cytoframeAPI.cpp
-cpp11::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr);
+cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr);
 extern "C" SEXP _flowWorkspace_cf_getData(SEXP fr) {
   BEGIN_CPP11
     return cpp11::as_sexp(cf_getData(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));

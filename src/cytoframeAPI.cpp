@@ -242,7 +242,7 @@ cpp11::external_pointer<CytoFrameView> parseFCS(string filename, SEXP configr, b
 }
 
 [[cpp11::register]]
-cpp11::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
+cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
   auto nrow = fr->n_rows();
   auto ncol = fr->n_cols();
   // int ntotal = ncol * nrow;
@@ -271,7 +271,9 @@ cpp11::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
   {
     mydims[0] = cpp11::writable::strings(rn.begin(), rn.end());
   } 
-  mat.attr("dimnames") = mydims;
+
+   Rf_setAttrib(cpp11::as_sexp(mat), cpp11::as_sexp({"dimnames"}), cpp11::as_sexp(mydims));
+  // mat.attr("dimnames") = mydims; //somehow this doesn't work for matrix class
   return mat;
 }
 [[cpp11::register]]
