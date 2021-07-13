@@ -263,15 +263,16 @@ cpp11::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
     cid[i] = "$P" + to_string(i+1) + "N";
   
   chnl.attr("names") = cid;
+    
   cpp11::writable::list_of<cpp11::writable::strings> mydims(
       {R_NilValue, chnl});
-  // Rf_setAttrib(cpp11::as_sexp(res), cpp11::as_sexp({"dimnames"}),
-  //              cpp11::as_sexp(mydims));
+
+  auto rn = fr->get_rownames();
+  if (rn.size() > 0)
+  {
+    mydims[0] = cpp11::writable::strings(rn.begin(), rn.end());
+  } 
   mat.attr("dimnames") = mydims;
-  // colnames(mat) = chnl;
-  // auto rn = fr->get_rownames();
-  // if(rn.size()>0)
-  //   rownames(mat) = wrap(rn);
   return mat;
 }
 [[cpp11::register]]

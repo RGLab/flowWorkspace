@@ -10,14 +10,15 @@ cf_lock(cf)
 
 
 test_that("rownames", {
+  skip("rownames feature is to be deprecated")
   rn <- rownames(cf)
   cn <- colnames(cf)
   expect_equivalent(dimnames(cf), list(rn, cn))
   expect_null(rn)
   expect_null(rownames(exprs(cf)))
   
-  # add rn
-  cf <- realize_view(cf)  
+  # add rn 
+  cf <- realize_view(cf)
   rn <- paste0("c", seq_len(nrow(cf)))
   rownames(cf) <- rn
   expect_equal(rownames(cf), rn)
