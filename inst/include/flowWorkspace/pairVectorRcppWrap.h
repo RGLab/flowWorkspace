@@ -70,13 +70,13 @@ SEXP kw_to_sexp(const KW_PAIR & kw){
 		config.data.decades = cpp11::as_cpp<double>(cfg["decades"]);
 	
 	if(cfg["truncate_min_val"]!=R_NilValue)
-		config.data.truncate_min_val = cpp11::as_cpp<double>(cfg["truncate_min_val"]);
+		config.data.truncate_min_val = cpp11::as_cpp<bool>(cfg["truncate_min_val"]);
 	
 	if(cfg["min_limit"]!=R_NilValue)
 		config.data.min_limit = cpp11::as_cpp<double>(cfg["min_limit"]);
 	
 	if(cfg["truncate_max_range"]!=R_NilValue)
-		config.data.truncate_max_range = cpp11::as_cpp<double>(cfg["truncate_max_range"]);
+		config.data.truncate_max_range = cpp11::as_cpp<bool>(cfg["truncate_max_range"]);
 	
 	if(cfg["num_threads"]!=R_NilValue)
 		config.data.num_threads = cpp11::as_cpp<int>(cfg["num_threads"]);
@@ -84,30 +84,30 @@ SEXP kw_to_sexp(const KW_PAIR & kw){
 	if(cfg["transformation"]!=R_NilValue)
 	{
 		SEXP trans_sxp = cfg["transformation"];
-	unsigned short trans_type = TYPEOF(trans_sxp);
-	string transformation;
-	if(trans_type  == STRSXP)
-		transformation = cpp11::as_cpp<string>(trans_sxp);
-	else if(trans_type == LGLSXP)
-	{
-		if(cpp11::as_cpp<bool>(trans_sxp))
-		transformation="linearize";
+		unsigned short trans_type = TYPEOF(trans_sxp);
+		string transformation;
+		if(trans_type  == STRSXP)
+			transformation = cpp11::as_cpp<string>(trans_sxp);
+		else if(trans_type == LGLSXP)
+		{
+			if(cpp11::as_cpp<bool>(trans_sxp))
+			transformation="linearize";
+			else
+			transformation="none";
+		}
 		else
-		transformation="none";
-	}
-	else
-		cpp11::stop("invalid transformation argument!");
-		
-	if(transformation=="linearize")
-		config.data.transform = TransformType::linearize;
-	else if(transformation=="none")
-		config.data.transform = TransformType::none;
-	else if(transformation=="linearize_with_PnG_scaling")
-		config.data.transform = TransformType::linearize_with_PnG_scaling;
-	else if(transformation=="scale")
-		config.data.transform = TransformType::scale;
-	else
-		cpp11::stop("unkown transformation type :" + transformation);
+			cpp11::stop("invalid transformation argument!");
+			
+		if(transformation=="linearize")
+			config.data.transform = TransformType::linearize;
+		else if(transformation=="none")
+			config.data.transform = TransformType::none;
+		else if(transformation=="linearize_with_PnG_scaling")
+			config.data.transform = TransformType::linearize_with_PnG_scaling;
+		else if(transformation=="scale")
+			config.data.transform = TransformType::scale;
+		else
+			cpp11::stop("unkown transformation type :" + transformation);
 	}
 		return config;
 }
