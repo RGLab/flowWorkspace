@@ -179,6 +179,13 @@ extern "C" SEXP _flowWorkspace_append_cols(SEXP fr, SEXP new_colnames, SEXP new_
   END_CPP11
 }
 // cytoframeAPI.cpp
+cpp11::external_pointer<CytoFrameView> parseFCS(string filename, SEXP configr, bool text_only, string format, string uri);
+extern "C" SEXP _flowWorkspace_parseFCS(SEXP filename, SEXP configr, SEXP text_only, SEXP format, SEXP uri) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(parseFCS(cpp11::as_cpp<cpp11::decay_t<string>>(filename), cpp11::as_cpp<cpp11::decay_t<SEXP>>(configr), cpp11::as_cpp<cpp11::decay_t<bool>>(text_only), cpp11::as_cpp<cpp11::decay_t<string>>(format), cpp11::as_cpp<cpp11::decay_t<string>>(uri)));
+  END_CPP11
+}
+// cytoframeAPI.cpp
 cpp11::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr);
 extern "C" SEXP _flowWorkspace_cf_getData(SEXP fr) {
   BEGIN_CPP11
@@ -215,6 +222,52 @@ extern "C" SEXP _flowWorkspace_cf_getKeywords(SEXP fr) {
     return cpp11::as_sexp(cf_getKeywords(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
   END_CPP11
 }
+// cytoframeAPI.cpp
+void cf_setKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::list_of<cpp11::r_string> keys);
+extern "C" SEXP _flowWorkspace_cf_setKeywords(SEXP fr, SEXP keys) {
+  BEGIN_CPP11
+    cf_setKeywords(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::list_of<cpp11::r_string>>>(keys));
+    return R_NilValue;
+  END_CPP11
+}
+// cytoframeAPI.cpp
+void cf_setKeywordsSubset(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings keys, cpp11::strings values);
+extern "C" SEXP _flowWorkspace_cf_setKeywordsSubset(SEXP fr, SEXP keys, SEXP values) {
+  BEGIN_CPP11
+    cf_setKeywordsSubset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(keys), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(values));
+    return R_NilValue;
+  END_CPP11
+}
+// cytoframeAPI.cpp
+void cf_renameKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings old_keys, cpp11::strings new_keys);
+extern "C" SEXP _flowWorkspace_cf_renameKeywords(SEXP fr, SEXP old_keys, SEXP new_keys) {
+  BEGIN_CPP11
+    cf_renameKeywords(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(old_keys), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(new_keys));
+    return R_NilValue;
+  END_CPP11
+}
+// cytoframeAPI.cpp
+void cf_removeKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings keys);
+extern "C" SEXP _flowWorkspace_cf_removeKeywords(SEXP fr, SEXP keys) {
+  BEGIN_CPP11
+    cf_removeKeywords(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(keys));
+    return R_NilValue;
+  END_CPP11
+}
+// cytoframeAPI.cpp
+int getncol(cpp11::external_pointer<CytoFrameView> fr);
+extern "C" SEXP _flowWorkspace_getncol(SEXP fr) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getncol(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
+  END_CPP11
+}
+// cytoframeAPI.cpp
+int getnrow(cpp11::external_pointer<CytoFrameView> fr);
+extern "C" SEXP _flowWorkspace_getnrow(SEXP fr) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getnrow(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
+  END_CPP11
+}
 
 extern "C" {
 /* .Call calls */
@@ -226,9 +279,13 @@ extern SEXP _flowWorkspace_cf_getKeyword(SEXP, SEXP);
 extern SEXP _flowWorkspace_cf_getKeywords(SEXP);
 extern SEXP _flowWorkspace_cf_is_indexed(SEXP);
 extern SEXP _flowWorkspace_cf_load_meta_cpp(SEXP);
+extern SEXP _flowWorkspace_cf_removeKeywords(SEXP, SEXP);
+extern SEXP _flowWorkspace_cf_renameKeywords(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cf_scale_time_channel_cpp(SEXP);
 extern SEXP _flowWorkspace_cf_set_readonly(SEXP, SEXP);
 extern SEXP _flowWorkspace_cf_setData(SEXP, SEXP);
+extern SEXP _flowWorkspace_cf_setKeywords(SEXP, SEXP);
+extern SEXP _flowWorkspace_cf_setKeywordsSubset(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cf_to_memcf(SEXP);
 extern SEXP _flowWorkspace_cf_transform_data(SEXP, SEXP);
 extern SEXP _flowWorkspace_copy_view_cytoframe(SEXP);
@@ -237,7 +294,10 @@ extern SEXP _flowWorkspace_frm_compensate(SEXP, SEXP);
 extern SEXP _flowWorkspace_get_channels(SEXP);
 extern SEXP _flowWorkspace_get_rownames(SEXP);
 extern SEXP _flowWorkspace_get_uri(SEXP);
+extern SEXP _flowWorkspace_getncol(SEXP);
+extern SEXP _flowWorkspace_getnrow(SEXP);
 extern SEXP _flowWorkspace_load_cf(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_parseFCS(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_realize_view_cytoframe(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_all_channels(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_rownames(SEXP, SEXP);
@@ -256,9 +316,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cf_getKeywords",            (DL_FUNC) &_flowWorkspace_cf_getKeywords,            1},
     {"_flowWorkspace_cf_is_indexed",             (DL_FUNC) &_flowWorkspace_cf_is_indexed,             1},
     {"_flowWorkspace_cf_load_meta_cpp",          (DL_FUNC) &_flowWorkspace_cf_load_meta_cpp,          1},
+    {"_flowWorkspace_cf_removeKeywords",         (DL_FUNC) &_flowWorkspace_cf_removeKeywords,         2},
+    {"_flowWorkspace_cf_renameKeywords",         (DL_FUNC) &_flowWorkspace_cf_renameKeywords,         3},
     {"_flowWorkspace_cf_scale_time_channel_cpp", (DL_FUNC) &_flowWorkspace_cf_scale_time_channel_cpp, 1},
     {"_flowWorkspace_cf_set_readonly",           (DL_FUNC) &_flowWorkspace_cf_set_readonly,           2},
     {"_flowWorkspace_cf_setData",                (DL_FUNC) &_flowWorkspace_cf_setData,                2},
+    {"_flowWorkspace_cf_setKeywords",            (DL_FUNC) &_flowWorkspace_cf_setKeywords,            2},
+    {"_flowWorkspace_cf_setKeywordsSubset",      (DL_FUNC) &_flowWorkspace_cf_setKeywordsSubset,      3},
     {"_flowWorkspace_cf_to_memcf",               (DL_FUNC) &_flowWorkspace_cf_to_memcf,               1},
     {"_flowWorkspace_cf_transform_data",         (DL_FUNC) &_flowWorkspace_cf_transform_data,         2},
     {"_flowWorkspace_copy_view_cytoframe",       (DL_FUNC) &_flowWorkspace_copy_view_cytoframe,       1},
@@ -267,7 +331,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_channels",              (DL_FUNC) &_flowWorkspace_get_channels,              1},
     {"_flowWorkspace_get_rownames",              (DL_FUNC) &_flowWorkspace_get_rownames,              1},
     {"_flowWorkspace_get_uri",                   (DL_FUNC) &_flowWorkspace_get_uri,                   1},
+    {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
+    {"_flowWorkspace_getnrow",                   (DL_FUNC) &_flowWorkspace_getnrow,                   1},
     {"_flowWorkspace_load_cf",                   (DL_FUNC) &_flowWorkspace_load_cf,                   3},
+    {"_flowWorkspace_parseFCS",                  (DL_FUNC) &_flowWorkspace_parseFCS,                  5},
     {"_flowWorkspace_realize_view_cytoframe",    (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,    2},
     {"_flowWorkspace_set_all_channels",          (DL_FUNC) &_flowWorkspace_set_all_channels,          2},
     {"_flowWorkspace_set_rownames",              (DL_FUNC) &_flowWorkspace_set_rownames,              2},

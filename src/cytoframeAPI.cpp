@@ -208,35 +208,36 @@ cpp11::external_pointer<CytoFrameView> append_cols(cpp11::external_pointer<CytoF
   return fr;
 }
                                       
-// [[cpp11::register]]
-// cpp11::external_pointer<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false
-// 		, string format = "mem", string uri = "")
-// {
-// 	CytoFramePtr ptr;
-// 	unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
-// 	if(format!="mem"&&text_only)
-// 	{
-// 		warning("text_only is ignored when format is set to 'h5' or 'tile'!");
-// 		text_only = false;
-// 	}
-// 	if(text_only)
-// 		cf->read_fcs_header();
-// 	else
-// 		cf->read_fcs();
-// 	if(format=="mem")
-// 	{
-// 		ptr.reset(cf.release());
-// 	}
-// 	else
-// 	{
-// 		FileFormat fmt;
-// 		fmt = FileFormat::H5;
-// 		cf->write_to_disk(uri, fmt);
-// 		ptr = load_cytoframe(uri, false);
-// 	}
+[[cpp11::register]]
+cpp11::external_pointer<CytoFrameView> parseFCS(string filename, SEXP configr, bool text_only = false
+		, string format = "mem", string uri = "")
+{
+  auto config = sexp_to_fcs_read_param(configr);
+  CytoFramePtr ptr;
+  unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
+	if(format!="mem"&&text_only)
+	{
+		cpp11::warning("text_only is ignored when format is set to 'h5' or 'tile'!");
+		text_only = false;
+	}
+	if(text_only)
+		cf->read_fcs_header();
+	else
+		cf->read_fcs();
+	if(format=="mem")
+	{
+		ptr.reset(cf.release());
+	}
+	else
+	{
+		FileFormat fmt;
+		fmt = FileFormat::H5;
+		cf->write_to_disk(uri, fmt);
+		ptr = load_cytoframe(uri, false);
+	}
 
-// 	return cpp11::external_pointer<CytoFrameView>(new CytoFrameView(ptr));
-// }
+	return cpp11::external_pointer<CytoFrameView>(new CytoFrameView(ptr));
+}
 
 [[cpp11::register]]
 cpp11::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
@@ -309,44 +310,44 @@ SEXP cf_getKeywords(cpp11::external_pointer<CytoFrameView> fr){
   return kw_to_sexp(fr->get_keywords().getPairs());
 }
 
-// [[cpp11::register]]
-// void cf_setKeywords(cpp11::external_pointer<CytoFrameView> fr, List keys){
-//     vector<string> names = keys.names();
-//     KEY_WORDS kws;
-//     for(int i = 0; i < keys.size(); i++) 
-//       kws[names[i]] = as<string>(keys[i]);
-//     fr->set_keywords(kws);
-// }
+[[cpp11::register]]
+void cf_setKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::list_of<cpp11::r_string> keys){
+    
+    KEY_WORDS kws;
+    for(int i = 0; i < keys.size(); i++) 
+      kws[keys.names()[i]] = keys[i];
+    fr->set_keywords(kws);
+}
 
-// [[cpp11::register]]
-// void cf_setKeywordsSubset(cpp11::external_pointer<CytoFrameView> fr, StringVector keys, StringVector values){
-//     for(int i = 0; i < keys.size(); i++)
-//       fr->set_keyword(as<string>(keys[i]), as<string>(values[i]));
-// }
+[[cpp11::register]]
+void cf_setKeywordsSubset(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings keys, cpp11::strings values){
+    for(int i = 0; i < keys.size(); i++)
+      fr->set_keyword(keys[i], values[i]);
+}
 
-// [[cpp11::register]]
-// void cf_renameKeywords(cpp11::external_pointer<CytoFrameView> fr, StringVector old_keys, StringVector new_keys){
-//   for(int i = 0; i < old_keys.size(); i++)
-//     fr->rename_keyword(as<string>(old_keys[i]), as<string>(new_keys[i]));
-// }
+[[cpp11::register]]
+void cf_renameKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings old_keys, cpp11::strings new_keys){
+  for(int i = 0; i < old_keys.size(); i++)
+    fr->rename_keyword(old_keys[i], new_keys[i]);
+}
 
-// [[cpp11::register]]
-// void cf_removeKeywords(cpp11::external_pointer<CytoFrameView> fr, StringVector keys){
-//   for(int i = 0; i < keys.size(); i++)
-//     fr->remove_keyword(as<string>(keys[i]));
-// }
+[[cpp11::register]]
+void cf_removeKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings keys){
+  for(int i = 0; i < keys.size(); i++)
+    fr->remove_keyword(keys[i]);
+}
 
-// [[cpp11::register]]
-// int getncol(cpp11::external_pointer<CytoFrameView> fr){
+[[cpp11::register]]
+int getncol(cpp11::external_pointer<CytoFrameView> fr){
   
-//   return fr->n_cols();
-// }
+  return fr->n_cols();
+}
 
-// [[cpp11::register]]
-// int getnrow(cpp11::external_pointer<CytoFrameView> fr){
+[[cpp11::register]]
+int getnrow(cpp11::external_pointer<CytoFrameView> fr){
   
-//   return fr->n_rows();
-// }
+  return fr->n_rows();
+}
 
 // [[cpp11::register]]
 // void setpdata(cpp11::external_pointer<CytoFrameView> fr, Rcpp::DataFrame df){

@@ -92,6 +92,10 @@ append_cols <- function(fr, new_colnames, new_cols_mat) {
   .Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat)
 }
 
+parseFCS <- function(filename, configr, text_only, format, uri) {
+  .Call(`_flowWorkspace_parseFCS`, filename, configr, text_only, format, uri)
+}
+
 cf_getData <- function(fr) {
   .Call(`_flowWorkspace_cf_getData`, fr)
 }
@@ -110,4 +114,28 @@ cf_getKeyword <- function(fr, key) {
 
 cf_getKeywords <- function(fr) {
   .Call(`_flowWorkspace_cf_getKeywords`, fr)
+}
+
+cf_setKeywords <- function(fr, keys) {
+  invisible(.Call(`_flowWorkspace_cf_setKeywords`, fr, keys))
+}
+
+cf_setKeywordsSubset <- function(fr, keys, values) {
+  invisible(.Call(`_flowWorkspace_cf_setKeywordsSubset`, fr, keys, values))
+}
+
+cf_renameKeywords <- function(fr, old_keys, new_keys) {
+  invisible(.Call(`_flowWorkspace_cf_renameKeywords`, fr, old_keys, new_keys))
+}
+
+cf_removeKeywords <- function(fr, keys) {
+  invisible(.Call(`_flowWorkspace_cf_removeKeywords`, fr, keys))
+}
+
+getncol <- function(fr) {
+  .Call(`_flowWorkspace_getncol`, fr)
+}
+
+getnrow <- function(fr) {
+  .Call(`_flowWorkspace_getnrow`, fr)
 }
