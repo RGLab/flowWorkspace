@@ -349,57 +349,61 @@ int getnrow(cpp11::external_pointer<CytoFrameView> fr){
   return fr->n_rows();
 }
 
-// [[cpp11::register]]
-// void setpdata(cpp11::external_pointer<CytoFrameView> fr, Rcpp::DataFrame df){
-// 	int nChnls = df.nrows();
-// 	//assume channels are consistent between fr and df
-// 	vector<string> chnls = df["name"];
-// 	vector<string> markers = df["desc"];
-// 	vector<float> minRange = df["minRange"];
-// 	vector<float> maxRange = df["maxRange"];
-// 	for(int i = 0; i < nChnls; i++)
-// 	{
-// 		string chnl = chnls[i];
-// 		fr->set_marker(chnl, markers[i]);
-// 		fr->set_range(chnl, ColType::channel, pair<float, float>(minRange[i], maxRange[i]));
-// 	}
-// 	//no need to update $Pn keyword based on rownames of df assuming it is done through keyword setter separately
-// }
+[[cpp11::register]]
+void setpdata(cpp11::external_pointer<CytoFrameView> fr, cpp11::data_frame df){
+	int nChnls = df.nrow();
+	//assume channels are consistent between fr and df
+	cpp11::strings chnls(df["name"]);
+	cpp11::strings markers(df["desc"]);
+	cpp11::doubles minRange(df["minRange"]);
+	cpp11::doubles maxRange(df["maxRange"]);
+	for(int i = 0; i < nChnls; i++)
+	{
+		string chnl = chnls[i];
+		fr->set_marker(chnl, markers[i]);
+		fr->set_range(chnl, ColType::channel, pair<float, float>(minRange[i], maxRange[i]));
+	}
+	//no need to update $Pn keyword based on rownames of df assuming it is done through keyword setter separately
+}
 
-// [[cpp11::register]]
-// Rcpp::DataFrame getpdata(cpp11::external_pointer<CytoFrameView> fr){
+[[cpp11::register]]
+cpp11::writable::data_frame getpdata(cpp11::external_pointer<CytoFrameView> fr){
   
-//   int ncol = fr->n_cols();
-//   StringVector rowid(ncol);
-//   StringVector names(ncol);
-//   StringVector desc(ncol);
-//   NumericVector range(ncol);
-//   NumericVector minRange(ncol);
-//   NumericVector maxRange(ncol);
-//   vector<string> chnl = fr->get_channels();
-//   vector<string> marker = fr->get_markers();
-//   vector<unsigned> orig_rowid = fr->get_original_col_ids();
-//   for(int i = 0; i < ncol; i++)
-//   {
-//     rowid[i] = "$P" + to_string(orig_rowid[i]+1);
-//     names[i] = chnl[i];
-//     if(marker[i].empty())
-//       desc[i] = StringVector::get_na();
-//     else
-//       desc[i] = marker[i];
-//     pair<float, float> r = fr->get_range(chnl[i], ColType::channel, RangeType::instrument);
-//     maxRange[i] = range[i] = r.second;
-//     minRange[i] = r.first;
-//   }
-//   rowid.attr("class") = "AsIs";
-//   desc.attr("class") = "AsIs";
-//   names.attr("class") = "AsIs";
-//   DataFrame df = DataFrame::create(Named("name") = names
-//                              ,Named("desc") = desc
-//                              ,Named("range") = range
-//                              ,Named("minRange") = minRange
-//                              ,Named("maxRange") = maxRange
-//                              );
-//   df.attr("row.names") = rowid;
-//   return df;
-// }
+  int ncol = fr->n_cols();
+  cpp11::writable::strings rowid(ncol);
+  cpp11::writable::strings names(ncol);
+  cpp11::writable::strings desc(ncol);
+  cpp11::writable::doubles range(ncol);
+  cpp11::writable::doubles minRange(ncol);
+  cpp11::writable::doubles maxRange(ncol);
+  vector<string> chnl = fr->get_channels();
+  vector<string> marker = fr->get_markers();
+  vector<unsigned> orig_rowid = fr->get_original_col_ids();
+  for(int i = 0; i < ncol; i++)
+  {
+    rowid[i] = "$P" + to_string(orig_rowid[i]+1);
+    names[i] = chnl[i];
+    if(marker[i].empty())
+      desc[i] = NA_STRING;
+    else
+      desc[i] = marker[i];
+    pair<float, float> r = fr->get_range(chnl[i], ColType::channel, RangeType::instrument);
+    range[i] = r.second;
+    maxRange[i] = r.second;
+    minRange[i] = r.first;
+  }
+  rowid.attr("class") = "AsIs";
+  desc.attr("class") = "AsIs";
+  names.attr("class") = "AsIs";
+  using namespace cpp11::literals;
+
+  cpp11::writable::data_frame df ({"name"_nm = names
+                             ,"desc"_nm = desc
+                             ,"range"_nm = range
+                             ,"minRange"_nm = minRange
+                             ,"maxRange"_nm = maxRange
+                              }
+                             );
+  df.attr("row.names") = rowid;
+  return df;
+}

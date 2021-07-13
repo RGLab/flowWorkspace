@@ -268,6 +268,21 @@ extern "C" SEXP _flowWorkspace_getnrow(SEXP fr) {
     return cpp11::as_sexp(getnrow(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
   END_CPP11
 }
+// cytoframeAPI.cpp
+void setpdata(cpp11::external_pointer<CytoFrameView> fr, cpp11::data_frame df);
+extern "C" SEXP _flowWorkspace_setpdata(SEXP fr, SEXP df) {
+  BEGIN_CPP11
+    setpdata(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::data_frame>>(df));
+    return R_NilValue;
+  END_CPP11
+}
+// cytoframeAPI.cpp
+cpp11::writable::data_frame getpdata(cpp11::external_pointer<CytoFrameView> fr);
+extern "C" SEXP _flowWorkspace_getpdata(SEXP fr) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getpdata(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
+  END_CPP11
+}
 
 extern "C" {
 /* .Call calls */
@@ -296,6 +311,7 @@ extern SEXP _flowWorkspace_get_rownames(SEXP);
 extern SEXP _flowWorkspace_get_uri(SEXP);
 extern SEXP _flowWorkspace_getncol(SEXP);
 extern SEXP _flowWorkspace_getnrow(SEXP);
+extern SEXP _flowWorkspace_getpdata(SEXP);
 extern SEXP _flowWorkspace_load_cf(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_parseFCS(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_realize_view_cytoframe(SEXP, SEXP);
@@ -303,6 +319,7 @@ extern SEXP _flowWorkspace_set_all_channels(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_rownames(SEXP, SEXP);
 extern SEXP _flowWorkspace_setChannel(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setMarker(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_setpdata(SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoframe_by_cols(SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoframe_by_rows(SEXP, SEXP);
 extern SEXP _flowWorkspace_write_to_disk(SEXP, SEXP, SEXP);
@@ -333,6 +350,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_uri",                   (DL_FUNC) &_flowWorkspace_get_uri,                   1},
     {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
     {"_flowWorkspace_getnrow",                   (DL_FUNC) &_flowWorkspace_getnrow,                   1},
+    {"_flowWorkspace_getpdata",                  (DL_FUNC) &_flowWorkspace_getpdata,                  1},
     {"_flowWorkspace_load_cf",                   (DL_FUNC) &_flowWorkspace_load_cf,                   3},
     {"_flowWorkspace_parseFCS",                  (DL_FUNC) &_flowWorkspace_parseFCS,                  5},
     {"_flowWorkspace_realize_view_cytoframe",    (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,    2},
@@ -340,6 +358,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_set_rownames",              (DL_FUNC) &_flowWorkspace_set_rownames,              2},
     {"_flowWorkspace_setChannel",                (DL_FUNC) &_flowWorkspace_setChannel,                3},
     {"_flowWorkspace_setMarker",                 (DL_FUNC) &_flowWorkspace_setMarker,                 3},
+    {"_flowWorkspace_setpdata",                  (DL_FUNC) &_flowWorkspace_setpdata,                  2},
     {"_flowWorkspace_subset_cytoframe_by_cols",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols,  2},
     {"_flowWorkspace_subset_cytoframe_by_rows",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows,  2},
     {"_flowWorkspace_write_to_disk",             (DL_FUNC) &_flowWorkspace_write_to_disk,             3},
