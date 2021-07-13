@@ -320,7 +320,7 @@ void cf_setKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::list_of<cp
     
     KEY_WORDS kws;
     for(int i = 0; i < keys.size(); i++) 
-      kws[keys.names()[i]] = keys[i];
+      kws[keys.names()[i]] = cpp11::as_cpp<string>(keys[i]);
     fr->set_keywords(kws);
 }
 
