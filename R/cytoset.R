@@ -974,7 +974,7 @@ cs_keyword_insert <- function(cs, keys, values){
   if(any(dup_idx))
     stop("keywords already exist in one or more cytoframes!:", paste(keys[dup_idx], collapse = ", "))
   for(idx in seq_along(cs))
-    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, values)
+    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, as.character(values))
 }
 
 #' @rdname keyword-mutators
@@ -1037,5 +1037,5 @@ cs_keyword_set <- function(cs, keys, values){
   if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
     stop("keys and values must be character vectors of equal length")
   for(idx in seq_along(cs))
-    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, values)
+    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, as.character(values))
 }
