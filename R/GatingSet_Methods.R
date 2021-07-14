@@ -173,7 +173,7 @@ gh_apply_to_cs <- function(x, cs
 				
 			}
 			execute_in_c <- length(x@transformation) == 0
-			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c, compensation_source))
+			gs <- new("GatingSet", pointer = cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c, compensation_source))
 			#deal with the trans that are not stored in c++
 			if(!execute_in_c)
 			{
@@ -295,14 +295,14 @@ fix_y_axis <- function(gs, x, y){
 #' @param h5_dir h5 dir for the new gs
 #' @export 
 gs_clone <- function(x, h5_dir = tempdir()){
-  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir, is_copy_data = TRUE))
+  new("GatingSet", pointer = cpp_CloneGatingSet(x@pointer, h5_dir, is_copy_data = TRUE))
   
 }
 
 #' @rdname gs_clone
 #' @export 
 gs_copy_tree_only <- function(x){
-  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
+  new("GatingSet", pointer = cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
   
 }
 #' @name recompute
@@ -378,7 +378,7 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 #'       }
 #' @export
 setMethod("sampleNames","GatingSet",function(object){
-      .cpp_getSamples(object@pointer)
+      cpp_getSamples(object@pointer)
     })
 
 #' @param value \code{character} new sample names
@@ -397,7 +397,7 @@ setReplaceMethod("sampleNames",
       oldNames <- sampleNames(object)
       #update c++ data structure
       mapply(oldNames,value, FUN = function(oldName, newName){
-            .cpp_setSample( object@pointer, oldName, newName)
+            cpp_setSample( object@pointer, oldName, newName)
       })
 
       object
@@ -665,7 +665,7 @@ NULL
 #' @rdname loglevel
 #' @export
 get_log_level <- function(){
-  level <- .cpp_getLogLevel()
+  level <- cpp_getLogLevel()
   c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")[level + 1]
 }
 
@@ -688,7 +688,7 @@ NULL
 set_log_level <- function(level = "none"){
   valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
   level <- match.arg(level, valid_levels)
-  .cpp_setLogLevel( as.integer(match(level, valid_levels) - 1))
+  cpp_setLogLevel( as.integer(match(level, valid_levels) - 1))
   level
 }
 

@@ -198,7 +198,7 @@ gslist_to_gs <- function(x,...){
 	#combine tree structure
 	ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
 	sampleList <- lapply(x, sampleNames, level =1)
-	new("GatingSet", pointer = .cpp_combineGatingSet(ptrlist,sampleList))
+	new("GatingSet", pointer = cpp_combineGatingSet(ptrlist,sampleList))
 }
 
 #' @name recompute

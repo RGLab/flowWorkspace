@@ -203,3 +203,83 @@ get_pheno_data <- function(cs) {
 h5_set_error_handler <- function() {
   invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
 }
+
+gs_transform_data <- function(gsPtr) {
+  invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
+}
+
+cpp_gating <- function(gsPtr, nodes, alwaysLoadData, verbose, leafbool) {
+  invisible(.Call(`_flowWorkspace_cpp_gating`, gsPtr, nodes, alwaysLoadData, verbose, leafbool))
+}
+
+subset_gs_by_sample <- function(gsPtr, samples) {
+  .Call(`_flowWorkspace_subset_gs_by_sample`, gsPtr, samples)
+}
+
+get_cytoset <- function(gsPtr) {
+  .Call(`_flowWorkspace_get_cytoset`, gsPtr)
+}
+
+get_cytoset_from_node <- function(gsPtr, node) {
+  .Call(`_flowWorkspace_get_cytoset_from_node`, gsPtr, node)
+}
+
+set_cytoset <- function(gsPtr, cs) {
+  invisible(.Call(`_flowWorkspace_set_cytoset`, gsPtr, cs))
+}
+
+cpp_getSamples <- function(gsPtr) {
+  .Call(`_flowWorkspace_cpp_getSamples`, gsPtr)
+}
+
+cpp_NewGatingSet <- function(gsPtr, src_sample_uid, cs, execute, comp_source) {
+  .Call(`_flowWorkspace_cpp_NewGatingSet`, gsPtr, src_sample_uid, cs, execute, comp_source)
+}
+
+get_gatingset_id <- function(gsPtr) {
+  .Call(`_flowWorkspace_get_gatingset_id`, gsPtr)
+}
+
+set_gatingset_id <- function(gsPtr, id) {
+  invisible(.Call(`_flowWorkspace_set_gatingset_id`, gsPtr, id))
+}
+
+cpp_saveGatingSet <- function(gs, path, backend_opt) {
+  invisible(.Call(`_flowWorkspace_cpp_saveGatingSet`, gs, path, backend_opt))
+}
+
+cpp_loadGatingSet <- function(path, readonly, select_samples, verbose) {
+  .Call(`_flowWorkspace_cpp_loadGatingSet`, path, readonly, select_samples, verbose)
+}
+
+load_legacy_gs <- function(pbfile, cs) {
+  .Call(`_flowWorkspace_load_legacy_gs`, pbfile, cs)
+}
+
+cpp_CloneGatingSet <- function(gs, h5_dir, is_copy_data) {
+  .Call(`_flowWorkspace_cpp_CloneGatingSet`, gs, h5_dir, is_copy_data)
+}
+
+cpp_combineGatingSet <- function(gsList, sampleList) {
+  .Call(`_flowWorkspace_cpp_combineGatingSet`, gsList, sampleList)
+}
+
+cpp_setSample <- function(gs, oldName, newName) {
+  invisible(.Call(`_flowWorkspace_cpp_setSample`, gs, oldName, newName))
+}
+
+is_tiledb_support <- function() {
+  .Call(`_flowWorkspace_is_tiledb_support`)
+}
+
+cpp_getLogLevel <- function() {
+  .Call(`_flowWorkspace_cpp_getLogLevel`)
+}
+
+cpp_setLogLevel <- function(loglevel) {
+  invisible(.Call(`_flowWorkspace_cpp_setLogLevel`, loglevel))
+}
+
+cpp_togleErrorFlag <- function() {
+  invisible(.Call(`_flowWorkspace_cpp_togleErrorFlag`))
+}

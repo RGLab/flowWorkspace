@@ -59,7 +59,7 @@ save_gs<-function(gs, path
   if(backend_opt == "link")
   	stop("'link' option for save_gs is no longer supported")
   
-  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt), silent = TRUE))
+  suppressMessages(res <- try(cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt), silent = TRUE))
 
   if(class(res) == "try-error")
   {
@@ -135,7 +135,7 @@ load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = ch
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
   }else
     select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose))
+  new("GatingSet", pointer = cpp_loadGatingSet(path, backend_readonly, select.sn, verbose))
   
 }
 
