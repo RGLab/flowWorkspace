@@ -94,20 +94,7 @@ void subset_cytoframe_by_cols(cpp11::external_pointer<CytoFrameView> fr, vector<
   
   fr->cols_(vector<unsigned>(idx.begin(), idx.end()));
 }
- /*
-  * subset by cols and rows in place for each frames
-  */  
- 
- // unsigned short r_type = TYPEOF(r_obj);
- // // Rcout << "r_type:" << r_type << endl;  
- // for(auto & it : *cs_new)
- // {
- //   if(j_type != NILSXP)
- //     it.second->cols_(ch_selected, ColType::channel);
- //   if(r_type != NILSXP)
- //     it.second->rows_(convert_to_uint_idx(it.second->n_rows(), r_obj));
- // }
- 
+  
  
 [[cpp11::register]]
 void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix spillover){

@@ -31,7 +31,7 @@
 // //' @param node node name
 // //' @noRd
 // //[[Rcpp::export(".getDescendants")]]
-// VertexID_vec getDescendants(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node){
+// VertexID_vec getDescendants(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node){
 //   // Rcpp::Rcout << sampleName << std::endl;
 //   GatingHierarchy &gh = *gsPtr->getGatingHierarchy(sampleName);
 //   VertexID_vec output;

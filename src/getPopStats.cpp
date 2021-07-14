@@ -9,7 +9,7 @@
 //   struct getStats : public Worker
 //   {
 //     // source 
-//     Rcpp::XPtr<GatingSet> gs;
+//     cpp11::external_pointer<GatingSet> gs;
 //     const bool freq;
 //     const StringVec sampleNames;
 //     const StringVec subpopulation;
@@ -27,7 +27,7 @@
 //     Rcpp::DoubleVector parentFreqVec;
     
 //     // initialize with source and destination
-//     getStats(Rcpp::XPtr<GatingSet> gs, const bool freq, const StringVec sampleNames,const StringVec subpopulation, const bool isFlowCore, const bool isFullPath,List output) 
+//     getStats(cpp11::external_pointer<GatingSet> gs, const bool freq, const StringVec sampleNames,const StringVec subpopulation, const bool isFlowCore, const bool isFullPath,List output) 
 //       : gs(gs), freq(freq), sampleNames(sampleNames), subpopulation(subpopulation), isFlowCore(isFlowCore), isFullPath(isFullPath), output(output) {
 //           sampleVec = output["name"];
 //           popVec = output["Population"];
@@ -102,7 +102,7 @@
 // //' @importFrom RcppParallel RcppParallelLibs
 // //' @noRd
 // //[[Rcpp::export(".getPopCounts")]]
-// Rcpp::List getPopCounts(Rcpp::XPtr<GatingSet> gsPtr, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath){
+// Rcpp::List getPopCounts(cpp11::external_pointer<GatingSet> gsPtr, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath){
   
 //   bool isFlowCore = !flowJo;
 //   StringVec sampleNames = gsPtr->get_sample_uids();

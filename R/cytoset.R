@@ -678,27 +678,32 @@ setMethod("[",
     if(length(x) == 0)
       stop("Empty cytoset!")
 		if(missing(i))
-		  i <- NULL
+		  i <- character()
 		else if(any(i < 0)){
 			if(!all(i <= 0)){
 				stop("Cannot mix positive and negative subscripts")
 			}
 			i <- (1:length(x))[i]
 		}
-			
-	    if(missing(j))
-	      j <- NULL
-	    if(is.numeric(j)||is.integer(j)){
-	    	if(any(j < 0)){
-	    		if(!all(j <= 0)){
-	    			stop("Cannot mix positive and negative subscripts")
-	    		}
-	    		j <- (1:length(colnames(x)))[j]
-	    	}
-	    }
-	    x <- copy_view(x)
-	    subset_cytoset(x@pointer, i, j)
-	    x
+		if(!is.character(i))
+      i <- sampleNames(x)[i]
+
+    if(missing(j))
+      j <- character()
+    if(is.numeric(j)||is.integer(j)){
+      if(any(j < 0)){
+        if(!all(j <= 0)){
+          stop("Cannot mix positive and negative subscripts")
+        }
+        j <- (1:length(colnames(x)))[j]
+      }
+    }
+    if(!is.character(j))
+      j <- colnames(x)[j]
+
+    x <- copy_view(x)
+    subset_cytoset(x@pointer, i, j)
+    x
 	})
 
 # Dispatching to the flowSet-version of fsApply by changing simplify default value from TRUE from FALSE
@@ -768,7 +773,7 @@ setMethod("Subset",
               if(!is(ind, "integer"))
                 stop("Invalid row indices for: ", sn)
               
-              subset_cytoset_by_rows(cs@pointer, sn, ind - 1)
+              subset_cytoset_by_rows(cs@pointer, sn, as.integer(ind - 1))
             }
               
             cs         

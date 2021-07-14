@@ -68,7 +68,7 @@
 // //'         Each of these functions carries the attributes to be used to convert to c++ transformation
 // //' @noRd
 // //[[Rcpp::export(".addTrans")]]
-// void addTrans(Rcpp::XPtr<GatingSet> gsPtr, Rcpp::S4 transformList){
+// void addTrans(cpp11::external_pointer<GatingSet> gsPtr, Rcpp::S4 transformList){
 
 // 	trans_map tm;
 // 	/*
@@ -143,7 +143,7 @@
 // //[[Rcpp::export(.updateChannels)]]
 // void updateChannels(Rcpp::S4 gs, Rcpp::DataFrame map){
 
-// 	Rcpp::XPtr<GatingSet> gsPtr = gs.slot("pointer");
+// 	cpp11::external_pointer<GatingSet> gsPtr = gs.slot("pointer");
 // 	//convert dataframe to map
 // 	CHANNEL_MAP stdmap;
 // 	std::vector<std::string> oldN =  map["old"];

@@ -7,11 +7,9 @@
 
 // #ifndef VECTORSUBSETTING_HPP_
 // #define VECTORSUBSETTING_HPP_
-// #include <RcppArmadillo.h> //include this instead of Rcpp.h so that RcppArmadillo inclusion won't be preceded by Rcpp.h in RcppExport.cpp
-// #include <RcppCommon.h>
-// using namespace Rcpp;
+// #include <cpp11.hpp>
 
-// inline StringVector convert_to_str_idx(StringVector x, SEXP i) {
+// inline cpp11::strings convert_to_str_idx(cpp11::strings x, SEXP i) {
 //   int type = TYPEOF(i);
 //   if(type == LGLSXP)
 //     return x[as<LogicalVector>(i)];

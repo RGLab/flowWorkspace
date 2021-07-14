@@ -148,6 +148,46 @@ getpdata <- function(fr) {
   .Call(`_flowWorkspace_getpdata`, fr)
 }
 
+cs_set_compensation <- function(cs, comps, compensate_data) {
+  invisible(.Call(`_flowWorkspace_cs_set_compensation`, cs, comps, compensate_data))
+}
+
+set_cytoframe <- function(cs, sn, fr) {
+  invisible(.Call(`_flowWorkspace_set_cytoframe`, cs, sn, fr))
+}
+
+add_cytoframe <- function(cs, sn, fr) {
+  invisible(.Call(`_flowWorkspace_add_cytoframe`, cs, sn, fr))
+}
+
+new_cytoset <- function() {
+  .Call(`_flowWorkspace_new_cytoset`)
+}
+
+fcs_to_cytoset <- function(sample_uid_vs_file_path, rconfig, backend, backend_dir) {
+  .Call(`_flowWorkspace_fcs_to_cytoset`, sample_uid_vs_file_path, rconfig, backend, backend_dir)
+}
+
+get_colnames <- function(cs) {
+  .Call(`_flowWorkspace_get_colnames`, cs)
+}
+
+realize_view_cytoset <- function(cs, path) {
+  .Call(`_flowWorkspace_realize_view_cytoset`, cs, path)
+}
+
+copy_view_cytoset <- function(cs) {
+  .Call(`_flowWorkspace_copy_view_cytoset`, cs)
+}
+
+subset_cytoset_by_rows <- function(cs, sn, idx) {
+  invisible(.Call(`_flowWorkspace_subset_cytoset_by_rows`, cs, sn, idx))
+}
+
+subset_cytoset <- function(cs, sample_uids, ch_selected) {
+  invisible(.Call(`_flowWorkspace_subset_cytoset`, cs, sample_uids, ch_selected))
+}
+
 h5_set_error_handler <- function() {
   invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
 }

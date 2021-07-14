@@ -1,131 +1,132 @@
-// #include <cytolib/H5CytoFrame.hpp>
-// #include <flowWorkspace/pairVectorRcppWrap.h>
-// #include <flowWorkspace/convert_to_str_idx.h>
-// #include <flowWorkspace/list_to_comp.h>
+#include <cytolib/H5CytoFrame.hpp>
+#include <flowWorkspace/pairVectorRcppWrap.h>
+#include <flowWorkspace/list_to_comp.h>
 
-// using namespace cytolib;
-
+using namespace cytolib;
 
 
-// [[cpp11::register]]
-// void cs_set_compensation(Rcpp::XPtr<GatingSet> cs, cpp11::list comps, bool compensate_data){
 
-// 	unordered_map<string, compensation> comp_objs = list_to_comps(comps);
-// 	for(auto sn : cs->get_sample_uids())
-// 	{
-// 		GatingHierarchyPtr gh = cs->getGatingHierarchy(sn);
-// 		auto it = comp_objs.find(sn);
-// 		if(it==comp_objs.end())
-// 			throw(domain_error("compensation not found for: " + sn));
-// 		compensation comp = it->second;
-// 		gh->set_compensation(comp, false);
-// 		if(compensate_data)
-// 		{
-// 			//assume always dealing with h5 based gs
-// 			auto &fr = static_cast<H5CytoFrame &>(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
-// 			gh->compensate(fr);
-// 		}
-// 	}
-// }
+[[cpp11::register]]
+void cs_set_compensation(cpp11::external_pointer<GatingSet> cs, cpp11::list comps, bool compensate_data){
 
-
-// [[cpp11::register]]
-// void set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
-// {
-// 	cs->update_cytoframe_view(sn, *fr);
-
-// }
-
-// [[cpp11::register]]
-// void add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
-// {
-// 	cs->add_cytoframe_view(sn, *fr);
-
-// }
+	unordered_map<string, compensation> comp_objs = list_to_comps(comps);
+	for(auto sn : cs->get_sample_uids())
+	{
+		GatingHierarchyPtr gh = cs->getGatingHierarchy(sn);
+		auto it = comp_objs.find(sn);
+		if(it==comp_objs.end())
+			throw(domain_error("compensation not found for: " + sn));
+		compensation comp = it->second;
+		gh->set_compensation(comp, false);
+		if(compensate_data)
+		{
+			//assume always dealing with h5 based gs
+			auto &fr = static_cast<H5CytoFrame &>(*(gh->get_cytoframe_view().get_cytoframe_ptr()));
+			gh->compensate(fr);
+		}
+	}
+}
 
 
-// [[cpp11::register]]
-// Rcpp::XPtr<GatingSet> new_cytoset()
-// {
+[[cpp11::register]]
+void set_cytoframe(cpp11::external_pointer<GatingSet> cs, string sn, cpp11::external_pointer<CytoFrameView> fr)
+{
+	cs->update_cytoframe_view(sn, *fr);
 
-//   Rcpp::XPtr<GatingSet> cs(new GatingSet());
+}
 
-//   return cs;
+[[cpp11::register]]
+void add_cytoframe(cpp11::external_pointer<GatingSet> cs, string sn, cpp11::external_pointer<CytoFrameView> fr)
+{
+	cs->add_cytoframe_view(sn, *fr);
 
-// }
+}
 
-// [[cpp11::register]]
-// Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path
-// 		, FCS_READ_PARAM config, string backend, string backend_dir)
-// {
-// 	FileFormat fmt;
-// 	if(backend == "mem")
-// 		fmt = FileFormat::MEM;
-// 	else
-// 		fmt = FileFormat::H5;
-//   Rcpp::XPtr<GatingSet> cs(new GatingSet(sample_uid_vs_file_path, config, fmt, backend_dir));
+
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> new_cytoset()
+{
+
+  cpp11::external_pointer<GatingSet> cs(new GatingSet());
+
+  return cs;
+
+}
+
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path
+		, cpp11::list rconfig, string backend, string backend_dir)
+{
+    auto config = sexp_to_fcs_read_param(rconfig);
+    FileFormat fmt;
+    if(backend == "mem")
+		fmt = FileFormat::MEM;
+	else
+		fmt = FileFormat::H5;
+  cpp11::external_pointer<GatingSet> cs(new GatingSet(sample_uid_vs_file_path, config, fmt, backend_dir));
   
-//   return cs;
+  return cs;
   
-// }
+}
 
 
-// [[cpp11::register]]
-// vector<string> get_colnames(Rcpp::XPtr<GatingSet> cs){
-//   return cs->get_channels();
-// }
+[[cpp11::register]]
+vector<string> get_colnames(cpp11::external_pointer<GatingSet> cs){
+  return cs->get_channels();
+}
 
-// [[cpp11::register]]
-// Rcpp::XPtr<GatingSet> realize_view_cytoset(Rcpp::XPtr<GatingSet> cs, string path)
-// {
-//   return XPtr<GatingSet>(new GatingSet(cs->copy(true, true, path)));
-// }
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> realize_view_cytoset(cpp11::external_pointer<GatingSet> cs, string path)
+{
+  return cpp11::external_pointer<GatingSet>(new GatingSet(cs->copy(true, true, path)));
+}
 
-// [[cpp11::register]]
-// Rcpp::XPtr<GatingSet> copy_view_cytoset(Rcpp::XPtr<GatingSet> cs)
-// {
-//   return XPtr<GatingSet>(new GatingSet(cs->copy(false, true, "")));
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> copy_view_cytoset(cpp11::external_pointer<GatingSet> cs)
+{
+  return cpp11::external_pointer<GatingSet>(new GatingSet(cs->copy(false, true, "")));
 
-// }
+}
 
-// [[cpp11::register]]
-// void subset_cytoset_by_rows(Rcpp::XPtr<GatingSet> cs
-//                                              , string sn
-//                                              , vector<unsigned> idx
-//                                             )
-// {
+[[cpp11::register]]
+void subset_cytoset_by_rows(cpp11::external_pointer<GatingSet> cs
+                                             , string sn
+                                             , vector<int> idx
+                                            )
+{
   
-//   cs->get_cytoframe_view_ref(sn).rows_(idx);
-// }
+  cs->get_cytoframe_view_ref(sn).rows_(vector<unsigned>(idx.begin(), idx.end()));
+}
   
-// [[cpp11::register]]
-// void subset_cytoset(Rcpp::XPtr<GatingSet> cs
-//                                      , SEXP i_obj
-//                                      , SEXP j_obj
-//                                       )
-// {
+[[cpp11::register]]
+void subset_cytoset(cpp11::external_pointer<GatingSet> cs
+                                     , vector<string> sample_uids
+                                     , vector<string> ch_selected
+                                      )
+{
   
-//   /*
-//   * parse i index (sample name)
-//   */
+  /*
+  * parse i index (sample name)
+  */
 //   unsigned short i_type = TYPEOF(i_obj);
 //   // Rcout << "i_type:" << i_type << endl;
 //   if(i_type != NILSXP)
 //   {
 //     StringVector sample_uids;
 //     if(i_type == STRSXP)
-//       sample_uids = as<StringVector>(i_obj);
+//       sample_uids = cpp11::strings(i_obj);
 //     else
 //     {
       
 //       sample_uids = convert_to_str_idx(wrap(cs->get_sample_uids()), i_obj);
 //     }
-//     cs->sub_samples_(as<vector<string>>(sample_uids));
+    if(sample_uids.size()>0)
+        cs->sub_samples_(sample_uids);
 //   }
   
-//   /*
-//    * parse j index (col)
-//    */  
+  /*
+   * parse j index (col)
+   */  
 //   unsigned short j_type = TYPEOF(j_obj);
 //   // Rcout << "j_type:" << j_type << endl;
 //   vector<string> ch_selected;
@@ -137,13 +138,14 @@
 //       ch_selected = as<vector<string>>(as<StringVector>(j_obj));
 //     else
 //       ch_selected = as<vector<string>>(convert_to_str_idx(wrap(cs->get_channels()), j_obj));
-//     cs->cols_(ch_selected, ColType::channel);
+if(ch_selected.size()>0)
+    cs->cols_(ch_selected, ColType::channel);
 //   }
   
-// }
+}
 
 // [[cpp11::register]]
-// Rcpp::XPtr<CytoFrameView> get_cytoframe(Rcpp::XPtr<GatingSet> cs
+// cpp11::external_pointer<CytoFrameView> get_cytoframe(cpp11::external_pointer<GatingSet> cs
 //                 , Rcpp::RObject i_obj
 //                 , Rcpp::RObject j_obj
 //                 )
@@ -168,7 +170,7 @@
 //     Rcpp::stop("unsupported i type!");
 
   
-//   XPtr<CytoFrameView> frame(new CytoFrameView(cs->get_cytoframe_view(sample_uid)));
+//   cpp11::external_pointer<CytoFrameView> frame(new CytoFrameView(cs->get_cytoframe_view(sample_uid)));
 //   /*
 //   * parse j index (channel names)
 //   */
@@ -225,7 +227,7 @@
 // }
 
 // [[cpp11::register]]
-// void set_pheno_data(Rcpp::XPtr<GatingSet> cs, DataFrame value)
+// void set_pheno_data(cpp11::external_pointer<GatingSet> cs, DataFrame value)
 // {
   
 //   vector<string> sample_uids = as<vector<string>>(value.attr("row.names"));
@@ -246,7 +248,7 @@
 // }
 
 // [[cpp11::register]]
-// cpp11::list get_pheno_data(Rcpp::XPtr<GatingSet> cs)
+// cpp11::list get_pheno_data(cpp11::external_pointer<GatingSet> cs)
 // {
 //   unordered_map<string, vector<string>> pd;
 //   vector<string> sample_uids = cs->get_sample_uids();

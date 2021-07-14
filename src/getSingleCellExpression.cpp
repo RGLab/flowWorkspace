@@ -56,7 +56,7 @@
 //  * since we use numeric index to mask the columns in data matrix
 //  */
 // //[[Rcpp::export(name=".cpp_getSingleCellExpressionByGate")]]
-// NumericMatrix getSingleCellExpressionByGate(XPtr<GatingSet> gs,string sampleName
+// NumericMatrix getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                                         , List markers_pops //each marker may be used by several pops
 //                                         , NumericMatrix data //ncol = length(markers)
 //                                         , CharacterVector markers //used for output mat colnames,may have other markers
@@ -98,7 +98,7 @@
 
 
 // //[[Rcpp::export(name=".cpp_getSingleCellExpression")]]
-// NumericMatrix getSingleCellExpression(XPtr<GatingSet> gs,string sampleName
+// NumericMatrix getSingleCellExpression(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                                         , vector<string> pops, NumericMatrix data
 //                                         , CharacterVector markers, bool threshold) {
   

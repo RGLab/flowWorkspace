@@ -284,6 +284,81 @@ extern "C" SEXP _flowWorkspace_getpdata(SEXP fr) {
     return cpp11::as_sexp(getpdata(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
   END_CPP11
 }
+// cytosetAPI.cpp
+void cs_set_compensation(cpp11::external_pointer<GatingSet> cs, cpp11::list comps, bool compensate_data);
+extern "C" SEXP _flowWorkspace_cs_set_compensation(SEXP cs, SEXP comps, SEXP compensate_data) {
+  BEGIN_CPP11
+    cs_set_compensation(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(comps), cpp11::as_cpp<cpp11::decay_t<bool>>(compensate_data));
+    return R_NilValue;
+  END_CPP11
+}
+// cytosetAPI.cpp
+void set_cytoframe(cpp11::external_pointer<GatingSet> cs, string sn, cpp11::external_pointer<CytoFrameView> fr);
+extern "C" SEXP _flowWorkspace_set_cytoframe(SEXP cs, SEXP sn, SEXP fr) {
+  BEGIN_CPP11
+    set_cytoframe(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<string>>(sn), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr));
+    return R_NilValue;
+  END_CPP11
+}
+// cytosetAPI.cpp
+void add_cytoframe(cpp11::external_pointer<GatingSet> cs, string sn, cpp11::external_pointer<CytoFrameView> fr);
+extern "C" SEXP _flowWorkspace_add_cytoframe(SEXP cs, SEXP sn, SEXP fr) {
+  BEGIN_CPP11
+    add_cytoframe(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<string>>(sn), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr));
+    return R_NilValue;
+  END_CPP11
+}
+// cytosetAPI.cpp
+cpp11::external_pointer<GatingSet> new_cytoset();
+extern "C" SEXP _flowWorkspace_new_cytoset() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(new_cytoset());
+  END_CPP11
+}
+// cytosetAPI.cpp
+cpp11::external_pointer<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, cpp11::list rconfig, string backend, string backend_dir);
+extern "C" SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_path, SEXP rconfig, SEXP backend, SEXP backend_dir) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(fcs_to_cytoset(cpp11::as_cpp<cpp11::decay_t<vector<pair<string,string>>>>(sample_uid_vs_file_path), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(rconfig), cpp11::as_cpp<cpp11::decay_t<string>>(backend), cpp11::as_cpp<cpp11::decay_t<string>>(backend_dir)));
+  END_CPP11
+}
+// cytosetAPI.cpp
+vector<string> get_colnames(cpp11::external_pointer<GatingSet> cs);
+extern "C" SEXP _flowWorkspace_get_colnames(SEXP cs) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(get_colnames(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs)));
+  END_CPP11
+}
+// cytosetAPI.cpp
+cpp11::external_pointer<GatingSet> realize_view_cytoset(cpp11::external_pointer<GatingSet> cs, string path);
+extern "C" SEXP _flowWorkspace_realize_view_cytoset(SEXP cs, SEXP path) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(realize_view_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<string>>(path)));
+  END_CPP11
+}
+// cytosetAPI.cpp
+cpp11::external_pointer<GatingSet> copy_view_cytoset(cpp11::external_pointer<GatingSet> cs);
+extern "C" SEXP _flowWorkspace_copy_view_cytoset(SEXP cs) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(copy_view_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs)));
+  END_CPP11
+}
+// cytosetAPI.cpp
+void subset_cytoset_by_rows(cpp11::external_pointer<GatingSet> cs, string sn, vector<int> idx);
+extern "C" SEXP _flowWorkspace_subset_cytoset_by_rows(SEXP cs, SEXP sn, SEXP idx) {
+  BEGIN_CPP11
+    subset_cytoset_by_rows(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<string>>(sn), cpp11::as_cpp<cpp11::decay_t<vector<int>>>(idx));
+    return R_NilValue;
+  END_CPP11
+}
+// cytosetAPI.cpp
+void subset_cytoset(cpp11::external_pointer<GatingSet> cs, vector<string> sample_uids, vector<string> ch_selected);
+extern "C" SEXP _flowWorkspace_subset_cytoset(SEXP cs, SEXP sample_uids, SEXP ch_selected) {
+  BEGIN_CPP11
+    subset_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(sample_uids), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(ch_selected));
+    return R_NilValue;
+  END_CPP11
+}
 // h5_error_r_handler.cpp
 void h5_set_error_handler();
 extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
@@ -295,6 +370,7 @@ extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
 
 extern "C" {
 /* .Call calls */
+extern SEXP _flowWorkspace_add_cytoframe(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_append_cols(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_backend_type(SEXP);
 extern SEXP _flowWorkspace_cf_flush_meta_cpp(SEXP);
@@ -313,9 +389,13 @@ extern SEXP _flowWorkspace_cf_setKeywordsSubset(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cf_to_memcf(SEXP);
 extern SEXP _flowWorkspace_cf_transform_data(SEXP, SEXP);
 extern SEXP _flowWorkspace_copy_view_cytoframe(SEXP);
+extern SEXP _flowWorkspace_copy_view_cytoset(SEXP);
+extern SEXP _flowWorkspace_cs_set_compensation(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_del_rownames(SEXP);
+extern SEXP _flowWorkspace_fcs_to_cytoset(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_frm_compensate(SEXP, SEXP);
 extern SEXP _flowWorkspace_get_channels(SEXP);
+extern SEXP _flowWorkspace_get_colnames(SEXP);
 extern SEXP _flowWorkspace_get_rownames(SEXP);
 extern SEXP _flowWorkspace_get_uri(SEXP);
 extern SEXP _flowWorkspace_getncol(SEXP);
@@ -323,18 +403,24 @@ extern SEXP _flowWorkspace_getnrow(SEXP);
 extern SEXP _flowWorkspace_getpdata(SEXP);
 extern SEXP _flowWorkspace_h5_set_error_handler();
 extern SEXP _flowWorkspace_load_cf(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_new_cytoset();
 extern SEXP _flowWorkspace_parseFCS(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_realize_view_cytoframe(SEXP, SEXP);
+extern SEXP _flowWorkspace_realize_view_cytoset(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_all_channels(SEXP, SEXP);
+extern SEXP _flowWorkspace_set_cytoframe(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_set_rownames(SEXP, SEXP);
 extern SEXP _flowWorkspace_setChannel(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setMarker(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setpdata(SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoframe_by_cols(SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoframe_by_rows(SEXP, SEXP);
+extern SEXP _flowWorkspace_subset_cytoset(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_subset_cytoset_by_rows(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_write_to_disk(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_flowWorkspace_add_cytoframe",             (DL_FUNC) &_flowWorkspace_add_cytoframe,             3},
     {"_flowWorkspace_append_cols",               (DL_FUNC) &_flowWorkspace_append_cols,               3},
     {"_flowWorkspace_backend_type",              (DL_FUNC) &_flowWorkspace_backend_type,              1},
     {"_flowWorkspace_cf_flush_meta_cpp",         (DL_FUNC) &_flowWorkspace_cf_flush_meta_cpp,         1},
@@ -353,9 +439,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cf_to_memcf",               (DL_FUNC) &_flowWorkspace_cf_to_memcf,               1},
     {"_flowWorkspace_cf_transform_data",         (DL_FUNC) &_flowWorkspace_cf_transform_data,         2},
     {"_flowWorkspace_copy_view_cytoframe",       (DL_FUNC) &_flowWorkspace_copy_view_cytoframe,       1},
+    {"_flowWorkspace_copy_view_cytoset",         (DL_FUNC) &_flowWorkspace_copy_view_cytoset,         1},
+    {"_flowWorkspace_cs_set_compensation",       (DL_FUNC) &_flowWorkspace_cs_set_compensation,       3},
     {"_flowWorkspace_del_rownames",              (DL_FUNC) &_flowWorkspace_del_rownames,              1},
+    {"_flowWorkspace_fcs_to_cytoset",            (DL_FUNC) &_flowWorkspace_fcs_to_cytoset,            4},
     {"_flowWorkspace_frm_compensate",            (DL_FUNC) &_flowWorkspace_frm_compensate,            2},
     {"_flowWorkspace_get_channels",              (DL_FUNC) &_flowWorkspace_get_channels,              1},
+    {"_flowWorkspace_get_colnames",              (DL_FUNC) &_flowWorkspace_get_colnames,              1},
     {"_flowWorkspace_get_rownames",              (DL_FUNC) &_flowWorkspace_get_rownames,              1},
     {"_flowWorkspace_get_uri",                   (DL_FUNC) &_flowWorkspace_get_uri,                   1},
     {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
@@ -363,15 +453,20 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getpdata",                  (DL_FUNC) &_flowWorkspace_getpdata,                  1},
     {"_flowWorkspace_h5_set_error_handler",      (DL_FUNC) &_flowWorkspace_h5_set_error_handler,      0},
     {"_flowWorkspace_load_cf",                   (DL_FUNC) &_flowWorkspace_load_cf,                   3},
+    {"_flowWorkspace_new_cytoset",               (DL_FUNC) &_flowWorkspace_new_cytoset,               0},
     {"_flowWorkspace_parseFCS",                  (DL_FUNC) &_flowWorkspace_parseFCS,                  5},
     {"_flowWorkspace_realize_view_cytoframe",    (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,    2},
+    {"_flowWorkspace_realize_view_cytoset",      (DL_FUNC) &_flowWorkspace_realize_view_cytoset,      2},
     {"_flowWorkspace_set_all_channels",          (DL_FUNC) &_flowWorkspace_set_all_channels,          2},
+    {"_flowWorkspace_set_cytoframe",             (DL_FUNC) &_flowWorkspace_set_cytoframe,             3},
     {"_flowWorkspace_set_rownames",              (DL_FUNC) &_flowWorkspace_set_rownames,              2},
     {"_flowWorkspace_setChannel",                (DL_FUNC) &_flowWorkspace_setChannel,                3},
     {"_flowWorkspace_setMarker",                 (DL_FUNC) &_flowWorkspace_setMarker,                 3},
     {"_flowWorkspace_setpdata",                  (DL_FUNC) &_flowWorkspace_setpdata,                  2},
     {"_flowWorkspace_subset_cytoframe_by_cols",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols,  2},
     {"_flowWorkspace_subset_cytoframe_by_rows",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows,  2},
+    {"_flowWorkspace_subset_cytoset",            (DL_FUNC) &_flowWorkspace_subset_cytoset,            3},
+    {"_flowWorkspace_subset_cytoset_by_rows",    (DL_FUNC) &_flowWorkspace_subset_cytoset_by_rows,    3},
     {"_flowWorkspace_write_to_disk",             (DL_FUNC) &_flowWorkspace_write_to_disk,             3},
     {NULL, NULL, 0}
 };

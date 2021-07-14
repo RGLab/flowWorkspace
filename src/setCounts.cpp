@@ -16,7 +16,7 @@
 // //' @param count the event count to be stored
 // //' @noRd
 // //[[Rcpp::export(".set.count.xml")]]
-// void setCounts(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, int count){
+// void setCounts(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, int count){
 //   // Rcpp::Rcout << sampleName << std::endl;
 //   GatingHierarchy & gh = *gsPtr->getGatingHierarchy(sampleName);
 //   VertexID nodeID = gh.getNodeID(node);
