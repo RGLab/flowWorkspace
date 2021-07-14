@@ -241,7 +241,7 @@ cpp11::external_pointer<CytoFrameView> get_cytoframe(cpp11::external_pointer<Gat
 void set_pheno_data(cpp11::external_pointer<GatingSet> cs, cpp11::data_frame value)
 {
   
-  cpp11::strings sample_uids(value.attr("rownames"));
+  cpp11::strings sample_uids(value.attr("row.names"));
   cpp11::strings colnames(value.names());
   
   for(auto i = 0; i < value.nrow(); i++)
@@ -283,9 +283,9 @@ cpp11::writable::list get_pheno_data(cpp11::external_pointer<GatingSet> cs)
   cpp11::writable::list res;
   for(const auto & it : pd)
   {
-    // res[it.first] = cpp11::as_sexp<cpp11::writable::strings>(it.second);
+      res.push_back(cpp11::named_arg(it.first.c_str()) = cpp11::as_sexp<cpp11::writable::strings>(it.second));
   }
-  res.attr("rownames") = cpp11::as_sexp<cpp11::writable::strings>(sample_uids);
+  res.attr("row.names") = cpp11::as_sexp<cpp11::writable::strings>(sample_uids);
   res.attr("class") = "data.frame";
   
   return res;

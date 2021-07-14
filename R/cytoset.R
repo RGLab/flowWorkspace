@@ -667,7 +667,7 @@ cs_get_h5_file_path <- function(x){
 }
 
 #' @export
-cs_get_cytoframe <- function(x, i, j = NULL, use.exprs = TRUE){
+cs_get_cytoframe <- function(x, i, j = character(), use.exprs = TRUE){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
   if(length(x) == 0)
     stop("Empty cytoset!")
