@@ -671,6 +671,11 @@ cs_get_cytoframe <- function(x, i, j = character(), use.exprs = TRUE){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
   if(length(x) == 0)
     stop("Empty cytoset!")
+  if(!is.character(i))
+      i <- sampleNames(x)[i]
+  if(!is.character(j))
+      j <- colnames(x)[j]
+
   new("cytoframe", pointer = get_cytoframe(x@pointer, i, j), use.exprs = use.exprs)
 }
 #' @export
