@@ -758,7 +758,7 @@ cf_keyword_insert <- function(cf, keys, values){
   dup_idx <- !is.na(idx)
   if(any(dup_idx))
     stop("keywords already exist!:", paste(keys[dup_idx], collapse = ", "))
-  cf_setKeywordsSubset(cf@pointer, keys, values)
+  cf_setKeywordsSubset(cf@pointer, keys, as.character(values))
 }
 
 #' @rdname keyword-mutators
@@ -811,7 +811,7 @@ cf_keyword_set <- function(cf, keys, values){
     stop("cf must be a cytoframe object")
   if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
     stop("keys and values must be character vectors of equal length")
-  cf_setKeywordsSubset(cf@pointer, keys, values)
+  cf_setKeywordsSubset(cf@pointer, keys, as.character(values))
 }
 
 #' Methods for conversion between flowCore and flowWorkspace data classes
