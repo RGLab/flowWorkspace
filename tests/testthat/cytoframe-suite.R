@@ -8,6 +8,13 @@ rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 cf <- load_cytoframe_from_fcs(fcs_file)
 cf_lock(cf)
 
+test_that("compensate", {
+  sp = spillover(cf)[[1]]
+  sa0 <- summary(compensate(realize_view(cf), sp))
+  sa1 <- summary(compensate(fr, sp))
+
+  expect_equivalent(sa0, sa1, tol = 2e-6)
+})
 
 test_that("rownames", {
   skip("rownames feature is to be deprecated")

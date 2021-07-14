@@ -126,7 +126,7 @@ void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_ma
   // copy spillover matrix.
   for (auto j = 0; j < m; j++) {
     for (auto i = 0; i < n; i++) {
-      mat(i, j) = spillover(i, j);
+      spill(i, j) = spillover(i, j);
     }
   }
   // spill.print(Rcout, "spill");
