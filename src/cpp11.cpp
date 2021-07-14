@@ -316,10 +316,10 @@ extern "C" SEXP _flowWorkspace_new_cytoset() {
   END_CPP11
 }
 // cytosetAPI.cpp
-cpp11::external_pointer<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path, cpp11::list rconfig, string backend, string backend_dir);
-extern "C" SEXP _flowWorkspace_fcs_to_cytoset(SEXP sample_uid_vs_file_path, SEXP rconfig, SEXP backend, SEXP backend_dir) {
+cpp11::external_pointer<GatingSet> fcs_to_cytoset(cpp11::strings files, cpp11::list rconfig, string backend, string backend_dir);
+extern "C" SEXP _flowWorkspace_fcs_to_cytoset(SEXP files, SEXP rconfig, SEXP backend, SEXP backend_dir) {
   BEGIN_CPP11
-    return cpp11::as_sexp(fcs_to_cytoset(cpp11::as_cpp<cpp11::decay_t<vector<pair<string,string>>>>(sample_uid_vs_file_path), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(rconfig), cpp11::as_cpp<cpp11::decay_t<string>>(backend), cpp11::as_cpp<cpp11::decay_t<string>>(backend_dir)));
+    return cpp11::as_sexp(fcs_to_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(files), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(rconfig), cpp11::as_cpp<cpp11::decay_t<string>>(backend), cpp11::as_cpp<cpp11::decay_t<string>>(backend_dir)));
   END_CPP11
 }
 // cytosetAPI.cpp
@@ -366,6 +366,21 @@ extern "C" SEXP _flowWorkspace_get_cytoframe(SEXP cs, SEXP sample_uid, SEXP ch_s
     return cpp11::as_sexp(get_cytoframe(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<string>>(sample_uid), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(ch_selected)));
   END_CPP11
 }
+// cytosetAPI.cpp
+void set_pheno_data(cpp11::external_pointer<GatingSet> cs, cpp11::data_frame value);
+extern "C" SEXP _flowWorkspace_set_pheno_data(SEXP cs, SEXP value) {
+  BEGIN_CPP11
+    set_pheno_data(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<cpp11::data_frame>>(value));
+    return R_NilValue;
+  END_CPP11
+}
+// cytosetAPI.cpp
+cpp11::writable::list get_pheno_data(cpp11::external_pointer<GatingSet> cs);
+extern "C" SEXP _flowWorkspace_get_pheno_data(SEXP cs) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(get_pheno_data(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs)));
+  END_CPP11
+}
 // h5_error_r_handler.cpp
 void h5_set_error_handler();
 extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
@@ -404,6 +419,7 @@ extern SEXP _flowWorkspace_frm_compensate(SEXP, SEXP);
 extern SEXP _flowWorkspace_get_channels(SEXP);
 extern SEXP _flowWorkspace_get_colnames(SEXP);
 extern SEXP _flowWorkspace_get_cytoframe(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_get_pheno_data(SEXP);
 extern SEXP _flowWorkspace_get_rownames(SEXP);
 extern SEXP _flowWorkspace_get_uri(SEXP);
 extern SEXP _flowWorkspace_getncol(SEXP);
@@ -417,6 +433,7 @@ extern SEXP _flowWorkspace_realize_view_cytoframe(SEXP, SEXP);
 extern SEXP _flowWorkspace_realize_view_cytoset(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_all_channels(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_cytoframe(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_set_pheno_data(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_rownames(SEXP, SEXP);
 extern SEXP _flowWorkspace_setChannel(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setMarker(SEXP, SEXP, SEXP);
@@ -455,6 +472,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_channels",              (DL_FUNC) &_flowWorkspace_get_channels,              1},
     {"_flowWorkspace_get_colnames",              (DL_FUNC) &_flowWorkspace_get_colnames,              1},
     {"_flowWorkspace_get_cytoframe",             (DL_FUNC) &_flowWorkspace_get_cytoframe,             3},
+    {"_flowWorkspace_get_pheno_data",            (DL_FUNC) &_flowWorkspace_get_pheno_data,            1},
     {"_flowWorkspace_get_rownames",              (DL_FUNC) &_flowWorkspace_get_rownames,              1},
     {"_flowWorkspace_get_uri",                   (DL_FUNC) &_flowWorkspace_get_uri,                   1},
     {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
@@ -468,6 +486,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_realize_view_cytoset",      (DL_FUNC) &_flowWorkspace_realize_view_cytoset,      2},
     {"_flowWorkspace_set_all_channels",          (DL_FUNC) &_flowWorkspace_set_all_channels,          2},
     {"_flowWorkspace_set_cytoframe",             (DL_FUNC) &_flowWorkspace_set_cytoframe,             3},
+    {"_flowWorkspace_set_pheno_data",            (DL_FUNC) &_flowWorkspace_set_pheno_data,            2},
     {"_flowWorkspace_set_rownames",              (DL_FUNC) &_flowWorkspace_set_rownames,              2},
     {"_flowWorkspace_setChannel",                (DL_FUNC) &_flowWorkspace_setChannel,                3},
     {"_flowWorkspace_setMarker",                 (DL_FUNC) &_flowWorkspace_setMarker,                 3},

@@ -164,8 +164,8 @@ new_cytoset <- function() {
   .Call(`_flowWorkspace_new_cytoset`)
 }
 
-fcs_to_cytoset <- function(sample_uid_vs_file_path, rconfig, backend, backend_dir) {
-  .Call(`_flowWorkspace_fcs_to_cytoset`, sample_uid_vs_file_path, rconfig, backend, backend_dir)
+fcs_to_cytoset <- function(files, rconfig, backend, backend_dir) {
+  .Call(`_flowWorkspace_fcs_to_cytoset`, files, rconfig, backend, backend_dir)
 }
 
 get_colnames <- function(cs) {
@@ -190,6 +190,14 @@ subset_cytoset <- function(cs, sample_uids, ch_selected) {
 
 get_cytoframe <- function(cs, sample_uid, ch_selected) {
   .Call(`_flowWorkspace_get_cytoframe`, cs, sample_uid, ch_selected)
+}
+
+set_pheno_data <- function(cs, value) {
+  invisible(.Call(`_flowWorkspace_set_pheno_data`, cs, value))
+}
+
+get_pheno_data <- function(cs) {
+  .Call(`_flowWorkspace_get_pheno_data`, cs)
 }
 
 h5_set_error_handler <- function() {

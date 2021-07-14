@@ -54,7 +54,7 @@ cpp11::external_pointer<GatingSet> new_cytoset()
 }
 
 [[cpp11::register]]
-cpp11::external_pointer<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path
+cpp11::external_pointer<GatingSet> fcs_to_cytoset(cpp11::strings files
 		, cpp11::list rconfig, string backend, string backend_dir)
 {
     auto config = sexp_to_fcs_read_param(rconfig);
@@ -63,9 +63,18 @@ cpp11::external_pointer<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sa
 		fmt = FileFormat::MEM;
 	else
 		fmt = FileFormat::H5;
-  cpp11::external_pointer<GatingSet> cs(new GatingSet(sample_uid_vs_file_path, config, fmt, backend_dir));
-  
-  return cs;
+    auto n = files.size();
+    vector<pair<string, string>> sample_uid_vs_file_path;
+    cpp11::strings sids(files.names());
+    for (size_t i = 0; i < n; i++)
+    {
+        sample_uid_vs_file_path[i].first = sids[i];
+        sample_uid_vs_file_path[i].second = files[i];
+    }
+
+    cpp11::external_pointer<GatingSet> cs(new GatingSet(sample_uid_vs_file_path, config, fmt, backend_dir));
+
+    return cs;
   
 }
 
@@ -226,62 +235,61 @@ cpp11::external_pointer<CytoFrameView> get_cytoframe(cpp11::external_pointer<Gat
    
 }
 
-// [[cpp11::register]]
-// void set_pheno_data(cpp11::external_pointer<GatingSet> cs, DataFrame value)
-// {
+[[cpp11::register]]
+void set_pheno_data(cpp11::external_pointer<GatingSet> cs, cpp11::data_frame value)
+{
   
-//   vector<string> sample_uids = as<vector<string>>(value.attr("row.names"));
-//   vector<string> colnames = as<vector<string>>(value.names());
+  cpp11::strings sample_uids(value.attr("rownames"));
+  cpp11::strings colnames(value.names());
   
-//   for(auto i = 0; i < value.rows(); i++)
-//   {
-//     CytoFrameView & fr = cs->get_cytoframe_view_ref(sample_uids[i]);
-//     PDATA pd;
-//     for(const string & key : colnames)
-//     {
-//       vector<string> col = value[key];
-//       pd[key] = col[i];
-//     }
-//     fr.set_pheno_data(pd);
-//   }
+  for(auto i = 0; i < value.nrow(); i++)
+  {
+    CytoFrameView & fr = cs->get_cytoframe_view_ref(sample_uids[i]);
+    PDATA pd;
+    for(const string & key : colnames)
+    {
+      cpp11::strings col(value[key]);
+      pd[key] = col[i];
+    }
+    fr.set_pheno_data(pd);
+  }
 
-// }
+}
 
-// [[cpp11::register]]
-// cpp11::list get_pheno_data(cpp11::external_pointer<GatingSet> cs)
-// {
-//   unordered_map<string, vector<string>> pd;
-//   vector<string> sample_uids = cs->get_sample_uids();
-//   unsigned nSample = sample_uids.size();
-//   //row-major to col-major
-//   for(unsigned i = 0; i < nSample; i++)
-//   {
-// 	string sn = sample_uids[i];
-// 	const GatingHierarchy & fr = *(cs->getGatingHierarchy(sn));
-// 	//assuming pdata is already homogenious across ghs
-// 	for(const auto & j: fr.get_pheno_data())
-// 	{
-// 	  if(i==0)
-// 		pd[j.first] = vector<string>(nSample);
+[[cpp11::register]]
+cpp11::writable::list get_pheno_data(cpp11::external_pointer<GatingSet> cs)
+{
+  unordered_map<string, vector<string>> pd;
+  vector<string> sample_uids = cs->get_sample_uids();
+  unsigned nSample = sample_uids.size();
+  //row-major to col-major
+  for(unsigned i = 0; i < nSample; i++)
+  {
+	string sn = sample_uids[i];
+	const GatingHierarchy & fr = *(cs->getGatingHierarchy(sn));
+	//assuming pdata is already homogenious across ghs
+	for(const auto & j: fr.get_pheno_data())
+	{
+	  if(i==0)
+		pd[j.first] = vector<string>(nSample);
 
-// 	  pd[j.first][i] = j.second;
-// 	}
-//   }
-//   //construct and assign DataFrame directly seems to
-//   //not preserving DataFrame class info at return
-//   cpp11::list res;
-//   for(const auto & it : pd)
-//   {
-//     res[it.first] = it.second;
-//   }
-//   res.attr("row.names") = sample_uids;
-//   res.attr("class") = "data.frame";
+	  pd[j.first][i] = j.second;
+	}
+  }
+  //construct and assign cpp11::data_frame directly seems to
+  //not preserving cpp11::data_frame class info at return
+  cpp11::writable::list res;
+  for(const auto & it : pd)
+  {
+    // res[it.first] = cpp11::as_sexp<cpp11::writable::strings>(it.second);
+  }
+  res.attr("rownames") = cpp11::as_sexp<cpp11::writable::strings>(sample_uids);
+  res.attr("class") = "data.frame";
   
-//   return res;
-//   // return DataFrame(res);
+  return res;
+
   
-  
-// }
+}
 
 
 
