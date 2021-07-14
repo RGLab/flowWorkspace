@@ -64,8 +64,10 @@ cpp11::external_pointer<GatingSet> fcs_to_cytoset(cpp11::strings files
 	else
 		fmt = FileFormat::H5;
     auto n = files.size();
-    vector<pair<string, string>> sample_uid_vs_file_path;
+    vector<pair<string, string>> sample_uid_vs_file_path(n);
     cpp11::strings sids(files.names());
+    if(sids.size()!=n)
+        cpp11::stop("file paths must be a named characters!");
     for (size_t i = 0; i < n; i++)
     {
         sample_uid_vs_file_path[i].first = sids[i];
