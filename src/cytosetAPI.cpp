@@ -144,16 +144,16 @@ if(ch_selected.size()>0)
   
 }
 
-// [[cpp11::register]]
-// cpp11::external_pointer<CytoFrameView> get_cytoframe(cpp11::external_pointer<GatingSet> cs
-//                 , Rcpp::RObject i_obj
-//                 , Rcpp::RObject j_obj
-//                 )
-// {
+[[cpp11::register]]
+cpp11::external_pointer<CytoFrameView> get_cytoframe(cpp11::external_pointer<GatingSet> cs
+                , string sample_uid
+                                     , vector<string> ch_selected
+                )
+{
   
-//   /*
-//    * parse i index (sample name)
-//    */
+  /*
+   * parse i index (sample name)
+   */
 //   std::string sample_uid;
 //   unsigned short i_type = i_obj.sexp_type();
 
@@ -170,13 +170,13 @@ if(ch_selected.size()>0)
 //     Rcpp::stop("unsupported i type!");
 
   
-//   cpp11::external_pointer<CytoFrameView> frame(new CytoFrameView(cs->get_cytoframe_view(sample_uid)));
-//   /*
-//   * parse j index (channel names)
-//   */
-//    /*
-//   * subset by j if applicable
-//   */
+  cpp11::external_pointer<CytoFrameView> frame(new CytoFrameView(cs->get_cytoframe_view(sample_uid)));
+  /*
+  * parse j index (channel names)
+  */
+   /*
+  * subset by j if applicable
+  */
 //   int j_type = j_obj.sexp_type();
 
 //   if(j_type != NILSXP)
@@ -217,14 +217,14 @@ if(ch_selected.size()>0)
 //     }
 //     else
 //       Rcpp::stop("unsupported j expression!");
-    
-//     frame->cols_(as<vector<string>>(ch_selected), ColType::channel);
+    if(ch_selected.size()>0)
+        frame->cols_(ch_selected, ColType::channel);
 //   }
   
-//   return frame;
+  return frame;
   
    
-// }
+}
 
 // [[cpp11::register]]
 // void set_pheno_data(cpp11::external_pointer<GatingSet> cs, DataFrame value)

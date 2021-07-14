@@ -188,6 +188,10 @@ subset_cytoset <- function(cs, sample_uids, ch_selected) {
   invisible(.Call(`_flowWorkspace_subset_cytoset`, cs, sample_uids, ch_selected))
 }
 
+get_cytoframe <- function(cs, sample_uid, ch_selected) {
+  .Call(`_flowWorkspace_get_cytoframe`, cs, sample_uid, ch_selected)
+}
+
 h5_set_error_handler <- function() {
   invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
 }

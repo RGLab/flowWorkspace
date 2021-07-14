@@ -359,6 +359,13 @@ extern "C" SEXP _flowWorkspace_subset_cytoset(SEXP cs, SEXP sample_uids, SEXP ch
     return R_NilValue;
   END_CPP11
 }
+// cytosetAPI.cpp
+cpp11::external_pointer<CytoFrameView> get_cytoframe(cpp11::external_pointer<GatingSet> cs, string sample_uid, vector<string> ch_selected);
+extern "C" SEXP _flowWorkspace_get_cytoframe(SEXP cs, SEXP sample_uid, SEXP ch_selected) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(get_cytoframe(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<string>>(sample_uid), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(ch_selected)));
+  END_CPP11
+}
 // h5_error_r_handler.cpp
 void h5_set_error_handler();
 extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
@@ -396,6 +403,7 @@ extern SEXP _flowWorkspace_fcs_to_cytoset(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_frm_compensate(SEXP, SEXP);
 extern SEXP _flowWorkspace_get_channels(SEXP);
 extern SEXP _flowWorkspace_get_colnames(SEXP);
+extern SEXP _flowWorkspace_get_cytoframe(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_get_rownames(SEXP);
 extern SEXP _flowWorkspace_get_uri(SEXP);
 extern SEXP _flowWorkspace_getncol(SEXP);
@@ -446,6 +454,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_frm_compensate",            (DL_FUNC) &_flowWorkspace_frm_compensate,            2},
     {"_flowWorkspace_get_channels",              (DL_FUNC) &_flowWorkspace_get_channels,              1},
     {"_flowWorkspace_get_colnames",              (DL_FUNC) &_flowWorkspace_get_colnames,              1},
+    {"_flowWorkspace_get_cytoframe",             (DL_FUNC) &_flowWorkspace_get_cytoframe,             3},
     {"_flowWorkspace_get_rownames",              (DL_FUNC) &_flowWorkspace_get_rownames,              1},
     {"_flowWorkspace_get_uri",                   (DL_FUNC) &_flowWorkspace_get_uri,                   1},
     {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
