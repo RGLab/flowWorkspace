@@ -120,18 +120,10 @@ void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_ma
   else
     detector = marker;
 
-  auto n = spillover.nrow();
-  auto m = spillover.ncol();
-  mat spill(n, m);
-  // copy spillover matrix.
-  for (auto j = 0; j < m; j++) {
-    for (auto i = 0; i < n; i++) {
-      spill(i, j) = spillover(i, j);
-    }
-  }
-  // spill.print(Rcout, "spill");
+  auto spill = rmatrix_to_arma(spillover);
+
   compensation comp(spill, marker, detector);
-  // comp.get_spillover_mat().print(Rcout, "comp");
+
   fr->compensate(comp);
 }
 
@@ -196,17 +188,7 @@ void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_c
   
   // Add the columns to the MemCytoFrame
 
-  auto n = new_cols_mat.nrow();
-  auto m = new_cols_mat.ncol();
-  arma::mat new_cols(n, m);
-  // copy spillover matrix.
-  for (auto j = 0; j < m; j++) {
-    for (auto i = 0; i < n; i++) {
-      new_cols(i, j) = new_cols_mat(i, j);
-    }
-  }
-  
-  fr->append_columns(new_colnames, new_cols);
+  fr->append_columns(new_colnames, rmatrix_to_arma(new_cols_mat));
   
 }
                                       
@@ -243,17 +225,10 @@ cpp11::external_pointer<CytoFrameView> parseFCS(string filename, SEXP configr, b
 
 [[cpp11::register]]
 cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
-  auto nrow = fr->n_rows();
   auto ncol = fr->n_cols();
-  // int ntotal = ncol * nrow;
   
   EVENT_DATA_VEC dat = fr->get_data();
-  cpp11::writable::doubles_matrix mat(nrow, ncol);
-  for (auto j = 0; j < ncol; j++)
-    for (auto i = 0; i < nrow; i++)
-    {
-      mat(i, j) = dat(i, j);
-    }
+  cpp11::writable::doubles_matrix mat = arma_to_rmatrix(dat);
 
   cpp11::writable::strings chnl(fr->get_channels());
 
@@ -278,13 +253,8 @@ cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView
 }
 [[cpp11::register]]
 void cf_setData(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix rmat){
-  arma::Mat<double> mat(rmat.nrow(), rmat.ncol());
-  for (auto j = 0; j < rmat.ncol(); j++) {
-    for (auto i = 0; i < rmat.nrow(); i++) {
-      mat(i, j) = rmat(i, j);
-    }
-  }
- fr->set_data(mat);
+ 
+ fr->set_data(rmatrix_to_arma(rmat));
 }
 
 [[cpp11::register]]

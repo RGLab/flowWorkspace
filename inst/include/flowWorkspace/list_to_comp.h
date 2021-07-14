@@ -1,18 +1,16 @@
 // #ifndef LISTTOCOMP_H_
 // #define LISTTOCOMP_H_
-
+// #include <cpp11.hpp>
+// #include <vector>
 
 // #include <cytolib/GatingSet.hpp>
 // using namespace cytolib;
 
-// #include <RcppArmadillo.h> //include this instead of Rcpp.h so that RcppArmadillo inclusion won't be preceded by Rcpp.h in RcppExport.cpp
-// #include <RcppCommon.h>
-// using namespace Rcpp;
-
-// inline compensation mat_to_comp(NumericMatrix rmat)
+// inline compensation mat_to_comp(cpp11::doubles_matrix rmat)
 // {
-//         vector<string> chnls = as<vector<string>>(colnames(rmat));
+//         vector<string> chnls = cpp11::as_cpp<vector<string>>(rmat.attr("dimnames")[1]);
 //         arma::mat mat = as<arma::mat>(rmat);
+        
 //         compensation comp = compensation(mat, chnls);
 //         comp.cid = "1";
 //         return comp;
@@ -27,7 +25,7 @@
 //                 {
 //                         if(sn.size()>0)
 //                         {
-//                                 NumericMatrix rmat = as<NumericMatrix>(comps[sn]);
+//                                 cpp11::doubles_matrix rmat = as<cpp11::doubles_matrix>(comps[sn]);
 //                                 res[sn] = mat_to_comp(rmat);
 //                         }
 //                 }

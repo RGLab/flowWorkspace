@@ -11,6 +11,32 @@
 #include <Rmath.h>
 #include <cytolib/GatingSet.hpp>
 using namespace cytolib;
+
+inline arma::mat rmatrix_to_arma(cpp11::doubles_matrix rmat){
+	auto n = rmat.nrow();
+	auto m = rmat.ncol();
+	arma::mat res(n, m);
+	// copy matrix.
+	for (auto j = 0; j < m; j++) {
+		for (auto i = 0; i < n; i++) {
+		res(i, j) = rmat(i, j);
+		}
+	}
+	return res;
+}
+
+inline cpp11::writable::doubles_matrix arma_to_rmatrix(const arma::mat &dat){
+	auto n = dat.n_rows;
+	auto m = dat.n_cols;
+	cpp11::writable::doubles_matrix res(n, m);
+	// copy matrix.
+	for (auto j = 0; j < m; j++) {
+		for (auto i = 0; i < n; i++) {
+		res(i, j) = dat(i, j);
+		}
+	}
+	return res;
+}
 inline SEXP kw_to_sexp(const KW_PAIR & kw){
 		int nSize = kw.size();
 		cpp11::writable::strings res(nSize);

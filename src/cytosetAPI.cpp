@@ -3,19 +3,14 @@
 // #include <flowWorkspace/convert_to_str_idx.h>
 // #include <flowWorkspace/list_to_comp.h>
 
-// using namespace Rcpp;
 // using namespace cytolib;
 
-// //[[Rcpp::plugins("temp")]]
 
 
-// //' @param comps a list of NumericMatrix
-// //' @param compensate_data Typically we set it to true to compensate the data as we set comp, Only when we convert the legacy gs, do we skipping this part.
-// // [[Rcpp::export]] 
-// void cs_set_compensation(Rcpp::XPtr<GatingSet> cs, List comps, bool compensate_data){
+// [[cpp11::register]]
+// void cs_set_compensation(Rcpp::XPtr<GatingSet> cs, cpp11::list comps, bool compensate_data){
 
 // 	unordered_map<string, compensation> comp_objs = list_to_comps(comps);
-// //	string dir = generate_unique_dir(fs::temp_directory_path(), "gs");
 // 	for(auto sn : cs->get_sample_uids())
 // 	{
 // 		GatingHierarchyPtr gh = cs->getGatingHierarchy(sn);
@@ -34,14 +29,14 @@
 // }
 
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // void set_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
 // {
 // 	cs->update_cytoframe_view(sn, *fr);
 
 // }
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // void add_cytoframe(Rcpp::XPtr<GatingSet> cs, string sn, Rcpp::XPtr<CytoFrameView> fr)
 // {
 // 	cs->add_cytoframe_view(sn, *fr);
@@ -49,7 +44,7 @@
 // }
 
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // Rcpp::XPtr<GatingSet> new_cytoset()
 // {
 
@@ -59,7 +54,7 @@
 
 // }
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_file_path
 // 		, FCS_READ_PARAM config, string backend, string backend_dir)
 // {
@@ -75,25 +70,25 @@
 // }
 
 
-// // [[Rcpp::export]] 
+// [[cpp11::register]]
 // vector<string> get_colnames(Rcpp::XPtr<GatingSet> cs){
 //   return cs->get_channels();
 // }
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // Rcpp::XPtr<GatingSet> realize_view_cytoset(Rcpp::XPtr<GatingSet> cs, string path)
 // {
 //   return XPtr<GatingSet>(new GatingSet(cs->copy(true, true, path)));
 // }
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // Rcpp::XPtr<GatingSet> copy_view_cytoset(Rcpp::XPtr<GatingSet> cs)
 // {
 //   return XPtr<GatingSet>(new GatingSet(cs->copy(false, true, "")));
 
 // }
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // void subset_cytoset_by_rows(Rcpp::XPtr<GatingSet> cs
 //                                              , string sn
 //                                              , vector<unsigned> idx
@@ -103,7 +98,7 @@
 //   cs->get_cytoframe_view_ref(sn).rows_(idx);
 // }
   
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // void subset_cytoset(Rcpp::XPtr<GatingSet> cs
 //                                      , SEXP i_obj
 //                                      , SEXP j_obj
@@ -147,7 +142,7 @@
   
 // }
 
-// // [[Rcpp::export]]
+// [[cpp11::register]]
 // Rcpp::XPtr<CytoFrameView> get_cytoframe(Rcpp::XPtr<GatingSet> cs
 //                 , Rcpp::RObject i_obj
 //                 , Rcpp::RObject j_obj
@@ -229,7 +224,7 @@
    
 // }
 
-// // [[Rcpp::export]] 
+// [[cpp11::register]]
 // void set_pheno_data(Rcpp::XPtr<GatingSet> cs, DataFrame value)
 // {
   
@@ -250,8 +245,8 @@
 
 // }
 
-// // [[Rcpp::export]] 
-// List get_pheno_data(Rcpp::XPtr<GatingSet> cs)
+// [[cpp11::register]]
+// cpp11::list get_pheno_data(Rcpp::XPtr<GatingSet> cs)
 // {
 //   unordered_map<string, vector<string>> pd;
 //   vector<string> sample_uids = cs->get_sample_uids();
@@ -272,7 +267,7 @@
 //   }
 //   //construct and assign DataFrame directly seems to
 //   //not preserving DataFrame class info at return
-//   List res;
+//   cpp11::list res;
 //   for(const auto & it : pd)
 //   {
 //     res[it.first] = it.second;
