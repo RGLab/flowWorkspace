@@ -968,7 +968,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 #' @aliases gh_pop_get_indices
 #' @export
 gh_pop_get_indices <- function(obj,y){
-	.cpp_getIndices(obj@pointer,sampleNames(obj), y)
+	cpp_getIndices(obj@pointer,sampleNames(obj), y)
 }
 #' @templateVar old isGated
 #' @templateVar new gh_pop_is_gated

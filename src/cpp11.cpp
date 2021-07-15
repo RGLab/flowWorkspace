@@ -468,6 +468,42 @@ extern "C" SEXP _flowWorkspace_cpp_getGate(SEXP gs, SEXP sampleName, SEXP gatePa
     return cpp11::as_sexp(cpp_getGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
   END_CPP11
 }
+// R_GatingHierarchy.cpp
+vector<bool> cpp_getIndices(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getIndices(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getIndices(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_setIndices(cpp11::external_pointer<GatingSet> gs, string sampleName, int u, cpp11::logicals ind);
+extern "C" SEXP _flowWorkspace_cpp_setIndices(SEXP gs, SEXP sampleName, SEXP u, SEXP ind) {
+  BEGIN_CPP11
+    cpp_setIndices(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(u), cpp11::as_cpp<cpp11::decay_t<cpp11::logicals>>(ind));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+bool cpp_getGateFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getGateFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getGateFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+bool cpp_getNegateFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getNegateFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getNegateFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+bool cpp_getHiddenFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getHiddenFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getHiddenFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
 // R_GatingSet.cpp
 void gs_transform_data(cpp11::external_pointer<GatingSet> gsPtr);
 extern "C" SEXP _flowWorkspace_gs_transform_data(SEXP gsPtr) {
@@ -645,7 +681,11 @@ extern SEXP _flowWorkspace_cpp_gating(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getChildren(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getCompensation(SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getGate(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getGateFlag(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getHiddenFlag(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getIndices(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getLogLevel();
+extern SEXP _flowWorkspace_cpp_getNegateFlag(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getNodeID(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getNodes(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getParent(SEXP, SEXP, SEXP);
@@ -656,6 +696,7 @@ extern SEXP _flowWorkspace_cpp_loadGatingSet(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_NewGatingSet(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_plotGh(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_saveGatingSet(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_setIndices(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_setLogLevel(SEXP);
 extern SEXP _flowWorkspace_cpp_setSample(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_togleErrorFlag();
@@ -729,7 +770,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cpp_getChildren",           (DL_FUNC) &_flowWorkspace_cpp_getChildren,           4},
     {"_flowWorkspace_cpp_getCompensation",       (DL_FUNC) &_flowWorkspace_cpp_getCompensation,       2},
     {"_flowWorkspace_cpp_getGate",               (DL_FUNC) &_flowWorkspace_cpp_getGate,               3},
+    {"_flowWorkspace_cpp_getGateFlag",           (DL_FUNC) &_flowWorkspace_cpp_getGateFlag,           3},
+    {"_flowWorkspace_cpp_getHiddenFlag",         (DL_FUNC) &_flowWorkspace_cpp_getHiddenFlag,         3},
+    {"_flowWorkspace_cpp_getIndices",            (DL_FUNC) &_flowWorkspace_cpp_getIndices,            3},
     {"_flowWorkspace_cpp_getLogLevel",           (DL_FUNC) &_flowWorkspace_cpp_getLogLevel,           0},
+    {"_flowWorkspace_cpp_getNegateFlag",         (DL_FUNC) &_flowWorkspace_cpp_getNegateFlag,         3},
     {"_flowWorkspace_cpp_getNodeID",             (DL_FUNC) &_flowWorkspace_cpp_getNodeID,             3},
     {"_flowWorkspace_cpp_getNodes",              (DL_FUNC) &_flowWorkspace_cpp_getNodes,              5},
     {"_flowWorkspace_cpp_getParent",             (DL_FUNC) &_flowWorkspace_cpp_getParent,             3},
@@ -740,6 +785,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cpp_NewGatingSet",          (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,          5},
     {"_flowWorkspace_cpp_plotGh",                (DL_FUNC) &_flowWorkspace_cpp_plotGh,                3},
     {"_flowWorkspace_cpp_saveGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_saveGatingSet,         3},
+    {"_flowWorkspace_cpp_setIndices",            (DL_FUNC) &_flowWorkspace_cpp_setIndices,            4},
     {"_flowWorkspace_cpp_setLogLevel",           (DL_FUNC) &_flowWorkspace_cpp_setLogLevel,           1},
     {"_flowWorkspace_cpp_setSample",             (DL_FUNC) &_flowWorkspace_cpp_setSample,             3},
     {"_flowWorkspace_cpp_togleErrorFlag",        (DL_FUNC) &_flowWorkspace_cpp_togleErrorFlag,        0},

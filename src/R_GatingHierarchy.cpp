@@ -519,107 +519,107 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 
 }
 
-// //[[Rcpp::export(name=".cpp_getIndices")]]
-// [[cpp11::register]]
-// vector<bool> getIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	nodeProperties & node = gh.getNodeProperty(u);
-// 	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
-// 	if(u>0&&!node.isGated())
-// 	{
-// 		if(node.getGate()->getType()!=BOOLGATE)
-// 			throw(domain_error("Event indicies are not available for the ungated non-boolean node: '" + gatePath + "'. \n Please recompute it first!"));
-// 		MemCytoFrame fr;
-// 		gh.gating(fr, u);
-// 	}
-// 	return node.getIndices();
+[[cpp11::register]]
+vector<bool> cpp_getIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
-
-// }
-
-// [[cpp11::register]]
-// void cpp_setIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,int u, BoolVec ind){
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	nodeProperties & node = gh.getNodeProperty(u);
+	//gate for this particular node in case it is not gated(e.g. indices of bool gate is not archived, thus needs the lazy-gating)
+	if(u>0&&!node.isGated())
+	{
+		if(node.getGate()->getType()!=BOOLGATE)
+			throw(domain_error("Event indicies are not available for the ungated non-boolean node: '" + gatePath + "'. \n Please recompute it first!"));
+		MemCytoFrame fr;
+		gh.gating(fr, u);
+	}
+	return node.getIndices();
 
 
-// 	if(u<0)throw(domain_error("not valid vertexID!"));
+}
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-
-// 	nodeProperties & node = gh.getNodeProperty(u);
-// 	node.setIndices(ind);
-// 	node.computeStats();
-
-// }
+[[cpp11::register]]
+void cpp_setIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,int u, cpp11::logicals ind){
 
 
-// [[cpp11::register]]
-// bool cpp_getGateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+	if(u<0)throw(domain_error("not valid vertexID!"));
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	return gh.getNodeProperty(u).isGated();
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
+	nodeProperties & node = gh.getNodeProperty(u);
+	node.setIndices(vector<bool>(ind.begin(), ind.end()));
+	node.computeStats();
 
-// }
-
-
-// [[cpp11::register]]
-// bool cpp_getNegateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
-
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	return gh.getNodeProperty(u).getGate()->isNegate();
-
-// }
-
-// [[cpp11::register]]
-// bool cpp_getHiddenFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
-
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	return gh.getNodeProperty(u).getHiddenFlag();
-
-// }
-
-// vector<BOOL_GATE_OP> boolFilter_R_to_C(cpp11::list filter){
+}
 
 
-// 			/*
-// 			 * get specification from R
-// 			 */
-// 			StringVec refs=as<StringVec>(filter["refs"]);
-// 			StringVec op=as<StringVec>(filter["op"]);
-// 			BoolVec isNot=as<BoolVec>(filter["isNot"]);
+[[cpp11::register]]
+bool cpp_getGateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
-// 			/*
-// 			 * convert to c class
-// 			 */
-// 			vector<BOOL_GATE_OP> res;
-// 			for(unsigned i=0;i<refs.size();i++)
-// 			{
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	return gh.getNodeProperty(u).isGated();
 
-// 				BOOL_GATE_OP gOpObj;
 
-// 				boost::split(gOpObj.path,refs.at(i),boost::is_any_of("/"));
-// 				if(gOpObj.path.at(0).empty())
-// 					gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
+}
 
-// 				gOpObj.isNot=isNot.at(i);
-// 				gOpObj.op=boost::iequals(op.at(i),"|")?'|':'&';
 
-// 				res.push_back(gOpObj);
-// 			}
-// 			return (res);
-// }
+[[cpp11::register]]
+bool cpp_getNegateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	return gh.getNodeProperty(u).getGate()->isNegate();
+
+}
+
+[[cpp11::register]]
+bool cpp_getHiddenFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	return gh.getNodeProperty(u).getHiddenFlag();
+
+}
+
+vector<BOOL_GATE_OP> boolFilter_R_to_C(cpp11::list filter){
+
+
+			/*
+			 * get specification from R
+			 */
+			cpp11::strings refs(filter["refs"]);
+			cpp11::strings op(filter["op"]);
+			cpp11::logicals isNot(filter["isNot"]);
+
+			/*
+			 * convert to c class
+			 */
+			vector<BOOL_GATE_OP> res;
+			for(int i=0;i<refs.size();i++)
+			{
+
+				BOOL_GATE_OP gOpObj;
+                string thispath = refs.at(i);
+                boost::split(gOpObj.path, thispath,boost::is_any_of("/"));
+				if(gOpObj.path.at(0).empty())
+					gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
+
+				// gOpObj.isNot=isNot.at(i)==TRUE;
+				gOpObj.op=boost::iequals(string(op.at(i)),"|")?'|':'&';
+
+				res.push_back(gOpObj);
+			}
+			return (res);
+}
 // /*
 //  * convert R filter to specific gate class
 //  * Note: up to caller to free the dynamically allocated gate object
 //  */
 // gatePtr  newGate(cpp11::list filter){
 
-// 	StringVec names=filter.names();
+// 	cpp11::strings names=filter.names();
 
 // 	unsigned short gateType=as<unsigned short>(filter["type"]);
 
@@ -630,7 +630,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 // 	{
 // 		case RANGEGATE:
 // 		{
-// 			StringVec params=as<StringVec>(filter["params"]);
+// 			cpp11::strings params(filter["params"]);
 // 			unique_ptr<rangeGate> rg(new rangeGate());
 // 			rg->setNegate(isNeg);
 
@@ -649,7 +649,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 // 		}
 // 		case POLYGONGATE:
 // 		{
-// 			StringVec params=as<StringVec>(filter["params"]);
+// 			cpp11::strings params(filter["params"]);
 // 			unique_ptr<polygonGate> pg(new polygonGate());
 
 // 			pg->setNegate(isNeg);
@@ -677,7 +677,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 // 		}
 // 		case RECTGATE:
 // 		{
-// 			StringVec params=as<StringVec>(filter["params"]);
+// 			cpp11::strings params(filter["params"]);
 // 			unique_ptr<rectGate> rectg(new rectGate());
 
 // 			rectg->setNegate(isNeg);
@@ -753,7 +753,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 // 			eg->setNegate(isNeg);
 
 // 			// parse the parameter names
-// 			StringVec params=as<StringVec>(filter["params"]);
+// 			cpp11::strings params(filter["params"]);
 // 			paramPoly pp;
 // 			pp.setName(params);
 // 			eg->setParam(pp);
@@ -764,7 +764,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 // 		}
 // 		case QUADGATE:
 // 		{
-// 			StringVec params=as<StringVec>(filter["params"]);
+// 			cpp11::strings params(filter["params"]);
 // 			auto mu = as<DoubleVec>(filter["mu"]);
 
 // 			paramPoly intersect;

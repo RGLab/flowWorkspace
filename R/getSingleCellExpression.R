@@ -11,7 +11,7 @@ gh_pop_get_indices_mat <- function(gh,y){
 .getIndiceMat <- function(gs, thisSample, nodes){
   
   #extract logical indices for each cytokine gate
-  indice_list <- sapply(nodes,function(this_node).cpp_getIndices(gs@pointer, thisSample, this_node)
+  indice_list <- sapply(nodes,function(this_node)cpp_getIndices(gs@pointer, thisSample, this_node)
       ,simplify = FALSE)
   
   #construct the indice matrix

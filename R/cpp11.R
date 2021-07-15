@@ -248,6 +248,26 @@ cpp_getGate <- function(gs, sampleName, gatePath) {
   .Call(`_flowWorkspace_cpp_getGate`, gs, sampleName, gatePath)
 }
 
+cpp_getIndices <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getIndices`, gs, sampleName, gatePath)
+}
+
+cpp_setIndices <- function(gs, sampleName, u, ind) {
+  invisible(.Call(`_flowWorkspace_cpp_setIndices`, gs, sampleName, u, ind))
+}
+
+cpp_getGateFlag <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getGateFlag`, gs, sampleName, gatePath)
+}
+
+cpp_getNegateFlag <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getNegateFlag`, gs, sampleName, gatePath)
+}
+
+cpp_getHiddenFlag <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getHiddenFlag`, gs, sampleName, gatePath)
+}
+
 gs_transform_data <- function(gsPtr) {
   invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }
