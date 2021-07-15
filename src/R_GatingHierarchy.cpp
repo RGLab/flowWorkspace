@@ -613,181 +613,181 @@ vector<BOOL_GATE_OP> boolFilter_R_to_C(cpp11::list filter){
 			}
 			return (res);
 }
-// /*
-//  * convert R filter to specific gate class
-//  * Note: up to caller to free the dynamically allocated gate object
-//  */
-// gatePtr  newGate(cpp11::list filter){
+/*
+ * convert R filter to specific gate class
+ * Note: up to caller to free the dynamically allocated gate object
+ */
+gatePtr  newGate(cpp11::list filter){
 
-// 	cpp11::strings names=filter.names();
+	cpp11::strings names=filter.names();
 
-// 	unsigned short gateType=as<unsigned short>(filter["type"]);
+	unsigned short gateType=cpp11::integers(filter["type"])[0];
 
-// 	bool isNeg=as<bool>(filter["negated"]);
-// 	gatePtr  g;
+	bool isNeg=cpp11::logicals(filter["negated"])[0];
+	gatePtr  g;
 
-// 	switch(gateType)
-// 	{
-// 		case RANGEGATE:
-// 		{
-// 			cpp11::strings params(filter["params"]);
-// 			unique_ptr<rangeGate> rg(new rangeGate());
-// 			rg->setNegate(isNeg);
+	switch(gateType)
+	{
+		case RANGEGATE:
+		{
+			cpp11::strings params(filter["params"]);
+			unique_ptr<rangeGate> rg(new rangeGate());
+			rg->setNegate(isNeg);
 
-// 			DoubleVec p=as<DoubleVec>(filter["range"]);
+			cpp11::doubles p(filter["range"]);
 
-// 			paramRange pRange;
-// 			pRange.setName(params.at(0));
-// 			pRange.setMin(p.at(0));
-// 			pRange.setMax(p.at(1));
+			paramRange pRange;
+			pRange.setName(params.at(0));
+			pRange.setMin(p.at(0));
+			pRange.setMax(p.at(1));
 
-// 			rg->setParam(pRange);
+			rg->setParam(pRange);
 
-// 			g.reset(rg.release());
+			g.reset(rg.release());
 
-// 			break;
-// 		}
-// 		case POLYGONGATE:
-// 		{
-// 			cpp11::strings params(filter["params"]);
-// 			unique_ptr<polygonGate> pg(new polygonGate());
+			break;
+		}
+		case POLYGONGATE:
+		{
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
+			unique_ptr<polygonGate> pg(new polygonGate());
 
-// 			pg->setNegate(isNeg);
+			pg->setNegate(isNeg);
 
-// 			paramPoly pp;
-// 			pp.setName(params);
+			paramPoly pp;
+			pp.setName(params);
 
-// 			vector<coordinate> v;
-// 			cpp11::doubles_matrix boundaries=as<cpp11::doubles_matrix>(filter["boundaries"]);
-// 			for(int i=0;i<boundaries.nrow();i++)
-// 			{
-// 				coordinate pCoord;
-// 				pCoord.x=boundaries(i,0);
-// 				pCoord.y=boundaries(i,1);
-// 				v.push_back(pCoord);
+			vector<coordinate> v;
+			cpp11::doubles_matrix boundaries(filter["boundaries"]);
+			for(int i=0;i<boundaries.nrow();i++)
+			{
+				coordinate pCoord;
+				pCoord.x=boundaries(i,0);
+				pCoord.y=boundaries(i,1);
+				v.push_back(pCoord);
 
-// 			}
-// 			pp.setVertices(v);
+			}
+			pp.setVertices(v);
 
-// 			pg->setParam(pp);
+			pg->setParam(pp);
 
-// 			g.reset(pg.release());
+			g.reset(pg.release());
 
-// 			break;
-// 		}
-// 		case RECTGATE:
-// 		{
-// 			cpp11::strings params(filter["params"]);
-// 			unique_ptr<rectGate> rectg(new rectGate());
+			break;
+		}
+		case RECTGATE:
+		{
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
+			unique_ptr<rectGate> rectg(new rectGate());
 
-// 			rectg->setNegate(isNeg);
+			rectg->setNegate(isNeg);
 
-// 			paramPoly pp;
-// 			pp.setName(params);
+			paramPoly pp;
+			pp.setName(params);
 
-// 			vector<coordinate> v;
-// 			cpp11::doubles_matrix boundaries=as<cpp11::doubles_matrix>(filter["boundaries"]);
-// 			for(int i=0;i<boundaries.nrow();i++)
-// 			{
-// 				coordinate pCoord;
-// 				pCoord.x=boundaries(i,0);
-// 				pCoord.y=boundaries(i,1);
-// 				v.push_back(pCoord);
+			vector<coordinate> v;
+			cpp11::doubles_matrix boundaries(filter["boundaries"]);
+			for(int i=0;i<boundaries.nrow();i++)
+			{
+				coordinate pCoord;
+				pCoord.x=boundaries(i,0);
+				pCoord.y=boundaries(i,1);
+				v.push_back(pCoord);
 
-// 			}
-// 			pp.setVertices(v);
+			}
+			pp.setVertices(v);
 
-// 			rectg->setParam(pp);
+			rectg->setParam(pp);
 
-// 			g.reset(rectg.release());
-// 			break;
+			g.reset(rectg.release());
+			break;
 
-// 		}
-// 		case BOOLGATE:
-// 		{
-// 			unique_ptr<boolGate> bg(new boolGate());
+		}
+		case BOOLGATE:
+		{
+			unique_ptr<boolGate> bg(new boolGate());
 
-// 			bg->setNegate(isNeg);
-// 			bg->boolOpSpec = boolFilter_R_to_C(filter);
-// 			g.reset(bg.release());
-// 			break;
+			bg->setNegate(isNeg);
+			bg->boolOpSpec = boolFilter_R_to_C(filter);
+			g.reset(bg.release());
+			break;
 
-// 		}
-// 		case LOGICALGATE:
-// 		{
-// 			unique_ptr<logicalGate> lg(new logicalGate());
-// 			lg->setNegate(isNeg);
-// 			g.reset(lg.release());
-// 			break;
-// 		}
-// 		case CLUSTERGATE:
-// 		{
-// 			unique_ptr<clusterGate> cg(new clusterGate(as<string>(filter["cluster_method_name"])));
-// 			cg->setNegate(isNeg);
-// 			g.reset(cg.release());
-// 			break;
-// 		}
-// 		case ELLIPSEGATE:
-// 		{
+		}
+		case LOGICALGATE:
+		{
+			unique_ptr<logicalGate> lg(new logicalGate());
+			lg->setNegate(isNeg);
+			g.reset(lg.release());
+			break;
+		}
+		case CLUSTERGATE:
+		{
+			unique_ptr<clusterGate> cg(new clusterGate(cpp11::as_cpp<string>(filter["cluster_method_name"])));
+			cg->setNegate(isNeg);
+			g.reset(cg.release());
+			break;
+		}
+		case ELLIPSEGATE:
+		{
 
 
 
-// 			//parse the mean
-// 			DoubleVec mean=as<DoubleVec>(filter["mu"]);
-// 			coordinate mu(mean.at(0), mean.at(1));
-// 			double dist = as<double>(filter["dist"]);
+			//parse the mean
+			cpp11::doubles mean(filter["mu"]);
+			coordinate mu(mean.at(0), mean.at(1));
+			double dist = cpp11::as_cpp<double>(filter["dist"]);
 
-// 			//parse cov mat
-// 			vector<coordinate> cov;
-// 			cpp11::doubles_matrix covMat=as<cpp11::doubles_matrix>(filter["cov"]);
-// 			for(int i=0;i<covMat.nrow();i++)
-// 			{
-// 				coordinate p;
-// 				p.x=covMat(i,0);
-// 				p.y=covMat(i,1);
-// 				cov.push_back(p);
+			//parse cov mat
+			vector<coordinate> cov;
+			cpp11::doubles_matrix covMat(filter["cov"]);
+			for(int i=0;i<covMat.nrow();i++)
+			{
+				coordinate p;
+				p.x=covMat(i,0);
+				p.y=covMat(i,1);
+				cov.push_back(p);
 
-// 			}
+			}
 
-// 			unique_ptr<ellipseGate> eg(new ellipseGate(mu, cov,dist));
-// 			eg->setNegate(isNeg);
+			unique_ptr<ellipseGate> eg(new ellipseGate(mu, cov,dist));
+			eg->setNegate(isNeg);
 
-// 			// parse the parameter names
-// 			cpp11::strings params(filter["params"]);
-// 			paramPoly pp;
-// 			pp.setName(params);
-// 			eg->setParam(pp);
+			// parse the parameter names
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
+			paramPoly pp;
+			pp.setName(params);
+			eg->setParam(pp);
 
-// 			g.reset(eg.release());
+			g.reset(eg.release());
 
-// 			break;
-// 		}
-// 		case QUADGATE:
-// 		{
-// 			cpp11::strings params(filter["params"]);
-// 			auto mu = as<DoubleVec>(filter["mu"]);
+			break;
+		}
+		case QUADGATE:
+		{
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
+			auto mu = cpp11::doubles(filter["mu"]);
 
-// 			paramPoly intersect;
-// 			intersect.setName(params);
-// 			intersect.setVertices({coordinate(mu[0], mu[1])});
+			paramPoly intersect;
+			intersect.setName(params);
+			intersect.setVertices({coordinate(mu[0], mu[1])});
 
-// 			string uid = as<string>(filter["uid"]);
-// 			QUAD quadrant = static_cast<QUAD>(as<int>(filter["quad"]));
-// 			unique_ptr<quadGate> qg(new quadGate(intersect, uid, quadrant));
+			string uid = cpp11::as_cpp<string>(filter["uid"]);
+			QUAD quadrant = static_cast<QUAD>(cpp11::as_cpp<int>(filter["quad"]));
+			unique_ptr<quadGate> qg(new quadGate(intersect, uid, quadrant));
 
-// 			g.reset(qg.release());
+			g.reset(qg.release());
 
-// 			break;
+			break;
 
-// 		}
-// 		default:
-// 			throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));
+		}
+		default:
+			throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));
 
-// 	}
-// 	g->setTransformed(TRUE);
-// 	return g;
+	}
+	g->setTransformed(TRUE);
+	return g;
 
-// }
+}
 
 // [[cpp11::register]]
 // NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs,string sampleName
