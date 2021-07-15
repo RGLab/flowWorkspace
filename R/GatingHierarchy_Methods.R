@@ -17,7 +17,7 @@ NULL
 #' @param sampleName sample name
 #' @export 
 gs_get_compensation_internal <- function(gs, sampleName) {
-  .cpp_getCompensation(gs, sampleName)
+  cpp_getCompensation(gs, sampleName)
 }
 
 #This legacy routine is currently not used
@@ -198,7 +198,7 @@ gs_get_compensation_internal <- function(gs, sampleName) {
 #return a graphNEL object that only contans the node Name and isBool flags
 .getGraph <- function(x){
   DotFile <- tempfile(fileext=".dot")
-  .cpp_plotGh(x@pointer,sampleNames(x),DotFile)
+  cpp_plotGh(x@pointer,sampleNames(x),DotFile)
 #  browser()
   #read dot from into Ragraph
   g <- agread(DotFile)
@@ -585,7 +585,7 @@ gs_get_pop_paths <- function(x,y=NULL,order="regular", path = "full", showHidden
             orderInd <- orderInd - 1
 
             if(is.numeric(path)){
-              nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              nodeNames <- cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
 
               if(path == 1){
                 nodeNames <- basename(nodeNames)
@@ -608,10 +608,10 @@ gs_get_pop_paths <- function(x,y=NULL,order="regular", path = "full", showHidden
               }
 
             }else if(path == "auto"){
-                nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
+                nodeNames <- cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
 
             }else if(path == "full"){
-              nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              nodeNames <- cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
             }else
 			  stop("Invalid 'path' argument. The valid input is 'full' or 'auto' or a numeric value.")
 
@@ -651,7 +651,7 @@ setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, .
 #' @rdname gs_pop_get_children
 #' @export
 gs_pop_get_parent <- function(obj,y, ...){
-            pind <- .cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
+            pind <- cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
             pind <- pind +1
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[pind]
 		}
@@ -702,7 +702,7 @@ setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y,
 #' }
 #' @export
 gs_pop_get_children <- function(obj,y, showHidden = TRUE, ...){
-      cind <- .cpp_getChildren(obj@pointer,sampleNames(obj)[1], y, showHidden)
+      cind <- cpp_getChildren(obj@pointer,sampleNames(obj)[1], y, showHidden)
       cind <- cind + 1
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[cind]
 }
@@ -745,7 +745,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #' @export
 gh_pop_get_gate <- function(obj,y){
 
-				g<-.cpp_getGate(obj@pointer,sampleNames(obj), y)
+				g<-cpp_getGate(obj@pointer,sampleNames(obj), y)
 				filterId <- g$filterId
 				if(g$type==1)
 				{
@@ -822,7 +822,7 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
   isFound <- FALSE
   for(node in nodes)
   {
-      g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+      g <-cpp_getGate(gh@pointer,sampleNames(gh), node)
       if(g[["type"]] == 8)
       {
         if(g[["cluster_method_name"]] == cluster_method_name)
@@ -910,7 +910,7 @@ extract_cluster_pop_name_from_node <- function(node, cluster_method_name)
 #' @return the name of the clustering method. If it is not cluster node, returns NULL
 #' @export
 gh_pop_get_cluster_name <- function(gh, node){
-  g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+  g <-cpp_getGate(gh@pointer,sampleNames(gh), node)
   if(g[["type"]] == 8)
     g[["cluster_method_name"]]
   else
@@ -921,7 +921,7 @@ gh_pop_get_cluster_name <- function(gh, node){
 #' @noRd 
 .getNodeInd <- function(obj,y, ...){
 
-    ind <- .cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
+    ind <- cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
 
     ind + 1 # convert to R index
 
@@ -994,7 +994,7 @@ isGated <- function(obj,y){
 #' @param y node/gating path
 #' @export 
 gh_pop_is_gated <- function(obj,y){
-      .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
+      cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
 
     }
 
@@ -1012,7 +1012,7 @@ isNegated <- function(obj,y){
 #' @rdname nodeflags
 #' @export 
 gh_pop_is_negated <- function(obj,y){
-      .cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
+      cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
 
     }
 
@@ -1030,7 +1030,7 @@ isHidden <- function(obj,y){
 #' @rdname nodeflags
 #' @export 
 gh_pop_is_hidden  <- function(obj,y){		
-      .cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
+      cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
     }
 
 
@@ -1382,7 +1382,7 @@ gh_get_compensations <- function(x){
   
       sn <- sampleNames(x)
 #      if(is.null(compobj)){
-        comp<-.cpp_getCompensation(x@pointer, sn)
+        comp<-cpp_getCompensation(x@pointer, sn)
         cid<-comp$cid
         #			browser()
         if(cid=="")
@@ -1565,7 +1565,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 						{
 							#use id instead of node name to avoid the special characters (e.g. '!') from interfering the 
 						  #parsing of parent info from the contatenated string  later on
-						  pid <- .cpp_getParent(gh@pointer,sn, y)+1
+						  pid <- cpp_getParent(gh@pointer,sn, y)+1
 							
                             myPrj <- projections[[as.character(y)]]
                             if(is.null(myPrj)){
@@ -1678,7 +1678,7 @@ setMethod("setNode"
 #' setNode,GatingHierarchy,character,ANY-method setNode,GatingSet,character,ANY-method
 #' @export
 gh_pop_set_name <- function(x,y,value){
-  .cpp_setNodeName(x@pointer,sampleNames(x), y,value)
+  setNodeName(x@pointer,sampleNames(x), y,value)
 }
 
 #' @export
@@ -1705,7 +1705,7 @@ setMethod("setNode"
 gh_pop_set_visibility <- function(x,y,value){
             
             hidden = !value
-            .cpp_setNodeFlag(x@pointer,sampleNames(x), y, hidden)
+            setNodeFlag(x@pointer,sampleNames(x), y, hidden)
           }
 
 

@@ -13,7 +13,7 @@ gs_get_leaf_nodes <- function(x, ancestor = "root", ...){
   {
     res <- gh_pop_get_descendants(x[[1]],  ancestor, ...)
   }
-  ind <- sapply(res, function(i)length(.cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
+  ind <- sapply(res, function(i)length(cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
   res[ind]
 }
 #' @export 

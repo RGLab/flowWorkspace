@@ -1,105 +1,106 @@
-// /*
-//  * R_GatingSet.cpp
-//  *
-//  *these are R APIs
-//  *
-//  *  Created on: Mar 30, 2012
-//  *      Author: wjiang2
-//  */
+/*
+ * R_GatingSet.cpp
+ *
+ *these are R APIs
+ *
+ *  Created on: Mar 30, 2012
+ *      Author: wjiang2
+ */
 
-// /*
-//  * can't use module for exposing overloaded methods and non-standard wrap/as type of the constructor
-//  * Also each GatingHierarchy object is created by GatingSet method within c++
-//  * thus it is not initialized by Rcpp module as S4 class within R. So have to use this tedious way to
-//  * write R API
-//  */
+/*
+ * can't use module for exposing overloaded methods and non-standard wrap/as type of the constructor
+ * Also each GatingHierarchy object is created by GatingSet method within c++
+ * thus it is not initialized by Rcpp module as S4 class within R. So have to use this tedious way to
+ * write R API
+ */
+#include <cpp11.hpp>
 
-// #include "cytolib/GatingSet.hpp"
-// #include <stdexcept>
-// #include "cytolib/gate.hpp"
-// #include "cytolib/transformation.hpp"
-// using namespace std;
+#include "cytolib/GatingSet.hpp"
+#include <stdexcept>
+#include "cytolib/gate.hpp"
+#include "cytolib/transformation.hpp"
+using namespace std;
 
-// #include "flowWorkspace/convert_trans.h"
-// #include <Rcpp.h>
-// using namespace Rcpp;
-// using namespace cytolib;
-
-
-// /*
-//  * only expose gating set pointer to R to avoid gc() by R
-//  */
-// //[[Rcpp::export(name=".cpp_plotGh")]]
-// void plotGh(cpp11::external_pointer<GatingSet> gs,string sampleName,string output) {
-
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-//   gh.drawGraph(output);
-
-// }
+#include "flowWorkspace/convert_trans.h"
+using namespace cytolib;
 
 
-// /*
-//  * return node names as a character vector
-//  */
-// //[[Rcpp::export(name=".cpp_getNodes")]]
-// StringVec getNodes(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                   ,unsigned short order
-//                   ,bool fullPath
-//                   , bool showHidden){
+/*
+ * only expose gating set pointer to R to avoid gc() by R
+ */
+[[cpp11::register]]
+void cpp_plotGh(cpp11::external_pointer<GatingSet> gs,string sampleName,string output) {
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+  gh.drawGraph(output);
 
-// 	return gh.getNodePaths(order,fullPath,showHidden);
+}
 
-// }
 
-// //[[Rcpp::export]]
-// string getNodePath(cpp11::external_pointer<GatingSet> gs,string sampleName,NODEID id){
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	return gh.getNodePath(id);
-// }
-// /*
-//  * query by path
-//  */
-// //[[Rcpp::export(name=".cpp_getNodeID")]]
-// NODEID getNodeID(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+/*
+ * return node names as a character vector
+ */
+[[cpp11::register]]
+StringVec cpp_getNodes(cpp11::external_pointer<GatingSet> gs,string sampleName
+                  ,int order
+                  ,bool fullPath
+                  , bool showHidden){
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-// 	return (NODEID)gh.getNodeID(gatePath);
+	return gh.getNodePaths(order,fullPath,showHidden);
 
-// }
-// //[[Rcpp::export(name=".cpp_getParent")]]
-// NODEID getParent(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+}
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	return (NODEID)gh.getParent(u);
+[[cpp11::register]]
+string getNodePath(cpp11::external_pointer<GatingSet> gs,string sampleName,int id){
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	return gh.getNodePath(unsigned(id));
+}
+/*
+ * query by path
+ */
 
-// }
+[[cpp11::register]]
+int cpp_getNodeID(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
-// //[[Rcpp::export(name=".cpp_getChildren")]]
-// vector<NODEID> getChildren(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                              ,string gatePath, bool showHidden){
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	return gh.getNodeID(gatePath);
 
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	VertexID_vec childrenID = gh.getChildren(u);
-// 	vector<NODEID> res;
-// 	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++){
-// 		NODEID thisNodeID = *it;
-// 		bool isHidden = gh.getNodeProperty(thisNodeID).getHiddenFlag();
-// 		if(showHidden||(!isHidden))
-// 			res.push_back(thisNodeID);
-// 	}
+}
 
-// 	return res;
+[[cpp11::register]]
+int cpp_getParent(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
-// }
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	return gh.getParent(u);
 
-// //[[Rcpp::export(name=".cpp_getPopStats")]]
-// List getPopStats(cpp11::external_pointer<GatingSet> gs,string sampleName
+}
+
+[[cpp11::register]]
+vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleName
+                             ,string gatePath, bool showHidden){
+
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+
+	NODEID u = gh.getNodeID(gatePath);
+	auto childrenID = gh.getChildren(u);
+	vector<NODEID> res;
+	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++){
+		auto thisNodeID = *it;
+		bool isHidden = gh.getNodeProperty(thisNodeID).getHiddenFlag();
+		if(showHidden||(!isHidden))
+			res.push_back(thisNodeID);
+	}
+
+	return res;
+
+}
+
+// [[cpp11::register]]
+// List cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                      ,string gatePath){
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -114,8 +115,8 @@
 
 
 
-// //[[Rcpp::export(name=".cpp_getCompensation")]]
-// List getCompensation(cpp11::external_pointer<GatingSet> gs,string sampleName){
+// [[cpp11::register]]
+// List cpp_getCompensation(cpp11::external_pointer<GatingSet> gs,string sampleName){
 //   GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 //   compensation comp=gh.get_compensation();
 // 	return(List::create(Named("cid",comp.cid)
@@ -130,7 +131,7 @@
 
 // }
 
-// //[[Rcpp::export]]
+// [[cpp11::register]]
 // void set_transformations(cpp11::external_pointer<GatingSet> gs,string sampleName, List translist){
 
 
@@ -140,6 +141,7 @@
 // }
 
 // //[[Rcpp::export(name=".cpp_getTransformations")]]
+// [[cpp11::register]]
 // List getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
 
 
@@ -331,8 +333,9 @@
 // 	}
 // 	return res;
 // }
-// //[[Rcpp::export(name=".cpp_getGate")]]
-// List getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+
+// [[cpp11::register]]
+// List cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 	NODEID u = gh.getNodeID(gatePath);
@@ -503,6 +506,7 @@
 // }
 
 // //[[Rcpp::export(name=".cpp_getIndices")]]
+// [[cpp11::register]]
 // vector<bool> getIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -521,8 +525,8 @@
 
 // }
 
-// //[[Rcpp::export(name=".cpp_setIndices")]]
-// void setIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,int u, BoolVec ind){
+// [[cpp11::register]]
+// void cpp_setIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,int u, BoolVec ind){
 
 
 // 	if(u<0)throw(domain_error("not valid vertexID!"));
@@ -536,8 +540,8 @@
 // }
 
 
-// //[[Rcpp::export(name=".cpp_getGateFlag")]]
-// bool getGateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+// [[cpp11::register]]
+// bool cpp_getGateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 	NODEID u = gh.getNodeID(gatePath);
@@ -546,16 +550,18 @@
 
 // }
 
-// //[[Rcpp::export(name=".cpp_getNegateFlag")]]
-// bool getNegateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+
+// [[cpp11::register]]
+// bool cpp_getNegateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 	NODEID u = gh.getNodeID(gatePath);
 // 	return gh.getNodeProperty(u).getGate()->isNegate();
 
 // }
-// //[[Rcpp::export(name=".cpp_getHiddenFlag")]]
-// bool getHiddenFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+
+// [[cpp11::register]]
+// bool cpp_getHiddenFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 	NODEID u = gh.getNodeID(gatePath);
@@ -769,8 +775,8 @@
 
 // }
 
-// //[[Rcpp::export(name=".cpp_addGate")]]
-// NODEID addGate(cpp11::external_pointer<GatingSet> gs,string sampleName
+// [[cpp11::register]]
+// NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                    ,List filter
 //                    ,string gatePath
 //                    ,string popName) {
@@ -791,8 +797,8 @@
 //  * mainly used for openCyto rectRef gate which first being added as a rectangle gate
 //  * and then gated as boolean filter
 //  */
-// //[[Rcpp::export(name=".cpp_boolGating")]]
-// void boolGating(cpp11::external_pointer<GatingSet> gs,string sampleName,List filter,unsigned nodeID) {
+// [[cpp11::register]]
+// void cpp_boolGating(cpp11::external_pointer<GatingSet> gs,string sampleName,List filter,unsigned nodeID) {
 
 // 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 		nodeProperties & node=gh.getNodeProperty(nodeID);
@@ -812,7 +818,7 @@
 
 // }
 
-// //[[Rcpp::export]]
+// [[cpp11::register]]
 // void set_quadgate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath, vector<double> inter) {
 
 // 	if(inter.size()!=2)
@@ -834,8 +840,8 @@
 
 // }
 
-// //[[Rcpp::export(name=".cpp_setGate")]]
-// void setGate(cpp11::external_pointer<GatingSet> gs,string sampleName
+// [[cpp11::register]]
+// void cpp_setGate(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                ,string gatePath,List filter) {
 
 // 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -850,8 +856,8 @@
 
 // }
 
-// //[[Rcpp::export(name=".cpp_removeNode")]]
-// void removeNode(cpp11::external_pointer<GatingSet> gs,string sampleName
+// [[cpp11::register]]
+// void cpp_removeNode(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                   ,string gatePath, bool recursive = false) {
 
 // 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -878,7 +884,7 @@
 // //' @param sampleName sample name
 // //' @param node node name
 // //' @noRd
-// //[[Rcpp::export(".moveNode")]]
+// [[cpp11::register]]
 // void moveNode(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, string parent){
 
 //   GatingHierarchy & gh = *gsPtr->getGatingHierarchy(sampleName);
@@ -888,7 +894,7 @@
 
 // }
 
-// //[[Rcpp::export(name=".cpp_setNodeName")]]
+// [[cpp11::register]]
 // void setNodeName(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                    ,string gatePath, string newNodeName) {
 
@@ -901,7 +907,7 @@
 
 // }
 
-// //[[Rcpp::export(name=".cpp_setNodeFlag")]]
+// [[cpp11::register]]
 // void setNodeFlag(cpp11::external_pointer<GatingSet> gs,string sampleName
 //                    ,string gatePath, bool hidden) {
 

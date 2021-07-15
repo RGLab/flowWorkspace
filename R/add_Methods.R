@@ -364,9 +364,9 @@ gh_pop_remove <- function(gh, node, ...)
         #will change during deletion
     lapply(childrenNodes,function(child)gh_pop_remove(gh, child, fast = FALSE))
         
-    .cpp_removeNode(gh@pointer,sampleNames(gh), node, FALSE)
+    cpp_removeNode(gh@pointer,sampleNames(gh), node, FALSE)
   }else
-    .cpp_removeNode(gh@pointer,sampleNames(gh), node, TRUE)
+    cpp_removeNode(gh@pointer,sampleNames(gh), node, TRUE)
 }
 
 

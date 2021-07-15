@@ -204,6 +204,30 @@ h5_set_error_handler <- function() {
   invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
 }
 
+cpp_plotGh <- function(gs, sampleName, output) {
+  invisible(.Call(`_flowWorkspace_cpp_plotGh`, gs, sampleName, output))
+}
+
+cpp_getNodes <- function(gs, sampleName, order, fullPath, showHidden) {
+  .Call(`_flowWorkspace_cpp_getNodes`, gs, sampleName, order, fullPath, showHidden)
+}
+
+getNodePath <- function(gs, sampleName, id) {
+  .Call(`_flowWorkspace_getNodePath`, gs, sampleName, id)
+}
+
+cpp_getNodeID <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getNodeID`, gs, sampleName, gatePath)
+}
+
+cpp_getParent <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getParent`, gs, sampleName, gatePath)
+}
+
+cpp_getChildren <- function(gs, sampleName, gatePath, showHidden) {
+  .Call(`_flowWorkspace_cpp_getChildren`, gs, sampleName, gatePath, showHidden)
+}
+
 gs_transform_data <- function(gsPtr) {
   invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }

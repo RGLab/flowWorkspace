@@ -389,6 +389,49 @@ extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
     return R_NilValue;
   END_CPP11
 }
+// R_GatingHierarchy.cpp
+void cpp_plotGh(cpp11::external_pointer<GatingSet> gs, string sampleName, string output);
+extern "C" SEXP _flowWorkspace_cpp_plotGh(SEXP gs, SEXP sampleName, SEXP output) {
+  BEGIN_CPP11
+    cpp_plotGh(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(output));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+StringVec cpp_getNodes(cpp11::external_pointer<GatingSet> gs, string sampleName, int order, bool fullPath, bool showHidden);
+extern "C" SEXP _flowWorkspace_cpp_getNodes(SEXP gs, SEXP sampleName, SEXP order, SEXP fullPath, SEXP showHidden) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getNodes(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(order), cpp11::as_cpp<cpp11::decay_t<bool>>(fullPath), cpp11::as_cpp<cpp11::decay_t<bool>>(showHidden)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+string getNodePath(cpp11::external_pointer<GatingSet> gs, string sampleName, int id);
+extern "C" SEXP _flowWorkspace_getNodePath(SEXP gs, SEXP sampleName, SEXP id) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getNodePath(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(id)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+int cpp_getNodeID(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getNodeID(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getNodeID(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+int cpp_getParent(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getParent(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getParent(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool showHidden);
+extern "C" SEXP _flowWorkspace_cpp_getChildren(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP showHidden) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getChildren(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(showHidden)));
+  END_CPP11
+}
 // R_GatingSet.cpp
 void gs_transform_data(cpp11::external_pointer<GatingSet> gsPtr);
 extern "C" SEXP _flowWorkspace_gs_transform_data(SEXP gsPtr) {
@@ -563,10 +606,15 @@ extern SEXP _flowWorkspace_copy_view_cytoset(SEXP);
 extern SEXP _flowWorkspace_cpp_CloneGatingSet(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_combineGatingSet(SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_gating(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getChildren(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getLogLevel();
+extern SEXP _flowWorkspace_cpp_getNodeID(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getNodes(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getParent(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getSamples(SEXP);
 extern SEXP _flowWorkspace_cpp_loadGatingSet(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_NewGatingSet(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_plotGh(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_saveGatingSet(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_setLogLevel(SEXP);
 extern SEXP _flowWorkspace_cpp_setSample(SEXP, SEXP, SEXP);
@@ -585,6 +633,7 @@ extern SEXP _flowWorkspace_get_pheno_data(SEXP);
 extern SEXP _flowWorkspace_get_rownames(SEXP);
 extern SEXP _flowWorkspace_get_uri(SEXP);
 extern SEXP _flowWorkspace_getncol(SEXP);
+extern SEXP _flowWorkspace_getNodePath(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_getnrow(SEXP);
 extern SEXP _flowWorkspace_getpdata(SEXP);
 extern SEXP _flowWorkspace_gs_transform_data(SEXP);
@@ -636,10 +685,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cpp_CloneGatingSet",        (DL_FUNC) &_flowWorkspace_cpp_CloneGatingSet,        3},
     {"_flowWorkspace_cpp_combineGatingSet",      (DL_FUNC) &_flowWorkspace_cpp_combineGatingSet,      2},
     {"_flowWorkspace_cpp_gating",                (DL_FUNC) &_flowWorkspace_cpp_gating,                5},
+    {"_flowWorkspace_cpp_getChildren",           (DL_FUNC) &_flowWorkspace_cpp_getChildren,           4},
     {"_flowWorkspace_cpp_getLogLevel",           (DL_FUNC) &_flowWorkspace_cpp_getLogLevel,           0},
+    {"_flowWorkspace_cpp_getNodeID",             (DL_FUNC) &_flowWorkspace_cpp_getNodeID,             3},
+    {"_flowWorkspace_cpp_getNodes",              (DL_FUNC) &_flowWorkspace_cpp_getNodes,              5},
+    {"_flowWorkspace_cpp_getParent",             (DL_FUNC) &_flowWorkspace_cpp_getParent,             3},
     {"_flowWorkspace_cpp_getSamples",            (DL_FUNC) &_flowWorkspace_cpp_getSamples,            1},
     {"_flowWorkspace_cpp_loadGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_loadGatingSet,         4},
     {"_flowWorkspace_cpp_NewGatingSet",          (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,          5},
+    {"_flowWorkspace_cpp_plotGh",                (DL_FUNC) &_flowWorkspace_cpp_plotGh,                3},
     {"_flowWorkspace_cpp_saveGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_saveGatingSet,         3},
     {"_flowWorkspace_cpp_setLogLevel",           (DL_FUNC) &_flowWorkspace_cpp_setLogLevel,           1},
     {"_flowWorkspace_cpp_setSample",             (DL_FUNC) &_flowWorkspace_cpp_setSample,             3},
@@ -658,6 +712,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_rownames",              (DL_FUNC) &_flowWorkspace_get_rownames,              1},
     {"_flowWorkspace_get_uri",                   (DL_FUNC) &_flowWorkspace_get_uri,                   1},
     {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
+    {"_flowWorkspace_getNodePath",               (DL_FUNC) &_flowWorkspace_getNodePath,               3},
     {"_flowWorkspace_getnrow",                   (DL_FUNC) &_flowWorkspace_getnrow,                   1},
     {"_flowWorkspace_getpdata",                  (DL_FUNC) &_flowWorkspace_getpdata,                  1},
     {"_flowWorkspace_gs_transform_data",         (DL_FUNC) &_flowWorkspace_gs_transform_data,         1},
