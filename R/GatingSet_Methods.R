@@ -810,7 +810,7 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
         if(is.null(subpopulations))
           subpopulations <- gs_get_pop_paths(x, path = path, ...)[-1]
 
-        pop_stats <- .getPopCounts(x@pointer, statistic == "freq", subpopulations, xml, path == "full")
+        pop_stats <- getPopCounts_cpp(x@pointer, statistic == "freq", subpopulations, xml, path == "full")
         if(statistic == "freq"){
         	pop_stats <- data.table(name = pop_stats[["name"]]
         							, Population = pop_stats[["Population"]]

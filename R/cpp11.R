@@ -204,6 +204,10 @@ getDescendants_cpp <- function(gsPtr, sampleName, node) {
   .Call(`_flowWorkspace_getDescendants_cpp`, gsPtr, sampleName, node)
 }
 
+getPopCounts_cpp <- function(gsPtr, freq, subpopulation, flowJo, isFullPath) {
+  .Call(`_flowWorkspace_getPopCounts_cpp`, gsPtr, freq, subpopulation, flowJo, isFullPath)
+}
+
 cpp_getSingleCellExpressionByGate <- function(gs, sampleName, markers_pops, data, markers, threshold) {
   .Call(`_flowWorkspace_cpp_getSingleCellExpressionByGate`, gs, sampleName, markers_pops, data, markers, threshold)
 }

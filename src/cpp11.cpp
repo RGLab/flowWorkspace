@@ -388,6 +388,13 @@ extern "C" SEXP _flowWorkspace_getDescendants_cpp(SEXP gsPtr, SEXP sampleName, S
     return cpp11::as_sexp(getDescendants_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(node)));
   END_CPP11
 }
+// getPopStats.cpp
+cpp11::list getPopCounts_cpp(cpp11::external_pointer<GatingSet> gsPtr, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath);
+extern "C" SEXP _flowWorkspace_getPopCounts_cpp(SEXP gsPtr, SEXP freq, SEXP subpopulation, SEXP flowJo, SEXP isFullPath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getPopCounts_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<bool>>(freq), cpp11::as_cpp<cpp11::decay_t<StringVec>>(subpopulation), cpp11::as_cpp<cpp11::decay_t<bool>>(flowJo), cpp11::as_cpp<cpp11::decay_t<bool>>(isFullPath)));
+  END_CPP11
+}
 // getSingleCellExpression.cpp
 cpp11::doubles_matrix cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list markers_pops, cpp11::doubles_matrix data, cpp11::strings markers, bool threshold);
 extern "C" SEXP _flowWorkspace_cpp_getSingleCellExpressionByGate(SEXP gs, SEXP sampleName, SEXP markers_pops, SEXP data, SEXP markers, SEXP threshold) {
@@ -816,6 +823,7 @@ extern SEXP _flowWorkspace_getncol(SEXP);
 extern SEXP _flowWorkspace_getNodePath(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_getnrow(SEXP);
 extern SEXP _flowWorkspace_getpdata(SEXP);
+extern SEXP _flowWorkspace_getPopCounts_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_gs_transform_data(SEXP);
 extern SEXP _flowWorkspace_h5_set_error_handler();
 extern SEXP _flowWorkspace_is_tiledb_support();
@@ -917,6 +925,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getNodePath",                       (DL_FUNC) &_flowWorkspace_getNodePath,                       3},
     {"_flowWorkspace_getnrow",                           (DL_FUNC) &_flowWorkspace_getnrow,                           1},
     {"_flowWorkspace_getpdata",                          (DL_FUNC) &_flowWorkspace_getpdata,                          1},
+    {"_flowWorkspace_getPopCounts_cpp",                  (DL_FUNC) &_flowWorkspace_getPopCounts_cpp,                  5},
     {"_flowWorkspace_gs_transform_data",                 (DL_FUNC) &_flowWorkspace_gs_transform_data,                 1},
     {"_flowWorkspace_h5_set_error_handler",              (DL_FUNC) &_flowWorkspace_h5_set_error_handler,              0},
     {"_flowWorkspace_is_tiledb_support",                 (DL_FUNC) &_flowWorkspace_is_tiledb_support,                 0},
