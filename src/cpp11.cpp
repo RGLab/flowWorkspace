@@ -381,6 +381,27 @@ extern "C" SEXP _flowWorkspace_get_pheno_data(SEXP cs) {
     return cpp11::as_sexp(get_pheno_data(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs)));
   END_CPP11
 }
+// getDescendants.cpp
+VertexID_vec getDescendants_cpp(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node);
+extern "C" SEXP _flowWorkspace_getDescendants_cpp(SEXP gsPtr, SEXP sampleName, SEXP node) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getDescendants_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(node)));
+  END_CPP11
+}
+// getSingleCellExpression.cpp
+cpp11::doubles_matrix cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list markers_pops, cpp11::doubles_matrix data, cpp11::strings markers, bool threshold);
+extern "C" SEXP _flowWorkspace_cpp_getSingleCellExpressionByGate(SEXP gs, SEXP sampleName, SEXP markers_pops, SEXP data, SEXP markers, SEXP threshold) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getSingleCellExpressionByGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(markers_pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));
+  END_CPP11
+}
+// getSingleCellExpression.cpp
+cpp11::doubles_matrix cpp_getSingleCellExpression(cpp11::external_pointer<GatingSet> gs, string sampleName, vector<string> pops, cpp11::doubles_matrix data, cpp11::strings markers, bool threshold);
+extern "C" SEXP _flowWorkspace_cpp_getSingleCellExpression(SEXP gs, SEXP sampleName, SEXP pops, SEXP data, SEXP markers, SEXP threshold) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getSingleCellExpression(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));
+  END_CPP11
+}
 // h5_error_r_handler.cpp
 void h5_set_error_handler();
 extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
@@ -715,6 +736,14 @@ extern "C" SEXP _flowWorkspace_cpp_togleErrorFlag() {
     return R_NilValue;
   END_CPP11
 }
+// setCounts.cpp
+void setCounts_cpp(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, int count);
+extern "C" SEXP _flowWorkspace_setCounts_cpp(SEXP gsPtr, SEXP sampleName, SEXP node, SEXP count) {
+  BEGIN_CPP11
+    setCounts_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(node), cpp11::as_cpp<cpp11::decay_t<int>>(count));
+    return R_NilValue;
+  END_CPP11
+}
 
 extern "C" {
 /* .Call calls */
@@ -756,6 +785,8 @@ extern SEXP _flowWorkspace_cpp_getNodes(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getParent(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getPopStats(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getSamples(SEXP);
+extern SEXP _flowWorkspace_cpp_getSingleCellExpression(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getSingleCellExpressionByGate(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getTransformations(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_loadGatingSet(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_NewGatingSet(SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -780,6 +811,7 @@ extern SEXP _flowWorkspace_get_gatingset_id(SEXP);
 extern SEXP _flowWorkspace_get_pheno_data(SEXP);
 extern SEXP _flowWorkspace_get_rownames(SEXP);
 extern SEXP _flowWorkspace_get_uri(SEXP);
+extern SEXP _flowWorkspace_getDescendants_cpp(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_getncol(SEXP);
 extern SEXP _flowWorkspace_getNodePath(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_getnrow(SEXP);
@@ -803,6 +835,7 @@ extern SEXP _flowWorkspace_set_quadgate(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_set_rownames(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_transformations(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setChannel(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_setCounts_cpp(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setMarker(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setNodeFlag(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setNodeName(SEXP, SEXP, SEXP, SEXP);
@@ -815,101 +848,105 @@ extern SEXP _flowWorkspace_subset_gs_by_sample(SEXP, SEXP);
 extern SEXP _flowWorkspace_write_to_disk(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_flowWorkspace_add_cytoframe",             (DL_FUNC) &_flowWorkspace_add_cytoframe,             3},
-    {"_flowWorkspace_append_cols",               (DL_FUNC) &_flowWorkspace_append_cols,               3},
-    {"_flowWorkspace_backend_type",              (DL_FUNC) &_flowWorkspace_backend_type,              1},
-    {"_flowWorkspace_cf_flush_meta_cpp",         (DL_FUNC) &_flowWorkspace_cf_flush_meta_cpp,         1},
-    {"_flowWorkspace_cf_getData",                (DL_FUNC) &_flowWorkspace_cf_getData,                1},
-    {"_flowWorkspace_cf_getKeyword",             (DL_FUNC) &_flowWorkspace_cf_getKeyword,             2},
-    {"_flowWorkspace_cf_getKeywords",            (DL_FUNC) &_flowWorkspace_cf_getKeywords,            1},
-    {"_flowWorkspace_cf_is_indexed",             (DL_FUNC) &_flowWorkspace_cf_is_indexed,             1},
-    {"_flowWorkspace_cf_load_meta_cpp",          (DL_FUNC) &_flowWorkspace_cf_load_meta_cpp,          1},
-    {"_flowWorkspace_cf_removeKeywords",         (DL_FUNC) &_flowWorkspace_cf_removeKeywords,         2},
-    {"_flowWorkspace_cf_renameKeywords",         (DL_FUNC) &_flowWorkspace_cf_renameKeywords,         3},
-    {"_flowWorkspace_cf_scale_time_channel_cpp", (DL_FUNC) &_flowWorkspace_cf_scale_time_channel_cpp, 1},
-    {"_flowWorkspace_cf_set_readonly",           (DL_FUNC) &_flowWorkspace_cf_set_readonly,           2},
-    {"_flowWorkspace_cf_setData",                (DL_FUNC) &_flowWorkspace_cf_setData,                2},
-    {"_flowWorkspace_cf_setKeywords",            (DL_FUNC) &_flowWorkspace_cf_setKeywords,            2},
-    {"_flowWorkspace_cf_setKeywordsSubset",      (DL_FUNC) &_flowWorkspace_cf_setKeywordsSubset,      3},
-    {"_flowWorkspace_cf_to_memcf",               (DL_FUNC) &_flowWorkspace_cf_to_memcf,               1},
-    {"_flowWorkspace_cf_transform_data",         (DL_FUNC) &_flowWorkspace_cf_transform_data,         2},
-    {"_flowWorkspace_copy_view_cytoframe",       (DL_FUNC) &_flowWorkspace_copy_view_cytoframe,       1},
-    {"_flowWorkspace_copy_view_cytoset",         (DL_FUNC) &_flowWorkspace_copy_view_cytoset,         1},
-    {"_flowWorkspace_cpp_addGate",               (DL_FUNC) &_flowWorkspace_cpp_addGate,               5},
-    {"_flowWorkspace_cpp_boolGating",            (DL_FUNC) &_flowWorkspace_cpp_boolGating,            4},
-    {"_flowWorkspace_cpp_CloneGatingSet",        (DL_FUNC) &_flowWorkspace_cpp_CloneGatingSet,        3},
-    {"_flowWorkspace_cpp_combineGatingSet",      (DL_FUNC) &_flowWorkspace_cpp_combineGatingSet,      2},
-    {"_flowWorkspace_cpp_gating",                (DL_FUNC) &_flowWorkspace_cpp_gating,                5},
-    {"_flowWorkspace_cpp_getChildren",           (DL_FUNC) &_flowWorkspace_cpp_getChildren,           4},
-    {"_flowWorkspace_cpp_getCompensation",       (DL_FUNC) &_flowWorkspace_cpp_getCompensation,       2},
-    {"_flowWorkspace_cpp_getGate",               (DL_FUNC) &_flowWorkspace_cpp_getGate,               3},
-    {"_flowWorkspace_cpp_getGateFlag",           (DL_FUNC) &_flowWorkspace_cpp_getGateFlag,           3},
-    {"_flowWorkspace_cpp_getHiddenFlag",         (DL_FUNC) &_flowWorkspace_cpp_getHiddenFlag,         3},
-    {"_flowWorkspace_cpp_getIndices",            (DL_FUNC) &_flowWorkspace_cpp_getIndices,            3},
-    {"_flowWorkspace_cpp_getLogLevel",           (DL_FUNC) &_flowWorkspace_cpp_getLogLevel,           0},
-    {"_flowWorkspace_cpp_getNegateFlag",         (DL_FUNC) &_flowWorkspace_cpp_getNegateFlag,         3},
-    {"_flowWorkspace_cpp_getNodeID",             (DL_FUNC) &_flowWorkspace_cpp_getNodeID,             3},
-    {"_flowWorkspace_cpp_getNodes",              (DL_FUNC) &_flowWorkspace_cpp_getNodes,              5},
-    {"_flowWorkspace_cpp_getParent",             (DL_FUNC) &_flowWorkspace_cpp_getParent,             3},
-    {"_flowWorkspace_cpp_getPopStats",           (DL_FUNC) &_flowWorkspace_cpp_getPopStats,           3},
-    {"_flowWorkspace_cpp_getSamples",            (DL_FUNC) &_flowWorkspace_cpp_getSamples,            1},
-    {"_flowWorkspace_cpp_getTransformations",    (DL_FUNC) &_flowWorkspace_cpp_getTransformations,    3},
-    {"_flowWorkspace_cpp_loadGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_loadGatingSet,         4},
-    {"_flowWorkspace_cpp_NewGatingSet",          (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,          5},
-    {"_flowWorkspace_cpp_plotGh",                (DL_FUNC) &_flowWorkspace_cpp_plotGh,                3},
-    {"_flowWorkspace_cpp_removeNode",            (DL_FUNC) &_flowWorkspace_cpp_removeNode,            4},
-    {"_flowWorkspace_cpp_saveGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_saveGatingSet,         3},
-    {"_flowWorkspace_cpp_setGate",               (DL_FUNC) &_flowWorkspace_cpp_setGate,               4},
-    {"_flowWorkspace_cpp_setIndices",            (DL_FUNC) &_flowWorkspace_cpp_setIndices,            4},
-    {"_flowWorkspace_cpp_setLogLevel",           (DL_FUNC) &_flowWorkspace_cpp_setLogLevel,           1},
-    {"_flowWorkspace_cpp_setSample",             (DL_FUNC) &_flowWorkspace_cpp_setSample,             3},
-    {"_flowWorkspace_cpp_togleErrorFlag",        (DL_FUNC) &_flowWorkspace_cpp_togleErrorFlag,        0},
-    {"_flowWorkspace_cs_set_compensation",       (DL_FUNC) &_flowWorkspace_cs_set_compensation,       3},
-    {"_flowWorkspace_del_rownames",              (DL_FUNC) &_flowWorkspace_del_rownames,              1},
-    {"_flowWorkspace_fcs_to_cytoset",            (DL_FUNC) &_flowWorkspace_fcs_to_cytoset,            4},
-    {"_flowWorkspace_frm_compensate",            (DL_FUNC) &_flowWorkspace_frm_compensate,            2},
-    {"_flowWorkspace_get_channels",              (DL_FUNC) &_flowWorkspace_get_channels,              1},
-    {"_flowWorkspace_get_colnames",              (DL_FUNC) &_flowWorkspace_get_colnames,              1},
-    {"_flowWorkspace_get_cytoframe",             (DL_FUNC) &_flowWorkspace_get_cytoframe,             3},
-    {"_flowWorkspace_get_cytoset",               (DL_FUNC) &_flowWorkspace_get_cytoset,               1},
-    {"_flowWorkspace_get_cytoset_from_node",     (DL_FUNC) &_flowWorkspace_get_cytoset_from_node,     2},
-    {"_flowWorkspace_get_gatingset_id",          (DL_FUNC) &_flowWorkspace_get_gatingset_id,          1},
-    {"_flowWorkspace_get_pheno_data",            (DL_FUNC) &_flowWorkspace_get_pheno_data,            1},
-    {"_flowWorkspace_get_rownames",              (DL_FUNC) &_flowWorkspace_get_rownames,              1},
-    {"_flowWorkspace_get_uri",                   (DL_FUNC) &_flowWorkspace_get_uri,                   1},
-    {"_flowWorkspace_getncol",                   (DL_FUNC) &_flowWorkspace_getncol,                   1},
-    {"_flowWorkspace_getNodePath",               (DL_FUNC) &_flowWorkspace_getNodePath,               3},
-    {"_flowWorkspace_getnrow",                   (DL_FUNC) &_flowWorkspace_getnrow,                   1},
-    {"_flowWorkspace_getpdata",                  (DL_FUNC) &_flowWorkspace_getpdata,                  1},
-    {"_flowWorkspace_gs_transform_data",         (DL_FUNC) &_flowWorkspace_gs_transform_data,         1},
-    {"_flowWorkspace_h5_set_error_handler",      (DL_FUNC) &_flowWorkspace_h5_set_error_handler,      0},
-    {"_flowWorkspace_is_tiledb_support",         (DL_FUNC) &_flowWorkspace_is_tiledb_support,         0},
-    {"_flowWorkspace_load_cf",                   (DL_FUNC) &_flowWorkspace_load_cf,                   3},
-    {"_flowWorkspace_load_legacy_gs",            (DL_FUNC) &_flowWorkspace_load_legacy_gs,            2},
-    {"_flowWorkspace_moveNode",                  (DL_FUNC) &_flowWorkspace_moveNode,                  4},
-    {"_flowWorkspace_new_cytoset",               (DL_FUNC) &_flowWorkspace_new_cytoset,               0},
-    {"_flowWorkspace_parseFCS",                  (DL_FUNC) &_flowWorkspace_parseFCS,                  5},
-    {"_flowWorkspace_realize_view_cytoframe",    (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,    2},
-    {"_flowWorkspace_realize_view_cytoset",      (DL_FUNC) &_flowWorkspace_realize_view_cytoset,      2},
-    {"_flowWorkspace_set_all_channels",          (DL_FUNC) &_flowWorkspace_set_all_channels,          2},
-    {"_flowWorkspace_set_cytoframe",             (DL_FUNC) &_flowWorkspace_set_cytoframe,             3},
-    {"_flowWorkspace_set_cytoset",               (DL_FUNC) &_flowWorkspace_set_cytoset,               2},
-    {"_flowWorkspace_set_gatingset_id",          (DL_FUNC) &_flowWorkspace_set_gatingset_id,          2},
-    {"_flowWorkspace_set_pheno_data",            (DL_FUNC) &_flowWorkspace_set_pheno_data,            2},
-    {"_flowWorkspace_set_quadgate",              (DL_FUNC) &_flowWorkspace_set_quadgate,              4},
-    {"_flowWorkspace_set_rownames",              (DL_FUNC) &_flowWorkspace_set_rownames,              2},
-    {"_flowWorkspace_set_transformations",       (DL_FUNC) &_flowWorkspace_set_transformations,       3},
-    {"_flowWorkspace_setChannel",                (DL_FUNC) &_flowWorkspace_setChannel,                3},
-    {"_flowWorkspace_setMarker",                 (DL_FUNC) &_flowWorkspace_setMarker,                 3},
-    {"_flowWorkspace_setNodeFlag",               (DL_FUNC) &_flowWorkspace_setNodeFlag,               4},
-    {"_flowWorkspace_setNodeName",               (DL_FUNC) &_flowWorkspace_setNodeName,               4},
-    {"_flowWorkspace_setpdata",                  (DL_FUNC) &_flowWorkspace_setpdata,                  2},
-    {"_flowWorkspace_subset_cytoframe_by_cols",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols,  2},
-    {"_flowWorkspace_subset_cytoframe_by_rows",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows,  2},
-    {"_flowWorkspace_subset_cytoset",            (DL_FUNC) &_flowWorkspace_subset_cytoset,            3},
-    {"_flowWorkspace_subset_cytoset_by_rows",    (DL_FUNC) &_flowWorkspace_subset_cytoset_by_rows,    3},
-    {"_flowWorkspace_subset_gs_by_sample",       (DL_FUNC) &_flowWorkspace_subset_gs_by_sample,       2},
-    {"_flowWorkspace_write_to_disk",             (DL_FUNC) &_flowWorkspace_write_to_disk,             3},
+    {"_flowWorkspace_add_cytoframe",                     (DL_FUNC) &_flowWorkspace_add_cytoframe,                     3},
+    {"_flowWorkspace_append_cols",                       (DL_FUNC) &_flowWorkspace_append_cols,                       3},
+    {"_flowWorkspace_backend_type",                      (DL_FUNC) &_flowWorkspace_backend_type,                      1},
+    {"_flowWorkspace_cf_flush_meta_cpp",                 (DL_FUNC) &_flowWorkspace_cf_flush_meta_cpp,                 1},
+    {"_flowWorkspace_cf_getData",                        (DL_FUNC) &_flowWorkspace_cf_getData,                        1},
+    {"_flowWorkspace_cf_getKeyword",                     (DL_FUNC) &_flowWorkspace_cf_getKeyword,                     2},
+    {"_flowWorkspace_cf_getKeywords",                    (DL_FUNC) &_flowWorkspace_cf_getKeywords,                    1},
+    {"_flowWorkspace_cf_is_indexed",                     (DL_FUNC) &_flowWorkspace_cf_is_indexed,                     1},
+    {"_flowWorkspace_cf_load_meta_cpp",                  (DL_FUNC) &_flowWorkspace_cf_load_meta_cpp,                  1},
+    {"_flowWorkspace_cf_removeKeywords",                 (DL_FUNC) &_flowWorkspace_cf_removeKeywords,                 2},
+    {"_flowWorkspace_cf_renameKeywords",                 (DL_FUNC) &_flowWorkspace_cf_renameKeywords,                 3},
+    {"_flowWorkspace_cf_scale_time_channel_cpp",         (DL_FUNC) &_flowWorkspace_cf_scale_time_channel_cpp,         1},
+    {"_flowWorkspace_cf_set_readonly",                   (DL_FUNC) &_flowWorkspace_cf_set_readonly,                   2},
+    {"_flowWorkspace_cf_setData",                        (DL_FUNC) &_flowWorkspace_cf_setData,                        2},
+    {"_flowWorkspace_cf_setKeywords",                    (DL_FUNC) &_flowWorkspace_cf_setKeywords,                    2},
+    {"_flowWorkspace_cf_setKeywordsSubset",              (DL_FUNC) &_flowWorkspace_cf_setKeywordsSubset,              3},
+    {"_flowWorkspace_cf_to_memcf",                       (DL_FUNC) &_flowWorkspace_cf_to_memcf,                       1},
+    {"_flowWorkspace_cf_transform_data",                 (DL_FUNC) &_flowWorkspace_cf_transform_data,                 2},
+    {"_flowWorkspace_copy_view_cytoframe",               (DL_FUNC) &_flowWorkspace_copy_view_cytoframe,               1},
+    {"_flowWorkspace_copy_view_cytoset",                 (DL_FUNC) &_flowWorkspace_copy_view_cytoset,                 1},
+    {"_flowWorkspace_cpp_addGate",                       (DL_FUNC) &_flowWorkspace_cpp_addGate,                       5},
+    {"_flowWorkspace_cpp_boolGating",                    (DL_FUNC) &_flowWorkspace_cpp_boolGating,                    4},
+    {"_flowWorkspace_cpp_CloneGatingSet",                (DL_FUNC) &_flowWorkspace_cpp_CloneGatingSet,                3},
+    {"_flowWorkspace_cpp_combineGatingSet",              (DL_FUNC) &_flowWorkspace_cpp_combineGatingSet,              2},
+    {"_flowWorkspace_cpp_gating",                        (DL_FUNC) &_flowWorkspace_cpp_gating,                        5},
+    {"_flowWorkspace_cpp_getChildren",                   (DL_FUNC) &_flowWorkspace_cpp_getChildren,                   4},
+    {"_flowWorkspace_cpp_getCompensation",               (DL_FUNC) &_flowWorkspace_cpp_getCompensation,               2},
+    {"_flowWorkspace_cpp_getGate",                       (DL_FUNC) &_flowWorkspace_cpp_getGate,                       3},
+    {"_flowWorkspace_cpp_getGateFlag",                   (DL_FUNC) &_flowWorkspace_cpp_getGateFlag,                   3},
+    {"_flowWorkspace_cpp_getHiddenFlag",                 (DL_FUNC) &_flowWorkspace_cpp_getHiddenFlag,                 3},
+    {"_flowWorkspace_cpp_getIndices",                    (DL_FUNC) &_flowWorkspace_cpp_getIndices,                    3},
+    {"_flowWorkspace_cpp_getLogLevel",                   (DL_FUNC) &_flowWorkspace_cpp_getLogLevel,                   0},
+    {"_flowWorkspace_cpp_getNegateFlag",                 (DL_FUNC) &_flowWorkspace_cpp_getNegateFlag,                 3},
+    {"_flowWorkspace_cpp_getNodeID",                     (DL_FUNC) &_flowWorkspace_cpp_getNodeID,                     3},
+    {"_flowWorkspace_cpp_getNodes",                      (DL_FUNC) &_flowWorkspace_cpp_getNodes,                      5},
+    {"_flowWorkspace_cpp_getParent",                     (DL_FUNC) &_flowWorkspace_cpp_getParent,                     3},
+    {"_flowWorkspace_cpp_getPopStats",                   (DL_FUNC) &_flowWorkspace_cpp_getPopStats,                   3},
+    {"_flowWorkspace_cpp_getSamples",                    (DL_FUNC) &_flowWorkspace_cpp_getSamples,                    1},
+    {"_flowWorkspace_cpp_getSingleCellExpression",       (DL_FUNC) &_flowWorkspace_cpp_getSingleCellExpression,       6},
+    {"_flowWorkspace_cpp_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_cpp_getSingleCellExpressionByGate, 6},
+    {"_flowWorkspace_cpp_getTransformations",            (DL_FUNC) &_flowWorkspace_cpp_getTransformations,            3},
+    {"_flowWorkspace_cpp_loadGatingSet",                 (DL_FUNC) &_flowWorkspace_cpp_loadGatingSet,                 4},
+    {"_flowWorkspace_cpp_NewGatingSet",                  (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,                  5},
+    {"_flowWorkspace_cpp_plotGh",                        (DL_FUNC) &_flowWorkspace_cpp_plotGh,                        3},
+    {"_flowWorkspace_cpp_removeNode",                    (DL_FUNC) &_flowWorkspace_cpp_removeNode,                    4},
+    {"_flowWorkspace_cpp_saveGatingSet",                 (DL_FUNC) &_flowWorkspace_cpp_saveGatingSet,                 3},
+    {"_flowWorkspace_cpp_setGate",                       (DL_FUNC) &_flowWorkspace_cpp_setGate,                       4},
+    {"_flowWorkspace_cpp_setIndices",                    (DL_FUNC) &_flowWorkspace_cpp_setIndices,                    4},
+    {"_flowWorkspace_cpp_setLogLevel",                   (DL_FUNC) &_flowWorkspace_cpp_setLogLevel,                   1},
+    {"_flowWorkspace_cpp_setSample",                     (DL_FUNC) &_flowWorkspace_cpp_setSample,                     3},
+    {"_flowWorkspace_cpp_togleErrorFlag",                (DL_FUNC) &_flowWorkspace_cpp_togleErrorFlag,                0},
+    {"_flowWorkspace_cs_set_compensation",               (DL_FUNC) &_flowWorkspace_cs_set_compensation,               3},
+    {"_flowWorkspace_del_rownames",                      (DL_FUNC) &_flowWorkspace_del_rownames,                      1},
+    {"_flowWorkspace_fcs_to_cytoset",                    (DL_FUNC) &_flowWorkspace_fcs_to_cytoset,                    4},
+    {"_flowWorkspace_frm_compensate",                    (DL_FUNC) &_flowWorkspace_frm_compensate,                    2},
+    {"_flowWorkspace_get_channels",                      (DL_FUNC) &_flowWorkspace_get_channels,                      1},
+    {"_flowWorkspace_get_colnames",                      (DL_FUNC) &_flowWorkspace_get_colnames,                      1},
+    {"_flowWorkspace_get_cytoframe",                     (DL_FUNC) &_flowWorkspace_get_cytoframe,                     3},
+    {"_flowWorkspace_get_cytoset",                       (DL_FUNC) &_flowWorkspace_get_cytoset,                       1},
+    {"_flowWorkspace_get_cytoset_from_node",             (DL_FUNC) &_flowWorkspace_get_cytoset_from_node,             2},
+    {"_flowWorkspace_get_gatingset_id",                  (DL_FUNC) &_flowWorkspace_get_gatingset_id,                  1},
+    {"_flowWorkspace_get_pheno_data",                    (DL_FUNC) &_flowWorkspace_get_pheno_data,                    1},
+    {"_flowWorkspace_get_rownames",                      (DL_FUNC) &_flowWorkspace_get_rownames,                      1},
+    {"_flowWorkspace_get_uri",                           (DL_FUNC) &_flowWorkspace_get_uri,                           1},
+    {"_flowWorkspace_getDescendants_cpp",                (DL_FUNC) &_flowWorkspace_getDescendants_cpp,                3},
+    {"_flowWorkspace_getncol",                           (DL_FUNC) &_flowWorkspace_getncol,                           1},
+    {"_flowWorkspace_getNodePath",                       (DL_FUNC) &_flowWorkspace_getNodePath,                       3},
+    {"_flowWorkspace_getnrow",                           (DL_FUNC) &_flowWorkspace_getnrow,                           1},
+    {"_flowWorkspace_getpdata",                          (DL_FUNC) &_flowWorkspace_getpdata,                          1},
+    {"_flowWorkspace_gs_transform_data",                 (DL_FUNC) &_flowWorkspace_gs_transform_data,                 1},
+    {"_flowWorkspace_h5_set_error_handler",              (DL_FUNC) &_flowWorkspace_h5_set_error_handler,              0},
+    {"_flowWorkspace_is_tiledb_support",                 (DL_FUNC) &_flowWorkspace_is_tiledb_support,                 0},
+    {"_flowWorkspace_load_cf",                           (DL_FUNC) &_flowWorkspace_load_cf,                           3},
+    {"_flowWorkspace_load_legacy_gs",                    (DL_FUNC) &_flowWorkspace_load_legacy_gs,                    2},
+    {"_flowWorkspace_moveNode",                          (DL_FUNC) &_flowWorkspace_moveNode,                          4},
+    {"_flowWorkspace_new_cytoset",                       (DL_FUNC) &_flowWorkspace_new_cytoset,                       0},
+    {"_flowWorkspace_parseFCS",                          (DL_FUNC) &_flowWorkspace_parseFCS,                          5},
+    {"_flowWorkspace_realize_view_cytoframe",            (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,            2},
+    {"_flowWorkspace_realize_view_cytoset",              (DL_FUNC) &_flowWorkspace_realize_view_cytoset,              2},
+    {"_flowWorkspace_set_all_channels",                  (DL_FUNC) &_flowWorkspace_set_all_channels,                  2},
+    {"_flowWorkspace_set_cytoframe",                     (DL_FUNC) &_flowWorkspace_set_cytoframe,                     3},
+    {"_flowWorkspace_set_cytoset",                       (DL_FUNC) &_flowWorkspace_set_cytoset,                       2},
+    {"_flowWorkspace_set_gatingset_id",                  (DL_FUNC) &_flowWorkspace_set_gatingset_id,                  2},
+    {"_flowWorkspace_set_pheno_data",                    (DL_FUNC) &_flowWorkspace_set_pheno_data,                    2},
+    {"_flowWorkspace_set_quadgate",                      (DL_FUNC) &_flowWorkspace_set_quadgate,                      4},
+    {"_flowWorkspace_set_rownames",                      (DL_FUNC) &_flowWorkspace_set_rownames,                      2},
+    {"_flowWorkspace_set_transformations",               (DL_FUNC) &_flowWorkspace_set_transformations,               3},
+    {"_flowWorkspace_setChannel",                        (DL_FUNC) &_flowWorkspace_setChannel,                        3},
+    {"_flowWorkspace_setCounts_cpp",                     (DL_FUNC) &_flowWorkspace_setCounts_cpp,                     4},
+    {"_flowWorkspace_setMarker",                         (DL_FUNC) &_flowWorkspace_setMarker,                         3},
+    {"_flowWorkspace_setNodeFlag",                       (DL_FUNC) &_flowWorkspace_setNodeFlag,                       4},
+    {"_flowWorkspace_setNodeName",                       (DL_FUNC) &_flowWorkspace_setNodeName,                       4},
+    {"_flowWorkspace_setpdata",                          (DL_FUNC) &_flowWorkspace_setpdata,                          2},
+    {"_flowWorkspace_subset_cytoframe_by_cols",          (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols,          2},
+    {"_flowWorkspace_subset_cytoframe_by_rows",          (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows,          2},
+    {"_flowWorkspace_subset_cytoset",                    (DL_FUNC) &_flowWorkspace_subset_cytoset,                    3},
+    {"_flowWorkspace_subset_cytoset_by_rows",            (DL_FUNC) &_flowWorkspace_subset_cytoset_by_rows,            3},
+    {"_flowWorkspace_subset_gs_by_sample",               (DL_FUNC) &_flowWorkspace_subset_gs_by_sample,               2},
+    {"_flowWorkspace_write_to_disk",                     (DL_FUNC) &_flowWorkspace_write_to_disk,                     3},
     {NULL, NULL, 0}
 };
 }

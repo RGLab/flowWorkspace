@@ -200,6 +200,18 @@ get_pheno_data <- function(cs) {
   .Call(`_flowWorkspace_get_pheno_data`, cs)
 }
 
+getDescendants_cpp <- function(gsPtr, sampleName, node) {
+  .Call(`_flowWorkspace_getDescendants_cpp`, gsPtr, sampleName, node)
+}
+
+cpp_getSingleCellExpressionByGate <- function(gs, sampleName, markers_pops, data, markers, threshold) {
+  .Call(`_flowWorkspace_cpp_getSingleCellExpressionByGate`, gs, sampleName, markers_pops, data, markers, threshold)
+}
+
+cpp_getSingleCellExpression <- function(gs, sampleName, pops, data, markers, threshold) {
+  .Call(`_flowWorkspace_cpp_getSingleCellExpression`, gs, sampleName, pops, data, markers, threshold)
+}
+
 h5_set_error_handler <- function() {
   invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
 }
@@ -378,4 +390,8 @@ cpp_setLogLevel <- function(loglevel) {
 
 cpp_togleErrorFlag <- function() {
   invisible(.Call(`_flowWorkspace_cpp_togleErrorFlag`))
+}
+
+setCounts_cpp <- function(gsPtr, sampleName, node, count) {
+  invisible(.Call(`_flowWorkspace_setCounts_cpp`, gsPtr, sampleName, node, count))
 }

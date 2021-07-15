@@ -240,9 +240,9 @@ gs_get_singlecell_expression <- function(x, nodes
 					}
 					data <- exprs(data)
 		            if(marginal)
-		              data <- .cpp_getSingleCellExpression(x@pointer, sample, pops, data, markers, threshold)
+		              data <- cpp_getSingleCellExpression(x@pointer, sample, pops, data, markers, threshold)
 		            else#modify data in place
-		              data <- .cpp_getSingleCellExpressionByGate(x@pointer, sample, markers_pops, data, markers, threshold)
+		              data <- cpp_getSingleCellExpressionByGate(x@pointer, sample, markers_pops, data, markers, threshold)
 		            
 		            data
 		            

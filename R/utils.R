@@ -93,5 +93,5 @@ NULL
 #' gh_pop_set_xml_count(gh, "CD3", 10000)
 #' }
 gh_pop_set_xml_count <- function(gh, node, count){
-  .set.count.xml(gh@pointer, sampleNames(gh), node, count)
+  setCounts_cpp(gh@pointer, sampleNames(gh), node, count)
 }
