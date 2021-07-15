@@ -789,148 +789,148 @@ gatePtr  newGate(cpp11::list filter){
 
 }
 
-// [[cpp11::register]]
-// NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                    ,cpp11::list filter
-//                    ,string gatePath
-//                    ,string popName) {
+[[cpp11::register]]
+NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs,string sampleName
+                   ,cpp11::list filter
+                   ,string gatePath
+                   ,string popName) {
 
-// 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-// 		NODEID u = gh.getNodeID(gatePath);
-// 		gatePtr  g=newGate(filter);
-
-
-// 		VertexID nodeID=gh.addGate(g,u,popName);
+		NODEID u = gh.getNodeID(gatePath);
+		gatePtr  g=newGate(filter);
 
 
-// 		return (NODEID)nodeID;
-
-// }
-// /**
-//  * mainly used for openCyto rectRef gate which first being added as a rectangle gate
-//  * and then gated as boolean filter
-//  */
-// [[cpp11::register]]
-// void cpp_boolGating(cpp11::external_pointer<GatingSet> gs,string sampleName,cpp11::list filter,unsigned nodeID) {
-
-// 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 		nodeProperties & node=gh.getNodeProperty(nodeID);
-// 		//parse boolean expression from R data structure into c++
-// 		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
-// 		//perform bool gating
-// 		MemCytoFrame fr;
-// 		vector<bool> curIndices= gh.boolGating(fr, boolOp, true);//pass dummy frame since boolgating doesn't need it in openCyto where all the ref nodes are guaranteed to be gated
-
-// 		//combine with parent indices
-// 		nodeProperties & parentNode=gh.getNodeProperty(gh.getParent(nodeID));
-// 		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
-// 		//save the indices
-// 		node.setIndices(curIndices);
-// 		node.computeStats();
+		VertexID nodeID=gh.addGate(g,u,popName);
 
 
-// }
+		return (NODEID)nodeID;
 
-// [[cpp11::register]]
-// void set_quadgate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath, vector<double> inter) {
+}
+/**
+ * mainly used for openCyto rectRef gate which first being added as a rectangle gate
+ * and then gated as boolean filter
+ */
+[[cpp11::register]]
+void cpp_boolGating(cpp11::external_pointer<GatingSet> gs,string sampleName,cpp11::list filter,unsigned nodeID) {
 
-// 	if(inter.size()!=2)
-// 		throw(domain_error("invalid intersection values!"));
+		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+		nodeProperties & node=gh.getNodeProperty(nodeID);
+		//parse boolean expression from R data structure into c++
+		vector<BOOL_GATE_OP> boolOp = boolFilter_R_to_C(filter);
+		//perform bool gating
+		MemCytoFrame fr;
+		vector<bool> curIndices= gh.boolGating(fr, boolOp, true);//pass dummy frame since boolgating doesn't need it in openCyto where all the ref nodes are guaranteed to be gated
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	auto siblings = retrieve_sibling_quadnodes(gh, u);
-// 	for(auto id : siblings)
-// 	{
-// 		auto& nd = gh.getNodeProperty(id);
-// 		auto g = nd.getGate();
-// 		quadGate & qg=dynamic_cast<quadGate&>(*g);
-// 		paramPoly param = qg.getParam();
-// 		param.setVertices({coordinate(inter[0], inter[1])});
-// 		qg.setParam(param);
-// 	}
-
-// }
-
-// [[cpp11::register]]
-// void cpp_setGate(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                ,string gatePath,cpp11::list filter) {
-
-// 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-
-// 		NODEID u = gh.getNodeID(gatePath);
-
-// 		gatePtr  g=newGate(filter);
-
-// 		nodeProperties & node=gh.getNodeProperty(u);
-// 		node.setGate(g);
+		//combine with parent indices
+		nodeProperties & parentNode=gh.getNodeProperty(gh.getParent(nodeID));
+		transform (curIndices.begin(), curIndices.end(), parentNode.getIndices().begin(), curIndices.begin(),logical_and<bool>());
+		//save the indices
+		node.setIndices(curIndices);
+		node.computeStats();
 
 
-// }
+}
 
-// [[cpp11::register]]
-// void cpp_removeNode(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                   ,string gatePath, bool recursive = false) {
+[[cpp11::register]]
+void set_quadgate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath, vector<double> inter) {
 
-// 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	if(inter.size()!=2)
+		throw(domain_error("invalid intersection values!"));
 
-// 		if(recursive)
-// 		{
-// 			gh.removeNode(gatePath);
-// 		}
-// 		else
-// 		{
-// 			NODEID u = gh.getNodeID(gatePath);
-// 			gh.removeNode(u);
-// 		}
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+
+	NODEID u = gh.getNodeID(gatePath);
+	auto siblings = retrieve_sibling_quadnodes(gh, u);
+	for(auto id : siblings)
+	{
+		auto& nd = gh.getNodeProperty(id);
+		auto g = nd.getGate();
+		quadGate & qg=dynamic_cast<quadGate&>(*g);
+		paramPoly param = qg.getParam();
+		param.setVertices({coordinate(inter[0], inter[1])});
+		qg.setParam(param);
+	}
+
+}
+
+[[cpp11::register]]
+void cpp_setGate(cpp11::external_pointer<GatingSet> gs,string sampleName
+               ,string gatePath,cpp11::list filter) {
+
+		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+
+		NODEID u = gh.getNodeID(gatePath);
+
+		gatePtr  g=newGate(filter);
+
+		nodeProperties & node=gh.getNodeProperty(u);
+		node.setGate(g);
 
 
-// }
+}
 
-// //' move a node within the gating tree
-// //'
-// //' This is light-weight since it only update the edge in graph and requires user to
-// //' invoke recompute to update gating
-// //'
-// //' @param gsPtr external pointer that points to the C data structure of GatingSet
-// //' @param sampleName sample name
-// //' @param node node name
-// //' @noRd
-// [[cpp11::register]]
-// void moveNode(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, string parent){
+[[cpp11::register]]
+void cpp_removeNode(cpp11::external_pointer<GatingSet> gs,string sampleName
+                  ,string gatePath, bool recursive = false) {
 
-//   GatingHierarchy & gh = *gsPtr->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-//   gh.moveNode(node, parent);
+		if(recursive)
+		{
+			gh.removeNode(gatePath);
+		}
+		else
+		{
+			NODEID u = gh.getNodeID(gatePath);
+			gh.removeNode(u);
+		}
 
 
-// }
+}
 
-// [[cpp11::register]]
-// void setNodeName(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                    ,string gatePath, string newNodeName) {
+//' move a node within the gating tree
+//'
+//' This is light-weight since it only update the edge in graph and requires user to
+//' invoke recompute to update gating
+//'
+//' @param gsPtr external pointer that points to the C data structure of GatingSet
+//' @param sampleName sample name
+//' @param node node name
+//' @noRd
+[[cpp11::register]]
+void moveNode(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, string parent){
 
-// 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+  GatingHierarchy & gh = *gsPtr->getGatingHierarchy(sampleName);
 
-// 		NODEID u = gh.getNodeID(gatePath);
+  gh.moveNode(node, parent);
 
-// 		nodeProperties &node=gh.getNodeProperty(u);
-// 		node.setName(newNodeName.c_str());
 
-// }
+}
 
-// [[cpp11::register]]
-// void setNodeFlag(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                    ,string gatePath, bool hidden) {
+[[cpp11::register]]
+void setNodeName(cpp11::external_pointer<GatingSet> gs,string sampleName
+                   ,string gatePath, string newNodeName) {
 
-// 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-// 		NODEID u = gh.getNodeID(gatePath);
+		NODEID u = gh.getNodeID(gatePath);
 
-// 		nodeProperties &node=gh.getNodeProperty(u);
-// 		node.setHiddenFlag(hidden);
+		nodeProperties &node=gh.getNodeProperty(u);
+		node.setName(newNodeName.c_str());
 
-// }
+}
+
+[[cpp11::register]]
+void setNodeFlag(cpp11::external_pointer<GatingSet> gs,string sampleName
+                   ,string gatePath, bool hidden) {
+
+		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+
+		NODEID u = gh.getNodeID(gatePath);
+
+		nodeProperties &node=gh.getNodeProperty(u);
+		node.setHiddenFlag(hidden);
+
+}
 

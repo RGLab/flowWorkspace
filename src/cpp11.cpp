@@ -504,6 +504,69 @@ extern "C" SEXP _flowWorkspace_cpp_getHiddenFlag(SEXP gs, SEXP sampleName, SEXP 
     return cpp11::as_sexp(cpp_getHiddenFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
   END_CPP11
 }
+// R_GatingHierarchy.cpp
+NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list filter, string gatePath, string popName);
+extern "C" SEXP _flowWorkspace_cpp_addGate(SEXP gs, SEXP sampleName, SEXP filter, SEXP gatePath, SEXP popName) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_addGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<string>>(popName)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_boolGating(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list filter, unsigned nodeID);
+extern "C" SEXP _flowWorkspace_cpp_boolGating(SEXP gs, SEXP sampleName, SEXP filter, SEXP nodeID) {
+  BEGIN_CPP11
+    cpp_boolGating(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter), cpp11::as_cpp<cpp11::decay_t<unsigned>>(nodeID));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void set_quadgate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, vector<double> inter);
+extern "C" SEXP _flowWorkspace_set_quadgate(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP inter) {
+  BEGIN_CPP11
+    set_quadgate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<vector<double>>>(inter));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_setGate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, cpp11::list filter);
+extern "C" SEXP _flowWorkspace_cpp_setGate(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP filter) {
+  BEGIN_CPP11
+    cpp_setGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_removeNode(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool recursive);
+extern "C" SEXP _flowWorkspace_cpp_removeNode(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP recursive) {
+  BEGIN_CPP11
+    cpp_removeNode(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(recursive));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void moveNode(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, string parent);
+extern "C" SEXP _flowWorkspace_moveNode(SEXP gsPtr, SEXP sampleName, SEXP node, SEXP parent) {
+  BEGIN_CPP11
+    moveNode(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(node), cpp11::as_cpp<cpp11::decay_t<string>>(parent));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void setNodeName(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, string newNodeName);
+extern "C" SEXP _flowWorkspace_setNodeName(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP newNodeName) {
+  BEGIN_CPP11
+    setNodeName(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<string>>(newNodeName));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void setNodeFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool hidden);
+extern "C" SEXP _flowWorkspace_setNodeFlag(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP hidden) {
+  BEGIN_CPP11
+    setNodeFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(hidden));
+    return R_NilValue;
+  END_CPP11
+}
 // R_GatingSet.cpp
 void gs_transform_data(cpp11::external_pointer<GatingSet> gsPtr);
 extern "C" SEXP _flowWorkspace_gs_transform_data(SEXP gsPtr) {
@@ -675,6 +738,8 @@ extern SEXP _flowWorkspace_cf_to_memcf(SEXP);
 extern SEXP _flowWorkspace_cf_transform_data(SEXP, SEXP);
 extern SEXP _flowWorkspace_copy_view_cytoframe(SEXP);
 extern SEXP _flowWorkspace_copy_view_cytoset(SEXP);
+extern SEXP _flowWorkspace_cpp_addGate(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_boolGating(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_CloneGatingSet(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_combineGatingSet(SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_gating(SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -695,7 +760,9 @@ extern SEXP _flowWorkspace_cpp_getTransformations(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_loadGatingSet(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_NewGatingSet(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_plotGh(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_removeNode(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_saveGatingSet(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_setGate(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_setIndices(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_setLogLevel(SEXP);
 extern SEXP _flowWorkspace_cpp_setSample(SEXP, SEXP, SEXP);
@@ -722,6 +789,7 @@ extern SEXP _flowWorkspace_h5_set_error_handler();
 extern SEXP _flowWorkspace_is_tiledb_support();
 extern SEXP _flowWorkspace_load_cf(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_load_legacy_gs(SEXP, SEXP);
+extern SEXP _flowWorkspace_moveNode(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_new_cytoset();
 extern SEXP _flowWorkspace_parseFCS(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_realize_view_cytoframe(SEXP, SEXP);
@@ -731,10 +799,13 @@ extern SEXP _flowWorkspace_set_cytoframe(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_set_cytoset(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_gatingset_id(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_pheno_data(SEXP, SEXP);
+extern SEXP _flowWorkspace_set_quadgate(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_set_rownames(SEXP, SEXP);
 extern SEXP _flowWorkspace_set_transformations(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setChannel(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setMarker(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_setNodeFlag(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_setNodeName(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_setpdata(SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoframe_by_cols(SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoframe_by_rows(SEXP, SEXP);
@@ -764,6 +835,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cf_transform_data",         (DL_FUNC) &_flowWorkspace_cf_transform_data,         2},
     {"_flowWorkspace_copy_view_cytoframe",       (DL_FUNC) &_flowWorkspace_copy_view_cytoframe,       1},
     {"_flowWorkspace_copy_view_cytoset",         (DL_FUNC) &_flowWorkspace_copy_view_cytoset,         1},
+    {"_flowWorkspace_cpp_addGate",               (DL_FUNC) &_flowWorkspace_cpp_addGate,               5},
+    {"_flowWorkspace_cpp_boolGating",            (DL_FUNC) &_flowWorkspace_cpp_boolGating,            4},
     {"_flowWorkspace_cpp_CloneGatingSet",        (DL_FUNC) &_flowWorkspace_cpp_CloneGatingSet,        3},
     {"_flowWorkspace_cpp_combineGatingSet",      (DL_FUNC) &_flowWorkspace_cpp_combineGatingSet,      2},
     {"_flowWorkspace_cpp_gating",                (DL_FUNC) &_flowWorkspace_cpp_gating,                5},
@@ -784,7 +857,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cpp_loadGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_loadGatingSet,         4},
     {"_flowWorkspace_cpp_NewGatingSet",          (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,          5},
     {"_flowWorkspace_cpp_plotGh",                (DL_FUNC) &_flowWorkspace_cpp_plotGh,                3},
+    {"_flowWorkspace_cpp_removeNode",            (DL_FUNC) &_flowWorkspace_cpp_removeNode,            4},
     {"_flowWorkspace_cpp_saveGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_saveGatingSet,         3},
+    {"_flowWorkspace_cpp_setGate",               (DL_FUNC) &_flowWorkspace_cpp_setGate,               4},
     {"_flowWorkspace_cpp_setIndices",            (DL_FUNC) &_flowWorkspace_cpp_setIndices,            4},
     {"_flowWorkspace_cpp_setLogLevel",           (DL_FUNC) &_flowWorkspace_cpp_setLogLevel,           1},
     {"_flowWorkspace_cpp_setSample",             (DL_FUNC) &_flowWorkspace_cpp_setSample,             3},
@@ -811,6 +886,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_is_tiledb_support",         (DL_FUNC) &_flowWorkspace_is_tiledb_support,         0},
     {"_flowWorkspace_load_cf",                   (DL_FUNC) &_flowWorkspace_load_cf,                   3},
     {"_flowWorkspace_load_legacy_gs",            (DL_FUNC) &_flowWorkspace_load_legacy_gs,            2},
+    {"_flowWorkspace_moveNode",                  (DL_FUNC) &_flowWorkspace_moveNode,                  4},
     {"_flowWorkspace_new_cytoset",               (DL_FUNC) &_flowWorkspace_new_cytoset,               0},
     {"_flowWorkspace_parseFCS",                  (DL_FUNC) &_flowWorkspace_parseFCS,                  5},
     {"_flowWorkspace_realize_view_cytoframe",    (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,    2},
@@ -820,10 +896,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_set_cytoset",               (DL_FUNC) &_flowWorkspace_set_cytoset,               2},
     {"_flowWorkspace_set_gatingset_id",          (DL_FUNC) &_flowWorkspace_set_gatingset_id,          2},
     {"_flowWorkspace_set_pheno_data",            (DL_FUNC) &_flowWorkspace_set_pheno_data,            2},
+    {"_flowWorkspace_set_quadgate",              (DL_FUNC) &_flowWorkspace_set_quadgate,              4},
     {"_flowWorkspace_set_rownames",              (DL_FUNC) &_flowWorkspace_set_rownames,              2},
     {"_flowWorkspace_set_transformations",       (DL_FUNC) &_flowWorkspace_set_transformations,       3},
     {"_flowWorkspace_setChannel",                (DL_FUNC) &_flowWorkspace_setChannel,                3},
     {"_flowWorkspace_setMarker",                 (DL_FUNC) &_flowWorkspace_setMarker,                 3},
+    {"_flowWorkspace_setNodeFlag",               (DL_FUNC) &_flowWorkspace_setNodeFlag,               4},
+    {"_flowWorkspace_setNodeName",               (DL_FUNC) &_flowWorkspace_setNodeName,               4},
     {"_flowWorkspace_setpdata",                  (DL_FUNC) &_flowWorkspace_setpdata,                  2},
     {"_flowWorkspace_subset_cytoframe_by_cols",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols,  2},
     {"_flowWorkspace_subset_cytoframe_by_rows",  (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows,  2},

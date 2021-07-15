@@ -268,6 +268,38 @@ cpp_getHiddenFlag <- function(gs, sampleName, gatePath) {
   .Call(`_flowWorkspace_cpp_getHiddenFlag`, gs, sampleName, gatePath)
 }
 
+cpp_addGate <- function(gs, sampleName, filter, gatePath, popName) {
+  .Call(`_flowWorkspace_cpp_addGate`, gs, sampleName, filter, gatePath, popName)
+}
+
+cpp_boolGating <- function(gs, sampleName, filter, nodeID) {
+  invisible(.Call(`_flowWorkspace_cpp_boolGating`, gs, sampleName, filter, nodeID))
+}
+
+set_quadgate <- function(gs, sampleName, gatePath, inter) {
+  invisible(.Call(`_flowWorkspace_set_quadgate`, gs, sampleName, gatePath, inter))
+}
+
+cpp_setGate <- function(gs, sampleName, gatePath, filter) {
+  invisible(.Call(`_flowWorkspace_cpp_setGate`, gs, sampleName, gatePath, filter))
+}
+
+cpp_removeNode <- function(gs, sampleName, gatePath, recursive) {
+  invisible(.Call(`_flowWorkspace_cpp_removeNode`, gs, sampleName, gatePath, recursive))
+}
+
+moveNode <- function(gsPtr, sampleName, node, parent) {
+  invisible(.Call(`_flowWorkspace_moveNode`, gsPtr, sampleName, node, parent))
+}
+
+setNodeName <- function(gs, sampleName, gatePath, newNodeName) {
+  invisible(.Call(`_flowWorkspace_setNodeName`, gs, sampleName, gatePath, newNodeName))
+}
+
+setNodeFlag <- function(gs, sampleName, gatePath, hidden) {
+  invisible(.Call(`_flowWorkspace_setNodeFlag`, gs, sampleName, gatePath, hidden))
+}
+
 gs_transform_data <- function(gsPtr) {
   invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }
