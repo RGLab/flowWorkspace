@@ -432,6 +432,13 @@ extern "C" SEXP _flowWorkspace_cpp_getChildren(SEXP gs, SEXP sampleName, SEXP ga
     return cpp11::as_sexp(cpp_getChildren(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(showHidden)));
   END_CPP11
 }
+// R_GatingHierarchy.cpp
+cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getPopStats(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getPopStats(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
 // R_GatingSet.cpp
 void gs_transform_data(cpp11::external_pointer<GatingSet> gsPtr);
 extern "C" SEXP _flowWorkspace_gs_transform_data(SEXP gsPtr) {
@@ -611,6 +618,7 @@ extern SEXP _flowWorkspace_cpp_getLogLevel();
 extern SEXP _flowWorkspace_cpp_getNodeID(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getNodes(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getParent(SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_cpp_getPopStats(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_getSamples(SEXP);
 extern SEXP _flowWorkspace_cpp_loadGatingSet(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_cpp_NewGatingSet(SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -690,6 +698,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cpp_getNodeID",             (DL_FUNC) &_flowWorkspace_cpp_getNodeID,             3},
     {"_flowWorkspace_cpp_getNodes",              (DL_FUNC) &_flowWorkspace_cpp_getNodes,              5},
     {"_flowWorkspace_cpp_getParent",             (DL_FUNC) &_flowWorkspace_cpp_getParent,             3},
+    {"_flowWorkspace_cpp_getPopStats",           (DL_FUNC) &_flowWorkspace_cpp_getPopStats,           3},
     {"_flowWorkspace_cpp_getSamples",            (DL_FUNC) &_flowWorkspace_cpp_getSamples,            1},
     {"_flowWorkspace_cpp_loadGatingSet",         (DL_FUNC) &_flowWorkspace_cpp_loadGatingSet,         4},
     {"_flowWorkspace_cpp_NewGatingSet",          (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,          5},

@@ -87,52 +87,62 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 
 	NODEID u = gh.getNodeID(gatePath);
 	auto childrenID = gh.getChildren(u);
-	vector<NODEID> res;
+	vector<int> res;
 	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++){
 		auto thisNodeID = *it;
 		bool isHidden = gh.getNodeProperty(thisNodeID).getHiddenFlag();
 		if(showHidden||(!isHidden))
-			res.push_back(thisNodeID);
+			res.push_back(int(thisNodeID));
 	}
 
 	return res;
 
 }
 
+[[cpp11::register]]
+cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,string sampleName
+                     ,string gatePath){
+
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	nodeProperties &node=gh.getNodeProperty(u);
+    cpp11::writable::list res;
+    for (bool i : {true, false})
+    {
+        const char * statsname = i ? "FlowCore" : "FlowJo";
+        auto stats = node.getStats(true);
+        cpp11::writable::doubles vals;
+        cpp11::writable::strings types;
+        for (auto it : stats)
+        {
+            types.push_back(it.first);
+            vals.push_back(it.second);
+        }
+        vals.names() = types;
+
+        res.push_back(cpp11::named_arg(statsname) = vals);//, cpp11::named_arg("FlowJo") = node.getStats(false)});
+    }
+    return res;
+}
+
 // [[cpp11::register]]
-// List cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                      ,string gatePath){
-
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	nodeProperties &node=gh.getNodeProperty(u);
-
-// 	return List::create(Named("FlowCore",node.getStats(true))
-// 						,Named("FlowJo",node.getStats(false))
-// 						);
-
-// }
-
-
-
-// [[cpp11::register]]
-// List cpp_getCompensation(cpp11::external_pointer<GatingSet> gs,string sampleName){
+// cpp11::list cpp_getCompensation(cpp11::external_pointer<GatingSet> gs,string sampleName){
 //   GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 //   compensation comp=gh.get_compensation();
-// 	return(List::create(Named("cid",comp.cid)
-// 						,Named("prefix",comp.prefix)
-// 						,Named("suffix",comp.suffix)
-// 						,Named("comment",comp.comment)
-// 						,Named("parameters",comp.marker)
-//             ,Named("detectors",comp.detector)
-// 						,Named("spillOver",comp.spillOver))
+// 	return(cpp11::list::create(cpp11::named_arg("cid",comp.cid)
+// 						,cpp11::named_arg("prefix",comp.prefix)
+// 						,cpp11::named_arg("suffix",comp.suffix)
+// 						,cpp11::named_arg("comment",comp.comment)
+// 						,cpp11::named_arg("parameters",comp.marker)
+//             ,cpp11::named_arg("detectors",comp.detector)
+// 						,cpp11::named_arg("spillOver",comp.spillOver))
 // 			);
 
 
 // }
 
 // [[cpp11::register]]
-// void set_transformations(cpp11::external_pointer<GatingSet> gs,string sampleName, List translist){
+// void set_transformations(cpp11::external_pointer<GatingSet> gs,string sampleName, cpp11::list translist){
 
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -142,12 +152,12 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 
 // //[[Rcpp::export(name=".cpp_getTransformations")]]
 // [[cpp11::register]]
-// List getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
+// cpp11::list getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
 
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 	trans_map trans=gh.getLocalTrans().getTransMap();
-// 	List res;
+// 	cpp11::list res;
 
 // 	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
 // 	{
@@ -169,11 +179,11 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 				case LOG:
 // 				{
 // 					shared_ptr<logTrans> thisTrans = dynamic_pointer_cast<logTrans>(curTrans);
-// 					res.push_back(List::create(Named("type","log")
-// 												,Named("decade",thisTrans->decade)
-// 												,Named("offset",thisTrans->offset)
-// 												,Named("T",thisTrans->T)
-// 												,Named("scale",thisTrans->scale)
+// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","log")
+// 												,cpp11::named_arg("decade",thisTrans->decade)
+// 												,cpp11::named_arg("offset",thisTrans->offset)
+// 												,cpp11::named_arg("T",thisTrans->T)
+// 												,cpp11::named_arg("scale",thisTrans->scale)
 // 												)
 // 									,chnl
 // 									);
@@ -182,7 +192,7 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 				case LIN:
 // 				{
 
-// 					res.push_back(List::create(Named("type","lin"))
+// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","lin"))
 // 									,chnl
 // 									);
 // 					break;
@@ -198,9 +208,9 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 
 // 					Spline_Coefs obj=curTrans->getSplineCoefs();
 
-// 					res.push_back(List::create(Named("z",obj.coefs)
-// 												,Named("method",obj.method)
-// 												,Named("type", "caltbl")
+// 					res.push_back(cpp11::list::create(cpp11::named_arg("z",obj.coefs)
+// 												,cpp11::named_arg("method",obj.method)
+// 												,cpp11::named_arg("type", "caltbl")
 // 												)
 // 									,chnl
 // 									);
@@ -224,14 +234,14 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 					/*
 // 					 * in addition, output the 5 arguments
 // 					 */
-// 					res.push_back(List::create(Named("z",obj.coefs)
-// 												,Named("method",obj.method)
-// 												,Named("type","biexp")
-// 												, Named("channelRange", thisTrans->channelRange)
-// 												, Named("maxValue", thisTrans->maxValue)
-// 												, Named("neg", thisTrans->neg)
-// 												, Named("pos", thisTrans->pos)
-// 												, Named("widthBasis", thisTrans->widthBasis)
+// 					res.push_back(cpp11::list::create(cpp11::named_arg("z",obj.coefs)
+// 												,cpp11::named_arg("method",obj.method)
+// 												,cpp11::named_arg("type","biexp")
+// 												, cpp11::named_arg("channelRange", thisTrans->channelRange)
+// 												, cpp11::named_arg("maxValue", thisTrans->maxValue)
+// 												, cpp11::named_arg("neg", thisTrans->neg)
+// 												, cpp11::named_arg("pos", thisTrans->pos)
+// 												, cpp11::named_arg("widthBasis", thisTrans->widthBasis)
 // 												)
 // 									,chnl
 // 									);
@@ -242,12 +252,12 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 				{
 // 					shared_ptr<fasinhTrans> thisTrans = dynamic_pointer_cast<fasinhTrans>(curTrans);
 
-// 					res.push_back(List::create(Named("type","fasinh")
-// 												, Named("A", thisTrans->A)
-// 												, Named("M", thisTrans->M)
-// 												, Named("T", thisTrans->T)
-// 												, Named("length", thisTrans->length)
-// 												, Named("maxRange", thisTrans->maxRange)
+// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","fasinh")
+// 												, cpp11::named_arg("A", thisTrans->A)
+// 												, cpp11::named_arg("M", thisTrans->M)
+// 												, cpp11::named_arg("T", thisTrans->T)
+// 												, cpp11::named_arg("length", thisTrans->length)
+// 												, cpp11::named_arg("maxRange", thisTrans->maxRange)
 // 												)
 // 												,chnl
 // 								);
@@ -258,11 +268,11 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 				{
 // 					shared_ptr<logicleTrans> thisTrans = dynamic_pointer_cast<logicleTrans>(curTrans);
 // 					logicle_params p = thisTrans->get_params();
-// 					res.push_back(List::create(Named("type","logicle")
-// 												, Named("A", p.A)
-// 												, Named("M", p.M)
-// 												, Named("T", p.T)
-// 												, Named("W", p.W)
+// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","logicle")
+// 												, cpp11::named_arg("A", p.A)
+// 												, cpp11::named_arg("M", p.M)
+// 												, cpp11::named_arg("T", p.T)
+// 												, cpp11::named_arg("W", p.W)
 // 												)
 // 												,chnl
 // 								);
@@ -272,9 +282,9 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 //   			case LOGGML2:
 //   			{
 //   			  shared_ptr<logGML2Trans> thisTrans = dynamic_pointer_cast<logGML2Trans>(curTrans);
-//   			  res.push_back(List::create(Named("type","logtGml2")
-//                                     ,Named("T",thisTrans->T)
-//                                     ,Named("M",thisTrans->M)
+//   			  res.push_back(cpp11::list::create(cpp11::named_arg("type","logtGml2")
+//                                     ,cpp11::named_arg("T",thisTrans->T)
+//                                     ,cpp11::named_arg("M",thisTrans->M)
 //   			                )
 //                        ,chnl
 //   			  );
@@ -283,11 +293,11 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 			case SCALE:
 // 			{
 // 				shared_ptr<scaleTrans> thisTrans = dynamic_pointer_cast<scaleTrans>(curTrans);
-// 				res.push_back(List::create(
-// 								Named("type", "scale"),
-// 								Named("trans_scale", thisTrans->t_scale),
-// 								Named("raw_scale", thisTrans->r_scale),
-// 								Named("scale_factor", thisTrans->scale_factor)
+// 				res.push_back(cpp11::list::create(
+// 								cpp11::named_arg("type", "scale"),
+// 								cpp11::named_arg("trans_scale", thisTrans->t_scale),
+// 								cpp11::named_arg("raw_scale", thisTrans->r_scale),
+// 								cpp11::named_arg("scale_factor", thisTrans->scale_factor)
 // 							 ),
 // 						chnl
 // 				);
@@ -335,7 +345,7 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // }
 
 // [[cpp11::register]]
-// List cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+// cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 // 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 	NODEID u = gh.getNodeID(gatePath);
@@ -382,12 +392,12 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 						covMat(i,1) = cov.at(i).y;
 // 					}
 
-// 					 List ret=List::create(Named("parameters",thisG.getParamNames())
-// 							 	 	 	 	 ,Named("mu", NumericVector::create(mu.x, mu.y))
-// 							 	 	 	 	 ,Named("cov", covMat)
-// 							 	 	 	 	 ,Named("dist", dist)
-// 							 	 	 	 	 ,Named("type",ELLIPSEGATE)
-// 							 	 	 	 	 , Named("filterId", nodeName)
+// 					 cpp11::list ret=cpp11::list::create(cpp11::named_arg("parameters",thisG.getParamNames())
+// 							 	 	 	 	 ,cpp11::named_arg("mu", NumericVector::create(mu.x, mu.y))
+// 							 	 	 	 	 ,cpp11::named_arg("cov", covMat)
+// 							 	 	 	 	 ,cpp11::named_arg("dist", dist)
+// 							 	 	 	 	 ,cpp11::named_arg("type",ELLIPSEGATE)
+// 							 	 	 	 	 , cpp11::named_arg("filterId", nodeName)
 // 							 	 	 	 	 );
 // 					return ret;
 // 				}
@@ -395,10 +405,10 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 			{
 // 				vertices_vector vert=g->getVertices().toVector();
 // 				 auto pn = g->getParamNames();
-// 				 List ret=List::create(Named("parameters", pn)
-// 						 	 	 	 	 ,Named("x",vert.x),Named("y",vert.y)
-// 						 	 	 	 	 ,Named("type",POLYGONGATE)
-// 						 	 	 	 	 , Named("filterId", nodeName)
+// 				 cpp11::list ret=cpp11::list::create(cpp11::named_arg("parameters", pn)
+// 						 	 	 	 	 ,cpp11::named_arg("x",vert.x),cpp11::named_arg("y",vert.y)
+// 						 	 	 	 	 ,cpp11::named_arg("type",POLYGONGATE)
+// 						 	 	 	 	 , cpp11::named_arg("filterId", nodeName)
 // 						 	 	 	 	 );
 // 				 if(quadpops.size() > 0)
 // 				 {
@@ -417,10 +427,10 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 			{
 // 				vertices_vector vert=g->getVertices().toVector();
 
-// 				List ret=List::create(Named("parameters",g->getParamNames())
-// 									 ,Named("range",vert.x)
-// 									 ,Named("type",RANGEGATE)
-// 									 , Named("filterId", nodeName)
+// 				cpp11::list ret=cpp11::list::create(cpp11::named_arg("parameters",g->getParamNames())
+// 									 ,cpp11::named_arg("range",vert.x)
+// 									 ,cpp11::named_arg("type",RANGEGATE)
+// 									 , cpp11::named_arg("filterId", nodeName)
 // 									 );
 // 				return ret;
 // 			}
@@ -438,11 +448,11 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 				  ref.push_back(it->path);
 // 			  }
 
-// 			  List ret=List::create(Named("v",v)
-// 									 ,Named("v2",v2)
-// 									 ,Named("ref",ref)
-// 									 ,Named("type",BOOLGATE)
-// 									 , Named("filterId", nodeName)
+// 			  cpp11::list ret=cpp11::list::create(cpp11::named_arg("v",v)
+// 									 ,cpp11::named_arg("v2",v2)
+// 									 ,cpp11::named_arg("ref",ref)
+// 									 ,cpp11::named_arg("type",BOOLGATE)
+// 									 , cpp11::named_arg("filterId", nodeName)
 // 									 );
 // 			  return ret;
 
@@ -461,11 +471,11 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 			  ref.push_back(it->path);
 // 		  }
 
-// 		  List ret=List::create(Named("v",v)
-// 								 ,Named("v2",v2)
-// 								 ,Named("ref",ref)
-// 								 ,Named("type",LOGICALGATE)
-// 								 , Named("filterId", nodeName)
+// 		  cpp11::list ret=cpp11::list::create(cpp11::named_arg("v",v)
+// 								 ,cpp11::named_arg("v2",v2)
+// 								 ,cpp11::named_arg("ref",ref)
+// 								 ,cpp11::named_arg("type",LOGICALGATE)
+// 								 , cpp11::named_arg("filterId", nodeName)
 // 								 );
 // 		  return ret;
 
@@ -484,12 +494,12 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 // 			  ref.push_back(it->path);
 // 		  }
 
-// 		  List ret=List::create(Named("v",v)
-// 								 ,Named("v2",v2)
-// 								 ,Named("ref",ref)
-// 								 ,Named("type",CLUSTERGATE)
-// 								 , Named("filterId", nodeName)
-// 								 , Named("cluster_method_name", cg.get_cluster_method_name())
+// 		  cpp11::list ret=cpp11::list::create(cpp11::named_arg("v",v)
+// 								 ,cpp11::named_arg("v2",v2)
+// 								 ,cpp11::named_arg("ref",ref)
+// 								 ,cpp11::named_arg("type",CLUSTERGATE)
+// 								 , cpp11::named_arg("filterId", nodeName)
+// 								 , cpp11::named_arg("cluster_method_name", cg.get_cluster_method_name())
 // 								 );
 // 		  return ret;
 
@@ -569,7 +579,7 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 
 // }
 
-// vector<BOOL_GATE_OP> boolFilter_R_to_C(List filter){
+// vector<BOOL_GATE_OP> boolFilter_R_to_C(cpp11::list filter){
 
 
 // 			/*
@@ -603,7 +613,7 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 //  * convert R filter to specific gate class
 //  * Note: up to caller to free the dynamically allocated gate object
 //  */
-// gatePtr  newGate(List filter){
+// gatePtr  newGate(cpp11::list filter){
 
 // 	StringVec names=filter.names();
 
@@ -777,7 +787,7 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 
 // [[cpp11::register]]
 // NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                    ,List filter
+//                    ,cpp11::list filter
 //                    ,string gatePath
 //                    ,string popName) {
 
@@ -798,7 +808,7 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 //  * and then gated as boolean filter
 //  */
 // [[cpp11::register]]
-// void cpp_boolGating(cpp11::external_pointer<GatingSet> gs,string sampleName,List filter,unsigned nodeID) {
+// void cpp_boolGating(cpp11::external_pointer<GatingSet> gs,string sampleName,cpp11::list filter,unsigned nodeID) {
 
 // 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 // 		nodeProperties & node=gh.getNodeProperty(nodeID);
@@ -842,7 +852,7 @@ vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleN
 
 // [[cpp11::register]]
 // void cpp_setGate(cpp11::external_pointer<GatingSet> gs,string sampleName
-//                ,string gatePath,List filter) {
+//                ,string gatePath,cpp11::list filter) {
 
 // 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 

@@ -228,6 +228,10 @@ cpp_getChildren <- function(gs, sampleName, gatePath, showHidden) {
   .Call(`_flowWorkspace_cpp_getChildren`, gs, sampleName, gatePath, showHidden)
 }
 
+cpp_getPopStats <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getPopStats`, gs, sampleName, gatePath)
+}
+
 gs_transform_data <- function(gsPtr) {
   invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }
