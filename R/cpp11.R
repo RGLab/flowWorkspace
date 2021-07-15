@@ -244,6 +244,10 @@ cpp_getTransformations <- function(gs, sampleName, inverse) {
   .Call(`_flowWorkspace_cpp_getTransformations`, gs, sampleName, inverse)
 }
 
+cpp_getGate <- function(gs, sampleName, gatePath) {
+  .Call(`_flowWorkspace_cpp_getGate`, gs, sampleName, gatePath)
+}
+
 gs_transform_data <- function(gsPtr) {
   invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }

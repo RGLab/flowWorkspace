@@ -310,209 +310,214 @@ cpp11::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string 
 	return (res);
 }
 
-// vector<VertexID> retrieve_sibling_quadnodes(GatingHierarchy & gh,  VertexID quadnode)
-// {
-// 	vector<VertexID> res;
-// 	auto & node = gh.getNodeProperty(quadnode);
-// 	auto g = node.getGate();
-// 	auto gType=g->getType();
-// 	if(gType == QUADGATE)
-// 	{
-// 		quadGate & qg=dynamic_cast<quadGate&>(*g);
-// 		//recollect all the quadrants
-// 		auto uid = qg.get_uid();
-// 		auto pid = gh.getParent(quadnode);
-// 		auto siblings = gh.getChildren(pid);
-// 		for(auto id : siblings)//search all siblings
-// 		{
-// 			nodeProperties & nd = gh.getNodeProperty(id);
-// 			gatePtr g1 = nd.getGate();
+vector<VertexID> retrieve_sibling_quadnodes(GatingHierarchy & gh,  VertexID quadnode)
+{
+	vector<VertexID> res;
+	auto & node = gh.getNodeProperty(quadnode);
+	auto g = node.getGate();
+	auto gType=g->getType();
+	if(gType == QUADGATE)
+	{
+		quadGate & qg=dynamic_cast<quadGate&>(*g);
+		//recollect all the quadrants
+		auto uid = qg.get_uid();
+		auto pid = gh.getParent(quadnode);
+		auto siblings = gh.getChildren(pid);
+		for(auto id : siblings)//search all siblings
+		{
+			nodeProperties & nd = gh.getNodeProperty(id);
+			gatePtr g1 = nd.getGate();
 
-// 			if(g1->getType() == QUADGATE)//if a quad
-// 			{
-// 				quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
-// 				if(qg1.get_uid() == uid)//if belongs to the same quad
-// 				{
-// 					res.push_back(id);
+			if(g1->getType() == QUADGATE)//if a quad
+			{
+				quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
+				if(qg1.get_uid() == uid)//if belongs to the same quad
+				{
+					res.push_back(id);
 
-// 				}
-// 			}
+				}
+			}
 
-// 		}
-// 	}
-// 	return res;
-// }
+		}
+	}
+	return res;
+}
 
-// [[cpp11::register]]
-// cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
+[[cpp11::register]]
+cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	NODEID u = gh.getNodeID(gatePath);
-// 	if(u==0)
-// 		throw(domain_error("no gate associated with root node."));
-// 	nodeProperties & node = gh.getNodeProperty(u);
-// 	gatePtr g = node.getGate();
-// 	string nodeName = node.getName();
-// 	unsigned short gType=g->getType();
-// 	vector<string> quadpops;
-// 	vector<unsigned> quadrants;
-// 	coordinate quadintersection;
-// 	if(gType == QUADGATE)
-// 	{
-// 		auto siblings = retrieve_sibling_quadnodes(gh, u);
-// 		quadGate & qg=dynamic_cast<quadGate&>(*g);
-// 		quadintersection = qg.get_intersection();
-// 		for(auto id : siblings)//collect all quadrants info
-// 		{
-// 			nodeProperties & nd = gh.getNodeProperty(id);
-// 			gatePtr g1 = nd.getGate();
-// 			quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
-// 			quadpops.push_back(nd.getName());
-// 			quadrants.push_back(qg1.get_quadrant());
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	NODEID u = gh.getNodeID(gatePath);
+	if(u==0)
+		throw(domain_error("no gate associated with root node."));
+	nodeProperties & node = gh.getNodeProperty(u);
+	gatePtr g = node.getGate();
+	string nodeName = node.getName();
+	unsigned short gType=g->getType();
+	vector<string> quadpops;
+	vector<unsigned> quadrants;
+	coordinate quadintersection;
+	if(gType == QUADGATE)
+	{
+		auto siblings = retrieve_sibling_quadnodes(gh, u);
+		quadGate & qg=dynamic_cast<quadGate&>(*g);
+		quadintersection = qg.get_intersection();
+		for(auto id : siblings)//collect all quadrants info
+		{
+			nodeProperties & nd = gh.getNodeProperty(id);
+			gatePtr g1 = nd.getGate();
+			quadGate & qg1 = dynamic_cast<quadGate&>(*g1);
+			quadpops.push_back(nd.getName());
+			quadrants.push_back(qg1.get_quadrant());
 
-// 		}
-// 		g.reset(new rectGate(qg.to_rectgate()));
-// 		gType=POLYGONGATE;
-// 	}
-// 	if(gType==RECTGATE||gType == CURLYQUADGATE)
-// 		gType=POLYGONGATE;
+		}
+		g.reset(new rectGate(qg.to_rectgate()));
+		gType=POLYGONGATE;
+	}
+	if(gType==RECTGATE||gType == CURLYQUADGATE)
+		gType=POLYGONGATE;
 
-// 	switch(gType)
-// 	{
-// 		case ELLIPSEGATE:
-// 				{
-// 					ellipseGate & thisG = dynamic_cast<ellipseGate&>(*g);
-// 					coordinate mu=thisG.getMu();
-// 					double dist=thisG.getDist();
-// 					vector<coordinate> cov = thisG.getCovarianceMat();
-// 					NumericMatrix covMat(2,2);
-// 					for(unsigned i =0; i < 2; i++){
-// 						covMat(i,0) = cov.at(i).x;
-// 						covMat(i,1) = cov.at(i).y;
-// 					}
+	switch(gType)
+	{
+		case ELLIPSEGATE:
+				{
+					ellipseGate & thisG = dynamic_cast<ellipseGate&>(*g);
+					coordinate mu=thisG.getMu();
+					double dist=thisG.getDist();
+					vector<coordinate> cov = thisG.getCovarianceMat();
+					cpp11::writable::doubles_matrix covMat(2,2);
+					for(unsigned i =0; i < 2; i++){
+						covMat(i,0) = cov.at(i).x;
+						covMat(i,1) = cov.at(i).y;
+					}
 
-// 					 cpp11::list ret=cpp11::list(cpp11::named_arg("parameters") = thisG.getParamNames()
-// 							 	 	 	 	 ,cpp11::named_arg("mu") =  NumericVector::create(mu.x) =  mu.y
-// 							 	 	 	 	 ,cpp11::named_arg("cov") =  covMat
-// 							 	 	 	 	 ,cpp11::named_arg("dist") =  dist
-// 							 	 	 	 	 ,cpp11::named_arg("type") = ELLIPSEGATE
-// 							 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
-// 							 	 	 	 	 );
-// 					return ret;
-// 				}
-// 		case POLYGONGATE:
-// 			{
-// 				vertices_vector vert=g->getVertices().toVector();
-// 				 auto pn = g->getParamNames();
-// 				 cpp11::list ret=cpp11::list(cpp11::named_arg("parameters") =  pn
-// 						 	 	 	 	 ,cpp11::named_arg("x",vert.x)) = cpp11::named_arg("y" = vert.y
-// 						 	 	 	 	 ,cpp11::named_arg("type") = POLYGONGATE
-// 						 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
-// 						 	 	 	 	 );
-// 				 if(quadpops.size() > 0)
-// 				 {
+					 cpp11::list ret=cpp11::list({cpp11::named_arg("parameters") = thisG.getParamNames()
+							 	 	 	 	 ,cpp11::named_arg("mu") =  {mu.x,mu.y}
+							 	 	 	 	 ,cpp11::named_arg("cov") =  covMat
+							 	 	 	 	 ,cpp11::named_arg("dist") =  dist
+							 	 	 	 	 ,cpp11::named_arg("type") = ELLIPSEGATE
+							 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
+                     });
+					return ret;
+				}
+		case POLYGONGATE:
+			{
+				vertices_vector vert=g->getVertices().toVector();
+				 auto pn = g->getParamNames();
+				 cpp11::writable::list ret({cpp11::named_arg("parameters") =  pn
+						 	 	 	 	 ,cpp11::named_arg("x") = vert.x
+                                         ,cpp11::named_arg("y") = vert.y
+						 	 	 	 	 ,cpp11::named_arg("type") = POLYGONGATE
+						 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
+						 	 	 	 	 });
+				 if(quadpops.size() > 0)
+				 {
 
-// 					 NumericVector inter = NumericVector::create(quadintersection.x, quadintersection.y);
-// 					 inter.attr("names") = pn;
-// 					 ret["quadintersection"] = inter;
-// 					 ret["quadrants"] = quadrants;
-// 					 ret["quadpops"] = quadpops;
+					 cpp11::writable::doubles inter({quadintersection.x, quadintersection.y});
+					 inter.attr("names") = pn;
+					 ret.push_back(cpp11::named_arg("quadintersection") = inter);
+					 ret.push_back(cpp11::named_arg("quadrants") = quadrants);
+					 ret.push_back(cpp11::named_arg("quadpops") = quadpops);
 
-// 				 }
-// 				return ret;
-// 			}
+				 }
+				return ret;
+			}
 
-// 		case RANGEGATE:
-// 			{
-// 				vertices_vector vert=g->getVertices().toVector();
+		case RANGEGATE:
+			{
+				vertices_vector vert=g->getVertices().toVector();
 
-// 				cpp11::list ret=cpp11::list(cpp11::named_arg("parameters") = g->getParamNames()
-// 									 ,cpp11::named_arg("range") = vert.x
-// 									 ,cpp11::named_arg("type") = RANGEGATE
-// 									 , cpp11::named_arg("filterId") =  nodeName
-// 									 );
-// 				return ret;
-// 			}
-// 		case BOOLGATE:
-// 			{
-// 			  boolGate & bg=dynamic_cast<boolGate&>(*g);
-// 			  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
-// 			  vector<string> v;
-// 			  vector<char>v2;
-// 			  vector<deque<string> >ref;
-// 			  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
-// 			  {
-// 				  v.push_back(it->isNot?"!":"");
-// 				  v2.push_back(it->op);
-// 				  ref.push_back(it->path);
-// 			  }
+				cpp11::list ret=cpp11::list({cpp11::named_arg("parameters") = g->getParamNames()
+									 ,cpp11::named_arg("range") = vert.x
+									 ,cpp11::named_arg("type") = RANGEGATE
+									 , cpp11::named_arg("filterId") =  nodeName
+									 });
+				return ret;
+			}
+		case BOOLGATE:
+			{
+			  boolGate & bg=dynamic_cast<boolGate&>(*g);
+			  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
+			  vector<string> v;
+			  vector<string>v2;
+			  cpp11::writable::list ref;
+			  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+			  {
+				  v.push_back(it->isNot?"!":"");
+				  v2.push_back(string(1, it->op));
+                  vector<string> spath(it->path.begin(), it->path.end());
+                  ref.push_back(cpp11::strings(spath));
+              }
+                
+			  cpp11::list ret=cpp11::list({cpp11::named_arg("v") = v
+									 ,cpp11::named_arg("v2") = v2
+									 ,cpp11::named_arg("ref") = ref
+									 ,cpp11::named_arg("type") = BOOLGATE
+									 , cpp11::named_arg("filterId") =  nodeName
+									 });
+			  return ret;
 
-// 			  cpp11::list ret=cpp11::list(cpp11::named_arg("v") = v
-// 									 ,cpp11::named_arg("v2") = v2
-// 									 ,cpp11::named_arg("ref") = ref
-// 									 ,cpp11::named_arg("type") = BOOLGATE
-// 									 , cpp11::named_arg("filterId") =  nodeName
-// 									 );
-// 			  return ret;
+			}
+		case LOGICALGATE:
+		{
+			boolGate & bg=dynamic_cast<boolGate&>(*g);
+		  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
+		  vector<string> v;
+		  vector<string>v2;
+            cpp11::writable::list ref;
+            for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+            {
+                v.push_back(it->isNot?"!":"");
+                v2.push_back(string(1, it->op));
+                vector<string> spath(it->path.begin(), it->path.end());
+                ref.push_back(cpp11::strings(spath));
+            }
+		
+		  cpp11::list ret=cpp11::list({cpp11::named_arg("v") = v
+								 ,cpp11::named_arg("v2") = v2
+								 ,cpp11::named_arg("ref") = ref
+								 ,cpp11::named_arg("type") = LOGICALGATE
+								 , cpp11::named_arg("filterId") =  nodeName
+								 });
+		  return ret;
 
-// 			}
-// 		case LOGICALGATE:
-// 		{
-// 			boolGate & bg=dynamic_cast<boolGate&>(*g);
-// 		  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
-// 		  vector<string> v;
-// 		  vector<char>v2;
-// 		  vector<deque<string> >ref;
-// 		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
-// 		  {
-// 			  v.push_back(it->isNot?"!":"");
-// 			  v2.push_back(it->op);
-// 			  ref.push_back(it->path);
-// 		  }
+		}
+		case CLUSTERGATE:
+		{
+		  clusterGate & cg=dynamic_cast<clusterGate&>(*g);
+		  vector<BOOL_GATE_OP> boolOpSpec=cg.getBoolSpec();
+		  vector<string> v;
+		    vector<string>v2;
+            cpp11::writable::list ref;
+            for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+            {
+                v.push_back(it->isNot?"!":"");
+                v2.push_back(string(1, it->op));
+                vector<string> spath(it->path.begin(), it->path.end());
+                ref.push_back(cpp11::strings(spath));
+            }
+		
 
-// 		  cpp11::list ret=cpp11::list(cpp11::named_arg("v") = v
-// 								 ,cpp11::named_arg("v2") = v2
-// 								 ,cpp11::named_arg("ref") = ref
-// 								 ,cpp11::named_arg("type") = LOGICALGATE
-// 								 , cpp11::named_arg("filterId") =  nodeName
-// 								 );
-// 		  return ret;
+		  cpp11::list ret=cpp11::list({cpp11::named_arg("v") = v
+								 ,cpp11::named_arg("v2") = v2
+								 ,cpp11::named_arg("ref") = ref
+								 ,cpp11::named_arg("type") = CLUSTERGATE
+								 , cpp11::named_arg("filterId") =  nodeName
+								 , cpp11::named_arg("cluster_method_name") =  cg.get_cluster_method_name()
+								 });
+		  return ret;
 
-// 		}
-// 		case CLUSTERGATE:
-// 		{
-// 		  clusterGate & cg=dynamic_cast<clusterGate&>(*g);
-// 		  vector<BOOL_GATE_OP> boolOpSpec=cg.getBoolSpec();
-// 		  vector<string> v;
-// 		  vector<char>v2;
-// 		  vector<deque<string> >ref;
-// 		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
-// 		  {
-// 			  v.push_back(it->isNot?"!":"");
-// 			  v2.push_back(it->op);
-// 			  ref.push_back(it->path);
-// 		  }
+		}
+		default:
+		{
+//			COUT<<g->getType()<<endl;
+			throw(domain_error("unknown gate thrown by R_getGate!"));
+		}
 
-// 		  cpp11::list ret=cpp11::list(cpp11::named_arg("v") = v
-// 								 ,cpp11::named_arg("v2") = v2
-// 								 ,cpp11::named_arg("ref") = ref
-// 								 ,cpp11::named_arg("type") = CLUSTERGATE
-// 								 , cpp11::named_arg("filterId") =  nodeName
-// 								 , cpp11::named_arg("cluster_method_name") =  cg.get_cluster_method_name()
-// 								 );
-// 		  return ret;
-
-// 		}
-// 		default:
-// 		{
-// //			COUT<<g->getType()<<endl;
-// 			throw(domain_error("unknown gate thrown by R_getGate!"));
-// 		}
-
-// 	}
+	}
 
 
-// }
+}
 
 // //[[Rcpp::export(name=".cpp_getIndices")]]
 // [[cpp11::register]]
@@ -653,7 +658,7 @@ cpp11::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string 
 // 			pp.setName(params);
 
 // 			vector<coordinate> v;
-// 			NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+// 			cpp11::doubles_matrix boundaries=as<cpp11::doubles_matrix>(filter["boundaries"]);
 // 			for(int i=0;i<boundaries.nrow();i++)
 // 			{
 // 				coordinate pCoord;
@@ -681,7 +686,7 @@ cpp11::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string 
 // 			pp.setName(params);
 
 // 			vector<coordinate> v;
-// 			NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+// 			cpp11::doubles_matrix boundaries=as<cpp11::doubles_matrix>(filter["boundaries"]);
 // 			for(int i=0;i<boundaries.nrow();i++)
 // 			{
 // 				coordinate pCoord;
@@ -734,7 +739,7 @@ cpp11::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string 
 
 // 			//parse cov mat
 // 			vector<coordinate> cov;
-// 			NumericMatrix covMat=as<NumericMatrix>(filter["cov"]);
+// 			cpp11::doubles_matrix covMat=as<cpp11::doubles_matrix>(filter["cov"]);
 // 			for(int i=0;i<covMat.nrow();i++)
 // 			{
 // 				coordinate p;
