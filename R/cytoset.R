@@ -803,7 +803,7 @@ subset.cytoset <- function (x, subset, ...)
 				r & !is.na(r)
 			}
 	
-	x[as.character(rownames(pd[r, ]))]
+	x[as.character(rownames(pd[r,,drop = FALSE ]))]
 }
 
 copy_view.cytoset <- function(x){

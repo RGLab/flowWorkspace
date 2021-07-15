@@ -169,7 +169,7 @@ gs_pop_add <- function(gs, gate, validityCheck = TRUE, ...){
     sn <- sampleNames(gh)
     
     ptr <- gh@pointer
-	nodeID <- .cpp_addGate( ptr, sn, filterObject, parent, name)
+	nodeID <- cpp_addGate( ptr, sn, filterObject, parent, name)
         
 	nodeID+1
 }
