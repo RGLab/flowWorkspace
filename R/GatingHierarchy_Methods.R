@@ -1328,8 +1328,8 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 #' extract trans from c++
 #' @noRd 
 .getTransformations <- function(pointer,sampleName, equal.space = FALSE, ...){
-    trans.func <- .cpp_getTransformations(pointer,sampleName, inverse = FALSE)
-    inv.func <- .cpp_getTransformations(pointer,sampleName, inverse = TRUE)
+    trans.func <- cpp_getTransformations(pointer,sampleName, inverse = FALSE)
+    inv.func <- cpp_getTransformations(pointer,sampleName, inverse = TRUE)
     trans.list <- .convertTrans(trans.func)
     inv.list <- .convertTrans(inv.func, inverse = TRUE)
     trans.name <- "flowJo_"

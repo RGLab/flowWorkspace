@@ -232,6 +232,18 @@ cpp_getPopStats <- function(gs, sampleName, gatePath) {
   .Call(`_flowWorkspace_cpp_getPopStats`, gs, sampleName, gatePath)
 }
 
+cpp_getCompensation <- function(gs, sampleName) {
+  .Call(`_flowWorkspace_cpp_getCompensation`, gs, sampleName)
+}
+
+set_transformations <- function(gs, sampleName, translist) {
+  invisible(.Call(`_flowWorkspace_set_transformations`, gs, sampleName, translist))
+}
+
+cpp_getTransformations <- function(gs, sampleName, inverse) {
+  .Call(`_flowWorkspace_cpp_getTransformations`, gs, sampleName, inverse)
+}
+
 gs_transform_data <- function(gsPtr) {
   invisible(.Call(`_flowWorkspace_gs_transform_data`, gsPtr))
 }

@@ -120,196 +120,195 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
         }
         vals.names() = types;
 
-        res.push_back(cpp11::named_arg(statsname) = vals);//, cpp11::named_arg("FlowJo") = node.getStats(false)});
+        res.push_back(cpp11::named_arg(statsname) = vals);
     }
     return res;
 }
 
-// [[cpp11::register]]
-// cpp11::list cpp_getCompensation(cpp11::external_pointer<GatingSet> gs,string sampleName){
-//   GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-//   compensation comp=gh.get_compensation();
-// 	return(cpp11::list::create(cpp11::named_arg("cid",comp.cid)
-// 						,cpp11::named_arg("prefix",comp.prefix)
-// 						,cpp11::named_arg("suffix",comp.suffix)
-// 						,cpp11::named_arg("comment",comp.comment)
-// 						,cpp11::named_arg("parameters",comp.marker)
-//             ,cpp11::named_arg("detectors",comp.detector)
-// 						,cpp11::named_arg("spillOver",comp.spillOver))
-// 			);
+[[cpp11::register]]
+cpp11::list cpp_getCompensation(cpp11::external_pointer<GatingSet> gs,string sampleName){
+  GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+  compensation comp=gh.get_compensation();
+	return(cpp11::list({cpp11::named_arg("cid")=comp.cid
+						,cpp11::named_arg("prefix")=comp.prefix
+						,cpp11::named_arg("suffix")=comp.suffix
+						,cpp11::named_arg("comment")=comp.comment
+						,cpp11::named_arg("parameters")=comp.marker
+            ,cpp11::named_arg("detectors")=comp.detector
+						,cpp11::named_arg("spillOver")=comp.spillOver})
+			);
 
 
-// }
+}
 
-// [[cpp11::register]]
-// void set_transformations(cpp11::external_pointer<GatingSet> gs,string sampleName, cpp11::list translist){
-
-
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	trans_map trans = convert_transformer_list(translist);
-// 	gh.addTransMap(trans);
-// }
-
-// //[[Rcpp::export(name=".cpp_getTransformations")]]
-// [[cpp11::register]]
-// cpp11::list getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
+[[cpp11::register]]
+void set_transformations(cpp11::external_pointer<GatingSet> gs,string sampleName, cpp11::list translist){
 
 
-// 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-// 	trans_map trans=gh.getLocalTrans().getTransMap();
-// 	cpp11::list res;
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	trans_map trans = convert_transformer_list(translist);
+	gh.addTransMap(trans);
+}
 
-// 	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
-// 	{
-// 		TransPtr curTrans=it->second;
-// 		if(curTrans==NULL)
-// 			throw(domain_error("empty transformation for channel"+it->first));
-// 		if(!curTrans->gateOnly())
-// 		{
-// 			if(inverse){
-// 				curTrans = curTrans->getInverseTransformation();
-// 			}
+[[cpp11::register]]
+cpp11::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
 
-// 			string chnl = it->first;
-// 	//		string transName = curTrans->getName()+" "+chnl;
 
-// 			switch(curTrans->getType())
-// 			{
+	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
+	trans_map trans=gh.getLocalTrans().getTransMap();
+	cpp11::writable::list res;
 
-// 				case LOG:
-// 				{
-// 					shared_ptr<logTrans> thisTrans = dynamic_pointer_cast<logTrans>(curTrans);
-// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","log")
-// 												,cpp11::named_arg("decade",thisTrans->decade)
-// 												,cpp11::named_arg("offset",thisTrans->offset)
-// 												,cpp11::named_arg("T",thisTrans->T)
-// 												,cpp11::named_arg("scale",thisTrans->scale)
-// 												)
-// 									,chnl
-// 									);
-// 					break;
-// 				}
-// 				case LIN:
-// 				{
+	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
+	{
+		TransPtr curTrans=it->second;
+		if(curTrans==NULL)
+			throw(domain_error("empty transformation for channel"+it->first));
+		if(!curTrans->gateOnly())
+		{
+			if(inverse){
+				curTrans = curTrans->getInverseTransformation();
+			}
 
-// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","lin"))
-// 									,chnl
-// 									);
-// 					break;
-// 				}
-// 				case CALTBL:
-// 				{
-// 					if(!curTrans->computed()){
-// 						curTrans->computCalTbl();
-// 					}
-// 					if(!curTrans->isInterpolated()){
-// 						curTrans->interpolate();
-// 					}
+			string chnl = it->first;
+	//		string transName = curTrans->getName()+" "+chnl;
 
-// 					Spline_Coefs obj=curTrans->getSplineCoefs();
+			switch(curTrans->getType())
+			{
 
-// 					res.push_back(cpp11::list::create(cpp11::named_arg("z",obj.coefs)
-// 												,cpp11::named_arg("method",obj.method)
-// 												,cpp11::named_arg("type", "caltbl")
-// 												)
-// 									,chnl
-// 									);
-// 					break;
-// 				}
-// 				case BIEXP:
-// 				{
-// 					shared_ptr<biexpTrans> thisTrans = dynamic_pointer_cast<biexpTrans>(curTrans);
-// 					/*
-// 					 * do all the CALTBL operation
-// 					 */
-// 					if(!curTrans->computed()){
-// 						curTrans->computCalTbl();
-// 					}
-// 					if(!curTrans->isInterpolated()){
-// 						curTrans->interpolate();
-// 					}
+				case LOG:
+				{
+					shared_ptr<logTrans> thisTrans = dynamic_pointer_cast<logTrans>(curTrans);
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "log"
+												,cpp11::named_arg("decade") = thisTrans->decade
+												,cpp11::named_arg("offset") = thisTrans->offset
+												,cpp11::named_arg("T") = thisTrans->T
+												,cpp11::named_arg("scale") = thisTrans->scale
+                    })
+									);
+					break;
+				}
+				case LIN:
+				{
 
-// 					Spline_Coefs obj=curTrans->getSplineCoefs();
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "lin"})
+                                            );
+					break;
+				}
+				case CALTBL:
+				{
+					if(!curTrans->computed()){
+						curTrans->computCalTbl();
+					}
+					if(!curTrans->isInterpolated()){
+						curTrans->interpolate();
+					}
 
-// 					/*
-// 					 * in addition, output the 5 arguments
-// 					 */
-// 					res.push_back(cpp11::list::create(cpp11::named_arg("z",obj.coefs)
-// 												,cpp11::named_arg("method",obj.method)
-// 												,cpp11::named_arg("type","biexp")
-// 												, cpp11::named_arg("channelRange", thisTrans->channelRange)
-// 												, cpp11::named_arg("maxValue", thisTrans->maxValue)
-// 												, cpp11::named_arg("neg", thisTrans->neg)
-// 												, cpp11::named_arg("pos", thisTrans->pos)
-// 												, cpp11::named_arg("widthBasis", thisTrans->widthBasis)
-// 												)
-// 									,chnl
-// 									);
+					Spline_Coefs obj=curTrans->getSplineCoefs();
+                    cpp11::writable::list coef;
+                    for (auto it : obj.coefs)
+                    {
+                        coef.push_back(cpp11::named_arg(it.first.c_str()) = it.second);
+                    }
+                    res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("z") = coef
+												,cpp11::named_arg("method") = obj.method
+												,cpp11::named_arg("type") =  "caltbl"
+                    })
+									);
+					break;
+				}
+				case BIEXP:
+				{
+					shared_ptr<biexpTrans> thisTrans = dynamic_pointer_cast<biexpTrans>(curTrans);
+					/*
+					 * do all the CALTBL operation
+					 */
+					if(!curTrans->computed()){
+						curTrans->computCalTbl();
+					}
+					if(!curTrans->isInterpolated()){
+						curTrans->interpolate();
+					}
 
-// 					break;
-// 				}
-// 				case FASINH:
-// 				{
-// 					shared_ptr<fasinhTrans> thisTrans = dynamic_pointer_cast<fasinhTrans>(curTrans);
+					Spline_Coefs obj=curTrans->getSplineCoefs();
+                    cpp11::writable::list coef;
+                    for (auto it : obj.coefs)
+                    {
+                        coef.push_back(cpp11::named_arg(it.first.c_str()) = it.second);
+                    }
+					/*
+					 * in addition, output the 5 arguments
+					 */
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("z") = coef
+												,cpp11::named_arg("method") = obj.method
+												,cpp11::named_arg("type") = "biexp"
+												, cpp11::named_arg("channelRange") =  thisTrans->channelRange
+												, cpp11::named_arg("maxValue") =  thisTrans->maxValue
+												, cpp11::named_arg("neg") =  thisTrans->neg
+												, cpp11::named_arg("pos") =  thisTrans->pos
+												, cpp11::named_arg("widthBasis") =  thisTrans->widthBasis
+                })
+									);
 
-// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","fasinh")
-// 												, cpp11::named_arg("A", thisTrans->A)
-// 												, cpp11::named_arg("M", thisTrans->M)
-// 												, cpp11::named_arg("T", thisTrans->T)
-// 												, cpp11::named_arg("length", thisTrans->length)
-// 												, cpp11::named_arg("maxRange", thisTrans->maxRange)
-// 												)
-// 												,chnl
-// 								);
+					break;
+				}
+				case FASINH:
+				{
+					shared_ptr<fasinhTrans> thisTrans = dynamic_pointer_cast<fasinhTrans>(curTrans);
 
-// 					break;
-// 				}
-// 				case LOGICLE:
-// 				{
-// 					shared_ptr<logicleTrans> thisTrans = dynamic_pointer_cast<logicleTrans>(curTrans);
-// 					logicle_params p = thisTrans->get_params();
-// 					res.push_back(cpp11::list::create(cpp11::named_arg("type","logicle")
-// 												, cpp11::named_arg("A", p.A)
-// 												, cpp11::named_arg("M", p.M)
-// 												, cpp11::named_arg("T", p.T)
-// 												, cpp11::named_arg("W", p.W)
-// 												)
-// 												,chnl
-// 								);
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "fasinh"
+												, cpp11::named_arg("A") =  thisTrans->A
+												, cpp11::named_arg("M") =  thisTrans->M
+												, cpp11::named_arg("T") =  thisTrans->T
+												, cpp11::named_arg("length") =  thisTrans->length
+												, cpp11::named_arg("maxRange") =  thisTrans->maxRange
+                })
+								);
 
-// 					break;
-// 				}
-//   			case LOGGML2:
-//   			{
-//   			  shared_ptr<logGML2Trans> thisTrans = dynamic_pointer_cast<logGML2Trans>(curTrans);
-//   			  res.push_back(cpp11::list::create(cpp11::named_arg("type","logtGml2")
-//                                     ,cpp11::named_arg("T",thisTrans->T)
-//                                     ,cpp11::named_arg("M",thisTrans->M)
-//   			                )
-//                        ,chnl
-//   			  );
-//   			  break;
-//   			}
-// 			case SCALE:
-// 			{
-// 				shared_ptr<scaleTrans> thisTrans = dynamic_pointer_cast<scaleTrans>(curTrans);
-// 				res.push_back(cpp11::list::create(
-// 								cpp11::named_arg("type", "scale"),
-// 								cpp11::named_arg("trans_scale", thisTrans->t_scale),
-// 								cpp11::named_arg("raw_scale", thisTrans->r_scale),
-// 								cpp11::named_arg("scale_factor", thisTrans->scale_factor)
-// 							 ),
-// 						chnl
-// 				);
-// 				break;
-// 			}
-// 				default:
-// 					throw(domain_error("unknown transformation in R_getTransformations!"));
-// 			}
-// 		}
-// 	}
-// 	return (res);
-// }
+					break;
+				}
+				case LOGICLE:
+				{
+					shared_ptr<logicleTrans> thisTrans = dynamic_pointer_cast<logicleTrans>(curTrans);
+					logicle_params p = thisTrans->get_params();
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "logicle"
+												, cpp11::named_arg("A") =  p.A
+												, cpp11::named_arg("M") =  p.M
+												, cpp11::named_arg("T") =  p.T
+												, cpp11::named_arg("W") =  p.W
+                    })
+								);
+
+					break;
+				}
+  			case LOGGML2:
+  			{
+  			  shared_ptr<logGML2Trans> thisTrans = dynamic_pointer_cast<logGML2Trans>(curTrans);
+  			  res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "logtGml2"
+                                    ,cpp11::named_arg("T") = thisTrans->T
+                                    ,cpp11::named_arg("M") = thisTrans->M
+                })
+  			  );
+  			  break;
+  			}
+			case SCALE:
+			{
+				shared_ptr<scaleTrans> thisTrans = dynamic_pointer_cast<scaleTrans>(curTrans);
+				res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({
+								cpp11::named_arg("type") =  "scale",
+								cpp11::named_arg("trans_scale") =  thisTrans->t_scale,
+								cpp11::named_arg("raw_scale") =  thisTrans->r_scale,
+								cpp11::named_arg("scale_factor") =  thisTrans->scale_factor
+                                    })
+				);
+				break;
+			}
+				default:
+					throw(domain_error("unknown transformation in R_getTransformations!"));
+			}
+		}
+	}
+	return (res);
+}
 
 // vector<VertexID> retrieve_sibling_quadnodes(GatingHierarchy & gh,  VertexID quadnode)
 // {
@@ -392,12 +391,12 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
 // 						covMat(i,1) = cov.at(i).y;
 // 					}
 
-// 					 cpp11::list ret=cpp11::list::create(cpp11::named_arg("parameters",thisG.getParamNames())
-// 							 	 	 	 	 ,cpp11::named_arg("mu", NumericVector::create(mu.x, mu.y))
-// 							 	 	 	 	 ,cpp11::named_arg("cov", covMat)
-// 							 	 	 	 	 ,cpp11::named_arg("dist", dist)
-// 							 	 	 	 	 ,cpp11::named_arg("type",ELLIPSEGATE)
-// 							 	 	 	 	 , cpp11::named_arg("filterId", nodeName)
+// 					 cpp11::list ret=cpp11::list(cpp11::named_arg("parameters") = thisG.getParamNames()
+// 							 	 	 	 	 ,cpp11::named_arg("mu") =  NumericVector::create(mu.x) =  mu.y
+// 							 	 	 	 	 ,cpp11::named_arg("cov") =  covMat
+// 							 	 	 	 	 ,cpp11::named_arg("dist") =  dist
+// 							 	 	 	 	 ,cpp11::named_arg("type") = ELLIPSEGATE
+// 							 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
 // 							 	 	 	 	 );
 // 					return ret;
 // 				}
@@ -405,10 +404,10 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
 // 			{
 // 				vertices_vector vert=g->getVertices().toVector();
 // 				 auto pn = g->getParamNames();
-// 				 cpp11::list ret=cpp11::list::create(cpp11::named_arg("parameters", pn)
-// 						 	 	 	 	 ,cpp11::named_arg("x",vert.x),cpp11::named_arg("y",vert.y)
-// 						 	 	 	 	 ,cpp11::named_arg("type",POLYGONGATE)
-// 						 	 	 	 	 , cpp11::named_arg("filterId", nodeName)
+// 				 cpp11::list ret=cpp11::list(cpp11::named_arg("parameters") =  pn
+// 						 	 	 	 	 ,cpp11::named_arg("x",vert.x)) = cpp11::named_arg("y" = vert.y
+// 						 	 	 	 	 ,cpp11::named_arg("type") = POLYGONGATE
+// 						 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
 // 						 	 	 	 	 );
 // 				 if(quadpops.size() > 0)
 // 				 {
@@ -427,10 +426,10 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
 // 			{
 // 				vertices_vector vert=g->getVertices().toVector();
 
-// 				cpp11::list ret=cpp11::list::create(cpp11::named_arg("parameters",g->getParamNames())
-// 									 ,cpp11::named_arg("range",vert.x)
-// 									 ,cpp11::named_arg("type",RANGEGATE)
-// 									 , cpp11::named_arg("filterId", nodeName)
+// 				cpp11::list ret=cpp11::list(cpp11::named_arg("parameters") = g->getParamNames()
+// 									 ,cpp11::named_arg("range") = vert.x
+// 									 ,cpp11::named_arg("type") = RANGEGATE
+// 									 , cpp11::named_arg("filterId") =  nodeName
 // 									 );
 // 				return ret;
 // 			}
@@ -448,11 +447,11 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
 // 				  ref.push_back(it->path);
 // 			  }
 
-// 			  cpp11::list ret=cpp11::list::create(cpp11::named_arg("v",v)
-// 									 ,cpp11::named_arg("v2",v2)
-// 									 ,cpp11::named_arg("ref",ref)
-// 									 ,cpp11::named_arg("type",BOOLGATE)
-// 									 , cpp11::named_arg("filterId", nodeName)
+// 			  cpp11::list ret=cpp11::list(cpp11::named_arg("v") = v
+// 									 ,cpp11::named_arg("v2") = v2
+// 									 ,cpp11::named_arg("ref") = ref
+// 									 ,cpp11::named_arg("type") = BOOLGATE
+// 									 , cpp11::named_arg("filterId") =  nodeName
 // 									 );
 // 			  return ret;
 
@@ -471,11 +470,11 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
 // 			  ref.push_back(it->path);
 // 		  }
 
-// 		  cpp11::list ret=cpp11::list::create(cpp11::named_arg("v",v)
-// 								 ,cpp11::named_arg("v2",v2)
-// 								 ,cpp11::named_arg("ref",ref)
-// 								 ,cpp11::named_arg("type",LOGICALGATE)
-// 								 , cpp11::named_arg("filterId", nodeName)
+// 		  cpp11::list ret=cpp11::list(cpp11::named_arg("v") = v
+// 								 ,cpp11::named_arg("v2") = v2
+// 								 ,cpp11::named_arg("ref") = ref
+// 								 ,cpp11::named_arg("type") = LOGICALGATE
+// 								 , cpp11::named_arg("filterId") =  nodeName
 // 								 );
 // 		  return ret;
 
@@ -494,12 +493,12 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
 // 			  ref.push_back(it->path);
 // 		  }
 
-// 		  cpp11::list ret=cpp11::list::create(cpp11::named_arg("v",v)
-// 								 ,cpp11::named_arg("v2",v2)
-// 								 ,cpp11::named_arg("ref",ref)
-// 								 ,cpp11::named_arg("type",CLUSTERGATE)
-// 								 , cpp11::named_arg("filterId", nodeName)
-// 								 , cpp11::named_arg("cluster_method_name", cg.get_cluster_method_name())
+// 		  cpp11::list ret=cpp11::list(cpp11::named_arg("v") = v
+// 								 ,cpp11::named_arg("v2") = v2
+// 								 ,cpp11::named_arg("ref") = ref
+// 								 ,cpp11::named_arg("type") = CLUSTERGATE
+// 								 , cpp11::named_arg("filterId") =  nodeName
+// 								 , cpp11::named_arg("cluster_method_name") =  cg.get_cluster_method_name()
 // 								 );
 // 		  return ret;
 
