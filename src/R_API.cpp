@@ -1,65 +1,70 @@
-// /*
-//  *
-//  *
-//  * some C++ routines to be invoked by R for the faster R APIs
-//  *
-//  *  Created on: Aug 18, 2014
-//  *      Author: wjiang2
-//  */
-// #include "cytolib/GatingSet.hpp"
-// #include <Rcpp.h>
-// using namespace Rcpp;
-// using namespace cytolib;
+/*
+ *
+ *
+ * some C++ routines to be invoked by R for the faster R APIs
+ *
+ *  Created on: Aug 18, 2014
+ *      Author: wjiang2
+ */
+#include "cytolib/GatingSet.hpp"
+#include <cpp11.hpp>
 
-// #define ARRAY_TYPE vector<double>
-// //[[Rcpp::export]]
-// string gen_uid()
-// {
-// 	return generate_uid();
-// }
-// //' construct the biexpTrans c++ object on the fly
-// //'
-// //' It returns the spline coefficients vectors to R.
-// //'
-// //' It is used to extract the spline coefficient vectors from the calibration table
-// //' which is computed by biexpTrans class and then return to R for constructing flowJo transformation function within R.
-// //' Mainly used for openCyto autoGating process where no xml workspace is needed to create flowJo transformation.
-// //' @noRd
-// //[[Rcpp::export(".getSplineCoefs")]]
-// Rcpp::List getSplineCoefs(int channelRange=4096, double maxValue=262144, double pos = 4.5, double neg = 0, double widthBasis = -10, bool inverse = false){
+using namespace cytolib;
 
-// 	biexpTrans curTran;
-// 	curTran.channelRange = channelRange;
-// 	curTran.maxValue = maxValue;
-// 	curTran.pos = pos;
-// 	curTran.neg = neg;
-// 	curTran.widthBasis = widthBasis;
+#define ARRAY_TYPE vector<double>
+[[cpp11::register]]
+string gen_uid()
+{
+	return generate_uid();
+}
+//' construct the biexpTrans c++ object on the fly
+//'
+//' It returns the spline coefficients vectors to R.
+//'
+//' It is used to extract the spline coefficient vectors from the calibration table
+//' which is computed by biexpTrans class and then return to R for constructing flowJo transformation function within R.
+//' Mainly used for openCyto autoGating process where no xml workspace is needed to create flowJo transformation.
+//' @noRd
 
+[[cpp11::register]]
+cpp11::list getSplineCoefs(int channelRange=4096, double maxValue=262144, double pos = 4.5, double neg = 0, double widthBasis = -10, bool inverse = false){
 
-// 	curTran.computCalTbl();
-// 	calibrationTable cal = curTran.getCalTbl();
-
-// 	if(inverse)
-// 	{
-// 		ARRAY_TYPE tmp = cal.getX();
-// 		cal.setX(cal.getY());
-// 		cal.setY(tmp);
-// 	}
-// 	cal.interpolate();
-// 	Spline_Coefs obj=cal.getSplineCoefs();
-
-// 	return Rcpp::List::create(Named("z",obj.coefs)
-// 								, Named("method",obj.method)
-// 								, Named("type", "biexp")
-// 								, Named("channelRange", channelRange)
-// 								, Named("maxValue", maxValue)
-// 								, Named("neg", neg)
-// 								, Named("pos", pos)
-// 								, Named("widthBasis", widthBasis)
-// 								);
+	biexpTrans curTran;
+	curTran.channelRange = channelRange;
+	curTran.maxValue = maxValue;
+	curTran.pos = pos;
+	curTran.neg = neg;
+	curTran.widthBasis = widthBasis;
 
 
-// }
+	curTran.computCalTbl();
+	calibrationTable cal = curTran.getCalTbl();
+
+	if(inverse)
+	{
+		ARRAY_TYPE tmp = cal.getX();
+		cal.setX(cal.getY());
+		cal.setY(tmp);
+	}
+	cal.interpolate();
+	Spline_Coefs obj=cal.getSplineCoefs();
+    cpp11::writable::list coef;
+    for (auto it : obj.coefs)
+    {
+        coef.push_back(cpp11::named_arg(it.first.c_str()) = it.second);
+    }
+	return cpp11::list({cpp11::named_arg("z")=coef
+								, cpp11::named_arg("method")=obj.method
+								, cpp11::named_arg("type")= "biexp"
+								, cpp11::named_arg("channelRange")= channelRange
+								, cpp11::named_arg("maxValue")= maxValue
+								, cpp11::named_arg("neg")= neg
+								, cpp11::named_arg("pos")= pos
+								, cpp11::named_arg("widthBasis")= widthBasis
+    });
+
+
+}
 
 // //' store the transformation functions created from R into GatingSet
 // //'
@@ -68,14 +73,15 @@
 // //'         Each of these functions carries the attributes to be used to convert to c++ transformation
 // //' @noRd
 // //[[Rcpp::export(".addTrans")]]
+// [[cpp11::register]]
 // void addTrans(cpp11::external_pointer<GatingSet> gsPtr, Rcpp::S4 transformList){
 
 // 	trans_map tm;
 // 	/*
 // 	 * parse the transformList
 // 	 */
-// 	Rcpp::List funs = transformList.slot("transforms");
-// 	for(Rcpp::List::iterator it = funs.begin(); it != funs.end(); it++){
+// 	cpp11::list funs = transformList.slot("transforms");
+// 	for(cpp11::list::iterator it = funs.begin(); it != funs.end(); it++){
 // 		Rcpp::S4 transMp = *it;
 // 		std::string ch = transMp.slot("input");
 // 		Rcpp::Function transFunc = transMp.slot("f");
@@ -87,7 +93,7 @@
 // 			std::string trans_type = Rcpp::as<std::string>(type.get__());
 // 			if(trans_type == "biexp")
 // 			{
-// 				Rcpp::List param = transFunc.attr("parameters");
+// 				cpp11::list param = transFunc.attr("parameters");
 // 				/*
 // 				 * create biexpTrans based on the parameters stored as function attribute
 // 				 */
@@ -121,36 +127,36 @@
 // }
 
 
-// //' Update the channel information of a GatingSet (c++ part)
-// //' 
-// //' It updates the channels stored in gates,compensations and transformations
-// //' based on given mapping between the old and new channel names.
-// //' 
-// //' @param gs a GatingSet
-// //' @param sampleNames the sample names specifies samples to be operated on
-// //' @param map \code{data.frame} contains the mapping from old to new channel names
-// //'                             Note: Make sure to remove the '<' or '>' characters from 'old` name because the API tries 
-// //'                                   to only look at the raw channel name so that the gates with both prefixed and non-prefixed names could be updated. 
-// //'                                   
-// //' @examples 
-// //' \dontrun{
-// //'  updateChannels(gs, map = data.frame(old = c("Qdot 655-A")  ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
-// //'                                          , new = c("<QDot 655-A>")
-// //'                                          )
-// //'                        , nodes = "14-")  
-// //'}
-// //' @noRd
-// //[[Rcpp::export(.updateChannels)]]
-// void updateChannels(Rcpp::S4 gs, Rcpp::DataFrame map){
+//' Update the channel information of a GatingSet (c++ part)
+//' 
+//' It updates the channels stored in gates,compensations and transformations
+//' based on given mapping between the old and new channel names.
+//' 
+//' @param gs a GatingSet
+//' @param sampleNames the sample names specifies samples to be operated on
+//' @param map \code{data.frame} contains the mapping from old to new channel names
+//'                             Note: Make sure to remove the '<' or '>' characters from 'old` name because the API tries 
+//'                                   to only look at the raw channel name so that the gates with both prefixed and non-prefixed names could be updated. 
+//'                                   
+//' @examples 
+//' \dontrun{
+//'  updateChannels(gs, map = data.frame(old = c("Qdot 655-A")  ##this will update both "Qdot 655-A" and "<Qdot 655-A>"
+//'                                          , new = c("<QDot 655-A>")
+//'                                          )
+//'                        , nodes = "14-")  
+//'}
+//' @noRd
+[[cpp11::register]]
+void updateChannels_cpp(cpp11::external_pointer<GatingSet> gsPtr, cpp11::data_frame map){
 
-// 	cpp11::external_pointer<GatingSet> gsPtr = gs.slot("pointer");
-// 	//convert dataframe to map
-// 	CHANNEL_MAP stdmap;
-// 	std::vector<std::string> oldN =  map["old"];
-// 	std::vector<std::string> newN =  map["new"];
-// 	for(unsigned i = 0; i < oldN.size(); i++){
-// 		stdmap[oldN.at(i)] = newN.at(i);
-// 	}
-// 	gsPtr->set_channels(stdmap);
+	
+	//convert dataframe to map
+	CHANNEL_MAP stdmap;
+	cpp11::strings oldN(map["old"]);
+	cpp11::strings newN(map["new"]);
+	for(int i = 0; i < oldN.size(); i++){
+		stdmap[oldN.at(i)] = newN.at(i);
+	}
+	gsPtr->set_channels(stdmap);
 
-// }
+}

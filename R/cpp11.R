@@ -204,8 +204,8 @@ getDescendants_cpp <- function(gsPtr, sampleName, node) {
   .Call(`_flowWorkspace_getDescendants_cpp`, gsPtr, sampleName, node)
 }
 
-getPopCounts_cpp <- function(gsPtr, freq, subpopulation, flowJo, isFullPath) {
-  .Call(`_flowWorkspace_getPopCounts_cpp`, gsPtr, freq, subpopulation, flowJo, isFullPath)
+getPopCounts_cpp <- function(gs, freq, subpopulation, flowJo, isFullPath) {
+  .Call(`_flowWorkspace_getPopCounts_cpp`, gs, freq, subpopulation, flowJo, isFullPath)
 }
 
 cpp_getSingleCellExpressionByGate <- function(gs, sampleName, markers_pops, data, markers, threshold) {
@@ -218,6 +218,18 @@ cpp_getSingleCellExpression <- function(gs, sampleName, pops, data, markers, thr
 
 h5_set_error_handler <- function() {
   invisible(.Call(`_flowWorkspace_h5_set_error_handler`))
+}
+
+gen_uid <- function() {
+  .Call(`_flowWorkspace_gen_uid`)
+}
+
+getSplineCoefs <- function(channelRange, maxValue, pos, neg, widthBasis, inverse) {
+  .Call(`_flowWorkspace_getSplineCoefs`, channelRange, maxValue, pos, neg, widthBasis, inverse)
+}
+
+updateChannels_cpp <- function(gsPtr, map) {
+  invisible(.Call(`_flowWorkspace_updateChannels_cpp`, gsPtr, map))
 }
 
 cpp_plotGh <- function(gs, sampleName, output) {

@@ -389,10 +389,10 @@ extern "C" SEXP _flowWorkspace_getDescendants_cpp(SEXP gsPtr, SEXP sampleName, S
   END_CPP11
 }
 // getPopStats.cpp
-cpp11::list getPopCounts_cpp(cpp11::external_pointer<GatingSet> gsPtr, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath);
-extern "C" SEXP _flowWorkspace_getPopCounts_cpp(SEXP gsPtr, SEXP freq, SEXP subpopulation, SEXP flowJo, SEXP isFullPath) {
+cpp11::list getPopCounts_cpp(cpp11::external_pointer<GatingSet> gs, bool freq, StringVec subpopulation, bool flowJo, bool isFullPath);
+extern "C" SEXP _flowWorkspace_getPopCounts_cpp(SEXP gs, SEXP freq, SEXP subpopulation, SEXP flowJo, SEXP isFullPath) {
   BEGIN_CPP11
-    return cpp11::as_sexp(getPopCounts_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<bool>>(freq), cpp11::as_cpp<cpp11::decay_t<StringVec>>(subpopulation), cpp11::as_cpp<cpp11::decay_t<bool>>(flowJo), cpp11::as_cpp<cpp11::decay_t<bool>>(isFullPath)));
+    return cpp11::as_sexp(getPopCounts_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<bool>>(freq), cpp11::as_cpp<cpp11::decay_t<StringVec>>(subpopulation), cpp11::as_cpp<cpp11::decay_t<bool>>(flowJo), cpp11::as_cpp<cpp11::decay_t<bool>>(isFullPath)));
   END_CPP11
 }
 // getSingleCellExpression.cpp
@@ -414,6 +414,28 @@ void h5_set_error_handler();
 extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
   BEGIN_CPP11
     h5_set_error_handler();
+    return R_NilValue;
+  END_CPP11
+}
+// R_API.cpp
+string gen_uid();
+extern "C" SEXP _flowWorkspace_gen_uid() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(gen_uid());
+  END_CPP11
+}
+// R_API.cpp
+cpp11::list getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis, bool inverse);
+extern "C" SEXP _flowWorkspace_getSplineCoefs(SEXP channelRange, SEXP maxValue, SEXP pos, SEXP neg, SEXP widthBasis, SEXP inverse) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getSplineCoefs(cpp11::as_cpp<cpp11::decay_t<int>>(channelRange), cpp11::as_cpp<cpp11::decay_t<double>>(maxValue), cpp11::as_cpp<cpp11::decay_t<double>>(pos), cpp11::as_cpp<cpp11::decay_t<double>>(neg), cpp11::as_cpp<cpp11::decay_t<double>>(widthBasis), cpp11::as_cpp<cpp11::decay_t<bool>>(inverse)));
+  END_CPP11
+}
+// R_API.cpp
+void updateChannels_cpp(cpp11::external_pointer<GatingSet> gsPtr, cpp11::data_frame map);
+extern "C" SEXP _flowWorkspace_updateChannels_cpp(SEXP gsPtr, SEXP map) {
+  BEGIN_CPP11
+    updateChannels_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<cpp11::data_frame>>(map));
     return R_NilValue;
   END_CPP11
 }
@@ -809,6 +831,7 @@ extern SEXP _flowWorkspace_cs_set_compensation(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_del_rownames(SEXP);
 extern SEXP _flowWorkspace_fcs_to_cytoset(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_frm_compensate(SEXP, SEXP);
+extern SEXP _flowWorkspace_gen_uid();
 extern SEXP _flowWorkspace_get_channels(SEXP);
 extern SEXP _flowWorkspace_get_colnames(SEXP);
 extern SEXP _flowWorkspace_get_cytoframe(SEXP, SEXP, SEXP);
@@ -824,6 +847,7 @@ extern SEXP _flowWorkspace_getNodePath(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_getnrow(SEXP);
 extern SEXP _flowWorkspace_getpdata(SEXP);
 extern SEXP _flowWorkspace_getPopCounts_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _flowWorkspace_getSplineCoefs(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_gs_transform_data(SEXP);
 extern SEXP _flowWorkspace_h5_set_error_handler();
 extern SEXP _flowWorkspace_is_tiledb_support();
@@ -853,6 +877,7 @@ extern SEXP _flowWorkspace_subset_cytoframe_by_rows(SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoset(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_cytoset_by_rows(SEXP, SEXP, SEXP);
 extern SEXP _flowWorkspace_subset_gs_by_sample(SEXP, SEXP);
+extern SEXP _flowWorkspace_updateChannels_cpp(SEXP, SEXP);
 extern SEXP _flowWorkspace_write_to_disk(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -911,6 +936,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_del_rownames",                      (DL_FUNC) &_flowWorkspace_del_rownames,                      1},
     {"_flowWorkspace_fcs_to_cytoset",                    (DL_FUNC) &_flowWorkspace_fcs_to_cytoset,                    4},
     {"_flowWorkspace_frm_compensate",                    (DL_FUNC) &_flowWorkspace_frm_compensate,                    2},
+    {"_flowWorkspace_gen_uid",                           (DL_FUNC) &_flowWorkspace_gen_uid,                           0},
     {"_flowWorkspace_get_channels",                      (DL_FUNC) &_flowWorkspace_get_channels,                      1},
     {"_flowWorkspace_get_colnames",                      (DL_FUNC) &_flowWorkspace_get_colnames,                      1},
     {"_flowWorkspace_get_cytoframe",                     (DL_FUNC) &_flowWorkspace_get_cytoframe,                     3},
@@ -926,6 +952,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_getnrow",                           (DL_FUNC) &_flowWorkspace_getnrow,                           1},
     {"_flowWorkspace_getpdata",                          (DL_FUNC) &_flowWorkspace_getpdata,                          1},
     {"_flowWorkspace_getPopCounts_cpp",                  (DL_FUNC) &_flowWorkspace_getPopCounts_cpp,                  5},
+    {"_flowWorkspace_getSplineCoefs",                    (DL_FUNC) &_flowWorkspace_getSplineCoefs,                    6},
     {"_flowWorkspace_gs_transform_data",                 (DL_FUNC) &_flowWorkspace_gs_transform_data,                 1},
     {"_flowWorkspace_h5_set_error_handler",              (DL_FUNC) &_flowWorkspace_h5_set_error_handler,              0},
     {"_flowWorkspace_is_tiledb_support",                 (DL_FUNC) &_flowWorkspace_is_tiledb_support,                 0},
@@ -955,6 +982,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_subset_cytoset",                    (DL_FUNC) &_flowWorkspace_subset_cytoset,                    3},
     {"_flowWorkspace_subset_cytoset_by_rows",            (DL_FUNC) &_flowWorkspace_subset_cytoset_by_rows,            3},
     {"_flowWorkspace_subset_gs_by_sample",               (DL_FUNC) &_flowWorkspace_subset_gs_by_sample,               2},
+    {"_flowWorkspace_updateChannels_cpp",                (DL_FUNC) &_flowWorkspace_updateChannels_cpp,                2},
     {"_flowWorkspace_write_to_disk",                     (DL_FUNC) &_flowWorkspace_write_to_disk,                     3},
     {NULL, NULL, 0}
 };

@@ -494,7 +494,7 @@ gs_update_channels <- function(gs, map, all = TRUE){
   map <- .preprocessMap(gs, map)
   
   #update gates and comps ,trans(c++ part)
-  .updateChannels(gs, map)
+  updateChannels_cpp(gs@pointer, map)
   
   
   if(!is.null(gs@transformation)){
