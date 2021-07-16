@@ -151,13 +151,13 @@ void set_transformations(cpp11::external_pointer<GatingSet> gs,string sampleName
 }
 
 [[cpp11::register]]
-cpp11::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
+cpp11::writable::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
 
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	trans_map trans=gh.getLocalTrans().getTransMap();
 	cpp11::writable::list res;
-
+	
 	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		TransPtr curTrans=it->second;

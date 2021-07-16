@@ -168,7 +168,7 @@ test_that("merge_list_to_gs", {
     #different colnames
     chnnls <- colnames(gs_cyto_data(gs_clone))
     chnnls[1] <- "FSC-H" 
-    expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "duplicates", class = "std::domain_error")
+    expect_error(colnames(gs_cyto_data(gs_clone)) <- chnnls, "duplicates", class = "error")
     chnnls[1] <- "F" 
     colnames(gs_cyto_data(gs_clone)) <- chnnls
     expect_error(merge_list_to_gs(list(gs, gs_clone)), "colnames of cyto data don't match")
@@ -229,7 +229,7 @@ test_that("sampleNames",{
       new_sn <- sampleNames(gs)
       expect_equal(new_sn, c("newSample", "CytoTrol_CytoTrol_2.fcs"))
       #check if sample name is also updated in cpp data structure
-      name_stored_in_cpp <- flowWorkspace:::.cpp_getSamples(gs@pointer)
+      name_stored_in_cpp <- flowWorkspace:::cpp_getSamples(gs@pointer)
       expect_equal(sort(new_sn), sort(name_stored_in_cpp))
       #restore the original name
       sampleNames(gs) <- sn

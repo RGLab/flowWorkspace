@@ -1254,6 +1254,9 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 
 
 .convertTrans <- function(trans, inverse = FALSE){
+  #remedy for dealing cpp1 bug see https://github.com/r-lib/cpp11/issues/206
+  chnls <- names(trans)
+  names(trans) <- chnls[chnls!=""]
   transList <- lapply(trans,function(curTrans){
 #						browser()
         if(curTrans$type=="log")

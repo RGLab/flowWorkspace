@@ -505,7 +505,7 @@ extern "C" SEXP _flowWorkspace_set_transformations(SEXP gs, SEXP sampleName, SEX
   END_CPP11
 }
 // R_GatingHierarchy.cpp
-cpp11::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs, string sampleName, bool inverse);
+cpp11::writable::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs, string sampleName, bool inverse);
 extern "C" SEXP _flowWorkspace_cpp_getTransformations(SEXP gs, SEXP sampleName, SEXP inverse) {
   BEGIN_CPP11
     return cpp11::as_sexp(cpp_getTransformations(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<bool>>(inverse)));
