@@ -9,7 +9,6 @@ NULL
 #' flowWorkspace-package
 #' flowWorkspace
 #' @docType package
-#' @importFrom Rcpp evalCpp
 #' @importFrom cytolib cytolib_LdFlags
 #' @title Import and replicate flowJo workspaces and gating schemes using flowCore.
 #' @description Import flowJo workspaces into R. Generate the flowJo gating hierarchy and gates using flowCore functionality. Transform and compensate data in accordance with flowJo settings. Plot gates, gating hierarchies,  population statistics, and compare flowJo vs flowCore population summaries.
@@ -21,7 +20,7 @@ NULL
 #'     Date: \tab 2011-03-04\cr
 #'     License: \tab Artistic 2.0 \cr
 #'     LazyLoad: \tab yes\cr
-#'     Depends: \tab R (>= 2.16.0),Rcpp (>= 0.9.9)\cr
+#'     Depends: \tab R (>= 2.16.0)\cr
 #'   }
 #' @author Greg Finak, Mike Jiang
 #' @references \url{http://www.rglab.org/}

@@ -67,11 +67,9 @@ cpp11::doubles_matrix cpp_getSingleCellExpressionByGate(cpp11::external_pointer<
   int nMarkers = markers_pops.size();
   vector<BoolVec> indexList(nMarkers);
   for(int i =0; i < nMarkers; i++){
-    // Rcpp::Rcout << "marker: " << i << endl;
     cpp11::strings pops(markers_pops.at(i));
     // merge the indices from multiple nodes for the same marker
     for(int j = 0; j < pops.size(); ++j){
-      // Rcpp::Rcout << "pop: " << j << endl;
       string pop = cpp11::as_cpp<std::string>(pops[j]);
       VertexID u = gh.getNodeID(pop);
       BoolVec ind = gh.getNodeProperty(u).getIndices();

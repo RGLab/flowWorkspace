@@ -83,7 +83,7 @@ cpp11::list getPopCounts_cpp(cpp11::external_pointer<GatingSet> gs, bool freq, S
   });
   if(freq)
   {
-    res.push_back(cpp11::named_arg("Frequency")= freq);
+    res.push_back(cpp11::named_arg("Frequency")= freqVec);
     res.push_back(cpp11::named_arg("ParentFrequency")= parentFreqVec);
   }
   else

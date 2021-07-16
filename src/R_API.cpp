@@ -66,66 +66,6 @@ cpp11::list getSplineCoefs(int channelRange=4096, double maxValue=262144, double
 
 }
 
-// //' store the transformation functions created from R into GatingSet
-// //'
-// //' @param gsPtr external pointer that points to the C data structure of GatingSet
-// //' @param transformList a transformList that constains a list of transformation functions.
-// //'         Each of these functions carries the attributes to be used to convert to c++ transformation
-// //' @noRd
-// //[[Rcpp::export(".addTrans")]]
-// [[cpp11::register]]
-// void addTrans(cpp11::external_pointer<GatingSet> gsPtr, Rcpp::S4 transformList){
-
-// 	trans_map tm;
-// 	/*
-// 	 * parse the transformList
-// 	 */
-// 	cpp11::list funs = transformList.slot("transforms");
-// 	for(cpp11::list::iterator it = funs.begin(); it != funs.end(); it++){
-// 		Rcpp::S4 transMp = *it;
-// 		std::string ch = transMp.slot("input");
-// 		Rcpp::Function transFunc = transMp.slot("f");
-
-// 		Rcpp::RObject type = transFunc.attr("type");
-// 		if(type.isNULL())
-// 			Rcpp::stop("transformation function must have 'type' attribute!");
-// 		else{
-// 			std::string trans_type = Rcpp::as<std::string>(type.get__());
-// 			if(trans_type == "biexp")
-// 			{
-// 				cpp11::list param = transFunc.attr("parameters");
-// 				/*
-// 				 * create biexpTrans based on the parameters stored as function attribute
-// 				 */
-// 				shared_ptr<biexpTrans> trans(new biexpTrans());
-// 				trans->channelRange = Rcpp::as<int>(param["channelRange"]);
-// 				trans->maxValue = Rcpp::as<int>(param["maxValue"]);
-// 				trans->neg = Rcpp::as<double>(param["neg"]);
-// 				trans->pos = Rcpp::as<double>(param["pos"]);
-// 				trans->widthBasis = Rcpp::as<double>(param["widthBasis"]);
-// 				//compute the calibration table
-// 				trans->computCalTbl();
-// 				trans->interpolate();
-
-// 				//push into the trans map
-// 				tm[ch] = trans;
-
-// 			}else
-// 				Rcpp::stop("add the unsupported transformation function!" + trans_type);
-// 		}
-// 	}
-
-// 	/*
-// 	 * propagate to each sample
-// 	 */
-// 	StringVec sn = gsPtr->get_sample_uids();
-// 	for(StringVec::iterator it = sn.begin(); it != sn.end(); it++){
-// 		GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(*it);
-// 		gh->addTransMap(tm);
-// 	}
-
-// }
-
 
 //' Update the channel information of a GatingSet (c++ part)
 //' 

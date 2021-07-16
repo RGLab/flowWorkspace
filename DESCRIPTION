@@ -36,7 +36,6 @@ Imports:
     dplyr,
     scales,
     matrixStats,
-    RcppParallel,
     RProtoBufLib,
     digest,
 	aws.s3,
@@ -81,7 +80,7 @@ Suggests:
     parallel,
     CytoML,
     openCyto
-LinkingTo: cpp11, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
+LinkingTo: cpp11, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
 SystemRequirements: GNU make, C++11

@@ -16,7 +16,6 @@ using namespace cytolib;
 //' @noRd
 [[cpp11::register]]
 void setCounts_cpp(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, int count){
-  // Rcpp::Rcout << sampleName << std::endl;
   GatingHierarchy & gh = *gsPtr->getGatingHierarchy(sampleName);
   VertexID nodeID = gh.getNodeID(node);
   nodeProperties & np = gh.getNodeProperty(nodeID);
