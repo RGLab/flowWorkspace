@@ -7,7 +7,7 @@ using namespace cytolib;
 
 inline TransPtr convert_transformer(cpp11::list trans, string chnl){
   TransPtr thisTrans;
-  auto type = cpp11::as_cpp<cpp11::r_string>(trans["type"]);
+  string type(cpp11::as_cpp<cpp11::strings>(trans["type"])[0]);
   if(type == "flowJo_log")
   {
     
@@ -68,7 +68,7 @@ inline trans_map convert_transformer_list(cpp11::list translist){
   
   if(Rf_isNull(translist.names()))
     cpp11::stop("empty names for translist!");
-  auto chnls = cpp11::as_cpp<cpp11::strings>(translist.names());
+  auto chnls = cpp11::as_cpp<vector<string>>(translist.names());
   for (string chnl : chnls)
   {
     trans[chnl] = convert_transformer(cpp11::as_cpp<cpp11::list>(translist[chnl]), chnl);

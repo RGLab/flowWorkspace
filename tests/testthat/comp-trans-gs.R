@@ -22,11 +22,11 @@ test_that("compensate & transform a GatingSet", {
   
   # unmatched names
   names(comp)[1] <- "dd"
-  expect_error(compensate(gs, comp), regexp = "compensation not found", class = "std::domain_error")
+  expect_error(compensate(gs, comp), regexp = "compensation not found", class = "error")
   
   #unmatched length
   comp <- comp[1:3]
-  expect_error(compensate(gs, comp), regexp = "compensation not found ", class = "std::domain_error")
+  expect_error(compensate(gs, comp), regexp = "compensation not found ", class = "error")
   
   #modify comp[5]
   comp <- sapply(sampleNames(gs), function(sn)comp.mat, simplify = FALSE)
