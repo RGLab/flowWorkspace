@@ -285,9 +285,11 @@ cpp11::writable::list get_pheno_data(cpp11::external_pointer<GatingSet> cs)
   {
       res.push_back(cpp11::named_arg(it.first.c_str()) = cpp11::as_sexp<cpp11::writable::strings>(it.second));
   }
-  res.attr("row.names") = cpp11::as_sexp<cpp11::writable::strings>(sample_uids);
-  res.attr("class") = "data.frame";
-  
+  if(sample_uids.size()>0)
+  {
+      res.attr("row.names") = cpp11::as_sexp<cpp11::writable::strings>(sample_uids);
+    res.attr("class") = "data.frame";
+  }
   return res;
 
   
