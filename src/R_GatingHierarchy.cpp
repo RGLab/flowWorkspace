@@ -606,7 +606,7 @@ vector<BOOL_GATE_OP> boolFilter_R_to_C(cpp11::list filter){
 				if(gOpObj.path.at(0).empty())
 					gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
 
-				// gOpObj.isNot=isNot.at(i)==TRUE;
+				gOpObj.isNot=isNot.at(i)==TRUE;
 				gOpObj.op=boost::iequals(string(op.at(i)),"|")?'|':'&';
 
 				res.push_back(gOpObj);
