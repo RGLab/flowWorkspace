@@ -182,7 +182,7 @@ test_that("add factor vector", {
   expect_equal(gh_pop_get_count(gs[[1]], "clusterA_Q5"),0)
   
   expect_error(gs_pop_add(gs, fac.list, parent = "rectangle", name = "clusterA")
-               , "exist", class = "std::domain_error")
+               , "exist", class = "error")
   
   #retrieve clustering results
   expect_error(gh_get_cluster_labels(gs[[1]], "rectangle", "cluster"), "No clustering results")

@@ -262,7 +262,7 @@ pop_add.logical <- function(gate, gh, parent, name, recompute, cluster_method_na
             #update object when it is a clusterGate
             if(!is.null(cluster_method_name))
             {
-              fb[["type"]] <- 8
+              fb[["type"]] <- as.integer(8)
               fb[["cluster_method_name"]] <- cluster_method_name
             }
             #skip gating by ignoring recompute      

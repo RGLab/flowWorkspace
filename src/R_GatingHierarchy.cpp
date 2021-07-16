@@ -115,13 +115,16 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
         cpp11::writable::strings types;
         for (auto it : stats)
         {
-            types.push_back(it.first);
-            vals.push_back(it.second);
+			types.push_back(it.first);
+			vals.push_back(it.second);
         }
-        vals.names() = types;
-
-        res.push_back(cpp11::named_arg(statsname) = vals);
-    }
+		
+		if(vals.size()>0)
+		{
+			vals.names() = types;
+			res.push_back(cpp11::named_arg(statsname) = vals);
+		}
+	}
     return res;
 }
 
@@ -472,14 +475,12 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
                 vector<string> spath(it->path.begin(), it->path.end());
                 ref.push_back(cpp11::strings(spath));
             }
-		
-		  cpp11::list ret=cpp11::list({cpp11::named_arg("v") = v
-								 ,cpp11::named_arg("v2") = v2
-								 ,cpp11::named_arg("ref") = ref
-								 ,cpp11::named_arg("type") = LOGICALGATE
-								 , cpp11::named_arg("filterId") =  nodeName
-								 });
-		  return ret;
+			cpp11::writable::list ret({cpp11::named_arg("v") = v, cpp11::named_arg("v2") = v2, cpp11::named_arg("type") = LOGICALGATE, cpp11::named_arg("filterId") = nodeName});
+			if(ref.size()==0)
+				ret.push_back(cpp11::named_arg("ref") = R_NilValue);
+			else
+				ret.push_back(cpp11::named_arg("ref") = ref);
+			return ret;
 
 		}
 		case CLUSTERGATE:
@@ -498,14 +499,17 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
             }
 		
 
-		  cpp11::list ret=cpp11::list({cpp11::named_arg("v") = v
-								 ,cpp11::named_arg("v2") = v2
-								 ,cpp11::named_arg("ref") = ref
-								 ,cpp11::named_arg("type") = CLUSTERGATE
-								 , cpp11::named_arg("filterId") =  nodeName
-								 , cpp11::named_arg("cluster_method_name") =  cg.get_cluster_method_name()
-								 });
-		  return ret;
+			cpp11::writable::list ret({cpp11::named_arg("v") = v
+							, cpp11::named_arg("v2") = v2
+							, cpp11::named_arg("type") = CLUSTERGATE
+							, cpp11::named_arg("filterId") = nodeName
+							, cpp11::named_arg("cluster_method_name") =  cg.get_cluster_method_name()
+		});
+			if(ref.size()==0)
+				ret.push_back(cpp11::named_arg("ref") = R_NilValue);
+			else
+				ret.push_back(cpp11::named_arg("ref") = ref);
+				  return ret;
 
 		}
 		default:
