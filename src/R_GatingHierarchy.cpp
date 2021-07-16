@@ -110,7 +110,7 @@ cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,stri
     for (bool i : {true, false})
     {
         const char * statsname = i ? "FlowCore" : "FlowJo";
-        auto stats = node.getStats(true);
+        auto stats = node.getStats(i);
         cpp11::writable::doubles vals;
         cpp11::writable::strings types;
         for (auto it : stats)
