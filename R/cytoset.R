@@ -355,7 +355,13 @@ setMethod("phenoData<-",
 #' @export 
 setMethod("pData",
           signature=signature(object="cytoset"),
-          definition=function(object) get_pheno_data(object@pointer))
+          definition=function(object) {
+            pd = get_pheno_data(object@pointer)
+             #remedy for dealing cpp1 bug see https://github.com/r-lib/cpp11/issues/206
+            cn <- names(pd)
+            names(pd) <- cn[cn!=""]
+            pd
+          })
 
 #' @export 
 setReplaceMethod("pData",

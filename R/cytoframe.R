@@ -1127,7 +1127,7 @@ cf_cleanup <- function(cf){
 #' 
 #' @export
 cf_append_cols <- function(cf, cols){
-  stopifnot(type(cols) == "double")
+  stopifnot(typeof(cols) == "double")
   if(cf_is_subsetted(cf))
     stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")
   append_cols(cf@pointer, colnames(cols), cols)
