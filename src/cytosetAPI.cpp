@@ -1,5 +1,5 @@
 #include <cytolib/H5CytoFrame.hpp>
-#include <flowWorkspace/pairVectorRcppWrap.h>
+#include <flowWorkspace/pairVectorCpp11Convert.h>
 #include <flowWorkspace/list_to_comp.h>
 
 using namespace cytolib;

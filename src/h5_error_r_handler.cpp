@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 #include <hdf5.h>
-#include <flowWorkspace/pairVectorRcppWrap.h>
+#include <flowWorkspace/pairVectorCpp11Convert.h>
 #define MSG_SIZE 1024
 herr_t my_hdf5_error_handler(unsigned n, const H5E_error2_t *err_desc, void *client_data)
 {

@@ -5,7 +5,7 @@
 #include <cytolib/CytoFrameView.hpp>
 #include <cytolib/GatingHierarchy.hpp>
 
-#include <flowWorkspace/pairVectorRcppWrap.h>
+#include <flowWorkspace/pairVectorCpp11Convert.h>
 #include <flowWorkspace/convert_trans.h>
 
 using namespace cytolib;

@@ -1,12 +1,12 @@
 /*
- * pairVectorRcppWrap.h
+ * pairVectorCpp11Convert.h
  *
  *  Created on: Feb 9, 2015
  *      Author: wjiang2
  */
 
-#ifndef PAIRVECTORRCPPWRAP_H_
-#define PAIRVECTORRCPPWRAP_H_
+#ifndef PAIRVECTORCPP11CONVERT_H_
+#define PAIRVECTORCPP11CONVERT_H_
 #include <cpp11.hpp>
 #include <Rmath.h>
 #include <cytolib/GatingSet.hpp>
@@ -141,4 +141,4 @@ inline 	FCS_READ_PARAM sexp_to_fcs_read_param(SEXP sexp) {
 
 
 
-#endif /* PAIRVECTORRCPPWRAP_H_ */
+#endif /* PAIRVECTORCPP11CONVERT_H_ */
