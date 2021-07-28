@@ -336,12 +336,12 @@ test_that("gs_pop_get_count_fast",{
       
       expect_equal(as.data.table(thisRes[,1:2]), expectRes[,-1, with = F], tol = 2e-3)
       
-      #use auto path
-      stats_wide <- gs_pop_get_count_fast(gs, format = "wide", path = "auto")
+      #use auto path #EDIT auto is no longer supported for long fmt
+      stats_wide <- gs_pop_get_count_fast(gs, format = "wide", path = "full")
       stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
       stats_wide <- as.data.frame(stats_wide)
       #get long format
-      stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "auto")
+      stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "full")
       
       #convert it to wide to do the comparsion
       stats_long[, value := Count]
