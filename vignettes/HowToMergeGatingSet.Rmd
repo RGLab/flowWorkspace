@@ -8,7 +8,7 @@ output:
     toc_float: yes
   pdf_document:
     toc: yes
-author: Greg Finak <gfinak@fhcrc.org>, Mike Jiang <wjiang2@fhcrc.org>
+author: Greg Finak <greg@ozette.ai>, Mike Jiang <mike@ozette.ai>
 vignette: >    
   %\VignetteIndexEntry{How to merge GatingSets}
   %\VignetteEngine{knitr::rmarkdown}
