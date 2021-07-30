@@ -77,5 +77,5 @@ Returns a list of matrix containing the events that expressed in any one of the 
 \code{\link{gh_pop_get_indices}}  \code{\link{gs_pop_get_count_fast}}
 }
 \author{
-Mike Jiang \email{wjiang2@fhcrc.org}
+Mike Jiang \email{mike@ozette.ai}
 }
