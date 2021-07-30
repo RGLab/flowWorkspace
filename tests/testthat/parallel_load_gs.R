@@ -47,6 +47,6 @@ f <- function(i,path){
   gs <- load_gs(path, select = i)
   nrow(gh_pop_get_data(gs[[1]]))
 }
-expect_equivalent(mclapply(sid, f, path = tmp), lapply(gs[sid], function(gh)nrow(gh_pop_get_data(gh))))
+expect_equivalent(parallel::mclapply(sid, f, path = tmp), lapply(gs[sid], function(gh)nrow(gh_pop_get_data(gh))))
 
 })
