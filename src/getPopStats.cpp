@@ -38,6 +38,12 @@ cpp11::list getPopCounts_cpp(cpp11::external_pointer<GatingSet> gs, bool freq, S
     {
         std::string sn = sampleNames.at(i);
         GatingHierarchy & gh = *gs->getGatingHierarchy(sn);
+        // hash for pop vs id since it is expensive to compute for large tree
+        std::unordered_map<std::string, cytolib::VertexID> pop_vs_id;
+        auto all_pops = gh.getNodePaths(0, true, true);
+        for (size_t j = 0; j < all_pops.size(); j++) {
+          pop_vs_id[all_pops[j]] = j;
+        }
         unsigned rootCount = gh.getNodeProperty(gh.getNodeID("root")).getStats(isFlowCore)["count"];
         for(int j = 0; j < nPop; j++){
             std::string pop = subpopulation.at(j);
@@ -46,7 +52,11 @@ cpp11::list getPopCounts_cpp(cpp11::external_pointer<GatingSet> gs, bool freq, S
             popVec[counter] = pop;
             
             //get count or frequency of this pop
-            VertexID u = gh.getNodeID(pop);
+            auto it = pop_vs_id.find(pop);
+          if (it == pop_vs_id.end())
+            throw std::domain_error(pop + " not found in gating tree of " + sn);
+          cytolib::VertexID u = it->second;
+
             unsigned thisCount = gh.getNodeProperty(u).getStats(isFlowCore)["count"];
             if(freq)
                 if(rootCount)
