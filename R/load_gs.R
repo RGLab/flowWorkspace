@@ -35,7 +35,6 @@
 #' @rdname save_gs
 #' @export
 #' @aliases save_gs load_gs save_gslist load_gslist
-#' @importFrom aws.s3 put_object
 save_gs<-function(gs, path
                   , cdf = NULL
                   , backend_opt = c("copy","move","skip","symlink","link")
@@ -98,7 +97,6 @@ parse_s3_path <- function(url){
 #' delete the archive of GatingSet
 #' 
 #' @param path either a local path or s3 path (e.g. "s3://bucketname/gs_path)
-#' @importFrom aws.s3 get_bucket delete_object
 #' @export
 delete_gs <- function(path){
   unlink(path, recursive = TRUE)
@@ -108,7 +106,6 @@ delete_gs <- function(path){
 #' @rdname save_gs
 #' @export
 #' @aliases load_gs load_gslist
-#' @importFrom aws.s3 get_bucket_df save_object
 load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE){
   if(!is.null(h5_readonly))
   {

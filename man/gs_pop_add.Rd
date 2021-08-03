@@ -90,7 +90,7 @@ They are equivalent to the \code{workFlow},\code{add} and \code{Rm} methods in \
     autoplot(gs[[1]],"rectangle")
     autoplot(gs[[1]],nodeIDs) #may be smoothed automatically if there are not enough events after gating
     
-#plot gates across samples using lattice plot
+#plot gates across samples 
     autoplot(gs,nodeID)
 #plot all gates for one sample
     autoplot(gs[[1]])#boolean gate is skipped by default 

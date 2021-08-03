@@ -909,19 +909,9 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
 #'   }
 #' @aliases gs_plot_pop_count_cv
 #' @export
-#' @importFrom lattice barchart
-#' @importFrom latticeExtra ggplot2like
 gs_plot_pop_count_cv <- function(x, scales = list(x = list(rot = 90)), path = "auto",...){
-      cv <- .computeCV(x, path = path)
-      #flatten, generate levels for samples.
-      nr<-nrow(cv)
-      nc<-ncol(cv)
-      populations<-gl(nc,nr,labels=as.character(colnames(cv)), ordered = TRUE)
-      samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
-      cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-
-      return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
-    }
+  .Defunct() 
+   }
 
 #' @export
 setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing", ...){

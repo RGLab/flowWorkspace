@@ -117,7 +117,7 @@ to a \code{flowFrame} by accessing the same information from the underlying data
   \item{plot}{Basic plots for \code{cytoframe} objects. If the object
     has only a single parameter this produces a \code{\link[graphics:hist]{histogram}}. 
     For exactly two parameters we plot a bivariate density map (see \code{\link[graphics]{smoothScatter}})
-    and for more than two parameters we produce a simple \code{\link[lattice]{splom}} plot. 
+    and for more than two parameters we produce a simple splom plot. 
     To select specific parameters from a \code{flowFrame} for plotting, either subset the object or
     specify the parameters as a character vector in the second argument to \code{plot}. 
     The smooth parameters lets you toggle between density-type \code{\link[graphics]{smoothScatter}}

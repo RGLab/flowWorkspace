@@ -109,7 +109,7 @@
 #'   \item{plot}{Basic plots for \code{cytoframe} objects. If the object
 #'     has only a single parameter this produces a \code{\link[graphics:hist]{histogram}}. 
 #'     For exactly two parameters we plot a bivariate density map (see \code{\link[graphics]{smoothScatter}})
-#'     and for more than two parameters we produce a simple \code{\link[lattice]{splom}} plot. 
+#'     and for more than two parameters we produce a simple splom plot. 
 #'     To select specific parameters from a \code{flowFrame} for plotting, either subset the object or
 #'     specify the parameters as a character vector in the second argument to \code{plot}. 
 #'     The smooth parameters lets you toggle between density-type \code{\link[graphics]{smoothScatter}}
@@ -939,7 +939,6 @@ cf_write_h5 <- function(cf, filename){
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #'                 And it is valid when on_disk is set to true.
-#' @importFrom aws.signature read_credentials
 #' @family cytoframe/cytoset IO functions
 #' @export
 load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk){
@@ -969,34 +968,6 @@ is_http_path <- function(x){
   grepl("^https://", x, ignore.case = TRUE)
 }
 
-check_credential <- function(cred = NULL){
-  if(is.null(cred))
-  {
-    #try the sys env first
-    if(Sys.getenv("AWS_ACCESS_KEY_ID")!="")
-    {
-      cred <- list(AWS_ACCESS_KEY_ID = Sys.getenv("AWS_ACCESS_KEY_ID")
-                   , AWS_SECRET_ACCESS_KEY = Sys.getenv("AWS_SECRET_ACCESS_KEY")
-                   , AWS_DEFAULT_REGION = Sys.getenv("AWS_DEFAULT_REGION")
-                   )
-      if(cred[["AWS_DEFAULT_REGION"]] == "")
-        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
-    }else
-    {
-      cred <- try(read_credentials()[[1]], silent = TRUE)
-      if(class(cred) == "try-error")
-      {
-        cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
-      }  
-      if(is.null(cred[["AWS_DEFAULT_REGION"]]))
-        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
-    }
-    
-    cred$AWS_REGION <- cred[["AWS_DEFAULT_REGION"]]
-    cred[["AWS_DEFAULT_REGION"]] <- NULL
-  }
-  cred
-}
 #' Return the file path of the underlying h5 file
 #' 
 #' Return the file path of the underlying h5 file

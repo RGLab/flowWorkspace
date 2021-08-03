@@ -38,8 +38,6 @@
 
 \code{getCompensationMatrices} --> \code{gh_get_compensations}
 
-\code{plotGate} --> \code{autoplot}
-
 \code{setNode} --> \code{gs(/gh)_set_node_name/gs(/gh)_set_node_visible}
 
 \code{isNcdf} --> \code{gs_is_h5}

@@ -239,9 +239,6 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y)
 		})
 
 
-setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
-          .Defunct("ggcyto::autoplot", "flowWorkspace")
-    })
 .gslist_get_pop_stats <- function(x, format = c("long", "wide"), ...){
       
       format <- match.arg(format)
