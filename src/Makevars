@@ -6,7 +6,7 @@ ifneq (,)
 This makefile requires GNU Make.
 endif
 	
-CXX_STD = CXX11
+CXX_STD = CXX17
 PKG_CPPFLAGS =-DROUT -I../inst/include -DBOOST_NO_AUTO_PTR 
 
 
