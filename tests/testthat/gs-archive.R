@@ -1,4 +1,4 @@
-if(Sys.getenv("test-gs-compatibility")=="yes")
+if(Sys.getenv("test_gs_compatibility")=="yes")
 {
   context("-- test-gs-compatibility")
   gs_dir <- test_gs_dir
