@@ -13,9 +13,6 @@ load_cytoset_from_fcs(
   name.keyword,
   transformation = "linearize",
   which.lines = NULL,
-  alter.names = FALSE,
-  column.pattern = NULL,
-  invert.pattern = FALSE,
   decades = 0,
   is_h5 = NULL,
   h5_dir = NULL,
@@ -57,12 +54,6 @@ then the file names are used.}
 \item{transformation}{see \code{\link{load_cytoframe_from_fcs}} for details.}
 
 \item{which.lines}{see \code{\link{load_cytoframe_from_fcs}} for details.}
-
-\item{alter.names}{see \code{\link{load_cytoframe_from_fcs}} for details.}
-
-\item{column.pattern}{see \code{\link{load_cytoframe_from_fcs}} for details.}
-
-\item{invert.pattern}{see \code{\link{load_cytoframe_from_fcs}} for details.}
 
 \item{decades}{see \code{\link{load_cytoframe_from_fcs}} for details.}
 
