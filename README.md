@@ -26,8 +26,7 @@ Otherwise, we may close your issue without responding.
 
 ```r
 # First, install it from bionconductor so that it will pull all the dependent packages automatically
-library(BiocInstalller)
-bicLite(flowWorkspace) # may be older
+biocManager::install("flowWorkspace") # may be older
 # Then, install the latest version from github using devtools package 
 install.packages("devtools") 
 library(devtools) #load it
