@@ -1188,3 +1188,41 @@ setReplaceMethod("colnames",
 gs_cleanup_temp <- function(x, temp_dir = NULL){
 	cs_cleanup_temp(gs_cyto_data(x), temp_dir)
 }
+
+#' Get a ape::phylo object from a \code{\link{GatingSet}} or \code{\link{GatingHierarchy}}
+#' @export
+gs_get_phylo <- function(gs, ancestor = "root", tip.label = "auto"){
+  tip.label <- match.arg(tip.label, c("auto", "full", "index"))
+  fullPath <- ifelse(tip.label == "full", TRUE, FALSE)
+  phylo_components <- flowWorkspace:::.cpp_getPhylo(gs@pointer, sampleNames(gs)[[1]], ancestor, fullPath)
+  
+  # Remap node indices to satsify ape::phylo indexing requirements
+  gs_leaf_idx <- phylo_components$leaf_nodes
+  gs_internal_idx <- phylo_components$internal_nodes
+  gs_idx <- c(gs_leaf_idx, gs_internal_idx)
+  idx_map <- data.frame("phylo_idx"=seq_along(gs_idx), 
+                        "gs_idx"=gs_idx,
+                        "node_names"=c(phylo_components$leaf_names, phylo_components$internal_names),
+                        "is_leaf"=c(rep(TRUE, length(gs_leaf_idx)), rep(FALSE, length(gs_internal_idx))))
+  
+  phylo_edges <- sapply(as.vector(phylo_components$edges), function(gs_val) {idx_map[idx_map$gs == gs_val, "phylo_idx"]})
+  phylo_components$phylo_edges <- matrix(phylo_edges, ncol = 2, byrow = FALSE)
+  
+  if(tip.label %in% c("auto", "full"))
+    tip.label <- phylo_components$leaf_names
+  else
+    tip.label <- seq_along(gs_leaf_idx)
+  
+  out_phylo <- list(edge=phylo_components$phylo_edges, 
+                    Nnode = length(gs_internal_idx), 
+                    tip.label = tip.label)
+  class(out_phylo) <- "phylo"
+  
+  # Also store the node map internally for later availability
+  attr(out_phylo, "node_idx_map") <- idx_map
+  out_phylo
+}
+
+#' @rdname gs_get_phylo
+#' @export
+gh_get_phylo <- gs_get_phylo

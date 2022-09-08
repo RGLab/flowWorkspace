@@ -34,6 +34,8 @@ Imports:
     Rgraphviz,
     data.table,
     dplyr,
+    tidyr,
+    tibble,
     Rcpp,
     scales,
     matrixStats,
@@ -44,12 +46,16 @@ Imports:
 	aws.signature,
     flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4),
+	S4Vectors,
+	SummarizedExperiment,
 	DelayedArray,
-	S4Vectors
+	SingleCellExperiment,
+	TreeSummarizedExperiment
 Collate: 
     'cytoframe.R'
     'cytoset.R'
     'AllClasses.R'
+    'CytoArray.R'
     'getStats.R'
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'
@@ -59,10 +65,12 @@ Collate:
     'add_Methods.R'
     'copyNode.R'
     'cytoctx.R'
+    'cytoexperiment.R'
     'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'
     'getSingleCellExpression.R'
+    'gsexperiment.R'
     'identifier.R'
     'load_fcs.R'
     'load_gs.R'

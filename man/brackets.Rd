@@ -15,7 +15,7 @@
 \usage{
 \S4method{[}{GatingSet,ANY,ANY,ANY}(x, i, j, ..., drop = TRUE)
 
-\S4method{[[}{GatingSet,numeric}(x, i, j, ...)
+\S4method{[[}{GatingSet,numeric,ANY}(x, i, j, ...)
 }
 \arguments{
 \item{x}{a \code{GatingSet} or \code{GatingSetList}}
