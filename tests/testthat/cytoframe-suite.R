@@ -8,9 +8,44 @@ rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
 cf <- load_cytoframe_from_fcs(fcs_file)
 cf_lock(cf)
 
-test_that("load_cytoframe", {
-  expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
+
+test_that("rownames", {
+  rn <- rownames(cf)
+  cn <- colnames(cf)
+  expect_equivalent(dimnames(cf), list(rn, cn))
+  expect_null(rn)
+  expect_null(rownames(exprs(cf)))
+  
+  # add rn
+  cf <- realize_view(cf)  
+  rn <- paste0("c", seq_len(nrow(cf)))
+  rownames(cf) <- rn
+  expect_equal(rownames(cf), rn)
+  expect_equal(rownames(exprs(cf)), rn)
+  
+  #subset
+  cf1 <- cf[2:4, 1:2]
+  rn1 <- rn[2:4]
+  expect_equal(rownames(cf1), rn1)
+  rn1 <- sub("c", "d", rn1)
+  expect_error(rownames(cf) <- rn1, "different", class = "error")
+  rownames(cf1) <- rn1
+  expect_equal(rownames(cf1), rn1)
+  rn[2:4] <- rn1
+  expect_equal(rownames(cf), rn)
+  expect_equal(rownames(exprs(cf)), rn)
+  
+  #del
+  expect_error(rownames(cf1) <- NULL, "subsetted", class = "error")
+  rownames(cf) <- NULL
+  expect_null(rownames(cf))
+  expect_null(rownames(cf1))
 })
+
+# test_that("load_cytoframe", {
+#   expect_error(load_cytoframe("/"), "invalid cytoframe", class = "error")
+# })
+
 test_that("cf_append_cols", {
   cf <- flowFrame_to_cytoframe(GvHD[[1]])
   
@@ -382,9 +417,53 @@ test_that("keyword setters", {
   cf_keyword_rename(cf1, "k1", "k2")
   expect_error(cf_keyword_rename(cf1, "k1", "k2"), "not found")
   expect_equal(keyword(cf1)[["k2"]], "2")
+  #set (subset)
+  cf_keyword_set(cf1, "k2", 5)
+  expect_equal(keyword(cf1)[["k2"]], "5")
   #delete
   cf_keyword_delete(cf1, "k2")
   expect_error(cf_keyword_delete(cf1, "k2"), "not found")
+  
+  # Testing vectorized operations
+  cf1 <- realize_view(cf)
+  #add new
+  cf_keyword_insert(cf1, c("k1", "k2", "k3"), c("red", 5, 1.23))
+  # If any is already present, the call should fail
+  expect_error(cf_keyword_insert(cf1, c("k1", "k2"), c("blue", 6)), "exist")
+  #rename
+  cf_keyword_rename(cf1, c("k1", "k2"), c("key1", "key2"))
+  expect_error(cf_keyword_rename(cf1, c("k1", "k2"), c("key1", "key2")), "not found")
+  expected <- list(key1="red", key2="5")
+  expect_equal(keyword(cf1)[c("key1", "key2")], expected)
+  #set (subset) -- overwrite two and add one
+  cf_keyword_set(cf1, c("key1", "key2", "key4"), c("green", 7, "newval"))
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
+  expect_equal(keyword(cf1)[c("key1", "key2", "k3", "key4")], expected)
+  #delete
+  cf_keyword_delete(cf1, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(cf_keyword_delete(cf1, c("key2", "k3")), "not found")
+  
+  # Testing vectorized operations with named vector
+  cf1 <- realize_view(cf)
+  #add new
+  values <- c(k1="red", k2=5, k3=1.23)
+  cf_keyword_insert(cf1, values)
+  # If any is already present, the call should fail
+  expect_error(cf_keyword_insert(cf1, c(k1="blue", k2=6)), "exist")
+  #rename
+  cf_keyword_rename(cf1, c(k1="key1", k2="key2"))
+  expect_error(cf_keyword_rename(cf1, c(k1="key1", k2="key2")), "not found")
+  expected <- list(key1="red", key2="5")
+  expect_equal(keyword(cf1)[c("key1", "key2")], expected)
+  #set (subset) -- overwrite two and add one
+  cf_keyword_set(cf1, c(key1="green", key2=7, key4="newval"))
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
+  expect_equal(keyword(cf1)[c("key1", "key2", "k3", "key4")], expected)
+  #delete
+  cf_keyword_delete(cf1, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(cf_keyword_delete(cf1, c("key2", "k3")), "not found")
 })
 # test_that("range", {
 # cf <- flowFrame_to_cytoframe(GvHD[[1]])

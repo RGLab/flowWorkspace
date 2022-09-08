@@ -4,7 +4,12 @@
 \alias{cf_write_disk}
 \title{Save the cytoframe to disk}
 \usage{
-cf_write_disk(cf, filename, backend = get_default_backend(), cred = NULL)
+cf_write_disk(
+  cf,
+  filename,
+  backend = get_default_backend(),
+  ctx = .cytoctx_global
+)
 }
 \arguments{
 \item{cf}{cytoframe object}
@@ -13,8 +18,7 @@ cf_write_disk(cf, filename, backend = get_default_backend(), cred = NULL)
 
 \item{backend}{either "h5" or "tile"}
 
-\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
+\item{ctx}{cytoctx object, see [cytoctx] for details}
 }
 \description{
 Save the cytoframe to disk

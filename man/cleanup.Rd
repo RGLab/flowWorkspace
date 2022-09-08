@@ -8,13 +8,12 @@
 \alias{gs_cleanup}
 \title{Remove on-disk files associatated with flowWorkspace data classes}
 \usage{
-cf_cleanup(cf, cred = NULL)
+cf_cleanup(cf, ctx = .cytoctx_global)
 }
 \arguments{
 \item{cf}{a cytoframe, cytoset, GatingHierarchy, or GatingSet object}
 
-\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
+\item{ctx}{cytoctx object, see [cytoctx] for details}
 }
 \description{
 These methods immediately delete the on-disk  storage associated with \link{cytoframe},

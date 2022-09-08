@@ -286,7 +286,7 @@ test_that("write.FCS compatibility", {
   # keys_cf will have a few different keys (like cytolib version)
   # and will thus also slightly offset BEGINDATA and ENDDATA
   keys_to_compare <- names(keys_fr)
-  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID"))]
+  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID","ORIGINALGUID"))]
   to_compare <- keys_cf[keys_to_compare]
   expect_equal(keys_fr[keys_to_compare], keys_cf[keys_to_compare])
   expect_equal(exprs(fr_from_fr), exprs(fr_from_cf))
@@ -299,7 +299,7 @@ test_that("write.FCS compatibility", {
   # keys_cf will have a few different keys (like cytolib version)
   # and will thus also slightly offset BEGINDATA and ENDDATA
   keys_to_compare <- names(keys_fr)
-  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID"))]
+  keys_to_compare <- keys_to_compare[!(keys_to_compare %in% c("$BEGINDATA", "$ENDDATA", "FILENAME", "GUID","ORIGINALGUID"))]
   to_compare <- keys_cf[keys_to_compare]
   expect_equal(keys_fr[keys_to_compare], keys_cf[keys_to_compare])
   expect_equal(exprs(cf_from_fr), exprs(cf_from_cf))

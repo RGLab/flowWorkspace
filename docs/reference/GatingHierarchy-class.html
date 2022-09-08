@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +105,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -143,23 +143,24 @@ Each sample (FCS file) is associated with it's own GatingHierarchy. It is also m
     <div class='dont-index'><p><code><a href='GatingSet-class.html'>GatingSet</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
- <span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowWorkspaceData</span>)
- <span class='no'>d</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowWorkspaceData"</span>)
- <span class='no'>wsfile</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>d</span>,<span class='kw'>pattern</span><span class='kw'>=</span><span class='st'>"A2004Analysis.xml"</span>,<span class='kw'>full</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
- <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>CytoML</span>)
- <span class='no'>ws</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/open_flowjo_xml.html'>open_flowjo_xml</a></span>(<span class='no'>wsfile</span>);
- <span class='no'>G</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/try.html'>try</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/flowjo_to_gatingset.html'>flowjo_to_gatingset</a></span>(<span class='no'>ws</span>,<span class='kw'>path</span><span class='kw'>=</span><span class='no'>d</span>,<span class='kw'>name</span><span class='kw'>=</span><span class='fl'>1</span>));
- <span class='no'>gh</span> <span class='kw'>&lt;-</span> <span class='no'>G</span><span class='kw'>[[</span><span class='fl'>1</span>]]
- <span class='fu'><a href='gh_pop_compare_stats.html'>gh_pop_compare_stats</a></span>(<span class='no'>gh</span>);
- <span class='fu'><a href='gs_plot_pop_count_cv.html'>gh_plot_pop_count_cv</a></span>(<span class='no'>gh</span>)
- <span class='no'>nodes</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>gh</span>)
- <span class='no'>thisNode</span> <span class='kw'>&lt;-</span> <span class='no'>nodes</span>[<span class='fl'>4</span>]
- <span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>ggcyto</span>)
- <span class='fu'><a href='https://rdrr.io/pkg/ggcyto/man/autoplot.html'>autoplot</a></span>(<span class='no'>gh</span>,<span class='no'>thisNode</span>);
- <span class='fu'><a href='gs_pop_get_gate.html'>gh_pop_get_gate</a></span>(<span class='no'>gh</span>,<span class='no'>thisNode</span>);
- <span class='fu'><a href='gh_pop_get_data.html'>gh_pop_get_data</a></span>(<span class='no'>gh</span>,<span class='no'>thisNode</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+ <span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'>flowWorkspaceData</span><span class='op'>)</span>
+ <span class='va'>d</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>,package<span class='op'>=</span><span class='st'>"flowWorkspaceData"</span><span class='op'>)</span>
+ <span class='va'>wsfile</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span><span class='va'>d</span>,pattern<span class='op'>=</span><span class='st'>"A2004Analysis.xml"</span>,full<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+ <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/RGLab/CytoML'>CytoML</a></span><span class='op'>)</span>
+ <span class='va'>ws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/open_flowjo_xml.html'>open_flowjo_xml</a></span><span class='op'>(</span><span class='va'>wsfile</span><span class='op'>)</span>;
+ <span class='va'>G</span><span class='op'>&lt;-</span><span class='kw'><a href='https://rdrr.io/r/base/try.html'>try</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/CytoML/man/flowjo_to_gatingset.html'>flowjo_to_gatingset</a></span><span class='op'>(</span><span class='va'>ws</span>,path<span class='op'>=</span><span class='va'>d</span>,name<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>;
+ <span class='va'>gh</span> <span class='op'>&lt;-</span> <span class='va'>G</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+ <span class='fu'><a href='gh_pop_compare_stats.html'>gh_pop_compare_stats</a></span><span class='op'>(</span><span class='va'>gh</span><span class='op'>)</span>;
+ <span class='fu'><a href='gh_plot_pop_count_cv.html'>gh_plot_pop_count_cv</a></span><span class='op'>(</span><span class='va'>gh</span><span class='op'>)</span>
+ <span class='va'>nodes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span><span class='op'>(</span><span class='va'>gh</span><span class='op'>)</span>
+ <span class='va'>thisNode</span> <span class='op'>&lt;-</span> <span class='va'>nodes</span><span class='op'>[</span><span class='fl'>4</span><span class='op'>]</span>
+ <span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/RGLab/ggcyto/issues'>ggcyto</a></span><span class='op'>)</span>
+ <span class='fu'><a href='https://rdrr.io/pkg/ggcyto/man/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>gh</span>,<span class='va'>thisNode</span><span class='op'>)</span>;
+ <span class='fu'><a href='gs_pop_get_gate.html'>gh_pop_get_gate</a></span><span class='op'>(</span><span class='va'>gh</span>,<span class='va'>thisNode</span><span class='op'>)</span>;
+ <span class='fu'><a href='gh_pop_get_data.html'>gh_pop_get_data</a></span><span class='op'>(</span><span class='va'>gh</span>,<span class='va'>thisNode</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -171,11 +172,11 @@ Each sample (FCS file) is associated with it's own GatingHierarchy. It is also m
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

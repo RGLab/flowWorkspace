@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +105,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@
     <p>Used to construct inverse hyperbolic sine transform object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>asinhtGml2_trans</span>(<span class='no'>...</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>equal.space</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>asinhtGml2_trans</span><span class='op'>(</span><span class='va'>...</span>, n <span class='op'>=</span> <span class='fl'>6</span>, equal.space <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,16 +155,18 @@
     <p>asinhtGml2 transformation object</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>trans.obj</span> <span class='kw'>&lt;-</span> <span class='fu'>asinhtGml2_trans</span>(<span class='kw'>equal.space</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>1e3</span>
-<span class='no'>brks.func</span> <span class='kw'>&lt;-</span> <span class='no'>trans.obj</span><span class='kw'>[[</span><span class='st'>"breaks"</span>]]
-<span class='no'>brks</span> <span class='kw'>&lt;-</span> <span class='fu'>brks.func</span>(<span class='no'>data</span>)
-<span class='no'>brks</span> <span class='co'># fasinh space displayed at raw data scale</span></div><div class='output co'>#&gt; [1]      0.00000     64.80398    522.91466   4154.68587  33001.97227
+    <pre class="examples"><div class='input'><span class='va'>trans.obj</span> <span class='op'>&lt;-</span> <span class='fu'>asinhtGml2_trans</span><span class='op'>(</span>equal.space <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>1e3</span>
+<span class='va'>brks.func</span> <span class='op'>&lt;-</span> <span class='va'>trans.obj</span><span class='op'>[[</span><span class='st'>"breaks"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>brks</span> <span class='op'>&lt;-</span> <span class='fu'>brks.func</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
+<span class='va'>brks</span> <span class='co'># fasinh space displayed at raw data scale</span>
+</div><div class='output co'>#&gt; [1]      0.00000     64.80398    522.91466   4154.68587  33001.97227
 #&gt; [6] 262144.00000</div><div class='input'>
 <span class='co'>#transform it to verify it is equal-spaced at transformed scale</span>
-<span class='no'>trans.func</span> <span class='kw'>&lt;-</span> <span class='no'>trans.obj</span><span class='kw'>[[</span><span class='st'>"transform"</span>]]
-<span class='no'>brks.trans</span> <span class='kw'>&lt;-</span> <span class='fu'>trans.func</span>(<span class='no'>brks</span>)
-<span class='no'>brks.trans</span></div><div class='output co'>#&gt; [1] 0.0 0.2 0.4 0.6 0.8 1.0</div></pre>
+<span class='va'>trans.func</span> <span class='op'>&lt;-</span> <span class='va'>trans.obj</span><span class='op'>[[</span><span class='st'>"transform"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>brks.trans</span> <span class='op'>&lt;-</span> <span class='fu'>trans.func</span><span class='op'>(</span><span class='va'>brks</span><span class='op'>)</span>
+<span class='va'>brks.trans</span>
+</div><div class='output co'>#&gt; [1] 0.0 0.2 0.4 0.6 0.8 1.0</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -176,11 +178,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

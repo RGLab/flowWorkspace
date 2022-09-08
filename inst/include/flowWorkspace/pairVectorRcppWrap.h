@@ -45,18 +45,7 @@ namespace Rcpp {
 
 		return res;
 	}
-	 // as for list to CytoCtx
-	template <> inline CytoCtx as(SEXP sexp) {
-		 Rcpp::List cred(sexp);
-		 int nthreads = 1;
-		if(cred.containsElementNamed("num_threads"))
-			nthreads = cred["num_threads"];
-		 return CytoCtx(as<string>(cred["AWS_ACCESS_KEY_ID"])
-				 , as<string>(cred["AWS_SECRET_ACCESS_KEY"])
-				 ,  as<string>(cred["AWS_REGION"])
-				 , nthreads
-				 );
-	}
+
 	 // as for FCS_READ_PARAM
 	template <> inline FCS_READ_PARAM as(SEXP sexp) {
 		 Rcpp::List cfg(sexp);

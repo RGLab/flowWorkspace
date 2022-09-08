@@ -15,6 +15,11 @@ test_that("gs_pop_get_gs", {
   expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
   recompute(gs1)
   expect_equal(gs_pop_get_stats(gs, nodes)[, c(1,3)], gs_pop_get_stats(gs1, nodes.new)[, c(1,3)])
+  # Quick test to make sure get_stats methods do not alter the original data frame when
+  # passed a function and/or inverse.transform = TRUE
+  stats_1 <- gs_pop_get_stats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
+  stats_2 <- gs_pop_get_stats(gs, nodes, type = pop.MFI, inverse.transform = TRUE)
+  expect_equal(stats_1, stats_2)
   
 })
 
@@ -331,12 +336,12 @@ test_that("gs_pop_get_count_fast",{
       
       expect_equal(as.data.table(thisRes[,1:2]), expectRes[,-1, with = F], tol = 2e-3)
       
-      #use auto path
-      stats_wide <- gs_pop_get_count_fast(gs, format = "wide", path = "auto")
+      #use auto path #EDIT auto is no longer supported for long fmt
+      stats_wide <- gs_pop_get_count_fast(gs, format = "wide", path = "full")
       stats_wide <- stats_wide[-match("root", rownames(stats_wide)), ] #remove root
       stats_wide <- as.data.frame(stats_wide)
       #get long format
-      stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "auto")
+      stats_long <- gs_pop_get_count_fast(gs, format = "long", path = "full")
       
       #convert it to wide to do the comparsion
       stats_long[, value := Count]
@@ -380,7 +385,8 @@ test_that("keyword",{
             
             #fix legacy result
             thisResult[paste0("$P",5:11, "N")] <- paste0("<", thisResult[paste0("$P",5:11, "N")], ">")
-            
+            thisResult$FCSversion <- NULL #avoid comaptibility test failure
+
             thisResult[["$BEGINDATA"]] <- NULL
             thisResult[["$ENDDATA"]] <- NULL
             thisResult <- sapply(thisResult, function(i)
@@ -397,6 +403,7 @@ test_that("keyword",{
             thisResult[["$BEGINDATA"]] <- NULL
             thisResult[["$ENDDATA"]] <- NULL
             thisResult[["$CYTOLIB_VERSION"]] <- NULL
+            thisResult$FCSversion <- NULL #avoid comaptibility test failure
             colnames(thisResult[["SPILL"]]) <- gsub("<|>", "", colnames(thisResult[["SPILL"]]))
             ind <- !grepl("(flowCore_\\$P)|(transformation)",names(thisResult))
             thisResult[ind]
@@ -583,4 +590,67 @@ test_that("node path accessors for GatingSet", {
                                                   "/not debris/singlets/CD3+/DNT", 
                                                   "/not debris/singlets/CD3+/DPT"))
   
+})
+
+test_that("keyword setters", {
+  gs_copy <- gs_clone(gs)
+  #add new
+  gs_keyword_insert(gs_copy, "k1", 2)
+  expect_error(gs_keyword_insert(gs_copy, "k1", 2), "exist")
+  #rename
+  gs_keyword_rename(gs_copy, "k1", "k2")
+  expect_error(gs_keyword_rename(gs_copy, "k1", "k2"), "not found")
+  expected <- data.frame(k2=rep("2",2))
+  expect_equal(keyword(gs_copy, "k2"), expected)
+  #set (subset)
+  gs_keyword_set(gs_copy, "k2", 5)
+  expected <- data.frame(k2=rep("5",2))
+  expect_equal(keyword(gs_copy, "k2"), expected)
+  #delete
+  gs_keyword_delete(gs_copy, "k2")
+  expect_error(gs_keyword_delete(gs_copy, "k2"), "not found")
+  
+  # Testing vectorized operations
+  gs_copy <- gs_clone(gs)
+  #add new
+  gs_keyword_insert(gs_copy, c("k1", "k2", "k3"), c("red", 5, 1.23))
+  # If any is already present, the call should fail
+  expect_error(gs_keyword_insert(gs_copy, c("k1", "k2"), c("blue", 6)), "exist")
+  #rename
+  gs_keyword_rename(gs_copy, c("k1", "k2"), c("key1", "key2"))
+  expect_error(gs_keyword_rename(gs_copy, c("k1", "k2"), c("key1", "key2")), "not found")
+  expected <- list(key1="red", key2="5")
+  expect_equal(keyword(gs_copy)[[1]][c("key1", "key2")], expected)
+  expect_equal(keyword(gs_copy)[[2]][c("key1", "key2")], expected)
+  #set (subset) -- overwrite two and add one
+  gs_keyword_set(gs_copy, c("key1", "key2", "key4"), c("green", 7, "newval"))
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
+  expect_equal(keyword(gs_copy)[[1]][c("key1", "key2", "k3", "key4")], expected)
+  expect_equal(keyword(gs_copy)[[2]][c("key1", "key2", "k3", "key4")], expected)
+  #delete
+  gs_keyword_delete(gs_copy, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(gs_keyword_delete(gs_copy, c("key2", "k3")), "not found")
+  
+  # Testing vectorized operations with named vectors
+  gs_copy <- gs_clone(gs)
+  #add new
+  gs_keyword_insert(gs_copy, c(k1="red", k2=5, k3=1.23))
+  # If any is already present, the call should fail
+  expect_error(gs_keyword_insert(gs_copy, c(k1="blue", k2=6)), "exist")
+  #rename
+  gs_keyword_rename(gs_copy, c(k1="key1", k2="key2"))
+  expect_error(gs_keyword_rename(gs_copy, c(k1="key1", k2="key2")), "not found")
+  expected <- list(key1="red", key2="5")
+  expect_equal(keyword(gs_copy)[[1]][c("key1", "key2")], expected)
+  expect_equal(keyword(gs_copy)[[2]][c("key1", "key2")], expected)
+  #set (subset) -- overwrite two and add one
+  gs_keyword_set(gs_copy, c("key1", "key2", "key4"), c("green", 7, "newval"))
+  expected <- list(key1="green", key2="7", k3="1.23", key4="newval")
+  expect_equal(keyword(gs_copy)[[1]][c("key1", "key2", "k3", "key4")], expected)
+  expect_equal(keyword(gs_copy)[[2]][c("key1", "key2", "k3", "key4")], expected)
+  #delete
+  gs_keyword_delete(gs_copy, c("key2", "key4"))
+  # If any are not longer present, the call should fail
+  expect_error(gs_keyword_delete(gs_copy, c("key2", "k3")), "not found")
 })

@@ -254,22 +254,11 @@ pop_add.logical <- function(gate, gh, parent, name, recompute, cluster_method_na
           {
             
             
-            ind <- gate
-            
             #convert to global one by combining it with parent indice
-            pInd.logical <- gh_pop_get_indices(gh, parent)
-            # browser()
-            #convert it to  global ind 
-            if(length(ind) < length(pInd.logical))
-            {
-              pInd.int <- which(pInd.logical)
-              if(length(ind) != length(pInd.int))
-                stop("the length of  the logical indices ", length(ind), " does not match to the parent events number ", length(pInd.int))
-              pInd.logical[pInd.int] <- ind
-              ind <- pInd.logical
-            }
+			idx <- gh_pop_normalize_idx(gh, parent, gate)
+	
               
-            fb <- filter_to_list(ind)
+            fb <- filter_to_list(idx)
             #update object when it is a clusterGate
             if(!is.null(cluster_method_name))
             {
@@ -279,10 +268,7 @@ pop_add.logical <- function(gate, gh, parent, name, recompute, cluster_method_na
             #skip gating by ignoring recompute      
             nodeID <- .addGate(gh, fb, name = name, parent = parent, ...)
             
-            #added it to gating tree
-            sn <- sampleNames(gh)
-            ptr <- gh@pointer
-            .cpp_setIndices(ptr, sn, nodeID-1, ind)
+			.gh_pop_set_indices(gh, nodeID, idx)
           }
 
 #' @rdname pop_add

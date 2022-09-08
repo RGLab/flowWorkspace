@@ -81,7 +81,7 @@ without removing or adding the existing gates." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@ without removing or adding the existing gates." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,7 +106,7 @@ without removing or adding the existing gates." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -133,7 +133,7 @@ without removing or adding the existing gates." />
 without removing or adding the existing gates.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gh_pop_set_indices</span>(<span class='no'>obj</span>, <span class='no'>y</span>, <span class='no'>z</span>)</pre>
+    <pre class="usage"><span class='fu'>gh_pop_set_indices</span><span class='op'>(</span><span class='va'>obj</span>, <span class='va'>y</span>, <span class='va'>z</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,36 +154,39 @@ without removing or adding the existing gates.</p>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowWorkspace</span>)
-<span class='no'>dataDir</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowWorkspaceData"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span>(<span class='no'>gs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gs</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>dataDir</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>"gs_manual"</span>,<span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)))
-<span class='no'>gh</span> <span class='kw'>&lt;-</span> <span class='no'>gs</span><span class='kw'>[[</span><span class='fl'>1</span>]]
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>flowWorkspace</span><span class='op'>)</span>
+<span class='va'>dataDir</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>,package<span class='op'>=</span><span class='st'>"flowWorkspaceData"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span><span class='op'>(</span><span class='va'>gs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gs</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span><span class='va'>dataDir</span>, pattern <span class='op'>=</span> <span class='st'>"gs_manual"</span>,full <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>gh</span> <span class='op'>&lt;-</span> <span class='va'>gs</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
 <span class='co'>#get pop counts</span>
-<span class='no'>pop.stats</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span>(<span class='no'>gh</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"CD3+"</span>, <span class='st'>"CD4"</span>, <span class='st'>"CD8"</span>))
-<span class='no'>pop.stats</span></div><div class='output co'>#&gt;     pop count
+<span class='va'>pop.stats</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span><span class='op'>(</span><span class='va'>gh</span>, nodes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CD3+"</span>, <span class='st'>"CD4"</span>, <span class='st'>"CD8"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>pop.stats</span>
+</div><div class='output co'>#&gt;     pop count
 #&gt; 1: CD3+ 54483
 #&gt; 2:  CD4 34032
 #&gt; 3:  CD8 14564</div><div class='input'>
 <span class='co'># subsample 30% cell events at CD3+ node</span>
-<span class='no'>total.cd3</span> <span class='kw'>&lt;-</span> <span class='no'>pop.stats</span>[<span class='no'>pop</span> <span class='kw'>==</span> <span class='st'>"CD3+"</span>, <span class='no'>count</span>]
-<span class='no'>gInd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='no'>total.cd3</span>) <span class='co'>#create integer index for cd3</span>
-<span class='no'>gInd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample.int</a></span>(<span class='no'>total.cd3</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='no'>total.cd3</span> * <span class='fl'>0.3</span>) <span class='co'>#randomly select 30%</span>
+<span class='va'>total</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gh_pop_get_proportion.html'>gh_pop_get_count</a></span><span class='op'>(</span><span class='va'>gh</span>, <span class='st'>"root"</span><span class='op'>)</span>
+<span class='va'>gInd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>total</span><span class='op'>)</span> <span class='co'>#create integer index for cd3</span>
+<span class='va'>gInd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample.int</a></span><span class='op'>(</span><span class='va'>total</span>, size <span class='op'>=</span> <span class='va'>total</span> <span class='op'>*</span> <span class='fl'>0.3</span><span class='op'>)</span> <span class='co'>#randomly select 30%</span>
 <span class='co'>#convert it to logicle index</span>
-<span class='no'>gInd.logical</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>FALSE</span>, <span class='no'>total.cd3</span>)
-<span class='no'>gInd.logical</span>[<span class='no'>gInd</span>] <span class='kw'>&lt;-</span> <span class='fl'>TRUE</span>
+<span class='va'>gInd.logical</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>FALSE</span>, <span class='va'>total</span><span class='op'>)</span>
+<span class='va'>gInd.logical</span><span class='op'>[</span><span class='va'>gInd</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='cn'>TRUE</span>
 <span class='co'>#replace the original index stored at GatingHierarchy</span>
-<span class='fu'>gh_pop_set_indices</span>(<span class='no'>gh</span>, <span class='st'>"CD3+"</span>, <span class='no'>gInd.logical</span>)
+<span class='fu'>gh_pop_set_indices</span><span class='op'>(</span><span class='va'>gh</span>, <span class='st'>"CD3+"</span>, <span class='va'>gInd.logical</span><span class='op'>)</span>
 <span class='co'>#check the updated pop counts</span>
-<span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span>(<span class='no'>gs</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"CD3+"</span>, <span class='st'>"CD4"</span>, <span class='st'>"CD8"</span>)) <span class='co'>#note that CD4, CD8 are not updated</span></div><div class='output co'>#&gt;     pop count
-#&gt; 1: CD3+ 16344
+<span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span><span class='op'>(</span><span class='va'>gs</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, nodes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CD3+"</span>, <span class='st'>"CD4"</span>, <span class='st'>"CD8"</span><span class='op'>)</span><span class='op'>)</span> <span class='co'>#note that CD4, CD8 are not updated</span>
+</div><div class='output co'>#&gt;     pop count
+#&gt; 1: CD3+ 35859
 #&gt; 2:  CD4 34032
 #&gt; 3:  CD8 14564</div><div class='input'><span class='co'>#update all the descendants of CD3+</span>
-<span class='no'>nodes</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='gh_pop_get_descendants.html'>gh_pop_get_descendants</a></span>(<span class='no'>gh</span>, <span class='st'>"CD3+"</span>)
-<span class='kw'>for</span> (<span class='no'>node</span> <span class='kw'>in</span> <span class='no'>nodes</span>) <span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span>(<span class='fu'><a href='recompute.html'>recompute</a></span>(<span class='no'>gh</span>, <span class='no'>node</span>))
-<span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span>(<span class='no'>gs</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"CD3+"</span>, <span class='st'>"CD4"</span>, <span class='st'>"CD8"</span>)) <span class='co'>#now all are update to date</span></div><div class='output co'>#&gt;     pop count
-#&gt; 1: CD3+ 16344
-#&gt; 2:  CD4 10276
-#&gt; 3:  CD8  4353</div></pre>
+<span class='va'>nodes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gh_pop_get_descendants.html'>gh_pop_get_descendants</a></span><span class='op'>(</span><span class='va'>gh</span>, <span class='st'>"CD3+"</span><span class='op'>)</span>
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>node</span> <span class='kw'>in</span> <span class='va'>nodes</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span><span class='op'>(</span><span class='fu'><a href='recompute.html'>recompute</a></span><span class='op'>(</span><span class='va'>gh</span>, <span class='va'>node</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='gs_pop_get_stats.html'>gh_pop_get_stats</a></span><span class='op'>(</span><span class='va'>gs</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, nodes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CD3+"</span>, <span class='st'>"CD4"</span>, <span class='st'>"CD8"</span><span class='op'>)</span><span class='op'>)</span> <span class='co'>#now all are update to date</span>
+</div><div class='output co'>#&gt;     pop count
+#&gt; 1: CD3+ 35859
+#&gt; 2:  CD4 11148
+#&gt; 3:  CD8  4984</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -195,11 +198,11 @@ without removing or adding the existing gates.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

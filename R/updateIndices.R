@@ -34,11 +34,11 @@ setMethod("updateIndices",
 #' pop.stats
 #'
 #' # subsample 30% cell events at CD3+ node
-#' total.cd3 <- pop.stats[pop == "CD3+", count]
-#' gInd <- seq_len(total.cd3) #create integer index for cd3
-#' gInd <- sample.int(total.cd3, size = total.cd3 * 0.3) #randomly select 30%
+#' total <- gh_pop_get_count(gh, "root")
+#' gInd <- seq_len(total) #create integer index for cd3
+#' gInd <- sample.int(total, size = total * 0.3) #randomly select 30%
 #' #convert it to logicle index
-#' gInd.logical <- rep(FALSE, total.cd3)
+#' gInd.logical <- rep(FALSE, total)
 #' gInd.logical[gInd] <- TRUE
 #' #replace the original index stored at GatingHierarchy
 #' gh_pop_set_indices(gh, "CD3+", gInd.logical)
@@ -51,15 +51,41 @@ setMethod("updateIndices",
 #' @export
 gh_pop_set_indices <- function(obj,y,z)
           {
+            parent <- gh_pop_get_parent(obj, y)
+  
+            idx <- gh_pop_normalize_idx(obj, parent, z)
             nodeID <- .getNodeInd(obj, y)
-            #get original indices
-            pInd <- gh_pop_get_indices(obj, y)
-            #update it with the new one
-            #convert to global one by combining it with parent indice
-            pInd[which(pInd)] <- z
-            #added it to gating tree
-            sn <- sampleNames(obj)
-            ptr <- obj@pointer
-            .cpp_setIndices(ptr, sn, nodeID-1, pInd)
+            .gh_pop_set_indices(obj, nodeID, idx)
+            
           }
 
+.gh_pop_set_indices <- function(obj, nodeID, idx)
+{
+  #added it to gating tree
+  sn <- sampleNames(obj)
+  ptr <- obj@pointer
+
+  .cpp_setIndices(ptr, sn, nodeID-1, idx)
+  
+}
+
+
+#' convert idx into global one when needed
+#' @noRd
+gh_pop_normalize_idx <- function(gh, parent, idx)
+{
+  
+  #convert to global one by combining it with parent indice
+  pInd.logical <- gh_pop_get_indices(gh, parent)
+  # browser()
+  #convert it to  global ind 
+  if(length(idx) < length(pInd.logical))
+  {
+    pInd.int <- which(pInd.logical)
+    if(length(idx) != length(pInd.int))
+      stop("the length of  the logical indices ", length(idx), " does not match to the parent events number ", length(pInd.int))
+    pInd.logical[pInd.int] <- idx
+    idx <- pInd.logical
+  }
+  idx
+}

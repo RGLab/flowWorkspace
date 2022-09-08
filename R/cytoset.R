@@ -937,3 +937,90 @@ cytoset_to_list <- function(cs){
 	names(cfs) <- sampleNames(cs)
 	cfs
 }
+
+#' @rdname keyword-mutators
+#' @export
+cs_keyword_insert <- function(cs, keys, values){
+  if(!is(cs, "cytoset"))
+    stop("cs must be a cytoset object")
+  if(missing(values)){
+    if(!is.vector(keys) || is.null(names(keys)) || any(is.na(names(keys))))
+      stop("If you are providing a single vector of values, it must have valid names providing the keys")
+    values <- keys
+    keys <- names(values)
+  }
+  if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
+    stop("keys and values must be vectors of equal length")
+  all_keys <- Reduce(union, lapply(cs, function(cf){
+    names(keyword(cf))
+  }))
+  idx <- match(keys, all_keys)
+  dup_idx <- !is.na(idx)
+  if(any(dup_idx))
+    stop("keywords already exist in one or more cytoframes!:", paste(keys[dup_idx], collapse = ", "))
+  for(idx in seq_along(cs))
+    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, values)
+}
+
+#' @rdname keyword-mutators
+#' @export
+cs_keyword_delete <- function(cs, keys){
+  if(!is(cs, "cytoset"))
+    stop("cs must be a cytoset object")
+  if(!is.vector(keys))
+    stop("keys must be a vector")
+  all_keys <- lapply(cs, function(cf){
+    names(keyword(cf))
+  })
+  invisible(lapply(all_keys, function(cf_keys) {
+    idx <- match(keys, cf_keys)
+    na_idx <- is.na(idx)
+    if(any(na_idx))
+      stop("keywords not found in one or more cytoframes:", paste(keys[na_idx], collapse = ", "))
+  }))
+  for(idx in seq_along(cs))
+    cf_removeKeywords(cs[[idx]]@pointer, keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+cs_keyword_rename <- function(cs, old_keys, new_keys){
+  if(!is(cs, "cytoset"))
+    stop("cs must be a cytoset object")
+  if(missing(new_keys)){
+    if(!is.vector(old_keys) || is.null(names(old_keys)) || any(is.na(names(old_keys))))
+      stop("If you are providing a single vector of values, it must have valid names providing the keys")
+    new_keys <- old_keys
+    old_keys <- names(new_keys)
+  }
+  if(!(is.vector(old_keys) && is.vector(new_keys) && length(old_keys) == length(new_keys)))
+    stop("old_keys and new_keys must be vectors of equal length")
+  all_keys <- lapply(cs, function(cf){
+    names(keyword(cf))
+  })
+  invisible(lapply(all_keys, function(cf_keys) {
+    idx <- match(old_keys, cf_keys)
+    na_idx <- is.na(idx)
+    if(any(na_idx))
+      stop("keyword not found in one or more cytoframes:", paste(keys[na_idx], collapse = ", "))
+  }))
+  for(idx in seq_along(cs))
+    cf_renameKeywords(cs[[idx]]@pointer, old_keys, new_keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+cs_keyword_set <- function(cs, keys, values){
+  if(!is(cs, "cytoset"))
+    stop("cs must be a cytoset object")
+  if(missing(values)){
+    if(!is.vector(keys) || is.null(names(keys)) || any(is.na(names(keys))))
+      stop("If you are providing a single vector of values, it must have valid names providing the keys")
+    values <- keys
+    keys <- names(values)
+  }
+  if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
+    stop("keys and values must be character vectors of equal length")
+  for(idx in seq_along(cs))
+    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, values)
+}

@@ -6,7 +6,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>save/load a cytoset to/from disk. — save_cytoset • flowWorkspace</title>
+<title>save/load a cytoset to/from disk.
+
+load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
+or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format) — save_cytoset • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +49,10 @@
 
 
 
-<meta property="og:title" content="save/load a cytoset to/from disk. — save_cytoset" />
+<meta property="og:title" content="save/load a cytoset to/from disk.
+
+load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
+or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format) — save_cytoset" />
 <meta property="og:description" content="Save/load a cytoset  to/from the disk." />
 <meta property="og:image" content="/logo.png" />
 
@@ -80,7 +86,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +94,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +111,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +128,10 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>save/load a cytoset to/from disk.</h1>
+    <h1>save/load a cytoset to/from disk.
+
+load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
+or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format)</h1>
     
     <div class="hidden name"><code>save_cytoset.Rd</code></div>
     </div>
@@ -131,9 +140,9 @@
     <p>Save/load a cytoset  to/from the disk.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>save_cytoset</span>(<span class='no'>cs</span>, <span class='no'>path</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>save_cytoset</span><span class='op'>(</span><span class='va'>cs</span>, <span class='va'>path</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>load_cytoset</span>(<span class='no'>path</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>load_cytoset</span><span class='op'>(</span><span class='va'>path</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,11 +153,15 @@
     </tr>
     <tr>
       <th>path</th>
-      <td><p>A character scalar giving the path to save/load the GatingSet to/from.</p></td>
+      <td><p>A character scalar giving the path to save/load the cytoset to/from.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>other arguments passed to <code>save_gs/load_gs</code></p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>whether to print details. Default is FALSE.</p></td>
     </tr>
     </table>
 
@@ -157,13 +170,17 @@
     <p><code>load_cytoset</code> returns a cytoset object</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-        <span class='co'>#G is a GatingSet</span>
-        <span class='fu'>save_cytoset</span>(<span class='no'>cs</span>, <span class='no'>outdir</span>)
-        <span class='no'>cs</span> <span class='kw'>&lt;-</span><span class='fu'>load_cytoset</span>(<span class='no'>outdir</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='co'>#cs is a cytoset</span>
+  <span class='fu'>save_cytoset</span><span class='op'>(</span><span class='va'>cs</span>, <span class='va'>outdir</span><span class='op'>)</span>
+  <span class='va'>cs</span> <span class='op'>&lt;-</span><span class='fu'>load_cytoset</span><span class='op'>(</span><span class='va'>outdir</span><span class='op'>)</span>
 
+<span class='co'>#or from cytoframe on-disk files</span>
+<span class='co'># e.g. h5_dir contains the cytoframes in h5 format</span>
+<span class='va'>cs</span> <span class='op'>&lt;-</span> <span class='fu'>load_cytoset</span><span class='op'>(</span><span class='va'>h5_dir</span><span class='op'>)</span>
 
-}</div></pre>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -175,11 +192,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

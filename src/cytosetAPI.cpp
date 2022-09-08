@@ -66,10 +66,8 @@ Rcpp::XPtr<GatingSet> fcs_to_cytoset(vector<pair<string,string>> sample_uid_vs_f
 	FileFormat fmt;
 	if(backend == "mem")
 		fmt = FileFormat::MEM;
-	else if (backend == "h5")
-		fmt = FileFormat::H5;
 	else
-		fmt = FileFormat::TILE;
+		fmt = FileFormat::H5;
   Rcpp::XPtr<GatingSet> cs(new GatingSet(sample_uid_vs_file_path, config, fmt, backend_dir));
   
   return cs;
