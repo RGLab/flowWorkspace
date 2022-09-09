@@ -242,6 +242,26 @@ is_tiledb_support <- function() {
     invisible(.Call(`_flowWorkspace_toggleErrorFlag`))
 }
 
+new_cytoctx <- function(cred) {
+    .Call(`_flowWorkspace_new_cytoctx`, cred)
+}
+
+read_cytoctx <- function(ctx) {
+    .Call(`_flowWorkspace_read_cytoctx`, ctx)
+}
+
+del_rownames <- function(fr) {
+    invisible(.Call(`_flowWorkspace_del_rownames`, fr))
+}
+
+set_rownames <- function(fr, val) {
+    invisible(.Call(`_flowWorkspace_set_rownames`, fr, val))
+}
+
+get_rownames <- function(fr) {
+    .Call(`_flowWorkspace_get_rownames`, fr)
+}
+
 backend_type <- function(fr) {
     .Call(`_flowWorkspace_backend_type`, fr)
 }
@@ -314,6 +334,10 @@ setChannel <- function(fr, old, new_name) {
     invisible(.Call(`_flowWorkspace_setChannel`, fr, old, new_name))
 }
 
+get_channels <- function(fr) {
+    .Call(`_flowWorkspace_get_channels`, fr)
+}
+
 append_cols <- function(fr, new_colnames, new_cols_mat) {
     .Call(`_flowWorkspace_append_cols`, fr, new_colnames, new_cols_mat)
 }
@@ -342,8 +366,20 @@ cf_getKeywords <- function(fr) {
     .Call(`_flowWorkspace_cf_getKeywords`, fr)
 }
 
-setKeywords <- function(fr, keys) {
-    invisible(.Call(`_flowWorkspace_setKeywords`, fr, keys))
+cf_setKeywords <- function(fr, keys) {
+    invisible(.Call(`_flowWorkspace_cf_setKeywords`, fr, keys))
+}
+
+cf_setKeywordsSubset <- function(fr, keys, values) {
+    invisible(.Call(`_flowWorkspace_cf_setKeywordsSubset`, fr, keys, values))
+}
+
+cf_renameKeywords <- function(fr, old_keys, new_keys) {
+    invisible(.Call(`_flowWorkspace_cf_renameKeywords`, fr, old_keys, new_keys))
+}
+
+cf_removeKeywords <- function(fr, keys) {
+    invisible(.Call(`_flowWorkspace_cf_removeKeywords`, fr, keys))
 }
 
 getncol <- function(fr) {

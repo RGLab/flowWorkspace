@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +105,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -131,17 +131,17 @@
     <p>Extract stats from populations(or nodes)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gs_pop_get_stats</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>gs_pop_get_stats</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>gh_pop_get_stats</span>(
-  <span class='no'>x</span>,
-  <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"count"</span>,
-  <span class='kw'>xml</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>inverse.transform</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>stats.fun.arg</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'>gh_pop_get_stats</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  nodes <span class='op'>=</span> <span class='cn'>NULL</span>,
+  type <span class='op'>=</span> <span class='st'>"count"</span>,
+  xml <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  inverse.transform <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  stats.fun.arg <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -185,31 +185,32 @@ when a function,  it takes a flowFrame object through 'fr' argument and return t
  along with 'pop' column and 'sample' column (when used on a 'GatingSet')</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>dataDir</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowWorkspaceData"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span>(<span class='no'>gs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gs</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>dataDir</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>"gs_manual"</span>,<span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)))
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>dataDir</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>,package<span class='op'>=</span><span class='st'>"flowWorkspaceData"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span><span class='op'>(</span><span class='va'>gs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gs</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span><span class='va'>dataDir</span>, pattern <span class='op'>=</span> <span class='st'>"gs_manual"</span>,full <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># get stats all nodes</span>
-<span class='no'>dt</span> <span class='kw'>&lt;-</span> <span class='fu'>gs_pop_get_stats</span>(<span class='no'>gs</span>) <span class='co'>#default is "count"</span>
+<span class='va'>dt</span> <span class='op'>&lt;-</span> <span class='fu'>gs_pop_get_stats</span><span class='op'>(</span><span class='va'>gs</span><span class='op'>)</span> <span class='co'>#default is "count"</span>
 
-<span class='no'>nodes</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"CD4"</span>, <span class='st'>"CD8"</span>)
-<span class='fu'>gs_pop_get_stats</span>(<span class='no'>gs</span>, <span class='no'>nodes</span>, <span class='st'>"percent"</span>)
+<span class='va'>nodes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CD4"</span>, <span class='st'>"CD8"</span><span class='op'>)</span>
+<span class='fu'>gs_pop_get_stats</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>nodes</span>, <span class='st'>"percent"</span><span class='op'>)</span>
 
 <span class='co'># pass a build-in function</span>
-<span class='fu'>gs_pop_get_stats</span>(<span class='no'>gs</span>, <span class='no'>nodes</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='no'>pop.MFI</span>)
+<span class='fu'>gs_pop_get_stats</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>nodes</span>, type <span class='op'>=</span> <span class='va'>pop.MFI</span><span class='op'>)</span>
 
 <span class='co'># compute the stats based on the raw data scale</span>
-<span class='fu'>gs_pop_get_stats</span>(<span class='no'>gs</span>, <span class='no'>nodes</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='no'>pop.MFI</span>, <span class='kw'>inverse.transform</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'>gs_pop_get_stats</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>nodes</span>, type <span class='op'>=</span> <span class='va'>pop.MFI</span>, inverse.transform <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
 <span class='co'># supply user-defined stats fun</span>
-<span class='no'>pop.quantiles</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>fr</span>){
-   <span class='no'>chnls</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>fr</span>)
-   <span class='no'>res</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>matrixStats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowQuantiles.html'>colQuantiles</a></span>(<span class='fu'>exprs</span>(<span class='no'>fr</span>), <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fl'>0.75</span>)
-   <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>res</span>) <span class='kw'>&lt;-</span> <span class='no'>chnls</span>
-   <span class='no'>res</span>
-   }
-<span class='fu'>gs_pop_get_stats</span>(<span class='no'>gs</span>, <span class='no'>nodes</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='no'>pop.quantiles</span>)
-}</div></pre>
+<span class='va'>pop.quantiles</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>fr</span><span class='op'>)</span><span class='op'>{</span>
+   <span class='va'>chnls</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>fr</span><span class='op'>)</span>
+   <span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>matrixStats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowQuantiles.html'>colQuantiles</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>exprs</a></span><span class='op'>(</span><span class='va'>fr</span><span class='op'>)</span>, probs <span class='op'>=</span> <span class='fl'>0.75</span><span class='op'>)</span>
+   <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>names</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>chnls</span>
+   <span class='va'>res</span>
+   <span class='op'>}</span>
+<span class='fu'>gs_pop_get_stats</span><span class='op'>(</span><span class='va'>gs</span>, <span class='va'>nodes</span>, type <span class='op'>=</span> <span class='va'>pop.quantiles</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -221,11 +222,11 @@ when a function,  it takes a flowFrame object through 'fr' argument and return t
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

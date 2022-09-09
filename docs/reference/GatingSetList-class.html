@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Class <code>"GatingSetList"</code> — GatingSetList-class • flowWorkspace</title>
+<title>Class "GatingSetList" — GatingSetList-class • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Class <code>"GatingSetList"</code> — GatingSetList-class" />
+<meta property="og:title" content="Class "GatingSetList" — GatingSetList-class" />
 <meta property="og:description" content="A list of of GatingSet objects. This class exists for method dispatching.
 use GatingSetList constructor to create a GatingSetList from a list of GatingSet" />
 <meta property="og:image" content="/logo.png" />
@@ -81,7 +81,7 @@ use GatingSetList constructor to create a GatingSetList from a list of GatingSet
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@ use GatingSetList constructor to create a GatingSetList from a list of GatingSet
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,7 +106,7 @@ use GatingSetList constructor to create a GatingSetList from a list of GatingSet
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -133,7 +133,7 @@ use GatingSetList constructor to create a GatingSetList from a list of GatingSet
 <p>use <code>GatingSetList</code> constructor to create a GatingSetList from a list of GatingSet</p>
     </div>
 
-    <pre class="usage"><span class='fu'>GatingSetList</span>(<span class='no'>x</span>, <span class='kw'>samples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>GatingSetList</span><span class='op'>(</span><span class='va'>x</span>, samples <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,83 +159,84 @@ if not specified, the samples are ordered as the underlying stored order.</p></t
   <code><a href='GatingHierarchy-class.html'>GatingHierarchy</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'>  <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
     <span class='co'>#load several GatingSets from disk</span>
-   <span class='no'>gs_list</span><span class='kw'>&lt;-</span><span class='fu'><a href='lapply-methods.html'>lapply</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='st'>"../gs_toMerge"</span>,<span class='kw'>full</span><span class='kw'>=</span><span class='no'>T</span>) ,<span class='kw'>function</span>(<span class='no'>this_folder</span>){
-                     <span class='fu'><a href='save_gs.html'>load_gs</a></span>(<span class='no'>this_folder</span>)
-                     })
-
+   <span class='va'>gs_list</span><span class='op'>&lt;-</span><span class='fu'><a href='lapply-methods.html'>lapply</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span><span class='st'>"../gs_toMerge"</span>,full<span class='op'>=</span><span class='cn'>T</span><span class='op'>)</span> ,<span class='kw'>function</span><span class='op'>(</span><span class='va'>this_folder</span><span class='op'>)</span><span class='op'>{</span>
+                     <span class='fu'><a href='save_gs.html'>load_gs</a></span><span class='op'>(</span><span class='va'>this_folder</span><span class='op'>)</span>
+                     <span class='op'>}</span><span class='op'>)</span>
+    
    <span class='co'>#gs_list is a list</span>
-    <span class='no'>gs_groups</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span>(<span class='no'>gs_list</span>)
+    <span class='va'>gs_groups</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>gs_list</span><span class='op'>)</span>
     <span class='co'>#returns a list of GatingSetList objects</span>
-    <span class='no'>gslist2</span> <span class='kw'>&lt;-</span> <span class='no'>gs_groups</span><span class='kw'>[[</span><span class='fl'>2</span>]]
+    <span class='va'>gslist2</span> <span class='op'>&lt;-</span> <span class='va'>gs_groups</span><span class='op'>[[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span>
     <span class='co'>#gslist2 is a GatingSetList that contains multiple GatingSets and they share the same gating and data structure</span>
-    <span class='no'>gslist2</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>gslist2</span>)
-    <span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>gslist2</span>)
-
+    <span class='va'>gslist2</span>
+    <span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>)</span>
+    <span class='fu'><a href='sampleNames.html'>sampleNames</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>)</span>
+    
     <span class='co'>#reference a GatingSet by numeric index</span>
-    <span class='no'>gslist2</span><span class='kw'>[[</span><span class='fl'>1</span>]]
+    <span class='va'>gslist2</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
     <span class='co'>#reference a GatingSet by character index</span>
-    <span class='no'>gslist2</span><span class='kw'>[[</span><span class='st'>"30104.fcs"</span>]]
-
+    <span class='va'>gslist2</span><span class='op'>[[</span><span class='st'>"30104.fcs"</span><span class='op'>]</span><span class='op'>]</span>
+    
     <span class='co'>#loop through all GatingSets within GatingSetList</span>
-    <span class='fu'><a href='lapply-methods.html'>lapply</a></span>(<span class='no'>gslist2</span>,<span class='no'>sampleNames</span>)
-
+    <span class='fu'><a href='lapply-methods.html'>lapply</a></span><span class='op'>(</span><span class='va'>gslist2</span>,<span class='va'>sampleNames</span><span class='op'>)</span>
+    
     <span class='co'>#subset a GatingSetList by [</span>
-    <span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>gslist2</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>,<span class='fl'>1</span>)])
-    <span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>gslist2</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>4</span>)])
-    <span class='no'>gslist2</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"30104.fcs"</span>)]
-
+    <span class='fu'><a href='sampleNames.html'>sampleNames</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
+    <span class='fu'><a href='sampleNames.html'>sampleNames</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>4</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
+    <span class='va'>gslist2</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"30104.fcs"</span><span class='op'>)</span><span class='op'>]</span>
+    
     <span class='co'>#get flow data from it</span>
-    <span class='fu'><a href='gh_pop_get_data.html'>gs_pop_get_data</a></span>(<span class='no'>gslist2</span>)
+    <span class='fu'><a href='gh_pop_get_data.html'>gs_pop_get_data</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>)</span>
     <span class='co'>#get gated flow data from a particular popoulation </span>
-    <span class='fu'><a href='gh_pop_get_data.html'>gs_pop_get_data</a></span>(<span class='no'>gslist2</span>, <span class='st'>"3+"</span>)
-
+    <span class='fu'><a href='gh_pop_get_data.html'>gs_pop_get_data</a></span><span class='op'>(</span><span class='va'>gslist2</span>, <span class='st'>"3+"</span><span class='op'>)</span>
+    
     <span class='co'>#extract the gates associated with one popoulation</span>
-    <span class='fu'><a href='gs_pop_get_gate.html'>gs_pop_get_gate</a></span>(<span class='no'>gslist2</span>,<span class='st'>"3+"</span>)
-    <span class='fu'><a href='gs_pop_get_gate.html'>gs_pop_get_gate</a></span>(<span class='no'>gslist2</span>,<span class='fl'>5</span>)
-
+    <span class='fu'><a href='gs_pop_get_gate.html'>gs_pop_get_gate</a></span><span class='op'>(</span><span class='va'>gslist2</span>,<span class='st'>"3+"</span><span class='op'>)</span>
+    <span class='fu'><a href='gs_pop_get_gate.html'>gs_pop_get_gate</a></span><span class='op'>(</span><span class='va'>gslist2</span>,<span class='fl'>5</span><span class='op'>)</span>
+    
     <span class='co'>#extract the pheno data</span>
-    <span class='fu'><a href='pData-methods.html'>pData</a></span>(<span class='no'>gslist2</span>[<span class='fl'>3</span>:<span class='fl'>1</span>])
+    <span class='fu'><a href='pData-methods.html'>pData</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span>
     <span class='co'>#modify the pheno data</span>
-    <span class='no'>pd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pData-methods.html'>pData</a></span>(<span class='no'>gslist2</span>)
-    <span class='no'>pd</span>$<span class='no'>id</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>pd</span>)
-    <span class='fu'><a href='pData-methods.html'>pData</a></span>(<span class='no'>gslist2</span>) <span class='kw'>&lt;-</span> <span class='no'>pd</span>
-    <span class='fu'><a href='pData-methods.html'>pData</a></span>(<span class='no'>gslist2</span>[<span class='fl'>3</span>:<span class='fl'>2</span>])
+    <span class='va'>pd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='pData-methods.html'>pData</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>)</span>
+    <span class='va'>pd</span><span class='op'>$</span><span class='va'>id</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>pd</span><span class='op'>)</span>
+    <span class='fu'><a href='pData-methods.html'>pData</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>pd</span>
+    <span class='fu'><a href='pData-methods.html'>pData</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span>
 
     <span class='co'>#plot the gate</span>
-    <span class='fu'>autoplot</span>(<span class='no'>gslist2</span>[<span class='fl'>1</span>:<span class='fl'>2</span>],<span class='fl'>5</span>)
-
+    <span class='fu'><a href='https://rdrr.io/pkg/ggcyto/man/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span>,<span class='fl'>5</span><span class='op'>)</span>
+    
     <span class='co'>#remove cerntain gates by loop through GatingSets</span>
-    <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span>(<span class='no'>gslist2</span><span class='kw'>[[</span><span class='fl'>1</span>]])
-    <span class='fu'><a href='lapply-methods.html'>lapply</a></span>(<span class='no'>gslist2</span>,<span class='kw'>function</span>(<span class='no'>gs</span>)<span class='fu'><a href='gs_pop_add.html'>gs_pop_remove</a></span>(<span class='st'>"Excl"</span>,<span class='kw'>gs</span> <span class='kw'>=</span> <span class='no'>gs</span>))
-
+    <span class='fu'><a href='gs_get_pop_paths.html'>gs_get_pop_paths</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+    <span class='fu'><a href='lapply-methods.html'>lapply</a></span><span class='op'>(</span><span class='va'>gslist2</span>,<span class='kw'>function</span><span class='op'>(</span><span class='va'>gs</span><span class='op'>)</span><span class='fu'><a href='gs_pop_add.html'>gs_pop_remove</a></span><span class='op'>(</span><span class='st'>"Excl"</span>,gs <span class='op'>=</span> <span class='va'>gs</span><span class='op'>)</span><span class='op'>)</span>
+    
     <span class='co'>#extract the stats</span>
-    <span class='fu'><a href='gs_pop_get_count_fast.html'>gs_pop_get_count_fast</a></span>(<span class='no'>gslist2</span>)
+    <span class='fu'><a href='gs_pop_get_count_fast.html'>gs_pop_get_count_fast</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>)</span>
     <span class='co'>#extract statistics by using getQAStats defined in QUALIFIER package</span>
-    <span class='no'>res</span><span class='kw'>&lt;-</span><span class='fu'>getQAStats</span>(<span class='no'>gslist2</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>,<span class='fl'>2</span>)],<span class='kw'>isMFI</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>isSpike</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>nslaves</span><span class='kw'>=</span><span class='fl'>1</span>)
-
+    <span class='va'>res</span><span class='op'>&lt;-</span><span class='fu'>getQAStats</span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>]</span>,isMFI<span class='op'>=</span><span class='cn'>F</span>,isSpike<span class='op'>=</span><span class='cn'>F</span>,nslaves<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+    
     <span class='co'>#archive the GatingSetList</span>
-    <span class='fu'><a href='save_gs.html'>save_gslist</a></span>(<span class='no'>gslist2</span>, <span class='kw'>path</span> <span class='kw'>=</span><span class='st'>"~/rglab/workspace/flowIncubator/output/gslist"</span>,<span class='kw'>overwrite</span><span class='kw'>=</span><span class='no'>T</span>)
-    <span class='no'>gslist2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gslist</a></span>(<span class='kw'>path</span> <span class='kw'>=</span><span class='st'>"~/rglab/workspace/flowIncubator/output/gslist"</span>)
-
+    <span class='fu'><a href='save_gs.html'>save_gslist</a></span><span class='op'>(</span><span class='va'>gslist2</span>, path <span class='op'>=</span><span class='st'>"~/rglab/workspace/flowIncubator/output/gslist"</span>,overwrite<span class='op'>=</span><span class='cn'>T</span><span class='op'>)</span>
+    <span class='va'>gslist2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='save_gs.html'>load_gslist</a></span><span class='op'>(</span>path <span class='op'>=</span><span class='st'>"~/rglab/workspace/flowIncubator/output/gslist"</span><span class='op'>)</span>
+    
     <span class='co'>#convert GatingSetList into one GatingSet by merge_list_to_gs</span>
-    <span class='no'>gs_merged2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='merge_list_to_gs.html'>merge_list_to_gs</a></span>(<span class='no'>gslist2</span>)
-    <span class='no'>gs_merged2</span>
-  }
+    <span class='va'>gs_merged2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='merge_list_to_gs.html'>merge_list_to_gs</a></span><span class='op'>(</span><span class='va'>gslist2</span><span class='op'>)</span>
+    <span class='va'>gs_merged2</span>
+  <span class='op'>}</span>
 
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>samleNames</span>(<span class='no'>gsA</span>) <span class='co'># return A1, A2</span>
-<span class='fu'>samleNames</span>(<span class='no'>gsB</span>) <span class='co'># return B1, B2</span>
-<span class='no'>gs.list</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>gsA</span>, <span class='no'>gsB</span>)
-<span class='no'>gslist</span><span class='kw'>&lt;-</span> <span class='fu'>GatingSetList</span>(<span class='no'>gs.list</span>)
-<span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>gslist</span>) <span class='co'>#return A1,A2,B1,B2</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>samleNames</span><span class='op'>(</span><span class='va'>gsA</span><span class='op'>)</span> <span class='co'># return A1, A2</span>
+<span class='fu'>samleNames</span><span class='op'>(</span><span class='va'>gsB</span><span class='op'>)</span> <span class='co'># return B1, B2</span>
+<span class='va'>gs.list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>gsA</span>, <span class='va'>gsB</span><span class='op'>)</span>
+<span class='va'>gslist</span><span class='op'>&lt;-</span> <span class='fu'>GatingSetList</span><span class='op'>(</span><span class='va'>gs.list</span><span class='op'>)</span>
+<span class='fu'><a href='sampleNames.html'>sampleNames</a></span><span class='op'>(</span><span class='va'>gslist</span><span class='op'>)</span> <span class='co'>#return A1,A2,B1,B2</span>
 
 <span class='co'>#set different order when create the GatingSetList</span>
-<span class='no'>gslist</span><span class='kw'>&lt;-</span> <span class='fu'>GatingSetList</span>(<span class='no'>gs.list</span>, <span class='kw'>samples</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"A1"</span>,<span class='st'>"B1"</span>, <span class='st'>"A2"</span>, <span class='st'>"B2"</span>))
-<span class='fu'><a href='sampleNames.html'>sampleNames</a></span>(<span class='no'>gslist</span>) <span class='co'>#return A1,B1,A2,B2</span>
-}</div></pre>
+<span class='va'>gslist</span><span class='op'>&lt;-</span> <span class='fu'>GatingSetList</span><span class='op'>(</span><span class='va'>gs.list</span>, samples <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A1"</span>,<span class='st'>"B1"</span>, <span class='st'>"A2"</span>, <span class='st'>"B2"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='sampleNames.html'>sampleNames</a></span><span class='op'>(</span><span class='va'>gslist</span><span class='op'>)</span> <span class='co'>#return A1,B1,A2,B2</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -247,11 +248,11 @@ if not specified, the samples are ordered as the underlying stored order.</p></t
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

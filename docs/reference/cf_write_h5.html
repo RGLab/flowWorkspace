@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +105,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@
     <p>Save the cytoframe as h5 format</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cf_write_h5</span>(<span class='no'>cf</span>, <span class='no'>filename</span>)</pre>
+    <pre class="usage"><span class='fu'>cf_write_h5</span><span class='op'>(</span><span class='va'>cf</span>, <span class='va'>filename</span>, ctx <span class='op'>=</span> <span class='va'>.cytoctx_global</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,15 +144,21 @@
       <th>filename</th>
       <td><p>the full path of the output h5 file</p></td>
     </tr>
+    <tr>
+      <th>ctx</th>
+      <td><p>cytoctx object, see [cytoctx] for details</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other cytoframe/cytoset IO functions: 
-<code><a href='cf_get_h5_file_path.html'>cf_get_h5_file_path</a>()</code>,
-<code><a href='cs_get_h5_file_path.html'>cs_get_h5_file_path</a>()</code>,
+<code><a href='cf_get_uri.html'>cf_get_uri</a>()</code>,
+<code><a href='cf_write_disk.html'>cf_write_disk</a>()</code>,
+<code><a href='cf_write_tile.html'>cf_write_tile</a>()</code>,
+<code><a href='cs_get_uri.html'>cs_get_uri</a>()</code>,
 <code><a href='load_cytoframe_from_fcs.html'>load_cytoframe_from_fcs</a>()</code>,
-<code><a href='load_cytoframe_from_h5.html'>load_cytoframe_from_h5</a>()</code>,
+<code><a href='load_cytoframe.html'>load_cytoframe</a>()</code>,
 <code><a href='load_cytoset_from_fcs.html'>load_cytoset_from_fcs</a>()</code></p></div>
 
   </div>
@@ -166,11 +172,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

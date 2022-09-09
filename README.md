@@ -1,8 +1,8 @@
 # <img src="logo_mid.png" align="right" />
 
-[![Build Status](https://travis-ci.org/RGLab/flowWorkspace.png?branch=master)](https://travis-ci.org/RGLab/flowWorkspace)
 
 # flowWorkspace: An infrastructure tool for the hierarchical gated flow cytometry data.     
+[![Build Status](https://github.com/RGLab/flowWorkspace/workflows/build/badge.svg?branch=master)](https://github.com/RGLab/flowWorkspace/actions)
 
 This package is designed to store, query and visualize the hierarchical gated flow data.
 
@@ -26,8 +26,7 @@ Otherwise, we may close your issue without responding.
 
 ```r
 # First, install it from bionconductor so that it will pull all the dependent packages automatically
-library(BiocInstalller)
-bicLite(flowWorkspace) # may be older
+biocManager::install("flowWorkspace") # may be older
 # Then, install the latest version from github using devtools package 
 install.packages("devtools") 
 library(devtools) #load it

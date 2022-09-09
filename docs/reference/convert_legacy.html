@@ -83,7 +83,7 @@ they will need to be converted to the new format." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@ they will need to be converted to the new format." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -108,7 +108,7 @@ they will need to be converted to the new format." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -137,9 +137,9 @@ the sake of efficiency. In order to use <code>GatingSet</code> or <code>GatingSe
 they will need to be converted to the new format.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>convert_legacy_gs</span>(<span class='no'>from</span>, <span class='no'>to</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>convert_legacy_gs</span><span class='op'>(</span><span class='va'>from</span>, <span class='va'>to</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>convert_legacy_gslist</span>(<span class='no'>from</span>, <span class='no'>to</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>convert_legacy_gslist</span><span class='op'>(</span><span class='va'>from</span>, <span class='va'>to</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -166,9 +166,10 @@ sometime it is helpful to be able to customize it to other location when system 
 due to the process of rewriting data to FCS files through write.FCS.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>convert_legacy_gs</span>(<span class='no'>old_gs_path</span>, <span class='no'>new_gs_path</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>convert_legacy_gs</span><span class='op'>(</span><span class='va'>old_gs_path</span>, <span class='va'>new_gs_path</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -180,11 +181,11 @@ due to the process of rewriting data to FCS files through write.FCS.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

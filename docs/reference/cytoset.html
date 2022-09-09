@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title><code>cytoset</code>: a reference class for efficiently managing the data representation
-of a <code>flowSet</code> — cytoset • flowWorkspace</title>
+<title>cytoset: a reference class for efficiently managing the data representation
+of a flowSet — cytoset • flowWorkspace</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,8 +47,8 @@ of a <code>flowSet</code> — cytoset • flowWorkspace</title>
 
 
 
-<meta property="og:title" content="<code>cytoset</code>: a reference class for efficiently managing the data representation
-of a <code>flowSet</code> — cytoset" />
+<meta property="og:title" content="cytoset: a reference class for efficiently managing the data representation
+of a flowSet — cytoset" />
 <meta property="og:description" content="This class is a container for a set of cytoframe objects, analagous to
 a flowSet." />
 <meta property="og:image" content="/logo.png" />
@@ -83,7 +83,7 @@ a flowSet." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@ a flowSet." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -108,7 +108,7 @@ a flowSet." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -158,8 +158,9 @@ with existing user scripts.</p>
 <p>Objects can be created using <code>cytoset()</code> and then adding samples
 by providing a <code>cytoframe</code> and sample name to <code>cs_add_cytoframe</code>:<br /><br /></p>
 <pre>
-<span class='no'>cs</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'>cytoset</span>()
-<span class='fu'><a href='cs_add_cytoframe.html'>cs_add_cytoframe</a></span>(<span class='no'>cs</span>, <span class='st'>"Sample Name"</span>, <span class='no'>cytoframe</span>)</pre>
+<span class='va'>cs</span> <span class='op'>&lt;-</span> <span class='fu'>cytoset</span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'><a href='cs_add_cytoframe.html'>cs_add_cytoframe</a></span><span class='op'>(</span><span class='va'>cs</span>, <span class='st'>"Sample Name"</span>, <span class='va'>cytoframe</span><span class='op'>)</span>
+</pre>
 
 <p>The safest and easiest way to create <code>cytoset</code>s directly from
 <acronym>FCS</acronym> files is via the <code><a href='load_cytoset_from_fcs.html'>load_cytoset_from_fcs</a></code> function, and
@@ -169,16 +170,16 @@ documentation for details.</p>
 
     
 
-<p></p><dl'>
+<p></p><dl>
 
 <dt>[, [[</dt><dd><p>Subsetting. <code>x[i]</code> where <code>i</code> is a scalar,
   returns a <code>cytoset</code> object, and <code>x[[i]]</code> a
-  <code>flowFrame</code> object. In this respect the
+  <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>flowFrame</a></code> object. In this respect the
   semantics are similar to the behavior of the subsetting operators
   for lists. <code>x[i, j]</code> returns a <code>cytoset</code> for which the
   parameters of each <code><a href='cytoframe.html'>cytoframe</a></code> have been subset
   according to <code>j</code>, <code>x[[i,j]]</code> returns the subset of a
-  single <code>flowFrame</code> for all parameters in
+  single <code><a href='https://rdrr.io/pkg/flowCore/man/flowFrame-class.html'>flowFrame</a></code> for all parameters in
   <code>j</code>.<br /><br />
   The reason for the default behavior of the extraction operator <code>[[]]</code>
   returning a <code>flowFrame</code> rather than <code>cytoframe</code>
@@ -298,8 +299,8 @@ documentation for details.</p>
   the <code>sampleNames</code> of the <code>cytoset</code>. See <code><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>filter</a></code>
   for details.<br /><br />
   <em>Usage:</em><br /><br />
-  <code><a href='https://rdrr.io/r/stats/filter.html'>   filter(cytoset, filter)</a></code><br /><br />
-  <code><a href='https://rdrr.io/r/stats/filter.html'>   filter(cytoset, list(filters))</a></code><br /><br /></p></dd>
+  <code><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>   filter(cytoset, filter)</a></code><br /><br />
+  <code><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>   filter(cytoset, list(filters))</a></code><br /><br /></p></dd>
 
 <dt>split</dt><dd><p>Split all <code>cytoframe</code> objects according to a
   <code><a href='https://rdrr.io/pkg/flowCore/man/filter-class.html'>filter</a></code>, <code><a href='https://rdrr.io/pkg/flowCore/man/filterResult-class.html'>filterResult</a></code> or a list of such
@@ -313,10 +314,10 @@ documentation for details.</p>
   <code><a href='https://rdrr.io/r/base/split.html'>split</a></code> for lists. This will return a list of
   <code>cytoset</code>s. See <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>split</a></code> for details.<br /><br />
   <em>Usage:</em><br /><br />
-  <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoset, filter)</a></code><br /><br />
-  <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoset, filterResult)</a></code><br /><br />
-  <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoset, list(filters))</a></code><br /><br />
-  <code><a href='https://rdrr.io/r/base/split.html'>   split(cytoset, factor)</a></code><br /><br /></p></dd>
+  <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>   split(cytoset, filter)</a></code><br /><br />
+  <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>   split(cytoset, filterResult)</a></code><br /><br />
+  <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>   split(cytoset, list(filters))</a></code><br /><br />
+  <code><a href='https://rdrr.io/pkg/flowCore/man/split-methods.html'>   split(cytoset, factor)</a></code><br /><br /></p></dd>
 
 <dt>Subset</dt><dd><p>Returns a <code>cytoset</code> of
   <code><a href='cytoframe.html'>cytoframe</a></code>s that have been subset according
@@ -325,9 +326,9 @@ documentation for details.</p>
   items of equal length as the <code>cytoset</code>. See <code><a href='https://rdrr.io/pkg/flowCore/man/Subset-methods.html'>Subset</a></code>
   for details.<br /><br />
   <em>Usage:</em><br /><br />
-  <code>   Subset(cytoset, filter)</code><br /><br />
-  <code>   Subset(cytoset, filterResult)</code><br /><br />
-  <code>   Subset(cytoset, list(filters))</code><br /><br /></p></dd>
+  <code><a href='https://rdrr.io/pkg/flowCore/man/Subset-methods.html'>   Subset(cytoset, filter)</a></code><br /><br />
+  <code><a href='https://rdrr.io/pkg/flowCore/man/Subset-methods.html'>   Subset(cytoset, filterResult)</a></code><br /><br />
+  <code><a href='https://rdrr.io/pkg/flowCore/man/Subset-methods.html'>   Subset(cytoset, list(filters))</a></code><br /><br /></p></dd>
 
 
 <dt>rbind2</dt><dd><p><strong>Not yet implemented.</strong><br /> Combine two <code>cytoset</code> objects, or one
@@ -364,11 +365,11 @@ by a string.<br /><br />
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

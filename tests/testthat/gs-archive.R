@@ -1,27 +1,26 @@
-context("-- archived gs")
-
+if(Sys.getenv("test_gs_compatibility")=="yes")
+{
+  context("-- test-gs-compatibility")
+  gs_dir <- test_gs_dir
+}else
+{
+  context("-- archived gs")
+  gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
+  
+}
+  
 gs <- NULL
 isCpStaticGate <<- TRUE
 test_that("load GatingSet from archive",
 {
-  gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
   suppressWarnings(suppressMessages(gs <<- load_gs(gs_dir)))
   expect_that(gs, is_a("GatingSet"))
   gs <<- gs_clone(gs)#make it writable  
-  
-  if(get_default_backend() == "tile")
-  {
-    tmp1 <- tempfile()
-    convert_backend(gs_dir, tmp1)
-    gs <<- load_gs(tmp1)
-  }
-  
-  
 })
 
 test_that("load read-only archive",
 {
-  skip_on_os("windows")
+  skip_on_os(c("windows", "mac"))
   tmp <- tempfile()
   save_gs(gs, tmp)
   

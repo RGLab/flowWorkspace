@@ -9,41 +9,10 @@ endif
 CXX_STD = CXX11
 PKG_CPPFLAGS =-DROUT -I../inst/include -DBOOST_NO_AUTO_PTR 
 
-#somehow the implicit $CC isn't available/accurate, so we have to re-fetch it
-compilerinfo = ${shell R CMD config CXX}
-compiler = $(findstring clang++, $(compilerinfo))
-#$(info "$(compiler)")
-ifneq (,$(compiler))
-	fslib = c++fs
-else
-	fslib = stdc++fs
-endif
-	
 
-h5lib = $(shell echo 'Rhdf5lib::pkgconfig("PKG_C_LIBS")'|\
+h5lib = $(shell echo 'Rhdf5lib::pkgconfig("PKG_CXX_LIBS")'|\
     "${R_HOME}/bin/R" --vanilla --slave)
     
 
-PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"` ${h5lib}  
+PKG_LIBS = `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"` ${h5lib}  $(LAPACK_LIBS) $(BLAS_LIBS) 
 
-USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
-PKGLIB = ${USERDIR}/libflowWorkspace.a
-
- 
-all:  $(SHLIB)
-	if [ `uname -s` = 'Darwin' ]; then install_name_tool -change /usr/local/clang4/lib/libc++.1.dylib /usr/lib/libc++.1.dylib $(SHLIB); fi
-
-$(SHLIB): $(PKGLIB)
-
-
-#expose static lib for other package to link to 
-$(PKGLIB): $(OBJECTS)
-	mkdir -p "${USERDIR}"
-	$(AR) rs "${PKGLIB}" $(OBJECTS)
-
-
-.PHONY: 	all clean 
-
-clean:
-		rm -f $(OBJECTS) $(SHLIB)
- 

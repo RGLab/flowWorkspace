@@ -1,3 +1,14 @@
+# write out refresh gating set folder by invoking open source serialization methods
+# to be consumed by third party software to test the compatibility/readability (this gating set format)
+generate_gatingset_example_archive <- function(){
+  dataDir <- system.file("extdata",package="flowWorkspaceData")
+  gs_dir <- list.files(dataDir, pattern = "gs_manual",full = TRUE)
+  gs <- load_gs(gs_dir)
+  tmp_local = tempfile(tmpdir = "/tmp")
+  save_gs(gs, tmp_local)
+  writeLines(tmp_local)
+}
+
 #' get all the leaf nodes
 #' @name gs_get_leaf_nodes
 #' @aliases gh_get_leaf_nodes get_leaf_nodes

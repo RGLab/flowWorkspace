@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowWorkspace</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.3.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,7 +105,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RGLab/flowWorkspace">
-    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+    <span class="fas fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@
     <p>Append data columns to a flowFrame</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cf_append_cols</span>(<span class='no'>cf</span>, <span class='no'>cols</span>)</pre>
+    <pre class="usage"><span class='fu'>cf_append_cols</span><span class='op'>(</span><span class='va'>cf</span>, <span class='va'>cols</span>, ctx <span class='op'>=</span> <span class='va'>.cytoctx_global</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,15 +155,19 @@ as a valid FCS through the function <code>write.FCS</code> .</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowCore</span>)
-  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>GvHD</span>)
-  <span class='no'>tmp</span> <span class='kw'>&lt;-</span> <span class='no'>GvHD</span><span class='kw'>[[</span><span class='fl'>1</span>]]
-  <span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='convert.html'>flowFrame_to_cytoframe</a></span>(<span class='no'>tmp</span>)
-  <span class='no'>kf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/kmeansFilter-class.html'>kmeansFilter</a></span>(<span class='st'>"FSC-H"</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Pop1"</span>,<span class='st'>"Pop2"</span>,<span class='st'>"Pop3"</span>), <span class='kw'>filterId</span><span class='kw'>=</span><span class='st'>"myKmFilter"</span>)
-  <span class='no'>fres</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>filter</a></span>(<span class='no'>cf</span>, <span class='no'>kf</span>)
-  <span class='no'>cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>fres</span>@<span class='kw'>subSet</span>)
-  <span class='no'>cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='no'>cols</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>NULL</span>, <span class='st'>"km"</span>))
-  <span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'>cf_append_cols</span>(<span class='no'>cf</span>, <span class='no'>cols</span>)</div></pre>
+  <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>flowCore</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>GvHD</span><span class='op'>)</span>
+  <span class='va'>tmp</span> <span class='op'>&lt;-</span> <span class='va'>GvHD</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+  <span class='va'>cf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='convert.html'>flowFrame_to_cytoframe</a></span><span class='op'>(</span><span class='va'>tmp</span><span class='op'>)</span>
+  <span class='va'>kf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/kmeansFilter-class.html'>kmeansFilter</a></span><span class='op'>(</span><span class='st'>"FSC-H"</span><span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Pop1"</span>,<span class='st'>"Pop2"</span>,<span class='st'>"Pop3"</span><span class='op'>)</span>, filterId<span class='op'>=</span><span class='st'>"myKmFilter"</span><span class='op'>)</span>
+  <span class='va'>fres</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/flowCore/man/filter-methods.html'>filter</a></span><span class='op'>(</span><span class='va'>cf</span>, <span class='va'>kf</span><span class='op'>)</span>
+  <span class='va'>cols</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='op'>(</span><span class='va'>fres</span><span class='op'>@</span><span class='va'>subSet</span><span class='op'>)</span>
+  <span class='va'>cols</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='va'>cols</span>, dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='cn'>NULL</span>, <span class='st'>"km"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>cf</span> <span class='op'>&lt;-</span> <span class='fu'>cf_append_cols</span><span class='op'>(</span><span class='va'>cf</span>, <span class='va'>cols</span><span class='op'>)</span>
+  
+
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -175,11 +179,11 @@ as a valid FCS through the function <code>write.FCS</code> .</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Greg Finak,Mike Jiang <wjiang2@fhcrc.org>,Jake Wagner <jpwagner@fhcrc.org>.</p>
+  <p>Developed by Greg Finak,Mike Jiang <mike@ozette.ai>,Jake Wagner <jpwagner@fhcrc.org>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

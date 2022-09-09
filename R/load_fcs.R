@@ -36,15 +36,6 @@
 #' @param which.lines Numeric vector to specify the indices of the lines to be
 #' read. If it is NULL, all the records are read. If it is of length 1, a random sample of
 #' the size indicated by \code{which.lines} is read in.
-#' @param alter.names Logical indicating whether or not we should rename the
-#' columns to valid R names using \code{\link{make.names}}. The default is
-#' FALSE.
-#' @param column.pattern An optional regular expression defining parameters we
-#' should keep when loading the file. The default is NULL.
-#' @param invert.pattern Logical. By default, \code{FALSE}. If \code{TRUE},
-#' inverts the regular expression specified in \code{column.pattern}. This is
-#' useful for indicating the channel names that we do not want to read. If
-#' \code{column.pattern} is set to \code{NULL}, this argument is ignored.
 #' @param decades When scaling is activated, the number of decades to use for
 #' the output.
 #' @param is_h5 Logical indicating whether the data should be stored in h5 format
@@ -92,9 +83,6 @@
 load_cytoframe_from_fcs <- function(filename,
                      transformation="linearize",
                      which.lines=NULL,
-                     alter.names=FALSE,
-                     column.pattern=NULL,
-                     invert.pattern = FALSE,
                      decades=0,
                       is_h5= NULL,
                       backend = get_default_backend(),
@@ -208,9 +196,6 @@ load_cytoframe_from_fcs <- function(filename,
 #' then the file names are used.
 #' @param transformation see \code{\link{load_cytoframe_from_fcs}} for details.
 #' @param which.lines see \code{\link{load_cytoframe_from_fcs}} for details.
-#' @param alter.names see \code{\link{load_cytoframe_from_fcs}} for details.
-#' @param column.pattern see \code{\link{load_cytoframe_from_fcs}} for details.
-#' @param invert.pattern see \code{\link{load_cytoframe_from_fcs}} for details.
 #' @param decades see \code{\link{load_cytoframe_from_fcs}} for details.
 #' @param is_h5 logical indicating whether the data should be stored in h5 format
 #' @param min.limit see \code{\link{load_cytoframe_from_fcs}} for details.
@@ -242,9 +227,6 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
                          descriptions, name.keyword,
                          transformation="linearize",
                          which.lines=NULL,
-                         alter.names=FALSE,
-                         column.pattern=NULL,
-                         invert.pattern = FALSE,
                          decades=0,
                          is_h5= NULL
                          , h5_dir = NULL

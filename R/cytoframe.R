@@ -279,6 +279,47 @@ setMethod("compensate",
       x
     })
 
+cf_colnames <- function(cf){
+  get_channels(cf@pointer)
+}
+
+cf_rownames <- function(cf){
+  res <- get_rownames(cf@pointer)
+  if(length(res) == 0)
+    res <- NULL
+  res
+}
+
+#' @export
+setMethod("colnames", "cytoframe",
+          function (x, do.NULL = TRUE, prefix = "col") 
+          {
+            cf_colnames(x)
+          })
+#' @export
+#' @importFrom BiocGenerics rownames rownames<-
+setMethod("rownames", "cytoframe",
+    function (x, do.NULL = TRUE, prefix = "row") 
+    {
+      dimnames(x)[[1L]]
+      })
+#' @export
+setMethod("dimnames", "cytoframe",
+          function(x)
+          {
+            ans <- list(cf_rownames(x), cf_colnames((x)))
+            DelayedArray:::simplify_NULL_dimnames(ans)
+          })
+#' @export
+setReplaceMethod("rownames", c("cytoframe"),
+                 function(x, value)
+                 {
+                    if(is.null(value))
+                      del_rownames(x@pointer)
+                    else
+                      set_rownames(x@pointer, value)
+                    x
+                 })
 
 setMethod("nrow",
     signature=signature(x="cytoframe"),
@@ -291,13 +332,15 @@ setMethod("ncol",
     definition=function(x)
       getncol(x@pointer)
 )
-
+#' @importFrom S4Vectors coolcat
 setMethod("show",
           signature=signature(object="cytoframe"),
           definition=function(object)
           {
             
             selectMethod("show", "flowFrame")(object)
+            coolcat("row names(%d): %s\n", rownames(object))
+            
             if(cf_is_subsetted(object))
             {
               cat("cytoframe has been subsetted and can be realized through 'realize_view()'.\n")  
@@ -382,12 +425,15 @@ setMethod("exprs",
     signature=signature(object="cytoframe"),
     definition=function(object){
       if(object@use.exprs)
-        cf_getData(object@pointer)
+        mat <- cf_getData(object@pointer)
       else
       {
         cn <- colnames(object)
-        matrix(nrow = 0, ncol = length(cn), dimnames = list(NULL, cn))
+        mat <- matrix(nrow = 0, ncol = length(cn), dimnames = list(NULL, cn))
       }
+	  # browser()
+      # rownames(mat) <- rownames(object) #strange that rownames method always fall back to ANY signature
+      mat
     })
 
 setReplaceMethod("exprs",
@@ -398,21 +444,21 @@ setReplaceMethod("exprs",
 			cf_setData(object@pointer, value)
 			object
 		})
-
-setReplaceMethod("colnames",
-    signature=signature(x="cytoframe",
-        value="ANY"),
-    definition=function(x, value)
-    {
-      old.names <- colnames(x)
-      if(length(value) != length(old.names))
-        stop("colnames don't match dimensions of data matrix",
-            call.=FALSE)
-      
-		set_all_channels(x@pointer, value)
-      
-      return(x)
-    })
+ 
+ setReplaceMethod("colnames",
+     signature=signature(x="cytoframe",
+         value="ANY"),
+     definition=function(x, value)
+     {
+       old.names <- colnames(x)
+       if(length(value) != length(old.names))
+         stop("colnames don't match dimensions of data matrix",
+             call.=FALSE)
+       
+ 		set_all_channels(x@pointer, value)
+       
+       return(x)
+     })
 
 #' Methods to change channel and marker names for \code{cytoframe} and \code{cytoset} objects
 #' 
@@ -607,7 +653,6 @@ setMethod("keyword",
         keyword="missing"),
     function(object, compact = FALSE)
     {           
-      
       desc <- cf_getKeywords(object@pointer)
 
       if(compact)
@@ -630,58 +675,143 @@ setReplaceMethod("keyword",
       if(length(n) == 0)
         stop(kwdError, call.=FALSE)
 	  value <- collapse_desc(value) #flattern and coerce any R object to string
-      setKeywords(object@pointer, value)
+      cf_setKeywords(object@pointer, value)
       return(object)
     })
 
-#' \code{cytoframe} keyword access methods
+#' Methods to alter keywords in \code{cytoframe}, \code{cytoset}, \code{GatingHierarchy}, or \code{GatingSet} objects
 #' 
 #' These methods allow for direct insertion, deletion, or renaming
-#' of keywords in \code{\link{cytoframe}} objects.
+#' of keywords in \code{\link{cytoframe}}, \code{\link{cytoset}}, \code{\link{GatingHierarchy}}, 
+#' or \code{\link{GatingSet}} objects.
 #' 
-#' @param cf a \code{cytoframe}
-#' @param keyword the keyword name to insert/delete/replace
-#' @param value the value to associate with the supplied keyword
-#' @param from the old keyword name (for renaming)
-#' @param to the new keyword name (for renamiing)
+#' @param cf a \code{\link{cytoframe}}
+#' @param cs a \code{\link{cytoset}}}
+#' @param gh a \code{\link{GatingHierarchy}}
+#' @param gs a \code{\link{GatingSet}}
+#' @param keys the keyword names to insert/delete/replace -- single value or vector
+#' @param values the values to associate with the supplied keywords -- single value or vector of sample length as keys
+#' @param old_keys the old keyword name (for renaming)
+#' @param new_keys the new keyword name (for renaming)
 #' 
-#' @rdname cytoframe-keywords
-#' @aliases cf_keyword_insert cf_keyword_rename cf_keyword_delete 
+#' @name keyword-mutators
+#' @rdname keyword-mutators
+#' @aliases 
+#' cf_keyword_insert cf_keyword_rename cf_keyword_delete cf_keyword_set
+#' cs_keyword_insert cs_keyword_rename cs_keyword_delete cs_keyword_set
+#' gh_keyword_insert gh_keyword_rename gh_keyword_delete gh_keyword_set
+#' gs_keyword_insert gs_keyword_rename gs_keyword_delete gs_keyword_set
+#' 
+#' @details
+#' Each of the methods taking two character vectors (keys/values or old_keys/new_keys)
+#' will also accept a single named vector for flexibility in usage. 
+#' 
+#' For the functions that take a vector of keys and a vector of values (the \code{keyword_insert} and \code{keyword_set} functions), 
+#' the names of this vector should be the keys to which the values of the vector will be assigned. 
+#' 
+#' For the \code{keyword_rename} functions, the names of this vector should be the existing keyword names (\code{old_keys})
+#' while the values should be the replacement keyword names (\code{new_keys}).
+#' 
+#' See examples for details
+#' 
+#' @examples 
+#' library(flowCore)
+#' data(GvHD)
+#' cs <- flowSet_to_cytoset(GvHD[1:2])
+#' 
+#' keys <- c("CYTNUM", "CREATOR")
+#' 
+#' # Values before changes
+#' keyword(cs, keys)
+#' 
+#' # Set two keyword values using separate key and values vectors
+#' values <- c("E3598", "CELLQuest  3.4")
+#' cs_keyword_set(cs, keys, values)
+#' 
+#' # Values after changes
+#' keyword(cs, keys)
+#' 
+#' # Change the values again using a single named vector
+#' values <- c("E3599", "CELLQuest  3.5")
+#' names(values) <- keys
+#' cs_keyword_set(cs, values)
+#' 
+#' # Values after changes
+#' keyword(cs, keys)
+#' 
 #' @export
-cf_keyword_insert <- function(cf, keyword, value){
+cf_keyword_insert <- function(cf, keys, values){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(missing(values)){
+    if(!is.vector(keys) || is.null(names(keys)) || any(is.na(names(keys))))
+      stop("If you are providing a single vector of values, it must have valid names providing the keys")
+    values <- keys
+    keys <- names(values)
+  }
+  if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
+    stop("keys and values must be vectors of equal length")
+
   kw <- keyword(cf)
   kn <- names(kw)
-  idx <- match(keyword, kn)
-  if(!is.na(idx))
-    stop("keyword already exists:", keyword)
-  kw[[keyword]] <- value
-  keyword(cf) <- kw
-  
+  idx <- match(keys, kn)
+  dup_idx <- !is.na(idx)
+  if(any(dup_idx))
+    stop("keywords already exist!:", paste(keys[dup_idx], collapse = ", "))
+  cf_setKeywordsSubset(cf@pointer, keys, values)
 }
 
-#' @rdname cytoframe-keywords
+#' @rdname keyword-mutators
 #' @export
-cf_keyword_delete <- function(cf, keyword){
+cf_keyword_delete <- function(cf, keys){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(!is.vector(keys))
+    stop("keys must be a vector")
   kw <- keyword(cf)
   kn <- names(kw)
-  idx <- match(keyword, kn)
+  idx <- match(keys, kn)
   na_idx <- is.na(idx)
   if(any(na_idx))
-    stop("keyword not found:", paste(keyword[na_idx], collapse = ", "))
-  keyword(cf) <- kw[-idx]
- 	
-  
+    stop("keyword not found:", paste(keys[na_idx], collapse = ", "))
+ 	cf_removeKeywords(cf@pointer, keys)
 }
 
-#' @rdname cytoframe-keywords
+#' @rdname keyword-mutators
 #' @export
-cf_keyword_rename <- function(cf, from, to){
-  kw <- keyword(cf)
+cf_keyword_rename <- function(cf, old_keys, new_keys){
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(missing(new_keys)){
+    if(!is.vector(old_keys) || is.null(names(old_keys)) || any(is.na(names(old_keys))))
+      stop("If you are providing a single vector of new keys, it must have valid names providing the old keys")
+    new_keys <- old_keys
+    old_keys <- names(new_keys)
+  }
+  if(!(is.vector(old_keys) && is.vector(new_keys) && length(old_keys) == length(new_keys)))
+    stop("old_keys and new_keys must be vectors of equal length")
+  kw <- keyword(cf) 
   kn <- names(kw)
-  idx <- match(from, kn)
-  if(is.na(idx))
-    stop("keyword not found:", from)
-  names(keyword(cf))[idx] <- to
+  idx <- match(old_keys, kn)
+  if(any(is.na(idx)))
+    stop("keyword not found:", paste(old_keys[na_idx], collapse = ", "))
+  cf_renameKeywords(cf@pointer, old_keys, new_keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+cf_keyword_set <- function(cf, keys, values){
+  if(missing(values)){
+    if(!is.vector(keys) || is.null(names(keys)) || any(is.na(names(keys))))
+      stop("If you are providing a single vector of values, it must have valid names providing the keys")
+    values <- keys
+    keys <- names(values)
+  }
+  if(!is(cf, "cytoframe"))
+    stop("cf must be a cytoframe object")
+  if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
+    stop("keys and values must be character vectors of equal length")
+  cf_setKeywordsSubset(cf@pointer, keys, values)
 }
 
 #' Methods for conversion between flowCore and flowWorkspace data classes
@@ -783,12 +913,11 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_disk <- function(cf, filename, backend = get_default_backend(), cred = NULL){
+cf_write_disk <- function(cf, filename, backend = get_default_backend(), ctx = .cytoctx_global){
   backend <- match.arg(backend, c("h5", "tile"))
   stopifnot(is(cf, "cytoframe"))
-  cred <- check_credential(cred)
-  
-  write_to_disk(cf@pointer,filename, backend == "h5",  cred)
+
+  write_to_disk(cf@pointer,filename, backend == "h5",  ctx$pointer)
 }
 
 #' Save the cytoframe as h5 format
@@ -798,8 +927,8 @@ cf_write_disk <- function(cf, filename, backend = get_default_backend(), cred = 
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_h5 <- function(cf, filename, cred = NULL){
-	cf_write_disk(cf, filename, backend = "h5", cred)
+cf_write_h5 <- function(cf, filename, ctx = .cytoctx_global){
+	cf_write_disk(cf, filename, backend = "h5", ctx)
 }
 
 #' Save the cytoframe as h5 format
@@ -809,8 +938,8 @@ cf_write_h5 <- function(cf, filename, cred = NULL){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_tile <- function(cf, filename, cred = NULL){
-  cf_write_disk(cf, filename, backend = "tile", cred)
+cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
+  cf_write_disk(cf, filename, backend = "tile", ctx)
 }
 
 #' Load the cytoframe from disk
@@ -819,13 +948,11 @@ cf_write_tile <- function(cf, filename, cred = NULL){
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #'                 And it is valid when on_disk is set to true.
-#' @param cred credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-#'                   when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)
+#' @param ctx cytoctx object, see [cytoctx] for details
 #' @importFrom aws.signature read_credentials
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads = 1L, cred = NULL){
-	cred <- check_credential(cred)
+load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoctx_global){
 	if(!on_disk)
 	{
 	  if(readonly)
@@ -833,10 +960,9 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, num_threads 
 	    stop("'readonly = TRUE' is only valid when 'on_disk' is TRUE! ")
 	  }
 	}
-	cred[["num_threads"]] <- num_threads
 	uri <- suppressWarnings(normalizePath(uri))
 	
-	p <- load_cf(uri, readonly, on_disk, cred)
+	p <- load_cf(uri, readonly, on_disk, ctx$pointer)
 	
 	new("cytoframe", pointer = p, use.exprs = TRUE)
 }
@@ -868,7 +994,7 @@ check_credential <- function(cred = NULL){
     }else
     {
       cred <- try(read_credentials()[[1]], silent = TRUE)
-      if(is(cred, "try-error"))
+      if(class(cred) == "try-error")
       {
         cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
       }  
@@ -976,7 +1102,7 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' @inheritParams load_cytoframe
 #' @details this will override tempdir() in determining the top directory under which files can safely be removed.
 #' @export
-cf_cleanup <- function(cf, cred = NULL){
+cf_cleanup <- function(cf, ctx = .cytoctx_global){
   uri <- cf_get_uri(cf)
   
   if(is_http_path(uri)||is_s3_path(uri))
@@ -984,7 +1110,7 @@ cf_cleanup <- function(cf, cred = NULL){
     s3_paths <- parse_s3_path(uri)
     bucket <- s3_paths[["bucket"]]
     key <- s3_paths[["key"]]	
-    cred <- check_credential(cred)
+    cred <- ctx_to_list(ctx)
     b <- get_bucket(bucket, key, region = cred$AWS_REGION)
     for(obj in b)
       delete_object(obj, region = cred$AWS_REGION)
@@ -1020,7 +1146,7 @@ cf_cleanup <- function(cf, cred = NULL){
 #' 
 #' 
 #' @export
-cf_append_cols <- function(cf, cols, cred = NULL){
+cf_append_cols <- function(cf, cols, ctx = .cytoctx_global){
 
   if(cf_is_subsetted(cf))
     stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")

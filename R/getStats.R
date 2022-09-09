@@ -96,7 +96,7 @@ gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inver
         names(res) <- type
       
     }else{
-      fr <- gh_pop_get_data(gh, y = node)
+      fr <- gh_pop_get_data(gh, y = node, returnType = "flowFrame")
       if(inverse.transform)
       {
         trans <- gh_get_transformations(gh, inverse = TRUE)

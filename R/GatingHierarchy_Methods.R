@@ -495,6 +495,43 @@ setMethod("keyword",c("GatingHierarchy","missing"),function(object,keyword = "mi
       flowCore::keyword(fr, ...)
     })
 
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_insert <- function(gh, keys, values){
+  cf <- gh_pop_get_data(gh)
+  if(missing(values))
+    cf_keyword_insert(cf, keys)
+  else
+    cf_keyword_insert(cf, keys, values)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_delete <- function(gh, keys){
+  cf <- gh_pop_get_data(gh)
+  cf_keyword_delete(cf, keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_rename <- function(gh, old_keys, new_keys){
+  cf <- gh_pop_get_data(gh)
+  if(missing(new_keys))
+    cf_keyword_rename(cf, old_keys)
+  else
+    cf_keyword_rename(cf, old_keys, new_keys)
+}
+
+#' @rdname keyword-mutators
+#' @export
+gh_keyword_set <- function(gh, keys, values){
+  cf <- gh_pop_get_data(gh)
+  if(missing(values))
+    cf_keyword_set(cf, keys)
+  else
+    cf_keyword_set(cf, keys, values)
+}
+
 #' @title Deprecated functions in package \pkg{flowWorkspace}.
 #' @templateVar old getNodes
 #' @templateVar new gs_get_pop_paths
@@ -1352,7 +1389,15 @@ gh_get_compensations <- function(x){
           cid=-2
         if(cid!="-1" && cid!="-2"){
           marker<-comp$parameters
-          compobj<-compensation(matrix(comp$spillOver,nrow=length(marker),ncol=length(marker),byrow=TRUE,dimnames=list(marker,marker)))
+          detector<-comp$detectors
+          compobj<-compensation(matrix(comp$spillOver
+                                       ,ncol=length(detector)
+                                       ,nrow=length(marker)
+                                       ,byrow=TRUE
+                                       ,dimnames=list(marker, detector)
+          )
+          )        
+          
         }else if(cid=="-2"){
           #TODO the matrix may be acquisition defined.
           #				message("No compensation");

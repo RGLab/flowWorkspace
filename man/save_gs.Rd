@@ -13,7 +13,7 @@ save_gs(
   path,
   cdf = NULL,
   backend_opt = c("copy", "move", "skip", "symlink", "link"),
-  cred = NULL,
+  ctx = .cytoctx_global,
   ...
 )
 
@@ -23,7 +23,7 @@ load_gs(
   backend_readonly = TRUE,
   select = character(),
   verbose = FALSE,
-  cred = NULL
+  ctx = .cytoctx_global
 )
 
 \S4method{sampleNames}{character}(object)
@@ -41,8 +41,7 @@ load_gslist(path)
 Sometimes it is more efficient to move or create a symlink of the existing backend file to the archived folder.
 It is useful to "skip" archiving backend file if raw data has not been changed.}
 
-\item{cred}{credentials for s3 access. It is a list containing elements of "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"
-when NULL, read the default credential file from disk (e.g., ~/.aws/credentials)}
+\item{ctx}{cytoctx object, see [cytoctx] for details}
 
 \item{...}{other arguments: not used.}
 

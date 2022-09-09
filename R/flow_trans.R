@@ -26,6 +26,8 @@
 #' @export  
 logtGml2_trans <- function (t = 262144, m = 4.5, n = 6, equal.space = FALSE)
 {
+  t = eval(t)
+  m = eval(m)
   trans <- function(x){
     x[x<0] <- min(x[x>0])
     log10(x/t)/m + 1
@@ -79,6 +81,9 @@ NULL
 #' @export  
 flowjo_log_trans <- function(decade = 4.5, offset = 1, scale = 1, n = 6, equal.space = FALSE)
 {
+  decade = eval(decade)
+  offset = eval(offset)
+  scale = eval(scale)
    trans <- function(x){
     x[x<offset] <- offset
     x <- log10(x)-log10(offset)
@@ -169,7 +174,11 @@ NULL
 #' inv <- flowjo_biexp(inverse = TRUE)
 #' round(inv(data.trans))
 flowjo_biexp <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0, widthBasis = -10, inverse = FALSE){
-
+  channelRange = eval(channelRange)
+  maxValue = eval(maxValue)
+  pos = eval(pos)
+  neg = eval(neg)
+  widthBasis = eval(widthBasis)
   coef <- .getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis, inverse = inverse)
   .flowJoTrans(coef)
 
@@ -320,6 +329,10 @@ NULL
 #' @export
 flowjo_fasinh <- function (m = 4.0, t = 12000, a =  0.7, length = 256)
 {
+  m = eval(m)
+  t = eval(t)
+  a = eval(a)
+  
   function(x){ #copied fom c++ code
     length * ((asinh(x * sinh(m * log(10)) / t) + a * log(10)) / ((m + a) * log(10)))
   }
@@ -338,6 +351,9 @@ NULL
 #' @aliases flowJo.fsinh
 #' @export
 flowjo_fsinh <- function(m = 4.0, t = 12000, a =  0.7, length = 256){
+  m = eval(m)
+  t = eval(t)
+  a = eval(a)
   function(x){
     sinh(((m + a) * log(10)) * x/length - a * log(10)) * t / sinh(m * log(10))
   }
@@ -410,7 +426,11 @@ flowJo_fasinh_trans <- function(...){
 #' @export
 asinh_Gml2 <- function(T = 262144,M = 4.5,A = 0, inverse = FALSE)
 {
-
+  #avoid lazy evaluation side effects
+  #https://github.com/RGLab/CytoML/issues/130
+    T = eval(T)
+    M = eval(M)
+    A = eval(A)
     if(inverse){
 
       flowjo_fsinh(m = M, t = T, a = A, length = 1)
@@ -467,7 +487,7 @@ asinhtGml2_trans <- function(..., n = 6, equal.space = FALSE){
 #' @export
 logicle_trans <- function(..., n = 6, equal.space = FALSE){
   trans.obj <- logicleTransform(...)
-  trans <- trans.obj@.Data
+  trans <- trans.obj@.Data#by retrieving the function object, it effectively force the argument to be evaluated. so no need to explicitly call eval()
   inv <- inverseLogicleTransform(trans = trans.obj)@.Data
   flow_trans(name = "logicle", trans.fun = trans, inverse.fun = inv, n = n, equal.space = equal.space)
 }
@@ -491,7 +511,10 @@ logicle_trans <- function(..., n = 6, equal.space = FALSE){
 #' @export
 logicleGml2_trans <- function (T = 262144, M = 4.5, W = 0.5, A = 0, n = 6, equal.space = FALSE)
 {
-
+  T = eval(T)
+  M = eval(M)
+  W = eval(W)
+  A = eval(A)
   trans <- function (x)
   {
 

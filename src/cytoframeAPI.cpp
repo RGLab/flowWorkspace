@@ -6,6 +6,25 @@ using namespace Rcpp;
 using namespace cytolib;
 
 // [[Rcpp::export]]
+void del_rownames(Rcpp::XPtr<CytoFrameView> fr)
+{
+  return fr->del_rownames();
+}
+
+// [[Rcpp::export]]
+void set_rownames(Rcpp::XPtr<CytoFrameView> fr, vector<string> val)
+{
+  return fr->set_rownames(val);
+}
+
+// [[Rcpp::export]]
+vector<string> get_rownames(Rcpp::XPtr<CytoFrameView> fr)
+{
+  return fr->get_rownames();
+}
+
+
+// [[Rcpp::export]]
 string backend_type(Rcpp::XPtr<CytoFrameView> fr)
 {
 	return fmt_to_str(fr->get_backend_type());
@@ -87,23 +106,29 @@ void subset_cytoframe_by_cols(Rcpp::XPtr<CytoFrameView> fr, vector<unsigned> idx
 // [[Rcpp::export]] 
 void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
   vector<string> marker = as<vector<string>>(colnames(spillover));
+  vector<string> detector;
+  if(!Rf_isNull(rownames(spillover)))
+    detector = as<vector<string>>(rownames(spillover));
+  else
+    detector = marker;
+  
   mat spill = as<mat>(spillover);
   // spill.print(Rcout, "spill");
-  compensation comp(spill, marker);
+  compensation comp(spill, marker, detector);
   // comp.get_spillover_mat().print(Rcout, "comp");
   fr->compensate(comp);
 }
 
 // [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, CytoCtx ctx){
-  FileFormat format = ish5?FileFormat::H5:FileFormat::TILE;
+void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, XPtr<CytoCtx> ctx){
+  FileFormat format = FileFormat::H5;
 
-  fr->write_to_disk(filename, format, ctx);
+  fr->write_to_disk(filename, format, *ctx);
   
 }
 // [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,CytoCtx ctx){
-    CytoFramePtr ptr = load_cytoframe(url, readonly, ctx);
+XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,XPtr<CytoCtx> ctx){
+    CytoFramePtr ptr = load_cytoframe(url, readonly, *ctx);
 
 	if(!on_disk)
 	{
@@ -145,6 +170,11 @@ void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
 }
 
 // [[Rcpp::export]]
+vector<string> get_channels(Rcpp::XPtr<CytoFrameView> fr){
+	return fr->get_channels();
+}
+
+// [[Rcpp::export]]
 Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat){
   
   
@@ -178,10 +208,7 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 	else
 	{
 		FileFormat fmt;
-		if(format == "h5")
-			fmt = FileFormat::H5;
-		else
-			fmt = FileFormat::TILE;
+		fmt = FileFormat::H5;
 		cf->write_to_disk(uri, fmt);
 		ptr = load_cytoframe(uri, false);
 	}
@@ -203,9 +230,11 @@ NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
   for(int i = 0; i < ncol; i++)
     cid[i] = "$P" + to_string(i+1) + "N";
   
-    
   chnl.attr("names") = cid;
-  mat.attr("dimnames") = List::create(R_NilValue, chnl);
+  colnames(mat) = chnl;
+  auto rn = fr->get_rownames();
+  if(rn.size()>0)
+	  rownames(mat) = wrap(rn);
   return mat;
 }
 // [[Rcpp::export]]
@@ -243,13 +272,32 @@ KW_PAIR cf_getKeywords(Rcpp::XPtr<CytoFrameView> fr){
 }
 
 // [[Rcpp::export]] 
-void setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys){
+void cf_setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys){
     vector<string> names = keys.names();
     KEY_WORDS kws;
     for(int i = 0; i < keys.size(); i++) 
       kws[names[i]] = as<string>(keys[i]);
     fr->set_keywords(kws);
 }
+
+// [[Rcpp::export]]
+void cf_setKeywordsSubset(Rcpp::XPtr<CytoFrameView> fr, StringVector keys, StringVector values){
+    for(int i = 0; i < keys.size(); i++)
+      fr->set_keyword(as<string>(keys[i]), as<string>(values[i]));
+}
+
+// [[Rcpp::export]]
+void cf_renameKeywords(Rcpp::XPtr<CytoFrameView> fr, StringVector old_keys, StringVector new_keys){
+  for(int i = 0; i < old_keys.size(); i++)
+    fr->rename_keyword(as<string>(old_keys[i]), as<string>(new_keys[i]));
+}
+
+// [[Rcpp::export]]
+void cf_removeKeywords(Rcpp::XPtr<CytoFrameView> fr, StringVector keys){
+  for(int i = 0; i < keys.size(); i++)
+    fr->remove_keyword(as<string>(keys[i]));
+}
+
 // [[Rcpp::export]] 
 int getncol(Rcpp::XPtr<CytoFrameView> fr){
   
