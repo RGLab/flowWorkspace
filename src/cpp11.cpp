@@ -397,14 +397,14 @@ extern "C" SEXP _flowWorkspace_getPopCounts_cpp(SEXP gs, SEXP freq, SEXP subpopu
   END_CPP11
 }
 // getSingleCellExpression.cpp
-cpp11::doubles_matrix<> cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list markers_pops, cpp11::doubles_matrix<> data, cpp11::strings markers, bool threshold);
+cpp11::writable::doubles_matrix<> cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list markers_pops, cpp11::doubles_matrix<> data, cpp11::strings markers, bool threshold);
 extern "C" SEXP _flowWorkspace_cpp_getSingleCellExpressionByGate(SEXP gs, SEXP sampleName, SEXP markers_pops, SEXP data, SEXP markers, SEXP threshold) {
   BEGIN_CPP11
     return cpp11::as_sexp(cpp_getSingleCellExpressionByGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(markers_pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));
   END_CPP11
 }
 // getSingleCellExpression.cpp
-cpp11::doubles_matrix<> cpp_getSingleCellExpression(cpp11::external_pointer<GatingSet> gs, string sampleName, vector<string> pops, cpp11::doubles_matrix<> data, cpp11::strings markers, bool threshold);
+cpp11::writable::doubles_matrix<> cpp_getSingleCellExpression(cpp11::external_pointer<GatingSet> gs, string sampleName, vector<string> pops, cpp11::doubles_matrix<> data, cpp11::strings markers, bool threshold);
 extern "C" SEXP _flowWorkspace_cpp_getSingleCellExpression(SEXP gs, SEXP sampleName, SEXP pops, SEXP data, SEXP markers, SEXP threshold) {
   BEGIN_CPP11
     return cpp11::as_sexp(cpp_getSingleCellExpression(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));

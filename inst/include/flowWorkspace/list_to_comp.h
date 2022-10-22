@@ -6,7 +6,7 @@
 #include <cytolib/GatingSet.hpp>
 using namespace cytolib;
 
-inline compensation mat_to_comp(cpp11::doubles_matrix rmat)
+inline compensation mat_to_comp(cpp11::doubles_matrix<> rmat)
 {
         vector<string> chnls = cpp11::as_cpp<vector<string>>(cpp11::list(rmat.attr("dimnames"))[1]);
         
@@ -24,7 +24,7 @@ inline unordered_map<string, compensation> list_to_comps(cpp11::list comps){
                 {
                         if(sn.size()>0)
                         {
-                                cpp11::doubles_matrix rmat(comps[sn]);
+                                cpp11::doubles_matrix<> rmat(comps[sn]);
                                 res[sn] = mat_to_comp(rmat);
                         }
                 }

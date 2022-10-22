@@ -193,7 +193,7 @@ cpp11::writable::list cpp_getTransformations(cpp11::external_pointer<GatingSet> 
 				case LIN:
 				{
 
-					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "lin"})
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::writable::list({cpp11::named_arg("type") = "lin"})
                                             );
 					break;
 				}
