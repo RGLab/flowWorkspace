@@ -109,7 +109,7 @@
 #'   \item{plot}{Basic plots for \code{cytoframe} objects. If the object
 #'     has only a single parameter this produces a \code{\link[graphics:hist]{histogram}}. 
 #'     For exactly two parameters we plot a bivariate density map (see \code{\link[graphics]{smoothScatter}})
-#'     and for more than two parameters we produce a simple \code{\link[lattice]{splom}} plot. 
+#'     and for more than two parameters we produce a simple splom plot. 
 #'     To select specific parameters from a \code{flowFrame} for plotting, either subset the object or
 #'     specify the parameters as a character vector in the second argument to \code{plot}. 
 #'     The smooth parameters lets you toggle between density-type \code{\link[graphics]{smoothScatter}}
@@ -402,7 +402,7 @@ setMethod("[",
         		}
         		j <- (1:length(colnames(x)))[j]
         	}
-        	subset_cytoframe_by_cols(fr@pointer, j - 1)
+        	subset_cytoframe_by_cols(fr@pointer, as.integer(j - 1))
         }    
         else
           stop("invalid j index!")
@@ -413,7 +413,7 @@ setMethod("[",
         if(is.logical(i))
           i <- which(i)
         if(is.numeric(i)||is.integer(i))    
-          subset_cytoframe_by_rows(fr@pointer, i - 1)
+          subset_cytoframe_by_rows(fr@pointer, as.integer(i - 1))
         else
           stop("invalid i index!")
       }
@@ -758,7 +758,7 @@ cf_keyword_insert <- function(cf, keys, values){
   dup_idx <- !is.na(idx)
   if(any(dup_idx))
     stop("keywords already exist!:", paste(keys[dup_idx], collapse = ", "))
-  cf_setKeywordsSubset(cf@pointer, keys, values)
+  cf_setKeywordsSubset(cf@pointer, keys, as.character(values))
 }
 
 #' @rdname keyword-mutators
@@ -811,7 +811,7 @@ cf_keyword_set <- function(cf, keys, values){
     stop("cf must be a cytoframe object")
   if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
     stop("keys and values must be character vectors of equal length")
-  cf_setKeywordsSubset(cf@pointer, keys, values)
+  cf_setKeywordsSubset(cf@pointer, keys, as.character(values))
 }
 
 #' Methods for conversion between flowCore and flowWorkspace data classes
@@ -913,11 +913,11 @@ flowFrame_to_cytoframe <- function(fr, ...){
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_disk <- function(cf, filename, backend = get_default_backend(), ctx = .cytoctx_global){
+cf_write_disk <- function(cf, filename, backend = get_default_backend()){
   backend <- match.arg(backend, c("h5", "tile"))
   stopifnot(is(cf, "cytoframe"))
 
-  write_to_disk(cf@pointer,filename, backend == "h5",  ctx$pointer)
+  write_to_disk(cf@pointer,filename, backend == "h5")
 }
 
 #' Save the cytoframe as h5 format
@@ -927,20 +927,11 @@ cf_write_disk <- function(cf, filename, backend = get_default_backend(), ctx = .
 #' @inheritParams load_cytoframe
 #' @family cytoframe/cytoset IO functions
 #' @export
-cf_write_h5 <- function(cf, filename, ctx = .cytoctx_global){
-	cf_write_disk(cf, filename, backend = "h5", ctx)
+cf_write_h5 <- function(cf, filename){
+	cf_write_disk(cf, filename, backend = "h5")
 }
 
-#' Save the cytoframe as h5 format
-#' 
-#' @param cf cytoframe object
-#' @param filename the full path of the output file
-#' @inheritParams load_cytoframe
-#' @family cytoframe/cytoset IO functions
-#' @export
-cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
-  cf_write_disk(cf, filename, backend = "tile", ctx)
-}
+
 
 #' Load the cytoframe from disk
 #' 
@@ -948,11 +939,9 @@ cf_write_tile <- function(cf, filename, ctx = .cytoctx_global){
 #' @param on_disk logical flag indicating whether to keep the data on disk and load it on demand. Default is TRUE.
 #' @param readonly logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 #'                 And it is valid when on_disk is set to true.
-#' @param ctx cytoctx object, see [cytoctx] for details
-#' @importFrom aws.signature read_credentials
 #' @family cytoframe/cytoset IO functions
 #' @export
-load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoctx_global){
+load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk){
 	if(!on_disk)
 	{
 	  if(readonly)
@@ -962,7 +951,7 @@ load_cytoframe <- function(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoc
 	}
 	uri <- suppressWarnings(normalizePath(uri))
 	
-	p <- load_cf(uri, readonly, on_disk, ctx$pointer)
+	p <- load_cf(uri, readonly, on_disk)
 	
 	new("cytoframe", pointer = p, use.exprs = TRUE)
 }
@@ -979,34 +968,6 @@ is_http_path <- function(x){
   grepl("^https://", x, ignore.case = TRUE)
 }
 
-check_credential <- function(cred = NULL){
-  if(is.null(cred))
-  {
-    #try the sys env first
-    if(Sys.getenv("AWS_ACCESS_KEY_ID")!="")
-    {
-      cred <- list(AWS_ACCESS_KEY_ID = Sys.getenv("AWS_ACCESS_KEY_ID")
-                   , AWS_SECRET_ACCESS_KEY = Sys.getenv("AWS_SECRET_ACCESS_KEY")
-                   , AWS_DEFAULT_REGION = Sys.getenv("AWS_DEFAULT_REGION")
-                   )
-      if(cred[["AWS_DEFAULT_REGION"]] == "")
-        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
-    }else
-    {
-      cred <- try(read_credentials()[[1]], silent = TRUE)
-      if(class(cred) == "try-error")
-      {
-        cred <- list(AWS_ACCESS_KEY_ID = "", AWS_SECRET_ACCESS_KEY = "")
-      }  
-      if(is.null(cred[["AWS_DEFAULT_REGION"]]))
-        cred[["AWS_DEFAULT_REGION"]] <- "us-west-1"
-    }
-    
-    cred$AWS_REGION <- cred[["AWS_DEFAULT_REGION"]]
-    cred[["AWS_DEFAULT_REGION"]] <- NULL
-  }
-  cred
-}
 #' Return the file path of the underlying h5 file
 #' 
 #' Return the file path of the underlying h5 file
@@ -1051,18 +1012,18 @@ cf_unlock <- function(cf){
 #' @export
 cf_flush_meta <- function(cf){
 	stopifnot(is(cf, "cytoframe"))
-	.cf_flush_meta(cf@pointer)
+	cf_flush_meta_cpp(cf@pointer)
 }
 #' @export 
 #' @rdname load_meta
 cf_load_meta <- function(cf){
 	stopifnot(is(cf, "cytoframe"))
-	.cf_load_meta(cf@pointer)
+	cf_load_meta_cpp(cf@pointer)
 }
 
 cf_scale_time_channel <- function(cf){
 	stopifnot(is(cf, "cytoframe"))
-	.cf_scale_time_channel(cf@pointer)
+	cf_scale_time_channel_cpp(cf@pointer)
 }
 
 #' Remove temporary files associatated with flowWorkspace data classes
@@ -1102,20 +1063,10 @@ cf_cleanup_temp <- function(x, temp_dir = NULL){
 #' @inheritParams load_cytoframe
 #' @details this will override tempdir() in determining the top directory under which files can safely be removed.
 #' @export
-cf_cleanup <- function(cf, ctx = .cytoctx_global){
+cf_cleanup <- function(cf){
   uri <- cf_get_uri(cf)
   
-  if(is_http_path(uri)||is_s3_path(uri))
-  {
-    s3_paths <- parse_s3_path(uri)
-    bucket <- s3_paths[["bucket"]]
-    key <- s3_paths[["key"]]	
-    cred <- ctx_to_list(ctx)
-    b <- get_bucket(bucket, key, region = cred$AWS_REGION)
-    for(obj in b)
-      delete_object(obj, region = cred$AWS_REGION)
-  }else
-    unlink(uri, recursive = TRUE)
+  unlink(uri, recursive = TRUE)
   message(uri, " is deleted!")
 } 
 #' Append data columns to a flowFrame
@@ -1146,10 +1097,11 @@ cf_cleanup <- function(cf, ctx = .cytoctx_global){
 #' 
 #' 
 #' @export
-cf_append_cols <- function(cf, cols, ctx = .cytoctx_global){
-
+cf_append_cols <- function(cf, cols){
+  stopifnot(typeof(cols) == "double")
   if(cf_is_subsetted(cf))
     stop("Columns cannot be added to subsetted cytoframes. This cytoframe must first be realized with `realize_view()`.\n")
-  cf <- new("cytoframe", pointer = append_cols(cf@pointer, colnames(cols), cols), use.exprs = TRUE);
+  append_cols(cf@pointer, colnames(cols), cols)
+  cf <- new("cytoframe", pointer = cf@pointer, use.exprs = TRUE);
 
 }

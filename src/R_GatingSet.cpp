@@ -7,26 +7,25 @@
  *      Author: wjiang2
  */
 
-#include "flowWorkspace.h"
-#include <Rcpp.h>
-using namespace Rcpp;
+#include "flowWorkspace_types.h"
+#include <cpp11.hpp>
 GatingSet * getGsPtr(SEXP _gsPtr){
 
         if(R_ExternalPtrAddr(_gsPtr)==0)
                         throw(domain_error("Null GatingSet pointer!"));
-        XPtr<GatingSet>gs(_gsPtr);
+        cpp11::external_pointer<GatingSet>gs(_gsPtr);
 
-        return gs;
+        return gs.get();
 }
 
 
-//[[Rcpp::export]]
-void gs_transform_data(XPtr<GatingSet> gsPtr) {
+[[cpp11::register]]
+void gs_transform_data(cpp11::external_pointer<GatingSet> gsPtr) {
 	for(auto sn : gsPtr->get_sample_uids())
 	{
 		GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(sn);
 		if(g_loglevel>=GATING_HIERARCHY_LEVEL)
-			Rcout<<"transforming: "<<sn<<endl;
+			cout<<"transforming: "<<sn<<endl;
 		CytoFramePtr cf = gh->get_cytoframe_view().get_cytoframe_ptr();
 
 		MemCytoFrame fr(*cf);
@@ -37,8 +36,8 @@ void gs_transform_data(XPtr<GatingSet> gsPtr) {
 		cf->set_keywords(fr.get_keywords());
 	}
 }
-//[[Rcpp::export]]
-void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool) {
+[[cpp11::register]]
+void cpp_gating(cpp11::external_pointer<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool) {
   if(nodes[0] == "root")
     alwaysLoadData = true; //skip the checking to save time when start from root
 
@@ -47,7 +46,7 @@ void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData
   for(const string & sid : gsPtr->get_sample_uids())
   {
     if(verbose)
-      Rcout << "gating " << sid << endl;
+      cout << "gating " << sid << endl;
     GatingHierarchyPtr gh = gsPtr->getGatingHierarchy(sid);
     for(unsigned i = 0; i < nodes.size(); i++)
       nodeIDs[i] = gh->getNodeID(nodes[i]);
@@ -133,31 +132,32 @@ void cpp_gating(XPtr<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData
   }
 }
 
-//[[Rcpp::export]]
-XPtr<GatingSet> subset_gs_by_sample(XPtr<GatingSet> gsPtr, vector<string> samples) {
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> subset_gs_by_sample(cpp11::external_pointer<GatingSet> gsPtr, vector<string> samples) {
 
-  return XPtr<GatingSet>(new GatingSet(gsPtr->sub_samples(samples)));
+  return cpp11::external_pointer<GatingSet>(new GatingSet(gsPtr->sub_samples(samples)));
 }
 
-//[[Rcpp::export]]
-XPtr<GatingSet> get_cytoset(XPtr<GatingSet> gsPtr) {
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> get_cytoset(cpp11::external_pointer<GatingSet> gsPtr) {
 
-  return XPtr<GatingSet>(new GatingSet(gsPtr->get_cytoset()));
+  return cpp11::external_pointer<GatingSet>(new GatingSet(gsPtr->get_cytoset()));
 }
 
-//[[Rcpp::export]]
-XPtr<GatingSet> get_cytoset_from_node(XPtr<GatingSet> gsPtr, string node) {
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> get_cytoset_from_node(cpp11::external_pointer<GatingSet> gsPtr, string node) {
 
-  return XPtr<GatingSet>(new GatingSet(gsPtr->get_cytoset(node)));
+  return cpp11::external_pointer<GatingSet>(new GatingSet(gsPtr->get_cytoset(node)));
 }
 
-//[[Rcpp::export]]
-void set_cytoset(XPtr<GatingSet> gsPtr, XPtr<GatingSet> cs) {
+[[cpp11::register]]
+void set_cytoset(cpp11::external_pointer<GatingSet> gsPtr, cpp11::external_pointer<GatingSet> cs) {
 
   gsPtr->set_cytoset(*cs);
 }
-//[[Rcpp::export(name=".cpp_getSamples")]]
-StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
+
+[[cpp11::register]]
+StringVec cpp_getSamples(cpp11::external_pointer<GatingSet> gsPtr) {
 
 	return gsPtr->get_sample_uids();
 }
@@ -165,10 +165,10 @@ StringVec get_sample_uids(XPtr<GatingSet> gsPtr) {
 /*
  * constructing GatingSet from existing gating hierarchy and new data
  */
-//[[Rcpp::export(name=".cpp_NewGatingSet")]]
-XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> cpp_NewGatingSet(cpp11::external_pointer<GatingSet> gsPtr
                ,string src_sample_uid
-			   , XPtr<GatingSet> cs
+			   , cpp11::external_pointer<GatingSet> cs
 			   , bool execute
          , string comp_source)
   {
@@ -185,26 +185,23 @@ XPtr<GatingSet> NewGatingSet(XPtr<GatingSet> gsPtr
 		 * xptr is out of scope
 		 */
 
-		return XPtr<GatingSet>(newGS);
+		return cpp11::external_pointer<GatingSet>(newGS);
 
 }
 
-//[[Rcpp::export]]
-string get_gatingset_id(XPtr<GatingSet> gsPtr) {
+[[cpp11::register]]
+string get_gatingset_id(cpp11::external_pointer<GatingSet> gsPtr) {
 
 	return gsPtr->get_uid();
 }
-//[[Rcpp::export]]
-void set_gatingset_id(XPtr<GatingSet> gsPtr, string id) {
+[[cpp11::register]]
+void set_gatingset_id(cpp11::external_pointer<GatingSet> gsPtr, string id) {
 
 	 gsPtr->set_uid(id);
 }
 
-/*
- * save/load GatingSet
- */
-//[[Rcpp::export(name=".cpp_saveGatingSet")]]
-void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, XPtr<CytoCtx> ctx) {
+[[cpp11::register]]
+void cpp_saveGatingSet(cpp11::external_pointer<GatingSet> gs, string path, string backend_opt) {
       CytoFileOption cf_opt;
       bool skip_data = false;
       if(backend_opt == "copy")
@@ -222,43 +219,42 @@ void save_gatingset(XPtr<GatingSet> gs, string path, string backend_opt, XPtr<Cy
       }
       else
         stop("invalid backend_opt option!");
-			gs->serialize_pb(path, cf_opt, skip_data, *ctx);
+			gs->serialize_pb(path, cf_opt, skip_data);
 }
 
-//[[Rcpp::export(name=".cpp_loadGatingSet")]]
-XPtr<GatingSet> load_gatingset(string path, bool readonly, vector<string> select_samples, bool verbose
-									, XPtr<CytoCtx> ctx) {
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> cpp_loadGatingSet(string path, bool readonly, vector<string> select_samples, bool verbose) {
 
 
-	return XPtr<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose, *ctx));
-
-}
-
-//[[Rcpp::export]]
-XPtr<GatingSet> load_legacy_gs(string pbfile, XPtr<GatingSet> cs) {
-		return XPtr<GatingSet>(new GatingSet(pbfile, *cs));
+	return cpp11::external_pointer<GatingSet>(new GatingSet(path, false, readonly, select_samples, verbose));
 
 }
 
-//[[Rcpp::export(name=".cpp_CloneGatingSet")]]
-XPtr<GatingSet> CloneGatingSet(XPtr<GatingSet> gs, string h5_dir, bool is_copy_data) {
-
-
-
-		return XPtr<GatingSet>(new GatingSet(gs->copy(is_copy_data, true, h5_dir)));
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> load_legacy_gs(string pbfile, cpp11::external_pointer<GatingSet> cs) {
+		return cpp11::external_pointer<GatingSet>(new GatingSet(pbfile, *cs));
 
 }
 
-//[[Rcpp::export(name=".cpp_combineGatingSet")]]
-XPtr<GatingSet> combineGatingSet(Rcpp::List gsList,Rcpp::List sampleList) {
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> cpp_CloneGatingSet(cpp11::external_pointer<GatingSet> gs, string h5_dir, bool is_copy_data) {
 
-	XPtr<GatingSet> newGS(new GatingSet());
+
+
+		return cpp11::external_pointer<GatingSet>(new GatingSet(gs->copy(is_copy_data, true, h5_dir)));
+
+}
+
+[[cpp11::register]]
+cpp11::external_pointer<GatingSet> cpp_combineGatingSet(cpp11::list gsList,cpp11::list sampleList) {
+
+	cpp11::external_pointer<GatingSet> newGS(new GatingSet());
 //	GatingSet newCS;
 
 		for(int i=0;i<gsList.size();i++)
 		{
 			GatingSet *	gs=getGsPtr((SEXP)gsList[i]);
-			StringVec samples=as<StringVec>(sampleList[i]);
+			cpp11::strings samples(sampleList[i]);
 //			const GatingSet & cs = gs->get_cytoset();
 			for(auto sn : samples)
 			{
@@ -276,8 +272,8 @@ XPtr<GatingSet> combineGatingSet(Rcpp::List gsList,Rcpp::List sampleList) {
 /**
  * change sample name
  */
-//[[Rcpp::export(name=".cpp_setSample")]]
-void set_sample_uid(XPtr<GatingSet> gs,string oldName, string newName) {
+[[cpp11::register]]
+void cpp_setSample(cpp11::external_pointer<GatingSet> gs,string oldName, string newName) {
 	
 		gs->set_sample_uid(oldName,newName);
 
@@ -286,27 +282,27 @@ void set_sample_uid(XPtr<GatingSet> gs,string oldName, string newName) {
 //' check whether cytolib is build with tiledb support
 //' @return TRUE or FALSE
 //' @export
-//[[Rcpp::export]]
+[[cpp11::register]]
 bool is_tiledb_support() {
 
 		return false;
 
 }
-//[[Rcpp::export(name=".cpp_getLogLevel")]]
-unsigned short getLogLevel() {
+[[cpp11::register]]
+unsigned short cpp_getLogLevel() {
 
 		return(g_loglevel);
 
 }
 
-//[[Rcpp::export(name=".cpp_setLogLevel")]]
-void setLogLevel(unsigned short loglevel) {
+[[cpp11::register]]
+void cpp_setLogLevel(unsigned short loglevel) {
 
 		g_loglevel = loglevel;
 
 }
 
-//[[Rcpp::export(name=".cpp_togleErrorFlag")]]
-void toggleErrorFlag(){
+[[cpp11::register]]
+void cpp_togleErrorFlag(){
 	my_throw_on_error = !my_throw_on_error;
 }

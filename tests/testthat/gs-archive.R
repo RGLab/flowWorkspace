@@ -164,10 +164,10 @@ test_that("save GatingSet to archive",
       
       # protect the readonly data
       cf <- get_cytoframe_from_cs(gs_cyto_data(gs), 1)
-      expect_error(exprs(cf)[1,1] <- 0, "read-only", class = "std::domain_error")
+      expect_error(exprs(cf)[1,1] <- 0, "read-only", class = "error")
       colnames(gs_cyto_data(gs))[1] <- "dd"
       expect_equal(colnames(gs)[1], "dd")
-      expect_error(cs_flush_meta(gs_cyto_data(gs)) , "read-only", class = "std::domain_error")
+      expect_error(cs_flush_meta(gs_cyto_data(gs)) , "read-only", class = "error")
       #but can be saved 
       tmp1 <- tempfile()
       #either by save_gs

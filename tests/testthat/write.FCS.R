@@ -221,7 +221,7 @@ test_that("write.FCS -- add new cols", {
   kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
   fres <- filter(tmp, kf)
   cols <- as.integer(fres@subSet)
-  cols <- matrix(cols, dimnames = list(NULL, "km"))
+  cols <- matrix(as.numeric(cols), dimnames = list(NULL, "km"))
   tmp <- cf_append_cols(tmp, cols)
 
   tmpfile <- tempfile()

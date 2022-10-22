@@ -4,7 +4,7 @@
 \alias{delete_gs}
 \title{delete the archive of GatingSet}
 \usage{
-delete_gs(path, ctx = .cytoctx_global)
+delete_gs(path)
 }
 \arguments{
 \item{path}{either a local path or s3 path (e.g. "s3://bucketname/gs_path)}

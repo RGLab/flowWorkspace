@@ -27,7 +27,7 @@ test_that("filterObject from rectangleGate", {
                         , boundaries = rbind(rg@min, rg@max)
                         , filterId = rg@filterId
                       )
-      expect_equal(filter_to_list(rg), expectRes)
+      expect_equivalent(filter_to_list(rg), expectRes)
       
       #1d gate
       rg <- rectangleGate(filterId="myRectGate", "FSC-H"=c(200, 600))
@@ -36,7 +36,7 @@ test_that("filterObject from rectangleGate", {
                         , range = c(rg@min, rg@max) 
                         , filterId = rg@filterId
                     )
-      expect_equal(filter_to_list(rg), expectRes)
+      expect_equivalent(filter_to_list(rg), expectRes)
       
     })
 

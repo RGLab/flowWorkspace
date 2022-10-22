@@ -4,14 +4,12 @@
 \alias{cf_write_h5}
 \title{Save the cytoframe as h5 format}
 \usage{
-cf_write_h5(cf, filename, ctx = .cytoctx_global)
+cf_write_h5(cf, filename)
 }
 \arguments{
 \item{cf}{cytoframe object}
 
 \item{filename}{the full path of the output h5 file}
-
-\item{ctx}{cytoctx object, see [cytoctx] for details}
 }
 \description{
 Save the cytoframe as h5 format
@@ -20,7 +18,6 @@ Save the cytoframe as h5 format
 Other cytoframe/cytoset IO functions: 
 \code{\link{cf_get_uri}()},
 \code{\link{cf_write_disk}()},
-\code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
 \code{\link{load_cytoframe}()},

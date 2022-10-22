@@ -18,8 +18,6 @@ Imports:
     Biobase,
     BiocGenerics,
     cytolib (>= 2.3.9),
-    lattice,
-    latticeExtra,
     XML,
     ggplot2,
     graph,
@@ -34,14 +32,9 @@ Imports:
     Rgraphviz,
     data.table,
     dplyr,
-    Rcpp,
     scales,
     matrixStats,
-    RcppParallel,
     RProtoBufLib,
-    digest,
-	aws.s3,
-	aws.signature,
     flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4),
 	DelayedArray,
@@ -54,11 +47,10 @@ Collate:
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'
     'GatingSetList_Methods.R'
-    'RcppExports.R'
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
-    'cytoctx.R'
+    'cpp11.R'
     'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'
@@ -83,7 +75,7 @@ Suggests:
     parallel,
     CytoML,
     openCyto
-LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
+LinkingTo: cpp11, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
 SystemRequirements: GNU make, C++11

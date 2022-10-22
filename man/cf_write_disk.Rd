@@ -4,12 +4,7 @@
 \alias{cf_write_disk}
 \title{Save the cytoframe to disk}
 \usage{
-cf_write_disk(
-  cf,
-  filename,
-  backend = get_default_backend(),
-  ctx = .cytoctx_global
-)
+cf_write_disk(cf, filename, backend = get_default_backend())
 }
 \arguments{
 \item{cf}{cytoframe object}
@@ -17,8 +12,6 @@ cf_write_disk(
 \item{filename}{the full path of the output file}
 
 \item{backend}{either "h5" or "tile"}
-
-\item{ctx}{cytoctx object, see [cytoctx] for details}
 }
 \description{
 Save the cytoframe to disk
@@ -27,7 +20,6 @@ Save the cytoframe to disk
 Other cytoframe/cytoset IO functions: 
 \code{\link{cf_get_uri}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
 \code{\link{load_cytoframe}()},

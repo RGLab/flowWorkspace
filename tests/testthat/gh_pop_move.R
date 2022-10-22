@@ -9,10 +9,10 @@ test_that("gh_pop_move", {
   old.parent <- gs_pop_get_parent(gh, "CD4")
   
   new.parent <- "CD4"
-  expect_error(gh_pop_move(gh, "CD4", new.parent), "itself", class = "std::domain_error")
+  expect_error(gh_pop_move(gh, "CD4", new.parent), "itself", class = "error")
   
   new.parent <- "CD4/CCR7- 45RA+"
-  expect_error(gh_pop_move(gh, "CD4", new.parent), "descendants", class = "std::domain_error")
+  expect_error(gh_pop_move(gh, "CD4", new.parent), "descendants", class = "error")
   
   new.parent <- "singlets"
   suppressMessages(gh_pop_move(gh, "CD4", new.parent))

@@ -285,7 +285,7 @@ gh_pop_get_count <- function(x,y,xml = FALSE){
 	stopifnot(!missing(y))
 	
 	
-	stats<-.cpp_getPopStats(x@pointer,sampleNames(x), y)
+	stats<-cpp_getPopStats(x@pointer,sampleNames(x), y)
 	
 	
 	parent<-try(gs_pop_get_parent(x, y),silent=T)
@@ -296,7 +296,7 @@ gh_pop_get_count <- function(x,y,xml = FALSE){
 	else
 	{
 		
-		pstats<-.cpp_getPopStats(x@pointer,sampleNames(x), parent)
+		pstats<-cpp_getPopStats(x@pointer,sampleNames(x), parent)
 	}
 	
 	

@@ -179,7 +179,7 @@ flowjo_biexp <- function(channelRange=4096, maxValue=262144, pos = 4.5, neg = 0,
   pos = eval(pos)
   neg = eval(neg)
   widthBasis = eval(widthBasis)
-  coef <- .getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis, inverse = inverse)
+  coef <- getSplineCoefs(channelRange = channelRange, maxValue = maxValue, pos = pos, neg = neg, widthBasis = widthBasis, inverse = inverse)
   .flowJoTrans(coef)
 
 }

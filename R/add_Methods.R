@@ -91,7 +91,7 @@ add.default <- function(gs, gate,...)
 #'     autoplot(gs[[1]],"rectangle")
 #'     autoplot(gs[[1]],nodeIDs) #may be smoothed automatically if there are not enough events after gating
 #'     
-#' #plot gates across samples using lattice plot
+#' #plot gates across samples 
 #'     autoplot(gs,nodeID)
 #' #plot all gates for one sample
 #'     autoplot(gs[[1]])#boolean gate is skipped by default 
@@ -169,7 +169,7 @@ gs_pop_add <- function(gs, gate, validityCheck = TRUE, ...){
     sn <- sampleNames(gh)
     
     ptr <- gh@pointer
-	nodeID <- .cpp_addGate( ptr, sn, filterObject, parent, name)
+	nodeID <- cpp_addGate( ptr, sn, filterObject, parent, name)
         
 	nodeID+1
 }
@@ -262,7 +262,7 @@ pop_add.logical <- function(gate, gh, parent, name, recompute, cluster_method_na
             #update object when it is a clusterGate
             if(!is.null(cluster_method_name))
             {
-              fb[["type"]] <- 8
+              fb[["type"]] <- as.integer(8)
               fb[["cluster_method_name"]] <- cluster_method_name
             }
             #skip gating by ignoring recompute      
@@ -364,9 +364,9 @@ gh_pop_remove <- function(gh, node, ...)
         #will change during deletion
     lapply(childrenNodes,function(child)gh_pop_remove(gh, child, fast = FALSE))
         
-    .cpp_removeNode(gh@pointer,sampleNames(gh), node, FALSE)
+    cpp_removeNode(gh@pointer,sampleNames(gh), node, FALSE)
   }else
-    .cpp_removeNode(gh@pointer,sampleNames(gh), node, TRUE)
+    cpp_removeNode(gh@pointer,sampleNames(gh), node, TRUE)
 }
 
 

@@ -24,7 +24,7 @@ gs_get_leaf_nodes <- function(x, ancestor = "root", ...){
   {
     res <- gh_pop_get_descendants(x[[1]],  ancestor, ...)
   }
-  ind <- sapply(res, function(i)length(.cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
+  ind <- sapply(res, function(i)length(cpp_getChildren(x@pointer,sampleNames(x)[1], i, T)) == 0, simplify = TRUE)
   res[ind]
 }
 #' @export 
@@ -104,5 +104,5 @@ NULL
 #' gh_pop_set_xml_count(gh, "CD3", 10000)
 #' }
 gh_pop_set_xml_count <- function(gh, node, count){
-  .set.count.xml(gh@pointer, sampleNames(gh), node, count)
+  setCounts_cpp(gh@pointer, sampleNames(gh), node, count)
 }

@@ -4,7 +4,7 @@
 \alias{load_cytoframe}
 \title{Load the cytoframe from disk}
 \usage{
-load_cytoframe(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoctx_global)
+load_cytoframe(uri, on_disk = TRUE, readonly = on_disk)
 }
 \arguments{
 \item{uri}{path to the cytoframe file}
@@ -13,8 +13,6 @@ load_cytoframe(uri, on_disk = TRUE, readonly = on_disk, ctx = .cytoctx_global)
 
 \item{readonly}{logical flag indicating whether to open h5 data as readonly. Default is TRUE.
 And it is valid when on_disk is set to true.}
-
-\item{ctx}{cytoctx object, see [cytoctx] for details}
 }
 \description{
 Load the cytoframe from disk
@@ -24,7 +22,6 @@ Other cytoframe/cytoset IO functions:
 \code{\link{cf_get_uri}()},
 \code{\link{cf_write_disk}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cf_write_tile}()},
 \code{\link{cs_get_uri}()},
 \code{\link{load_cytoframe_from_fcs}()},
 \code{\link{load_cytoset_from_fcs}()}

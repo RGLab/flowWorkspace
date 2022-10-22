@@ -494,7 +494,7 @@ gs_update_channels <- function(gs, map, all = TRUE){
   map <- .preprocessMap(gs, map)
   
   #update gates and comps ,trans(c++ part)
-  .updateChannels(gs, map)
+  updateChannels_cpp(gs@pointer, map)
   
   
   if(!is.null(gs@transformation)){
@@ -537,8 +537,8 @@ gs_update_channels <- function(gs, map, all = TRUE){
   #and we have to make sure updated comp.chnls
   #doesn't interfere the second run of gs_update_channels
   
-  sn <- .cpp_getSamples( gs@pointer)[1] #can't use sampleNames(gs) since flow data may not be bound to gs yet when it is used within flowjo_to_gatingset
-  comp <- .cpp_getCompensation( gs@pointer, sn)
+  sn <- cpp_getSamples( gs@pointer)[1] #can't use sampleNames(gs) since flow data may not be bound to gs yet when it is used within flowjo_to_gatingset
+  comp <- cpp_getCompensation( gs@pointer, sn)
 #   comp.chnl <- comp$parameters
   prefix <- comp$prefix
   suffix <- comp$suffix

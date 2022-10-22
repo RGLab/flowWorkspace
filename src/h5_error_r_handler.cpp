@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 #include <hdf5.h>
-#include <flowWorkspace/pairVectorRcppWrap.h>
+#include <flowWorkspace/pairVectorCpp11Convert.h>
 #define MSG_SIZE 1024
 herr_t my_hdf5_error_handler(unsigned n, const H5E_error2_t *err_desc, void *client_data)
 {
@@ -37,12 +37,12 @@ herr_t custom_print_cb(hid_t estack, void *client_data)
 	hid_t estack_id = H5Eget_current_stack();//copy stack before it is corrupted by my_hdf5_error_handler
 	H5Ewalk2(estack_id, H5E_WALK_DOWNWARD, my_hdf5_error_handler, client_data);
 	H5Eclose_stack(estack_id);
-	Rcpp::stop("hdf Error");
+	cpp11::stop("hdf Error");
     return 0;
 
 }
 
-// [[Rcpp::export]]
+[[cpp11::register]]
 void h5_set_error_handler(){
 	H5Eset_auto2(H5E_DEFAULT, (H5E_auto2_t)custom_print_cb, NULL);
 }

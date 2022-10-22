@@ -123,7 +123,7 @@ load_cytoframe_from_fcs <- function(filename,
     }else
       truncate_min_val <- TRUE
     if(is.null(which.lines))
-      which.lines <- vector()
+      which.lines <- numeric()
     else
     {
     	# Verify that which.lines is positive and within file limit.
@@ -266,7 +266,7 @@ load_cytoset_from_fcs <- function(files=NULL, path=".", pattern=NULL, phenoData=
     }else
       truncate_min_val <- TRUE
     if(is.null(which.lines))
-      which.lines <- vector()
+      which.lines <- numeric()
     else
     {     
       if (length(which.lines) > 1) {

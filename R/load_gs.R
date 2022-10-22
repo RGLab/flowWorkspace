@@ -35,11 +35,9 @@
 #' @rdname save_gs
 #' @export
 #' @aliases save_gs load_gs save_gslist load_gslist
-#' @importFrom aws.s3 put_object
 save_gs<-function(gs, path
                   , cdf = NULL
                   , backend_opt = c("copy","move","skip","symlink","link")
-                  , ctx = .cytoctx_global
                   , ...){
   if(!is.null(cdf))
   {
@@ -60,7 +58,7 @@ save_gs<-function(gs, path
   if(backend_opt == "link")
   	stop("'link' option for save_gs is no longer supported")
   
-  suppressMessages(res <- try(.cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt, ctx$pointer), silent = TRUE))
+  suppressMessages(res <- try(cpp_saveGatingSet(gs@pointer, path = path, backend_opt = backend_opt), silent = TRUE))
 
   if(class(res) == "try-error")
   {
@@ -99,26 +97,16 @@ parse_s3_path <- function(url){
 #' delete the archive of GatingSet
 #' 
 #' @param path either a local path or s3 path (e.g. "s3://bucketname/gs_path)
-#' @importFrom aws.s3 get_bucket delete_object
 #' @export
-delete_gs <- function(path, ctx = .cytoctx_global){
-  if(is_s3_path(path))
-  {
-    cred <- ctx_to_list(ctx)
-    s3_paths <- parse_s3_path(path)
-    b <- get_bucket(s3_paths[["bucket"]], s3_paths[["key"]], region = cred$AWS_REGION)
-    for(obj in b)
-      delete_object(obj, region = cred$AWS_REGION)
-     }else
-    unlink(path, recursive = TRUE)
+delete_gs <- function(path){
+  unlink(path, recursive = TRUE)
   message(path, " is deleted")
 }
 
 #' @rdname save_gs
 #' @export
 #' @aliases load_gs load_gslist
-#' @importFrom aws.s3 get_bucket_df save_object
-load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE, ctx = .cytoctx_global){
+load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = character(), verbose = FALSE){
   if(!is.null(h5_readonly))
   {
     warning("'h5_readonly' is deprecated by 'backend_readonly'!")
@@ -144,7 +132,7 @@ load_gs<-function(path, h5_readonly = NULL, backend_readonly = TRUE, select = ch
       stop("sample selection is out of boundary: ", paste0(select[idx], ","))
   }else
     select.sn <- select
-  new("GatingSet", pointer = .cpp_loadGatingSet(path, backend_readonly, select.sn, verbose, ctx$pointer))
+  new("GatingSet", pointer = cpp_loadGatingSet(path, backend_readonly, select.sn, verbose))
   
 }
 

@@ -65,7 +65,7 @@ gh_pop_set_indices <- function(obj,y,z)
   sn <- sampleNames(obj)
   ptr <- obj@pointer
 
-  .cpp_setIndices(ptr, sn, nodeID-1, idx)
+  cpp_setIndices(ptr, sn, nodeID-1, idx)
   
 }
 

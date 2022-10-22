@@ -1,147 +1,142 @@
+#include <cpp11.hpp>
+#include <vector>
 #include <cytolib/H5CytoFrame.hpp>
 #include <cytolib/CytoFrame.hpp>
-#include <flowWorkspace/pairVectorRcppWrap.h>
-#include <flowWorkspace/convert_trans.h>
-using namespace Rcpp;
-using namespace cytolib;
+#include <cytolib/CytoFrameView.hpp>
+#include <cytolib/GatingHierarchy.hpp>
 
-// [[Rcpp::export]]
-void del_rownames(Rcpp::XPtr<CytoFrameView> fr)
+#include <flowWorkspace/pairVectorCpp11Convert.h>
+#include <flowWorkspace/convert_trans.h>
+
+using namespace cytolib;
+[[cpp11::register]] void del_rownames(cpp11::external_pointer<CytoFrameView> fr)
 {
   return fr->del_rownames();
 }
 
-// [[Rcpp::export]]
-void set_rownames(Rcpp::XPtr<CytoFrameView> fr, vector<string> val)
+[[cpp11::register]]
+void set_rownames(cpp11::external_pointer<CytoFrameView> fr, vector<string> val)
 {
   return fr->set_rownames(val);
 }
 
-// [[Rcpp::export]]
-vector<string> get_rownames(Rcpp::XPtr<CytoFrameView> fr)
+[[cpp11::register]]
+vector<string> get_rownames(cpp11::external_pointer<CytoFrameView> fr)
 {
   return fr->get_rownames();
 }
 
 
-// [[Rcpp::export]]
-string backend_type(Rcpp::XPtr<CytoFrameView> fr)
+[[cpp11::register]]
+string backend_type(cpp11::external_pointer<CytoFrameView> fr)
 {
 	return fmt_to_str(fr->get_backend_type());
 }
 
-// [[Rcpp::export]]
-bool cf_is_indexed(Rcpp::XPtr<CytoFrameView> fr)
+[[cpp11::register]]
+bool cf_is_indexed(cpp11::external_pointer<CytoFrameView> fr)
 {
 	return fr->is_row_indexed()||fr->is_col_indexed();
 }
 
-// [[Rcpp::export(name=".cf_scale_time_channel")]]
-void cf_scale_time_channel(Rcpp::XPtr<CytoFrameView> fr)
+[[cpp11::register]]
+void cf_scale_time_channel_cpp(cpp11::external_pointer<CytoFrameView> fr)
 {
 	fr->scale_time_channel();
 }
-// [[Rcpp::export]]
-void cf_set_readonly(Rcpp::XPtr<CytoFrameView> fr, bool flag)
+
+[[cpp11::register]]
+void cf_set_readonly(cpp11::external_pointer<CytoFrameView> fr, bool flag)
 {
 	fr->set_readonly(flag);
 }
-// [[Rcpp::export(name=".cf_flush_meta")]]
-void cf_flush_meta(Rcpp::XPtr<CytoFrameView> fr)
+
+[[cpp11::register]]
+void cf_flush_meta_cpp(cpp11::external_pointer<CytoFrameView> fr)
 {
 	fr->flush_meta();
 }
-// [[Rcpp::export(name=".cf_load_meta")]]
-void cf_load_meta(Rcpp::XPtr<CytoFrameView> fr)
+
+[[cpp11::register]]
+void cf_load_meta_cpp(cpp11::external_pointer<CytoFrameView> fr)
 {
 	fr->load_meta();
 }
 
-// [[Rcpp::export]]
-string get_uri(Rcpp::XPtr<CytoFrameView> fr)
+[[cpp11::register]]
+string get_uri(cpp11::external_pointer<CytoFrameView> fr)
 {
 	return fr->get_uri();
 }
 
-// [[Rcpp::export]]
-Rcpp::XPtr<CytoFrameView> realize_view_cytoframe(Rcpp::XPtr<CytoFrameView> fr, string filename)
+[[cpp11::register]]
+cpp11::external_pointer<CytoFrameView> realize_view_cytoframe(cpp11::external_pointer<CytoFrameView> fr, string filename)
 {
- return XPtr<CytoFrameView>(new CytoFrameView(fr->copy_realized(filename)));
+ return cpp11::external_pointer<CytoFrameView>(new CytoFrameView(fr->copy_realized(filename)));
 }
 
-// [[Rcpp::export]]
-Rcpp::XPtr<CytoFrameView> copy_view_cytoframe(Rcpp::XPtr<CytoFrameView> fr)
+[[cpp11::register]]
+cpp11::external_pointer<CytoFrameView> copy_view_cytoframe(cpp11::external_pointer<CytoFrameView> fr)
 {
-  return XPtr<CytoFrameView>(new CytoFrameView(*fr));
+  return cpp11::external_pointer<CytoFrameView>(new CytoFrameView(*fr));
 }
 
-// [[Rcpp::export]]
-void subset_cytoframe_by_rows(Rcpp::XPtr<CytoFrameView> fr, vector<unsigned> idx)
+[[cpp11::register]]
+void subset_cytoframe_by_rows(cpp11::external_pointer<CytoFrameView> fr, vector<int> idx)
 {
   
-  fr->rows_(idx);
+  fr->rows_(vector<unsigned>(idx.begin(), idx.end()));
 }
 
-// [[Rcpp::export]]
-void subset_cytoframe_by_cols(Rcpp::XPtr<CytoFrameView> fr, vector<unsigned> idx)
+[[cpp11::register]]
+void subset_cytoframe_by_cols(cpp11::external_pointer<CytoFrameView> fr, vector<int> idx)
 {
   
-  fr->cols_(idx);
+  fr->cols_(vector<unsigned>(idx.begin(), idx.end()));
 }
- /*
-  * subset by cols and rows in place for each frames
-  */  
+  
  
- // unsigned short r_type = TYPEOF(r_obj);
- // // Rcout << "r_type:" << r_type << endl;  
- // for(auto & it : *cs_new)
- // {
- //   if(j_type != NILSXP)
- //     it.second->cols_(ch_selected, ColType::channel);
- //   if(r_type != NILSXP)
- //     it.second->rows_(convert_to_uint_idx(it.second->n_rows(), r_obj));
- // }
- 
- 
-// [[Rcpp::export]] 
-void frm_compensate(Rcpp::XPtr<CytoFrameView> fr, NumericMatrix spillover){
-  vector<string> marker = as<vector<string>>(colnames(spillover));
+[[cpp11::register]]
+void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix spillover){
+  cpp11::list dimn(spillover.attr("dimnames"));
+
+  vector<string> marker = cpp11::as_cpp<vector<string>>(cpp11::strings(dimn[1]));
   vector<string> detector;
-  if(!Rf_isNull(rownames(spillover)))
-    detector = as<vector<string>>(rownames(spillover));
+  if(!Rf_isNull(dimn[0]))
+    detector = cpp11::as_cpp<vector<string>>(cpp11::strings(dimn[0]));
   else
     detector = marker;
-  
-  mat spill = as<mat>(spillover);
-  // spill.print(Rcout, "spill");
+
+  auto spill = rmatrix_to_arma(spillover);
+
   compensation comp(spill, marker, detector);
-  // comp.get_spillover_mat().print(Rcout, "comp");
+
   fr->compensate(comp);
 }
 
-// [[Rcpp::export]]
-void write_to_disk(Rcpp::XPtr<CytoFrameView> fr, string filename, bool ish5, XPtr<CytoCtx> ctx){
+[[cpp11::register]]
+void write_to_disk(cpp11::external_pointer<CytoFrameView> fr, string filename, bool ish5){
   FileFormat format = FileFormat::H5;
 
-  fr->write_to_disk(filename, format, *ctx);
+  fr->write_to_disk(filename, format);
   
 }
-// [[Rcpp::export]]
-XPtr<CytoFrameView> load_cf(string url, bool readonly, bool on_disk,XPtr<CytoCtx> ctx){
-    CytoFramePtr ptr = load_cytoframe(url, readonly, *ctx);
+[[cpp11::register]]
+cpp11::external_pointer<CytoFrameView> load_cf(string url, bool readonly, bool on_disk){
+    CytoFramePtr ptr = load_cytoframe(url, readonly);
 
 	if(!on_disk)
 	{
 		ptr.reset(new MemCytoFrame(*ptr));
 	}
 
-	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
+	return cpp11::external_pointer<CytoFrameView>(new CytoFrameView(ptr));
 
 }
 
 
-// [[Rcpp::export]]
-XPtr<CytoFrameView> cf_to_memcf(Rcpp::XPtr<CytoFrameView> fr){
+[[cpp11::register]]
+cpp11::external_pointer<CytoFrameView> cf_to_memcf(cpp11::external_pointer<CytoFrameView> fr){
     CytoFrameView new_fr = fr->copy_realized();
     CytoFramePtr ptr = new_fr.get_cytoframe_ptr();
     if(ptr->get_backend_type() != FileFormat::MEM){
@@ -151,50 +146,49 @@ XPtr<CytoFrameView> cf_to_memcf(Rcpp::XPtr<CytoFrameView> fr){
       if(!temp_uri.empty())
         fs::remove_all(temp_uri);
     }
-    return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
+    return cpp11::external_pointer<CytoFrameView>(new CytoFrameView(ptr));
 }
 
-// [[Rcpp::export]] 
-void setMarker(Rcpp::XPtr<CytoFrameView> fr, string channel, string marker){
+[[cpp11::register]]
+void setMarker(cpp11::external_pointer<CytoFrameView> fr, string channel, string marker){
   fr->set_marker(channel, marker);
 }                                      
 
-// [[Rcpp::export]] 
-void set_all_channels(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_names){
+[[cpp11::register]]
+void set_all_channels(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_names){
   fr->set_channels(new_names);
 }
 
-// [[Rcpp::export]]
-void setChannel(Rcpp::XPtr<CytoFrameView> fr, string old, string new_name){
+[[cpp11::register]]
+void setChannel(cpp11::external_pointer<CytoFrameView> fr, string old, string new_name){
   fr->set_channel(old, new_name);
 }
 
-// [[Rcpp::export]]
-vector<string> get_channels(Rcpp::XPtr<CytoFrameView> fr){
+[[cpp11::register]]
+vector<string> get_channels(cpp11::external_pointer<CytoFrameView> fr){
 	return fr->get_channels();
 }
 
-// [[Rcpp::export]]
-Rcpp::XPtr<CytoFrameView> append_cols(Rcpp::XPtr<CytoFrameView> fr, vector<string> new_colnames, NumericMatrix new_cols_mat){
+[[cpp11::register]]
+void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix new_cols_mat){
   
   
   // Add the columns to the MemCytoFrame
-  arma::mat new_cols = as<arma::mat>(new_cols_mat);
-  fr->append_columns(new_colnames, new_cols);
+
+  fr->append_columns(new_colnames, rmatrix_to_arma(new_cols_mat));
   
-  return fr;
-  // return Rcpp::XPtr<CytoFrameView>(fr);
 }
                                       
-// [[Rcpp::export]] 
-Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool text_only = false
+[[cpp11::register]]
+cpp11::external_pointer<CytoFrameView> parseFCS(string filename, SEXP configr, bool text_only = false
 		, string format = "mem", string uri = "")
 {
-	CytoFramePtr ptr;
-	unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
+  auto config = sexp_to_fcs_read_param(configr);
+  CytoFramePtr ptr;
+  unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
 	if(format!="mem"&&text_only)
 	{
-		warning("text_only is ignored when format is set to 'h5' or 'tile'!");
+		cpp11::warning("text_only is ignored when format is set to 'h5' or 'tile'!");
 		text_only = false;
 	}
 	if(text_only)
@@ -213,37 +207,45 @@ Rcpp::XPtr<CytoFrameView> parseFCS(string filename, FCS_READ_PARAM config, bool 
 		ptr = load_cytoframe(uri, false);
 	}
 
-	return Rcpp::XPtr<CytoFrameView>(new CytoFrameView(ptr));
+	return cpp11::external_pointer<CytoFrameView>(new CytoFrameView(ptr));
 }
 
-// [[Rcpp::export]] 
-NumericVector cf_getData(Rcpp::XPtr<CytoFrameView> fr){
-  // int nrow = fr->n_rows();
-  int ncol = fr->n_cols();
-  // int ntotal = ncol * nrow;
+[[cpp11::register]]
+cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
+  auto ncol = fr->n_cols();
   
   EVENT_DATA_VEC dat = fr->get_data();
-  NumericMatrix mat = wrap(dat);
-  // mat.attr("dim") = Dimension(nrow, ncol);
-  StringVector chnl = wrap(fr->get_channels());
-  StringVector cid(ncol);
+  cpp11::writable::doubles_matrix mat = arma_to_rmatrix(dat);
+
+  cpp11::writable::strings chnl(fr->get_channels());
+
+  cpp11::writable::strings cid(ncol);
   for(int i = 0; i < ncol; i++)
     cid[i] = "$P" + to_string(i+1) + "N";
   
   chnl.attr("names") = cid;
-  colnames(mat) = chnl;
+    
+  cpp11::writable::list_of<cpp11::writable::strings> mydims(
+      {R_NilValue, chnl});
+
   auto rn = fr->get_rownames();
-  if(rn.size()>0)
-	  rownames(mat) = wrap(rn);
+  if (rn.size() > 0)
+  {
+    mydims[0] = cpp11::writable::strings(rn.begin(), rn.end());
+  } 
+
+   Rf_setAttrib(cpp11::as_sexp(mat), cpp11::as_sexp({"dimnames"}), cpp11::as_sexp(mydims));
+  // mat.attr("dimnames") = mydims; //somehow this doesn't work for matrix class
   return mat;
 }
-// [[Rcpp::export]]
-void cf_setData(Rcpp::XPtr<CytoFrameView> fr, EVENT_DATA_VEC data){
- fr->set_data(data);
+[[cpp11::register]]
+void cf_setData(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix rmat){
+ 
+ fr->set_data(rmatrix_to_arma(rmat));
 }
 
-// [[Rcpp::export]]
-void cf_transform_data(Rcpp::XPtr<CytoFrameView> fr, List translist){
+[[cpp11::register]]
+void cf_transform_data(cpp11::external_pointer<CytoFrameView> fr, cpp11::list translist){
   trans_map trans = convert_transformer_list(translist);
   trans_local t_local = trans_local();
   t_local.setTransMap(trans);
@@ -258,66 +260,65 @@ void cf_transform_data(Rcpp::XPtr<CytoFrameView> fr, List translist){
   
 }
 
-// [[Rcpp::export]] 
-string cf_getKeyword(Rcpp::XPtr<CytoFrameView> fr, string key){
+[[cpp11::register]]
+string cf_getKeyword(cpp11::external_pointer<CytoFrameView> fr, string key){
   
   string res = fr->get_keyword(key);
   return res;
 }
 
-// [[Rcpp::export]] 
-KW_PAIR cf_getKeywords(Rcpp::XPtr<CytoFrameView> fr){
-  // return fr->getKeywords().getPairs();
-  return fr->get_keywords().getPairs();
+[[cpp11::register]]
+SEXP cf_getKeywords(cpp11::external_pointer<CytoFrameView> fr){
+  return kw_to_sexp(fr->get_keywords().getPairs());
 }
 
-// [[Rcpp::export]] 
-void cf_setKeywords(Rcpp::XPtr<CytoFrameView> fr, List keys){
-    vector<string> names = keys.names();
+[[cpp11::register]]
+void cf_setKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::list_of<cpp11::r_string> keys){
+    
     KEY_WORDS kws;
     for(int i = 0; i < keys.size(); i++) 
-      kws[names[i]] = as<string>(keys[i]);
+      kws[keys.names()[i]] = cpp11::as_cpp<string>(keys[i]);
     fr->set_keywords(kws);
 }
 
-// [[Rcpp::export]]
-void cf_setKeywordsSubset(Rcpp::XPtr<CytoFrameView> fr, StringVector keys, StringVector values){
+[[cpp11::register]]
+void cf_setKeywordsSubset(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings keys, cpp11::strings values){
     for(int i = 0; i < keys.size(); i++)
-      fr->set_keyword(as<string>(keys[i]), as<string>(values[i]));
+      fr->set_keyword(keys[i], values[i]);
 }
 
-// [[Rcpp::export]]
-void cf_renameKeywords(Rcpp::XPtr<CytoFrameView> fr, StringVector old_keys, StringVector new_keys){
+[[cpp11::register]]
+void cf_renameKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings old_keys, cpp11::strings new_keys){
   for(int i = 0; i < old_keys.size(); i++)
-    fr->rename_keyword(as<string>(old_keys[i]), as<string>(new_keys[i]));
+    fr->rename_keyword(old_keys[i], new_keys[i]);
 }
 
-// [[Rcpp::export]]
-void cf_removeKeywords(Rcpp::XPtr<CytoFrameView> fr, StringVector keys){
+[[cpp11::register]]
+void cf_removeKeywords(cpp11::external_pointer<CytoFrameView> fr, cpp11::strings keys){
   for(int i = 0; i < keys.size(); i++)
-    fr->remove_keyword(as<string>(keys[i]));
+    fr->remove_keyword(keys[i]);
 }
 
-// [[Rcpp::export]] 
-int getncol(Rcpp::XPtr<CytoFrameView> fr){
+[[cpp11::register]]
+int getncol(cpp11::external_pointer<CytoFrameView> fr){
   
   return fr->n_cols();
 }
 
-// [[Rcpp::export]] 
-int getnrow(Rcpp::XPtr<CytoFrameView> fr){
+[[cpp11::register]]
+int getnrow(cpp11::external_pointer<CytoFrameView> fr){
   
   return fr->n_rows();
 }
 
-// [[Rcpp::export]] 
-void setpdata(Rcpp::XPtr<CytoFrameView> fr, Rcpp::DataFrame df){
-	int nChnls = df.nrows();
+[[cpp11::register]]
+void setpdata(cpp11::external_pointer<CytoFrameView> fr, cpp11::data_frame df){
+	int nChnls = df.nrow();
 	//assume channels are consistent between fr and df
-	vector<string> chnls = df["name"];
-	vector<string> markers = df["desc"];
-	vector<float> minRange = df["minRange"];
-	vector<float> maxRange = df["maxRange"];
+	cpp11::strings chnls(df["name"]);
+	cpp11::strings markers(df["desc"]);
+	cpp11::doubles minRange(df["minRange"]);
+	cpp11::doubles maxRange(df["maxRange"]);
 	for(int i = 0; i < nChnls; i++)
 	{
 		string chnl = chnls[i];
@@ -327,16 +328,16 @@ void setpdata(Rcpp::XPtr<CytoFrameView> fr, Rcpp::DataFrame df){
 	//no need to update $Pn keyword based on rownames of df assuming it is done through keyword setter separately
 }
 
-// [[Rcpp::export]]
-Rcpp::DataFrame getpdata(Rcpp::XPtr<CytoFrameView> fr){
+[[cpp11::register]]
+cpp11::writable::data_frame getpdata(cpp11::external_pointer<CytoFrameView> fr){
   
   int ncol = fr->n_cols();
-  StringVector rowid(ncol);
-  StringVector names(ncol);
-  StringVector desc(ncol);
-  NumericVector range(ncol);
-  NumericVector minRange(ncol);
-  NumericVector maxRange(ncol);
+  cpp11::writable::strings rowid(ncol);
+  cpp11::writable::strings names(ncol);
+  cpp11::writable::strings desc(ncol);
+  cpp11::writable::doubles range(ncol);
+  cpp11::writable::doubles minRange(ncol);
+  cpp11::writable::doubles maxRange(ncol);
   vector<string> chnl = fr->get_channels();
   vector<string> marker = fr->get_markers();
   vector<unsigned> orig_rowid = fr->get_original_col_ids();
@@ -345,21 +346,25 @@ Rcpp::DataFrame getpdata(Rcpp::XPtr<CytoFrameView> fr){
     rowid[i] = "$P" + to_string(orig_rowid[i]+1);
     names[i] = chnl[i];
     if(marker[i].empty())
-      desc[i] = StringVector::get_na();
+      desc[i] = NA_STRING;
     else
       desc[i] = marker[i];
     pair<float, float> r = fr->get_range(chnl[i], ColType::channel, RangeType::instrument);
-    maxRange[i] = range[i] = r.second;
+    range[i] = r.second;
+    maxRange[i] = r.second;
     minRange[i] = r.first;
   }
   rowid.attr("class") = "AsIs";
   desc.attr("class") = "AsIs";
   names.attr("class") = "AsIs";
-  DataFrame df = DataFrame::create(Named("name") = names
-                             ,Named("desc") = desc
-                             ,Named("range") = range
-                             ,Named("minRange") = minRange
-                             ,Named("maxRange") = maxRange
+  using namespace cpp11::literals;
+
+  cpp11::writable::data_frame df ({"name"_nm = names
+                             ,"desc"_nm = desc
+                             ,"range"_nm = range
+                             ,"minRange"_nm = minRange
+                             ,"maxRange"_nm = maxRange
+                              }
                              );
   df.attr("row.names") = rowid;
   return df;
