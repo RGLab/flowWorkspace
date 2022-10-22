@@ -97,7 +97,7 @@ void subset_cytoframe_by_cols(cpp11::external_pointer<CytoFrameView> fr, vector<
   
  
 [[cpp11::register]]
-void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix spillover){
+void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix<> spillover){
   cpp11::list dimn(spillover.attr("dimnames"));
 
   vector<string> marker = cpp11::as_cpp<vector<string>>(cpp11::strings(dimn[1]));
@@ -170,7 +170,7 @@ vector<string> get_channels(cpp11::external_pointer<CytoFrameView> fr){
 }
 
 [[cpp11::register]]
-void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix new_cols_mat){
+void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix<> new_cols_mat){
   
   
   // Add the columns to the MemCytoFrame
@@ -211,11 +211,11 @@ cpp11::external_pointer<CytoFrameView> parseFCS(string filename, SEXP configr, b
 }
 
 [[cpp11::register]]
-cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr){
+cpp11::writable::doubles_matrix<> cf_getData(cpp11::external_pointer<CytoFrameView> fr){
   auto ncol = fr->n_cols();
   
   EVENT_DATA_VEC dat = fr->get_data();
-  cpp11::writable::doubles_matrix mat = arma_to_rmatrix(dat);
+  cpp11::writable::doubles_matrix<> mat = arma_to_rmatrix(dat);
 
   cpp11::writable::strings chnl(fr->get_channels());
 
@@ -239,7 +239,7 @@ cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView
   return mat;
 }
 [[cpp11::register]]
-void cf_setData(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix rmat){
+void cf_setData(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix<> rmat){
  
  fr->set_data(rmatrix_to_arma(rmat));
 }

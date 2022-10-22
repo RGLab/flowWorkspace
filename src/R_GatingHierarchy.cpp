@@ -388,7 +388,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 					coordinate mu=thisG.getMu();
 					double dist=thisG.getDist();
 					vector<coordinate> cov = thisG.getCovarianceMat();
-					cpp11::writable::doubles_matrix covMat(2,2);
+					cpp11::writable::doubles_matrix<> covMat(2,2);
 					for(unsigned i =0; i < 2; i++){
 						covMat(i,0) = cov.at(i).x;
 						covMat(i,1) = cov.at(i).y;
@@ -662,7 +662,7 @@ gatePtr  newGate(cpp11::list filter){
 			pp.setName(params);
 
 			vector<coordinate> v;
-			cpp11::doubles_matrix boundaries(filter["boundaries"]);
+			cpp11::doubles_matrix<> boundaries(filter["boundaries"]);
 			for(int i=0;i<boundaries.nrow();i++)
 			{
 				coordinate pCoord;
@@ -690,7 +690,7 @@ gatePtr  newGate(cpp11::list filter){
 			pp.setName(params);
 
 			vector<coordinate> v;
-			cpp11::doubles_matrix boundaries(filter["boundaries"]);
+			cpp11::doubles_matrix<> boundaries(filter["boundaries"]);
 			for(int i=0;i<boundaries.nrow();i++)
 			{
 				coordinate pCoord;
@@ -743,7 +743,7 @@ gatePtr  newGate(cpp11::list filter){
 
 			//parse cov mat
 			vector<coordinate> cov;
-			cpp11::doubles_matrix covMat(filter["cov"]);
+			cpp11::doubles_matrix<> covMat(filter["cov"]);
 			for(int i=0;i<covMat.nrow();i++)
 			{
 				coordinate p;

@@ -9,7 +9,7 @@ using namespace cytolib;
 /**
  * mask and subset the input data matrix based on indexList
  */
-cpp11::doubles_matrix maskMatrix(const vector<BoolVec> & indexList, cpp11::doubles_matrix data, bool threshold){
+cpp11::doubles_matrix<> maskMatrix(const vector<BoolVec> & indexList, cpp11::doubles_matrix<> data, bool threshold){
   
   // or operation among these indices
   int nMarkers = indexList.size();
@@ -25,7 +25,7 @@ cpp11::doubles_matrix maskMatrix(const vector<BoolVec> & indexList, cpp11::doubl
   int k = data.ncol();
   if(k!=  nMarkers && threshold)
     cpp11::stop("when 'threshold = TRUE' , the number of markers to be masked must be consistent with the columns of the input data matrix!");
-  cpp11::writable::doubles_matrix output(lgl_n, k);
+  cpp11::writable::doubles_matrix<> output(lgl_n, k);
   
   int counter = 0;
   for (int i=0; i < n; ++i) {
@@ -52,12 +52,12 @@ cpp11::doubles_matrix maskMatrix(const vector<BoolVec> & indexList, cpp11::doubl
  * since we use numeric index to mask the columns in data matrix
 //  */
 // , cpp11::list markers_pops //each marker may be used by several pops
-//                                         , cpp11::doubles_matrix data //ncol = length(markers)
+//                                         , cpp11::doubles_matrix<> data //ncol = length(markers)
 //                                         , vector<string> markers //used for output mat colnames,may have other markers
 [[cpp11::register]]
-cpp11::doubles_matrix cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs,string sampleName
+cpp11::doubles_matrix<> cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs,string sampleName
                                         , cpp11::list markers_pops 
-                                        , cpp11::doubles_matrix data
+                                        , cpp11::doubles_matrix<> data
                                         , cpp11::strings markers 
                                         , bool threshold) {
   
@@ -83,7 +83,7 @@ cpp11::doubles_matrix cpp_getSingleCellExpressionByGate(cpp11::external_pointer<
     
   }
   
-  cpp11::doubles_matrix output = maskMatrix(indexList, data, threshold);
+  cpp11::doubles_matrix<> output = maskMatrix(indexList, data, threshold);
   
   //attach marker names to data
    cpp11::writable::list_of<cpp11::writable::strings> dimnms(
@@ -96,8 +96,8 @@ cpp11::doubles_matrix cpp_getSingleCellExpressionByGate(cpp11::external_pointer<
 
 
 [[cpp11::register]]
-cpp11::doubles_matrix cpp_getSingleCellExpression(cpp11::external_pointer<GatingSet> gs,string sampleName
-                                        , vector<string> pops, cpp11::doubles_matrix data
+cpp11::doubles_matrix<> cpp_getSingleCellExpression(cpp11::external_pointer<GatingSet> gs,string sampleName
+                                        , vector<string> pops, cpp11::doubles_matrix<> data
                                         , cpp11::strings markers, bool threshold) {
   
   //get indices from each node
@@ -111,7 +111,7 @@ cpp11::doubles_matrix cpp_getSingleCellExpression(cpp11::external_pointer<Gating
     indexList.at(i)=gh.getNodeProperty(u).getIndices();
   }
   
-  cpp11::doubles_matrix output = maskMatrix(indexList, data, threshold);
+  cpp11::doubles_matrix<> output = maskMatrix(indexList, data, threshold);
   
   cpp11::writable::list_of<cpp11::writable::strings> dimnms(
       {R_NilValue, markers});

@@ -3,6 +3,7 @@
 
 #include "flowWorkspace_types.h"
 #include "cpp11/declarations.hpp"
+#include <R_ext/Visibility.h>
 
 // cytoframeAPI.cpp
 void del_rownames(cpp11::external_pointer<CytoFrameView> fr);
@@ -111,10 +112,10 @@ extern "C" SEXP _flowWorkspace_subset_cytoframe_by_cols(SEXP fr, SEXP idx) {
   END_CPP11
 }
 // cytoframeAPI.cpp
-void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix spillover);
+void frm_compensate(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix<> spillover);
 extern "C" SEXP _flowWorkspace_frm_compensate(SEXP fr, SEXP spillover) {
   BEGIN_CPP11
-    frm_compensate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(spillover));
+    frm_compensate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(spillover));
     return R_NilValue;
   END_CPP11
 }
@@ -172,10 +173,10 @@ extern "C" SEXP _flowWorkspace_get_channels(SEXP fr) {
   END_CPP11
 }
 // cytoframeAPI.cpp
-void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix new_cols_mat);
+void append_cols(cpp11::external_pointer<CytoFrameView> fr, vector<string> new_colnames, cpp11::doubles_matrix<> new_cols_mat);
 extern "C" SEXP _flowWorkspace_append_cols(SEXP fr, SEXP new_colnames, SEXP new_cols_mat) {
   BEGIN_CPP11
-    append_cols(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(new_colnames), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(new_cols_mat));
+    append_cols(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(new_colnames), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(new_cols_mat));
     return R_NilValue;
   END_CPP11
 }
@@ -187,17 +188,17 @@ extern "C" SEXP _flowWorkspace_parseFCS(SEXP filename, SEXP configr, SEXP text_o
   END_CPP11
 }
 // cytoframeAPI.cpp
-cpp11::writable::doubles_matrix cf_getData(cpp11::external_pointer<CytoFrameView> fr);
+cpp11::writable::doubles_matrix<> cf_getData(cpp11::external_pointer<CytoFrameView> fr);
 extern "C" SEXP _flowWorkspace_cf_getData(SEXP fr) {
   BEGIN_CPP11
     return cpp11::as_sexp(cf_getData(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr)));
   END_CPP11
 }
 // cytoframeAPI.cpp
-void cf_setData(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix rmat);
+void cf_setData(cpp11::external_pointer<CytoFrameView> fr, cpp11::doubles_matrix<> rmat);
 extern "C" SEXP _flowWorkspace_cf_setData(SEXP fr, SEXP rmat) {
   BEGIN_CPP11
-    cf_setData(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(rmat));
+    cf_setData(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<CytoFrameView>>>(fr), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(rmat));
     return R_NilValue;
   END_CPP11
 }
@@ -396,17 +397,17 @@ extern "C" SEXP _flowWorkspace_getPopCounts_cpp(SEXP gs, SEXP freq, SEXP subpopu
   END_CPP11
 }
 // getSingleCellExpression.cpp
-cpp11::doubles_matrix cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list markers_pops, cpp11::doubles_matrix data, cpp11::strings markers, bool threshold);
+cpp11::doubles_matrix<> cpp_getSingleCellExpressionByGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list markers_pops, cpp11::doubles_matrix<> data, cpp11::strings markers, bool threshold);
 extern "C" SEXP _flowWorkspace_cpp_getSingleCellExpressionByGate(SEXP gs, SEXP sampleName, SEXP markers_pops, SEXP data, SEXP markers, SEXP threshold) {
   BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getSingleCellExpressionByGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(markers_pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));
+    return cpp11::as_sexp(cpp_getSingleCellExpressionByGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(markers_pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));
   END_CPP11
 }
 // getSingleCellExpression.cpp
-cpp11::doubles_matrix cpp_getSingleCellExpression(cpp11::external_pointer<GatingSet> gs, string sampleName, vector<string> pops, cpp11::doubles_matrix data, cpp11::strings markers, bool threshold);
+cpp11::doubles_matrix<> cpp_getSingleCellExpression(cpp11::external_pointer<GatingSet> gs, string sampleName, vector<string> pops, cpp11::doubles_matrix<> data, cpp11::strings markers, bool threshold);
 extern "C" SEXP _flowWorkspace_cpp_getSingleCellExpression(SEXP gs, SEXP sampleName, SEXP pops, SEXP data, SEXP markers, SEXP threshold) {
   BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getSingleCellExpression(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));
+    return cpp11::as_sexp(cpp_getSingleCellExpression(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(pops), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::strings>>(markers), cpp11::as_cpp<cpp11::decay_t<bool>>(threshold)));
   END_CPP11
 }
 // h5_error_r_handler.cpp
@@ -775,111 +776,6 @@ extern "C" SEXP _flowWorkspace_setCounts_cpp(SEXP gsPtr, SEXP sampleName, SEXP n
 }
 
 extern "C" {
-/* .Call calls */
-extern SEXP _flowWorkspace_add_cytoframe(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_append_cols(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_backend_type(SEXP);
-extern SEXP _flowWorkspace_cf_flush_meta_cpp(SEXP);
-extern SEXP _flowWorkspace_cf_getData(SEXP);
-extern SEXP _flowWorkspace_cf_getKeyword(SEXP, SEXP);
-extern SEXP _flowWorkspace_cf_getKeywords(SEXP);
-extern SEXP _flowWorkspace_cf_is_indexed(SEXP);
-extern SEXP _flowWorkspace_cf_load_meta_cpp(SEXP);
-extern SEXP _flowWorkspace_cf_removeKeywords(SEXP, SEXP);
-extern SEXP _flowWorkspace_cf_renameKeywords(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cf_scale_time_channel_cpp(SEXP);
-extern SEXP _flowWorkspace_cf_set_readonly(SEXP, SEXP);
-extern SEXP _flowWorkspace_cf_setData(SEXP, SEXP);
-extern SEXP _flowWorkspace_cf_setKeywords(SEXP, SEXP);
-extern SEXP _flowWorkspace_cf_setKeywordsSubset(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cf_to_memcf(SEXP);
-extern SEXP _flowWorkspace_cf_transform_data(SEXP, SEXP);
-extern SEXP _flowWorkspace_copy_view_cytoframe(SEXP);
-extern SEXP _flowWorkspace_copy_view_cytoset(SEXP);
-extern SEXP _flowWorkspace_cpp_addGate(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_boolGating(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_CloneGatingSet(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_combineGatingSet(SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_gating(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getChildren(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getCompensation(SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getGate(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getGateFlag(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getHiddenFlag(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getIndices(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getLogLevel();
-extern SEXP _flowWorkspace_cpp_getNegateFlag(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getNodeID(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getNodes(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getParent(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getPopStats(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getSamples(SEXP);
-extern SEXP _flowWorkspace_cpp_getSingleCellExpression(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getSingleCellExpressionByGate(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_getTransformations(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_loadGatingSet(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_NewGatingSet(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_plotGh(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_removeNode(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_saveGatingSet(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_setGate(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_setIndices(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_setLogLevel(SEXP);
-extern SEXP _flowWorkspace_cpp_setSample(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_cpp_togleErrorFlag();
-extern SEXP _flowWorkspace_cs_set_compensation(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_del_rownames(SEXP);
-extern SEXP _flowWorkspace_fcs_to_cytoset(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_frm_compensate(SEXP, SEXP);
-extern SEXP _flowWorkspace_gen_uid();
-extern SEXP _flowWorkspace_get_channels(SEXP);
-extern SEXP _flowWorkspace_get_colnames(SEXP);
-extern SEXP _flowWorkspace_get_cytoframe(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_get_cytoset(SEXP);
-extern SEXP _flowWorkspace_get_cytoset_from_node(SEXP, SEXP);
-extern SEXP _flowWorkspace_get_gatingset_id(SEXP);
-extern SEXP _flowWorkspace_get_pheno_data(SEXP);
-extern SEXP _flowWorkspace_get_rownames(SEXP);
-extern SEXP _flowWorkspace_get_uri(SEXP);
-extern SEXP _flowWorkspace_getDescendants_cpp(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_getncol(SEXP);
-extern SEXP _flowWorkspace_getNodePath(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_getnrow(SEXP);
-extern SEXP _flowWorkspace_getpdata(SEXP);
-extern SEXP _flowWorkspace_getPopCounts_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_getSplineCoefs(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_gs_transform_data(SEXP);
-extern SEXP _flowWorkspace_h5_set_error_handler();
-extern SEXP _flowWorkspace_is_tiledb_support();
-extern SEXP _flowWorkspace_load_cf(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_load_legacy_gs(SEXP, SEXP);
-extern SEXP _flowWorkspace_moveNode(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_new_cytoset();
-extern SEXP _flowWorkspace_parseFCS(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_realize_view_cytoframe(SEXP, SEXP);
-extern SEXP _flowWorkspace_realize_view_cytoset(SEXP, SEXP);
-extern SEXP _flowWorkspace_set_all_channels(SEXP, SEXP);
-extern SEXP _flowWorkspace_set_cytoframe(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_set_cytoset(SEXP, SEXP);
-extern SEXP _flowWorkspace_set_gatingset_id(SEXP, SEXP);
-extern SEXP _flowWorkspace_set_pheno_data(SEXP, SEXP);
-extern SEXP _flowWorkspace_set_quadgate(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_set_rownames(SEXP, SEXP);
-extern SEXP _flowWorkspace_set_transformations(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_setChannel(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_setCounts_cpp(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_setMarker(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_setNodeFlag(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_setNodeName(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_setpdata(SEXP, SEXP);
-extern SEXP _flowWorkspace_subset_cytoframe_by_cols(SEXP, SEXP);
-extern SEXP _flowWorkspace_subset_cytoframe_by_rows(SEXP, SEXP);
-extern SEXP _flowWorkspace_subset_cytoset(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_subset_cytoset_by_rows(SEXP, SEXP, SEXP);
-extern SEXP _flowWorkspace_subset_gs_by_sample(SEXP, SEXP);
-extern SEXP _flowWorkspace_updateChannels_cpp(SEXP, SEXP);
-extern SEXP _flowWorkspace_write_to_disk(SEXP, SEXP, SEXP);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_add_cytoframe",                     (DL_FUNC) &_flowWorkspace_add_cytoframe,                     3},
     {"_flowWorkspace_append_cols",                       (DL_FUNC) &_flowWorkspace_append_cols,                       3},
@@ -893,17 +789,18 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cf_removeKeywords",                 (DL_FUNC) &_flowWorkspace_cf_removeKeywords,                 2},
     {"_flowWorkspace_cf_renameKeywords",                 (DL_FUNC) &_flowWorkspace_cf_renameKeywords,                 3},
     {"_flowWorkspace_cf_scale_time_channel_cpp",         (DL_FUNC) &_flowWorkspace_cf_scale_time_channel_cpp,         1},
-    {"_flowWorkspace_cf_set_readonly",                   (DL_FUNC) &_flowWorkspace_cf_set_readonly,                   2},
     {"_flowWorkspace_cf_setData",                        (DL_FUNC) &_flowWorkspace_cf_setData,                        2},
     {"_flowWorkspace_cf_setKeywords",                    (DL_FUNC) &_flowWorkspace_cf_setKeywords,                    2},
     {"_flowWorkspace_cf_setKeywordsSubset",              (DL_FUNC) &_flowWorkspace_cf_setKeywordsSubset,              3},
+    {"_flowWorkspace_cf_set_readonly",                   (DL_FUNC) &_flowWorkspace_cf_set_readonly,                   2},
     {"_flowWorkspace_cf_to_memcf",                       (DL_FUNC) &_flowWorkspace_cf_to_memcf,                       1},
     {"_flowWorkspace_cf_transform_data",                 (DL_FUNC) &_flowWorkspace_cf_transform_data,                 2},
     {"_flowWorkspace_copy_view_cytoframe",               (DL_FUNC) &_flowWorkspace_copy_view_cytoframe,               1},
     {"_flowWorkspace_copy_view_cytoset",                 (DL_FUNC) &_flowWorkspace_copy_view_cytoset,                 1},
+    {"_flowWorkspace_cpp_CloneGatingSet",                (DL_FUNC) &_flowWorkspace_cpp_CloneGatingSet,                3},
+    {"_flowWorkspace_cpp_NewGatingSet",                  (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,                  5},
     {"_flowWorkspace_cpp_addGate",                       (DL_FUNC) &_flowWorkspace_cpp_addGate,                       5},
     {"_flowWorkspace_cpp_boolGating",                    (DL_FUNC) &_flowWorkspace_cpp_boolGating,                    4},
-    {"_flowWorkspace_cpp_CloneGatingSet",                (DL_FUNC) &_flowWorkspace_cpp_CloneGatingSet,                3},
     {"_flowWorkspace_cpp_combineGatingSet",              (DL_FUNC) &_flowWorkspace_cpp_combineGatingSet,              2},
     {"_flowWorkspace_cpp_gating",                        (DL_FUNC) &_flowWorkspace_cpp_gating,                        5},
     {"_flowWorkspace_cpp_getChildren",                   (DL_FUNC) &_flowWorkspace_cpp_getChildren,                   4},
@@ -923,7 +820,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_cpp_getSingleCellExpressionByGate", (DL_FUNC) &_flowWorkspace_cpp_getSingleCellExpressionByGate, 6},
     {"_flowWorkspace_cpp_getTransformations",            (DL_FUNC) &_flowWorkspace_cpp_getTransformations,            3},
     {"_flowWorkspace_cpp_loadGatingSet",                 (DL_FUNC) &_flowWorkspace_cpp_loadGatingSet,                 4},
-    {"_flowWorkspace_cpp_NewGatingSet",                  (DL_FUNC) &_flowWorkspace_cpp_NewGatingSet,                  5},
     {"_flowWorkspace_cpp_plotGh",                        (DL_FUNC) &_flowWorkspace_cpp_plotGh,                        3},
     {"_flowWorkspace_cpp_removeNode",                    (DL_FUNC) &_flowWorkspace_cpp_removeNode,                    4},
     {"_flowWorkspace_cpp_saveGatingSet",                 (DL_FUNC) &_flowWorkspace_cpp_saveGatingSet,                 3},
@@ -937,6 +833,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_fcs_to_cytoset",                    (DL_FUNC) &_flowWorkspace_fcs_to_cytoset,                    4},
     {"_flowWorkspace_frm_compensate",                    (DL_FUNC) &_flowWorkspace_frm_compensate,                    2},
     {"_flowWorkspace_gen_uid",                           (DL_FUNC) &_flowWorkspace_gen_uid,                           0},
+    {"_flowWorkspace_getDescendants_cpp",                (DL_FUNC) &_flowWorkspace_getDescendants_cpp,                3},
+    {"_flowWorkspace_getNodePath",                       (DL_FUNC) &_flowWorkspace_getNodePath,                       3},
+    {"_flowWorkspace_getPopCounts_cpp",                  (DL_FUNC) &_flowWorkspace_getPopCounts_cpp,                  5},
+    {"_flowWorkspace_getSplineCoefs",                    (DL_FUNC) &_flowWorkspace_getSplineCoefs,                    6},
     {"_flowWorkspace_get_channels",                      (DL_FUNC) &_flowWorkspace_get_channels,                      1},
     {"_flowWorkspace_get_colnames",                      (DL_FUNC) &_flowWorkspace_get_colnames,                      1},
     {"_flowWorkspace_get_cytoframe",                     (DL_FUNC) &_flowWorkspace_get_cytoframe,                     3},
@@ -946,13 +846,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_get_pheno_data",                    (DL_FUNC) &_flowWorkspace_get_pheno_data,                    1},
     {"_flowWorkspace_get_rownames",                      (DL_FUNC) &_flowWorkspace_get_rownames,                      1},
     {"_flowWorkspace_get_uri",                           (DL_FUNC) &_flowWorkspace_get_uri,                           1},
-    {"_flowWorkspace_getDescendants_cpp",                (DL_FUNC) &_flowWorkspace_getDescendants_cpp,                3},
     {"_flowWorkspace_getncol",                           (DL_FUNC) &_flowWorkspace_getncol,                           1},
-    {"_flowWorkspace_getNodePath",                       (DL_FUNC) &_flowWorkspace_getNodePath,                       3},
     {"_flowWorkspace_getnrow",                           (DL_FUNC) &_flowWorkspace_getnrow,                           1},
     {"_flowWorkspace_getpdata",                          (DL_FUNC) &_flowWorkspace_getpdata,                          1},
-    {"_flowWorkspace_getPopCounts_cpp",                  (DL_FUNC) &_flowWorkspace_getPopCounts_cpp,                  5},
-    {"_flowWorkspace_getSplineCoefs",                    (DL_FUNC) &_flowWorkspace_getSplineCoefs,                    6},
     {"_flowWorkspace_gs_transform_data",                 (DL_FUNC) &_flowWorkspace_gs_transform_data,                 1},
     {"_flowWorkspace_h5_set_error_handler",              (DL_FUNC) &_flowWorkspace_h5_set_error_handler,              0},
     {"_flowWorkspace_is_tiledb_support",                 (DL_FUNC) &_flowWorkspace_is_tiledb_support,                 0},
@@ -963,6 +859,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_parseFCS",                          (DL_FUNC) &_flowWorkspace_parseFCS,                          5},
     {"_flowWorkspace_realize_view_cytoframe",            (DL_FUNC) &_flowWorkspace_realize_view_cytoframe,            2},
     {"_flowWorkspace_realize_view_cytoset",              (DL_FUNC) &_flowWorkspace_realize_view_cytoset,              2},
+    {"_flowWorkspace_setChannel",                        (DL_FUNC) &_flowWorkspace_setChannel,                        3},
+    {"_flowWorkspace_setCounts_cpp",                     (DL_FUNC) &_flowWorkspace_setCounts_cpp,                     4},
+    {"_flowWorkspace_setMarker",                         (DL_FUNC) &_flowWorkspace_setMarker,                         3},
+    {"_flowWorkspace_setNodeFlag",                       (DL_FUNC) &_flowWorkspace_setNodeFlag,                       4},
+    {"_flowWorkspace_setNodeName",                       (DL_FUNC) &_flowWorkspace_setNodeName,                       4},
     {"_flowWorkspace_set_all_channels",                  (DL_FUNC) &_flowWorkspace_set_all_channels,                  2},
     {"_flowWorkspace_set_cytoframe",                     (DL_FUNC) &_flowWorkspace_set_cytoframe,                     3},
     {"_flowWorkspace_set_cytoset",                       (DL_FUNC) &_flowWorkspace_set_cytoset,                       2},
@@ -971,11 +872,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowWorkspace_set_quadgate",                      (DL_FUNC) &_flowWorkspace_set_quadgate,                      4},
     {"_flowWorkspace_set_rownames",                      (DL_FUNC) &_flowWorkspace_set_rownames,                      2},
     {"_flowWorkspace_set_transformations",               (DL_FUNC) &_flowWorkspace_set_transformations,               3},
-    {"_flowWorkspace_setChannel",                        (DL_FUNC) &_flowWorkspace_setChannel,                        3},
-    {"_flowWorkspace_setCounts_cpp",                     (DL_FUNC) &_flowWorkspace_setCounts_cpp,                     4},
-    {"_flowWorkspace_setMarker",                         (DL_FUNC) &_flowWorkspace_setMarker,                         3},
-    {"_flowWorkspace_setNodeFlag",                       (DL_FUNC) &_flowWorkspace_setNodeFlag,                       4},
-    {"_flowWorkspace_setNodeName",                       (DL_FUNC) &_flowWorkspace_setNodeName,                       4},
     {"_flowWorkspace_setpdata",                          (DL_FUNC) &_flowWorkspace_setpdata,                          2},
     {"_flowWorkspace_subset_cytoframe_by_cols",          (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_cols,          2},
     {"_flowWorkspace_subset_cytoframe_by_rows",          (DL_FUNC) &_flowWorkspace_subset_cytoframe_by_rows,          2},
@@ -988,7 +884,7 @@ static const R_CallMethodDef CallEntries[] = {
 };
 }
 
-extern "C" void R_init_flowWorkspace(DllInfo* dll){
+extern "C" attribute_visible void R_init_flowWorkspace(DllInfo* dll){
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
   R_forceSymbols(dll, TRUE);
