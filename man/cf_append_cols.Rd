@@ -28,7 +28,7 @@ as a valid FCS through the function \code{write.FCS} .
   cf <- flowFrame_to_cytoframe(tmp)
   kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
   fres <- filter(cf, kf)
-  cols <- as.integer(fres@subSet)
+  cols <- as.numeric(fres@subSet)
   cols <- matrix(cols, dimnames = list(NULL, "km"))
   cf <- cf_append_cols(cf, cols)
   
