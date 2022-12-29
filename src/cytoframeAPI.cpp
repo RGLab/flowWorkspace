@@ -188,7 +188,7 @@ cpp11::external_pointer<CytoFrameView> parseFCS(string filename, SEXP configr, b
   unique_ptr<MemCytoFrame> cf(new MemCytoFrame(filename.c_str(), config));
 	if(format!="mem"&&text_only)
 	{
-		cpp11::warning("text_only is ignored when format is set to 'h5' or 'tile'!");
+		cpp11::warning(std::string("text_only is ignored when format is set to 'h5' or 'tile'!"));
 		text_only = false;
 	}
 	if(text_only)
