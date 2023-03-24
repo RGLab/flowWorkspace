@@ -528,6 +528,9 @@ setReplaceMethod("flowData",signature(x="GatingSet"),function(x,value){
 #' @rdname gs_cyto_data
 #' @export
 setReplaceMethod("gs_cyto_data",signature(x="GatingSet"),function(x,value){
+      if(class(value) != "cytoset") {
+        value <- flowSet_to_cytoset(value)
+      }
 			set_cytoset(x@pointer, value@pointer)
 			x
 		})
