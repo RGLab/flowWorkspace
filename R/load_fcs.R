@@ -22,9 +22,9 @@
 #' @param filename The filename of the single FCS file to be read
 #' @param transformation A character string that defines the type of
 #' transformation. Valid values are \code{linearize} (default),
-#' \code{linearize-with-PnG-scaling}, or \code{scale}.  The \code{linearize}
+#' \code{linearize_with_PnG_scaling}, or \code{scale}.  The \code{linearize}
 #' transformation applies the appropriate power transform to the data. The
-#' \code{linearize-with-PnG-scaling} transformation applies the appropriate
+#' \code{linearize_with_PnG_scaling} transformation applies the appropriate
 #' power transform for parameters stored on log scale, and also a linear
 #' scaling transformation based on the "gain" (FCS $PnG keywords) for
 #' parameters stored on a linear scale. The \code{scale} transformation scales
