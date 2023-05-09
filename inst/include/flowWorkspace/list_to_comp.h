@@ -1,33 +1,30 @@
 #ifndef LISTTOCOMP_H_
 #define LISTTOCOMP_H_
-
+#include <cpp11.hpp>
+#include <vector>
 
 #include <cytolib/GatingSet.hpp>
 using namespace cytolib;
 
-#include <RcppArmadillo.h> //include this instead of Rcpp.h so that RcppArmadillo inclusion won't be preceded by Rcpp.h in RcppExport.cpp
-#include <RcppCommon.h>
-using namespace Rcpp;
-
-inline compensation mat_to_comp(NumericMatrix rmat)
+inline compensation mat_to_comp(cpp11::doubles_matrix<> rmat)
 {
-        vector<string> chnls = as<vector<string>>(colnames(rmat));
-        arma::mat mat = as<arma::mat>(rmat);
-        compensation comp = compensation(mat, chnls);
+        vector<string> chnls = cpp11::as_cpp<vector<string>>(cpp11::list(rmat.attr("dimnames"))[1]);
+        
+        compensation comp = compensation(rmatrix_to_arma(rmat), chnls);
         comp.cid = "1";
         return comp;
 }
-inline unordered_map<string, compensation> list_to_comps(List comps){
+inline unordered_map<string, compensation> list_to_comps(cpp11::list comps){
         unordered_map<string, compensation> res;
 
         if(!Rf_isNull(comps.names()))
         {
-                vector<string> names = as<vector<string>>(comps.names());
+                vector<string> names = cpp11::as_cpp<vector<string>>(comps.names());
                 for(auto sn : names)
                 {
                         if(sn.size()>0)
                         {
-                                NumericMatrix rmat = as<NumericMatrix>(comps[sn]);
+                                cpp11::doubles_matrix<> rmat(comps[sn]);
                                 res[sn] = mat_to_comp(rmat);
                         }
                 }

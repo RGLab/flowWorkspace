@@ -17,7 +17,7 @@ NULL
 #' @param sampleName sample name
 #' @export 
 gs_get_compensation_internal <- function(gs, sampleName) {
-  .cpp_getCompensation(gs, sampleName)
+  cpp_getCompensation(gs, sampleName)
 }
 
 #This legacy routine is currently not used
@@ -198,7 +198,7 @@ gs_get_compensation_internal <- function(gs, sampleName) {
 #return a graphNEL object that only contans the node Name and isBool flags
 .getGraph <- function(x){
   DotFile <- tempfile(fileext=".dot")
-  .cpp_plotGh(x@pointer,sampleNames(x),DotFile)
+  cpp_plotGh(x@pointer,sampleNames(x),DotFile)
 #  browser()
   #read dot from into Ragraph
   g <- agread(DotFile)
@@ -585,7 +585,7 @@ gs_get_pop_paths <- function(x,y=NULL,order="regular", path = "full", showHidden
             orderInd <- orderInd - 1
 
             if(is.numeric(path)){
-              nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              nodeNames <- cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
 
               if(path == 1){
                 nodeNames <- basename(nodeNames)
@@ -608,10 +608,10 @@ gs_get_pop_paths <- function(x,y=NULL,order="regular", path = "full", showHidden
               }
 
             }else if(path == "auto"){
-                nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
+                nodeNames <- cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),FALSE,showHidden)
 
             }else if(path == "full"){
-              nodeNames <- .cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
+              nodeNames <- cpp_getNodes(x@pointer,sampleNames(x)[1],as.integer(orderInd),TRUE,showHidden)
             }else
 			  stop("Invalid 'path' argument. The valid input is 'full' or 'auto' or a numeric value.")
 
@@ -651,7 +651,7 @@ setMethod("getParent",signature(obj="GatingSet",y="character"),function(obj,y, .
 #' @rdname gs_pop_get_children
 #' @export
 gs_pop_get_parent <- function(obj,y, ...){
-            pind <- .cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
+            pind <- cpp_getParent(obj@pointer,sampleNames(obj)[1], y)
             pind <- pind +1
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[pind]
 		}
@@ -702,7 +702,7 @@ setMethod("getChildren",signature(obj="GatingSet",y="character"),function(obj,y,
 #' }
 #' @export
 gs_pop_get_children <- function(obj,y, showHidden = TRUE, ...){
-      cind <- .cpp_getChildren(obj@pointer,sampleNames(obj)[1], y, showHidden)
+      cind <- cpp_getChildren(obj@pointer,sampleNames(obj)[1], y, showHidden)
       cind <- cind + 1
 			gs_get_pop_paths(obj, showHidden = TRUE, ...)[cind]
 }
@@ -745,7 +745,7 @@ setMethod("getGate",signature(obj="GatingHierarchy",y="character"),function(obj,
 #' @export
 gh_pop_get_gate <- function(obj,y){
 
-				g<-.cpp_getGate(obj@pointer,sampleNames(obj), y)
+				g<-cpp_getGate(obj@pointer,sampleNames(obj), y)
 				filterId <- g$filterId
 				if(g$type==1)
 				{
@@ -822,7 +822,7 @@ gh_get_cluster_labels <- function(gh, parent, cluster_method_name){
   isFound <- FALSE
   for(node in nodes)
   {
-      g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+      g <-cpp_getGate(gh@pointer,sampleNames(gh), node)
       if(g[["type"]] == 8)
       {
         if(g[["cluster_method_name"]] == cluster_method_name)
@@ -910,7 +910,7 @@ extract_cluster_pop_name_from_node <- function(node, cluster_method_name)
 #' @return the name of the clustering method. If it is not cluster node, returns NULL
 #' @export
 gh_pop_get_cluster_name <- function(gh, node){
-  g <-.cpp_getGate(gh@pointer,sampleNames(gh), node)
+  g <-cpp_getGate(gh@pointer,sampleNames(gh), node)
   if(g[["type"]] == 8)
     g[["cluster_method_name"]]
   else
@@ -921,7 +921,7 @@ gh_pop_get_cluster_name <- function(gh, node){
 #' @noRd 
 .getNodeInd <- function(obj,y, ...){
 
-    ind <- .cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
+    ind <- cpp_getNodeID(obj@pointer,sampleNames(obj)[1], y)
 
     ind + 1 # convert to R index
 
@@ -968,7 +968,7 @@ setMethod("getIndices",signature(obj="GatingHierarchy",y="character"),function(o
 #' @aliases gh_pop_get_indices
 #' @export
 gh_pop_get_indices <- function(obj,y){
-	.cpp_getIndices(obj@pointer,sampleNames(obj), y)
+	cpp_getIndices(obj@pointer,sampleNames(obj), y)
 }
 #' @templateVar old isGated
 #' @templateVar new gh_pop_is_gated
@@ -994,7 +994,7 @@ isGated <- function(obj,y){
 #' @param y node/gating path
 #' @export 
 gh_pop_is_gated <- function(obj,y){
-      .cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
+      cpp_getGateFlag(obj@pointer,sampleNames(obj), y)
 
     }
 
@@ -1012,7 +1012,7 @@ isNegated <- function(obj,y){
 #' @rdname nodeflags
 #' @export 
 gh_pop_is_negated <- function(obj,y){
-      .cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
+      cpp_getNegateFlag(obj@pointer,sampleNames(obj), y)
 
     }
 
@@ -1030,7 +1030,7 @@ isHidden <- function(obj,y){
 #' @rdname nodeflags
 #' @export 
 gh_pop_is_hidden  <- function(obj,y){		
-      .cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
+      cpp_getHiddenFlag(obj@pointer,sampleNames(obj), y)
     }
 
 
@@ -1254,6 +1254,9 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 
 
 .convertTrans <- function(trans, inverse = FALSE){
+  #remedy for dealing cpp1 bug see https://github.com/r-lib/cpp11/issues/206
+  chnls <- names(trans)
+  names(trans) <- chnls[chnls!=""]
   transList <- lapply(trans,function(curTrans){
 #						browser()
         if(curTrans$type=="log")
@@ -1328,8 +1331,8 @@ gh_get_transformations  <- function(x, channel = NULL, inverse = FALSE, only.fun
 #' extract trans from c++
 #' @noRd 
 .getTransformations <- function(pointer,sampleName, equal.space = FALSE, ...){
-    trans.func <- .cpp_getTransformations(pointer,sampleName, inverse = FALSE)
-    inv.func <- .cpp_getTransformations(pointer,sampleName, inverse = TRUE)
+    trans.func <- cpp_getTransformations(pointer,sampleName, inverse = FALSE)
+    inv.func <- cpp_getTransformations(pointer,sampleName, inverse = TRUE)
     trans.list <- .convertTrans(trans.func)
     inv.list <- .convertTrans(inv.func, inverse = TRUE)
     trans.name <- "flowJo_"
@@ -1382,7 +1385,7 @@ gh_get_compensations <- function(x){
   
       sn <- sampleNames(x)
 #      if(is.null(compobj)){
-        comp<-.cpp_getCompensation(x@pointer, sn)
+        comp<-cpp_getCompensation(x@pointer, sn)
         cid<-comp$cid
         #			browser()
         if(cid=="")
@@ -1425,111 +1428,6 @@ gh_get_compensations <- function(x){
 
 }
 
-
-
-#' @templateVar old plotGate
-#' @templateVar new autoplot
-#' @template template-depr_pkg
-NULL
-
-#' Plot gates and associated cell population contained in a \code{GatingHierarchy} or \code{GatingSet}
-#'
-#' \strong{Important}: The \code{plotGate} methods are now defunct and gates should instead be plotted using the 
-#' \code{\link[ggcyto]{autoplot}} method from the \code{ggcyto} package. The \code{plotGate} documentation has been 
-#' left here to ease the transition. \cr\cr
-#' When applied to a \code{GatingHierarchy},\code{arrange} is set as TRUE, then all the gates associated with it are plotted as different panel on the same page.
-#' If \code{arrange} is FALSE, then it plots one gate at a time.
-#' By default ,\code{merge} is set as TRUE, plot multiple gates on the same plot when they share common parent population and axis.
-#' When applied to a \code{GatingSet}, if lattice is TRUE,it plots one gate (multiple samples) per page , otherwise, one sample (with multiple gates) per page.
-#'
-#' @name plotGate-methods-defunct
-#' @aliases
-#' plotGate
-#' plotGate-methods
-#' plotGate,GatingHierarchy,character-method
-#' plotGate,GatingHierarchy,numeric-method
-#' plotGate,GatingHierarchy,missing-method
-#' plotGate,GatingSet,numeric-method
-#' plotGate,GatingSet,character-method
-#' plotGate,GatingSet,missing-method
-#' plotGate,GatingSetList,character-method
-#' @param x \code{\linkS4class{GatingSet}} or \code{\linkS4class{GatingHierarchy}}object
-#' @param y \code{character} the node name or full(/partial) gating path
-#'          or \code{numeric} representing the node index in the \code{GatingHierarchy}.
-#'          or \code{missing} which will plot all gates and one gate per page. It is useful for generating plots in a multi-page pdf.
-#'          Nodes can be accessed with \code{\link{gs_get_pop_paths}}.
-#' @param ...
-#' \itemize{
-#'  \item{bool}{ \code{logical} specifying whether to plot boolean gates.}
-#'  \item{arrange.main}{ \code{character} The title of the main page of the plot. Default is the sample name. Only valid when \code{x} is GatingHierarchy}
-#'  \item{arrange}{ \code{logical} indicating whether to arrange different populations/nodes on the same page via \code{arrangeGrob} call.}
-#'  \item{merge}{ \code{logical} indicating whether to draw multiple gates on the same plot if these gates share the same parent population and same x,y dimensions/parameters;}
-#' \item{projections}{ \code{list} of character vectors used to customize x,y axis. By default, the x,y axis are determined by the respective gate parameters.
-#'                                 The elements of the list are named by the population name or path (see \code{y}). Each element is a pair of named character specifying the channel name(or marker name) for x, y axis.
-#'                                 Short form of channel or marker names (e.g. "APC" or "CD3") can be used as long as they can be uniquely matched to the dimentions of flow data.
-#'                                 For example, projections = list("lymph" = c(x = "SSC-A", y = "FSC-A"), "CD3" = c(x = "CD3", y = "SSC-A"))
-#'                      }
-#' \item{par.settings}{ \code{list} of graphical parameters passed to \code{\link{lattice}};}
-#'
-#'  \item{gpar}{ \code{list} of grid parameters passed to \code{\link{grid.layout}};}
-#'
-#'  \item{lattice}{ \code{logical} deprecated;}
-#'
-#'  \item{formula}{ \code{formula} a formula passed to \code{xyplot} function of \code{flowViz}, by default it is NULL, which means the formula is generated according to the x,y parameters associated with gate.}
-#'
-#'  \item{cond}{ \code{character} the conditioning variable to be passed to lattice plot.}
-#'
-#'  \item{overlay}{Node names. These populations are plotted on top of the existing gates(defined by \code{y} argument) as the overlaid dots.}
-#'  \item{overlay.symbol}{A named (lattice graphic parameter) list that defines the symbol color and size for each overlaid population.
-#'                         If not given, we automatically assign the colors.}
-#'  \item{key}{Lattice legend paraemter for overlay symbols.}
-#'
-#'  \item{default.y}{ \code{character} specifiying y channel for xyplot when plotting a 1d gate. Default is "SSC-A" and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(default.y = "FSC-A"))'}
-#'
-#'  \item{type}{ \code{character} either "xyplot" or "densityplot". Default is "xyplot"  and session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(type = "xyplot"))'}
-#'
-#'  \item{fitGate}{ used to disable behavior of plotting the gate region in 1d densityplot. Default is FALSE and  session-wise setting can be stored by 'flowWorkspace.par.set("plotGate", list(fitGate = FALSE))'}
-#'
-#'  \item{strip}{ \code{ligcal} specifies whether to show pop name in strip box,only valid when x is \code{GatingHierarchy}}
-#' \item{strip.text}{either "parent" (the parent population name) or "gate "(the gate name).}
-#'
-#'
-#'  \item{raw.scale}{ \code{logical} whether to show the axis in raw(untransformed) scale. Default is TRUE and can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(raw.scale = TRUE))'}
-#'  \item{xlim, ylim}{ \code{character} can be either "instrument" or "data" which determines the x, y axis scale
-#'                                            either by instrument measurement range or the actual data range.
-#'                     or \code{numeric} which specifies customized range.
-#'                      They can be stored as session-wise setting by 'flowWorkspace.par.set("plotGate", list(xlim = "instrument"))'
-#' }
-#'
-#'  \item{...}{
-#'
-#'          path A \code{character} or \code{numeric} scalar passed to \link{gs_get_pop_paths} method (used to control how the gating/node path is displayed)
-#'
-#'          ... The other additional arguments to be passed to \link[flowViz]{xyplot}.
-#'          }
-#' }
-#'
-#' @return  a \code{trellis} object if \code{arrange} is \code{FALSE},
-#' @references \url{http://www.rglab.org/}
-#' @examples \dontrun{
-#' 	#G is a GatingHierarchy
-#' 	plotGate(G,gs_get_pop_paths(G)[5]);#plot the gate for the  fifth node
-#' }
-#' @export
-setGeneric("plotGate",function(x,y,...)standardGeneric("plotGate"))
-
-setMethod("plotGate",signature(x="GatingHierarchy",y="character"),function(x,y,...){
-  .Defunct("ggcyto::autoplot", "flowWorkspace")
-})
-setMethod("plotGate",signature(x="GatingHierarchy",y="missing"),function(x,y,...){
-  .Defunct("ggcyto::autoplot", "flowWorkspace")
-})
-
-setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
-                    , function(x, y, ...){
-                      .Defunct("ggcyto::autoplot", "flowWorkspace")
-                    })
-
 .mergeGates<-function(gh,i,bool,merge, projections = list()){
 	##filter out boolean gates when bool==FALSE
 #	browser()
@@ -1565,7 +1463,7 @@ setMethod("plotGate", signature(x="GatingHierarchy",y="numeric")
 						{
 							#use id instead of node name to avoid the special characters (e.g. '!') from interfering the 
 						  #parsing of parent info from the contatenated string  later on
-						  pid <- .cpp_getParent(gh@pointer,sn, y)+1
+						  pid <- cpp_getParent(gh@pointer,sn, y)+1
 							
                             myPrj <- projections[[as.character(y)]]
                             if(is.null(myPrj)){
@@ -1678,7 +1576,7 @@ setMethod("setNode"
 #' setNode,GatingHierarchy,character,ANY-method setNode,GatingSet,character,ANY-method
 #' @export
 gh_pop_set_name <- function(x,y,value){
-  .cpp_setNodeName(x@pointer,sampleNames(x), y,value)
+  setNodeName(x@pointer,sampleNames(x), y,value)
 }
 
 #' @export
@@ -1705,7 +1603,7 @@ setMethod("setNode"
 gh_pop_set_visibility <- function(x,y,value){
             
             hidden = !value
-            .cpp_setNodeFlag(x@pointer,sampleNames(x), y, hidden)
+            setNodeFlag(x@pointer,sampleNames(x), y, hidden)
           }
 
 

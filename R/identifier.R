@@ -23,12 +23,11 @@ setMethod("identifier",
 			get_gatingset_id(object@pointer)
 		})
 
-#' @importFrom digest digest
 #' @export 
 setMethod("identifier",c("GatingSetList"),function(object){
   gs.ids <- lapply(object, identifier, level = 1)
   gs.ids <- paste(gs.ids, collapse = "")
-  digest(gs.ids)
+  gs.ids
 })
 
 #' @param value string

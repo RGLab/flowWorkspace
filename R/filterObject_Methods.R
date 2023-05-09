@@ -39,14 +39,14 @@ filter_to_list.rectangleGate <- function(x){
         #convert to rangeGate
         filterObject<-list(type=as.integer(2)
             ,params=params
-            ,range=c(x@min,x@max) 
+            ,range=as.numeric(c(x@min,x@max)) 
             ,filterId=x@filterId
         )
         
       }else if(nDim==2)
       {
         #convert to rectGate gate
-        mat<-rbind(x@min,x@max)
+        mat<-rbind(as.numeric(x@min),as.numeric(x@max))
         filterObject<-list(type=as.integer(5)
             ,params=params
             ,boundaries=mat

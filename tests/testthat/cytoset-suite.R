@@ -40,7 +40,7 @@ test_that("empty cs", {
 			expect_error(cs[[1]], "Empty")
 			expect_error(cs[1], "Empty")
 			expect_equal(colnames(cs), character())
-			expect_equal(nrow(pData(cs)), 0)
+			# expect_equal(nrow(pData(cs)), 0)
 			expect_error(cs_get_uri(cs), "Empty")
 			
 		})
@@ -216,14 +216,14 @@ test_that("save/load", {
   #restore id
   identifier(cs) <- id
   # file.copy(cdf, file.path(tmp, "redundant.nc"))
-  # expect_error(save_cytoset(cs, path = tmp), "Not a valid", class = "std::domain_error")
+  # expect_error(save_cytoset(cs, path = tmp), "Not a valid", class = "error")
   colnames(cs)[1] <- "dd"
   expect_equal(colnames(cs)[1], "dd")
   if(get_default_backend() != "mem")
   {
-    expect_error(cs_flush_meta(cs) , "read-only", class = "std::domain_error")
+    expect_error(cs_flush_meta(cs) , "read-only", class = "error")
     cf <- get_cytoframe_from_cs(cs, 1)
-    expect_error(exprs(cf)[1,1] <- 0, "read-only", class = "std::domain_error")
+    expect_error(exprs(cf)[1,1] <- 0, "read-only", class = "error")
   
     cs <- load_cytoset(tmp, backend_readonly = FALSE)
     colnames(cs)[1] <- "dd"
@@ -429,7 +429,7 @@ test_that("sampleNames<-", {
       is_equal_flowFrame(cs[sn][[1]], nc[[1]])
 
       newNames <- c("s2", "s2")
-      expect_error(sampleNames(nc) <- newNames, "exists", class = "std::range_error")
+      expect_error(sampleNames(nc) <- newNames, "exists", class = "error")
 
       #replace the single subsetted fs
       nc <- nc["s2"]

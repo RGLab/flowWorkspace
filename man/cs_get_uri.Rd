@@ -20,7 +20,6 @@ Other cytoframe/cytoset IO functions:
 \code{\link{cf_get_uri}()},
 \code{\link{cf_write_disk}()},
 \code{\link{cf_write_h5}()},
-\code{\link{cf_write_tile}()},
 \code{\link{load_cytoframe_from_fcs}()},
 \code{\link{load_cytoframe}()},
 \code{\link{load_cytoset_from_fcs}()}

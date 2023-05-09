@@ -63,7 +63,7 @@ gh_pop_set_gate <- function(obj,y,value, negated = FALSE,...){
 			{
 			  this_fobj <- filter_to_list(value)
 			  this_fobj$negated<-negated
-			  .cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
+			  cpp_setGate(obj@pointer,sampleNames(obj), y, this_fobj)
 			  
 			}
 			

@@ -198,7 +198,7 @@ gslist_to_gs <- function(x,...){
 	#combine tree structure
 	ptrlist <- lapply(x,function(gs)gs@pointer, level =1)
 	sampleList <- lapply(x, sampleNames, level =1)
-	new("GatingSet", pointer = .cpp_combineGatingSet(ptrlist,sampleList))
+	new("GatingSet", pointer = cpp_combineGatingSet(ptrlist,sampleList))
 }
 
 #' @name recompute
@@ -239,9 +239,6 @@ setMethod("getGate",signature(obj="GatingSetList",y="character"),function(obj,y)
 		})
 
 
-setMethod("plotGate",signature(x="GatingSetList",y="character"),function(x,y, ...){
-          .Defunct("ggcyto::autoplot", "flowWorkspace")
-    })
 .gslist_get_pop_stats <- function(x, format = c("long", "wide"), ...){
       
       format <- match.arg(format)

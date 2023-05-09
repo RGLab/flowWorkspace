@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
-Version: 4.9.1
+Version: 4.13.0
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <greg@ozette.com>, Mike Jiang <mike@ozette.com>
@@ -11,15 +11,13 @@ Description: This package is designed to facilitate comparison of automated
     gating from flowJo using the flowCore functionality. Gating hierarchies,
     groups of samples, compensation, and transformation are performed so that
     the output matches the flowJo analysis.
-License: file LICENSE
-License_restricts_use: yes
+License: AGPL-3.0-only 
+License_restricts_use: no 
 LazyLoad: yes
 Imports:
     Biobase,
     BiocGenerics,
     cytolib (>= 2.3.9),
-    lattice,
-    latticeExtra,
     XML,
     ggplot2,
     graph,
@@ -34,14 +32,9 @@ Imports:
     Rgraphviz,
     data.table,
     dplyr,
-    Rcpp,
     scales,
     matrixStats,
-    RcppParallel,
     RProtoBufLib,
-    digest,
-	aws.s3,
-	aws.signature,
     flowCore(>= 2.1.1),
 	ncdfFlow(>= 2.25.4),
 	DelayedArray,
@@ -54,11 +47,10 @@ Collate:
     'GatingHierarchy_Methods.R'
     'GatingSet_Methods.R'
     'GatingSetList_Methods.R'
-    'RcppExports.R'
     'filterObject_Methods.R'
     'add_Methods.R'
     'copyNode.R'
-    'cytoctx.R'
+    'cpp11.R'
     'deprecated.R'
     'flow_trans.R'
     'getDescendants.R'
@@ -83,9 +75,9 @@ Suggests:
     parallel,
     CytoML,
     openCyto
-LinkingTo: Rcpp, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib, RcppArmadillo, RcppParallel(>= 4.4.2-1)
+LinkingTo: cpp11, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
 SystemRequirements: GNU make, C++11
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1

@@ -1,13 +1,3 @@
-#' @templateVar old moveNode
-#' @templateVar new gh_pop_move
-#' @template template-depr_pkg
-NULL
-
-#' @export
-moveNode <- function(gh, node, to){
-  .Deprecated("gh_pop_move")
-  gh_pop_move(gh, node, to)
-}
 #' move a node along with all of its descendant nodes to the given ancester
 #' 
 #' @name gh_pop_move
@@ -29,7 +19,7 @@ moveNode <- function(gh, node, to){
 #' @export
 gh_pop_move <- function(gh, node, to, recompute = TRUE){
   
-  .moveNode(gh@pointer, sampleNames(gh), node, to)
+  moveNode(gh@pointer, sampleNames(gh), node, to)
   if(recompute)
     recompute(gh, to)
 

@@ -13,6 +13,7 @@
  * thus it is not initialized by Rcpp module as S4 class within R. So have to use this tedious way to
  * write R API
  */
+#include <cpp11.hpp>
 
 #include "cytolib/GatingSet.hpp"
 #include <stdexcept>
@@ -21,16 +22,14 @@
 using namespace std;
 
 #include "flowWorkspace/convert_trans.h"
-#include <Rcpp.h>
-using namespace Rcpp;
 using namespace cytolib;
 
 
 /*
  * only expose gating set pointer to R to avoid gc() by R
  */
-//[[Rcpp::export(name=".cpp_plotGh")]]
-void plotGh(XPtr<GatingSet> gs,string sampleName,string output) {
+[[cpp11::register]]
+void cpp_plotGh(cpp11::external_pointer<GatingSet> gs,string sampleName,string output) {
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
   gh.drawGraph(output);
@@ -41,9 +40,9 @@ void plotGh(XPtr<GatingSet> gs,string sampleName,string output) {
 /*
  * return node names as a character vector
  */
-//[[Rcpp::export(name=".cpp_getNodes")]]
-StringVec getNodes(XPtr<GatingSet> gs,string sampleName
-                  ,unsigned short order
+[[cpp11::register]]
+StringVec cpp_getNodes(cpp11::external_pointer<GatingSet> gs,string sampleName
+                  ,int order
                   ,bool fullPath
                   , bool showHidden){
 
@@ -53,85 +52,100 @@ StringVec getNodes(XPtr<GatingSet> gs,string sampleName
 
 }
 
-//[[Rcpp::export]]
-string getNodePath(XPtr<GatingSet> gs,string sampleName,NODEID id){
+[[cpp11::register]]
+string getNodePath(cpp11::external_pointer<GatingSet> gs,string sampleName,int id){
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
-	return gh.getNodePath(id);
+	return gh.getNodePath(unsigned(id));
 }
 /*
  * query by path
  */
-//[[Rcpp::export(name=".cpp_getNodeID")]]
-NODEID getNodeID(XPtr<GatingSet> gs,string sampleName,string gatePath){
+
+[[cpp11::register]]
+int cpp_getNodeID(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
-	return (NODEID)gh.getNodeID(gatePath);
+	return gh.getNodeID(gatePath);
 
 }
-//[[Rcpp::export(name=".cpp_getParent")]]
-NODEID getParent(XPtr<GatingSet> gs,string sampleName,string gatePath){
+
+[[cpp11::register]]
+int cpp_getParent(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
-	return (NODEID)gh.getParent(u);
+	return gh.getParent(u);
 
 }
 
-//[[Rcpp::export(name=".cpp_getChildren")]]
-vector<NODEID> getChildren(XPtr<GatingSet> gs,string sampleName
+[[cpp11::register]]
+vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs,string sampleName
                              ,string gatePath, bool showHidden){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
 	NODEID u = gh.getNodeID(gatePath);
-	VertexID_vec childrenID = gh.getChildren(u);
-	vector<NODEID> res;
+	auto childrenID = gh.getChildren(u);
+	vector<int> res;
 	for(VertexID_vec::iterator it=childrenID.begin(); it!=childrenID.end();it++){
-		NODEID thisNodeID = *it;
+		auto thisNodeID = *it;
 		bool isHidden = gh.getNodeProperty(thisNodeID).getHiddenFlag();
 		if(showHidden||(!isHidden))
-			res.push_back(thisNodeID);
+			res.push_back(int(thisNodeID));
 	}
 
 	return res;
 
 }
 
-//[[Rcpp::export(name=".cpp_getPopStats")]]
-List getPopStats(XPtr<GatingSet> gs,string sampleName
+[[cpp11::register]]
+cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs,string sampleName
                      ,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
 	nodeProperties &node=gh.getNodeProperty(u);
-
-	return List::create(Named("FlowCore",node.getStats(true))
-						,Named("FlowJo",node.getStats(false))
-						);
-
+    cpp11::writable::list res;
+    for (bool i : {true, false})
+    {
+        const char * statsname = i ? "FlowCore" : "FlowJo";
+        auto stats = node.getStats(i);
+        cpp11::writable::doubles vals;
+        cpp11::writable::strings types;
+        for (auto it : stats)
+        {
+			types.push_back(it.first);
+			vals.push_back(it.second);
+        }
+		
+		if(vals.size()>0)
+		{
+			vals.names() = types;
+			res.push_back(cpp11::named_arg(statsname) = vals);
+		}
+	}
+    return res;
 }
 
-
-
-//[[Rcpp::export(name=".cpp_getCompensation")]]
-List getCompensation(XPtr<GatingSet> gs,string sampleName){
+[[cpp11::register]]
+cpp11::list cpp_getCompensation(cpp11::external_pointer<GatingSet> gs,string sampleName){
   GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
   compensation comp=gh.get_compensation();
-	return(List::create(Named("cid",comp.cid)
-						,Named("prefix",comp.prefix)
-						,Named("suffix",comp.suffix)
-						,Named("comment",comp.comment)
-						,Named("parameters",comp.marker)
-            ,Named("detectors",comp.detector)
-						,Named("spillOver",comp.spillOver))
+	return(cpp11::list({cpp11::named_arg("cid")=comp.cid
+						,cpp11::named_arg("prefix")=comp.prefix
+						,cpp11::named_arg("suffix")=comp.suffix
+						,cpp11::named_arg("comment")=comp.comment
+						,cpp11::named_arg("parameters")=comp.marker
+            ,cpp11::named_arg("detectors")=comp.detector
+						,cpp11::named_arg("spillOver")=comp.spillOver})
 			);
 
 
 }
 
-//[[Rcpp::export]]
-void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
+[[cpp11::register]]
+void set_transformations(cpp11::external_pointer<GatingSet> gs,string sampleName, cpp11::list translist){
 
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -139,14 +153,14 @@ void set_transformations(XPtr<GatingSet> gs,string sampleName, List translist){
 	gh.addTransMap(trans);
 }
 
-//[[Rcpp::export(name=".cpp_getTransformations")]]
-List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
+[[cpp11::register]]
+cpp11::writable::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs,string sampleName, bool inverse){
 
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	trans_map trans=gh.getLocalTrans().getTransMap();
-	List res;
-
+	cpp11::writable::list res;
+	
 	for (trans_map::iterator it=trans.begin();it!=trans.end();it++)
 	{
 		TransPtr curTrans=it->second;
@@ -167,22 +181,20 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 				case LOG:
 				{
 					shared_ptr<logTrans> thisTrans = dynamic_pointer_cast<logTrans>(curTrans);
-					res.push_back(List::create(Named("type","log")
-												,Named("decade",thisTrans->decade)
-												,Named("offset",thisTrans->offset)
-												,Named("T",thisTrans->T)
-												,Named("scale",thisTrans->scale)
-												)
-									,chnl
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "log"
+												,cpp11::named_arg("decade") = thisTrans->decade
+												,cpp11::named_arg("offset") = thisTrans->offset
+												,cpp11::named_arg("T") = thisTrans->T
+												,cpp11::named_arg("scale") = thisTrans->scale
+                    })
 									);
 					break;
 				}
 				case LIN:
 				{
 
-					res.push_back(List::create(Named("type","lin"))
-									,chnl
-									);
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::writable::list({cpp11::named_arg("type") = "lin"})
+                                            );
 					break;
 				}
 				case CALTBL:
@@ -195,12 +207,15 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 					}
 
 					Spline_Coefs obj=curTrans->getSplineCoefs();
-
-					res.push_back(List::create(Named("z",obj.coefs)
-												,Named("method",obj.method)
-												,Named("type", "caltbl")
-												)
-									,chnl
+                    cpp11::writable::list coef;
+                    for (auto it : obj.coefs)
+                    {
+                        coef.push_back(cpp11::named_arg(it.first.c_str()) = it.second);
+                    }
+                    res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("z") = coef
+												,cpp11::named_arg("method") = obj.method
+												,cpp11::named_arg("type") =  "caltbl"
+                    })
 									);
 					break;
 				}
@@ -218,20 +233,23 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 					}
 
 					Spline_Coefs obj=curTrans->getSplineCoefs();
-
+                    cpp11::writable::list coef;
+                    for (auto it : obj.coefs)
+                    {
+                        coef.push_back(cpp11::named_arg(it.first.c_str()) = it.second);
+                    }
 					/*
 					 * in addition, output the 5 arguments
 					 */
-					res.push_back(List::create(Named("z",obj.coefs)
-												,Named("method",obj.method)
-												,Named("type","biexp")
-												, Named("channelRange", thisTrans->channelRange)
-												, Named("maxValue", thisTrans->maxValue)
-												, Named("neg", thisTrans->neg)
-												, Named("pos", thisTrans->pos)
-												, Named("widthBasis", thisTrans->widthBasis)
-												)
-									,chnl
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("z") = coef
+												,cpp11::named_arg("method") = obj.method
+												,cpp11::named_arg("type") = "biexp"
+												, cpp11::named_arg("channelRange") =  thisTrans->channelRange
+												, cpp11::named_arg("maxValue") =  thisTrans->maxValue
+												, cpp11::named_arg("neg") =  thisTrans->neg
+												, cpp11::named_arg("pos") =  thisTrans->pos
+												, cpp11::named_arg("widthBasis") =  thisTrans->widthBasis
+                })
 									);
 
 					break;
@@ -240,14 +258,13 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 				{
 					shared_ptr<fasinhTrans> thisTrans = dynamic_pointer_cast<fasinhTrans>(curTrans);
 
-					res.push_back(List::create(Named("type","fasinh")
-												, Named("A", thisTrans->A)
-												, Named("M", thisTrans->M)
-												, Named("T", thisTrans->T)
-												, Named("length", thisTrans->length)
-												, Named("maxRange", thisTrans->maxRange)
-												)
-												,chnl
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "fasinh"
+												, cpp11::named_arg("A") =  thisTrans->A
+												, cpp11::named_arg("M") =  thisTrans->M
+												, cpp11::named_arg("T") =  thisTrans->T
+												, cpp11::named_arg("length") =  thisTrans->length
+												, cpp11::named_arg("maxRange") =  thisTrans->maxRange
+                })
 								);
 
 					break;
@@ -256,13 +273,12 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
 				{
 					shared_ptr<logicleTrans> thisTrans = dynamic_pointer_cast<logicleTrans>(curTrans);
 					logicle_params p = thisTrans->get_params();
-					res.push_back(List::create(Named("type","logicle")
-												, Named("A", p.A)
-												, Named("M", p.M)
-												, Named("T", p.T)
-												, Named("W", p.W)
-												)
-												,chnl
+					res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "logicle"
+												, cpp11::named_arg("A") =  p.A
+												, cpp11::named_arg("M") =  p.M
+												, cpp11::named_arg("T") =  p.T
+												, cpp11::named_arg("W") =  p.W
+                    })
 								);
 
 					break;
@@ -270,24 +286,22 @@ List getTransformations(XPtr<GatingSet> gs,string sampleName, bool inverse){
   			case LOGGML2:
   			{
   			  shared_ptr<logGML2Trans> thisTrans = dynamic_pointer_cast<logGML2Trans>(curTrans);
-  			  res.push_back(List::create(Named("type","logtGml2")
-                                    ,Named("T",thisTrans->T)
-                                    ,Named("M",thisTrans->M)
-  			                )
-                       ,chnl
+  			  res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({cpp11::named_arg("type") = "logtGml2"
+                                    ,cpp11::named_arg("T") = thisTrans->T
+                                    ,cpp11::named_arg("M") = thisTrans->M
+                })
   			  );
   			  break;
   			}
 			case SCALE:
 			{
 				shared_ptr<scaleTrans> thisTrans = dynamic_pointer_cast<scaleTrans>(curTrans);
-				res.push_back(List::create(
-								Named("type", "scale"),
-								Named("trans_scale", thisTrans->t_scale),
-								Named("raw_scale", thisTrans->r_scale),
-								Named("scale_factor", thisTrans->scale_factor)
-							 ),
-						chnl
+				res.push_back(cpp11::named_arg(chnl.c_str())=cpp11::list({
+								cpp11::named_arg("type") =  "scale",
+								cpp11::named_arg("trans_scale") =  thisTrans->t_scale,
+								cpp11::named_arg("raw_scale") =  thisTrans->r_scale,
+								cpp11::named_arg("scale_factor") =  thisTrans->scale_factor
+                                    })
 				);
 				break;
 			}
@@ -331,8 +345,9 @@ vector<VertexID> retrieve_sibling_quadnodes(GatingHierarchy & gh,  VertexID quad
 	}
 	return res;
 }
-//[[Rcpp::export(name=".cpp_getGate")]]
-List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
+
+[[cpp11::register]]
+cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
@@ -373,38 +388,39 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 					coordinate mu=thisG.getMu();
 					double dist=thisG.getDist();
 					vector<coordinate> cov = thisG.getCovarianceMat();
-					NumericMatrix covMat(2,2);
+					cpp11::writable::doubles_matrix<> covMat(2,2);
 					for(unsigned i =0; i < 2; i++){
 						covMat(i,0) = cov.at(i).x;
 						covMat(i,1) = cov.at(i).y;
 					}
 
-					 List ret=List::create(Named("parameters",thisG.getParamNames())
-							 	 	 	 	 ,Named("mu", NumericVector::create(mu.x, mu.y))
-							 	 	 	 	 ,Named("cov", covMat)
-							 	 	 	 	 ,Named("dist", dist)
-							 	 	 	 	 ,Named("type",ELLIPSEGATE)
-							 	 	 	 	 , Named("filterId", nodeName)
-							 	 	 	 	 );
+					 cpp11::list ret=cpp11::list({cpp11::named_arg("parameters") = thisG.getParamNames()
+							 	 	 	 	 ,cpp11::named_arg("mu") =  {mu.x,mu.y}
+							 	 	 	 	 ,cpp11::named_arg("cov") =  covMat
+							 	 	 	 	 ,cpp11::named_arg("dist") =  dist
+							 	 	 	 	 ,cpp11::named_arg("type") = ELLIPSEGATE
+							 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
+                     });
 					return ret;
 				}
 		case POLYGONGATE:
 			{
 				vertices_vector vert=g->getVertices().toVector();
 				 auto pn = g->getParamNames();
-				 List ret=List::create(Named("parameters", pn)
-						 	 	 	 	 ,Named("x",vert.x),Named("y",vert.y)
-						 	 	 	 	 ,Named("type",POLYGONGATE)
-						 	 	 	 	 , Named("filterId", nodeName)
-						 	 	 	 	 );
+				 cpp11::writable::list ret({cpp11::named_arg("parameters") =  pn
+						 	 	 	 	 ,cpp11::named_arg("x") = vert.x
+                                         ,cpp11::named_arg("y") = vert.y
+						 	 	 	 	 ,cpp11::named_arg("type") = POLYGONGATE
+						 	 	 	 	 , cpp11::named_arg("filterId") =  nodeName
+						 	 	 	 	 });
 				 if(quadpops.size() > 0)
 				 {
 
-					 NumericVector inter = NumericVector::create(quadintersection.x, quadintersection.y);
+					 cpp11::writable::doubles inter({quadintersection.x, quadintersection.y});
 					 inter.attr("names") = pn;
-					 ret["quadintersection"] = inter;
-					 ret["quadrants"] = quadrants;
-					 ret["quadpops"] = quadpops;
+					 ret.push_back(cpp11::named_arg("quadintersection") = inter);
+					 ret.push_back(cpp11::named_arg("quadrants") = quadrants);
+					 ret.push_back(cpp11::named_arg("quadpops") = quadpops);
 
 				 }
 				return ret;
@@ -414,11 +430,11 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 			{
 				vertices_vector vert=g->getVertices().toVector();
 
-				List ret=List::create(Named("parameters",g->getParamNames())
-									 ,Named("range",vert.x)
-									 ,Named("type",RANGEGATE)
-									 , Named("filterId", nodeName)
-									 );
+				cpp11::list ret=cpp11::list({cpp11::named_arg("parameters") = g->getParamNames()
+									 ,cpp11::named_arg("range") = vert.x
+									 ,cpp11::named_arg("type") = RANGEGATE
+									 , cpp11::named_arg("filterId") =  nodeName
+									 });
 				return ret;
 			}
 		case BOOLGATE:
@@ -426,21 +442,22 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 			  boolGate & bg=dynamic_cast<boolGate&>(*g);
 			  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
 			  vector<string> v;
-			  vector<char>v2;
-			  vector<deque<string> >ref;
+			  vector<string>v2;
+			  cpp11::writable::list ref;
 			  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
 			  {
 				  v.push_back(it->isNot?"!":"");
-				  v2.push_back(it->op);
-				  ref.push_back(it->path);
-			  }
-
-			  List ret=List::create(Named("v",v)
-									 ,Named("v2",v2)
-									 ,Named("ref",ref)
-									 ,Named("type",BOOLGATE)
-									 , Named("filterId", nodeName)
-									 );
+				  v2.push_back(string(1, it->op));
+                  vector<string> spath(it->path.begin(), it->path.end());
+                  ref.push_back(cpp11::strings(spath));
+              }
+                
+			  cpp11::list ret=cpp11::list({cpp11::named_arg("v") = v
+									 ,cpp11::named_arg("v2") = v2
+									 ,cpp11::named_arg("ref") = ref
+									 ,cpp11::named_arg("type") = BOOLGATE
+									 , cpp11::named_arg("filterId") =  nodeName
+									 });
 			  return ret;
 
 			}
@@ -449,22 +466,21 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 			boolGate & bg=dynamic_cast<boolGate&>(*g);
 		  vector<BOOL_GATE_OP> boolOpSpec=bg.getBoolSpec();
 		  vector<string> v;
-		  vector<char>v2;
-		  vector<deque<string> >ref;
-		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
-		  {
-			  v.push_back(it->isNot?"!":"");
-			  v2.push_back(it->op);
-			  ref.push_back(it->path);
-		  }
-
-		  List ret=List::create(Named("v",v)
-								 ,Named("v2",v2)
-								 ,Named("ref",ref)
-								 ,Named("type",LOGICALGATE)
-								 , Named("filterId", nodeName)
-								 );
-		  return ret;
+		  vector<string>v2;
+            cpp11::writable::list ref;
+            for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+            {
+                v.push_back(it->isNot?"!":"");
+                v2.push_back(string(1, it->op));
+                vector<string> spath(it->path.begin(), it->path.end());
+                ref.push_back(cpp11::strings(spath));
+            }
+			cpp11::writable::list ret({cpp11::named_arg("v") = v, cpp11::named_arg("v2") = v2, cpp11::named_arg("type") = LOGICALGATE, cpp11::named_arg("filterId") = nodeName});
+			if(ref.size()==0)
+				ret.push_back(cpp11::named_arg("ref") = R_NilValue);
+			else
+				ret.push_back(cpp11::named_arg("ref") = ref);
+			return ret;
 
 		}
 		case CLUSTERGATE:
@@ -472,23 +488,28 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 		  clusterGate & cg=dynamic_cast<clusterGate&>(*g);
 		  vector<BOOL_GATE_OP> boolOpSpec=cg.getBoolSpec();
 		  vector<string> v;
-		  vector<char>v2;
-		  vector<deque<string> >ref;
-		  for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
-		  {
-			  v.push_back(it->isNot?"!":"");
-			  v2.push_back(it->op);
-			  ref.push_back(it->path);
-		  }
+		    vector<string>v2;
+            cpp11::writable::list ref;
+            for(vector<BOOL_GATE_OP>::iterator it=boolOpSpec.begin();it!=boolOpSpec.end();it++)
+            {
+                v.push_back(it->isNot?"!":"");
+                v2.push_back(string(1, it->op));
+                vector<string> spath(it->path.begin(), it->path.end());
+                ref.push_back(cpp11::strings(spath));
+            }
+		
 
-		  List ret=List::create(Named("v",v)
-								 ,Named("v2",v2)
-								 ,Named("ref",ref)
-								 ,Named("type",CLUSTERGATE)
-								 , Named("filterId", nodeName)
-								 , Named("cluster_method_name", cg.get_cluster_method_name())
-								 );
-		  return ret;
+			cpp11::writable::list ret({cpp11::named_arg("v") = v
+							, cpp11::named_arg("v2") = v2
+							, cpp11::named_arg("type") = CLUSTERGATE
+							, cpp11::named_arg("filterId") = nodeName
+							, cpp11::named_arg("cluster_method_name") =  cg.get_cluster_method_name()
+		});
+			if(ref.size()==0)
+				ret.push_back(cpp11::named_arg("ref") = R_NilValue);
+			else
+				ret.push_back(cpp11::named_arg("ref") = ref);
+				  return ret;
 
 		}
 		default:
@@ -502,8 +523,9 @@ List getGate(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 }
 
-//[[Rcpp::export(name=".cpp_getIndices")]]
-vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
+
+[[cpp11::register]]
+vector<bool> cpp_getIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
@@ -521,8 +543,8 @@ vector<bool> getIndices(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 }
 
-//[[Rcpp::export(name=".cpp_setIndices")]]
-void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
+[[cpp11::register]]
+void cpp_setIndices(cpp11::external_pointer<GatingSet> gs,string sampleName,int u, cpp11::logicals ind){
 
 
 	if(u<0)throw(domain_error("not valid vertexID!"));
@@ -530,14 +552,14 @@ void setIndices(XPtr<GatingSet> gs,string sampleName,int u, BoolVec ind){
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
 	nodeProperties & node = gh.getNodeProperty(u);
-	node.setIndices(ind);
+	node.setIndices(vector<bool>(ind.begin(), ind.end()));
 	node.computeStats();
 
 }
 
 
-//[[Rcpp::export(name=".cpp_getGateFlag")]]
-bool getGateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
+[[cpp11::register]]
+bool cpp_getGateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
@@ -546,16 +568,18 @@ bool getGateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 }
 
-//[[Rcpp::export(name=".cpp_getNegateFlag")]]
-bool getNegateFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
+
+[[cpp11::register]]
+bool cpp_getNegateFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
 	return gh.getNodeProperty(u).getGate()->isNegate();
 
 }
-//[[Rcpp::export(name=".cpp_getHiddenFlag")]]
-bool getHiddenFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
+
+[[cpp11::register]]
+bool cpp_getHiddenFlag(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath){
 
 	GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 	NODEID u = gh.getNodeID(gatePath);
@@ -563,31 +587,31 @@ bool getHiddenFlag(XPtr<GatingSet> gs,string sampleName,string gatePath){
 
 }
 
-vector<BOOL_GATE_OP> boolFilter_R_to_C(List filter){
+vector<BOOL_GATE_OP> boolFilter_R_to_C(cpp11::list filter){
 
 
 			/*
 			 * get specification from R
 			 */
-			StringVec refs=as<StringVec>(filter["refs"]);
-			StringVec op=as<StringVec>(filter["op"]);
-			BoolVec isNot=as<BoolVec>(filter["isNot"]);
+			cpp11::strings refs(filter["refs"]);
+			cpp11::strings op(filter["op"]);
+			cpp11::logicals isNot(filter["isNot"]);
 
 			/*
 			 * convert to c class
 			 */
 			vector<BOOL_GATE_OP> res;
-			for(unsigned i=0;i<refs.size();i++)
+			for(int i=0;i<refs.size();i++)
 			{
 
 				BOOL_GATE_OP gOpObj;
-
-				boost::split(gOpObj.path,refs.at(i),boost::is_any_of("/"));
+                string thispath = refs.at(i);
+                boost::split(gOpObj.path, thispath,boost::is_any_of("/"));
 				if(gOpObj.path.at(0).empty())
 					gOpObj.path.erase(gOpObj.path.begin());//remove the first empty string
 
-				gOpObj.isNot=isNot.at(i);
-				gOpObj.op=boost::iequals(op.at(i),"|")?'|':'&';
+				gOpObj.isNot=isNot.at(i)==TRUE;
+				gOpObj.op=boost::iequals(string(op.at(i)),"|")?'|':'&';
 
 				res.push_back(gOpObj);
 			}
@@ -597,24 +621,24 @@ vector<BOOL_GATE_OP> boolFilter_R_to_C(List filter){
  * convert R filter to specific gate class
  * Note: up to caller to free the dynamically allocated gate object
  */
-gatePtr  newGate(List filter){
+gatePtr  newGate(cpp11::list filter){
 
-	StringVec names=filter.names();
+	cpp11::strings names=filter.names();
 
-	unsigned short gateType=as<unsigned short>(filter["type"]);
+	unsigned short gateType=cpp11::integers(filter["type"])[0];
 
-	bool isNeg=as<bool>(filter["negated"]);
+	bool isNeg=cpp11::logicals(filter["negated"])[0];
 	gatePtr  g;
 
 	switch(gateType)
 	{
 		case RANGEGATE:
 		{
-			StringVec params=as<StringVec>(filter["params"]);
+			cpp11::strings params(filter["params"]);
 			unique_ptr<rangeGate> rg(new rangeGate());
 			rg->setNegate(isNeg);
 
-			DoubleVec p=as<DoubleVec>(filter["range"]);
+			cpp11::doubles p(filter["range"]);
 
 			paramRange pRange;
 			pRange.setName(params.at(0));
@@ -629,7 +653,7 @@ gatePtr  newGate(List filter){
 		}
 		case POLYGONGATE:
 		{
-			StringVec params=as<StringVec>(filter["params"]);
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
 			unique_ptr<polygonGate> pg(new polygonGate());
 
 			pg->setNegate(isNeg);
@@ -638,7 +662,7 @@ gatePtr  newGate(List filter){
 			pp.setName(params);
 
 			vector<coordinate> v;
-			NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+			cpp11::doubles_matrix<> boundaries(filter["boundaries"]);
 			for(int i=0;i<boundaries.nrow();i++)
 			{
 				coordinate pCoord;
@@ -657,7 +681,7 @@ gatePtr  newGate(List filter){
 		}
 		case RECTGATE:
 		{
-			StringVec params=as<StringVec>(filter["params"]);
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
 			unique_ptr<rectGate> rectg(new rectGate());
 
 			rectg->setNegate(isNeg);
@@ -666,7 +690,7 @@ gatePtr  newGate(List filter){
 			pp.setName(params);
 
 			vector<coordinate> v;
-			NumericMatrix boundaries=as<NumericMatrix>(filter["boundaries"]);
+			cpp11::doubles_matrix<> boundaries(filter["boundaries"]);
 			for(int i=0;i<boundaries.nrow();i++)
 			{
 				coordinate pCoord;
@@ -702,7 +726,7 @@ gatePtr  newGate(List filter){
 		}
 		case CLUSTERGATE:
 		{
-			unique_ptr<clusterGate> cg(new clusterGate(as<string>(filter["cluster_method_name"])));
+			unique_ptr<clusterGate> cg(new clusterGate(cpp11::as_cpp<string>(filter["cluster_method_name"])));
 			cg->setNegate(isNeg);
 			g.reset(cg.release());
 			break;
@@ -713,13 +737,13 @@ gatePtr  newGate(List filter){
 
 
 			//parse the mean
-			DoubleVec mean=as<DoubleVec>(filter["mu"]);
+			cpp11::doubles mean(filter["mu"]);
 			coordinate mu(mean.at(0), mean.at(1));
-			double dist = as<double>(filter["dist"]);
+			double dist = cpp11::as_cpp<double>(filter["dist"]);
 
 			//parse cov mat
 			vector<coordinate> cov;
-			NumericMatrix covMat=as<NumericMatrix>(filter["cov"]);
+			cpp11::doubles_matrix<> covMat(filter["cov"]);
 			for(int i=0;i<covMat.nrow();i++)
 			{
 				coordinate p;
@@ -733,7 +757,7 @@ gatePtr  newGate(List filter){
 			eg->setNegate(isNeg);
 
 			// parse the parameter names
-			StringVec params=as<StringVec>(filter["params"]);
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
 			paramPoly pp;
 			pp.setName(params);
 			eg->setParam(pp);
@@ -744,15 +768,15 @@ gatePtr  newGate(List filter){
 		}
 		case QUADGATE:
 		{
-			StringVec params=as<StringVec>(filter["params"]);
-			auto mu = as<DoubleVec>(filter["mu"]);
+			auto params = cpp11::as_cpp<vector<string>>(filter["params"]);
+			auto mu = cpp11::doubles(filter["mu"]);
 
 			paramPoly intersect;
 			intersect.setName(params);
 			intersect.setVertices({coordinate(mu[0], mu[1])});
 
-			string uid = as<string>(filter["uid"]);
-			QUAD quadrant = static_cast<QUAD>(as<int>(filter["quad"]));
+			string uid = cpp11::as_cpp<string>(filter["uid"]);
+			QUAD quadrant = static_cast<QUAD>(cpp11::as_cpp<int>(filter["quad"]));
 			unique_ptr<quadGate> qg(new quadGate(intersect, uid, quadrant));
 
 			g.reset(qg.release());
@@ -769,9 +793,9 @@ gatePtr  newGate(List filter){
 
 }
 
-//[[Rcpp::export(name=".cpp_addGate")]]
-NODEID addGate(XPtr<GatingSet> gs,string sampleName
-                   ,List filter
+[[cpp11::register]]
+NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs,string sampleName
+                   ,cpp11::list filter
                    ,string gatePath
                    ,string popName) {
 
@@ -791,8 +815,8 @@ NODEID addGate(XPtr<GatingSet> gs,string sampleName
  * mainly used for openCyto rectRef gate which first being added as a rectangle gate
  * and then gated as boolean filter
  */
-//[[Rcpp::export(name=".cpp_boolGating")]]
-void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID) {
+[[cpp11::register]]
+void cpp_boolGating(cpp11::external_pointer<GatingSet> gs,string sampleName,cpp11::list filter,unsigned nodeID) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 		nodeProperties & node=gh.getNodeProperty(nodeID);
@@ -812,8 +836,8 @@ void boolGating(XPtr<GatingSet> gs,string sampleName,List filter,unsigned nodeID
 
 }
 
-//[[Rcpp::export]]
-void set_quadgate(XPtr<GatingSet> gs,string sampleName,string gatePath, vector<double> inter) {
+[[cpp11::register]]
+void set_quadgate(cpp11::external_pointer<GatingSet> gs,string sampleName,string gatePath, vector<double> inter) {
 
 	if(inter.size()!=2)
 		throw(domain_error("invalid intersection values!"));
@@ -834,9 +858,9 @@ void set_quadgate(XPtr<GatingSet> gs,string sampleName,string gatePath, vector<d
 
 }
 
-//[[Rcpp::export(name=".cpp_setGate")]]
-void setGate(XPtr<GatingSet> gs,string sampleName
-               ,string gatePath,List filter) {
+[[cpp11::register]]
+void cpp_setGate(cpp11::external_pointer<GatingSet> gs,string sampleName
+               ,string gatePath,cpp11::list filter) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
 
@@ -850,8 +874,8 @@ void setGate(XPtr<GatingSet> gs,string sampleName
 
 }
 
-//[[Rcpp::export(name=".cpp_removeNode")]]
-void removeNode(XPtr<GatingSet> gs,string sampleName
+[[cpp11::register]]
+void cpp_removeNode(cpp11::external_pointer<GatingSet> gs,string sampleName
                   ,string gatePath, bool recursive = false) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -878,8 +902,8 @@ void removeNode(XPtr<GatingSet> gs,string sampleName
 //' @param sampleName sample name
 //' @param node node name
 //' @noRd
-//[[Rcpp::export(".moveNode")]]
-void moveNode(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, string parent){
+[[cpp11::register]]
+void moveNode(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, string parent){
 
   GatingHierarchy & gh = *gsPtr->getGatingHierarchy(sampleName);
 
@@ -888,8 +912,8 @@ void moveNode(Rcpp::XPtr<GatingSet> gsPtr, string sampleName, string node, strin
 
 }
 
-//[[Rcpp::export(name=".cpp_setNodeName")]]
-void setNodeName(XPtr<GatingSet> gs,string sampleName
+[[cpp11::register]]
+void setNodeName(cpp11::external_pointer<GatingSet> gs,string sampleName
                    ,string gatePath, string newNodeName) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);
@@ -901,8 +925,8 @@ void setNodeName(XPtr<GatingSet> gs,string sampleName
 
 }
 
-//[[Rcpp::export(name=".cpp_setNodeFlag")]]
-void setNodeFlag(XPtr<GatingSet> gs,string sampleName
+[[cpp11::register]]
+void setNodeFlag(cpp11::external_pointer<GatingSet> gs,string sampleName
                    ,string gatePath, bool hidden) {
 
 		GatingHierarchy & gh=*gs->getGatingHierarchy(sampleName);

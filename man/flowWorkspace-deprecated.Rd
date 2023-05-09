@@ -3,7 +3,7 @@
 %   R/GatingSet_Methods.R, R/GatingSetList_Methods.R, R/filterObject_Methods.R,
 %   R/add_Methods.R, R/copyNode.R, R/deprecated.R, R/flow_trans.R,
 %   R/getDescendants.R, R/getSingleCellExpression.R, R/merge_GatingSet.R,
-%   R/moveNode.R, R/setGate_Methods.R, R/updateIndices.R, R/utils.R
+%   R/setGate_Methods.R, R/updateIndices.R, R/utils.R
 \name{flowWorkspace-deprecated}
 \alias{flowWorkspace-deprecated}
 \title{Deprecated functions in package \pkg{flowWorkspace}.}
@@ -37,8 +37,6 @@
 \code{getTransformations} --> \code{gh_get_transformations}
 
 \code{getCompensationMatrices} --> \code{gh_get_compensations}
-
-\code{plotGate} --> \code{autoplot}
 
 \code{setNode} --> \code{gs(/gh)_set_node_name/gs(/gh)_set_node_visible}
 
@@ -91,8 +89,6 @@
 \code{dropRedundantChannels} --> \code{gs_drop_redundant_channels}
 
 \code{updateChannels} --> \code{gs_update_channels}
-
-\code{moveNode} --> \code{gh_pop_move}
 
 \code{setGate} --> \code{gs(/gh)_pop_set_gate}
 

@@ -173,7 +173,7 @@ gh_apply_to_cs <- function(x, cs
 				
 			}
 			execute_in_c <- length(x@transformation) == 0
-			gs <- new("GatingSet", pointer = .cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c, compensation_source))
+			gs <- new("GatingSet", pointer = cpp_NewGatingSet(x@pointer,sampleNames(x), cs@pointer, execute_in_c, compensation_source))
 			#deal with the trans that are not stored in c++
 			if(!execute_in_c)
 			{
@@ -295,14 +295,14 @@ fix_y_axis <- function(gs, x, y){
 #' @param h5_dir h5 dir for the new gs
 #' @export 
 gs_clone <- function(x, h5_dir = tempdir()){
-  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir, is_copy_data = TRUE))
+  new("GatingSet", pointer = cpp_CloneGatingSet(x@pointer, h5_dir, is_copy_data = TRUE))
   
 }
 
 #' @rdname gs_clone
 #' @export 
 gs_copy_tree_only <- function(x){
-  new("GatingSet", pointer = .cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
+  new("GatingSet", pointer = cpp_CloneGatingSet(x@pointer, h5_dir = "", is_copy_data = FALSE))
   
 }
 #' @name recompute
@@ -378,7 +378,7 @@ setMethod("lapply","GatingSet",function(X,FUN,...){
 #'       }
 #' @export
 setMethod("sampleNames","GatingSet",function(object){
-      .cpp_getSamples(object@pointer)
+      cpp_getSamples(object@pointer)
     })
 
 #' @param value \code{character} new sample names
@@ -397,7 +397,7 @@ setReplaceMethod("sampleNames",
       oldNames <- sampleNames(object)
       #update c++ data structure
       mapply(oldNames,value, FUN = function(oldName, newName){
-            .cpp_setSample( object@pointer, oldName, newName)
+            cpp_setSample( object@pointer, oldName, newName)
       })
 
       object
@@ -665,7 +665,7 @@ NULL
 #' @rdname loglevel
 #' @export
 get_log_level <- function(){
-  level <- .cpp_getLogLevel()
+  level <- cpp_getLogLevel()
   c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")[level + 1]
 }
 
@@ -688,7 +688,7 @@ NULL
 set_log_level <- function(level = "none"){
   valid_levels <- c("none", "GatingSet", "GatingHierarchy", "Population", "Gate")
   level <- match.arg(level, valid_levels)
-  .cpp_setLogLevel( as.integer(match(level, valid_levels) - 1))
+  cpp_setLogLevel( as.integer(match(level, valid_levels) - 1))
   level
 }
 
@@ -810,7 +810,7 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
         if(is.null(subpopulations))
           subpopulations <- gs_get_pop_paths(x, path = path, ...)[-1]
 
-        pop_stats <- .getPopCounts(x@pointer, statistic == "freq", subpopulations, xml, path == "full")
+        pop_stats <- getPopCounts_cpp(x@pointer, statistic == "freq", subpopulations, xml, path == "full")
         if(statistic == "freq"){
         	pop_stats <- data.table(name = pop_stats[["name"]]
         							, Population = pop_stats[["Population"]]
@@ -909,19 +909,9 @@ gs_pop_get_count_fast <- function(x, statistic = c("count", "freq"), xml = FALSE
 #'   }
 #' @aliases gs_plot_pop_count_cv
 #' @export
-#' @importFrom lattice barchart
-#' @importFrom latticeExtra ggplot2like
 gs_plot_pop_count_cv <- function(x, scales = list(x = list(rot = 90)), path = "auto",...){
-      cv <- .computeCV(x, path = path)
-      #flatten, generate levels for samples.
-      nr<-nrow(cv)
-      nc<-ncol(cv)
-      populations<-gl(nc,nr,labels=as.character(colnames(cv)), ordered = TRUE)
-      samples<-as.vector(t(matrix(gl(nr,nc,labels=basename(as.character(rownames(cv)))),nrow=nc)))
-      cv<-data.frame(cv=as.vector(cv),samples=samples,populations=populations)
-
-      return(barchart(cv~populations|samples,cv,..., scale = scales, par.settings = ggplot2like));
-    }
+  .Defunct() 
+   }
 
 #' @export
 setMethod("keyword",c("GatingSet", "missing"),function(object,keyword = "missing", ...){

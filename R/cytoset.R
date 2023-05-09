@@ -355,7 +355,13 @@ setMethod("phenoData<-",
 #' @export 
 setMethod("pData",
           signature=signature(object="cytoset"),
-          definition=function(object) get_pheno_data(object@pointer))
+          definition=function(object) {
+            pd = get_pheno_data(object@pointer)
+             #remedy for dealing cpp1 bug see https://github.com/r-lib/cpp11/issues/206
+            cn <- names(pd)
+            names(pd) <- cn[cn!=""]
+            pd
+          })
 
 #' @export 
 setReplaceMethod("pData",
@@ -465,9 +471,14 @@ setMethod("[[",
             
             returnType <- match.arg(returnType)
             if(missing(j))
-              j <- NULL
+              j <- character()
+            if(!is.character(j))
+              j <- colnames(x)[j]
+
             if(length(i) != 1||(is.numeric(i)&&i<=0))
             	stop("subscript out of bounds (index must have length 1 and be positive)")
+            if(!is.character(i))
+              i <- sampleNames(x)[i]
             fr <- get_cytoframe_from_cs(x, i, j, use.exprs)
             if(returnType == "flowFrame")
               fr <- cytoframe_to_flowFrame(fr)
@@ -662,10 +673,15 @@ cs_get_h5_file_path <- function(x){
 }
 
 #' @export
-cs_get_cytoframe <- function(x, i, j = NULL, use.exprs = TRUE){
+cs_get_cytoframe <- function(x, i, j = character(), use.exprs = TRUE){
 	stopifnot(is(x, "cytoset")||is(x, "GatingSet"))
   if(length(x) == 0)
     stop("Empty cytoset!")
+  if(!is.character(i))
+      i <- sampleNames(x)[i]
+  if(!is.character(j))
+      j <- colnames(x)[j]
+
   new("cytoframe", pointer = get_cytoframe(x@pointer, i, j), use.exprs = use.exprs)
 }
 #' @export
@@ -678,27 +694,32 @@ setMethod("[",
     if(length(x) == 0)
       stop("Empty cytoset!")
 		if(missing(i))
-		  i <- NULL
+		  i <- character()
 		else if(any(i < 0)){
 			if(!all(i <= 0)){
 				stop("Cannot mix positive and negative subscripts")
 			}
 			i <- (1:length(x))[i]
 		}
-			
-	    if(missing(j))
-	      j <- NULL
-	    if(is.numeric(j)||is.integer(j)){
-	    	if(any(j < 0)){
-	    		if(!all(j <= 0)){
-	    			stop("Cannot mix positive and negative subscripts")
-	    		}
-	    		j <- (1:length(colnames(x)))[j]
-	    	}
-	    }
-	    x <- copy_view(x)
-	    subset_cytoset(x@pointer, i, j)
-	    x
+		if(!is.character(i))
+      i <- sampleNames(x)[i]
+
+    if(missing(j))
+      j <- character()
+    if(is.numeric(j)||is.integer(j)){
+      if(any(j < 0)){
+        if(!all(j <= 0)){
+          stop("Cannot mix positive and negative subscripts")
+        }
+        j <- (1:length(colnames(x)))[j]
+      }
+    }
+    if(!is.character(j))
+      j <- colnames(x)[j]
+
+    x <- copy_view(x)
+    subset_cytoset(x@pointer, i, j)
+    x
 	})
 
 # Dispatching to the flowSet-version of fsApply by changing simplify default value from TRUE from FALSE
@@ -768,7 +789,7 @@ setMethod("Subset",
               if(!is(ind, "integer"))
                 stop("Invalid row indices for: ", sn)
               
-              subset_cytoset_by_rows(cs@pointer, sn, ind - 1)
+              subset_cytoset_by_rows(cs@pointer, sn, as.integer(ind - 1))
             }
               
             cs         
@@ -788,7 +809,7 @@ subset.cytoset <- function (x, subset, ...)
 				r & !is.na(r)
 			}
 	
-	x[as.character(rownames(pd[r, ]))]
+	x[as.character(rownames(pd[r,,drop = FALSE ]))]
 }
 
 copy_view.cytoset <- function(x){
@@ -959,7 +980,7 @@ cs_keyword_insert <- function(cs, keys, values){
   if(any(dup_idx))
     stop("keywords already exist in one or more cytoframes!:", paste(keys[dup_idx], collapse = ", "))
   for(idx in seq_along(cs))
-    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, values)
+    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, as.character(values))
 }
 
 #' @rdname keyword-mutators
@@ -1022,5 +1043,5 @@ cs_keyword_set <- function(cs, keys, values){
   if(!(is.vector(keys) && is.vector(values) && length(keys) == length(values)))
     stop("keys and values must be character vectors of equal length")
   for(idx in seq_along(cs))
-    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, values)
+    cf_setKeywordsSubset(cs[[idx]]@pointer, keys, as.character(values))
 }

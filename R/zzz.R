@@ -15,9 +15,7 @@ set_default_backend <- function(backend = c("h5", "mem",  "tile")){
   options("backend" = backend)
 }
 
-.cytoctx_global <- NULL
 .onLoad <- function(libname, pkgname){
-  .cytoctx_global <<- cytoctx()
   set_default_backend()
   h5_set_error_handler()#set R stderr as output stream for error handler of libhdf5
 }

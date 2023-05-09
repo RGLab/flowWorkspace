@@ -7,7 +7,7 @@ This makefile requires GNU Make.
 endif
 	
 CXX_STD = CXX11
-PKG_CPPFLAGS =-DROUT -I../inst/include -DBOOST_NO_AUTO_PTR 
+PKG_CPPFLAGS =-DROUT -I../inst/include -DBOOST_NO_AUTO_PTR -Wno-pedantic
 
 
 h5lib = $(shell echo 'Rhdf5lib::pkgconfig("PKG_CXX_LIBS")'|\

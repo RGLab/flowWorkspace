@@ -16,7 +16,7 @@ Import flowJo workspaces into R. Generate the flowJo gating hierarchy and gates 
     Date: \tab 2011-03-04\cr
     License: \tab Artistic 2.0 \cr
     LazyLoad: \tab yes\cr
-    Depends: \tab R (>= 2.16.0),Rcpp (>= 0.9.9)\cr
+    Depends: \tab R (>= 2.16.0)\cr
   }
 }
 \references{

@@ -15,7 +15,7 @@ test_that("partial load_gs", {
     #sub load by sn
     sel <- c(3, 1)
     sid.sel <- sid.h5[sel]
-    expect_error(load_gs(tmp, select = c(sid.sel, "dd")), "out of boundary", class = "std::domain_error")
+    expect_error(load_gs(tmp, select = c(sid.sel, "dd")), "out of boundary", class = "error")
     
     gs1 <- load_gs(tmp, select = sid.sel)
     expect_equal(length(gs1), 2)
