@@ -87,7 +87,7 @@ gh_pop_get_stats <- function(x, nodes = NULL, type = "count", xml = FALSE, inver
   res <- sapply(nodes, function(node){
     if(is.character(type))
     {
-      type <- match.arg(type, c("count", "percent"))
+      type <- match.arg(tolower(type), c("count", "percent"))
 	  stats<-.getPopStat(x,y = node)
 	  source <- ifelse(xml, "xml", "openCyto")
 	
