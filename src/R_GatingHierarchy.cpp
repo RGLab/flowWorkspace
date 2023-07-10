@@ -540,7 +540,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 		default:
 		{
 //			COUT<<g->getType()<<endl;
-			throw(domain_error("unknown gate thrown by R_getGate!"));
+			throw(domain_error("unknown gate thrown by R_getGate!" + std::to_string(gType)));
 		}
 
 	}
