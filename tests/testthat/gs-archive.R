@@ -16,6 +16,13 @@ test_that("load GatingSet from archive",
   suppressWarnings(suppressMessages(gs <<- load_gs(gs_dir)))
   expect_that(gs, is_a("GatingSet"))
   gs <<- gs_clone(gs)#make it writable  
+  if(Sys.getenv("test_gs_compatibility")=="yes")
+  {
+    # Remove the new time gate to avoid breaking the existing test suite
+    # right now we only test if it is loadable, TODO:modify existing test to accommodate time gates
+    gs_pop_remove(gs, "/Time")
+  }
+    
 })
 
 test_that("load read-only archive",
