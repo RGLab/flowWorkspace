@@ -461,6 +461,31 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 			  return ret;
 
 			}
+	case MULTIRANGEGATE: {
+	  auto& mg = dynamic_cast<cytolib::MultiRangeGate&>(*g);
+	  auto ranges_pairs = mg.getRanges();
+	  cpp11::writable::doubles min;
+	  cpp11::writable::doubles max;
+	  for (auto range : ranges_pairs) {
+	    min.push_back(range.first);
+	    max.push_back(range.second);
+	  }
+	  cpp11::writable::list ranges_list = cpp11::writable::list(
+	  {cpp11::named_arg("min") = min, cpp11::named_arg("max") = max});
+	  cpp11::writable::strings names;
+	  for (auto name : g->getParamNames()) {
+	    names.push_back(name);
+	  }
+	  cpp11::writable::list ret =
+	    cpp11::list({cpp11::named_arg("parameters") = g->getParamNames(),
+                 cpp11::named_arg("ranges") = ranges_list,
+                 cpp11::named_arg("type") = static_cast<unsigned>(
+                   MULTIRANGEGATE),
+                   cpp11::named_arg("filterId") = nodeName,
+                   cpp11::named_arg("negated") = g->isNegate()});
+	  return ret;
+	}
+	  
 		case LOGICALGATE:
 		{
 			boolGate & bg=dynamic_cast<boolGate&>(*g);
@@ -515,7 +540,7 @@ cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs,string sampleName,
 		default:
 		{
 //			COUT<<g->getType()<<endl;
-			throw(domain_error("unknown gate thrown by R_getGate!"));
+			throw(domain_error("unknown gate thrown by R_getGate!" + std::to_string(gType)));
 		}
 
 	}
@@ -717,6 +742,7 @@ gatePtr  newGate(cpp11::list filter){
 			break;
 
 		}
+		  
 		case LOGICALGATE:
 		{
 			unique_ptr<logicalGate> lg(new logicalGate());
@@ -784,6 +810,25 @@ gatePtr  newGate(cpp11::list filter){
 			break;
 
 		}
+	case MULTIRANGEGATE: {
+	  std::unique_ptr<cytolib::MultiRangeGate> mrg(new cytolib::MultiRangeGate);
+	  auto param = cpp11::as_cpp<std::string>(filter["params"]);
+	  assert(param == "Time");
+	  mrg->setNegate(isNeg);
+	  std::vector<double> ranges_input =
+	    cpp11::as_cpp<std::vector<double>>(filter["ranges"]);
+	  assert(ranges_in.size() % 2 == 0);
+	  std::vector<std::pair<float, float>> ranges;
+	  for (int i = 0; i < ranges_input.size(); i += 2) {
+	    ranges.push_back(
+	      std::make_pair(static_cast<float>(ranges_input.at(i)),
+                      static_cast<float>(ranges_input.at(i + 1))));
+	  }
+	  mrg->setRanges(ranges);
+	  g = std::move(mrg);
+	  break;
+	}
+	  
 		default:
 			throw(domain_error("unsupported gate type!valid types: POLYGONGATE(1),RANGEGATE(2),BOOLGATE(3),RECTGATE(5),LOGICALGATE(6)"));
 

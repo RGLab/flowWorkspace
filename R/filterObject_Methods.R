@@ -30,6 +30,20 @@ filterObject.default <- function(x){
 #' @export 
 filter_to_list <- function(x)UseMethod("filter_to_list")
 
+#' @export
+filter_to_list.multiRangeGate <- function(x) {
+  params = parameters(x)
+  ranges_list=NULL
+  for(i in seq_along(x@ranges[["min"]])){
+    ranges_list=c(ranges_list,x@ranges[["min"]][i],x@ranges[["max"]][i])
+  }
+  list(type=as.integer(11),
+       params = params,
+       ranges = ranges_list,
+       filterId = x@filterId)
+}
+
+
 #' @export 
 filter_to_list.rectangleGate <- function(x){
       params<-parameters(x)

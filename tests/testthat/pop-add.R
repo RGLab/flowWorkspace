@@ -22,6 +22,18 @@ gs <- compensate(gs, comp)
 transList <- estimateLogicle(gs[[1]], chnls)
 gs <- transform(gs, transList)
 
+test_that("add multiRangeGate", {
+  node <- "multirange"
+  mrg <- multiRangeGate(filterId = node,ranges=list(min=c(0,60,120,131),max=c(10,100,130,Inf)))
+  gs_pop_add(gs, mrg, negated=TRUE)
+  recompute(gs)
+  expect_equal(gs_get_pop_paths(gs), c("root", "/multirange"))
+  expect_equivalent(gh_pop_get_gate(gs[[1]], node), mrg)
+  expect_equal(gh_pop_get_stats(gs[[1]], node)[[2]], 480)
+  expect_equal(sum(gh_pop_get_indices(gs[[1]], node)),480)
+  expect_equal(sum(!flowFrame(exprs(gh_pop_get_data(gs[[1]])))%in%mrg),480)
+  gs_pop_remove(gs,node)
+})
 
 test_that("add rectangleGate", {
   node <- "rectangle"
