@@ -1,6 +1,19 @@
 context("filterObject (convert flowCore filter to list")
 skip_if(win32_flag)
 
+test_that("filterObject from multiRangeGate", {
+  mrg <- multiRangeGate(filterId = "dummy_multiRangeGate", ranges=list(min=c(0,50,150),max=c(10,100,Inf)))
+  ranges=NULL
+  for(i in seq_along(mrg@ranges[["min"]])){
+    ranges = c(ranges,mrg@ranges[["min"]][i],mrg@ranges[["max"]][i])
+  }
+  expectRes <- list(type = as.integer(11),
+                    params = parameters(mrg),
+                    ranges = ranges,
+                    filterId = mrg@filterId)
+  expect_equal(filter_to_list(mrg), expectRes)
+})
+
 test_that("filterObject from logical", {
   #logical vector
   lg <- rep(TRUE, 10)

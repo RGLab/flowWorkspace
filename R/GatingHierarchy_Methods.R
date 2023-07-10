@@ -799,7 +799,9 @@ gh_pop_get_gate <- function(obj,y){
               ellipsoidGate(.gate = cov.mat, mean = g$mu, distance = g$dist, filterId = filterId)
         }else if (g$type %in% c(6,8)){#logicalGate
           booleanFilter(filterId=filterId)#return dummy boolean filter
-				}else
+        }else if (g$type %in% c(11)){ #multi range gate
+          multiRangeGate(filterId=filterId,ranges = g$ranges)
+        }else
 					stop("not supported gate type",g$type)
 
 
