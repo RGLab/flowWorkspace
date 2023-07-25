@@ -32,7 +32,9 @@ cytoset_to_list(cs)
 
 \item{fr}{flowframe}
 
-\item{...}{additional arguments passed to \code{\link{load_cytoset_from_fcs}}.}
+\item{...}{additional arguments passed to
+\code{\link{load_cytoframe_from_fcs}} or
+\code{\link{load_cytoset_from_fcs}}.}
 
 \item{cs}{cytoset}
 

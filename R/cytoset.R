@@ -293,7 +293,9 @@ cytoset_to_flowSet <- function(cs){
 #' @param tmp the temp folder when the temporary files are written to during
 #'   conversion by default, it is system temp path. And it can be changed to the
 #'   customized location when there is not enough space at system path.
-#' @param ... additional arguments passed to \code{\link{load_cytoset_from_fcs}}.
+#' @param ... additional arguments passed to
+#'   \code{\link{load_cytoframe_from_fcs}} or
+#'   \code{\link{load_cytoset_from_fcs}}.
 #' @export
 flowSet_to_cytoset <- function(fs,
                                path = tempfile(),
