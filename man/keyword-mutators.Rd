@@ -64,6 +64,8 @@ gs_keyword_set(gs, keys, values)
 
 \item{new_keys}{the new keyword name (for renaming)}
 
+\item{cs}{a \code{\link{cytoset}}}
+
 \item{gh}{a \code{\link{GatingHierarchy}}}
 
 \item{gs}{a \code{\link{GatingSet}}}
