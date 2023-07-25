@@ -3,10 +3,7 @@
 \name{save_cytoset}
 \alias{save_cytoset}
 \alias{load_cytoset}
-\title{save/load a cytoset to/from disk.
-
-load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
-or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format)}
+\title{save/load a cytoset to/from disk.}
 \usage{
 save_cytoset(cs, path, ...)
 
@@ -25,7 +22,8 @@ load_cytoset(path, verbose = FALSE, ...)
 \code{load_cytoset} returns a cytoset object
 }
 \description{
-Save/load a cytoset  to/from the disk.
+load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
+or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format)
 }
 \examples{
 \dontrun{
