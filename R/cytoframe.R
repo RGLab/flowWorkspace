@@ -686,7 +686,7 @@ setReplaceMethod("keyword",
 #' or \code{\link{GatingSet}} objects.
 #' 
 #' @param cf a \code{\link{cytoframe}}
-#' @param cs a \code{\link{cytoset}}}
+#' @param cs a \code{\link{cytoset}}
 #' @param gh a \code{\link{GatingHierarchy}}
 #' @param gs a \code{\link{GatingSet}}
 #' @param keys the keyword names to insert/delete/replace -- single value or vector

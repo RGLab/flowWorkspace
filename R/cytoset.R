@@ -290,11 +290,18 @@ cytoset_to_flowSet <- function(cs){
 #' @rdname convert
 #' @param fs flowSet or ncdfFlowSet
 #' @param path the h5 path for cytoset
-#' @param tmp the temp folder when the temporary files are written to during conversion
-#'         by default, it is system temp path. And it can be changed to the customized location
-#'         when there is not enough space at system path.
-#' @export 
-flowSet_to_cytoset <- function(fs, path = tempfile(),backend = get_default_backend(), tmp = tempfile()){
+#' @param tmp the temp folder when the temporary files are written to during
+#'   conversion by default, it is system temp path. And it can be changed to the
+#'   customized location when there is not enough space at system path.
+#' @param ... additional arguments passed to
+#'   \code{\link{load_cytoframe_from_fcs}} or
+#'   \code{\link{load_cytoset_from_fcs}}.
+#' @export
+flowSet_to_cytoset <- function(fs,
+                               path = tempfile(),
+                               backend = get_default_backend(),
+                               tmp = tempfile(),
+                               ...){
   backend <- match.arg(backend, c("h5", "mem",  "tile"))
   # Set up mapping to ensure that the sampleNames 
   # come back in without additional ".fcs" and allow
@@ -308,7 +315,8 @@ flowSet_to_cytoset <- function(fs, path = tempfile(),backend = get_default_backe
                               , backend = backend
                               , backend_dir = path
                               , file_col_name = "FCS_File"
-                              , check.names = FALSE )
+                              , check.names = FALSE,
+                              ...)
   # Remove the temporary intermediate flowSet
   unlink(normalizePath(tmp), recursive = TRUE)
   # Fix any potential change or re-ordering of sampleNames
@@ -872,12 +880,10 @@ cs_load_meta <- function(cs){
 	invisible(lapply(cs, cf_load_meta))
 }
 
-#' @title save/load a cytoset to/from disk.
+#' save/load a cytoset to/from disk.
 #'
 #' load_cytoset() can load a cytoset from either the archive previously saved by save_cytoset() call
 #' or from a folder that contains a collection of inidivudal cytoframe files (either in h5 format or tiledb format)
-#' @description
-#' Save/load a cytoset  to/from the disk.
 #'
 #' @param cs A \code{cytoset}
 #' @param path A character scalar giving the path to save/load the cytoset to/from.
