@@ -1,7 +1,7 @@
 Package: flowWorkspace
 Type: Package
 Title: Infrastructure for representing and interacting with gated and ungated cytometry data sets.
-Version: 4.13.1
+Version: 4.13.2
 Date: 2011-06-10
 Author: Greg Finak, Mike Jiang
 Maintainer: Greg Finak <greg@ozette.com>, Mike Jiang <mike@ozette.com>
