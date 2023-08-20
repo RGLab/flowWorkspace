@@ -70,17 +70,14 @@ cpp11::writable::doubles_matrix<> cpp_getSingleCellExpressionByGate(cpp11::exter
     cpp11::strings pops(markers_pops.at(i));
     // merge the indices from multiple nodes for the same marker
     for(int j = 0; j < pops.size(); ++j){
-      string pop = cpp11::as_cpp<std::string>(pops[j]);
-      VertexID u = gh.getNodeID(pop);
+      VertexID u = gh.getNodeID(pops[j]);
       BoolVec ind = gh.getNodeProperty(u).getIndices();
       if(j == 0)
         indexList.at(i) = ind;  
       else{
         transform(ind.begin(), ind.end(), indexList.at(i).begin(), indexList.at(i).begin(), logical_or<bool>());  
       }
-        
     }
-    
   }
   
   cpp11::writable::doubles_matrix<> output = maskMatrix(indexList, data, threshold);
