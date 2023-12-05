@@ -3,7 +3,7 @@
 #' @return a list that represents the data structure that is ready to be passed to Rcpp API 'set_transformations'
 #' @noRd
 parse_transformer <- function(x){
-  stopifnot(is(x, "trans"))
+  stopifnot(is(x, "transform"))
   transobj <- as.list(environment(x[["transform"]]))
   transobj[["type"]] <- x[["name"]]
   if(transobj[["type"]] == "flowJo_biexp")
