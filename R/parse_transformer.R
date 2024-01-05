@@ -3,7 +3,7 @@
 #' @return a list that represents the data structure that is ready to be passed to Rcpp API 'set_transformations'
 #' @noRd
 parse_transformer <- function(x){
-  stopifnot(is(x, "transform"))
+  stopifnot(valid_scales_transformer(x))
   transobj <- as.list(environment(x[["transform"]]))
   transobj[["type"]] <- x[["name"]]
   if(transobj[["type"]] == "flowJo_biexp")
@@ -16,4 +16,12 @@ parse_transformer <- function(x){
     
   return(transobj)
   
+}
+
+#' check whether transformers have correct scales class
+#' @return logical
+#' @noRd
+valid_scales_transformer <- function(x) {
+  # scales < 1.3.0 = "trans" | scales >= 1.30 = "transform"
+  inherits(x, "trans") || inherits(x, "transform")
 }
