@@ -16,7 +16,7 @@ set_default_backend <- function(backend = c("h5", "mem",  "tile")){
 }
 
 .onLoad <- function(libname, pkgname){
-  set_default_backend()
+  set_default_backend("h5")
   h5_set_error_handler()#set R stderr as output stream for error handler of libhdf5
 }
 
