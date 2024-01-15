@@ -365,7 +365,7 @@ cf1 <- cf[]
 ### Deep Copy
 
 It is also possible to perform a deep copy of a `cytoframe` or a view of it, resulting in two objects pointing to distinct C-level representations of the data. This is accomplished with the `realize_view` method.
-```{r deep_cf}
+```{r deep_cf, eval = FALSE}
 cf <- load_cytoframe_from_fcs(files[1], num_threads = 4) # starting fresh
 cf1 <- realize_view(cf[1:10, 2:3])
 dim(cf1)
