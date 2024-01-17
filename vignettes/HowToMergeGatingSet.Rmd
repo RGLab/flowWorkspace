@@ -36,7 +36,7 @@ Arguments
 
 **...** other arguments	
 
-```{r echo=FALSE, message=FALSE, results='hide',eval = FALSE}
+```{r echo=FALSE, message=FALSE, results='hide'}
 library(flowWorkspace)
 flowDataPath <- system.file("extdata", package = "flowWorkspaceData")
 gs <- load_gs(file.path(flowDataPath,"gs_manual"))
@@ -95,7 +95,7 @@ opts_chunk$set(fig.show = 'hold', fig.width = 4, fig.height = 4, results= 'asis'
 ```
 
 ## Remove the redudant leaf/terminal nodes
-```{r echo=FALSE,eval = FALSE}
+```{r echo=FALSE}
 plot(gs1)
 plot(gs2)
 ```
@@ -103,14 +103,14 @@ plot(gs2)
 Leaf nodes **DNT** and **DPT** are redudant for the analysis and should be **removed** before merging.
 
 ## Hide the non-leaf nodes
-```{r echo=FALSE,eval = FALSE}
+```{r echo=FALSE}
 plot(gs2)
 plot(gs3)
 ```
 
 **singlets** node is not present in the second tree. But we **can't** remove it because it will remove all its descendants. We can **hide** it instead.
 
-```{r,eval = FALSE}
+```{r}
 invisible(gs_pop_set_visibility(gs2, "singlets", FALSE))
 plot(gs2)
 plot(gs3)
