@@ -1,3 +1,8 @@
+# Resolve symlink
+tempfile_normalized <-function (...) {
+  path = tempfile(...)
+  file.path(normalizePath(dirname(path)), basename(path))
+  }
 # write out refresh gating set folder by invoking open source serialization methods
 # to be consumed by third party software to test the compatibility/readability (this gating set format)
 generate_gatingset_example_archive <- function(){

@@ -365,7 +365,7 @@ realize_view <- function(x, filepath)UseMethod("realize_view")
 #' @export 
 realize_view.cytoframe <- function(x, filepath = NULL){
   if(is.null(filepath))
-    filepath <- tempfile(fileext = paste0(".", cf_backend_type(x)))
+    filepath <- tempfile_normalized(fileext = paste0(".", cf_backend_type(x)))
   new("cytoframe", pointer = realize_view_cytoframe(x@pointer, filepath), use.exprs = TRUE)
 }
 
