@@ -1,7 +1,8 @@
 
 CXX_STD = CXX17
 
-PKG_CPPFLAGS =-DROUT -I../inst/include -DBOOST_NO_AUTO_PTR -DRCPP_PARALLEL_USE_TBB=1 -fpermissive 
+PKG_CPPFLAGS =-DROUT -I../inst/include -DBOOST_NO_AUTO_PTR -DRCPP_PARALLEL_USE_TBB=1 -fpermissive \
+              -D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION 
 
 #needs to wrap in $(shell) to strip the quotes returned by rhdf5lib::pkgconfig
 RHDF5_LIBS= $(shell "${R_HOME}/bin/Rscript" -e "Rhdf5lib::pkgconfig('PKG_CXX_LIBS')")
