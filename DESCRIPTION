@@ -78,6 +78,6 @@ Suggests:
 LinkingTo: cpp11, BH(>= 1.62.0-1), RProtoBufLib(>= 1.99.4), cytolib (>= 2.3.7),Rhdf5lib
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, FlowCytometry, DataImport, Preprocessing, DataRepresentation
-SystemRequirements: GNU make, C++11
+SystemRequirements: GNU make, C++17
 Encoding: UTF-8
 RoxygenNote: 7.2.3
