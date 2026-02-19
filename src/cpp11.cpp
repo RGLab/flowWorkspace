@@ -5,6 +5,354 @@
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
+// R_API.cpp
+string gen_uid();
+extern "C" SEXP _flowWorkspace_gen_uid() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(gen_uid());
+  END_CPP11
+}
+// R_API.cpp
+cpp11::list getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis, bool inverse);
+extern "C" SEXP _flowWorkspace_getSplineCoefs(SEXP channelRange, SEXP maxValue, SEXP pos, SEXP neg, SEXP widthBasis, SEXP inverse) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getSplineCoefs(cpp11::as_cpp<cpp11::decay_t<int>>(channelRange), cpp11::as_cpp<cpp11::decay_t<double>>(maxValue), cpp11::as_cpp<cpp11::decay_t<double>>(pos), cpp11::as_cpp<cpp11::decay_t<double>>(neg), cpp11::as_cpp<cpp11::decay_t<double>>(widthBasis), cpp11::as_cpp<cpp11::decay_t<bool>>(inverse)));
+  END_CPP11
+}
+// R_API.cpp
+void updateChannels_cpp(cpp11::external_pointer<GatingSet> gsPtr, cpp11::data_frame map);
+extern "C" SEXP _flowWorkspace_updateChannels_cpp(SEXP gsPtr, SEXP map) {
+  BEGIN_CPP11
+    updateChannels_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<cpp11::data_frame>>(map));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_plotGh(cpp11::external_pointer<GatingSet> gs, string sampleName, string output);
+extern "C" SEXP _flowWorkspace_cpp_plotGh(SEXP gs, SEXP sampleName, SEXP output) {
+  BEGIN_CPP11
+    cpp_plotGh(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(output));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+StringVec cpp_getNodes(cpp11::external_pointer<GatingSet> gs, string sampleName, int order, bool fullPath, bool showHidden);
+extern "C" SEXP _flowWorkspace_cpp_getNodes(SEXP gs, SEXP sampleName, SEXP order, SEXP fullPath, SEXP showHidden) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getNodes(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(order), cpp11::as_cpp<cpp11::decay_t<bool>>(fullPath), cpp11::as_cpp<cpp11::decay_t<bool>>(showHidden)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+string getNodePath(cpp11::external_pointer<GatingSet> gs, string sampleName, int id);
+extern "C" SEXP _flowWorkspace_getNodePath(SEXP gs, SEXP sampleName, SEXP id) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(getNodePath(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(id)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+int cpp_getNodeID(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getNodeID(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getNodeID(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+int cpp_getParent(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getParent(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getParent(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool showHidden);
+extern "C" SEXP _flowWorkspace_cpp_getChildren(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP showHidden) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getChildren(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(showHidden)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getPopStats(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getPopStats(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+cpp11::list cpp_getCompensation(cpp11::external_pointer<GatingSet> gs, string sampleName);
+extern "C" SEXP _flowWorkspace_cpp_getCompensation(SEXP gs, SEXP sampleName) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getCompensation(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void set_transformations(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list translist);
+extern "C" SEXP _flowWorkspace_set_transformations(SEXP gs, SEXP sampleName, SEXP translist) {
+  BEGIN_CPP11
+    set_transformations(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(translist));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+cpp11::writable::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs, string sampleName, bool inverse);
+extern "C" SEXP _flowWorkspace_cpp_getTransformations(SEXP gs, SEXP sampleName, SEXP inverse) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getTransformations(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<bool>>(inverse)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getGate(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+vector<bool> cpp_getIndices(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getIndices(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getIndices(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_setIndices(cpp11::external_pointer<GatingSet> gs, string sampleName, int u, cpp11::logicals ind);
+extern "C" SEXP _flowWorkspace_cpp_setIndices(SEXP gs, SEXP sampleName, SEXP u, SEXP ind) {
+  BEGIN_CPP11
+    cpp_setIndices(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(u), cpp11::as_cpp<cpp11::decay_t<cpp11::logicals>>(ind));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+bool cpp_getGateFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getGateFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getGateFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+bool cpp_getNegateFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getNegateFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getNegateFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+bool cpp_getHiddenFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
+extern "C" SEXP _flowWorkspace_cpp_getHiddenFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getHiddenFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list filter, string gatePath, string popName);
+extern "C" SEXP _flowWorkspace_cpp_addGate(SEXP gs, SEXP sampleName, SEXP filter, SEXP gatePath, SEXP popName) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_addGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<string>>(popName)));
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_boolGating(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list filter, unsigned nodeID);
+extern "C" SEXP _flowWorkspace_cpp_boolGating(SEXP gs, SEXP sampleName, SEXP filter, SEXP nodeID) {
+  BEGIN_CPP11
+    cpp_boolGating(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter), cpp11::as_cpp<cpp11::decay_t<unsigned>>(nodeID));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void set_quadgate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, vector<double> inter);
+extern "C" SEXP _flowWorkspace_set_quadgate(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP inter) {
+  BEGIN_CPP11
+    set_quadgate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<vector<double>>>(inter));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_setGate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, cpp11::list filter);
+extern "C" SEXP _flowWorkspace_cpp_setGate(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP filter) {
+  BEGIN_CPP11
+    cpp_setGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void cpp_removeNode(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool recursive);
+extern "C" SEXP _flowWorkspace_cpp_removeNode(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP recursive) {
+  BEGIN_CPP11
+    cpp_removeNode(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(recursive));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void moveNode(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, string parent);
+extern "C" SEXP _flowWorkspace_moveNode(SEXP gsPtr, SEXP sampleName, SEXP node, SEXP parent) {
+  BEGIN_CPP11
+    moveNode(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(node), cpp11::as_cpp<cpp11::decay_t<string>>(parent));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void setNodeName(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, string newNodeName);
+extern "C" SEXP _flowWorkspace_setNodeName(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP newNodeName) {
+  BEGIN_CPP11
+    setNodeName(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<string>>(newNodeName));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingHierarchy.cpp
+void setNodeFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool hidden);
+extern "C" SEXP _flowWorkspace_setNodeFlag(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP hidden) {
+  BEGIN_CPP11
+    setNodeFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(hidden));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+void gs_transform_data(cpp11::external_pointer<GatingSet> gsPtr);
+extern "C" SEXP _flowWorkspace_gs_transform_data(SEXP gsPtr) {
+  BEGIN_CPP11
+    gs_transform_data(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+void cpp_gating(cpp11::external_pointer<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool);
+extern "C" SEXP _flowWorkspace_cpp_gating(SEXP gsPtr, SEXP nodes, SEXP alwaysLoadData, SEXP verbose, SEXP leafbool) {
+  BEGIN_CPP11
+    cpp_gating(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(nodes), cpp11::as_cpp<cpp11::decay_t<bool>>(alwaysLoadData), cpp11::as_cpp<cpp11::decay_t<bool>>(verbose), cpp11::as_cpp<cpp11::decay_t<bool>>(leafbool));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> subset_gs_by_sample(cpp11::external_pointer<GatingSet> gsPtr, vector<string> samples);
+extern "C" SEXP _flowWorkspace_subset_gs_by_sample(SEXP gsPtr, SEXP samples) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(subset_gs_by_sample(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(samples)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> get_cytoset(cpp11::external_pointer<GatingSet> gsPtr);
+extern "C" SEXP _flowWorkspace_get_cytoset(SEXP gsPtr) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(get_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> get_cytoset_from_node(cpp11::external_pointer<GatingSet> gsPtr, string node);
+extern "C" SEXP _flowWorkspace_get_cytoset_from_node(SEXP gsPtr, SEXP node) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(get_cytoset_from_node(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(node)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+void set_cytoset(cpp11::external_pointer<GatingSet> gsPtr, cpp11::external_pointer<GatingSet> cs);
+extern "C" SEXP _flowWorkspace_set_cytoset(SEXP gsPtr, SEXP cs) {
+  BEGIN_CPP11
+    set_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+StringVec cpp_getSamples(cpp11::external_pointer<GatingSet> gsPtr);
+extern "C" SEXP _flowWorkspace_cpp_getSamples(SEXP gsPtr) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getSamples(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> cpp_NewGatingSet(cpp11::external_pointer<GatingSet> gsPtr, string src_sample_uid, cpp11::external_pointer<GatingSet> cs, bool execute, string comp_source);
+extern "C" SEXP _flowWorkspace_cpp_NewGatingSet(SEXP gsPtr, SEXP src_sample_uid, SEXP cs, SEXP execute, SEXP comp_source) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_NewGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(src_sample_uid), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<bool>>(execute), cpp11::as_cpp<cpp11::decay_t<string>>(comp_source)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+string get_gatingset_id(cpp11::external_pointer<GatingSet> gsPtr);
+extern "C" SEXP _flowWorkspace_get_gatingset_id(SEXP gsPtr) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(get_gatingset_id(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+void set_gatingset_id(cpp11::external_pointer<GatingSet> gsPtr, string id);
+extern "C" SEXP _flowWorkspace_set_gatingset_id(SEXP gsPtr, SEXP id) {
+  BEGIN_CPP11
+    set_gatingset_id(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(id));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+void cpp_saveGatingSet(cpp11::external_pointer<GatingSet> gs, string path, string backend_opt);
+extern "C" SEXP _flowWorkspace_cpp_saveGatingSet(SEXP gs, SEXP path, SEXP backend_opt) {
+  BEGIN_CPP11
+    cpp_saveGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(path), cpp11::as_cpp<cpp11::decay_t<string>>(backend_opt));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> cpp_loadGatingSet(string path, bool readonly, vector<string> select_samples, bool verbose);
+extern "C" SEXP _flowWorkspace_cpp_loadGatingSet(SEXP path, SEXP readonly, SEXP select_samples, SEXP verbose) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_loadGatingSet(cpp11::as_cpp<cpp11::decay_t<string>>(path), cpp11::as_cpp<cpp11::decay_t<bool>>(readonly), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(select_samples), cpp11::as_cpp<cpp11::decay_t<bool>>(verbose)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> load_legacy_gs(string pbfile, cpp11::external_pointer<GatingSet> cs);
+extern "C" SEXP _flowWorkspace_load_legacy_gs(SEXP pbfile, SEXP cs) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(load_legacy_gs(cpp11::as_cpp<cpp11::decay_t<string>>(pbfile), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> cpp_CloneGatingSet(cpp11::external_pointer<GatingSet> gs, string h5_dir, bool is_copy_data);
+extern "C" SEXP _flowWorkspace_cpp_CloneGatingSet(SEXP gs, SEXP h5_dir, SEXP is_copy_data) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_CloneGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(h5_dir), cpp11::as_cpp<cpp11::decay_t<bool>>(is_copy_data)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+cpp11::external_pointer<GatingSet> cpp_combineGatingSet(cpp11::list gsList, cpp11::list sampleList);
+extern "C" SEXP _flowWorkspace_cpp_combineGatingSet(SEXP gsList, SEXP sampleList) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_combineGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(gsList), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(sampleList)));
+  END_CPP11
+}
+// R_GatingSet.cpp
+void cpp_setSample(cpp11::external_pointer<GatingSet> gs, string oldName, string newName);
+extern "C" SEXP _flowWorkspace_cpp_setSample(SEXP gs, SEXP oldName, SEXP newName) {
+  BEGIN_CPP11
+    cpp_setSample(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(oldName), cpp11::as_cpp<cpp11::decay_t<string>>(newName));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+bool is_tiledb_support();
+extern "C" SEXP _flowWorkspace_is_tiledb_support() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(is_tiledb_support());
+  END_CPP11
+}
+// R_GatingSet.cpp
+unsigned short cpp_getLogLevel();
+extern "C" SEXP _flowWorkspace_cpp_getLogLevel() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(cpp_getLogLevel());
+  END_CPP11
+}
+// R_GatingSet.cpp
+void cpp_setLogLevel(unsigned short loglevel);
+extern "C" SEXP _flowWorkspace_cpp_setLogLevel(SEXP loglevel) {
+  BEGIN_CPP11
+    cpp_setLogLevel(cpp11::as_cpp<cpp11::decay_t<unsigned short>>(loglevel));
+    return R_NilValue;
+  END_CPP11
+}
+// R_GatingSet.cpp
+void cpp_togleErrorFlag();
+extern "C" SEXP _flowWorkspace_cpp_togleErrorFlag() {
+  BEGIN_CPP11
+    cpp_togleErrorFlag();
+    return R_NilValue;
+  END_CPP11
+}
 // cytoframeAPI.cpp
 void del_rownames(cpp11::external_pointer<CytoFrameView> fr);
 extern "C" SEXP _flowWorkspace_del_rownames(SEXP fr) {
@@ -415,354 +763,6 @@ void h5_set_error_handler();
 extern "C" SEXP _flowWorkspace_h5_set_error_handler() {
   BEGIN_CPP11
     h5_set_error_handler();
-    return R_NilValue;
-  END_CPP11
-}
-// R_API.cpp
-string gen_uid();
-extern "C" SEXP _flowWorkspace_gen_uid() {
-  BEGIN_CPP11
-    return cpp11::as_sexp(gen_uid());
-  END_CPP11
-}
-// R_API.cpp
-cpp11::list getSplineCoefs(int channelRange, double maxValue, double pos, double neg, double widthBasis, bool inverse);
-extern "C" SEXP _flowWorkspace_getSplineCoefs(SEXP channelRange, SEXP maxValue, SEXP pos, SEXP neg, SEXP widthBasis, SEXP inverse) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(getSplineCoefs(cpp11::as_cpp<cpp11::decay_t<int>>(channelRange), cpp11::as_cpp<cpp11::decay_t<double>>(maxValue), cpp11::as_cpp<cpp11::decay_t<double>>(pos), cpp11::as_cpp<cpp11::decay_t<double>>(neg), cpp11::as_cpp<cpp11::decay_t<double>>(widthBasis), cpp11::as_cpp<cpp11::decay_t<bool>>(inverse)));
-  END_CPP11
-}
-// R_API.cpp
-void updateChannels_cpp(cpp11::external_pointer<GatingSet> gsPtr, cpp11::data_frame map);
-extern "C" SEXP _flowWorkspace_updateChannels_cpp(SEXP gsPtr, SEXP map) {
-  BEGIN_CPP11
-    updateChannels_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<cpp11::data_frame>>(map));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void cpp_plotGh(cpp11::external_pointer<GatingSet> gs, string sampleName, string output);
-extern "C" SEXP _flowWorkspace_cpp_plotGh(SEXP gs, SEXP sampleName, SEXP output) {
-  BEGIN_CPP11
-    cpp_plotGh(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(output));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-StringVec cpp_getNodes(cpp11::external_pointer<GatingSet> gs, string sampleName, int order, bool fullPath, bool showHidden);
-extern "C" SEXP _flowWorkspace_cpp_getNodes(SEXP gs, SEXP sampleName, SEXP order, SEXP fullPath, SEXP showHidden) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getNodes(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(order), cpp11::as_cpp<cpp11::decay_t<bool>>(fullPath), cpp11::as_cpp<cpp11::decay_t<bool>>(showHidden)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-string getNodePath(cpp11::external_pointer<GatingSet> gs, string sampleName, int id);
-extern "C" SEXP _flowWorkspace_getNodePath(SEXP gs, SEXP sampleName, SEXP id) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(getNodePath(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(id)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-int cpp_getNodeID(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getNodeID(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getNodeID(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-int cpp_getParent(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getParent(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getParent(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-vector<int> cpp_getChildren(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool showHidden);
-extern "C" SEXP _flowWorkspace_cpp_getChildren(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP showHidden) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getChildren(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(showHidden)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-cpp11::writable::list cpp_getPopStats(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getPopStats(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getPopStats(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-cpp11::list cpp_getCompensation(cpp11::external_pointer<GatingSet> gs, string sampleName);
-extern "C" SEXP _flowWorkspace_cpp_getCompensation(SEXP gs, SEXP sampleName) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getCompensation(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void set_transformations(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list translist);
-extern "C" SEXP _flowWorkspace_set_transformations(SEXP gs, SEXP sampleName, SEXP translist) {
-  BEGIN_CPP11
-    set_transformations(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(translist));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-cpp11::writable::list cpp_getTransformations(cpp11::external_pointer<GatingSet> gs, string sampleName, bool inverse);
-extern "C" SEXP _flowWorkspace_cpp_getTransformations(SEXP gs, SEXP sampleName, SEXP inverse) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getTransformations(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<bool>>(inverse)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-cpp11::list cpp_getGate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getGate(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-vector<bool> cpp_getIndices(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getIndices(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getIndices(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void cpp_setIndices(cpp11::external_pointer<GatingSet> gs, string sampleName, int u, cpp11::logicals ind);
-extern "C" SEXP _flowWorkspace_cpp_setIndices(SEXP gs, SEXP sampleName, SEXP u, SEXP ind) {
-  BEGIN_CPP11
-    cpp_setIndices(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<int>>(u), cpp11::as_cpp<cpp11::decay_t<cpp11::logicals>>(ind));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-bool cpp_getGateFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getGateFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getGateFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-bool cpp_getNegateFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getNegateFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getNegateFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-bool cpp_getHiddenFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath);
-extern "C" SEXP _flowWorkspace_cpp_getHiddenFlag(SEXP gs, SEXP sampleName, SEXP gatePath) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getHiddenFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-NODEID cpp_addGate(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list filter, string gatePath, string popName);
-extern "C" SEXP _flowWorkspace_cpp_addGate(SEXP gs, SEXP sampleName, SEXP filter, SEXP gatePath, SEXP popName) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_addGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<string>>(popName)));
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void cpp_boolGating(cpp11::external_pointer<GatingSet> gs, string sampleName, cpp11::list filter, unsigned nodeID);
-extern "C" SEXP _flowWorkspace_cpp_boolGating(SEXP gs, SEXP sampleName, SEXP filter, SEXP nodeID) {
-  BEGIN_CPP11
-    cpp_boolGating(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter), cpp11::as_cpp<cpp11::decay_t<unsigned>>(nodeID));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void set_quadgate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, vector<double> inter);
-extern "C" SEXP _flowWorkspace_set_quadgate(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP inter) {
-  BEGIN_CPP11
-    set_quadgate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<vector<double>>>(inter));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void cpp_setGate(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, cpp11::list filter);
-extern "C" SEXP _flowWorkspace_cpp_setGate(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP filter) {
-  BEGIN_CPP11
-    cpp_setGate(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(filter));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void cpp_removeNode(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool recursive);
-extern "C" SEXP _flowWorkspace_cpp_removeNode(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP recursive) {
-  BEGIN_CPP11
-    cpp_removeNode(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(recursive));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void moveNode(cpp11::external_pointer<GatingSet> gsPtr, string sampleName, string node, string parent);
-extern "C" SEXP _flowWorkspace_moveNode(SEXP gsPtr, SEXP sampleName, SEXP node, SEXP parent) {
-  BEGIN_CPP11
-    moveNode(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(node), cpp11::as_cpp<cpp11::decay_t<string>>(parent));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void setNodeName(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, string newNodeName);
-extern "C" SEXP _flowWorkspace_setNodeName(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP newNodeName) {
-  BEGIN_CPP11
-    setNodeName(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<string>>(newNodeName));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingHierarchy.cpp
-void setNodeFlag(cpp11::external_pointer<GatingSet> gs, string sampleName, string gatePath, bool hidden);
-extern "C" SEXP _flowWorkspace_setNodeFlag(SEXP gs, SEXP sampleName, SEXP gatePath, SEXP hidden) {
-  BEGIN_CPP11
-    setNodeFlag(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(sampleName), cpp11::as_cpp<cpp11::decay_t<string>>(gatePath), cpp11::as_cpp<cpp11::decay_t<bool>>(hidden));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-void gs_transform_data(cpp11::external_pointer<GatingSet> gsPtr);
-extern "C" SEXP _flowWorkspace_gs_transform_data(SEXP gsPtr) {
-  BEGIN_CPP11
-    gs_transform_data(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-void cpp_gating(cpp11::external_pointer<GatingSet> gsPtr, vector<string> nodes, bool alwaysLoadData, bool verbose, bool leafbool);
-extern "C" SEXP _flowWorkspace_cpp_gating(SEXP gsPtr, SEXP nodes, SEXP alwaysLoadData, SEXP verbose, SEXP leafbool) {
-  BEGIN_CPP11
-    cpp_gating(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(nodes), cpp11::as_cpp<cpp11::decay_t<bool>>(alwaysLoadData), cpp11::as_cpp<cpp11::decay_t<bool>>(verbose), cpp11::as_cpp<cpp11::decay_t<bool>>(leafbool));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> subset_gs_by_sample(cpp11::external_pointer<GatingSet> gsPtr, vector<string> samples);
-extern "C" SEXP _flowWorkspace_subset_gs_by_sample(SEXP gsPtr, SEXP samples) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(subset_gs_by_sample(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(samples)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> get_cytoset(cpp11::external_pointer<GatingSet> gsPtr);
-extern "C" SEXP _flowWorkspace_get_cytoset(SEXP gsPtr) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(get_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> get_cytoset_from_node(cpp11::external_pointer<GatingSet> gsPtr, string node);
-extern "C" SEXP _flowWorkspace_get_cytoset_from_node(SEXP gsPtr, SEXP node) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(get_cytoset_from_node(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(node)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-void set_cytoset(cpp11::external_pointer<GatingSet> gsPtr, cpp11::external_pointer<GatingSet> cs);
-extern "C" SEXP _flowWorkspace_set_cytoset(SEXP gsPtr, SEXP cs) {
-  BEGIN_CPP11
-    set_cytoset(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-StringVec cpp_getSamples(cpp11::external_pointer<GatingSet> gsPtr);
-extern "C" SEXP _flowWorkspace_cpp_getSamples(SEXP gsPtr) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getSamples(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> cpp_NewGatingSet(cpp11::external_pointer<GatingSet> gsPtr, string src_sample_uid, cpp11::external_pointer<GatingSet> cs, bool execute, string comp_source);
-extern "C" SEXP _flowWorkspace_cpp_NewGatingSet(SEXP gsPtr, SEXP src_sample_uid, SEXP cs, SEXP execute, SEXP comp_source) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_NewGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(src_sample_uid), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs), cpp11::as_cpp<cpp11::decay_t<bool>>(execute), cpp11::as_cpp<cpp11::decay_t<string>>(comp_source)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-string get_gatingset_id(cpp11::external_pointer<GatingSet> gsPtr);
-extern "C" SEXP _flowWorkspace_get_gatingset_id(SEXP gsPtr) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(get_gatingset_id(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-void set_gatingset_id(cpp11::external_pointer<GatingSet> gsPtr, string id);
-extern "C" SEXP _flowWorkspace_set_gatingset_id(SEXP gsPtr, SEXP id) {
-  BEGIN_CPP11
-    set_gatingset_id(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gsPtr), cpp11::as_cpp<cpp11::decay_t<string>>(id));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-void cpp_saveGatingSet(cpp11::external_pointer<GatingSet> gs, string path, string backend_opt);
-extern "C" SEXP _flowWorkspace_cpp_saveGatingSet(SEXP gs, SEXP path, SEXP backend_opt) {
-  BEGIN_CPP11
-    cpp_saveGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(path), cpp11::as_cpp<cpp11::decay_t<string>>(backend_opt));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> cpp_loadGatingSet(string path, bool readonly, vector<string> select_samples, bool verbose);
-extern "C" SEXP _flowWorkspace_cpp_loadGatingSet(SEXP path, SEXP readonly, SEXP select_samples, SEXP verbose) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_loadGatingSet(cpp11::as_cpp<cpp11::decay_t<string>>(path), cpp11::as_cpp<cpp11::decay_t<bool>>(readonly), cpp11::as_cpp<cpp11::decay_t<vector<string>>>(select_samples), cpp11::as_cpp<cpp11::decay_t<bool>>(verbose)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> load_legacy_gs(string pbfile, cpp11::external_pointer<GatingSet> cs);
-extern "C" SEXP _flowWorkspace_load_legacy_gs(SEXP pbfile, SEXP cs) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(load_legacy_gs(cpp11::as_cpp<cpp11::decay_t<string>>(pbfile), cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(cs)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> cpp_CloneGatingSet(cpp11::external_pointer<GatingSet> gs, string h5_dir, bool is_copy_data);
-extern "C" SEXP _flowWorkspace_cpp_CloneGatingSet(SEXP gs, SEXP h5_dir, SEXP is_copy_data) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_CloneGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(h5_dir), cpp11::as_cpp<cpp11::decay_t<bool>>(is_copy_data)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-cpp11::external_pointer<GatingSet> cpp_combineGatingSet(cpp11::list gsList, cpp11::list sampleList);
-extern "C" SEXP _flowWorkspace_cpp_combineGatingSet(SEXP gsList, SEXP sampleList) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_combineGatingSet(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(gsList), cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(sampleList)));
-  END_CPP11
-}
-// R_GatingSet.cpp
-void cpp_setSample(cpp11::external_pointer<GatingSet> gs, string oldName, string newName);
-extern "C" SEXP _flowWorkspace_cpp_setSample(SEXP gs, SEXP oldName, SEXP newName) {
-  BEGIN_CPP11
-    cpp_setSample(cpp11::as_cpp<cpp11::decay_t<cpp11::external_pointer<GatingSet>>>(gs), cpp11::as_cpp<cpp11::decay_t<string>>(oldName), cpp11::as_cpp<cpp11::decay_t<string>>(newName));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-bool is_tiledb_support();
-extern "C" SEXP _flowWorkspace_is_tiledb_support() {
-  BEGIN_CPP11
-    return cpp11::as_sexp(is_tiledb_support());
-  END_CPP11
-}
-// R_GatingSet.cpp
-unsigned short cpp_getLogLevel();
-extern "C" SEXP _flowWorkspace_cpp_getLogLevel() {
-  BEGIN_CPP11
-    return cpp11::as_sexp(cpp_getLogLevel());
-  END_CPP11
-}
-// R_GatingSet.cpp
-void cpp_setLogLevel(unsigned short loglevel);
-extern "C" SEXP _flowWorkspace_cpp_setLogLevel(SEXP loglevel) {
-  BEGIN_CPP11
-    cpp_setLogLevel(cpp11::as_cpp<cpp11::decay_t<unsigned short>>(loglevel));
-    return R_NilValue;
-  END_CPP11
-}
-// R_GatingSet.cpp
-void cpp_togleErrorFlag();
-extern "C" SEXP _flowWorkspace_cpp_togleErrorFlag() {
-  BEGIN_CPP11
-    cpp_togleErrorFlag();
     return R_NilValue;
   END_CPP11
 }
