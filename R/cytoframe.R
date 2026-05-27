@@ -588,9 +588,10 @@ setReplaceMethod("parameters",
 			return(object)
 		})
 
+#' @importFrom BiocGenerics transform
 setMethod("transform",
-          signature=signature(`_data`="cytoframe"),
-          definition=function(`_data`, translist, ...)
+          signature=signature(x="cytoframe"),
+          definition=function(x, translist, ...)
           {
             if(missing(translist))
               stop("Missing the second argument 'translist'!")
@@ -626,11 +627,11 @@ setMethod("transform",
             if(is(tList, "transformList")){
               # flowCore %on% method for flowFrame
               # Also updates keywords: "transformation", "PnRmax", "PnRmin"
-              return(tList %on% `_data`)
+              return(tList %on% x)
             }else{
               # Do the transformation at the C++ level
-              cf_transform_data(`_data`@pointer, tList)
-              return(`_data`)
+              cf_transform_data(x@pointer, tList)
+              return(x)
             }
             
           })

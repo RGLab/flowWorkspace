@@ -311,11 +311,12 @@ setMethod("keyword",c("GatingSetList","character"),function(object,keyword){
 }
 
 #' @export
+#' @importFrom BiocGenerics transform
 setMethod("transform",
-    signature = signature(`_data` = "GatingSetList"),
-    definition = function(`_data`, ...)
+    signature = signature(x = "GatingSetList"),
+    definition = function(x, ...)
     {
-      res <- lapply(`_data`, function(gs)transform(gs, ...), level = 1)
+      res <- lapply(x, function(gs)transform(gs, ...), level = 1)
       GatingSetList(res)
     })
 
