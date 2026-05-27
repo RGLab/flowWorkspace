@@ -6,10 +6,10 @@
 \alias{transform,GatingSet-method}
 \title{tranform the flow data asssociated with the GatingSet}
 \usage{
-\S4method{transform}{GatingSet}(`_data`, translist, ...)
+\S4method{transform}{GatingSet}(x, translist, ...)
 }
 \arguments{
-\item{_data}{\code{GatingSet} or \code{GatingSetList}}
+\item{x}{\code{GatingSet} or \code{GatingSetList}}
 
 \item{translist}{expect a \code{transformList} object or a list of \code{transformList} objects(with names matched to sample names)}
 
