@@ -553,15 +553,16 @@ setMethod("compensate", signature=signature(x="cytoset", spillover="list"),#expl
           })
 
 #' @export
+#' @importFrom BiocGenerics transform
 setMethod("transform",
-	  signature=signature(`_data`="cytoset"),
-	  definition=function(`_data`, translist,...)
+	  signature=signature(x="cytoset"),
+	  definition=function(x, translist,...)
 	  {
 		  if(missing(translist))
 			  stop("Missing the second argument 'translist'!")
 		  else if(is(translist, "transformList"))
 		  {
-			  translist <- sapply(sampleNames(`_data`), function(obj)translist, simplify = FALSE)
+			  translist <- sapply(sampleNames(x), function(obj)translist, simplify = FALSE)
 		  }
 	    if(is(translist, "list"))
 	    {
@@ -569,12 +570,12 @@ setMethod("transform",
 	        if(!is(trans, "transformList"))
 	          stop("All the elements of 'translist' must be 'transformList' objects!")
 	        })
-	      sns <- sampleNames(`_data`)
+	      sns <- sampleNames(x)
 	      if(!setequal(sns, names(translist)))
 	        stop("names of 'translist' must be consistent with flow data!")
-	      for(sn in sampleNames(`_data`))
+	      for(sn in sampleNames(x))
 	      {
-	        cf <- get_cytoframe_from_cs(`_data`, sn)
+	        cf <- get_cytoframe_from_cs(x, sn)
 	        transform(cf, translist[[sn]], ...)
 	      }
       }else
@@ -582,7 +583,7 @@ setMethod("transform",
 		  
 
 		  
-		  `_data`
+		  x
 	  })
 setMethod("identifier",
 		signature=signature(object="cytoset"),

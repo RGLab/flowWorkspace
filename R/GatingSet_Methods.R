@@ -982,7 +982,7 @@ gs_keyword_set <- function(gs, keys, values){
 #' 
 #' @name transform
 #' @aliases transform,GatingSetList-method transform,GatingSet-method
-#' @param _data \code{GatingSet} or \code{GatingSetList}
+#' @param x \code{GatingSet} or \code{GatingSetList}
 #' @param translist expect a \code{transformList} object or a list of \code{transformList} objects(with names matched to sample names)
 #' @param ... other arguments passed to 'transform' method for 'ncdfFlowSet'.(e.g. 'ncdfFile')
 #' @return a \code{GatingSet} or \code{GatingSetList} object with the underling flow data transformed.
@@ -1005,12 +1005,13 @@ gs_keyword_set <- function(gs, keys, values){
 #'
 #' }
 #' @export
+#' @importFrom BiocGenerics transform
 setMethod("transform",
-    signature = signature(`_data` = "GatingSet"),
-    definition = function(`_data`, translist, ...)
+    signature = signature(x = "GatingSet"),
+    definition = function(x, translist, ...)
     {
       
-      gs <- `_data`
+      gs <- x
       # browser()
       if(missing(translist))
         stop("Missing the second argument 'translist'!")
